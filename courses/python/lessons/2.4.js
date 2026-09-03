@@ -371,7 +371,7 @@ class ProfileFactory:
 #        because BUG 2 handed out that exact object.
 #
 # BUG 2  Default arguments are evaluated once, when def executes. Every
-#        call omitting `permissions` binds the SAME list -- so appends
+#        call omitting the argument binds the SAME list -- so appends
 #        accumulate across users. This is the growing-permissions symptom.
 #
 # BUG 3  dict.copy() is shallow. Every profile's "settings" and "tags"
