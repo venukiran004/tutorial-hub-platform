@@ -36,7 +36,7 @@
        "soon" in the rail and the curriculum, so the roadmap is visible in full
        without ever promising content that is not there yet. Add an id here the
        moment its lesson file lands — this is the single switch. */
-    published: ["1.1", "1.2", "1.3", "1.4"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6"],
 
     modules: [
 
