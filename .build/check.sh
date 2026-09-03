@@ -5,7 +5,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-for f in assets/js/*.js courses/*/curriculum.js courses/*/lessons/*.js; do
+for f in assets/js/*.js courses/*/curriculum.js courses/*/lessons/*/*.js; do
   node --check "$f"
 done
 echo "syntax: all files parse"

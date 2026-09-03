@@ -107,7 +107,9 @@
   EC.receiveLesson = function (L) { paint(L); };
 
   var s = document.createElement("script");
-  s.src = "lessons/" + id + ".js";
+  // One folder per module, numbered so a directory listing stays in
+  // curriculum order: lessons/02_core/2.11.js
+  s.src = "lessons/" + EC.lessonDir(meta) + "/" + id + ".js";
   s.onerror = function () {
     $("#lesson-head").innerHTML = header(meta);
     $("#lesson-body").innerHTML = EC.render([

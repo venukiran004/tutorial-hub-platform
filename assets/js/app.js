@@ -85,6 +85,14 @@
     return (base || "") + "lesson.html?id=" + encodeURIComponent(l.id);
   };
 
+  /* Lesson files live in one folder per module, zero-padded so the
+     directory listing matches curriculum order. Defined here so the page,
+     the build scripts and the tests all derive the path the same way. */
+  EC.lessonDir = function (l) {
+    var n = String(l.moduleIndex + 1);
+    return (n.length < 2 ? "0" + n : n) + "_" + l.module.id;
+  };
+
   /* -------------------------------------------------------------- rail -- */
   EC.buildRail = function (opts) {
     var c = EC.course, cur = opts.current, base = opts.base || "";

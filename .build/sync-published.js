@@ -11,9 +11,14 @@ const root = path.join(__dirname, "..", course);
 const lessonsDir = path.join(root, "lessons");
 const curriculum = path.join(root, "curriculum.js");
 
-const ids = fs.readdirSync(lessonsDir)
-  .filter(f => f.endsWith(".js"))
-  .map(f => f.slice(0, -3))
+// Lessons live one folder per module: lessons/02_core/2.11.js
+const ids = fs.readdirSync(lessonsDir, { withFileTypes: true })
+  .filter(d => d.isDirectory())
+  .flatMap(d =>
+    fs.readdirSync(path.join(lessonsDir, d.name))
+      .filter(f => f.endsWith(".js"))
+      .map(f => f.slice(0, -3))
+  )
   // numeric sort on module.lesson so 1.10 follows 1.9, not 1.1
   .sort((a, b) => {
     const [am, al] = a.split(".").map(Number);

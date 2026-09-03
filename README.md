@@ -64,7 +64,11 @@ enterprise-course/
 │       ├── lesson.html            Lesson shell (reads ?id=)
 │       ├── curriculum.js          The spine: modules, lessons, ordering
 │       └── lessons/
-│           └── 1.1.js             One file per lesson
+│           ├── 01_foundations/    One folder per module, numbered so the
+│           │   ├── 1.1.js         listing stays in curriculum order
+│           │   └── ...
+│           └── 02_core/
+│               └── ...
 └── .build/
     └── rendertest.js              Headless smoke test — run before pushing
 ```
@@ -76,18 +80,25 @@ A second course is a copy of `courses/python/` with its own `curriculum.js` and
 
 ## Adding a lesson
 
-1. Create `courses/<course>/lessons/<id>.js` calling `EC.receiveLesson({ … })`.
-2. Add the id to the `published: []` array in that course's `curriculum.js`.
+1. Create `courses/<course>/lessons/<NN>_<module-id>/<id>.js` calling
+   `EC.receiveLesson({ … })`. The folder name comes from `EC.lessonDir()` —
+   the module's index (zero-padded) and its `id` from `curriculum.js`.
+2. Run `node .build/sync-published.js`, which rewrites the `published: []`
+   array from the files actually on disk.
 
 That is the whole process. Until an id is in `published`, it renders as **soon** in the
 rail and curriculum — so the full roadmap is visible from day one without ever promising
 content that does not exist.
 
 ```bash
-node .build/rendertest.js    # 47 assertions: renderer, highlighter, curriculum integrity
+bash .build/check.sh              # syntax-check every file, then render every lesson
+bash .build/ship.sh "message"     # the same gate, then commit only if it passes
 ```
 
-CI runs this before deploying, so a broken block type cannot reach the published site.
+`check.sh` runs `node --check` on every lesson before the render suite, which
+catches the one failure mode that is invisible in review: a backtick inside a
+lesson's Python code silently terminates the JavaScript template literal
+holding it. CI runs the same gate before deploying.
 
 ---
 
