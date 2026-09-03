@@ -46,13 +46,11 @@
         <span id="start-label">Start Lesson 1.1</span>
       </a>
       <a class="cta ghost" href="#curriculum">View full curriculum</a>
-      <span class="cta-note">Progress saves in your browser. No account.</span>
+      <span class="cta-note">142 lessons · no account, no sign-up.</span>
     </div>
 
     <div class="stats" id="stats"></div>
   </section>
-
-  <div id="resume-slot"></div>
 
   <!-- --------------------------------------------------------- outcomes -- -->
   <section class="sec">
@@ -138,7 +136,7 @@
   <footer class="foot">
     <span>Enterprise Engineering Academy — Python</span>
     <span class="sp"></span>
-    <button class="ghost-btn" id="reset-progress" type="button">Reset my progress</button>
+    <span>Built as a single static site — no build step, no dependencies.</span>
   </footer>
 
 </div>
@@ -152,14 +150,12 @@
 (function () {
   "use strict";
   var C = EC.course, I = EC.icons, $ = EC.$, $$ = EC.$$;
-  var prog = new EC.Progress(C.id);
 
   EC.initTheme();
   EC.initCmdK("");
 
   var ready = C.readyLessons;
   var totalMin = C.allLessons.reduce(function (a, l) { return a + l.minutes; }, 0);
-  var doneCount = prog.countDone(ready.map(function (l) { return l.id; }));
 
   /* ---- hero badge + stats ---- */
   $("#hero-badge").innerHTML = I.python + "<span>Course 01 · Python</span>";
@@ -168,29 +164,13 @@
     { v: C.modules.length, l: "Modules" },
     { v: C.allLessons.length, l: "Lessons" },
     { v: Math.round(totalMin / 60) + " hrs", l: "Guided content" },
-    { v: ready.length, l: "Available now" },
-    { v: doneCount + "/" + ready.length, l: "You have completed" }
+    { v: ready.length, l: "Published so far" }
   ].map(function (s) {
     return '<div class="stat"><div class="stat-v">' + s.v + '</div><div class="stat-l">' + s.l + "</div></div>";
   }).join("");
 
-  /* ---- resume / start ---- */
-  var lastId = prog.data.last;
-  var lastLesson = lastId && C.lessonById[lastId];
-  // "Next" means the first ready lesson not yet completed — the thing a
-  // returning learner actually wants, rather than the last one they opened.
-  var nextLesson = ready.filter(function (l) { return !prog.isDone(l.id); })[0] || ready[0];
-
-  if (doneCount > 0 || lastLesson) {
-    var target = nextLesson;
-    $("#resume-slot").innerHTML =
-      '<div class="resume"><div class="resume-ic">' + I.arrowR + "</div>" +
-      '<div class="resume-main"><div class="resume-k">Pick up where you left off</div>' +
-      '<div class="resume-t">' + target.num + " · " + EC.esc(target.title) + "</div></div>" +
-      '<a class="cta primary" href="' + EC.lessonHref(target) + '">Continue</a></div>';
-    $("#start-label").textContent = "Continue · " + target.num;
-    $("#start-btn").href = EC.lessonHref(target);
-  }
+  /* ---- where to start ---- */
+  var nextLesson = ready[0] || C.allLessons[0];
 
   /* ---- curriculum ---- */
   var html = "", lastPhase = null, phaseN = 0;
@@ -202,14 +182,10 @@
       lastPhase = m.phase;
     }
     var rd = m.lessons.filter(function (l) { return l.ready !== false; });
-    var md = prog.countDone(rd.map(function (l) { return l.id; }));
-    var pct = rd.length ? md / rd.length : 0;
     var mins = m.lessons.reduce(function (a, l) { return a + l.minutes; }, 0);
-    var allDone = rd.length > 0 && md === rd.length;
-    var CIRC = 2 * Math.PI * 15;
 
     html +=
-      '<div class="mcard' + (allDone ? " done" : "") + '" data-m="' + m.id + '">' +
+      '<div class="mcard" data-m="' + m.id + '">' +
         '<button class="mcard-h" type="button" aria-expanded="false">' +
           '<span class="mcard-lv">' + EC.esc(m.short) + "</span>" +
           '<span class="mcard-main">' +
@@ -222,9 +198,6 @@
             "</span>" +
           "</span>" +
           '<span class="mcard-right">' +
-            '<svg class="mcard-ring" viewBox="0 0 34 34"><circle class="bgc" cx="17" cy="17" r="15"/>' +
-            '<circle class="fgc" cx="17" cy="17" r="15" stroke-dasharray="' + (pct * CIRC).toFixed(1) + " " + CIRC.toFixed(1) + '"/></svg>' +
-            '<span class="mcard-pct">' + md + "/" + rd.length + "</span>" +
             '<span class="mcard-chev">' + I.chevron + "</span>" +
           "</span>" +
         "</button>" +
@@ -233,7 +206,7 @@
           '<ul class="llist">' +
             m.lessons.map(function (l) {
               var soon = l.ready === false;
-              return '<li class="' + (prog.isDone(l.id) ? "done" : "") + '">' +
+              return "<li>" +
                 (soon ? '<a aria-disabled="true">' : '<a href="' + EC.lessonHref(l) + '">') +
                   '<span class="ll-n">' + l.num + "</span>" +
                   '<span class="ll-main"><span class="ll-t">' + EC.esc(l.title) + "</span>" +
@@ -241,7 +214,7 @@
                   '<span class="ll-right">' +
                     '<span class="badge ' + l.difficulty + '"><span class="dot"></span>' + l.difficulty + "</span>" +
                     '<span class="ll-time">' + l.minutes + " min</span>" +
-                    (soon ? '<span class="lsn-soon">soon</span>' : '<span class="ll-tick">' + I.check + "</span>") +
+                    (soon ? '<span class="lsn-soon">soon</span>' : "") +
                   "</span>" +
                 "</a></li>";
             }).join("") +
@@ -295,13 +268,6 @@
   $("#fit-yes").innerHTML = yes.map(function (t) { return "<li>" + I.check + "<span>" + t + "</span></li>"; }).join("");
   $("#fit-no").innerHTML  = no.map(function (t) { return "<li>" + I.chevron + "<span>" + t + "</span></li>"; }).join("");
 
-  /* ---- reset ---- */
-  $("#reset-progress").addEventListener("click", function () {
-    if (confirm("Clear all completion data for the Python course? This cannot be undone.")) {
-      prog.reset();
-      location.reload();
-    }
-  });
 })();
 </script>
 </body>

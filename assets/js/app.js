@@ -4,9 +4,9 @@
    No framework, no build step. Classic scripts with a global namespace so the
    whole site opens straight off the filesystem as well as from a web server.
 
-   Owns: theme, progress persistence, the course rail, the command palette,
-   the on-this-page rail with scroll-spy, and every interactive behaviour a
-   lesson block can declare (copy, tabs, reveal, quiz).
+   Owns: theme, the course rail, the command palette, the on-this-page rail
+   with scroll-spy, and every interactive behaviour a lesson block can
+   declare (copy, tabs, reveal, quiz).
    ========================================================================= */
 (function (global) {
   "use strict";
@@ -48,37 +48,6 @@
     } catch (e) {}
   })();
 
-  /* ------------------------------------------------------------ progress -- */
-  /* Per-course completion, kept in localStorage. Deliberately simple: a set of
-     completed lesson ids plus a timestamp, so a future "resume where you left
-     off" can be added without a migration. */
-  function Progress(courseId) {
-    this.key = "ea:progress:" + courseId;
-    this.data = { done: {}, last: null, at: 0 };
-    try {
-      var raw = localStorage.getItem(this.key);
-      if (raw) this.data = JSON.parse(raw);
-      if (!this.data.done) this.data.done = {};
-    } catch (e) {}
-  }
-  Progress.prototype.save = function () {
-    this.data.at = Date.now();
-    try { localStorage.setItem(this.key, JSON.stringify(this.data)); } catch (e) {}
-  };
-  Progress.prototype.isDone  = function (id) { return !!this.data.done[id]; };
-  Progress.prototype.setDone = function (id, v) {
-    if (v) this.data.done[id] = Date.now(); else delete this.data.done[id];
-    this.save();
-  };
-  Progress.prototype.touch = function (id) { this.data.last = id; this.save(); };
-  Progress.prototype.countDone = function (ids) {
-    var d = this.data.done, n = 0;
-    ids.forEach(function (i) { if (d[i]) n++; });
-    return n;
-  };
-  Progress.prototype.reset = function () { this.data = { done: {}, last: null, at: 0 }; this.save(); };
-  EC.Progress = Progress;
-
   /* ------------------------------------------------------------ course -- */
   /* A curriculum is a list of modules; a module is a list of lessons. Lessons
      with `ready:false` render as "soon" — the shape of the full course is
@@ -118,7 +87,7 @@
 
   /* -------------------------------------------------------------- rail -- */
   EC.buildRail = function (opts) {
-    var c = EC.course, prog = opts.progress, cur = opts.current, base = opts.base || "";
+    var c = EC.course, cur = opts.current, base = opts.base || "";
     var el = $("#rail-nav");
     if (!el) return;
 
@@ -128,27 +97,24 @@
         html += '<div class="rail-phase">' + EC.esc(m.phase) + "</div>";
         lastPhase = m.phase;
       }
-      var ids = m.lessons.filter(function (l) { return l.ready !== false; }).map(function (l) { return l.id; });
-      var done = prog.countDone(ids);
       var isCur = cur && cur.module === m;
-      var allDone = ids.length > 0 && done === ids.length;
 
-      html += '<div class="mod' + (isCur ? " open active" : "") + (allDone ? " done" : "") + '" data-mod="' + m.id + '">' +
+      html += '<div class="mod' + (isCur ? " open active" : "") + '" data-mod="' + m.id + '">' +
         '<button class="mod-btn" type="button" aria-expanded="' + (isCur ? "true" : "false") + '">' +
         '<span class="mod-chev">' + EC.icons.chevron + "</span>" +
         '<span class="mod-lv">' + EC.esc(m.short || ("L" + (m.index + 1))) + "</span>" +
         '<span class="mod-name">' + EC.esc(m.title) + "</span>" +
-        '<span class="mod-count">' + done + "/" + ids.length + "</span></button>" +
+        '<span class="mod-count">' + m.lessons.length + "</span></button>" +
         '<ul class="mod-list' + (isCur ? "" : " collapsed") + '">';
 
       m.lessons.forEach(function (l) {
         var soon = l.ready === false;
-        var cls = "lsn" + (cur && cur.id === l.id ? " cur" : "") + (prog.isDone(l.id) ? " done" : "") + (soon ? " locked" : "");
+        var cls = "lsn" + (cur && cur.id === l.id ? " cur" : "") + (soon ? " locked" : "");
         html += '<li class="' + cls + '">' +
           (soon ? '<a aria-disabled="true">' : '<a href="' + EC.lessonHref(l, base) + '">') +
           '<span class="lsn-n">' + l.num + "</span>" +
           '<span class="lsn-t">' + EC.esc(l.title) + "</span>" +
-          (soon ? '<span class="lsn-soon">soon</span>' : '<span class="lsn-tick">' + EC.icons.check + "</span>") +
+          (soon ? '<span class="lsn-soon">soon</span>' : "") +
           "</a></li>";
       });
       html += "</ul></div>";
@@ -184,8 +150,6 @@
       });
     }
 
-    EC.updateRailProgress(prog);
-
     // Keep the active lesson in view on load without yanking the whole page.
     var act = $(".lsn.cur", el);
     if (act) {
@@ -194,25 +158,6 @@
         el.parentElement.scrollTop = act.offsetTop - 200;
       }
     }
-  };
-
-  EC.updateRailProgress = function (prog) {
-    var c = EC.course;
-    var ids = c.readyLessons.map(function (l) { return l.id; });
-    var done = prog.countDone(ids);
-    var pct = ids.length ? Math.round((done / ids.length) * 100) : 0;
-    var bar = $("#rail-bar"), lbl = $("#rail-bar-label");
-    if (bar) { bar.style.width = pct + "%"; bar.parentElement.classList.toggle("good", pct === 100); }
-    if (lbl) lbl.textContent = done + " of " + ids.length + " · " + pct + "%";
-    $$("[data-mod]").forEach(function (mod) {
-      var m = c.modules.filter(function (x) { return x.id === mod.dataset.mod; })[0];
-      if (!m) return;
-      var mids = m.lessons.filter(function (l) { return l.ready !== false; }).map(function (l) { return l.id; });
-      var md = prog.countDone(mids);
-      var cnt = $(".mod-count", mod);
-      if (cnt) cnt.textContent = md + "/" + mids.length;
-      mod.classList.toggle("done", mids.length > 0 && md === mids.length);
-    });
   };
 
   /* ---------------------------------------------------- command palette -- */

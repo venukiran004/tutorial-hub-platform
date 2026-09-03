@@ -44,10 +44,6 @@
           <div class="rail-course-meta" id="rail-meta"></div>
         </div>
       </div>
-      <div class="rail-prog">
-        <div class="rail-prog-top"><b>Course progress</b><span id="rail-bar-label"></span></div>
-        <div class="bar"><i id="rail-bar"></i></div>
-      </div>
     </div>
     <div class="rail-filter">
       <input id="rail-filter" type="text" placeholder="Filter lessons…" autocomplete="off" spellcheck="false" aria-label="Filter lessons">
@@ -80,7 +76,6 @@
 (function () {
   "use strict";
   var C = EC.course, I = EC.icons, $ = EC.$;
-  var prog = new EC.Progress(C.id);
 
   EC.initTheme();
   EC.initCmdK("");
@@ -96,17 +91,16 @@
       '<span class="callout-kind">Not found</span></div><div class="callout-body">' +
       "<p>No lesson with id <code>" + EC.esc(id) + "</code>. " +
       '<a href="index.html">Back to the curriculum</a>.</p></div></div>';
-    EC.buildRail({ progress: prog, current: null });
+    EC.buildRail({ current: null });
     return;
   }
 
   $("#rail-mark").innerHTML = I.python;
   $("#rail-meta").textContent = C.readyLessons.length + " lessons available";
-  EC.buildRail({ progress: prog, current: meta });
+  EC.buildRail({ current: meta });
   $("#crumb-mod").textContent = meta.module.title;
   $("#crumb-lesson").textContent = meta.num + " " + meta.title;
   document.title = meta.num + " " + meta.title + " — Python — Enterprise Academy";
-  prog.touch(id);
 
   /* The lesson body lives in its own classic script so the whole site works
      from file:// as well as over HTTP. It self-registers on load. */
@@ -185,13 +179,7 @@
         '<span class="dir">' + (isNext ? "Next" + I.arrowR : I.arrowL + "Previous") + "</span>" +
         '<span class="t">' + l.num + " · " + EC.esc(l.title) + "</span></a>";
     }
-    var done = prog.isDone(m.id);
-    return '<div class="lesson-done">' +
-        '<div class="done-txt"><b>Finished ' + m.num + "?</b><span>Marking it complete updates your course progress and unlocks the next step in the rail.</span></div>" +
-        '<button class="done-btn' + (done ? " is-done" : "") + '" id="mark-done" type="button">' +
-          (done ? I.checkCircle + "<span>Completed</span>" : I.check + "<span>Mark complete</span>") +
-        "</button></div>" +
-      '<div class="pager">' + cell(m.prev, "prev") + cell(m.next, "next") + "</div>";
+    return '<div class="pager">' + cell(m.prev, "prev") + cell(m.next, "next") + "</div>";
   }
 
   function paint(L) {
@@ -207,23 +195,6 @@
 
     EC.wireBlocks();
     EC.buildToc();
-
-    $("#mark-done").addEventListener("click", function () {
-      var now = !prog.isDone(meta.id);
-      prog.setDone(meta.id, now);
-      this.classList.toggle("is-done", now);
-      this.innerHTML = now ? I.checkCircle + "<span>Completed</span>" : I.check + "<span>Mark complete</span>";
-      EC.updateRailProgress(prog);
-      var li = document.querySelector('.lsn.cur');
-      if (li) li.classList.toggle("done", now);
-      // Completing the lesson you are on is the moment you most want the next
-      // one; surface it rather than making the learner hunt in the rail.
-      if (now && meta.next && meta.next.ready !== false) {
-        setTimeout(function () {
-          document.querySelector(".pager .nx").scrollIntoView({ behavior: "smooth", block: "center" });
-        }, 220);
-      }
-    });
 
     // j / k move through the course, matching the muscle memory of docs sites.
     document.addEventListener("keydown", function (e) {

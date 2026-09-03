@@ -73,7 +73,6 @@
   background: var(--surface-3); border: 1px solid var(--border);
   font-family: var(--mono); font-size: 12.4px; font-weight: 700; color: var(--ink-2);
 }
-.mcard.done .mcard-lv { background: var(--good-soft); border-color: var(--good-line); color: var(--good); }
 .mcard-main { flex: 1 1 auto; min-width: 0; display: block; }
 .mcard-t { display: block; font-size: 16.2px; font-weight: 640; letter-spacing: -.019em; color: var(--ink); }
 .mcard-b { display: block; font-size: 13.9px; color: var(--ink-2); margin-top: 4px; line-height: 1.55; max-width: 72ch; }
@@ -81,14 +80,8 @@
 .mcard-meta .mi { display: inline-flex; align-items: center; gap: 5px; }
 .mcard-meta .mi svg { width: 12px; height: 12px; }
 .mcard-right { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 9px; }
-.mcard-pct { font-size: 11.6px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .mcard-chev { width: 15px; height: 15px; color: var(--ink-3); transition: transform .2s ease; }
 .mcard.open .mcard-chev { transform: rotate(90deg); }
-.mcard-ring { width: 34px; height: 34px; }
-.mcard-ring circle { fill: none; stroke-width: 3.2; }
-.mcard-ring .bgc { stroke: var(--surface-3); }
-.mcard-ring .fgc { stroke: var(--accent); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dasharray .4s ease; }
-.mcard.done .mcard-ring .fgc { stroke: var(--good); }
 
 .mcard-body { border-top: 1px solid var(--border); }
 .mcard-body[hidden] { display: none; }
@@ -108,9 +101,6 @@
 .ll-s { display: block; font-size: 13.2px; color: var(--ink-3); margin-top: 3px; line-height: 1.5; max-width: 78ch; }
 .ll-right { flex: none; display: flex; align-items: center; gap: 8px; padding-top: 1px; }
 .ll-time { font-size: 11.8px; color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.ll-tick { width: 15px; height: 15px; color: var(--good); opacity: 0; flex: none; }
-.llist li.done .ll-tick { opacity: 1; }
-.llist li.done .ll-t { color: var(--ink-2); }
 @media (max-width: 700px) { .ll-s { display: none !important; } .ll-right .badge { display: none; } }
 
 /* --------------------------------------------------------- how it works -- */
@@ -135,14 +125,6 @@
 .split-box li svg { width: 14px; height: 14px; flex: none; margin-top: 4px; }
 .split-box.yes li svg { color: var(--good); }
 .split-box.no  li svg { color: var(--ink-3); }
-
-/* --------------------------------------------------------- resume card -- */
-.resume { display: flex; align-items: center; gap: 16px; padding: 17px 19px; border: 1px solid var(--accent-line); background: var(--accent-soft); border-radius: var(--r-lg); margin: 26px 0 0; flex-wrap: wrap; }
-.resume-ic { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; background: var(--accent); color: #fff; flex: none; }
-.resume-ic svg { width: 18px; height: 18px; }
-.resume-main { flex: 1 1 200px; min-width: 0; }
-.resume-k { font-size: 10.6px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); }
-.resume-t { font-size: 15.4px; font-weight: 620; color: var(--ink); margin-top: 2px; letter-spacing: -.016em; }
 
 /* ------------------------------------------------------- academy index -- */
 .acad-hero { padding: 76px 0 46px; text-align: center; }

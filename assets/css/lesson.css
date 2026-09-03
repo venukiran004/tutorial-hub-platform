@@ -360,16 +360,6 @@ details.disclose[open] .disclose-chev { transform: rotate(90deg); }
 .takeaways li b { color: var(--ink); font-weight: 620; }
 
 /* ------------------------------------------------------- lesson footer -- */
-.lesson-done { margin: 36px 0 30px; padding: 18px 20px; border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface); display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-.done-txt { flex: 1 1 220px; }
-.done-txt b { display: block; font-size: 14.6px; font-weight: 640; color: var(--ink); }
-.done-txt span { font-size: 13.2px; color: var(--ink-3); }
-.done-btn { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 17px; font: inherit; font-size: 13.6px; font-weight: 620; color: #fff; background: var(--accent); border: 1px solid var(--accent); border-radius: var(--r-sm); cursor: pointer; flex: none; }
-.done-btn:hover { background: color-mix(in srgb, var(--accent) 86%, #000); }
-.done-btn svg { width: 14px; height: 14px; }
-.done-btn.is-done { background: var(--good-soft); border-color: var(--good-line); color: var(--good); }
-.done-btn.is-done:hover { background: var(--good-soft); }
-
 .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
 @media (max-width: 640px) { .pager { grid-template-columns: 1fr; } }
 .pager a { display: flex; flex-direction: column; gap: 3px; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); text-decoration: none; transition: border-color .15s, transform .15s; }
