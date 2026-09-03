@@ -127,12 +127,19 @@ blockquote { margin: 20px 0; padding: 2px 0 2px 18px; border-left: 3px solid var
 .cb-caption { font-size: 13.2px; color: var(--ink-3); margin: -14px 0 24px; padding-left: 2px; max-width: 70ch; line-height: 1.55; }
 .cb-caption b { color: var(--ink-2); font-weight: 600; }
 
-/* Output panel — visually a terminal, attached under its source block so the
-   pairing is unambiguous. */
-.output { margin: -24px 0 24px; border: 1px solid var(--border); border-top: 0; border-radius: 0 0 var(--r) var(--r); background: var(--surface-2); }
-.output-h { font-family: var(--mono); font-size: 9.8px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); padding: 6px 14px 0; }
-.output pre { margin: 0; padding: 4px 14px 12px; font-size: 12.5px; line-height: 1.6; color: var(--ink-2); overflow-x: auto; white-space: pre; }
-.codeblock:has(+ .output) { border-radius: var(--r) var(--r) 0 0; margin-bottom: 0; }
+/* Output panel — a separate surface sitting just below its source block.
+   Butted directly against the code it read as one cramped box; a small gap
+   plus its own border reads as "this came from that" while letting the eye
+   find the boundary between what you wrote and what it printed. */
+.output { margin: 7px 0 24px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surface-2); }
+.output-h { font-family: var(--mono); font-size: 9.8px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); padding: 9px 14px 0; }
+.output pre { margin: 0; padding: 6px 14px 13px; font-size: 12.5px; line-height: 1.6; color: var(--ink-2); overflow-x: auto; white-space: pre; }
+.codeblock:has(+ .output) { margin-bottom: 0; }
+
+/* Inside a ladder rung the code block is edge-to-edge, so the output needs
+   side margins of its own to line up with it rather than touching the frame. */
+.rung .output { margin: 7px 12px 12px; }
+.tab-panel.bare .output { margin: 7px 12px 12px; }
 
 /* ------------------------------------------------------------ callouts -- */
 .callout {
