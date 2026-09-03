@@ -317,8 +317,8 @@ def resolve(
     """Return the first source that actually supplied a value.
 
     'Supplied' means 'is not None'. A value of 0, False or "" is a real
-    answer and stops the search -- which is precisely what `explicit or
-    default` would get wrong.
+    answer and stops the search -- which is precisely what an
+    "explicit or default" implementation would get wrong.
     """
     if explicit is not None:
         return explicit

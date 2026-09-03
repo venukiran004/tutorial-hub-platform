@@ -22,9 +22,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      # Renders every lesson headlessly and asserts the output is structurally
-      # sound, so a broken block type can never reach the published site.
-      - run: node .build/rendertest.js
+      # Parses every lesson file, then renders each one headlessly and asserts
+      # the output is structurally sound. A broken block type or a backtick
+      # inside a lesson's Python code cannot reach the published site.
+      - run: bash .build/check.sh
 
   deploy:
     needs: test
