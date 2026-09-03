@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enterprise Engineering Academy</title>
+<meta name="description" content="Engineering courses that go past syntax — Python, SQL, Machine Learning, Generative AI, RAG, MLOps and Agentic AI, taught with the judgement that separates working code from production systems.">
+<script>try{var t=localStorage.getItem("ea:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/system.css">
+<link rel="stylesheet" href="assets/css/course.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="brand-mark">EA</span>Enterprise<span class="brand-sub">Academy</span></a>
+  <span class="topbar-spacer"></span>
+  <a class="ghost-btn" href="courses/python/index.html">Python course</a>
+  <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
+</header>
+
+<main>
+<div class="page wide">
+
+  <section class="acad-hero">
+    <span class="hero-eyebrow" id="badge"></span>
+    <h1>Engineering courses that do not stop at the syntax.</h1>
+    <p class="hero-lede">
+      Most technical material teaches you what to type. The gap between that and being trusted with
+      production systems is <b>judgement</b> — knowing why one approach beats another, what breaks at
+      scale, and what you will be asked to defend in review. That gap is what these courses teach.
+    </p>
+    <div class="hero-cta">
+      <a class="cta primary" href="courses/python/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+        Start with Python
+      </a>
+      <a class="cta ghost" href="#tracks">See all tracks</a>
+    </div>
+  </section>
+
+  <section class="sec" id="tracks">
+    <div class="sec-kicker">Tracks</div>
+    <div class="sec-h"><h2>The curriculum</h2></div>
+    <p class="sec-lede">
+      Each track is built on the same teaching structure and the same design system, so moving
+      between them costs you nothing. Python is live; the rest follow in order of dependency.
+    </p>
+    <div class="tracks" id="tracks-grid"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-kicker">Standard</div>
+    <div class="sec-h"><h2>What every lesson is held to</h2></div>
+    <div class="method">
+      <div class="method-i"><div class="method-n">01</div><div class="method-t">A mental model before syntax</div><div class="method-d">Diagrams that show real mechanism. If a picture does not improve understanding it is not drawn.</div></div>
+      <div class="method-i"><div class="method-n">02</div><div class="method-t">Code that resembles work</div><div class="method-d">Runnable, modern, typed where it helps, and drawn from systems rather than textbooks.</div></div>
+      <div class="method-i"><div class="method-n">03</div><div class="method-t">Three rungs, not one answer</div><div class="method-d">Bad, better and production-grade, with the reasoning between them made explicit.</div></div>
+      <div class="method-i"><div class="method-n">04</div><div class="method-t">Trade-offs stated honestly</div><div class="method-d">Where there is no single right answer, you get the decision procedure instead of a rule.</div></div>
+      <div class="method-i"><div class="method-n">05</div><div class="method-t">Practice you must attempt</div><div class="method-d">Solutions stay hidden until you choose to reveal them, because reading a solution is not learning.</div></div>
+      <div class="method-i"><div class="method-n">06</div><div class="method-t">Interview and production lenses</div><div class="method-d">What the topic sounds like under questioning, and how it behaves at 3am.</div></div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Enterprise Engineering Academy</span>
+    <span class="sp"></span>
+    <span>Progress is stored locally in your browser.</span>
+  </footer>
+
+</div>
+</main>
+
+<script src="assets/js/highlight.js"></script>
+<script src="assets/js/render.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  "use strict";
+  var I = EC.icons, $ = EC.$;
+  EC.initTheme();
+  $("#badge").innerHTML = I.layers + "<span>Engineering curriculum</span>";
+
+  // Ordered by dependency, not by popularity: each track assumes the ones
+  // above it. Showing the whole roadmap up front is what makes the first
+  // course credible as part of something larger.
+  var tracks = [
+    { t: "Python", s: "The language, the craft, and the engineering judgement around it — from the execution model through production services.", n: "15 levels · 100+ lessons", href: "courses/python/index.html", live: true, ic: I.python },
+    { t: "SQL & Data Modelling", s: "Query correctness, execution plans, indexing and schema design for engineers who are tired of guessing why a query is slow.", n: "In development", ic: I.layers },
+    { t: "Python for Data Science", s: "NumPy and pandas as engineering tools — vectorised thinking, memory control, and pipelines that survive re-runs.", n: "Planned", ic: I.code },
+    { t: "Machine Learning", s: "Models as one component of a system: evaluation you can trust, leakage you can detect, and baselines you cannot beat.", n: "Planned", ic: I.brain },
+    { t: "Generative AI & LLMs", s: "How the models work, what they cost, where they fail, and how to build on them without pretending they are deterministic.", n: "Planned", ic: I.bulb },
+    { t: "RAG Systems", s: "Retrieval as an engineering problem — chunking, embeddings, hybrid search, reranking, and honest evaluation.", n: "Planned", ic: I.search },
+    { t: "Agentic AI", s: "Tool use, planning, memory and control loops, with the failure modes that show up once an agent can act.", n: "Planned", ic: I.target },
+    { t: "MLOps & LLMOps", s: "Versioning, deployment, monitoring and rollback for systems whose behaviour changes with their data.", n: "Planned", ic: I.server }
+  ];
+
+  $("#tracks-grid").innerHTML = tracks.map(function (k) {
+    var inner =
+      '<div class="track-top"><span class="track-mark">' + k.ic + "</span>" +
+      '<span class="track-t">' + EC.esc(k.t) + "</span></div>" +
+      '<p class="track-s">' + EC.esc(k.s) + "</p>" +
+      '<div class="track-f"><span>' + EC.esc(k.n) + '</span><span class="sp"></span>' +
+      (k.live ? '<span class="track-go">Open' + I.arrowR + "</span>" : '<span class="badge">Soon</span>') + "</div>";
+    return k.live
+      ? '<a class="track" href="' + k.href + '">' + inner + "</a>"
+      : '<div class="track soon">' + inner + "</div>";
+  }).join("");
+})();
+</script>
+</body>
+</html>

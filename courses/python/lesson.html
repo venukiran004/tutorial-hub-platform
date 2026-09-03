@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson — Python — Enterprise Engineering Academy</title>
+<script>try{var t=localStorage.getItem("ea:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/system.css">
+<link rel="stylesheet" href="../../assets/css/course.css">
+<link rel="stylesheet" href="../../assets/css/lesson.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="ghost-btn icon-only rail-toggle" data-rail-toggle type="button" aria-label="Open course navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
+  </button>
+  <a class="brand" href="../../index.html"><span class="brand-mark">EA</span>Enterprise<span class="brand-sub">Academy</span></a>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <span class="sep">/</span><a href="index.html">Python</a>
+    <span class="sep">/</span><a href="index.html#curriculum" id="crumb-mod"></a>
+    <span class="sep">/</span><span class="cur" id="crumb-lesson"></span>
+  </nav>
+  <span class="topbar-spacer"></span>
+  <button class="ghost-btn search-trigger" data-cmdk type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+    <span class="label">Search lessons</span><span class="hint">Ctrl K</span>
+  </button>
+  <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
+</header>
+
+<div class="shell with-toc">
+
+  <!-- ------------------------------------------------------ course rail -- -->
+  <aside class="rail">
+    <div class="rail-head">
+      <div class="rail-course">
+        <span class="rail-course-mark" id="rail-mark"></span>
+        <div>
+          <div class="rail-course-name">Python</div>
+          <div class="rail-course-meta" id="rail-meta"></div>
+        </div>
+      </div>
+      <div class="rail-prog">
+        <div class="rail-prog-top"><b>Course progress</b><span id="rail-bar-label"></span></div>
+        <div class="bar"><i id="rail-bar"></i></div>
+      </div>
+    </div>
+    <div class="rail-filter">
+      <input id="rail-filter" type="text" placeholder="Filter lessons…" autocomplete="off" spellcheck="false" aria-label="Filter lessons">
+    </div>
+    <nav id="rail-nav" aria-label="Course navigation"></nav>
+  </aside>
+
+  <!-- ----------------------------------------------------------- lesson -- -->
+  <main>
+    <div class="page">
+      <header class="lh" id="lesson-head"></header>
+      <article class="body" id="lesson-body"></article>
+      <div id="lesson-foot"></div>
+    </div>
+  </main>
+
+  <!-- ------------------------------------------------------ on this page -- -->
+  <aside class="toc">
+    <div class="toc-h">On this page</div>
+    <ul id="toc-list"></ul>
+  </aside>
+
+</div>
+
+<script src="../../assets/js/highlight.js"></script>
+<script src="../../assets/js/render.js"></script>
+<script src="../../assets/js/app.js"></script>
+<script src="curriculum.js"></script>
+<script>
+(function () {
+  "use strict";
+  var C = EC.course, I = EC.icons, $ = EC.$;
+  var prog = new EC.Progress(C.id);
+
+  EC.initTheme();
+  EC.initCmdK("");
+  EC.initRailDrawer();
+  EC.initReadingBar();
+
+  var id = new URLSearchParams(location.search).get("id") || C.allLessons[0].id;
+  var meta = C.lessonById[id];
+
+  if (!meta) {
+    $("#lesson-body").innerHTML =
+      '<div class="callout trap"><div class="callout-h"><span class="callout-ic">' + I.alert + '</span>' +
+      '<span class="callout-kind">Not found</span></div><div class="callout-body">' +
+      "<p>No lesson with id <code>" + EC.esc(id) + "</code>. " +
+      '<a href="index.html">Back to the curriculum</a>.</p></div></div>';
+    EC.buildRail({ progress: prog, current: null });
+    return;
+  }
+
+  $("#rail-mark").innerHTML = I.python;
+  $("#rail-meta").textContent = C.readyLessons.length + " lessons available";
+  EC.buildRail({ progress: prog, current: meta });
+  $("#crumb-mod").textContent = meta.module.title;
+  $("#crumb-lesson").textContent = meta.num + " " + meta.title;
+  document.title = meta.num + " " + meta.title + " — Python — Enterprise Academy";
+  prog.touch(id);
+
+  /* The lesson body lives in its own classic script so the whole site works
+     from file:// as well as over HTTP. It self-registers on load. */
+  EC.receiveLesson = function (L) { paint(L); };
+
+  var s = document.createElement("script");
+  s.src = "lessons/" + id + ".js";
+  s.onerror = function () {
+    $("#lesson-head").innerHTML = header(meta);
+    $("#lesson-body").innerHTML = EC.render([
+      { t: "callout", kind: "note", title: "This lesson is being written", body: [
+        { t: "p", text: "**" + meta.num + " · " + meta.title + "** is scheduled but not yet published." },
+        { t: "p", text: meta.summary },
+        { t: "p", text: "The curriculum is deliberately visible in full from day one so you can see where the course goes. [Back to the curriculum](index.html#curriculum)." }
+      ] }
+    ]);
+    $("#lesson-foot").innerHTML = pager(meta);
+    EC.wireBlocks();
+  };
+  document.head.appendChild(s);
+
+  /* ------------------------------------------------------------ render -- */
+  function header(m, L) {
+    L = L || {};
+    var prereqs = (L.prerequisites || []).map(function (p) {
+      var t = C.lessonById[p];
+      return t
+        ? "<li>" + I.link + '<a href="' + EC.lessonHref(t) + '">' + t.num + " · " + EC.esc(t.title) + "</a></li>"
+        : "<li>" + I.link + "<span>" + EC.esc(p) + "</span></li>";
+    }).join("");
+
+    return '<div class="lh-eyebrow">' +
+        '<span class="lv">' + m.module.short + " · " + EC.esc(m.module.title) + "</span>" +
+        '<span style="opacity:.4">/</span><span>Lesson ' + m.num + "</span></div>" +
+      "<h1>" + EC.esc(m.title) + "</h1>" +
+      (L.lede ? '<p class="lh-lede">' + EC.inline(L.lede) + "</p>" : "") +
+      '<div class="lh-meta">' +
+        '<span class="badge ' + m.difficulty + '"><span class="dot"></span>' + m.difficulty + "</span>" +
+        '<span class="meta-row"><span class="mi">' + I.clock + "<b>" + m.minutes + " min</b> read</span>" +
+        '<span class="mi">' + I.layers + "Lesson <b>" + (m.seq + 1) + "</b> of " + C.allLessons.length + "</span>" +
+        (L.blocks ? '<span class="mi">' + I.code + "<b>" + countCode(L) + "</b> code examples</span>" : "") +
+        "</span></div>" +
+      '<div class="lh-contract">' +
+        '<div class="contract-box obj"><div class="contract-h">' + I.target + "<span>What you will be able to do</span></div><ol>" +
+          (L.objectives || []).map(function (o) { return "<li>" + EC.inline(o) + "</li>"; }).join("") +
+        "</ol></div>" +
+        '<div class="contract-box"><div class="contract-h">' + I.layers + "<span>Prerequisites</span></div><ul>" +
+          (prereqs || "<li>" + I.check + "<span>None — this is a starting point.</span></li>") +
+        "</ul></div>" +
+      "</div>";
+  }
+
+  function countCode(L) {
+    var n = 0;
+    (function walk(bs) {
+      (bs || []).forEach(function (b) {
+        if (b.t === "code") n++;
+        if (b.rungs) n += b.rungs.length;
+        if (b.body) walk(b.body);
+        if (b.blocks) walk(b.blocks);
+        if (b.items) b.items.forEach(function (i) { if (i && i.blocks) walk(i.blocks); });
+      });
+    })(L.blocks);
+    return n;
+  }
+
+  function pager(m) {
+    function cell(l, dir) {
+      var isNext = dir === "next";
+      if (!l || l.ready === false) {
+        return '<a class="ph ' + (isNext ? "nx" : "") + '"><span class="dir">' +
+          (isNext ? "Next" + I.arrowR : I.arrowL + "Previous") + '</span><span class="t">' +
+          (l ? "Coming soon" : "End of course") + "</span></a>";
+      }
+      return '<a class="' + (isNext ? "nx" : "") + '" href="' + EC.lessonHref(l) + '">' +
+        '<span class="dir">' + (isNext ? "Next" + I.arrowR : I.arrowL + "Previous") + "</span>" +
+        '<span class="t">' + l.num + " · " + EC.esc(l.title) + "</span></a>";
+    }
+    var done = prog.isDone(m.id);
+    return '<div class="lesson-done">' +
+        '<div class="done-txt"><b>Finished ' + m.num + "?</b><span>Marking it complete updates your course progress and unlocks the next step in the rail.</span></div>" +
+        '<button class="done-btn' + (done ? " is-done" : "") + '" id="mark-done" type="button">' +
+          (done ? I.checkCircle + "<span>Completed</span>" : I.check + "<span>Mark complete</span>") +
+        "</button></div>" +
+      '<div class="pager">' + cell(m.prev, "prev") + cell(m.next, "next") + "</div>";
+  }
+
+  function paint(L) {
+    $("#lesson-head").innerHTML = header(meta, L);
+
+    var blocks = (L.blocks || []).slice();
+    if (L.takeaways) blocks.push({ t: "takeaways", items: L.takeaways });
+    if (L.quiz) blocks.push({ t: "quiz", title: L.quiz.title, questions: L.quiz.questions });
+    if (L.interview) blocks.push({ t: "interview", title: L.interview.title, sub: L.interview.sub, questions: L.interview.questions });
+
+    $("#lesson-body").innerHTML = EC.render(blocks);
+    $("#lesson-foot").innerHTML = pager(meta);
+
+    EC.wireBlocks();
+    EC.buildToc();
+
+    $("#mark-done").addEventListener("click", function () {
+      var now = !prog.isDone(meta.id);
+      prog.setDone(meta.id, now);
+      this.classList.toggle("is-done", now);
+      this.innerHTML = now ? I.checkCircle + "<span>Completed</span>" : I.check + "<span>Mark complete</span>";
+      EC.updateRailProgress(prog);
+      var li = document.querySelector('.lsn.cur');
+      if (li) li.classList.toggle("done", now);
+      // Completing the lesson you are on is the moment you most want the next
+      // one; surface it rather than making the learner hunt in the rail.
+      if (now && meta.next && meta.next.ready !== false) {
+        setTimeout(function () {
+          document.querySelector(".pager .nx").scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 220);
+      }
+    });
+
+    // j / k move through the course, matching the muscle memory of docs sites.
+    document.addEventListener("keydown", function (e) {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+      if (e.key === "j" && meta.next && meta.next.ready !== false) location.href = EC.lessonHref(meta.next);
+      if (e.key === "k" && meta.prev) location.href = EC.lessonHref(meta.prev);
+    });
+  }
+})();
+</script>
+</body>
+</html>

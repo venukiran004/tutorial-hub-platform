@@ -1,0 +1,472 @@
+/* ============================================================================
+   APPLICATION RUNTIME
+   ----------------------------------------------------------------------------
+   No framework, no build step. Classic scripts with a global namespace so the
+   whole site opens straight off the filesystem as well as from a web server.
+
+   Owns: theme, progress persistence, the course rail, the command palette,
+   the on-this-page rail with scroll-spy, and every interactive behaviour a
+   lesson block can declare (copy, tabs, reveal, quiz).
+   ========================================================================= */
+(function (global) {
+  "use strict";
+
+  var EC = global.EC || (global.EC = {});
+  var $  = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  EC.$ = $; EC.$$ = $$;
+
+  /* --------------------------------------------------------------- theme -- */
+  var THEME_KEY = "ea:theme";
+  function applyTheme(t) {
+    if (t === "system") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", t);
+    $$("[data-theme-toggle]").forEach(function (b) {
+      b.innerHTML = t === "light" ? EC.icons.moon : EC.icons.sun;
+      b.setAttribute("aria-label", "Switch to " + (t === "light" ? "dark" : "light") + " theme");
+    });
+  }
+  EC.initTheme = function () {
+    var saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+    applyTheme(saved || "dark");
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-theme-toggle]");
+      if (!b) return;
+      var cur = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+      var next = cur === "light" ? "dark" : "light";
+      applyTheme(next);
+      try { localStorage.setItem(THEME_KEY, next); } catch (err) {}
+    });
+  };
+  // Applied before first paint by an inline script in each page; this is the
+  // fallback for anything that loads late.
+  (function () {
+    try {
+      var t = localStorage.getItem(THEME_KEY);
+      if (t && t !== "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+
+  /* ------------------------------------------------------------ progress -- */
+  /* Per-course completion, kept in localStorage. Deliberately simple: a set of
+     completed lesson ids plus a timestamp, so a future "resume where you left
+     off" can be added without a migration. */
+  function Progress(courseId) {
+    this.key = "ea:progress:" + courseId;
+    this.data = { done: {}, last: null, at: 0 };
+    try {
+      var raw = localStorage.getItem(this.key);
+      if (raw) this.data = JSON.parse(raw);
+      if (!this.data.done) this.data.done = {};
+    } catch (e) {}
+  }
+  Progress.prototype.save = function () {
+    this.data.at = Date.now();
+    try { localStorage.setItem(this.key, JSON.stringify(this.data)); } catch (e) {}
+  };
+  Progress.prototype.isDone  = function (id) { return !!this.data.done[id]; };
+  Progress.prototype.setDone = function (id, v) {
+    if (v) this.data.done[id] = Date.now(); else delete this.data.done[id];
+    this.save();
+  };
+  Progress.prototype.touch = function (id) { this.data.last = id; this.save(); };
+  Progress.prototype.countDone = function (ids) {
+    var d = this.data.done, n = 0;
+    ids.forEach(function (i) { if (d[i]) n++; });
+    return n;
+  };
+  Progress.prototype.reset = function () { this.data = { done: {}, last: null, at: 0 }; this.save(); };
+  EC.Progress = Progress;
+
+  /* ------------------------------------------------------------ course -- */
+  /* A curriculum is a list of modules; a module is a list of lessons. Lessons
+     with `ready:false` render as "soon" — the shape of the full course is
+     visible from day one, which is what makes the roadmap credible. */
+  EC.course = null;
+  EC.defineCourse = function (c) {
+    EC.course = c;
+    c.allLessons = [];
+    c.lessonById = {};
+    var pub = c.published || null;
+    c.modules.forEach(function (m, mi) {
+      m.index = mi;
+      m.lessons.forEach(function (l, li) {
+        // Readiness is derived from the published list rather than repeated on
+        // every lesson, so shipping a lesson is a one-line change.
+        if (pub && l.ready === undefined) l.ready = pub.indexOf(l.id) !== -1;
+        l.module = m;
+        l.moduleIndex = mi;
+        l.indexInModule = li;
+        l.num = (mi + 1) + "." + (li + 1);
+        c.allLessons.push(l);
+        c.lessonById[l.id] = l;
+      });
+    });
+    c.allLessons.forEach(function (l, i) {
+      l.seq = i;
+      l.prev = i > 0 ? c.allLessons[i - 1] : null;
+      l.next = i < c.allLessons.length - 1 ? c.allLessons[i + 1] : null;
+    });
+    c.readyLessons = c.allLessons.filter(function (l) { return l.ready !== false; });
+    return c;
+  };
+
+  EC.lessonHref = function (l, base) {
+    return (base || "") + "lesson.html?id=" + encodeURIComponent(l.id);
+  };
+
+  /* -------------------------------------------------------------- rail -- */
+  EC.buildRail = function (opts) {
+    var c = EC.course, prog = opts.progress, cur = opts.current, base = opts.base || "";
+    var el = $("#rail-nav");
+    if (!el) return;
+
+    var html = "", lastPhase = null;
+    c.modules.forEach(function (m) {
+      if (m.phase && m.phase !== lastPhase) {
+        html += '<div class="rail-phase">' + EC.esc(m.phase) + "</div>";
+        lastPhase = m.phase;
+      }
+      var ids = m.lessons.filter(function (l) { return l.ready !== false; }).map(function (l) { return l.id; });
+      var done = prog.countDone(ids);
+      var isCur = cur && cur.module === m;
+      var allDone = ids.length > 0 && done === ids.length;
+
+      html += '<div class="mod' + (isCur ? " open active" : "") + (allDone ? " done" : "") + '" data-mod="' + m.id + '">' +
+        '<button class="mod-btn" type="button" aria-expanded="' + (isCur ? "true" : "false") + '">' +
+        '<span class="mod-chev">' + EC.icons.chevron + "</span>" +
+        '<span class="mod-lv">' + EC.esc(m.short || ("L" + (m.index + 1))) + "</span>" +
+        '<span class="mod-name">' + EC.esc(m.title) + "</span>" +
+        '<span class="mod-count">' + done + "/" + ids.length + "</span></button>" +
+        '<ul class="mod-list' + (isCur ? "" : " collapsed") + '">';
+
+      m.lessons.forEach(function (l) {
+        var soon = l.ready === false;
+        var cls = "lsn" + (cur && cur.id === l.id ? " cur" : "") + (prog.isDone(l.id) ? " done" : "") + (soon ? " locked" : "");
+        html += '<li class="' + cls + '">' +
+          (soon ? '<a aria-disabled="true">' : '<a href="' + EC.lessonHref(l, base) + '">') +
+          '<span class="lsn-n">' + l.num + "</span>" +
+          '<span class="lsn-t">' + EC.esc(l.title) + "</span>" +
+          (soon ? '<span class="lsn-soon">soon</span>' : '<span class="lsn-tick">' + EC.icons.check + "</span>") +
+          "</a></li>";
+      });
+      html += "</ul></div>";
+    });
+    el.innerHTML = html;
+
+    el.addEventListener("click", function (e) {
+      var b = e.target.closest(".mod-btn");
+      if (!b) return;
+      var mod = b.parentElement;
+      var open = mod.classList.toggle("open");
+      $(".mod-list", mod).classList.toggle("collapsed", !open);
+      b.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+
+    // Filter box narrows to matching lessons and auto-opens their modules —
+    // typing should never require a second click to see the hit.
+    var f = $("#rail-filter");
+    if (f) {
+      f.addEventListener("input", function () {
+        var q = f.value.trim().toLowerCase();
+        $$(".mod", el).forEach(function (mod) {
+          var hits = 0;
+          $$(".lsn", mod).forEach(function (li) {
+            var ok = !q || li.textContent.toLowerCase().indexOf(q) !== -1;
+            li.style.display = ok ? "" : "none";
+            if (ok) hits++;
+          });
+          mod.style.display = hits ? "" : "none";
+          if (q) { mod.classList.add("open"); $(".mod-list", mod).classList.remove("collapsed"); }
+          else if (!mod.classList.contains("active")) { mod.classList.remove("open"); $(".mod-list", mod).classList.add("collapsed"); }
+        });
+      });
+    }
+
+    EC.updateRailProgress(prog);
+
+    // Keep the active lesson in view on load without yanking the whole page.
+    var act = $(".lsn.cur", el);
+    if (act) {
+      var r = act.getBoundingClientRect(), rr = el.getBoundingClientRect();
+      if (r.top < rr.top + 60 || r.bottom > rr.bottom - 60) {
+        el.parentElement.scrollTop = act.offsetTop - 200;
+      }
+    }
+  };
+
+  EC.updateRailProgress = function (prog) {
+    var c = EC.course;
+    var ids = c.readyLessons.map(function (l) { return l.id; });
+    var done = prog.countDone(ids);
+    var pct = ids.length ? Math.round((done / ids.length) * 100) : 0;
+    var bar = $("#rail-bar"), lbl = $("#rail-bar-label");
+    if (bar) { bar.style.width = pct + "%"; bar.parentElement.classList.toggle("good", pct === 100); }
+    if (lbl) lbl.textContent = done + " of " + ids.length + " · " + pct + "%";
+    $$("[data-mod]").forEach(function (mod) {
+      var m = c.modules.filter(function (x) { return x.id === mod.dataset.mod; })[0];
+      if (!m) return;
+      var mids = m.lessons.filter(function (l) { return l.ready !== false; }).map(function (l) { return l.id; });
+      var md = prog.countDone(mids);
+      var cnt = $(".mod-count", mod);
+      if (cnt) cnt.textContent = md + "/" + mids.length;
+      mod.classList.toggle("done", mids.length > 0 && md === mids.length);
+    });
+  };
+
+  /* ---------------------------------------------------- command palette -- */
+  EC.initCmdK = function (base) {
+    var open = false, sel = 0, results = [];
+    var scrim, input, list;
+
+    function build() {
+      scrim = document.createElement("div");
+      scrim.className = "cmdk-scrim";
+      scrim.innerHTML =
+        '<div class="cmdk" role="dialog" aria-modal="true" aria-label="Search lessons">' +
+        '<div class="cmdk-in">' + EC.icons.search +
+        '<input type="text" placeholder="Search lessons, topics, concepts…" autocomplete="off" spellcheck="false">' +
+        "</div><div class=\"cmdk-list\" role=\"listbox\"></div>" +
+        '<div class="cmdk-foot"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>↵</kbd> open</span><span><kbd>esc</kbd> close</span></div></div>';
+      document.body.appendChild(scrim);
+      input = $("input", scrim);
+      list = $(".cmdk-list", scrim);
+
+      scrim.addEventListener("mousedown", function (e) { if (e.target === scrim) close(); });
+      input.addEventListener("input", function () { query(input.value); });
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowDown") { e.preventDefault(); move(1); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); move(-1); }
+        else if (e.key === "Enter") { e.preventDefault(); go(); }
+        else if (e.key === "Escape") { e.preventDefault(); close(); }
+      });
+      list.addEventListener("click", function (e) {
+        var it = e.target.closest(".cmdk-item");
+        if (it) { sel = +it.dataset.i; go(); }
+      });
+    }
+
+    // Scoring: title prefix beats title substring beats keyword/module match,
+    // so typing "gen" surfaces "Generators" before "Dependency management".
+    function score(l, q) {
+      var t = l.title.toLowerCase();
+      if (t.indexOf(q) === 0) return 100;
+      if (t.indexOf(q) !== -1) return 70;
+      if ((l.summary || "").toLowerCase().indexOf(q) !== -1) return 40;
+      var kw = (l.keywords || []).join(" ").toLowerCase();
+      if (kw.indexOf(q) !== -1) return 35;
+      if (l.module.title.toLowerCase().indexOf(q) !== -1) return 20;
+      return 0;
+    }
+
+    function query(q) {
+      q = q.trim().toLowerCase();
+      var pool = EC.course.allLessons;
+      results = q
+        ? pool.map(function (l) { return { l: l, s: score(l, q) }; })
+             .filter(function (r) { return r.s > 0; })
+             .sort(function (a, b) { return b.s - a.s || a.l.seq - b.l.seq; })
+             .slice(0, 24).map(function (r) { return r.l; })
+        : pool.slice(0, 12);
+      sel = 0;
+      draw(q);
+    }
+
+    function draw(q) {
+      if (!results.length) {
+        list.innerHTML = '<div class="cmdk-empty">No lesson matches “' + EC.esc(q) + "”</div>";
+        return;
+      }
+      list.innerHTML = '<div class="cmdk-grp">' + (q ? results.length + " result" + (results.length > 1 ? "s" : "") : "Start here") + "</div>" +
+        results.map(function (l, i) {
+          return '<a class="cmdk-item" data-i="' + i + '" role="option" aria-selected="' + (i === sel) + '" href="' +
+            (l.ready === false ? "#" : EC.lessonHref(l, base)) + '">' +
+            '<span class="n">' + l.num + '</span><span class="t">' + EC.esc(l.title) + "</span>" +
+            '<span class="m">' + EC.esc(l.module.short || l.module.title) + (l.ready === false ? " · soon" : "") + "</span></a>";
+        }).join("");
+    }
+
+    function move(d) {
+      if (!results.length) return;
+      sel = (sel + d + results.length) % results.length;
+      $$(".cmdk-item", list).forEach(function (it, i) {
+        it.setAttribute("aria-selected", i === sel);
+        if (i === sel) it.scrollIntoView({ block: "nearest" });
+      });
+    }
+    function go() {
+      var l = results[sel];
+      if (l && l.ready !== false) location.href = EC.lessonHref(l, base);
+    }
+    function show() {
+      if (!scrim) build();
+      scrim.style.display = "";
+      open = true;
+      input.value = "";
+      query("");
+      input.focus();
+    }
+    function close() { if (scrim) scrim.style.display = "none"; open = false; }
+
+    document.addEventListener("keydown", function (e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); open ? close() : show(); }
+      else if (e.key === "/" && !open && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) { e.preventDefault(); show(); }
+    });
+    $$("[data-cmdk]").forEach(function (b) { b.addEventListener("click", show); });
+  };
+
+  /* ------------------------------------------------------------- toc -- */
+  EC.buildToc = function () {
+    var toc = $("#toc-list");
+    if (!toc) return;
+    var heads = $$(".body > h2, .body > h3");
+    if (!heads.length) { var w = $(".toc"); if (w) w.style.display = "none"; return; }
+
+    toc.innerHTML = heads.map(function (h) {
+      if (!h.id) h.id = EC.slug(h.textContent);
+      var txt = h.tagName === "H2" ? (h.lastElementChild ? h.lastElementChild.textContent : h.textContent) : h.textContent;
+      return '<li class="' + (h.tagName === "H3" ? "sub" : "") + '"><a href="#' + h.id + '">' + EC.esc(txt) + "</a></li>";
+    }).join("");
+
+    var links = $$("a", toc);
+    // Scroll-spy: mark the last heading whose top has passed the sticky bar.
+    // rAF-throttled so a fast scroll costs one layout read per frame.
+    var ticking = false;
+    function spy() {
+      var y = window.scrollY + 110, active = heads[0];
+      for (var i = 0; i < heads.length; i++) if (heads[i].offsetTop <= y) active = heads[i];
+      links.forEach(function (a) { a.classList.toggle("on", a.getAttribute("href") === "#" + active.id); });
+      ticking = false;
+    }
+    window.addEventListener("scroll", function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(spy); }
+    }, { passive: true });
+    spy();
+  };
+
+  /* ------------------------------------------------------- reading bar -- */
+  EC.initReadingBar = function () {
+    var bar = document.createElement("div");
+    bar.className = "reading-bar";
+    document.body.appendChild(bar);
+    var ticking = false;
+    function upd() {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = (h > 0 ? Math.min(100, (window.scrollY / h) * 100) : 0) + "%";
+      ticking = false;
+    }
+    window.addEventListener("scroll", function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(upd); }
+    }, { passive: true });
+    upd();
+  };
+
+  /* --------------------------------------------------- block behaviours -- */
+  EC.wireBlocks = function (root) {
+    root = root || document;
+
+    // copy
+    root.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-copy]");
+      if (!b) return;
+      var code = document.getElementById(b.dataset.copy);
+      if (!code) return;
+      var txt = code.getAttribute("data-raw") || code.innerText;
+      var done = function () {
+        b.classList.add("ok");
+        var s = $("span", b); var was = s.textContent; s.textContent = "Copied";
+        setTimeout(function () { b.classList.remove("ok"); s.textContent = was; }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(done, fallback);
+      } else fallback();
+      function fallback() {
+        var ta = document.createElement("textarea");
+        ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); done(); } catch (err) {}
+        document.body.removeChild(ta);
+      }
+    });
+
+    // tabs
+    root.addEventListener("click", function (e) {
+      var b = e.target.closest('.tabs-strip button');
+      if (!b) return;
+      var wrap = b.closest("[data-tabs]");
+      $$(".tabs-strip button", wrap).forEach(function (x) { x.setAttribute("aria-selected", x === b); });
+      $$(".tab-panel", wrap).forEach(function (p) { p.hidden = p.id !== b.getAttribute("aria-controls"); });
+    });
+    // arrow-key navigation inside a tablist, per WAI-ARIA
+    root.addEventListener("keydown", function (e) {
+      if (!/^Arrow(Left|Right)$/.test(e.key)) return;
+      var b = e.target.closest(".tabs-strip button");
+      if (!b) return;
+      var all = $$(".tabs-strip button", b.closest("[data-tabs]"));
+      var i = all.indexOf(b) + (e.key === "ArrowRight" ? 1 : -1);
+      var n = all[(i + all.length) % all.length];
+      n.click(); n.focus();
+      e.preventDefault();
+    });
+
+    // reveal solution
+    root.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-reveal]");
+      if (!b) return;
+      var box = document.getElementById(b.dataset.reveal);
+      if (!box) return;
+      box.hidden = !box.hidden;
+      $("span", b).textContent = box.hidden ? "Reveal solution" : "Hide solution";
+      if (!box.hidden) box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+
+    // quiz
+    root.addEventListener("click", function (e) {
+      var o = e.target.closest(".q-opt");
+      if (!o || o.disabled) return;
+      var q = o.closest(".q");
+      var right = +q.dataset.answer, picked = +o.dataset.i;
+      var ok = picked === right;
+
+      $$(".q-opt", q).forEach(function (x) {
+        x.disabled = true;
+        var i = +x.dataset.i;
+        if (i === right) x.classList.add("correct");
+        else if (i === picked) x.classList.add("wrong");
+        else x.classList.add("dim");
+      });
+
+      var fb = $(".q-fb", q);
+      fb.hidden = false;
+      fb.classList.add(ok ? "right" : "nope");
+      $(".q-fb-h", fb).textContent = ok ? "Correct" : "Not quite";
+
+      var quiz = q.closest("[data-quiz]");
+      var got = $$(".q", quiz).filter(function (x) { return $(".q-opt.correct:not(.dim)", x) && $(".q-fb.right", x); }).length;
+      $(".quiz-score", quiz).innerHTML = "<b>" + got + "</b> / " + quiz.dataset.total + " correct";
+    });
+  };
+
+  /* --------------------------------------------------------- rail drawer -- */
+  EC.initRailDrawer = function () {
+    var rail = $(".rail"), scrim = null;
+    $$("[data-rail-toggle]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var open = rail.classList.toggle("open");
+        if (open) {
+          scrim = document.createElement("div");
+          scrim.className = "rail-scrim";
+          scrim.addEventListener("click", function () { rail.classList.remove("open"); scrim.remove(); scrim = null; });
+          document.body.appendChild(scrim);
+        } else if (scrim) { scrim.remove(); scrim = null; }
+      });
+    });
+  };
+
+  EC.fmtTime = function (min) {
+    if (min < 60) return min + " min";
+    var h = Math.floor(min / 60), m = min % 60;
+    return h + " hr" + (h > 1 ? "s" : "") + (m ? " " + m + " min" : "");
+  };
+})(window);

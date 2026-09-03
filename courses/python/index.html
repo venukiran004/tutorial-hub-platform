@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python — Enterprise Engineering Academy</title>
+<meta name="description" content="Python from syntax to production systems. 15 levels, 100+ lessons, built around the engineering judgement that separates working code from maintainable systems.">
+<script>try{var t=localStorage.getItem("ea:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/system.css">
+<link rel="stylesheet" href="../../assets/css/course.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="../../index.html"><span class="brand-mark">EA</span>Enterprise<span class="brand-sub">Academy</span></a>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <span class="sep">/</span><a href="../../index.html">Courses</a>
+    <span class="sep">/</span><span class="cur">Python</span>
+  </nav>
+  <span class="topbar-spacer"></span>
+  <button class="ghost-btn search-trigger" data-cmdk type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+    <span class="label">Search lessons</span><span class="hint">Ctrl K</span>
+  </button>
+  <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
+</header>
+
+<main>
+<div class="page wide">
+
+  <!-- ------------------------------------------------------------- hero -- -->
+  <section class="hero">
+    <span class="hero-eyebrow" id="hero-badge"></span>
+    <h1>Python, taught the way it is <span class="dim">actually used at work.</span></h1>
+    <p class="hero-lede">
+      Most Python material stops at "here is the syntax". This course starts there and keeps going —
+      through the idioms senior engineers use, the internals that explain the surprises, and the
+      operational work that turns a script into <b>a system a team can run</b>.
+    </p>
+    <div class="hero-cta">
+      <a class="cta primary" id="start-btn" href="lesson.html?id=1.1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+        <span id="start-label">Start Lesson 1.1</span>
+      </a>
+      <a class="cta ghost" href="#curriculum">View full curriculum</a>
+      <span class="cta-note">Progress saves in your browser. No account.</span>
+    </div>
+
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <div id="resume-slot"></div>
+
+  <!-- --------------------------------------------------------- outcomes -- -->
+  <section class="sec">
+    <div class="sec-kicker">The progression</div>
+    <div class="sec-h"><h2>Five states, in order</h2></div>
+    <p class="sec-lede">
+      Every level exists to move you from one of these states to the next. If a lesson does not
+      advance you along this line, it was cut.
+    </p>
+    <div class="ladder-strip">
+      <div class="ls-step" style="--c:var(--d-foundation)">
+        <div class="ls-n">01</div><div class="ls-t">I know the syntax</div>
+        <div class="ls-d">You can read Python and predict what it does — including the surprising parts.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-core)">
+        <div class="ls-n">02</div><div class="ls-t">I write clean Python</div>
+        <div class="ls-d">Your code reads as idiomatic because every idiom is a choice you can defend.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--accent)">
+        <div class="ls-n">03</div><div class="ls-t">I build applications</div>
+        <div class="ls-d">Packaging, errors, tests, I/O — the machinery around the logic.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-advanced)">
+        <div class="ls-n">04</div><div class="ls-t">I understand trade-offs</div>
+        <div class="ls-d">Internals, performance and concurrency, so your decisions have evidence behind them.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-expert)">
+        <div class="ls-n">05</div><div class="ls-t">I run it in production</div>
+        <div class="ls-d">Observable, deployable, debuggable at 3am by someone who is not you.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------ how it works -- -->
+  <section class="sec">
+    <div class="sec-kicker">How each lesson is built</div>
+    <div class="sec-h"><h2>A consistent teaching structure</h2></div>
+    <p class="sec-lede">
+      Not every lesson uses every element — but the ones it uses always mean the same thing,
+      so you learn to read the course as quickly as you read the code.
+    </p>
+    <div class="method">
+      <div class="method-i"><div class="method-n">01</div><div class="method-t">Mental model first</div><div class="method-d">A picture of how the thing works before any syntax, because syntax you cannot model is syntax you will misuse.</div></div>
+      <div class="method-i"><div class="method-n">02</div><div class="method-t">Realistic examples</div><div class="method-d">Code that resembles the systems you work on. `foo` and `bar` appear only where the point is genuinely abstract.</div></div>
+      <div class="method-i"><div class="method-n">03</div><div class="method-t">Bad → Better → Production</div><div class="method-d">The same problem solved three times, with the reasoning that separates each rung made explicit.</div></div>
+      <div class="method-i"><div class="method-n">04</div><div class="method-t">Traps and trade-offs</div><div class="method-d">The mistakes experienced developers still make, and the decisions that have no single right answer.</div></div>
+      <div class="method-i"><div class="method-n">05</div><div class="method-t">Practice before answers</div><div class="method-d">Exercises with solutions you must deliberately reveal, plus knowledge checks that explain the reasoning.</div></div>
+      <div class="method-i"><div class="method-n">06</div><div class="method-t">Interview lens</div><div class="method-d">What this topic sounds like when an interviewer probes it, and what separates a strong answer from a recited one.</div></div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------- curriculum -- -->
+  <section class="sec" id="curriculum">
+    <div class="sec-kicker">Curriculum</div>
+    <div class="sec-h">
+      <h2>The full path</h2>
+      <span class="sp"></span>
+      <button class="ghost-btn" id="expand-all" type="button">Expand all</button>
+    </div>
+    <p class="sec-lede">
+      Ordered so nothing is used before it is taught. Modules marked <b>soon</b> are written and
+      scheduled — the shape of the whole course is visible from day one.
+    </p>
+    <div id="curriculum-list"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- audience -- -->
+  <section class="sec">
+    <div class="sec-kicker">Fit</div>
+    <div class="sec-h"><h2>Who this is for</h2></div>
+    <div class="split">
+      <div class="split-box yes">
+        <div class="split-h">A good fit if</div>
+        <ul id="fit-yes"></ul>
+      </div>
+      <div class="split-box no">
+        <div class="split-h">Not the right course if</div>
+        <ul id="fit-no"></ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Enterprise Engineering Academy — Python</span>
+    <span class="sp"></span>
+    <button class="ghost-btn" id="reset-progress" type="button">Reset my progress</button>
+  </footer>
+
+</div>
+</main>
+
+<script src="../../assets/js/highlight.js"></script>
+<script src="../../assets/js/render.js"></script>
+<script src="../../assets/js/app.js"></script>
+<script src="curriculum.js"></script>
+<script>
+(function () {
+  "use strict";
+  var C = EC.course, I = EC.icons, $ = EC.$, $$ = EC.$$;
+  var prog = new EC.Progress(C.id);
+
+  EC.initTheme();
+  EC.initCmdK("");
+
+  var ready = C.readyLessons;
+  var totalMin = C.allLessons.reduce(function (a, l) { return a + l.minutes; }, 0);
+  var doneCount = prog.countDone(ready.map(function (l) { return l.id; }));
+
+  /* ---- hero badge + stats ---- */
+  $("#hero-badge").innerHTML = I.python + "<span>Course 01 · Python</span>";
+
+  $("#stats").innerHTML = [
+    { v: C.modules.length, l: "Modules" },
+    { v: C.allLessons.length, l: "Lessons" },
+    { v: Math.round(totalMin / 60) + " hrs", l: "Guided content" },
+    { v: ready.length, l: "Available now" },
+    { v: doneCount + "/" + ready.length, l: "You have completed" }
+  ].map(function (s) {
+    return '<div class="stat"><div class="stat-v">' + s.v + '</div><div class="stat-l">' + s.l + "</div></div>";
+  }).join("");
+
+  /* ---- resume / start ---- */
+  var lastId = prog.data.last;
+  var lastLesson = lastId && C.lessonById[lastId];
+  // "Next" means the first ready lesson not yet completed — the thing a
+  // returning learner actually wants, rather than the last one they opened.
+  var nextLesson = ready.filter(function (l) { return !prog.isDone(l.id); })[0] || ready[0];
+
+  if (doneCount > 0 || lastLesson) {
+    var target = nextLesson;
+    $("#resume-slot").innerHTML =
+      '<div class="resume"><div class="resume-ic">' + I.arrowR + "</div>" +
+      '<div class="resume-main"><div class="resume-k">Pick up where you left off</div>' +
+      '<div class="resume-t">' + target.num + " · " + EC.esc(target.title) + "</div></div>" +
+      '<a class="cta primary" href="' + EC.lessonHref(target) + '">Continue</a></div>';
+    $("#start-label").textContent = "Continue · " + target.num;
+    $("#start-btn").href = EC.lessonHref(target);
+  }
+
+  /* ---- curriculum ---- */
+  var html = "", lastPhase = null, phaseN = 0;
+  C.modules.forEach(function (m) {
+    if (m.phase !== lastPhase) {
+      phaseN++;
+      html += '<div class="phase-h"><span class="phase-n">' + String(phaseN).padStart(2, "0") + "</span>" +
+        '<span class="phase-t">' + EC.esc(m.phase) + '</span><span class="rule"></span></div>';
+      lastPhase = m.phase;
+    }
+    var rd = m.lessons.filter(function (l) { return l.ready !== false; });
+    var md = prog.countDone(rd.map(function (l) { return l.id; }));
+    var pct = rd.length ? md / rd.length : 0;
+    var mins = m.lessons.reduce(function (a, l) { return a + l.minutes; }, 0);
+    var allDone = rd.length > 0 && md === rd.length;
+    var CIRC = 2 * Math.PI * 15;
+
+    html +=
+      '<div class="mcard' + (allDone ? " done" : "") + '" data-m="' + m.id + '">' +
+        '<button class="mcard-h" type="button" aria-expanded="false">' +
+          '<span class="mcard-lv">' + EC.esc(m.short) + "</span>" +
+          '<span class="mcard-main">' +
+            '<span class="mcard-t">' + EC.esc(m.title) + "</span>" +
+            '<span class="mcard-b">' + EC.esc(m.blurb) + "</span>" +
+            '<span class="mcard-meta">' +
+              '<span class="mi">' + I.layers + m.lessons.length + " lessons</span>" +
+              '<span class="mi">' + I.clock + EC.fmtTime(mins) + "</span>" +
+              (rd.length < m.lessons.length ? '<span class="mi">' + (m.lessons.length - rd.length) + " coming soon</span>" : "") +
+            "</span>" +
+          "</span>" +
+          '<span class="mcard-right">' +
+            '<svg class="mcard-ring" viewBox="0 0 34 34"><circle class="bgc" cx="17" cy="17" r="15"/>' +
+            '<circle class="fgc" cx="17" cy="17" r="15" stroke-dasharray="' + (pct * CIRC).toFixed(1) + " " + CIRC.toFixed(1) + '"/></svg>' +
+            '<span class="mcard-pct">' + md + "/" + rd.length + "</span>" +
+            '<span class="mcard-chev">' + I.chevron + "</span>" +
+          "</span>" +
+        "</button>" +
+        '<div class="mcard-body" hidden>' +
+          '<div class="mcard-outcome">' + I.target + "<span><b>By the end:</b> " + EC.esc(m.outcome) + "</span></div>" +
+          '<ul class="llist">' +
+            m.lessons.map(function (l) {
+              var soon = l.ready === false;
+              return '<li class="' + (prog.isDone(l.id) ? "done" : "") + '">' +
+                (soon ? '<a aria-disabled="true">' : '<a href="' + EC.lessonHref(l) + '">') +
+                  '<span class="ll-n">' + l.num + "</span>" +
+                  '<span class="ll-main"><span class="ll-t">' + EC.esc(l.title) + "</span>" +
+                  '<span class="ll-s">' + EC.esc(l.summary) + "</span></span>" +
+                  '<span class="ll-right">' +
+                    '<span class="badge ' + l.difficulty + '"><span class="dot"></span>' + l.difficulty + "</span>" +
+                    '<span class="ll-time">' + l.minutes + " min</span>" +
+                    (soon ? '<span class="lsn-soon">soon</span>' : '<span class="ll-tick">' + I.check + "</span>") +
+                  "</span>" +
+                "</a></li>";
+            }).join("") +
+          "</ul>" +
+        "</div>" +
+      "</div>";
+  });
+  $("#curriculum-list").innerHTML = html;
+
+  $("#curriculum-list").addEventListener("click", function (e) {
+    var b = e.target.closest(".mcard-h");
+    if (!b) return;
+    var card = b.parentElement;
+    var open = card.classList.toggle("open");
+    $(".mcard-body", card).hidden = !open;
+    b.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+
+  // Open the module containing the learner's next lesson, so the page lands
+  // on something actionable rather than a wall of closed accordions.
+  (function () {
+    var card = $('.mcard[data-m="' + nextLesson.module.id + '"]');
+    if (card) { card.classList.add("open"); $(".mcard-body", card).hidden = false; $(".mcard-h", card).setAttribute("aria-expanded", "true"); }
+  })();
+
+  var expanded = false;
+  $("#expand-all").addEventListener("click", function () {
+    expanded = !expanded;
+    $$(".mcard").forEach(function (c) {
+      c.classList.toggle("open", expanded);
+      $(".mcard-body", c).hidden = !expanded;
+      $(".mcard-h", c).setAttribute("aria-expanded", expanded ? "true" : "false");
+    });
+    this.textContent = expanded ? "Collapse all" : "Expand all";
+  });
+
+  /* ---- fit ---- */
+  var yes = [
+    "You can write basic Python but your code gets messy past 200 lines.",
+    "You are moving from scripts and notebooks into services other people depend on.",
+    "You are a data scientist or ML engineer whose Python is holding back your engineering.",
+    "You are preparing for interviews and want depth, not a list of memorised answers.",
+    "You want to understand <em>why</em> Python behaves as it does, not just what to type."
+  ];
+  var no = [
+    "You have never programmed before — start with an absolute-beginner course, then come here.",
+    "You want a language reference. This teaches judgement; the docs are better at lookup.",
+    "You want copy-paste snippets without explanation.",
+    "You are looking for a data-science or ML curriculum. Those are separate courses; this is the language underneath them."
+  ];
+  $("#fit-yes").innerHTML = yes.map(function (t) { return "<li>" + I.check + "<span>" + t + "</span></li>"; }).join("");
+  $("#fit-no").innerHTML  = no.map(function (t) { return "<li>" + I.chevron + "<span>" + t + "</span></li>"; }).join("");
+
+  /* ---- reset ---- */
+  $("#reset-progress").addEventListener("click", function () {
+    if (confirm("Clear all completion data for the Python course? This cannot be undone.")) {
+      prog.reset();
+      location.reload();
+    }
+  });
+})();
+</script>
+</body>
+</html>
