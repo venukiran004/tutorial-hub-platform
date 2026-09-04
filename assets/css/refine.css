@@ -711,3 +711,14 @@ details.solution > summary { color: var(--good); }
   font-family: var(--mono); font-size: 9.6px; border-radius: 4px;
   background: var(--surface-3); border: 1px solid var(--border); color: var(--ink-3);
 }
+
+/* The rail's lesson list had a vertical rule marking the module's extent.
+   The current lesson already carries an accent bar, so the rule was a second
+   vertical line competing with it — removed, and the indent kept. */
+.mod-list::before { content: none; }
+
+/* The current lesson is marked by its filled box alone. The accent bar beside
+   it was a second marker for the same state, and two markers read as two
+   things. */
+.lsn a { border-left: 0; margin-left: 9px; }
+.lsn.cur a { border-left: 0; }

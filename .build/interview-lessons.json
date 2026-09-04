@@ -1,0 +1,437 @@
+[
+  {
+    "id": "17.1",
+    "title": "Strings",
+    "difficulty": "core",
+    "minutes": 14,
+    "tier": "should",
+    "summary": "6 interview questions on strings, answers hidden.",
+    "keywords": [
+      "strings"
+    ]
+  },
+  {
+    "id": "17.2",
+    "title": "Control Flow",
+    "difficulty": "core",
+    "minutes": 36,
+    "tier": "should",
+    "summary": "18 interview questions on control flow, answers hidden.",
+    "keywords": [
+      "control",
+      "flow"
+    ]
+  },
+  {
+    "id": "17.3",
+    "title": "File I/O & Context Managers",
+    "difficulty": "core",
+    "minutes": 18,
+    "tier": "should",
+    "summary": "9 interview questions on file i/o & context managers, answers hidden.",
+    "keywords": [
+      "file",
+      "context",
+      "managers"
+    ]
+  },
+  {
+    "id": "17.4",
+    "title": "Object-Oriented Programming · 1",
+    "difficulty": "advanced",
+    "minutes": 56,
+    "tier": "should",
+    "summary": "28 interview questions on object-oriented programming, answers hidden.",
+    "keywords": [
+      "object",
+      "oriented",
+      "programming"
+    ]
+  },
+  {
+    "id": "17.5",
+    "title": "Object-Oriented Programming · 2",
+    "difficulty": "advanced",
+    "minutes": 42,
+    "tier": "should",
+    "summary": "21 interview questions on object-oriented programming, answers hidden.",
+    "keywords": [
+      "object",
+      "oriented",
+      "programming"
+    ]
+  },
+  {
+    "id": "17.6",
+    "title": "Design Patterns & SOLID",
+    "difficulty": "advanced",
+    "minutes": 60,
+    "tier": "should",
+    "summary": "33 interview questions on design patterns & solid, answers hidden.",
+    "keywords": [
+      "design",
+      "patterns",
+      "solid"
+    ]
+  },
+  {
+    "id": "17.7",
+    "title": "Concurrency (Asyncio, Threading, Multiprocessing) · 1",
+    "difficulty": "advanced",
+    "minutes": 56,
+    "tier": "should",
+    "summary": "28 interview questions on concurrency (asyncio, threading, multiprocessing), answers hidden.",
+    "keywords": [
+      "concurrency",
+      "asyncio",
+      "threading",
+      "multiprocessing"
+    ]
+  },
+  {
+    "id": "17.8",
+    "title": "Concurrency (Asyncio, Threading, Multiprocessing) · 2",
+    "difficulty": "core",
+    "minutes": 28,
+    "tier": "should",
+    "summary": "14 interview questions on concurrency (asyncio, threading, multiprocessing), answers hidden.",
+    "keywords": [
+      "concurrency",
+      "asyncio",
+      "threading",
+      "multiprocessing"
+    ]
+  },
+  {
+    "id": "17.9",
+    "title": "Memory Management & the PVM",
+    "difficulty": "advanced",
+    "minutes": 60,
+    "tier": "should",
+    "summary": "32 interview questions on memory management & the pvm, answers hidden.",
+    "keywords": [
+      "memory",
+      "management"
+    ]
+  },
+  {
+    "id": "17.10",
+    "title": "Scenario \"Predict the Output\" Questions · 1",
+    "difficulty": "advanced",
+    "minutes": 56,
+    "tier": "should",
+    "summary": "28 interview questions on scenario \"predict the output\" questions, answers hidden.",
+    "keywords": [
+      "scenario",
+      "predict",
+      "output",
+      "questions"
+    ]
+  },
+  {
+    "id": "17.11",
+    "title": "Scenario \"Predict the Output\" Questions · 2",
+    "difficulty": "advanced",
+    "minutes": 44,
+    "tier": "should",
+    "summary": "22 interview questions on scenario \"predict the output\" questions, answers hidden.",
+    "keywords": [
+      "scenario",
+      "predict",
+      "output",
+      "questions"
+    ]
+  },
+  {
+    "id": "17.12",
+    "title": "Best Practices · 1",
+    "difficulty": "advanced",
+    "minutes": 56,
+    "tier": "should",
+    "summary": "28 interview questions on best practices, answers hidden.",
+    "keywords": [
+      "best",
+      "practices"
+    ]
+  },
+  {
+    "id": "17.13",
+    "title": "Best Practices · 2",
+    "difficulty": "core",
+    "minutes": 16,
+    "tier": "should",
+    "summary": "8 interview questions on best practices, answers hidden.",
+    "keywords": [
+      "best",
+      "practices"
+    ]
+  },
+  {
+    "id": "17.14",
+    "title": "Modern Features",
+    "difficulty": "advanced",
+    "minutes": 48,
+    "tier": "should",
+    "summary": "24 interview questions on modern features, answers hidden.",
+    "keywords": [
+      "modern",
+      "features"
+    ]
+  },
+  {
+    "id": "17.15",
+    "title": "Testing & Debugging",
+    "difficulty": "advanced",
+    "minutes": 48,
+    "tier": "should",
+    "summary": "24 interview questions on testing & debugging, answers hidden.",
+    "keywords": [
+      "testing",
+      "debugging"
+    ]
+  },
+  {
+    "id": "17.16",
+    "title": "NumPy · 1",
+    "difficulty": "advanced",
+    "minutes": 56,
+    "tier": "should",
+    "summary": "28 interview questions on numpy, answers hidden.",
+    "keywords": [
+      "numpy"
+    ]
+  },
+  {
+    "id": "17.17",
+    "title": "NumPy · 2",
+    "difficulty": "core",
+    "minutes": 30,
+    "tier": "should",
+    "summary": "15 interview questions on numpy, answers hidden.",
+    "keywords": [
+      "numpy"
+    ]
+  },
+  {
+    "id": "17.18",
+    "title": "Pandas · 1",
+    "difficulty": "advanced",
+    "minutes": 56,
+    "tier": "should",
+    "summary": "28 interview questions on pandas, answers hidden.",
+    "keywords": [
+      "pandas"
+    ]
+  },
+  {
+    "id": "17.19",
+    "title": "Pandas · 2",
+    "difficulty": "advanced",
+    "minutes": 42,
+    "tier": "should",
+    "summary": "21 interview questions on pandas, answers hidden.",
+    "keywords": [
+      "pandas"
+    ]
+  },
+  {
+    "id": "17.20",
+    "title": "FastAPI · 1",
+    "difficulty": "advanced",
+    "minutes": 56,
+    "tier": "should",
+    "summary": "28 interview questions on fastapi, answers hidden.",
+    "keywords": [
+      "fastapi"
+    ]
+  },
+  {
+    "id": "17.21",
+    "title": "FastAPI · 2",
+    "difficulty": "core",
+    "minutes": 22,
+    "tier": "should",
+    "summary": "11 interview questions on fastapi, answers hidden.",
+    "keywords": [
+      "fastapi"
+    ]
+  },
+  {
+    "id": "17.22",
+    "title": "Task Queues & Background Jobs",
+    "difficulty": "core",
+    "minutes": 30,
+    "tier": "should",
+    "summary": "15 interview questions on task queues & background jobs, answers hidden.",
+    "keywords": [
+      "task",
+      "queues",
+      "background",
+      "jobs"
+    ]
+  },
+  {
+    "id": "17.23",
+    "title": "Pydantic",
+    "difficulty": "core",
+    "minutes": 40,
+    "tier": "should",
+    "summary": "20 interview questions on pydantic, answers hidden.",
+    "keywords": [
+      "pydantic"
+    ]
+  },
+  {
+    "id": "17.24",
+    "title": "Database & ORM",
+    "difficulty": "advanced",
+    "minutes": 50,
+    "tier": "should",
+    "summary": "25 interview questions on database & orm, answers hidden.",
+    "keywords": [
+      "database"
+    ]
+  },
+  {
+    "id": "17.25",
+    "title": "API Consumption & Webhooks",
+    "difficulty": "core",
+    "minutes": 32,
+    "tier": "should",
+    "summary": "16 interview questions on api consumption & webhooks, answers hidden.",
+    "keywords": [
+      "consumption",
+      "webhooks"
+    ]
+  },
+  {
+    "id": "17.26",
+    "title": "Auth & Security",
+    "difficulty": "advanced",
+    "minutes": 44,
+    "tier": "should",
+    "summary": "22 interview questions on auth & security, answers hidden.",
+    "keywords": [
+      "auth",
+      "security"
+    ]
+  },
+  {
+    "id": "17.27",
+    "title": "Data Structures & Algorithms",
+    "difficulty": "advanced",
+    "minutes": 58,
+    "tier": "should",
+    "summary": "29 interview questions on data structures & algorithms, answers hidden.",
+    "keywords": [
+      "data",
+      "structures",
+      "algorithms"
+    ]
+  },
+  {
+    "id": "17.28",
+    "title": "100 Python Interview Questions · 1",
+    "difficulty": "advanced",
+    "minutes": 56,
+    "tier": "should",
+    "summary": "28 interview questions on 100 python interview questions, answers hidden.",
+    "keywords": [
+      "python",
+      "interview",
+      "questions"
+    ]
+  },
+  {
+    "id": "17.29",
+    "title": "100 Python Interview Questions · 2",
+    "difficulty": "advanced",
+    "minutes": 56,
+    "tier": "should",
+    "summary": "28 interview questions on 100 python interview questions, answers hidden.",
+    "keywords": [
+      "python",
+      "interview",
+      "questions"
+    ]
+  },
+  {
+    "id": "17.30",
+    "title": "100 Python Interview Questions · 3",
+    "difficulty": "advanced",
+    "minutes": 56,
+    "tier": "should",
+    "summary": "28 interview questions on 100 python interview questions, answers hidden.",
+    "keywords": [
+      "python",
+      "interview",
+      "questions"
+    ]
+  },
+  {
+    "id": "17.31",
+    "title": "100 Python Interview Questions · 4",
+    "difficulty": "advanced",
+    "minutes": 56,
+    "tier": "should",
+    "summary": "28 interview questions on 100 python interview questions, answers hidden.",
+    "keywords": [
+      "python",
+      "interview",
+      "questions"
+    ]
+  },
+  {
+    "id": "17.32",
+    "title": "100 Python Interview Questions · 5",
+    "difficulty": "advanced",
+    "minutes": 56,
+    "tier": "should",
+    "summary": "28 interview questions on 100 python interview questions, answers hidden.",
+    "keywords": [
+      "python",
+      "interview",
+      "questions"
+    ]
+  },
+  {
+    "id": "17.33",
+    "title": "100 Python Interview Questions · 6",
+    "difficulty": "advanced",
+    "minutes": 56,
+    "tier": "should",
+    "summary": "28 interview questions on 100 python interview questions, answers hidden.",
+    "keywords": [
+      "python",
+      "interview",
+      "questions"
+    ]
+  },
+  {
+    "id": "17.34",
+    "title": "100 Python Interview Questions · 7",
+    "difficulty": "advanced",
+    "minutes": 60,
+    "tier": "should",
+    "summary": "32 interview questions on 100 python interview questions, answers hidden.",
+    "keywords": [
+      "python",
+      "interview",
+      "questions"
+    ]
+  },
+  {
+    "id": "17.35",
+    "title": "Senior-Level Python Interview Q&A",
+    "difficulty": "core",
+    "minutes": 22,
+    "tier": "should",
+    "summary": "11 interview questions on senior-level python interview q&a, answers hidden.",
+    "keywords": [
+      "senior",
+      "level",
+      "python",
+      "interview"
+    ]
+  }
+]

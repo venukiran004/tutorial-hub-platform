@@ -139,7 +139,11 @@ for (const id of published) {
   const quizQs = (L.quiz || {}).questions || [];
   const ivQs = (L.interview || {}).questions || [];
 
-  const isPractice = COURSE === "practice";
+  // A question set is judged on its questions, not on the essay furniture
+  // a taught lesson carries. Detected from the blocks so it applies to
+  // Python's imported interview sets as well as the Practice course.
+  const drillBlocks = (L.blocks || []).filter(b => b.t === "drill");
+  const isPractice = drillBlocks.length >= 5;
 
   p("id matches filename", L.id === id, `declares ${L.id}`);
   p("lede", !!L.lede && L.lede.length > 80);
@@ -157,11 +161,15 @@ for (const id of published) {
     p("quiz explains why", quizQs.every(q => q.why && q.why.length > 60));
     p("interview >= 3", ivQs.length >= 3);
   } else {
-    const drills = (L.blocks || []).filter(b => b.t === "drill");
+    const drills = drillBlocks;
     p("drills >= 5", drills.length >= 5, `${drills.length}`);
     p("every drill has a question", drills.every(d => d.q && d.q.length > 3));
-    p("every drill has code", drills.every(d => (d.body || []).some(x => x.t === "code")),
-      drills.filter(d => !(d.body || []).some(x => x.t === "code")).map(d => d.q).slice(0, 2).join(" | "));
+    if (COURSE === "practice") {
+      p("every drill has code", drills.every(d => (d.body || []).some(x => x.t === "code")),
+        drills.filter(d => !(d.body || []).some(x => x.t === "code")).map(d => d.q).slice(0, 2).join(" | "));
+    } else {
+      p("every drill has an answer", drills.every(d => (d.body || []).length > 0));
+    }
     p("drill numbering is sequential",
       drills.every((d, i) => Number(d.n) === i + 1));
   }

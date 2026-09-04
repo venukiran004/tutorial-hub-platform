@@ -237,7 +237,36 @@ ITEM = re.compile(
 )
 
 
+def extract_all(path):
+    """The raw walk, with no filtering: every part heading and every
+    question in source order.
+
+    extract() below applies the Coding Practice rule (a problem must have
+    code). The interview importer applies the opposite one, so the parse
+    is shared and only the predicate differs.
+    """
+    return _walk(path)
+
+
 def extract(path):
+    """-> ordered list of ('part', title) and ('q', question, terms, blocks)."""
+    kept, skipping = [], False
+    for it in _walk(path):
+        if it[0] == "part":
+            skipping = is_theory_part(it[1])
+            if not skipping:
+                kept.append(it)
+            continue
+        if skipping:
+            continue
+        # A programming question has code to write. One without any is a
+        # definition being recited, which belongs in the Python course.
+        if any(b.get("t") == "code" for b in it[3]):
+            kept.append(it)
+    return kept
+
+
+def _walk(path):
     """-> ordered list of ('part', title) and ('q', question, terms, blocks)."""
     src = io.open(path, encoding="utf-8", errors="replace").read()
     items = []
@@ -245,12 +274,8 @@ def extract(path):
     for m in ITEM.finditer(src):
         if m.group("part") is not None:
             title = inline_text(re.sub(r"<i>\s*</i>", "", m.group("part")))
-            skipping = is_theory_part(title)
-            if title and not skipping:
+            if title:
                 items.append(("part", title))
-            continue
-
-        if skipping:
             continue
 
         art = m.group("q")
@@ -268,13 +293,8 @@ def extract(path):
         answer = re.sub(r"<div class=\"keyterms\">.*?</div>", "", answer, flags=re.S)
 
         blocks = to_blocks(answer)
-        if not question:
-            continue
-        # A programming question has code to write. One without any is a
-        # definition being recited, which belongs in the Python course.
-        if not any(b.get("t") == "code" for b in blocks):
-            continue
-        items.append(("q", question, terms, blocks))
+        if question:
+            items.append(("q", question, terms, blocks))
     return items
 
 
