@@ -32,11 +32,20 @@
     short: "PY",
     tagline: "The language, the craft, and the engineering judgement around it.",
 
+    /* Two tracks. "learn" teaches the language; "practice" builds the reflex.
+       They are numbered and navigated independently but share one design
+       system, one rail and one search index. */
+    trackLabels: { learn: "Python", practice: "Coding Practice" },
+    trackBlurbs: {
+      learn: "The language itself — mental models, craft, and the engineering judgement around them.",
+      practice: "Problem sets that build fluency — a pattern briefing, then problems that ramp to interview grade."
+    },
+
     /* Lessons with an authored file in lessons/. Everything else renders as
        "soon" in the rail and the curriculum, so the roadmap is visible in full
        without ever promising content that is not there yet. Add an id here the
        moment its lesson file lands — this is the single switch. */
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "6.5", "7.1", "7.2", "7.3", "9.1", "9.2", "10.1", "10.2"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.8", "8.9", "9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "10.1", "10.2"],
 
     modules: [
 
@@ -668,6 +677,293 @@
           { id: "17.4", title: "System and Scenario Questions", difficulty: "expert", minutes: 42, tier: "should",
             summary: "'This endpoint got slow', 'this job runs out of memory', 'design this pipeline' — structured ways to answer.",
             keywords: ["interview", "scenario", "system design", "debugging", "architecture", "trade-off"] }
+        ]
+      }
+,
+
+      /* ==================================================================
+         TRACK 2 — CODING PRACTICE
+         ------------------------------------------------------------------
+         The learn track teaches the language. This one builds the reflex.
+         Every lesson is a problem set: a short pattern briefing, then
+         problems that ramp from warm-up to interview grade, each with a
+         hidden solution, a complexity note and the mistakes people make.
+
+         Ordering mirrors the learn track so the two can be taken in
+         parallel: by the time a practice module needs dictionaries, the
+         learn track has taught them.
+         ================================================================== */
+
+      {
+        id: "p_strings", short: "P1", track: "practice", numPrefix: "P",
+        phase: "Practice · Core data",
+        title: "Strings and Text",
+        blurb: "The problems that come up constantly: parsing, cleaning, formatting, searching.",
+        outcome: "You can take any text-shaped problem apart without reaching for a regex first.",
+        lessons: [
+          { id: "p1.1", title: "String Basics Drills", difficulty: "foundation", minutes: 30, tier: "must",
+            summary: "Reversing, casing, trimming, counting — eight warm-ups that build the vocabulary everything else uses.",
+            keywords: ["string", "slice", "reverse", "case", "strip", "count"] },
+          { id: "p1.2", title: "Palindromes and Anagrams", difficulty: "foundation", minutes: 32, tier: "must",
+            summary: "The classic pair, done properly: normalisation, two-pointer checks, and why sorting is not the best answer.",
+            keywords: ["palindrome", "anagram", "two pointer", "normalise", "counter"] },
+          { id: "p1.3", title: "Splitting, Joining and Parsing", difficulty: "foundation", minutes: 32, tier: "must",
+            summary: "Turning messy lines into structured data, and the split() edge cases that bite in production.",
+            keywords: ["split", "join", "parse", "partition", "maxsplit", "whitespace"] },
+          { id: "p1.4", title: "Searching and Replacing", difficulty: "core", minutes: 32, tier: "must",
+            summary: "find vs index vs in, replacing with counts, and building a small template engine by hand.",
+            keywords: ["find", "index", "replace", "startswith", "template", "substring"] },
+          { id: "p1.5", title: "Formatting and Alignment", difficulty: "core", minutes: 28, tier: "should",
+            summary: "f-string mini-language problems: tables, currency, percentages, padding and truncation.",
+            keywords: ["format", "f-string", "align", "padding", "precision", "table"] },
+          { id: "p1.6", title: "Character Frequency Problems", difficulty: "core", minutes: 32, tier: "must",
+            summary: "First unique character, most common word, ransom notes — the Counter family of problems.",
+            keywords: ["counter", "frequency", "unique", "histogram", "most common"] },
+          { id: "p1.7", title: "Sliding Window on Strings", difficulty: "advanced", minutes: 36, tier: "should",
+            summary: "Longest substring without repeats, anagram windows, minimum window — one pattern, four problems.",
+            keywords: ["sliding window", "substring", "two pointer", "set", "optimal"] },
+          { id: "p1.8", title: "Text Challenge Set", difficulty: "advanced", minutes: 40, tier: "should",
+            summary: "A timed set combining everything: log parsing, word wrap, a diff, and a tokeniser.",
+            keywords: ["challenge", "parsing", "wrap", "diff", "tokenise", "timed"] }
+        ]
+      },
+
+      {
+        id: "p_lists", short: "P2", track: "practice", numPrefix: "P",
+        phase: "Practice · Core data",
+        title: "Lists, Slicing and Arrays",
+        blurb: "Indexing, in-place work, and the array problems every interview reaches for.",
+        outcome: "You reach for the right traversal instead of nesting two loops by reflex.",
+        lessons: [
+          { id: "p2.1", title: "Indexing and Slicing Drills", difficulty: "foundation", minutes: 30, tier: "must",
+            summary: "Every slice form, negative steps, copies vs views, and rotating a list four ways.",
+            keywords: ["slice", "index", "negative", "step", "rotate", "copy"] },
+          { id: "p2.2", title: "Building and Transforming Lists", difficulty: "foundation", minutes: 30, tier: "must",
+            summary: "Map, filter and flatten by hand, then as comprehensions, then measured against each other.",
+            keywords: ["comprehension", "map", "filter", "flatten", "transform"] },
+          { id: "p2.3", title: "Searching and Sorting Problems", difficulty: "core", minutes: 34, tier: "must",
+            summary: "Custom sort keys, stable sorting, binary search with bisect, and finding the k largest.",
+            keywords: ["sort", "key", "bisect", "binary search", "heapq", "top k"] },
+          { id: "p2.4", title: "Two Pointers", difficulty: "core", minutes: 34, tier: "must",
+            summary: "Pair sums, dedupe in place, merging sorted lists, container with most water — the whole pattern.",
+            keywords: ["two pointer", "in place", "merge", "sorted", "pair sum"] },
+          { id: "p2.5", title: "Prefix Sums and Running State", difficulty: "core", minutes: 32, tier: "should",
+            summary: "Range sums, equilibrium index, maximum subarray — replacing a nested loop with one pass.",
+            keywords: ["prefix sum", "kadane", "running total", "subarray", "accumulate"] },
+          { id: "p2.6", title: "Matrix Problems", difficulty: "core", minutes: 34, tier: "should",
+            summary: "Transpose, rotate, spiral order and neighbour walks, with the index arithmetic made explicit.",
+            keywords: ["matrix", "2d", "rotate", "spiral", "transpose", "grid"] },
+          { id: "p2.7", title: "In-Place Modification", difficulty: "advanced", minutes: 32, tier: "should",
+            summary: "Removing while iterating, partitioning, the Dutch national flag — and the aliasing bugs they cause.",
+            keywords: ["in place", "mutate", "partition", "aliasing", "swap"] },
+          { id: "p2.8", title: "Array Challenge Set", difficulty: "advanced", minutes: 40, tier: "should",
+            summary: "A timed set: stock profits, product except self, trapping rain water, and a merge-intervals problem.",
+            keywords: ["challenge", "intervals", "greedy", "timed", "optimal"] }
+        ]
+      },
+
+      {
+        id: "p_dicts", short: "P3", track: "practice", numPrefix: "P",
+        phase: "Practice · Core data",
+        title: "Dictionaries, Sets and Grouping",
+        blurb: "Hash-based problems: counting, grouping, deduplicating, indexing.",
+        outcome: "You recognise the problems where a dict turns quadratic work into linear.",
+        lessons: [
+          { id: "p3.1", title: "Dictionary Drills", difficulty: "foundation", minutes: 30, tier: "must",
+            summary: "Building, inverting, merging and safely reading dicts, with get, setdefault and defaultdict compared.",
+            keywords: ["dict", "get", "setdefault", "invert", "merge", "defaultdict"] },
+          { id: "p3.2", title: "Grouping and Bucketing", difficulty: "foundation", minutes: 32, tier: "must",
+            summary: "Group anagrams, bucket by property, index by key — the pattern behind half of all data wrangling.",
+            keywords: ["group", "bucket", "defaultdict", "index", "key function"] },
+          { id: "p3.3", title: "Sets and Membership", difficulty: "foundation", minutes: 28, tier: "must",
+            summary: "Dedupe preserving order, intersections, the hashability rules, and set arithmetic problems.",
+            keywords: ["set", "dedupe", "intersection", "union", "hashable", "membership"] },
+          { id: "p3.4", title: "Counting Problems", difficulty: "core", minutes: 32, tier: "must",
+            summary: "Two sum, majority element, frequency ranking and duplicate detection — all one idea.",
+            keywords: ["two sum", "counter", "frequency", "majority", "duplicate"] },
+          { id: "p3.5", title: "Caching and Memoisation by Hand", difficulty: "core", minutes: 30, tier: "should",
+            summary: "Building a memo dict, then an LRU, then measuring both against lru_cache.",
+            keywords: ["memo", "cache", "lru", "fibonacci", "hit rate"] },
+          { id: "p3.6", title: "Nested Data Problems", difficulty: "core", minutes: 34, tier: "must",
+            summary: "Walking, flattening, searching and safely reading deeply nested JSON without a KeyError.",
+            keywords: ["nested", "json", "recursion", "flatten", "path", "deep get"] },
+          { id: "p3.7", title: "Hashing Challenge Set", difficulty: "advanced", minutes: 38, tier: "should",
+            summary: "A timed set: longest consecutive sequence, subarray sum equals k, and an isomorphic-strings problem.",
+            keywords: ["challenge", "hash map", "consecutive", "prefix", "timed"] }
+        ]
+      },
+
+      {
+        id: "p_control", short: "P4", track: "practice", numPrefix: "P",
+        phase: "Practice · Logic",
+        title: "Loops, Conditions and Numbers",
+        blurb: "Control-flow reasoning and the number problems that test it.",
+        outcome: "You can write a loop with the right invariant and prove it terminates.",
+        lessons: [
+          { id: "p4.1", title: "Loop Construction Drills", difficulty: "foundation", minutes: 30, tier: "must",
+            summary: "range arithmetic, enumerate, zip, while with a sentinel, and the off-by-one taxonomy.",
+            keywords: ["loop", "range", "enumerate", "zip", "off by one", "invariant"] },
+          { id: "p4.2", title: "Conditional Logic Problems", difficulty: "foundation", minutes: 28, tier: "must",
+            summary: "FizzBuzz done four ways, leap years, grade boundaries, and flattening nested ifs.",
+            keywords: ["conditional", "fizzbuzz", "boundary", "guard clause", "boolean"] },
+          { id: "p4.3", title: "Number Theory Basics", difficulty: "core", minutes: 32, tier: "should",
+            summary: "Primes, factors, GCD, digit manipulation and base conversion, with the naive version measured.",
+            keywords: ["prime", "gcd", "factor", "digits", "base", "sieve"] },
+          { id: "p4.4", title: "Accumulator Patterns", difficulty: "foundation", minutes: 28, tier: "must",
+            summary: "Running totals, min and max tracking, streak detection, and why sum() is not always the answer.",
+            keywords: ["accumulator", "running", "streak", "min max", "reduce"] },
+          { id: "p4.5", title: "Simulation Problems", difficulty: "core", minutes: 34, tier: "should",
+            summary: "Game of life, robot on a grid, a vending machine — turning rules into a loop that terminates.",
+            keywords: ["simulation", "state machine", "grid", "rules", "step"] },
+          { id: "p4.6", title: "Loop Optimisation Drills", difficulty: "core", minutes: 30, tier: "should",
+            summary: "Six nested loops rewritten to single passes, each with the measurement that justifies it.",
+            keywords: ["optimise", "nested loop", "complexity", "single pass", "measure"] },
+          { id: "p4.7", title: "Logic Challenge Set", difficulty: "advanced", minutes: 36, tier: "should",
+            summary: "A timed set: a calculator, Roman numerals both directions, and a valid-parentheses family.",
+            keywords: ["challenge", "parser", "stack", "roman", "timed"] }
+        ]
+      },
+
+      {
+        id: "p_functions", short: "P5", track: "practice", numPrefix: "P",
+        phase: "Practice · Logic",
+        title: "Functions and Recursion",
+        blurb: "Decomposition, recursion, closures and higher-order functions, as problems.",
+        outcome: "You can turn a recursive idea into working code and then into an iterative one.",
+        lessons: [
+          { id: "p5.1", title: "Function Design Drills", difficulty: "foundation", minutes: 30, tier: "must",
+            summary: "Splitting a long function, choosing parameters, defaults and returns — six refactors.",
+            keywords: ["function", "parameters", "return", "decompose", "default"] },
+          { id: "p5.2", title: "Recursion Fundamentals", difficulty: "core", minutes: 34, tier: "must",
+            summary: "Base cases, the call stack drawn out, factorial through tree traversal, and when it blows up.",
+            keywords: ["recursion", "base case", "call stack", "tree", "depth"] },
+          { id: "p5.3", title: "Recursion to Iteration", difficulty: "advanced", minutes: 34, tier: "should",
+            summary: "Converting four recursive solutions to explicit stacks, and deciding which version to ship.",
+            keywords: ["iteration", "stack", "convert", "tail call", "depth limit"] },
+          { id: "p5.4", title: "Higher-Order Function Problems", difficulty: "core", minutes: 30, tier: "should",
+            summary: "Functions as arguments and returns: pipelines, key functions, partial application, a retry wrapper.",
+            keywords: ["higher order", "callback", "pipeline", "partial", "closure"] },
+          { id: "p5.5", title: "Closures and State", difficulty: "advanced", minutes: 30, tier: "should",
+            summary: "Counters, accumulators, rate limiters and the late-binding bug, built as exercises.",
+            keywords: ["closure", "state", "late binding", "nonlocal", "counter"] },
+          { id: "p5.6", title: "Backtracking Problems", difficulty: "advanced", minutes: 40, tier: "adv",
+            summary: "Permutations, subsets, n-queens and a sudoku solver — one template applied four times.",
+            keywords: ["backtracking", "permutation", "subset", "n-queens", "prune"] }
+        ]
+      },
+
+      {
+        id: "p_data", short: "P6", track: "practice", numPrefix: "P",
+        phase: "Practice · Applied",
+        title: "Files and Real Data",
+        blurb: "Problems using data that is messy, large, or both.",
+        outcome: "You can take a real file and produce a correct answer without loading all of it.",
+        lessons: [
+          { id: "p6.1", title: "Reading and Writing Files", difficulty: "foundation", minutes: 30, tier: "must",
+            summary: "Line counting, filtering, appending and atomic writes, with encodings that go wrong on purpose.",
+            keywords: ["file", "read", "write", "encoding", "atomic", "lines"] },
+          { id: "p6.2", title: "CSV Problems", difficulty: "core", minutes: 32, tier: "must",
+            summary: "Aggregating a sales file, joining two files, and the quoting cases that break a naive split.",
+            keywords: ["csv", "dictreader", "aggregate", "join", "quoting"] },
+          { id: "p6.3", title: "JSON Problems", difficulty: "core", minutes: 32, tier: "must",
+            summary: "Reshaping an API response, validating a payload, and serialising types json cannot handle.",
+            keywords: ["json", "reshape", "validate", "custom encoder", "nested"] },
+          { id: "p6.4", title: "Log Analysis", difficulty: "core", minutes: 34, tier: "should",
+            summary: "Parsing, counting by field, finding error bursts and building a top-N report from a large file.",
+            keywords: ["log", "parse", "aggregate", "top n", "streaming"] },
+          { id: "p6.5", title: "Streaming Large Files", difficulty: "advanced", minutes: 34, tier: "should",
+            summary: "Solving four problems in constant memory, and proving the solutions actually stream.",
+            keywords: ["generator", "streaming", "memory", "chunk", "large file"] },
+          { id: "p6.6", title: "Data Challenge Set", difficulty: "advanced", minutes: 40, tier: "should",
+            summary: "A timed set: reconcile two exports, detect duplicates fuzzily, and build a summary report.",
+            keywords: ["challenge", "reconcile", "duplicate", "report", "timed"] }
+        ]
+      },
+
+      {
+        id: "p_oop", short: "P7", track: "practice", numPrefix: "P",
+        phase: "Practice · Applied",
+        title: "Classes and Object Design",
+        blurb: "Design exercises rather than syntax drills: model something, then defend the model.",
+        outcome: "You can turn a paragraph of requirements into classes that survive the next requirement.",
+        lessons: [
+          { id: "p7.1", title: "Modelling Drills", difficulty: "core", minutes: 32, tier: "must",
+            summary: "Six short briefs turned into classes, each with the alternative design and why it lost.",
+            keywords: ["model", "class", "design", "attributes", "responsibility"] },
+          { id: "p7.2", title: "Dunder Method Problems", difficulty: "core", minutes: 32, tier: "should",
+            summary: "Building a Vector, a Money type and a Matrix — equality, ordering, arithmetic and repr.",
+            keywords: ["dunder", "operator", "eq", "repr", "vector", "money"] },
+          { id: "p7.3", title: "Inheritance and Composition Exercises", difficulty: "advanced", minutes: 34, tier: "should",
+            summary: "The same problem solved both ways, with the maintenance cost of each made explicit.",
+            keywords: ["inheritance", "composition", "refactor", "protocol", "trade-off"] },
+          { id: "p7.4", title: "Building a Small Library", difficulty: "advanced", minutes: 40, tier: "should",
+            summary: "A retry decorator, a cache, a config loader and a result type — written as a real package.",
+            keywords: ["library", "api design", "decorator", "package", "public surface"] },
+          { id: "p7.5", title: "State Machines and Workflows", difficulty: "advanced", minutes: 34, tier: "adv",
+            summary: "Order lifecycles and approval flows, with illegal transitions made impossible rather than checked.",
+            keywords: ["state machine", "enum", "transition", "workflow", "invariant"] },
+          { id: "p7.6", title: "Design Challenge Set", difficulty: "expert", minutes: 42, tier: "should",
+            summary: "A timed set: design a parking lot, a rate limiter and an event bus, then critique your own answer.",
+            keywords: ["challenge", "design", "rate limiter", "event bus", "timed"] }
+        ]
+      },
+
+      {
+        id: "p_patterns", short: "P8", track: "practice", numPrefix: "P",
+        phase: "Practice · Interview",
+        title: "Algorithmic Patterns",
+        blurb: "The eight shapes that cover most interview questions, taught as recognisable patterns.",
+        outcome: "You can name the pattern a problem belongs to before you write a line.",
+        lessons: [
+          { id: "p8.1", title: "Recognising the Pattern", difficulty: "core", minutes: 32, tier: "must",
+            summary: "A decision procedure: what the constraints tell you, and which pattern each signal points at.",
+            keywords: ["pattern", "constraints", "recognise", "approach", "signals"] },
+          { id: "p8.2", title: "Stack and Queue Problems", difficulty: "core", minutes: 34, tier: "must",
+            summary: "Bracket matching, next greater element, monotonic stacks and a queue from two stacks.",
+            keywords: ["stack", "queue", "monotonic", "brackets", "deque"] },
+          { id: "p8.3", title: "Linked Structures", difficulty: "advanced", minutes: 36, tier: "should",
+            summary: "Building a linked list, reversing it, cycle detection and merging — pointer discipline in Python.",
+            keywords: ["linked list", "pointer", "cycle", "reverse", "merge"] },
+          { id: "p8.4", title: "Trees and Traversals", difficulty: "advanced", minutes: 38, tier: "should",
+            summary: "Depth-first and breadth-first, recursive and iterative, plus the five most common tree questions.",
+            keywords: ["tree", "dfs", "bfs", "traversal", "binary tree", "depth"] },
+          { id: "p8.5", title: "Graphs Without the Theory", difficulty: "advanced", minutes: 38, tier: "adv",
+            summary: "Representing a graph, flood fill, shortest path on a grid and cycle detection in a dependency list.",
+            keywords: ["graph", "bfs", "adjacency", "topological", "flood fill"] },
+          { id: "p8.6", title: "Greedy and Interval Problems", difficulty: "advanced", minutes: 34, tier: "should",
+            summary: "Meeting rooms, interval merging, activity selection — and how to tell greedy will actually work.",
+            keywords: ["greedy", "interval", "schedule", "sort", "proof"] },
+          { id: "p8.7", title: "Dynamic Programming, Gently", difficulty: "expert", minutes: 42, tier: "adv",
+            summary: "Climbing stairs to coin change to edit distance, using one repeatable method rather than intuition.",
+            keywords: ["dp", "memo", "tabulation", "subproblem", "state", "transition"] },
+          { id: "p8.8", title: "Pattern Challenge Set", difficulty: "expert", minutes: 44, tier: "should",
+            summary: "Twelve problems with the pattern hidden — the point is choosing, not implementing.",
+            keywords: ["challenge", "mixed", "recognise", "timed", "choose"] }
+        ]
+      },
+
+      {
+        id: "p_sets", short: "P9", track: "practice", numPrefix: "P",
+        phase: "Practice · Interview",
+        title: "Timed Problem Sets",
+        blurb: "Full sets under time pressure, with a worked commentary on how to attack each one.",
+        outcome: "You can start a problem you have never seen without freezing.",
+        lessons: [
+          { id: "p9.1", title: "Warm-Up Set — 30 Minutes", difficulty: "core", minutes: 30, tier: "should",
+            summary: "Five approachable problems, with a method for the first sixty seconds of any question.",
+            keywords: ["timed", "warm up", "method", "approach", "clarify"] },
+          { id: "p9.2", title: "Core Set — 45 Minutes", difficulty: "advanced", minutes: 45, tier: "should",
+            summary: "Four medium problems spanning strings, hashing and two pointers, with commentary throughout.",
+            keywords: ["timed", "medium", "mixed", "commentary", "practice"] },
+          { id: "p9.3", title: "Hard Set — 60 Minutes", difficulty: "expert", minutes: 60, tier: "adv",
+            summary: "Three hard problems, including one deliberately underspecified so you must ask the right questions.",
+            keywords: ["timed", "hard", "ambiguous", "clarify", "trade-off"] },
+          { id: "p9.4", title: "Debugging Under Pressure", difficulty: "advanced", minutes: 36, tier: "should",
+            summary: "Six almost-correct solutions to fix, which is what a live interview usually turns into.",
+            keywords: ["debug", "off by one", "edge case", "fix", "pressure"] },
+          { id: "p9.5", title: "Explaining Your Solution", difficulty: "advanced", minutes: 32, tier: "must",
+            summary: "Complexity out loud, trade-offs, and what to say when your first approach is the wrong one.",
+            keywords: ["communication", "complexity", "trade-off", "explain", "interview"] }
         ]
       }
     ]

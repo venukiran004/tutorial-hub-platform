@@ -284,10 +284,18 @@
   /* ------------------------------------------------------------ router -- */
   var R = {
     h2: function (b) {
-      return "<h2 id=\"" + (b.id || slug(b.text)) + '"><span class="hn">' + esc(b.n || "") + "</span><span>" + inline(b.text) + "</span></h2>" +
+      var id = b.id || slug(b.text);
+      // The anchor is a real link, revealed on hover: deep-linking a section
+      // is something readers do, and hunting for a hidden affordance is not.
+      return '<h2 id="' + id + '"><span class="hn">' + esc(b.n || "") + '</span><span>' + inline(b.text) +
+        '</span><a class="anchor" href="#' + id + '" aria-label="Link to this section">#</a></h2>' +
         (b.sub ? '<p class="h2-sub">' + inline(b.sub) + "</p>" : "");
     },
-    h3: function (b) { return '<h3 id="' + (b.id || slug(b.text)) + '">' + inline(b.text) + "</h3>"; },
+    h3: function (b) {
+      var id = b.id || slug(b.text);
+      return '<h3 id="' + id + '">' + inline(b.text) +
+        '<a class="anchor" href="#' + id + '" aria-label="Link to this section">#</a></h3>';
+    },
     h4: function (b) { return "<h4>" + inline(b.text) + "</h4>"; },
     p:  function (b) { return "<p>" + inline(b.text) + "</p>"; },
     ul: function (b) { return '<ul class="' + (b.tight ? "tight" : "") + '">' + b.items.map(function (i) { return "<li>" + inline(i) + "</li>"; }).join("") + "</ul>"; },

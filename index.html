@@ -3,19 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Enterprise Engineering Academy</title>
+<title>Tutorial Hub</title>
 <meta name="description" content="Engineering courses that go past syntax — Python, SQL, Machine Learning, Generative AI, RAG, MLOps and Agentic AI, taught with the judgement that separates working code from production systems.">
-<script>try{var t=localStorage.getItem("ea:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<script>try{var t=localStorage.getItem("th:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/system.css">
 <link rel="stylesheet" href="assets/css/course.css">
+<link rel="stylesheet" href="assets/css/refine.css">
 </head>
 <body>
 
 <header class="topbar">
-  <a class="brand" href="index.html"><span class="brand-mark">EA</span>Enterprise<span class="brand-sub">Academy</span></a>
+  <a class="brand" href="index.html"><span class="brand-mark">TH</span>Tutorial<span class="brand-sub">Hub</span></a>
   <span class="topbar-spacer"></span>
   <a class="ghost-btn" href="courses/python/index.html">Python course</a>
   <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
@@ -65,7 +66,7 @@
   </section>
 
   <footer class="foot">
-    <span>Enterprise Engineering Academy</span>
+    <span>Tutorial Hub</span>
     <span class="sp"></span>
     <span>Progress is stored locally in your browser.</span>
   </footer>
@@ -81,13 +82,14 @@
   "use strict";
   var I = EC.icons, $ = EC.$;
   EC.initTheme();
-  $("#badge").innerHTML = I.layers + "<span>Engineering curriculum</span>";
+  $("#badge").innerHTML = I.layers + "<span>Tutorial Hub · engineering curriculum</span>";
 
   // Ordered by dependency, not by popularity: each track assumes the ones
   // above it. Showing the whole roadmap up front is what makes the first
   // course credible as part of something larger.
   var tracks = [
-    { t: "Python", s: "The language, the craft, and the engineering judgement around it — from the execution model through production services.", n: "15 levels · 100+ lessons", href: "courses/python/index.html", live: true, ic: I.python },
+    { t: "Python", s: "The language, the craft, and the engineering judgement around it — from the execution model through production services.", n: "17 modules · 142 lessons", href: "courses/python/index.html", live: true, ic: I.python },
+    { t: "Python — Coding Practice", s: "The companion track: problem sets that build fluency. A pattern briefing, then problems that ramp from warm-up to interview grade.", n: "9 modules · 61 problem sets", href: "courses/python/index.html#curriculum", live: true, ic: I.dumbbell },
     { t: "SQL & Data Modelling", s: "Query correctness, execution plans, indexing and schema design for engineers who are tired of guessing why a query is slow.", n: "In development", ic: I.layers },
     { t: "Python for Data Science", s: "NumPy and pandas as engineering tools — vectorised thinking, memory control, and pipelines that survive re-runs.", n: "Planned", ic: I.code },
     { t: "Machine Learning", s: "Models as one component of a system: evaluation you can trust, leakage you can detect, and baselines you cannot beat.", n: "Planned", ic: I.brain },

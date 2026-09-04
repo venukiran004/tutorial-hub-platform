@@ -3,14 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lesson — Python — Enterprise Engineering Academy</title>
-<script>try{var t=localStorage.getItem("ea:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<title>Lesson — Python — Tutorial Hub</title>
+<script>try{var t=localStorage.getItem("th:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/system.css">
 <link rel="stylesheet" href="../../assets/css/course.css">
 <link rel="stylesheet" href="../../assets/css/lesson.css">
+<link rel="stylesheet" href="../../assets/css/refine.css">
 </head>
 <body>
 
@@ -18,7 +19,7 @@
   <button class="ghost-btn icon-only rail-toggle" data-rail-toggle type="button" aria-label="Open course navigation">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
   </button>
-  <a class="brand" href="../../index.html"><span class="brand-mark">EA</span>Enterprise<span class="brand-sub">Academy</span></a>
+  <a class="brand" href="../../index.html"><span class="brand-mark">TH</span>Tutorial<span class="brand-sub">Hub</span></a>
   <nav class="crumbs" aria-label="Breadcrumb">
     <span class="sep">/</span><a href="index.html">Python</a>
     <span class="sep">/</span><a href="index.html#curriculum" id="crumb-mod"></a>
@@ -45,6 +46,7 @@
         </div>
       </div>
     </div>
+    <div class="track-switch" id="track-switch"></div>
     <div class="rail-filter">
       <input id="rail-filter" type="text" placeholder="Filter lessons…" autocomplete="off" spellcheck="false" aria-label="Filter lessons">
     </div>
@@ -91,16 +93,20 @@
       '<span class="callout-kind">Not found</span></div><div class="callout-body">' +
       "<p>No lesson with id <code>" + EC.esc(id) + "</code>. " +
       '<a href="index.html">Back to the curriculum</a>.</p></div></div>';
+    EC.buildTrackSwitch({ track: "learn" });
     EC.buildRail({ current: null });
     return;
   }
 
   $("#rail-mark").innerHTML = I.python;
-  $("#rail-meta").textContent = C.readyLessons.length + " lessons available";
+  var TR = C.tracks[meta.track];
+  $(".rail-course-name").textContent = TR.label;
+  $("#rail-meta").textContent = TR.readyLessons.length + " of " + TR.lessons.length + " lessons ready";
+  EC.buildTrackSwitch({ track: meta.track });
   EC.buildRail({ current: meta });
   $("#crumb-mod").textContent = meta.module.title;
   $("#crumb-lesson").textContent = meta.num + " " + meta.title;
-  document.title = meta.num + " " + meta.title + " — Python — Enterprise Academy";
+  document.title = meta.num + " " + meta.title + " — Python — Tutorial Hub";
 
   /* The lesson body lives in its own classic script so the whole site works
      from file:// as well as over HTTP. It self-registers on load. */
@@ -142,9 +148,10 @@
       '<div class="lh-meta">' +
         '<span class="badge ' + m.difficulty + '"><span class="dot"></span>' + m.difficulty + "</span>" +
         '<span class="meta-row"><span class="mi">' + I.clock + "<b>" + m.minutes + " min</b> read</span>" +
-        '<span class="mi">' + I.layers + "Lesson <b>" + (m.seq + 1) + "</b> of " + C.allLessons.length + "</span>" +
+        '<span class="mi">' + I.layers + "Lesson <b>" + (m.seq + 1) + "</b> of " + m.trackTotal + "</span>" +
         (L.blocks ? '<span class="mi">' + I.code + "<b>" + countCode(L) + "</b> code examples</span>" : "") +
         "</span></div>" +
+      progress(m) +
       '<div class="lh-contract">' +
         '<div class="contract-box obj"><div class="contract-h">' + I.target + "<span>What you will be able to do</span></div><ol>" +
           (L.objectives || []).map(function (o) { return "<li>" + EC.inline(o) + "</li>"; }).join("") +
@@ -153,6 +160,18 @@
           (prereqs || "<li>" + I.check + "<span>None — this is a starting point.</span></li>") +
         "</ul></div>" +
       "</div>";
+  }
+
+  /* Where this lesson sits inside its module. Segments rather than a
+     percentage, because "4 of 9" is the unit a reader actually wants. */
+  function progress(m) {
+    var ls = m.module.lessons, i = m.indexInModule;
+    var segs = ls.map(function (_, k) {
+      return "<i class=\"" + (k < i ? "done" : k === i ? "cur" : "") + "\"></i>";
+    }).join("");
+    return '<div class="lh-prog"><span class="lh-prog-seg">' + segs + "</span>" +
+      '<span class="lh-prog-t"><b>' + (i + 1) + " of " + ls.length + "</b> in " +
+      EC.esc(m.module.title) + "</span></div>";
   }
 
   function countCode(L) {

@@ -17,7 +17,7 @@
   EC.$ = $; EC.$$ = $$;
 
   /* --------------------------------------------------------------- theme -- */
-  var THEME_KEY = "ea:theme";
+  var THEME_KEY = "th:theme";
   function applyTheme(t) {
     if (t === "system") document.documentElement.removeAttribute("data-theme");
     else document.documentElement.setAttribute("data-theme", t);
@@ -53,30 +53,64 @@
      with `ready:false` render as "soon" — the shape of the full course is
      visible from day one, which is what makes the roadmap credible. */
   EC.course = null;
+  /* One course can carry several TRACKS — Python has "learn" (the language)
+     and "practice" (problem sets). A track is an independent spine: its own
+     numbering, its own prev/next, its own rail. Modules without a track
+     default to "learn", so the original curriculum needed no edits. */
   EC.defineCourse = function (c) {
     EC.course = c;
     c.allLessons = [];
     c.lessonById = {};
+    c.tracks = {};
+    c.trackOrder = [];
     var pub = c.published || null;
+
     c.modules.forEach(function (m, mi) {
       m.index = mi;
+      m.track = m.track || "learn";
+
+      if (!c.tracks[m.track]) {
+        c.tracks[m.track] = {
+          id: m.track,
+          label: (c.trackLabels || {})[m.track] || m.track,
+          blurb: (c.trackBlurbs || {})[m.track] || "",
+          modules: [],
+          lessons: []
+        };
+        c.trackOrder.push(m.track);
+      }
+      var tr = c.tracks[m.track];
+      m.trackIndex = tr.modules.length;
+      tr.modules.push(m);
+
       m.lessons.forEach(function (l, li) {
         // Readiness is derived from the published list rather than repeated on
         // every lesson, so shipping a lesson is a one-line change.
         if (pub && l.ready === undefined) l.ready = pub.indexOf(l.id) !== -1;
         l.module = m;
+        l.track = m.track;
         l.moduleIndex = mi;
         l.indexInModule = li;
-        l.num = (mi + 1) + "." + (li + 1);
+        l.num = (m.numPrefix || "") + (m.trackIndex + 1) + "." + (li + 1);
         c.allLessons.push(l);
+        tr.lessons.push(l);
         c.lessonById[l.id] = l;
       });
     });
-    c.allLessons.forEach(function (l, i) {
-      l.seq = i;
-      l.prev = i > 0 ? c.allLessons[i - 1] : null;
-      l.next = i < c.allLessons.length - 1 ? c.allLessons[i + 1] : null;
+
+    // prev / next stay WITHIN a track: finishing the last language lesson
+    // should not drop you into a problem set.
+    c.trackOrder.forEach(function (t) {
+      var ls = c.tracks[t].lessons;
+      ls.forEach(function (l, i) {
+        l.seq = i;
+        l.trackTotal = ls.length;
+        l.prev = i > 0 ? ls[i - 1] : null;
+        l.next = i < ls.length - 1 ? ls[i + 1] : null;
+      });
+      c.tracks[t].readyLessons = ls.filter(function (l) { return l.ready !== false; });
     });
+
     c.readyLessons = c.allLessons.filter(function (l) { return l.ready !== false; });
     return c;
   };
@@ -89,8 +123,32 @@
      directory listing matches curriculum order. Defined here so the page,
      the build scripts and the tests all derive the path the same way. */
   EC.lessonDir = function (l) {
-    var n = String(l.moduleIndex + 1);
-    return (n.length < 2 ? "0" + n : n) + "_" + l.module.id;
+    var n = String(l.module.trackIndex + 1);
+    n = (n.length < 2 ? "0" + n : n) + "_" + l.module.id;
+    // The learn track keeps the original flat layout; every other track gets
+    // its own subtree, so lessons/ stays readable as the course grows.
+    return (l.track && l.track !== "learn") ? l.track + "/" + n : n;
+  };
+
+  /* ------------------------------------------------------ track switch -- */
+  /* Two tracks share one rail, so the switch has to be unmissable and cost
+     one click. A segmented control does both, and it collapses to nothing
+     when a course has only one track. */
+  EC.buildTrackSwitch = function (opts) {
+    var c = EC.course, el = $("#track-switch");
+    if (!el || c.trackOrder.length < 2) { if (el) el.style.display = "none"; return; }
+    var base = opts.base || "", active = opts.track || "learn";
+
+    el.innerHTML = c.trackOrder.map(function (t) {
+      var tr = c.tracks[t];
+      var first = tr.readyLessons[0] || tr.lessons[0];
+      var on = t === active;
+      return '<a class="tsw' + (on ? " on" : "") + '"' +
+        (on ? ' aria-current="true"' : "") +
+        ' href="' + (first ? EC.lessonHref(first, base) : base + "index.html") + '">' +
+        '<span class="tsw-t">' + EC.esc(tr.label) + "</span>" +
+        '<span class="tsw-n">' + tr.readyLessons.length + "</span></a>";
+    }).join("");
   };
 
   /* -------------------------------------------------------------- rail -- */
@@ -100,7 +158,10 @@
     if (!el) return;
 
     var html = "", lastPhase = null;
-    c.modules.forEach(function (m) {
+    // Only the current track's modules: mixing sixty language lessons with
+    // sixty problem sets in one list helps nobody.
+    var track = (cur && cur.track) || opts.track || c.trackOrder[0];
+    (c.tracks[track] ? c.tracks[track].modules : c.modules).forEach(function (m) {
       if (m.phase && m.phase !== lastPhase) {
         html += '<div class="rail-phase">' + EC.esc(m.phase) + "</div>";
         lastPhase = m.phase;
