@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tutorial Hub</title>
-<meta name="description" content="Engineering courses that go past syntax — Python, SQL, Machine Learning, Generative AI, RAG, MLOps and Agentic AI, taught with the judgement that separates working code from production systems.">
+<meta name="description" content="A self-contained study system covering Python, coding practice, SQL, machine learning, deep learning, transformers, GenAI and MLOps — with diagrams, runnable code and practice questions on every topic.">
 <script>try{var t=localStorage.getItem("th:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,63 +12,76 @@
 <link rel="stylesheet" href="assets/css/system.css">
 <link rel="stylesheet" href="assets/css/course.css">
 <link rel="stylesheet" href="assets/css/refine.css">
+<link rel="stylesheet" href="assets/css/home.css">
 </head>
-<body>
+<body id="top">
 
 <header class="topbar">
   <a class="brand" href="index.html"><span class="brand-mark">TH</span>Tutorial<span class="brand-sub">Hub</span></a>
   <span class="topbar-spacer"></span>
-  <a class="ghost-btn" href="courses/python/index.html">Python course</a>
+  <a class="ghost-btn hide-sm" href="#topics">All topics</a>
+  <a class="ghost-btn" href="courses/python/index.html">Python</a>
   <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
 </header>
 
 <main>
 <div class="page wide">
 
-  <section class="acad-hero">
+  <!-- ============================================================= hero -- -->
+  <section class="home-hero">
     <span class="hero-eyebrow" id="badge"></span>
-    <h1>Engineering courses that do not stop at the syntax.</h1>
+
+    <h1>Everything engineering,<br><em>explained visually.</em></h1>
+
     <p class="hero-lede">
-      Most technical material teaches you what to type. The gap between that and being trusted with
-      production systems is <b>judgement</b> — knowing why one approach beats another, what breaks at
-      scale, and what you will be asked to defend in review. That gap is what these courses teach.
+      A self-contained study system covering Python, coding practice, SQL, machine learning,
+      deep learning, transformers, GenAI and MLOps — with <b>diagrams, runnable code and practice
+      questions on every topic</b>. No build step, no network, no account.
     </p>
+
     <div class="hero-cta">
       <a class="cta primary" href="courses/python/index.html">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
-        Start with Python
+        Start from the beginning
       </a>
-      <a class="cta ghost" href="#tracks">See all tracks</a>
+      <a class="cta ghost" href="#topics">Browse every topic</a>
+      <a class="cta ghost" href="courses/python/index.html#curriculum">Jump to Coding Practice</a>
     </div>
   </section>
 
-  <section class="sec" id="tracks">
-    <div class="sec-kicker">Tracks</div>
-    <div class="sec-h"><h2>The curriculum</h2></div>
+  <!-- ==================================================== learning path -- -->
+  <section class="sec" id="path">
+    <div class="sec-kicker">Suggested learning path</div>
+    <div class="sec-h"><h2>Five stages, in dependency order</h2></div>
     <p class="sec-lede">
-      Each track is built on the same teaching structure and the same design system, so moving
-      between them costs you nothing. Python is live; the rest follow in order of dependency.
+      Each stage assumes the one above it. You can enter anywhere, but this is the order in which
+      nothing is used before it has been taught.
     </p>
-    <div class="tracks" id="tracks-grid"></div>
+    <div class="path" id="path-grid"></div>
   </section>
 
-  <section class="sec">
-    <div class="sec-kicker">Standard</div>
-    <div class="sec-h"><h2>What every lesson is held to</h2></div>
-    <div class="method">
-      <div class="method-i"><div class="method-n">01</div><div class="method-t">A mental model before syntax</div><div class="method-d">Diagrams that show real mechanism. If a picture does not improve understanding it is not drawn.</div></div>
-      <div class="method-i"><div class="method-n">02</div><div class="method-t">Code that resembles work</div><div class="method-d">Runnable, modern, typed where it helps, and drawn from systems rather than textbooks.</div></div>
-      <div class="method-i"><div class="method-n">03</div><div class="method-t">Three rungs, not one answer</div><div class="method-d">Bad, better and production-grade, with the reasoning between them made explicit.</div></div>
-      <div class="method-i"><div class="method-n">04</div><div class="method-t">Trade-offs stated honestly</div><div class="method-d">Where there is no single right answer, you get the decision procedure instead of a rule.</div></div>
-      <div class="method-i"><div class="method-n">05</div><div class="method-t">Practice you must attempt</div><div class="method-d">Solutions stay hidden until you choose to reveal them, because reading a solution is not learning.</div></div>
-      <div class="method-i"><div class="method-n">06</div><div class="method-t">Interview and production lenses</div><div class="method-d">What the topic sounds like under questioning, and how it behaves at 3am.</div></div>
-    </div>
+  <!-- ========================================================== topics -- -->
+  <section class="sec" id="topics">
+    <div class="sec-kicker">All topics</div>
+    <div class="sec-h"><h2>The full catalogue</h2></div>
+    <p class="sec-lede">
+      Every subject area, with what it covers. Live topics are written and readable now; the rest
+      are scheduled — the shape of the whole thing is visible from day one.
+    </p>
+    <div class="topics" id="topics-grid"></div>
+  </section>
+
+  <!-- ===================================================== how it works -- -->
+  <section class="sec" id="how">
+    <div class="sec-kicker">How these pages work</div>
+    <div class="sec-h"><h2>Built for studying, not skimming</h2></div>
+    <div class="feats" id="feats-grid"></div>
   </section>
 
   <footer class="foot">
-    <span>Tutorial Hub</span>
+    <span>Built to be read offline — every page works with no network.</span>
     <span class="sp"></span>
-    <span>Progress is stored locally in your browser.</span>
+    <a href="#top">Back to top ↑</a>
   </footer>
 
 </div>
@@ -82,33 +95,131 @@
   "use strict";
   var I = EC.icons, $ = EC.$;
   EC.initTheme();
-  $("#badge").innerHTML = I.layers + "<span>Tutorial Hub · engineering curriculum</span>";
+  $("#badge").innerHTML = I.layers + "<span>Tutorial Hub · study system</span>";
 
-  // Ordered by dependency, not by popularity: each track assumes the ones
-  // above it. Showing the whole roadmap up front is what makes the first
-  // course credible as part of something larger.
-  var tracks = [
-    { t: "Python", s: "The language, the craft, and the engineering judgement around it — from the execution model through production services.", n: "17 modules · 142 lessons", href: "courses/python/index.html", live: true, ic: I.python },
-    { t: "Python — Coding Practice", s: "The companion track: problem sets that build fluency. A pattern briefing, then problems that ramp from warm-up to interview grade.", n: "9 modules · 61 problem sets", href: "courses/python/index.html#curriculum", live: true, ic: I.dumbbell },
-    { t: "SQL & Data Modelling", s: "Query correctness, execution plans, indexing and schema design for engineers who are tired of guessing why a query is slow.", n: "In development", ic: I.layers },
-    { t: "Python for Data Science", s: "NumPy and pandas as engineering tools — vectorised thinking, memory control, and pipelines that survive re-runs.", n: "Planned", ic: I.code },
-    { t: "Machine Learning", s: "Models as one component of a system: evaluation you can trust, leakage you can detect, and baselines you cannot beat.", n: "Planned", ic: I.brain },
-    { t: "Generative AI & LLMs", s: "How the models work, what they cost, where they fail, and how to build on them without pretending they are deterministic.", n: "Planned", ic: I.bulb },
-    { t: "RAG Systems", s: "Retrieval as an engineering problem — chunking, embeddings, hybrid search, reranking, and honest evaluation.", n: "Planned", ic: I.search },
-    { t: "Agentic AI", s: "Tool use, planning, memory and control loops, with the failure modes that show up once an agent can act.", n: "Planned", ic: I.target },
-    { t: "MLOps & LLMOps", s: "Versioning, deployment, monitoring and rollback for systems whose behaviour changes with their data.", n: "Planned", ic: I.server }
+  /* ---------------------------------------------------- learning path -- */
+  /* Ordered by dependency rather than by popularity. Each stage assumes the
+     one above it, which is the only ordering that lets a reader start at the
+     top and never meet an unexplained term. */
+  var path = [
+    { n: "01", t: "Foundations",
+      d: "Python end to end, the linear algebra and statistics the models rest on, and getting real data into shape." },
+    { n: "02", t: "Modelling",
+      d: "Classical machine learning algorithm by algorithm, then neural networks from a single neuron upward." },
+    { n: "03", t: "Language",
+      d: "Classical NLP and the transformer taken apart block by block, with worked numbers at each step." },
+    { n: "04", t: "Generative",
+      d: "How large models are controlled, aligned, retrieved against, and wired into agents and tools." },
+    { n: "05", t: "Shipping",
+      d: "Serving, monitoring and cost, and the system design interview that ties all of it together." }
   ];
 
-  $("#tracks-grid").innerHTML = tracks.map(function (k) {
+  $("#path-grid").innerHTML = path.map(function (s) {
+    return '<div class="path-i">' +
+      '<div class="path-n">' + s.n + "</div>" +
+      '<div class="path-t">' + EC.esc(s.t) + "</div>" +
+      '<div class="path-d">' + EC.esc(s.d) + "</div></div>";
+  }).join("");
+
+  /* --------------------------------------------------------- topics -- */
+  /* Python and Coding Practice are separate cards because they are separate
+     tracks: one teaches the language, the other builds the reflex. */
+  var topics = [
+    { t: "Python", ic: I.python, live: true, href: "courses/python/index.html",
+      d: "The language, the craft, and the engineering judgement around it — from the execution model through production services.",
+      tags: ["Core", "Internals", "OOP", "Testing", "Async", "FastAPI"],
+      meta: "17 modules · 142 lessons" },
+
+    { t: "Coding Practice", ic: I.dumbbell, live: true, href: "courses/python/index.html#curriculum",
+      d: "Problem sets that build fluency. A pattern briefing, then problems that ramp from warm-up to interview grade, each with a hidden solution.",
+      tags: ["Programs", "Predict the output", "Patterns", "Timed sets", "Scenarios"],
+      meta: "9 modules · 61 problem sets" },
+
+    { t: "Mathematics & Statistics", ic: I.layers,
+      d: "The linear algebra, probability and inference the models actually rest on — worked numerically rather than symbolically.",
+      tags: ["Linear algebra", "Probability", "Inference"] },
+
+    { t: "Data Handling", ic: I.code,
+      d: "Getting real data into shape: cleaning, feature engineering, and the exploratory work that decides whether a model is worth training.",
+      tags: ["SQL", "Feature engineering", "EDA", "pandas"] },
+
+    { t: "SQL", ic: I.server,
+      d: "Query correctness, execution plans, indexing and schema design for engineers tired of guessing why a query is slow.",
+      tags: ["Joins", "Windows", "CTEs", "Query plans"] },
+
+    { t: "Machine Learning", ic: I.brain,
+      d: "Algorithm by algorithm, with the evaluation you can trust, the leakage you can detect, and the baseline you cannot beat.",
+      tags: ["Algorithms", "Metrics", "sklearn", "Validation"] },
+
+    { t: "Deep Learning", ic: I.bulb,
+      d: "From a single neuron upward: backpropagation by hand, then the architectures, then what actually makes training work.",
+      tags: ["CNN", "RNN/LSTM", "PyTorch", "RL", "GNN"] },
+
+    { t: "NLP & Transformers", ic: I.search,
+      d: "Classical NLP, then the transformer taken apart block by block with worked numbers at every step.",
+      tags: ["Attention", "MQA/GQA", "RoPE", "Multimodal"] },
+
+    { t: "GenAI & LLMs", ic: I.target,
+      d: "How large models are controlled, aligned and served — what they cost, where they fail, and how to build on them honestly.",
+      tags: ["Parameters", "KV cache", "DPO/GRPO", "RAG"] },
+
+    { t: "LangChain & LangGraph", ic: I.link,
+      d: "Composition, state and control flow for LLM applications, with the failure modes that appear once an agent can act.",
+      tags: ["LCEL", "StateGraph", "Agentic RAG", "Reference"] },
+
+    { t: "Model Context Protocol", ic: I.layers,
+      d: "The protocol itself: transport, capability negotiation, and building servers that other people's clients can trust.",
+      tags: ["JSON-RPC", "Elicitation", "OAuth", "Servers"] },
+
+    { t: "MLOps & Deployment", ic: I.server,
+      d: "Versioning, deployment, monitoring and rollback for systems whose behaviour changes with their data.",
+      tags: ["CI/CD", "Docker", "Cloud", "Monitoring"] },
+
+    { t: "System Design", ic: I.target,
+      d: "Scaling, patterns and distributed systems, framed as the interview that ties every other topic together.",
+      tags: ["Scaling", "Patterns", "Distributed", "Trade-offs"] }
+  ];
+
+  $("#topics-grid").innerHTML = topics.map(function (k) {
+    var tags = k.tags.map(function (g) {
+      return '<span class="tag">' + EC.esc(g) + "</span>";
+    }).join("");
+
     var inner =
-      '<div class="track-top"><span class="track-mark">' + k.ic + "</span>" +
-      '<span class="track-t">' + EC.esc(k.t) + "</span></div>" +
-      '<p class="track-s">' + EC.esc(k.s) + "</p>" +
-      '<div class="track-f"><span>' + EC.esc(k.n) + '</span><span class="sp"></span>' +
-      (k.live ? '<span class="track-go">Open' + I.arrowR + "</span>" : '<span class="badge">Soon</span>') + "</div>";
+      '<div class="topic-top">' +
+        '<span class="topic-mark">' + k.ic + "</span>" +
+        '<span class="topic-t">' + EC.esc(k.t) + "</span>" +
+        (k.live ? '<span class="topic-live">Live</span>' : '<span class="badge">Soon</span>') +
+      "</div>" +
+      '<p class="topic-d">' + EC.esc(k.d) + "</p>" +
+      '<div class="topic-tags">' + tags + "</div>" +
+      (k.meta
+        ? '<div class="topic-f"><span>' + EC.esc(k.meta) + '</span><span class="sp"></span>' +
+          '<span class="topic-go">Open' + I.arrowR + "</span></div>"
+        : "");
+
     return k.live
-      ? '<a class="track" href="' + k.href + '">' + inner + "</a>"
-      : '<div class="track soon">' + inner + "</div>";
+      ? '<a class="topic" href="' + k.href + '">' + inner + "</a>"
+      : '<div class="topic soon">' + inner + "</div>";
+  }).join("");
+
+  /* --------------------------------------------------------- features -- */
+  var feats = [
+    { ic: I.target, t: "Attempt before you read",
+      d: "Every exercise and every problem hides its solution until you choose to reveal it, because reading a solution is not learning." },
+    { ic: I.layers, t: "Three rungs, not one answer",
+      d: "Bad, better and production-grade side by side, with the reasoning between them made explicit rather than implied." },
+    { ic: I.search, t: "Search as you type",
+      d: "Ctrl K filters every lesson in a course by title, module and keyword, so a half-remembered topic is two keystrokes away." },
+    { ic: I.bulb, t: "Explained visually",
+      d: "Diagrams are drawn as plain SVG, so they stay sharp, follow the theme, and work with the network off." }
+  ];
+
+  $("#feats-grid").innerHTML = feats.map(function (f) {
+    return '<div class="feat">' +
+      '<span class="feat-ic">' + f.ic + "</span>" +
+      '<div class="feat-t">' + EC.esc(f.t) + "</div>" +
+      '<div class="feat-d">' + EC.esc(f.d) + "</div></div>";
   }).join("");
 })();
 </script>

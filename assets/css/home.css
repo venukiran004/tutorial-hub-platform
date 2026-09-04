@@ -1,0 +1,219 @@
+/* ============================================================================
+   TUTORIAL HUB — HOME PAGE
+   ----------------------------------------------------------------------------
+   Four sections, in the order a new reader needs them: what this is, where to
+   start, what exists, and how the pages behave. Nothing below the fold is
+   required to understand anything above it.
+   ========================================================================= */
+
+/* ============================================================== hero ==== */
+
+.home-hero {
+  padding: clamp(48px, 8vw, 92px) 0 clamp(36px, 5vw, 60px);
+  max-width: 860px;
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 12px 5px 10px; margin-bottom: 26px; border-radius: 999px;
+  background: var(--accent-soft); border: 1px solid var(--accent-line);
+  color: var(--accent-ink);
+  font-size: 11.6px; font-weight: 600; letter-spacing: .01em;
+}
+.hero-eyebrow svg { width: 14px; height: 14px; }
+
+.home-hero h1 {
+  font-size: clamp(38px, 6.4vw, 68px);
+  line-height: 1.05;
+  letter-spacing: -.032em;
+  font-weight: 780;
+  margin: 0 0 24px;
+}
+/* The second line is the promise, so it carries the accent. One emphasis on
+   the page, and it is the one sentence that has to land. */
+.home-hero h1 em {
+  font-style: normal;
+  color: var(--accent-ink);
+  background: linear-gradient(var(--accent-line) 0 0) bottom / 100% 2px no-repeat;
+  padding-bottom: 4px;
+}
+
+.home-hero .hero-lede {
+  font-size: clamp(16.5px, 1.55vw, 19px);
+  line-height: 1.66;
+  color: var(--ink-2);
+  max-width: 70ch;
+  margin: 0 0 32px;
+}
+.home-hero .hero-lede b { color: var(--ink); font-weight: 640; }
+
+.hero-cta { display: flex; flex-wrap: wrap; gap: 11px; }
+.cta {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 12px 20px; border-radius: 11px;
+  font-size: 14.6px; font-weight: 620; text-decoration: none;
+  border: 1px solid var(--border);
+  transition: transform .16s var(--ease), border-color .16s var(--ease),
+              background-color .16s var(--ease), color .16s var(--ease);
+}
+.cta svg { width: 16px; height: 16px; }
+.cta.primary {
+  background: var(--accent); border-color: var(--accent); color: #06122b;
+  box-shadow: 0 1px 0 rgba(255,255,255,.18) inset, var(--e2);
+}
+.cta.primary:hover { transform: translateY(-1px); text-decoration: none; filter: brightness(1.06); }
+.cta.ghost { background: var(--surface); color: var(--ink-2); }
+.cta.ghost:hover {
+  color: var(--ink); border-color: var(--border-strong);
+  background: var(--surface-2); text-decoration: none; transform: translateY(-1px);
+}
+
+/* ========================================================== sections ==== */
+
+.sec { padding: clamp(38px, 5vw, 62px) 0; border-top: 1px solid var(--border-soft); }
+.sec-kicker {
+  font-size: 10.6px; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--accent-ink); margin-bottom: 12px;
+}
+.sec-h { display: flex; align-items: baseline; gap: 14px; margin-bottom: 12px; }
+.sec-h h2 {
+  margin: 0; font-size: clamp(23px, 2.6vw, 31px);
+  letter-spacing: -.022em; font-weight: 720; line-height: 1.2;
+}
+.sec-h .sp { flex: 1 1 auto; }
+.sec-lede { font-size: 15.8px; line-height: 1.65; color: var(--ink-2); max-width: 74ch; margin: 0 0 28px; }
+.sec-lede b { color: var(--ink); font-weight: 640; }
+
+/* ===================================================== learning path ==== */
+/* A row of stages, numbered, with a connector so the sequence is visible
+   without reading a word. Wraps to two rows and then to a column. */
+
+.path {
+  display: grid; gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+.path-i {
+  position: relative;
+  padding: 20px 18px 20px;
+  border: 1px solid var(--border); border-radius: 14px;
+  background: var(--surface);
+}
+.path-n {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: .06em; color: var(--accent-ink);
+  padding-bottom: 12px; margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.path-t { font-size: 16.5px; font-weight: 660; letter-spacing: -.014em; margin-bottom: 8px; }
+.path-d { font-size: 13.8px; line-height: 1.58; color: var(--ink-3); }
+
+/* ============================================================ topics ==== */
+
+.topics {
+  display: grid; gap: 13px;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+}
+
+.topic {
+  display: flex; flex-direction: column;
+  padding: 19px 20px 17px;
+  border: 1px solid var(--border); border-radius: 15px;
+  background: var(--surface); text-decoration: none; color: inherit;
+  transition: border-color .17s var(--ease), background-color .17s var(--ease),
+              transform .17s var(--ease), box-shadow .17s var(--ease);
+}
+a.topic:hover {
+  border-color: var(--accent-line); background: var(--surface-2);
+  transform: translateY(-2px); box-shadow: var(--e2); text-decoration: none;
+}
+.topic.soon { opacity: .68; }
+
+.topic-top { display: flex; align-items: center; gap: 11px; margin-bottom: 11px; }
+.topic-mark {
+  display: inline-grid; place-items: center; flex: none;
+  width: 32px; height: 32px; border-radius: 9px;
+  background: var(--accent-soft); border: 1px solid var(--accent-line);
+  color: var(--accent-ink);
+}
+.topic-mark svg { width: 17px; height: 17px; }
+.topic.soon .topic-mark {
+  background: var(--surface-2); border-color: var(--border); color: var(--ink-3);
+}
+.topic-t { font-size: 16.4px; font-weight: 670; letter-spacing: -.016em; flex: 1 1 auto; }
+.topic-live {
+  flex: none; font-size: 9.6px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; padding: 3px 7px; border-radius: 999px;
+  background: var(--good-soft); border: 1px solid var(--good-line); color: var(--good);
+}
+.topic .badge {
+  flex: none; font-size: 9.6px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; padding: 3px 7px; border-radius: 999px;
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--ink-3);
+}
+
+.topic-d { font-size: 13.9px; line-height: 1.6; color: var(--ink-2); margin: 0 0 13px; flex: 1 1 auto; }
+
+.topic-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  font-size: 11px; padding: 3px 8px; border-radius: 6px;
+  background: var(--surface-2); border: 1px solid var(--border-soft); color: var(--ink-3);
+  white-space: nowrap;
+}
+a.topic:hover .tag { border-color: var(--border); }
+
+.topic-f {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--border-soft);
+  font-size: 12.2px; color: var(--ink-3);
+}
+.topic-f .sp { flex: 1 1 auto; }
+.topic-go {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-weight: 640; color: var(--accent-ink);
+}
+.topic-go svg { width: 14px; height: 14px; transition: transform .17s var(--ease); }
+a.topic:hover .topic-go svg { transform: translateX(3px); }
+
+/* ========================================================== features ==== */
+
+.feats {
+  display: grid; gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.feat {
+  padding: 20px 19px;
+  border: 1px solid var(--border); border-radius: 14px;
+  background: var(--surface);
+}
+.feat-ic {
+  display: inline-grid; place-items: center;
+  width: 34px; height: 34px; border-radius: 10px; margin-bottom: 13px;
+  background: var(--accent-soft); border: 1px solid var(--accent-line);
+  color: var(--accent-ink);
+}
+.feat-ic svg { width: 17px; height: 17px; }
+.feat-t { font-size: 15.6px; font-weight: 660; letter-spacing: -.012em; margin-bottom: 7px; }
+.feat-d { font-size: 13.8px; line-height: 1.6; color: var(--ink-3); }
+
+/* ============================================================ footer ==== */
+
+.foot {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 28px 0 56px; margin-top: 12px;
+  border-top: 1px solid var(--border-soft);
+  font-size: 13px; color: var(--ink-3);
+}
+.foot .sp { flex: 1 1 auto; }
+.foot a { color: var(--ink-3); text-decoration: none; }
+.foot a:hover { color: var(--accent-ink); }
+
+/* ============================================================ mobile ==== */
+
+@media (max-width: 720px) {
+  .hide-sm { display: none; }
+  .home-hero { padding-top: 40px; }
+  .home-hero h1 { font-size: 33px; }
+  .home-hero h1 br { display: none; }
+  .hero-cta .cta { flex: 1 1 100%; justify-content: center; }
+  .topics { grid-template-columns: 1fr; }
+}

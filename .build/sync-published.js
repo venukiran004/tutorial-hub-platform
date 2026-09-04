@@ -12,19 +12,26 @@ const lessonsDir = path.join(root, "lessons");
 const curriculum = path.join(root, "curriculum.js");
 
 // Lessons live one folder per module: lessons/02_core/2.11.js
-const ids = fs.readdirSync(lessonsDir, { withFileTypes: true })
-  .filter(d => d.isDirectory())
-  .flatMap(d =>
-    fs.readdirSync(path.join(lessonsDir, d.name))
-      .filter(f => f.endsWith(".js"))
-      .map(f => f.slice(0, -3))
-  )
-  // numeric sort on module.lesson so 1.10 follows 1.9, not 1.1
-  .sort((a, b) => {
-    const [am, al] = a.split(".").map(Number);
-    const [bm, bl] = b.split(".").map(Number);
-    return am - bm || al - bl;
+// Non-default tracks nest one level deeper: lessons/practice/01_p_strings/p1.1.js
+function collect(dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap(d => {
+    const full = path.join(dir, d.name);
+    if (d.isDirectory()) return collect(full);
+    return d.name.endsWith(".js") ? [d.name.slice(0, -3)] : [];
   });
+}
+
+// Sort by track prefix first (numeric ids before p-prefixed ones), then
+// numerically on module.lesson so 1.10 follows 1.9 rather than 1.1.
+function key(id) {
+  const m = /^([a-z]*)(\d+)\.(\d+)$/i.exec(id);
+  return m ? [m[1].toLowerCase(), Number(m[2]), Number(m[3])] : [id, 0, 0];
+}
+
+const ids = collect(lessonsDir).sort((a, b) => {
+  const [ap, am, al] = key(a), [bp, bm, bl] = key(b);
+  return ap.localeCompare(bp) || am - bm || al - bl;
+});
 
 const src = fs.readFileSync(curriculum, "utf8");
 const line = `    published: [${ids.map(i => `"${i}"`).join(", ")}],`;
