@@ -1,0 +1,1499 @@
+[
+  {
+    "id": "cp_basics",
+    "short": "C1",
+    "track": "practice",
+    "numPrefix": "C",
+    "phase": "Practice · Core Python",
+    "title": "Basics and Data Types",
+    "blurb": "Data types, strings, control flow, tuples, sets and dictionaries.",
+    "outcome": "You can write any small Python program without looking up syntax.",
+    "lessons": [
+      {
+        "id": "c1.1",
+        "title": "Programs · 1",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c1.2",
+        "title": "Programs · 2",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c1.3",
+        "title": "Programs · 3",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c1.4",
+        "title": "Programs · 4",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c1.5",
+        "title": "Programs · 5",
+        "difficulty": "foundation",
+        "minutes": 58,
+        "tier": "should",
+        "summary": "29 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c1.6",
+        "title": "Programs · 6",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c1.7",
+        "title": "Programs · 7",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c1.8",
+        "title": "Programs · 8",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c1.9",
+        "title": "Programs · 9",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c1.10",
+        "title": "Programs · 10",
+        "difficulty": "foundation",
+        "minutes": 58,
+        "tier": "should",
+        "summary": "29 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c1.11",
+        "title": "Programs · 11",
+        "difficulty": "foundation",
+        "minutes": 40,
+        "tier": "should",
+        "summary": "20 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c1.12",
+        "title": "Predict the Output — Scenario Questions · 1",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c1.13",
+        "title": "Predict the Output — Scenario Questions · 2",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c1.14",
+        "title": "Predict the Output — Scenario Questions · 3",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c1.15",
+        "title": "Predict the Output — Scenario Questions · 4",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c1.16",
+        "title": "Predict the Output — Scenario Questions · 5",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c1.17",
+        "title": "Predict the Output — Scenario Questions · 6",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c1.18",
+        "title": "Predict the Output — Scenario Questions · 7",
+        "difficulty": "foundation",
+        "minutes": 38,
+        "tier": "should",
+        "summary": "19 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c1.19",
+        "title": "Dictionaries & Sets",
+        "difficulty": "foundation",
+        "minutes": 40,
+        "tier": "should",
+        "summary": "20 problems with hidden answers, from the dictionaries & sets set.",
+        "keywords": [
+          "dictionaries",
+          "sets"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cp_lists",
+    "short": "C2",
+    "track": "practice",
+    "numPrefix": "C",
+    "phase": "Practice · Core Python",
+    "title": "Lists and Arrays",
+    "blurb": "Every list and array program: classic problems, array algorithms, matrices and grids.",
+    "outcome": "You reach for the right traversal instead of nesting two loops by reflex.",
+    "lessons": [
+      {
+        "id": "c2.1",
+        "title": "Programs · 1",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c2.2",
+        "title": "Programs · 2",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c2.3",
+        "title": "Programs · 3",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c2.4",
+        "title": "Programs · 4",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c2.5",
+        "title": "Programs · 5",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c2.6",
+        "title": "Programs · 6",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c2.7",
+        "title": "Programs · 7",
+        "difficulty": "foundation",
+        "minutes": 38,
+        "tier": "should",
+        "summary": "19 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c2.8",
+        "title": "List Operations",
+        "difficulty": "foundation",
+        "minutes": 36,
+        "tier": "should",
+        "summary": "18 problems with hidden answers, from the list operations set.",
+        "keywords": [
+          "list",
+          "operations"
+        ]
+      },
+      {
+        "id": "c2.9",
+        "title": "More List Programs · 1",
+        "difficulty": "foundation",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the more list programs set.",
+        "keywords": [
+          "more",
+          "list",
+          "programs"
+        ]
+      },
+      {
+        "id": "c2.10",
+        "title": "More List Programs · 2",
+        "difficulty": "foundation",
+        "minutes": 14,
+        "tier": "should",
+        "summary": "7 problems with hidden answers, from the more list programs set.",
+        "keywords": [
+          "more",
+          "list",
+          "programs"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cp_functions",
+    "short": "C3",
+    "track": "practice",
+    "numPrefix": "C",
+    "phase": "Practice · Core Python",
+    "title": "Functions and Functional",
+    "blurb": "Functions, arguments, lambdas, comprehensions and the functional toolkit.",
+    "outcome": "You can decompose a problem into functions that are worth testing.",
+    "lessons": [
+      {
+        "id": "c3.1",
+        "title": "Programs · 1",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c3.2",
+        "title": "Programs · 2",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c3.3",
+        "title": "Programs · 3",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c3.4",
+        "title": "Programs · 4",
+        "difficulty": "core",
+        "minutes": 58,
+        "tier": "should",
+        "summary": "29 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c3.5",
+        "title": "Programs · 5",
+        "difficulty": "core",
+        "minutes": 40,
+        "tier": "should",
+        "summary": "20 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c3.6",
+        "title": "Predict the Output — Scenario Questions · 1",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c3.7",
+        "title": "Predict the Output — Scenario Questions · 2",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c3.8",
+        "title": "Predict the Output — Scenario Questions · 3",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c3.9",
+        "title": "Predict the Output — Scenario Questions · 4",
+        "difficulty": "core",
+        "minutes": 36,
+        "tier": "should",
+        "summary": "18 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cp_advanced",
+    "short": "C4",
+    "track": "practice",
+    "numPrefix": "C",
+    "phase": "Practice · Depth",
+    "title": "Decorators, Generators and Internals",
+    "blurb": "Decorators, generators, iterators, memory and the performance edge cases.",
+    "outcome": "The advanced features stop being trivia and become tools you choose.",
+    "lessons": [
+      {
+        "id": "c4.1",
+        "title": "Programs · 1",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c4.2",
+        "title": "Programs · 2",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c4.3",
+        "title": "Programs · 3",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c4.4",
+        "title": "Programs · 4",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c4.5",
+        "title": "Programs · 5",
+        "difficulty": "advanced",
+        "minutes": 44,
+        "tier": "should",
+        "summary": "22 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c4.6",
+        "title": "Predict the Output — Scenario Questions · 1",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c4.7",
+        "title": "Predict the Output — Scenario Questions · 2",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c4.8",
+        "title": "Predict the Output — Scenario Questions · 3",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c4.9",
+        "title": "Predict the Output — Scenario Questions · 4",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c4.10",
+        "title": "Predict the Output — Scenario Questions · 5",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c4.11",
+        "title": "Predict the Output — Scenario Questions · 6",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c4.12",
+        "title": "Predict the Output — Scenario Questions · 7",
+        "difficulty": "advanced",
+        "minutes": 40,
+        "tier": "should",
+        "summary": "20 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c4.13",
+        "title": "Custom Iterators & Generators · 1",
+        "difficulty": "advanced",
+        "minutes": 56,
+        "tier": "should",
+        "summary": "28 problems with hidden answers, from the custom iterators & generators set.",
+        "keywords": [
+          "custom",
+          "iterators",
+          "generators"
+        ]
+      },
+      {
+        "id": "c4.14",
+        "title": "Custom Iterators & Generators · 2",
+        "difficulty": "advanced",
+        "minutes": 56,
+        "tier": "should",
+        "summary": "28 problems with hidden answers, from the custom iterators & generators set.",
+        "keywords": [
+          "custom",
+          "iterators",
+          "generators"
+        ]
+      },
+      {
+        "id": "c4.15",
+        "title": "Decorators, Iterators & Generators",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the decorators, iterators & generators set.",
+        "keywords": [
+          "decorators",
+          "iterators",
+          "generators"
+        ]
+      },
+      {
+        "id": "c4.16",
+        "title": "Decorator, Property & Generator Internals",
+        "difficulty": "advanced",
+        "minutes": 56,
+        "tier": "should",
+        "summary": "28 problems with hidden answers, from the decorator, property & generator internals set.",
+        "keywords": [
+          "decorator",
+          "property",
+          "generator",
+          "internals"
+        ]
+      },
+      {
+        "id": "c4.17",
+        "title": "Performance & Profiling",
+        "difficulty": "advanced",
+        "minutes": 20,
+        "tier": "should",
+        "summary": "10 problems with hidden answers, from the performance & profiling set.",
+        "keywords": [
+          "performance",
+          "profiling"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cp_oop",
+    "short": "C5",
+    "track": "practice",
+    "numPrefix": "C",
+    "phase": "Practice · Depth",
+    "title": "OOP and Design Patterns",
+    "blurb": "Classes, inheritance, dunder methods and the design patterns built on them.",
+    "outcome": "You can turn a paragraph of requirements into classes that survive the next one.",
+    "lessons": [
+      {
+        "id": "c5.1",
+        "title": "Programs · 1",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c5.2",
+        "title": "Programs · 2",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c5.3",
+        "title": "Programs · 3",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c5.4",
+        "title": "Programs · 4",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c5.5",
+        "title": "Programs · 5",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c5.6",
+        "title": "Programs · 6",
+        "difficulty": "core",
+        "minutes": 48,
+        "tier": "should",
+        "summary": "24 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c5.7",
+        "title": "Predict the Output — Scenario Questions · 1",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c5.8",
+        "title": "Predict the Output — Scenario Questions · 2",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c5.9",
+        "title": "Predict the Output — Scenario Questions · 3",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c5.10",
+        "title": "Predict the Output — Scenario Questions · 4",
+        "difficulty": "core",
+        "minutes": 34,
+        "tier": "should",
+        "summary": "17 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c5.11",
+        "title": "OOP, Design Patterns & Architecture · 1",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the oop, design patterns & architecture set.",
+        "keywords": [
+          "design",
+          "patterns",
+          "architecture"
+        ]
+      },
+      {
+        "id": "c5.12",
+        "title": "OOP, Design Patterns & Architecture · 2",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the oop, design patterns & architecture set.",
+        "keywords": [
+          "design",
+          "patterns",
+          "architecture"
+        ]
+      },
+      {
+        "id": "c5.13",
+        "title": "OOP, Design Patterns & Architecture · 3",
+        "difficulty": "core",
+        "minutes": 20,
+        "tier": "should",
+        "summary": "10 problems with hidden answers, from the oop, design patterns & architecture set.",
+        "keywords": [
+          "design",
+          "patterns",
+          "architecture"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cp_errors",
+    "short": "C6",
+    "track": "practice",
+    "numPrefix": "C",
+    "phase": "Practice · Depth",
+    "title": "Errors, I/O and Concurrency",
+    "blurb": "Exceptions, file input and output, serialisation, threading and async.",
+    "outcome": "You can make code fail correctly, and keep it fast without making it wrong.",
+    "lessons": [
+      {
+        "id": "c6.1",
+        "title": "Programs · 1",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c6.2",
+        "title": "Programs · 2",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c6.3",
+        "title": "Programs · 3",
+        "difficulty": "advanced",
+        "minutes": 58,
+        "tier": "should",
+        "summary": "29 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c6.4",
+        "title": "Programs · 4",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c6.5",
+        "title": "Programs · 5",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c6.6",
+        "title": "Programs · 6",
+        "difficulty": "advanced",
+        "minutes": 38,
+        "tier": "should",
+        "summary": "19 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c6.7",
+        "title": "Programs · 7",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c6.8",
+        "title": "Programs · 8",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c6.9",
+        "title": "Programs · 9",
+        "difficulty": "advanced",
+        "minutes": 50,
+        "tier": "should",
+        "summary": "25 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c6.10",
+        "title": "Predict the Output — Scenario Questions · 1",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c6.11",
+        "title": "Predict the Output — Scenario Questions · 2",
+        "difficulty": "advanced",
+        "minutes": 40,
+        "tier": "should",
+        "summary": "20 problems with hidden answers, from the predict the output — scenario questions set.",
+        "keywords": [
+          "predict",
+          "output",
+          "scenario",
+          "questions"
+        ]
+      },
+      {
+        "id": "c6.12",
+        "title": "Async Iterators & Context Managers · 1",
+        "difficulty": "advanced",
+        "minutes": 58,
+        "tier": "should",
+        "summary": "29 problems with hidden answers, from the async iterators & context managers set.",
+        "keywords": [
+          "async",
+          "iterators",
+          "context",
+          "managers"
+        ]
+      },
+      {
+        "id": "c6.13",
+        "title": "Async Iterators & Context Managers · 2",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the async iterators & context managers set.",
+        "keywords": [
+          "async",
+          "iterators",
+          "context",
+          "managers"
+        ]
+      },
+      {
+        "id": "c6.14",
+        "title": "Async Iterators & Context Managers · 3",
+        "difficulty": "advanced",
+        "minutes": 46,
+        "tier": "should",
+        "summary": "23 problems with hidden answers, from the async iterators & context managers set.",
+        "keywords": [
+          "async",
+          "iterators",
+          "context",
+          "managers"
+        ]
+      },
+      {
+        "id": "c6.15",
+        "title": "Advanced AsyncIO",
+        "difficulty": "advanced",
+        "minutes": 20,
+        "tier": "should",
+        "summary": "10 problems with hidden answers, from the advanced asyncio set.",
+        "keywords": [
+          "advanced",
+          "asyncio"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cp_tooling",
+    "short": "C7",
+    "track": "practice",
+    "numPrefix": "C",
+    "phase": "Practice · Applied",
+    "title": "Modules, Regex, Testing and Tooling",
+    "blurb": "Modules, regular expressions, testing, command-line tools, sockets, HTTP and APIs.",
+    "outcome": "You can build and ship a Python project, not just write one.",
+    "lessons": [
+      {
+        "id": "c7.1",
+        "title": "Programs · 1",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c7.2",
+        "title": "Programs · 2",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c7.3",
+        "title": "Programs · 3",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c7.4",
+        "title": "Programs · 4",
+        "difficulty": "core",
+        "minutes": 58,
+        "tier": "should",
+        "summary": "29 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c7.5",
+        "title": "Programs · 5",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c7.6",
+        "title": "Programs · 6",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c7.7",
+        "title": "Programs · 7",
+        "difficulty": "core",
+        "minutes": 48,
+        "tier": "should",
+        "summary": "24 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c7.8",
+        "title": "Testing",
+        "difficulty": "core",
+        "minutes": 52,
+        "tier": "should",
+        "summary": "26 problems with hidden answers, from the testing set.",
+        "keywords": [
+          "testing"
+        ]
+      },
+      {
+        "id": "c7.9",
+        "title": "Packaging & Tooling",
+        "difficulty": "core",
+        "minutes": 48,
+        "tier": "should",
+        "summary": "24 problems with hidden answers, from the packaging & tooling set.",
+        "keywords": [
+          "packaging",
+          "tooling"
+        ]
+      },
+      {
+        "id": "c7.10",
+        "title": "Static Analysis & Type Hints",
+        "difficulty": "core",
+        "minutes": 40,
+        "tier": "should",
+        "summary": "20 problems with hidden answers, from the static analysis & type hints set.",
+        "keywords": [
+          "static",
+          "analysis",
+          "type",
+          "hints"
+        ]
+      },
+      {
+        "id": "c7.11",
+        "title": "Advanced Testing & Build",
+        "difficulty": "core",
+        "minutes": 40,
+        "tier": "should",
+        "summary": "20 problems with hidden answers, from the advanced testing & build set.",
+        "keywords": [
+          "advanced",
+          "testing",
+          "build"
+        ]
+      },
+      {
+        "id": "c7.12",
+        "title": "Programs · 8",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c7.13",
+        "title": "Programs · 9",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c7.14",
+        "title": "Programs · 10",
+        "difficulty": "core",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c7.15",
+        "title": "Programs · 11",
+        "difficulty": "core",
+        "minutes": 58,
+        "tier": "should",
+        "summary": "29 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c7.16",
+        "title": "Programs · 12",
+        "difficulty": "core",
+        "minutes": 44,
+        "tier": "should",
+        "summary": "22 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c7.17",
+        "title": "Auth, Security, WebSockets & Protocols",
+        "difficulty": "core",
+        "minutes": 40,
+        "tier": "should",
+        "summary": "20 problems with hidden answers, from the auth, security, websockets & protocols set.",
+        "keywords": [
+          "auth",
+          "security",
+          "websockets",
+          "protocols"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cp_algorithms",
+    "short": "C8",
+    "track": "practice",
+    "numPrefix": "C",
+    "phase": "Practice · Applied",
+    "title": "Algorithms and Data Structures",
+    "blurb": "Sorting, searching, recursion, maths and cryptography problems.",
+    "outcome": "You can name the pattern a problem belongs to before you write a line.",
+    "lessons": [
+      {
+        "id": "c8.1",
+        "title": "Programs · 1",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c8.2",
+        "title": "Programs · 2",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c8.3",
+        "title": "Programs · 3",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c8.4",
+        "title": "Programs · 4",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c8.5",
+        "title": "Programs · 5",
+        "difficulty": "advanced",
+        "minutes": 60,
+        "tier": "should",
+        "summary": "30 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c8.6",
+        "title": "Programs · 6",
+        "difficulty": "advanced",
+        "minutes": 58,
+        "tier": "should",
+        "summary": "29 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      },
+      {
+        "id": "c8.7",
+        "title": "Programs · 7",
+        "difficulty": "advanced",
+        "minutes": 58,
+        "tier": "should",
+        "summary": "29 problems with hidden answers, from the programs set.",
+        "keywords": [
+          "programs"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cp_banks",
+    "short": "C9",
+    "track": "practice",
+    "numPrefix": "C",
+    "phase": "Practice · Interview",
+    "title": "Topic-Wise and Scenario Sets",
+    "blurb": "The cross-topic coding sets: topic-by-topic problems and scenario-based questions that arrive as a situation rather than a specification.",
+    "outcome": "You can start a problem stated as a situation rather than a task.",
+    "lessons": [
+      {
+        "id": "c9.1",
+        "title": "Topic-Wise Coding Questions",
+        "difficulty": "advanced",
+        "minutes": 40,
+        "tier": "should",
+        "summary": "20 problems with hidden answers, from the topic-wise coding questions set.",
+        "keywords": [
+          "topic",
+          "wise",
+          "coding",
+          "questions"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cp_backend",
+    "short": "C10",
+    "track": "practice",
+    "numPrefix": "C",
+    "phase": "Practice · Interview",
+    "title": "Backend, Databases and Production",
+    "blurb": "Databases and ORMs, caching, scaling, containers, observability, security and system design.",
+    "outcome": "You can answer the questions that come after 'and how would you deploy it?'",
+    "lessons": [
+      {
+        "id": "c10.1",
+        "title": "Databases, ORM & Caching",
+        "difficulty": "expert",
+        "minutes": 44,
+        "tier": "should",
+        "summary": "22 problems with hidden answers, from the databases, orm & caching set.",
+        "keywords": [
+          "databases",
+          "caching"
+        ]
+      },
+      {
+        "id": "c10.2",
+        "title": "Scaling & Resilience",
+        "difficulty": "expert",
+        "minutes": 40,
+        "tier": "should",
+        "summary": "20 problems with hidden answers, from the scaling & resilience set.",
+        "keywords": [
+          "scaling",
+          "resilience"
+        ]
+      },
+      {
+        "id": "c10.3",
+        "title": "Docker & Kubernetes · 1",
+        "difficulty": "expert",
+        "minutes": 58,
+        "tier": "should",
+        "summary": "29 problems with hidden answers, from the docker & kubernetes set.",
+        "keywords": [
+          "docker",
+          "kubernetes"
+        ]
+      },
+      {
+        "id": "c10.4",
+        "title": "Docker & Kubernetes · 2",
+        "difficulty": "expert",
+        "minutes": 56,
+        "tier": "should",
+        "summary": "28 problems with hidden answers, from the docker & kubernetes set.",
+        "keywords": [
+          "docker",
+          "kubernetes"
+        ]
+      },
+      {
+        "id": "c10.5",
+        "title": "Docker & Kubernetes · 3",
+        "difficulty": "expert",
+        "minutes": 46,
+        "tier": "should",
+        "summary": "23 problems with hidden answers, from the docker & kubernetes set.",
+        "keywords": [
+          "docker",
+          "kubernetes"
+        ]
+      },
+      {
+        "id": "c10.6",
+        "title": "Senior-Level Databases",
+        "difficulty": "expert",
+        "minutes": 50,
+        "tier": "should",
+        "summary": "25 problems with hidden answers, from the senior-level databases set.",
+        "keywords": [
+          "senior",
+          "level",
+          "databases"
+        ]
+      }
+    ]
+  }
+]

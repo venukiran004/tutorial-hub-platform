@@ -281,6 +281,28 @@
       "</ul></div>";
   }
 
+  /* ------------------------------------------------------------- drill -- */
+  /* A question whose answer stays hidden until asked for. Deliberately
+     lighter than `exercise`: a practice page carries hundreds of these, so
+     the chrome has to stay out of the way and the reveal has to be one
+     click with no layout jump. */
+  function drill(b) {
+    var terms = (b.terms || []).length
+      ? '<div class="drill-terms">' + b.terms.map(function (t) {
+          return '<span class="kt">' + esc(t) + "</span>";
+        }).join("") + "</div>"
+      : "";
+
+    return '<details class="drill' + (b.kind ? " " + b.kind : "") + '">' +
+      "<summary>" +
+        '<span class="drill-n">' + esc(b.n || "") + "</span>" +
+        '<span class="drill-q">' + inline(b.q) + "</span>" +
+        '<span class="drill-cue">Reveal</span>' +
+      "</summary>" +
+      '<div class="drill-a">' + terms + render(b.body || []) + "</div>" +
+      "</details>";
+  }
+
   /* ------------------------------------------------------------ router -- */
   var R = {
     h2: function (b) {
@@ -311,6 +333,7 @@
     table: table,
     viz: viz,
     disclose: disclose,
+    drill: drill,
     exercise: exercise,
     quiz: quiz,
     interview: interview,

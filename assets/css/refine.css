@@ -622,3 +622,92 @@ details.solution > summary { color: var(--good); }
 .ttab-t { font-size: 16px; font-weight: 660; color: var(--ink); letter-spacing: -.012em; }
 .ttab-m { font-size: 12.4px; color: var(--ink-3); }
 .ttab.on .ttab-m { color: var(--accent-ink); }
+
+/* =========================================================== drills ===== */
+/* A practice page carries hundreds of these, so the resting state has to be
+   quiet and scannable: one line per question, the answer folded away. */
+
+.drill {
+  border: 1px solid var(--border); border-radius: 11px;
+  background: var(--surface); margin: 0 0 8px; overflow: hidden;
+  transition: border-color .15s var(--ease);
+}
+.drill:hover { border-color: var(--border-strong); }
+.drill[open] { border-color: var(--accent-line); background: var(--surface-2); }
+
+.drill > summary {
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 12px 15px; cursor: pointer; list-style: none; user-select: none;
+  font-size: 14.8px; line-height: 1.5; font-weight: 600; color: var(--ink-2);
+  transition: color .15s var(--ease);
+}
+.drill > summary::-webkit-details-marker { display: none; }
+.drill > summary::before { content: none; }
+.drill > summary:hover { color: var(--ink); }
+.drill[open] > summary { color: var(--ink); border-bottom: 1px solid var(--border); }
+
+.drill-n {
+  flex: none; min-width: 30px;
+  font-family: var(--mono); font-size: 10.6px; font-weight: 700;
+  color: var(--ink-3); padding-top: 2px;
+}
+.drill[open] .drill-n { color: var(--accent-ink); }
+.drill-q { flex: 1 1 auto; }
+.drill-q code { font-size: .86em; }
+
+/* The cue is the affordance: without it a reader does not know the answer
+   is there at all. It disappears once opened, because then it is obvious. */
+.drill-cue {
+  flex: none; align-self: center;
+  font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-3); border: 1px solid var(--border); border-radius: 999px;
+  padding: 3px 9px; background: var(--bg-elev);
+  transition: color .15s var(--ease), border-color .15s var(--ease);
+}
+.drill > summary:hover .drill-cue { color: var(--accent-ink); border-color: var(--accent-line); }
+.drill[open] .drill-cue { display: none; }
+
+.drill-a { padding: 14px 15px 4px; }
+.drill-a > *:last-child { margin-bottom: 12px; }
+.drill-a > p { font-size: 14.8px; line-height: 1.64; max-width: 70ch; }
+.drill-a > ul, .drill-a > ol { font-size: 14.6px; max-width: 70ch; }
+.drill-a .codeblock { margin: 10px 0 14px; }
+.drill-a .codeblock:first-child { margin-top: 0; }
+.drill-a h4 { margin: 16px 0 7px; font-size: 14.4px; color: var(--ink-2); }
+
+.drill-terms { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.kt {
+  font-size: 10.8px; font-weight: 600; padding: 3px 8px; border-radius: 999px;
+  background: var(--accent-soft); border: 1px solid var(--accent-line);
+  color: var(--accent-ink);
+}
+
+/* Predict-the-output drills read differently from programs, so they carry a
+   different accent — the question is the point, not the code. */
+.drill.predict { background: linear-gradient(var(--warn) 0 0) left / 3px 100% no-repeat, var(--surface); }
+.drill.predict[open] { background: linear-gradient(var(--warn) 0 0) left / 3px 100% no-repeat, var(--surface-2); }
+.drill.predict .drill-n, .drill.predict[open] .drill-n { color: var(--warn); }
+
+/* Bulk controls for a page of drills. */
+.drill-bar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: 0 0 var(--sp-3); padding: 11px 14px;
+  border: 1px solid var(--border); border-radius: 11px; background: var(--surface-2);
+  position: sticky; top: calc(var(--topbar) + 8px); z-index: 5;
+  backdrop-filter: blur(10px);
+}
+.drill-bar .sp { flex: 1 1 auto; }
+.drill-bar-c { font-size: 12.4px; color: var(--ink-3); }
+.drill-bar-c b { color: var(--ink-2); font-weight: 640; }
+.drill-btn {
+  font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+  padding: 6px 12px; border-radius: 8px;
+  background: var(--bg-elev); border: 1px solid var(--border); color: var(--ink-2);
+  transition: color .15s var(--ease), border-color .15s var(--ease);
+}
+.drill-btn:hover { color: var(--ink); border-color: var(--border-strong); }
+.drill-btn kbd {
+  display: inline-block; margin-left: 6px; padding: 1px 5px;
+  font-family: var(--mono); font-size: 9.6px; border-radius: 4px;
+  background: var(--surface-3); border: 1px solid var(--border); color: var(--ink-3);
+}

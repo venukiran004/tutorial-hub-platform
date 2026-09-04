@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="assets/css/course.css">
 <link rel="stylesheet" href="assets/css/refine.css">
 <link rel="stylesheet" href="assets/css/home.css">
+<link rel="stylesheet" href="assets/css/aurora.css">
 </head>
 <body id="top">
 
@@ -20,7 +21,8 @@
   <a class="brand" href="index.html"><span class="brand-mark">TH</span>Tutorial<span class="brand-sub">Hub</span></a>
   <span class="topbar-spacer"></span>
   <a class="ghost-btn hide-sm" href="#topics">All topics</a>
-  <a class="ghost-btn" href="courses/python/index.html">Python</a>
+  <a class="ghost-btn hide-sm" href="courses/python/index.html">Python</a>
+  <a class="ghost-btn" href="courses/practice/index.html">Practice</a>
   <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
 </header>
 
@@ -45,7 +47,7 @@
         Start from the beginning
       </a>
       <a class="cta ghost" href="#topics">Browse every topic</a>
-      <a class="cta ghost" href="courses/python/index.html#curriculum">Jump to Coding Practice</a>
+      <a class="cta ghost" href="courses/practice/index.html">Jump to Coding Practice</a>
     </div>
   </section>
 
@@ -122,18 +124,19 @@
   }).join("");
 
   /* --------------------------------------------------------- topics -- */
-  /* Python and Coding Practice are separate cards because they are separate
-     tracks: one teaches the language, the other builds the reflex. */
+  /* Python and Coding Practice are separate COURSES, not two halves of one:
+     Python teaches the language, Coding Practice builds the reflex, and
+     neither is a prerequisite for the other. */
   var topics = [
     { t: "Python", ic: I.python, live: true, href: "courses/python/index.html",
       d: "The language, the craft, and the engineering judgement around it — from the execution model through production services.",
       tags: ["Core", "Internals", "OOP", "Testing", "Async", "FastAPI"],
       meta: "17 modules · 142 lessons" },
 
-    { t: "Coding Practice", ic: I.dumbbell, live: true, href: "courses/python/index.html#curriculum",
-      d: "Problem sets that build fluency. A pattern briefing, then problems that ramp from warm-up to interview grade, each with a hidden solution.",
+    { t: "Coding Practice", ic: I.dumbbell, live: true, href: "courses/practice/index.html",
+      d: "Programming problems only, with every answer folded away until you ask for it. Programs to write and predict-the-output scenarios to reason through.",
       tags: ["Programs", "Predict the output", "Patterns", "Timed sets", "Scenarios"],
-      meta: "9 modules · 61 problem sets" },
+      meta: "10 tracks · 115 sets · 3,079 problems" },
 
     { t: "Mathematics & Statistics", ic: I.layers,
       d: "The linear algebra, probability and inference the models actually rest on — worked numerically rather than symbolically.",
@@ -180,7 +183,12 @@
       tags: ["Scaling", "Patterns", "Distributed", "Trade-offs"] }
   ];
 
-  $("#topics-grid").innerHTML = topics.map(function (k) {
+  // One hue per topic, carried by --tc through the card's icon, rule, tags
+  // and hover border. A subject becomes recognisable by colour before its
+  // name is read.
+  var HUES = ["--t-blue", "--t-orange", "--t-violet", "--t-green", "--t-cyan", "--t-amber", "--t-pink", "--t-blue", "--t-violet", "--t-green", "--t-cyan", "--t-orange", "--t-amber"];
+
+  $("#topics-grid").innerHTML = topics.map(function (k, i) {
     var tags = k.tags.map(function (g) {
       return '<span class="tag">' + EC.esc(g) + "</span>";
     }).join("");
@@ -198,9 +206,10 @@
           '<span class="topic-go">Open' + I.arrowR + "</span></div>"
         : "");
 
+    var style = ' style="--tc:var(' + HUES[i % HUES.length] + ')"';
     return k.live
-      ? '<a class="topic" href="' + k.href + '">' + inner + "</a>"
-      : '<div class="topic soon">' + inner + "</div>";
+      ? '<a class="topic"' + style + ' href="' + k.href + '">' + inner + "</a>"
+      : '<div class="topic soon"' + style + ">" + inner + "</div>";
   }).join("");
 
   /* --------------------------------------------------------- features -- */

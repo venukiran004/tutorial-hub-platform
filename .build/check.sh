@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Full gate. Runs the syntax check on every lesson first so a template-literal
-# break is reported against its own file, then the render suite. Exits non-zero
-# on any failure -- never pipe this into grep, which would mask the status.
+# break is reported against its own file, then the render suite for each
+# course. Exits non-zero on any failure — never pipe this into grep, which
+# would mask the status.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -10,6 +11,15 @@ for f in assets/js/*.js courses/*/curriculum.js courses/*/lessons/*/*.js; do
 done
 echo "syntax: all files parse"
 
-node .build/sync-published.js
-node .build/rendertest.js > /tmp/ea-test.log 2>&1 || { cat /tmp/ea-test.log; exit 1; }
-tail -3 /tmp/ea-test.log
+for course in python practice; do
+  node .build/sync-published.js "courses/$course" > /dev/null
+done
+echo "published lists synced"
+
+echo
+echo "=== python ==="
+node .build/rendertest.js | tail -4
+
+echo
+echo "=== practice ==="
+TH_COURSE=practice node .build/rendertest.js | tail -4

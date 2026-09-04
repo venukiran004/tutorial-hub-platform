@@ -1,0 +1,388 @@
+/* ============================================================================
+   TUTORIAL HUB — AURORA GLASS
+   ----------------------------------------------------------------------------
+   The final layer. Everything below re-tints the sheet above it: a deep
+   near-black canvas lit by a fixed gradient mesh, with the chrome and the
+   cards reading as frosted panels floating on top of it.
+
+   Three rules keep it from becoming decoration:
+     1. The mesh is strongest at the top and gone by mid-scroll, so a long
+        reading page settles onto clean dark rather than a permanent wash.
+     2. Colour still carries meaning. Each topic owns a hue (--tc) and keeps
+        it everywhere it appears; the accent pair is reserved for the product.
+     3. Glass is a surface treatment, never a legibility cost — text sits on
+        an opaque enough panel to hold contrast at every scroll position.
+   ========================================================================= */
+
+:root {
+  --bg:          #070a12;
+  --bg-2:        #0a0e18;
+  --bg-elev:     #0f131e;
+  --surface:     #0f131e;
+  --surface-2:   #141a27;
+  --surface-3:   #1c2333;
+  --code-bg:     #080b13;
+
+  --border:        #232c40;
+  --border-soft:   #19202f;
+  --border-strong: #35405c;
+
+  --ink:   #eaf0fb;
+  --ink-2: #9fabc4;
+  --ink-3: #717c95;   /* 4.62:1 on this canvas — the floor for real text */
+
+  --accent:      #7c9dff;
+  --accent-2:    #b18cff;
+  --accent-ink:  #a8beff;
+  --accent-soft: rgba(124,157,255,.15);
+  --accent-line: rgba(124,157,255,.40);
+
+  /* Topic hues. A card, its icon, its glow and its hover border all come from
+     one of these, so a subject is recognisable before its name is read. */
+  --t-blue:   #7c9dff;
+  --t-orange: #ff9563;
+  --t-green:  #3ed9a4;
+  --t-violet: #b18cff;
+  --t-amber:  #f0c274;
+  --t-pink:   #ff8fb1;
+  --t-cyan:   #5ad6e8;
+
+  --good: #3ed9a4;  --good-soft: rgba(62,217,164,.12);  --good-line: rgba(62,217,164,.36);
+  --warn: #f5c451;  --warn-soft: rgba(245,196,81,.12);  --warn-line: rgba(245,196,81,.36);
+  --crit: #ff6b81;  --crit-soft: rgba(255,107,129,.12); --crit-line: rgba(255,107,129,.36);
+  --violet: #b18cff; --violet-soft: rgba(177,140,255,.12); --violet-line: rgba(177,140,255,.36);
+  --teal: #3ed9a4;  --teal-soft: rgba(62,217,164,.12);  --teal-line: rgba(62,217,164,.36);
+
+  --d-foundation: #3ed9a4;
+  --d-core:       #7c9dff;
+  --d-advanced:   #f0c274;
+  --d-expert:     #ff8fb1;
+
+  --glass:    rgba(255,255,255,.045);
+  --glass-bd: rgba(255,255,255,.075);
+
+  --e1: 0 1px 2px rgba(0,0,0,.40);
+  --e2: 0 8px 26px rgba(3,6,15,.55);
+  --e3: 0 22px 60px rgba(3,6,15,.68);
+
+  --r: 14px; --r-lg: 16px; --r-xl: 22px;
+}
+
+html[data-theme="light"] {
+  --bg:        #f6f8fe;
+  --bg-2:      #eef2fb;
+  --bg-elev:   #ffffff;
+  --surface:   #ffffff;
+  --surface-2: #fafbff;
+  --surface-3: #eef2fb;
+  --code-bg:   #0b0f18;      /* code stays dark in both themes, deliberately */
+
+  --border:        #dce3f2;
+  --border-soft:   #e9edf8;
+  --border-strong: #c2cce4;
+
+  --ink:   #111828;
+  --ink-2: #4c586f;
+  --ink-3: #687180;   /* 4.64:1 on the light canvas */
+
+  --accent:      #4f6fe6;
+  --accent-2:    #8b5cf6;
+  --accent-ink:  #3f5bd0;
+  --accent-soft: rgba(79,111,230,.10);
+  --accent-line: rgba(79,111,230,.34);
+
+  --t-blue:   #4f6fe6;
+  --t-orange: #e0663a;
+  --t-green:  #0f9e74;
+  --t-violet: #8b5cf6;
+  --t-amber:  #a9760a;
+  --t-pink:   #d94f7d;
+  --t-cyan:   #0e8fa5;
+
+  --good: #0f9e74;  --good-soft: rgba(15,158,116,.10);  --good-line: rgba(15,158,116,.28);
+  --warn: #b07d00;  --warn-soft: rgba(176,125,0,.11);   --warn-line: rgba(176,125,0,.28);
+  --crit: #dc3d55;  --crit-soft: rgba(220,61,85,.09);   --crit-line: rgba(220,61,85,.26);
+
+  --d-foundation: #0f9e74;
+  --d-core:       #4f6fe6;
+  --d-advanced:   #a9760a;
+  --d-expert:     #d94f7d;
+
+  --glass:    rgba(255,255,255,.62);
+  --glass-bd: rgba(17,24,40,.07);
+
+  --e1: 0 1px 2px rgba(16,24,40,.05);
+  --e2: 0 8px 24px rgba(16,24,40,.08);
+  --e3: 0 22px 56px rgba(16,24,40,.12);
+}
+
+/* ============================================================ canvas ==== */
+/* The background lives on <html> so the fixed aurora layer can sit between it
+   and the content without the body's own fill covering it. */
+
+html { background: var(--bg); }
+body { background: transparent; }
+
+/* Ambient tint: strongest at the top edge, gone by mid-scroll. */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(46% 38% at 22% -6%, color-mix(in srgb, var(--accent) 46%, transparent), transparent 66%),
+    radial-gradient(38% 32% at 82% -8%, color-mix(in srgb, var(--accent-2) 40%, transparent), transparent 64%),
+    radial-gradient(30% 30% at 58% 4%, color-mix(in srgb, var(--t-green) 22%, transparent), transparent 68%);
+  filter: blur(30px) saturate(1.3);
+  opacity: .5;
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 34%, transparent 82%);
+          mask-image: linear-gradient(180deg, #000 0, #000 34%, transparent 82%);
+}
+html[data-theme="light"] body::before { opacity: .5; filter: blur(36px) saturate(1); }
+
+/* Film grain: keeps the large flat gradients from banding on cheap panels. */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  opacity: .032; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* Multiply over a light canvas darkens fast — the grain must be far weaker
+   here or the whole page reads grey instead of white. */
+html[data-theme="light"] body::after { opacity: .08; mix-blend-mode: multiply; }
+
+/* ============================================================ chrome ==== */
+
+.topbar {
+  background: color-mix(in srgb, var(--bg) 62%, transparent);
+  backdrop-filter: blur(20px) saturate(1.7);
+  -webkit-backdrop-filter: blur(20px) saturate(1.7);
+  border-bottom: 1px solid var(--glass-bd);
+}
+.brand-mark {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: 0 1px 0 rgba(255,255,255,.20) inset, var(--e1);
+  color: #06091a;
+}
+.brand-sub {
+  background: linear-gradient(115deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ============================================================= glass ==== */
+/* Every panel on the page is the same frosted sheet. Listing them together
+   is what keeps the surface consistent as components are added. */
+
+.topic, .feat, .path-i, .contract-box, .callout, .rung, .q, .iv-q,
+.takeaways, .exercise, .drill, .drill-bar, .output, .tbl-wrap,
+.stat, .mcard, .track-switch, .ttab, .pager a, .toc, .rail {
+  background: linear-gradient(168deg,
+      color-mix(in srgb, var(--surface) 88%, transparent),
+      color-mix(in srgb, var(--surface-2) 72%, transparent));
+  border-color: var(--glass-bd);
+  backdrop-filter: blur(12px) saturate(1.15);
+  -webkit-backdrop-filter: blur(12px) saturate(1.15);
+}
+
+/* The accent-barred components keep their bar and take the glass behind it. */
+.callout {
+  background:
+    linear-gradient(var(--c) 0 0) left / 3px 100% no-repeat,
+    linear-gradient(168deg, color-mix(in srgb, var(--surface) 88%, transparent),
+                            color-mix(in srgb, var(--surface-2) 72%, transparent));
+}
+.rung {
+  background:
+    linear-gradient(var(--c) 0 0) left / 3px 100% no-repeat,
+    linear-gradient(168deg, color-mix(in srgb, var(--surface) 88%, transparent),
+                            color-mix(in srgb, var(--surface-2) 72%, transparent));
+}
+.contract-box.obj {
+  background:
+    linear-gradient(var(--accent) 0 0) left / 3px 100% no-repeat,
+    linear-gradient(168deg, color-mix(in srgb, var(--surface) 88%, transparent),
+                            color-mix(in srgb, var(--surface-2) 72%, transparent));
+}
+
+/* =============================================================== hero === */
+
+.home-hero { position: relative; }
+.home-hero::before {
+  content: ""; position: absolute; left: -56px; right: -56px; top: -140px;
+  height: 420px; z-index: -1; pointer-events: none; opacity: .72;
+  background:
+    radial-gradient(58% 62% at 14% 24%, color-mix(in srgb, var(--accent) 34%, transparent), transparent 70%),
+    radial-gradient(46% 54% at 82% 8%, color-mix(in srgb, var(--t-orange) 22%, transparent), transparent 72%);
+  filter: blur(38px);
+}
+
+/* Gradient text on the one heading that has to land. */
+.home-hero h1 {
+  background: linear-gradient(112deg,
+    var(--ink) 4%,
+    color-mix(in srgb, var(--accent) 88%, var(--ink)) 46%,
+    color-mix(in srgb, var(--accent-2) 92%, var(--ink)) 74%,
+    color-mix(in srgb, var(--t-green) 70%, var(--ink)) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.home-hero h1 em {
+  background: none; color: transparent; padding-bottom: 0;
+}
+
+.hero-eyebrow {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-color: var(--accent-line);
+  backdrop-filter: blur(8px);
+}
+
+.cta.primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-color: transparent; color: #fff;
+  box-shadow: 0 1px 0 rgba(255,255,255,.22) inset, var(--e2);
+}
+.cta.ghost {
+  background: var(--glass);
+  border-color: var(--glass-bd);
+  backdrop-filter: blur(10px);
+}
+
+/* ============================================================ topics ==== */
+/* Each card carries a topic hue in --tc, set inline. Everything tinted in the
+   card reads from that one variable. */
+
+.topic { position: relative; }
+.topic-mark {
+  background: linear-gradient(150deg,
+    color-mix(in srgb, var(--tc, var(--accent)) 26%, transparent),
+    color-mix(in srgb, var(--tc, var(--accent)) 8%, transparent));
+  border-color: color-mix(in srgb, var(--tc, var(--accent)) 40%, transparent);
+  color: var(--tc, var(--accent));
+}
+.topic-t { color: var(--ink); }
+.topic-live {
+  background: color-mix(in srgb, var(--tc, var(--good)) 14%, transparent);
+  border-color: color-mix(in srgb, var(--tc, var(--good)) 40%, transparent);
+  color: var(--tc, var(--good));
+}
+a.topic:hover {
+  border-color: color-mix(in srgb, var(--tc, var(--accent)) 55%, transparent);
+  box-shadow: var(--e3), 0 0 0 1px color-mix(in srgb, var(--tc, var(--accent)) 22%, transparent);
+  transform: translateY(-4px);
+}
+.topic-go { color: var(--tc, var(--accent)); }
+
+/* A hairline of the topic's own colour along the top edge. */
+.topic::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 2px;
+  border-radius: 15px 15px 0 0;
+  background: linear-gradient(90deg, var(--tc, var(--accent)),
+    color-mix(in srgb, var(--tc, var(--accent)) 20%, transparent) 70%, transparent);
+  opacity: .55; transition: opacity .17s var(--ease, ease);
+}
+a.topic:hover::before { opacity: 1; }
+.topic.soon::before { opacity: .2; }
+
+.tag {
+  background: color-mix(in srgb, var(--tc, var(--accent)) 8%, transparent);
+  border-color: color-mix(in srgb, var(--tc, var(--accent)) 22%, transparent);
+  color: var(--ink-3);
+}
+a.topic:hover .tag {
+  border-color: color-mix(in srgb, var(--tc, var(--accent)) 38%, transparent);
+  color: var(--ink-2);
+}
+
+/* ====================================================== learning path === */
+/* Numbered stages, each taking the next hue along, so the row reads as a
+   progression rather than five identical boxes. */
+
+.path-i { position: relative; overflow: hidden; }
+.path-i::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
+  background: linear-gradient(180deg, var(--tc, var(--accent)),
+    color-mix(in srgb, var(--tc, var(--accent)) 15%, transparent));
+}
+.path-i:nth-child(1) { --tc: var(--t-blue); }
+.path-i:nth-child(2) { --tc: var(--t-violet); }
+.path-i:nth-child(3) { --tc: var(--t-cyan); }
+.path-i:nth-child(4) { --tc: var(--t-orange); }
+.path-i:nth-child(5) { --tc: var(--t-green); }
+.path-n { color: var(--tc, var(--accent)); }
+.path-i { padding-left: 21px; }
+
+/* ========================================================== features ==== */
+
+.feat-ic {
+  background: linear-gradient(150deg,
+    color-mix(in srgb, var(--tc, var(--accent)) 24%, transparent),
+    color-mix(in srgb, var(--tc, var(--accent)) 7%, transparent));
+  border-color: color-mix(in srgb, var(--tc, var(--accent)) 38%, transparent);
+  color: var(--tc, var(--accent));
+}
+.feats .feat:nth-child(1) { --tc: var(--t-blue); }
+.feats .feat:nth-child(2) { --tc: var(--t-violet); }
+.feats .feat:nth-child(3) { --tc: var(--t-cyan); }
+.feats .feat:nth-child(4) { --tc: var(--t-amber); }
+
+/* ========================================================= sections ===== */
+
+.sec { border-top: 1px solid var(--glass-bd); }
+.sec-kicker {
+  background: linear-gradient(115deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.sec-h { align-items: center; }
+.sec-h::after {
+  content: ""; flex: 1 1 auto; height: 1px;
+  background: linear-gradient(90deg, var(--border), transparent);
+}
+
+/* ====================================================== reading bar ===== */
+
+.reading-bar {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--t-green));
+}
+
+/* ============================================================ lesson ==== */
+
+.body > h2 .hn {
+  background: linear-gradient(150deg,
+    color-mix(in srgb, var(--accent) 24%, transparent),
+    color-mix(in srgb, var(--accent-2) 12%, transparent));
+  border-color: var(--accent-line);
+}
+.lh-eyebrow .lv {
+  background: color-mix(in srgb, var(--accent) 13%, transparent);
+  border-color: var(--accent-line);
+}
+.lh-prog-seg i.cur { background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+
+.ex-head {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent) 16%, transparent),
+    color-mix(in srgb, var(--accent-2) 9%, transparent));
+  border-bottom-color: var(--accent-line);
+}
+
+.drill[open] {
+  border-color: color-mix(in srgb, var(--accent) 34%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.drill-bar { background: color-mix(in srgb, var(--surface-2) 82%, transparent); }
+
+/* ============================================================== rail ==== */
+
+.rail { border-right: 1px solid var(--glass-bd); }
+.toc { border-left: 1px solid var(--glass-bd); }
+.lsn.cur a {
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--accent) 16%, transparent), transparent 80%);
+  border-left-color: var(--accent);
+}
+
+/* ============================================================ motion ==== */
+
+a, button, .topic, .feat, .path-i, .drill, .q-opt, .pager a, .ttab {
+  transition: background-color .16s ease, border-color .16s ease, color .16s ease,
+              transform .16s cubic-bezier(.2,.7,.3,1), box-shadow .16s ease, opacity .16s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before, body::after { display: none; }
+}
