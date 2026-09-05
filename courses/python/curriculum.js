@@ -650,8 +650,13 @@
 
       {
         id: "interview",
-        short: "A2",
-        phase: "Appendix · Practice",
+        short: "IV",
+        // Its own phase and its own numbering: the interview set is a
+        // reference you dip into, not lesson 17 of a progression. numFrom
+        // restarts the display number; dir keeps the files where they are.
+        phase: "Interview Preparation",
+        numFrom: 1,
+        dir: "17_interview",
         title: "Interview Preparation",
         blurb: "Theory interview questions — the ones you answer out loud, by topic.",
         outcome: "You can answer the standard questions with the depth of someone who has shipped Python, not revised it.",

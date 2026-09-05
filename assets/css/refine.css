@@ -498,6 +498,15 @@ details.solution > summary { color: var(--good); }
 .toc li a:hover { color: var(--ink-2); border-left-color: var(--border-strong); text-decoration: none; }
 .toc li a.on { color: var(--accent-ink); border-left-color: var(--accent); font-weight: 600; }
 
+/* A problem set lists its drills instead of headings. Questions are a
+   sentence long, so they clamp to two lines — the number stays readable and
+   the panel keeps its width. */
+.toc li.drill-item a {
+  font-size: 12.1px; line-height: 1.38; padding-top: 5px; padding-bottom: 5px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* ============================================================ rail ====== */
 
 .rail-course-name { font-size: 14.6px; font-weight: 680; letter-spacing: -.01em; }

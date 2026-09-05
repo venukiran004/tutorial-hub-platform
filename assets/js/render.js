@@ -293,7 +293,13 @@
         }).join("") + "</div>"
       : "";
 
-    return '<details class="drill' + (b.kind ? " " + b.kind : "") + '">' +
+    // A stable id per drill, so the contents panel can link to a problem and
+    // a reader can share one. Drill lessons carry no headings, so without
+    // this there is nothing on the page to navigate by.
+    var id = b.id || (b.n ? "d" + String(b.n).replace(/[^\w.-]+/g, "-") : "");
+
+    return '<details class="drill' + (b.kind ? " " + b.kind : "") + '"' +
+      (id ? ' id="' + esc(id) + '"' : "") + ">" +
       "<summary>" +
         '<span class="drill-n">' + esc(b.n || "") + "</span>" +
         '<span class="drill-q">' + inline(b.q) + "</span>" +

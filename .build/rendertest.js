@@ -71,12 +71,26 @@ check("course defined", !!C);
 check("modules present", C.modules.length >= 10, `got ${C.modules.length}`);
 check("lessons indexed", C.allLessons.length > 100, `got ${C.allLessons.length}`);
 check("lesson ids unique", new Set(C.allLessons.map(l => l.id)).size === C.allLessons.length);
-// The practice track numbers as P1.1 while its ids stay lowercase p1.1,
-// so the comparison is case-insensitive.
-// Practice ids carry a "c" prefix that the generated numbering does not.
-check("numbering matches ids", C.allLessons.every(l =>
-  l.id.replace(/^[a-z]+/i, "") === l.num.replace(/^[A-Z]*/, "")),
-  C.allLessons.filter(l => l.id !== l.num).slice(0, 3).map(l => `${l.id}!=${l.num}`).join(", "));
+// Practice ids carry a "c" prefix that the generated numbering does not, so
+// the comparison strips leading letters from both sides.
+//
+// A module that sets numFrom numbers independently of its ids on purpose --
+// an appendix reads as its own sequence -- so there the number is checked
+// against numFrom and the position instead.
+const numberOf = l => l.num.replace(/^[A-Z]*/, "");
+const expectedNum = l => l.module.numFrom !== l.module.trackIndex + 1
+  ? `${l.module.numFrom}.${l.indexInModule + 1}`
+  : l.id.replace(/^[a-z]+/i, "");
+check("numbering matches ids", C.allLessons.every(l => numberOf(l) === expectedNum(l)),
+  C.allLessons.filter(l => numberOf(l) !== expectedNum(l)).slice(0, 3)
+    .map(l => `${l.id}!=${l.num}`).join(", "));
+
+// The renumbered module still has to resolve to real files, which is the
+// half of the change that a wrong dir would silently break.
+check("every lesson dir exists", C.allLessons.every(l =>
+  fs.existsSync(`courses/${COURSE}/lessons/${EC.lessonDir(l)}`)),
+  C.allLessons.filter(l => !fs.existsSync(`courses/${COURSE}/lessons/${EC.lessonDir(l)}`))
+    .slice(0, 3).map(l => `${l.id} -> ${EC.lessonDir(l)}`).join(", "));
 check("prev/next linked", C.allLessons[0].prev === null &&
   C.allLessons[0].next === C.allLessons[1] &&
   C.allLessons[C.allLessons.length - 1].next === null);

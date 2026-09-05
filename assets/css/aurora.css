@@ -246,7 +246,9 @@ html[data-theme="light"] body::after { opacity: .08; mix-blend-mode: multiply; }
 /* Each card carries a topic hue in --tc, set inline. Everything tinted in the
    card reads from that one variable. */
 
-.topic { position: relative; }
+/* overflow clips the hue bar to the card's radius, so it reads as part of
+   the card rather than a line laid over its edge. */
+.topic { position: relative; overflow: hidden; }
 .topic-mark {
   background: linear-gradient(150deg,
     color-mix(in srgb, var(--tc, var(--accent)) 26%, transparent),
@@ -267,13 +269,13 @@ a.topic:hover {
 }
 .topic-go { color: var(--tc, var(--accent)); }
 
-/* A hairline of the topic's own colour along the top edge. */
+/* A bar of the topic's own colour down the leading edge — the same marker
+   the learning-path stages use, so the two rows read as one system. */
 .topic::before {
-  content: ""; position: absolute; inset: 0 0 auto 0; height: 2px;
-  border-radius: 15px 15px 0 0;
-  background: linear-gradient(90deg, var(--tc, var(--accent)),
-    color-mix(in srgb, var(--tc, var(--accent)) 20%, transparent) 70%, transparent);
-  opacity: .55; transition: opacity .17s var(--ease, ease);
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
+  background: linear-gradient(180deg, var(--tc, var(--accent)),
+    color-mix(in srgb, var(--tc, var(--accent)) 15%, transparent));
+  opacity: .85; transition: opacity .17s var(--ease, ease);
 }
 a.topic:hover::before { opacity: 1; }
 .topic.soon::before { opacity: .2; }
@@ -305,6 +307,7 @@ a.topic:hover .tag {
 .path-i:nth-child(5) { --tc: var(--t-green); }
 .path-n { color: var(--tc, var(--accent)); }
 .path-i { padding-left: 21px; }
+.topic { padding-left: 23px; }
 
 /* ========================================================== features ==== */
 

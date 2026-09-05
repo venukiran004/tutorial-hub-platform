@@ -83,6 +83,11 @@
       m.trackIndex = tr.modules.length;
       tr.modules.push(m);
 
+      // An appendix reads as its own sequence, so a module may restart the
+      // numbering with numFrom without its files moving: dir keeps the
+      // original folder name. Display order and storage stay independent.
+      m.numFrom = m.numFrom != null ? m.numFrom : m.trackIndex + 1;
+
       m.lessons.forEach(function (l, li) {
         // Readiness is derived from the published list rather than repeated on
         // every lesson, so shipping a lesson is a one-line change.
@@ -91,7 +96,7 @@
         l.track = m.track;
         l.moduleIndex = mi;
         l.indexInModule = li;
-        l.num = (m.numPrefix || "") + (m.trackIndex + 1) + "." + (li + 1);
+        l.num = (m.numPrefix || "") + m.numFrom + "." + (li + 1);
         c.allLessons.push(l);
         tr.lessons.push(l);
         c.lessonById[l.id] = l;
@@ -123,8 +128,14 @@
      directory listing matches curriculum order. Defined here so the page,
      the build scripts and the tests all derive the path the same way. */
   EC.lessonDir = function (l) {
-    var n = String(l.module.trackIndex + 1);
-    n = (n.length < 2 ? "0" + n : n) + "_" + l.module.id;
+    var m = l.module;
+    // dir is set when a module's display number no longer matches its
+    // position, so renumbering never means moving 35 files.
+    var n = m.dir;
+    if (!n) {
+      n = String(m.trackIndex + 1);
+      n = (n.length < 2 ? "0" + n : n) + "_" + m.id;
+    }
     // The learn track keeps the original flat layout; every other track gets
     // its own subtree, so lessons/ stays readable as the course grows.
     return (l.track && l.track !== "learn") ? l.track + "/" + n : n;
@@ -334,13 +345,43 @@
   EC.buildToc = function () {
     var toc = $("#toc-list");
     if (!toc) return;
-    var heads = $$(".body > h2, .body > h3");
-    if (!heads.length) { var w = $(".toc"); if (w) w.style.display = "none"; return; }
 
-    toc.innerHTML = heads.map(function (h) {
-      if (!h.id) h.id = EC.slug(h.textContent);
-      var txt = h.tagName === "H2" ? (h.lastElementChild ? h.lastElementChild.textContent : h.textContent) : h.textContent;
-      return '<li class="' + (h.tagName === "H3" ? "sub" : "") + '"><a href="#' + h.id + '">' + EC.esc(txt) + "</a></li>";
+    var heads = $$(".body > h2, .body > h3");
+    var items;
+
+    if (heads.length) {
+      items = heads.map(function (h) {
+        if (!h.id) h.id = EC.slug(h.textContent);
+        var txt = h.tagName === "H2"
+          ? (h.lastElementChild ? h.lastElementChild.textContent : h.textContent)
+          : h.textContent;
+        return { el: h, cls: h.tagName === "H3" ? "sub" : "", label: txt };
+      });
+    } else {
+      // A problem set has no headings — its structure is the numbered
+      // drills. Listing those turns an empty panel into the navigation the
+      // page actually needs: thirty problems are hard to move around
+      // otherwise.
+      heads = $$(".body > .drill");
+      items = heads.map(function (d, i) {
+        if (!d.id) d.id = "d" + (i + 1);
+        var n = $(".drill-n", d), q = $(".drill-q", d);
+        return {
+          el: d,
+          cls: "drill-item",
+          label: (n ? n.textContent.trim() + ". " : "") +
+                 (q ? q.textContent.trim() : "")
+        };
+      });
+    }
+
+    // Nothing to navigate by: reclaim the column rather than leaving a
+    // heading over empty space.
+    if (!items.length) { var w = $(".toc"); if (w) w.style.display = "none"; return; }
+
+    toc.innerHTML = items.map(function (it) {
+      return '<li class="' + it.cls + '"><a href="#' + it.el.id + '" title="' +
+        EC.esc(it.label) + '">' + EC.esc(it.label) + "</a></li>";
     }).join("");
 
     var links = $$("a", toc);
