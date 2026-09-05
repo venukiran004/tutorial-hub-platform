@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. What's the difference between authentication and authorization?",
+   "q": "What's the difference between authentication and authorization?",
    "body": [
     {
      "t": "p",
@@ -68,7 +68,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. Why can't you store passwords with SHA-256, and what should you use?",
+   "q": "Why can't you store passwords with SHA-256, and what should you use?",
    "body": [
     {
      "t": "p",
@@ -101,7 +101,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. What are a salt and a pepper?",
+   "q": "What are a salt and a pepper?",
    "body": [
     {
      "t": "p",
@@ -130,7 +130,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. Walk through how a JWT works and its three parts.",
+   "q": "Walk through how a JWT works and its three parts.",
    "body": [
     {
      "t": "p",
@@ -169,7 +169,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. What is the JWT `alg=none` (and `alg` confusion) attack, and how do you prevent it?",
+   "q": "What is the JWT `alg=none` (and `alg` confusion) attack, and how do you prevent it?",
    "body": [
     {
      "t": "p",
@@ -208,7 +208,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. HS256 vs RS256 — when do you use each?",
+   "q": "HS256 vs RS256 — when do you use each?",
    "body": [
     {
      "t": "p",
@@ -238,7 +238,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. Sessions vs JWTs — trade-offs?",
+   "q": "Sessions vs JWTs — trade-offs?",
    "body": [
     {
      "t": "p",
@@ -289,7 +289,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. Since a JWT can't be revoked before it expires, how do you handle logout/revocation?",
+   "q": "Since a JWT can't be revoked before it expires, how do you handle logout/revocation?",
    "body": [
     {
      "t": "p",
@@ -315,7 +315,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. How does refresh-token rotation work, and why detect reuse?",
+   "q": "How does refresh-token rotation work, and why detect reuse?",
    "body": [
     {
      "t": "p",
@@ -342,7 +342,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. OAuth2 vs OpenID Connect?",
+   "q": "OAuth2 vs OpenID Connect?",
    "body": [
     {
      "t": "p",
@@ -376,7 +376,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. Which OAuth2 grant type do you use for an SPA/mobile app vs a backend service?",
+   "q": "Which OAuth2 grant type do you use for an SPA/mobile app vs a backend service?",
    "body": [
     {
      "t": "p",
@@ -408,7 +408,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. RBAC vs ABAC, and what's the most commonly forgotten authorization check?",
+   "q": "RBAC vs ABAC, and what's the most commonly forgotten authorization check?",
    "body": [
     {
      "t": "p",
@@ -446,7 +446,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. Why use `secrets` instead of `random`, and why `hmac.compare_digest` instead of `==`?",
+   "q": "Why use `secrets` instead of `random`, and why `hmac.compare_digest` instead of `==`?",
    "body": [
     {
      "t": "p",
@@ -474,7 +474,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. How do you prevent SQL injection and command injection in Python?",
+   "q": "How do you prevent SQL injection and command injection in Python?",
    "body": [
     {
      "t": "p",
@@ -523,7 +523,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. What's the danger with `pickle` / `yaml.load`, and the safe alternative?",
+   "q": "What's the danger with `pickle` / `yaml.load`, and the safe alternative?",
    "body": [
     {
      "t": "p",
@@ -547,7 +547,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. What is CSRF, and how is it different from XSS? How do you defend against each?",
+   "q": "What is CSRF, and how is it different from XSS? How do you defend against each?",
    "body": [
     {
      "t": "p",
@@ -577,7 +577,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. Is CORS a security mechanism? What does a safe config look like?",
+   "q": "Is CORS a security mechanism? What does a safe config look like?",
    "body": [
     {
      "t": "p",
@@ -607,7 +607,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. Where should secrets live, and what do you do if one is committed to git?",
+   "q": "Where should secrets live, and what do you do if one is committed to git?",
    "body": [
     {
      "t": "p",
@@ -635,7 +635,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. How do you authenticate one backend service to another?",
+   "q": "How do you authenticate one backend service to another?",
    "body": [
     {
      "t": "p",
@@ -661,7 +661,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. Name the JWT validation checks you must perform on every request.",
+   "q": "Name the JWT validation checks you must perform on every request.",
    "body": [
     {
      "t": "p",
@@ -694,7 +694,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q21. What are the headline security misconfigurations to avoid in a Python web app?",
+   "q": "What are the headline security misconfigurations to avoid in a Python web app?",
    "body": [
     {
      "t": "p",
@@ -723,7 +723,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q22. What security tooling would you put in CI?",
+   "q": "What security tooling would you put in CI?",
    "body": [
     {
      "t": "p",

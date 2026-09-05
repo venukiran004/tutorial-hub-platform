@@ -177,8 +177,13 @@
   var nextLesson = ready[0] || C.allLessons[0];
 
   /* ---- curriculum, per track ---- */
+  // One hue per module, so a section is recognisable by colour before its
+  // name is read -- the same device the home page uses for topics.
+  var MHUES = ["--t-blue", "--t-violet", "--t-cyan", "--t-orange", "--t-green",
+               "--t-amber", "--t-pink"];
+
   function renderTrack() {
-  var html = "", lastPhase = null, phaseN = 0;
+  var html = "", lastPhase = null, phaseN = 0, modN = 0;
   C.modules.forEach(function (m) {
     if (m.phase !== lastPhase) {
       phaseN++;
@@ -188,26 +193,37 @@
     }
     var rd = m.lessons.filter(function (l) { return l.ready !== false; });
     var mins = m.lessons.reduce(function (a, l) { return a + l.minutes; }, 0);
+    modN++;
+
+    // What is inside, without expanding. Capped so a twelve-lesson module
+    // does not turn the card into a wall of chips.
+    var SHOWN = 7;
+    var tags = m.lessons.slice(0, SHOWN).map(function (l) {
+      return '<span class="mtag" title="' + EC.esc(l.title) + '">' +
+        EC.esc(l.title) + "</span>";
+    }).join("") + (m.lessons.length > SHOWN
+      ? '<span class="mtag more">+' + (m.lessons.length - SHOWN) + " more</span>" : "");
 
     html +=
-      '<div class="mcard" data-m="' + m.id + '">' +
+      '<div class="mcard" data-m="' + m.id + '" style="--tc:var(' +
+          MHUES[(modN - 1) % MHUES.length] + ')">' +
         '<button class="mcard-h" type="button" aria-expanded="false">' +
           '<span class="mcard-lv">' + EC.esc(m.short) + "</span>" +
           '<span class="mcard-main">' +
-            '<span class="mcard-t">' + EC.esc(m.title) + "</span>" +
+            '<span class="mcard-t"><span class="mcard-num">' + modN + ".</span>" +
+              EC.esc(m.title) + "</span>" +
             '<span class="mcard-b">' + EC.esc(m.blurb) + "</span>" +
-            '<span class="mcard-meta">' +
-              '<span class="mi">' + I.layers + m.lessons.length + " lessons</span>" +
-              '<span class="mi">' + I.clock + EC.fmtTime(mins) + "</span>" +
-              (rd.length < m.lessons.length ? '<span class="mi">' + (m.lessons.length - rd.length) + " coming soon</span>" : "") +
-            "</span>" +
+            '<span class="mcard-tags">' + tags + "</span>" +
           "</span>" +
           '<span class="mcard-right">' +
+            '<span class="mcard-count">' + m.lessons.length + " lessons</span>" +
+            '<span class="mcard-time">' + EC.fmtTime(mins) + "</span>" +
+            (rd.length < m.lessons.length
+              ? '<span class="mcard-soon">' + (m.lessons.length - rd.length) + " soon</span>" : "") +
             '<span class="mcard-chev">' + I.chevron + "</span>" +
           "</span>" +
         "</button>" +
         '<div class="mcard-body" hidden>' +
-          '<div class="mcard-outcome">' + I.target + "<span><b>By the end:</b> " + EC.esc(m.outcome) + "</span></div>" +
           '<ul class="llist">' +
             m.lessons.map(function (l) {
               var soon = l.ready === false;

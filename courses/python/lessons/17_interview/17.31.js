@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q85. What are Python's profiling tools?",
+   "q": "What are Python's profiling tools?",
    "body": [
     {
      "t": "ul",
@@ -50,7 +50,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q86. What are common Python performance bottlenecks?",
+   "q": "What are common Python performance bottlenecks?",
    "body": [
     {
      "t": "p",
@@ -61,7 +61,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q87. What is a virtual environment and why use it?",
+   "q": "What is a virtual environment and why use it?",
    "body": [
     {
      "t": "p",
@@ -72,7 +72,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q88. What is type checking with mypy?",
+   "q": "What is type checking with mypy?",
    "body": [
     {
      "t": "p",
@@ -83,7 +83,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q89. What is the `__init__.py` file's role?",
+   "q": "What is the `__init__.py` file's role?",
    "body": [
     {
      "t": "p",
@@ -94,7 +94,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q90. What is Poetry and how does it differ from pip?",
+   "q": "What is Poetry and how does it differ from pip?",
    "body": [
     {
      "t": "p",
@@ -105,7 +105,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q91. What is PEP 8?",
+   "q": "What is PEP 8?",
    "body": [
     {
      "t": "p",
@@ -116,7 +116,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q92. What is the `walrus operator` (:=) in Python 3.8+?",
+   "q": "What is the `walrus operator` (:=) in Python 3.8+?",
    "body": [
     {
      "t": "p",
@@ -133,7 +133,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q93. What are structural pattern matching (match/case) in Python 3.10+?",
+   "q": "What are structural pattern matching (match/case) in Python 3.10+?",
    "body": [
     {
      "t": "code",
@@ -150,7 +150,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q94. What is `__pycache__` and `.pyc` files?",
+   "q": "What is `__pycache__` and `.pyc` files?",
    "body": [
     {
      "t": "p",
@@ -161,7 +161,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q95. What is `importlib` and dynamic imports?",
+   "q": "What is `importlib` and dynamic imports?",
    "body": [
     {
      "t": "code",
@@ -178,7 +178,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q96. What is `slots` and when does it save memory?",
+   "q": "What is `slots` and when does it save memory?",
    "body": [
     {
      "t": "p",
@@ -189,7 +189,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q97. How does Python's `sorted` achieve stability?",
+   "q": "How does Python's `sorted` achieve stability?",
    "body": [
     {
      "t": "p",
@@ -200,7 +200,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q98. What is the `functools.cache` decorator (Python 3.9+)?",
+   "q": "What is the `functools.cache` decorator (Python 3.9+)?",
    "body": [
     {
      "t": "p",
@@ -211,7 +211,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q99. What are Python's `__enter__` and `__exit__` protocol methods?",
+   "q": "What are Python's `__enter__` and `__exit__` protocol methods?",
    "body": [
     {
      "t": "code",
@@ -224,7 +224,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q100. What is `Pydantic` and why is it popular in Python?",
+   "q": "What is `Pydantic` and why is it popular in Python?",
    "body": [
     {
      "t": "p",
@@ -252,7 +252,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q101. What is the Python memory model and reference counting?",
+   "q": "What is the Python memory model and reference counting?",
    "body": [
     {
      "t": "p",
@@ -273,7 +273,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q102. What is `__slots__` and when should you use it?",
+   "q": "What is `__slots__` and when should you use it?",
    "body": [
     {
      "t": "code",
@@ -290,7 +290,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q103. What is the difference between `id()`, `is`, and `==`?",
+   "q": "What is the difference between `id()`, `is`, and `==`?",
    "body": [
     {
      "t": "ul",
@@ -311,7 +311,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q104. What is interning in Python?",
+   "q": "What is interning in Python?",
    "body": [
     {
      "t": "p",
@@ -332,7 +332,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q105. What is `__new__` vs `__init__`?",
+   "q": "What is `__new__` vs `__init__`?",
    "body": [
     {
      "t": "ul",
@@ -352,7 +352,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q106. What are Python descriptors?",
+   "q": "What are Python descriptors?",
    "body": [
     {
      "t": "p",
@@ -373,7 +373,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q107. What is `__missing__` in dict subclasses?",
+   "q": "What is `__missing__` in dict subclasses?",
    "body": [
     {
      "t": "p",
@@ -394,7 +394,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q108. What is the `__call__` method?",
+   "q": "What is the `__call__` method?",
    "body": [
     {
      "t": "p",
@@ -415,7 +415,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q109. What is `__enter__` and `__exit__` for context managers?",
+   "q": "What is `__enter__` and `__exit__` for context managers?",
    "body": [
     {
      "t": "code",
@@ -432,7 +432,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q110. What is `__getattr__` vs `__getattribute__`?",
+   "q": "What is `__getattr__` vs `__getattribute__`?",
    "body": [
     {
      "t": "ul",
@@ -452,7 +452,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q111. What is `functools.lru_cache` and how does it work internally?",
+   "q": "What is `functools.lru_cache` and how does it work internally?",
    "body": [
     {
      "t": "p",
@@ -473,7 +473,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q112. What is `functools.partial`?",
+   "q": "What is `functools.partial`?",
    "body": [
     {
      "t": "p",

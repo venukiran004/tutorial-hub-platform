@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q61. deque vs list for FIFO",
+   "q": "deque vs list for FIFO",
    "body": [
     {
      "t": "code",
@@ -55,7 +55,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q62. Object pool reuse",
+   "q": "Object pool reuse",
    "body": [
     {
      "t": "code",
@@ -76,7 +76,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q63. Generator vs list sum result",
+   "q": "Generator vs list sum result",
    "body": [
     {
      "t": "code",
@@ -97,7 +97,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q64. Dict overhead by key type",
+   "q": "Dict overhead by key type",
    "body": [
     {
      "t": "code",
@@ -118,7 +118,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q65. Descriptor cache keyed by id",
+   "q": "Descriptor cache keyed by id",
    "body": [
     {
      "t": "code",
@@ -139,7 +139,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q66. Three ways to build a string",
+   "q": "Three ways to build a string",
    "body": [
     {
      "t": "code",
@@ -160,7 +160,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q67. range vs list memory and membership",
+   "q": "range vs list memory and membership",
    "body": [
     {
      "t": "code",
@@ -181,7 +181,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q68. Storage class with __slots__ holding a dict",
+   "q": "Storage class with __slots__ holding a dict",
    "body": [
     {
      "t": "code",
@@ -202,7 +202,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q69. Counter vs manual vs defaultdict",
+   "q": "Counter vs manual vs defaultdict",
    "body": [
     {
      "t": "code",
@@ -223,7 +223,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q70. Int memory by magnitude",
+   "q": "Int memory by magnitude",
    "body": [
     {
      "t": "code",
@@ -245,7 +245,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q71. Set intersection equals multiples of 6",
+   "q": "Set intersection equals multiples of 6",
    "body": [
     {
      "t": "code",
@@ -266,7 +266,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q72. Memoize decorator hit rate",
+   "q": "Memoize decorator hit rate",
    "body": [
     {
      "t": "code",
@@ -287,7 +287,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q73. for-loop vs map vs comprehension",
+   "q": "for-loop vs map vs comprehension",
    "body": [
     {
      "t": "code",
@@ -308,7 +308,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q74. Generator file parsing with comment skip",
+   "q": "Generator file parsing with comment skip",
    "body": [
     {
      "t": "code",
@@ -329,7 +329,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q75. Three dict-merge idioms",
+   "q": "Three dict-merge idioms",
    "body": [
     {
      "t": "code",
@@ -346,7 +346,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q76. itemgetter vs lambda key",
+   "q": "itemgetter vs lambda key",
    "body": [
     {
      "t": "code",
@@ -367,7 +367,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q77. Acyclic garbage needs no GC",
+   "q": "Acyclic garbage needs no GC",
    "body": [
     {
      "t": "code",
@@ -388,7 +388,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q78. chain.from_iterable vs extend loop",
+   "q": "chain.from_iterable vs extend loop",
    "body": [
     {
      "t": "code",
@@ -409,7 +409,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q79. Local vs global access speed",
+   "q": "Local vs global access speed",
    "body": [
     {
      "t": "code",
@@ -430,7 +430,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q80. EfficientRecord with __slots__",
+   "q": "EfficientRecord with __slots__",
    "body": [
     {
      "t": "code",
@@ -451,7 +451,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q81. any/loop/in for membership",
+   "q": "any/loop/in for membership",
    "body": [
     {
      "t": "code",
@@ -472,7 +472,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q82. Batch counting with a final partial batch",
+   "q": "Batch counting with a final partial batch",
    "body": [
     {
      "t": "code",

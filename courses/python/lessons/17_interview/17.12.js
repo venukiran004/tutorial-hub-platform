@@ -7,9 +7,9 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "17.12",
- "lede": "**28 interview questions on best practices**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up question.",
+ "lede": "**27 interview questions on best practices**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up question.",
  "objectives": [
-  "Answer 28 questions on best practices without prompting",
+  "Answer 27 questions on best practices without prompting",
   "State the trade-off behind each answer, not only the definition",
   "Recognise the follow-up each question is setting up",
   "Notice which answers you can recognise but not produce"
@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. What is PEP 8 and why does it matter?",
+   "q": "What is PEP 8 and why does it matter?",
    "body": [
     {
      "t": "p",
@@ -64,7 +64,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. What does \"Pythonic\" mean? Give examples.",
+   "q": "What does \"Pythonic\" mean? Give examples.",
    "body": [
     {
      "t": "p",
@@ -93,7 +93,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. Explain EAFP vs LBYL and why Python prefers EAFP.",
+   "q": "Explain EAFP vs LBYL and why Python prefers EAFP.",
    "body": [
     {
      "t": "p",
@@ -127,7 +127,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. What are the most common Python anti-patterns?",
+   "q": "What are the most common Python anti-patterns?",
    "body": [
     {
      "t": "p",
@@ -150,7 +150,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. Why are mutable default arguments dangerous?",
+   "q": "Why are mutable default arguments dangerous?",
    "body": [
     {
      "t": "p",
@@ -180,7 +180,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. Explain the late-binding closure gotcha in loops.",
+   "q": "Explain the late-binding closure gotcha in loops.",
    "body": [
     {
      "t": "p",
@@ -210,7 +210,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. When should you use `is` vs `==`?",
+   "q": "When should you use `is` vs `==`?",
    "body": [
     {
      "t": "p",
@@ -241,7 +241,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. How should you handle exceptions well?",
+   "q": "How should you handle exceptions well?",
    "body": [
     {
      "t": "p",
@@ -271,7 +271,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. What are docstrings and what conventions apply?",
+   "q": "What are docstrings and what conventions apply?",
    "body": [
     {
      "t": "p",
@@ -296,7 +296,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. How do you structure a production Python project?",
+   "q": "How do you structure a production Python project?",
    "body": [
     {
      "t": "p",
@@ -320,7 +320,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. What standard library modules should every Python developer know?",
+   "q": "What standard library modules should every Python developer know?",
    "body": [
     {
      "t": "p",
@@ -343,7 +343,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. When would you use the standard library vs a third-party package?",
+   "q": "When would you use the standard library vs a third-party package?",
    "body": [
     {
      "t": "p",
@@ -368,7 +368,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. How do you correctly handle datetimes and timezones?",
+   "q": "How do you correctly handle datetimes and timezones?",
    "body": [
     {
      "t": "p",
@@ -399,7 +399,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. How do you prevent SQL injection in Python?",
+   "q": "How do you prevent SQL injection in Python?",
    "body": [
     {
      "t": "p",
@@ -433,7 +433,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. What's the difference between `subprocess.run()` and `subprocess.Popen()`?",
+   "q": "What's the difference between `subprocess.run()` and `subprocess.Popen()`?",
    "body": [
     {
      "t": "p",
@@ -458,7 +458,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. Why use `secrets` instead of `random` for security?",
+   "q": "Why use `secrets` instead of `random` for security?",
    "body": [
     {
      "t": "p",
@@ -492,7 +492,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. What is Ruff and why has it replaced multiple tools?",
+   "q": "What is Ruff and why has it replaced multiple tools?",
    "body": [
     {
      "t": "p",
@@ -517,7 +517,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. What is mypy strict mode and how do you adopt it?",
+   "q": "What is mypy strict mode and how do you adopt it?",
    "body": [
     {
      "t": "p",
@@ -541,7 +541,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. What is `pyproject.toml` and why is it preferred over `setup.py`?",
+   "q": "What is `pyproject.toml` and why is it preferred over `setup.py`?",
    "body": [
     {
      "t": "p",
@@ -564,7 +564,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. Compare pip+requirements.txt, Poetry, and uv.",
+   "q": "Compare pip+requirements.txt, Poetry, and uv.",
    "body": [
     {
      "t": "p",
@@ -593,7 +593,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q21. What's the difference between `^1.2.3` and `~1.2.3` in Poetry?",
+   "q": "What's the difference between `^1.2.3` and `~1.2.3` in Poetry?",
    "body": [
     {
      "t": "p",
@@ -624,7 +624,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q22. When should you commit `poetry.lock` / a lock file?",
+   "q": "When should you commit `poetry.lock` / a lock file?",
    "body": [
     {
      "t": "p",
@@ -649,7 +649,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q23. What is `py.typed` / PEP 561?",
+   "q": "What is `py.typed` / PEP 561?",
    "body": [
     {
      "t": "p",
@@ -672,7 +672,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q24. Why use pre-commit hooks, and what would you put in them?",
+   "q": "Why use pre-commit hooks, and what would you put in them?",
    "body": [
     {
      "t": "p",
@@ -695,7 +695,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q25. How does pytest improve on unittest?",
+   "q": "How does pytest improve on unittest?",
    "body": [
     {
      "t": "p",
@@ -726,43 +726,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q26. What are the SOLID and DRY/KISS/YAGNI principles?",
-   "body": [
-    {
-     "t": "p",
-     "text": "**Answer:**"
-    },
-    {
-     "t": "ul",
-     "items": [
-      "**DRY**one source of truth; extract repetition.",
-      "**KISS**favor simple, readable solutions over clever ones.",
-      "**YAGNI**don't build features/abstractions until actually needed.",
-      "**SOLID**Single responsibility, Open/closed, Liskov substitution, Interface segregation, Dependency inversion: keep classes small, extensible, substitutable, and depending on abstractions."
-     ]
-    },
-    {
-     "t": "p",
-     "text": "Also: **composition over inheritance** — inject behavior rather than building deep class hierarchies."
-    },
-    {
-     "t": "p",
-     "text": "**Key takeaway:** These principles keep code decoupled, simple, and maintainable as it grows."
-    }
-   ],
-   "terms": [
-    "Answer",
-    "DRY",
-    "KISS",
-    "YAGNI",
-    "SOLID",
-    "composition over inheritance"
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "27",
-   "q": "Q27. How do you set up a modern Python project from scratch?",
+   "q": "How do you set up a modern Python project from scratch?",
    "body": [
     {
      "t": "p",
@@ -786,8 +750,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "28",
-   "q": "Q28. What is the difference between shallow and deep copy?",
+   "n": "27",
+   "q": "What is the difference between shallow and deep copy?",
    "body": [
     {
      "t": "p",

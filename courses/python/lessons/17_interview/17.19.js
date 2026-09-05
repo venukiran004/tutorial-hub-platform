@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q29. What is the `.str` accessor and how do you extract patterns?",
+   "q": "What is the `.str` accessor and how do you extract patterns?",
    "body": [
     {
      "t": "p",
@@ -63,7 +63,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q30. What is the difference between `where` and `mask`?",
+   "q": "What is the difference between `where` and `mask`?",
    "body": [
     {
      "t": "p",
@@ -93,7 +93,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q31. How do you remove duplicate rows?",
+   "q": "How do you remove duplicate rows?",
    "body": [
     {
      "t": "p",
@@ -118,7 +118,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q32. What is `pd.cut` vs `pd.qcut`?",
+   "q": "What is `pd.cut` vs `pd.qcut`?",
    "body": [
     {
      "t": "p",
@@ -147,7 +147,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q33. What is `pd.get_dummies` (one-hot encoding)?",
+   "q": "What is `pd.get_dummies` (one-hot encoding)?",
    "body": [
     {
      "t": "p",
@@ -180,7 +180,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q34. What is `explode` and when is it used?",
+   "q": "What is `explode` and when is it used?",
    "body": [
     {
      "t": "p",
@@ -209,7 +209,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q35. What is `pd.json_normalize`?",
+   "q": "What is `pd.json_normalize`?",
    "body": [
     {
      "t": "p",
@@ -238,7 +238,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q36. Should you use `inplace=True`?",
+   "q": "Should you use `inplace=True`?",
    "body": [
     {
      "t": "p",
@@ -267,7 +267,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q37. What are common Pandas performance anti-patterns?",
+   "q": "What are common Pandas performance anti-patterns?",
    "body": [
     {
      "t": "p",
@@ -296,7 +296,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q38. How do you read a file too large for memory?",
+   "q": "How do you read a file too large for memory?",
    "body": [
     {
      "t": "p",
@@ -325,7 +325,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q39. How do you read from and write to a SQL database?",
+   "q": "How do you read from and write to a SQL database?",
    "body": [
     {
      "t": "p",
@@ -350,7 +350,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q40. What is the PyArrow backend in Pandas 2.0+?",
+   "q": "What is the PyArrow backend in Pandas 2.0+?",
    "body": [
     {
      "t": "p",
@@ -379,7 +379,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q41. How do you compute correlation, and which method?",
+   "q": "How do you compute correlation, and which method?",
    "body": [
     {
      "t": "p",
@@ -404,7 +404,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q42. When should you move from Pandas to Polars, Dask, or Spark?",
+   "q": "When should you move from Pandas to Polars, Dask, or Spark?",
    "body": [
     {
      "t": "p",
@@ -448,7 +448,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q43. What is a MultiIndex and how do you access data in it?",
+   "q": "What is a MultiIndex and how do you access data in it?",
    "body": [
     {
      "t": "p",
@@ -477,7 +477,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q44. What is the difference between `map` and `replace` for value substitution?",
+   "q": "What is the difference between `map` and `replace` for value substitution?",
    "body": [
     {
      "t": "p",
@@ -508,7 +508,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q45. How do you apply a function element-wise across an entire DataFrame?",
+   "q": "How do you apply a function element-wise across an entire DataFrame?",
    "body": [
     {
      "t": "p",
@@ -537,7 +537,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q46. What is the Sparse dtype and when does it help?",
+   "q": "What is the Sparse dtype and when does it help?",
    "body": [
     {
      "t": "p",
@@ -566,7 +566,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q47. How do you take a random sample or bootstrap from a DataFrame?",
+   "q": "How do you take a random sample or bootstrap from a DataFrame?",
    "body": [
     {
      "t": "p",
@@ -595,7 +595,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q48. How do you build a cohort or period column from dates?",
+   "q": "How do you build a cohort or period column from dates?",
    "body": [
     {
      "t": "p",
@@ -624,7 +624,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q49. How do you safely convert messy columns to numbers/dates?",
+   "q": "How do you safely convert messy columns to numbers/dates?",
    "body": [
     {
      "t": "p",

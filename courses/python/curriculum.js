@@ -36,7 +36,7 @@
        "soon" in the rail and the curriculum, so the roadmap is visible in full
        without ever promising content that is not there yet. Add an id here the
        moment its lesson file lands — this is the single switch. */
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.8", "8.9", "9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8", "10.1", "10.2", "10.3", "10.4", "10.5", "10.6", "11.1", "11.2", "11.3", "11.4", "11.5", "11.6", "11.7", "11.8", "12.1", "12.2", "12.3", "12.4", "12.5", "12.6", "12.7", "12.8", "13.1", "13.2", "13.3", "13.4", "13.5", "13.6", "13.7", "14.1", "14.2", "14.3", "14.4", "14.5", "14.6", "14.7", "14.8", "14.9", "14.10", "15.1", "15.2", "15.3", "15.4", "15.5", "15.6", "15.7", "15.8", "15.9", "16.1", "16.2", "16.3", "16.4", "16.5", "16.6", "17.1", "17.2", "17.3", "17.4", "17.5", "17.6", "17.7", "17.8", "17.9", "17.10", "17.11", "17.12", "17.13", "17.14", "17.15", "17.16", "17.17", "17.18", "17.19", "17.20", "17.21", "17.22", "17.23", "17.24", "17.25", "17.26", "17.27", "17.28", "17.29", "17.30", "17.31", "17.32", "17.33", "17.34", "17.35"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.8", "8.9", "9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8", "10.1", "10.2", "10.3", "10.4", "10.5", "10.6", "11.1", "11.2", "11.3", "11.4", "11.5", "11.6", "11.7", "11.8", "12.1", "12.2", "12.3", "12.4", "12.5", "12.6", "12.7", "12.8", "13.1", "13.2", "13.3", "13.4", "13.5", "13.6", "13.7", "14.1", "14.2", "14.3", "14.4", "14.5", "14.6", "14.7", "14.8", "14.9", "14.10", "15.1", "15.2", "15.3", "15.4", "15.5", "15.6", "15.7", "15.8", "15.9", "16.1", "16.2", "16.3", "16.4", "16.5", "16.6", "17.1", "17.2", "17.3", "17.4", "17.5", "17.7", "17.8", "17.9", "17.10", "17.11", "17.12", "17.13", "17.14", "17.15", "17.16", "17.17", "17.18", "17.19", "17.20", "17.21", "17.22", "17.23", "17.24", "17.25", "17.26", "17.27", "17.28", "17.29", "17.30", "17.31", "17.32", "17.33", "17.34", "17.35", "18.1", "18.2", "18.3", "18.4", "18.5"],
 
     modules: [
 
@@ -649,6 +649,38 @@
       },
 
       {
+        id: "patterns",
+        short: "DP",
+        // Patterns and SOLID were scattered through the interview sets, which
+        // meant the subject had no home and the same Singleton question
+        // appeared three times. Gathered here, numbered from 1 like every
+        // other reference section.
+        phase: "Design Patterns & SOLID",
+        numFrom: 1,
+        dir: "18_patterns",
+        title: "Design Patterns & SOLID",
+        blurb: "The patterns worth knowing in Python, and the principles behind choosing none of them.",
+        outcome: "You can name the force a pattern resolves, give its Python-idiomatic form, and say when it is the wrong tool.",
+        lessons: [
+          { id: "18.1", title: "SOLID and Design Principles", difficulty: "core", minutes: 16, tier: "should",
+            summary: "5 questions — The five principles, and how to decide whether a pattern earns its place at all.",
+            keywords: ["solid", "srp", "principles", "design", "dry", "kiss"] },
+          { id: "18.2", title: "Creational Patterns", difficulty: "advanced", minutes: 30, tier: "should",
+            summary: "15 questions — Factory, Builder, Singleton, Prototype and Object Pool — and when a plain function beats all of them.",
+            keywords: ["factory", "builder", "singleton", "prototype", "object pool"] },
+          { id: "18.3", title: "Structural Patterns", difficulty: "core", minutes: 12, tier: "should",
+            summary: "6 questions — Decorator, Adapter, Facade, Proxy, Composite and Bridge, and the differences interviewers probe.",
+            keywords: ["decorator", "adapter", "facade", "proxy", "composite", "bridge"] },
+          { id: "18.4", title: "Behavioural Patterns", difficulty: "advanced", minutes: 32, tier: "should",
+            summary: "16 questions — Observer, Strategy, Command, Iterator, State and Chain of Responsibility in idiomatic Python.",
+            keywords: ["observer", "strategy", "command", "iterator", "state", "mediator"] },
+          { id: "18.5", title: "Architectural Patterns", difficulty: "advanced", minutes: 18, tier: "should",
+            summary: "9 questions — Dependency injection, Repository, Circuit Breaker, Saga, CQRS and plugin systems.",
+            keywords: ["dependency injection", "repository", "circuit breaker", "saga", "cqrs", "plugin"] },
+        ]
+      },
+
+      {
         id: "interview",
         short: "IV",
         // Its own phase and its own numbering: the interview set is a
@@ -677,16 +709,13 @@
             summary: "28 interview questions on object-oriented programming, answers hidden.",
             keywords: ["object", "oriented", "programming"] },
           { id: "17.5", title: "Object-Oriented Programming · 2", difficulty: "advanced", minutes: 42, tier: "should",
-            summary: "21 interview questions on object-oriented programming, answers hidden.",
+            summary: "15 interview questions on object-oriented programming, answers hidden.",
             keywords: ["object", "oriented", "programming"] },
-          { id: "17.6", title: "Design Patterns & SOLID", difficulty: "advanced", minutes: 60, tier: "should",
-            summary: "33 interview questions on design patterns & solid, answers hidden.",
-            keywords: ["design", "patterns", "solid"] },
           { id: "17.7", title: "Concurrency (Asyncio, Threading, Multiprocessing) · 1", difficulty: "advanced", minutes: 56, tier: "should",
             summary: "28 interview questions on concurrency (asyncio, threading, multiprocessing), answers hidden.",
             keywords: ["concurrency", "asyncio", "threading", "multiprocessing"] },
           { id: "17.8", title: "Concurrency (Asyncio, Threading, Multiprocessing) · 2", difficulty: "core", minutes: 28, tier: "should",
-            summary: "14 interview questions on concurrency (asyncio, threading, multiprocessing), answers hidden.",
+            summary: "13 interview questions on concurrency (asyncio, threading, multiprocessing), answers hidden.",
             keywords: ["concurrency", "asyncio", "threading", "multiprocessing"] },
           { id: "17.9", title: "Memory Management & the PVM", difficulty: "advanced", minutes: 60, tier: "should",
             summary: "32 interview questions on memory management & the pvm, answers hidden.",
@@ -698,7 +727,7 @@
             summary: "22 interview questions on scenario \"predict the output\" questions, answers hidden.",
             keywords: ["scenario", "predict", "output", "questions"] },
           { id: "17.12", title: "Best Practices · 1", difficulty: "advanced", minutes: 56, tier: "should",
-            summary: "28 interview questions on best practices, answers hidden.",
+            summary: "27 interview questions on best practices, answers hidden.",
             keywords: ["best", "practices"] },
           { id: "17.13", title: "Best Practices · 2", difficulty: "core", minutes: 16, tier: "should",
             summary: "8 interview questions on best practices, answers hidden.",
@@ -737,7 +766,7 @@
             summary: "25 interview questions on database & orm, answers hidden.",
             keywords: ["database"] },
           { id: "17.25", title: "API Consumption & Webhooks", difficulty: "core", minutes: 32, tier: "should",
-            summary: "16 interview questions on api consumption & webhooks, answers hidden.",
+            summary: "15 interview questions on api consumption & webhooks, answers hidden.",
             keywords: ["consumption", "webhooks"] },
           { id: "17.26", title: "Auth & Security", difficulty: "advanced", minutes: 44, tier: "should",
             summary: "22 interview questions on auth & security, answers hidden.",
@@ -749,7 +778,7 @@
             summary: "28 interview questions on 100 python interview questions, answers hidden.",
             keywords: ["python", "interview", "questions"] },
           { id: "17.29", title: "100 Python Interview Questions · 2", difficulty: "advanced", minutes: 56, tier: "should",
-            summary: "28 interview questions on 100 python interview questions, answers hidden.",
+            summary: "24 interview questions on 100 python interview questions, answers hidden.",
             keywords: ["python", "interview", "questions"] },
           { id: "17.30", title: "100 Python Interview Questions · 3", difficulty: "advanced", minutes: 56, tier: "should",
             summary: "28 interview questions on 100 python interview questions, answers hidden.",
@@ -761,7 +790,7 @@
             summary: "28 interview questions on 100 python interview questions, answers hidden.",
             keywords: ["python", "interview", "questions"] },
           { id: "17.33", title: "100 Python Interview Questions · 6", difficulty: "advanced", minutes: 56, tier: "should",
-            summary: "28 interview questions on 100 python interview questions, answers hidden.",
+            summary: "23 interview questions on 100 python interview questions, answers hidden.",
             keywords: ["python", "interview", "questions"] },
           { id: "17.34", title: "100 Python Interview Questions · 7", difficulty: "advanced", minutes: 60, tier: "should",
             summary: "32 interview questions on 100 python interview questions, answers hidden.",

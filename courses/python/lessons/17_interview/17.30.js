@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q57. What is the `any()` and `all()` function?",
+   "q": "What is the `any()` and `all()` function?",
    "body": [
     {
      "t": "code",
@@ -47,7 +47,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q58. What is `typing` module? Give examples.",
+   "q": "What is `typing` module? Give examples.",
    "body": [
     {
      "t": "code",
@@ -64,7 +64,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q59. What is `@dataclass(frozen=True)`?",
+   "q": "What is `@dataclass(frozen=True)`?",
    "body": [
     {
      "t": "p",
@@ -75,7 +75,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q60. What is `Protocol` in Python typing?",
+   "q": "What is `Protocol` in Python typing?",
    "body": [
     {
      "t": "p",
@@ -99,7 +99,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q61. What is the difference between threading, multiprocessing, and asyncio?",
+   "q": "What is the difference between threading, multiprocessing, and asyncio?",
    "body": [
     {
      "t": "table",
@@ -135,7 +135,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q62. What is asyncio? Explain `async/await`.",
+   "q": "What is asyncio? Explain `async/await`.",
    "body": [
     {
      "t": "p",
@@ -152,7 +152,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q63. What is a coroutine in Python?",
+   "q": "What is a coroutine in Python?",
    "body": [
     {
      "t": "p",
@@ -163,7 +163,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q64. What is `asyncio.gather`?",
+   "q": "What is `asyncio.gather`?",
    "body": [
     {
      "t": "p",
@@ -180,7 +180,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q65. What is a thread-safe data structure?",
+   "q": "What is a thread-safe data structure?",
    "body": [
     {
      "t": "p",
@@ -191,7 +191,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q66. What is `multiprocessing.Pool`?",
+   "q": "What is `multiprocessing.Pool`?",
    "body": [
     {
      "t": "p",
@@ -208,7 +208,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q67. What is a `ProcessPoolExecutor` and `ThreadPoolExecutor`?",
+   "q": "What is a `ProcessPoolExecutor` and `ThreadPoolExecutor`?",
    "body": [
     {
      "t": "p",
@@ -225,7 +225,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q68. What is a race condition and how do you prevent it?",
+   "q": "What is a race condition and how do you prevent it?",
    "body": [
     {
      "t": "p",
@@ -236,7 +236,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q69. What is a deadlock?",
+   "q": "What is a deadlock?",
    "body": [
     {
      "t": "p",
@@ -247,7 +247,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q70. What is Python's `__future__` module?",
+   "q": "What is Python's `__future__` module?",
    "body": [
     {
      "t": "p",
@@ -264,7 +264,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q71. What are Python's exception handling best practices?",
+   "q": "What are Python's exception handling best practices?",
    "body": [
     {
      "t": "ul",
@@ -280,7 +280,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q72. What is the `contextlib` module?",
+   "q": "What is the `contextlib` module?",
    "body": [
     {
      "t": "p",
@@ -297,7 +297,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q73. What is `pickle` in Python?",
+   "q": "What is `pickle` in Python?",
    "body": [
     {
      "t": "p",
@@ -308,7 +308,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q74. What is `__all__` in a Python module?",
+   "q": "What is `__all__` in a Python module?",
    "body": [
     {
      "t": "p",
@@ -325,7 +325,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q75. What is the difference between a module and a package?",
+   "q": "What is the difference between a module and a package?",
    "body": [
     {
      "t": "ul",
@@ -343,7 +343,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q76. What is `sys.argv`?",
+   "q": "What is `sys.argv`?",
    "body": [
     {
      "t": "p",
@@ -354,7 +354,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q77. What is the `__name__ == \"__main__\"` idiom?",
+   "q": "What is the `__name__ == \"__main__\"` idiom?",
    "body": [
     {
      "t": "p",
@@ -365,7 +365,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q78. What is the `abc` module?",
+   "q": "What is the `abc` module?",
    "body": [
     {
      "t": "p",
@@ -376,7 +376,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q79. What is `os` vs `pathlib`?",
+   "q": "What is `os` vs `pathlib`?",
    "body": [
     {
      "t": "p",
@@ -397,7 +397,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q80. What is the `logging` module and why is it better than `print`?",
+   "q": "What is the `logging` module and why is it better than `print`?",
    "body": [
     {
      "t": "p",
@@ -415,7 +415,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q81. What is `pytest` and how does it differ from `unittest`?",
+   "q": "What is `pytest` and how does it differ from `unittest`?",
    "body": [
     {
      "t": "p",
@@ -426,7 +426,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q82. What are pytest fixtures?",
+   "q": "What are pytest fixtures?",
    "body": [
     {
      "t": "p",
@@ -443,7 +443,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q83. What is mocking in Python tests?",
+   "q": "What is mocking in Python tests?",
    "body": [
     {
      "t": "p",
@@ -460,7 +460,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q84. What is Test-Driven Development (TDD)?",
+   "q": "What is Test-Driven Development (TDD)?",
    "body": [
     {
      "t": "p",

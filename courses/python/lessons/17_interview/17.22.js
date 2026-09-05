@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q40. Why do we need task queues / background jobs at all?",
+   "q": "Why do we need task queues / background jobs at all?",
    "body": [
     {
      "t": "p",
@@ -68,7 +68,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q41. What is a message broker and what role does it play?",
+   "q": "What is a message broker and what role does it play?",
    "body": [
     {
      "t": "p",
@@ -99,7 +99,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q42. What is the difference between a broker and a result backend in Celery?",
+   "q": "What is the difference between a broker and a result backend in Celery?",
    "body": [
     {
      "t": "p",
@@ -131,7 +131,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q43. Compare Celery vs RQ vs FastAPI BackgroundTasks. When do you use each?",
+   "q": "Compare Celery vs RQ vs FastAPI BackgroundTasks. When do you use each?",
    "body": [
     {
      "t": "p",
@@ -187,7 +187,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q44. Why must background tasks be idempotent?",
+   "q": "Why must background tasks be idempotent?",
    "body": [
     {
      "t": "p",
@@ -218,7 +218,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q45. How do retries work and what is the danger of naive retries?",
+   "q": "How do retries work and what is the danger of naive retries?",
    "body": [
     {
      "t": "p",
@@ -251,7 +251,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q46. What is a dead-letter queue (DLQ)?",
+   "q": "What is a dead-letter queue (DLQ)?",
    "body": [
     {
      "t": "p",
@@ -275,7 +275,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q47. What's the difference between `.delay()` and `.apply_async()` in Celery?",
+   "q": "What's the difference between `.delay()` and `.apply_async()` in Celery?",
    "body": [
     {
      "t": "p",
@@ -307,7 +307,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q48. How do you schedule periodic/recurring tasks?",
+   "q": "How do you schedule periodic/recurring tasks?",
    "body": [
     {
      "t": "p",
@@ -344,7 +344,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q49. How do task queues let you scale, and what is a concurrency model?",
+   "q": "How do task queues let you scale, and what is a concurrency model?",
    "body": [
     {
      "t": "p",
@@ -375,7 +375,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q50. What is task acknowledgement, and what does `acks_late` do?",
+   "q": "What is task acknowledgement, and what does `acks_late` do?",
    "body": [
     {
      "t": "p",
@@ -409,7 +409,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q51. What data should you pass to a task — the whole object or just an ID?",
+   "q": "What data should you pass to a task — the whole object or just an ID?",
    "body": [
     {
      "t": "p",
@@ -444,7 +444,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q52. How do you monitor and observe task queues in production?",
+   "q": "How do you monitor and observe task queues in production?",
    "body": [
     {
      "t": "p",
@@ -477,7 +477,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q53. What serialization format should tasks use, and why not `pickle`?",
+   "q": "What serialization format should tasks use, and why not `pickle`?",
    "body": [
     {
      "t": "p",
@@ -502,7 +502,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q54. What happens if the broker (e.g. Redis) goes down?",
+   "q": "What happens if the broker (e.g. Redis) goes down?",
    "body": [
     {
      "t": "p",

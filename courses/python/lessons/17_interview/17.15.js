@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. What is the difference between `unittest` and `pytest`?",
+   "q": "What is the difference between `unittest` and `pytest`?",
    "body": [
     {
      "t": "p",
@@ -99,7 +99,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. Explain the test pyramid.",
+   "q": "Explain the test pyramid.",
    "body": [
     {
      "t": "p",
@@ -129,7 +129,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. What is a fixture in pytest, and how does scope work?",
+   "q": "What is a fixture in pytest, and how does scope work?",
    "body": [
     {
      "t": "p",
@@ -162,7 +162,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. What are the different kinds of test doubles?",
+   "q": "What are the different kinds of test doubles?",
    "body": [
     {
      "t": "p",
@@ -201,7 +201,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. What is the difference between `Mock` and `MagicMock`?",
+   "q": "What is the difference between `Mock` and `MagicMock`?",
    "body": [
     {
      "t": "p",
@@ -231,7 +231,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. How does `patch` work, and what's the \"patch where it's used\" rule?",
+   "q": "How does `patch` work, and what's the \"patch where it's used\" rule?",
    "body": [
     {
      "t": "p",
@@ -264,7 +264,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. What does code coverage measure, and is 100% coverage enough?",
+   "q": "What does code coverage measure, and is 100% coverage enough?",
    "body": [
     {
      "t": "p",
@@ -298,7 +298,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. What is parametrized testing and why use it?",
+   "q": "What is parametrized testing and why use it?",
    "body": [
     {
      "t": "p",
@@ -331,7 +331,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. What is property-based testing? How does it differ from example-based testing?",
+   "q": "What is property-based testing? How does it differ from example-based testing?",
    "body": [
     {
      "t": "p",
@@ -366,7 +366,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. How do you test code that raises exceptions?",
+   "q": "How do you test code that raises exceptions?",
    "body": [
     {
      "t": "p",
@@ -391,7 +391,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. How do you test functions that depend on the current time or randomness?",
+   "q": "How do you test functions that depend on the current time or randomness?",
    "body": [
     {
      "t": "p",
@@ -420,7 +420,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. What's the difference between `pytest.approx` and `assertAlmostEqual`?",
+   "q": "What's the difference between `pytest.approx` and `assertAlmostEqual`?",
    "body": [
     {
      "t": "p",
@@ -450,7 +450,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. How do you debug a Python program interactively?",
+   "q": "How do you debug a Python program interactively?",
    "body": [
     {
      "t": "p",
@@ -483,7 +483,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. What is post-mortem debugging?",
+   "q": "What is post-mortem debugging?",
    "body": [
     {
      "t": "p",
@@ -512,7 +512,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. How do you debug code running on a remote server?",
+   "q": "How do you debug code running on a remote server?",
    "body": [
     {
      "t": "p",
@@ -545,7 +545,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. When should you use logging instead of print for debugging?",
+   "q": "When should you use logging instead of print for debugging?",
    "body": [
     {
      "t": "p",
@@ -578,7 +578,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. How do you find performance bottlenecks in Python?",
+   "q": "How do you find performance bottlenecks in Python?",
    "body": [
     {
      "t": "p",
@@ -615,7 +615,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. Why is `pickle.loads()` on untrusted data dangerous, and what are safe alternatives?",
+   "q": "Why is `pickle.loads()` on untrusted data dangerous, and what are safe alternatives?",
    "body": [
     {
      "t": "p",
@@ -651,7 +651,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. How do you prevent SQL injection and command injection in Python?",
+   "q": "How do you prevent SQL injection and command injection in Python?",
    "body": [
     {
      "t": "p",
@@ -704,7 +704,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. What is the OWASP Top 10 and how does it apply to Python?",
+   "q": "What is the OWASP Top 10 and how does it apply to Python?",
    "body": [
     {
      "t": "p",
@@ -731,7 +731,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q21. How do you manage secrets securely in a Python application?",
+   "q": "How do you manage secrets securely in a Python application?",
    "body": [
     {
      "t": "p",
@@ -766,7 +766,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q22. What's the difference between hashing for checksums and hashing for passwords?",
+   "q": "What's the difference between hashing for checksums and hashing for passwords?",
    "body": [
     {
      "t": "p",
@@ -803,7 +803,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q23. How do you keep tests fast, isolated, and non-flaky?",
+   "q": "How do you keep tests fast, isolated, and non-flaky?",
    "body": [
     {
      "t": "p",
@@ -835,7 +835,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q24. How would you debug intermittent / hard-to-reproduce failures?",
+   "q": "How would you debug intermittent / hard-to-reproduce failures?",
    "body": [
     {
      "t": "p",

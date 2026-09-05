@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. How do you approach a coding interview problem?",
+   "q": "How do you approach a coding interview problem?",
    "body": [
     {
      "t": "p",
@@ -73,7 +73,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. What is Big O notation and why do we drop constants?",
+   "q": "What is Big O notation and why do we drop constants?",
    "body": [
     {
      "t": "p",
@@ -108,7 +108,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. When do you use BFS vs DFS?",
+   "q": "When do you use BFS vs DFS?",
    "body": [
     {
      "t": "p",
@@ -137,7 +137,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. What is the time complexity of hash map operations?",
+   "q": "What is the time complexity of hash map operations?",
    "body": [
     {
      "t": "p",
@@ -162,7 +162,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. Explain dynamic programming. How do you know when to use it?",
+   "q": "Explain dynamic programming. How do you know when to use it?",
    "body": [
     {
      "t": "p",
@@ -204,7 +204,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. What's the difference between memoization and tabulation?",
+   "q": "What's the difference between memoization and tabulation?",
    "body": [
     {
      "t": "p",
@@ -253,7 +253,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. Explain the monotonic stack pattern.",
+   "q": "Explain the monotonic stack pattern.",
    "body": [
     {
      "t": "p",
@@ -281,7 +281,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. How do you detect a cycle in a directed vs undirected graph?",
+   "q": "How do you detect a cycle in a directed vs undirected graph?",
    "body": [
     {
      "t": "p",
@@ -311,7 +311,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. When would you use a Trie vs a hash set for string problems?",
+   "q": "When would you use a Trie vs a hash set for string problems?",
    "body": [
     {
      "t": "p",
@@ -341,7 +341,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. Explain Union-Find and the two optimizations.",
+   "q": "Explain Union-Find and the two optimizations.",
    "body": [
     {
      "t": "p",
@@ -378,7 +378,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. What is the difference between Dijkstra, Bellman-Ford, and Floyd-Warshall?",
+   "q": "What is the difference between Dijkstra, Bellman-Ford, and Floyd-Warshall?",
    "body": [
     {
      "t": "p",
@@ -430,7 +430,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. Why is `heapq` a min-heap, and how do you make a max-heap?",
+   "q": "Why is `heapq` a min-heap, and how do you make a max-heap?",
    "body": [
     {
      "t": "p",
@@ -465,7 +465,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. How do you find the Kth largest element efficiently?",
+   "q": "How do you find the Kth largest element efficiently?",
    "body": [
     {
      "t": "p",
@@ -505,7 +505,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. Explain the two-heap (median finder) pattern.",
+   "q": "Explain the two-heap (median finder) pattern.",
    "body": [
     {
      "t": "p",
@@ -534,7 +534,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. What sorting algorithm does Python use, and what are its properties?",
+   "q": "What sorting algorithm does Python use, and what are its properties?",
    "body": [
     {
      "t": "p",
@@ -565,7 +565,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. What makes a sort stable, and when does stability matter?",
+   "q": "What makes a sort stable, and when does stability matter?",
    "body": [
     {
      "t": "p",
@@ -593,7 +593,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. What is the difference between backtracking and brute force?",
+   "q": "What is the difference between backtracking and brute force?",
    "body": [
     {
      "t": "p",
@@ -621,7 +621,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. How does the sliding window technique reduce complexity?",
+   "q": "How does the sliding window technique reduce complexity?",
    "body": [
     {
      "t": "p",
@@ -649,7 +649,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. Why use `collections.deque` instead of a list for a queue?",
+   "q": "Why use `collections.deque` instead of a list for a queue?",
    "body": [
     {
      "t": "p",
@@ -674,7 +674,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. How do you design an LRU cache with O(1) operations?",
+   "q": "How do you design an LRU cache with O(1) operations?",
    "body": [
     {
      "t": "p",
@@ -703,7 +703,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q21. What is amortized time complexity? Give an example.",
+   "q": "What is amortized time complexity? Give an example.",
    "body": [
     {
      "t": "p",
@@ -727,7 +727,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q22. When is greedy correct, and how does it differ from DP?",
+   "q": "When is greedy correct, and how does it differ from DP?",
    "body": [
     {
      "t": "p",
@@ -756,7 +756,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q23. What bit-manipulation tricks should you know?",
+   "q": "What bit-manipulation tricks should you know?",
    "body": [
     {
      "t": "p",
@@ -786,7 +786,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q24. How do you solve interval problems like Merge Intervals or Meeting Rooms?",
+   "q": "How do you solve interval problems like Merge Intervals or Meeting Rooms?",
    "body": [
     {
      "t": "p",
@@ -819,7 +819,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q25. How would you find the shortest path in a weighted graph with negative edges?",
+   "q": "How would you find the shortest path in a weighted graph with negative edges?",
    "body": [
     {
      "t": "p",

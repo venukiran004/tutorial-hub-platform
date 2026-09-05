@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. What are the four pillars of OOP? Explain with Python examples.",
+   "q": "What are the four pillars of OOP? Explain with Python examples.",
    "body": [
     {
      "t": "p",
@@ -70,7 +70,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. What is `self`? Is it a keyword?",
+   "q": "What is `self`? Is it a keyword?",
    "body": [
     {
      "t": "p",
@@ -95,7 +95,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. Class vs instance variables — explain with shadowing example.",
+   "q": "Class vs instance variables — explain with shadowing example.",
    "body": [
     {
      "t": "p",
@@ -124,7 +124,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. `@classmethod` vs `@staticmethod` vs instance method — when to use each?",
+   "q": "`@classmethod` vs `@staticmethod` vs instance method — when to use each?",
    "body": [
     {
      "t": "p",
@@ -180,7 +180,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. What are factory methods? Show an example with `@classmethod`.",
+   "q": "What are factory methods? Show an example with `@classmethod`.",
    "body": [
     {
      "t": "p",
@@ -201,7 +201,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. Explain `@property` — getter, setter, deleter with validation example.",
+   "q": "Explain `@property` — getter, setter, deleter with validation example.",
    "body": [
     {
      "t": "p",
@@ -226,7 +226,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. What is the difference between `__repr__` and `__str__`?",
+   "q": "What is the difference between `__repr__` and `__str__`?",
    "body": [
     {
      "t": "p",
@@ -284,7 +284,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. Explain operator overloading with `__add__`, `__mul__`, `__radd__`.",
+   "q": "Explain operator overloading with `__add__`, `__mul__`, `__radd__`.",
    "body": [
     {
      "t": "p",
@@ -313,7 +313,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. What is `__call__`? When would you make a class callable?",
+   "q": "What is `__call__`? When would you make a class callable?",
    "body": [
     {
      "t": "p",
@@ -334,7 +334,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. How does name mangling work? (`_var`, `__var`, `__var__`)",
+   "q": "How does name mangling work? (`_var`, `__var`, `__var__`)",
    "body": [
     {
      "t": "p",
@@ -390,7 +390,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. Single vs multiple inheritance.",
+   "q": "Single vs multiple inheritance.",
    "body": [
     {
      "t": "p",
@@ -423,7 +423,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. What is MRO? Explain C3 Linearization with diamond problem example.",
+   "q": "What is MRO? Explain C3 Linearization with diamond problem example.",
    "body": [
     {
      "t": "p",
@@ -459,7 +459,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. How does `super()` work? Does it always call the parent?",
+   "q": "How does `super()` work? Does it always call the parent?",
    "body": [
     {
      "t": "p",
@@ -485,7 +485,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. What is cooperative multiple inheritance?",
+   "q": "What is cooperative multiple inheritance?",
    "body": [
     {
      "t": "p",
@@ -512,7 +512,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. What is the Mixin pattern? Rules for writing mixins?",
+   "q": "What is the Mixin pattern? Rules for writing mixins?",
    "body": [
     {
      "t": "p",
@@ -541,7 +541,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. `isinstance()` vs `type()` — why prefer `isinstance`?",
+   "q": "`isinstance()` vs `type()` — why prefer `isinstance`?",
    "body": [
     {
      "t": "p",
@@ -574,7 +574,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. What makes an object hashable? What's the relationship between `__hash__` and `__eq__`?",
+   "q": "What makes an object hashable? What's the relationship between `__hash__` and `__eq__`?",
    "body": [
     {
      "t": "p",
@@ -606,7 +606,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. How do you make a class iterable? (`__iter__` and `__next__`)",
+   "q": "How do you make a class iterable? (`__iter__` and `__next__`)",
    "body": [
     {
      "t": "p",
@@ -647,7 +647,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. Explain the container protocol (`__len__`, `__getitem__`, `__contains__`).",
+   "q": "Explain the container protocol (`__len__`, `__getitem__`, `__contains__`).",
    "body": [
     {
      "t": "p",
@@ -703,7 +703,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. How do context managers work? (`__enter__` / `__exit__`)",
+   "q": "How do context managers work? (`__enter__` / `__exit__`)",
    "body": [
     {
      "t": "p",
@@ -724,7 +724,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q21. `__new__` vs `__init__` — when to use `__new__`?",
+   "q": "`__new__` vs `__init__` — when to use `__new__`?",
    "body": [
     {
      "t": "p",
@@ -755,7 +755,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q22. Explain `__getattr__` vs `__getattribute__`.",
+   "q": "Explain `__getattr__` vs `__getattribute__`.",
    "body": [
     {
      "t": "p",
@@ -808,7 +808,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q23. How does `__iadd__` (`+=`) work differently from `__add__`?",
+   "q": "How does `__iadd__` (`+=`) work differently from `__add__`?",
    "body": [
     {
      "t": "p",
@@ -845,7 +845,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q24. What are descriptors? Data vs non-data descriptor.",
+   "q": "What are descriptors? Data vs non-data descriptor.",
    "body": [
     {
      "t": "p",
@@ -897,7 +897,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q25. What is a metaclass? When would you use one?",
+   "q": "What is a metaclass? When would you use one?",
    "body": [
     {
      "t": "p",
@@ -936,7 +936,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q26. Explain `__init_subclass__` and when to prefer it over metaclasses.",
+   "q": "Explain `__init_subclass__` and when to prefer it over metaclasses.",
    "body": [
     {
      "t": "p",
@@ -975,7 +975,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q27. What are `__slots__`? Memory benefits and trade-offs.",
+   "q": "What are `__slots__`? Memory benefits and trade-offs.",
    "body": [
     {
      "t": "p",
@@ -1010,7 +1010,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q28. `@dataclass` — what does it auto-generate? Explain `frozen`, `slots`, `field()`.",
+   "q": "`@dataclass` — what does it auto-generate? Explain `frozen`, `slots`, `field()`.",
    "body": [
     {
      "t": "p",

@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q29. How do you handle environment-specific configuration?",
+   "q": "How do you handle environment-specific configuration?",
    "body": [
     {
      "t": "p",
@@ -63,7 +63,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q30. How do you serve an ML model with FastAPI?",
+   "q": "How do you serve an ML model with FastAPI?",
    "body": [
     {
      "t": "p",
@@ -93,7 +93,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q31. What deployment setup do you use in production?",
+   "q": "What deployment setup do you use in production?",
    "body": [
     {
      "t": "p",
@@ -118,7 +118,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q32. REST vs gRPC — when would you choose gRPC?",
+   "q": "REST vs gRPC — when would you choose gRPC?",
    "body": [
     {
      "t": "p",
@@ -141,7 +141,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q33. Why FastAPI over Flask or Django?",
+   "q": "Why FastAPI over Flask or Django?",
    "body": [
     {
      "t": "p",
@@ -208,7 +208,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q34. What are the four gRPC communication patterns?",
+   "q": "What are the four gRPC communication patterns?",
    "body": [
     {
      "t": "p",
@@ -240,7 +240,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q35. What HTTP headers should a rate-limited API return?",
+   "q": "What HTTP headers should a rate-limited API return?",
    "body": [
     {
      "t": "p",
@@ -265,7 +265,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q36. Rate limiting vs throttling — what's the difference?",
+   "q": "Rate limiting vs throttling — what's the difference?",
    "body": [
     {
      "t": "p",
@@ -299,7 +299,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q37. What performance optimizations apply to a FastAPI app?",
+   "q": "What performance optimizations apply to a FastAPI app?",
    "body": [
     {
      "t": "p",
@@ -330,7 +330,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q38. How do you handle graceful shutdown?",
+   "q": "How do you handle graceful shutdown?",
    "body": [
     {
      "t": "p",
@@ -363,7 +363,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q39. PUT vs PATCH, and URL vs URI?",
+   "q": "PUT vs PATCH, and URL vs URI?",
    "body": [
     {
      "t": "p",

@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. What is an `ndarray` and how does it differ from a Python list?",
+   "q": "What is an `ndarray` and how does it differ from a Python list?",
    "body": [
     {
      "t": "p",
@@ -94,7 +94,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. Why is NumPy faster than pure Python?",
+   "q": "Why is NumPy faster than pure Python?",
    "body": [
     {
      "t": "p",
@@ -133,7 +133,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. What is `dtype` and why does it matter?",
+   "q": "What is `dtype` and why does it matter?",
    "body": [
     {
      "t": "p",
@@ -162,7 +162,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. Explain `shape`, `ndim`, `size`, `strides`, and `nbytes`.",
+   "q": "Explain `shape`, `ndim`, `size`, `strides`, and `nbytes`.",
    "body": [
     {
      "t": "p",
@@ -187,7 +187,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. What is the difference between a view and a copy? When does each occur?",
+   "q": "What is the difference between a view and a copy? When does each occur?",
    "body": [
     {
      "t": "p",
@@ -247,7 +247,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. What is the difference between `ravel()` and `flatten()`?",
+   "q": "What is the difference between `ravel()` and `flatten()`?",
    "body": [
     {
      "t": "p",
@@ -278,7 +278,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. Explain broadcasting and give an example where it fails.",
+   "q": "Explain broadcasting and give an example where it fails.",
    "body": [
     {
      "t": "p",
@@ -318,7 +318,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. What does the `axis` parameter mean in aggregations?",
+   "q": "What does the `axis` parameter mean in aggregations?",
    "body": [
     {
      "t": "p",
@@ -348,7 +348,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. What are universal functions (ufuncs)?",
+   "q": "What are universal functions (ufuncs)?",
    "body": [
     {
      "t": "p",
@@ -377,7 +377,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. What is the difference between `*`, `np.dot`, `np.matmul`, and `@`?",
+   "q": "What is the difference between `*`, `np.dot`, `np.matmul`, and `@`?",
    "body": [
     {
      "t": "p",
@@ -415,7 +415,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. What is fancy indexing and how does it differ from basic indexing?",
+   "q": "What is fancy indexing and how does it differ from basic indexing?",
    "body": [
     {
      "t": "p",
@@ -445,7 +445,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. What is boolean indexing?",
+   "q": "What is boolean indexing?",
    "body": [
     {
      "t": "p",
@@ -474,7 +474,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. What does `np.where` do, and how does `np.select` extend it?",
+   "q": "What does `np.where` do, and how does `np.select` extend it?",
    "body": [
     {
      "t": "p",
@@ -503,7 +503,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. What is `np.newaxis` / `np.expand_dims` used for?",
+   "q": "What is `np.newaxis` / `np.expand_dims` used for?",
    "body": [
     {
      "t": "p",
@@ -532,7 +532,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. What is `np.einsum` and when would you use it?",
+   "q": "What is `np.einsum` and when would you use it?",
    "body": [
     {
      "t": "p",
@@ -561,7 +561,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. Explain C-order vs F-order (memory layout). Why does it matter?",
+   "q": "Explain C-order vs F-order (memory layout). Why does it matter?",
    "body": [
     {
      "t": "p",
@@ -595,7 +595,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. What are strides, and how do they enable zero-copy tricks?",
+   "q": "What are strides, and how do they enable zero-copy tricks?",
    "body": [
     {
      "t": "p",
@@ -624,7 +624,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. `np.random.seed` vs `np.random.default_rng(seed)` — which should you use?",
+   "q": "`np.random.seed` vs `np.random.default_rng(seed)` — which should you use?",
    "body": [
     {
      "t": "p",
@@ -654,7 +654,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. How do you handle `nan` and `inf` values?",
+   "q": "How do you handle `nan` and `inf` values?",
    "body": [
     {
      "t": "p",
@@ -679,7 +679,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. How would you write a numerically stable softmax?",
+   "q": "How would you write a numerically stable softmax?",
    "body": [
     {
      "t": "p",
@@ -708,7 +708,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q21. How do you compute pairwise Euclidean distances efficiently?",
+   "q": "How do you compute pairwise Euclidean distances efficiently?",
    "body": [
     {
      "t": "p",
@@ -737,7 +737,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q22. What is the difference between `np.sum` and Python's built-in `sum` on an array?",
+   "q": "What is the difference between `np.sum` and Python's built-in `sum` on an array?",
    "body": [
     {
      "t": "p",
@@ -766,7 +766,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q23. Is `np.vectorize` a performance optimization?",
+   "q": "Is `np.vectorize` a performance optimization?",
    "body": [
     {
      "t": "p",
@@ -791,7 +791,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q24. How do you reshape an array, and what are the constraints?",
+   "q": "How do you reshape an array, and what are the constraints?",
    "body": [
     {
      "t": "p",
@@ -820,7 +820,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q25. How do you stack and concatenate arrays?",
+   "q": "How do you stack and concatenate arrays?",
    "body": [
     {
      "t": "p",
@@ -847,7 +847,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q26. How do you solve a linear system Ax = b?",
+   "q": "How do you solve a linear system Ax = b?",
    "body": [
     {
      "t": "p",
@@ -872,7 +872,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q27. What is SVD and why is it important in ML?",
+   "q": "What is SVD and why is it important in ML?",
    "body": [
     {
      "t": "p",
@@ -901,7 +901,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q28. What is `np.linalg.eig` vs `np.linalg.eigh`?",
+   "q": "What is `np.linalg.eig` vs `np.linalg.eigh`?",
    "body": [
     {
      "t": "p",

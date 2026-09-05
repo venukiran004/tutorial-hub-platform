@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. Is Python compiled or interpreted?",
+   "q": "Is Python compiled or interpreted?",
    "body": [
     {
      "t": "p",
@@ -65,7 +65,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. Walk through the full lifecycle of running `python hello.py`.",
+   "q": "Walk through the full lifecycle of running `python hello.py`.",
    "body": [
     {
      "t": "p",
@@ -105,7 +105,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. What is the PVM and why is it \"stack-based\"?",
+   "q": "What is the PVM and why is it \"stack-based\"?",
    "body": [
     {
      "t": "p",
@@ -129,7 +129,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. What is a `.pyc` file and when is it reused?",
+   "q": "What is a `.pyc` file and when is it reused?",
    "body": [
     {
      "t": "p",
@@ -159,7 +159,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. What is a frame object?",
+   "q": "What is a frame object?",
    "body": [
     {
      "t": "p",
@@ -189,7 +189,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. What is reference counting?",
+   "q": "What is reference counting?",
    "body": [
     {
      "t": "p",
@@ -220,7 +220,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. Why is `sys.getrefcount(x)` always one higher than expected?",
+   "q": "Why is `sys.getrefcount(x)` always one higher than expected?",
    "body": [
     {
      "t": "p",
@@ -249,7 +249,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. What is a circular reference and how does Python handle it?",
+   "q": "What is a circular reference and how does Python handle it?",
    "body": [
     {
      "t": "p",
@@ -279,7 +279,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. Explain the generations in Python's garbage collector.",
+   "q": "Explain the generations in Python's garbage collector.",
    "body": [
     {
      "t": "p",
@@ -311,7 +311,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. How does the GC's cycle-detection algorithm work?",
+   "q": "How does the GC's cycle-detection algorithm work?",
    "body": [
     {
      "t": "p",
@@ -334,7 +334,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. When would you disable the garbage collector?",
+   "q": "When would you disable the garbage collector?",
    "body": [
     {
      "t": "p",
@@ -374,7 +374,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. What is the difference between `del x` and garbage collection?",
+   "q": "What is the difference between `del x` and garbage collection?",
    "body": [
     {
      "t": "p",
@@ -398,7 +398,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. What is `__del__` and why is it discouraged for cleanup?",
+   "q": "What is `__del__` and why is it discouraged for cleanup?",
    "body": [
     {
      "t": "p",
@@ -429,7 +429,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. What are weak references and when do you use them?",
+   "q": "What are weak references and when do you use them?",
    "body": [
     {
      "t": "p",
@@ -462,7 +462,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. What does `__slots__` do and what are its trade-offs?",
+   "q": "What does `__slots__` do and what are its trade-offs?",
    "body": [
     {
      "t": "p",
@@ -492,7 +492,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. Explain small-integer caching and string interning.",
+   "q": "Explain small-integer caching and string interning.",
    "body": [
     {
      "t": "p",
@@ -523,7 +523,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. How does CPython's memory allocator (pymalloc) work?",
+   "q": "How does CPython's memory allocator (pymalloc) work?",
    "body": [
     {
      "t": "p",
@@ -547,7 +547,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. Why doesn't Python compile straight to machine code like C?",
+   "q": "Why doesn't Python compile straight to machine code like C?",
    "body": [
     {
      "t": "p",
@@ -574,7 +574,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. What is the GIL and how does it relate to memory management?",
+   "q": "What is the GIL and how does it relate to memory management?",
    "body": [
     {
      "t": "p",
@@ -598,7 +598,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. How do you measure the memory size of a Python object?",
+   "q": "How do you measure the memory size of a Python object?",
    "body": [
     {
      "t": "p",
@@ -628,7 +628,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q21. Tuple vs list — why is a tuple smaller and is it faster?",
+   "q": "Tuple vs list — why is a tuple smaller and is it faster?",
    "body": [
     {
      "t": "p",
@@ -658,7 +658,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q22. Why is a generator more memory-efficient than a list comprehension?",
+   "q": "Why is a generator more memory-efficient than a list comprehension?",
    "body": [
     {
      "t": "p",
@@ -688,7 +688,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q23. Why is `''.join(...)` preferred over `+=` for building strings?",
+   "q": "Why is `''.join(...)` preferred over `+=` for building strings?",
    "body": [
     {
      "t": "p",
@@ -718,7 +718,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q24. Why is local variable access faster than global access?",
+   "q": "Why is local variable access faster than global access?",
    "body": [
     {
      "t": "p",
@@ -747,7 +747,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q25. How do you find and debug a memory leak in Python?",
+   "q": "How do you find and debug a memory leak in Python?",
    "body": [
     {
      "t": "p",
@@ -772,7 +772,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q26. How do you profile CPU performance, and what's the golden rule?",
+   "q": "How do you profile CPU performance, and what's the golden rule?",
    "body": [
     {
      "t": "p",
@@ -801,7 +801,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q27. What are `lru_cache` / memoization and when do they help?",
+   "q": "What are `lru_cache` / memoization and when do they help?",
    "body": [
     {
      "t": "p",
@@ -831,7 +831,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q28. Compare CPython, PyPy, Jython, and IronPython.",
+   "q": "Compare CPython, PyPy, Jython, and IronPython.",
    "body": [
     {
      "t": "p",
@@ -893,7 +893,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q29. After deleting a big list, why doesn't my process memory shrink?",
+   "q": "After deleting a big list, why doesn't my process memory shrink?",
    "body": [
     {
      "t": "p",
@@ -917,7 +917,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q30. How does `weakref.WeakValueDictionary` differ from a normal dict cache?",
+   "q": "How does `weakref.WeakValueDictionary` differ from a normal dict cache?",
    "body": [
     {
      "t": "p",
@@ -948,7 +948,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "31",
-   "q": "Q31. What is the difference between shallow and deep copy, memory-wise?",
+   "q": "What is the difference between shallow and deep copy, memory-wise?",
    "body": [
     {
      "t": "p",
@@ -979,7 +979,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "32",
-   "q": "Q32. What practical techniques reduce a Python program's memory footprint?",
+   "q": "What practical techniques reduce a Python program's memory footprint?",
    "body": [
     {
      "t": "p",

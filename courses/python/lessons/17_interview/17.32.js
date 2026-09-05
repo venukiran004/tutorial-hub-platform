@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q113. What is `itertools.chain` and `itertools.product`?",
+   "q": "What is `itertools.chain` and `itertools.product`?",
    "body": [
     {
      "t": "code",
@@ -47,7 +47,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q114. What is `collections.Counter` and its most useful methods?",
+   "q": "What is `collections.Counter` and its most useful methods?",
    "body": [
     {
      "t": "code",
@@ -64,7 +64,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q115. What is Python's `heapq` module?",
+   "q": "What is Python's `heapq` module?",
    "body": [
     {
      "t": "p",
@@ -85,7 +85,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q116. What is `bisect` and when is it useful?",
+   "q": "What is `bisect` and when is it useful?",
    "body": [
     {
      "t": "p",
@@ -106,7 +106,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q117. What is Python's `abc` module and abstract classes?",
+   "q": "What is Python's `abc` module and abstract classes?",
    "body": [
     {
      "t": "code",
@@ -123,7 +123,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q118. What is `typing.Protocol` and structural subtyping?",
+   "q": "What is `typing.Protocol` and structural subtyping?",
    "body": [
     {
      "t": "code",
@@ -140,7 +140,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q119. What is `__class_getitem__` and generic classes?",
+   "q": "What is `__class_getitem__` and generic classes?",
    "body": [
     {
      "t": "p",
@@ -161,7 +161,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q120. What is `sys.getsizeof` and how do you measure memory usage of Python objects?",
+   "q": "What is `sys.getsizeof` and how do you measure memory usage of Python objects?",
    "body": [
     {
      "t": "code",
@@ -181,7 +181,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q121. What is asyncio's event loop?",
+   "q": "What is asyncio's event loop?",
    "body": [
     {
      "t": "p",
@@ -198,7 +198,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q122. What is `asyncio.gather` vs `asyncio.wait`?",
+   "q": "What is `asyncio.gather` vs `asyncio.wait`?",
    "body": [
     {
      "t": "code",
@@ -215,7 +215,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q123. What is an asyncio `Queue` and how is it used for producer-consumer?",
+   "q": "What is an asyncio `Queue` and how is it used for producer-consumer?",
    "body": [
     {
      "t": "code",
@@ -228,7 +228,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q124. What is `asyncio.Semaphore` and why use it?",
+   "q": "What is `asyncio.Semaphore` and why use it?",
    "body": [
     {
      "t": "p",
@@ -245,7 +245,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q125. What is `asyncio.TaskGroup` (Python 3.11+)?",
+   "q": "What is `asyncio.TaskGroup` (Python 3.11+)?",
    "body": [
     {
      "t": "code",
@@ -262,7 +262,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q126. What is the difference between `threading.Lock` and `asyncio.Lock`?",
+   "q": "What is the difference between `threading.Lock` and `asyncio.Lock`?",
    "body": [
     {
      "t": "ul",
@@ -276,7 +276,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q127. What is `concurrent.futures.ProcessPoolExecutor`?",
+   "q": "What is `concurrent.futures.ProcessPoolExecutor`?",
    "body": [
     {
      "t": "code",
@@ -293,7 +293,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q128. What is `multiprocessing.shared_memory`?",
+   "q": "What is `multiprocessing.shared_memory`?",
    "body": [
     {
      "t": "p",
@@ -310,7 +310,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q129. What is `uvloop` and when should you use it?",
+   "q": "What is `uvloop` and when should you use it?",
    "body": [
     {
      "t": "p",
@@ -327,7 +327,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q130. What is Cython and when is it used?",
+   "q": "What is Cython and when is it used?",
    "body": [
     {
      "t": "p",
@@ -348,7 +348,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q131. What is Numba and when is it better than Cython?",
+   "q": "What is Numba and when is it better than Cython?",
    "body": [
     {
      "t": "p",
@@ -369,7 +369,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q132. What is `mmap` in Python and when is it used?",
+   "q": "What is `mmap` in Python and when is it used?",
    "body": [
     {
      "t": "p",
@@ -390,7 +390,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q133. What is `pickle` and its security concern?",
+   "q": "What is `pickle` and its security concern?",
    "body": [
     {
      "t": "p",
@@ -411,7 +411,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q134. What is `__reduce__` for custom pickle serialization?",
+   "q": "What is `__reduce__` for custom pickle serialization?",
    "body": [
     {
      "t": "code",
@@ -428,7 +428,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q135. What is the `struct` module and when is it used?",
+   "q": "What is the `struct` module and when is it used?",
    "body": [
     {
      "t": "p",
@@ -449,7 +449,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q136. What is `contextlib.contextmanager` decorator?",
+   "q": "What is `contextlib.contextmanager` decorator?",
    "body": [
     {
      "t": "code",
@@ -462,7 +462,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q137. What is `contextlib.suppress`?",
+   "q": "What is `contextlib.suppress`?",
    "body": [
     {
      "t": "code",
@@ -479,7 +479,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q138. What is `contextlib.ExitStack`?",
+   "q": "What is `contextlib.ExitStack`?",
    "body": [
     {
      "t": "p",
@@ -496,7 +496,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q139. What is the `dis` module and how does it help understand Python performance?",
+   "q": "What is the `dis` module and how does it help understand Python performance?",
    "body": [
     {
      "t": "p",
@@ -517,7 +517,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q140. What is `__future__` in Python?",
+   "q": "What is `__future__` in Python?",
    "body": [
     {
      "t": "p",

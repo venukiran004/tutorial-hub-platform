@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. What is FastAPI and why is it \"fast\"?",
+   "q": "What is FastAPI and why is it \"fast\"?",
    "body": [
     {
      "t": "p",
@@ -74,7 +74,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. What is ASGI and how does it differ from WSGI?",
+   "q": "What is ASGI and how does it differ from WSGI?",
    "body": [
     {
      "t": "p",
@@ -108,7 +108,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. How does FastAPI decide if a parameter is a path, query, or body parameter?",
+   "q": "How does FastAPI decide if a parameter is a path, query, or body parameter?",
    "body": [
     {
      "t": "p",
@@ -158,7 +158,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. What happens when you use `def` vs `async def` for an endpoint?",
+   "q": "What happens when you use `def` vs `async def` for an endpoint?",
    "body": [
     {
      "t": "p",
@@ -190,7 +190,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. What is the role of Pydantic in FastAPI?",
+   "q": "What is the role of Pydantic in FastAPI?",
    "body": [
     {
      "t": "p",
@@ -223,7 +223,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. Explain dependency injection in FastAPI.",
+   "q": "Explain dependency injection in FastAPI.",
    "body": [
     {
      "t": "p",
@@ -257,7 +257,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. What is `yield` in a dependency and when is it useful?",
+   "q": "What is `yield` in a dependency and when is it useful?",
    "body": [
     {
      "t": "p",
@@ -288,7 +288,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. How do you implement JWT authentication in FastAPI?",
+   "q": "How do you implement JWT authentication in FastAPI?",
    "body": [
     {
      "t": "p",
@@ -326,7 +326,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. What is the difference between HTTP 401 and 403?",
+   "q": "What is the difference between HTTP 401 and 403?",
    "body": [
     {
      "t": "p",
@@ -360,7 +360,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. How do you handle role-based authorization?",
+   "q": "How do you handle role-based authorization?",
    "body": [
     {
      "t": "p",
@@ -389,7 +389,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. What is middleware and how do you add it?",
+   "q": "What is middleware and how do you add it?",
    "body": [
     {
      "t": "p",
@@ -419,7 +419,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. How do you enable CORS, and why is it needed?",
+   "q": "How do you enable CORS, and why is it needed?",
    "body": [
     {
      "t": "p",
@@ -448,7 +448,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. How do you customize error handling?",
+   "q": "How do you customize error handling?",
    "body": [
     {
      "t": "p",
@@ -481,7 +481,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. When should you use `BackgroundTasks` vs Celery?",
+   "q": "When should you use `BackgroundTasks` vs Celery?",
    "body": [
     {
      "t": "p",
@@ -535,7 +535,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. How do you implement real-time streaming in FastAPI?",
+   "q": "How do you implement real-time streaming in FastAPI?",
    "body": [
     {
      "t": "p",
@@ -563,7 +563,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. How do you handle file uploads?",
+   "q": "How do you handle file uploads?",
    "body": [
     {
      "t": "p",
@@ -596,7 +596,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. How do you integrate SQLAlchemy with FastAPI?",
+   "q": "How do you integrate SQLAlchemy with FastAPI?",
    "body": [
     {
      "t": "p",
@@ -627,7 +627,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. What is `from_attributes=True` (formerly `orm_mode`)?",
+   "q": "What is `from_attributes=True` (formerly `orm_mode`)?",
    "body": [
     {
      "t": "p",
@@ -657,7 +657,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. How do you test a FastAPI application?",
+   "q": "How do you test a FastAPI application?",
    "body": [
     {
      "t": "p",
@@ -686,7 +686,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. What are Lifespan events and why use them?",
+   "q": "What are Lifespan events and why use them?",
    "body": [
     {
      "t": "p",
@@ -715,7 +715,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q21. What is `APIRouter` and why use it?",
+   "q": "What is `APIRouter` and why use it?",
    "body": [
     {
      "t": "p",
@@ -744,7 +744,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q22. How do you version an API?",
+   "q": "How do you version an API?",
    "body": [
     {
      "t": "p",
@@ -780,7 +780,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q23. What is `response_model_exclude_unset` and when is it used?",
+   "q": "What is `response_model_exclude_unset` and when is it used?",
    "body": [
     {
      "t": "p",
@@ -809,7 +809,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q24. What is the difference between PUT and PATCH?",
+   "q": "What is the difference between PUT and PATCH?",
    "body": [
     {
      "t": "p",
@@ -845,7 +845,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q25. Offset vs cursor pagination — when to use which?",
+   "q": "Offset vs cursor pagination — when to use which?",
    "body": [
     {
      "t": "p",
@@ -873,7 +873,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q26. How does FastAPI auto-generate documentation?",
+   "q": "How does FastAPI auto-generate documentation?",
    "body": [
     {
      "t": "p",
@@ -899,7 +899,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q27. Explain the FastAPI request lifecycle.",
+   "q": "Explain the FastAPI request lifecycle.",
    "body": [
     {
      "t": "p",
@@ -924,7 +924,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q28. What is rate limiting and how do you implement it?",
+   "q": "What is rate limiting and how do you implement it?",
    "body": [
     {
      "t": "p",

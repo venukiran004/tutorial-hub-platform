@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. What is an ORM and what are its trade-offs?",
+   "q": "What is an ORM and what are its trade-offs?",
    "body": [
     {
      "t": "p",
@@ -69,7 +69,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. What is the N+1 query problem and how do you fix it?",
+   "q": "What is the N+1 query problem and how do you fix it?",
    "body": [
     {
      "t": "p",
@@ -109,7 +109,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. What does ACID stand for?",
+   "q": "What does ACID stand for?",
    "body": [
     {
      "t": "p",
@@ -145,7 +145,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. When should you add an index, and what's the downside?",
+   "q": "When should you add an index, and what's the downside?",
    "body": [
     {
      "t": "p",
@@ -174,7 +174,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. What is a database transaction isolation level?",
+   "q": "What is a database transaction isolation level?",
    "body": [
     {
      "t": "p",
@@ -226,7 +226,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. What is the difference between SQLAlchemy Core and the ORM?",
+   "q": "What is the difference between SQLAlchemy Core and the ORM?",
    "body": [
     {
      "t": "p",
@@ -259,7 +259,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. What is a connection pool and why does it matter?",
+   "q": "What is a connection pool and why does it matter?",
    "body": [
     {
      "t": "p",
@@ -293,7 +293,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. What is the Session in SQLAlchemy and how should its lifecycle be managed?",
+   "q": "What is the Session in SQLAlchemy and how should its lifecycle be managed?",
    "body": [
     {
      "t": "p",
@@ -329,7 +329,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. How does an ORM protect against SQL injection?",
+   "q": "How does an ORM protect against SQL injection?",
    "body": [
     {
      "t": "p",
@@ -359,7 +359,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. What is a database migration and why not just edit tables manually?",
+   "q": "What is a database migration and why not just edit tables manually?",
    "body": [
     {
      "t": "p",
@@ -394,7 +394,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. What is the difference between `joinedload` and `selectinload`?",
+   "q": "What is the difference between `joinedload` and `selectinload`?",
    "body": [
     {
      "t": "p",
@@ -428,7 +428,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. When would you choose NoSQL over a relational database?",
+   "q": "When would you choose NoSQL over a relational database?",
    "body": [
     {
      "t": "p",
@@ -457,7 +457,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. What is normalization vs denormalization?",
+   "q": "What is normalization vs denormalization?",
    "body": [
     {
      "t": "p",
@@ -485,7 +485,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. What is a deadlock and how do you avoid it?",
+   "q": "What is a deadlock and how do you avoid it?",
    "body": [
     {
      "t": "p",
@@ -516,7 +516,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. What is eager vs lazy loading?",
+   "q": "What is eager vs lazy loading?",
    "body": [
     {
      "t": "p",
@@ -544,7 +544,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. What is the difference between `flush` and `commit`?",
+   "q": "What is the difference between `flush` and `commit`?",
    "body": [
     {
      "t": "p",
@@ -584,7 +584,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. What is the identity map and the unit-of-work pattern?",
+   "q": "What is the identity map and the unit-of-work pattern?",
    "body": [
     {
      "t": "p",
@@ -620,7 +620,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. Optimistic vs pessimistic locking — how do you prevent lost updates?",
+   "q": "Optimistic vs pessimistic locking — how do you prevent lost updates?",
    "body": [
     {
      "t": "p",
@@ -659,7 +659,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. What do relationship cascades control?",
+   "q": "What do relationship cascades control?",
    "body": [
     {
      "t": "p",
@@ -697,7 +697,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. How do you efficiently insert/update thousands of rows?",
+   "q": "How do you efficiently insert/update thousands of rows?",
    "body": [
     {
      "t": "p",
@@ -726,7 +726,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q21. How do you diagnose a slow query?",
+   "q": "How do you diagnose a slow query?",
    "body": [
     {
      "t": "p",
@@ -763,7 +763,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q22. How does a composite index work, and what's the leftmost-prefix rule?",
+   "q": "How does a composite index work, and what's the leftmost-prefix rule?",
    "body": [
     {
      "t": "p",
@@ -822,7 +822,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q23. How do you scale a database for reads and for writes?",
+   "q": "How do you scale a database for reads and for writes?",
    "body": [
     {
      "t": "p",
@@ -853,7 +853,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q24. What is a detached instance / `DetachedInstanceError`?",
+   "q": "What is a detached instance / `DetachedInstanceError`?",
    "body": [
     {
      "t": "p",
@@ -884,7 +884,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q25. What changes when you use async SQLAlchemy?",
+   "q": "What changes when you use async SQLAlchemy?",
    "body": [
     {
      "t": "p",

@@ -7,9 +7,9 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "17.8",
- "lede": "**14 interview questions on concurrency (asyncio, threading, multiprocessing)**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up question.",
+ "lede": "**13 interview questions on concurrency (asyncio, threading, multiprocessing)**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up question.",
  "objectives": [
-  "Answer 14 questions on concurrency (asyncio, threading, multiprocessing) without prompting",
+  "Answer 13 questions on concurrency (asyncio, threading, multiprocessing) without prompting",
   "State the trade-off behind each answer, not only the definition",
   "Recognise the follow-up each question is setting up",
   "Notice which answers you can recognise but not produce"
@@ -34,32 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q29. Implement a thread-safe singleton with double-checked locking.",
-   "body": [
-    {
-     "t": "p",
-     "text": "**Answer:**"
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "import threading\n\nclass Singleton:\n    _instance = None\n    _lock = threading.Lock()\n\n    def __new__(cls):\n        if cls._instance is None:            # fast path, no lock\n            with cls._lock:\n                if cls._instance is None:    # re-check under lock\n                    cls._instance = super().__new__(cls)\n        return cls._instance\n\nprint(Singleton() is Singleton())   # True",
-     "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Key takeaway:** The outer check avoids locking on the common path; the inner check (inside the lock) prevents two threads both creating an instance during the race."
-    }
-   ],
-   "terms": [
-    "Answer",
-    "Key takeaway"
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "2",
-   "q": "Q30. What is the producer/consumer pattern and how is it done sync vs async?",
+   "q": "What is the producer/consumer pattern and how is it done sync vs async?",
    "body": [
     {
      "t": "p",
@@ -87,8 +62,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "3",
-   "q": "Q31. What does `maxsize` on a queue do, and how does backpressure work?",
+   "n": "2",
+   "q": "What does `maxsize` on a queue do, and how does backpressure work?",
    "body": [
     {
      "t": "p",
@@ -117,8 +92,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "4",
-   "q": "Q32. Are operations on built-in collections thread-safe?",
+   "n": "3",
+   "q": "Are operations on built-in collections thread-safe?",
    "body": [
     {
      "t": "p",
@@ -147,8 +122,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "5",
-   "q": "Q33. How do you cancel a coroutine/task in asyncio?",
+   "n": "4",
+   "q": "How do you cancel a coroutine/task in asyncio?",
    "body": [
     {
      "t": "p",
@@ -176,8 +151,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "6",
-   "q": "Q34. What is \"coroutine was never awaited\" and how do you fix it?",
+   "n": "5",
+   "q": "What is \"coroutine was never awaited\" and how do you fix it?",
    "body": [
     {
      "t": "p",
@@ -205,8 +180,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "7",
-   "q": "Q35. What are the main pitfalls of each concurrency model? (summary)",
+   "n": "6",
+   "q": "What are the main pitfalls of each concurrency model? (summary)",
    "body": [
     {
      "t": "p",
@@ -245,8 +220,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "8",
-   "q": "Q36. How do you implement a read-write lock, and why use one?",
+   "n": "7",
+   "q": "How do you implement a read-write lock, and why use one?",
    "body": [
     {
      "t": "p",
@@ -276,8 +251,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "9",
-   "q": "Q37. What is a `CountDownLatch` and how does it differ from a `Barrier`?",
+   "n": "8",
+   "q": "What is a `CountDownLatch` and how does it differ from a `Barrier`?",
    "body": [
     {
      "t": "p",
@@ -333,8 +308,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "10",
-   "q": "Q38. How do you ensure an initializer runs exactly once across threads?",
+   "n": "9",
+   "q": "How do you ensure an initializer runs exactly once across threads?",
    "body": [
     {
      "t": "p",
@@ -363,8 +338,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "11",
-   "q": "Q39. What are debouncing and throttling, and how do they differ?",
+   "n": "10",
+   "q": "What are debouncing and throttling, and how do they differ?",
    "body": [
     {
      "t": "p",
@@ -399,8 +374,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "12",
-   "q": "Q40. How do you build a Future/promise from scratch?",
+   "n": "11",
+   "q": "How do you build a Future/promise from scratch?",
    "body": [
     {
      "t": "p",
@@ -428,8 +403,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "13",
-   "q": "Q41. What does `Thread.join(timeout)` do, and can it stop the thread?",
+   "n": "12",
+   "q": "What does `Thread.join(timeout)` do, and can it stop the thread?",
    "body": [
     {
      "t": "p",
@@ -458,8 +433,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "14",
-   "q": "Q42. How does a bounded queue provide backpressure, and how do priority/LIFO queues differ?",
+   "n": "13",
+   "q": "How does a bounded queue provide backpressure, and how do priority/LIFO queues differ?",
    "body": [
     {
      "t": "p",

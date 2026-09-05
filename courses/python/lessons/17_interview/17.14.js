@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. What is the walrus operator and when should you use it?",
+   "q": "What is the walrus operator and when should you use it?",
    "body": [
     {
      "t": "p",
@@ -66,7 +66,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. What is structural pattern matching and how does it differ from a C/Java `switch`?",
+   "q": "What is structural pattern matching and how does it differ from a C/Java `switch`?",
    "body": [
     {
      "t": "p",
@@ -96,7 +96,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. In `match`/`case`, what is the difference between a capture pattern and a value pattern?",
+   "q": "In `match`/`case`, what is the difference between a capture pattern and a value pattern?",
    "body": [
     {
      "t": "p",
@@ -127,7 +127,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. How do mapping patterns and sequence patterns differ in match semantics?",
+   "q": "How do mapping patterns and sequence patterns differ in match semantics?",
    "body": [
     {
      "t": "p",
@@ -163,7 +163,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. What changed about context managers in Python 3.10?",
+   "q": "What changed about context managers in Python 3.10?",
    "body": [
     {
      "t": "p",
@@ -193,7 +193,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. Explain `ExceptionGroup` and `except*`. When do you need them?",
+   "q": "Explain `ExceptionGroup` and `except*`. When do you need them?",
    "body": [
     {
      "t": "p",
@@ -227,7 +227,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. How does `asyncio.TaskGroup` improve on `asyncio.gather()`?",
+   "q": "How does `asyncio.TaskGroup` improve on `asyncio.gather()`?",
    "body": [
     {
      "t": "p",
@@ -278,7 +278,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. What is `tomllib` and what is its main limitation?",
+   "q": "What is `tomllib` and what is its main limitation?",
    "body": [
     {
      "t": "p",
@@ -308,7 +308,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. What problem does `typing.Self` solve?",
+   "q": "What problem does `typing.Self` solve?",
    "body": [
     {
      "t": "p",
@@ -338,7 +338,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. What is `StrEnum` and why prefer it over a plain `Enum` of strings?",
+   "q": "What is `StrEnum` and why prefer it over a plain `Enum` of strings?",
    "body": [
     {
      "t": "p",
@@ -368,7 +368,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. How do the Python 3.11 speedups work, and what code benefits most?",
+   "q": "How do the Python 3.11 speedups work, and what code benefits most?",
    "body": [
     {
      "t": "p",
@@ -399,7 +399,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. What restrictions on f-strings did Python 3.12 remove?",
+   "q": "What restrictions on f-strings did Python 3.12 remove?",
    "body": [
     {
      "t": "p",
@@ -428,7 +428,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. Explain the `type` statement (PEP 695). Why is lazy evaluation important?",
+   "q": "Explain the `type` statement (PEP 695). Why is lazy evaluation important?",
    "body": [
     {
      "t": "p",
@@ -468,7 +468,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. What is the new generic class/function syntax in 3.12 and how does it compare to `TypeVar`?",
+   "q": "What is the new generic class/function syntax in 3.12 and how does it compare to `TypeVar`?",
    "body": [
     {
      "t": "p",
@@ -497,7 +497,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. What does the `@override` decorator do?",
+   "q": "What does the `@override` decorator do?",
    "body": [
     {
      "t": "p",
@@ -526,7 +526,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. What is the per-interpreter GIL (PEP 684) and how does it differ from multiprocessing?",
+   "q": "What is the per-interpreter GIL (PEP 684) and how does it differ from multiprocessing?",
    "body": [
     {
      "t": "p",
@@ -575,7 +575,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. Explain free-threaded (no-GIL) Python in 3.13. What are the trade-offs?",
+   "q": "Explain free-threaded (no-GIL) Python in 3.13. What are the trade-offs?",
    "body": [
     {
      "t": "p",
@@ -616,7 +616,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. What is the copy-and-patch JIT in 3.13? How does it differ from PyPy's JIT?",
+   "q": "What is the copy-and-patch JIT in 3.13? How does it differ from PyPy's JIT?",
    "body": [
     {
      "t": "p",
@@ -669,7 +669,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. Which modules were removed in 3.13 and how do you migrate off the common ones?",
+   "q": "Which modules were removed in 3.13 and how do you migrate off the common ones?",
    "body": [
     {
      "t": "p",
@@ -698,7 +698,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. You maintain a 3.10 codebase and must reach 3.13. What's your migration strategy?",
+   "q": "You maintain a 3.10 codebase and must reach 3.13. What's your migration strategy?",
    "body": [
     {
      "t": "p",
@@ -729,7 +729,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q21. Did the walrus operator's behavior change in 3.12?",
+   "q": "Did the walrus operator's behavior change in 3.12?",
    "body": [
     {
      "t": "p",
@@ -760,7 +760,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q22. What is `ParamSpec` and what problem does it solve?",
+   "q": "What is `ParamSpec` and what problem does it solve?",
    "body": [
     {
      "t": "p",
@@ -791,7 +791,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q23. What is `TypeVarTuple` used for?",
+   "q": "What is `TypeVarTuple` used for?",
    "body": [
     {
      "t": "p",
@@ -821,7 +821,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q24. How did tracebacks improve in 3.11, and why does it matter?",
+   "q": "How did tracebacks improve in 3.11, and why does it matter?",
    "body": [
     {
      "t": "p",

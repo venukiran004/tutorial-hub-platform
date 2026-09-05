@@ -7,9 +7,9 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "17.33",
- "lede": "**28 interview questions on 100 python interview questions**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up question.",
+ "lede": "**23 interview questions on 100 python interview questions**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up question.",
  "objectives": [
-  "Answer 28 questions on 100 python interview questions without prompting",
+  "Answer 23 questions on 100 python interview questions without prompting",
   "State the trade-off behind each answer, not only the definition",
   "Recognise the follow-up each question is setting up",
   "Notice which answers you can recognise but not produce"
@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q141. What is Python's `weakref` module?",
+   "q": "What is Python's `weakref` module?",
    "body": [
     {
      "t": "p",
@@ -55,7 +55,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q142. What is `__init_subclass__` in Python?",
+   "q": "What is `__init_subclass__` in Python?",
    "body": [
     {
      "t": "p",
@@ -72,7 +72,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q143. What are Python dataclasses with `field()` and `__post_init__`?",
+   "q": "What are Python dataclasses with `field()` and `__post_init__`?",
    "body": [
     {
      "t": "code",
@@ -85,7 +85,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q144. What is `__set_name__` in descriptors?",
+   "q": "What is `__set_name__` in descriptors?",
    "body": [
     {
      "t": "p",
@@ -102,7 +102,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q145. What is `typing.ParamSpec` and `typing.Concatenate`?",
+   "q": "What is `typing.ParamSpec` and `typing.Concatenate`?",
    "body": [
     {
      "t": "p",
@@ -126,7 +126,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q146. What is property-based testing with Hypothesis?",
+   "q": "What is property-based testing with Hypothesis?",
    "body": [
     {
      "t": "code",
@@ -143,7 +143,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q147. What is pytest's `monkeypatch` fixture?",
+   "q": "What is pytest's `monkeypatch` fixture?",
    "body": [
     {
      "t": "code",
@@ -160,7 +160,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q148. What is `pytest.raises` and when is it used?",
+   "q": "What is `pytest.raises` and when is it used?",
    "body": [
     {
      "t": "code",
@@ -173,7 +173,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q149. What are pytest fixtures with scope?",
+   "q": "What are pytest fixtures with scope?",
    "body": [
     {
      "t": "code",
@@ -190,7 +190,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q150. What is `unittest.mock.patch` vs `pytest.monkeypatch`?",
+   "q": "What is `unittest.mock.patch` vs `pytest.monkeypatch`?",
    "body": [
     {
      "t": "ul",
@@ -204,80 +204,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q151. What is the Singleton pattern in Python?",
-   "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class Singleton(type):\n    _instances = {}\n    def __call__(cls, *args, **kwargs):\n        if cls not in cls._instances:\n            cls._instances[cls] = super().__call__(*args, **kwargs)\n        return cls._instances[cls]\n\nclass Config(metaclass=Singleton):\n    pass",
-     "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "Or use a module-level variable (Python modules are singletons by nature)."
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "12",
-   "q": "Q152. What is the Factory pattern in Python?",
-   "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class AnimalFactory:\n    @staticmethod\n    def create(animal_type: str):\n        animals = {\"dog\": Dog, \"cat\": Cat, \"bird\": Bird}\n        if animal_type not in animals:\n            raise ValueError(f\"Unknown animal: {animal_type}\")\n        return animals[animal_type]()\n\nanimal = AnimalFactory.create(\"dog\")",
-     "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "13",
-   "q": "Q153. What is the Observer pattern in Python?",
-   "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class EventEmitter:\n    def __init__(self):\n        self._listeners: dict[str, list] = defaultdict(list)\n\n    def on(self, event: str, callback):\n        self._listeners[event].append(callback)\n\n    def emit(self, event: str, *args, **kwargs):\n        for callback in self._listeners[event]:\n            callback(*args, **kwargs)\n\nemitter = EventEmitter()\nemitter.on(\"data\", lambda x: print(f\"Received: {x}\"))\nemitter.emit(\"data\", 42)",
-     "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "14",
-   "q": "Q154. What is the Strategy pattern in Python?",
-   "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from typing import Protocol\n\nclass SortStrategy(Protocol):\n    def sort(self, data: list) -> list: ...\n\nclass QuickSort:\n    def sort(self, data): return sorted(data)  # Simplified\n\nclass MergeSort:\n    def sort(self, data): ...\n\nclass Sorter:\n    def __init__(self, strategy: SortStrategy):\n        self.strategy = strategy\n    def sort(self, data):\n        return self.strategy.sort(data)",
-     "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "15",
-   "q": "Q155. What is the Command pattern in Python?",
-   "body": [
-    {
-     "t": "p",
-     "text": "Encapsulate a request as an object, enabling undo/redo:"
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class Command(ABC):\n    @abstractmethod\n    def execute(self): ...\n    @abstractmethod\n    def undo(self): ...\n\nclass InsertTextCommand(Command):\n    def __init__(self, editor, text, position):\n        self.editor, self.text, self.position = editor, text, position\n    def execute(self): self.editor.insert(self.text, self.position)\n    def undo(self): self.editor.delete(self.position, len(self.text))",
-     "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "16",
-   "q": "Q156. What is Python's `__repr__` vs `__str__`?",
+   "q": "What is Python's `__repr__` vs `__str__`?",
    "body": [
     {
      "t": "ul",
@@ -290,8 +217,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "17",
-   "q": "Q157. What are Python's comparison dunder methods and `functools.total_ordering`?",
+   "n": "12",
+   "q": "What are Python's comparison dunder methods and `functools.total_ordering`?",
    "body": [
     {
      "t": "code",
@@ -303,8 +230,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "18",
-   "q": "Q158. What is `os.walk` vs `pathlib.Path.rglob`?",
+   "n": "13",
+   "q": "What is `os.walk` vs `pathlib.Path.rglob`?",
    "body": [
     {
      "t": "code",
@@ -320,8 +247,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "19",
-   "q": "Q159. What is `importlib` and dynamic imports?",
+   "n": "14",
+   "q": "What is `importlib` and dynamic imports?",
    "body": [
     {
      "t": "code",
@@ -337,8 +264,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "20",
-   "q": "Q160. What is Python's `__all__` in modules?",
+   "n": "15",
+   "q": "What is Python's `__all__` in modules?",
    "body": [
     {
      "t": "code",
@@ -354,8 +281,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "21",
-   "q": "Q161. What is a namespace package (PEP 420)?",
+   "n": "16",
+   "q": "What is a namespace package (PEP 420)?",
    "body": [
     {
      "t": "p",
@@ -375,8 +302,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "22",
-   "q": "Q162. What is `sys.path` manipulation and why should you avoid it?",
+   "n": "17",
+   "q": "What is `sys.path` manipulation and why should you avoid it?",
    "body": [
     {
      "t": "p",
@@ -386,8 +313,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "23",
-   "q": "Q163. What is a Python virtual environment and how does it work?",
+   "n": "18",
+   "q": "What is a Python virtual environment and how does it work?",
    "body": [
     {
      "t": "p",
@@ -407,8 +334,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "24",
-   "q": "Q164. What is `pyproject.toml` and modern Python packaging?",
+   "n": "19",
+   "q": "What is `pyproject.toml` and modern Python packaging?",
    "body": [
     {
      "t": "p",
@@ -428,8 +355,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "25",
-   "q": "Q165. What are Python type narrowing techniques?",
+   "n": "20",
+   "q": "What are Python type narrowing techniques?",
    "body": [
     {
      "t": "code",
@@ -448,8 +375,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "26",
-   "q": "Q166. What is Python's `array` module vs NumPy arrays?",
+   "n": "21",
+   "q": "What is Python's `array` module vs NumPy arrays?",
    "body": [
     {
      "t": "ul",
@@ -462,8 +389,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "27",
-   "q": "Q167. What is `__array_ufunc__` in NumPy integration?",
+   "n": "22",
+   "q": "What is `__array_ufunc__` in NumPy integration?",
    "body": [
     {
      "t": "p",
@@ -483,8 +410,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "28",
-   "q": "Q168. What is Python's `struct.pack` format string and binary protocol handling?",
+   "n": "23",
+   "q": "What is Python's `struct.pack` format string and binary protocol handling?",
    "body": [
     {
      "t": "code",

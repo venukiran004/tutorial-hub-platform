@@ -7,9 +7,9 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "17.5",
- "lede": "**21 interview questions on object-oriented programming**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up question.",
+ "lede": "**15 interview questions on object-oriented programming**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up question.",
  "objectives": [
-  "Answer 21 questions on object-oriented programming without prompting",
+  "Answer 15 questions on object-oriented programming without prompting",
   "State the trade-off behind each answer, not only the definition",
   "Recognise the follow-up each question is setting up",
   "Notice which answers you can recognise but not produce"
@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q29. `__post_init__` in dataclasses — use cases.",
+   "q": "`__post_init__` in dataclasses — use cases.",
    "body": [
     {
      "t": "p",
@@ -65,7 +65,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q30. ABC vs Protocol — nominal vs structural typing.",
+   "q": "ABC vs Protocol — nominal vs structural typing.",
    "body": [
     {
      "t": "p",
@@ -124,7 +124,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q31. `@abstractmethod` — can you instantiate an ABC?",
+   "q": "`@abstractmethod` — can you instantiate an ABC?",
    "body": [
     {
      "t": "p",
@@ -160,7 +160,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q32. What is `@runtime_checkable` Protocol?",
+   "q": "What is `@runtime_checkable` Protocol?",
    "body": [
     {
      "t": "p",
@@ -198,150 +198,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q33. Implement Singleton in Python (3 ways: `__new__`, metaclass, module).",
-   "body": [
-    {
-     "t": "p",
-     "text": "**A:** A Singleton ensures only one instance of a class exists."
-    },
-    {
-     "t": "p",
-     "text": "**Way 1: Using `__new__`**"
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class Singleton:\n    _instance = None\n\n    def __new__(cls, *args, **kwargs):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n        return cls._instance\n\n    def __init__(self, value=None):\n        self.value = value       # runs every time — may reset state\n\na = Singleton(1)\nb = Singleton(2)\nprint(a is b)         # True\nprint(a.value)        # 2 — __init__ ran twice",
-     "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Way 2: Using metaclass**"
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class SingletonMeta(type):\n    _instances = {}\n\n    def __call__(cls, *args, **kwargs):\n        if cls not in cls._instances:\n            instance = super().__call__(*args, **kwargs)\n            cls._instances[cls] = instance\n        return cls._instances[cls]\n\nclass Database(metaclass=SingletonMeta):\n    def __init__(self, url):\n        self.url = url\n        print(f\"Connecting to {url}\")    # only prints once\n\ndb1 = Database(\"postgres://localhost\")   # Connecting to postgres://localhost\ndb2 = Database(\"mysql://localhost\")      # no output — returns cached instance\nprint(db1 is db2)    # True\nprint(db1.url)       # postgres://localhost — __init__ did NOT run again",
-     "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Way 3: Module-level singleton (most Pythonic)**"
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "# config.py — the module IS the singleton\nclass _Config:\n    def __init__(self):\n        self.debug = False\n        self.db_url = \"sqlite:///default.db\"\n\nconfig = _Config()    # single instance at module level\n\n# usage.py\n# from config import config\n# config.debug = True\n# All importers share the same `config` object.",
-     "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Recommendation:** The module approach is simplest and most Pythonic. Use the metaclass approach when you need inheritance support and guaranteed single instantiation."
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "6",
-   "q": "Q34. Factory pattern in Python.",
-   "body": [
-    {
-     "t": "p",
-     "text": "**A:** The Factory pattern creates objects without exposing creation logic to the client. In Python, it's commonly implemented with functions, `@classmethod`, or a dedicated factory class."
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from abc import ABC, abstractmethod\n\n# Product hierarchy\nclass Notification(ABC):\n    @abstractmethod\n    def send(self, message: str) -> str: ...\n\nclass EmailNotification(Notification):\n    def send(self, message):\n        return f\"Email: {message}\"\n\nclass SMSNotification(Notification):\n    def send(self, message):\n        return f\"SMS: {message}\"\n\nclass PushNotification(Notification):\n    def send(self, message):\n        return f\"Push: {message}\"\n\n# Factory function (simplest approach)\ndef create_notification(channel: str) -> Notification:\n    factories = {\n        \"email\": EmailNotification,\n        \"sms\": SMSNotification,\n        \"push\": PushNotification,\n    }\n    if channel not in factories:\n        raise ValueError(f\"Unknown channel: {channel}\")\n    return factories[channel]()\n\n# Usage\nnotif = create_notification(\"email\")\nprint(notif.send(\"Hello!\"))   # Email: Hello!\n\n# Registry-based factory with auto-registration\nclass NotificationFactory:\n    _registry: dict[str, type[Notification]] = {}\n\n    @classmethod\n    def register(cls, name: str):\n        def decorator(klass):\n            cls._registry[name] = klass\n            return klass\n        return decorator\n\n    @classmethod\n    def create(cls, name: str, **kwargs) -> Notification:\n        if name not in cls._registry:\n            raise ValueError(f\"Unknown: {name}\")\n        return cls._registry[name](**kwargs)\n\n@NotificationFactory.register(\"slack\")\nclass SlackNotification(Notification):\n    def send(self, message):\n        return f\"Slack: {message}\"\n\nprint(NotificationFactory.create(\"slack\").send(\"Hi\"))  # Slack: Hi",
-     "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "The registry-based approach is open/closed principle compliant — new notification types can register themselves without modifying the factory."
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "7",
-   "q": "Q35. Builder pattern with method chaining.",
-   "body": [
-    {
-     "t": "p",
-     "text": "**A:** The Builder pattern constructs complex objects step-by-step. In Python, **method chaining** (returning `self` from each method) makes it fluent and readable."
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class QueryBuilder:\n    def __init__(self):\n        self._table = None\n        self._columns = [\"*\"]\n        self._conditions = []\n        self._order_by = None\n        self._limit = None\n\n    def table(self, name: str):\n        self._table = name\n        return self              # return self for chaining\n\n    def select(self, *columns: str):\n        self._columns = list(columns)\n        return self\n\n    def where(self, condition: str):\n        self._conditions.append(condition)\n        return self\n\n    def order(self, column: str, desc: bool = False):\n        direction = \"DESC\" if desc else \"ASC\"\n        self._order_by = f\"{column} {direction}\"\n        return self\n\n    def limit(self, n: int):\n        self._limit = n\n        return self\n\n    def build(self) -> str:\n        if not self._table:\n            raise ValueError(\"Table not specified\")\n        cols = \", \".join(self._columns)\n        query = f\"SELECT {cols} FROM {self._table}\"\n        if self._conditions:\n            query += \" WHERE \" + \" AND \".join(self._conditions)\n        if self._order_by:\n            query += f\" ORDER BY {self._order_by}\"\n        if self._limit is not None:\n            query += f\" LIMIT {self._limit}\"\n        return query\n\n# Fluent API with method chaining\nquery = (\n    QueryBuilder()\n    .table(\"users\")\n    .select(\"name\", \"email\", \"age\")\n    .where(\"age > 18\")\n    .where(\"active = true\")\n    .order(\"name\")\n    .limit(10)\n    .build()\n)\nprint(query)\n# SELECT name, email, age FROM users WHERE age > 18 AND active = true ORDER BY name ASC LIMIT 10",
-     "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Key principle:** Every setter method returns `self` to enable chaining. The `build()` method validates and produces the final product."
-    }
-   ],
-   "terms": [
-    "method chaining",
-    "Key principle"
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "8",
-   "q": "Q36. Observer / event pattern.",
-   "body": [
-    {
-     "t": "p",
-     "text": "**A:** The Observer pattern lets objects (observers/subscribers) register to receive notifications when another object (subject/publisher) changes state. In Python, this is often implemented with callbacks or an event system."
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from collections import defaultdict\nfrom typing import Callable\n\nclass EventEmitter:\n    \"\"\"A generic event system (Publisher).\"\"\"\n    def __init__(self):\n        self._listeners: dict[str, list[Callable]] = defaultdict(list)\n\n    def on(self, event: str, callback: Callable):\n        \"\"\"Subscribe to an event.\"\"\"\n        self._listeners[event].append(callback)\n        return self\n\n    def off(self, event: str, callback: Callable):\n        \"\"\"Unsubscribe from an event.\"\"\"\n        self._listeners[event].remove(callback)\n\n    def emit(self, event: str, *args, **kwargs):\n        \"\"\"Notify all subscribers of an event.\"\"\"\n        for callback in self._listeners[event]:\n            callback(*args, **kwargs)\n\n# Usage\nclass StockMarket(EventEmitter):\n    def __init__(self):\n        super().__init__()\n        self._prices = {}\n\n    def update_price(self, symbol: str, price: float):\n        old = self._prices.get(symbol)\n        self._prices[symbol] = price\n        self.emit(\"price_change\", symbol=symbol, price=price, old_price=old)\n\n# Observers (subscribers)\ndef logger(symbol, price, old_price):\n    print(f\"[LOG] {symbol}: ${old_price} → ${price}\")\n\ndef alert(symbol, price, old_price):\n    if price and old_price and price > old_price * 1.05:\n        print(f\"[ALERT] {symbol} jumped more than 5%!\")\n\nmarket = StockMarket()\nmarket.on(\"price_change\", logger)\nmarket.on(\"price_change\", alert)\n\nmarket.update_price(\"AAPL\", 150)\n# [LOG] AAPL: $None → $150\n\nmarket.update_price(\"AAPL\", 160)\n# [LOG] AAPL: $150 → $160\n# [ALERT] AAPL jumped more than 5%!",
-     "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "This is the foundation of event-driven programming. Frameworks like Django (signals), Flask, and Node.js (EventEmitter) use this pattern extensively."
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "9",
-   "q": "Q37. Strategy pattern — Pythonic approach.",
-   "body": [
-    {
-     "t": "p",
-     "text": "**A:** The Strategy pattern lets you swap algorithms at runtime. In classic OOP, you'd use an interface + concrete classes. In Python, **first-class functions** or callables make it much simpler."
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "# Pythonic Strategy with functions\nfrom typing import Callable\n\ndef bubble_sort(data: list) -> list:\n    arr = data[:]\n    for i in range(len(arr)):\n        for j in range(len(arr) - 1 - i):\n            if arr[j] > arr[j + 1]:\n                arr[j], arr[j + 1] = arr[j + 1], arr[j]\n    return arr\n\ndef quick_sort(data: list) -> list:\n    if len(data) <= 1:\n        return data\n    pivot = data[0]\n    left = [x for x in data[1:] if x <= pivot]\n    right = [x for x in data[1:] if x > pivot]\n    return quick_sort(left) + [pivot] + quick_sort(right)\n\nclass Sorter:\n    def __init__(self, strategy: Callable[[list], list] = sorted):\n        self.strategy = strategy\n\n    def sort(self, data: list) -> list:\n        return self.strategy(data)\n\ndata = [5, 2, 8, 1, 9]\nsorter = Sorter(bubble_sort)\nprint(sorter.sort(data))       # [1, 2, 5, 8, 9]\n\nsorter.strategy = quick_sort   # swap strategy at runtime\nprint(sorter.sort(data))       # [1, 2, 5, 8, 9]",
-     "numbered": false
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "# Class-based approach (when strategies need state)\nfrom abc import ABC, abstractmethod\n\nclass PricingStrategy(ABC):\n    @abstractmethod\n    def calculate(self, base_price: float) -> float: ...\n\nclass RegularPricing(PricingStrategy):\n    def calculate(self, base_price):\n        return base_price\n\nclass DiscountPricing(PricingStrategy):\n    def __init__(self, discount: float):\n        self.discount = discount\n\n    def calculate(self, base_price):\n        return base_price * (1 - self.discount)\n\nclass Product:\n    def __init__(self, name: str, price: float, pricing: PricingStrategy):\n        self.name = name\n        self.price = price\n        self.pricing = pricing\n\n    def final_price(self):\n        return self.pricing.calculate(self.price)\n\np = Product(\"Laptop\", 1000, DiscountPricing(0.2))\nprint(p.final_price())   # 800.0",
-     "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Pythonic rule:** If the strategy is a simple function, use a callable. If it carries state, use a class."
-    }
-   ],
-   "terms": [
-    "first-class functions",
-    "Pythonic rule"
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "10",
-   "q": "Q39. How do you make a class immutable?",
+   "q": "How do you make a class immutable?",
    "body": [
     {
      "t": "p",
@@ -391,8 +248,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "11",
-   "q": "Q40. Explain method chaining — how to implement it.",
+   "n": "6",
+   "q": "Explain method chaining — how to implement it.",
    "body": [
     {
      "t": "p",
@@ -422,8 +279,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "12",
-   "q": "Q41. How would you implement a custom dict with dot notation access?",
+   "n": "7",
+   "q": "How would you implement a custom dict with dot notation access?",
    "body": [
     {
      "t": "p",
@@ -453,8 +310,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "13",
-   "q": "Q42. What is monkey patching? Is it good practice?",
+   "n": "8",
+   "q": "What is monkey patching? Is it good practice?",
    "body": [
     {
      "t": "p",
@@ -518,8 +375,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "14",
-   "q": "Q43. Composition vs Inheritance — when to prefer which?",
+   "n": "9",
+   "q": "Composition vs Inheritance — when to prefer which?",
    "body": [
     {
      "t": "p",
@@ -584,8 +441,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "15",
-   "q": "Q44. What is duck typing? How does it relate to Protocols?",
+   "n": "10",
+   "q": "What is duck typing? How does it relate to Protocols?",
    "body": [
     {
      "t": "p",
@@ -637,8 +494,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "16",
-   "q": "Q45. How do you prevent a class from being subclassed?",
+   "n": "11",
+   "q": "How do you prevent a class from being subclassed?",
    "body": [
     {
      "t": "p",
@@ -696,95 +553,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "17",
-   "q": "Q46. (Bonus) What are the SOLID principles in the context of Python OOP?",
-   "body": [
-    {
-     "t": "p",
-     "text": "**A:** SOLID is a set of five design principles that help write maintainable, extensible OOP code."
-    },
-    {
-     "t": "h4",
-     "text": "S — Single Responsibility Principle (SRP)"
-    },
-    {
-     "t": "p",
-     "text": "A class should have **one reason to change** — one responsibility."
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "# BAD: User handles both data AND persistence\nclass User:\n    def __init__(self, name): self.name = name\n    def save_to_db(self): ...       # persistence logic mixed in\n    def send_email(self): ...       # notification logic mixed in\n\n# GOOD: separated responsibilities\nclass User:\n    def __init__(self, name): self.name = name\n\nclass UserRepository:\n    def save(self, user: User): ...\n\nclass EmailService:\n    def send(self, user: User, message: str): ...",
-     "numbered": false
-    },
-    {
-     "t": "h4",
-     "text": "O — Open/Closed Principle (OCP)"
-    },
-    {
-     "t": "p",
-     "text": "Open for **extension**, closed for **modification**."
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from abc import ABC, abstractmethod\n\nclass Discount(ABC):\n    @abstractmethod\n    def apply(self, price: float) -> float: ...\n\nclass PercentDiscount(Discount):\n    def __init__(self, pct: float): self.pct = pct\n    def apply(self, price): return price * (1 - self.pct)\n\nclass FlatDiscount(Discount):\n    def __init__(self, amount: float): self.amount = amount\n    def apply(self, price): return max(0, price - self.amount)\n\n# Adding a new discount type doesn't modify existing code\nclass BuyOneGetOneFree(Discount):\n    def apply(self, price): return price / 2",
-     "numbered": false
-    },
-    {
-     "t": "h4",
-     "text": "L — Liskov Substitution Principle (LSP)"
-    },
-    {
-     "t": "p",
-     "text": "Subtypes must be substitutable for their base types without breaking correctness."
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class Bird:\n    def fly(self): return \"flying\"\n\nclass Penguin(Bird):\n    def fly(self): raise NotImplementedError(\"Penguins can't fly\")  # VIOLATES LSP\n\n# Fix: restructure hierarchy\nclass Bird: pass\nclass FlyingBird(Bird):\n    def fly(self): return \"flying\"\nclass Penguin(Bird):\n    def swim(self): return \"swimming\"",
-     "numbered": false
-    },
-    {
-     "t": "h4",
-     "text": "I — Interface Segregation Principle (ISP)"
-    },
-    {
-     "t": "p",
-     "text": "Don't force clients to depend on methods they don't use."
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "# BAD: one fat interface\nclass Worker(ABC):\n    @abstractmethod\n    def work(self): ...\n    @abstractmethod\n    def eat(self): ...        # robots don't eat!\n\n# GOOD: segregated protocols\nclass Workable(Protocol):\n    def work(self) -> None: ...\n\nclass Eatable(Protocol):\n    def eat(self) -> None: ...\n\nclass Human:\n    def work(self): ...\n    def eat(self): ...\n\nclass Robot:\n    def work(self): ...\n    # No eat() — and that's fine",
-     "numbered": false
-    },
-    {
-     "t": "h4",
-     "text": "D — Dependency Inversion Principle (DIP)"
-    },
-    {
-     "t": "p",
-     "text": "High-level modules should depend on **abstractions**, not concrete implementations."
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from typing import Protocol\n\nclass Logger(Protocol):\n    def log(self, message: str) -> None: ...\n\nclass FileLogger:\n    def log(self, message: str):\n        with open(\"app.log\", \"a\") as f:\n            f.write(message + \"\\n\")\n\nclass ConsoleLogger:\n    def log(self, message: str):\n        print(message)\n\nclass App:\n    def __init__(self, logger: Logger):      # depends on abstraction\n        self.logger = logger\n\n    def run(self):\n        self.logger.log(\"App started\")\n\napp = App(ConsoleLogger())    # inject any Logger implementation\napp.run()",
-     "numbered": false
-    }
-   ],
-   "terms": [
-    "one reason to change",
-    "extension",
-    "modification",
-    "abstractions"
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "18",
-   "q": "Q47. (Bonus) What is `__class_getitem__` and how is it used for generic types?",
+   "n": "12",
+   "q": "(Bonus) What is `__class_getitem__` and how is it used for generic types?",
    "body": [
     {
      "t": "p",
@@ -804,8 +574,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "19",
-   "q": "Q48. (Bonus) Explain `__del__` — destructor, pitfalls, and alternatives.",
+   "n": "13",
+   "q": "(Bonus) Explain `__del__` — destructor, pitfalls, and alternatives.",
    "body": [
     {
      "t": "p",
@@ -843,8 +613,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "20",
-   "q": "Q49. (Bonus) How does Python's garbage collection work with OOP? (Reference counting + cycle collector)",
+   "n": "14",
+   "q": "(Bonus) How does Python's garbage collection work with OOP? (Reference counting + cycle collector)",
    "body": [
     {
      "t": "p",
@@ -878,8 +648,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "21",
-   "q": "Q50. (Bonus) What is `__prepare__` in metaclasses?",
+   "n": "15",
+   "q": "(Bonus) What is `__prepare__` in metaclasses?",
    "body": [
     {
      "t": "p",

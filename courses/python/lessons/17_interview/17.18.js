@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. What are the core data structures in Pandas?",
+   "q": "What are the core data structures in Pandas?",
    "body": [
     {
      "t": "p",
@@ -70,7 +70,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. What is the difference between `loc` and `iloc`?",
+   "q": "What is the difference between `loc` and `iloc`?",
    "body": [
     {
      "t": "p",
@@ -102,7 +102,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. What are `at` and `iat`, and when are they preferable?",
+   "q": "What are `at` and `iat`, and when are they preferable?",
    "body": [
     {
      "t": "p",
@@ -132,7 +132,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. Why do you need parentheses with `&` and `|` when filtering?",
+   "q": "Why do you need parentheses with `&` and `|` when filtering?",
    "body": [
     {
      "t": "p",
@@ -166,7 +166,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. What is the difference between a view and a copy? What is `SettingWithCopyWarning`?",
+   "q": "What is the difference between a view and a copy? What is `SettingWithCopyWarning`?",
    "body": [
     {
      "t": "p",
@@ -197,7 +197,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. How is `NaN` different from `None`?",
+   "q": "How is `NaN` different from `None`?",
    "body": [
     {
      "t": "p",
@@ -226,7 +226,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. What is the difference between `apply`, `map`, and `transform`?",
+   "q": "What is the difference between `apply`, `map`, and `transform`?",
    "body": [
     {
      "t": "p",
@@ -262,7 +262,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. What is vectorization and why is it preferred over `apply`?",
+   "q": "What is vectorization and why is it preferred over `apply`?",
    "body": [
     {
      "t": "p",
@@ -291,7 +291,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. How does `groupby` work internally (split-apply-combine)?",
+   "q": "How does `groupby` work internally (split-apply-combine)?",
    "body": [
     {
      "t": "p",
@@ -327,7 +327,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. What is the difference between `agg`, `transform`, `filter`, and `apply` in groupby?",
+   "q": "What is the difference between `agg`, `transform`, `filter`, and `apply` in groupby?",
    "body": [
     {
      "t": "p",
@@ -377,7 +377,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. What is `pd.NamedAgg` / named aggregation?",
+   "q": "What is `pd.NamedAgg` / named aggregation?",
    "body": [
     {
      "t": "p",
@@ -406,7 +406,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. What is the difference between `merge`, `join`, and `concat`?",
+   "q": "What is the difference between `merge`, `join`, and `concat`?",
    "body": [
     {
      "t": "p",
@@ -442,7 +442,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. What are the join types in `merge`?",
+   "q": "What are the join types in `merge`?",
    "body": [
     {
      "t": "p",
@@ -492,7 +492,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. What is the difference between `pivot` and `pivot_table`?",
+   "q": "What is the difference between `pivot` and `pivot_table`?",
    "body": [
     {
      "t": "p",
@@ -521,7 +521,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. What do `melt`, `stack`, and `unstack` do?",
+   "q": "What do `melt`, `stack`, and `unstack` do?",
    "body": [
     {
      "t": "p",
@@ -557,7 +557,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. How do you handle missing data?",
+   "q": "How do you handle missing data?",
    "body": [
     {
      "t": "p",
@@ -587,7 +587,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. What is the `category` dtype and why use it?",
+   "q": "What is the `category` dtype and why use it?",
    "body": [
     {
      "t": "p",
@@ -616,7 +616,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. How do you optimize the memory usage of a DataFrame?",
+   "q": "How do you optimize the memory usage of a DataFrame?",
    "body": [
     {
      "t": "p",
@@ -655,7 +655,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. Why is Parquet preferred over CSV?",
+   "q": "Why is Parquet preferred over CSV?",
    "body": [
     {
      "t": "p",
@@ -684,7 +684,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. What is `query()` and when is it useful?",
+   "q": "What is `query()` and when is it useful?",
    "body": [
     {
      "t": "p",
@@ -713,7 +713,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q21. What does `transform` enable that `agg` cannot?",
+   "q": "What does `transform` enable that `agg` cannot?",
    "body": [
     {
      "t": "p",
@@ -742,7 +742,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q22. How do you get the top-N rows per group?",
+   "q": "How do you get the top-N rows per group?",
    "body": [
     {
      "t": "p",
@@ -767,7 +767,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q23. What is the difference between `nlargest`/`nsmallest` and sorting?",
+   "q": "What is the difference between `nlargest`/`nsmallest` and sorting?",
    "body": [
     {
      "t": "p",
@@ -796,7 +796,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q24. How do you work with datetimes and time-based slicing?",
+   "q": "How do you work with datetimes and time-based slicing?",
    "body": [
     {
      "t": "p",
@@ -821,7 +821,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q25. How do you resample time series, and what is up- vs down-sampling?",
+   "q": "How do you resample time series, and what is up- vs down-sampling?",
    "body": [
     {
      "t": "p",
@@ -852,7 +852,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q26. What is `shift` and how do you build lag features?",
+   "q": "What is `shift` and how do you build lag features?",
    "body": [
     {
      "t": "p",
@@ -881,7 +881,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q27. What are rolling, expanding, and ewm windows?",
+   "q": "What are rolling, expanding, and ewm windows?",
    "body": [
     {
      "t": "p",
@@ -917,7 +917,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q28. What is the difference between `df['col']` and `df[['col']]`?",
+   "q": "What is the difference between `df['col']` and `df[['col']]`?",
    "body": [
     {
      "t": "p",

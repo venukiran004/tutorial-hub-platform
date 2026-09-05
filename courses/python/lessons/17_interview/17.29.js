@@ -7,9 +7,9 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "17.29",
- "lede": "**28 interview questions on 100 python interview questions**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up question.",
+ "lede": "**24 interview questions on 100 python interview questions**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up question.",
  "objectives": [
-  "Answer 28 questions on 100 python interview questions without prompting",
+  "Answer 24 questions on 100 python interview questions without prompting",
   "State the trade-off behind each answer, not only the definition",
   "Recognise the follow-up each question is setting up",
   "Notice which answers you can recognise but not produce"
@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q29. What is `super()` and when do you use it?",
+   "q": "What is `super()` and when do you use it?",
    "body": [
     {
      "t": "p",
@@ -55,7 +55,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q30. What is an abstract class in Python?",
+   "q": "What is an abstract class in Python?",
    "body": [
     {
      "t": "code",
@@ -72,7 +72,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q31. What is duck typing?",
+   "q": "What is duck typing?",
    "body": [
     {
      "t": "p",
@@ -83,7 +83,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q32. What are dunder (magic) methods? Give examples.",
+   "q": "What are dunder (magic) methods? Give examples.",
    "body": [
     {
      "t": "p",
@@ -94,7 +94,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q33. What is the difference between `__str__` and `__repr__`?",
+   "q": "What is the difference between `__str__` and `__repr__`?",
    "body": [
     {
      "t": "ul",
@@ -108,7 +108,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q34. What is a dataclass in Python?",
+   "q": "What is a dataclass in Python?",
    "body": [
     {
      "t": "p",
@@ -125,7 +125,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q35. What is composition vs. inheritance?",
+   "q": "What is composition vs. inheritance?",
    "body": [
     {
      "t": "ul",
@@ -143,7 +143,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q36. What is a mixin in Python?",
+   "q": "What is a mixin in Python?",
    "body": [
     {
      "t": "p",
@@ -154,7 +154,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q37. What is `__slots__`?",
+   "q": "What is `__slots__`?",
    "body": [
     {
      "t": "p",
@@ -171,7 +171,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q38. What is the `property` decorator?",
+   "q": "What is the `property` decorator?",
    "body": [
     {
      "t": "code",
@@ -188,24 +188,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q39. What is the Singleton design pattern in Python?",
-   "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class Singleton:\n    _instance = None\n\n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n        return cls._instance",
-     "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "Ensures only one instance of the class is created."
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "12",
-   "q": "Q40. What is method chaining?",
+   "q": "What is method chaining?",
    "body": [
     {
      "t": "p",
@@ -221,8 +204,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "13",
-   "q": "Q41. What is `__call__`?",
+   "n": "12",
+   "q": "What is `__call__`?",
    "body": [
     {
      "t": "p",
@@ -238,19 +221,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "14",
-   "q": "Q42. What is the Observer design pattern?",
-   "body": [
-    {
-     "t": "p",
-     "text": "Defines a one-to-many dependency: when one object (subject) changes state, all its observers are notified and updated automatically. Used heavily in event systems, GUI frameworks."
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "15",
-   "q": "Q43. What is `__getattr__` vs `__getattribute__`?",
+   "n": "13",
+   "q": "What is `__getattr__` vs `__getattribute__`?",
    "body": [
     {
      "t": "ul",
@@ -263,49 +235,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "16",
-   "q": "Q44. What is the Factory design pattern?",
-   "body": [
-    {
-     "t": "p",
-     "text": "A creational pattern where a factory function or class creates objects without specifying the exact class:"
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "def create_shape(shape_type):\n    if shape_type == \"circle\":   return Circle()\n    if shape_type == \"square\":   return Square()",
-     "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "17",
-   "q": "Q45. What is the Strategy design pattern?",
-   "body": [
-    {
-     "t": "p",
-     "text": "Define a family of algorithms, encapsulate each, and make them interchangeable. In Python, often implemented by passing functions/callables:"
-    },
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "def sort_by_name(items): return sorted(items, key=lambda x: x.name)\ndef sort_by_price(items): return sorted(items, key=lambda x: x.price)\n\nsorter = sort_by_price  # Swap strategy at runtime",
-     "numbered": false
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Functional Programming & Itertools (Q46–Q60)"
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "18",
-   "q": "Q46. What is a closure in Python?",
+   "n": "14",
+   "q": "What is a closure in Python?",
    "body": [
     {
      "t": "p",
@@ -321,8 +252,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "19",
-   "q": "Q47. What is `map`, `filter`, and `reduce`?",
+   "n": "15",
+   "q": "What is `map`, `filter`, and `reduce`?",
    "body": [
     {
      "t": "code",
@@ -334,8 +265,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "20",
-   "q": "Q48. What is `functools.partial`?",
+   "n": "16",
+   "q": "What is `functools.partial`?",
    "body": [
     {
      "t": "p",
@@ -351,8 +282,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "21",
-   "q": "Q49. What is `itertools` and name five useful functions?",
+   "n": "17",
+   "q": "What is `itertools` and name five useful functions?",
    "body": [
     {
      "t": "p",
@@ -362,8 +293,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "22",
-   "q": "Q50. What is `enumerate`?",
+   "n": "18",
+   "q": "What is `enumerate`?",
    "body": [
     {
      "t": "code",
@@ -379,8 +310,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "23",
-   "q": "Q51. What is `sorted` vs `.sort()`?",
+   "n": "19",
+   "q": "What is `sorted` vs `.sort()`?",
    "body": [
     {
      "t": "ul",
@@ -393,8 +324,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "24",
-   "q": "Q52. What is a `namedtuple`?",
+   "n": "20",
+   "q": "What is a `namedtuple`?",
    "body": [
     {
      "t": "code",
@@ -410,8 +341,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "25",
-   "q": "Q53. What are `defaultdict` and `Counter` from `collections`?",
+   "n": "21",
+   "q": "What are `defaultdict` and `Counter` from `collections`?",
    "body": [
     {
      "t": "code",
@@ -423,8 +354,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "26",
-   "q": "Q54. What is `heapq` module used for?",
+   "n": "22",
+   "q": "What is `heapq` module used for?",
    "body": [
     {
      "t": "p",
@@ -434,8 +365,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "27",
-   "q": "Q55. What is `lru_cache` and when should you use it?",
+   "n": "23",
+   "q": "What is `lru_cache` and when should you use it?",
    "body": [
     {
      "t": "p",
@@ -445,8 +376,8 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "28",
-   "q": "Q56. What is recursion and what is its Python-specific limitation?",
+   "n": "24",
+   "q": "What is recursion and what is its Python-specific limitation?",
    "body": [
     {
      "t": "p",

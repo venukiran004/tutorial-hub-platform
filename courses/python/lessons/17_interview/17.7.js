@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. What is the difference between concurrency and parallelism?",
+   "q": "What is the difference between concurrency and parallelism?",
    "body": [
     {
      "t": "p",
@@ -68,7 +68,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. What is the GIL and why does it exist?",
+   "q": "What is the GIL and why does it exist?",
    "body": [
     {
      "t": "p",
@@ -98,7 +98,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. How does the GIL affect CPU-bound vs I/O-bound threads?",
+   "q": "How does the GIL affect CPU-bound vs I/O-bound threads?",
    "body": [
     {
      "t": "p",
@@ -133,7 +133,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. When should you use threading vs multiprocessing vs asyncio?",
+   "q": "When should you use threading vs multiprocessing vs asyncio?",
    "body": [
     {
      "t": "p",
@@ -177,7 +177,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. What is a race condition? Show one and fix it.",
+   "q": "What is a race condition? Show one and fix it.",
    "body": [
     {
      "t": "p",
@@ -206,7 +206,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. What is the difference between `Lock` and `RLock`?",
+   "q": "What is the difference between `Lock` and `RLock`?",
    "body": [
     {
      "t": "p",
@@ -236,7 +236,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. Compare Event, Semaphore, Condition, and Barrier.",
+   "q": "Compare Event, Semaphore, Condition, and Barrier.",
    "body": [
     {
      "t": "p",
@@ -286,7 +286,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. Why is `queue.Queue` preferred for communicating between threads?",
+   "q": "Why is `queue.Queue` preferred for communicating between threads?",
    "body": [
     {
      "t": "p",
@@ -315,7 +315,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. How does `multiprocessing` bypass the GIL? What's the catch?",
+   "q": "How does `multiprocessing` bypass the GIL? What's the catch?",
    "body": [
     {
      "t": "p",
@@ -346,7 +346,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. Why is `if __name__ == \"__main__\":` required with multiprocessing?",
+   "q": "Why is `if __name__ == \"__main__\":` required with multiprocessing?",
    "body": [
     {
      "t": "p",
@@ -376,7 +376,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. How do you share state between processes?",
+   "q": "How do you share state between processes?",
    "body": [
     {
      "t": "p",
@@ -405,7 +405,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. What is `concurrent.futures` and why prefer it?",
+   "q": "What is `concurrent.futures` and why prefer it?",
    "body": [
     {
      "t": "p",
@@ -434,7 +434,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. What is a `Future`? What does `.result()` do with exceptions?",
+   "q": "What is a `Future`? What does `.result()` do with exceptions?",
    "body": [
     {
      "t": "p",
@@ -464,7 +464,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. Difference between `executor.map` and `submit` + `as_completed`?",
+   "q": "Difference between `executor.map` and `submit` + `as_completed`?",
    "body": [
     {
      "t": "p",
@@ -489,7 +489,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. How do you set a timeout or cancel a task in `concurrent.futures`?",
+   "q": "How do you set a timeout or cancel a task in `concurrent.futures`?",
    "body": [
     {
      "t": "p",
@@ -515,7 +515,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. What is asyncio and how does the event loop work?",
+   "q": "What is asyncio and how does the event loop work?",
    "body": [
     {
      "t": "p",
@@ -545,7 +545,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. What is the difference between a coroutine, a Task, and a Future in asyncio?",
+   "q": "What is the difference between a coroutine, a Task, and a Future in asyncio?",
    "body": [
     {
      "t": "p",
@@ -581,7 +581,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. What does `await` actually do?",
+   "q": "What does `await` actually do?",
    "body": [
     {
      "t": "p",
@@ -611,7 +611,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. How do you run multiple coroutines concurrently with `gather`?",
+   "q": "How do you run multiple coroutines concurrently with `gather`?",
    "body": [
     {
      "t": "p",
@@ -640,7 +640,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. What is `asyncio.TaskGroup` and why prefer it over `gather` (3.11+)?",
+   "q": "What is `asyncio.TaskGroup` and why prefer it over `gather` (3.11+)?",
    "body": [
     {
      "t": "p",
@@ -670,7 +670,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q21. How do you implement timeouts in asyncio?",
+   "q": "How do you implement timeouts in asyncio?",
    "body": [
     {
      "t": "p",
@@ -695,7 +695,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q22. How do you limit concurrency in asyncio?",
+   "q": "How do you limit concurrency in asyncio?",
    "body": [
     {
      "t": "p",
@@ -724,7 +724,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q23. What are async generators and async iterators?",
+   "q": "What are async generators and async iterators?",
    "body": [
     {
      "t": "p",
@@ -755,7 +755,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q24. What happens if you run blocking code inside an async function?",
+   "q": "What happens if you run blocking code inside an async function?",
    "body": [
     {
      "t": "p",
@@ -785,7 +785,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q25. How do you mix asyncio with CPU-bound work?",
+   "q": "How do you mix asyncio with CPU-bound work?",
    "body": [
     {
      "t": "p",
@@ -814,7 +814,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q26. What is a deadlock and how do you avoid it?",
+   "q": "What is a deadlock and how do you avoid it?",
    "body": [
     {
      "t": "p",
@@ -843,7 +843,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q27. What is a daemon thread and when should you use one?",
+   "q": "What is a daemon thread and when should you use one?",
    "body": [
     {
      "t": "p",
@@ -873,7 +873,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q28. How are exceptions handled across threads, processes, and asyncio?",
+   "q": "How are exceptions handled across threads, processes, and asyncio?",
    "body": [
     {
      "t": "p",

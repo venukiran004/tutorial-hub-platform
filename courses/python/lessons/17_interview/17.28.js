@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. What are Python's key characteristics?",
+   "q": "What are Python's key characteristics?",
    "body": [
     {
      "t": "p",
@@ -45,7 +45,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. What is the difference between a list, tuple, and set?",
+   "q": "What is the difference between a list, tuple, and set?",
    "body": [
     {
      "t": "table",
@@ -87,7 +87,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. What is a dictionary in Python? How is it implemented?",
+   "q": "What is a dictionary in Python? How is it implemented?",
    "body": [
     {
      "t": "p",
@@ -98,7 +98,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. What is the difference between `==` and `is`?",
+   "q": "What is the difference between `==` and `is`?",
    "body": [
     {
      "t": "ul",
@@ -118,7 +118,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. What are Python's mutable and immutable types?",
+   "q": "What are Python's mutable and immutable types?",
    "body": [
     {
      "t": "ul",
@@ -136,7 +136,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. How does Python manage memory?",
+   "q": "How does Python manage memory?",
    "body": [
     {
      "t": "p",
@@ -147,7 +147,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. What is a generator in Python?",
+   "q": "What is a generator in Python?",
    "body": [
     {
      "t": "p",
@@ -164,7 +164,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. What are list comprehensions and generator expressions?",
+   "q": "What are list comprehensions and generator expressions?",
    "body": [
     {
      "t": "code",
@@ -181,7 +181,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. What is a lambda function?",
+   "q": "What is a lambda function?",
    "body": [
     {
      "t": "p",
@@ -202,7 +202,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. What is the difference between `*args` and `**kwargs`?",
+   "q": "What is the difference between `*args` and `**kwargs`?",
    "body": [
     {
      "t": "ul",
@@ -222,7 +222,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. What is a Python decorator and how does it work?",
+   "q": "What is a Python decorator and how does it work?",
    "body": [
     {
      "t": "p",
@@ -239,7 +239,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. What is `functools.wraps` and why use it with decorators?",
+   "q": "What is `functools.wraps` and why use it with decorators?",
    "body": [
     {
      "t": "p",
@@ -250,7 +250,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. What are Python's built-in data structures and their time complexities?",
+   "q": "What are Python's built-in data structures and their time complexities?",
    "body": [
     {
      "t": "table",
@@ -292,7 +292,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. What is the Global Interpreter Lock (GIL)?",
+   "q": "What is the Global Interpreter Lock (GIL)?",
    "body": [
     {
      "t": "p",
@@ -303,7 +303,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. What is the difference between `deepcopy` and `copy`?",
+   "q": "What is the difference between `deepcopy` and `copy`?",
    "body": [
     {
      "t": "ul",
@@ -323,7 +323,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. Explain Python's `with` statement and context managers.",
+   "q": "Explain Python's `with` statement and context managers.",
    "body": [
     {
      "t": "p",
@@ -340,7 +340,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. What is the difference between `staticmethod`, `classmethod`, and instance methods?",
+   "q": "What is the difference between `staticmethod`, `classmethod`, and instance methods?",
    "body": [
     {
      "t": "ul",
@@ -355,7 +355,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. What are Python's string formatting methods?",
+   "q": "What are Python's string formatting methods?",
    "body": [
     {
      "t": "code",
@@ -368,7 +368,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. What is `__init__` vs `__new__` in Python?",
+   "q": "What is `__init__` vs `__new__` in Python?",
    "body": [
     {
      "t": "ul",
@@ -382,7 +382,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. What are Python's collection modules?",
+   "q": "What are Python's collection modules?",
    "body": [
     {
      "t": "p",
@@ -393,7 +393,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q21. What is the difference between `range` and `xrange` in Python 2 vs 3?",
+   "q": "What is the difference between `range` and `xrange` in Python 2 vs 3?",
    "body": [
     {
      "t": "p",
@@ -404,7 +404,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q22. What is Python's `None` type?",
+   "q": "What is Python's `None` type?",
    "body": [
     {
      "t": "p",
@@ -415,7 +415,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q23. Explain Python's truthiness rules.",
+   "q": "Explain Python's truthiness rules.",
    "body": [
     {
      "t": "p",
@@ -426,7 +426,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q24. What is unpacking in Python?",
+   "q": "What is unpacking in Python?",
    "body": [
     {
      "t": "code",
@@ -439,7 +439,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q25. What is the `zip` function?",
+   "q": "What is the `zip` function?",
    "body": [
     {
      "t": "p",
@@ -463,7 +463,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q26. What are the four pillars of OOP?",
+   "q": "What are the four pillars of OOP?",
    "body": [
     {
      "t": "ol",
@@ -485,7 +485,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q27. How does Python handle encapsulation?",
+   "q": "How does Python handle encapsulation?",
    "body": [
     {
      "t": "p",
@@ -496,7 +496,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q28. What is Python's MRO (Method Resolution Order)?",
+   "q": "What is Python's MRO (Method Resolution Order)?",
    "body": [
     {
      "t": "p",

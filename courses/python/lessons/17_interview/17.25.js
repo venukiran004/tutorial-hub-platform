@@ -7,9 +7,9 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "17.25",
- "lede": "**16 interview questions on api consumption & webhooks**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up question.",
+ "lede": "**15 interview questions on api consumption & webhooks**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up question.",
  "objectives": [
-  "Answer 16 questions on api consumption & webhooks without prompting",
+  "Answer 15 questions on api consumption & webhooks without prompting",
   "State the trade-off behind each answer, not only the definition",
   "Recognise the follow-up each question is setting up",
   "Notice which answers you can recognise but not produce"
@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. What is the difference between consuming an API and building one?",
+   "q": "What is the difference between consuming an API and building one?",
    "body": [
     {
      "t": "p",
@@ -66,7 +66,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. Why use `requests.Session()` instead of calling `requests.get()` directly?",
+   "q": "Why use `requests.Session()` instead of calling `requests.get()` directly?",
    "body": [
     {
      "t": "p",
@@ -105,7 +105,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. When should you use `httpx` instead of `requests`?",
+   "q": "When should you use `httpx` instead of `requests`?",
    "body": [
     {
      "t": "p",
@@ -139,7 +139,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. Why must you always set a timeout on outgoing requests?",
+   "q": "Why must you always set a timeout on outgoing requests?",
    "body": [
     {
      "t": "p",
@@ -169,7 +169,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. What is the difference between `response.raise_for_status()` and checking `status_code`?",
+   "q": "What is the difference between `response.raise_for_status()` and checking `status_code`?",
    "body": [
     {
      "t": "p",
@@ -205,7 +205,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. What are common HTTP status codes a client should handle?",
+   "q": "What are common HTTP status codes a client should handle?",
    "body": [
     {
      "t": "p",
@@ -285,7 +285,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. How do you implement retries with exponential backoff, and why \"exponential\"?",
+   "q": "How do you implement retries with exponential backoff, and why \"exponential\"?",
    "body": [
     {
      "t": "p",
@@ -316,7 +316,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. What is the difference between polling and webhooks?",
+   "q": "What is the difference between polling and webhooks?",
    "body": [
     {
      "t": "p",
@@ -349,7 +349,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. How do you secure a webhook endpoint?",
+   "q": "How do you secure a webhook endpoint?",
    "body": [
     {
      "t": "p",
@@ -391,7 +391,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. Why must webhook handlers be idempotent?",
+   "q": "Why must webhook handlers be idempotent?",
    "body": [
     {
      "t": "p",
@@ -427,7 +427,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. How do you handle pagination when consuming a large API?",
+   "q": "How do you handle pagination when consuming a large API?",
    "body": [
     {
      "t": "p",
@@ -471,7 +471,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. What is rate limiting and how do you respect it as a client?",
+   "q": "What is rate limiting and how do you respect it as a client?",
    "body": [
     {
      "t": "p",
@@ -510,7 +510,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. What are the common API authentication schemes you'll encounter as a client?",
+   "q": "What are the common API authentication schemes you'll encounter as a client?",
    "body": [
     {
      "t": "p",
@@ -568,7 +568,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. How should you store and manage API keys and secrets?",
+   "q": "How should you store and manage API keys and secrets?",
    "body": [
     {
      "t": "p",
@@ -603,46 +603,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. What is a circuit breaker and when would you use one?",
-   "body": [
-    {
-     "t": "p",
-     "text": "**Answer:**"
-    },
-    {
-     "t": "p",
-     "text": "A **circuit breaker** stops sending requests to a dependency that is clearly failing, instead of retrying into a black hole. Like an electrical breaker it has three states:"
-    },
-    {
-     "t": "ul",
-     "items": [
-      "**Closed**calls flow normally; failures are counted.",
-      "**Open**after too many failures it \"trips\" — calls fail fast immediately (no network call) for a cooldown period.",
-      "**Half-open**after cooldown it lets a few trial calls through; success closes the circuit, failure re-opens it."
-     ]
-    },
-    {
-     "t": "p",
-     "text": "This prevents a failing downstream service from tying up all your workers and gives it room to recover."
-    },
-    {
-     "t": "p",
-     "text": "**Key takeaway:** Retries handle *transient* blips; circuit breakers handle a dependency that's *down* — fail fast and protect your own service from cascading failure."
-    }
-   ],
-   "terms": [
-    "Answer",
-    "circuit breaker",
-    "Closed",
-    "Open",
-    "Half-open",
-    "Key takeaway"
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "16",
-   "q": "Q16. What's the difference between connect timeout and read timeout?",
+   "q": "What's the difference between connect timeout and read timeout?",
    "body": [
     {
      "t": "p",

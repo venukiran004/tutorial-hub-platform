@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q29. How do you broadcast to compute group/segment sums quickly?",
+   "q": "How do you broadcast to compute group/segment sums quickly?",
    "body": [
     {
      "t": "p",
@@ -63,7 +63,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q30. What are `np.argpartition` and `np.argsort`? When prefer one?",
+   "q": "What are `np.argpartition` and `np.argsort`? When prefer one?",
    "body": [
     {
      "t": "p",
@@ -92,7 +92,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q31. How do you create a one-hot encoding with NumPy?",
+   "q": "How do you create a one-hot encoding with NumPy?",
    "body": [
     {
      "t": "p",
@@ -117,7 +117,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q32. What is the difference between `np.copy`, assignment, and a view in practice?",
+   "q": "What is the difference between `np.copy`, assignment, and a view in practice?",
    "body": [
     {
      "t": "p",
@@ -146,7 +146,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q33. How do you count elements satisfying a condition?",
+   "q": "How do you count elements satisfying a condition?",
    "body": [
     {
      "t": "p",
@@ -171,7 +171,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q34. What is `np.clip` and how does it relate to `np.maximum`/`np.minimum`?",
+   "q": "What is `np.clip` and how does it relate to `np.maximum`/`np.minimum`?",
    "body": [
     {
      "t": "p",
@@ -200,7 +200,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q35. How would you reduce the memory footprint of a large NumPy array?",
+   "q": "How would you reduce the memory footprint of a large NumPy array?",
    "body": [
     {
      "t": "p",
@@ -237,7 +237,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q36. What are structured (record) arrays?",
+   "q": "What are structured (record) arrays?",
    "body": [
     {
      "t": "p",
@@ -266,7 +266,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q37. What is a masked array (`np.ma`)?",
+   "q": "What is a masked array (`np.ma`)?",
    "body": [
     {
      "t": "p",
@@ -295,7 +295,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q38. How do you do an FFT and read its output?",
+   "q": "How do you do an FFT and read its output?",
    "body": [
     {
      "t": "p",
@@ -324,7 +324,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q39. What's the difference between `np.convolve`, `np.correlate`, and the `'valid'/'same'/'full'` modes?",
+   "q": "What's the difference between `np.convolve`, `np.correlate`, and the `'valid'/'same'/'full'` modes?",
    "body": [
     {
      "t": "p",
@@ -353,7 +353,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q40. How do you build a coordinate grid to evaluate a 2D function?",
+   "q": "How do you build a coordinate grid to evaluate a 2D function?",
    "body": [
     {
      "t": "p",
@@ -383,7 +383,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q41. How do you compute Gini impurity and entropy with NumPy?",
+   "q": "How do you compute Gini impurity and entropy with NumPy?",
    "body": [
     {
      "t": "p",
@@ -408,7 +408,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q42. Why subtract the max in softmax and clip the input to sigmoid?",
+   "q": "Why subtract the max in softmax and clip the input to sigmoid?",
    "body": [
     {
      "t": "p",
@@ -437,7 +437,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q43. How do Xavier and He initialization differ?",
+   "q": "How do Xavier and He initialization differ?",
    "body": [
     {
      "t": "p",

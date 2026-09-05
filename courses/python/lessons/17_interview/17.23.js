@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. What is Pydantic and what problem does it solve?",
+   "q": "What is Pydantic and what problem does it solve?",
    "body": [
     {
      "t": "p",
@@ -63,7 +63,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. What changed from Pydantic v1 to v2, and why?",
+   "q": "What changed from Pydantic v1 to v2, and why?",
    "body": [
     {
      "t": "p",
@@ -127,7 +127,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. What is the difference between `field_validator` and `model_validator`?",
+   "q": "What is the difference between `field_validator` and `model_validator`?",
    "body": [
     {
      "t": "p",
@@ -160,7 +160,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. What is the difference between validator `mode=\"before\"` and `mode=\"after\"`?",
+   "q": "What is the difference between validator `mode=\"before\"` and `mode=\"after\"`?",
    "body": [
     {
      "t": "p",
@@ -196,7 +196,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. What does `Field()` do? Give common constraints.",
+   "q": "What does `Field()` do? Give common constraints.",
    "body": [
     {
      "t": "p",
@@ -229,7 +229,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. How do you serialize a Pydantic model?",
+   "q": "How do you serialize a Pydantic model?",
    "body": [
     {
      "t": "p",
@@ -254,7 +254,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. How do you parse external data into a model?",
+   "q": "How do you parse external data into a model?",
    "body": [
     {
      "t": "p",
@@ -279,7 +279,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. What is `ConfigDict` and what are common options?",
+   "q": "What is `ConfigDict` and what are common options?",
    "body": [
     {
      "t": "p",
@@ -339,7 +339,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. What is strict mode and when would you use it?",
+   "q": "What is strict mode and when would you use it?",
    "body": [
     {
      "t": "p",
@@ -368,7 +368,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. How do discriminated unions work and why use them?",
+   "q": "How do discriminated unions work and why use them?",
    "body": [
     {
      "t": "p",
@@ -402,7 +402,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. What are computed fields?",
+   "q": "What are computed fields?",
    "body": [
     {
      "t": "p",
@@ -431,7 +431,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. How does `pydantic-settings` resolve configuration values?",
+   "q": "How does `pydantic-settings` resolve configuration values?",
    "body": [
     {
      "t": "p",
@@ -464,7 +464,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. How do you handle mutable defaults correctly?",
+   "q": "How do you handle mutable defaults correctly?",
    "body": [
     {
      "t": "p",
@@ -493,7 +493,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. What is `from_attributes` (formerly `orm_mode`)?",
+   "q": "What is `from_attributes` (formerly `orm_mode`)?",
    "body": [
     {
      "t": "p",
@@ -523,7 +523,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. How does Pydantic integrate with FastAPI?",
+   "q": "How does Pydantic integrate with FastAPI?",
    "body": [
     {
      "t": "p",
@@ -553,7 +553,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. When would you choose attrs or msgspec over Pydantic?",
+   "q": "When would you choose attrs or msgspec over Pydantic?",
    "body": [
     {
      "t": "p",
@@ -583,7 +583,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. How do dataclasses compare to Pydantic models?",
+   "q": "How do dataclasses compare to Pydantic models?",
    "body": [
     {
      "t": "p",
@@ -607,7 +607,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. How do you create a reusable custom validated type?",
+   "q": "How do you create a reusable custom validated type?",
    "body": [
     {
      "t": "p",
@@ -644,7 +644,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. How are validation errors structured, and why is that useful?",
+   "q": "How are validation errors structured, and why is that useful?",
    "body": [
     {
      "t": "p",
@@ -674,7 +674,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. How would you validate a complex ML/training config at startup?",
+   "q": "How would you validate a complex ML/training config at startup?",
    "body": [
     {
      "t": "p",

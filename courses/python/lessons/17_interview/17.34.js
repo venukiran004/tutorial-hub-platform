@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q169. What is `asyncio.to_thread` and when is it used?",
+   "q": "What is `asyncio.to_thread` and when is it used?",
    "body": [
     {
      "t": "p",
@@ -55,7 +55,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q170. What is `logging.getLogger` vs print for production code?",
+   "q": "What is `logging.getLogger` vs print for production code?",
    "body": [
     {
      "t": "code",
@@ -72,7 +72,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q171. What is structured logging with `structlog`?",
+   "q": "What is structured logging with `structlog`?",
    "body": [
     {
      "t": "code",
@@ -89,7 +89,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q172. What is Python's `traceback` module?",
+   "q": "What is Python's `traceback` module?",
    "body": [
     {
      "t": "code",
@@ -102,7 +102,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q173. What is Python's `subprocess` module and the `subprocess.run` vs `Popen`?",
+   "q": "What is Python's `subprocess` module and the `subprocess.run` vs `Popen`?",
    "body": [
     {
      "t": "code",
@@ -115,7 +115,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q174. What is Python's `pathlib` and why is it preferred over `os.path`?",
+   "q": "What is Python's `pathlib` and why is it preferred over `os.path`?",
    "body": [
     {
      "t": "code",
@@ -132,7 +132,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q175. What is `io.StringIO` and `io.BytesIO`?",
+   "q": "What is `io.StringIO` and `io.BytesIO`?",
    "body": [
     {
      "t": "p",
@@ -149,7 +149,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q176. What is `json.loads` vs `json.load` and `json.dumps` vs `json.dump`?",
+   "q": "What is `json.loads` vs `json.load` and `json.dumps` vs `json.dump`?",
    "body": [
     {
      "t": "ul",
@@ -175,7 +175,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q177. What are Python's `@property`, `@getter`, `@property.setter`, `@property.deleter`?",
+   "q": "What are Python's `@property`, `@getter`, `@property.setter`, `@property.deleter`?",
    "body": [
     {
      "t": "code",
@@ -188,7 +188,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q178. What is `__format__` and custom format specifications?",
+   "q": "What is `__format__` and custom format specifications?",
    "body": [
     {
      "t": "code",
@@ -201,7 +201,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q179. What is `zlib`/`gzip`/`lzma` compression in Python?",
+   "q": "What is `zlib`/`gzip`/`lzma` compression in Python?",
    "body": [
     {
      "t": "code",
@@ -214,7 +214,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q180. What is Python's `re` module and key regex patterns for data science?",
+   "q": "What is Python's `re` module and key regex patterns for data science?",
    "body": [
     {
      "t": "code",
@@ -227,7 +227,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q181. What is Python's `enum` module?",
+   "q": "What is Python's `enum` module?",
    "body": [
     {
      "t": "code",
@@ -240,7 +240,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q182. What is Python's `datetime` and `zoneinfo` (Python 3.9+)?",
+   "q": "What is Python's `datetime` and `zoneinfo` (Python 3.9+)?",
    "body": [
     {
      "t": "code",
@@ -253,7 +253,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q183. What are `match` statements (PEP 634) and structural pattern matching?",
+   "q": "What are `match` statements (PEP 634) and structural pattern matching?",
    "body": [
     {
      "t": "code",
@@ -270,7 +270,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q184. What is Python's `__init__.py` and lazy imports?",
+   "q": "What is Python's `__init__.py` and lazy imports?",
    "body": [
     {
      "t": "code",
@@ -287,7 +287,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q185. What is `typing.TypeVar` with bounds and constraints?",
+   "q": "What is `typing.TypeVar` with bounds and constraints?",
    "body": [
     {
      "t": "code",
@@ -300,7 +300,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q186. What is `typing.Literal`?",
+   "q": "What is `typing.Literal`?",
    "body": [
     {
      "t": "code",
@@ -313,7 +313,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q187. What is `typing.TypedDict` for typed dictionaries?",
+   "q": "What is `typing.TypedDict` for typed dictionaries?",
    "body": [
     {
      "t": "code",
@@ -326,7 +326,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q188. What is `typing.Annotated`?",
+   "q": "What is `typing.Annotated`?",
    "body": [
     {
      "t": "p",
@@ -343,7 +343,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q189. What is Python's `__debug__` flag and `assert`?",
+   "q": "What is Python's `__debug__` flag and `assert`?",
    "body": [
     {
      "t": "p",
@@ -364,7 +364,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q190. What is `sys.argv` vs `argparse` vs `click`?",
+   "q": "What is `sys.argv` vs `argparse` vs `click`?",
    "body": [
     {
      "t": "code",
@@ -377,7 +377,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q191. What is Python's `__file__` and package path resolution?",
+   "q": "What is Python's `__file__` and package path resolution?",
    "body": [
     {
      "t": "code",
@@ -394,7 +394,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q192. What is `sys.exit` vs `raise SystemExit`?",
+   "q": "What is `sys.exit` vs `raise SystemExit`?",
    "body": [
     {
      "t": "p",
@@ -405,7 +405,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q193. What is Python's `inspect` module?",
+   "q": "What is Python's `inspect` module?",
    "body": [
     {
      "t": "code",
@@ -422,7 +422,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q194. What is Python's `ast` module?",
+   "q": "What is Python's `ast` module?",
    "body": [
     {
      "t": "p",
@@ -443,7 +443,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q195. What is `copy.copy()` vs `copy.deepcopy()`?",
+   "q": "What is `copy.copy()` vs `copy.deepcopy()`?",
    "body": [
     {
      "t": "code",
@@ -456,7 +456,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q196. What is `pickle` vs `json` vs `msgpack` vs `parquet` for data serialization?",
+   "q": "What is `pickle` vs `json` vs `msgpack` vs `parquet` for data serialization?",
    "body": [
     {
      "t": "table",
@@ -508,7 +508,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q197. What is Python's `with` statement and multiple context managers?",
+   "q": "What is Python's `with` statement and multiple context managers?",
    "body": [
     {
      "t": "code",
@@ -521,7 +521,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q198. What is PEP 8 and which tools enforce it?",
+   "q": "What is PEP 8 and which tools enforce it?",
    "body": [
     {
      "t": "p",
@@ -532,7 +532,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "31",
-   "q": "Q199. What is a Python project's typical folder structure?",
+   "q": "What is a Python project's typical folder structure?",
    "body": [
     {
      "t": "code",
@@ -549,7 +549,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "32",
-   "q": "Q200. What are Python's best practices for writing production-grade code?",
+   "q": "What are Python's best practices for writing production-grade code?",
    "body": [
     {
      "t": "ul",

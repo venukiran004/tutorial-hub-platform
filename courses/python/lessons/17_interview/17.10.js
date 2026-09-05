@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q33. Small-int cache + getrefcount",
+   "q": "Small-int cache + getrefcount",
    "body": [
     {
      "t": "code",
@@ -55,7 +55,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q34. Counting references with aliases",
+   "q": "Counting references with aliases",
    "body": [
     {
      "t": "code",
@@ -76,7 +76,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q35. String interning of concatenations and joins",
+   "q": "String interning of concatenations and joins",
    "body": [
     {
      "t": "code",
@@ -97,7 +97,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q36. Object sizes of empty containers",
+   "q": "Object sizes of empty containers",
    "body": [
     {
      "t": "code",
@@ -118,7 +118,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q37. `__slots__` vs regular instance — `__dict__`",
+   "q": "`__slots__` vs regular instance — `__dict__`",
    "body": [
     {
      "t": "code",
@@ -139,7 +139,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q38. Adding an undeclared attribute to a slotted instance",
+   "q": "Adding an undeclared attribute to a slotted instance",
    "body": [
     {
      "t": "code",
@@ -160,7 +160,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q39. Collecting a circular reference",
+   "q": "Collecting a circular reference",
    "body": [
     {
      "t": "code",
@@ -181,7 +181,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q40. Weakref before and after deletion",
+   "q": "Weakref before and after deletion",
    "body": [
     {
      "t": "code",
@@ -202,7 +202,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q41. WeakValueDictionary auto-eviction",
+   "q": "WeakValueDictionary auto-eviction",
    "body": [
     {
      "t": "code",
@@ -223,7 +223,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q42. Generator vs list memory",
+   "q": "Generator vs list memory",
    "body": [
     {
      "t": "code",
@@ -244,7 +244,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q43. String `+=` vs `join` timing",
+   "q": "String `+=` vs `join` timing",
    "body": [
     {
      "t": "code",
@@ -265,7 +265,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q44. `lru_cache` hit/miss stats for fib(50)",
+   "q": "`lru_cache` hit/miss stats for fib(50)",
    "body": [
     {
      "t": "code",
@@ -286,7 +286,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q45. `array.array` vs list memory",
+   "q": "`array.array` vs list memory",
    "body": [
     {
      "t": "code",
@@ -307,7 +307,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q46. Membership testing: list vs set vs dict",
+   "q": "Membership testing: list vs set vs dict",
    "body": [
     {
      "t": "code",
@@ -328,7 +328,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q47. LazyProperty descriptor — compute once",
+   "q": "LazyProperty descriptor — compute once",
    "body": [
     {
      "t": "code",
@@ -355,7 +355,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q48. namedtuple vs dict vs tuple memory",
+   "q": "namedtuple vs dict vs tuple memory",
    "body": [
     {
      "t": "code",
@@ -376,7 +376,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q49. Chunked processing equivalence",
+   "q": "Chunked processing equivalence",
    "body": [
     {
      "t": "code",
@@ -397,7 +397,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q50. Infinite generator + islice",
+   "q": "Infinite generator + islice",
    "body": [
     {
      "t": "code",
@@ -418,7 +418,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q51. Dict comprehension vs dict(zip(...))",
+   "q": "Dict comprehension vs dict(zip(...))",
    "body": [
     {
      "t": "code",
@@ -439,7 +439,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q52. Generator pipeline filtering",
+   "q": "Generator pipeline filtering",
    "body": [
     {
      "t": "code",
@@ -460,7 +460,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q53. `@dataclass(slots=True)` vs plain dataclass",
+   "q": "`@dataclass(slots=True)` vs plain dataclass",
    "body": [
     {
      "t": "code",
@@ -481,7 +481,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q54. Tuple vs list memory for same data",
+   "q": "Tuple vs list memory for same data",
    "body": [
     {
      "t": "code",
@@ -502,7 +502,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q55. `__slots__` inheritance across three levels",
+   "q": "`__slots__` inheritance across three levels",
    "body": [
     {
      "t": "code",
@@ -523,7 +523,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q56. LRU eviction ordering",
+   "q": "LRU eviction ordering",
    "body": [
     {
      "t": "code",
@@ -554,7 +554,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q57. `sys.intern` for long strings",
+   "q": "`sys.intern` for long strings",
    "body": [
     {
      "t": "code",
@@ -575,7 +575,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q58. Sparse matrix storage",
+   "q": "Sparse matrix storage",
    "body": [
     {
      "t": "code",
@@ -596,7 +596,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q59. tracemalloc on a comprehension",
+   "q": "tracemalloc on a comprehension",
    "body": [
     {
      "t": "code",
@@ -613,7 +613,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q60. Flyweight shared instances",
+   "q": "Flyweight shared instances",
    "body": [
     {
      "t": "code",

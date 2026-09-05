@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q29. What is the `with` statement / context manager protocol, and why use it?",
+   "q": "What is the `with` statement / context manager protocol, and why use it?",
    "body": [
     {
      "t": "p",
@@ -63,7 +63,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q30. What does `functools.wraps` do and why is it important in decorators?",
+   "q": "What does `functools.wraps` do and why is it important in decorators?",
    "body": [
     {
      "t": "p",
@@ -93,7 +93,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q31. What's the difference between `==` for dicts and merging strategies, and how do you merge dicts cleanly?",
+   "q": "What's the difference between `==` for dicts and merging strategies, and how do you merge dicts cleanly?",
    "body": [
     {
      "t": "p",
@@ -126,7 +126,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q32. Which Ruff rules would you enable for a production project?",
+   "q": "Which Ruff rules would you enable for a production project?",
    "body": [
     {
      "t": "p",
@@ -149,7 +149,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q33. When would you use `unittest.mock.patch` vs dependency injection?",
+   "q": "When would you use `unittest.mock.patch` vs dependency injection?",
    "body": [
     {
      "t": "p",
@@ -180,7 +180,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q34. What is `uv` and how does it compare to pip?",
+   "q": "What is `uv` and how does it compare to pip?",
    "body": [
     {
      "t": "p",
@@ -210,7 +210,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q35. What is the difference between `subprocess.run()` list form and `shell=True`?",
+   "q": "What is the difference between `subprocess.run()` list form and `shell=True`?",
    "body": [
     {
      "t": "p",
@@ -242,7 +242,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q36. How do pytest fixtures and their scopes work?",
+   "q": "How do pytest fixtures and their scopes work?",
    "body": [
     {
      "t": "p",
