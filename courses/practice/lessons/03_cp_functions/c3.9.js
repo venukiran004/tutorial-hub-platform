@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q91. A lambda — what is the output?",
+   "q": "A lambda — output of `result = dict(map(lambda x: (x[0], 'Pass' if…`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q92. A lambda — what is the output?",
+   "q": "A lambda — output of `type(g)`",
    "body": [
     {
      "t": "code",
@@ -74,7 +74,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q93. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `dropped = list(dropwhile(lambda x: x < 5, num…`",
    "body": [
     {
      "t": "code",
@@ -96,7 +96,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q94. map() and filter() — what is the output?",
+   "q": "map() and filter() — output of `result = '-'.join(mapped)`",
    "body": [
     {
      "t": "code",
@@ -118,7 +118,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q95. A lambda — what is the output?",
+   "q": "A lambda — output of `factorial(5)`",
    "body": [
     {
      "t": "code",
@@ -140,7 +140,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q96. A lambda — what is the output?",
+   "q": "A lambda — output of `sorter(data)`",
    "body": [
     {
      "t": "code",
@@ -162,7 +162,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q97. map() and filter() — what is the output?",
+   "q": "map() and filter() — output of `nested = [[1, 2, 3], [4, 5], [6]]`",
    "body": [
     {
      "t": "code",
@@ -184,7 +184,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q98. A lambda — what is the output?",
+   "q": "A lambda — output of `result = reduce(lambda a, b: f\"{a} {b}\", word…`",
    "body": [
     {
      "t": "code",
@@ -206,7 +206,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q99. A generator expression — what is the output?",
+   "q": "A generator expression — output of `[d['name'] for d in by_age]`",
    "body": [
     {
      "t": "code",

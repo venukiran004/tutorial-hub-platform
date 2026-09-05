@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. A function call — what is the output?",
+   "q": "A function call — output of `greet()`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. A function call — what is the output?",
+   "q": "A function call — output of `add(1, 2)`",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. *args and **kwargs — what is the output?",
+   "q": "*args and **kwargs — output of `a, b, args, kwargs`",
    "body": [
     {
      "t": "code",
@@ -96,7 +96,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. A mutable default argument — what is the output?",
+   "q": "A mutable default argument — output of `dangerous()`",
    "body": [
     {
      "t": "code",
@@ -118,7 +118,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. What is the fix for Q304?",
+   "q": "What is the fix for Q304?",
    "body": [
     {
      "t": "code",
@@ -140,7 +140,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. A function call — what is the output?",
+   "q": "A function call — output of `\"inner:\", x`",
    "body": [
     {
      "t": "code",
@@ -162,7 +162,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. The global keyword — what is the output?",
+   "q": "The global keyword — output of `def func():`",
    "body": [
     {
      "t": "code",
@@ -184,7 +184,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. The nonlocal keyword — what is the output?",
+   "q": "The nonlocal keyword — output of `def outer():`",
    "body": [
     {
      "t": "code",
@@ -206,7 +206,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. A function call — what is the output?",
+   "q": "A function call — output of `a, b, c, d, e, f`",
    "body": [
     {
      "t": "code",
@@ -228,7 +228,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. A function call — what is the output?",
+   "q": "A function call — output of `def func(a, b, /, c, d, *, e, f):`",
    "body": [
     {
      "t": "code",
@@ -250,7 +250,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. A function call — what is the output?",
+   "q": "A function call — output of `a, b, c = multiple_return()`",
    "body": [
     {
      "t": "code",
@@ -272,7 +272,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. A function call — what is the output?",
+   "q": "A function call — output of `result = func()`",
    "body": [
     {
      "t": "code",
@@ -294,7 +294,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. The nonlocal keyword — what is the output?",
+   "q": "The nonlocal keyword — output of `c()`",
    "body": [
     {
      "t": "code",
@@ -316,7 +316,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. A lambda — what is the output?",
+   "q": "A lambda — output of `apply(str.upper, \"hello\")`",
    "body": [
     {
      "t": "code",
@@ -334,7 +334,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. A function call — what is the output?",
+   "q": "A function call — output of `factorial(5)`",
    "body": [
     {
      "t": "code",
@@ -356,7 +356,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. An lru_cache-memoised function — what is the output?",
+   "q": "An lru_cache-memoised function — output of `fib(10)`",
    "body": [
     {
      "t": "code",
@@ -378,7 +378,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `[f() for f in funcs]`",
    "body": [
     {
      "t": "code",
@@ -400,7 +400,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. What is the fix for Q317?",
+   "q": "What is the fix for Q317?",
    "body": [
     {
      "t": "code",
@@ -422,7 +422,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. *args and **kwargs — what is the output?",
+   "q": "*args and **kwargs — output of `func(*nums)`",
    "body": [
     {
      "t": "code",
@@ -444,7 +444,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. *args and **kwargs — what is the output?",
+   "q": "*args and **kwargs — output of `f\"{k}={v}\", end=' '`",
    "body": [
     {
      "t": "code",
@@ -466,7 +466,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q21. list.append — what is the output?",
+   "q": "list.append — output of `a = [1, 2, 3]`",
    "body": [
     {
      "t": "code",
@@ -488,7 +488,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q22. A function call — what is the output?",
+   "q": "A function call — output of `x = [4, 5, 6]`",
    "body": [
     {
      "t": "code",
@@ -510,7 +510,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q23. A function call — what is the output?",
+   "q": "A function call — output of `a = [1, 2, 3]`",
    "body": [
     {
      "t": "code",
@@ -532,7 +532,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q24. A function call — what is the output?",
+   "q": "A function call — output of `x = x + [4, 5]`",
    "body": [
     {
      "t": "code",
@@ -554,7 +554,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q25. A function call — what is the output?",
+   "q": "A function call — output of `add5(3)`",
    "body": [
     {
      "t": "code",
@@ -576,7 +576,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q26. A decorated function — what is the output?",
+   "q": "A decorated function — output of `\"Before\"`",
    "body": [
     {
      "t": "code",
@@ -608,7 +608,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q27. A decorator using functools.wraps — what is the output?",
+   "q": "A decorator using functools.wraps — output of `my_func.__name__`",
    "body": [
     {
      "t": "code",
@@ -630,7 +630,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q28. A lambda — what is the output?",
+   "q": "A lambda — output of `square(5)`",
    "body": [
     {
      "t": "code",
@@ -648,7 +648,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q29. *args and **kwargs — what is the output?",
+   "q": "*args and **kwargs — output of `a, b, args, kwargs`",
    "body": [
     {
      "t": "code",
@@ -666,7 +666,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q30. A lambda — what is the output?",
+   "q": "A lambda — output of `(lambda x, y: x + y)(3, 4)`",
    "body": [
     {
      "t": "code",

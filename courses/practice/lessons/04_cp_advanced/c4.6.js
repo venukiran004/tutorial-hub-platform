@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q1. A decorated function — what is the output?",
+   "q": "A decorated function — output of `\"Before\"`",
    "body": [
     {
      "t": "code",
@@ -66,7 +66,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q2. A decorator that takes arguments — what is the output?",
+   "q": "A decorator that takes arguments — output of `\"Hello!\"`",
    "body": [
     {
      "t": "code",
@@ -98,7 +98,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q3. A decorated function — what is the output?",
+   "q": "A decorated function — output of `f\"{func.__name__} took {end-start:.4f}s\"`",
    "body": [
     {
      "t": "code",
@@ -130,7 +130,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q4. A decorator using functools.wraps — what is the output?",
+   "q": "A decorator using functools.wraps — output of `f\"Calling {func.__name__}({signature})\"`",
    "body": [
     {
      "t": "code",
@@ -162,7 +162,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q5. A function call — what is the output?",
+   "q": "A function call — output of `double(5)`",
    "body": [
     {
      "t": "code",
@@ -184,7 +184,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q6. The nonlocal keyword — what is the output?",
+   "q": "The nonlocal keyword — output of `inc()`",
    "body": [
     {
      "t": "code",
@@ -206,7 +206,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q7. A decorator that takes arguments — what is the output?",
+   "q": "A decorator that takes arguments — output of `add(3, 4)`",
    "body": [
     {
      "t": "code",
@@ -228,7 +228,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q8. A class definition — what is the output?",
+   "q": "A class definition — output of `\"Creating database\"`",
    "body": [
     {
      "t": "code",
@@ -260,7 +260,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q9. A callable object via __call__ — what is the output?",
+   "q": "A callable object via __call__ — output of `fibonacci(10)`",
    "body": [
     {
      "t": "code",
@@ -282,7 +282,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q10. The global keyword — what is the output?",
+   "q": "The global keyword — output of `f\"Attempt {attempt} failed: {e}\"`",
    "body": [
     {
      "t": "code",
@@ -314,7 +314,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q11. A decorated function — what is the output?",
+   "q": "A decorated function — output of `\"D1 before\"`",
    "body": [
     {
      "t": "code",
@@ -346,7 +346,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q12. A decorated function — what is the output?",
+   "q": "A decorated function — output of `f\"Cache hit for {args}\"`",
    "body": [
     {
      "t": "code",
@@ -378,7 +378,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q13. A lambda — what is the output?",
+   "q": "A lambda — output of `add5(3)`",
    "body": [
     {
      "t": "code",
@@ -400,7 +400,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q14. A function call — what is the output?",
+   "q": "A function call — output of `hello(\"Alice\")`",
    "body": [
     {
      "t": "code",
@@ -422,7 +422,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q15. A decorator that takes arguments — what is the output?",
+   "q": "A decorator that takes arguments — output of `delete_user(admin, 'Charlie')`",
    "body": [
     {
      "t": "code",
@@ -444,7 +444,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q16. A decorated function — what is the output?",
+   "q": "A decorated function — output of `my_func.__wrapped__.call_count`",
    "body": [
     {
      "t": "code",
@@ -466,7 +466,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q17. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `[c() for c in closures]`",
    "body": [
     {
      "t": "code",
@@ -488,7 +488,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q18. A decorator that takes arguments — what is the output?",
+   "q": "A decorator that takes arguments — output of `score(50)`",
    "body": [
     {
      "t": "code",
@@ -510,7 +510,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q19. The nonlocal keyword — what is the output?",
+   "q": "The nonlocal keyword — output of `\"Initializing...\"`",
    "body": [
     {
      "t": "code",
@@ -542,7 +542,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q20. A callable object via __call__ — what is the output?",
+   "q": "A callable object via __call__ — output of `set_volume(50)`",
    "body": [
     {
      "t": "code",
@@ -564,7 +564,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q21. A decorator using functools.wraps — what is the output?",
+   "q": "A decorator using functools.wraps — output of `f\"Rate limited. Wait {seconds - elapsed:.…`",
    "body": [
     {
      "t": "code",
@@ -586,7 +586,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q22. A decorator using functools.wraps — what is the output?",
+   "q": "A decorator using functools.wraps — output of `warnings.warn(f\"{func.__name__} is deprecated…`",
    "body": [
     {
      "t": "code",
@@ -608,7 +608,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q23. A class definition — what is the output?",
+   "q": "A class definition — output of `f\"Calling {func.__name__} on {self.__clas…`",
    "body": [
     {
      "t": "code",
@@ -640,7 +640,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q24. list.append — what is the output?",
+   "q": "list.append — output of `avg(10)`",
    "body": [
     {
      "t": "code",
@@ -662,7 +662,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q25. A decorator that takes arguments — what is the output?",
+   "q": "A decorator that takes arguments — output of `greet(\"World\")`",
    "body": [
     {
      "t": "code",
@@ -684,7 +684,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q26. A decorated function — what is the output?",
+   "q": "A decorated function — output of `f\"{indent}→ {func.__name__}({', '.join(ma…`",
    "body": [
     {
      "t": "code",
@@ -716,7 +716,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q27. A caught ValueError — what is the output?",
+   "q": "A caught ValueError — output of `c.radius`",
    "body": [
     {
      "t": "code",
@@ -738,7 +738,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q28. A callable object via __call__ — what is the output?",
+   "q": "A callable object via __call__ — output of `f\"[{self.prefix}] Calling {func.__name__}\"`",
    "body": [
     {
      "t": "code",
@@ -770,7 +770,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q29. A decorator that takes arguments — what is the output?",
+   "q": "A decorator that takes arguments — output of `compute(3, 4)`",
    "body": [
     {
      "t": "code",
@@ -792,7 +792,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q30. A raised exception — what is the output?",
+   "q": "A raised exception — output of `account['deposit'](50)`",
    "body": [
     {
      "t": "code",

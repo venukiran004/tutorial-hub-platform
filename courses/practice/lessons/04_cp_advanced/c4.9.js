@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q91. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `list(flatten_gen(data))`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q92. A function call — what is the output?",
+   "q": "A function call — output of `list(merge_sorted(a, b, c))`",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q93. A generator expression — what is the output?",
+   "q": "A generator expression — output of `list(b)`",
    "body": [
     {
      "t": "code",
@@ -100,7 +100,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q94. A generator expression — what is the output?",
+   "q": "A generator expression — output of `list(combined)`",
    "body": [
     {
      "t": "code",
@@ -122,7 +122,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q95. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `pairs = list(zip(count(1), 'abcd'))`",
    "body": [
     {
      "t": "code",
@@ -144,7 +144,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q96. A generator — what is the output?",
+   "q": "A generator — output of `list(sieve_of_eratosthenes(30))`",
    "body": [
     {
      "t": "code",
@@ -166,7 +166,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q97. The iterator protocol — what is the output?",
+   "q": "The iterator protocol — output of `list(islice(fib, 10))`",
    "body": [
     {
      "t": "code",
@@ -188,7 +188,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q98. A generator — what is the output?",
+   "q": "A generator — output of `list(skip_first_and_last([1, 2, 3, 4, 5]))`",
    "body": [
     {
      "t": "code",
@@ -210,7 +210,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q99. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `rising = list(takewhile(lambda x: x < 8, drop…`",
    "body": [
     {
      "t": "code",
@@ -232,7 +232,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q100. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `a, b = iter(iterable), iter(iterable)`",
    "body": [
     {
      "t": "code",
@@ -254,7 +254,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q101. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `a is b`",
    "body": [
     {
      "t": "code",
@@ -276,7 +276,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q102. What is the output?",
+   "q": "What is the output of `sys.getrefcount(a) - 1`?",
    "body": [
     {
      "t": "code",
@@ -298,7 +298,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q103. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `a is b`",
    "body": [
     {
      "t": "code",
@@ -320,7 +320,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q104. Set operations — what is the output?",
+   "q": "Set operations — output of `f\"{name}: {size} bytes\"`",
    "body": [
     {
      "t": "code",
@@ -352,7 +352,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q105. __slots__ — what is the output?",
+   "q": "__slots__ — output of `f\"Slotted: {sys.getsizeof(s)} bytes\"`",
    "body": [
     {
      "t": "code",
@@ -374,7 +374,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q106. __slots__ — what is the output?",
+   "q": "__slots__ — output of `f\"Error: {e}\"`",
    "body": [
     {
      "t": "code",
@@ -396,7 +396,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q107. A class definition — what is the output?",
+   "q": "A class definition — output of `f\"Collected: {collected}\"`",
    "body": [
     {
      "t": "code",
@@ -418,7 +418,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q108. A class definition — what is the output?",
+   "q": "A class definition — output of `weak() is obj`",
    "body": [
     {
      "t": "code",
@@ -440,7 +440,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q109. A caught KeyError — what is the output?",
+   "q": "A caught KeyError — output of `cache[\"db\"].name`",
    "body": [
     {
      "t": "code",
@@ -462,7 +462,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q110. A generator expression — what is the output?",
+   "q": "A generator expression — output of `f\"List: {sys.getsizeof(list_comp)} bytes\"`",
    "body": [
     {
      "t": "code",
@@ -484,7 +484,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q111. A lambda — what is the output?",
+   "q": "A lambda — output of `f\"Plus: {t1:.4f}s\"`",
    "body": [
     {
      "t": "code",
@@ -506,7 +506,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q112. An lru_cache-memoised function — what is the output?",
+   "q": "An lru_cache-memoised function — output of `f\"Hits: {info.hits}\"`",
    "body": [
     {
      "t": "code",
@@ -528,7 +528,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q113. list.append — what is the output?",
+   "q": "list.append — output of `f\"List: {sys.getsizeof(int_list)} bytes\"`",
    "body": [
     {
      "t": "code",
@@ -550,7 +550,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q114. A dict comprehension — what is the output?",
+   "q": "A dict comprehension — output of `f\"List search: {t_list:.4f}s\"`",
    "body": [
     {
      "t": "code",
@@ -572,7 +572,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q115. A class definition — what is the output?",
+   "q": "A class definition — output of `\"Computing...\"`",
    "body": [
     {
      "t": "code",
@@ -600,7 +600,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q116. A namedtuple — what is the output?",
+   "q": "A namedtuple — output of `f\"Dict: {sys.getsizeof(Point_dict)} bytes\"`",
    "body": [
     {
      "t": "code",
@@ -622,7 +622,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q117. A generator — what is the output?",
+   "q": "A generator — output of `\"\"\"Process large data in chunks to limit memo…`",
    "body": [
     {
      "t": "code",
@@ -644,7 +644,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q118. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `first_10 = list(islice(fibonacci(), 10))`",
    "body": [
     {
      "t": "code",
@@ -666,7 +666,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q119. A dict comprehension — what is the output?",
+   "q": "A dict comprehension — output of `f\"Dict comp: {t1:.4f}s\"`",
    "body": [
     {
      "t": "code",
@@ -688,7 +688,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q120. A dataclass — what is the output?",
+   "q": "A dataclass — output of `f\"Optimized has __dict__: {hasattr(o, '__…`",
    "body": [
     {
      "t": "code",

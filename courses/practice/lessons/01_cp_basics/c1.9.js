@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q118. A filtered list comprehension — what is the output?",
+   "q": "A filtered list comprehension — output of `positive, negative`",
    "body": [
     {
      "t": "code",
@@ -55,7 +55,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q119. range() — what is the output?",
+   "q": "range() — output of `i, end=' '`",
    "body": [
     {
      "t": "code",
@@ -76,7 +76,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q120. What is the output?",
+   "q": "What is the output of `x, y`?",
    "body": [
     {
      "t": "code",
@@ -97,7 +97,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q121. enumerate() — what is the output?",
+   "q": "enumerate() — output of `f\"{index}. {item}\"`",
    "body": [
     {
      "t": "code",
@@ -130,7 +130,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q122. What is the output?",
+   "q": "What is the output of `\"big\" if x > 10 else \"medium\" if x > 3 else…`?",
    "body": [
     {
      "t": "code",
@@ -151,7 +151,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q123. A generator expression — what is the output?",
+   "q": "A generator expression — output of `result = sum(i for i in range(1, n+1) if i %…`",
    "body": [
     {
      "t": "code",
@@ -172,7 +172,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q124. range() — what is the output?",
+   "q": "range() — output of `diagonal = [matrix[i][i] for i in range(len(m…`",
    "body": [
     {
      "t": "code",
@@ -193,7 +193,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q125. A dict comprehension — what is the output?",
+   "q": "A dict comprehension — output of `result = {k: v for k, v in d.items() if v % 2…`",
    "body": [
     {
      "t": "code",
@@ -214,7 +214,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q126. A generator expression — what is the output?",
+   "q": "A generator expression — output of `vowels = sum(1 for c in text.lower() if c in…`",
    "body": [
     {
      "t": "code",
@@ -235,7 +235,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q127. try / except / else / finally in order — what is the output?",
+   "q": "try / except / else / finally in order — output of `\"no error\"`",
    "body": [
     {
      "t": "code",
@@ -266,7 +266,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q128. What is the output?",
+   "q": "What is the output of `\"FizzBuzz\"`?",
    "body": [
     {
      "t": "code",
@@ -287,7 +287,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q129. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `b = [x if x % 2 == 0 else x * 10 for x in a]`",
    "body": [
     {
      "t": "code",
@@ -308,7 +308,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q130. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `f\"({a},{b})\", end=' '`",
    "body": [
     {
      "t": "code",
@@ -329,7 +329,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q131. What is the output?",
+   "q": "What is the output of `isinstance(x, int) and x > 0 and x < 100`?",
    "body": [
     {
      "t": "code",
@@ -350,7 +350,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q132. A filtered list comprehension — what is the output?",
+   "q": "A filtered list comprehension — output of `words = [\"hello\", \"\", \"world\", None, \"python\"]`",
    "body": [
     {
      "t": "code",
@@ -371,7 +371,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q133. Slicing — what is the output?",
+   "q": "Slicing — output of `nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]`",
    "body": [
     {
      "t": "code",
@@ -392,7 +392,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q134. A filtered list comprehension — what is the output?",
+   "q": "A filtered list comprehension — output of `passed = [(name, score) for name, score in da…`",
    "body": [
     {
      "t": "code",
@@ -413,7 +413,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q135. What is the output?",
+   "q": "What is the output of `a and b or c`?",
    "body": [
     {
      "t": "code",
@@ -434,7 +434,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q136. list.append — what is the output?",
+   "q": "list.append — output of `while x or not x:`",
    "body": [
     {
      "t": "code",
@@ -455,7 +455,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q137. any() and all() — what is the output?",
+   "q": "any() and all() — output of `result, result2, result3`",
    "body": [
     {
      "t": "code",
@@ -476,7 +476,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q138. any() and all() — what is the output?",
+   "q": "any() and all() — output of `result, result2, result3`",
    "body": [
     {
      "t": "code",
@@ -497,7 +497,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q139. What is the output?",
+   "q": "What is the output of `\"origin\"`?",
    "body": [
     {
      "t": "code",
@@ -518,7 +518,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q140. A while loop — what is the output?",
+   "q": "A while loop — output of `i, end=' '`",
    "body": [
     {
      "t": "code",
@@ -539,7 +539,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q141. range() — what is the output?",
+   "q": "range() — output of `\"inner done\", end=' '`",
    "body": [
     {
      "t": "code",
@@ -560,7 +560,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q142. map() and filter() — what is the output?",
+   "q": "map() and filter() — output of `result = list(filter(None, [0, 1, '', 'hello'…`",
    "body": [
     {
      "t": "code",
@@ -581,7 +581,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q143. range() — what is the output?",
+   "q": "range() — output of `for i in range(1, n + 1):`",
    "body": [
     {
      "t": "code",
@@ -602,7 +602,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q144. What is the output?",
+   "q": "What is the output of `x if x > 0 else 0`?",
    "body": [
     {
      "t": "code",
@@ -623,7 +623,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q145. Slicing — what is the output?",
+   "q": "Slicing — output of `is_palindrome = text == text[::-1]`",
    "body": [
     {
      "t": "code",
@@ -644,7 +644,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q146. range() — what is the output?",
+   "q": "range() — output of `transposed = [[row[i] for row in matrix] for…`",
    "body": [
     {
      "t": "code",
@@ -665,7 +665,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q147. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `result = [x + y + z for x, y, z in zip(a, b,…`",
    "body": [
     {
      "t": "code",

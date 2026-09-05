@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q117. JSON round-trips lose Python types — what is the output?",
+   "q": "JSON round-trips lose Python types — output of `\"TypeError\"`",
    "body": [
     {
      "t": "code",
@@ -65,7 +65,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q118. JSON booleans and nulls have different names — what is the output?",
+   "q": "JSON booleans and nulls have different names — output of `json.dumps({\"a\": True, \"b\": None, \"c\": fl…`",
    "body": [
     {
      "t": "code",
@@ -96,7 +96,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q119. Base64 is encoding, not encryption — what is the output?",
+   "q": "Base64 is encoding, not encryption — output of `enc = base64.b64encode(secret)`",
    "body": [
     {
      "t": "code",
@@ -127,7 +127,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q120. Comparing secrets in constant time — what is the output?",
+   "q": "Comparing secrets in constant time — output of `a == \"abc123token\"`",
    "body": [
     {
      "t": "code",
@@ -158,7 +158,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q121. A dict is not a stable API response — what is the output?",
+   "q": "A dict is not a stable API response — output of `json.dumps(a)`",
    "body": [
     {
      "t": "code",
@@ -189,7 +189,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q122. Reading a response body twice — what is the output?",
+   "q": "Reading a response body twice — output of `r.read()`",
    "body": [
     {
      "t": "code",
@@ -220,7 +220,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q123. Headers you send versus headers you get — what is the output?",
+   "q": "Headers you send versus headers you get — output of `r.headers[\"X-Custom\"]`",
    "body": [
     {
      "t": "code",
@@ -251,7 +251,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q124. IP address parsing and validation — what is the output?",
+   "q": "IP address parsing and validation — output of `a.version, a.is_private`",
    "body": [
     {
      "t": "code",
@@ -282,7 +282,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q125. Hostname resolution can return several addresses — what is the output?",
+   "q": "Hostname resolution can return several addresses — output of `len(info) >= 1`",
    "body": [
     {
      "t": "code",
@@ -313,7 +313,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q126. A socket in TIME_WAIT blocks rebinding — what is the output?",
+   "q": "A socket in TIME_WAIT blocks rebinding — output of `port > 0`",
    "body": [
     {
      "t": "code",
@@ -344,7 +344,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q127. Cookies are strings with attributes — what is the output?",
+   "q": "Cookies are strings with attributes — output of `\"sid=abc\" in out`",
    "body": [
     {
      "t": "code",
@@ -375,7 +375,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q128. Percent-encoding is not idempotent — what is the output?",
+   "q": "Percent-encoding is not idempotent — output of `from urllib.parse import quote, unquote`",
    "body": [
     {
      "t": "code",
@@ -406,7 +406,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q129. Chunked responses have no Content-Length — what is the output?",
+   "q": "Chunked responses have no Content-Length — output of `r.headers.get(\"Content-Length\")`",
    "body": [
     {
      "t": "code",
@@ -437,7 +437,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q130. Rate limiting arithmetic — what is the output?",
+   "q": "Rate limiting arithmetic — output of `allowed, requests - allowed`",
    "body": [
     {
      "t": "code",

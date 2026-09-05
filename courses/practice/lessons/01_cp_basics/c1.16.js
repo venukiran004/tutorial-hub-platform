@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q270. Iterating a dict's views — what is the output?",
+   "q": "Iterating a dict's views — output of `'a' in d`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q271. A lambda — what is the output?",
+   "q": "A lambda — output of `sorted(d)`",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q272. zip() — what is the output?",
+   "q": "zip() — output of `d = dict(zip(keys, values))`",
    "body": [
     {
      "t": "code",
@@ -100,7 +100,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q273. What is the output?",
+   "q": "What is the output of `max_key, min_key`?",
    "body": [
     {
      "t": "code",
@@ -122,7 +122,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q274. What is the output?",
+   "q": "What is the output of `d`?",
    "body": [
     {
      "t": "code",
@@ -144,7 +144,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q275. A ChainMap — what is the output?",
+   "q": "A ChainMap — output of `cm['a']`",
    "body": [
     {
      "t": "code",
@@ -166,7 +166,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q276. What is the output?",
+   "q": "What is the output of `d`?",
    "body": [
     {
      "t": "code",
@@ -188,7 +188,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q277. Removing an item with pop() — what is the output?",
+   "q": "Removing an item with pop() — output of `name, d`",
    "body": [
     {
      "t": "code",
@@ -210,7 +210,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q278. What is the output?",
+   "q": "What is the output of `d['a']['x']`?",
    "body": [
     {
      "t": "code",
@@ -232,7 +232,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q279. Iterating a dict's views — what is the output?",
+   "q": "Iterating a dict's views — output of `list(keys_view)`",
    "body": [
     {
      "t": "code",
@@ -254,7 +254,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q280. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `d1 == d2`",
    "body": [
     {
      "t": "code",
@@ -276,7 +276,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q281. A Counter — what is the output?",
+   "q": "A Counter — output of `c1 + c2`",
    "body": [
     {
      "t": "code",
@@ -308,7 +308,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q282. What is the output?",
+   "q": "What is the output of `d`?",
    "body": [
     {
      "t": "code",
@@ -330,7 +330,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q283. A dict comprehension — what is the output?",
+   "q": "A dict comprehension — output of `result = {k: v for k, v in sorted(d.items(),…`",
    "body": [
     {
      "t": "code",
@@ -352,7 +352,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q284. str.split — what is the output?",
+   "q": "str.split — output of `word_count[word] = word_count.get(word, 0) + 1`",
    "body": [
     {
      "t": "code",
@@ -374,7 +374,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q285. A dict comprehension — what is the output?",
+   "q": "A dict comprehension — output of `{v: k for k, v in d.items()}`",
    "body": [
     {
      "t": "code",
@@ -396,7 +396,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q286. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `deep_get(nested, ['a', 'b', 'c'])`",
    "body": [
     {
      "t": "code",
@@ -418,7 +418,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q287. What is the output?",
+   "q": "What is the output of `d3`?",
    "body": [
     {
      "t": "code",
@@ -440,7 +440,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q288. A dict comprehension — what is the output?",
+   "q": "A dict comprehension — output of `result = {k: v for k, v in d.items() if k not…`",
    "body": [
     {
      "t": "code",
@@ -462,7 +462,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q289. A defaultdict — what is the output?",
+   "q": "A defaultdict — output of `d['name']`",
    "body": [
     {
      "t": "code",
@@ -484,7 +484,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q290. A dict comprehension — what is the output?",
+   "q": "A dict comprehension — output of `d = {i: i**2 for i in range(5) if i % 2 != 0}`",
    "body": [
     {
      "t": "code",
@@ -502,7 +502,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q291. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `flat = [v for vals in d.values() for v in val…`",
    "body": [
     {
      "t": "code",
@@ -524,7 +524,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q292. dict.setdefault — what is the output?",
+   "q": "dict.setdefault — output of `d.setdefault('key', [1, 2, 3])`",
    "body": [
     {
      "t": "code",
@@ -546,7 +546,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q293. A caught KeyError — what is the output?",
+   "q": "A caught KeyError — output of `f\"KeyError: {e}\"`",
    "body": [
     {
      "t": "code",
@@ -568,7 +568,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q294. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `d1 == d2`",
    "body": [
     {
      "t": "code",
@@ -590,7 +590,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q295. JSON encoding or decoding — what is the output?",
+   "q": "JSON encoding or decoding — output of `type(json_str)`",
    "body": [
     {
      "t": "code",
@@ -612,7 +612,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q296. A sequence built with the * operator — what is the output?",
+   "q": "A sequence built with the * operator — output of `for i in range(5):`",
    "body": [
     {
      "t": "code",
@@ -634,7 +634,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q297. Iterating a dict's views — what is the output?",
+   "q": "Iterating a dict's views — output of `d = {'a': 1, 'b': 2, 'c': 3}`",
    "body": [
     {
      "t": "code",
@@ -656,7 +656,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q298. A Counter — what is the output?",
+   "q": "A Counter — output of `from collections import Counter`",
    "body": [
     {
      "t": "code",
@@ -678,7 +678,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q299. A Counter — what is the output?",
+   "q": "A Counter — output of `c1 + c2`",
    "body": [
     {
      "t": "code",

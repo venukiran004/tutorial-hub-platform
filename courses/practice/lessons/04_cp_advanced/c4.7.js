@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q31. A decorator that takes arguments — what is the output?",
+   "q": "A decorator that takes arguments — output of `expensive(5)`",
    "body": [
     {
      "t": "code",
@@ -52,7 +52,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q32. A class definition — what is the output?",
+   "q": "A class definition — output of `\"Connected!\"`",
    "body": [
     {
      "t": "code",
@@ -84,7 +84,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q33. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `[a(10) for a in adders]`",
    "body": [
     {
      "t": "code",
@@ -106,7 +106,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q34. A lambda — what is the output?",
+   "q": "A lambda — output of `transform(4)`",
    "body": [
     {
      "t": "code",
@@ -128,7 +128,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q35. A class definition — what is the output?",
+   "q": "A class definition — output of `f\"Creating {cls.__name__}\"`",
    "body": [
     {
      "t": "code",
@@ -160,7 +160,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q36. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `[op(3) for op in operations]`",
    "body": [
     {
      "t": "code",
@@ -178,7 +178,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q37. A decorator that takes arguments — what is the output?",
+   "q": "A decorator that takes arguments — output of `greet(\"world\")`",
    "body": [
     {
      "t": "code",
@@ -200,7 +200,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q38. A decorator using functools.wraps — what is the output?",
+   "q": "A decorator using functools.wraps — output of `process.calls`",
    "body": [
     {
      "t": "code",
@@ -222,7 +222,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q39. A decorator that takes arguments — what is the output?",
+   "q": "A decorator that takes arguments — output of `divide(10, 2)`",
    "body": [
     {
      "t": "code",
@@ -244,7 +244,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q40. A function call — what is the output?",
+   "q": "A function call — output of `f()`",
    "body": [
     {
      "t": "code",
@@ -266,7 +266,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q41. A decorator that takes arguments — what is the output?",
+   "q": "A decorator that takes arguments — output of `list(plugins.keys())`",
    "body": [
     {
      "t": "code",
@@ -288,7 +288,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q42. A @contextmanager generator — what is the output?",
+   "q": "A @contextmanager generator — output of `f\"Acquiring {name}\"`",
    "body": [
     {
      "t": "code",
@@ -320,7 +320,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q43. A property — what is the output?",
+   "q": "A property — output of `\"Computing area...\"`",
    "body": [
     {
      "t": "code",
@@ -348,7 +348,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q44. A callable object via __call__ — what is the output?",
+   "q": "A callable object via __call__ — output of `f\"Call`",
    "body": [
     {
      "t": "code",
@@ -380,7 +380,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q45. The nonlocal keyword — what is the output?",
+   "q": "The nonlocal keyword — output of `by_ones(), by_ones(), by_ones()`",
    "body": [
     {
      "t": "code",
@@ -402,7 +402,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q46. A decorated function — what is the output?",
+   "q": "A decorated function — output of `process(5)`",
    "body": [
     {
      "t": "code",
@@ -424,7 +424,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q47. A decorator that takes arguments — what is the output?",
+   "q": "A decorator that takes arguments — output of `f\"[{level}] Entering {func.__name__}\"`",
    "body": [
     {
      "t": "code",
@@ -452,7 +452,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q48. The nonlocal keyword — what is the output?",
+   "q": "The nonlocal keyword — output of `acc(10)`",
    "body": [
     {
      "t": "code",
@@ -474,7 +474,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q49. A decorator that takes arguments — what is the output?",
+   "q": "A decorator that takes arguments — output of `process_user({'name': 'Alice', 'email': '…`",
    "body": [
     {
      "t": "code",
@@ -496,7 +496,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q50. A decorated function — what is the output?",
+   "q": "A decorated function — output of `compute(3, 4)`",
    "body": [
     {
      "t": "code",
@@ -528,7 +528,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q51. A generator — what is the output?",
+   "q": "A generator — output of `next(g)`",
    "body": [
     {
      "t": "code",
@@ -550,7 +550,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q52. A generator — what is the output?",
+   "q": "A generator — output of `next(g)`",
    "body": [
     {
      "t": "code",
@@ -572,7 +572,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q53. A generator — what is the output?",
+   "q": "A generator — output of `num, end=' '`",
    "body": [
     {
      "t": "code",
@@ -594,7 +594,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q54. A generator expression — what is the output?",
+   "q": "A generator expression — output of `type(gen)`",
    "body": [
     {
      "t": "code",
@@ -612,7 +612,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q55. A generator expression — what is the output?",
+   "q": "A generator expression — output of `sys.getsizeof(list_comp)`",
    "body": [
     {
      "t": "code",
@@ -634,7 +634,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q56. A generator — what is the output?",
+   "q": "A generator — output of `result = [next(fib) for _ in range(10)]`",
    "body": [
     {
      "t": "code",
@@ -656,7 +656,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q57. A generator driven with .send() — what is the output?",
+   "q": "A generator driven with .send() — output of `f\"Received: {value}\"`",
    "body": [
     {
      "t": "code",
@@ -688,7 +688,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q58. A generator driven with .send() — what is the output?",
+   "q": "A generator driven with .send() — output of `acc.send(10)`",
    "body": [
     {
      "t": "code",
@@ -710,7 +710,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q59. The iterator protocol — what is the output?",
+   "q": "The iterator protocol — output of `i, end=' '`",
    "body": [
     {
      "t": "code",
@@ -732,7 +732,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q60. The iterator protocol — what is the output?",
+   "q": "The iterator protocol — output of `list(s)`",
    "body": [
     {
      "t": "code",

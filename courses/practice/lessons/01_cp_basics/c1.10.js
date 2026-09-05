@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q148. A set comprehension — what is the output?",
+   "q": "A set comprehension — output of `even_vals = {k for k, v in d.items() if v % 2…`",
    "body": [
     {
      "t": "code",
@@ -55,7 +55,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q149. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `result[:5]`",
    "body": [
     {
      "t": "code",

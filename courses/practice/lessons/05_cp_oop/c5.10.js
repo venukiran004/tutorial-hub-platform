@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q91. Attribute lookup hooks — what is the output?",
+   "q": "Attribute lookup hooks — output of `api.new_method(5)`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q92. A staticmethod — what is the output?",
+   "q": "A staticmethod — output of `animal.speak()`",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q93. Inheritance — what is the output?",
+   "q": "Inheritance — output of `Base.counter, Child1.counter, Child2.coun…`",
    "body": [
     {
      "t": "code",
@@ -100,7 +100,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q94. __slots__ — what is the output?",
+   "q": "__slots__ — output of `p.x, p.y`",
    "body": [
     {
      "t": "code",
@@ -122,7 +122,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q95. __new__ versus __init__ — what is the output?",
+   "q": "__new__ versus __init__ — output of `Color._members`",
    "body": [
     {
      "t": "code",
@@ -144,7 +144,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q96. A staticmethod — what is the output?",
+   "q": "A staticmethod — output of `Base.create()`",
    "body": [
     {
      "t": "code",
@@ -166,7 +166,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q97. super() and the method resolution order — what is the output?",
+   "q": "super() and the method resolution order — output of `c1.debug, c1.version`",
    "body": [
     {
      "t": "code",
@@ -184,7 +184,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q98. A property — what is the output?",
+   "q": "A property — output of `type(m.created_at).__name__`",
    "body": [
     {
      "t": "code",
@@ -206,7 +206,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q99. Inheritance — what is the output?",
+   "q": "Inheritance — output of `v.visit(5)`",
    "body": [
     {
      "t": "code",
@@ -228,7 +228,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q100. A class-creation hook — what is the output?",
+   "q": "A class-creation hook — output of `Plugin.registry`",
    "body": [
     {
      "t": "code",

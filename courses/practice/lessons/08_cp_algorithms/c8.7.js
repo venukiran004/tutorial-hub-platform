@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q26. all() and any() on an empty sequence — what is the output?",
+   "q": "all() and any() on an empty sequence — output of `all([]), any([])`",
    "body": [
     {
      "t": "code",
@@ -65,7 +65,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q27. Bitwise operations and two's complement — what is the output?",
+   "q": "Bitwise operations and two's complement — output of `5 & 3, 5 | 3, 5 ^ 3`",
    "body": [
     {
      "t": "code",
@@ -96,7 +96,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q28. divmod and negative numbers — what is the output?",
+   "q": "divmod and negative numbers — output of `divmod(17, 5)`",
    "body": [
     {
      "t": "code",
@@ -127,7 +127,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q29. Mutable objects as dictionary values — what is the output?",
+   "q": "Mutable objects as dictionary values — output of `dict(d)`",
    "body": [
     {
      "t": "code",
@@ -158,7 +158,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q30. Identity of slices — what is the output?",
+   "q": "Identity of slices — output of `a is b, a is c`",
    "body": [
     {
      "t": "code",
@@ -189,7 +189,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q31. Exception inside a comprehension — what is the output?",
+   "q": "Exception inside a comprehension — output of `[int(v) for v in values]`",
    "body": [
     {
      "t": "code",
@@ -220,7 +220,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q32. Nested function scope in a loop — what is the output?",
+   "q": "Nested function scope in a loop — output of `[h() for h in handlers]`",
    "body": [
     {
      "t": "code",
@@ -251,7 +251,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q33. Truthiness of zero and empty containers — what is the output?",
+   "q": "Truthiness of zero and empty containers — output of `[bool(v) for v in values]`",
    "body": [
     {
      "t": "code",
@@ -282,7 +282,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q34. in on a dict checks keys — what is the output?",
+   "q": "in on a dict checks keys — output of `\"a\" in d, 1 in d`",
    "body": [
     {
      "t": "code",
@@ -313,7 +313,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q35. Integer overflow does not exist — what is the output?",
+   "q": "Integer overflow does not exist — output of `big = 2 ** 100`",
    "body": [
     {
      "t": "code",
@@ -340,7 +340,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q36. A shallow copy of a dict of lists — what is the output?",
+   "q": "A shallow copy of a dict of lists — output of `original = {\"a\": [1, 2], \"b\": [3]}`",
    "body": [
     {
      "t": "code",
@@ -365,7 +365,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q37. Order of evaluation in an assignment — what is the output?",
+   "q": "Order of evaluation in an assignment — output of `i, a`",
    "body": [
     {
      "t": "code",
@@ -390,7 +390,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q38. Comparing collections of different types — what is the output?",
+   "q": "Comparing collections of different types — output of `[1, 2] == (1, 2)`",
    "body": [
     {
      "t": "code",
@@ -421,7 +421,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q39. min and max on strings — what is the output?",
+   "q": "min and max on strings — output of `min(\"banana\")`",
    "body": [
     {
      "t": "code",
@@ -452,7 +452,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q40. Slice assignment on a step slice — what is the output?",
+   "q": "Slice assignment on a step slice — output of `except ValueError as e:`",
    "body": [
     {
      "t": "code",

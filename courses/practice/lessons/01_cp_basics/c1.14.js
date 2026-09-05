@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q210. What is the output?",
+   "q": "What is the output of `len(s)`?",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q211. What is the output?",
+   "q": "What is the output of `s`?",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q212. What happens?",
+   "q": "What happens?",
    "body": [
     {
      "t": "code",
@@ -100,7 +100,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q213. What is the output?",
+   "q": "What is the output of `a.union(b)`?",
    "body": [
     {
      "t": "code",
@@ -132,7 +132,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q214. Set operations — what is the output?",
+   "q": "Set operations — output of `s = set(\"hello\")`",
    "body": [
     {
      "t": "code",
@@ -154,7 +154,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q215. Sorting — what is the output?",
+   "q": "Sorting — output of `sorted(s)`",
    "body": [
     {
      "t": "code",
@@ -176,7 +176,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q216. Set operations — what is the output?",
+   "q": "Set operations — output of `type(s)`",
    "body": [
     {
      "t": "code",
@@ -198,7 +198,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q217. A frozenset — what is the output?",
+   "q": "A frozenset — output of `fs = frozenset([1, 2, 3, 4, 5])`",
    "body": [
     {
      "t": "code",
@@ -220,7 +220,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q218. A frozenset — what is the output?",
+   "q": "A frozenset — output of `s = {frozenset([1, 2]), frozenset([3, 4])}`",
    "body": [
     {
      "t": "code",
@@ -242,7 +242,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q219. What is the output?",
+   "q": "What is the output of `s`?",
    "body": [
     {
      "t": "code",
@@ -264,7 +264,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q220. What is the output?",
+   "q": "What is the output of `a`?",
    "body": [
     {
      "t": "code",
@@ -286,7 +286,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q221. What is the output?",
+   "q": "What is the output of `a`?",
    "body": [
     {
      "t": "code",
@@ -308,7 +308,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q222. What is the output?",
+   "q": "What is the output of `a.isdisjoint(b)`?",
    "body": [
     {
      "t": "code",
@@ -330,7 +330,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q223. Removing an item with pop() — what is the output?",
+   "q": "Removing an item with pop() — output of `type(elem)`",
    "body": [
     {
      "t": "code",
@@ -352,7 +352,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q224. A set comprehension — what is the output?",
+   "q": "A set comprehension — output of `sorted(s)`",
    "body": [
     {
      "t": "code",
@@ -370,7 +370,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q225. Set operations — what is the output?",
+   "q": "Set operations — output of `t == t2`",
    "body": [
     {
      "t": "code",
@@ -392,7 +392,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q226. What is the output?",
+   "q": "What is the output of `a < b`?",
    "body": [
     {
      "t": "code",
@@ -414,7 +414,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q227. What happens?",
+   "q": "What happens?",
    "body": [
     {
      "t": "code",
@@ -436,7 +436,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q228. A frozenset — what is the output?",
+   "q": "A frozenset — output of `a | b`",
    "body": [
     {
      "t": "code",
@@ -458,7 +458,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q229. A sequence built with the * operator — what is the output?",
+   "q": "A sequence built with the * operator — output of `t3 = t1 + t2`",
    "body": [
     {
      "t": "code",
@@ -480,7 +480,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q230. What is the output?",
+   "q": "What is the output of `sys.getsizeof(l)`?",
    "body": [
     {
      "t": "code",
@@ -502,7 +502,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q231. A caught TypeError — what is the output?",
+   "q": "A caught TypeError — output of `d[(1, 2)] = \"tuple key\"`",
    "body": [
     {
      "t": "code",
@@ -524,7 +524,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q232. What is the output?",
+   "q": "What is the output of `x, y, z`?",
    "body": [
     {
      "t": "code",
@@ -546,7 +546,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q233. A function call — what is the output?",
+   "q": "A function call — output of `return min(numbers), max(numbers), sum(number…`",
    "body": [
     {
      "t": "code",
@@ -568,7 +568,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q234. What is the output?",
+   "q": "What is the output of `s`?",
    "body": [
     {
      "t": "code",
@@ -590,7 +590,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q235. What is the output?",
+   "q": "What is the output of `s`?",
    "body": [
     {
      "t": "code",
@@ -612,7 +612,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q236. A frozenset — what is the output?",
+   "q": "A frozenset — output of `a == b == c`",
    "body": [
     {
      "t": "code",
@@ -634,7 +634,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q237. Set operations — what is the output?",
+   "q": "Set operations — output of `t, l, s`",
    "body": [
     {
      "t": "code",
@@ -656,7 +656,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q238. What is the output?",
+   "q": "What is the output of `a`?",
    "body": [
     {
      "t": "code",
@@ -678,7 +678,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q239. What is the output?",
+   "q": "What is the output of `a`?",
    "body": [
     {
      "t": "code",

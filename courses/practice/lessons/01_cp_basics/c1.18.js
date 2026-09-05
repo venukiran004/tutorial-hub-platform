@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q330. A defaultdict — what is the output?",
+   "q": "A defaultdict — output of `trie.search(\"apple\")`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q331. A Counter — what is the output?",
+   "q": "A Counter — output of `can_construct(\"aa\", \"aab\")`",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q332. A deque — what is the output?",
+   "q": "A deque — output of `ma.next(1)`",
    "body": [
     {
      "t": "code",
@@ -100,7 +100,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q333. super() and the method resolution order — what is the output?",
+   "q": "super() and the method resolution order — output of `list(d.keys())`",
    "body": [
     {
      "t": "code",
@@ -122,7 +122,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q334. A Counter — what is the output?",
+   "q": "A Counter — output of `first_unique_char(\"leetcode\")`",
    "body": [
     {
      "t": "code",
@@ -144,7 +144,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q335. A collections container — what is the output?",
+   "q": "A collections container — output of `ds.find(1) == ds.find(4)`",
    "body": [
     {
      "t": "code",
@@ -166,7 +166,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q336. A defaultdict — what is the output?",
+   "q": "A defaultdict — output of `dict(dept_counts)`",
    "body": [
     {
      "t": "code",
@@ -188,7 +188,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q337. A deque — what is the output?",
+   "q": "A deque — output of `zigzag_levels(tree)`",
    "body": [
     {
      "t": "code",
@@ -210,7 +210,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q338. A Counter — what is the output?",
+   "q": "A Counter — output of `most_common_words(text, 3, {'the', 'on'})`",
    "body": [
     {
      "t": "code",
@@ -232,7 +232,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q339. A deque — what is the output?",
+   "q": "A deque — output of `return self.queue.popleft() if self.queue els…`",
    "body": [
     {
      "t": "code",
@@ -254,7 +254,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q340. A Counter — what is the output?",
+   "q": "A Counter — output of `find_duplicates([1, 2, 3, 2, 4, 3, 5])`",
    "body": [
     {
      "t": "code",
@@ -276,7 +276,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q341. A defaultdict — what is the output?",
+   "q": "A defaultdict — output of `len(mm.get('tag'))`",
    "body": [
     {
      "t": "code",
@@ -298,7 +298,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q342. A deque — what is the output?",
+   "q": "A deque — output of `f\"Eliminated: {eliminated}\"`",
    "body": [
     {
      "t": "code",
@@ -330,7 +330,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q343. A Counter — what is the output?",
+   "q": "A Counter — output of `longest_substring_k_distinct(\"eceba\", 2)`",
    "body": [
     {
      "t": "code",
@@ -352,7 +352,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q344. A collections container — what is the output?",
+   "q": "A collections container — output of `pm.get_by_prefix('app')`",
    "body": [
     {
      "t": "code",
@@ -374,7 +374,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q345. A Counter — what is the output?",
+   "q": "A Counter — output of `c = Counter({'a': 5, 'b': 3, 'c': 1})`",
    "body": [
     {
      "t": "code",
@@ -396,7 +396,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q346. A deque — what is the output?",
+   "q": "A deque — output of `interleave_halves(deque([1, 2, 3, 4, 5, 6…`",
    "body": [
     {
      "t": "code",
@@ -418,7 +418,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q347. A namedtuple — what is the output?",
+   "q": "A namedtuple — output of `f\"Count: {stats.count}, Mean: {stats.mean…`",
    "body": [
     {
      "t": "code",
@@ -440,7 +440,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q348. An OrderedDict — what is the output?",
+   "q": "An OrderedDict — output of `fs.pop()`",
    "body": [
     {
      "t": "code",

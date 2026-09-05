@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q17. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `f\"{key}: {list(group)}\"`",
    "body": [
     {
      "t": "code",
@@ -65,7 +65,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q18. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `list(product('AB', '12'))`",
    "body": [
     {
      "t": "code",
@@ -86,7 +86,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q19. An lru_cache-memoised function — what is the output?",
+   "q": "An lru_cache-memoised function — output of `fib(10)`",
    "body": [
     {
      "t": "code",
@@ -107,7 +107,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q20. An abstract base class — what is the output?",
+   "q": "An abstract base class — output of `c.describe()`",
    "body": [
     {
      "t": "code",
@@ -124,7 +124,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q21. Inheritance — what is the output?",
+   "q": "Inheritance — output of `len(s)`",
    "body": [
     {
      "t": "code",
@@ -145,7 +145,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q22. str.split — what is the output?",
+   "q": "str.split — output of `calculate(\"10 + 20\")`",
    "body": [
     {
      "t": "code",
@@ -166,7 +166,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q23. A for loop — what is the output?",
+   "q": "A for loop — output of `from bisect import insort, bisect_left`",
    "body": [
     {
      "t": "code",
@@ -187,7 +187,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q24. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `[heappop(heap) for _ in range(3)]`",
    "body": [
     {
      "t": "code",
@@ -208,7 +208,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q25. What is the output?",
+   "q": "What is the output of `t.substitute(name=\"Alice\", count=5)`?",
    "body": [
     {
      "t": "code",
@@ -229,7 +229,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q26. What is the output?",
+   "q": "What is the output of `type(formatted)`?",
    "body": [
     {
      "t": "code",
@@ -250,7 +250,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q27. A class definition — what is the output?",
+   "q": "A class definition — output of `weak().name`",
    "body": [
     {
      "t": "code",
@@ -271,7 +271,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q28. What is the output?",
+   "q": "What is the output of `f\"Mean: {mean(data)}\"`?",
    "body": [
     {
      "t": "code",
@@ -292,7 +292,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q29. What is the output?",
+   "q": "What is the output of `randint(1, 10)`?",
    "body": [
     {
      "t": "code",
@@ -313,7 +313,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q30. Slicing — what is the output?",
+   "q": "Slicing — output of `string.ascii_lowercase`",
    "body": [
     {
      "t": "code",
@@ -334,7 +334,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q31. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `list(accumulate(data))`",
    "body": [
     {
      "t": "code",
@@ -355,7 +355,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q32. What is the output?",
+   "q": "What is the output of `\"won't reach here\"`?",
    "body": [
     {
      "t": "code",
@@ -376,7 +376,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q33. Inheritance — what is the output?",
+   "q": "Inheritance — output of `render(Circle())`",
    "body": [
     {
      "t": "code",
@@ -397,7 +397,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q34. Slicing — what is the output?",
+   "q": "Slicing — output of `f\"MD5 length: {len(md5)}\"`",
    "body": [
     {
      "t": "code",
@@ -418,7 +418,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q35. A dataclass — what is the output?",
+   "q": "A dataclass — output of `asdict(p)`",
    "body": [
     {
      "t": "code",
@@ -439,7 +439,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q36. __eq__ and __hash__ — what is the output?",
+   "q": "__eq__ and __hash__ — output of `v1 < v2`",
    "body": [
     {
      "t": "code",
@@ -460,7 +460,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q37. A ChainMap — what is the output?",
+   "q": "A ChainMap — output of `config['theme']`",
    "body": [
     {
      "t": "code",
@@ -481,7 +481,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q38. Stripping whitespace — what is the output?",
+   "q": "Stripping whitespace — output of `\"world\"`",
    "body": [
     {
      "t": "code",
@@ -512,7 +512,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q39. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `list(takewhile(lambda x: x < 5, data))`",
    "body": [
     {
      "t": "code",
@@ -533,7 +533,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q40. An Enum — what is the output?",
+   "q": "An Enum — output of `user_perms = Permission.READ | Permission.WRI…`",
    "body": [
     {
      "t": "code",
@@ -554,7 +554,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q41. What is the output?",
+   "q": "What is the output of `id1 == id2`?",
    "body": [
     {
      "t": "code",
@@ -575,7 +575,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q42. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `list(starmap(pow, pairs))`",
    "body": [
     {
      "t": "code",
@@ -596,7 +596,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q43. functools.singledispatch — what is the output?",
+   "q": "functools.singledispatch — output of `process(5)`",
    "body": [
     {
      "t": "code",
@@ -617,7 +617,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q44. A namedtuple — what is the output?",
+   "q": "A namedtuple — output of `Point = namedtuple('Point', ['x', 'y'], defau…`",
    "body": [
     {
      "t": "code",
@@ -638,7 +638,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q45. A decorator using functools.wraps — what is the output?",
+   "q": "A decorator using functools.wraps — output of `f\"{func.__name__}: {elapsed:.6f}s\"`",
    "body": [
     {
      "t": "code",
@@ -659,7 +659,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q46. A dataclass — what is the output?",
+   "q": "A dataclass — output of `_tags: list = field(default_factory=list, rep…`",
    "body": [
     {
      "t": "code",

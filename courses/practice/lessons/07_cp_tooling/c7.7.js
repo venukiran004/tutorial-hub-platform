@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q77. A regular expression — what is the output?",
+   "q": "A regular expression — output of `f\"{m.group(1)}. {m.group(2)}\"`",
    "body": [
     {
      "t": "code",
@@ -65,7 +65,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q78. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.fullmatch(r'[a-z0-9]+', text) is not N…`",
    "body": [
     {
      "t": "code",
@@ -86,7 +86,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q79. A regular expression — what is the output?",
+   "q": "A regular expression — output of `result = re.sub(r'\\{(\\w+)\\}', lambda m: value…`",
    "body": [
     {
      "t": "code",
@@ -107,7 +107,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q80. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.search(r'(?i)TEST', text).group()`",
    "body": [
     {
      "t": "code",
@@ -128,7 +128,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q81. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.sub(r'\\s+', ' ', text.strip())`",
    "body": [
     {
      "t": "code",
@@ -149,7 +149,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q82. A regular expression — what is the output?",
+   "q": "A regular expression — output of `validate_password(\"Hello123!\")`",
    "body": [
     {
      "t": "code",
@@ -170,7 +170,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q83. A regular expression — what is the output?",
+   "q": "A regular expression — output of `parts.groups()`",
    "body": [
     {
      "t": "code",
@@ -191,7 +191,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q84. A regular expression — what is the output?",
+   "q": "A regular expression — output of `items = [item.strip() for item in re.split(r'…`",
    "body": [
     {
      "t": "code",
@@ -212,7 +212,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q85. A regular expression — what is the output?",
+   "q": "A regular expression — output of `extract_urls(text)`",
    "body": [
     {
      "t": "code",
@@ -233,7 +233,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q86. A regular expression — what is the output?",
+   "q": "A regular expression — output of `bool(re.match(r'^\\d', text))`",
    "body": [
     {
      "t": "code",
@@ -254,7 +254,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q87. A regular expression — what is the output?",
+   "q": "A regular expression — output of `colors = re.findall(pattern, text)`",
    "body": [
     {
      "t": "code",
@@ -275,7 +275,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q88. A regular expression — what is the output?",
+   "q": "A regular expression — output of `text = \"John's phone: 555-1234. Jane's: 555-5…`",
    "body": [
     {
      "t": "code",
@@ -296,7 +296,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q89. A regular expression — what is the output?",
+   "q": "A regular expression — output of `match.expand(r'\\3 \\2 \\1')`",
    "body": [
     {
      "t": "code",
@@ -317,7 +317,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q90. A regular expression — what is the output?",
+   "q": "A regular expression — output of `m.group('word')`",
    "body": [
     {
      "t": "code",
@@ -338,7 +338,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q91. A regular expression — what is the output?",
+   "q": "A regular expression — output of `len(re.findall(r'\\bthe\\b', text))`",
    "body": [
     {
      "t": "code",
@@ -359,7 +359,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q92. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.findall(r'a(?=b)', text)`",
    "body": [
     {
      "t": "code",
@@ -389,7 +389,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q93. A regular expression — what is the output?",
+   "q": "A regular expression — output of `tokenize(\"3.14 + 2 * (4 - 1)\")`",
    "body": [
     {
      "t": "code",
@@ -410,7 +410,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q94. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.findall(r'.+', text)`",
    "body": [
     {
      "t": "code",
@@ -431,7 +431,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q95. A regular expression — what is the output?",
+   "q": "A regular expression — output of `result = re.sub(r'(\\d{4})/(\\d{2})/(\\d{2})', r…`",
    "body": [
     {
      "t": "code",
@@ -452,7 +452,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q96. A regular expression — what is the output?",
+   "q": "A regular expression — output of `words = [\"hello\", \"world\", \"help\", \"heap\", \"h…`",
    "body": [
     {
      "t": "code",
@@ -473,7 +473,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q97. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.sub(r'^\\s+|\\s+$', '', text)`",
    "body": [
     {
      "t": "code",
@@ -494,7 +494,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q98. A regular expression — what is the output?",
+   "q": "A regular expression — output of `special = \"hello.world+foo*bar\"`",
    "body": [
     {
      "t": "code",
@@ -515,7 +515,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q99. A regular expression — what is the output?",
+   "q": "A regular expression — output of `for key, pattern in patterns.items():`",
    "body": [
     {
      "t": "code",
@@ -536,7 +536,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q100. A regular expression — what is the output?",
+   "q": "A regular expression — output of `camel_to_words(\"getUserNameById\")`",
    "body": [
     {
      "t": "code",

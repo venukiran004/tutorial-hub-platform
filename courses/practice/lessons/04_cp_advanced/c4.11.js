@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q151. What is the output?",
+   "q": "What is the output of `type(x)`?",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q152. Floating-point representation — what is the output?",
+   "q": "Floating-point representation — output of `0.1 + 0.2 == 0.3`",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q153. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `a = [1, 2, 3]`",
    "body": [
     {
      "t": "code",
@@ -100,7 +100,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q154. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `a = [1, 2, 3]`",
    "body": [
     {
      "t": "code",
@@ -122,7 +122,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q155. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `a = (1, 2, 3)`",
    "body": [
     {
      "t": "code",
@@ -144,7 +144,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q156. What is the output?",
+   "q": "What is the output of `True + True`?",
    "body": [
     {
      "t": "code",
@@ -166,7 +166,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q157. What is the output?",
+   "q": "What is the output of `[] == False`?",
    "body": [
     {
      "t": "code",
@@ -188,7 +188,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q158. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `x == y == z`",
    "body": [
     {
      "t": "code",
@@ -210,7 +210,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q159. Iterating a dict's views — what is the output?",
+   "q": "Iterating a dict's views — output of `len(keys)`",
    "body": [
     {
      "t": "code",
@@ -232,7 +232,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q160. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `type(None)`",
    "body": [
     {
      "t": "code",
@@ -254,7 +254,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q161. A mutable default argument — what is the output?",
+   "q": "A mutable default argument — output of `f()`",
    "body": [
     {
      "t": "code",
@@ -276,7 +276,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q162. Slicing — what is the output?",
+   "q": "Slicing — output of `x[::2]`",
    "body": [
     {
      "t": "code",
@@ -298,7 +298,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q163. What is the output?",
+   "q": "What is the output of `a`?",
    "body": [
     {
      "t": "code",
@@ -320,7 +320,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q164. A sequence built with the * operator — what is the output?",
+   "q": "A sequence built with the * operator — output of `'abc' * 0`",
    "body": [
     {
      "t": "code",
@@ -342,7 +342,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q165. A sequence built with the * operator — what is the output?",
+   "q": "A sequence built with the * operator — output of `a = [[0] * 3] * 3`",
    "body": [
     {
      "t": "code",
@@ -364,7 +364,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q166. A sequence built with the * operator — what is the output?",
+   "q": "A sequence built with the * operator — output of `a = [[0] * 3 for _ in range(3)]`",
    "body": [
     {
      "t": "code",
@@ -386,7 +386,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q167. A function call — what is the output?",
+   "q": "A function call — output of `def outer():`",
    "body": [
     {
      "t": "code",
@@ -408,7 +408,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q168. A caught TypeError — what is the output?",
+   "q": "A caught TypeError — output of `t = (1, 2, [3, 4])`",
    "body": [
     {
      "t": "code",
@@ -430,7 +430,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q169. A caught TypeError — what is the output?",
+   "q": "A caught TypeError — output of `f\"Error: {e}\"`",
    "body": [
     {
      "t": "code",
@@ -452,7 +452,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q170. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `{} is {}`",
    "body": [
     {
      "t": "code",
@@ -474,7 +474,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q171. __new__ versus __init__ — what is the output?",
+   "q": "__new__ versus __init__ — output of `MyClass.created_by`",
    "body": [
     {
      "t": "code",
@@ -496,7 +496,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q172. A class-creation hook — what is the output?",
+   "q": "A class-creation hook — output of `c.port`",
    "body": [
     {
      "t": "code",
@@ -518,7 +518,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q173. A function call — what is the output?",
+   "q": "A function call — output of `simple_add.__code__.co_varnames`",
    "body": [
     {
      "t": "code",
@@ -540,7 +540,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q174. A metaclass — what is the output?",
+   "q": "A metaclass — output of `list(AutoRegister.registry.keys())`",
    "body": [
     {
      "t": "code",
@@ -562,7 +562,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q175. Attribute lookup hooks — what is the output?",
+   "q": "Attribute lookup hooks — output of `proxy.value`",
    "body": [
     {
      "t": "code",
@@ -584,7 +584,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q176. Inheritance — what is the output?",
+   "q": "Inheritance — output of `Dog().speak()`",
    "body": [
     {
      "t": "code",
@@ -602,7 +602,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q177. __repr__ versus __str__ — what is the output?",
+   "q": "__repr__ versus __str__ — output of `d.x`",
    "body": [
     {
      "t": "code",
@@ -620,7 +620,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q178. A class definition — what is the output?",
+   "q": "A class definition — output of `from contextlib import contextmanager`",
    "body": [
     {
      "t": "code",
@@ -642,7 +642,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q179. A generator driven with .send() — what is the output?",
+   "q": "A generator driven with .send() — output of `acc.send(10)`",
    "body": [
     {
      "t": "code",
@@ -664,7 +664,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q180. A class-creation hook — what is the output?",
+   "q": "A class-creation hook — output of `p.validate(50)`",
    "body": [
     {
      "t": "code",

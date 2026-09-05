@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q47. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `list(islice(counter, 5))`",
    "body": [
     {
      "t": "code",
@@ -55,7 +55,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q48. Filesystem paths — what is the output?",
+   "q": "Filesystem paths — output of `os.path.exists('.')`",
    "body": [
     {
      "t": "code",
@@ -76,7 +76,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q49. super() and the method resolution order — what is the output?",
+   "q": "super() and the method resolution order — output of `d['age']`",
    "body": [
     {
      "t": "code",
@@ -97,7 +97,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q50. A class definition — what is the output?",
+   "q": "A class definition — output of `\"Computing area...\"`",
    "body": [
     {
      "t": "code",
@@ -114,7 +114,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q51. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.findall(pattern, text)`",
    "body": [
     {
      "t": "code",
@@ -135,7 +135,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q52. A regular expression — what is the output?",
+   "q": "A regular expression — output of `match.group()`",
    "body": [
     {
      "t": "code",
@@ -156,7 +156,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q53. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.sub(r'Hello', 'Hi', text)`",
    "body": [
     {
      "t": "code",
@@ -177,7 +177,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q54. A regular expression — what is the output?",
+   "q": "A regular expression — output of `f\"Full: {m.group()}, Amount: {m.group(1)}…`",
    "body": [
     {
      "t": "code",
@@ -208,7 +208,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q55. A regular expression — what is the output?",
+   "q": "A regular expression — output of `match.group('year')`",
    "body": [
     {
      "t": "code",
@@ -229,7 +229,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q56. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.findall(r'[cbsm]at', text)`",
    "body": [
     {
      "t": "code",
@@ -250,7 +250,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q57. A regular expression — what is the output?",
+   "q": "A regular expression — output of `f\"Greedy: {greedy}\"`",
    "body": [
     {
      "t": "code",
@@ -271,7 +271,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q58. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.findall(r'[A-Z]+', text)`",
    "body": [
     {
      "t": "code",
@@ -292,7 +292,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q59. A regular expression — what is the output?",
+   "q": "A regular expression — output of `match.group()`",
    "body": [
     {
      "t": "code",
@@ -313,7 +313,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q60. A regular expression — what is the output?",
+   "q": "A regular expression — output of `text = \"apple123banana456cherry789\"`",
    "body": [
     {
      "t": "code",
@@ -334,7 +334,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q61. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.findall(r'^line \\d', text)`",
    "body": [
     {
      "t": "code",
@@ -355,7 +355,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q62. A regular expression — what is the output?",
+   "q": "A regular expression — output of `match.groups()`",
    "body": [
     {
      "t": "code",
@@ -376,7 +376,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q63. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.sub(r'\\b(\\w)', lambda m: m.group(1).up…`",
    "body": [
     {
      "t": "code",
@@ -397,7 +397,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q64. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.findall(r'(.)\\1+', text)`",
    "body": [
     {
      "t": "code",
@@ -418,7 +418,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q65. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.search(r'(?<=start ).*(?= end)', text)…`",
    "body": [
     {
      "t": "code",
@@ -439,7 +439,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q66. A regular expression — what is the output?",
+   "q": "A regular expression — output of `emails = \"alice@test.com, bob@example.org, in…`",
    "body": [
     {
      "t": "code",
@@ -460,7 +460,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q67. A regular expression — what is the output?",
+   "q": "A regular expression — output of `currencies = re.findall(r'([$€])(\\d+\\.\\d{2})\\…`",
    "body": [
     {
      "t": "code",
@@ -481,7 +481,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q68. A regular expression — what is the output?",
+   "q": "A regular expression — output of `mask_sensitive(\"Card: 1234-5678-9012-3456…`",
    "body": [
     {
      "t": "code",
@@ -498,7 +498,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q69. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.findall(r'colou?r', text)`",
    "body": [
     {
      "t": "code",
@@ -519,7 +519,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q70. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.search(r'(?=.*hello)(?=.*world)', text…`",
    "body": [
     {
      "t": "code",
@@ -540,7 +540,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q71. A regular expression — what is the output?",
+   "q": "A regular expression — output of `snake = re.sub(r'(?<!^)(?=[A-Z])', '_', text)…`",
    "body": [
     {
      "t": "code",
@@ -561,7 +561,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q72. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.findall(r'\\w+', text)`",
    "body": [
     {
      "t": "code",
@@ -582,7 +582,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q73. A regular expression — what is the output?",
+   "q": "A regular expression — output of `matches = compiled.findall(\"ranges: 1-10, 20-…`",
    "body": [
     {
      "t": "code",
@@ -613,7 +613,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q74. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.split(r'(\\d)', text, maxsplit=2)`",
    "body": [
     {
      "t": "code",
@@ -634,7 +634,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q75. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.sub(r'[A-Z]+', lambda m: m.group().low…`",
    "body": [
     {
      "t": "code",
@@ -655,7 +655,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q76. A regular expression — what is the output?",
+   "q": "A regular expression — output of `re.findall(r'\\([^()]*\\)', text)`",
    "body": [
     {
      "t": "code",

@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q150. Slicing — what is the output?",
+   "q": "Slicing — output of `a[1:4]`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q151. What is the output?",
+   "q": "What is the output of `a + b`?",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q152. Sorting — what is the output?",
+   "q": "Sorting — output of `a = [3, 1, 4, 1, 5, 9]`",
    "body": [
     {
      "t": "code",
@@ -100,7 +100,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q153. Removing an item with pop() — what is the output?",
+   "q": "Removing an item with pop() — output of `a = [1, 2, 3, 4, 5]`",
    "body": [
     {
      "t": "code",
@@ -122,7 +122,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q154. list.extend — what is the output?",
+   "q": "list.extend — output of `a.extend([4, 5])`",
    "body": [
     {
      "t": "code",
@@ -144,7 +144,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q155. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `result = [x**2 for x in range(5)]`",
    "body": [
     {
      "t": "code",
@@ -162,7 +162,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q156. A filtered list comprehension — what is the output?",
+   "q": "A filtered list comprehension — output of `result = [x for x in range(20) if x % 2 == 0…`",
    "body": [
     {
      "t": "code",
@@ -184,7 +184,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q157. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `matrix = [[i*3+j for j in range(3)] for i in…`",
    "body": [
     {
      "t": "code",
@@ -206,7 +206,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q158. Slicing — what is the output?",
+   "q": "Slicing — output of `a = [1, 2, 3, 4, 5]`",
    "body": [
     {
      "t": "code",
@@ -228,7 +228,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q159. Slicing — what is the output?",
+   "q": "Slicing — output of `a[1:3] = [20, 30, 40]`",
    "body": [
     {
      "t": "code",
@@ -250,7 +250,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q160. What happens?",
+   "q": "What happens?",
    "body": [
     {
      "t": "code",
@@ -272,7 +272,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q161. What happens?",
+   "q": "What happens?",
    "body": [
     {
      "t": "code",
@@ -294,7 +294,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q162. Slicing — what is the output?",
+   "q": "Slicing — output of `a = [1, [2, 3], 4]`",
    "body": [
     {
      "t": "code",
@@ -316,7 +316,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q163. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `result = list(map(lambda x: x * 2, nums))`",
    "body": [
     {
      "t": "code",
@@ -338,7 +338,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q164. A lambda — what is the output?",
+   "q": "A lambda — output of `evens = list(filter(lambda x: x % 2 == 0, num…`",
    "body": [
     {
      "t": "code",
@@ -360,7 +360,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q165. What is the output?",
+   "q": "What is the output of `a.index(1)`?",
    "body": [
     {
      "t": "code",
@@ -382,7 +382,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q166. What happens?",
+   "q": "What happens?",
    "body": [
     {
      "t": "code",
@@ -404,7 +404,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q167. What is the output?",
+   "q": "What is the output of `a`?",
    "body": [
     {
      "t": "code",
@@ -426,7 +426,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q168. Slicing — what is the output?",
+   "q": "Slicing — output of `a[-2:]`",
    "body": [
     {
      "t": "code",
@@ -448,7 +448,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q169. any() and all() — what is the output?",
+   "q": "any() and all() — output of `sum(a)`",
    "body": [
     {
      "t": "code",
@@ -470,7 +470,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q170. sorting with a key function — what is the output?",
+   "q": "sorting with a key function — output of `a = ['banana', 'apple', 'cherry']`",
    "body": [
     {
      "t": "code",
@@ -492,7 +492,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q171. A lambda — what is the output?",
+   "q": "A lambda — output of `a = [(1, 'b'), (3, 'a'), (2, 'c')]`",
    "body": [
     {
      "t": "code",
@@ -514,7 +514,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q172. zip() — what is the output?",
+   "q": "zip() — output of `c = list(zip(a, b))`",
    "body": [
     {
      "t": "code",
@@ -536,7 +536,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q173. Removing an item with pop() — what is the output?",
+   "q": "Removing an item with pop() — output of `a.pop()`",
    "body": [
     {
      "t": "code",
@@ -558,7 +558,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q174. Slicing — what is the output?",
+   "q": "Slicing — output of `a[2:8:2] = [20, 40, 60]`",
    "body": [
     {
      "t": "code",
@@ -580,7 +580,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q175. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `result = [i if i % 2 == 0 else -i for i in ra…`",
    "body": [
     {
      "t": "code",
@@ -602,7 +602,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q176. A sequence built with the * operator — what is the output?",
+   "q": "A sequence built with the * operator — output of `b = [[] for _ in range(3)]`",
    "body": [
     {
      "t": "code",
@@ -624,7 +624,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q177. Slicing — what is the output?",
+   "q": "Slicing — output of `a = [1, 2, 3, 4, 5]`",
    "body": [
     {
      "t": "code",
@@ -646,7 +646,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q178. What is the output?",
+   "q": "What is the output of `a`?",
    "body": [
     {
      "t": "code",
@@ -668,7 +668,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q179. What is the output?",
+   "q": "What is the output of `a`?",
    "body": [
     {
      "t": "code",

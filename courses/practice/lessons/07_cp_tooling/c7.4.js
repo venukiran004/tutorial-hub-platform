@@ -208,7 +208,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q1. What is the output?",
+   "q": "What is the output of `math.ceil(4.1)`?",
    "body": [
     {
      "t": "code",
@@ -230,7 +230,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q2. What is the output?",
+   "q": "What is the output of `type(sys.path)`?",
    "body": [
     {
      "t": "code",
@@ -252,7 +252,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q3. A Counter — what is the output?",
+   "q": "A Counter — output of `c.most_common(2)`",
    "body": [
     {
      "t": "code",
@@ -274,7 +274,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q4. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `list(combined)`",
    "body": [
     {
      "t": "code",
@@ -296,7 +296,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q5. A lambda — what is the output?",
+   "q": "A lambda — output of `result = reduce(lambda x, y: x * y, [1, 2, 3,…`",
    "body": [
     {
      "t": "code",
@@ -318,7 +318,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q6. deepcopy versus a shallow copy — what is the output?",
+   "q": "deepcopy versus a shallow copy — output of `shallow[0]`",
    "body": [
     {
      "t": "code",
@@ -340,7 +340,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q7. Dates and times — what is the output?",
+   "q": "Dates and times — output of `future.strftime(\"%Y-%m-%d %H:%M\")`",
    "body": [
     {
      "t": "code",
@@ -362,7 +362,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q8. An Enum — what is the output?",
+   "q": "An Enum — output of `Color.RED.value`",
    "body": [
     {
      "t": "code",
@@ -384,7 +384,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q9. Decimal and Fraction arithmetic — what is the output?",
+   "q": "Decimal and Fraction arithmetic — output of `from decimal import Decimal, ROUND_HALF_UP`",
    "body": [
     {
      "t": "code",
@@ -406,7 +406,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q10. Decimal and Fraction arithmetic — what is the output?",
+   "q": "Decimal and Fraction arithmetic — output of `f1 + f2`",
    "body": [
     {
      "t": "code",
@@ -428,7 +428,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q11. A dataclass — what is the output?",
+   "q": "A dataclass — output of `s1.grades`",
    "body": [
     {
      "t": "code",
@@ -450,7 +450,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q12. Inheritance — what is the output?",
+   "q": "Inheritance — output of `from typing import NamedTuple`",
    "body": [
     {
      "t": "code",
@@ -472,7 +472,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q13. A regular expression — what is the output?",
+   "q": "A regular expression — output of `result = re.sub(r'\\d+', lambda m: str(int(m.g…`",
    "body": [
     {
      "t": "code",
@@ -494,7 +494,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q14. A defaultdict — what is the output?",
+   "q": "A defaultdict — output of `dict(dd)`",
    "body": [
     {
      "t": "code",
@@ -516,7 +516,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q15. An OrderedDict — what is the output?",
+   "q": "An OrderedDict — output of `list(od.keys())`",
    "body": [
     {
      "t": "code",
@@ -538,7 +538,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q16. A deque — what is the output?",
+   "q": "A deque — output of `list(d)`",
    "body": [
     {
      "t": "code",

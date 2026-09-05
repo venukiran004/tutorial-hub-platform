@@ -208,7 +208,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q101. Parsing a URL into its parts — what is the output?",
+   "q": "Parsing a URL into its parts — output of `u.scheme, u.hostname, u.port`",
    "body": [
     {
      "t": "code",
@@ -240,7 +240,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q102. Query strings hold LISTS of values — what is the output?",
+   "q": "Query strings hold LISTS of values — output of `parse_qs(q)`",
    "body": [
     {
      "t": "code",
@@ -272,7 +272,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q103. Escaping in urlencode versus quote — what is the output?",
+   "q": "Escaping in urlencode versus quote — output of `urlencode(params)`",
    "body": [
     {
      "t": "code",
@@ -304,7 +304,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q104. Joining a relative URL to a base — what is the output?",
+   "q": "Joining a relative URL to a base — output of `urljoin(base, \"intro.html\")`",
    "body": [
     {
      "t": "code",
@@ -336,7 +336,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q105. HTTP headers are case-insensitive — what is the output?",
+   "q": "HTTP headers are case-insensitive — output of `m[\"content-type\"]`",
    "body": [
     {
      "t": "code",
@@ -368,7 +368,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q106. urlopen raises on 4xx and 5xx — what is the output?",
+   "q": "urlopen raises on 4xx and 5xx — output of `\"ok\", r.status`",
    "body": [
     {
      "t": "code",
@@ -400,7 +400,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q107. A byte string is not a str — what is the output?",
+   "q": "A byte string is not a str — output of `type(payload).__name__`",
    "body": [
     {
      "t": "code",
@@ -432,7 +432,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q108. Non-ASCII in a URL and in a body — what is the output?",
+   "q": "Non-ASCII in a URL and in a body — output of `quote(name)`",
    "body": [
     {
      "t": "code",
@@ -464,7 +464,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q109. TCP delivers a stream, not messages — what is the output?",
+   "q": "TCP delivers a stream, not messages — output of `srv = socket.socket(); srv.bind((\"127.0.0.1\",…`",
    "body": [
     {
      "t": "code",
@@ -496,7 +496,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q110. recv returns what is available, not what you asked for — what is the output?",
+   "q": "recv returns what is available, not what you asked for — output of `len(chunk), chunk`",
    "body": [
     {
      "t": "code",
@@ -528,7 +528,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q111. struct packing is fixed width and endian-sensitive — what is the output?",
+   "q": "struct packing is fixed width and endian-sensitive — output of `struct.pack(\"!I\", 1)`",
    "body": [
     {
      "t": "code",
@@ -560,7 +560,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q112. Content-Length must match the bytes exactly — what is the output?",
+   "q": "Content-Length must match the bytes exactly — output of `len(\"caf\\u00e9\"), len(body)`",
    "body": [
     {
      "t": "code",
@@ -592,7 +592,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q113. Status codes: which are safe to retry — what is the output?",
+   "q": "Status codes: which are safe to retry — output of `sorted(codes)`",
    "body": [
     {
      "t": "code",
@@ -624,7 +624,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q114. Idempotency of HTTP methods — what is the output?",
+   "q": "Idempotency of HTTP methods — output of `[m for m, safe in sorted(methods.items())…`",
    "body": [
     {
      "t": "code",
@@ -656,7 +656,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q115. Timeouts are not set by default — what is the output?",
+   "q": "Timeouts are not set by default — output of `s.gettimeout()`",
    "body": [
     {
      "t": "code",
@@ -688,7 +688,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q116. Exponential backoff with a cap — what is the output?",
+   "q": "Exponential backoff with a cap — output of `delays = [min(base * 2 ** i, cap) for i in ra…`",
    "body": [
     {
      "t": "code",

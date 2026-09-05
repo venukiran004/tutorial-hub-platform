@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q58. str.format — what is the output?",
+   "q": "str.format — output of `f\"{name} is {age} years old\"`",
    "body": [
     {
      "t": "code",
@@ -55,7 +55,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q59. What is the output?",
+   "q": "What is the output of `f\"{x:.2f}\"`?",
    "body": [
     {
      "t": "code",
@@ -86,7 +86,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q60. What is the output?",
+   "q": "What is the output of `s.center(11, \"*\")`?",
    "body": [
     {
      "t": "code",
@@ -118,7 +118,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q61. str.replace — what is the output?",
+   "q": "str.replace — output of `s.replace(\"World\", \"Python\")`",
    "body": [
     {
      "t": "code",
@@ -139,7 +139,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q62. What is the output?",
+   "q": "What is the output of `s.encode('utf-8')`?",
    "body": [
     {
      "t": "code",
@@ -160,7 +160,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q63. str.split — what is the output?",
+   "q": "str.split — output of `s.split(\"apple\")`",
    "body": [
     {
      "t": "code",
@@ -191,7 +191,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q64. str.split — what is the output?",
+   "q": "str.split — output of `lines.splitlines()`",
    "body": [
     {
      "t": "code",
@@ -212,7 +212,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q65. str.join — what is the output?",
+   "q": "str.join — output of `s = \"The quick brown fox\"`",
    "body": [
     {
      "t": "code",
@@ -233,7 +233,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q66. What is the output?",
+   "q": "What is the output of `s * 0`?",
    "body": [
     {
      "t": "code",
@@ -254,7 +254,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q67. Slicing — what is the output?",
+   "q": "Slicing — output of `s[::-1]`",
    "body": [
     {
      "t": "code",
@@ -275,7 +275,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q68. What is the output?",
+   "q": "What is the output of `\"abc\" < \"abd\"`?",
    "body": [
     {
      "t": "code",
@@ -296,7 +296,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q69. What is the output?",
+   "q": "What is the output of `s.capitalize()`?",
    "body": [
     {
      "t": "code",
@@ -317,7 +317,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q70. What is the output?",
+   "q": "What is the output of `string.ascii_lowercase`?",
    "body": [
     {
      "t": "code",
@@ -348,7 +348,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q71. Stripping whitespace — what is the output?",
+   "q": "Stripping whitespace — output of `s.strip()`",
    "body": [
     {
      "t": "code",
@@ -369,7 +369,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q72. What is the output?",
+   "q": "What is the output of `s.translate(table)`?",
    "body": [
     {
      "t": "code",
@@ -390,7 +390,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q73. What happens?",
+   "q": "What happens?",
    "body": [
     {
      "t": "code",
@@ -411,7 +411,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q74. What is the output?",
+   "q": "What is the output of `s.expandtabs(4)`?",
    "body": [
     {
      "t": "code",
@@ -432,7 +432,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q75. What is the output?",
+   "q": "What is the output of `s.islower()`?",
    "body": [
     {
      "t": "code",
@@ -453,7 +453,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q76. What is the output?",
+   "q": "What is the output of `\" \".isspace()`?",
    "body": [
     {
      "t": "code",
@@ -474,7 +474,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q77. What is the output?",
+   "q": "What is the output of `s.removeprefix(\"hel\")`?",
    "body": [
     {
      "t": "code",
@@ -495,7 +495,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q78. What is the output?",
+   "q": "What is the output of `text.isnumeric()`?",
    "body": [
     {
      "t": "code",
@@ -516,7 +516,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q79. A caught TypeError — what is the output?",
+   "q": "A caught TypeError — output of `except TypeError as e:`",
    "body": [
     {
      "t": "code",
@@ -537,7 +537,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q80. A generator expression — what is the output?",
+   "q": "A generator expression — output of `new_s = \"\".join(c for c in s if c.lower() not…`",
    "body": [
     {
      "t": "code",
@@ -558,7 +558,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q81. What is the output?",
+   "q": "What is the output of `chr(65)`?",
    "body": [
     {
      "t": "code",
@@ -579,7 +579,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q82. What is the output?",
+   "q": "What is the output of `s.rfind(\"o\")`?",
    "body": [
     {
      "t": "code",
@@ -600,7 +600,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q83. str.format — what is the output?",
+   "q": "str.format — output of `template.format(name=\"Alice\", age=30)`",
    "body": [
     {
      "t": "code",
@@ -631,7 +631,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q84. enumerate() — what is the output?",
+   "q": "enumerate() — output of `list(enumerate(s))`",
    "body": [
     {
      "t": "code",
@@ -652,7 +652,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q85. A Counter — what is the output?",
+   "q": "A Counter — output of `Counter(s)`",
    "body": [
     {
      "t": "code",
@@ -673,7 +673,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q86. map() and filter() — what is the output?",
+   "q": "map() and filter() — output of `result = list(map(len, words))`",
    "body": [
     {
      "t": "code",
@@ -694,7 +694,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q87. Slicing — what is the output?",
+   "q": "Slicing — output of `s[10:]`",
    "body": [
     {
      "t": "code",

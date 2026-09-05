@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q100. Threads — what is the output?",
+   "q": "Threads — output of `sorted(results)`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q101. Threads — what is the output?",
+   "q": "Threads — output of `threads = [threading.Thread(target=increment,…`",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q102. Threads — what is the output?",
+   "q": "Threads — output of `f\"Thread {name}: {local.name}\"`",
    "body": [
     {
      "t": "code",
@@ -100,7 +100,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q103. Threads — what is the output?",
+   "q": "Threads — output of `results = [limiter.acquire() for _ in range(5…`",
    "body": [
     {
      "t": "code",
@@ -122,7 +122,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q104. Threads — what is the output?",
+   "q": "Threads — output of `t1 = threading.Thread(target=waiter, args=(\"T…`",
    "body": [
     {
      "t": "code",
@@ -144,7 +144,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q105. Threads — what is the output?",
+   "q": "Threads — output of `f\"Max concurrent: {max_concurrent}\"`",
    "body": [
     {
      "t": "code",
@@ -166,7 +166,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q106. Threads — what is the output?",
+   "q": "Threads — output of `sorted(results)`",
    "body": [
     {
      "t": "code",
@@ -188,7 +188,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q107. A property — what is the output?",
+   "q": "A property — output of `counter.value`",
    "body": [
     {
      "t": "code",
@@ -210,7 +210,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q108. Threads — what is the output?",
+   "q": "Threads — output of `f\"All arrived: {len(arrived) == 3}\"`",
    "body": [
     {
      "t": "code",
@@ -232,7 +232,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q109. A pool executor — what is the output?",
+   "q": "A pool executor — output of `len(results)`",
    "body": [
     {
      "t": "code",
@@ -254,7 +254,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q110. A pool executor — what is the output?",
+   "q": "A pool executor — output of `from concurrent.futures import ThreadPoolExec…`",
    "body": [
     {
      "t": "code",
@@ -276,7 +276,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q111. __new__ versus __init__ — what is the output?",
+   "q": "__new__ versus __init__ — output of `len(results)`",
    "body": [
     {
      "t": "code",
@@ -298,7 +298,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q112. A try / except block — what is the output?",
+   "q": "A try / except block — output of `q.full()`",
    "body": [
     {
      "t": "code",
@@ -320,7 +320,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q113. A while loop — what is the output?",
+   "q": "A while loop — output of `f\"[{priority}] {task}\"`",
    "body": [
     {
      "t": "code",
@@ -352,7 +352,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q114. Threads — what is the output?",
+   "q": "Threads — output of `self._thread = threading.Thread(target=self._…`",
    "body": [
     {
      "t": "code",
@@ -374,7 +374,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q115. Threads — what is the output?",
+   "q": "Threads — output of `f\"Readers: {rwl.readers}\"`",
    "body": [
     {
      "t": "code",
@@ -396,7 +396,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q116. A pool executor — what is the output?",
+   "q": "A pool executor — output of `f\"First completed: {first_result}\"`",
    "body": [
     {
      "t": "code",
@@ -418,7 +418,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q117. Threads — what is the output?",
+   "q": "Threads — output of `bb.get()`",
    "body": [
     {
      "t": "code",
@@ -440,7 +440,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q118. Threads — what is the output?",
+   "q": "Threads — output of `f\"First setters: {first_count}\"`",
    "body": [
     {
      "t": "code",
@@ -462,7 +462,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q119. A pool executor — what is the output?",
+   "q": "A pool executor — output of `future.done()`",
    "body": [
     {
      "t": "code",
@@ -484,7 +484,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q120. Threads — what is the output?",
+   "q": "Threads — output of `log[-1]`",
    "body": [
     {
      "t": "code",
@@ -506,7 +506,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q121. A pool executor — what is the output?",
+   "q": "A pool executor — output of `f\"Doubles: {doubles}\"`",
    "body": [
     {
      "t": "code",
@@ -528,7 +528,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q122. Threads — what is the output?",
+   "q": "Threads — output of `f\"Call count: {call_count}\"`",
    "body": [
     {
      "t": "code",
@@ -550,7 +550,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q123. Threads — what is the output?",
+   "q": "Threads — output of `pipeline.process([1, 2, 3])`",
    "body": [
     {
      "t": "code",
@@ -568,7 +568,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q124. Threads — what is the output?",
+   "q": "Threads — output of `f\"Remaining: {remaining}\"`",
    "body": [
     {
      "t": "code",
@@ -590,7 +590,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q125. A pool executor — what is the output?",
+   "q": "A pool executor — output of `f\"Batches: {len(batches)}\"`",
    "body": [
     {
      "t": "code",
@@ -608,7 +608,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q126. Threads — what is the output?",
+   "q": "Threads — output of `self.timer = threading.Timer(self.delay, func…`",
    "body": [
     {
      "t": "code",
@@ -630,7 +630,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q127. Threads — what is the output?",
+   "q": "Threads — output of `f\"Consumed count: {len(results[0]) if res…`",
    "body": [
     {
      "t": "code",
@@ -652,7 +652,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q128. Threads — what is the output?",
+   "q": "Threads — output of `f\"Ready: {result.is_ready()}\"`",
    "body": [
     {
      "t": "code",
@@ -674,7 +674,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q129. Threads — what is the output?",
+   "q": "Threads — output of `sorted(pool.results)`",
    "body": [
     {
      "t": "code",

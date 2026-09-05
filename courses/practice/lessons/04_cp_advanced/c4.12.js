@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q181. Attribute lookup hooks — what is the output?",
+   "q": "Attribute lookup hooks — output of `r.watch('x', lambda n, o, v: changes.append(f…`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q182. Attribute lookup hooks — what is the output?",
+   "q": "Attribute lookup hooks — output of `obj.x, obj.y, obj.z`",
    "body": [
     {
      "t": "code",
@@ -74,7 +74,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q183. Attribute lookup hooks — what is the output?",
+   "q": "Attribute lookup hooks — output of `obj.hello(\"world\")`",
    "body": [
     {
      "t": "code",
@@ -102,7 +102,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q184. A caught ValueError — what is the output?",
+   "q": "A caught ValueError — output of `result = eval(compile(tree, 'string', 'eval…`",
    "body": [
     {
      "t": "code",
@@ -124,7 +124,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q185. __repr__ versus __str__ — what is the output?",
+   "q": "__repr__ versus __str__ — output of `result = Chainable(10).add(5).multiply(2).sub…`",
    "body": [
     {
      "t": "code",
@@ -146,7 +146,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q186. A callable object via __call__ — what is the output?",
+   "q": "A callable object via __call__ — output of `db1 is db2`",
    "body": [
     {
      "t": "code",
@@ -168,7 +168,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q187. __repr__ versus __str__ — what is the output?",
+   "q": "__repr__ versus __str__ — output of `a + b`",
    "body": [
     {
      "t": "code",
@@ -190,7 +190,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q188. A callable object via __call__ — what is the output?",
+   "q": "A callable object via __call__ — output of `add(1, 2)`",
    "body": [
     {
      "t": "code",
@@ -212,7 +212,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q189. The iterator protocol — what is the output?",
+   "q": "The iterator protocol — output of `list(tree)`",
    "body": [
     {
      "t": "code",
@@ -234,7 +234,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q190. __eq__ and __hash__ — what is the output?",
+   "q": "__eq__ and __hash__ — output of `items = ', '.join(f'{k}={v!r}' for k, v in se…`",
    "body": [
     {
      "t": "code",
@@ -252,7 +252,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q191. A callable object via __call__ — what is the output?",
+   "q": "A callable object via __call__ — output of `m.factorial(5)`",
    "body": [
     {
      "t": "code",
@@ -274,7 +274,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q192. A class definition — what is the output?",
+   "q": "A class definition — output of `data = [{'name': 'Alice', 'age': 30}, {'name'…`",
    "body": [
     {
      "t": "code",
@@ -296,7 +296,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q193. A class-creation hook — what is the output?",
+   "q": "A class-creation hook — output of `Color.names()`",
    "body": [
     {
      "t": "code",
@@ -318,7 +318,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q194. A decorator using functools.wraps — what is the output?",
+   "q": "A decorator using functools.wraps — output of `f\"{indent}→ {func.__name__}({args})\"`",
    "body": [
     {
      "t": "code",
@@ -350,7 +350,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q195. A caught ValueError — what is the output?",
+   "q": "A caught ValueError — output of `sm.trigger('start')`",
    "body": [
     {
      "t": "code",
@@ -382,7 +382,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q196. A class definition — what is the output?",
+   "q": "A class definition — output of `self._handlers.setdefault(event, []).append(f…`",
    "body": [
     {
      "t": "code",
@@ -404,7 +404,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q197. __repr__ versus __str__ — what is the output?",
+   "q": "__repr__ versus __str__ — output of `a @ b`",
    "body": [
     {
      "t": "code",
@@ -426,7 +426,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q198. __repr__ versus __str__ — what is the output?",
+   "q": "__repr__ versus __str__ — output of `result = Monad(10) >> safe_divide >> add_one…`",
    "body": [
     {
      "t": "code",
@@ -448,7 +448,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q199. A classmethod — what is the output?",
+   "q": "A classmethod — output of `f\"{name}: {time_val:.4f}s ({ratio:.1f}x)\"`",
    "body": [
     {
      "t": "code",
@@ -466,7 +466,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q200. The iterator protocol — what is the output?",
+   "q": "The iterator protocol — output of `\"Multiple inheritance\", \"GIL\", \"GC with refer…`",
    "body": [
     {
      "t": "code",

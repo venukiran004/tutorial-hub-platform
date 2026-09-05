@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q61. A lambda — what is the output?",
+   "q": "A lambda — output of `sentence = reduce(lambda a, b: a + b, words)`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q62. A lambda — what is the output?",
+   "q": "A lambda — output of `sorted_pairs = sorted(pairs, key=lambda x: x[…`",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q63. A lambda — what is the output?",
+   "q": "A lambda — output of `top['name']`",
    "body": [
     {
      "t": "code",
@@ -100,7 +100,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q64. A lambda — what is the output?",
+   "q": "A lambda — output of `product = reduce(lambda a, b: a * b, nums)`",
    "body": [
     {
      "t": "code",
@@ -122,7 +122,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q65. A lambda — what is the output?",
+   "q": "A lambda — output of `result = reduce(lambda a, b: a * 10 + b, nums)`",
    "body": [
     {
      "t": "code",
@@ -144,7 +144,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q66. A lambda — what is the output?",
+   "q": "A lambda — output of `flattened = list(reduce(lambda a, b: a + b, m…`",
    "body": [
     {
      "t": "code",
@@ -166,7 +166,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q67. A lambda — what is the output?",
+   "q": "A lambda — output of `positive = list(filter(lambda x: x > 0, data))`",
    "body": [
     {
      "t": "code",
@@ -188,7 +188,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q68. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `funcs = [lambda x: x + 1, lambda x: x * 2, la…`",
    "body": [
     {
      "t": "code",
@@ -206,7 +206,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q69. A lambda — what is the output?",
+   "q": "A lambda — output of `flat = reduce(lambda a, b: a + b, nested, [])`",
    "body": [
     {
      "t": "code",
@@ -228,7 +228,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q70. A lambda — what is the output?",
+   "q": "A lambda — output of `add(5)`",
    "body": [
     {
      "t": "code",
@@ -250,7 +250,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q71. A lambda — what is the output?",
+   "q": "A lambda — output of `items = [('apple', 3), ('banana', 1), ('cherr…`",
    "body": [
     {
      "t": "code",
@@ -272,7 +272,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q72. functools.reduce — what is the output?",
+   "q": "functools.reduce — output of `reduce(add, [1, 2, 3, 4, 5])`",
    "body": [
     {
      "t": "code",
@@ -294,7 +294,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q73. map() and filter() — what is the output?",
+   "q": "map() and filter() — output of `texts = [' Hello ', ' WORLD ', ' Python ']`",
    "body": [
     {
      "t": "code",
@@ -316,7 +316,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q74. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `result = list(starmap(lambda x, y: x * y, pai…`",
    "body": [
     {
      "t": "code",
@@ -338,7 +338,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q75. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `odds = list(filterfalse(lambda x: x % 2 == 0,…`",
    "body": [
     {
      "t": "code",
@@ -360,7 +360,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q76. A filtered list comprehension — what is the output?",
+   "q": "A filtered list comprehension — output of `doubled_evens = list(map(lambda x: x * 2, fil…`",
    "body": [
     {
      "t": "code",
@@ -382,7 +382,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q77. A lambda — what is the output?",
+   "q": "A lambda — output of `f(5)`",
    "body": [
     {
      "t": "code",
@@ -404,7 +404,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q78. A lambda — what is the output?",
+   "q": "A lambda — output of `all_true, any_true`",
    "body": [
     {
      "t": "code",
@@ -426,7 +426,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q79. A generator expression — what is the output?",
+   "q": "A generator expression — output of `adults = list(filter(lambda p: p['age'] >= 30…`",
    "body": [
     {
      "t": "code",
@@ -448,7 +448,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q80. A lambda — what is the output?",
+   "q": "A lambda — output of `is_even(4)`",
    "body": [
     {
      "t": "code",
@@ -470,7 +470,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q81. A lambda — what is the output?",
+   "q": "A lambda — output of `operations['add'](10, 5)`",
    "body": [
     {
      "t": "code",
@@ -492,7 +492,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q82. A lambda — what is the output?",
+   "q": "A lambda — output of `result = list(map(lambda x: (x, x**2, x**3),…`",
    "body": [
     {
      "t": "code",
@@ -515,7 +515,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q83. A lambda — what is the output?",
+   "q": "A lambda — output of `flat = reduce(lambda acc, x: acc + x, data)`",
    "body": [
     {
      "t": "code",
@@ -537,7 +537,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q84. A lambda — what is the output?",
+   "q": "A lambda — output of `pipeline(nums)`",
    "body": [
     {
      "t": "code",
@@ -555,7 +555,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q85. A lambda — what is the output?",
+   "q": "A lambda — output of `transform(5)`",
    "body": [
     {
      "t": "code",
@@ -573,7 +573,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q86. A lambda — what is the output?",
+   "q": "A lambda — output of `result = list(map(lambda w: w.lower().capital…`",
    "body": [
     {
      "t": "code",
@@ -595,7 +595,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q87. A lambda — what is the output?",
+   "q": "A lambda — output of `col_sums = list(map(lambda col: sum(col), zip…`",
    "body": [
     {
      "t": "code",
@@ -617,7 +617,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q88. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `running_product = list(accumulate(nums, lambd…`",
    "body": [
     {
      "t": "code",
@@ -639,7 +639,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q89. A lambda — what is the output?",
+   "q": "A lambda — output of `grade = lambda s: 'A' if s >= 90 else 'B' if…`",
    "body": [
     {
      "t": "code",
@@ -661,7 +661,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q90. functools.reduce — what is the output?",
+   "q": "functools.reduce — output of `sets = [{1, 2}, {2, 3}, {3, 4}]`",
    "body": [
     {
      "t": "code",

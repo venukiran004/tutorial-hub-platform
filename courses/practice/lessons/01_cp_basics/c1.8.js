@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q88. What is the output?",
+   "q": "What is the output of `s.ljust(10) + \"|\"`?",
    "body": [
     {
      "t": "code",
@@ -65,7 +65,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q89. What is the output?",
+   "q": "What is the output of `b`?",
    "body": [
     {
      "t": "code",
@@ -86,7 +86,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q90. What is the output?",
+   "q": "What is the output of `s1 == s2`?",
    "body": [
     {
      "t": "code",
@@ -107,7 +107,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q91. str.split — what is the output?",
+   "q": "str.split — output of `s = \"Hello\\x00World\"`",
    "body": [
     {
      "t": "code",
@@ -128,7 +128,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q92. A sequence built with the * operator — what is the output?",
+   "q": "A sequence built with the * operator — output of `len(s)`",
    "body": [
     {
      "t": "code",
@@ -149,7 +149,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q93. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `a == b`",
    "body": [
     {
      "t": "code",
@@ -170,7 +170,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q94. A regular expression — what is the output?",
+   "q": "A regular expression — output of `words = re.findall(r'[a-zA-Z]+', s)`",
    "body": [
     {
      "t": "code",
@@ -191,7 +191,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q95. What is the output?",
+   "q": "What is the output of `s.isidentifier()`?",
    "body": [
     {
      "t": "code",
@@ -212,7 +212,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q96. What is the output?",
+   "q": "What is the output of `iskeyword(\"class\")`?",
    "body": [
     {
      "t": "code",
@@ -233,7 +233,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q97. enumerate() — what is the output?",
+   "q": "enumerate() — output of `f\"{i}: {line}\"`",
    "body": [
     {
      "t": "code",
@@ -264,7 +264,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q98. Stripping whitespace — what is the output?",
+   "q": "Stripping whitespace — output of `len(s)`",
    "body": [
     {
      "t": "code",
@@ -285,7 +285,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q99. What is the output?",
+   "q": "What is the output of `textwrap.fill(s, width=30)`?",
    "body": [
     {
      "t": "code",
@@ -316,7 +316,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q100. What is the output?",
+   "q": "What is the output of `f\"{s!r}\"`?",
    "body": [
     {
      "t": "code",
@@ -347,7 +347,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q101. What is the output?",
+   "q": "What is the output of `\"A\"`?",
    "body": [
     {
      "t": "code",
@@ -368,7 +368,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q102. What is the output?",
+   "q": "What is the output of `\"truthy\"`?",
    "body": [
     {
      "t": "code",
@@ -389,7 +389,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q103. range() — what is the output?",
+   "q": "range() — output of `i, end=' '`",
    "body": [
     {
      "t": "code",
@@ -410,7 +410,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q104. range() — what is the output?",
+   "q": "range() — output of `i, end=' '`",
    "body": [
     {
      "t": "code",
@@ -431,7 +431,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q105. range() — what is the output?",
+   "q": "range() — output of `i, end=' '`",
    "body": [
     {
      "t": "code",
@@ -452,7 +452,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q106. range() — what is the output?",
+   "q": "range() — output of `\"completed\"`",
    "body": [
     {
      "t": "code",
@@ -473,7 +473,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q107. What is the output?",
+   "q": "What is the output of `result`?",
    "body": [
     {
      "t": "code",
@@ -494,7 +494,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q108. A while loop — what is the output?",
+   "q": "A while loop — output of `i, end=' '`",
    "body": [
     {
      "t": "code",
@@ -515,7 +515,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q109. range() — what is the output?",
+   "q": "range() — output of `f\"({i},{j})\", end=' '`",
    "body": [
     {
      "t": "code",
@@ -546,7 +546,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q110. What is the output?",
+   "q": "What is the output of `\"one\"`?",
    "body": [
     {
      "t": "code",
@@ -567,7 +567,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q111. A filtered list comprehension — what is the output?",
+   "q": "A filtered list comprehension — output of `result = [x for x in nums if x > 2]`",
    "body": [
     {
      "t": "code",
@@ -588,7 +588,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q112. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `\"None!\"`",
    "body": [
     {
      "t": "code",
@@ -609,7 +609,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q113. What is the output?",
+   "q": "What is the output of `a > 3 and b > 5`?",
    "body": [
     {
      "t": "code",
@@ -630,7 +630,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q114. What is the output?",
+   "q": "What is the output of `0 and 5`?",
    "body": [
     {
      "t": "code",
@@ -651,7 +651,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q115. What is the output?",
+   "q": "What is the output of `1 < 2 < 3`?",
    "body": [
     {
      "t": "code",
@@ -672,7 +672,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q116. range() — what is the output?",
+   "q": "range() — output of `i, end=' '`",
    "body": [
     {
      "t": "code",
@@ -693,7 +693,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q117. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `x == y`",
    "body": [
     {
      "t": "code",

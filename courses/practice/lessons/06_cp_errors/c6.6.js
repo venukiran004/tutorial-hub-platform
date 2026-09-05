@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q84. A context manager — what is the output?",
+   "q": "A context manager — output of `s.read()`",
    "body": [
     {
      "t": "code",
@@ -55,7 +55,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q85. A for loop — what is the output?",
+   "q": "A for loop — output of `f\"{item.get('id')}: {item.text}\"`",
    "body": [
     {
      "t": "code",
@@ -76,7 +76,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q86. A class definition — what is the output?",
+   "q": "A class definition — output of `rs.operations`",
    "body": [
     {
      "t": "code",
@@ -97,7 +97,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q87. Stripping whitespace — what is the output?",
+   "q": "Stripping whitespace — output of `wrapped = textwrap.fill(textwrap.dedent(text)…`",
    "body": [
     {
      "t": "code",
@@ -128,7 +128,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q88. yield from — what is the output?",
+   "q": "yield from — output of `result = [line.strip() for line in merge_stre…`",
    "body": [
     {
      "t": "code",
@@ -149,7 +149,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q89. A raised exception — what is the output?",
+   "q": "A raised exception — output of `lw.write(\"Hello\")`",
    "body": [
     {
      "t": "code",
@@ -170,7 +170,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q90. JSON encoding or decoding — what is the output?",
+   "q": "JSON encoding or decoding — output of `f\"Compact length: {len(compact)}\"`",
    "body": [
     {
      "t": "code",
@@ -191,7 +191,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q91. Filesystem paths — what is the output?",
+   "q": "Filesystem paths — output of `p.suffixes`",
    "body": [
     {
      "t": "code",
@@ -212,7 +212,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q92. A class definition — what is the output?",
+   "q": "A class definition — output of `cr.read()`",
    "body": [
     {
      "t": "code",
@@ -233,7 +233,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q93. A class definition — what is the output?",
+   "q": "A class definition — output of `buf.getvalue()`",
    "body": [
     {
      "t": "code",
@@ -264,7 +264,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q94. A generator expression — what is the output?",
+   "q": "A generator expression — output of `head(f, 3)`",
    "body": [
     {
      "t": "code",
@@ -285,7 +285,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q95. The iterator protocol — what is the output?",
+   "q": "The iterator protocol — output of `list(fr)`",
    "body": [
     {
      "t": "code",
@@ -306,7 +306,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q96. A class definition — what is the output?",
+   "q": "A class definition — output of `f\"Parts: {len(sw.parts)}\"`",
    "body": [
     {
      "t": "code",
@@ -337,7 +337,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q97. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `list(interleave_streams(s1, s2))`",
    "body": [
     {
      "t": "code",
@@ -358,7 +358,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q98. A class definition — what is the output?",
+   "q": "A class definition — output of `f\"Data: {cw.getvalue()}\"`",
    "body": [
     {
      "t": "code",
@@ -379,7 +379,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q99. A @contextmanager generator — what is the output?",
+   "q": "A @contextmanager generator — output of `a.read()`",
    "body": [
     {
      "t": "code",

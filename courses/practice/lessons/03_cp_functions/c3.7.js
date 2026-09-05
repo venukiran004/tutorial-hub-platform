@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q31. A decorated function — what is the output?",
+   "q": "A decorated function — output of `double(5)`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q32. A generator — what is the output?",
+   "q": "A generator — output of `type(g)`",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q33. A function call — what is the output?",
+   "q": "A function call — output of `func()`",
    "body": [
     {
      "t": "code",
@@ -100,7 +100,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q34. A function call — what is the output?",
+   "q": "A function call — output of `func(1, 2)`",
    "body": [
     {
      "t": "code",
@@ -122,7 +122,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q35. A function call — what is the output?",
+   "q": "A function call — output of `\"unreachable\"`",
    "body": [
     {
      "t": "code",
@@ -144,7 +144,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q36. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `[f(10) for f in functions]`",
    "body": [
     {
      "t": "code",
@@ -166,7 +166,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q37. A lambda — what is the output?",
+   "q": "A lambda — output of `add(3)(5)`",
    "body": [
     {
      "t": "code",
@@ -188,7 +188,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q38. A function call — what is the output?",
+   "q": "A function call — output of `func(5)`",
    "body": [
     {
      "t": "code",
@@ -210,7 +210,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q39. functools.partial — what is the output?",
+   "q": "functools.partial — output of `square(5)`",
    "body": [
     {
      "t": "code",
@@ -228,7 +228,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q40. A decorated function — what is the output?",
+   "q": "A decorated function — output of `f\"Calling {func.__name__}{args}\"`",
    "body": [
     {
      "t": "code",
@@ -260,7 +260,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q41. A return inside finally — what is the output?",
+   "q": "A return inside finally — output of `func()`",
    "body": [
     {
      "t": "code",
@@ -282,7 +282,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q42. The nonlocal keyword — what is the output?",
+   "q": "The nonlocal keyword — output of `acc(5)`",
    "body": [
     {
      "t": "code",
@@ -304,7 +304,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q43. *args and **kwargs — what is the output?",
+   "q": "*args and **kwargs — output of `func(*args)`",
    "body": [
     {
      "t": "code",
@@ -322,7 +322,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q44. A for loop — what is the output?",
+   "q": "A for loop — output of `transform(\" HELLO WORLD \")`",
    "body": [
     {
      "t": "code",
@@ -344,7 +344,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q45. A function call — what is the output?",
+   "q": "A function call — output of `locals()`",
    "body": [
     {
      "t": "code",
@@ -366,7 +366,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q46. A try / except block — what is the output?",
+   "q": "A try / except block — output of `\"RecursionError caught\"`",
    "body": [
     {
      "t": "code",
@@ -388,7 +388,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q47. A mutable default argument — what is the output?",
+   "q": "A mutable default argument — output of `foo()`",
    "body": [
     {
      "t": "code",
@@ -410,7 +410,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q48. A function call — what is the output?",
+   "q": "A function call — output of `a, b`",
    "body": [
     {
      "t": "code",
@@ -432,7 +432,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q49. A decorated function — what is the output?",
+   "q": "A decorated function — output of `sqrt(16)`",
    "body": [
     {
      "t": "code",
@@ -450,7 +450,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q50. A lambda — what is the output?",
+   "q": "A lambda — output of `double_then_increment(5)`",
    "body": [
     {
      "t": "code",
@@ -472,7 +472,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q51. A lambda — what is the output?",
+   "q": "A lambda — output of `square(5)`",
    "body": [
     {
      "t": "code",
@@ -490,7 +490,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q52. A lambda — what is the output?",
+   "q": "A lambda — output of `result = list(map(lambda x: x * 2, nums))`",
    "body": [
     {
      "t": "code",
@@ -512,7 +512,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q53. A lambda — what is the output?",
+   "q": "A lambda — output of `total = reduce(lambda a, b: a + b, nums)`",
    "body": [
     {
      "t": "code",
@@ -534,7 +534,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q54. A lambda — what is the output?",
+   "q": "A lambda — output of `maximum = reduce(lambda a, b: a if a > b else…`",
    "body": [
     {
      "t": "code",
@@ -556,7 +556,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q55. A lambda — what is the output?",
+   "q": "A lambda — output of `result = list(map(lambda x, y: x + y, a, b))`",
    "body": [
     {
      "t": "code",
@@ -578,7 +578,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q56. A lambda — what is the output?",
+   "q": "A lambda — output of `result = list(map(lambda x, y: x + y, a, b))`",
    "body": [
     {
      "t": "code",
@@ -600,7 +600,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q57. map() and filter() — what is the output?",
+   "q": "map() and filter() — output of `words = ['hello', 'world', 'python']`",
    "body": [
     {
      "t": "code",
@@ -622,7 +622,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q58. map() and filter() — what is the output?",
+   "q": "map() and filter() — output of `data = ['1', '2', '3', '4', '5']`",
    "body": [
     {
      "t": "code",
@@ -644,7 +644,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q59. map() and filter() — what is the output?",
+   "q": "map() and filter() — output of `nums = [0, 1, 2, '', 'hello', None, [], [1]]`",
    "body": [
     {
      "t": "code",
@@ -666,7 +666,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q60. A lambda — what is the output?",
+   "q": "A lambda — output of `result = list(map(lambda x: x ** 2, filter(la…`",
    "body": [
     {
      "t": "code",

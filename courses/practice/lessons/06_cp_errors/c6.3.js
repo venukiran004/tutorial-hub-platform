@@ -117,7 +117,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q1. Division by zero inside try — what is the output?",
+   "q": "Division by zero inside try — output of `\"Division by zero!\"`",
    "body": [
     {
      "t": "code",
@@ -139,7 +139,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q2. A caught ValueError — what is the output?",
+   "q": "A caught ValueError — output of `f\"Error: {e}\"`",
    "body": [
     {
      "t": "code",
@@ -161,7 +161,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q3. try / except / else / finally in order — what is the output?",
+   "q": "try / except / else / finally in order — output of `\"caught\"`",
    "body": [
     {
      "t": "code",
@@ -183,7 +183,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q4. try / except / else / finally in order — what is the output?",
+   "q": "try / except / else / finally in order — output of `\"error\"`",
    "body": [
     {
      "t": "code",
@@ -205,7 +205,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q5. A caught TypeError — what is the output?",
+   "q": "A caught TypeError — output of `\"caught inner\"`",
    "body": [
     {
      "t": "code",
@@ -227,7 +227,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q6. Division by zero inside try — what is the output?",
+   "q": "Division by zero inside try — output of `divide(10, 2)`",
    "body": [
     {
      "t": "code",
@@ -249,7 +249,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q7. A caught KeyError — what is the output?",
+   "q": "A caught KeyError — output of `x[5]`",
    "body": [
     {
      "t": "code",
@@ -271,7 +271,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q8. super() and the method resolution order — what is the output?",
+   "q": "super() and the method resolution order — output of `f\"Error: {e}, Code: {e.code}\"`",
    "body": [
     {
      "t": "code",
@@ -293,7 +293,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q9. An exception chained with raise ... from — what is the output?",
+   "q": "An exception chained with raise ... from — output of `try:`",
    "body": [
     {
      "t": "code",
@@ -315,7 +315,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q10. Division by zero inside try — what is the output?",
+   "q": "Division by zero inside try — output of `\"Caught!\"`",
    "body": [
     {
      "t": "code",
@@ -337,7 +337,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q11. A try / finally block — what is the output?",
+   "q": "A try / finally block — output of `\"finally\"`",
    "body": [
     {
      "t": "code",
@@ -359,7 +359,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q12. Inheritance — what is the output?",
+   "q": "Inheritance — output of `f\"ValueError: {e}\"`",
    "body": [
     {
      "t": "code",
@@ -381,7 +381,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q13. File input/output — what is the output?",
+   "q": "File input/output — output of `\"This won't print\"`",
    "body": [
     {
      "t": "code",
@@ -403,7 +403,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q14. A try / except block — what is the output?",
+   "q": "A try / except block — output of `raise TypeError(f\"Type error at {i}\")`",
    "body": [
     {
      "t": "code",
@@ -425,7 +425,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q15. A caught ValueError — what is the output?",
+   "q": "A caught ValueError — output of `type(e)`",
    "body": [
     {
      "t": "code",
@@ -447,7 +447,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q16. A callable object via __call__ — what is the output?",
+   "q": "A callable object via __call__ — output of `f\"Retry {i+1}: {e}\"`",
    "body": [
     {
      "t": "code",
@@ -479,7 +479,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q17. An exception chained with raise ... from — what is the output?",
+   "q": "An exception chained with raise ... from — output of `f\"Caught: {e}\"`",
    "body": [
     {
      "t": "code",
@@ -501,7 +501,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q18. A warning — what is the output?",
+   "q": "A warning — output of `warnings.warn(\"This function is deprecated\",…`",
    "body": [
     {
      "t": "code",
@@ -523,7 +523,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q19. A context manager — what is the output?",
+   "q": "A context manager — output of `[str(e) for e in group.errors]`",
    "body": [
     {
      "t": "code",
@@ -545,7 +545,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q20. A caught KeyError — what is the output?",
+   "q": "A caught KeyError — output of `repr(e)`",
    "body": [
     {
      "t": "code",
@@ -567,7 +567,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q21. A try / except block — what is the output?",
+   "q": "A try / except block — output of `safe_divide(10, 2)`",
    "body": [
     {
      "t": "code",
@@ -589,7 +589,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q22. A bare except clause — what is the output?",
+   "q": "A bare except clause — output of `exc_type.__name__`",
    "body": [
     {
      "t": "code",
@@ -611,7 +611,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q23. Inheritance — what is the output?",
+   "q": "Inheritance — output of `f\"Database issue: {e}\"`",
    "body": [
     {
      "t": "code",

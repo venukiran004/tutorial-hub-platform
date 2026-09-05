@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q61. Inheritance — what is the output?",
+   "q": "Inheritance — output of `f\"Parent setup: {self.value}\"`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q62. __repr__ versus __str__ — what is the output?",
+   "q": "__repr__ versus __str__ — output of `C()`",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q63. super() and the method resolution order — what is the output?",
+   "q": "super() and the method resolution order — output of `Combined().action()`",
    "body": [
     {
      "t": "code",
@@ -100,7 +100,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q64. Attribute lookup hooks — what is the output?",
+   "q": "Attribute lookup hooks — output of `c.host, c.port`",
    "body": [
     {
      "t": "code",
@@ -118,7 +118,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q65. __repr__ versus __str__ — what is the output?",
+   "q": "__repr__ versus __str__ — output of `return f\"{self.__class__.__name__}('{self.nam…`",
    "body": [
     {
      "t": "code",
@@ -140,7 +140,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q66. An abstract base class — what is the output?",
+   "q": "An abstract base class — output of `b.is_empty()`",
    "body": [
     {
      "t": "code",
@@ -162,7 +162,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q67. __repr__ versus __str__ — what is the output?",
+   "q": "__repr__ versus __str__ — output of `Person(\"Alice\", 30)`",
    "body": [
     {
      "t": "code",
@@ -184,7 +184,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q68. Inheritance — what is the output?",
+   "q": "Inheritance — output of `v.validate(50)`",
    "body": [
     {
      "t": "code",
@@ -206,7 +206,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q69. A class definition — what is the output?",
+   "q": "A class definition — output of `a.class_var`",
    "body": [
     {
      "t": "code",
@@ -228,7 +228,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q70. A class-creation hook — what is the output?",
+   "q": "A class-creation hook — output of `Greeter().greet(\"World\")`",
    "body": [
     {
      "t": "code",
@@ -250,7 +250,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q71. Inheritance — what is the output?",
+   "q": "Inheritance — output of `Processor(SortAsc()).process(data)`",
    "body": [
     {
      "t": "code",
@@ -272,7 +272,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q72. Inheritance — what is the output?",
+   "q": "Inheritance — output of `c.call_private()`",
    "body": [
     {
      "t": "code",
@@ -294,7 +294,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q73. super() and the method resolution order — what is the output?",
+   "q": "super() and the method resolution order — output of `f\"Adding: {item}\"`",
    "body": [
     {
      "t": "code",
@@ -326,7 +326,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q74. A callable object via __call__ — what is the output?",
+   "q": "A callable object via __call__ — output of `a is b`",
    "body": [
     {
      "t": "code",
@@ -348,7 +348,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q75. Attribute lookup hooks — what is the output?",
+   "q": "Attribute lookup hooks — output of `f\"Called {name} with {args} {kwargs}\"`",
    "body": [
     {
      "t": "code",
@@ -376,7 +376,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q76. A class definition — what is the output?",
+   "q": "A class definition — output of `f\"Current: {self.value}\"`",
    "body": [
     {
      "t": "code",
@@ -408,7 +408,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q77. Inheritance — what is the output?",
+   "q": "Inheritance — output of `d.fly()`",
    "body": [
     {
      "t": "code",
@@ -430,7 +430,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q78. A class-creation hook — what is the output?",
+   "q": "A class-creation hook — output of `c.x, c.y`",
    "body": [
     {
      "t": "code",
@@ -452,7 +452,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q79. super() and the method resolution order — what is the output?",
+   "q": "super() and the method resolution order — output of `class Observable:`",
    "body": [
     {
      "t": "code",
@@ -474,7 +474,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q80. __eq__ and __hash__ — what is the output?",
+   "q": "__eq__ and __hash__ — output of `a == b`",
    "body": [
     {
      "t": "code",
@@ -496,7 +496,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q81. Inheritance — what is the output?",
+   "q": "Inheritance — output of `A.x, B.x, C.x`",
    "body": [
     {
      "t": "code",
@@ -518,7 +518,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q82. Inheritance — what is the output?",
+   "q": "Inheritance — output of `Base().method()`",
    "body": [
     {
      "t": "code",
@@ -540,7 +540,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q83. Inheritance — what is the output?",
+   "q": "Inheritance — output of `d2.operation()`",
    "body": [
     {
      "t": "code",
@@ -562,7 +562,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q84. Inheritance — what is the output?",
+   "q": "Inheritance — output of `Config.settings`",
    "body": [
     {
      "t": "code",
@@ -584,7 +584,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q85. A class-creation hook — what is the output?",
+   "q": "A class-creation hook — output of `Ordered._order`",
    "body": [
     {
      "t": "code",
@@ -606,7 +606,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q86. deepcopy versus a shallow copy — what is the output?",
+   "q": "deepcopy versus a shallow copy — output of `doc.content, doc.metadata`",
    "body": [
     {
      "t": "code",
@@ -628,7 +628,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q87. super() and the method resolution order — what is the output?",
+   "q": "super() and the method resolution order — output of `\"Auth: OK\"`",
    "body": [
     {
      "t": "code",
@@ -660,7 +660,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q88. A classmethod — what is the output?",
+   "q": "A classmethod — output of `Base.get_visibility_name()`",
    "body": [
     {
      "t": "code",
@@ -682,7 +682,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q89. A class-creation hook — what is the output?",
+   "q": "A class-creation hook — output of `raise TypeError(f\"{cls.__name__} must impleme…`",
    "body": [
     {
      "t": "code",
@@ -704,7 +704,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q90. super() and the method resolution order — what is the output?",
+   "q": "super() and the method resolution order — output of `f\"Mixin ({self.__class__.__name__})\"`",
    "body": [
     {
      "t": "code",

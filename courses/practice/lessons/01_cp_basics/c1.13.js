@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q180. A lambda — what is the output?",
+   "q": "A lambda — output of `result = reduce(lambda a, b: a + b, nums)`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q181. What is the output?",
+   "q": "What is the output of `*a`?",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q182. What is the output?",
+   "q": "What is the output of `min(a)`?",
    "body": [
     {
      "t": "code",
@@ -100,7 +100,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q183. Slicing — what is the output?",
+   "q": "Slicing — output of `a = [1, 2, 3, 4, 5]`",
    "body": [
     {
      "t": "code",
@@ -122,7 +122,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q184. A for loop — what is the output?",
+   "q": "A for loop — output of `for item in a:`",
    "body": [
     {
      "t": "code",
@@ -144,7 +144,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q185. Sorting — what is the output?",
+   "q": "Sorting — output of `sorted(unique)`",
    "body": [
     {
      "t": "code",
@@ -166,7 +166,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q186. A generator expression — what is the output?",
+   "q": "A generator expression — output of `[x + y for x, y in zip(a, b)]`",
    "body": [
     {
      "t": "code",
@@ -188,7 +188,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q187. Slicing — what is the output?",
+   "q": "Slicing — output of `a[:]`",
    "body": [
     {
      "t": "code",
@@ -210,7 +210,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q188. zip() — what is the output?",
+   "q": "zip() — output of `a = [[1, 2], [3, 4], [5, 6]]`",
    "body": [
     {
      "t": "code",
@@ -232,7 +232,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q189. list.append — what is the output?",
+   "q": "list.append — output of `a = [1, 2, 3, 2, 3, 4, 3, 4, 5]`",
    "body": [
     {
      "t": "code",
@@ -254,7 +254,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q190. Slicing — what is the output?",
+   "q": "Slicing — output of `a[-1]`",
    "body": [
     {
      "t": "code",
@@ -276,7 +276,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q191. list.append — what is the output?",
+   "q": "list.append — output of `bool(a)`",
    "body": [
     {
      "t": "code",
@@ -298,7 +298,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q192. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `nested = [x * y for x in range(1, 4) for y in…`",
    "body": [
     {
      "t": "code",
@@ -320,7 +320,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q193. str.join — what is the output?",
+   "q": "str.join — output of `a = list(\"hello\")`",
    "body": [
     {
      "t": "code",
@@ -342,7 +342,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q194. Slicing — what is the output?",
+   "q": "Slicing — output of `a = [1, 2, 3, 4, 5]`",
    "body": [
     {
      "t": "code",
@@ -364,7 +364,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q195. A filtered list comprehension — what is the output?",
+   "q": "A filtered list comprehension — output of `a == b`",
    "body": [
     {
      "t": "code",
@@ -386,7 +386,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q196. What is the output?",
+   "q": "What is the output of `a`?",
    "body": [
     {
      "t": "code",
@@ -408,7 +408,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q197. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `list(chain(a, b, c))`",
    "body": [
     {
      "t": "code",
@@ -430,7 +430,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q198. What is the output?",
+   "q": "What is the output of `a[slice(1, 4)]`?",
    "body": [
     {
      "t": "code",
@@ -452,7 +452,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q199. A sequence built with the * operator — what is the output?",
+   "q": "A sequence built with the * operator — output of `a = [1, 2, 3]`",
    "body": [
     {
      "t": "code",
@@ -474,7 +474,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q200. Slicing — what is the output?",
+   "q": "Slicing — output of `t[1:3]`",
    "body": [
     {
      "t": "code",
@@ -496,7 +496,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q201. What is the output?",
+   "q": "What is the output of `type(t), type(t2), type(t3), type(t4)`?",
    "body": [
     {
      "t": "code",
@@ -518,7 +518,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q202. What is the output?",
+   "q": "What is the output of `t.count(2)`?",
    "body": [
     {
      "t": "code",
@@ -540,7 +540,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q203. What is the output?",
+   "q": "What is the output of `a, b, c`?",
    "body": [
     {
      "t": "code",
@@ -562,7 +562,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q204. What is the output?",
+   "q": "What is the output of `a, b, c`?",
    "body": [
     {
      "t": "code",
@@ -584,7 +584,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q205. list.append — what is the output?",
+   "q": "list.append — output of `t = (1, 2, [3, 4])`",
    "body": [
     {
      "t": "code",
@@ -606,7 +606,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q206. A caught TypeError — what is the output?",
+   "q": "A caught TypeError — output of `except TypeError as e:`",
    "body": [
     {
      "t": "code",
@@ -628,7 +628,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q207. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `t1 == t2`",
    "body": [
     {
      "t": "code",
@@ -650,7 +650,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q208. A namedtuple — what is the output?",
+   "q": "A namedtuple — output of `p.x, p.y`",
    "body": [
     {
      "t": "code",
@@ -672,7 +672,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q209. range() — what is the output?",
+   "q": "range() — output of `t = tuple(range(5))`",
    "body": [
     {
      "t": "code",

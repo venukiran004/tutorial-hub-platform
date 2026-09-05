@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q300. A Counter — what is the output?",
+   "q": "A Counter — output of `word_freq.most_common(3)`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q301. A Counter — what is the output?",
+   "q": "A Counter — output of `+c`",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q302. A defaultdict — what is the output?",
+   "q": "A defaultdict — output of `t['a']['b']['c']`",
    "body": [
     {
      "t": "code",
@@ -100,7 +100,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q303. A defaultdict — what is the output?",
+   "q": "A defaultdict — output of `dict(index)`",
    "body": [
     {
      "t": "code",
@@ -122,7 +122,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q304. An OrderedDict — what is the output?",
+   "q": "An OrderedDict — output of `list(lru.cache.keys())`",
    "body": [
     {
      "t": "code",
@@ -144,7 +144,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q305. A deque — what is the output?",
+   "q": "A deque — output of `sliding_window_max([1, 3, -1, -3, 5, 3, 6…`",
    "body": [
     {
      "t": "code",
@@ -166,7 +166,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q306. A deque — what is the output?",
+   "q": "A deque — output of `bfs_levels(graph, 'A')`",
    "body": [
     {
      "t": "code",
@@ -188,7 +188,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q307. A namedtuple — what is the output?",
+   "q": "A namedtuple — output of `Color = namedtuple('Color', 'red green blue',…`",
    "body": [
     {
      "t": "code",
@@ -220,7 +220,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q308. A ChainMap — what is the output?",
+   "q": "A ChainMap — output of `scope['x']`",
    "body": [
     {
      "t": "code",
@@ -242,7 +242,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q309. A ChainMap — what is the output?",
+   "q": "A ChainMap — output of `child['a']`",
    "body": [
     {
      "t": "code",
@@ -264,7 +264,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q310. A defaultdict — what is the output?",
+   "q": "A defaultdict — output of `sorted(group)`",
    "body": [
     {
      "t": "code",
@@ -296,7 +296,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q311. A deque — what is the output?",
+   "q": "A deque — output of `cb.get_all()`",
    "body": [
     {
      "t": "code",
@@ -318,7 +318,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q312. A Counter — what is the output?",
+   "q": "A Counter — output of `top_k_frequent([1, 1, 1, 2, 2, 3], 2)`",
    "body": [
     {
      "t": "code",
@@ -340,7 +340,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q313. An OrderedDict — what is the output?",
+   "q": "An OrderedDict — output of `q.pop()`",
    "body": [
     {
      "t": "code",
@@ -362,7 +362,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q314. A defaultdict — what is the output?",
+   "q": "A defaultdict — output of `g.degree('A')`",
    "body": [
     {
      "t": "code",
@@ -384,7 +384,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q315. A defaultdict — what is the output?",
+   "q": "A defaultdict — output of `group_by_frequency([1, 1, 2, 2, 2, 3, 4,…`",
    "body": [
     {
      "t": "code",
@@ -406,7 +406,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q316. A deque — what is the output?",
+   "q": "A deque — output of `rotate_list([1, 2, 3, 4, 5], 2)`",
    "body": [
     {
      "t": "code",
@@ -428,7 +428,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q317. A namedtuple — what is the output?",
+   "q": "A namedtuple — output of `log.timestamp`",
    "body": [
     {
      "t": "code",
@@ -450,7 +450,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q318. A Counter — what is the output?",
+   "q": "A Counter — output of `f\"{jaccard_similarity('hello', 'hallo'):.…`",
    "body": [
     {
      "t": "code",
@@ -472,7 +472,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q319. A defaultdict — what is the output?",
+   "q": "A defaultdict — output of `md.get('header')`",
    "body": [
     {
      "t": "code",
@@ -494,7 +494,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q320. A deque — what is the output?",
+   "q": "A deque — output of `s.peek()`",
    "body": [
     {
      "t": "code",
@@ -516,7 +516,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q321. A Counter — what is the output?",
+   "q": "A Counter — output of `is_subset(\"abc\", \"aabbcc\")`",
    "body": [
     {
      "t": "code",
@@ -538,7 +538,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q322. super() and the method resolution order — what is the output?",
+   "q": "super() and the method resolution order — output of `dict(fd)`",
    "body": [
     {
      "t": "code",
@@ -560,7 +560,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q323. A defaultdict — what is the output?",
+   "q": "A defaultdict — output of `invert_dict(d)`",
    "body": [
     {
      "t": "code",
@@ -582,7 +582,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q324. A deque — what is the output?",
+   "q": "A deque — output of `is_palindrome(\"racecar\")`",
    "body": [
     {
      "t": "code",
@@ -604,7 +604,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q325. A Counter — what is the output?",
+   "q": "A Counter — output of `char_frequency_sort(\"tree\")`",
    "body": [
     {
      "t": "code",
@@ -626,7 +626,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q326. A defaultdict — what is the output?",
+   "q": "A defaultdict — output of `bus.on('click', lambda d: results.append(f\"cl…`",
    "body": [
     {
      "t": "code",
@@ -648,7 +648,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q327. A Counter — what is the output?",
+   "q": "A Counter — output of `min_window_substring(\"ADOBECODEBANC\", \"AB…`",
    "body": [
     {
      "t": "code",
@@ -670,7 +670,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q328. A namedtuple — what is the output?",
+   "q": "A namedtuple — output of `m.nonzero()`",
    "body": [
     {
      "t": "code",
@@ -692,7 +692,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q329. A deque — what is the output?",
+   "q": "A deque — output of `rc.ping(1)`",
    "body": [
     {
      "t": "code",

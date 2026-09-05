@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q130. A context manager — what is the output?",
+   "q": "A context manager — output of `f\"Max concurrent: {throttle.max_active}\"`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q131. Threads — what is the output?",
+   "q": "Threads — output of `f\"Ticks: {len(results)}\"`",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q132. A pool executor — what is the output?",
+   "q": "A pool executor — output of `pairs = [(10, 2), (20, 0), (30, 3), (40, 0),…`",
    "body": [
     {
      "t": "code",
@@ -100,7 +100,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q133. Threads — what is the output?",
+   "q": "Threads — output of `chunks = [data[i:i+chunk_size] for i in range…`",
    "body": [
     {
      "t": "code",
@@ -122,7 +122,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q134. Threads — what is the output?",
+   "q": "Threads — output of `f\"Total reads: {len(results)}\"`",
    "body": [
     {
      "t": "code",
@@ -144,7 +144,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q135. A classmethod — what is the output?",
+   "q": "A classmethod — output of `r1 is r2`",
    "body": [
     {
      "t": "code",
@@ -166,7 +166,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q136. A pool executor — what is the output?",
+   "q": "A pool executor — output of `\"Task timed out!\"`",
    "body": [
     {
      "t": "code",
@@ -188,7 +188,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q137. Threads — what is the output?",
+   "q": "Threads — output of `f\"Available: {len(pool.pool)}\"`",
    "body": [
     {
      "t": "code",
@@ -210,7 +210,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q138. Threads — what is the output?",
+   "q": "Threads — output of `f\"Result: {result}, Error: {err}\"`",
    "body": [
     {
      "t": "code",
@@ -232,7 +232,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q139. A pool executor — what is the output?",
+   "q": "A pool executor — output of `future.result()`",
    "body": [
     {
      "t": "code",
@@ -254,7 +254,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q140. Threads — what is the output?",
+   "q": "Threads — output of `tsd._dict`",
    "body": [
     {
      "t": "code",
@@ -276,7 +276,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q141. Threads — what is the output?",
+   "q": "Threads — output of `f\"All reached phase: {phases[0]}\"`",
    "body": [
     {
      "t": "code",
@@ -298,7 +298,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q142. A pool executor — what is the output?",
+   "q": "A pool executor — output of `with ThreadPoolExecutor(max_workers=self.max_…`",
    "body": [
     {
      "t": "code",
@@ -316,7 +316,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q143. Threads — what is the output?",
+   "q": "Threads — output of `barrier = CyclicBarrier(3, action=lambda: res…`",
    "body": [
     {
      "t": "code",
@@ -338,7 +338,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q144. Threads — what is the output?",
+   "q": "Threads — output of `self.thread = threading.Thread(target=self._m…`",
    "body": [
     {
      "t": "code",
@@ -360,7 +360,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q145. A pool executor — what is the output?",
+   "q": "A pool executor — output of `f\"Total: {total}\"`",
    "body": [
     {
      "t": "code",
@@ -382,7 +382,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q146. Threads — what is the output?",
+   "q": "Threads — output of `pub.subscribe(lambda m: messages['A'].append(…`",
    "body": [
     {
      "t": "code",
@@ -404,7 +404,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q147. Threads — what is the output?",
+   "q": "Threads — output of `t1 = threading.Thread(target=thread1)`",
    "body": [
     {
      "t": "code",
@@ -426,7 +426,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q148. Threads — what is the output?",
+   "q": "Threads — output of `f1.result()`",
    "body": [
     {
      "t": "code",
@@ -448,7 +448,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q149. Threads — what is the output?",
+   "q": "Threads — output of `futures = {self.executor.submit(self.get_or_c…`",
    "body": [
     {
      "t": "code",

@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q61. yield from — what is the output?",
+   "q": "yield from — output of `result = list(chain([1, 2], [3, 4], [5, 6]))`",
    "body": [
     {
      "t": "code",
@@ -56,7 +56,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q62. yield from — what is the output?",
+   "q": "yield from — output of `list(flatten(data))`",
    "body": [
     {
      "t": "code",
@@ -78,7 +78,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q63. A generator — what is the output?",
+   "q": "A generator — output of `next(g)`",
    "body": [
     {
      "t": "code",
@@ -100,7 +100,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q64. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `first_10 = list(islice(naturals(), 10))`",
    "body": [
     {
      "t": "code",
@@ -122,7 +122,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q65. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `result = list(takewhile(lambda x: x < 10, eve…`",
    "body": [
     {
      "t": "code",
@@ -144,7 +144,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q66. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `result = [next(colors) for _ in range(7)]`",
    "body": [
     {
      "t": "code",
@@ -166,7 +166,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q67. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `from itertools import repeat`",
    "body": [
     {
      "t": "code",
@@ -188,7 +188,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q68. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `c = list(zip_longest(a, b, fillvalue=0))`",
    "body": [
     {
      "t": "code",
@@ -210,7 +210,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q69. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `result = list(product('AB', repeat=2))`",
    "body": [
     {
      "t": "code",
@@ -232,7 +232,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q70. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `list(permutations('ABC', 2))`",
    "body": [
     {
      "t": "code",
@@ -264,7 +264,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q71. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `key, list(group)`",
    "body": [
     {
      "t": "code",
@@ -296,7 +296,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q72. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `list(a)`",
    "body": [
     {
      "t": "code",
@@ -318,7 +318,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q73. A generator — what is the output?",
+   "q": "A generator — output of `for i in range(0, len(data), chunk_size):`",
    "body": [
     {
      "t": "code",
@@ -350,7 +350,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q74. A lambda — what is the output?",
+   "q": "A lambda — output of `list(result)`",
    "body": [
     {
      "t": "code",
@@ -368,7 +368,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q75. A generator driven with .send() — what is the output?",
+   "q": "A generator driven with .send() — output of `f\"Got: {value}\"`",
    "body": [
     {
      "t": "code",
@@ -400,7 +400,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q76. A generator — what is the output?",
+   "q": "A generator — output of `next(g)`",
    "body": [
     {
      "t": "code",
@@ -422,7 +422,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q77. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `result = list(interleave([1, 2, 3], ['a', 'b'…`",
    "body": [
     {
      "t": "code",
@@ -444,7 +444,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q78. The iterator protocol — what is the output?",
+   "q": "The iterator protocol — output of `result = list(islice(InfiniteRange(10), 5))`",
    "body": [
     {
      "t": "code",
@@ -466,7 +466,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q79. A generator — what is the output?",
+   "q": "A generator — output of `result = list(window(range(6), 3))`",
    "body": [
     {
      "t": "code",
@@ -488,7 +488,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q80. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `result = list(starmap(pow, pairs))`",
    "body": [
     {
      "t": "code",
@@ -510,7 +510,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q81. A generator — what is the output?",
+   "q": "A generator — output of `1 in g`",
    "body": [
     {
      "t": "code",
@@ -532,7 +532,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q82. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `result = list(compress(data, selectors))`",
    "body": [
     {
      "t": "code",
@@ -554,7 +554,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q83. A generator — what is the output?",
+   "q": "A generator — output of `list(batch(range(7), 3))`",
    "body": [
     {
      "t": "code",
@@ -576,7 +576,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q84. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `list(accumulate(nums))`",
    "body": [
     {
      "t": "code",
@@ -608,7 +608,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q85. A generator — what is the output?",
+   "q": "A generator — output of `list(unique(data))`",
    "body": [
     {
      "t": "code",
@@ -630,7 +630,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q86. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `result = list(combinations_with_replacement('…`",
    "body": [
     {
      "t": "code",
@@ -652,7 +652,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q87. A generator — what is the output?",
+   "q": "A generator — output of `list(gen_range(5))`",
    "body": [
     {
      "t": "code",
@@ -674,7 +674,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q88. An itertools recipe — what is the output?",
+   "q": "An itertools recipe — output of `result = list(takewhile(lambda x: x <= 128, p…`",
    "body": [
     {
      "t": "code",
@@ -696,7 +696,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q89. The iterator protocol — what is the output?",
+   "q": "The iterator protocol — output of `p.peek()`",
    "body": [
     {
      "t": "code",
@@ -718,7 +718,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q90. A generator expression — what is the output?",
+   "q": "A generator expression — output of `evens = (x for x in data if x % 2 == 0)`",
    "body": [
     {
      "t": "code",

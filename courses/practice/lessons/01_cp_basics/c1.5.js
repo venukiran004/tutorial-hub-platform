@@ -65,7 +65,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q1. What will be the output?",
+   "q": "What will be the output?",
    "body": [
     {
      "t": "code",
@@ -87,7 +87,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q2. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `a is b`",
    "body": [
     {
      "t": "code",
@@ -109,7 +109,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q3. Floating-point representation — what is the output?",
+   "q": "Floating-point representation — output of `x == 0.3`",
    "body": [
     {
      "t": "code",
@@ -131,7 +131,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q4. What is the output?",
+   "q": "What is the output of `type(True)`?",
    "body": [
     {
      "t": "code",
@@ -153,7 +153,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q5. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `x is y`",
    "body": [
     {
      "t": "code",
@@ -175,7 +175,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q6. list.append — what is the output?",
+   "q": "list.append — output of `a = [1, 2, 3]`",
    "body": [
     {
      "t": "code",
@@ -197,7 +197,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q7. What's the difference?",
+   "q": "What's the difference?",
    "body": [
     {
      "t": "code",
@@ -219,7 +219,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q8. Object identity via id() — what is the output?",
+   "q": "Object identity via id() — output of `id(x)`",
    "body": [
     {
      "t": "code",
@@ -241,7 +241,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q9. Identity (is) versus equality (==) — what is the output?",
+   "q": "Identity (is) versus equality (==) — output of `a is b`",
    "body": [
     {
      "t": "code",
@@ -263,7 +263,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q10. What is the output?",
+   "q": "What is the output of `type(x).__name__`?",
    "body": [
     {
      "t": "code",
@@ -285,7 +285,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q11. int() with a base — what is the output?",
+   "q": "int() with a base — output of `x = int(\"10\", 2)`",
    "body": [
     {
      "t": "code",
@@ -307,7 +307,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q12. Floating-point representation — what is the output?",
+   "q": "Floating-point representation — output of `0.1 + 0.2 - 0.3`",
    "body": [
     {
      "t": "code",
@@ -329,7 +329,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q13. What will this print?",
+   "q": "What will this print?",
    "body": [
     {
      "t": "code",
@@ -351,7 +351,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q14. What is the output?",
+   "q": "What is the output of `math.isnan(float('nan'))`?",
    "body": [
     {
      "t": "code",
@@ -373,7 +373,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q15. Integer division — what is the output?",
+   "q": "Integer division — output of `a / b`",
    "body": [
     {
      "t": "code",
@@ -395,7 +395,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q16. Integer division — what is the output?",
+   "q": "Integer division — output of `-7 // 2`",
    "body": [
     {
      "t": "code",
@@ -417,7 +417,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q17. What happens?",
+   "q": "What happens?",
    "body": [
     {
      "t": "code",
@@ -439,7 +439,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q18. What is the output?",
+   "q": "What is the output of `x, y, z`?",
    "body": [
     {
      "t": "code",
@@ -461,7 +461,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q19. round() — what is the output?",
+   "q": "round() — output of `int(x)`",
    "body": [
     {
      "t": "code",
@@ -483,7 +483,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q20. What is the output?",
+   "q": "What is the output of `a + a`?",
    "body": [
     {
      "t": "code",
@@ -505,7 +505,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q21. What happens?",
+   "q": "What happens?",
    "body": [
     {
      "t": "code",
@@ -527,7 +527,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q22. Predict the output:",
+   "q": "Predict the output:",
    "body": [
     {
      "t": "code",
@@ -549,7 +549,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q23. What is the output?",
+   "q": "What is the output of `x ** y`?",
    "body": [
     {
      "t": "code",
@@ -567,7 +567,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q24. A sequence built with the * operator — what is the output?",
+   "q": "A sequence built with the * operator — output of `type(x)`",
    "body": [
     {
      "t": "code",
@@ -585,7 +585,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q25. What is the output?",
+   "q": "What is the output of `sys.maxsize`?",
    "body": [
     {
      "t": "code",
@@ -607,7 +607,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q26. Slicing — what is the output?",
+   "q": "Slicing — output of `a[0]`",
    "body": [
     {
      "t": "code",
@@ -629,7 +629,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q27. What is the output?",
+   "q": "What is the output of `x == y`?",
    "body": [
     {
      "t": "code",

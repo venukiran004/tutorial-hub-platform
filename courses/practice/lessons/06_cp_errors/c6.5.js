@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Q54. Filesystem paths — what is the output?",
+   "q": "Filesystem paths — output of `f.read()`",
    "body": [
     {
      "t": "code",
@@ -55,7 +55,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Q55. A context manager — what is the output?",
+   "q": "A context manager — output of `f\"Opening {self.filename}\"`",
    "body": [
     {
      "t": "code",
@@ -86,7 +86,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Q56. A @contextmanager generator — what is the output?",
+   "q": "A @contextmanager generator — output of `f\"Acquiring {name}\"`",
    "body": [
     {
      "t": "code",
@@ -117,7 +117,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Q57. CSV reading and writing — what is the output?",
+   "q": "CSV reading and writing — output of `content.strip()`",
    "body": [
     {
      "t": "code",
@@ -148,7 +148,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q58. CSV reading and writing — what is the output?",
+   "q": "CSV reading and writing — output of `dict(row)`",
    "body": [
     {
      "t": "code",
@@ -179,7 +179,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q59. JSON encoding or decoding — what is the output?",
+   "q": "JSON encoding or decoding — output of `loaded == data`",
    "body": [
     {
      "t": "code",
@@ -200,7 +200,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q60. JSON encoding or decoding — what is the output?",
+   "q": "JSON encoding or decoding — output of `return {\"x\": obj.x, \"y\": obj.y, \"__type__\": \"…`",
    "body": [
     {
      "t": "code",
@@ -221,7 +221,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q61. enumerate() — what is the output?",
+   "q": "enumerate() — output of `line.strip()`",
    "body": [
     {
      "t": "code",
@@ -242,7 +242,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q62. Filesystem paths — what is the output?",
+   "q": "Filesystem paths — output of `path = os.path.join(\"home\", \"user\", \"document…`",
    "body": [
     {
      "t": "code",
@@ -263,7 +263,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q63. Filesystem paths — what is the output?",
+   "q": "Filesystem paths — output of `p.name`",
    "body": [
     {
      "t": "code",
@@ -284,7 +284,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q64. What is the output?",
+   "q": "What is the output of `len(packed)`?",
    "body": [
     {
      "t": "code",
@@ -305,7 +305,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q65. Pickle serialization — what is the output?",
+   "q": "Pickle serialization — output of `loaded == data`",
    "body": [
     {
      "t": "code",
@@ -326,7 +326,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q66. A lambda — what is the output?",
+   "q": "A lambda — output of `f\"Using: {resources}\"`",
    "body": [
     {
      "t": "code",
@@ -357,7 +357,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q67. A class definition — what is the output?",
+   "q": "A class definition — output of `f\"Writes: {lw.count}\"`",
    "body": [
     {
      "t": "code",
@@ -378,7 +378,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q68. A context manager — what is the output?",
+   "q": "A context manager — output of `f\"Lines: {lc.line_count}\"`",
    "body": [
     {
      "t": "code",
@@ -399,7 +399,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q69. Slicing — what is the output?",
+   "q": "Slicing — output of `h.hexdigest()[:16]`",
    "body": [
     {
      "t": "code",
@@ -420,7 +420,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q70. A class definition — what is the output?",
+   "q": "A class definition — output of `a.getvalue() == b.getvalue()`",
    "body": [
     {
      "t": "code",
@@ -441,7 +441,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q71. list.append — what is the output?",
+   "q": "list.append — output of `chunked_read(f)`",
    "body": [
     {
      "t": "code",
@@ -462,7 +462,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q72. What is the output?",
+   "q": "What is the output of `encoded`?",
    "body": [
     {
      "t": "code",
@@ -483,7 +483,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q73. A class definition — what is the output?",
+   "q": "A class definition — output of `bp.flushed`",
    "body": [
     {
      "t": "code",
@@ -504,7 +504,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q74. A @contextmanager generator — what is the output?",
+   "q": "A @contextmanager generator — output of `f\"{label}: {elapsed:.4f}s\"`",
    "body": [
     {
      "t": "code",
@@ -525,7 +525,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q75. Stripping whitespace — what is the output?",
+   "q": "Stripping whitespace — output of `data.read(6)`",
    "body": [
     {
      "t": "code",
@@ -546,7 +546,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q76. Filesystem paths — what is the output?",
+   "q": "Filesystem paths — output of `os.path.normpath(\"a/b/../c/./d\")`",
    "body": [
     {
      "t": "code",
@@ -567,7 +567,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q77. A sequence built with the * operator — what is the output?",
+   "q": "A sequence built with the * operator — output of `f\"Original: {len(original)}\"`",
    "body": [
     {
      "t": "code",
@@ -588,7 +588,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q78. A try / except block — what is the output?",
+   "q": "A try / except block — output of `raise RuntimeError(\"Already committed\")`",
    "body": [
     {
      "t": "code",
@@ -609,7 +609,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q79. Filesystem paths — what is the output?",
+   "q": "Filesystem paths — output of `p1.parts`",
    "body": [
     {
      "t": "code",
@@ -630,7 +630,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q80. JSON encoding or decoding — what is the output?",
+   "q": "JSON encoding or decoding — output of `json.dumps(data, cls=DateEncoder)`",
    "body": [
     {
      "t": "code",
@@ -651,7 +651,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q81. A class definition — what is the output?",
+   "q": "A class definition — output of `w.getvalue()`",
    "body": [
     {
      "t": "code",
@@ -682,7 +682,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q82. What is the output?",
+   "q": "What is the output of `config['database']['host']`?",
    "body": [
     {
      "t": "code",
@@ -703,7 +703,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "Q83. A list comprehension — what is the output?",
+   "q": "A list comprehension — output of `[line.strip() for line in result]`",
    "body": [
     {
      "t": "code",

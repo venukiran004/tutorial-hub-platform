@@ -101,7 +101,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Q1. Slicing past the end of a list — what is the output?",
+   "q": "Slicing past the end of a list — output of `a[2:100]`",
    "body": [
     {
      "t": "code",
@@ -133,7 +133,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Q2. A reversed slice with a positive step — what is the output?",
+   "q": "A reversed slice with a positive step — output of `a[4:1]`",
    "body": [
     {
      "t": "code",
@@ -165,7 +165,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Q3. Integer division with a negative operand — what is the output?",
+   "q": "Integer division with a negative operand — output of `7 // 2, -7 // 2`",
    "body": [
     {
      "t": "code",
@@ -197,7 +197,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Q4. Banker's rounding — what is the output?",
+   "q": "Banker's rounding — output of `round(0.5), round(1.5), round(2.5), round…`",
    "body": [
     {
      "t": "code",
@@ -229,7 +229,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Q5. Comparing floats for equality — what is the output?",
+   "q": "Comparing floats for equality — output of `total = sum([0.1] * 10)`",
    "body": [
     {
      "t": "code",
@@ -261,7 +261,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Q6. Mutating a list while iterating it — what is the output?",
+   "q": "Mutating a list while iterating it — output of `nums = [1, 2, 3, 4, 5, 6]`",
    "body": [
     {
      "t": "code",
@@ -287,7 +287,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Q7. Sorting is stable — what is the output?",
+   "q": "Sorting is stable — output of `sorted(data, key=lambda t: t[1])`",
    "body": [
     {
      "t": "code",
@@ -313,7 +313,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Q8. sort() returns None — what is the output?",
+   "q": "sort() returns None — output of `a, b`",
    "body": [
     {
      "t": "code",
@@ -345,7 +345,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Q9. max() with a key function — what is the output?",
+   "q": "max() with a key function — output of `max(words)`",
    "body": [
     {
      "t": "code",
@@ -377,7 +377,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Q10. Building a matrix with the multiplication operator — what is the output?",
+   "q": "Building a matrix with the multiplication operator — output of `grid = [[0] * 3] * 3`",
    "body": [
     {
      "t": "code",
@@ -409,7 +409,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Q11. Recursion without a base case guard — what is the output?",
+   "q": "Recursion without a base case guard — output of `countdown(50)`",
    "body": [
     {
      "t": "code",
@@ -441,7 +441,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Q12. Default argument shared across calls in a recursive helper — what is the output?",
+   "q": "Default argument shared across calls in a recursive helper — output of `collect(1)`",
    "body": [
     {
      "t": "code",
@@ -473,7 +473,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "17",
-   "q": "Q13. Integer caching and the identity operator — what is the output?",
+   "q": "Integer caching and the identity operator — output of `a is b, x is y`",
    "body": [
     {
      "t": "code",
@@ -505,7 +505,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Q14. Sum of an empty sequence — what is the output?",
+   "q": "Sum of an empty sequence — output of `sum([])`",
    "body": [
     {
      "t": "code",
@@ -537,7 +537,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "Q15. Chained comparison versus a bitwise operator — what is the output?",
+   "q": "Chained comparison versus a bitwise operator — output of `1 < 2 < 3`",
    "body": [
     {
      "t": "code",
@@ -569,7 +569,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "Q16. Set operations do not preserve order — what is the output?",
+   "q": "Set operations do not preserve order — output of `sorted(set(a))`",
    "body": [
     {
      "t": "code",
@@ -601,7 +601,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Q17. Modifying a dict during iteration — what is the output?",
+   "q": "Modifying a dict during iteration — output of `\"RuntimeError:\", \"changed size\" in str(e)`",
    "body": [
     {
      "t": "code",
@@ -633,7 +633,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "22",
-   "q": "Q18. Tuple comparison is lexicographic — what is the output?",
+   "q": "Tuple comparison is lexicographic — output of `(1, 2) < (1, 3)`",
    "body": [
     {
      "t": "code",
@@ -665,7 +665,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Q19. heapq gives you a MIN-heap — what is the output?",
+   "q": "heapq gives you a MIN-heap — output of `heapq.heappop(h)`",
    "body": [
     {
      "t": "code",
@@ -697,7 +697,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "Q20. bisect finds the insertion point, not the item — what is the output?",
+   "q": "bisect finds the insertion point, not the item — output of `bisect.bisect_left(a, 5), bisect.bisect_r…`",
    "body": [
     {
      "t": "code",
@@ -729,7 +729,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Q21. Copying a nested structure — what is the output?",
+   "q": "Copying a nested structure — output of `a = [[1, 2], [3, 4]]`",
    "body": [
     {
      "t": "code",
@@ -761,7 +761,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Q22. String concatenation in a loop — what is the output?",
+   "q": "String concatenation in a loop — output of `concat() == join()`",
    "body": [
     {
      "t": "code",
@@ -793,7 +793,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "Q23. Generators are consumed once — what is the output?",
+   "q": "Generators are consumed once — output of `sum(squares)`",
    "body": [
     {
      "t": "code",
@@ -825,7 +825,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Q24. zip stops at the shortest input — what is the output?",
+   "q": "zip stops at the shortest input — output of `list(zip(ids, names))`",
    "body": [
     {
      "t": "code",
@@ -857,7 +857,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Q25. enumerate with a start value — what is the output?",
+   "q": "enumerate with a start value — output of `list(enumerate(items))`",
    "body": [
     {
      "t": "code",
