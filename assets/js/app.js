@@ -231,11 +231,21 @@
     }
 
     // Keep the active lesson in view on load without yanking the whole page.
+    //
+    // Every lesson is a fresh page load, so the rail starts at scrollTop 0 --
+    // arriving at 15.9 would otherwise mean scrolling past fourteen modules
+    // to find where you are. Measured against the RAIL, which is the scroll
+    // container: #rail-nav is the content and spans the full list height, so
+    // testing against it never detects anything as out of view.
+    var scroller = el.closest(".rail") || el.parentElement;
     var act = $(".lsn.cur", el);
-    if (act) {
-      var r = act.getBoundingClientRect(), rr = el.getBoundingClientRect();
-      if (r.top < rr.top + 60 || r.bottom > rr.bottom - 60) {
-        el.parentElement.scrollTop = act.offsetTop - 200;
+    if (act && scroller) {
+      var a = act.getBoundingClientRect(), sc = scroller.getBoundingClientRect();
+      if (a.top < sc.top + 60 || a.bottom > sc.bottom - 60) {
+        // Centre it. Deriving the target from the live rects plus the current
+        // scroll avoids depending on offsetParent, which changes the moment
+        // any wrapper becomes positioned.
+        scroller.scrollTop += (a.top - sc.top) - sc.height / 2 + a.height / 2;
       }
     }
   };
@@ -387,11 +397,29 @@
     var links = $$("a", toc);
     // Scroll-spy: mark the last heading whose top has passed the sticky bar.
     // rAF-throttled so a fast scroll costs one layout read per frame.
-    var ticking = false;
+    var panel = toc.closest(".toc");
+    var ticking = false, lastOn = null;
     function spy() {
       var y = window.scrollY + 110, active = heads[0];
       for (var i = 0; i < heads.length; i++) if (heads[i].offsetTop <= y) active = heads[i];
-      links.forEach(function (a) { a.classList.toggle("on", a.getAttribute("href") === "#" + active.id); });
+
+      var on = null;
+      links.forEach(function (a) {
+        var is = a.getAttribute("href") === "#" + active.id;
+        a.classList.toggle("on", is);
+        if (is) on = a;
+      });
+
+      // A problem set lists thirty drills, so the marked entry drifts out of
+      // the panel long before the page ends. Follow it -- but only when it
+      // actually changes, so this costs nothing on an ordinary scroll.
+      if (on && on !== lastOn && panel) {
+        lastOn = on;
+        var a = on.getBoundingClientRect(), pr = panel.getBoundingClientRect();
+        if (a.top < pr.top + 40 || a.bottom > pr.bottom - 40) {
+          panel.scrollTop += (a.top - pr.top) - pr.height / 2 + a.height / 2;
+        }
+      }
       ticking = false;
     }
     window.addEventListener("scroll", function () {
