@@ -149,6 +149,17 @@ EC.receiveLesson({
    ]
   },
   {
+   "t": "callout",
+   "kind": "note",
+   "title": "Program 72: Additional Challenges",
+   "body": [
+    {
+     "t": "p",
+     "text": "Harder, multi-concept problems — graphs, heaps and topological sorts — the kind that show up in onsite rounds rather than screens."
+    }
+   ]
+  },
+  {
    "t": "drill",
    "n": "10",
    "q": "Program 73: Merge K Sorted Lists",

@@ -6,9 +6,9 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "18.3",
- "lede": "**6 interview questions on structural patterns**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
+ "lede": "**7 interview questions on structural patterns**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
  "objectives": [
-  "Answer 6 questions on structural patterns without prompting",
+  "Answer 7 questions on structural patterns without prompting",
   "Name the force each pattern resolves, not only its shape",
   "Say when the pattern is the wrong choice",
   "Give the Python-idiomatic form rather than the textbook one"
@@ -222,6 +222,44 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "**Key takeaway:** Bridge = \"prefer composition over inheritance\" applied to two orthogonal hierarchies."
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "7",
+   "q": "Proxy / decorator structural pattern",
+   "terms": [
+    "Proxy",
+    "Decorator",
+    "Generic proxy using __getattr__"
+   ],
+   "body": [
+    {
+     "t": "p",
+     "text": "**A:** The **Proxy** pattern wraps an object to control access (logging, caching, access control, lazy loading). The **Decorator** structural pattern (not Python's `@decorator` syntax) dynamically adds behaviour to an object."
+    },
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "# Proxy pattern — lazy loading + access logging\nclass HeavyDatabase:\n    def __init__(self):\n        import time\n        time.sleep(0.1)        # simulate expensive initialisation\n        self.data = {\"users\": 100}\n        print(\"Database loaded!\")\n\n    def query(self, sql: str):\n        return f\"Result for: {sql}\"\n\nclass DatabaseProxy:\n    def __init__(self):\n        self._db = None         # lazy — not created yet\n\n    def _ensure_loaded(self):\n        if self._db is None:\n            self._db = HeavyDatabase()\n\n    def query(self, sql: str):\n        self._ensure_loaded()   # load on first use\n        print(f\"[LOG] Query: {sql}\")\n        return self._db.query(sql)\n\ndb = DatabaseProxy()            # instant — no heavy loading\nprint(db.query(\"SELECT *\"))     # triggers loading + logs",
+     "numbered": false
+    },
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "# Decorator structural pattern — adding behaviour dynamically\nclass Notifier:\n    def send(self, message: str):\n        print(f\"Basic notification: {message}\")\n\nclass SMSDecorator:\n    def __init__(self, wrapped: Notifier):\n        self._wrapped = wrapped\n\n    def send(self, message: str):\n        self._wrapped.send(message)         # delegate to original\n        print(f\"SMS notification: {message}\")  # add behaviour\n\nclass SlackDecorator:\n    def __init__(self, wrapped):\n        self._wrapped = wrapped\n\n    def send(self, message: str):\n        self._wrapped.send(message)\n        print(f\"Slack notification: {message}\")\n\n# Stack decorators:\nnotifier = SlackDecorator(SMSDecorator(Notifier()))\nnotifier.send(\"Server down!\")\n# Basic notification: Server down!\n# SMS notification: Server down!\n# Slack notification: Server down!",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**Generic proxy using `__getattr__`:**"
+    },
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "class LoggingProxy:\n    def __init__(self, target):\n        self._target = target\n\n    def __getattr__(self, name):\n        attr = getattr(self._target, name)\n        if callable(attr):\n            def wrapper(*args, **kwargs):\n                print(f\"Calling {name}({args}, {kwargs})\")\n                return attr(*args, **kwargs)\n            return wrapper\n        return attr\n\nproxied_list = LoggingProxy([1, 2, 3])\nproxied_list.append(4)    # Calling append((4,), {})",
+     "numbered": false
     }
    ]
   }

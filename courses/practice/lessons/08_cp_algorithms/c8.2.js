@@ -279,6 +279,17 @@ EC.receiveLesson({
    ]
   },
   {
+   "t": "callout",
+   "kind": "note",
+   "title": "Program 50: Quick Utility Algorithms",
+   "body": [
+    {
+     "t": "p",
+     "text": "Short, self-contained utilities — the warm-up round of most coding screens. Each one fits in a few lines once you see the trick."
+    }
+   ]
+  },
+  {
    "t": "drill",
    "n": "20",
    "q": "Program 51: Rotate Matrix 90°",
@@ -405,6 +416,17 @@ EC.receiveLesson({
      "lang": "python",
      "code": "def max_water(height):\n    left, right = 0, len(height) - 1\n    max_area = 0\n    while left < right:\n        area = min(height[left], height[right]) * (right - left)\n        max_area = max(max_area, area)\n        if height[left] < height[right]:\n            left += 1\n        else:\n            right -= 1\n    return max_area\n\nprint(max_water([1,8,6,2,5,4,8,3,7]))  # 49",
      "numbered": false
+    }
+   ]
+  },
+  {
+   "t": "callout",
+   "kind": "note",
+   "title": "Program 61: String Algorithms",
+   "body": [
+    {
+     "t": "p",
+     "text": "String problems, where the win is almost always a sliding window, a frequency map, or two pointers rather than a clever formula."
     }
    ]
   },
