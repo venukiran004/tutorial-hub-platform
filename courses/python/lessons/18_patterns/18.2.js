@@ -6,9 +6,9 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "18.2",
- "lede": "**15 interview questions on creational patterns**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
+ "lede": "**16 interview questions on creational patterns**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
  "objectives": [
-  "Answer 15 questions on creational patterns without prompting",
+  "Answer 16 questions on creational patterns without prompting",
   "Name the force each pattern resolves, not only its shape",
   "Say when the pattern is the wrong choice",
   "Give the Python-idiomatic form rather than the textbook one"
@@ -434,6 +434,27 @@ EC.receiveLesson({
      "lang": "python",
      "code": "class AnimalFactory:\n    @staticmethod\n    def create(animal_type: str):\n        animals = {\"dog\": Dog, \"cat\": Cat, \"bird\": Bird}\n        if animal_type not in animals:\n            raise ValueError(f\"Unknown animal: {animal_type}\")\n        return animals[animal_type]()\n\nanimal = AnimalFactory.create(\"dog\")",
      "numbered": false
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "16",
+   "q": "Trace an Object Pool implementation: what does acquire/release print?",
+   "terms": [
+    "Answer",
+    "Explanation"
+   ],
+   "body": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "class ObjectPool:\n    def __init__(self, factory, max_size=10):\n        self.factory, self.max_size, self.pool, self.created = factory, max_size, [], 0\n    def acquire(self):\n        if self.pool: return self.pool.pop()\n        self.created += 1\n        return self.factory()\n    def release(self, obj):\n        if len(self.pool) < self.max_size: self.pool.append(obj)\n\npool = ObjectPool(lambda: [0] * 1000, max_size=5)\nobjs = [pool.acquire() for _ in range(3)]\nprint(f\"Created: {pool.created}\")\nfor obj in objs: pool.release(obj)\nprint(f\"Pooled: {len(pool.pool)}\")\nobj = pool.acquire()\nprint(f\"Created after reuse: {pool.created}\")",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**Answer:** `Created: 3`, `Pooled: 3`, `Created after reuse: 3` **Explanation:** Released objects are reused on the next `acquire`, so the creation count doesn't increase."
     }
    ]
   }

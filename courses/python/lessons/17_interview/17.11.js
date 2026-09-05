@@ -7,9 +7,9 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "17.11",
- "lede": "**22 interview questions on scenario \"predict the output\" questions**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up question.",
+ "lede": "**21 interview questions on scenario \"predict the output\" questions**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up question.",
  "objectives": [
-  "Answer 22 questions on scenario \"predict the output\" questions without prompting",
+  "Answer 21 questions on scenario \"predict the output\" questions without prompting",
   "State the trade-off behind each answer, not only the definition",
   "Recognise the follow-up each question is setting up",
   "Notice which answers you can recognise but not produce"
@@ -55,27 +55,6 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Object pool reuse",
-   "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class ObjectPool:\n    def __init__(self, factory, max_size=10):\n        self.factory, self.max_size, self.pool, self.created = factory, max_size, [], 0\n    def acquire(self):\n        if self.pool: return self.pool.pop()\n        self.created += 1\n        return self.factory()\n    def release(self, obj):\n        if len(self.pool) < self.max_size: self.pool.append(obj)\n\npool = ObjectPool(lambda: [0] * 1000, max_size=5)\nobjs = [pool.acquire() for _ in range(3)]\nprint(f\"Created: {pool.created}\")\nfor obj in objs: pool.release(obj)\nprint(f\"Pooled: {len(pool.pool)}\")\nobj = pool.acquire()\nprint(f\"Created after reuse: {pool.created}\")",
-     "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Created: 3`, `Pooled: 3`, `Created after reuse: 3` **Explanation:** Released objects are reused on the next `acquire`, so the creation count doesn't increase."
-    }
-   ],
-   "terms": [
-    "Answer",
-    "Explanation"
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "3",
    "q": "Generator vs list sum result",
    "body": [
     {
@@ -96,7 +75,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "4",
+   "n": "3",
    "q": "Dict overhead by key type",
    "body": [
     {
@@ -117,7 +96,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "5",
+   "n": "4",
    "q": "Descriptor cache keyed by id",
    "body": [
     {
@@ -138,7 +117,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "6",
+   "n": "5",
    "q": "Three ways to build a string",
    "body": [
     {
@@ -159,7 +138,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "7",
+   "n": "6",
    "q": "range vs list memory and membership",
    "body": [
     {
@@ -180,7 +159,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "8",
+   "n": "7",
    "q": "Storage class with __slots__ holding a dict",
    "body": [
     {
@@ -201,7 +180,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "9",
+   "n": "8",
    "q": "Counter vs manual vs defaultdict",
    "body": [
     {
@@ -222,7 +201,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "10",
+   "n": "9",
    "q": "Int memory by magnitude",
    "body": [
     {
@@ -244,7 +223,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "11",
+   "n": "10",
    "q": "Set intersection equals multiples of 6",
    "body": [
     {
@@ -265,7 +244,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "12",
+   "n": "11",
    "q": "Memoize decorator hit rate",
    "body": [
     {
@@ -286,7 +265,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "13",
+   "n": "12",
    "q": "for-loop vs map vs comprehension",
    "body": [
     {
@@ -307,7 +286,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "14",
+   "n": "13",
    "q": "Generator file parsing with comment skip",
    "body": [
     {
@@ -328,7 +307,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "15",
+   "n": "14",
    "q": "Three dict-merge idioms",
    "body": [
     {
@@ -345,7 +324,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "16",
+   "n": "15",
    "q": "itemgetter vs lambda key",
    "body": [
     {
@@ -366,7 +345,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "17",
+   "n": "16",
    "q": "Acyclic garbage needs no GC",
    "body": [
     {
@@ -387,7 +366,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "18",
+   "n": "17",
    "q": "chain.from_iterable vs extend loop",
    "body": [
     {
@@ -408,7 +387,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "19",
+   "n": "18",
    "q": "Local vs global access speed",
    "body": [
     {
@@ -429,7 +408,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "20",
+   "n": "19",
    "q": "EfficientRecord with __slots__",
    "body": [
     {
@@ -450,7 +429,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "21",
+   "n": "20",
    "q": "any/loop/in for membership",
    "body": [
     {
@@ -471,7 +450,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "22",
+   "n": "21",
    "q": "Batch counting with a final partial batch",
    "body": [
     {

@@ -87,23 +87,6 @@
     </div>
   </section>
 
-  <!-- ------------------------------------------------------ how it works -- -->
-  <section class="sec">
-    <div class="sec-kicker">How each lesson is built</div>
-    <div class="sec-h"><h2>A consistent teaching structure</h2></div>
-    <p class="sec-lede">
-      Not every lesson uses every element — but the ones it uses always mean the same thing,
-      so you learn to read the course as quickly as you read the code.
-    </p>
-    <div class="method">
-      <div class="method-i"><div class="method-n">01</div><div class="method-t">Mental model first</div><div class="method-d">A picture of how the thing works before any syntax, because syntax you cannot model is syntax you will misuse.</div></div>
-      <div class="method-i"><div class="method-n">02</div><div class="method-t">Realistic examples</div><div class="method-d">Code that resembles the systems you work on. `foo` and `bar` appear only where the point is genuinely abstract.</div></div>
-      <div class="method-i"><div class="method-n">03</div><div class="method-t">Bad → Better → Production</div><div class="method-d">The same problem solved three times, with the reasoning that separates each rung made explicit.</div></div>
-      <div class="method-i"><div class="method-n">04</div><div class="method-t">Traps and trade-offs</div><div class="method-d">The mistakes experienced developers still make, and the decisions that have no single right answer.</div></div>
-      <div class="method-i"><div class="method-n">05</div><div class="method-t">Practice before answers</div><div class="method-d">Exercises with solutions you must deliberately reveal, plus knowledge checks that explain the reasoning.</div></div>
-      <div class="method-i"><div class="method-n">06</div><div class="method-t">Interview lens</div><div class="method-d">What this topic sounds like when an interviewer probes it, and what separates a strong answer from a recited one.</div></div>
-    </div>
-  </section>
 
   <!-- ------------------------------------------------------- curriculum -- -->
   <section class="sec" id="curriculum">
@@ -118,7 +101,6 @@
       <b>Coding Practice</b> builds the reflex on problem sets. Modules marked <b>soon</b> are
       written and scheduled — the shape of the whole course is visible from day one.
     </p>
-    <div class="track-tabs" id="track-tabs" role="tablist"></div>
     <div id="curriculum-list"></div>
   </section>
 
@@ -177,27 +159,6 @@
 
   /* ---- where to start ---- */
   var nextLesson = ready[0] || C.allLessons[0];
-
-  /* ---- curriculum, per track ---- */
-  $("#track-tabs").innerHTML = C.trackOrder.map(function (t, i) {
-    var tr = C.tracks[t];
-    return '<button class="ttab' + (i === 0 ? " on" : "") + '" type="button" role="tab" data-track="' + t + '"' +
-      ' aria-selected="' + (i === 0) + '">' +
-      '<span class="ttab-t">' + EC.esc(tr.label) + "</span>" +
-      '<span class="ttab-m">' + tr.modules.length + " modules · " + tr.lessons.length + " lessons</span>" +
-      "</button>";
-  }).join("");
-
-  $("#track-tabs").addEventListener("click", function (e) {
-    var b = e.target.closest(".ttab");
-    if (!b) return;
-    EC.$$(".ttab").forEach(function (x) {
-      var on = x === b;
-      x.classList.toggle("on", on);
-      x.setAttribute("aria-selected", String(on));
-    });
-    renderTrack(b.dataset.track);
-  });
 
   // One hue per module, so a section is recognisable by colour before its
   // name is read -- the same device the home page uses for topics.
