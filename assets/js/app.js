@@ -352,6 +352,17 @@
   };
 
   /* ------------------------------------------------------------- toc -- */
+  /* A heading carries furniture as well as its title: the section number and
+     a "#" deep-link. Both are children, so reading textContent -- or the last
+     child, which is the anchor -- gives "01Title#" or just "#". Strip the
+     furniture by name rather than by position, which is what broke when the
+     anchor was added. */
+  function headingText(h) {
+    var clone = h.cloneNode(true);
+    $$(".anchor, .hn", clone).forEach(function (n) { n.remove(); });
+    return clone.textContent.trim();
+  }
+
   EC.buildToc = function () {
     var toc = $("#toc-list");
     if (!toc) return;
@@ -361,11 +372,9 @@
 
     if (heads.length) {
       items = heads.map(function (h) {
-        if (!h.id) h.id = EC.slug(h.textContent);
-        var txt = h.tagName === "H2"
-          ? (h.lastElementChild ? h.lastElementChild.textContent : h.textContent)
-          : h.textContent;
-        return { el: h, cls: h.tagName === "H3" ? "sub" : "", label: txt };
+        if (!h.id) h.id = EC.slug(headingText(h));
+        return { el: h, cls: h.tagName === "H3" ? "sub" : "",
+                 label: headingText(h) };
       });
     } else {
       // A problem set has no headings — its structure is the numbered
