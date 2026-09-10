@@ -20,6 +20,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The columns are the answer", id: "columns" },
 
+    { t: "p", text: "A **matrix** is a function that turns vectors into vectors, and its columns tell you everything about it. **Column `j` is where the `j`th basis vector lands** — so reading a matrix means reading off the destinations of the axes, with no multiplication required." },
+
+    { t: "dl", items: [
+      ["Matrix", "A rectangular grid of numbers. An `m × n` matrix maps `n`-dimensional vectors to `m`-dimensional ones."],
+      ["Basis vector", "A vector with a single 1 and the rest zeros. `e₁ = [1,0]` is the x-axis, `e₂ = [0,1]` the y-axis."],
+      ["Linear transformation", "What a matrix does: it moves every vector while keeping the grid straight, evenly spaced, and the origin fixed."],
+      ["Column space", "Every vector the matrix can possibly produce — all combinations of its columns. Also called the **range** or **image**."]
+    ]},
+
     { t: "viz",
       title: "A matrix is where the basis vectors land",
       caption: "Every column of a matrix is the image of one basis vector. Read the columns and you have read the transformation — no multiplication required.",
@@ -90,6 +99,15 @@ A @ np.array([3.0, 2.0])     # [8., 2.]
 
     { t: "h2", n: "02", text: "The transformations worth recognising", id: "kinds" },
 
+    { t: "p", text: "A handful of transformations account for most matrices you will meet, and each has a signature you can recognise by eye. The **determinant** is the single number that summarises what a transformation does to area or volume." },
+
+    { t: "dl", items: [
+      ["Determinant", "The factor by which the transformation scales area (2D) or volume (3D). `det = 3` triples areas; `det = 0` collapses them to nothing."],
+      ["Negative determinant", "The transformation flips orientation — a reflection is included somewhere in it."],
+      ["Singular matrix", "A matrix with `det = 0`. It squashes space into a lower dimension, and that loss cannot be undone."],
+      ["Orthogonal matrix", "A rotation or reflection: lengths and angles are preserved, and `Qᵀ = Q⁻¹`, which makes it exceptionally well behaved numerically."]
+    ]},
+
     { t: "table",
       head: ["Matrix", "Does", "Determinant", "Tell"],
       rows: [
@@ -138,6 +156,14 @@ np.linalg.matrix_rank(collapse)   # 1, not 2
     ]},
 
     { t: "h2", n: "03", text: "Composition is multiplication", id: "composition" },
+
+    { t: "p", text: "**Matrix multiplication is function composition.** `BA` means \"do `A`, then do `B`\" — which is why the order matters and why the notation reads right to left, exactly like nested function calls." },
+
+    { t: "dl", items: [
+      ["Composition", "Applying one transformation to the result of another. `(BA)v = B(Av)`, and doing the composition once is cheaper than applying two matrices to every vector."],
+      ["Non-commutative", "`AB ≠ BA` in general. Rotating then stretching is a different transformation from stretching then rotating."],
+      ["Transpose", "`Aᵀ` swaps rows and columns. It reverses the order of a product: `(AB)ᵀ = BᵀAᵀ`."]
+    ]},
 
     { t: "ladder",
       title: "Rotate by 90°, then stretch x by 3",
@@ -201,6 +227,16 @@ X @ A                   # [[6., 5.], [2., 1.]]   <- silently WRONG
     ]},
 
     { t: "h2", n: "04", text: "Linear, and what it excludes", id: "linear" },
+
+    { t: "p", text: "**Linear** has a precise definition that excludes a great deal, and \"linear model\" in machine learning means something looser. A transformation is linear when it satisfies two rules, and those two rules are what make matrices sufficient to describe it." },
+
+    { t: "dl", items: [
+      ["Additivity", "`f(u + v) = f(u) + f(v)`. Transforming a sum gives the sum of the transforms."],
+      ["Homogeneity", "`f(cv) = c·f(v)`. Scaling the input scales the output by the same factor."],
+      ["Affine", "A linear map plus a shift: `f(v) = Av + b`. **Not linear**, because the origin moves — which is why a bias term is handled separately or by an extra column of ones."]
+    ]},
+
+    { t: "p", text: "A consequence worth stating plainly: **a linear transformation must send the origin to the origin**. Anything that translates, squares, or applies an activation function has left this territory, and matrices alone can no longer describe it." },
 
     { t: "code", lang: "python", title: "the two rules, and the thing they forbid", code: `
 # A map is LINEAR when it respects addition and scaling:

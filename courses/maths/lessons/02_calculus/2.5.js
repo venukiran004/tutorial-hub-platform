@@ -20,6 +20,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The geometric fact behind the method", id: "geometry" },
 
+    { t: "p", text: "**At a constrained optimum, the objective's gradient must point straight out of the constraint.** If it had any component along the constraint you could still move that way and improve — so the two gradients are parallel, and the ratio between them is the Lagrange multiplier." },
+
+    { t: "dl", items: [
+      ["Constrained optimisation", "Minimising `f(x)` subject to `g(x) = 0` or `g(x) ≤ 0`. The optimum need not be where the gradient vanishes."],
+      ["Lagrangian", "`L(x, λ) = f(x) − λg(x)`. Setting all its partial derivatives to zero recovers both the optimality condition and the constraint itself."],
+      ["Lagrange multiplier", "`λ`. Not bookkeeping — it equals `∂f*/∂c`, the rate at which the optimal value improves as the constraint is relaxed."],
+      ["Shadow price", "The economic name for that same `λ`: what one more unit of the constrained resource is worth."]
+    ]},
+
     { t: "viz",
       title: "At the constrained optimum the gradients are parallel",
       caption: "Walk along the constraint. While the objective's gradient has any component along your path you can still improve, so at the optimum it must point straight out of the constraint — parallel to the constraint's own gradient. The ratio between them is λ.",
@@ -107,6 +116,16 @@ r2 = minimize(f, [0.5, 0.5], constraints=[con2], bounds=[(0, None)]*2)
 
     { t: "h2", n: "02", text: "Inequalities and the KKT conditions", id: "kkt" },
 
+    { t: "p", text: "The **KKT conditions** extend Lagrange multipliers to inequality constraints, and they are best read as a four-item checklist. For a convex problem they are necessary *and* sufficient, so satisfying them proves you have found the global optimum." },
+
+    { t: "dl", items: [
+      ["Stationarity", "`∇f = Σλᵢ∇gᵢ`. No improving direction remains that the constraints permit."],
+      ["Primal feasibility", "The solution satisfies every constraint."],
+      ["Dual feasibility", "`λᵢ ≥ 0` for inequality constraints. They push in one direction only."],
+      ["Complementary slackness", "`λᵢ · gᵢ(x) = 0`. Each constraint is either **active** — tight, with a positive price — or **inactive** — slack, and costing nothing."],
+      ["Active set", "The constraints that are tight at the optimum. Only these affect the answer, and it is usually a small subset."]
+    ]},
+
     { t: "table",
       head: ["Condition", "Statement", "What it means"],
       rows: [
@@ -162,6 +181,15 @@ for bound in (5.0, 2.0):
 
     { t: "h2", n: "03", text: "Regularisation is a constraint in disguise", id: "regularisation" },
 
+    { t: "p", text: "**Ridge and lasso are constrained problems written as penalties.** Minimising `‖y − Xw‖² + α‖w‖²` is the Lagrangian of minimising the error subject to a budget on `‖w‖²`, with `α` playing the part of the multiplier." },
+
+    { t: "dl", items: [
+      ["Penalised form", "Objective plus `α ×` penalty. What the code actually optimises."],
+      ["Constrained form", "Objective subject to `penalty ≤ t`. Mathematically equivalent, with `t` and `α` in inverse correspondence."],
+      ["L2 constraint set", "A ball — smooth, with no corners. The optimum touches it at a generic point, so weights shrink but none reaches zero."],
+      ["L1 constraint set", "A diamond, with corners on the axes. A corner is where a coordinate is exactly zero, which is why lasso produces sparsity."]
+    ]},
+
     { t: "code", lang: "python", title: "the equivalence worth knowing", code: `
 # THESE TWO PROBLEMS HAVE THE SAME SOLUTION SET:
 #
@@ -207,6 +235,15 @@ for a in (0.0, 1.0, 100.0):
     },
 
     { t: "h2", n: "04", text: "Three ways to enforce a constraint", id: "enforcing" },
+
+    { t: "p", text: "There are three ways to make an optimiser respect a constraint, and they are not equally good. **Reparameterising so the constraint cannot be violated is almost always best**, because it holds exactly at every step with no extra hyperparameter." },
+
+    { t: "dl", items: [
+      ["Penalty", "Add a term punishing violation. Simple, approximate, and it introduces a weight that fights the objective."],
+      ["Projection", "After each step, map back to the nearest feasible point. Exact, and it requires a projection operator that exists and is cheap."],
+      ["Reparameterisation", "Optimise an unconstrained variable and transform it into the feasible set — `exp` for positivity, `softmax` for a simplex, `LLᵀ` for positive-definiteness."],
+      ["Clipping", "Not projection, despite appearances. It does not converge to the constrained optimum and it kills gradients at the boundary."]
+    ]},
 
     { t: "ladder",
       title: "Keeping weights on the probability simplex",

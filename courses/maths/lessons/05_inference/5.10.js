@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The arithmetic, and why it is unavoidable", id: "arithmetic" },
 
+    { t: "p", text: "**`α` is a per-test error rate, so running many tests guarantees false positives.** Twenty tests at `α = 0.05` give a 64% chance of at least one, and the expected count `α × m` is the more useful form — a 20,000-gene scan yields 1,000 from noise alone." },
+
+    { t: "dl", items: [
+      ["Multiple testing problem", "The inflation of false positives when several tests are run and any of them could be reported."],
+      ["Family-wise error rate", "`FWER = 1 − (1−α)^m` for independent tests. The probability of **at least one** false positive."],
+      ["Expected false positives", "`α × m`. Easier to reason about, and it does not saturate at 1 the way FWER does."],
+      ["Correlated tests", "Reduce the FWER but never remove it — at `ρ = 0.95` across 20 tests it is still nearly four times nominal."],
+      ["The family", "The set of tests among which you would be willing to claim a finding. If you would report any green metric, all of them are in it."]
+    ]},
+
     { t: "code", lang: "python", title: "significance is guaranteed at scale", code: `
 import numpy as np
 from scipy import stats
@@ -99,6 +109,16 @@ correlated_hits(20, rho=0.95)     # 0.183
     },
 
     { t: "h2", n: "02", text: "Two error rates, two different jobs", id: "two-rates" },
+
+    { t: "p", text: "There are two error rates you might control, and they are **different jobs rather than different strengths**. FWER asks whether *any* discovery is false; FDR asks what *fraction* are — and controlling the wrong one either buries every real finding or admits a flood." },
+
+    { t: "dl", items: [
+      ["FWER", "Family-wise error rate. Use when a single false positive is costly and hard to reverse — a drug approval, a safety claim."],
+      ["FDR", "False discovery rate: the expected proportion of discoveries that are false. Use when discoveries are leads that will be followed up."],
+      ["Bonferroni", "Reject where `p ≤ α/m`. Controls FWER under any dependence, and is conservative."],
+      ["Holm", "A step-down procedure, uniformly at least as powerful as Bonferroni. There is no reason to prefer Bonferroni except simplicity of explanation."],
+      ["Benjamini-Hochberg", "Controls FDR. On a 1,000-test screen it found 21 real effects where Bonferroni found 4."]
+    ]},
 
     { t: "viz",
       title: "FWER controls any error; FDR controls the proportion",
@@ -277,6 +297,16 @@ def experiment_readout(primary_p, secondary_ps, alpha=0.05, q=0.10):
     ]},
 
     { t: "h2", n: "03", text: "Multiplicity you did not notice", id: "hidden" },
+
+    { t: "p", text: "Explicit multiplicity is easy to see and easy to correct. **The damaging kind is the multiplicity nobody counted as tests** — subgroups, dashboards, time windows, model specifications and repeated experiments over a year." },
+
+    { t: "dl", items: [
+      ["Subgroup analysis", "Five binary splits give 31 combinations. Hunting through them reaches a 34% false-positive rate on data with no effect."],
+      ["Metric proliferation", "A 25-metric dashboard turns something green 72% of the time under the null."],
+      ["Specification search", "Covariates, transforms and outlier rules generate dozens of defensible pipelines, of which one gets reported."],
+      ["Across experiments", "100 experiments a year at `α = 0.05` ships five noise features annually, and nobody counts across experiments."],
+      ["Guardrail exception", "Guardrail metrics should **not** be corrected — correcting them makes you less likely to detect harm, which inverts their purpose."]
+    ]},
 
     { t: "code", lang: "python", title: "the tests you did not count", code: `
 # EXPLICIT MULTIPLICITY IS EASY TO SEE AND EASY TO CORRECT. The

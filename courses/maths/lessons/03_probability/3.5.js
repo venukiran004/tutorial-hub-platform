@@ -20,6 +20,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The four you meet, and where they come from", id: "family" },
 
+    { t: "p", text: "Continuous distributions are best identified by **the process that generates them** rather than by the shape of their density. The single most useful distinction is additive against multiplicative: many small effects adding give a normal, and many small effects multiplying give a lognormal." },
+
+    { t: "dl", items: [
+      ["Uniform", "Every value in a range equally likely. What you use when you know nothing beyond the bounds."],
+      ["Normal", "The sum of many independent effects with finite variance. Symmetric, and fully described by its mean and standard deviation."],
+      ["Exponential", "Waiting time at a constant rate. The only continuous distribution that is **memoryless**."],
+      ["Lognormal", "The product of many independent effects — so it is normal in the logs. Right-skewed, and the correct default for latency, income and file sizes."],
+      ["Pareto / power law", "Extremely heavy-tailed, arising from preferential attachment. Its variance may not exist at all."],
+      ["Student's t", "A normal with an estimated variance. Heavier tails, converging to the normal as the sample grows."]
+    ]},
+
     { t: "table",
       head: ["Distribution", "The process that generates it", "Typical use"],
       rows: [
@@ -117,6 +128,16 @@ for k in (5, 30, 200):
 
     { t: "h2", n: "02", text: "Heavy tails, and how to spot one", id: "heavy-tails" },
 
+    { t: "p", text: "**A heavy tail means extreme values are far more common than a normal distribution allows**, and it breaks the intuitions that most statistical practice rests on. Under a heavy tail the mean can be unstable, the standard deviation misleading, and a three-sigma event routine." },
+
+    { t: "dl", items: [
+      ["Heavy tail", "A tail decaying more slowly than an exponential. Extreme values dominate sums and averages."],
+      ["Skewness", "Asymmetry. Right-skewed data has mean above median, and the gap widens with the spread."],
+      ["Tail index", "For a power law, how fast the tail decays. Below 2 the variance is infinite; below 1 even the mean is."],
+      ["Infinite variance", "The sample standard deviation never converges — it simply grows with `n`, so any `3σ` rule is meaningless."],
+      ["Max-share diagnostic", "The largest observation's share of the total. It falls as `1/n` under a light tail and barely falls under a heavy one."]
+    ]},
+
     { t: "viz",
       title: "The same mean, a completely different tail",
       caption: "Three distributions matched on mean and variance. Under the normal a 4σ event is one in 30,000; under the lognormal it is routine, and under the Pareto the variance may not exist at all.",
@@ -203,6 +224,15 @@ running_mean_jumps(heavy)             # 7
     },
 
     { t: "h2", n: "03", text: "The memoryless property, and its consequence", id: "memoryless" },
+
+    { t: "p", text: "**A memoryless process has no notion of age**: having waited already tells you nothing about how much longer you will wait. The exponential is the only continuous distribution with this property, and whether your process has it decides whether a timeout makes sense." },
+
+    { t: "dl", items: [
+      ["Memoryless", "`P(X > s + t | X > s) = P(X > t)`. The clock effectively resets at every instant."],
+      ["Hazard rate", "The instantaneous chance of the event occurring, given it has not yet. Constant for an exponential."],
+      ["Ageing", "A hazard rate rising with time — wear-out. A long-running request is *less* likely to finish soon, which is why timeouts exist."],
+      ["Weibull", "Generalises the exponential with a shape parameter `k`: below 1 the failure rate falls with age, at 1 it is constant, above 1 it rises."]
+    ]},
 
     { t: "code", lang: "python", title: "the exponential forgets, which is often wrong", code: `
 # THE EXPONENTIAL IS THE ONLY CONTINUOUS MEMORYLESS DISTRIBUTION:

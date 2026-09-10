@@ -20,6 +20,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The whole algorithm", id: "algorithm" },
 
+    { t: "p", text: "**Gradient descent is four lines: compute the gradient, step against it, repeat, stop.** Everything written about optimisers since is a variation on how large that step should be and in what direction — the core loop has not changed." },
+
+    { t: "dl", items: [
+      ["Gradient descent", "The update `θ ← θ − η∇f(θ)`. Move downhill by a fixed fraction of the slope."],
+      ["Learning rate", "`η`, the step size. The one parameter that matters most, and the one most often wrong."],
+      ["Convergence", "Reaching a point where the gradient is near zero and further steps change little."],
+      ["Divergence", "Steps large enough that each overshoots further than the last, so the loss grows without bound."]
+    ]},
+
+    { t: "p", text: "There is a hard limit on the step size: **for a curvature of `L`, any learning rate above `2/L` diverges**, regardless of how well everything else is configured. That threshold is why doubling a working learning rate sometimes produces `NaN` rather than faster training." },
+
     { t: "code", lang: "python", title: "four lines, and the one parameter that matters", code: `
 import numpy as np
 
@@ -89,6 +100,15 @@ for lr in (0.1, 0.5, 0.9, 1.0, 1.1):
     },
 
     { t: "h2", n: "02", text: "One step size cannot suit every direction", id: "problem" },
+
+    { t: "p", text: "A single learning rate has to serve every parameter, and that is the central difficulty. **When the loss surface is a long thin valley, the rate that is safe across the valley is far too small to make progress along it** — so descent zigzags and crawls." },
+
+    { t: "dl", items: [
+      ["Ill-conditioned surface", "One where curvature differs sharply between directions. Measured by the Hessian's condition number."],
+      ["Zigzagging", "The characteristic path of gradient descent in a valley: large oscillations across it, tiny progress along it."],
+      ["Momentum", "Accumulating a running average of past gradients. Oscillations cancel and consistent directions reinforce, so the valley floor is traversed faster."],
+      ["Adaptive methods", "Adam, RMSProp and relatives, which keep a per-parameter scale estimate so each coordinate gets an appropriate step."]
+    ]},
 
     { t: "code", lang: "python", title: "the valley that defeats plain descent", code: `
 # A quadratic with curvature 20 in one direction and 1 in the other.
@@ -172,6 +192,15 @@ for t in range(1, steps + 1):
 
     { t: "h2", n: "03", text: "How much data per step", id: "batch" },
 
+    { t: "p", text: "**Batch size decides how much data contributes to each gradient**, trading noise against compute. A full-dataset gradient is exact and expensive; a single-example gradient is cheap and extremely noisy — and that noise turns out to be useful rather than merely tolerable." },
+
+    { t: "dl", items: [
+      ["Batch gradient descent", "One update per pass over the whole dataset. Exact gradient, very few updates."],
+      ["Stochastic gradient descent", "One update per example. Maximum noise, maximum updates per epoch."],
+      ["Mini-batch", "The practical middle: 32 to 512 examples. Gradient noise falls as `1/√batch`, so returns diminish quickly."],
+      ["Gradient noise", "The difference between a batch gradient and the true one. It helps escape saddle points, which is why pure batch descent is not obviously better."]
+    ]},
+
     { t: "table",
       head: ["", "Full batch", "Mini-batch", "Stochastic (n=1)"],
       rows: [
@@ -245,6 +274,15 @@ loss = (pred - y).pow(2).sum()       # lr scales WITH batch size
     ]},
 
     { t: "h2", n: "04", text: "Schedules", id: "schedules" },
+
+    { t: "p", text: "**A learning-rate schedule changes the step size during training**, because the right size early is not the right size late. Large steps make fast progress across the landscape; small steps are needed to settle into a minimum without bouncing out of it." },
+
+    { t: "dl", items: [
+      ["Schedule", "A rule setting the learning rate as a function of step or epoch."],
+      ["Warmup", "Starting small and increasing over the first few hundred steps. It prevents early divergence when initial gradients are large and poorly estimated."],
+      ["Decay", "Reducing the rate over training — step, exponential or cosine. Cosine is the common default because it decays smoothly to near zero."],
+      ["Per-step versus per-epoch", "Whether the schedule advances every batch or every pass. Stepping a per-step schedule once per epoch is a frequent and quiet bug."]
+    ]},
 
     { t: "code", lang: "python", title: "why the rate should change", code: `
 # EARLY: you are far away, the surface is roughly linear, and large

@@ -20,6 +20,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What a vector is", id: "what" },
 
+    { t: "p", text: "A **vector** is an ordered list of numbers, and the whole of linear algebra rests on the fact that one list supports three readings at once: a point in space, an arrow with a direction and a length, and a row of data. Nothing distinguishes them mathematically — you choose whichever reading makes the problem easiest." },
+
+    { t: "dl", items: [
+      ["Vector", "An ordered list of `n` numbers. Its **dimension** is `n`, the count of numbers — not how large they are."],
+      ["Component", "One entry of the list. In data work each component is usually one feature or one measurement."],
+      ["Magnitude", "The vector's length, written `‖v‖`. A vector with magnitude 1 is a **unit vector**."],
+      ["Direction", "What remains after dividing a vector by its magnitude. Two vectors can share a direction and differ enormously in length."]
+    ]},
+
     { t: "viz",
       title: "The same vector, three descriptions",
       caption: "The components depend on the axes you chose. The length and the angle do not — which is why almost every useful formula is written in terms of those two.",
@@ -83,6 +92,16 @@ np.linalg.norm(v_hat)                  # 1.0
 
     { t: "h2", n: "02", text: "The dot product", id: "dot" },
 
+    { t: "p", text: "The **dot product** multiplies two vectors element by element and adds the results, collapsing two lists into a single number. That number answers a question about alignment: it is positive when the vectors point broadly the same way, zero when they are perpendicular, and negative when they oppose." },
+
+    { t: "dl", items: [
+      ["Dot product", "`a · b = Σ aᵢbᵢ`. Also written `aᵀb`, and identical to `np.dot(a, b)`."],
+      ["Orthogonal", "A dot product of exactly zero. The vectors are perpendicular and share no component — this is what \"unrelated directions\" means precisely."],
+      ["Cosine similarity", "The dot product of the two **unit** vectors, so it measures direction alone and ignores magnitude entirely."]
+    ]},
+
+    { t: "p", text: "It has a second reading that matters more in practice: `a · b = ‖a‖ ‖b‖ cos θ`. **The same number is both an algebraic sum and a geometric statement about the angle between the two vectors**, which is why one operation serves both similarity search and projection." },
+
     { t: "code", lang: "python", title: "one number, two readings", code: `
 a = np.array([3.0, 4.0])
 b = np.array([4.0, 3.0])
@@ -115,6 +134,16 @@ np.array([1, 0]) @ np.array([-1, 0])    # -1.0 -- opposite
     ]},
 
     { t: "h2", n: "03", text: "Which norm, and why it changes the answer", id: "norms" },
+
+    { t: "p", text: "A **norm** is any rule for measuring the size of a vector. There is more than one because \"size\" is not a single idea — the distance a taxi drives, the distance a bird flies and the worst single deviation are all legitimate measures, and they rank the same vectors differently." },
+
+    { t: "dl", items: [
+      ["L2 norm", "`√(Σ xᵢ²)` — straight-line distance, the default. Penalises one large deviation far more than several small ones, because of the square."],
+      ["L1 norm", "`Σ |xᵢ|` — the sum of absolute values, sometimes called Manhattan or taxicab distance. Treats all deviations proportionally."],
+      ["L∞ norm", "`max |xᵢ|` — the largest single component. Everything else is ignored, so it answers \"what is the worst case\"."]
+    ]},
+
+    { t: "p", text: "**Choosing a norm is choosing what counts as close**, and it is a modelling decision rather than a technicality. L2 gives you ridge regression and least squares; L1 gives you lasso and median-like robustness; L∞ gives you worst-case guarantees." },
 
     { t: "table",
       head: ["Norm", "Formula", "Geometry", "Where it shows up"],
@@ -151,6 +180,16 @@ np.linalg.norm(spike,  np.inf)   # 6.0
 
     { t: "h2", n: "04", text: "Projection, which is secretly regression", id: "projection" },
 
+    { t: "p", text: "**Projection** answers: how much of one vector points along another? Geometrically it is the shadow `a` casts on the line through `b` — the closest point to `a` that lies on that line, and the part of `a` that `b` can account for." },
+
+    { t: "dl", items: [
+      ["Projection of `a` onto `b`", "`(a·b / b·b) · b` — a vector, pointing along `b`, whose length is how much of `a` lies in that direction."],
+      ["Scalar projection", "`a·b / ‖b‖` — the same quantity as a single number, without the direction attached."],
+      ["Residual", "What is left over: `a − proj_b(a)`. It is always orthogonal to `b`, which is the entire mechanism behind least squares."]
+    ]},
+
+    { t: "p", text: "This is not an analogy for regression — **it is regression**. Fitting `y ≈ Xβ` means projecting `y` onto the space the columns of `X` can reach, and the residual being orthogonal to that space is precisely the condition least squares solves for." },
+
     { t: "ladder",
       title: "How much of `a` lies along `b`?",
       rungs: [
@@ -186,6 +225,14 @@ resid @ b                           # 0.0  (to floating point)
     },
 
     { t: "h2", n: "05", text: "What breaks in high dimensions", id: "high-d" },
+
+    { t: "p", text: "Every intuition in this lesson was formed in two or three dimensions, and most of it stops being true above about ten. **Distances concentrate, everything becomes nearly orthogonal to everything else, and volume flees to the corners** — so \"nearest neighbour\" gradually stops meaning anything." },
+
+    { t: "dl", items: [
+      ["Curse of dimensionality", "The collective name for what follows. As dimensions grow, the data you have occupies a vanishing fraction of the space it lives in."],
+      ["Distance concentration", "The gap between the nearest and furthest point shrinks relative to the average distance, so ranking by distance becomes unstable."],
+      ["Effective dimension", "How many dimensions the data actually varies in, which is usually far below the number of columns — and is why PCA (lesson 1.6) works at all."]
+    ]},
 
     { t: "callout", kind: "trap", title: "Your two-dimensional intuition expires", body: [
       { t: "code", lang: "python", title: "three surprises, all real", numbered: false, code: `

@@ -20,6 +20,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Pearson, Spearman and what each sees", id: "pearson-spearman" },
 
+    { t: "p", text: "**Pearson measures how close a relationship is to a straight line; Spearman measures whether it is consistently increasing or decreasing.** They answer different questions, so Pearson reporting a lower value on a curved relationship is not a failure — it is the correct answer to its own question." },
+
+    { t: "dl", items: [
+      ["Pearson correlation", "`r = Cov(X,Y)/(σₓσᵧ)`. Detects **linear** association only, and one extreme point can flip its sign."],
+      ["Spearman correlation", "Pearson computed on the ranks. Detects any **monotonic** relationship, and is unaffected by monotonic transforms or outliers."],
+      ["Kendall's tau", "The probability that two randomly chosen pairs agree in order, minus the probability they disagree. More interpretable, slower to compute."],
+      ["What none of them catch", "Non-monotonic relationships. A parabola scores zero on all three, and mutual information is what detects it."]
+    ]},
+
     { t: "code", lang: "python", title: "two coefficients, two questions", code: `
 import numpy as np
 from scipy import stats
@@ -85,6 +94,15 @@ stats.kendalltau(x, np.exp(x/2)).statistic      # 1.0
     },
 
     { t: "h2", n: "02", text: "Anscombe's quartet", id: "anscombe" },
+
+    { t: "p", text: "**Anscombe's quartet is four datasets with identical means, variances, correlations and regression lines** — and four completely different shapes. It is the standard demonstration that summary statistics cannot substitute for looking at the data." },
+
+    { t: "dl", items: [
+      ["The quartet", "One genuinely linear relationship, one perfect parabola, one line with a single outlier, and one where a lone point determines the entire slope."],
+      ["Leverage", "How far an observation sits from the mean of the predictors, `hᵢᵢ`. A value near 1 means the fitted line passes through that point regardless of everything else."],
+      ["Datasaurus", "The modern extension — a dozen wildly different shapes sharing summary statistics to two decimal places."],
+      ["The automatable part", "Leverage and a Pearson-versus-Spearman disagreement catch three of the four without a human looking at anything."]
+    ]},
 
     { t: "viz",
       title: "Four datasets, identical to two decimal places",
@@ -198,6 +216,16 @@ def max_leverage(x):
     },
 
     { t: "h2", n: "03", text: "The four alternatives to causation", id: "alternatives" },
+
+    { t: "p", text: "\"Correlation does not imply causation\" is only useful if you **name which alternative applies**. There are four, each with a different structure and a different test — and ruling one out says nothing about the others." },
+
+    { t: "dl", items: [
+      ["Confounding", "A third variable `Z` causes both. Test by conditioning on `Z`; the association should vanish."],
+      ["Reverse causation", "`Y` causes `X` rather than the other way round. Check the timing, or intervene."],
+      ["Selection", "How the sample was chosen depends on both variables. Ask **who is missing**, and whether both variables affected their absence."],
+      ["Coincidence", "Nothing at all. Addressed by pre-registration, replication, or correcting for the size of the search."],
+      ["E-value", "How strong an unmeasured confounder would need to be, with both exposure and outcome, to explain the association away. It turns the slogan into a number."]
+    ]},
 
     { t: "table",
       head: ["Explanation", "Structure", "How to test it"],

@@ -20,6 +20,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The definition, and what it buys", id: "definition" },
 
+    { t: "p", text: "**A function is convex when the straight line between any two points on its graph never dips below the curve.** That single geometric property is what guarantees a local minimum is global — and therefore what separates problems you can solve from problems you can only attempt." },
+
+    { t: "dl", items: [
+      ["Convex function", "One where `f(ta + (1−t)b) ≤ tf(a) + (1−t)f(b)` for every pair of points and every `t` in `[0,1]`. The chord lies on or above the curve."],
+      ["Strictly convex", "The inequality is strict, so the minimum is unique rather than a flat region."],
+      ["Concave", "The reverse — the chord lies below. `f` is concave exactly when `−f` is convex."],
+      ["Convex set", "A region containing the whole line segment between any two of its points. Convex optimisation needs both a convex function and a convex feasible set."]
+    ]},
+
     { t: "viz",
       title: "A chord never dips below the curve",
       caption: "That is the whole definition. Every consequence — local equals global, no saddles, a unique minimum for strictly convex functions — follows from this one geometric fact.",
@@ -92,6 +101,15 @@ def is_convex_at(hess, x):
 
     { t: "h2", n: "02", text: "Which losses are convex", id: "which" },
 
+    { t: "p", text: "Knowing which common losses are convex tells you immediately how much you can trust a single training run. **Every classical model in this list is convex, and anything with a hidden layer is not** — a distinction with practical consequences for how results must be reported." },
+
+    { t: "dl", items: [
+      ["Convex losses", "Squared error in linear regression, log loss in logistic regression, hinge loss in an SVM, and any of these plus an L1 or L2 penalty."],
+      ["Non-convex", "Anything composing linear maps with nonlinearities — every neural network — plus k-means and joint matrix factorisation."],
+      ["Permutation symmetry", "Swapping two hidden units and their weights leaves the network's function unchanged, so a layer of `h` units has `h!` equivalent minima. A strictly convex function has exactly one."],
+      ["Biconvex", "Convex in each block of variables with the others fixed, though not jointly. This is what alternating least squares exploits."]
+    ]},
+
     { t: "table",
       head: ["Model / loss", "Convex?", "Consequence"],
       rows: [
@@ -144,6 +162,15 @@ math.factorial(100)                  # 9.33e157
     },
 
     { t: "h2", n: "03", text: "What changes when it is not convex", id: "consequences" },
+
+    { t: "p", text: "Losing convexity does not make a problem unsolvable, but it changes what a result means. **A non-convex model's score is a random variable**, so a single run is one draw rather than the answer, and comparisons need seeds." },
+
+    { t: "dl", items: [
+      ["Local minimum", "A point lower than everything nearby. In a convex problem there is only one; otherwise there may be many."],
+      ["Saddle point", "A critical point that is a minimum in some directions and a maximum in others. In high dimensions these vastly outnumber true minima."],
+      ["Basin of attraction", "The set of starting points from which descent reaches a given minimum. Which basin you land in depends on initialisation."],
+      ["Seed variance", "The spread of final results across random initialisations. It is a property of your result and must be reported alongside it."]
+    ]},
 
     { t: "ladder",
       title: "Getting a reliable result from an optimisation",
@@ -198,6 +225,14 @@ np.mean(losses), np.std(losses), np.min(losses)
     ]},
 
     { t: "h2", n: "04", text: "Jensen's inequality", id: "jensen" },
+
+    { t: "p", text: "**Jensen's inequality says the function of an average is at most the average of the function, for any convex function.** It looks abstract and it is the reason a variance cannot be negative and the reason the ELBO is a valid bound." },
+
+    { t: "dl", items: [
+      ["Jensen's inequality", "`f(E[X]) ≤ E[f(X)]` for convex `f`, with the direction reversed for concave `f`."],
+      ["Applied to `x²`", "Gives `E[X]² ≤ E[X²]`, which is exactly the statement that `Var(X) ≥ 0`."],
+      ["Applied to `log`", "`log` is concave, so `log E[p] ≥ E[log p]` — the inequality behind the evidence lower bound in variational inference."]
+    ]},
 
     { t: "code", lang: "python", title: "the inequality you already use", code: `
 # For a CONVEX f:      f(E[X])  <=  E[f(X)]

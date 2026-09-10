@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Order statistics and the interpolation problem", id: "definitions" },
 
+    { t: "p", text: "A percentile is a position in the sorted data, and the requested position almost never lands exactly on an observation. **Every definition of a percentile is a rule for what to do in between** — and there are at least nine of them, which disagree." },
+
+    { t: "dl", items: [
+      ["Percentile", "The value below which a given fraction of the data falls. The 99th percentile has 99% of observations at or below it."],
+      ["Quantile", "The same idea on a `0`–`1` scale. The 0.99 quantile is the 99th percentile."],
+      ["Order statistic", "The `k`th smallest observation. Percentiles are interpolated between neighbouring order statistics."],
+      ["Interpolation method", "The rule bridging the gap — linear, lower, higher, nearest, and several more. NumPy's default is linear, and other tools differ."],
+      ["Ten-beyond rule", "You want about ten observations past the percentile for a stable estimate: 1,000 for a p99, 10,000 for a p99.9."]
+    ]},
+
     { t: "code", lang: "python", title: "the same data, four answers", code: `
 import numpy as np
 
@@ -135,6 +145,16 @@ for n in (50, 200, 1000, 10_000):
 
     { t: "h2", n: "02", text: "The IQR and the box plot's hidden rule", id: "iqr" },
 
+    { t: "p", text: "**The interquartile range is the span of the middle half of the data**, and it is the basis of the box plot. The whiskers follow a specific rule that is worth knowing, because it decides which points get drawn as outliers." },
+
+    { t: "dl", items: [
+      ["Quartiles", "`Q1`, `Q2` and `Q3` — the 25th, 50th and 75th percentiles. `Q2` is the median."],
+      ["IQR", "`Q3 − Q1`. A robust measure of spread, unaffected by the outer quarters entirely."],
+      ["Fence", "`Q1 − 1.5×IQR` and `Q3 + 1.5×IQR`. For normal data these sit at about `±2.7σ`, flagging roughly 0.7% of observations."],
+      ["Whisker", "Extends to the furthest actual data point **inside** the fence — not to the fence itself, which is why whiskers are asymmetric."],
+      ["The skew caveat", "The rule assumes symmetry, so on lognormal data it flags around 4.5% of perfectly ordinary points. It detects skew and calls it outliers."]
+    ]},
+
     { t: "viz",
       title: "Every part of a box plot, and where the whiskers stop",
       caption: "The whiskers extend to the furthest point within 1.5 × IQR of the box — not to the extremes, and not to a fixed percentile. Anything beyond is drawn individually.",
@@ -227,6 +247,15 @@ len(box_stats(np.exp(rng.normal(0, 1, 10_000)))["outliers"])  # ~450
     },
 
     { t: "h2", n: "03", text: "Aggregating percentiles across shards", id: "aggregating" },
+
+    { t: "p", text: "**Percentiles do not average.** The mean of several regional p99s is not the fleet p99 and is not an approximation of it — the error has no bound and no consistent sign, so any correct aggregation must merge the underlying distributions." },
+
+    { t: "dl", items: [
+      ["Non-linearity", "A percentile of a union is not a function of the percentiles of the parts. Counts add; percentiles do not."],
+      ["Histogram", "Bucket boundaries with counts. Merging is exact — add the counts — which is why metrics backends store these rather than quantiles."],
+      ["Exponential buckets", "Bucket widths growing geometrically, giving constant **relative** error. What latency needs, since 10% of 10 ms and 10% of 10 s are both acceptable."],
+      ["Sketch", "A compact structure such as t-digest or DDSketch that merges with bounded error and far less memory than raw values."]
+    ]},
 
     { t: "ladder",
       title: "Getting a fleet-wide p99 from per-host metrics",

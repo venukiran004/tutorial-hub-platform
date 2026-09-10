@@ -20,6 +20,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Newton's method: quadratic until it is not", id: "newton" },
 
+    { t: "p", text: "**Newton's method approximates a function by its tangent line and jumps to where that line hits zero**, repeating until it converges. Near a simple root it roughly doubles the number of correct digits each step; away from one it offers no guarantee whatsoever." },
+
+    { t: "dl", items: [
+      ["Newton's method", "`x ← x − f(x)/f'(x)` for root-finding. The same linear approximation as lesson 2.1, used to take a step rather than describe a slope."],
+      ["Quadratic convergence", "Correct digits roughly double per iteration. Five steps take a rough guess to machine precision."],
+      ["Newton for optimisation", "Finding a root of `∇f` gives `x ← x − H⁻¹∇f`. Scale-invariant, and it needs the Hessian."],
+      ["Failure modes", "A zero derivative, an overshoot cycle that never settles, or no real root at all. Production solvers bracket first, then switch to Newton."]
+    ]},
+
     { t: "code", lang: "python", title: "the method and its failure modes", code: `
 import numpy as np
 
@@ -109,6 +118,16 @@ newton(lambda x: x*x + 1, lambda x: 2*x, 0.0)     # ZeroDivisionError
 
     { t: "h2", n: "02", text: "Finite differences, and why smaller is not better", id: "finite-differences" },
 
+    { t: "p", text: "A **finite difference** estimates a derivative by evaluating the function at two nearby points. The surprising part is that **making the step smaller stops helping and starts hurting** — two error sources pull in opposite directions and their sum has a floor." },
+
+    { t: "dl", items: [
+      ["Forward difference", "`[f(x+h) − f(x)] / h`. One extra evaluation, with truncation error proportional to `h`."],
+      ["Central difference", "`[f(x+h) − f(x−h)] / 2h`. Two extra evaluations, with error proportional to `h²` — three orders of magnitude better in practice."],
+      ["Truncation error", "The Taylor terms dropped by the approximation. Falls as `h` shrinks."],
+      ["Round-off error", "Precision lost when subtracting two nearly equal values, then amplified by dividing by a tiny `h`. Grows as `h` shrinks."],
+      ["Optimal step", "About `√ε ≈ 1.5×10⁻⁸` for a forward difference and `ε^(1/3) ≈ 6×10⁻⁶` for a central one."]
+    ]},
+
     { t: "viz",
       title: "The error curve has a floor you cannot step below",
       caption: "Truncation error falls as h shrinks; round-off error rises as h shrinks. Their sum has a minimum near h ≈ √ε ≈ 1.5e-8 for a forward difference, and no choice of h does better.",
@@ -186,6 +205,16 @@ h = np.sqrt(np.finfo(float).eps) * max(abs(x), 1.0)
 
     { t: "h2", n: "03", text: "Automatic differentiation", id: "autodiff" },
 
+    { t: "p", text: "**Automatic differentiation applies the chain rule to the operations a program actually executed**, each of which has a known exact derivative. It is not symbolic — it never builds a formula — and it is not numerical — it takes no step and suffers no cancellation." },
+
+    { t: "dl", items: [
+      ["Automatic differentiation", "Exact derivatives to machine precision, computed by propagating known primitive derivatives through the execution trace."],
+      ["Forward mode", "Carries a derivative alongside each value. Costs one pass per input, so it suits few inputs and many outputs."],
+      ["Reverse mode", "Records a tape forwards, then walks it backwards. One pass gives the gradient with respect to **every** input — this is backpropagation."],
+      ["Dual number", "A value paired with its derivative, `(v, dv)`. Implementing arithmetic on these is the whole of forward mode."],
+      ["The tape", "The stored intermediate values reverse mode needs. Its size is why `.backward()` can run out of memory."]
+    ]},
+
     { t: "table",
       head: ["", "Symbolic", "Finite differences", "Automatic"],
       rows: [
@@ -251,6 +280,15 @@ r.d                              # 6.8917  =  3(1.5)^2 + 2 cos(1.5)
     },
 
     { t: "h2", n: "04", text: "Where floating point bites", id: "floating-point" },
+
+    { t: "p", text: "Floating-point arithmetic has about sixteen decimal digits of precision, and a handful of ordinary-looking expressions destroy most of them. **These failures are predictable, and every one has a stable alternative already in the standard library.**" },
+
+    { t: "dl", items: [
+      ["Catastrophic cancellation", "Subtracting nearly equal numbers. The leading digits cancel and what remains is accumulated round-off."],
+      ["Overflow / underflow", "A value too large or too small to represent — `exp(1000)` is `inf`, and `exp(−1000)` is `0`."],
+      ["Stable alternatives", "`log1p`, `expm1`, `logaddexp`, and the max-shift inside softmax. Each computes an algebraically identical expression without the dangerous intermediate."],
+      ["Relative error", "Error as a fraction of the value, which is what floating point actually bounds. Absolute error means little across scales."]
+    ]},
 
     { t: "code", lang: "python", title: "catastrophic cancellation, in code you would write", code: `
 # SUBTRACTING TWO NEARLY EQUAL NUMBERS DESTROYS PRECISION. The leading

@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The definition, and what it conditions on", id: "definition" },
 
+    { t: "p", text: "**A p-value is the probability of data at least this extreme, assuming the null hypothesis is true.** Read the conditioning bar carefully: it assumes the null and speaks about the data. Everyone wants the reverse, and the two are different quantities related by Bayes." },
+
+    { t: "dl", items: [
+      ["p-value", "`P(data at least this extreme | H₀ true)`. A statement about the data under an assumption, not about the assumption."],
+      ["Extreme", "Defined by the alternative — larger, smaller, or either, depending on whether the test is one- or two-sided."],
+      ["Uniform under the null", "If `H₀` is true, p is uniformly distributed on `[0,1]`. So 5% of null experiments give `p < 0.05`, by construction."],
+      ["Statistical significance", "`p < α`. A decision rule, not a measure of importance or of effect size."],
+      ["What it is not", "Not `P(H₀ | data)`, not the probability the result is a fluke, and not a measure of how large the effect is."]
+    ]},
+
     { t: "code", lang: "python", title: "compute one without any formula", code: `
 import numpy as np
 from scipy import stats
@@ -80,6 +90,16 @@ stats.fisher_exact([[66, 54], [51, 69]])[1]           # 0.0479
     },
 
     { t: "h2", n: "02", text: "Five misreadings, each with a number", id: "misreadings" },
+
+    { t: "p", text: "Five misreadings appear routinely in published work, and **the first two are the same error in opposite clothing** — reversing the conditional. Getting the direction right is what separates a p-value from the quantity people believe they are reading." },
+
+    { t: "dl", items: [
+      ["Reversing the conditional", "Reading `P(data|H₀)` as `P(H₀|data)`. Converting between them needs a prior, which the p-value contains no information about."],
+      ["False discovery rate", "`P(H₀ true | significant)`. It depends on how often hypotheses like yours turn out true — at a 10% base rate, over a third of significant findings are wrong."],
+      ["Type M error", "Exaggeration of magnitude. At low power only large observed effects clear the threshold, so published effects are inflated — more than two-fold at 18% power."],
+      ["Type S error", "Getting the **sign** wrong. Also a low-power phenomenon."],
+      ["Absence of evidence", "`p > 0.05` means the data is compatible with the null, not that the null is true."]
+    ]},
 
     { t: "table",
       head: ["The claim", "Status", "Why"],
@@ -218,6 +238,16 @@ np.percentile(null_ps, [5, 25, 50, 75, 95])
     ]},
 
     { t: "h2", n: "03", text: "P-hacking without meaning to", id: "p-hacking" },
+
+    { t: "p", text: "**P-hacking rarely involves anyone being dishonest.** It is the accumulation of ordinary analytic choices made *after* seeing the data — and six defensible decisions take the false-positive rate from 5% to 23% on data with no effect at all." },
+
+    { t: "dl", items: [
+      ["Researcher degrees of freedom", "The analytic choices available: which test, which transform, which outlier rule, which subgroup, when to stop."],
+      ["Optional stopping", "Collecting data until the result is significant. Peeking alone reaches 28%, and with unlimited patience it converges to 100%."],
+      ["HARKing", "Hypothesising After the Results are Known — presenting an exploratory finding as if it had been predicted."],
+      ["Garden of forking paths", "The same problem without any explicit multiple testing: a single analysis, chosen from many that *would* have been run had the data differed."],
+      ["Pre-registration", "Writing down the metric, test, direction and subgroups before the data arrives. It costs a document and eliminates the entire class."]
+    ]},
 
     { t: "code", lang: "python", title: "researcher degrees of freedom, measured", code: `
 # NONE OF THESE FEELS DISHONEST. Each is a defensible analytic choice,

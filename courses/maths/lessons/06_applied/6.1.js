@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The order of operations", id: "order" },
 
+    { t: "p", text: "An A/B test is a randomised experiment, and **most of what goes wrong happens before any data is analysed.** Each stage has a characteristic failure that produces plausible-looking output, and analysis — the part people focus on — is the last and least dangerous." },
+
+    { t: "dl", items: [
+      ["Randomised controlled experiment", "Assigning treatment by chance, which severs every arrow into the exposure and eliminates confounding, reverse causation and selection at once."],
+      ["Unit of randomisation", "What gets assigned — usually a user, sometimes a session or a region. It must match the unit of analysis."],
+      ["Control and treatment", "The unchanged experience and the new one. The control is what makes the comparison causal."],
+      ["Allocation", "The split between arms. Unequal allocation costs power by a factor of `1/(4k(1−k))` — a 5% canary needs 5.3× the traffic of a 50/50 test."],
+      ["Intention to treat", "Analysing by the arm someone was **assigned** to, not what they actually did. Analysing by behaviour reintroduces the confounding randomisation removed."]
+    ]},
+
     { t: "viz",
       title: "Five stages, and where each one fails",
       caption: "Each stage has a characteristic failure that produces plausible-looking output. Analysis is the last and least dangerous — by the time you reach it, most of the damage has already been done.",
@@ -130,6 +140,15 @@ for k in (0.5, 0.4, 0.2, 0.1, 0.05):
 
     { t: "h2", n: "02", text: "Sample ratio mismatch", id: "srm" },
 
+    { t: "p", text: "**Sample ratio mismatch is when the arms receive different numbers of users than the split intended** — and it invalidates the whole experiment rather than just the counts. Whatever decided who went where may also affect the outcome, so the arms are no longer comparable." },
+
+    { t: "dl", items: [
+      ["Sample ratio mismatch", "An observed split differing from the intended one by more than chance allows. Tested with a chi-square on the assignment counts."],
+      ["Why it is fatal", "Every cause — bot filtering, redirect latency, crashes in one arm — removes a **non-random** subset. It is selection bias with a count attached."],
+      ["Strict threshold", "Use `α = 0.001`, because the check runs on every experiment and investigating a real SRM costs far less than trusting a broken test."],
+      ["What not to do", "Do not reweight to correct it. Reweighting assumes you know the mechanism, and if you knew it you would fix it."]
+    ]},
+
     { t: "callout", kind: "trap", title: "SRM invalidates the entire test, not just the counts", body: [
       { t: "p", text: "If a 50/50 split delivers 49.2/50.8, something decided who went where. Whatever that something is, it may also affect the outcome — so the arms are no longer comparable and no analysis can fix it." },
       { t: "code", lang: "python", numbered: false, title: "check it first, and treat a failure as fatal", code: `
@@ -192,6 +211,16 @@ for imbalance in (0.001, 0.005, 0.01, 0.02):
     ]},
 
     { t: "h2", n: "03", text: "Peeking, and the methods that permit it", id: "peeking" },
+
+    { t: "p", text: "**Checking results repeatedly and stopping when they turn significant inflates the false-positive rate enormously** — fourteen daily checks reach about 28%, and with unlimited patience it converges to 100%. The fix is a method built for looking, not a rule forbidding it." },
+
+    { t: "dl", items: [
+      ["Peeking", "Analysing before the planned sample is reached. Every look is another test at the same threshold."],
+      ["Fixed-horizon test", "Valid at one pre-specified sample size only. Most powerful, and it requires discipline that usually fails."],
+      ["Alpha spending", "Allocating the error budget across planned interim analyses. O'Brien-Fleming spends very little early, so five looks cost about 3% of power."],
+      ["Always-valid confidence sequence", "An interval correct at **every** sample size simultaneously, so you can monitor continuously. Wider than a fixed-horizon interval, and that width buys the anytime guarantee."],
+      ["Sequential test", "Any design accounting for repeated looks. The right answer when someone will look regardless."]
+    ]},
 
     { t: "ladder",
       title: "Wanting to look at the results before the test ends",
@@ -286,6 +315,16 @@ sequential_error_rate(always_valid_ci)          # ~0.02
     },
 
     { t: "h2", n: "04", text: "Novelty, primacy and the shape of the effect", id: "novelty" },
+
+    { t: "p", text: "An effect that **changes over the course of the experiment** is not the same as one that persists, and a pooled figure averages over the change and describes no period at all. Two opposite versions exist, and both look like a result in the first few days." },
+
+    { t: "dl", items: [
+      ["Novelty effect", "Users engage with anything new, so the measured lift decays. A pure novelty effect can show a 10.8% pooled lift with no real improvement."],
+      ["Primacy effect", "Users are disrupted by change, so the effect improves over time. The mirror image, and it makes a good change look harmful early."],
+      ["Trend test", "Regressing the daily effect on day number. A significant slope means the pooled figure is misleading — worth running as a matter of course."],
+      ["Stable window", "The last period where the effect has plateaued. This is the number to report, with the pooled figure alongside."],
+      ["New-user segment", "Users with no prior experience to be surprised by. Usually the cleanest estimate of the steady state."]
+    ]},
 
     { t: "code", lang: "python", title: "an effect that decays is not the same as one that persists", code: `
 # TWO OPPOSITE TIME-VARYING EFFECTS, and both look like a result on

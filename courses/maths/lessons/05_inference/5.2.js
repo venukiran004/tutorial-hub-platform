@@ -20,6 +20,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three properties, and the one that matters", id: "properties" },
 
+    { t: "p", text: "**An estimator is a recipe for turning data into a number**, and there is always more than one. Judging between them means trading bias against variance — and mean squared error, which combines both, is the quantity you actually pay." },
+
+    { t: "dl", items: [
+      ["Estimator", "A rule mapping a sample to an estimate. The sample mean is an estimator of the population mean."],
+      ["Bias", "`E[θ̂] − θ`. Zero means correct on average across samples."],
+      ["Variance", "`Var(θ̂)`. How much the estimate moves from sample to sample."],
+      ["Mean squared error", "`MSE = bias² + variance`. The expected squared error, and the thing worth minimising — unbiasedness is a constraint you may choose to impose."],
+      ["Consistency", "Converging to the truth as `n → ∞`. A minimum requirement rather than a strong one."],
+      ["Shrinkage", "Deliberately biasing an estimate towards a prior guess to cut variance. For three or more parameters at once it provably beats estimating each independently."]
+    ]},
+
     { t: "table",
       head: ["Property", "Definition", "What it buys"],
       rows: [
@@ -140,6 +151,16 @@ smoothed_rating(5.0, 1), smoothed_rating(4.7, 400)   # 4.05, 4.67`},
 
     { t: "h2", n: "02", text: "Maximum likelihood", id: "mle" },
 
+    { t: "p", text: "**Maximum likelihood chooses the parameter that makes the data you observed most probable.** It is the default recipe behind almost every fitted model, and knowing what it optimises explains its behaviour — including the fact that it produces a biased variance estimate." },
+
+    { t: "dl", items: [
+      ["Likelihood", "`P(data | θ)` viewed as a function of `θ` with the data fixed. Not a probability distribution over `θ`."],
+      ["Log likelihood", "Its logarithm. Always work with this: products of many probabilities underflow, and sums differentiate more easily."],
+      ["MLE", "The `θ` maximising it. For a coin it is the sample proportion; for a normal, the sample mean — both derived rather than assumed."],
+      ["Fisher information", "The curvature of the log likelihood at its peak. A sharper peak means more information and a smaller standard error."],
+      ["Equivalence to loss", "Minimising cross-entropy or squared error **is** maximum likelihood. \"Minimise the loss\" and \"maximise the likelihood\" are the same instruction."]
+    ]},
+
     { t: "viz",
       title: "The likelihood is a function of the parameter, not of the data",
       caption: "Fix the data you observed, then ask which parameter value makes it most probable. The peak is the MLE, and the curvature at the peak determines how precisely it is pinned down.",
@@ -236,6 +257,16 @@ stats.gamma.fit(data, floc=0)[0::2]                # (2.48, 3.02)
     },
 
     { t: "h2", n: "03", text: "What MLE guarantees, and where it fails", id: "guarantees" },
+
+    { t: "p", text: "Maximum likelihood comes with strong guarantees — **all of them asymptotic**, meaning they describe behaviour as the sample grows without bound. At small `n`, or near a boundary, several fail outright." },
+
+    { t: "dl", items: [
+      ["Consistent", "Converges to the true value with enough data."],
+      ["Efficient", "Achieves the Cramér-Rao lower bound — no unbiased estimator has smaller variance."],
+      ["Asymptotically normal", "The estimator's sampling distribution becomes normal, which is where its standard errors come from."],
+      ["Invariant", "The MLE of `g(θ)` is `g` of the MLE, for any `g`. Unbiased estimation offers no such guarantee."],
+      ["Where it fails", "Perfect separation in logistic regression, boundary estimates such as a uniform's maximum, unregularised models with too many parameters, and small `n`."]
+    ]},
 
     { t: "code", lang: "python", title: "asymptotic properties, and the small print", code: `
 # WHAT MLE GUARANTEES, AS n -> infinity:

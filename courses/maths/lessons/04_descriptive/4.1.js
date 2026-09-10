@@ -20,6 +20,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three summaries, three questions", id: "three" },
 
+    { t: "p", text: "**Mean, median and mode are not three attempts at the same number** — they answer three different questions, and for skewed data they give very different answers. Choosing between them is a decision about which question you meant to ask." },
+
+    { t: "dl", items: [
+      ["Mean", "`Σx/n` — the total shared equally. The right summary whenever the **total** is what matters, because `total = mean × count`."],
+      ["Median", "The middle value once sorted. The right summary whenever a **typical case** matters, and unaffected by how extreme the extremes are."],
+      ["Mode", "The most common value. The only one that works for categories, and the only one that can have several answers."],
+      ["Mean/median ratio", "A free measure of skew. Around 1 means symmetric; above 1.2 means a tail is pulling the mean."],
+      ["Geometric mean", "The `n`th root of the product. The correct average for **multiplicative** quantities such as growth rates."],
+      ["Harmonic mean", "`n / Σ(1/xᵢ)`. The correct average for **rates over a fixed amount of work**, such as speeds over equal distances."]
+    ]},
+
     { t: "code", lang: "python", title: "they are not competing estimates of the same thing", code: `
 import numpy as np
 from scipy import stats
@@ -74,6 +85,15 @@ pay.mean() / np.median(pay)   # 1.646
     },
 
     { t: "h2", n: "02", text: "Robustness, measured", id: "robustness" },
+
+    { t: "p", text: "**Robustness is how much of your data an adversary would have to corrupt before your summary becomes meaningless** — and it is measurable, not a vague quality. The breakdown point turns it into a single number you can compare." },
+
+    { t: "dl", items: [
+      ["Breakdown point", "The fraction of observations that must be corrupted to move an estimator arbitrarily far. `1/n` for the mean, 50% for the median."],
+      ["Robust estimator", "One with a breakdown point well above zero. It resists contamination at some cost in efficiency."],
+      ["Trimmed mean", "Discard the extreme `k%` at each end, then average. The breakdown point is exactly the trim fraction, so you choose it deliberately."],
+      ["Efficiency", "How much data a robust estimator needs to match a non-robust one on clean data. The median needs about 57% more than the mean under normality."]
+    ]},
 
     { t: "viz",
       title: "One value moves the mean without limit",
@@ -202,6 +222,15 @@ hmean([1,2,4]), gmean([1,2,4]), np.mean([1,2,4])   # 1.714, 2.0, 2.333`},
     ]},
 
     { t: "h2", n: "03", text: "When no single number is honest", id: "multimodal" },
+
+    { t: "p", text: "Sometimes no single number is honest, because the data is a **mixture of distinct populations**. A mean that falls in the empty gap between two groups describes a case that does not exist, and the right response is to report the structure instead." },
+
+    { t: "dl", items: [
+      ["Multimodal", "A distribution with several peaks. Usually a sign that two or more populations have been pooled."],
+      ["Mixture", "A distribution formed by drawing from several component distributions with given weights — cache hits and misses, free and paid users."],
+      ["Percentile jump", "A large ratio between adjacent percentiles. A smooth distribution cannot produce one, so it is a reliable signature of a mixture."],
+      ["Decomposition", "Reporting the components and their weights rather than one summary. Usually shorter than the caveat a single number would need."]
+    ]},
 
     { t: "code", lang: "python", title: "the average of two groups describes neither", code: `
 rng = np.random.default_rng(0)

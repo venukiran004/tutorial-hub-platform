@@ -20,6 +20,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Every matrix is a rotation, a stretch, and a rotation", id: "shape" },
 
+    { t: "p", text: "**Every matrix — square or not, invertible or not — factors into a rotation, a stretch along axes, and another rotation.** That is the singular value decomposition, and unlike eigendecomposition it always exists, which is what makes it the workhorse of numerical linear algebra." },
+
+    { t: "dl", items: [
+      ["SVD", "`A = UΣVᵀ` for any `m × n` matrix. No conditions, no exceptions."],
+      ["`V`", "An orthogonal matrix. Its columns are the input directions the transformation treats independently — a rotation applied first."],
+      ["`Σ`", "A diagonal matrix of non-negative **singular values**, in descending order. Pure stretching, one factor per direction."],
+      ["`U`", "An orthogonal matrix. Its columns are where those directions end up — a rotation applied last."]
+    ]},
+
+    { t: "p", text: "The three-step reading is the useful one: **rotate the input so the interesting directions line up with the axes, scale each axis independently, then rotate into the output space.** Any linear transformation whatsoever is those three moves." },
+
     { t: "viz",
       title: "A = U Σ Vᵀ",
       caption: "Read right to left, as function composition. Whatever a matrix does — however lopsided, however rectangular — it factors into exactly these three steps.",
@@ -102,6 +113,15 @@ np.allclose(A, U @ np.diag(s) @ Vt) # True
 
     { t: "h2", n: "02", text: "Singular values are importance", id: "importance" },
 
+    { t: "p", text: "**The singular values rank the matrix's directions by importance**, largest first. That ordering is what makes SVD a compression tool: keeping the first `k` gives the best possible rank-`k` approximation of the matrix, in a precise and provable sense." },
+
+    { t: "dl", items: [
+      ["Singular value", "`σᵢ`, the stretch factor for direction `i`. Always non-negative and conventionally sorted descending."],
+      ["Rank-one piece", "`σᵢ uᵢ vᵢᵀ`. The matrix is the sum of these, each weighted by its singular value."],
+      ["Truncated SVD", "Keeping only the largest `k` pieces. The Eckart-Young theorem says no other rank-`k` matrix is closer to the original."],
+      ["Spectrum decay", "How fast the singular values fall. Fast decay means the matrix has strong structure and compresses well; a flat spectrum means it does not."]
+    ]},
+
     { t: "code", lang: "python", title: "the sum of rank-one pieces", code: `
 # The decomposition can be rewritten as a SUM, and this is the form that
 # makes truncation obvious:
@@ -172,6 +192,14 @@ err.round(4)            # 0.0186 -- and 98% of it is the noise we WANTED
 
     { t: "h2", n: "03", text: "SVD against eigendecomposition", id: "vs-eig" },
 
+    { t: "p", text: "Eigendecomposition and SVD are related but not interchangeable, and choosing the wrong one is a common source of confusion. **SVD always exists; eigendecomposition often does not** — and for symmetric positive semi-definite matrices they coincide." },
+
+    { t: "dl", items: [
+      ["Eigendecomposition", "`A = QΛQ⁻¹`. Requires a square matrix with enough independent eigenvectors, and can produce complex values."],
+      ["SVD", "`A = UΣVᵀ`. Works for any shape, always real, always numerically stable."],
+      ["The link", "The singular values of `A` are the square roots of the eigenvalues of `AᵀA`, and `V` holds that matrix's eigenvectors."]
+    ]},
+
     { t: "table",
       head: ["", "Eigendecomposition", "SVD"],
       rows: [
@@ -220,6 +248,15 @@ np.sqrt(np.abs(np.linalg.eigvalsh(B.T @ B)))[::-1]    # [1.414e0, 1.05e-8]
     },
 
     { t: "h2", n: "04", text: "The pseudoinverse", id: "pinv" },
+
+    { t: "p", text: "The **pseudoinverse** gives a sensible answer where a true inverse does not exist — a non-square matrix, or a singular one. It is the SVD with the singular values reciprocated, and it is what `lstsq` computes underneath." },
+
+    { t: "dl", items: [
+      ["Pseudoinverse", "`A⁺ = VΣ⁺Uᵀ`, where `Σ⁺` inverts each non-zero singular value and leaves the zeros alone."],
+      ["Overdetermined system", "More equations than unknowns. `A⁺b` returns the least-squares solution — the closest reachable point."],
+      ["Underdetermined system", "More unknowns than equations. `A⁺b` returns the minimum-norm solution among the infinitely many."],
+      ["Truncation threshold", "Singular values below a tolerance are treated as zero rather than inverted. Inverting a tiny value would multiply noise by an enormous factor."]
+    ]},
 
     { t: "code", lang: "python", title: "an inverse for matrices that have none", code: `
 # Invert what you can, leave alone what you cannot: transpose the

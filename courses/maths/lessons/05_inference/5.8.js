@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Power is a four-way relationship", id: "power" },
 
+    { t: "p", text: "**Power is the probability of detecting an effect that is really there.** It is locked together with effect size, sample size and `α` — fix any three and the fourth is determined, which is what makes study design a calculation rather than a guess." },
+
+    { t: "dl", items: [
+      ["Power", "`1 − β`, the chance of rejecting a false null. Conventionally targeted at 80%."],
+      ["Effect size", "How large the difference is, in standardised units. Cohen's `d` is the difference divided by the pooled standard deviation."],
+      ["Minimum detectable effect", "The smallest effect a design can detect at the stated power. **The MDE is what makes a study feasible or not.**"],
+      ["Sample size scaling", "`n ∝ 1/d²`. Halving the effect you want to detect quadruples the data required."],
+      ["Post-hoc power", "Power computed from the *observed* effect. A deterministic function of the p-value, so it restates the result rather than explaining it — `p = 0.05` always gives exactly 50%."]
+    ]},
+
     { t: "viz",
       title: "Power is the overlap you did not choose",
       caption: "α fixes where the critical line sits under the null. Power is however much of the alternative distribution falls beyond it — determined by the effect size, the sample size and α together.",
@@ -179,6 +189,16 @@ power_two_sample(0.3, 50)        # 0.318 for a pre-specified d = 0.3
 
     { t: "h2", n: "02", text: "Significance is not importance", id: "importance" },
 
+    { t: "p", text: "**Statistical significance and practical importance are independent.** With enough data any non-zero difference becomes significant, and with too little an important one goes undetected — so a p-value alone cannot distinguish the two cases." },
+
+    { t: "dl", items: [
+      ["Effect size", "The magnitude, in units someone can act on. Always report it alongside the p-value."],
+      ["Cohen's d", "Difference in pooled standard deviations. Roughly 0.2 small, 0.5 medium, 0.8 large — a guide from psychology, not a law."],
+      ["Probability of superiority", "The chance a random treatment case exceeds a random control case. The most readable effect measure, and the least reported."],
+      ["Overlap", "How much the two distributions share. `d = 0.003` means 99.87% overlap, whatever the p-value says."],
+      ["Smallest worthwhile effect", "The threshold below which you would not act. Comparing the interval against **this** rather than against zero gives four conclusions instead of two."]
+    ]},
+
     { t: "code", lang: "python", title: "the two failures, in both directions", code: `
 rng = np.random.default_rng(0)
 
@@ -260,6 +280,15 @@ decision(0.02, 0.05, 0.01)        # 'ship: clearly worthwhile'
     },
 
     { t: "h2", n: "03", text: "Choosing an MDE", id: "mde" },
+
+    { t: "p", text: "**The minimum detectable effect should come from the decision, not from hope.** The natural choice is the break-even effect — the size at which acting becomes worthwhile — because detecting anything smaller has no value even if it is real." },
+
+    { t: "dl", items: [
+      ["Break-even effect", "Where the value of the change equals its cost. Below it you would not act regardless of significance."],
+      ["Sizing from consequences", "Deriving the MDE and `α` from what each error costs, rather than from convention."],
+      ["Feasibility", "Whether the required sample fits the traffic and time available. Establishing this **before** running is the point of the calculation."],
+      ["Variance reduction", "Cutting `σ` rather than raising `n`. A 40% variance reduction is worth as much as 40% more data, and it is permanent."]
+    ]},
 
     { t: "ladder",
       title: "Deciding what effect to size an experiment for",

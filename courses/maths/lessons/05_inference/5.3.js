@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What the 95% refers to", id: "coverage" },
 
+    { t: "p", text: "**A 95% confidence interval does not have a 95% chance of containing the parameter.** The parameter is a fixed number; the interval is what varies from sample to sample. The 95% describes how often the *procedure* succeeds across the intervals it would produce." },
+
+    { t: "dl", items: [
+      ["Confidence interval", "A range computed from data by a procedure with a stated long-run success rate."],
+      ["Coverage", "The fraction of such intervals containing the true value. It is a property of the recipe, verifiable by simulation."],
+      ["Confidence level", "The advertised coverage — 95%, 99%. Higher means wider."],
+      ["Margin of error", "Half the interval's width, `critical value × standard error`."],
+      ["Prediction interval", "A range for the **next individual observation** rather than for a mean. Several times wider, and it does not shrink to nothing with infinite data."]
+    ]},
+
     { t: "viz",
       title: "The interval moves; the parameter does not",
       caption: "Twenty samples, twenty intervals. One misses. The parameter never moved — 95% is a property of the recipe, counted across the intervals it would produce.",
@@ -173,6 +183,16 @@ for n_ in (25, 250, 25_000):
 
     { t: "h2", n: "02", text: "What width costs", id: "width" },
 
+    { t: "p", text: "Interval width is `2 × critical value × σ/√n`, and each of those three factors is a lever with a very different price. **Precision is expensive and confidence is cheap** — which is the opposite of most people's expectation." },
+
+    { t: "dl", items: [
+      ["Sample size", "Width falls as `1/√n`, so **halving it costs four times the data**. The expensive lever."],
+      ["Confidence level", "Going from 95% to 99.9% costs 68% more width. Cheap by comparison."],
+      ["Variance reduction", "The free lever: pairing, stratifying or adjusting for a covariate narrows the interval without collecting anything."],
+      ["Pairing", "Comparing each unit against itself. It multiplies the effective sample by `1/(1−ρ)` — five times at `ρ = 0.8`."],
+      ["CUPED", "Regressing out a pre-experiment covariate. Typically cuts variance 30–50% in online experiments, permanently and for free."]
+    ]},
+
     { t: "code", lang: "python", title: "the three levers, and their prices", code: `
 # WIDTH = 2 x critical_value x sigma / sqrt(n)
 #
@@ -236,6 +256,15 @@ for rho in (0.3, 0.6, 0.8, 0.95):
     },
 
     { t: "h2", n: "03", text: "Intervals that break near a boundary", id: "boundaries" },
+
+    { t: "p", text: "The textbook interval for a proportion, `p̂ ± z√(p̂(1−p̂)/n)`, **fails badly exactly where rates usually live**. Near zero or one it can produce impossible values and its true coverage collapses far below the level it claims." },
+
+    { t: "dl", items: [
+      ["Wald interval", "The familiar normal-approximation formula. At `p = 0.02` with `n = 100` its actual coverage is about 60%, not 95%."],
+      ["Wilson score interval", "Inverts the test rather than approximating the estimate. Respects `[0,1]` automatically and has far better coverage at extreme rates."],
+      ["Clopper-Pearson", "Exact and conservative, built from the binomial distribution directly. The right choice at `k = 0` or `k = n`."],
+      ["Rule of three", "Zero events in `n` trials gives a 95% upper bound of about `3/n`. \"No failures in 300 runs\" is consistent with a 1% failure rate."]
+    ]},
 
     { t: "ladder",
       title: "An interval for a conversion rate of 2 successes in 100",

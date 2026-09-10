@@ -20,6 +20,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three different problems", id: "three" },
 
+    { t: "p", text: "Three problems produce a regression that looks entirely healthy and is wrong, and **they are routinely conflated**. An outlier is unusual in `y`, a leverage point is unusual in `x`, and only a point that is both actually moves the fitted line." },
+
+    { t: "dl", items: [
+      ["Outlier", "An observation far from the fitted line — unusual in `y`. It inflates the residual variance and moves the line very little."],
+      ["Leverage", "How far an observation sits from the mean of the predictors, `hᵢᵢ` from the hat matrix. High leverage alone is **beneficial** — it extends the range of `x` and shrinks the standard errors."],
+      ["Influential point", "Both unusual in `x` and off the line. This is the one that determines the slope."],
+      ["Studentised residual", "A residual scaled by an error estimate that **excludes** that observation, so a large outlier does not inflate its own yardstick."],
+      ["Cook's distance", "How far every fitted value moves if the point is dropped. It combines residual and leverage, and it is the diagnostic to watch."],
+      ["Breakdown point", "The fraction of corrupted data an estimator tolerates. OLS is `1/n` — one point can determine the answer."]
+    ]},
+
     { t: "viz",
       title: "Outlier, leverage point, influential point",
       caption: "An outlier is unusual in y. A leverage point is unusual in x. Only a point that is both — an influential point — actually moves the fitted line.",
@@ -250,6 +261,16 @@ huber_regression(x_i, y_i)[1]                    # 1.98 -- unaffected
     ]},
 
     { t: "h2", n: "02", text: "Multicollinearity", id: "multicollinearity" },
+
+    { t: "p", text: "**Multicollinearity is predictors carrying overlapping information**, so the data cannot separate their individual effects. Coefficients become unstable and swing between refits, while R² stays perfectly steady — which is why the fit statistic cannot detect it." },
+
+    { t: "dl", items: [
+      ["Multicollinearity", "High correlation among predictors. The combined effect is precisely identified; the split between them is not."],
+      ["Variance inflation factor", "`VIF = 1/(1−R²ⱼ)`, where `R²ⱼ` comes from regressing predictor `j` on the rest. Above 10 means trouble."],
+      ["Condition number", "Largest singular value over smallest, on standardised predictors. Above 30 is severe — the same measure as lesson 1.7."],
+      ["What it does not hurt", "Prediction. If you only need `ŷ`, collinearity costs nothing at all."],
+      ["What not to do", "Do not drop a genuine confounder for a high VIF — a biased coefficient is worse than an imprecise one. Combine them, use ridge, or create independent variation with an experiment."]
+    ]},
 
     { t: "code", lang: "python", title: "unstable coefficients, untouched fit", code: `
 n = 500

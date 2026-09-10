@@ -20,6 +20,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Four parts, always the same", id: "framework" },
 
+    { t: "p", text: "**Every statistical test has the same four parts**, and every named test is this procedure with one part swapped. Assembling the framework once means you can read a test you have never met, and build one when none fits." },
+
+    { t: "dl", items: [
+      ["Null hypothesis", "`H₀` — a **specific** claim precise enough to compute under. \"The coin is biased\" is not a null, because it does not say how."],
+      ["Alternative hypothesis", "`H₁` — everything else, or a stated direction. It never has to be specific."],
+      ["Test statistic", "A function of the data that grows as the alternative becomes more plausible."],
+      ["Null distribution", "What that statistic would do if `H₀` were true. Derived analytically for named tests, and simulable for any test at all."],
+      ["Significance level", "`α` — how surprising is too surprising. Chosen **before** looking, or the guarantee does not hold."],
+      ["Rejection region", "The statistic values leading to rejection. Its total probability under `H₀` is exactly `α`."]
+    ]},
+
     { t: "viz",
       title: "The machine every test runs on",
       caption: "Assume the null. Work out what your statistic would do under that assumption. Compare what you saw. The only thing that changes between tests is which statistic and which null distribution.",
@@ -127,6 +138,16 @@ stats.binomtest(observed_heads, n_flips, 0.5).pvalue    # 0.0210
 
     { t: "h2", n: "02", text: "The four outcomes", id: "outcomes" },
 
+    { t: "p", text: "A test has four possible outcomes, two of them errors. **You choose the rate of one error and inherit the other** — which is why choosing `α` without computing power is choosing one error rate and letting the second happen to you." },
+
+    { t: "dl", items: [
+      ["Type I error", "Rejecting a true null — a false positive. Its rate is `α`, chosen by you."],
+      ["Type II error", "Failing to reject a false null — a false negative. Its rate `β` follows from `α`, the sample size and the true effect."],
+      ["Power", "`1 − β`, the chance of detecting a real effect of a given size."],
+      ["The trade", "Tightening `α` raises `β`, and vice versa. **Only more data lowers both.**"],
+      ["One-sided versus two-sided", "A directional alternative has more power for the same `α`, and must be chosen in advance. Switching after seeing the direction doubles your real `α`."]
+    ]},
+
     { t: "table",
       head: ["", "H₀ is true", "H₀ is false"],
       rows: [
@@ -201,6 +222,15 @@ stats.norm.ppf(0.975), stats.norm.ppf(0.95)    # 1.960 vs 1.645
     },
 
     { t: "h2", n: "03", text: "Building a test when none fits", id: "custom" },
+
+    { t: "p", text: "When no named test matches your question, **you can build one** — because parts one, two and four are yours to choose and part three can always be generated. A permutation test does exactly this, and its null distribution is exact rather than approximate." },
+
+    { t: "dl", items: [
+      ["Permutation test", "Shuffle the group labels many times to build the null distribution directly. Works for **any** statistic, with no formula required."],
+      ["Exchangeability", "Its one assumption: under the null, every relabelling is equally likely. It fails for paired or clustered data, which must be shuffled within groups."],
+      ["Exact test", "One whose null distribution is computed rather than approximated. Permutation and Fisher's exact test are both of this kind."],
+      ["The `+1` rule", "A permutation p-value is `(extreme + 1)/(perms + 1)`. It prevents an impossible p-value of exactly zero and keeps the test valid."]
+    ]},
 
     { t: "ladder",
       title: "Testing whether two groups differ in something unusual",

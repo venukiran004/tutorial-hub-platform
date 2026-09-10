@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "A random variable is a function", id: "definition" },
 
+    { t: "p", text: "**A random variable is not a variable — it is a function** that assigns a number to every outcome. The randomness lives in which outcome occurs; the function itself is a fixed, deterministic rule, which is why one experiment can support many different random variables." },
+
+    { t: "dl", items: [
+      ["Random variable", "A function `X : S → ℝ` from the sample space to the real numbers. Conventionally written with a capital letter."],
+      ["Realisation", "A particular value `X` took, written lower-case as `x`. The distinction between `X` and `x` is worth keeping."],
+      ["Discrete", "Takes countably many values — counts, categories, outcomes of trials."],
+      ["Continuous", "Takes any value in an interval. `P(X = x)` is exactly zero for every single `x`; only intervals carry probability."],
+      ["Support", "The set of values the variable can actually take."]
+    ]},
+
     { t: "code", lang: "python", title: "the definition people skip", code: `
 import numpy as np
 from itertools import product
@@ -67,6 +77,15 @@ sum(pmf(X, S).values())                # 1.0, necessarily
     },
 
     { t: "h2", n: "02", text: "PMF against PDF", id: "pmf-pdf" },
+
+    { t: "p", text: "**A probability mass function gives probabilities; a probability density function does not.** A density is probability *per unit of x* — a rate — so it can exceed 1 without anything being wrong, and only its integral over an interval is a probability." },
+
+    { t: "dl", items: [
+      ["PMF", "`p(k) = P(X = k)` for a discrete variable. Each value is a genuine probability between 0 and 1, and they sum to 1."],
+      ["PDF", "`f(x)` for a continuous variable. A **density**, not a probability: it has units of `1/x` and may be arbitrarily large."],
+      ["Interval probability", "`P(a < X < b) = ∫ f(x) dx`. The area under the density, which is what carries the meaning."],
+      ["The units test", "Change the units of `x` and a density value changes; a probability does not. That is the cleanest way to tell which you are looking at."]
+    ]},
 
     { t: "table",
       head: ["", "Discrete — PMF", "Continuous — PDF"],
@@ -146,6 +165,15 @@ stats.norm(loc=1.80, scale=0.07).pdf(1.80)  # 5.699 -- 100x the cm value
 
     { t: "h2", n: "03", text: "The CDF works for both", id: "cdf" },
 
+    { t: "p", text: "**The cumulative distribution function is defined identically for discrete and continuous variables**, which makes it the more fundamental object. It also exists for mixed distributions that have neither a clean PMF nor a clean PDF." },
+
+    { t: "dl", items: [
+      ["CDF", "`F(x) = P(X ≤ x)`. Non-decreasing, running from 0 to 1, right-continuous."],
+      ["Survival function", "`S(x) = 1 − F(x) = P(X > x)`. Computed directly rather than by subtraction, because in the far tail the subtraction returns pure round-off."],
+      ["Quantile function", "The inverse `F⁻¹(q)` — the value below which a fraction `q` of the distribution lies. Every percentile and SLO is a statement about it."],
+      ["Inverse transform sampling", "`F⁻¹(U)` has distribution `F` when `U` is uniform. This is why a uniform generator is the only primitive a language needs."]
+    ]},
+
     { t: "code", lang: "python", title: "one object, every question", code: `
 # THE CDF IS DEFINED IDENTICALLY FOR DISCRETE AND CONTINUOUS:
 #
@@ -224,6 +252,15 @@ stats.kstest(stats.norm.cdf(stats.norm.rvs(size=5000, random_state=1)),
     ]},
 
     { t: "h2", n: "04", text: "Mixed distributions, which real data is full of", id: "mixed" },
+
+    { t: "p", text: "Real measurements frequently have a **point mass** — a specific value occurring with positive probability — sitting on top of a continuous spread. Revenue with many zeros, latency with a timeout, and any metric with a floor all take this shape, and neither a PMF nor a PDF describes it alone." },
+
+    { t: "dl", items: [
+      ["Mixed distribution", "Part discrete, part continuous. It has a valid CDF and no single density."],
+      ["Point mass", "An atom of probability at one value — `P(X = 0) = 0.94` for revenue where most users pay nothing."],
+      ["Zero-inflated", "The common case: a spike at zero plus a continuous distribution for the non-zero part."],
+      ["Censoring", "Values beyond a limit are recorded as the limit. A timeout at 30 s piles every slower request onto exactly 30 s."]
+    ]},
 
     { t: "ladder",
       title: "Modelling revenue per user, where most users pay nothing",

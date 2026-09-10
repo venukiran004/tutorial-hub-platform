@@ -20,6 +20,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why the rule is the rule", id: "rule" },
 
+    { t: "p", text: "Matrix multiplication looks arbitrary when you first meet it — rows against columns, and dimensions that must line up in a particular way. **The rule is forced, not chosen**: it is the only definition that makes `(AB)v` equal `A(Bv)`, which is what composition requires." },
+
+    { t: "dl", items: [
+      ["Inner dimension", "For `A` of shape `m × n` and `B` of shape `n × p`, the shared `n` must match. It is the dimension being summed over and it vanishes from the result."],
+      ["Result shape", "`m × p` — the outer dimensions. A useful check: write the shapes side by side and cancel the middle."],
+      ["Entry `(i,j)`", "The dot product of row `i` of `A` with column `j` of `B` — so every entry of a product is an alignment measurement (lesson 1.1)."]
+    ]},
+
     { t: "code", lang: "python", title: "multiplication is forced, not chosen", code: `
 import numpy as np
 
@@ -54,6 +62,17 @@ N = np.zeros((3, 5))
     },
 
     { t: "h2", n: "02", text: "Rank", id: "rank" },
+
+    { t: "p", text: "**Rank counts how many independent directions survive a transformation.** It is the single most informative number about a matrix: it tells you whether information is being destroyed, whether a system has a unique solution, and whether a regression's coefficients are identified at all." },
+
+    { t: "dl", items: [
+      ["Rank", "The number of linearly independent columns — equivalently, of rows. The two are always equal, which is not obvious and is genuinely useful."],
+      ["Full rank", "Rank equal to the smaller of the two dimensions. Nothing is redundant and nothing collapses."],
+      ["Rank-deficient", "Rank below full. Some column is a combination of the others, so the matrix squashes space and cannot be inverted."],
+      ["Null space", "Every vector the matrix sends to zero. Its dimension is `n − rank`, and it is exactly the information the transformation destroys."]
+    ]},
+
+    { t: "p", text: "**Rank plus null-space dimension always equals the number of columns.** That identity — the rank-nullity theorem — says the information a matrix keeps and the information it destroys must add up to what it was given." },
 
     { t: "viz",
       title: "Rank counts what survives",
@@ -127,6 +146,14 @@ np.linalg.matrix_rank(W)             # 5, not 100
 
     { t: "h2", n: "03", text: "Three things a linear system can do", id: "systems" },
 
+    { t: "p", text: "A system `Ax = b` asks: which input produces this output? There are exactly three possible answers, and which one you get is decided by the rank of `A` and whether `b` lies in its column space." },
+
+    { t: "dl", items: [
+      ["Unique solution", "`A` is full rank and square. One input produces `b`, and it can be recovered exactly."],
+      ["No solution", "`b` lies outside the column space — the transformation simply cannot produce it. This is the usual case in regression, and least squares answers it by finding the closest reachable point."],
+      ["Infinitely many solutions", "`A` is rank-deficient and `b` is reachable. Any vector from the null space can be added to a solution and it remains one."]
+    ]},
+
     { t: "table",
       head: ["Situation", "Geometry", "Solutions", "In practice"],
       rows: [
@@ -170,6 +197,15 @@ sol, rank                    # [0.6, 1.2], rank 1
     },
 
     { t: "h2", n: "04", text: "Never invert to solve", id: "inverse" },
+
+    { t: "p", text: "The **inverse** `A⁻¹` undoes a transformation, and computing it explicitly to solve `Ax = b` is almost always the wrong move. A solver does the job in a third of the operations with substantially better numerical accuracy." },
+
+    { t: "dl", items: [
+      ["Inverse", "The matrix with `A⁻¹A = I`. It exists only when `A` is square and full rank."],
+      ["Condition number", "How much a transformation stretches the worst-case direction relative to the best. A large value means small input errors become large output errors."],
+      ["Ill-conditioned", "A condition number large enough that floating-point error dominates the answer. The matrix is invertible in theory and untrustworthy in practice."],
+      ["Solver", "`np.linalg.solve(A, b)` — factorises and substitutes rather than inverting. Faster, and it does not amplify error the way an explicit inverse does."]
+    ]},
 
     { t: "ladder",
       title: "Computing `x` where `Ax = b`",

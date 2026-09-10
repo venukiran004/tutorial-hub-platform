@@ -20,6 +20,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What each test actually tests", id: "hypotheses" },
 
+    { t: "p", text: "Non-parametric tests are usually described as \"what you use when the data is not normal\", and that is misleading twice. **They do not test the same hypothesis as their parametric counterparts** — Mann-Whitney tests stochastic dominance, not means — and they are not assumption-free." },
+
+    { t: "dl", items: [
+      ["Non-parametric", "A test making no assumption about the distribution's *form*. It still assumes independence, and often more."],
+      ["Rank test", "One that replaces values with their positions in the sorted order, discarding magnitude and keeping order."],
+      ["Mann-Whitney U", "Tests `P(X > Y) = 0.5`. **Not** equal means, and only equal medians under the extra assumption of identically shaped distributions."],
+      ["Wilcoxon signed-rank", "The paired counterpart. Tests whether the differences are symmetric about zero."],
+      ["Kruskal-Wallis", "The counterpart to one-way ANOVA, across several groups."],
+      ["Estimand", "The quantity a test is actually about. Switching from a t-test to a rank test changes it, which is the substance of the choice."]
+    ]},
+
     { t: "table",
       head: ["Test", "Parametric counterpart", "Its null hypothesis"],
       rows: [
@@ -161,6 +172,16 @@ stats.mannwhitneyu(disc_a, disc_b)      # correction applied automatically
 
     { t: "h2", n: "02", text: "What ranks cost, and what they buy", id: "power" },
 
+    { t: "p", text: "Discarding magnitude costs surprisingly little and buys a great deal. **Ranks lose about 4.5% of power on perfectly normal data and can gain over 500% under contamination** — an asymmetry that makes the trade worth taking whenever the tails are uncertain." },
+
+    { t: "dl", items: [
+      ["Asymptotic relative efficiency", "The power ratio against the parametric alternative. Mann-Whitney's is `3/π = 95.5%` under normality."],
+      ["Robustness to contamination", "Ranks bound each observation's influence, so one absurd value cannot dominate — where a t-test's power can collapse from 74% to 11%."],
+      ["What you give up", "An effect size in the original units. A rank test estimates a probability, not a location shift."],
+      ["Hodges-Lehmann estimator", "The median of all pairwise differences. It fills that gap with a robust location estimate in real units."],
+      ["Ties", "Many repeated values destroy a rank test's information — which matters for Likert scales and other low-cardinality data."]
+    ]},
+
     { t: "viz",
       title: "Ranks discard magnitude and keep order",
       caption: "Every value is replaced by its position. That makes the test immune to any monotonic transform and to arbitrarily extreme outliers — and blind to how far apart the values actually are.",
@@ -271,6 +292,15 @@ hodges_lehmann(rng.normal(0,1,200), rng.normal(0.6,1,200))    # ~0.60
     },
 
     { t: "h2", n: "03", text: "Choosing between the three options", id: "choosing" },
+
+    { t: "p", text: "The choice between a t-test, a rank test and a permutation test is **a choice about what the decision needs, not about the histogram**. Totals need a mean; a typical case needs a rank; and a permutation test lets you keep whichever estimand you wanted." },
+
+    { t: "dl", items: [
+      ["Choose by estimand", "\"What is the total?\" needs the mean. \"Which experience is better for a typical user?\" needs a rank."],
+      ["Permutation on any statistic", "Gives robustness without changing what is estimated — a p-value for a trimmed mean, a p95, or anything else."],
+      ["Trimmed mean", "The underrated middle ground: original units, a chosen breakdown point, and about 95% efficiency on clean data."],
+      ["Brunner-Munzel", "The rank-based fix for unequal variances, since Mann-Whitney inherits Student's failure there."]
+    ]},
 
     { t: "ladder",
       title: "Comparing two groups of skewed, contaminated measurements",

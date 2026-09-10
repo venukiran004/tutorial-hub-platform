@@ -20,6 +20,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three axioms, and everything else", id: "axioms" },
 
+    { t: "p", text: "Probability is built on three assumptions, and everything else in the subject is derived from them. **They say that probabilities are non-negative, that something certainly happens, and that probabilities of separate outcomes add** — nothing more is assumed." },
+
+    { t: "dl", items: [
+      ["Sample space", "Written `S` — the set of every outcome the experiment can produce. Writing it down is most of the work."],
+      ["Event", "Any subset of the sample space. \"The die shows an even number\" is the event `{2, 4, 6}`."],
+      ["Non-negativity", "`P(A) ≥ 0`. A probability is never negative."],
+      ["Normalisation", "`P(S) = 1`. Some outcome occurs with certainty."],
+      ["Countable additivity", "For **disjoint** events, `P(A or B) = P(A) + P(B)`. The word *disjoint* is what the union rule later has to repair."],
+      ["Equally likely", "A property of the sample space you chose, not a default. `P(A) = |A|/|S|` is valid only when it holds."]
+    ]},
+
     { t: "code", lang: "python", title: "the rules are consequences, not extra assumptions", code: `
 import numpy as np
 from itertools import product, permutations, combinations
@@ -78,6 +89,16 @@ sums[7] / 36                  # 0.1667
 
     { t: "h2", n: "02", text: "Counting: four cases and nothing else", id: "counting" },
 
+    { t: "p", text: "When outcomes are equally likely, a probability becomes a counting problem — and **every counting problem is one of four cases**, decided by two questions: can an item repeat, and does the order matter?" },
+
+    { t: "dl", items: [
+      ["Permutation", "An arrangement where order matters. `n!/(n−k)!` ways to arrange `k` of `n` distinct items."],
+      ["Combination", "A selection where order does not matter. `C(n,k) = n!/(k!(n−k)!)`, read as \"n choose k\"."],
+      ["With replacement", "Items may repeat. `nᵏ` if order matters — passwords, dice rolls."],
+      ["Without replacement", "Each item used once. Cards dealt, people chosen for a committee."],
+      ["The bridge", "`C(n,k) = P(n,k)/k!`. Count the ordered arrangements, then divide out the orderings you did not want."]
+    ]},
+
     { t: "table",
       head: ["", "Order matters", "Order does not"],
       rows: [
@@ -132,6 +153,15 @@ comb(50, 47) == comb(50, 3)                  # True, and 19600 either way
     },
 
     { t: "h2", n: "03", text: "Inclusion–exclusion", id: "inclusion-exclusion" },
+
+    { t: "p", text: "The third axiom only permits adding probabilities for **disjoint** events. When events overlap, adding them counts the overlap twice — so **inclusion–exclusion subtracts it back out**, and with more events the corrections alternate in sign." },
+
+    { t: "dl", items: [
+      ["Union rule", "`P(A ∪ B) = P(A) + P(B) − P(A ∩ B)`. Not an extra axiom, just additivity with the double count removed."],
+      ["Union bound", "`P(any of A₁…Aₘ) ≤ ΣP(Aᵢ)` — the naive sum, kept deliberately as an upper bound. It can exceed 1, which is the giveaway."],
+      ["Complement rule", "`P(not A) = 1 − P(A)`. For \"at least one\" questions this turns a sum over every occurrence count into a single term."],
+      ["Mutually exclusive", "Events that cannot both occur, so their intersection is empty and they simply add."]
+    ]},
 
     { t: "viz",
       title: "Adding overlapping events counts the overlap twice",
@@ -202,6 +232,15 @@ for p in (0.01, 0.1, 0.3, 0.5):
     },
 
     { t: "h2", n: "04", text: "The birthday problem, and where it shows up", id: "birthday" },
+
+    { t: "p", text: "The birthday problem is the classic demonstration that collision intuition is badly wrong. **With 23 people the chance of a shared birthday is above 50%** — because the question is about *any* pair, and 23 people make 253 pairs." },
+
+    { t: "dl", items: [
+      ["Collision", "Two draws producing the same value. In engineering: two records with the same hash, two ids that clash."],
+      ["The √N rule", "A collision becomes likely after roughly `√N` draws from `N` possibilities — not `N/2`. Precisely, `1.177√N` for even odds."],
+      ["Expected collisions", "`C(n,2)/N ≈ n²/2N`. The most useful form, because it converts directly into \"how many records will I lose\"."],
+      ["Birthday attack", "The cryptographic consequence: a hash of `b` bits offers only about `b/2` bits of collision resistance."]
+    ]},
 
     { t: "code", lang: "python", title: "collisions arrive far sooner than intuition says", code: `
 def any_collision(n, days=365):

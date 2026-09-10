@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Entropy is expected surprise", id: "entropy" },
 
+    { t: "p", text: "**Entropy measures how much uncertainty a distribution carries**, defined as the average surprise of its outcomes. Only the logarithm makes surprise behave sensibly — certain events surprising you not at all, and independent surprises adding — which is why logs appear throughout." },
+
+    { t: "dl", items: [
+      ["Surprise", "`−log₂ p` for an outcome of probability `p`. Zero for a certain event, and growing without bound as `p` falls."],
+      ["Entropy", "`H(p) = −Σ pᵢ log₂ pᵢ`, the expected surprise. Measured in **bits** with base 2, or **nats** with base `e`."],
+      ["Maximum entropy", "The uniform distribution, at `log₂ n`. Any structure at all reduces it."],
+      ["Source coding theorem", "Entropy is a hard lower bound on the average bits per symbol any encoder can achieve — so it is a compression limit, not an index."],
+      ["Conditional entropy", "`H(X|Y)` — the uncertainty left in `X` once `Y` is known."]
+    ]},
+
     { t: "code", lang: "python", title: "start from what surprise should mean", code: `
 import numpy as np
 
@@ -82,6 +92,16 @@ entropy(freqs)                            # 2.246 bits per symbol
     },
 
     { t: "h2", n: "02", text: "Cross-entropy and KL", id: "cross-entropy" },
+
+    { t: "p", text: "**Cross-entropy is the cost of encoding data from one distribution using a code built for another** — and it is exactly the loss function every classifier minimises. It splits into two parts: the data's own irreducible uncertainty, and the penalty for your model being wrong." },
+
+    { t: "dl", items: [
+      ["Cross-entropy", "`H(p,q) = −Σ pᵢ log qᵢ`. The expected bits to encode data from `p` using a code optimal for `q`."],
+      ["KL divergence", "`KL(p‖q) = Σ pᵢ log(pᵢ/qᵢ)` — the **extra** bits paid for using `q` instead of `p`. Always non-negative, and zero only when they match."],
+      ["The identity", "`H(p,q) = H(p) + KL(p‖q)`. Training moves only the second term, because the first belongs to the data."],
+      ["Not a distance", "`KL(p‖q) ≠ KL(q‖p)`, and it violates the triangle inequality. The direction is a modelling choice with visible consequences."],
+      ["Perplexity", "`exp(loss)` — the effective number of choices the model is still weighing. The readable form of a cross-entropy figure."]
+    ]},
 
     { t: "viz",
       title: "Cross-entropy is entropy plus the cost of being wrong",
@@ -207,6 +227,15 @@ js(p, q), js(q, p)       # 0.311, 0.311 -- symmetric, and finite`},
     ]},
 
     { t: "h2", n: "03", text: "Mutual information", id: "mutual-information" },
+
+    { t: "p", text: "**Mutual information measures how much knowing one variable reduces uncertainty about another.** Unlike correlation it detects any dependence whatsoever, linear or not — it is the KL divergence between the joint distribution and the product of the marginals." },
+
+    { t: "dl", items: [
+      ["Mutual information", "`I(X;Y) = H(X) − H(X|Y) = KL(P(X,Y) ‖ P(X)P(Y))`. Zero exactly when the variables are independent."],
+      ["Symmetric", "`I(X;Y) = I(Y;X)`. It says nothing about direction or causation."],
+      ["Units", "Bits or nats, like entropy. \"One bit of mutual information\" means knowing `Y` halves the uncertainty about `X`."],
+      ["Redundancy", "Two features can each have high mutual information with the target and be duplicates of each other, so ranking features individually selects the same information twice."]
+    ]},
 
     { t: "code", lang: "python", title: "the dependence measure that catches everything", code: `
 # MUTUAL INFORMATION is the KL divergence between the joint and the

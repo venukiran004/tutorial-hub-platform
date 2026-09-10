@@ -20,6 +20,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Joint, marginal, conditional", id: "joint" },
 
+    { t: "p", text: "A **joint distribution** assigns probability to every combination of two or more variables, and both marginals and conditionals are derived from it. **The reverse is not true** — the marginals alone cannot reconstruct the joint, and everything about how the variables relate lives in that gap." },
+
+    { t: "dl", items: [
+      ["Joint distribution", "`P(X, Y)` — the probability of each combination. It contains the complete picture."],
+      ["Marginal distribution", "`P(X)`, obtained by summing the joint over every value of `Y`. \"Marginalising out\" means summing away a variable."],
+      ["Conditional distribution", "`P(X|Y)`, obtained by dividing the joint by the marginal of `Y`. Fixes one variable and renormalises."],
+      ["Independence, tested", "The joint equals the product of the marginals. The gap between observed and product is precisely what chi-square and mutual information each measure."]
+    ]},
+
     { t: "code", lang: "python", title: "three views of one table", code: `
 import numpy as np
 
@@ -76,6 +85,16 @@ np.abs(joint - independent).max()       # 0.05 -- not independent
     },
 
     { t: "h2", n: "02", text: "Covariance measures one specific thing", id: "covariance" },
+
+    { t: "p", text: "**Covariance and correlation measure linear association only.** A variable can determine another completely and still show a correlation of exactly zero — which makes \"uncorrelated\" a much weaker statement than \"independent\"." },
+
+    { t: "dl", items: [
+      ["Covariance", "`Cov(X,Y) = E[(X−μₓ)(Y−μᵧ)]`. Carries the units of both variables multiplied, so it cannot be compared across pairs."],
+      ["Correlation", "`ρ = Cov(X,Y)/(σₓσᵧ)`. Dimensionless and bounded in `[−1, 1]`."],
+      ["What it measures", "How tightly points cluster around a straight line — **not** how steep that line is. `r = 0.99` with a slope of 0.0001 is a tight relationship of no consequence."],
+      ["Independence implies zero correlation", "The reverse fails in general, and holds only for jointly normal variables."],
+      ["Spearman correlation", "Pearson applied to the ranks, so it detects any monotonic relationship and resists outliers."]
+    ]},
 
     { t: "viz",
       title: "Four datasets, all with correlation ≈ 0",
@@ -201,6 +220,15 @@ np.corrcoef(a, 1000*a)[0, 1]            # 1.0   slope 1000
 
     { t: "h2", n: "03", text: "The covariance matrix", id: "covariance-matrix" },
 
+    { t: "p", text: "For several variables at once, the **covariance matrix** holds every pairwise covariance, with the variances along its diagonal. It is what turns risk, portfolio and dimensionality questions into linear algebra — and using only its diagonal is a common and expensive shortcut." },
+
+    { t: "dl", items: [
+      ["Covariance matrix", "`Σ`, symmetric and positive semi-definite, with `Σᵢⱼ = Cov(Xᵢ, Xⱼ)`."],
+      ["Variance of a combination", "`Var(wᵀX) = wᵀΣw` — one line, and always correct. `Σwᵢ²σᵢ²` drops the off-diagonal terms and understates risk whenever components share a driver."],
+      ["Eigenvalues of `Σ`", "How much variance lies along each independent direction. Their number above zero is the effective dimensionality."],
+      ["Condition number", "Largest eigenvalue over smallest. A high value means multicollinearity: the variables carry overlapping information and coefficients become unstable."]
+    ]},
+
     { t: "code", lang: "python", title: "why per-variable variances are not enough", code: `
 # THE COVARIANCE MATRIX holds every pairwise covariance, with the
 # variances on the diagonal. It is symmetric and positive semi-definite
@@ -269,6 +297,15 @@ w_min @ S @ w_min                        # 0.2947 vs 0.4941 equal-weight
     },
 
     { t: "h2", n: "04", text: "Simpson's paradox", id: "simpson" },
+
+    { t: "p", text: "**Simpson's paradox is a trend that holds in every subgroup and reverses when the groups are pooled.** Both tables are arithmetically correct; which one answers your question depends on whether the grouping variable is a confounder or a mediator." },
+
+    { t: "dl", items: [
+      ["Simpson's paradox", "A reversal between subgroup and aggregate comparisons, caused by unequal group sizes combined with differing baseline rates."],
+      ["Confounder", "A common cause of both the grouping and the outcome. **Adjust for it** — the subgroup tables answer the causal question."],
+      ["Mediator", "Something the treatment causes, which then causes the outcome. **Do not adjust for it** — doing so removes part of the effect you are measuring."],
+      ["Standardisation", "Reweighting each group's rates to a common case mix, so a single comparable number can be reported."]
+    ]},
 
     { t: "code", lang: "python", title: "every subgroup one way, the total the other", code: `
 # A TREATMENT THAT WINS IN EVERY SUBGROUP AND LOSES OVERALL. This is

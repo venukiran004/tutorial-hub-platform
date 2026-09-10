@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why `n − 1`, demonstrated", id: "bessel" },
 
+    { t: "p", text: "**The sample variance divides by `n − 1` because the sample mean sits closer to your data than the true mean does.** Squared deviations measured from it are therefore systematically too small — by exactly a factor of `(n−1)/n`, which is precisely what the correction cancels." },
+
+    { t: "dl", items: [
+      ["Variance", "The mean squared deviation from the centre. In the squared units of the data."],
+      ["Bessel's correction", "Dividing by `n − 1` rather than `n`, which makes the estimator unbiased."],
+      ["Degrees of freedom", "The count of independent pieces of information. Estimating the mean forces the deviations to sum to zero, so only `n − 1` are free."],
+      ["Unbiased", "Correct on average across all possible samples. It is a property of the recipe, not of any single result."],
+      ["`ddof`", "The NumPy parameter for the subtraction. `ddof=0` divides by `n`, `ddof=1` by `n − 1` — and the two libraries disagree by default."]
+    ]},
+
     { t: "viz",
       title: "The sample mean is closer to your data than the truth is",
       caption: "The sample mean minimises the sum of squared deviations for this sample — no other point can do better. So deviations measured from it undershoot the deviations from the true mean, every time.",
@@ -147,6 +157,16 @@ c4(5)                                # 0.9400
 
     { t: "h2", n: "02", text: "When `n` is the right divisor", id: "when-n" },
 
+    { t: "p", text: "`n − 1` is not universally right. **When nothing is being estimated — you have the whole population, or the true mean is known independently — dividing by `n` is correct**, because no degree of freedom was consumed." },
+
+    { t: "dl", items: [
+      ["Population variance", "Divide by `n`. You are describing a complete set, not inferring about a larger one."],
+      ["Sample variance", "Divide by `n − 1`. You are estimating a population parameter from a subset."],
+      ["Maximum likelihood estimate", "Divides by `n` and is biased — MLE optimises probability of the data, not unbiasedness."],
+      ["Regression residuals", "Divide by `n − p − 1`, since each fitted parameter consumes a degree of freedom."],
+      ["Feature scaling", "`StandardScaler` uses `ddof=0`, because it describes the training set rather than inferring about a population."]
+    ]},
+
     { t: "table",
       head: ["Situation", "Divisor", "Why"],
       rows: [
@@ -205,6 +225,16 @@ for n in (5, 10, 30, 100):
     },
 
     { t: "h2", n: "03", text: "Robust dispersion", id: "robust" },
+
+    { t: "p", text: "The standard deviation has the same weakness as the mean — **one bad value can multiply it many times over**, and it is exactly the value you were trying to detect that does the damage. Robust measures of spread avoid that circularity." },
+
+    { t: "dl", items: [
+      ["IQR", "`Q3 − Q1`, the range of the middle half. Breakdown point 25%."],
+      ["MAD", "Median absolute deviation: the median of `|xᵢ − median|`. Breakdown point 50%, the maximum possible."],
+      ["The 1.4826 factor", "Scales the MAD so it estimates `σ` for normal data, making it a drop-in replacement on the same scale."],
+      ["Robust z-score", "`(x − median)/MAD`. Uses a scale the outliers cannot inflate, unlike the classic z-score which they can."],
+      ["Masking", "An outlier inflating the very scale used to judge it, so it appears less extreme than it is. The reason sd-based detection fails when there is something to detect."]
+    ]},
 
     { t: "code", lang: "python", title: "three measures, three breakdown points", code: `
 clean = rng.normal(100, 15, 1000)
@@ -280,6 +310,15 @@ np.abs(robust_z(dirty)).max()                              # 660.5
     },
 
     { t: "h2", n: "04", text: "Comparing across scales", id: "cv" },
+
+    { t: "p", text: "A standard deviation cannot be compared across quantities with different units or magnitudes. **The coefficient of variation divides the spread by the mean**, producing a dimensionless figure — but only where the quantity has a meaningful zero." },
+
+    { t: "dl", items: [
+      ["Coefficient of variation", "`CV = σ/μ`. Relative spread, comparable across quantities."],
+      ["Ratio scale", "A scale with a true zero, where doubling the value means twice as much. Required for the CV to mean anything."],
+      ["Interval scale", "A scale with an arbitrary zero, such as Celsius. The CV changes with the unit, so it is an artefact rather than a measurement."],
+      ["Robust CV", "`IQR / median`. The same idea, immune to outliers and defined wherever the median is non-zero."]
+    ]},
 
     { t: "code", lang: "python", title: "the coefficient of variation, and where it fails", code: `
 # STANDARD DEVIATION CANNOT BE COMPARED ACROSS QUANTITIES with

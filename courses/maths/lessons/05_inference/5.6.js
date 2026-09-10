@@ -20,6 +20,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Chi-square: comparing counts against a model", id: "chi-square" },
 
+    { t: "p", text: "**Chi-square compares observed counts against what a model predicts**, dividing each discrepancy by the count expected there. That division is what makes the comparison fair: a gap of 10 matters enormously where 12 were expected and not at all where 10,000 were." },
+
+    { t: "dl", items: [
+      ["Chi-square statistic", "`χ² = Σ (observed − expected)²/expected`, summed over every cell."],
+      ["Goodness of fit", "Testing counts against a specified distribution — is this die fair?"],
+      ["Test of independence", "Testing whether two categorical variables are related. The expected counts are `row × column / total` — the product of the marginals from lesson 3.7."],
+      ["Standardised residual", "`(observed − expected)/√expected` per cell. A value beyond ±2 identifies the cell driving the result, and it is the actionable output."],
+      ["Cramér's V", "Chi-square rescaled to `[0,1]`, so it is comparable across table sizes and sample sizes — which `χ²` itself is not."],
+      ["Expected-count rule", "The approximation needs expected counts of about 5 or more. Below that, use Fisher's exact test or a permutation."]
+    ]},
+
     { t: "code", lang: "python", title: "one statistic, two uses", code: `
 import numpy as np
 from scipy import stats
@@ -174,6 +185,17 @@ chi2_permutation(np.array([[8, 2], [1, 9]]))   # ~0.006, matching Fisher
 
     { t: "h2", n: "02", text: "ANOVA is a variance decomposition", id: "anova" },
 
+    { t: "p", text: "**ANOVA compares several means at once by splitting total variation into two parts**: how much groups differ from each other, and how much observations differ within their group. Their ratio is the F statistic, and this is the law of total variance from lesson 3.3 made into a test." },
+
+    { t: "dl", items: [
+      ["Sum of squares", "Squared deviations, totalled. `SS_total = SS_between + SS_within`, exactly."],
+      ["Mean square", "A sum of squares divided by its degrees of freedom — an estimate of variance."],
+      ["F statistic", "`MS_between / MS_within`. Near 1 under the null, because both then estimate the same `σ²`."],
+      ["Omnibus test", "One test for \"are any of these different?\" — which is all a significant F establishes."],
+      ["Eta squared", "`SS_between / SS_total` — the fraction of variance explained by group. The effect size, since F and p say nothing about magnitude."],
+      ["`F = t²`", "With two groups, ANOVA is exactly a t-test. It inherits Student's equal-variance assumption rather than Welch's."]
+    ]},
+
     { t: "viz",
       title: "F is the ratio of between-group spread to within-group spread",
       caption: "The same three group means, with tight and loose within-group spread. On the left the separation is obvious; on the right the identical means are indistinguishable. F is exactly that comparison.",
@@ -264,6 +286,16 @@ stats.ttest_ind(a, b).statistic**2                    # 7.31 -- F = t^2
     },
 
     { t: "h2", n: "03", text: "Why not just run all the t-tests", id: "post-hoc" },
+
+    { t: "p", text: "Running every pairwise comparison instead of one omnibus test would find something by construction — **ten tests at `α = 0.05` give a 40% chance of a false positive**. A post-hoc procedure controls that while still telling you *which* groups differ." },
+
+    { t: "dl", items: [
+      ["Family-wise error rate", "The probability of at least one false positive across a set of tests. What a post-hoc procedure controls."],
+      ["Tukey's HSD", "All pairwise comparisons, family-wise controlled. Uses the **studentised range** because the question is how large the *biggest* difference gets by chance."],
+      ["Dunnett's test", "Every group against one control. Fewer comparisons than Tukey, so more power."],
+      ["Fisher's LSD", "Run pairwise tests only if the omnibus is significant. Adequate for three groups and leaks for more."],
+      ["Planned contrast", "A specific comparison chosen before the data. It needs no correction beyond its own count."]
+    ]},
 
     { t: "ladder",
       title: "Comparing five treatment variants",

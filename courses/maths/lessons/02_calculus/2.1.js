@@ -20,6 +20,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "A derivative is a local straight line", id: "local" },
 
+    { t: "p", text: "**A derivative is the slope of the straight line that best matches a curve at one point.** Zoom in far enough on any smooth curve and it becomes indistinguishable from a line — the derivative is that line's slope, and it tells you how the output responds to a small nudge in the input." },
+
+    { t: "dl", items: [
+      ["Derivative", "`f'(x) = lim(h→0) [f(x+h) − f(x)] / h`. The rate of change at a single point, written `f'(x)` or `df/dx`."],
+      ["Tangent line", "The straight line touching the curve at `x` with that slope. It is the best linear approximation available near that point."],
+      ["Local linearity", "The property that makes calculus work: every smooth function looks linear if you look closely enough."],
+      ["Smooth", "Differentiable everywhere — no corners, jumps or vertical tangents. A condition that real loss functions frequently violate."]
+    ]},
+
+    { t: "p", text: "The practically useful reading is **sensitivity**: a derivative of 3 means that changing the input by a small amount `ε` changes the output by roughly `3ε`. Every gradient in machine learning is answering that question about a parameter." },
+
     { t: "viz",
       title: "Zoom in far enough and every smooth curve is a line",
       caption: "The derivative is that line's slope. Everything calculus does with derivatives is a consequence of curves being locally straight — including gradient descent, which follows the line and hopes the curve agrees for a short distance.",
@@ -91,6 +102,16 @@ f(2.001) - f(2.0)          # 0.004001  -- the prediction was 0.004
 
     { t: "h2", n: "02", text: "The chain rule", id: "chain" },
 
+    { t: "p", text: "**The chain rule says that composed functions multiply their sensitivities.** If `x` affects `u` and `u` affects `y`, then a nudge to `x` reaches `y` scaled by both factors — and this single rule, applied layer by layer, is the whole of backpropagation." },
+
+    { t: "dl", items: [
+      ["Chain rule", "`dy/dx = (dy/du) × (du/dx)`. The derivative of a composition is the product of the derivatives."],
+      ["Composition", "`f(g(x))` — one function's output feeding another's input. A neural network is composition repeated dozens of times."],
+      ["Backpropagation", "The chain rule applied backwards through a network, reusing shared factors instead of recomputing them."]
+    ]},
+
+    { t: "p", text: "The multiplication is why deep networks are difficult to train. **Twenty layers each contributing a factor of 0.5 produce a total sensitivity of `0.5²⁰ ≈ 10⁻⁶`** — the vanishing gradient, which is arithmetic rather than a mystery." },
+
     { t: "code", lang: "python", title: "composition multiplies sensitivities", code: `
 # If y depends on u, and u depends on x, then
 #
@@ -126,6 +147,14 @@ np.prod([1.5] * 50)                  # 6.4e+08  -- exploded
     },
 
     { t: "h2", n: "03", text: "A gradient by hand", id: "byhand" },
+
+    { t: "p", text: "Deriving a gradient by hand once is worth the effort, because the intermediate quantities explain behaviour you would otherwise have to accept on faith. The sigmoid's derivative is the clearest example: **its maximum value is 0.25**, and that single number explains saturation." },
+
+    { t: "dl", items: [
+      ["Sigmoid", "`σ(x) = 1/(1 + e⁻ˣ)`, squashing any real number into `(0, 1)`."],
+      ["Its derivative", "`σ'(x) = σ(x)(1 − σ(x))`, which peaks at 0.25 when `σ(x) = 0.5` and approaches zero at both extremes."],
+      ["Saturation", "The regime where the input is large in magnitude, the output is nearly 0 or 1, and the derivative is nearly zero — so no gradient flows and learning stops."]
+    ]},
 
     { t: "ladder",
       title: "Finding `dL/dw` for one neuron with a sigmoid and squared loss",
@@ -197,6 +226,15 @@ a = 1 / (1 + np.exp(-z))
     ]},
 
     { t: "h2", n: "04", text: "Where derivatives do not exist", id: "nondiff" },
+
+    { t: "p", text: "Several functions used every day are not differentiable everywhere, and frameworks handle this by convention rather than by mathematics. **ReLU has no derivative at zero, and `|x|` has none either** — knowing what the library substitutes is occasionally the difference between a working model and a silent `NaN`." },
+
+    { t: "dl", items: [
+      ["Non-differentiable point", "Where the left and right slopes disagree — a corner. The limit defining the derivative does not exist."],
+      ["Subgradient", "Any slope lying between the left and right values. At a corner, several are valid and the framework picks one."],
+      ["Convention at zero", "PyTorch and TensorFlow define `ReLU'(0) = 0`. It is a choice, not a derivation, and it is stable because exact zeros are rare in floating point."],
+      ["Epsilon guard", "The small constant added inside a square root or division to keep the derivative finite. Not optional, and its size matters."]
+    ]},
 
     { t: "table",
       head: ["Function", "Problem point", "What frameworks do"],

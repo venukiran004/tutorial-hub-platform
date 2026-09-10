@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The idea, and why it works at all", id: "idea" },
 
+    { t: "p", text: "**The bootstrap treats your sample as if it were the population and resamples from it.** Since you cannot draw new samples from the world, you draw them from what you have — and the spread of the resulting statistics estimates the sampling distribution you never see." },
+
+    { t: "dl", items: [
+      ["Bootstrap", "Resample `n` observations **with replacement**, recompute the statistic, and repeat thousands of times."],
+      ["Empirical distribution", "The observed data treated as a distribution. It converges to the true one, which is why the substitution works."],
+      ["Resample", "One bootstrap draw. It contains about 63.2% of the distinct original points — `1 − 1/e`."],
+      ["Out-of-bag", "The remaining 36.8%, left out of a given resample. Exactly what random forests validate on."],
+      ["Number of resamples", "About 2,000 for a standard error and 10,000 for a 95% interval. Monte Carlo noise falls as `1/√B`."]
+    ]},
+
     { t: "viz",
       title: "The sample stands in for the population",
       caption: "You cannot draw new samples from the population. So draw new samples from your sample — the empirical distribution is the best estimate of the real one, and resampling it mimics the sampling you cannot repeat.",
@@ -136,6 +146,16 @@ for B in (100, 1_000, 10_000, 100_000):
     },
 
     { t: "h2", n: "02", text: "Three intervals, increasing sophistication", id: "intervals" },
+
+    { t: "p", text: "There are three standard ways to turn a bootstrap distribution into an interval, in increasing sophistication. **What separates them is how they handle bias and skew** — and on skewed data the difference in actual coverage is several percentage points." },
+
+    { t: "dl", items: [
+      ["Percentile interval", "Take the empirical 2.5th and 97.5th percentiles of the bootstrap values. Simple, and optimistic when the estimator is biased."],
+      ["Basic interval", "Reflects around the observed value, correcting for location bias. Note the reversed quantiles."],
+      ["BCa", "Bias-corrected and accelerated. Adjusts for median bias (`z₀`) and for skew (`a`, from the jackknife). The modern default."],
+      ["Jackknife", "Leave-one-out resampling. Used inside BCa to estimate the acceleration."],
+      ["Coverage", "The only thing that matters. Verify it by simulation rather than assuming the nominal level."]
+    ]},
 
     { t: "code", lang: "python", title: "percentile, basic and BCa", code: `
 def percentile_ci(boots, alpha=0.05):
@@ -273,6 +293,16 @@ np.percentile(diffs, [2.5, 97.5])                        # (0.16, 0.86)
     ]},
 
     { t: "h2", n: "03", text: "Where the bootstrap silently fails", id: "failures" },
+
+    { t: "p", text: "**The bootstrap fails silently** — it returns an ordinary-looking interval with no warning. The failures fall into two groups: statistics that are not smooth functions of the distribution, and, far more commonly, resampling the wrong unit." },
+
+    { t: "dl", items: [
+      ["Non-smooth statistic", "Extremes and boundaries. A bootstrapped maximum can never exceed the sample maximum, so its interval is bounded by construction."],
+      ["Atomicity diagnostic", "If many resamples return exactly the same value, the statistic is not smooth enough. 63% identical for a maximum against 0.02% for a mean."],
+      ["Cluster bootstrap", "Resample **clusters**, not rows. Row-level resampling of clustered data understates the standard error by the design effect."],
+      ["Block bootstrap", "For time series: resample contiguous blocks so autocorrelation survives. Block length should exceed the correlation length."],
+      ["Bootstrap versus permutation", "Bootstrap estimates a sampling distribution and gives intervals; permutation builds a null distribution and gives p-values. A \"bootstrap p-value\" controls no error rate."]
+    ]},
 
     { t: "ladder",
       title: "Bootstrapping a statistic that depends on the extremes",

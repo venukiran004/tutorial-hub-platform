@@ -20,6 +20,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three shapes, one idea", id: "shapes" },
 
+    { t: "p", text: "With more than one input, a derivative becomes an array — and which array depends only on how many inputs and outputs the function has. **The three shapes are the gradient, the Jacobian and the Hessian**, and confusing them is the source of most shape errors in hand-written backpropagation." },
+
+    { t: "dl", items: [
+      ["Partial derivative", "`∂f/∂xᵢ` — the derivative with respect to one input, holding the others fixed."],
+      ["Gradient", "For `n` inputs and **one** output: a vector of `n` partial derivatives, written `∇f`. Its shape matches the input."],
+      ["Jacobian", "For `n` inputs and `m` outputs: an `m × n` matrix, one row per output. It is the local linear approximation of a vector-valued function."],
+      ["Hessian", "For `n` inputs and one output: an `n × n` matrix of second derivatives, describing curvature rather than slope."]
+    ]},
+
+    { t: "p", text: "**The shape follows from the counts, not from the mathematics** — which makes it a reliable check. A loss function has one output, so it has a gradient and a Hessian but no Jacobian worth the name." },
+
     { t: "viz",
       title: "The shape follows from the counts",
       caption: "Count the inputs and outputs and the shape is determined. Almost every dimension bug in numerical code is a disagreement between the shape you assumed and the shape the counts require.",
@@ -103,6 +114,15 @@ np.allclose(H, H.T)                      # True -- always, for smooth f
 
     { t: "h2", n: "02", text: "Why the gradient points uphill", id: "steepest" },
 
+    { t: "p", text: "**The gradient points in the direction of steepest increase**, and this is a theorem rather than a definition — it follows from the dot product being maximised when two vectors align, which is the fact from lesson 1.1." },
+
+    { t: "dl", items: [
+      ["Directional derivative", "How fast `f` changes as you move along a chosen unit direction `u`. It equals `∇f · u`."],
+      ["Steepest ascent", "The direction maximising that dot product, which is `∇f` itself. Steepest descent is `−∇f`."],
+      ["Gradient magnitude", "`‖∇f‖` — how steep the steepest direction is. Zero magnitude means a flat point in every direction."],
+      ["Level set", "The set of points with equal `f`. The gradient is always perpendicular to it, so moving along a contour changes nothing."]
+    ]},
+
     { t: "code", lang: "python", title: "a proof you can run", code: `
 # CLAIM: among all unit directions, the gradient is the one along which f
 # increases fastest.
@@ -142,6 +162,15 @@ g @ u_perp                                 # 0.0
     },
 
     { t: "h2", n: "03", text: "The Hessian is curvature", id: "hessian" },
+
+    { t: "p", text: "**The Hessian measures curvature — how the slope itself changes as you move.** It is what distinguishes a minimum from a maximum from a saddle, and its eigenvalues (lesson 1.4) set the largest step size an optimiser can safely take." },
+
+    { t: "dl", items: [
+      ["Hessian", "The matrix of second partial derivatives, `H[i][j] = ∂²f/∂xᵢ∂xⱼ`. Symmetric for any smooth function."],
+      ["Critical point", "Where `∇f = 0`. The Hessian's eigenvalues then decide what kind of point it is."],
+      ["Minimum / maximum / saddle", "All eigenvalues positive, all negative, or mixed signs respectively. Mixed is by far the most common in high dimensions."],
+      ["Condition number", "Largest eigenvalue divided by smallest. It governs how badly a valley is stretched, and therefore how slowly gradient descent crawls along it."]
+    ]},
 
     { t: "table",
       head: ["Hessian eigenvalues", "Surface", "For optimisation"],
@@ -188,6 +217,14 @@ w2.max() / w2.min()                            # 100.0 -- identical
     },
 
     { t: "h2", n: "04", text: "Nobody forms the Hessian", id: "no-hessian" },
+
+    { t: "p", text: "The Hessian is conceptually essential and computationally impossible at scale. **A model with ten million parameters has a Hessian with 10¹⁴ entries** — 800 terabytes — so every second-order method in practice works with an approximation that is never formed explicitly." },
+
+    { t: "dl", items: [
+      ["Hessian-vector product", "`Hv` computed without building `H`, by differentiating the gradient once more in the direction `v`. Costs about the same as one gradient."],
+      ["Diagonal approximation", "Keeping only `∂²f/∂xᵢ²`. This is what Adam and RMSProp effectively estimate, which is why they rescale coordinates independently."],
+      ["Low-rank approximation", "L-BFGS builds an inverse-Hessian estimate from a window of recent gradients, storing a few vectors rather than a matrix."]
+    ]},
 
     { t: "ladder",
       title: "Using curvature on a model with 10 million parameters",

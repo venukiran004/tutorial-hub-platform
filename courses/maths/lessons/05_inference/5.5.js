@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Four tests, four questions", id: "four" },
 
+    { t: "p", text: "There are four t-tests and picking the wrong one is a common analysis error. **They differ in what is being compared and what is assumed** — and a paired test is not a variant of a two-sample test, it is a one-sample test on the differences." },
+
+    { t: "dl", items: [
+      ["One-sample t", "Does this mean differ from a fixed value? `t = (x̄ − μ₀)/(s/√n)`."],
+      ["Paired t", "Did each unit change? Literally a one-sample test on the differences, which is why pairing removes between-unit variance entirely."],
+      ["Student's two-sample t", "Do two groups differ, **assuming equal variance**? Pools the two variances into one estimate."],
+      ["Welch's two-sample t", "Do two groups differ? Makes no equal-variance assumption and uses fractional degrees of freedom."],
+      ["The t-distribution", "What replaces the normal when `σ` is estimated from the same data. Heavier tails, converging to the normal as `n` grows."]
+    ]},
+
     { t: "table",
       head: ["Test", "The question", "Statistic", "Degrees of freedom"],
       rows: [
@@ -144,6 +154,16 @@ stats.ttest_ind(uncorrelated_a, uncorrelated_b).pvalue    # 0.70
 
     { t: "h2", n: "02", text: "Why Welch should be the default", id: "welch" },
 
+    { t: "p", text: "**Welch's test should be your default.** It costs under one percentage point of power when variances really are equal, and Student's true error rate can reach 17% when unequal variances meet unequal group sizes — a configuration that is entirely ordinary." },
+
+    { t: "dl", items: [
+      ["Pooled variance", "Student's single variance estimate, weighted by sample size. Dominated by the larger group, which is the mechanism of the failure."],
+      ["Welch-Satterthwaite", "The fractional degrees of freedom Welch uses, computed from the two variances and sample sizes."],
+      ["The failure condition", "Unequal variance **and** unequal `n` together. Either alone is harmless."],
+      ["Why not pre-test", "Choosing your test based on a variance test's outcome invalidates the error rate of both. The fix is to use the test that does not need the assumption."],
+      ["Library defaults", "scipy defaults to Student's; R defaults to Welch's. The same data gives different p-values by language, with no warning."]
+    ]},
+
     { t: "viz",
       title: "Student's test fails when unequal variances meet unequal group sizes",
       caption: "Pooling variances assumes the groups share one. When the smaller group is also the more variable one, the pooled estimate is dominated by the wrong group and the test's true error rate rises far above its nominal 5%.",
@@ -260,6 +280,16 @@ pretest_then_choose(200, 20, 1.0, 1.0)      # 0.058
     },
 
     { t: "h2", n: "03", text: "Which assumptions actually matter", id: "assumptions" },
+
+    { t: "p", text: "A t-test's assumptions are not equally important, and effort should go where a violation costs something. **Independence is the one that matters and the only one with no symptom in the data** — normality and equal variance are the two people check, and they matter least." },
+
+    { t: "dl", items: [
+      ["Independence", "**Critical.** A clustering violation multiplies your error rate and leaves no trace in the numbers. Only the design reveals it."],
+      ["Normality of the sampling distribution", "Moderate, and usually supplied by the CLT. Note it is the *mean's* distribution that matters, not the data's."],
+      ["Outliers", "Moderate. One extreme value inflates `s`, which shrinks `t` — so the test quietly loses power."],
+      ["Equal variance", "Not an issue if you use Welch. Listed only so nobody adds a Levene test."],
+      ["Unit of analysis", "Must match the unit of randomisation. Aggregating to the randomised unit is the simplest correct fix."]
+    ]},
 
     { t: "ladder",
       title: "Deciding whether a t-test is safe here",

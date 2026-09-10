@@ -20,6 +20,18 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "One trial, and everything built from it", id: "family" },
 
+    { t: "p", text: "Four discrete distributions cover almost everything you will meet, and **each answers a specific question about repeated trials**. Learning which situation produces which distribution is more useful than memorising the formulas, because the situation is what tells you which to reach for." },
+
+    { t: "dl", items: [
+      ["Bernoulli(p)", "One trial with two outcomes. `E[X] = p`, `Var(X) = p(1−p)`. Everything else is built from repeating it."],
+      ["Binomial(n,p)", "How many successes in `n` **fixed** trials. `E = np`, `Var = np(1−p)`."],
+      ["Geometric(p)", "How many trials until the **first** success. `E = 1/p`, and a standard deviation nearly as large as the mean when `p` is small."],
+      ["Negative binomial(r,p)", "How many trials until the `r`th success. The geometric is the `r = 1` case."],
+      ["Poisson(λ)", "How many events in a fixed interval at a constant rate. `E = Var = λ` — an equality that is its signature and a testable claim."]
+    ]},
+
+    { t: "p", text: "The distinction people reverse: **binomial fixes the number of trials and counts successes; geometric fixes the successes and counts trials.** Same experiment, read in opposite directions." },
+
     { t: "table",
       head: ["Distribution", "The question it answers", "Mean", "Variance"],
       rows: [
@@ -90,6 +102,15 @@ po.mean(), po.var()                      # 4.0, 4.0
     },
 
     { t: "h2", n: "02", text: "The Poisson limit", id: "poisson-limit" },
+
+    { t: "p", text: "**A binomial with many trials and a small success probability becomes a Poisson.** That limit matters because the Poisson needs only one parameter, and because the situations it describes usually have no natural number of trials to count." },
+
+    { t: "dl", items: [
+      ["The limit", "`Binomial(n, λ/n) → Poisson(λ)` as `n` grows. It is about `p` being small, not `n` being large."],
+      ["Rate parameter", "`λ` — the expected number of events per interval. Doubling the interval doubles `λ`."],
+      ["Additivity", "`Poisson(a) + Poisson(b) = Poisson(a+b)` for independent counts, so rates rescale by multiplication. No other distribution here does this."],
+      ["Poisson process", "Events arriving independently at a constant rate. Counts per interval are Poisson; the gaps between events are exponential."]
+    ]},
 
     { t: "viz",
       title: "Many rare trials become a Poisson",
@@ -183,6 +204,16 @@ per_hour.mean()                          # 9000.0
     },
 
     { t: "h2", n: "03", text: "Overdispersion: when Poisson is wrong", id: "overdispersion" },
+
+    { t: "p", text: "The Poisson makes exactly one testable claim — **that the variance equals the mean** — and real count data routinely violates it. When the variance is larger, the data is *overdispersed*, and fitting a Poisson anyway understates the tail by a wide margin." },
+
+    { t: "dl", items: [
+      ["Dispersion index", "`variance / mean`. Poisson implies 1; above 1 is overdispersed, below 1 underdispersed."],
+      ["Overdispersion", "More spread than Poisson allows. Caused by a rate that varies, or by events clustering — one incident producing many tickets."],
+      ["Underdispersion", "Less spread than Poisson. Something is regulating the process: a scheduler, a rate limiter, a quota."],
+      ["Negative binomial", "A Poisson whose rate is itself gamma-distributed. Its extra parameter measures how much the rate moves, and it is the standard fix."],
+      ["Compound Poisson", "Poisson arrivals of *batches*, with a separate size distribution. The right model when one cause produces many events."]
+    ]},
 
     { t: "ladder",
       title: "Modelling daily support-ticket counts",

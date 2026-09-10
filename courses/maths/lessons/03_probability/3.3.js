@@ -20,6 +20,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Linearity, and why it is unreasonable", id: "linearity" },
 
+    { t: "p", text: "**Expectation is the long-run average value of a random variable**, and its most useful property is that it adds — always, with no conditions attached. Independence is never required, which is what lets you compute averages for problems whose distributions you could not write down." },
+
+    { t: "dl", items: [
+      ["Expectation", "`E[X] = Σ x·p(x)` or `∫ x·f(x) dx`. The probability-weighted average, also called the mean."],
+      ["Linearity of expectation", "`E[aX + bY] = aE[X] + bE[Y]`, for **any** joint distribution. Correlated, dependent, adversarial — it still holds."],
+      ["Indicator variable", "A variable that is 1 when an event occurs and 0 otherwise. Since `E[1_A] = P(A)`, an expectation of an indicator is just a probability."],
+      ["The indicator trick", "Write a count as a sum of indicators, take each expectation separately, and add. It is the standard route to an answer."]
+    ]},
+
     { t: "code", lang: "python", title: "the fact that does the work", code: `
 import numpy as np
 
@@ -133,6 +142,16 @@ expected_distinct(3000, 1000)     # 950.2
 
     { t: "h2", n: "02", text: "Variance does not have linearity", id: "variance" },
 
+    { t: "p", text: "**Variance measures spread as the average squared distance from the mean**, and unlike expectation it does not simply add. Combining two variables introduces a covariance term, and assuming it away is one of the more expensive habits in applied statistics." },
+
+    { t: "dl", items: [
+      ["Variance", "`Var(X) = E[(X − μ)²]`. In the **squared** units of `X`, which is why it cannot be interpreted directly."],
+      ["Standard deviation", "`σ = √Var(X)`. Back in the original units, and therefore what belongs in a report."],
+      ["Covariance", "`Cov(X,Y) = E[(X−μₓ)(Y−μᵧ)]`. Positive when they move together, negative when they oppose, zero when uncorrelated."],
+      ["Variance of a sum", "`Var(X+Y) = Var(X) + Var(Y) + 2Cov(X,Y)`. The cross term vanishes only under zero covariance."],
+      ["Scaling", "`Var(aX) = a²Var(X)` — quadratic — while `sd(aX) = |a|·sd(X)` is linear. That square is where the `√n` in every standard error comes from."]
+    ]},
+
     { t: "table",
       head: ["Property", "Expectation", "Variance"],
       rows: [
@@ -218,6 +237,15 @@ x.std(ddof=1)        # 9.37   ms     -- reportable
     ]},
 
     { t: "h2", n: "03", text: "Conditioning: splitting a hard problem", id: "conditioning" },
+
+    { t: "p", text: "**Conditioning splits a hard problem into easier ones by asking \"what if I knew this?\"** Two identities make it precise: total expectation says an average of averages recovers the average, and total variance splits spread into within-group and between-group parts." },
+
+    { t: "dl", items: [
+      ["Conditional expectation", "`E[X | Y]` — the average of `X` among cases with that value of `Y`. It is itself a random variable, since it varies with `Y`."],
+      ["Law of total expectation", "`E[X] = E[E[X|Y]]`. Average within each group, then average the group averages by their weights."],
+      ["Law of total variance", "`Var(X) = E[Var(X|Y)] + Var(E[X|Y])` — within-group spread plus between-group spread. An exact identity, not an approximation."],
+      ["Within versus between", "Which term dominates tells you where to act: a large between term means the grouping is the lever, not the variation inside groups."]
+    ]},
 
     { t: "viz",
       title: "Total variance splits into within and between",

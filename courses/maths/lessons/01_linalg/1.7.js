@@ -20,6 +20,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Two different failures", id: "two" },
 
+    { t: "p", text: "When a numerical result is wrong, the fault lies in one of two places, and confusing them wastes a great deal of time. **Conditioning is a property of the problem; stability is a property of the algorithm.** A well-designed algorithm cannot rescue an ill-conditioned problem." },
+
+    { t: "dl", items: [
+      ["Conditioning", "How much the answer changes when the input is perturbed slightly. A property of the problem itself, independent of any code."],
+      ["Condition number", "The measurement: `κ = σ_max / σ_min`. Roughly, you lose `log₁₀(κ)` digits of accuracy no matter what you do."],
+      ["Stability", "Whether an algorithm adds error beyond what conditioning already forces. A property of the method, and fixable."],
+      ["Machine epsilon", "The smallest gap between representable numbers near 1 — about `2.2 × 10⁻¹⁶` in float64. It sets the floor on everything."]
+    ]},
+
+    { t: "p", text: "The rule that follows is worth memorising: **a condition number of `10ᵏ` costs you about `k` of your sixteen digits.** At `κ = 10¹⁰` you have six digits left, and at `κ = 10¹⁶` you have none." },
+
     { t: "viz",
       title: "Conditioning is the problem; stability is the method",
       caption: "A well-conditioned problem solved by a stable algorithm gives an accurate answer. Any other combination does not, and the fix differs in each case — so the first job is telling them apart.",
@@ -91,6 +102,14 @@ for n in (4, 8, 12):
     ]},
 
     { t: "h2", n: "02", text: "Catastrophic cancellation", id: "cancellation" },
+
+    { t: "p", text: "**Subtracting two nearly equal numbers destroys precision**, because the leading digits cancel and what remains is the rounding error you were already carrying. It is the single most common source of silent numerical failure." },
+
+    { t: "dl", items: [
+      ["Catastrophic cancellation", "Loss of significant digits when subtracting close values. The result may have no correct digits at all."],
+      ["Significant digits", "How many digits of a result are actually meaningful. Cancellation reduces this without changing how many are printed."],
+      ["Stable reformulation", "An algebraically equivalent expression that avoids the subtraction — such as centring data before squaring rather than after."]
+    ]},
 
     { t: "code", lang: "python", title: "how subtraction destroys information", code: `
 # Subtracting two nearly-equal numbers annihilates the leading digits,
@@ -175,6 +194,15 @@ rv.variance          # 1.0  -- exact, in one pass`,
     },
 
     { t: "h2", n: "03", text: "Choosing a factorisation", id: "factorisation" },
+
+    { t: "p", text: "Most numerical linear algebra is a choice among a few factorisations, each trading speed against robustness. **Choosing the cheapest one that will not fail on your data** is the whole of the decision, and a factorisation refusing to run is itself useful information." },
+
+    { t: "dl", items: [
+      ["Cholesky", "Fastest, for symmetric positive-definite matrices only. Failing to factorise proves the matrix is not positive definite — a free diagnostic."],
+      ["LU", "General square matrices, with partial pivoting for stability. What `solve` uses by default."],
+      ["QR", "Least squares without forming `AᵀX`, which would square the condition number. Slower than LU and much better behaved."],
+      ["SVD", "Slowest and most robust. Handles rank deficiency gracefully and reports the condition number as a by-product."]
+    ]},
 
     { t: "table",
       head: ["Matrix", "Method", "Cost", "Why"],

@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Posterior ∝ likelihood × prior", id: "posterior" },
 
+    { t: "p", text: "**Bayesian inference treats the parameter as uncertain and updates a belief about it.** You state what you believed beforehand, weight it by how well each value explains the data, and the result is a full distribution over the parameter rather than a single estimate." },
+
+    { t: "dl", items: [
+      ["Prior", "`P(θ)` — belief before the data. Its strength is measurable in **pseudo-observations**, which makes it auditable rather than merely subjective."],
+      ["Likelihood", "`P(data | θ)` — how well each parameter value explains what you saw. The same function maximum likelihood maximises."],
+      ["Posterior", "`P(θ | data) ∝ likelihood × prior`. A distribution, not a point."],
+      ["Conjugate prior", "A prior whose family the posterior shares, making the update pure arithmetic — Beta with a binomial, Gamma with a Poisson, Normal with a Normal."],
+      ["MAP estimate", "The posterior's peak. The Bayesian analogue of the MLE, and equal to it under a flat prior."]
+    ]},
+
     { t: "viz",
       title: "The prior is overwhelmed as data accumulates",
       caption: "With ten observations the posterior sits near the prior. With a thousand it sits on the likelihood and the prior is irrelevant. The prior matters most exactly when you have least data — which is when you most need it.",
@@ -153,6 +163,16 @@ normal_posterior(100, 15, np.array([120., 118., 125.]), sigma=10)
 
     { t: "h2", n: "02", text: "Credible against confidence", id: "credible" },
 
+    { t: "p", text: "**A credible interval supports the reading a confidence interval cannot**: there really is a 95% probability the parameter lies inside it. That is what the prior buys — and with a flat prior and a decent sample the two intervals usually agree numerically while meaning different things." },
+
+    { t: "dl", items: [
+      ["Credible interval", "A range containing 95% of the posterior's mass. A direct probability statement about the parameter."],
+      ["Confidence interval", "A range from a procedure with 95% long-run coverage. A statement about the procedure, not this interval."],
+      ["Highest density interval", "The narrowest credible interval, containing the most probable values. Preferred when the posterior is skewed."],
+      ["Posterior probability", "`P(θ > c | data)` — computable in one line, and directly actionable in a way a p-value is not."],
+      ["Where they diverge", "Small samples and informative priors. At 0 successes in 10 trials an informed prior narrows the interval from 28 points wide to 17."]
+    ]},
+
     { t: "table",
       head: ["", "Confidence interval", "Credible interval"],
       rows: [
@@ -280,6 +300,16 @@ sensitivity(1, 10)       # means from 0.10 to 0.14, CIs differ widely
     ]},
 
     { t: "h2", n: "03", text: "Which framework answers which question", id: "choosing" },
+
+    { t: "p", text: "Neither framework is correct in general — **they answer different questions naturally**, and the choice should be made before the data. Switching afterwards because one gave the friendlier number is p-hacking with an extra step." },
+
+    { t: "dl", items: [
+      ["Frequentist strengths", "Guaranteed error rates over repeated use. What a regulator or a platform-wide policy actually requires."],
+      ["Bayesian strengths", "Scarce data with real prior information, decisions needing a probability, and evidence accumulating sequentially — a posterior is the natural input to the next analysis."],
+      ["Expected loss", "`E[cost of being wrong]` under the posterior. It converts a belief into a decision with no threshold on a p-value."],
+      ["Sensitivity analysis", "Reporting the answer under several defensible priors. If the conclusion survives all of them, the prior is not doing the work."],
+      ["Uninformative prior", "Not the absence of a prior. Uniform on `p` is not uniform on the odds, and Jeffreys is the choice invariant under reparameterisation."]
+    ]},
 
     { t: "ladder",
       title: "Deciding whether to ship a variant",

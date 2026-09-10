@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three distributions, routinely confused", id: "three" },
 
+    { t: "p", text: "Three distributions get confused constantly, and keeping them apart is what makes the rest of inference straightforward. **The population has a spread, each sample has a spread, and the collection of sample summaries has its own spread** — and it is the third that every p-value and confidence interval is about." },
+
+    { t: "dl", items: [
+      ["Population", "Everything you would like to describe. Its summaries are **parameters**, written with Greek letters — `μ`, `σ`."],
+      ["Sample", "The subset you actually observed. Its summaries are **statistics**, written with Latin letters — `x̄`, `s`."],
+      ["Sampling distribution", "What a statistic would do across every possible sample of that size. You never see it, and inference is entirely about it."],
+      ["Standard deviation", "How much individual observations vary. A property of the data."],
+      ["Standard error", "`SE = σ/√n` — how much an **estimate** varies across samples. A property of the estimate, and often ten times smaller."]
+    ]},
+
     { t: "viz",
       title: "The sampling distribution is a distribution of statistics",
       caption: "The population has a spread. Each sample has a spread. The sampling distribution is the spread of the summaries — and it is narrower than either, by exactly √n.",
@@ -120,6 +130,16 @@ stats.skew(means)                 # 0.29
 
     { t: "h2", n: "02", text: "The CLT, stated properly", id: "clt" },
 
+    { t: "p", text: "**The central limit theorem says the distribution of a sample mean becomes normal as the sample grows** — whatever the population looks like. It has three conditions, all of which fail in real work, and knowing which one has failed tells you what to do instead." },
+
+    { t: "dl", items: [
+      ["Central limit theorem", "`(x̄ − μ)/(σ/√n) → Normal(0,1)`. It makes the distribution of the **mean** normal, not the data."],
+      ["Independence", "Observations must not influence one another. Broken by clustering, time series and network effects."],
+      ["Identically distributed", "They must come from the same population. Broken when the population shifts mid-collection."],
+      ["Finite variance", "Required, and it fails totally rather than gradually — the mean of a million Cauchy samples is distributed like a single one."],
+      ["Convergence rate", "Governed by skewness. The centre converges long before the tails, so `n > 25 × skew²` is the usable rule for trusting a tail probability."]
+    ]},
+
     { t: "code", lang: "python", title: "the conditions, and what each one does", code: `
 # THE CENTRAL LIMIT THEOREM. For X_1 ... X_n independent, identically
 # distributed, with finite mean mu and FINITE VARIANCE sigma^2:
@@ -186,6 +206,16 @@ n_needed(0.0), n_needed(2.0), n_needed(6.0)      # 0, 100, 900
     },
 
     { t: "h2", n: "03", text: "Bias is not fixed by more data", id: "bias" },
+
+    { t: "p", text: "**More data reduces variance and does nothing at all to bias.** A precise estimate of the wrong quantity is more dangerous than a noisy estimate of the right one, because the narrow interval invites confidence it has not earned." },
+
+    { t: "dl", items: [
+      ["Bias", "A systematic difference between your estimate and the truth. Independent of sample size."],
+      ["Variance", "Random variation between samples. Falls as `1/n`, which is what a margin of error describes."],
+      ["Selection bias", "The sample is not representative because of how it was chosen. Response bias and survivorship are both forms of it."],
+      ["Non-response bias", "Scales as `(1 − response rate) × (responder − non-responder gap)`. Only measuring some non-responders can bound it."],
+      ["Design effect", "`DEFF = 1 + (m−1)·ICC` for clustered data. The **effective sample size** is `n/DEFF`, so 40,000 rows can carry the information of 250."]
+    ]},
 
     { t: "ladder",
       title: "Estimating average customer satisfaction",

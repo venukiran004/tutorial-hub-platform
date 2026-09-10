@@ -20,6 +20,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The special directions", id: "special" },
 
+    { t: "p", text: "Almost every vector changes direction when a matrix is applied to it. **An eigenvector is one of the rare directions that does not** — it comes out pointing the same way, only stretched or shrunk. The factor by which it stretches is its eigenvalue." },
+
+    { t: "dl", items: [
+      ["Eigenvector", "A non-zero vector `v` with `Av = λv`. The transformation acts on it as pure scaling, with no rotation at all."],
+      ["Eigenvalue", "The scalar `λ`. It is how much that direction stretches: `λ = 2` doubles, `λ = 0.5` halves, `λ = −1` flips."],
+      ["Eigenvalue zero", "That direction is collapsed entirely, so the matrix is singular and the eigenvector lies in the null space (lesson 1.3)."],
+      ["Spectrum", "The full set of eigenvalues. Their signs and sizes characterise the transformation more compactly than the matrix does."]
+    ]},
+
+    { t: "p", text: "**Eigenvectors are the transformation's own coordinate system.** Expressed in that basis, a complicated matrix becomes a list of independent scale factors — which is why the decomposition makes so many problems tractable." },
+
     { t: "viz",
       title: "Most vectors turn; eigenvectors only scale",
       caption: "The transformation moves every vector. The two dashed directions come back pointing exactly where they started, longer or shorter — those are the eigenvectors, and the scale factors are the eigenvalues.",
@@ -98,6 +109,14 @@ vecs[:, 1] / vecs[0, 1] # [1., -2.]   (normalised to match our working)
 
     { t: "h2", n: "02", text: "What the numbers tell you", id: "reading" },
 
+    { t: "p", text: "The eigenvalues tell you what happens when a transformation is applied **repeatedly** — which is the situation in every iterative algorithm, every Markov chain, and every recurrent network. The largest one dominates everything else." },
+
+    { t: "dl", items: [
+      ["Spectral radius", "The largest absolute eigenvalue. Above 1 and repeated application explodes; below 1 and it decays to zero; exactly 1 and it persists."],
+      ["Dominant eigenvector", "The direction belonging to the largest eigenvalue. Repeated application drives almost any starting vector towards it."],
+      ["Complex eigenvalues", "They come in conjugate pairs and mean rotation is present. Their magnitude still governs growth or decay."]
+    ]},
+
     { t: "table",
       head: ["Eigenvalues", "Behaviour", "Where you meet it"],
       rows: [
@@ -146,6 +165,16 @@ max(abs(np.linalg.eigvals(grow)))          # 1.1  -> explodes
     },
 
     { t: "h2", n: "03", text: "Symmetric matrices are the good case", id: "symmetric" },
+
+    { t: "p", text: "**Symmetric matrices — those equal to their own transpose — are exceptionally well behaved**, and they are the ones that arise in practice: covariance matrices, Hessians, Gram matrices and graph Laplacians are all symmetric. Everything awkward about general eigendecomposition disappears." },
+
+    { t: "dl", items: [
+      ["Symmetric", "`A = Aᵀ`. Entry `(i,j)` equals entry `(j,i)`."],
+      ["Real eigenvalues", "Guaranteed for symmetric matrices — no complex numbers to interpret."],
+      ["Orthogonal eigenvectors", "Also guaranteed. The eigenvectors are mutually perpendicular, so they form a clean coordinate system."],
+      ["Positive definite", "All eigenvalues strictly positive. The matrix stretches every direction, never flipping or collapsing one — the condition that makes a quadratic a bowl rather than a saddle."],
+      ["Positive semi-definite", "All eigenvalues at least zero. Every covariance matrix is at minimum this, which is why a negative eigenvalue on one is proof of a numerical fault."]
+    ]},
 
     { t: "ladder",
       title: "Decomposing a matrix",
@@ -214,6 +243,15 @@ for i in range(vecs.shape[1]):
     ]},
 
     { t: "h2", n: "04", text: "Eigenvalues of a covariance matrix", id: "covariance" },
+
+    { t: "p", text: "The **covariance matrix** records how every pair of variables move together, and its eigendecomposition is the bridge to PCA. Its eigenvectors are the directions of independent variation in the data, and its eigenvalues are how much variance each direction carries." },
+
+    { t: "dl", items: [
+      ["Covariance matrix", "Symmetric, with variances on the diagonal and pairwise covariances off it. Written `Σ` or `C`."],
+      ["Principal direction", "An eigenvector of `Σ`. Data spreads furthest along the one with the largest eigenvalue."],
+      ["Explained variance", "An eigenvalue divided by the sum of all of them — the fraction of total spread that direction accounts for."],
+      ["Effective rank", "How many eigenvalues are meaningfully above zero. It is the number of dimensions the data genuinely occupies, regardless of how many columns it has."]
+    ]},
 
     { t: "code", lang: "python", title: "the bridge to PCA", code: `
 rng = np.random.default_rng(0)

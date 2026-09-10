@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three bounds, three assumptions", id: "the-three" },
 
+    { t: "p", text: "**A concentration inequality bounds how far a random quantity can stray from its expectation, without assuming a distribution.** The three standard ones trade assumptions for tightness: assume less and the bound is looser, but it cannot be wrong." },
+
+    { t: "dl", items: [
+      ["Concentration inequality", "A distribution-free bound on a tail probability. Guaranteed rather than approximate."],
+      ["Markov", "`P(X ≥ a) ≤ E[X]/a`, needing only a non-negative variable with a known mean. Very weak, and it cannot be wrong."],
+      ["Chebyshev", "`P(|X−μ| ≥ kσ) ≤ 1/k²`, needing only a variance. About 70,000× looser than the normal at 5σ — which is the price of assuming nothing."],
+      ["Cantelli", "The one-sided form, `1/(1+k²)`. You cannot simply halve Chebyshev's two-sided bound."],
+      ["Tightness", "How close a bound sits to the true probability. Looser bounds are safer and less informative — the trade is deliberate."]
+    ]},
+
     { t: "table",
       head: ["Bound", "Assumes", "Says", "Tail decay"],
       rows: [
@@ -90,6 +100,15 @@ chebyshev(3) / 2, cantelli(3)   # 0.0556 (naive halving), 0.1000
     },
 
     { t: "h2", n: "02", text: "Hoeffding: the one you will actually use", id: "hoeffding" },
+
+    { t: "p", text: "**Hoeffding's inequality is the one you will actually use**, because it gives exponential tail decay from just two assumptions: independence and a bounded range. It produces sample sizes with no central limit theorem and no \"n ≥ 30\" hand-waving." },
+
+    { t: "dl", items: [
+      ["Hoeffding's inequality", "`P(|X̄ − μ| ≥ t) ≤ 2exp(−2nt²/(b−a)²)` for `n` independent variables bounded in `[a,b]`."],
+      ["Sample size", "Inverted: `n ≥ (b−a)²log(2/δ)/(2t²)`. Precision costs `1/t²`; confidence costs only `log(1/δ)`."],
+      ["Bernstein's inequality", "Uses the variance as well as the range. Far tighter for rare events, where Hoeffding's range-only bound is catastrophically loose."],
+      ["Union bound", "Guaranteeing `m` claims at once costs `log(m)`, not `m` — which is why monitoring thousands of metrics is affordable."]
+    ]},
 
     { t: "viz",
       title: "Bounded range buys exponential decay",
@@ -209,6 +228,15 @@ for m in (1, 10, 100, 10_000):
     ]},
 
     { t: "h2", n: "03", text: "When the looseness is the point", id: "looseness" },
+
+    { t: "p", text: "A distribution-free bound is deliberately pessimistic, and **that pessimism is the product rather than a defect**. When a guarantee must hold under conditions you do not control — a contractual SLO, an unattended automated decision — a loose bound that cannot be wrong beats a tight one resting on an unchecked assumption." },
+
+    { t: "dl", items: [
+      ["Distribution-free", "Valid for every distribution satisfying the stated conditions. No normality, no shape assumption."],
+      ["Empirical quantile", "A percentile computed from the data. Precise about the past, and it assumes the future resembles it."],
+      ["The gap", "The distance between the distribution-free bound and the empirical estimate. It measures how much your guarantee depends on the distribution not moving."],
+      ["Sequential guarantee", "A bound that remains valid however many times you check it — necessary whenever a rule runs unattended and repeatedly."]
+    ]},
 
     { t: "ladder",
       title: "Guaranteeing a p99 latency claim to a customer",

@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Regression to the mean", id: "regression-to-mean" },
 
+    { t: "p", text: "**Any measurement is signal plus noise, so selecting the most extreme cases selects partly for extreme noise — and noise does not repeat.** The group therefore improves on remeasurement whether or not anything was done to it, which fakes an effect in every targeted programme." },
+
+    { t: "dl", items: [
+      ["Regression to the mean", "The tendency of extreme measurements to be followed by less extreme ones, purely from measurement noise."],
+      ["Reliability", "The test-retest correlation `r`. Lower reliability means more regression, and a single quarter's data is usually low."],
+      ["The size of the artefact", "`(1 − r) × (selection gap)` — predictable in advance, so you can compute the fake effect before running the study."],
+      ["The defence", "A control group selected the **same way**. Both regress equally, and the difference is the real effect — and for a targeted programme it costs nothing."],
+      ["Third-measurement check", "Select on measurement 1, evaluate on measurement 3. Regression happens between 1 and 2 and does not happen again."]
+    ]},
+
     { t: "viz",
       title: "Select on an extreme, measure again, and the effect appears",
       caption: "Any measurement is signal plus noise. Selecting the extreme selects for extreme noise, and noise does not repeat — so the group improves on remeasurement whether or not anything was done to it.",
@@ -146,6 +156,16 @@ score3[worst].mean() - score2[worst].mean()      # ~0.0
     },
 
     { t: "h2", n: "02", text: "Survivorship and its relatives", id: "survivorship" },
+
+    { t: "p", text: "**Survivorship bias is when the sample contains only what survived a process, and survival depends on the outcome.** The data that is missing is precisely the data that would change your conclusion, and nothing in the surviving data reveals its absence." },
+
+    { t: "dl", items: [
+      ["Survivorship bias", "Analysing only the cases that lasted long enough to be observed. Funds that closed, startups that failed, customers who already churned."],
+      ["Attrition", "The fraction of the original population missing from the sample. If it relates to the outcome, the sample is not the population."],
+      ["Berkson's paradox", "Selecting on a **combination** of two conditions makes them appear negatively correlated even when independent. A collider (lesson 3.6) in sampling clothing."],
+      ["Left truncation", "Cases that ended before observation began are absent entirely, which biases any duration estimate upward."],
+      ["The check", "Count who is missing, and ask whether both variables affected their absence."]
+    ]},
 
     { t: "code", lang: "python", title: "the data that is missing is the data that matters", code: `
 # SURVIVORSHIP BIAS: the sample contains only the things that survived
@@ -305,6 +325,18 @@ simpson_check([81/87, 192/263], [234/270, 55/80], [87, 263], [270, 80])
     ]},
 
     { t: "h2", n: "03", text: "The review checklist", id: "checklist" },
+
+    { t: "p", text: "Each of these mistakes has **a recognisable shape in a report and a one-line check** — which is faster than re-deriving the statistics every time. Reading the shape is the practical skill this module has been building towards." },
+
+    { t: "dl", items: [
+      ["Who is missing?", "What population entered, and does the reason for leaving relate to the outcome?"],
+      ["What was selected on?", "If any group was chosen for being extreme, compute `(1−r) × gap` before believing any improvement."],
+      ["How many tests?", "Metrics, segments, time windows and specifications. The answer is never one."],
+      ["What is the effect size?", "In the units of the decision, with an interval. Not the p-value."],
+      ["What is the power?", "For the effect **claimed**, not the effect observed. Below 50%, a significant result is probably exaggerated."],
+      ["What is the unit?", "Does the unit of analysis match the unit of randomisation, and are rows independent?"],
+      ["What would falsify it?", "If the claim were false, what would the data look like? If the answer is \"the same\", it is not a finding."]
+    ]},
 
     { t: "table",
       head: ["The shape it takes", "What it is", "The one-line check"],

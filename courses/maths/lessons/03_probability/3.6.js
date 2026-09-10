@@ -20,6 +20,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Conditioning restricts the sample space", id: "conditioning" },
 
+    { t: "p", text: "**Conditioning means discarding every outcome where the condition failed, then rescaling what remains so it sums to 1 again.** The relative sizes inside the condition never change — only the denominator does, which is why `P(A|B)` and `P(B|A)` divide by different things." },
+
+    { t: "dl", items: [
+      ["Conditional probability", "`P(A|B) = P(A ∩ B) / P(B)`, read as \"the probability of A given B\". Undefined when `P(B) = 0`."],
+      ["Joint probability", "`P(A ∩ B)` — both occur. Symmetric in `A` and `B`, unlike the conditional."],
+      ["Multiplication rule", "`P(A ∩ B) = P(A|B)P(B)`. The definition rearranged, and the way joint distributions are built from conditionals."],
+      ["Chain rule", "`P(A,B,C) = P(A)P(B|A)P(C|A,B)`. Every probabilistic model is a claim about which of these terms simplify."]
+    ]},
+
     { t: "code", lang: "python", title: "the definition, and what it does geometrically", code: `
 import numpy as np
 
@@ -78,6 +87,17 @@ joint[("paid", "churn")] / p_churn               # 0.077
     },
 
     { t: "h2", n: "02", text: "Bayes, and the term everyone drops", id: "bayes" },
+
+    { t: "p", text: "**Bayes' theorem converts `P(evidence | hypothesis)` into `P(hypothesis | evidence)`** — the direction you almost always want and almost never measure directly. The conversion requires the prior, and the prior is the term that gets dropped." },
+
+    { t: "dl", items: [
+      ["Prior", "`P(H)` — what you believed before seeing the evidence. In a medical test this is the prevalence; in an experiment, the base rate of ideas that work."],
+      ["Likelihood", "`P(E|H)` — how well the hypothesis explains the evidence. A test's sensitivity is a likelihood."],
+      ["Posterior", "`P(H|E)` — the updated belief. What the question was actually asking for."],
+      ["Evidence", "`P(E)` — the normaliser, summed over every hypothesis. It makes the posterior a proper distribution."],
+      ["Base rate neglect", "Ignoring the prior and reading the likelihood as the posterior. The single most consequential error in applied probability."],
+      ["Sensitivity / specificity", "`P(positive | disease)` and `P(negative | healthy)`. Both are properties of the test alone; **precision is not**, because it also depends on prevalence."]
+    ]},
 
     { t: "viz",
       title: "Why a 99% accurate test is usually wrong",
@@ -201,6 +221,16 @@ p_guilty_given_match(60_000_000)   # 1.6%   -- 60 expected false matches
     ]},
 
     { t: "h2", n: "03", text: "Independence and its conditional cousin", id: "independence" },
+
+    { t: "p", text: "**Independence means learning one thing tells you nothing about the other**, and it is a much stronger claim than it sounds. Conditional independence — independence once a third variable is known — is a different property, and neither implies the other." },
+
+    { t: "dl", items: [
+      ["Independent", "`P(A ∩ B) = P(A)P(B)`. Equivalently `P(A|B) = P(A)`: the condition changes nothing."],
+      ["Conditionally independent", "`P(A ∩ B | C) = P(A|C)P(B|C)`. Independent *once you know* `C`."],
+      ["Confounder", "A common **cause** of both variables. Conditioning on it removes a spurious association."],
+      ["Collider", "A common **effect** of both. Conditioning on it *creates* an association that was not there — which is why \"control for everything\" is unsafe advice."],
+      ["Mutually exclusive ≠ independent", "Disjoint events are maximally dependent: knowing one occurred tells you the other did not."]
+    ]},
 
     { t: "code", lang: "python", title: "two ideas that are routinely confused", code: `
 # INDEPENDENT:              P(A and B) = P(A) P(B)

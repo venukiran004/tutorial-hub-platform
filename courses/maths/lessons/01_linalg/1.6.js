@@ -20,6 +20,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The question PCA answers", id: "question" },
 
+    { t: "p", text: "**PCA asks one question: which direction does the data spread along most?** Then it asks the same question again about what is left, and repeats. The answers are the eigenvectors of the covariance matrix, which is why lesson 1.4 was the prerequisite." },
+
+    { t: "dl", items: [
+      ["Principal component", "A direction in the original feature space, written as a weighted combination of the original variables."],
+      ["Loading", "One variable's weight within a component. Reading the loadings is how you interpret what a component represents."],
+      ["Score", "An observation's coordinate along a component — the transformed data."],
+      ["Explained variance ratio", "The fraction of total variance a component accounts for. They sum to 1 across all components."]
+    ]},
+
+    { t: "p", text: "Components are **orthogonal by construction**, so each captures variation the previous ones missed. That is a property of the method, not of the data, and it is the reason PCA components are not the same thing as interpretable factors." },
+
     { t: "viz",
       title: "Which direction carries the most spread?",
       caption: "Project the cloud onto a direction and measure the variance of the projections. PCA is the answer to \"which direction maximises that?\" — and then the same question again, restricted to what is left.",
@@ -121,6 +132,15 @@ np.allclose(np.abs(Vt[:2]), np.abs(comps.T))     # True, up to sign
 
     { t: "h2", n: "02", text: "Centring is mandatory; scaling is a decision", id: "preprocessing" },
 
+    { t: "p", text: "PCA operates on variance, which makes it sensitive to how the data is prepared. **Centring is not optional** — without it the first component points at the mean rather than at the spread. **Scaling is a genuine decision** with no default right answer." },
+
+    { t: "dl", items: [
+      ["Centring", "Subtracting each variable's mean. Mandatory: uncentred PCA finds the direction of the data's centre of mass, not its variation."],
+      ["Scaling", "Dividing by each variable's standard deviation. It makes variables comparable and discards genuine differences in importance."],
+      ["When to scale", "When variables use different units — an income in pounds would otherwise dominate an age in years purely by magnitude."],
+      ["When not to scale", "When variables share units and their relative spread is meaningful, such as pixel intensities or repeated measurements of one quantity."]
+    ]},
+
     { t: "ladder",
       title: "Preparing data for PCA",
       rungs: [
@@ -165,6 +185,15 @@ np.abs(c_std[:, 0]).round(3)          # [0.707, 0.707] -- both counted
     ]},
 
     { t: "h2", n: "03", text: "What a component is not", id: "not" },
+
+    { t: "p", text: "PCA is routinely misused because two plausible-sounding beliefs about it are false: that the top components carry the useful signal, and that components mean something. **PCA maximises variance, and variance is not relevance.**" },
+
+    { t: "dl", items: [
+      ["Not feature selection", "Every component uses every original variable. Nothing is discarded, only recombined."],
+      ["Not supervised", "PCA never sees the target. A direction of small variance can carry all the predictive signal, and PCA will drop it first."],
+      ["Not interpretable by default", "A component is a weighted mixture. It has a meaning only if the loadings happen to admit one."],
+      ["Not scale-invariant", "Change the units of one variable and the components change. This is a property of the method, not a bug."]
+    ]},
 
     { t: "table",
       head: ["Belief", "Reality"],

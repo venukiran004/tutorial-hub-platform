@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Moments, standardised", id: "moments" },
 
+    { t: "p", text: "**Moments describe a distribution's shape one power at a time**: the first gives location, the second spread, the third asymmetry and the fourth tail weight. Standardising them removes units, so the numbers are comparable across any two datasets." },
+
+    { t: "dl", items: [
+      ["Moment", "An expectation of a power, `E[Xᵏ]`. Higher `k` weights extreme values more heavily."],
+      ["Standardised moment", "`E[((X−μ)/σ)ᵏ]`. Dimensionless, so unaffected by units or scaling."],
+      ["Skewness", "The third standardised moment. Positive means a long right tail; negative, a long left tail; zero, symmetry."],
+      ["Kurtosis", "The fourth. A normal distribution has raw kurtosis 3, so **excess kurtosis** subtracts it and a normal reads 0."],
+      ["The convention trap", "scipy reports excess by default; R's `e1071` reports raw. \"Our kurtosis is 3\" is ambiguous without saying which."]
+    ]},
+
     { t: "code", lang: "python", title: "the first four, and what each adds", code: `
 import numpy as np
 from scipy import stats
@@ -81,6 +91,16 @@ for name, sample in [
     },
 
     { t: "h2", n: "02", text: "Kurtosis measures tails", id: "kurtosis" },
+
+    { t: "p", text: "**Kurtosis measures tail weight, not peakedness** — a description that has misled generations of readers. The fourth power means an observation at `4σ` contributes 256 times as much as one at `1σ`, so the value is dominated almost entirely by the extremes." },
+
+    { t: "dl", items: [
+      ["Excess kurtosis", "Kurtosis minus 3. Zero for a normal, positive for heavier tails, negative for lighter."],
+      ["Leptokurtic", "Heavier tails than a normal — more extreme values than the bell curve allows."],
+      ["Platykurtic", "Lighter tails. The uniform distribution is the extreme case at `−1.2`, and it is perfectly flat with no peak at all."],
+      ["Why not peakedness", "The uniform is flat and scores lowest of any common distribution. If kurtosis measured peaks, that would be impossible."],
+      ["Standard errors", "`SE(skew) ≈ √(6/n)` and `SE(excess kurtosis) ≈ √(24/n)`. Both are extremely noisy at small `n`."]
+    ]},
 
     { t: "viz",
       title: "The fourth power makes the tails everything",
@@ -225,6 +245,15 @@ np.mean([stats.skew(rng.lognormal(0, 1, 30)) for _ in range(3000)])  # ~2.4`},
     ]},
 
     { t: "h2", n: "03", text: "Normality tests, and why they stop being useful", id: "normality" },
+
+    { t: "p", text: "**A normality test answers \"do I have enough data to detect non-normality\", not \"is non-normality a problem\".** At large `n` it rejects deviations too small to matter; at small `n` it misses ones that do — failing in the damaging direction at both ends." },
+
+    { t: "dl", items: [
+      ["Shapiro-Wilk", "The most common test. Its power grows with `n`, which is exactly why it becomes useless at scale."],
+      ["QQ plot", "Sample quantiles against theoretical ones. A straight line means agreement, and the shape of any departure tells you what kind it is."],
+      ["Max QQ gap", "The largest vertical departure, in standard deviations. It means the same thing at every sample size, which a p-value does not."],
+      ["What actually matters", "Not whether the data is normal, but whether your method survives the departure. Inference about a mean is protected by the CLT; prediction intervals and `σ`-based limits are not."]
+    ]},
 
     { t: "code", lang: "python", title: "the large-n problem every test has", code: `
 # EVERY NORMALITY TEST HAS THE SAME STRUCTURE: a null hypothesis of
