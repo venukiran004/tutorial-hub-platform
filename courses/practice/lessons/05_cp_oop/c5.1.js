@@ -17,6 +17,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "Class attribute or instance attribute?",
+   "caption": "Assignment through an instance always creates an instance attribute; it never modifies the class. Mutation of a shared class attribute does affect everyone — and that pair explains most of this module's output questions.",
+   "svg": "<svg viewBox='0 0 880 220' role='img' aria-label='A class attribute shared by instances, and an instance attribute shadowing it'><rect x='320' y='40' width='240' height='56' rx='8' style='fill:var(--accent);fill-opacity:.14;stroke:var(--accent)' stroke-width='2'/><text x='344' y='66' class='s-label' style='fill:var(--accent)'>class C</text><text x='344' y='86' class='s-sub' style='fill:var(--ink-3)'>items = []   shared</text><g style='stroke:var(--accent);stroke-width:2'><line x1='380' y1='100' x2='200' y2='140' marker-end='url(#ca-a)'/><line x1='500' y1='100' x2='680' y2='140' marker-end='url(#ca-a)'/></g><rect x='100' y='146' width='210' height='52' rx='7' style='fill:var(--good);fill-opacity:.13;stroke:var(--good)' stroke-width='2'/><text x='120' y='170' class='s-sub' style='fill:var(--ink-2)'>a.items.append(1)</text><text x='120' y='190' class='s-sub' style='fill:var(--good)'>mutates the shared list</text><rect x='580' y='146' width='230' height='52' rx='7' style='fill:var(--warn);fill-opacity:.13;stroke:var(--warn)' stroke-width='2'/><text x='600' y='170' class='s-sub' style='fill:var(--ink-2)'>b.items = []</text><text x='600' y='190' class='s-sub' style='fill:var(--warn)'>creates b's own attribute</text><text x='30' y='128' class='s-sub' style='fill:var(--ink-3)'>mutate vs rebind</text><defs><marker id='ca-a' markerWidth='8' markerHeight='8' refX='6' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 z' style='fill:var(--accent)'/></marker></defs></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

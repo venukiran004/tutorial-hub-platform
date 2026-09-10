@@ -21,6 +21,29 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "The signature is the interface", id: "the-interface" },
 
+
+    { t: "viz",
+      title: "The parameter order Python enforces",
+      caption: "Positional-only, then normal, then keyword-only. The `/` and `*` markers are what draw those boundaries, and they let you change a parameter's name later without breaking callers.",
+      svg: `<svg viewBox="0 0 880 230" role="img" aria-label="A function signature divided into positional-only, standard, and keyword-only regions">
+  <text x="30" y="58" class="s-sub" style="fill:var(--ink-2)">def render(template, /, data, *, escape=True, timeout=5):</text>
+
+  <g style="stroke-width:2">
+    <rect x="30"  y="78" width="180" height="60" rx="7" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent)"/>
+    <rect x="226" y="78" width="170" height="60" rx="7" style="fill:var(--warn);fill-opacity:.14;stroke:var(--warn)"/>
+    <rect x="412" y="78" width="300" height="60" rx="7" style="fill:var(--good);fill-opacity:.14;stroke:var(--good)"/>
+  </g>
+  <text x="48"  y="102" class="s-label" style="fill:var(--accent)">before /</text>
+  <text x="48"  y="124" class="s-sub" style="fill:var(--ink-3)">positional only</text>
+  <text x="244" y="102" class="s-label" style="fill:var(--warn)">between</text>
+  <text x="244" y="124" class="s-sub" style="fill:var(--ink-3)">either way</text>
+  <text x="430" y="102" class="s-label" style="fill:var(--good)">after *</text>
+  <text x="430" y="124" class="s-sub" style="fill:var(--ink-3)">keyword only — must be named at the call site</text>
+
+  <text x="30" y="172" class="s-sub" style="fill:var(--ink-3)">Positional-only frees you to rename the parameter later; keyword-only stops a caller passing flags by position.</text>
+  <text x="30" y="198" class="s-sub" style="fill:var(--crit)">A boolean is almost always better keyword-only: render(t, d, True) tells the reader nothing.</text>
+</svg>`
+    },
     { t: "p", text: "Read these two and decide which you could call correctly without opening the body." },
 
     { t: "code", lang: "python", title: "same function, two contracts", code: `

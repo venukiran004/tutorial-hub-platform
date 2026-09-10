@@ -21,6 +21,28 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "What a lambda is", id: "lambda" },
 
+
+    { t: "viz",
+      title: "When a lambda helps and when it hurts",
+      caption: "A lambda earns its place as a throwaway key or predicate. Assigned to a name it is a worse `def` — no docstring, a useless `__name__` in tracebacks, and no room to grow.",
+      svg: `<svg viewBox="0 0 880 230" role="img" aria-label="Idiomatic uses of lambda beside the cases where a def is better">
+  <rect x="24" y="40" width="400" height="150" rx="8" style="fill:var(--good);fill-opacity:.10;stroke:var(--good)" stroke-width="2"/>
+  <text x="44" y="66" class="s-label" style="fill:var(--good)">USE A LAMBDA</text>
+  <text x="44" y="96"  class="s-sub" style="fill:var(--ink-2)">sorted(rows, key=lambda r: r.name)</text>
+  <text x="44" y="122" class="s-sub" style="fill:var(--ink-2)">max(items, key=lambda i: i.score)</text>
+  <text x="44" y="148" class="s-sub" style="fill:var(--ink-2)">defaultdict(lambda: [])</text>
+  <text x="44" y="176" class="s-sub" style="fill:var(--ink-3)">one expression, used once, obvious</text>
+
+  <rect x="456" y="40" width="400" height="150" rx="8" style="fill:var(--crit);fill-opacity:.09;stroke:var(--crit)" stroke-width="2"/>
+  <text x="476" y="66" class="s-label" style="fill:var(--crit)">WRITE A def</text>
+  <text x="476" y="96"  class="s-sub" style="fill:var(--ink-2)">handler = lambda e: ...</text>
+  <text x="476" y="122" class="s-sub" style="fill:var(--ink-2)">anything needing a docstring</text>
+  <text x="476" y="148" class="s-sub" style="fill:var(--ink-2)">anything you will want to test</text>
+  <text x="476" y="176" class="s-sub" style="fill:var(--ink-3)">named, reused, or longer than a line</text>
+
+  <text x="24" y="216" class="s-sub" style="fill:var(--crit)">A named lambda shows as &lt;lambda&gt; in every traceback — which is exactly when you most want its name</text>
+</svg>`
+    },
     { t: "code", lang: "python", title: "an expression that evaluates to a function", code: `
 double = lambda x: x * 2          # works, and see the warning below
 print(double(5))

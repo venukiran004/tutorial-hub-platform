@@ -20,6 +20,36 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The guarantee", id: "guarantee" },
 
+
+    { t: "viz",
+      title: "What `with` guarantees",
+      caption: "The exit runs whether the block finishes, returns, or raises. That guarantee is the entire point — it is the difference between a file that is always closed and one that usually is.",
+      svg: `<svg viewBox="0 0 880 240" role="img" aria-label="A with block showing __enter__, the body, and __exit__ running on every path out">
+  <rect x="40" y="44" width="360" height="150" rx="8" style="fill:var(--accent);fill-opacity:.10;stroke:var(--accent)" stroke-width="2"/>
+  <text x="62" y="72"  class="s-label" style="fill:var(--accent)">__enter__</text>
+  <text x="62" y="94"  class="s-sub" style="fill:var(--ink-3)">acquire, return the resource</text>
+
+  <rect x="62" y="108" width="316" height="44" rx="6" style="fill:var(--ink-3);fill-opacity:.07;stroke:var(--line)" stroke-width="1.5"/>
+  <text x="82" y="136" class="s-sub" style="fill:var(--ink-2)">the body — may return or raise</text>
+
+  <text x="62" y="180" class="s-label" style="fill:var(--good)">__exit__</text>
+
+  <g style="stroke:var(--good);stroke-width:2">
+    <line x1="400" y1="120" x2="470" y2="84"  marker-end="url(#cm-a)"/>
+    <line x1="400" y1="130" x2="470" y2="130" marker-end="url(#cm-a)"/>
+    <line x1="400" y1="140" x2="470" y2="176" marker-end="url(#cm-a)"/>
+  </g>
+  <text x="482" y="88"  class="s-sub" style="fill:var(--ink-2)">normal completion</text>
+  <text x="482" y="134" class="s-sub" style="fill:var(--ink-2)">return from inside</text>
+  <text x="482" y="180" class="s-sub" style="fill:var(--ink-2)">exception raised</text>
+  <text x="700" y="134" class="s-label" style="fill:var(--good)">exit runs</text>
+  <text x="700" y="156" class="s-sub" style="fill:var(--ink-3)">on all three</text>
+
+  <text x="40" y="226" class="s-sub" style="fill:var(--ink-3)">Returning True from __exit__ swallows the exception — rarely what you want, and a silent bug when it is accidental.</text>
+
+  <defs><marker id="cm-a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--good)"/></marker></defs>
+</svg>`
+    },
     { t: "code", lang: "python", title: "what `with` expands to", code: `
 with open("data.txt") as f:
     process(f)

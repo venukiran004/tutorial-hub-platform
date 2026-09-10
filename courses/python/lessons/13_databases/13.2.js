@@ -20,6 +20,29 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Types are the first constraint", id: "types" },
 
+
+    { t: "viz",
+      title: "Where a constraint can live, and why the database wins",
+      caption: "The same rule can be enforced in four places. Only the database sees every writer — including the migration script, the admin console and the colleague with psql open.",
+      svg: `<svg viewBox="0 0 880 240" role="img" aria-label="Layers where a data constraint can be enforced, from the form down to the database">
+  <g style="stroke-width:2">
+    <rect x="120" y="40" width="640" height="38" rx="6" style="fill:var(--crit);fill-opacity:.09;stroke:var(--crit)"/>
+    <rect x="100" y="86" width="680" height="38" rx="6" style="fill:var(--warn);fill-opacity:.10;stroke:var(--warn)"/>
+    <rect x="80"  y="132" width="720" height="38" rx="6" style="fill:var(--warn);fill-opacity:.10;stroke:var(--warn)"/>
+    <rect x="60"  y="178" width="760" height="44" rx="6" style="fill:var(--good);fill-opacity:.14;stroke:var(--good)"/>
+  </g>
+  <text x="140" y="64"  class="s-sub" style="fill:var(--ink-2)">form validation — one client only</text>
+  <text x="120" y="110" class="s-sub" style="fill:var(--ink-2)">application code — one service only</text>
+  <text x="100" y="156" class="s-sub" style="fill:var(--ink-2)">ORM validators — one codebase only</text>
+  <text x="80"  y="206" class="s-label" style="fill:var(--good)">database constraint — every writer, without exception</text>
+
+  <text x="24" y="64"  class="s-sub" style="fill:var(--crit)">bypassed by</text>
+  <text x="24" y="110" class="s-sub" style="fill:var(--crit)">a script</text>
+  <text x="24" y="156" class="s-sub" style="fill:var(--crit)">raw SQL</text>
+
+  <text x="60" y="236" class="s-sub" style="fill:var(--ink-3)">NOT NULL, UNIQUE, CHECK and foreign keys cost almost nothing and are the only rules a 3am data fix cannot skip.</text>
+</svg>`
+    },
     { t: "table",
       head: ["Instead of", "Use", "Because"],
       rows: [

@@ -20,6 +20,35 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What is configuration", id: "what" },
 
+
+    { t: "viz",
+      title: "Where configuration comes from, and which wins",
+      caption: "Later sources override earlier ones. Keeping that order explicit is what lets a developer override one value locally without editing anything the deployment depends on.",
+      svg: `<svg viewBox="0 0 880 230" role="img" aria-label="Configuration precedence from defaults through files and environment to command-line flags">
+  <g style="stroke-width:2">
+    <rect x="30"  y="56" width="170" height="54" rx="7" style="fill:var(--ink-3);fill-opacity:.07;stroke:var(--line)"/>
+    <rect x="226" y="56" width="170" height="54" rx="7" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+    <rect x="422" y="56" width="170" height="54" rx="7" style="fill:var(--warn);fill-opacity:.13;stroke:var(--warn)"/>
+    <rect x="618" y="56" width="170" height="54" rx="7" style="fill:var(--good);fill-opacity:.14;stroke:var(--good)"/>
+  </g>
+  <text x="50"  y="88" class="s-sub" style="fill:var(--ink-3)">code defaults</text>
+  <text x="246" y="88" class="s-sub" style="fill:var(--ink-2)">config file</text>
+  <text x="442" y="88" class="s-sub" style="fill:var(--ink-2)">environment</text>
+  <text x="638" y="88" class="s-sub" style="fill:var(--good)">CLI flags</text>
+
+  <g style="stroke:var(--ink-3);stroke-width:1.5">
+    <line x1="204" y1="83" x2="222" y2="83" marker-end="url(#cfg-a)"/>
+    <line x1="400" y1="83" x2="418" y2="83" marker-end="url(#cfg-a)"/>
+    <line x1="596" y1="83" x2="614" y2="83" marker-end="url(#cfg-a)"/>
+  </g>
+  <text x="330" y="136" class="s-sub" style="fill:var(--ink-3)">increasing precedence</text>
+
+  <text x="30" y="178" class="s-sub" style="fill:var(--crit)">Secrets belong only in the environment or a secret store — never in the file, and never with a default in code.</text>
+  <text x="30" y="202" class="s-sub" style="fill:var(--ink-3)">Validate the whole configuration at startup and exit on failure, rather than discovering a missing value at 3am.</text>
+
+  <defs><marker id="cfg-a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--ink-3)"/></marker></defs>
+</svg>`
+    },
     { t: "table",
       head: ["Value", "Config?", "Why"],
       rows: [

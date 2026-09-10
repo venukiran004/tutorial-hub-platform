@@ -17,6 +17,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "Three traversals that solve most list problems",
+   "caption": "Before writing a nested loop, ask which of these fits. Two of the three turn a quadratic solution linear.",
+   "svg": "<svg viewBox='0 0 880 230' role='img' aria-label='Two pointers, sliding window and single pass with a dict, shown over an array'><text x='30' y='36' class='s-label' style='fill:var(--accent)'>TWO POINTERS</text><g style='fill:var(--ink-3);fill-opacity:.35'><rect x='30' y='48' width='30' height='22'/><rect x='66' y='48' width='30' height='22'/><rect x='102' y='48' width='30' height='22'/><rect x='138' y='48' width='30' height='22'/><rect x='174' y='48' width='30' height='22'/><rect x='210' y='48' width='30' height='22'/></g><path d='M45 78 L45 88' style='stroke:var(--good);stroke-width:2.5'/><path d='M225 78 L225 88' style='stroke:var(--good);stroke-width:2.5'/><text x='260' y='66' class='s-sub' style='fill:var(--ink-3)'>ends move inward -- sorted input</text><text x='30' y='122' class='s-label' style='fill:var(--warn)'>SLIDING WINDOW</text><g style='fill:var(--ink-3);fill-opacity:.35'><rect x='30' y='134' width='30' height='22'/><rect x='66' y='134' width='30' height='22'/><rect x='102' y='134' width='30' height='22'/><rect x='138' y='134' width='30' height='22'/><rect x='174' y='134' width='30' height='22'/><rect x='210' y='134' width='30' height='22'/></g><rect x='66' y='130' width='102' height='30' rx='4' style='fill:none;stroke:var(--warn)' stroke-width='2.5'/><text x='260' y='152' class='s-sub' style='fill:var(--ink-3)'>a contiguous run that grows and shrinks</text><text x='560' y='36' class='s-label' style='fill:var(--good)'>ONE PASS + DICT</text><text x='560' y='66' class='s-sub' style='fill:var(--ink-3)'>remember what you have seen,</text><text x='560' y='88' class='s-sub' style='fill:var(--ink-3)'>so you never look back</text><text x='30' y='196' class='s-sub' style='fill:var(--ink-3)'>A nested loop over the same list is the signal to stop and ask which of these applies.</text><text x='30' y='218' class='s-sub' style='fill:var(--crit)'>Watch for mutation while iterating -- removing from a list you are looping over skips elements.</text></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

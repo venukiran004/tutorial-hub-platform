@@ -20,6 +20,41 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Behaviour, not ancestry", id: "behaviour" },
 
+
+    { t: "viz",
+      title: "Duck typing asks what an object does, not what it is",
+      caption: "Nothing here shares a base class. The function works because each object supplies the one method it calls — which is why Python code so rarely needs an inheritance hierarchy.",
+      svg: `<svg viewBox="0 0 880 240" role="img" aria-label="Three unrelated classes each providing a write method, all accepted by one function">
+  <g style="stroke-width:2">
+    <rect x="30"  y="50" width="180" height="52" rx="7" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent)"/>
+    <rect x="30"  y="116" width="180" height="52" rx="7" style="fill:var(--warn);fill-opacity:.14;stroke:var(--warn)"/>
+    <rect x="30"  y="182" width="180" height="46" rx="7" style="fill:var(--good);fill-opacity:.14;stroke:var(--good)"/>
+  </g>
+  <text x="50" y="74"  class="s-sub" style="fill:var(--ink-2)">FileHandle</text>
+  <text x="50" y="94"  class="s-sub" style="fill:var(--ink-3)">.write(s)</text>
+  <text x="50" y="140" class="s-sub" style="fill:var(--ink-2)">StringIO</text>
+  <text x="50" y="160" class="s-sub" style="fill:var(--ink-3)">.write(s)</text>
+  <text x="50" y="206" class="s-sub" style="fill:var(--ink-2)">MockLogger  .write(s)</text>
+
+  <g style="stroke:var(--ink-3);stroke-width:1.5">
+    <line x1="214" y1="76"  x2="380" y2="128" marker-end="url(#dt-a)"/>
+    <line x1="214" y1="142" x2="380" y2="136" marker-end="url(#dt-a)"/>
+    <line x1="214" y1="204" x2="380" y2="146" marker-end="url(#dt-a)"/>
+  </g>
+
+  <rect x="390" y="104" width="280" height="66" rx="8" style="fill:var(--ink-3);fill-opacity:.07;stroke:var(--line)" stroke-width="2"/>
+  <text x="412" y="132" class="s-label" style="fill:var(--ink-2)">def emit(sink, msg):</text>
+  <text x="412" y="156" class="s-sub" style="fill:var(--ink-3)">sink.write(msg)</text>
+
+  <text x="700" y="126" class="s-sub" style="fill:var(--good)">no base class,</text>
+  <text x="700" y="146" class="s-sub" style="fill:var(--good)">no isinstance,</text>
+  <text x="700" y="166" class="s-sub" style="fill:var(--good)">no registration</text>
+
+  <text x="30" y="236" class="s-sub" style="fill:var(--ink-3)">The cost: the contract is implicit. A Protocol makes it checkable without forcing inheritance.</text>
+
+  <defs><marker id="dt-a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--ink-3)"/></marker></defs>
+</svg>`
+    },
     { t: "code", lang: "python", title: "three unrelated classes, one function", code: `
 class EmailNotifier:
     def send(self, message: str) -> None:

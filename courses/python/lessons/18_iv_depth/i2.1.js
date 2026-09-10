@@ -16,6 +16,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "The three mechanisms this set keeps returning to",
+   "caption": "Decorators, generators and context managers are all the same move: wrap something so code runs before and after it. Seeing that connection turns three topics into one.",
+   "svg": "<svg viewBox='0 0 880 220' role='img' aria-label='Decorators, generators and context managers shown as three forms of wrapping'><g style='stroke-width:2'><rect x='24' y='46' width='260' height='110' rx='8' style='fill:var(--accent);fill-opacity:.12;stroke:var(--accent)'/><rect x='310' y='46' width='260' height='110' rx='8' style='fill:var(--warn);fill-opacity:.12;stroke:var(--warn)'/><rect x='596' y='46' width='260' height='110' rx='8' style='fill:var(--good);fill-opacity:.12;stroke:var(--good)'/></g><text x='44' y='74' class='s-label' style='fill:var(--accent)'>DECORATOR</text><text x='330' y='74' class='s-label' style='fill:var(--warn)'>GENERATOR</text><text x='616' y='74' class='s-label' style='fill:var(--good)'>CONTEXT MANAGER</text><text x='44' y='104' class='s-sub' style='fill:var(--ink-2)'>wraps a function</text><text x='330' y='104' class='s-sub' style='fill:var(--ink-2)'>suspends and resumes</text><text x='616' y='104' class='s-sub' style='fill:var(--ink-2)'>wraps a block</text><text x='44' y='134' class='s-sub' style='fill:var(--ink-3)'>before and after a call</text><text x='330' y='134' class='s-sub' style='fill:var(--ink-3)'>state kept between yields</text><text x='616' y='134' class='s-sub' style='fill:var(--ink-3)'>enter and exit, guaranteed</text><text x='24' y='188' class='s-sub' style='fill:var(--ink-3)'>contextlib.contextmanager builds a context manager out of a generator, using a decorator -- all three at once.</text><text x='24' y='210' class='s-sub' style='fill:var(--crit)'>Expect follow-ups on what functools.wraps preserves and on when a generator's code actually runs.</text></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

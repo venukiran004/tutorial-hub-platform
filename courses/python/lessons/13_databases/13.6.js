@@ -20,6 +20,40 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Find it before your users do", id: "detect" },
 
+
+    { t: "viz",
+      title: "The N+1 problem, drawn",
+      caption: "One query for the list, then one more per row. It is invisible in code — the loop looks like plain attribute access — and it is the single most common cause of a slow ORM endpoint.",
+      svg: `<svg viewBox="0 0 880 240" role="img" aria-label="One list query followed by one query per row, beside a single joined query">
+  <text x="30" y="34" class="s-label" style="fill:var(--crit)">N + 1 queries</text>
+  <rect x="30" y="46" width="170" height="32" rx="5" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent)" stroke-width="2"/>
+  <text x="46" y="67" class="s-sub" style="fill:var(--ink-2)">SELECT * FROM post</text>
+  <g style="stroke:var(--crit);stroke-width:1.5">
+    <line x1="115" y1="80" x2="115" y2="96"/>
+    <line x1="115" y1="96" x2="60"  y2="96"/><line x1="115" y1="96" x2="170" y2="96"/>
+    <line x1="115" y1="96" x2="280" y2="96"/>
+  </g>
+  <g style="stroke-width:2">
+    <rect x="20"  y="100" width="80" height="30" rx="4" style="fill:var(--crit);fill-opacity:.12;stroke:var(--crit)"/>
+    <rect x="110" y="100" width="80" height="30" rx="4" style="fill:var(--crit);fill-opacity:.12;stroke:var(--crit)"/>
+    <rect x="200" y="100" width="80" height="30" rx="4" style="fill:var(--crit);fill-opacity:.12;stroke:var(--crit)"/>
+  </g>
+  <text x="36"  y="120" class="s-sub" style="fill:var(--crit)">author 1</text>
+  <text x="126" y="120" class="s-sub" style="fill:var(--crit)">author 2</text>
+  <text x="216" y="120" class="s-sub" style="fill:var(--crit)">author 3</text>
+  <text x="300" y="120" class="s-sub" style="fill:var(--crit)">... one per row</text>
+  <text x="30" y="160" class="s-sub" style="fill:var(--ink-3)">100 posts = 101 round trips</text>
+
+  <text x="500" y="34" class="s-label" style="fill:var(--good)">one query</text>
+  <rect x="500" y="46" width="350" height="32" rx="5" style="fill:var(--good);fill-opacity:.14;stroke:var(--good)" stroke-width="2"/>
+  <text x="516" y="67" class="s-sub" style="fill:var(--ink-2)">SELECT ... FROM post JOIN author ...</text>
+  <text x="500" y="110" class="s-sub" style="fill:var(--good)">selectinload / joinedload / prefetch_related</text>
+  <text x="500" y="136" class="s-sub" style="fill:var(--ink-3)">1 round trip, whatever the row count</text>
+
+  <text x="30" y="212" class="s-sub" style="fill:var(--ink-3)">It scales with your data, so it passes review and every test, then appears when the table grows.</text>
+  <text x="30" y="232" class="s-sub" style="fill:var(--ink-3)">Log the query count per request — a number that jumps with row count is the signature.</text>
+</svg>`
+    },
     { t: "code", lang: "python", title: "counting queries per request", code: `
 from sqlalchemy import event
 

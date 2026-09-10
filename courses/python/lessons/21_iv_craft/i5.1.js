@@ -16,6 +16,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "Craft questions are about the team, not the syntax",
+   "caption": "Every question in this set has a technical answer and a reason. The reason is what is being assessed — whether you can say why a convention exists rather than that it does.",
+   "svg": "<svg viewBox='0 0 880 200' role='img' aria-label='A convention paired with the underlying reason it exists'><text x='30' y='36' class='s-label' style='fill:var(--ink-3)'>the rule</text><text x='470' y='36' class='s-label' style='fill:var(--good)'>the reason -- what is being asked</text><line x1='30' y1='46' x2='850' y2='46' style='stroke:var(--line)' stroke-width='1.5'/><g class='s-sub' style='fill:var(--ink-2)'><text x='30' y='76'>no mutable default arguments</text><text x='30' y='104'>prefer composition to inheritance</text><text x='30' y='132'>catch narrow exceptions</text></g><g class='s-sub' style='fill:var(--good)'><text x='470' y='76'>the default is created once, at def time</text><text x='470' y='104'>inheritance couples you to a parent for ever</text><text x='470' y='132'>a broad except hides the bug you have not met</text></g><text x='30' y='178' class='s-sub' style='fill:var(--ink-3)'>An answer that stops at the rule invites the follow-up. An answer that gives the mechanism ends the question.</text></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

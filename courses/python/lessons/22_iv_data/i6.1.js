@@ -16,6 +16,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "Why vectorised code is faster",
+   "caption": "A Python loop pays interpreter overhead per element. A NumPy operation hands the whole array to compiled code once, which is where the order-of-magnitude difference comes from.",
+   "svg": "<svg viewBox='0 0 880 210' role='img' aria-label='Per-element interpreter overhead compared with a single vectorised call'><text x='30' y='36' class='s-label' style='fill:var(--crit)'>Python loop</text><g style='fill:var(--crit);fill-opacity:.5'><rect x='30' y='48' width='34' height='26'/><rect x='70' y='48' width='34' height='26'/><rect x='110' y='48' width='34' height='26'/><rect x='150' y='48' width='34' height='26'/><rect x='190' y='48' width='34' height='26'/><rect x='230' y='48' width='34' height='26'/></g><text x='280' y='66' class='s-sub' style='fill:var(--crit)'>bytecode dispatch, box, unbox -- per element</text><text x='470' y='36' class='s-label' style='fill:var(--good)'>vectorised</text><rect x='470' y='96' width='300' height='30' rx='5' style='fill:var(--good);fill-opacity:.45;stroke:var(--good)' stroke-width='2'/><text x='486' y='116' class='s-sub' style='fill:var(--ink-2)'>one call into compiled C</text><text x='30' y='116' class='s-sub' style='fill:var(--ink-3)'>overhead dominates the arithmetic</text><text x='30' y='162' class='s-sub' style='fill:var(--ink-3)'>The array is contiguous and typed, so there is no per-element type check and the CPU can use SIMD.</text><text x='30' y='186' class='s-sub' style='fill:var(--crit)'>Expect a follow-up on views versus copies -- slicing shares memory, and fancy indexing does not.</text></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

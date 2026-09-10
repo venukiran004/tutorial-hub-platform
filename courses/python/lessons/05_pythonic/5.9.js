@@ -20,6 +20,39 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "defaultdict", id: "defaultdict" },
 
+
+    { t: "viz",
+      title: "Which collections type replaces which loop",
+      caption: "Each one exists because a particular hand-written pattern was common enough to be worth a C implementation. Recognising the pattern is how you know which to reach for.",
+      svg: `<svg viewBox="0 0 880 250" role="img" aria-label="collections types paired with the manual pattern each replaces">
+  <text x="30"  y="34" class="s-label" style="fill:var(--crit)">what you were writing</text>
+  <text x="500" y="34" class="s-label" style="fill:var(--good)">what to use</text>
+  <line x1="30" y1="44" x2="850" y2="44" style="stroke:var(--line)" stroke-width="1.5"/>
+
+  <g class="s-sub" style="fill:var(--ink-2)">
+    <text x="30" y="74">d[k] = d.get(k, 0) + 1</text>
+    <text x="30" y="104">if k not in d: d[k] = []</text>
+    <text x="30" y="134">lst.pop(0)  — O(n) every time</text>
+    <text x="30" y="164">a class with three fields and __eq__</text>
+    <text x="30" y="194">merging two config dicts by copying</text>
+  </g>
+  <g class="s-sub" style="fill:var(--good)">
+    <text x="500" y="74">Counter</text>
+    <text x="500" y="104">defaultdict(list)</text>
+    <text x="500" y="134">deque — popleft is O(1)</text>
+    <text x="500" y="164">NamedTuple, or a dataclass</text>
+    <text x="500" y="194">ChainMap — no copying at all</text>
+  </g>
+
+  <g style="stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3">
+    <line x1="430" y1="68" x2="490" y2="68"/><line x1="430" y1="98" x2="490" y2="98"/>
+    <line x1="430" y1="128" x2="490" y2="128"/><line x1="430" y1="158" x2="490" y2="158"/>
+    <line x1="430" y1="188" x2="490" y2="188"/>
+  </g>
+
+  <text x="30" y="232" class="s-sub" style="fill:var(--crit)">defaultdict inserts on read: a plain lookup of a missing key creates it, which quietly grows the dict.</text>
+</svg>`
+    },
     { t: "code", lang: "python", title: "the factory runs only on a genuine miss", code: `
 from collections import defaultdict
 

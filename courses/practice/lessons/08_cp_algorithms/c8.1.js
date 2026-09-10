@@ -17,6 +17,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "What each complexity class costs at scale",
+   "caption": "State the complexity before you write the code. The gap between O(n) and O(n²) is invisible at n = 100 and decisive at n = 100,000.",
+   "svg": "<svg viewBox='0 0 880 220' role='img' aria-label='Operation counts for common complexity classes at increasing input sizes'><text x='30' y='36' class='s-label' style='fill:var(--ink-3)'>n = 1,000</text><text x='300' y='36' class='s-label' style='fill:var(--ink-3)'>n = 100,000</text><text x='600' y='36' class='s-label' style='fill:var(--ink-3)'>feels like</text><line x1='30' y1='46' x2='850' y2='46' style='stroke:var(--line)' stroke-width='1.5'/><g class='s-sub'><text x='30' y='76' style='fill:var(--good)'>O(log n)     10</text><text x='300' y='76' style='fill:var(--good)'>17</text><text x='600' y='76' style='fill:var(--ink-3)'>instant, always</text><text x='30' y='106' style='fill:var(--good)'>O(n)         1,000</text><text x='300' y='106' style='fill:var(--good)'>100,000</text><text x='600' y='106' style='fill:var(--ink-3)'>instant</text><text x='30' y='136' style='fill:var(--warn)'>O(n log n)   10,000</text><text x='300' y='136' style='fill:var(--warn)'>1.7 million</text><text x='600' y='136' style='fill:var(--ink-3)'>fine -- this is sorting</text><text x='30' y='166' style='fill:var(--crit)'>O(n²)        1 million</text><text x='300' y='166' style='fill:var(--crit)'>10 billion</text><text x='600' y='166' style='fill:var(--crit)'>minutes, or never</text></g><text x='30' y='206' class='s-sub' style='fill:var(--ink-3)'>Sorting first costs O(n log n) and often turns a quadratic scan into a linear one -- usually the right trade.</text></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

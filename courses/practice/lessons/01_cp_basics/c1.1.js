@@ -17,6 +17,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "The four questions behind most basics problems",
+   "caption": "Nearly every problem in this module turns on one of these. Naming which one you are looking at is usually most of the solution.",
+   "svg": "<svg viewBox='0 0 880 200' role='img' aria-label='Four recurring themes in basic Python problems'><g style='stroke-width:2'><rect x='24' y='46' width='200' height='90' rx='8' style='fill:var(--accent);fill-opacity:.12;stroke:var(--accent)'/><rect x='240' y='46' width='200' height='90' rx='8' style='fill:var(--accent);fill-opacity:.12;stroke:var(--accent)'/><rect x='456' y='46' width='200' height='90' rx='8' style='fill:var(--accent);fill-opacity:.12;stroke:var(--accent)'/><rect x='672' y='46' width='184' height='90' rx='8' style='fill:var(--accent);fill-opacity:.12;stroke:var(--accent)'/></g><text x='44' y='74' class='s-label' style='fill:var(--accent)'>MUTABILITY</text><text x='260' y='74' class='s-label' style='fill:var(--accent)'>TRUTHINESS</text><text x='476' y='74' class='s-label' style='fill:var(--accent)'>ORDER</text><text x='692' y='74' class='s-label' style='fill:var(--accent)'>IDENTITY</text><text x='44' y='104' class='s-sub' style='fill:var(--ink-3)'>does it change in</text><text x='44' y='124' class='s-sub' style='fill:var(--ink-3)'>place, or rebind?</text><text x='260' y='104' class='s-sub' style='fill:var(--ink-3)'>which values are</text><text x='260' y='124' class='s-sub' style='fill:var(--ink-3)'>falsy, exactly?</text><text x='476' y='104' class='s-sub' style='fill:var(--ink-3)'>dicts keep insertion</text><text x='476' y='124' class='s-sub' style='fill:var(--ink-3)'>order; sets do not</text><text x='692' y='104' class='s-sub' style='fill:var(--ink-3)'>is versus ==,</text><text x='692' y='124' class='s-sub' style='fill:var(--ink-3)'>and small-int caching</text><text x='24' y='176' class='s-sub' style='fill:var(--ink-3)'>Predict the output before revealing it. A wrong prediction tells you which of the four you have not internalised.</text></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

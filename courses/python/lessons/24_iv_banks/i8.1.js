@@ -16,6 +16,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "Recognising which technique a problem wants",
+   "caption": "Most interview algorithm questions announce their technique in the phrasing. Learning the mapping is worth more than memorising individual solutions.",
+   "svg": "<svg viewBox='0 0 880 220' role='img' aria-label='Phrases in a problem statement mapped to the algorithmic technique each implies'><text x='30' y='36' class='s-label' style='fill:var(--ink-3)'>what the question says</text><text x='470' y='36' class='s-label' style='fill:var(--good)'>what it wants</text><line x1='30' y1='46' x2='850' y2='46' style='stroke:var(--line)' stroke-width='1.5'/><g class='s-sub' style='fill:var(--ink-2)'><text x='30' y='74'>sorted array, find a pair</text><text x='30' y='102'>contiguous subarray</text><text x='30' y='130'>k largest / k closest</text><text x='30' y='158'>count occurrences, find duplicates</text></g><g class='s-sub' style='fill:var(--good)'><text x='470' y='74'>two pointers</text><text x='470' y='102'>sliding window</text><text x='470' y='130'>a heap</text><text x='470' y='158'>a dict or Counter</text></g><text x='30' y='202' class='s-sub' style='fill:var(--ink-3)'>State the complexity before you code, and say what you are trading -- an O(n) solution using O(n) memory is a choice, not a default.</text></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

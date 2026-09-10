@@ -20,6 +20,34 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What it generates", id: "generates" },
 
+
+    { t: "viz",
+      title: "What @dataclass writes for you",
+      caption: "Six methods from one decorator. The value is not the typing saved — it is that every one is generated consistently, so equality and repr cannot drift from the field list.",
+      svg: `<svg viewBox="0 0 880 230" role="img" aria-label="A dataclass declaration expanding into the methods the decorator generates">
+  <rect x="24" y="46" width="300" height="120" rx="8" style="fill:var(--accent);fill-opacity:.13;stroke:var(--accent)" stroke-width="2"/>
+  <text x="44" y="74"  class="s-sub" style="fill:var(--ink-3)">@dataclass(frozen=True)</text>
+  <text x="44" y="98"  class="s-label" style="fill:var(--accent)">class Point:</text>
+  <text x="60" y="122" class="s-sub" style="fill:var(--ink-2)">x: float</text>
+  <text x="60" y="144" class="s-sub" style="fill:var(--ink-2)">y: float</text>
+
+  <line x1="330" y1="106" x2="420" y2="106" style="stroke:var(--good);stroke-width:2" marker-end="url(#dc-a)"/>
+  <text x="336" y="96" class="s-sub" style="fill:var(--good)">generates</text>
+
+  <g class="s-sub" style="fill:var(--ink-2)">
+    <text x="440" y="66">__init__</text>
+    <text x="440" y="90">__repr__</text>
+    <text x="440" y="114">__eq__</text>
+    <text x="640" y="66">__hash__   (frozen only)</text>
+    <text x="640" y="90">__setattr__ blocked</text>
+    <text x="640" y="114">fields() metadata</text>
+  </g>
+
+  <text x="440" y="150" class="s-sub" style="fill:var(--crit)">order=True adds the four comparison methods too</text>
+
+  <text x="24" y="200" class="s-sub" style="fill:var(--ink-3)">A mutable default is the one trap: use field(default_factory=list), never = [], or every instance shares one list.</text>
+</svg>`
+    },
     { t: "code", lang: "python", title: "twenty lines become five", code: `
 from dataclasses import dataclass
 from decimal import Decimal

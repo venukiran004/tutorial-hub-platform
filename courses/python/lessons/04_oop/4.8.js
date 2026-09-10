@@ -20,6 +20,34 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What an ABC enforces", id: "enforcement" },
 
+
+    { t: "viz",
+      title: "Three ways to state a contract",
+      caption: "They differ in when the failure appears. A plain convention fails at run time on the missing method; an ABC fails at instantiation; a Protocol fails in the type checker, before anything runs.",
+      svg: `<svg viewBox="0 0 880 240" role="img" aria-label="Convention, abstract base class and Protocol compared by when each detects a missing method">
+  <g style="stroke-width:2">
+    <rect x="24"  y="46" width="260" height="140" rx="8" style="fill:var(--crit);fill-opacity:.09;stroke:var(--crit)"/>
+    <rect x="310" y="46" width="260" height="140" rx="8" style="fill:var(--warn);fill-opacity:.11;stroke:var(--warn)"/>
+    <rect x="596" y="46" width="260" height="140" rx="8" style="fill:var(--good);fill-opacity:.12;stroke:var(--good)"/>
+  </g>
+  <text x="44"  y="74" class="s-label" style="fill:var(--crit)">CONVENTION</text>
+  <text x="330" y="74" class="s-label" style="fill:var(--warn)">ABC</text>
+  <text x="616" y="74" class="s-label" style="fill:var(--good)">PROTOCOL</text>
+
+  <text x="44"  y="104" class="s-sub" style="fill:var(--ink-2)">just document it</text>
+  <text x="330" y="104" class="s-sub" style="fill:var(--ink-2)">inherit + @abstractmethod</text>
+  <text x="616" y="104" class="s-sub" style="fill:var(--ink-2)">structural, no inheritance</text>
+
+  <text x="44"  y="140" class="s-sub" style="fill:var(--ink-3)">fails when the method</text>
+  <text x="44"  y="160" class="s-sub" style="fill:var(--crit)">is finally called</text>
+  <text x="330" y="140" class="s-sub" style="fill:var(--ink-3)">fails at</text>
+  <text x="330" y="160" class="s-sub" style="fill:var(--warn)">instantiation</text>
+  <text x="616" y="140" class="s-sub" style="fill:var(--ink-3)">fails in</text>
+  <text x="616" y="160" class="s-sub" style="fill:var(--good)">the type checker</text>
+
+  <text x="24" y="218" class="s-sub" style="fill:var(--ink-3)">Earlier is better, but an ABC forces inheritance on every implementer — which is why Protocol suits code you do not own.</text>
+</svg>`
+    },
     { t: "code", lang: "python", title: "instantiation fails, not definition", code: `
 from abc import ABC, abstractmethod
 

@@ -21,6 +21,42 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "The shape of real data", id: "shapes" },
 
+
+    { t: "viz",
+      title: "A nested shape, and where it breaks",
+      caption: "Every level is a place a key can be absent or a type can differ. Walking such a structure with plain indexing works until one record is shaped differently — which is what real data always contains.",
+      svg: `<svg viewBox="0 0 880 250" role="img" aria-label="A nested dictionary and list structure with the levels where lookups can fail marked">
+  <text x="30" y="34" class="s-label" style="fill:var(--accent)">response</text>
+  <g style="stroke:var(--line);stroke-width:1.5">
+    <line x1="46" y1="44" x2="46" y2="200"/>
+    <line x1="46" y1="66"  x2="70" y2="66"/>
+    <line x1="46" y1="100" x2="70" y2="100"/>
+    <line x1="46" y1="166" x2="70" y2="166"/>
+    <line x1="46" y1="200" x2="70" y2="200"/>
+  </g>
+  <text x="80" y="71"  class="s-sub" style="fill:var(--ink-2)">"status": "ok"</text>
+  <text x="80" y="105" class="s-sub" style="fill:var(--ink-2)">"items": [ ... ]</text>
+  <text x="80" y="171" class="s-sub" style="fill:var(--ink-2)">"meta": { "page": 1 }</text>
+  <text x="80" y="205" class="s-sub" style="fill:var(--crit)">"cursor": absent on the last page</text>
+
+  <g style="stroke:var(--line);stroke-width:1.5">
+    <line x1="230" y1="110" x2="230" y2="152"/>
+    <line x1="230" y1="126" x2="254" y2="126"/>
+    <line x1="230" y1="152" x2="254" y2="152"/>
+  </g>
+  <text x="264" y="131" class="s-sub" style="fill:var(--ink-2)">{ "id": 1, "tags": ["a"] }</text>
+  <text x="264" y="157" class="s-sub" style="fill:var(--crit)">{ "id": 2 }  — no "tags" key</text>
+
+  <rect x="560" y="46" width="290" height="120" rx="8" style="fill:var(--crit);fill-opacity:.08;stroke:var(--crit)" stroke-width="2"/>
+  <text x="578" y="72"  class="s-label" style="fill:var(--crit)">Four failure points</text>
+  <text x="578" y="98"  class="s-sub" style="fill:var(--ink-2)">a missing key at any level</text>
+  <text x="578" y="120" class="s-sub" style="fill:var(--ink-2)">a null where an object was expected</text>
+  <text x="578" y="142" class="s-sub" style="fill:var(--ink-2)">an empty list, so [0] raises</text>
+  <text x="578" y="160" class="s-sub" style="fill:var(--ink-2)">a scalar where a list was expected</text>
+
+  <text x="30" y="236" class="s-sub" style="fill:var(--ink-3)">.get() with a default handles one level; nested access needs a helper, a schema, or a dataclass</text>
+</svg>`
+    },
     { t: "code", lang: "json", title: "a typical API response", code: `{
   "order_id": "ord_8812",
   "customer": {

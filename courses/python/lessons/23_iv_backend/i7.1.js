@@ -16,6 +16,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "The path of a request, and what to name at each hop",
+   "caption": "Backend questions almost always land on one of these hops. Knowing which one a question is about tells you which trade-off to discuss.",
+   "svg": "<svg viewBox='0 0 880 210' role='img' aria-label='A request passing through load balancer, application, cache, database and queue'><g style='stroke-width:2'><rect x='24' y='56' width='140' height='50' rx='7' style='fill:var(--accent);fill-opacity:.12;stroke:var(--accent)'/><rect x='186' y='56' width='140' height='50' rx='7' style='fill:var(--accent);fill-opacity:.12;stroke:var(--accent)'/><rect x='348' y='56' width='140' height='50' rx='7' style='fill:var(--good);fill-opacity:.14;stroke:var(--good)'/><rect x='510' y='56' width='140' height='50' rx='7' style='fill:var(--warn);fill-opacity:.14;stroke:var(--warn)'/><rect x='672' y='56' width='184' height='50' rx='7' style='fill:var(--accent);fill-opacity:.12;stroke:var(--accent)'/></g><text x='48' y='86' class='s-sub' style='fill:var(--ink-2)'>load balancer</text><text x='212' y='86' class='s-sub' style='fill:var(--ink-2)'>app worker</text><text x='386' y='86' class='s-sub' style='fill:var(--ink-2)'>cache</text><text x='548' y='86' class='s-sub' style='fill:var(--ink-2)'>database</text><text x='700' y='86' class='s-sub' style='fill:var(--ink-2)'>queue / worker</text><g class='s-sub' style='fill:var(--ink-3)'><text x='24' y='134'>timeouts</text><text x='186' y='134'>concurrency model</text><text x='348' y='134'>invalidation</text><text x='510' y='134'>pool size, N+1</text><text x='672' y='134'>idempotency</text></g><text x='24' y='180' class='s-sub' style='fill:var(--ink-3)'>Anything that leaves the process can fail slowly rather than fast -- which is why every hop needs a timeout and a retry policy.</text></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

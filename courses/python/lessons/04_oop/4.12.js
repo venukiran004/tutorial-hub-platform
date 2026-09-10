@@ -20,6 +20,39 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The sorting", id: "sorting" },
 
+
+    { t: "viz",
+      title: "Patterns that shrink to nothing in Python",
+      caption: "Several Gang-of-Four patterns exist to work around limitations Python does not have. Recognising which collapse into a language feature is more useful than memorising all twenty-three.",
+      svg: `<svg viewBox="0 0 880 240" role="img" aria-label="Classic design patterns paired with the Python feature that replaces each">
+  <text x="30"  y="34" class="s-label" style="fill:var(--crit)">the pattern</text>
+  <text x="470" y="34" class="s-label" style="fill:var(--good)">what it becomes</text>
+  <line x1="30" y1="44" x2="850" y2="44" style="stroke:var(--line)" stroke-width="1.5"/>
+
+  <g class="s-sub" style="fill:var(--ink-2)">
+    <text x="30" y="72">Strategy</text>
+    <text x="30" y="100">Command</text>
+    <text x="30" y="128">Singleton</text>
+    <text x="30" y="156">Decorator</text>
+    <text x="30" y="184">Iterator</text>
+  </g>
+  <g class="s-sub" style="fill:var(--good)">
+    <text x="470" y="72">a function passed as an argument</text>
+    <text x="470" y="100">a callable, or functools.partial</text>
+    <text x="470" y="128">a module — imported once by design</text>
+    <text x="470" y="156">the @ syntax, built into the language</text>
+    <text x="470" y="184">__iter__ and a generator</text>
+  </g>
+
+  <g style="stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3">
+    <line x1="300" y1="66" x2="460" y2="66"/><line x1="300" y1="94" x2="460" y2="94"/>
+    <line x1="300" y1="122" x2="460" y2="122"/><line x1="300" y1="150" x2="460" y2="150"/>
+    <line x1="300" y1="178" x2="460" y2="178"/>
+  </g>
+
+  <text x="30" y="222" class="s-sub" style="fill:var(--ink-3)">The ones that survive intact — Adapter, Observer, State — solve problems the language does not address.</text>
+</svg>`
+    },
     { t: "table",
       head: ["Pattern", "In Python", "Because"],
       rows: [

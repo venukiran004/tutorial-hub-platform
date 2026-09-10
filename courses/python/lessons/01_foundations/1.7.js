@@ -21,6 +21,28 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "and and or return operands, not booleans", id: "and-or" },
 
+
+    { t: "viz",
+      title: "Truthiness: what counts as false",
+      caption: "Only these are falsy. Everything else — including `[0]`, `\"0\"`, `\"False\"` and any object without `__bool__` or `__len__` — is true.",
+      svg: `<svg viewBox="0 0 880 220" role="img" aria-label="The complete set of falsy values in Python beside examples of truthy ones">
+  <rect x="24" y="34" width="390" height="150" rx="8" style="fill:var(--crit);fill-opacity:.10;stroke:var(--crit)" stroke-width="2"/>
+  <text x="44" y="60" class="s-label" style="fill:var(--crit)">FALSY — the complete list</text>
+  <text x="44" y="88"  class="s-sub" style="fill:var(--ink-2)">None      False      0    0.0    0j</text>
+  <text x="44" y="112" class="s-sub" style="fill:var(--ink-2)">""    []    ()    {}    set()</text>
+  <text x="44" y="136" class="s-sub" style="fill:var(--ink-2)">range(0)    Decimal(0)</text>
+  <text x="44" y="166" class="s-sub" style="fill:var(--ink-3)">objects whose __bool__ or __len__ returns 0</text>
+
+  <rect x="466" y="34" width="390" height="150" rx="8" style="fill:var(--good);fill-opacity:.10;stroke:var(--good)" stroke-width="2"/>
+  <text x="486" y="60" class="s-label" style="fill:var(--good)">TRUTHY — everything else</text>
+  <text x="486" y="88"  class="s-sub" style="fill:var(--ink-2)">[0]    "0"    "False"    " "</text>
+  <text x="486" y="112" class="s-sub" style="fill:var(--ink-2)">-1    0.1    {0: None}    (0,)</text>
+  <text x="486" y="136" class="s-sub" style="fill:var(--ink-2)">any class instance, by default</text>
+  <text x="486" y="166" class="s-sub" style="fill:var(--crit)">the traps live on this side</text>
+
+  <text x="24" y="210" class="s-sub" style="fill:var(--ink-3)">if x: and if x is not None: differ for every falsy value — which is why the second is the safer default check</text>
+</svg>`
+    },
     { t: "p", text: "In most languages the logical operators produce `true` or `false`. In Python they produce **one of their operands**. The result is truthy or falsy in the way you expect, but it is not a `bool`." },
 
     { t: "code", lang: "python", title: "what they actually return", code: `

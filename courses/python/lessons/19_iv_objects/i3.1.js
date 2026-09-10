@@ -16,6 +16,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "Where Python looks when you touch an attribute",
+   "caption": "Instance, then class, then each base along the MRO. Most questions in this set are answerable by walking that chain out loud.",
+   "svg": "<svg viewBox='0 0 880 220' role='img' aria-label='Attribute lookup order from instance dict through class to base classes'><g style='stroke-width:2'><rect x='40' y='50' width='200' height='48' rx='7' style='fill:var(--good);fill-opacity:.16;stroke:var(--good)'/><rect x='280' y='50' width='200' height='48' rx='7' style='fill:var(--accent);fill-opacity:.14;stroke:var(--accent)'/><rect x='520' y='50' width='200' height='48' rx='7' style='fill:var(--accent);fill-opacity:.14;stroke:var(--accent)'/><rect x='760' y='50' width='96' height='48' rx='7' style='fill:var(--crit);fill-opacity:.12;stroke:var(--crit)'/></g><text x='62' y='80' class='s-sub' style='fill:var(--good)'>instance __dict__</text><text x='302' y='80' class='s-sub' style='fill:var(--ink-2)'>its class</text><text x='542' y='80' class='s-sub' style='fill:var(--ink-2)'>bases, in MRO order</text><text x='776' y='80' class='s-sub' style='fill:var(--crit)'>AttributeError</text><g style='stroke:var(--ink-3);stroke-width:1.5'><line x1='244' y1='74' x2='276' y2='74' marker-end='url(#ob-a)'/><line x1='484' y1='74' x2='516' y2='74' marker-end='url(#ob-a)'/><line x1='724' y1='74' x2='756' y2='74' marker-end='url(#ob-a)'/></g><text x='40' y='134' class='s-sub' style='fill:var(--ink-3)'>Data descriptors on the class outrank the instance dict -- which is why a property cannot be shadowed by assignment.</text><text x='40' y='158' class='s-sub' style='fill:var(--ink-3)'>The MRO is computed once by C3 linearisation; super() follows it rather than jumping to a parent.</text><text x='40' y='190' class='s-sub' style='fill:var(--crit)'>Say the chain aloud and most questions here answer themselves, including the diamond-inheritance ones.</text><defs><marker id='ob-a' markerWidth='8' markerHeight='8' refX='6' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 z' style='fill:var(--ink-3)'/></marker></defs></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

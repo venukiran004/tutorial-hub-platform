@@ -17,6 +17,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "How to work a mixed question set",
+   "caption": "A mixed set has no topic to prime you, which is the point — it is the closest thing here to an actual interview, where nobody tells you which technique applies.",
+   "svg": "<svg viewBox='0 0 880 200' role='img' aria-label='Four steps for approaching an unlabelled practice question'><g style='stroke-width:2'><rect x='24' y='50' width='195' height='84' rx='8' style='fill:var(--accent);fill-opacity:.12;stroke:var(--accent)'/><rect x='235' y='50' width='195' height='84' rx='8' style='fill:var(--accent);fill-opacity:.12;stroke:var(--accent)'/><rect x='446' y='50' width='195' height='84' rx='8' style='fill:var(--accent);fill-opacity:.12;stroke:var(--accent)'/><rect x='657' y='50' width='199' height='84' rx='8' style='fill:var(--good);fill-opacity:.14;stroke:var(--good)'/></g><text x='44' y='78' class='s-label' style='fill:var(--accent)'>1 CLASSIFY</text><text x='255' y='78' class='s-label' style='fill:var(--accent)'>2 STATE COST</text><text x='466' y='78' class='s-label' style='fill:var(--accent)'>3 EDGE CASES</text><text x='677' y='78' class='s-label' style='fill:var(--good)'>4 THEN CODE</text><text x='44' y='108' class='s-sub' style='fill:var(--ink-3)'>which technique?</text><text x='255' y='108' class='s-sub' style='fill:var(--ink-3)'>before writing it</text><text x='466' y='108' class='s-sub' style='fill:var(--ink-3)'>empty, one, duplicates</text><text x='677' y='108' class='s-sub' style='fill:var(--ink-3)'>the easy part</text><text x='24' y='174' class='s-sub' style='fill:var(--ink-3)'>Doing the first three out loud is what an interviewer is assessing -- the code is the smallest part of the answer.</text></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

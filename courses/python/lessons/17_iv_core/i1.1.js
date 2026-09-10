@@ -16,6 +16,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "What a language-core question is really testing",
+   "caption": "Almost every question in this set reduces to one idea: a name is a label bound to an object, and the object decides what happens next. Answers that start there hold up under follow-up.",
+   "svg": "<svg viewBox='0 0 880 210' role='img' aria-label='Names binding to objects, with mutability deciding what assignment does'><text x='30' y='40' class='s-label' style='fill:var(--accent)'>NAMES</text><text x='30' y='72' class='s-sub' style='fill:var(--ink-2)'>a</text><text x='30' y='102' class='s-sub' style='fill:var(--ink-2)'>b</text><g style='stroke:var(--accent);stroke-width:2'><line x1='70' y1='66' x2='300' y2='80' marker-end='url(#ic-a)'/><line x1='70' y1='96' x2='300' y2='88' marker-end='url(#ic-a)'/></g><rect x='310' y='56' width='230' height='58' rx='8' style='fill:var(--accent);fill-opacity:.14;stroke:var(--accent)' stroke-width='2'/><text x='332' y='82' class='s-label' style='fill:var(--accent)'>ONE OBJECT</text><text x='332' y='104' class='s-sub' style='fill:var(--ink-3)'>id, type, value</text><text x='580' y='72' class='s-sub' style='fill:var(--ink-3)'>mutable  -> both names see the change</text><text x='580' y='98' class='s-sub' style='fill:var(--ink-3)'>immutable -> rebinding moves one label</text><text x='30' y='158' class='s-sub' style='fill:var(--ink-3)'>Assignment never copies. It binds a name to an object -- which is the whole answer to aliasing, default arguments and is-versus-equals.</text><text x='30' y='182' class='s-sub' style='fill:var(--crit)'>If an answer here surprises you, the model of names and objects is what to revisit, not the individual question.</text><defs><marker id='ic-a' markerWidth='8' markerHeight='8' refX='6' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 z' style='fill:var(--accent)'/></marker></defs></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

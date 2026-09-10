@@ -20,6 +20,37 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The defaults are the bugs", id: "defaults" },
 
+
+    { t: "viz",
+      title: "Everything between your call and the response",
+      caption: "Each layer is a place the call can fail differently. A client that treats them all as one exception cannot retry intelligently, because a timeout and a 400 need opposite responses.",
+      svg: `<svg viewBox="0 0 880 240" role="img" aria-label="The layers of an outbound HTTP call and the distinct failure at each">
+  <g style="stroke-width:2">
+    <rect x="24"  y="56" width="150" height="52" rx="7" style="fill:var(--accent);fill-opacity:.13;stroke:var(--accent)"/>
+    <rect x="196" y="56" width="150" height="52" rx="7" style="fill:var(--accent);fill-opacity:.13;stroke:var(--accent)"/>
+    <rect x="368" y="56" width="150" height="52" rx="7" style="fill:var(--accent);fill-opacity:.13;stroke:var(--accent)"/>
+    <rect x="540" y="56" width="150" height="52" rx="7" style="fill:var(--accent);fill-opacity:.13;stroke:var(--accent)"/>
+    <rect x="712" y="56" width="144" height="52" rx="7" style="fill:var(--good);fill-opacity:.14;stroke:var(--good)"/>
+  </g>
+  <text x="44"  y="88" class="s-sub" style="fill:var(--ink-2)">DNS</text>
+  <text x="216" y="88" class="s-sub" style="fill:var(--ink-2)">TCP + TLS</text>
+  <text x="388" y="88" class="s-sub" style="fill:var(--ink-2)">request sent</text>
+  <text x="560" y="88" class="s-sub" style="fill:var(--ink-2)">server work</text>
+  <text x="732" y="88" class="s-sub" style="fill:var(--good)">response</text>
+
+  <g class="s-sub" style="fill:var(--crit)">
+    <text x="24"  y="138">resolution fails</text>
+    <text x="196" y="138">connect timeout</text>
+    <text x="368" y="138">write timeout</text>
+    <text x="540" y="138">read timeout, 5xx</text>
+    <text x="712" y="138">4xx — your fault</text>
+  </g>
+
+  <text x="24" y="186" class="s-sub" style="fill:var(--good)">retry: connect timeouts, 429, 502/503/504 — the request may not have been processed</text>
+  <text x="24" y="208" class="s-sub" style="fill:var(--crit)">do not retry: 4xx, and read timeouts on a non-idempotent POST — it may already have succeeded</text>
+  <text x="24" y="230" class="s-sub" style="fill:var(--ink-3)">Set connect and read timeouts separately; a single timeout value conflates two very different failures.</text>
+</svg>`
+    },
     { t: "table",
       head: ["Default", "Costs you", "Fix"],
       rows: [

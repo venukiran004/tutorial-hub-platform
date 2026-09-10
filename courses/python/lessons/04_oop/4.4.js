@@ -20,6 +20,33 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What the underscores do", id: "underscores" },
 
+
+    { t: "viz",
+      title: "A property is a method that looks like an attribute",
+      caption: "The caller writes plain attribute access; the class decides what happens. That is what lets you add validation later without changing a single call site.",
+      svg: `<svg viewBox="0 0 880 230" role="img" aria-label="Attribute access on the left routed through getter and setter methods inside the class">
+  <text x="30" y="58" class="s-label" style="fill:var(--ink-2)">caller</text>
+  <text x="30" y="92"  class="s-sub" style="fill:var(--ink-2)">t = account.balance</text>
+  <text x="30" y="126" class="s-sub" style="fill:var(--ink-2)">account.balance = 50</text>
+  <text x="30" y="162" class="s-sub" style="fill:var(--ink-3)">unchanged, for ever</text>
+
+  <g style="stroke:var(--accent);stroke-width:2">
+    <line x1="250" y1="86"  x2="430" y2="86" marker-end="url(#pr-a)"/>
+    <line x1="250" y1="120" x2="430" y2="120" marker-end="url(#pr-a)"/>
+  </g>
+
+  <rect x="440" y="46" width="410" height="140" rx="8" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)" stroke-width="2"/>
+  <text x="462" y="74" class="s-label" style="fill:var(--accent)">class Account</text>
+  <text x="462" y="102" class="s-sub" style="fill:var(--ink-2)">@property def balance(self): ...</text>
+  <text x="462" y="128" class="s-sub" style="fill:var(--ink-2)">@balance.setter def balance(self, v):</text>
+  <text x="484" y="150" class="s-sub" style="fill:var(--good)">validate, log, convert, cache</text>
+  <text x="462" y="174" class="s-sub" style="fill:var(--ink-3)">free to change</text>
+
+  <text x="30" y="212" class="s-sub" style="fill:var(--ink-3)">Start with a plain attribute. Promote it to a property only when there is behaviour to add — the call sites never notice.</text>
+
+  <defs><marker id="pr-a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--accent)"/></marker></defs>
+</svg>`
+    },
     { t: "code", lang: "python", title: "one convention, one mechanism", code: `
 class Account:
     def __init__(self, balance: int) -> None:

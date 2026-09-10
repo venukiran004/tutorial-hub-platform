@@ -20,6 +20,29 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why it is not a switch", id: "not-a-switch" },
 
+
+    { t: "viz",
+      title: "match is structural, not a switch",
+      caption: "Each case is a shape to match against, and matching binds names from the structure. That is what separates it from a chain of equality tests, and why it suits parsing rather than dispatch.",
+      svg: `<svg viewBox="0 0 880 240" role="img" aria-label="A match statement whose cases destructure different data shapes">
+  <text x="30" y="56" class="s-sub" style="fill:var(--ink-2)">match event:</text>
+
+  <g style="stroke-width:2">
+    <rect x="48" y="70" width="390" height="38" rx="6" style="fill:var(--accent);fill-opacity:.13;stroke:var(--accent)"/>
+    <rect x="48" y="116" width="390" height="38" rx="6" style="fill:var(--warn);fill-opacity:.13;stroke:var(--warn)"/>
+    <rect x="48" y="162" width="390" height="38" rx="6" style="fill:var(--good);fill-opacity:.13;stroke:var(--good)"/>
+  </g>
+  <text x="66" y="94"  class="s-sub" style="fill:var(--ink-2)">case {"type": "click", "pos": (x, y)}:</text>
+  <text x="66" y="140" class="s-sub" style="fill:var(--ink-2)">case [first, *others] if others:</text>
+  <text x="66" y="186" class="s-sub" style="fill:var(--ink-2)">case Point(x=0, y=0):</text>
+
+  <text x="470" y="94"  class="s-sub" style="fill:var(--good)">binds x and y from the tuple</text>
+  <text x="470" y="140" class="s-sub" style="fill:var(--good)">a guard runs after the shape matches</text>
+  <text x="470" y="186" class="s-sub" style="fill:var(--good)">matches a class by its attributes</text>
+
+  <text x="30" y="226" class="s-sub" style="fill:var(--crit)">A bare name always matches and binds — case x: is a catch-all, not a comparison with a variable called x.</text>
+</svg>`
+    },
     { t: "code", lang: "python", title: "the wrong use, and the right one", code: `
 # WRONG USE: comparing one value against constants.
 # This is a dict (Lesson 2.6) written as control flow.

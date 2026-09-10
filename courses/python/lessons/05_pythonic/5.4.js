@@ -20,6 +20,34 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Unpacking is a length assertion", id: "assertion" },
 
+
+    { t: "viz",
+      title: "Unpacking, and where the star goes",
+      caption: "A starred target absorbs whatever is left over, always as a list. Exactly one star is allowed, and it can sit anywhere — which is what makes head/tail and first/last splits one line each.",
+      svg: `<svg viewBox="0 0 880 230" role="img" aria-label="Three unpacking forms showing which elements the starred target absorbs">
+  <g class="s-sub" style="fill:var(--ink-2)">
+    <text x="30" y="66">first, *rest    = [1, 2, 3, 4, 5]</text>
+    <text x="30" y="110">*init, last     = [1, 2, 3, 4, 5]</text>
+    <text x="30" y="154">a, *mid, z      = [1, 2, 3, 4, 5]</text>
+  </g>
+
+  <g class="s-sub">
+    <text x="460" y="66"  style="fill:var(--good)">1</text>
+    <text x="490" y="66"  style="fill:var(--accent)">[2, 3, 4, 5]</text>
+    <text x="460" y="110" style="fill:var(--accent)">[1, 2, 3, 4]</text>
+    <text x="570" y="110" style="fill:var(--good)">5</text>
+    <text x="460" y="154" style="fill:var(--good)">1</text>
+    <text x="490" y="154" style="fill:var(--accent)">[2, 3, 4]</text>
+    <text x="580" y="154" style="fill:var(--good)">5</text>
+  </g>
+
+  <text x="680" y="66"  class="s-sub" style="fill:var(--ink-3)">the star always</text>
+  <text x="680" y="86"  class="s-sub" style="fill:var(--ink-3)">yields a list,</text>
+  <text x="680" y="106" class="s-sub" style="fill:var(--ink-3)">possibly empty</text>
+
+  <text x="30" y="196" class="s-sub" style="fill:var(--ink-3)">The walrus := is the other half of this lesson: it binds inside an expression, so a value can be tested and kept at once.</text>
+</svg>`
+    },
     { t: "p", text: "The underrated property: unpacking **checks the shape**. Indexing does not, and that difference catches bugs." },
 
     { t: "code", lang: "python", title: "the same data, two ways to read it", code: `

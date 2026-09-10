@@ -21,6 +21,32 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "The four forms", id: "forms" },
 
+
+    { t: "viz",
+      title: "Reading a comprehension in the order it executes",
+      caption: "Written output-first, executed loop-first. Reading it in execution order — for, then if, then the expression — is what makes a nested one tractable.",
+      svg: `<svg viewBox="0 0 880 230" role="img" aria-label="A list comprehension annotated with its reading order versus its execution order">
+  <text x="40" y="64" class="s-label" style="fill:var(--ink-2)">[  f(x)</text>
+  <text x="190" y="64" class="s-label" style="fill:var(--ink-2)">for x in items</text>
+  <text x="400" y="64" class="s-label" style="fill:var(--ink-2)">if keep(x)  ]</text>
+
+  <g style="stroke:var(--good);stroke-width:2">
+    <path d="M250 78 L250 108 L110 108 L110 82" fill="none" marker-end="url(#cp-a)"/>
+  </g>
+  <circle cx="250" cy="92" r="12" style="fill:var(--good);fill-opacity:.2;stroke:var(--good)" stroke-width="2"/>
+  <text x="245" y="97" class="s-sub" style="fill:var(--good)">1</text>
+  <circle cx="455" cy="92" r="12" style="fill:var(--good);fill-opacity:.2;stroke:var(--good)" stroke-width="2"/>
+  <text x="450" y="97" class="s-sub" style="fill:var(--good)">2</text>
+  <circle cx="110" cy="92" r="12" style="fill:var(--good);fill-opacity:.2;stroke:var(--good)" stroke-width="2"/>
+  <text x="105" y="97" class="s-sub" style="fill:var(--good)">3</text>
+
+  <text x="40" y="146" class="s-sub" style="fill:var(--ink-3)">execution order: iterate, filter, then build</text>
+
+  <rect x="40" y="162" width="800" height="50" rx="7" style="fill:var(--warn);fill-opacity:.10;stroke:var(--warn)" stroke-width="2"/>
+  <text x="58" y="184" class="s-sub" style="fill:var(--ink-2)">nested: [c for row in grid for c in row]  — the loops read left to right, exactly as nested for statements would</text>
+  <text x="58" y="204" class="s-sub" style="fill:var(--crit)">swap them and you get a NameError, because row must exist before c can use it</text>
+</svg>`
+    },
     { t: "code", lang: "python", title: "same syntax, four results", code: `
 users = [
     {"name": "ada", "role": "admin", "active": True},

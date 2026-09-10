@@ -17,6 +17,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "When a generator's body actually runs",
+   "caption": "Calling a generator function runs none of it. The body advances only on each `next`, and stops again at every yield — which explains most of the surprising output in this module.",
+   "svg": "<svg viewBox='0 0 880 220' role='img' aria-label='A generator suspended at each yield, resuming only when next is called'><text x='30' y='40' class='s-sub' style='fill:var(--ink-2)'>g = gen()</text><text x='150' y='40' class='s-sub' style='fill:var(--crit)'>nothing has run yet</text><line x1='40' y1='120' x2='840' y2='120' style='stroke:var(--line)' stroke-width='2'/><g style='fill:var(--good)'><circle cx='140' cy='120' r='8'/><circle cx='340' cy='120' r='8'/><circle cx='540' cy='120' r='8'/><circle cx='740' cy='120' r='8'/></g><g class='s-sub' style='fill:var(--ink-2)'><text x='104' y='104'>next()</text><text x='304' y='104'>next()</text><text x='504' y='104'>next()</text><text x='700' y='104'>next()</text></g><g class='s-sub' style='fill:var(--ink-3)'><text x='104' y='148'>runs to</text><text x='104' y='166'>yield 1</text><text x='304' y='148'>resumes,</text><text x='304' y='166'>yield 2</text><text x='504' y='148'>resumes,</text><text x='504' y='166'>yield 3</text><text x='700' y='148'>falls off end</text></g><text x='700' y='166' class='s-sub' style='fill:var(--crit)'>StopIteration</text><text x='30' y='202' class='s-sub' style='fill:var(--ink-3)'>State between yields is preserved, and a generator is exhausted once -- iterating it twice yields nothing the second time.</text></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

@@ -20,6 +20,36 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What is different, and what is not", id: "different" },
 
+
+    { t: "viz",
+      title: "The shape of a production LLM call",
+      caption: "The model call is one box among several. Most of the engineering — and most of the cost and latency — lives in the boxes around it.",
+      svg: `<svg viewBox="0 0 880 240" role="img" aria-label="The stages surrounding a language model call in a production application">
+  <g style="stroke-width:2">
+    <rect x="24"  y="56" width="150" height="52" rx="7" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+    <rect x="196" y="56" width="150" height="52" rx="7" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+    <rect x="368" y="56" width="150" height="52" rx="7" style="fill:var(--good);fill-opacity:.16;stroke:var(--good)"/>
+    <rect x="540" y="56" width="150" height="52" rx="7" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+    <rect x="712" y="56" width="144" height="52" rx="7" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+  </g>
+  <text x="44"  y="88" class="s-sub" style="fill:var(--ink-2)">retrieve context</text>
+  <text x="216" y="88" class="s-sub" style="fill:var(--ink-2)">build the prompt</text>
+  <text x="394" y="88" class="s-label" style="fill:var(--good)">model call</text>
+  <text x="560" y="88" class="s-sub" style="fill:var(--ink-2)">parse + validate</text>
+  <text x="732" y="88" class="s-sub" style="fill:var(--ink-2)">act or return</text>
+
+  <g class="s-sub" style="fill:var(--crit)">
+    <text x="24"  y="140">stale index</text>
+    <text x="196" y="140">token limit</text>
+    <text x="368" y="140">timeout, rate limit</text>
+    <text x="540" y="140">malformed JSON</text>
+    <text x="712" y="140">unsafe action</text>
+  </g>
+
+  <text x="24" y="186" class="s-sub" style="fill:var(--ink-3)">Treat the model as an unreliable network call: set a timeout, retry idempotently, and validate the output as untrusted.</text>
+  <text x="24" y="210" class="s-sub" style="fill:var(--ink-3)">Ask for structured output and parse it strictly — a schema failure is far cheaper than a plausible wrong answer.</text>
+</svg>`
+    },
     { t: "table",
       head: ["Property", "An ordinary API", "An LLM API"],
       rows: [

@@ -20,6 +20,33 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What survives and what changes", id: "overview" },
 
+
+    { t: "viz",
+      title: "SOLID, with the Python translation",
+      caption: "Three of the five are largely automatic in Python. The two that still take deliberate effort are single responsibility and dependency inversion — and those are the two worth arguing about in review.",
+      svg: `<svg viewBox="0 0 880 250" role="img" aria-label="The five SOLID principles marked by how much work each requires in Python">
+  <g style="stroke-width:2">
+    <rect x="24" y="40" width="420" height="44" rx="6" style="fill:var(--crit);fill-opacity:.10;stroke:var(--crit)"/>
+    <rect x="24" y="92" width="420" height="44" rx="6" style="fill:var(--good);fill-opacity:.12;stroke:var(--good)"/>
+    <rect x="24" y="144" width="420" height="44" rx="6" style="fill:var(--good);fill-opacity:.12;stroke:var(--good)"/>
+    <rect x="24" y="196" width="420" height="44" rx="6" style="fill:var(--good);fill-opacity:.12;stroke:var(--good)"/>
+  </g>
+  <text x="44" y="68"  class="s-label" style="fill:var(--crit)">S — single responsibility</text>
+  <text x="44" y="120" class="s-sub" style="fill:var(--ink-2)">O — open/closed</text>
+  <text x="44" y="172" class="s-sub" style="fill:var(--ink-2)">L — Liskov substitution</text>
+  <text x="44" y="224" class="s-sub" style="fill:var(--ink-2)">I — interface segregation</text>
+
+  <rect x="470" y="40" width="386" height="44" rx="6" style="fill:var(--crit);fill-opacity:.10;stroke:var(--crit)" stroke-width="2"/>
+  <text x="490" y="68" class="s-label" style="fill:var(--crit)">D — dependency inversion</text>
+
+  <text x="470" y="120" class="s-sub" style="fill:var(--ink-3)">O, L and I are close to free in Python:</text>
+  <text x="470" y="144" class="s-sub" style="fill:var(--ink-3)">duck typing gives substitutability, and</text>
+  <text x="470" y="166" class="s-sub" style="fill:var(--ink-3)">Protocols keep interfaces narrow.</text>
+
+  <text x="470" y="200" class="s-sub" style="fill:var(--crit)">S and D are the ones that need work —</text>
+  <text x="470" y="222" class="s-sub" style="fill:var(--crit)">and pass a dependency in, do not import it.</text>
+</svg>`
+    },
     { t: "table",
       head: ["Principle", "In Python", "Why"],
       rows: [

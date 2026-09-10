@@ -20,6 +20,40 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Coupling, in concrete terms", id: "coupling" },
 
+
+    { t: "viz",
+      title: "What actually makes code maintainable",
+      caption: "None of these is about cleverness. Each reduces the amount someone must hold in their head to change one thing safely — which is the only definition of maintainable that survives contact with a real team.",
+      svg: `<svg viewBox="0 0 880 240" role="img" aria-label="Four properties that make code maintainable, each with the question it answers">
+  <g style="stroke-width:2">
+    <rect x="24"  y="46" width="200" height="124" rx="8" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+    <rect x="240" y="46" width="200" height="124" rx="8" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+    <rect x="456" y="46" width="200" height="124" rx="8" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+    <rect x="672" y="46" width="184" height="124" rx="8" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+  </g>
+  <text x="44"  y="74" class="s-label" style="fill:var(--accent)">LOCALITY</text>
+  <text x="260" y="74" class="s-label" style="fill:var(--accent)">NAMES</text>
+  <text x="476" y="74" class="s-label" style="fill:var(--accent)">BOUNDARIES</text>
+  <text x="692" y="74" class="s-label" style="fill:var(--accent)">TESTS</text>
+
+  <text x="44"  y="104" class="s-sub" style="fill:var(--ink-2)">how many files</text>
+  <text x="44"  y="124" class="s-sub" style="fill:var(--ink-2)">must I open to</text>
+  <text x="44"  y="144" class="s-sub" style="fill:var(--ink-2)">change one thing?</text>
+
+  <text x="260" y="104" class="s-sub" style="fill:var(--ink-2)">can I guess what</text>
+  <text x="260" y="124" class="s-sub" style="fill:var(--ink-2)">this does without</text>
+  <text x="260" y="144" class="s-sub" style="fill:var(--ink-2)">reading it?</text>
+
+  <text x="476" y="104" class="s-sub" style="fill:var(--ink-2)">what can I change</text>
+  <text x="476" y="124" class="s-sub" style="fill:var(--ink-2)">without anyone</text>
+  <text x="476" y="144" class="s-sub" style="fill:var(--ink-2)">else noticing?</text>
+
+  <text x="692" y="104" class="s-sub" style="fill:var(--ink-2)">will I know if</text>
+  <text x="692" y="124" class="s-sub" style="fill:var(--ink-2)">I broke it?</text>
+
+  <text x="24" y="212" class="s-sub" style="fill:var(--ink-3)">Code is read far more often than written, and modified by someone with none of the context you have today.</text>
+</svg>`
+    },
     { t: "table",
       head: ["Kind", "Looks like", "Cost"],
       rows: [

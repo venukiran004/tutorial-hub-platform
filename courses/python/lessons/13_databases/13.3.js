@@ -20,6 +20,36 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The DB-API in one page", id: "dbapi" },
 
+
+    { t: "viz",
+      title: "Why a connection pool exists",
+      caption: "Opening a PostgreSQL connection means a TCP handshake, TLS, authentication and a new server-side process. A pool pays that once and hands out the result.",
+      svg: `<svg viewBox="0 0 880 240" role="img" aria-label="The cost of opening a database connection versus borrowing one from a pool">
+  <text x="30" y="34" class="s-label" style="fill:var(--crit)">connect per request</text>
+  <g style="stroke-width:2">
+    <rect x="30"  y="48" width="110" height="36" rx="5" style="fill:var(--crit);fill-opacity:.12;stroke:var(--crit)"/>
+    <rect x="150" y="48" width="110" height="36" rx="5" style="fill:var(--crit);fill-opacity:.12;stroke:var(--crit)"/>
+    <rect x="270" y="48" width="110" height="36" rx="5" style="fill:var(--crit);fill-opacity:.12;stroke:var(--crit)"/>
+    <rect x="390" y="48" width="130" height="36" rx="5" style="fill:var(--crit);fill-opacity:.12;stroke:var(--crit)"/>
+    <rect x="530" y="48" width="110" height="36" rx="5" style="fill:var(--good);fill-opacity:.14;stroke:var(--good)"/>
+  </g>
+  <text x="46"  y="71" class="s-sub" style="fill:var(--ink-3)">TCP</text>
+  <text x="166" y="71" class="s-sub" style="fill:var(--ink-3)">TLS</text>
+  <text x="286" y="71" class="s-sub" style="fill:var(--ink-3)">auth</text>
+  <text x="406" y="71" class="s-sub" style="fill:var(--ink-3)">backend fork</text>
+  <text x="546" y="71" class="s-sub" style="fill:var(--good)">query</text>
+  <text x="660" y="71" class="s-sub" style="fill:var(--crit)">tens of ms, every time</text>
+
+  <text x="30" y="136" class="s-label" style="fill:var(--good)">pooled</text>
+  <rect x="30" y="150" width="110" height="36" rx="5" style="fill:var(--good);fill-opacity:.14;stroke:var(--good)" stroke-width="2"/>
+  <text x="44" y="173" class="s-sub" style="fill:var(--good)">borrow</text>
+  <rect x="150" y="150" width="110" height="36" rx="5" style="fill:var(--good);fill-opacity:.14;stroke:var(--good)" stroke-width="2"/>
+  <text x="166" y="173" class="s-sub" style="fill:var(--good)">query</text>
+  <text x="290" y="173" class="s-sub" style="fill:var(--ink-3)">microseconds — the setup already happened</text>
+
+  <text x="30" y="224" class="s-sub" style="fill:var(--crit)">Size the pool to the database, not the app: every worker times its pool size must stay under max_connections.</text>
+</svg>`
+    },
     { t: "code", lang: "python", title: "psycopg 3, the whole interface", code: `
 import psycopg
 

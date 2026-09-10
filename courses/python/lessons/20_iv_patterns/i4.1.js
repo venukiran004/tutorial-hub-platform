@@ -19,6 +19,12 @@ EC.receiveLesson({
  ],
  "blocks": [
   {
+   "t": "viz",
+   "title": "What a patterns question is checking",
+   "caption": "Naming the pattern is the easy half. The answer that lands says what problem it solves, what it costs, and whether Python needs it at all.",
+   "svg": "<svg viewBox='0 0 880 210' role='img' aria-label='Four things a strong design-pattern answer covers'><g style='stroke-width:2'><rect x='24' y='46' width='200' height='96' rx='8' style='fill:var(--crit);fill-opacity:.10;stroke:var(--crit)'/><rect x='240' y='46' width='200' height='96' rx='8' style='fill:var(--good);fill-opacity:.13;stroke:var(--good)'/><rect x='456' y='46' width='200' height='96' rx='8' style='fill:var(--good);fill-opacity:.13;stroke:var(--good)'/><rect x='672' y='46' width='184' height='96' rx='8' style='fill:var(--good);fill-opacity:.13;stroke:var(--good)'/></g><text x='44' y='74' class='s-label' style='fill:var(--crit)'>NAME IT</text><text x='260' y='74' class='s-label' style='fill:var(--good)'>PROBLEM</text><text x='476' y='74' class='s-label' style='fill:var(--good)'>COST</text><text x='692' y='74' class='s-label' style='fill:var(--good)'>IN PYTHON</text><text x='44' y='104' class='s-sub' style='fill:var(--ink-3)'>the easy half</text><text x='260' y='104' class='s-sub' style='fill:var(--ink-2)'>what it prevents</text><text x='476' y='104' class='s-sub' style='fill:var(--ink-2)'>indirection, files</text><text x='692' y='104' class='s-sub' style='fill:var(--ink-2)'>often a function</text><text x='44' y='128' class='s-sub' style='fill:var(--ink-3)'>everyone does this</text><text x='260' y='128' class='s-sub' style='fill:var(--ink-3)'>few do</text><text x='476' y='128' class='s-sub' style='fill:var(--ink-3)'>fewer still</text><text x='692' y='128' class='s-sub' style='fill:var(--ink-3)'>the best answer</text><text x='24' y='178' class='s-sub' style='fill:var(--ink-3)'>Strategy is a function argument; Singleton is a module; Decorator is syntax. Saying so is a stronger answer than reciting the UML.</text></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

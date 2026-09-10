@@ -17,6 +17,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "The order of try, except, else and finally",
+   "caption": "`else` runs only when nothing was raised; `finally` runs on every path, including a return from inside the try. Most questions here turn on that last clause.",
+   "svg": "<svg viewBox='0 0 880 220' role='img' aria-label='Control flow through try, except, else and finally on both the success and failure paths'><g style='stroke-width:2'><rect x='40' y='44' width='170' height='44' rx='6' style='fill:var(--accent);fill-opacity:.13;stroke:var(--accent)'/><rect x='260' y='44' width='170' height='44' rx='6' style='fill:var(--good);fill-opacity:.14;stroke:var(--good)'/><rect x='260' y='104' width='170' height='44' rx='6' style='fill:var(--crit);fill-opacity:.12;stroke:var(--crit)'/><rect x='480' y='74' width='170' height='44' rx='6' style='fill:var(--warn);fill-opacity:.14;stroke:var(--warn)'/></g><text x='62' y='72' class='s-sub' style='fill:var(--ink-2)'>try</text><text x='282' y='72' class='s-sub' style='fill:var(--ink-2)'>else -- no exception</text><text x='282' y='132' class='s-sub' style='fill:var(--ink-2)'>except -- one was raised</text><text x='502' y='102' class='s-label' style='fill:var(--warn)'>finally</text><g style='stroke:var(--ink-3);stroke-width:1.5'><line x1='214' y1='58' x2='256' y2='58' marker-end='url(#ex-a)'/><line x1='214' y1='76' x2='256' y2='118' marker-end='url(#ex-a)'/><line x1='434' y1='66' x2='476' y2='88' marker-end='url(#ex-a)'/><line x1='434' y1='126' x2='476' y2='104' marker-end='url(#ex-a)'/></g><text x='670' y='96' class='s-sub' style='fill:var(--warn)'>always runs</text><text x='40' y='180' class='s-sub' style='fill:var(--crit)'>A return inside finally silently discards the exception and any earlier return -- a favourite of these question sets.</text><defs><marker id='ex-a' markerWidth='8' markerHeight='8' refX='6' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 z' style='fill:var(--ink-3)'/></marker></defs></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

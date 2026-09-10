@@ -21,6 +21,42 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "enumerate and zip", id: "enumerate-zip" },
 
+
+    { t: "viz",
+      title: "The loop you were about to write, and the built-in that replaces it",
+      caption: "Each built-in is a loop someone already wrote, in C, correctly. Reaching for one is faster to read and usually faster to run.",
+      svg: `<svg viewBox="0 0 880 250" role="img" aria-label="Common manual loops paired with the built-in that replaces each">
+  <text x="30"  y="32" class="s-label" style="fill:var(--crit)">the loop</text>
+  <text x="470" y="32" class="s-label" style="fill:var(--good)">the built-in</text>
+  <line x1="30" y1="42" x2="850" y2="42" style="stroke:var(--line)" stroke-width="1.5"/>
+
+  <g class="s-sub" style="fill:var(--ink-2)">
+    <text x="30" y="70">total = 0; for x in xs: total += x</text>
+    <text x="30" y="100">for i in range(len(xs)): xs[i], i</text>
+    <text x="30" y="130">out = []; for a, b in ...: pair them</text>
+    <text x="30" y="160">found = False; for x in xs: if p(x)</text>
+    <text x="30" y="190">best = xs[0]; for x in xs: compare</text>
+  </g>
+
+  <g class="s-sub" style="fill:var(--good)">
+    <text x="470" y="70">sum(xs)</text>
+    <text x="470" y="100">enumerate(xs)</text>
+    <text x="470" y="130">zip(a, b)</text>
+    <text x="470" y="160">any(p(x) for x in xs)</text>
+    <text x="470" y="190">max(xs, key=...)</text>
+  </g>
+
+  <g style="stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 3">
+    <line x1="400" y1="64"  x2="460" y2="64"/>
+    <line x1="400" y1="94"  x2="460" y2="94"/>
+    <line x1="400" y1="124" x2="460" y2="124"/>
+    <line x1="400" y1="154" x2="460" y2="154"/>
+    <line x1="400" y1="184" x2="460" y2="184"/>
+  </g>
+
+  <text x="30" y="226" class="s-sub" style="fill:var(--ink-3)">any and all short-circuit, so they stop at the first decisive element — a manual loop with an early break, written for you</text>
+</svg>`
+    },
     { t: "code", lang: "python", title: "index and parallel iteration", code: `
 items = ["alpha", "beta", "gamma"]
 

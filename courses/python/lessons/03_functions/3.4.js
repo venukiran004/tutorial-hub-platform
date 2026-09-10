@@ -21,6 +21,34 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "First-class means first-class", id: "first-class" },
 
+
+    { t: "viz",
+      title: "A function is an object like any other",
+      caption: "The name and the function are separate. `f` is a variable holding a function object, which is why it can be reassigned, stored in a list, or passed to something else.",
+      svg: `<svg viewBox="0 0 880 230" role="img" aria-label="Names on the left pointing at one function object on the right">
+  <g class="s-sub" style="fill:var(--ink-2)">
+    <text x="40" y="72">greet</text>
+    <text x="40" y="112">handlers["hello"]</text>
+    <text x="40" y="152">callback</text>
+  </g>
+  <g style="stroke:var(--accent);stroke-width:2">
+    <line x1="200" y1="66"  x2="430" y2="104" marker-end="url(#fo-a)"/>
+    <line x1="200" y1="106" x2="430" y2="110" marker-end="url(#fo-a)"/>
+    <line x1="200" y1="146" x2="430" y2="118" marker-end="url(#fo-a)"/>
+  </g>
+
+  <rect x="440" y="76" width="250" height="74" rx="8" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent)" stroke-width="2"/>
+  <text x="462" y="104" class="s-label" style="fill:var(--accent)">&lt;function object&gt;</text>
+  <text x="462" y="128" class="s-sub" style="fill:var(--ink-3)">__name__, __doc__, __code__</text>
+
+  <text x="720" y="104" class="s-sub" style="fill:var(--ink-3)">one object,</text>
+  <text x="720" y="124" class="s-sub" style="fill:var(--ink-3)">three names</text>
+
+  <text x="40" y="196" class="s-sub" style="fill:var(--ink-3)">f is the object; f() is the call. Passing f() where f was meant is the most common mistake in this lesson.</text>
+
+  <defs><marker id="fo-a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--accent)"/></marker></defs>
+</svg>`
+    },
     { t: "code", lang: "python", title: "everything you can do with a value, you can do with a function", code: `
 def shout(text: str) -> str:
     return text.upper() + "!"

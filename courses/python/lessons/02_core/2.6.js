@@ -21,6 +21,37 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "The syntax, and the one rule", id: "syntax" },
 
+
+    { t: "viz",
+      title: "How a chain of conditions is evaluated",
+      caption: "The first true branch wins and the rest are never evaluated. That short-circuit is why order matters, and why an expensive or unsafe check belongs after a cheap guard.",
+      svg: `<svg viewBox="0 0 880 240" role="img" aria-label="An if-elif-else chain evaluated top to bottom, stopping at the first true condition">
+  <g style="stroke-width:2">
+    <rect x="40" y="30" width="250" height="44" rx="6" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent)"/>
+    <rect x="40" y="88" width="250" height="44" rx="6" style="fill:var(--good);fill-opacity:.18;stroke:var(--good)"/>
+    <rect x="40" y="146" width="250" height="44" rx="6" style="fill:var(--ink-3);fill-opacity:.06;stroke:var(--line)"/>
+  </g>
+  <text x="58" y="58"  class="s-sub" style="fill:var(--ink-2)">if   cheap_guard(x)</text>
+  <text x="58" y="116" class="s-sub" style="fill:var(--ink-2)">elif expensive_check(x)</text>
+  <text x="58" y="174" class="s-sub" style="fill:var(--ink-3)">else default</text>
+
+  <text x="310" y="58"  class="s-sub" style="fill:var(--crit)">False — fall through</text>
+  <text x="310" y="116" class="s-label" style="fill:var(--good)">True — run this, stop</text>
+  <text x="310" y="174" class="s-sub" style="fill:var(--ink-3)">never reached</text>
+
+  <line x1="165" y1="76" x2="165" y2="86" style="stroke:var(--ink-3)" stroke-width="1.5"/>
+  <line x1="165" y1="134" x2="165" y2="144" style="stroke:var(--line);stroke-dasharray:3 3" stroke-width="1.5"/>
+
+  <text x="560" y="58"  class="s-sub" style="fill:var(--ink-3)">Order is not cosmetic:</text>
+  <text x="560" y="84"  class="s-sub" style="fill:var(--ink-3)">put the cheap or safe test</text>
+  <text x="560" y="106" class="s-sub" style="fill:var(--ink-3)">first, so the costly one</text>
+  <text x="560" y="128" class="s-sub" style="fill:var(--ink-3)">runs only when needed</text>
+  <text x="560" y="164" class="s-sub" style="fill:var(--crit)">if x and x.field:</text>
+  <text x="560" y="186" class="s-sub" style="fill:var(--ink-3)">the guard prevents the error</text>
+
+  <text x="40" y="224" class="s-sub" style="fill:var(--ink-3)">and / or short-circuit the same way — they return an operand, not a bool</text>
+</svg>`
+    },
     { t: "code", lang: "python", title: "the full form", code: `
 status = 404
 

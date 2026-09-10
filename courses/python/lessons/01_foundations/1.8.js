@@ -21,6 +21,43 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "Dynamic and strong are different axes", id: "dynamic-vs-strong" },
 
+
+    { t: "viz",
+      title: "Where a conversion can silently change the value",
+      caption: "Widening conversions keep the value; narrowing ones may not. `int(2.9)` truncates rather than rounding, and `float(large_int)` loses precision above 2⁵³.",
+      svg: `<svg viewBox="0 0 880 230" role="img" aria-label="Conversion paths between Python numeric types, marking which preserve the value">
+  <g style="stroke-width:2">
+    <rect x="30"  y="70" width="130" height="56" rx="7" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent)"/>
+    <rect x="250" y="70" width="130" height="56" rx="7" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent)"/>
+    <rect x="470" y="70" width="130" height="56" rx="7" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent)"/>
+    <rect x="690" y="70" width="160" height="56" rx="7" style="fill:var(--warn);fill-opacity:.14;stroke:var(--warn)"/>
+  </g>
+  <text x="66"  y="104" class="s-label" style="fill:var(--accent)">bool</text>
+  <text x="292" y="104" class="s-label" style="fill:var(--accent)">int</text>
+  <text x="500" y="104" class="s-label" style="fill:var(--accent)">float</text>
+  <text x="712" y="104" class="s-label" style="fill:var(--warn)">str / Decimal</text>
+
+  <g style="stroke:var(--good);stroke-width:2">
+    <line x1="162" y1="88" x2="246" y2="88" marker-end="url(#cv-g)"/>
+    <line x1="382" y1="88" x2="466" y2="88" marker-end="url(#cv-g)"/>
+  </g>
+  <text x="166" y="78" class="s-sub" style="fill:var(--good)">exact</text>
+  <text x="386" y="78" class="s-sub" style="fill:var(--good)">exact below 2^53</text>
+
+  <g style="stroke:var(--crit);stroke-width:2;stroke-dasharray:5 4">
+    <line x1="466" y1="112" x2="382" y2="112" marker-end="url(#cv-c)"/>
+  </g>
+  <text x="392" y="132" class="s-sub" style="fill:var(--crit)">int(2.9) = 2 — truncates</text>
+
+  <text x="30" y="176" class="s-sub" style="fill:var(--ink-3)">bool is a subclass of int, so True + True == 2 and [1,2][True] == 2</text>
+  <text x="30" y="198" class="s-sub" style="fill:var(--crit)">float(10**17) loses the last digits; Decimal("0.1") and float("0.1") are different numbers</text>
+
+  <defs>
+    <marker id="cv-g" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--good)"/></marker>
+    <marker id="cv-c" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--crit)"/></marker>
+  </defs>
+</svg>`
+    },
     { t: "code", lang: "python", title: "dynamic: a name can hold anything", code: `
 value = 42
 value = "forty-two"      # fine -- the name was never typed

@@ -20,6 +20,33 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What coverage measures", id: "what" },
 
+
+    { t: "viz",
+      title: "What coverage does and does not tell you",
+      caption: "Coverage measures which lines ran, not whether anything was checked. A test with no assertion still counts every line it touched, which is why 100% coverage and a working test suite are different achievements.",
+      svg: `<svg viewBox="0 0 880 240" role="img" aria-label="Line coverage compared with branch coverage and assertion quality">
+  <g style="stroke-width:2">
+    <rect x="24"  y="46" width="260" height="130" rx="8" style="fill:var(--good);fill-opacity:.12;stroke:var(--good)"/>
+    <rect x="310" y="46" width="260" height="130" rx="8" style="fill:var(--warn);fill-opacity:.12;stroke:var(--warn)"/>
+    <rect x="596" y="46" width="260" height="130" rx="8" style="fill:var(--crit);fill-opacity:.10;stroke:var(--crit)"/>
+  </g>
+  <text x="44"  y="74" class="s-label" style="fill:var(--good)">LINE COVERAGE</text>
+  <text x="330" y="74" class="s-label" style="fill:var(--warn)">BRANCH COVERAGE</text>
+  <text x="616" y="74" class="s-label" style="fill:var(--crit)">NOT MEASURED</text>
+
+  <text x="44"  y="104" class="s-sub" style="fill:var(--ink-2)">did this line execute?</text>
+  <text x="330" y="104" class="s-sub" style="fill:var(--ink-2)">did both sides of the if run?</text>
+  <text x="616" y="104" class="s-sub" style="fill:var(--ink-2)">did anything assert?</text>
+
+  <text x="44"  y="140" class="s-sub" style="fill:var(--ink-3)">easy to reach 100%</text>
+  <text x="330" y="140" class="s-sub" style="fill:var(--ink-3)">catches the untested else</text>
+  <text x="616" y="140" class="s-sub" style="fill:var(--crit)">no tool reports this</text>
+  <text x="616" y="162" class="s-sub" style="fill:var(--crit)">only review does</text>
+
+  <text x="24" y="212" class="s-sub" style="fill:var(--ink-3)">Use branch coverage, set the gate where the team will keep it, and treat a sudden jump as a signal to read the diff.</text>
+  <text x="24" y="232" class="s-sub" style="fill:var(--ink-3)">A ratchet that only ever rises is more useful than a fixed threshold nobody can reach.</text>
+</svg>`
+    },
     { t: "code", lang: "python", title: "95% coverage, zero verification", code: `
 def apply_discount(total, tier):
     if tier == "gold":

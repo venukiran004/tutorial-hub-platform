@@ -17,6 +17,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "Where backend latency actually goes",
+   "caption": "Application code is rarely the bottleneck. Almost every slow endpoint is waiting on something across a network, and the fix is usually fewer round trips rather than faster code.",
+   "svg": "<svg viewBox='0 0 880 210' role='img' aria-label='A latency budget dominated by database and network waits rather than application code'><text x='30' y='40' class='s-label' style='fill:var(--ink-3)'>a typical 200 ms request</text><rect x='30' y='56' width='60' height='34' style='fill:var(--good);fill-opacity:.5;stroke:var(--good)' stroke-width='2'/><rect x='94' y='56' width='330' height='34' style='fill:var(--crit);fill-opacity:.45;stroke:var(--crit)' stroke-width='2'/><rect x='428' y='56' width='200' height='34' style='fill:var(--warn);fill-opacity:.45;stroke:var(--warn)' stroke-width='2'/><rect x='632' y='56' width='90' height='34' style='fill:var(--accent);fill-opacity:.4;stroke:var(--accent)' stroke-width='2'/><text x='30' y='112' class='s-sub' style='fill:var(--good)'>app code</text><text x='150' y='112' class='s-sub' style='fill:var(--crit)'>database queries</text><text x='450' y='112' class='s-sub' style='fill:var(--warn)'>external API calls</text><text x='632' y='112' class='s-sub' style='fill:var(--accent)'>serialise</text><text x='30' y='154' class='s-sub' style='fill:var(--ink-3)'>Optimising the green block cannot help. Cutting one round trip from the red one halves the request.</text><text x='30' y='182' class='s-sub' style='fill:var(--crit)'>Measure before optimising -- and count queries per request, which is the number that usually explains the shape.</text></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

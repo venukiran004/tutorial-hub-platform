@@ -20,6 +20,34 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Passwords", id: "passwords" },
 
+
+    { t: "viz",
+      title: "Authentication, authorisation and secrets are three questions",
+      caption: "They fail differently and are fixed differently. Conflating them is how an endpoint ends up correctly identifying a user and then letting them read someone else's record.",
+      svg: `<svg viewBox="0 0 880 230" role="img" aria-label="Three separate security questions with the failure each produces">
+  <g style="stroke-width:2">
+    <rect x="24"  y="46" width="260" height="124" rx="8" style="fill:var(--accent);fill-opacity:.13;stroke:var(--accent)"/>
+    <rect x="310" y="46" width="260" height="124" rx="8" style="fill:var(--warn);fill-opacity:.13;stroke:var(--warn)"/>
+    <rect x="596" y="46" width="260" height="124" rx="8" style="fill:var(--good);fill-opacity:.13;stroke:var(--good)"/>
+  </g>
+  <text x="44"  y="74" class="s-label" style="fill:var(--accent)">AUTHENTICATION</text>
+  <text x="330" y="74" class="s-label" style="fill:var(--warn)">AUTHORISATION</text>
+  <text x="616" y="74" class="s-label" style="fill:var(--good)">SECRETS</text>
+
+  <text x="44"  y="102" class="s-sub" style="fill:var(--ink-2)">who are you?</text>
+  <text x="330" y="102" class="s-sub" style="fill:var(--ink-2)">may you do this?</text>
+  <text x="616" y="102" class="s-sub" style="fill:var(--ink-2)">where is the key kept?</text>
+
+  <text x="44"  y="134" class="s-sub" style="fill:var(--ink-3)">401 when it fails</text>
+  <text x="330" y="134" class="s-sub" style="fill:var(--ink-3)">403 when it fails</text>
+  <text x="616" y="134" class="s-sub" style="fill:var(--ink-3)">env or a secret store</text>
+  <text x="44"  y="156" class="s-sub" style="fill:var(--crit)">a stolen token</text>
+  <text x="330" y="156" class="s-sub" style="fill:var(--crit)">reading another user's row</text>
+  <text x="616" y="156" class="s-sub" style="fill:var(--crit)">a key in the repo</text>
+
+  <text x="24" y="206" class="s-sub" style="fill:var(--ink-3)">Authorise on the object, not the endpoint: knowing who the caller is says nothing about whether this row is theirs.</text>
+</svg>`
+    },
     { t: "code", lang: "python", title: "the whole of it", code: `
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError

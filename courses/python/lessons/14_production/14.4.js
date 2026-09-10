@@ -20,6 +20,38 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "One tool where there were six", id: "ruff" },
 
+
+    { t: "viz",
+      title: "Where each tool catches a problem",
+      caption: "The further left a fault is caught, the cheaper it is. A formatter settles arguments before review; a type checker catches in seconds what a test would catch in minutes and production in hours.",
+      svg: `<svg viewBox="0 0 880 230" role="img" aria-label="Quality tools placed along the timeline from editor to production">
+  <line x1="40" y1="120" x2="840" y2="120" style="stroke:var(--line)" stroke-width="2"/>
+  <g style="fill:var(--good)">
+    <circle cx="110" cy="120" r="7"/><circle cx="290" cy="120" r="7"/>
+  </g>
+  <g style="fill:var(--warn)"><circle cx="470" cy="120" r="7"/><circle cx="650" cy="120" r="7"/></g>
+  <circle cx="810" cy="120" r="7" style="fill:var(--crit)"/>
+
+  <text x="70"  y="98" class="s-label" style="fill:var(--good)">editor</text>
+  <text x="250" y="98" class="s-label" style="fill:var(--good)">pre-commit</text>
+  <text x="430" y="98" class="s-label" style="fill:var(--warn)">CI</text>
+  <text x="600" y="98" class="s-label" style="fill:var(--warn)">review</text>
+  <text x="770" y="98" class="s-label" style="fill:var(--crit)">production</text>
+
+  <text x="56"  y="152" class="s-sub" style="fill:var(--ink-3)">formatter</text>
+  <text x="56"  y="172" class="s-sub" style="fill:var(--ink-3)">linter</text>
+  <text x="236" y="152" class="s-sub" style="fill:var(--ink-3)">ruff</text>
+  <text x="236" y="172" class="s-sub" style="fill:var(--ink-3)">mypy</text>
+  <text x="420" y="152" class="s-sub" style="fill:var(--ink-3)">tests</text>
+  <text x="420" y="172" class="s-sub" style="fill:var(--ink-3)">coverage</text>
+  <text x="596" y="152" class="s-sub" style="fill:var(--ink-3)">design,</text>
+  <text x="596" y="172" class="s-sub" style="fill:var(--ink-3)">intent</text>
+  <text x="756" y="152" class="s-sub" style="fill:var(--crit)">everything</text>
+  <text x="756" y="172" class="s-sub" style="fill:var(--crit)">missed</text>
+
+  <text x="40" y="212" class="s-sub" style="fill:var(--ink-3)">Every tool left of review is arguing about something a human should not spend attention on.</text>
+</svg>`
+    },
     { t: "table",
       head: ["Was", "Did", "Now"],
       rows: [

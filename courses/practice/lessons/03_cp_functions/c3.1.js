@@ -17,6 +17,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "When a default argument is created",
+   "caption": "Once, at definition time — not per call. That single fact accounts for a large share of the surprising answers in this module.",
+   "svg": "<svg viewBox='0 0 880 210' role='img' aria-label='A mutable default argument created once and shared across every call'><rect x='24' y='46' width='300' height='60' rx='8' style='fill:var(--accent);fill-opacity:.13;stroke:var(--accent)' stroke-width='2'/><text x='44' y='72' class='s-sub' style='fill:var(--ink-2)'>def add(x, bucket=[]):</text><text x='44' y='94' class='s-sub' style='fill:var(--crit)'>the [] is made HERE, once</text><g style='stroke:var(--crit);stroke-width:2'><line x1='330' y1='68' x2='470' y2='60' marker-end='url(#df-a)'/><line x1='330' y1='76' x2='470' y2='92' marker-end='url(#df-a)'/><line x1='330' y1='84' x2='470' y2='124' marker-end='url(#df-a)'/></g><g class='s-sub' style='fill:var(--ink-2)'><text x='480' y='64'>add(1)  -> [1]</text><text x='480' y='96'>add(2)  -> [1, 2]</text><text x='480' y='128'>add(3)  -> [1, 2, 3]</text></g><text x='680' y='96' class='s-sub' style='fill:var(--crit)'>one list, shared</text><text x='24' y='170' class='s-sub' style='fill:var(--ink-3)'>The fix is bucket=None, then bucket = [] if bucket is None -- created per call, as expected.</text><text x='24' y='192' class='s-sub' style='fill:var(--ink-3)'>Closures have the matching trap: they capture the variable, not its value at the time.</text><defs><marker id='df-a' markerWidth='8' markerHeight='8' refX='6' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 z' style='fill:var(--crit)'/></marker></defs></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

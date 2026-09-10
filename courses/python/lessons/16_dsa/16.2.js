@@ -20,6 +20,39 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The trade", id: "trade" },
 
+
+    { t: "viz",
+      title: "Trading memory for time",
+      caption: "The nested-loop scan re-reads the data for every element. One pass building a dict costs memory proportional to the input and turns the same problem linear.",
+      svg: `<svg viewBox="0 0 880 240" role="img" aria-label="A quadratic nested scan compared with a single pass using a hash map">
+  <text x="30" y="34" class="s-label" style="fill:var(--crit)">nested loops — O(n²)</text>
+  <g style="fill:var(--crit);fill-opacity:.55">
+    <rect x="30" y="48" width="22" height="14"/><rect x="58" y="48" width="22" height="14"/>
+    <rect x="86" y="48" width="22" height="14"/><rect x="114" y="48" width="22" height="14"/>
+    <rect x="30" y="68" width="22" height="14"/><rect x="58" y="68" width="22" height="14"/>
+    <rect x="86" y="68" width="22" height="14"/><rect x="114" y="68" width="22" height="14"/>
+    <rect x="30" y="88" width="22" height="14"/><rect x="58" y="88" width="22" height="14"/>
+    <rect x="86" y="88" width="22" height="14"/><rect x="114" y="88" width="22" height="14"/>
+    <rect x="30" y="108" width="22" height="14"/><rect x="58" y="108" width="22" height="14"/>
+    <rect x="86" y="108" width="22" height="14"/><rect x="114" y="108" width="22" height="14"/>
+  </g>
+  <text x="156" y="90" class="s-sub" style="fill:var(--crit)">every pair compared</text>
+  <text x="30" y="148" class="s-sub" style="fill:var(--ink-3)">n = 10,000 → 100 million comparisons</text>
+
+  <text x="470" y="34" class="s-label" style="fill:var(--good)">one pass + a dict — O(n)</text>
+  <g style="fill:var(--good);fill-opacity:.6">
+    <rect x="470" y="48" width="22" height="14"/><rect x="498" y="48" width="22" height="14"/>
+    <rect x="526" y="48" width="22" height="14"/><rect x="554" y="48" width="22" height="14"/>
+  </g>
+  <text x="596" y="60" class="s-sub" style="fill:var(--good)">each element seen once</text>
+  <rect x="470" y="78" width="250" height="46" rx="6" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)" stroke-width="2"/>
+  <text x="488" y="106" class="s-sub" style="fill:var(--ink-2)">seen = {value: index}</text>
+  <text x="470" y="148" class="s-sub" style="fill:var(--ink-3)">n = 10,000 → 10,000 lookups, O(n) memory</text>
+
+  <text x="30" y="200" class="s-sub" style="fill:var(--ink-3)">The pattern behind two-sum, anagram grouping, duplicate detection and most frequency questions.</text>
+  <text x="30" y="224" class="s-sub" style="fill:var(--crit)">The trade is real: a dict of 10 million entries is hundreds of megabytes, which sometimes rules it out.</text>
+</svg>`
+    },
     { t: "code", lang: "python", title: "the same problem, both ways", code: `
 def two_sum(nums: list[int], target: int) -> tuple[int, int] | None:
     """BRUTE FORCE -- O(n^2) time, O(1) space.

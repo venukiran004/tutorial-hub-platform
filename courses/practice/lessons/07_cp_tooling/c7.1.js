@@ -17,6 +17,12 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
   {
+   "t": "viz",
+   "title": "What a regex is doing while it matches",
+   "caption": "A quantifier takes as much as it can, then gives characters back until the rest of the pattern fits. That backtracking is where both the surprising matches and the pathological slowdowns come from.",
+   "svg": "<svg viewBox='0 0 880 210' role='img' aria-label='A greedy quantifier consuming the whole string then backtracking to allow the rest of the pattern to match'><text x='30' y='40' class='s-sub' style='fill:var(--ink-2)'>pattern  &lt;.*&gt;      input  &lt;a&gt;&lt;b&gt;</text><text x='30' y='76' class='s-sub' style='fill:var(--crit)'>greedy .* takes everything</text><rect x='300' y='60' width='260' height='24' rx='4' style='fill:var(--crit);fill-opacity:.35;stroke:var(--crit)' stroke-width='2'/><text x='312' y='78' class='s-sub' style='fill:var(--ink-2)'>a&gt;&lt;b</text><text x='30' y='118' class='s-sub' style='fill:var(--warn)'>then gives back until &gt; can match</text><rect x='300' y='102' width='150' height='24' rx='4' style='fill:var(--warn);fill-opacity:.35;stroke:var(--warn)' stroke-width='2'/><text x='312' y='120' class='s-sub' style='fill:var(--ink-2)'>a&gt;&lt;b</text><text x='30' y='158' class='s-sub' style='fill:var(--good)'>lazy .*? stops at the first &gt;</text><rect x='300' y='142' width='40' height='24' rx='4' style='fill:var(--good);fill-opacity:.4;stroke:var(--good)' stroke-width='2'/><text x='310' y='160' class='s-sub' style='fill:var(--ink-2)'>a</text><text x='30' y='196' class='s-sub' style='fill:var(--ink-3)'>Nested quantifiers over overlapping character sets can backtrack exponentially -- the cause of catastrophic regex blowups.</text></svg>"
+  },
+  {
    "t": "callout",
    "kind": "note",
    "title": "How to use this set",

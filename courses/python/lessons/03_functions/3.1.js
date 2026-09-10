@@ -21,6 +21,38 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "def is a statement that runs", id: "def-runs" },
 
+
+    { t: "viz",
+      title: "What a call actually does",
+      caption: "A call binds arguments to parameters in a fresh local namespace, runs the body, and returns. Falling off the end returns `None` — there is no such thing as a function that returns nothing.",
+      svg: `<svg viewBox="0 0 880 230" role="img" aria-label="The four steps of a function call: bind, execute, return, discard the frame">
+  <g style="stroke-width:2">
+    <rect x="24"  y="56" width="180" height="64" rx="7" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent)"/>
+    <rect x="238" y="56" width="180" height="64" rx="7" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent)"/>
+    <rect x="452" y="56" width="180" height="64" rx="7" style="fill:var(--good);fill-opacity:.16;stroke:var(--good)"/>
+    <rect x="666" y="56" width="190" height="64" rx="7" style="fill:var(--ink-3);fill-opacity:.06;stroke:var(--line)"/>
+  </g>
+  <text x="44"  y="84"  class="s-label" style="fill:var(--accent)">1 BIND</text>
+  <text x="44"  y="106" class="s-sub" style="fill:var(--ink-3)">args to parameters</text>
+  <text x="258" y="84"  class="s-label" style="fill:var(--accent)">2 EXECUTE</text>
+  <text x="258" y="106" class="s-sub" style="fill:var(--ink-3)">in a new frame</text>
+  <text x="472" y="84"  class="s-label" style="fill:var(--good)">3 RETURN</text>
+  <text x="472" y="106" class="s-sub" style="fill:var(--ink-3)">a value, always</text>
+  <text x="686" y="84"  class="s-label" style="fill:var(--ink-3)">4 DISCARD</text>
+  <text x="686" y="106" class="s-sub" style="fill:var(--ink-3)">locals disappear</text>
+
+  <g style="stroke:var(--ink-3);stroke-width:1.5">
+    <line x1="206" y1="88" x2="234" y2="88" marker-end="url(#fn-a)"/>
+    <line x1="420" y1="88" x2="448" y2="88" marker-end="url(#fn-a)"/>
+    <line x1="634" y1="88" x2="662" y2="88" marker-end="url(#fn-a)"/>
+  </g>
+
+  <text x="24" y="166" class="s-sub" style="fill:var(--crit)">A function with no return still returns None — so x = f() binds None rather than failing</text>
+  <text x="24" y="192" class="s-sub" style="fill:var(--ink-3)">return with no value and falling off the end are identical; both produce None</text>
+
+  <defs><marker id="fn-a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--ink-3)"/></marker></defs>
+</svg>`
+    },
     { t: "p", text: "`def` is not a declaration processed at import — it is a statement that **executes**, building a function object and binding it to a name. Everything odd about default arguments, decorators and closures follows from that." },
 
     { t: "code", lang: "python", title: "a function is an object", code: `
