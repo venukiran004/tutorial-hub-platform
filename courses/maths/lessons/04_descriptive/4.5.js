@@ -26,7 +26,8 @@ EC.receiveLesson({
       ["Pearson correlation", "`r = Cov(X,Y)/(σₓσᵧ)`. Detects **linear** association only, and one extreme point can flip its sign."],
       ["Spearman correlation", "Pearson computed on the ranks. Detects any **monotonic** relationship, and is unaffected by monotonic transforms or outliers."],
       ["Kendall's tau", "The probability that two randomly chosen pairs agree in order, minus the probability they disagree. More interpretable, slower to compute."],
-      ["What none of them catch", "Non-monotonic relationships. A parabola scores zero on all three, and mutual information is what detects it."]
+      ["What none of them catch", "Non-monotonic relationships. A parabola scores zero on all three, and mutual information is what detects it."],
+      ["Non-linear relationship", "One that no straight line describes. Pearson understates it, Spearman catches it if it is monotonic, and only mutual information catches it in general."]
     ]},
 
     { t: "code", lang: "python", title: "two coefficients, two questions", code: `
@@ -101,7 +102,8 @@ stats.kendalltau(x, np.exp(x/2)).statistic      # 1.0
       ["The quartet", "One genuinely linear relationship, one perfect parabola, one line with a single outlier, and one where a lone point determines the entire slope."],
       ["Leverage", "How far an observation sits from the mean of the predictors, `hᵢᵢ`. A value near 1 means the fitted line passes through that point regardless of everything else."],
       ["Datasaurus", "The modern extension — a dozen wildly different shapes sharing summary statistics to two decimal places."],
-      ["The automatable part", "Leverage and a Pearson-versus-Spearman disagreement catch three of the four without a human looking at anything."]
+      ["The automatable part", "Leverage and a Pearson-versus-Spearman disagreement catch three of the four without a human looking at anything."],
+      ["Anscombe's quartet", "Four datasets constructed by Francis Anscombe in 1973 to share every common summary statistic while looking entirely different. The standard argument for plotting your data."]
     ]},
 
     { t: "viz",

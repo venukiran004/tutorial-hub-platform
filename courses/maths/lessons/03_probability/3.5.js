@@ -28,7 +28,8 @@ EC.receiveLesson({
       ["Exponential", "Waiting time at a constant rate. The only continuous distribution that is **memoryless**."],
       ["Lognormal", "The product of many independent effects — so it is normal in the logs. Right-skewed, and the correct default for latency, income and file sizes."],
       ["Pareto / power law", "Extremely heavy-tailed, arising from preferential attachment. Its variance may not exist at all."],
-      ["Student's t", "A normal with an estimated variance. Heavier tails, converging to the normal as the sample grows."]
+      ["Student's t", "A normal with an estimated variance. Heavier tails, converging to the normal as the sample grows."],
+      ["t-distribution", "What replaces the normal when the variance is estimated from the same small sample. Heavier tails, controlled by a degrees-of-freedom parameter, converging to the normal as it grows."]
     ]},
 
     { t: "table",

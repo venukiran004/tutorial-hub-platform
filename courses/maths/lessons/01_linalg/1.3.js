@@ -25,7 +25,8 @@ EC.receiveLesson({
     { t: "dl", items: [
       ["Inner dimension", "For `A` of shape `m × n` and `B` of shape `n × p`, the shared `n` must match. It is the dimension being summed over and it vanishes from the result."],
       ["Result shape", "`m × p` — the outer dimensions. A useful check: write the shapes side by side and cancel the middle."],
-      ["Entry `(i,j)`", "The dot product of row `i` of `A` with column `j` of `B` — so every entry of a product is an alignment measurement (lesson 1.1)."]
+      ["Entry `(i,j)`", "The dot product of row `i` of `A` with column `j` of `B` — so every entry of a product is an alignment measurement (lesson 1.1)."],
+      ["Matrix multiplication", "Written `A @ B` in NumPy, or `matmul`. Not element-by-element — that is `A * B`, and confusing the two is a common source of silently wrong shapes."]
     ]},
 
     { t: "code", lang: "python", title: "multiplication is forced, not chosen", code: `
@@ -151,7 +152,8 @@ np.linalg.matrix_rank(W)             # 5, not 100
     { t: "dl", items: [
       ["Unique solution", "`A` is full rank and square. One input produces `b`, and it can be recovered exactly."],
       ["No solution", "`b` lies outside the column space — the transformation simply cannot produce it. This is the usual case in regression, and least squares answers it by finding the closest reachable point."],
-      ["Infinitely many solutions", "`A` is rank-deficient and `b` is reachable. Any vector from the null space can be added to a solution and it remains one."]
+      ["Infinitely many solutions", "`A` is rank-deficient and `b` is reachable. Any vector from the null space can be added to a solution and it remains one."],
+      ["Linear system", "A set of equations `Ax = b` sharing unknowns. Every one has exactly one of three fates: a unique solution, none, or infinitely many."]
     ]},
 
     { t: "table",
@@ -204,7 +206,9 @@ sol, rank                    # [0.6, 1.2], rank 1
       ["Inverse", "The matrix with `A⁻¹A = I`. It exists only when `A` is square and full rank."],
       ["Condition number", "How much a transformation stretches the worst-case direction relative to the best. A large value means small input errors become large output errors."],
       ["Ill-conditioned", "A condition number large enough that floating-point error dominates the answer. The matrix is invertible in theory and untrustworthy in practice."],
-      ["Solver", "`np.linalg.solve(A, b)` — factorises and substitutes rather than inverting. Faster, and it does not amplify error the way an explicit inverse does."]
+      ["Solver", "`np.linalg.solve(A, b)` — factorises and substitutes rather than inverting. Faster, and it does not amplify error the way an explicit inverse does."],
+      ["Singular matrix", "One with no inverse — rank-deficient, determinant zero. It destroys information, and the loss cannot be undone."],
+      ["Near-singular", "Technically invertible but so ill-conditioned that floating point cannot recover the answer. Far more common in practice than exact singularity."]
     ]},
 
     { t: "ladder",

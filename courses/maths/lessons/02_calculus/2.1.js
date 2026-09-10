@@ -26,7 +26,8 @@ EC.receiveLesson({
       ["Derivative", "`f'(x) = lim(h→0) [f(x+h) − f(x)] / h`. The rate of change at a single point, written `f'(x)` or `df/dx`."],
       ["Tangent line", "The straight line touching the curve at `x` with that slope. It is the best linear approximation available near that point."],
       ["Local linearity", "The property that makes calculus work: every smooth function looks linear if you look closely enough."],
-      ["Smooth", "Differentiable everywhere — no corners, jumps or vertical tangents. A condition that real loss functions frequently violate."]
+      ["Smooth", "Differentiable everywhere — no corners, jumps or vertical tangents. A condition that real loss functions frequently violate."],
+      ["Limit", "What a quantity approaches as an input approaches a value, without necessarily reaching it. `lim(h→0)` is what makes a derivative a point property rather than an average over an interval."]
     ]},
 
     { t: "p", text: "The practically useful reading is **sensitivity**: a derivative of 3 means that changing the input by a small amount `ε` changes the output by roughly `3ε`. Every gradient in machine learning is answering that question about a parameter." },

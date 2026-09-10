@@ -27,7 +27,9 @@ EC.receiveLesson({
       ["Effect size", "How large the difference is, in standardised units. Cohen's `d` is the difference divided by the pooled standard deviation."],
       ["Minimum detectable effect", "The smallest effect a design can detect at the stated power. **The MDE is what makes a study feasible or not.**"],
       ["Sample size scaling", "`n ∝ 1/d²`. Halving the effect you want to detect quadruples the data required."],
-      ["Post-hoc power", "Power computed from the *observed* effect. A deterministic function of the p-value, so it restates the result rather than explaining it — `p = 0.05` always gives exactly 50%."]
+      ["Post-hoc power", "Power computed from the *observed* effect. A deterministic function of the p-value, so it restates the result rather than explaining it — `p = 0.05` always gives exactly 50%."],
+      ["Type I error", "Rejecting a true null — a false positive. Its rate is `α`, which you choose."],
+      ["Type II error", "Failing to reject a false null — a false negative. Its rate `β` follows from everything else."]
     ]},
 
     { t: "viz",
@@ -287,7 +289,8 @@ decision(0.02, 0.05, 0.01)        # 'ship: clearly worthwhile'
       ["Break-even effect", "Where the value of the change equals its cost. Below it you would not act regardless of significance."],
       ["Sizing from consequences", "Deriving the MDE and `α` from what each error costs, rather than from convention."],
       ["Feasibility", "Whether the required sample fits the traffic and time available. Establishing this **before** running is the point of the calculation."],
-      ["Variance reduction", "Cutting `σ` rather than raising `n`. A 40% variance reduction is worth as much as 40% more data, and it is permanent."]
+      ["Variance reduction", "Cutting `σ` rather than raising `n`. A 40% variance reduction is worth as much as 40% more data, and it is permanent."],
+      ["MDE", "Minimum detectable effect — the smallest difference a design can find at the stated power. It is what decides whether a study is feasible at all."]
     ]},
 
     { t: "ladder",

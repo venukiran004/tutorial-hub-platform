@@ -26,7 +26,8 @@ EC.receiveLesson({
       ["Newton's method", "`x ← x − f(x)/f'(x)` for root-finding. The same linear approximation as lesson 2.1, used to take a step rather than describe a slope."],
       ["Quadratic convergence", "Correct digits roughly double per iteration. Five steps take a rough guess to machine precision."],
       ["Newton for optimisation", "Finding a root of `∇f` gives `x ← x − H⁻¹∇f`. Scale-invariant, and it needs the Hessian."],
-      ["Failure modes", "A zero derivative, an overshoot cycle that never settles, or no real root at all. Production solvers bracket first, then switch to Newton."]
+      ["Failure modes", "A zero derivative, an overshoot cycle that never settles, or no real root at all. Production solvers bracket first, then switch to Newton."],
+      ["Root finding", "Solving `f(x) = 0`. Optimisation is root finding applied to the derivative, which is where the Hessian form of Newton's method comes from."]
     ]},
 
     { t: "code", lang: "python", title: "the method and its failure modes", code: `
@@ -212,7 +213,8 @@ h = np.sqrt(np.finfo(float).eps) * max(abs(x), 1.0)
       ["Forward mode", "Carries a derivative alongside each value. Costs one pass per input, so it suits few inputs and many outputs."],
       ["Reverse mode", "Records a tape forwards, then walks it backwards. One pass gives the gradient with respect to **every** input — this is backpropagation."],
       ["Dual number", "A value paired with its derivative, `(v, dv)`. Implementing arithmetic on these is the whole of forward mode."],
-      ["The tape", "The stored intermediate values reverse mode needs. Its size is why `.backward()` can run out of memory."]
+      ["The tape", "The stored intermediate values reverse mode needs. Its size is why `.backward()` can run out of memory."],
+      ["Autodiff", "The usual short name for automatic differentiation. Exact to machine precision, and neither symbolic nor a finite difference."]
     ]},
 
     { t: "table",
@@ -287,7 +289,9 @@ r.d                              # 6.8917  =  3(1.5)^2 + 2 cos(1.5)
       ["Catastrophic cancellation", "Subtracting nearly equal numbers. The leading digits cancel and what remains is accumulated round-off."],
       ["Overflow / underflow", "A value too large or too small to represent — `exp(1000)` is `inf`, and `exp(−1000)` is `0`."],
       ["Stable alternatives", "`log1p`, `expm1`, `logaddexp`, and the max-shift inside softmax. Each computes an algebraically identical expression without the dangerous intermediate."],
-      ["Relative error", "Error as a fraction of the value, which is what floating point actually bounds. Absolute error means little across scales."]
+      ["Relative error", "Error as a fraction of the value, which is what floating point actually bounds. Absolute error means little across scales."],
+      ["Precision", "How many significant digits a number carries — about 16 in float64, from a 53-bit mantissa. It is a count of digits, not a bound on magnitude."],
+      ["Machine epsilon", "The gap between 1.0 and the next representable number, `2.22×10⁻¹⁶` in float64. It sets the floor on every relative error."]
     ]},
 
     { t: "code", lang: "python", title: "catastrophic cancellation, in code you would write", code: `

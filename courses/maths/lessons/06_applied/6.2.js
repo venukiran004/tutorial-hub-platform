@@ -28,7 +28,9 @@ EC.receiveLesson({
       ["Partial association", "What a coefficient measures. By Frisch-Waugh-Lovell it is exactly the slope of residualised `y` on residualised `xⱼ`."],
       ["Residual", "`y − ŷ`. Orthogonal to every predictor by construction, which is what least squares solves for."],
       ["Standard error", "How much a coefficient would vary across samples. What turns an estimate into an interval."],
-      ["Omitted variable bias", "`bias = β_omitted × (correlation of omitted with included)`. Its direction is often knowable in advance from domain knowledge."]
+      ["Omitted variable bias", "`bias = β_omitted × (correlation of omitted with included)`. Its direction is often knowable in advance from domain knowledge."],
+      ["OLS", "Ordinary least squares — the standard fitting method, minimising the sum of squared residuals."],
+      ["Regression", "Modelling an outcome as a function of predictors. \"Linear\" refers to linearity in the coefficients, not in the predictors, so `x²` terms are still linear regression."]
     ]},
 
     { t: "viz",
@@ -152,7 +154,8 @@ ols(np.column_stack([x, z, w]), y)["beta"][1]     # 0.55, and unstable
       ["Independent errors", "Serious but not fatal: coefficients stay unbiased and standard errors become far too small. Cluster-robust errors fix it."],
       ["Homoscedasticity", "Constant error variance. Moderate, and fixed for free by HC3 robust standard errors — use them by default."],
       ["Normal errors", "**Usually irrelevant** for coefficients, thanks to the CLT. It does matter for prediction intervals, which use the error distribution directly."],
-      ["R²", "The fraction of variance explained. It never decreases when you add a variable, does not detect a wrong functional form, and is not comparable across datasets."]
+      ["R²", "The fraction of variance explained. It never decreases when you add a variable, does not detect a wrong functional form, and is not comparable across datasets."],
+      ["R-squared", "The fraction of variance the model explains. It never falls when a predictor is added, does not detect a wrong functional form, and is not comparable across datasets."]
     ]},
 
     { t: "table",

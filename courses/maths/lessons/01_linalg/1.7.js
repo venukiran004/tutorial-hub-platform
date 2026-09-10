@@ -201,7 +201,8 @@ rv.variance          # 1.0  -- exact, in one pass`,
       ["Cholesky", "Fastest, for symmetric positive-definite matrices only. Failing to factorise proves the matrix is not positive definite — a free diagnostic."],
       ["LU", "General square matrices, with partial pivoting for stability. What `solve` uses by default."],
       ["QR", "Least squares without forming `AᵀX`, which would square the condition number. Slower than LU and much better behaved."],
-      ["SVD", "Slowest and most robust. Handles rank deficiency gracefully and reports the condition number as a by-product."]
+      ["SVD", "Slowest and most robust. Handles rank deficiency gracefully and reports the condition number as a by-product."],
+      ["`lstsq`", "NumPy's least-squares solver. Uses SVD, so it handles rank-deficient systems by returning the minimum-norm solution rather than failing — safer than `solve` and slower."]
     ]},
 
     { t: "table",

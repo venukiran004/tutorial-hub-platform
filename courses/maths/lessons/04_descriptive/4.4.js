@@ -27,7 +27,8 @@ EC.receiveLesson({
       ["Standardised moment", "`E[((X−μ)/σ)ᵏ]`. Dimensionless, so unaffected by units or scaling."],
       ["Skewness", "The third standardised moment. Positive means a long right tail; negative, a long left tail; zero, symmetry."],
       ["Kurtosis", "The fourth. A normal distribution has raw kurtosis 3, so **excess kurtosis** subtracts it and a normal reads 0."],
-      ["The convention trap", "scipy reports excess by default; R's `e1071` reports raw. \"Our kurtosis is 3\" is ambiguous without saying which."]
+      ["The convention trap", "scipy reports excess by default; R's `e1071` reports raw. \"Our kurtosis is 3\" is ambiguous without saying which."],
+      ["Shape", "Everything about a distribution beyond its location and spread — captured by the third moment onward."]
     ]},
 
     { t: "code", lang: "python", title: "the first four, and what each adds", code: `
@@ -99,7 +100,8 @@ for name, sample in [
       ["Leptokurtic", "Heavier tails than a normal — more extreme values than the bell curve allows."],
       ["Platykurtic", "Lighter tails. The uniform distribution is the extreme case at `−1.2`, and it is perfectly flat with no peak at all."],
       ["Why not peakedness", "The uniform is flat and scores lowest of any common distribution. If kurtosis measured peaks, that would be impossible."],
-      ["Standard errors", "`SE(skew) ≈ √(6/n)` and `SE(excess kurtosis) ≈ √(24/n)`. Both are extremely noisy at small `n`."]
+      ["Standard errors", "`SE(skew) ≈ √(6/n)` and `SE(excess kurtosis) ≈ √(24/n)`. Both are extremely noisy at small `n`."],
+      ["Tail weight", "How much probability sits far from the centre. What kurtosis measures, and what makes extreme values common or rare."]
     ]},
 
     { t: "viz",
@@ -252,7 +254,8 @@ np.mean([stats.skew(rng.lognormal(0, 1, 30)) for _ in range(3000)])  # ~2.4`},
       ["Shapiro-Wilk", "The most common test. Its power grows with `n`, which is exactly why it becomes useless at scale."],
       ["QQ plot", "Sample quantiles against theoretical ones. A straight line means agreement, and the shape of any departure tells you what kind it is."],
       ["Max QQ gap", "The largest vertical departure, in standard deviations. It means the same thing at every sample size, which a p-value does not."],
-      ["What actually matters", "Not whether the data is normal, but whether your method survives the departure. Inference about a mean is protected by the CLT; prediction intervals and `σ`-based limits are not."]
+      ["What actually matters", "Not whether the data is normal, but whether your method survives the departure. Inference about a mean is protected by the CLT; prediction intervals and `σ`-based limits are not."],
+      ["Normality", "Agreement with a normal distribution. Worth measuring as a size — the maximum QQ gap in standard deviations — rather than testing as a yes-or-no."]
     ]},
 
     { t: "code", lang: "python", title: "the large-n problem every test has", code: `

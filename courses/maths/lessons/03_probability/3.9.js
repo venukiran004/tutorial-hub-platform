@@ -27,7 +27,8 @@ EC.receiveLesson({
       ["Markov", "`P(X ≥ a) ≤ E[X]/a`, needing only a non-negative variable with a known mean. Very weak, and it cannot be wrong."],
       ["Chebyshev", "`P(|X−μ| ≥ kσ) ≤ 1/k²`, needing only a variance. About 70,000× looser than the normal at 5σ — which is the price of assuming nothing."],
       ["Cantelli", "The one-sided form, `1/(1+k²)`. You cannot simply halve Chebyshev's two-sided bound."],
-      ["Tightness", "How close a bound sits to the true probability. Looser bounds are safer and less informative — the trade is deliberate."]
+      ["Tightness", "How close a bound sits to the true probability. Looser bounds are safer and less informative — the trade is deliberate."],
+      ["Tail probability", "The chance of landing far from the centre, `P(X ≥ a)` or `P(|X − μ| ≥ t)`. Concentration inequalities bound exactly this without naming a distribution."]
     ]},
 
     { t: "table",

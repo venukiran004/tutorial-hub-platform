@@ -27,7 +27,8 @@ EC.receiveLesson({
       ["Bessel's correction", "Dividing by `n − 1` rather than `n`, which makes the estimator unbiased."],
       ["Degrees of freedom", "The count of independent pieces of information. Estimating the mean forces the deviations to sum to zero, so only `n − 1` are free."],
       ["Unbiased", "Correct on average across all possible samples. It is a property of the recipe, not of any single result."],
-      ["`ddof`", "The NumPy parameter for the subtraction. `ddof=0` divides by `n`, `ddof=1` by `n − 1` — and the two libraries disagree by default."]
+      ["`ddof`", "The NumPy parameter for the subtraction. `ddof=0` divides by `n`, `ddof=1` by `n − 1` — and the two libraries disagree by default."],
+      ["Standard deviation", "`σ = √variance`. Back in the original units, which is why it and not variance belongs in a report."]
     ]},
 
     { t: "viz",
@@ -233,7 +234,8 @@ for n in (5, 10, 30, 100):
       ["MAD", "Median absolute deviation: the median of `|xᵢ − median|`. Breakdown point 50%, the maximum possible."],
       ["The 1.4826 factor", "Scales the MAD so it estimates `σ` for normal data, making it a drop-in replacement on the same scale."],
       ["Robust z-score", "`(x − median)/MAD`. Uses a scale the outliers cannot inflate, unlike the classic z-score which they can."],
-      ["Masking", "An outlier inflating the very scale used to judge it, so it appears less extreme than it is. The reason sd-based detection fails when there is something to detect."]
+      ["Masking", "An outlier inflating the very scale used to judge it, so it appears less extreme than it is. The reason sd-based detection fails when there is something to detect."],
+      ["Range", "Maximum minus minimum. The least robust measure of spread there is — its breakdown point is `1/n` at both ends — and it grows with sample size even when nothing changes."]
     ]},
 
     { t: "code", lang: "python", title: "three measures, three breakdown points", code: `

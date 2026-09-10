@@ -27,7 +27,8 @@ EC.receiveLesson({
       ["Paired t", "Did each unit change? Literally a one-sample test on the differences, which is why pairing removes between-unit variance entirely."],
       ["Student's two-sample t", "Do two groups differ, **assuming equal variance**? Pools the two variances into one estimate."],
       ["Welch's two-sample t", "Do two groups differ? Makes no equal-variance assumption and uses fractional degrees of freedom."],
-      ["The t-distribution", "What replaces the normal when `σ` is estimated from the same data. Heavier tails, converging to the normal as `n` grows."]
+      ["The t-distribution", "What replaces the normal when `σ` is estimated from the same data. Heavier tails, converging to the normal as `n` grows."],
+      ["z-test", "The same comparison with `σ` **known** rather than estimated. Almost never applicable, since knowing `σ` exactly is rare — use `t`, which converges to it anyway."]
     ]},
 
     { t: "table",
@@ -288,7 +289,8 @@ pretest_then_choose(200, 20, 1.0, 1.0)      # 0.058
       ["Normality of the sampling distribution", "Moderate, and usually supplied by the CLT. Note it is the *mean's* distribution that matters, not the data's."],
       ["Outliers", "Moderate. One extreme value inflates `s`, which shrinks `t` — so the test quietly loses power."],
       ["Equal variance", "Not an issue if you use Welch. Listed only so nobody adds a Levene test."],
-      ["Unit of analysis", "Must match the unit of randomisation. Aggregating to the randomised unit is the simplest correct fix."]
+      ["Unit of analysis", "Must match the unit of randomisation. Aggregating to the randomised unit is the simplest correct fix."],
+      ["Assumption", "A condition a test's guarantee depends on. Ranking them by what a violation costs is the difference between useful checking and ritual."]
     ]},
 
     { t: "ladder",

@@ -26,7 +26,10 @@ EC.receiveLesson({
       ["Principal component", "A direction in the original feature space, written as a weighted combination of the original variables."],
       ["Loading", "One variable's weight within a component. Reading the loadings is how you interpret what a component represents."],
       ["Score", "An observation's coordinate along a component — the transformed data."],
-      ["Explained variance ratio", "The fraction of total variance a component accounts for. They sum to 1 across all components."]
+      ["Explained variance ratio", "The fraction of total variance a component accounts for. They sum to 1 across all components."],
+      ["PCA", "Principal component analysis — rotating the data onto the orthogonal directions of greatest variance, which are the eigenvectors of its covariance matrix."],
+      ["Covariance matrix", "`Σ`, holding every pairwise covariance with variances on the diagonal. PCA is its eigendecomposition, and nothing more."],
+      ["Scree plot", "Explained variance against component number. The \"elbow\" where it flattens is the usual, and entirely informal, way of choosing how many components to keep."]
     ]},
 
     { t: "p", text: "Components are **orthogonal by construction**, so each captures variation the previous ones missed. That is a property of the method, not of the data, and it is the reason PCA components are not the same thing as interpretable factors." },
@@ -138,7 +141,8 @@ np.allclose(np.abs(Vt[:2]), np.abs(comps.T))     # True, up to sign
       ["Centring", "Subtracting each variable's mean. Mandatory: uncentred PCA finds the direction of the data's centre of mass, not its variation."],
       ["Scaling", "Dividing by each variable's standard deviation. It makes variables comparable and discards genuine differences in importance."],
       ["When to scale", "When variables use different units — an income in pounds would otherwise dominate an age in years purely by magnitude."],
-      ["When not to scale", "When variables share units and their relative spread is meaningful, such as pixel intensities or repeated measurements of one quantity."]
+      ["When not to scale", "When variables share units and their relative spread is meaningful, such as pixel intensities or repeated measurements of one quantity."],
+      ["Whitening", "Dividing each component by the square root of its eigenvalue, so every direction has unit variance. It removes correlation and scale at once — and amplifies the smallest, noisiest components, which is the cost."]
     ]},
 
     { t: "ladder",

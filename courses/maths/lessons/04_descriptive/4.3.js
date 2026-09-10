@@ -27,7 +27,8 @@ EC.receiveLesson({
       ["Quantile", "The same idea on a `0`–`1` scale. The 0.99 quantile is the 99th percentile."],
       ["Order statistic", "The `k`th smallest observation. Percentiles are interpolated between neighbouring order statistics."],
       ["Interpolation method", "The rule bridging the gap — linear, lower, higher, nearest, and several more. NumPy's default is linear, and other tools differ."],
-      ["Ten-beyond rule", "You want about ten observations past the percentile for a stable estimate: 1,000 for a p99, 10,000 for a p99.9."]
+      ["Ten-beyond rule", "You want about ten observations past the percentile for a stable estimate: 1,000 for a p99, 10,000 for a p99.9."],
+      ["Median", "The 50th percentile — the middle value once sorted. With an even count, conventionally the mean of the middle two."]
     ]},
 
     { t: "code", lang: "python", title: "the same data, four answers", code: `
@@ -152,7 +153,8 @@ for n in (50, 200, 1000, 10_000):
       ["IQR", "`Q3 − Q1`. A robust measure of spread, unaffected by the outer quarters entirely."],
       ["Fence", "`Q1 − 1.5×IQR` and `Q3 + 1.5×IQR`. For normal data these sit at about `±2.7σ`, flagging roughly 0.7% of observations."],
       ["Whisker", "Extends to the furthest actual data point **inside** the fence — not to the fence itself, which is why whiskers are asymmetric."],
-      ["The skew caveat", "The rule assumes symmetry, so on lognormal data it flags around 4.5% of perfectly ordinary points. It detects skew and calls it outliers."]
+      ["The skew caveat", "The rule assumes symmetry, so on lognormal data it flags around 4.5% of perfectly ordinary points. It detects skew and calls it outliers."],
+      ["Box plot", "A five-number summary drawn: minimum inside the fence, `Q1`, median, `Q3`, maximum inside the fence, with anything beyond drawn individually."]
     ]},
 
     { t: "viz",

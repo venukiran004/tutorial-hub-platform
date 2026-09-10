@@ -169,7 +169,8 @@ g @ u_perp                                 # 0.0
       ["Hessian", "The matrix of second partial derivatives, `H[i][j] = ∂²f/∂xᵢ∂xⱼ`. Symmetric for any smooth function."],
       ["Critical point", "Where `∇f = 0`. The Hessian's eigenvalues then decide what kind of point it is."],
       ["Minimum / maximum / saddle", "All eigenvalues positive, all negative, or mixed signs respectively. Mixed is by far the most common in high dimensions."],
-      ["Condition number", "Largest eigenvalue divided by smallest. It governs how badly a valley is stretched, and therefore how slowly gradient descent crawls along it."]
+      ["Condition number", "Largest eigenvalue divided by smallest. It governs how badly a valley is stretched, and therefore how slowly gradient descent crawls along it."],
+      ["Curvature", "How fast the slope itself changes. Positive curvature means the surface bends upward like a bowl; negative means it bends away; zero means locally flat."]
     ]},
 
     { t: "table",

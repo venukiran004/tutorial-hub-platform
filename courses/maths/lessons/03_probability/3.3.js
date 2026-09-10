@@ -149,7 +149,9 @@ expected_distinct(3000, 1000)     # 950.2
       ["Standard deviation", "`σ = √Var(X)`. Back in the original units, and therefore what belongs in a report."],
       ["Covariance", "`Cov(X,Y) = E[(X−μₓ)(Y−μᵧ)]`. Positive when they move together, negative when they oppose, zero when uncorrelated."],
       ["Variance of a sum", "`Var(X+Y) = Var(X) + Var(Y) + 2Cov(X,Y)`. The cross term vanishes only under zero covariance."],
-      ["Scaling", "`Var(aX) = a²Var(X)` — quadratic — while `sd(aX) = |a|·sd(X)` is linear. That square is where the `√n` in every standard error comes from."]
+      ["Scaling", "`Var(aX) = a²Var(X)` — quadratic — while `sd(aX) = |a|·sd(X)` is linear. That square is where the `√n` in every standard error comes from."],
+      ["Moment", "An expectation of a power of the variable. The first is the mean, the second gives variance, and higher ones describe shape."],
+      ["Independence and variance", "`Var(X+Y) = Var(X) + Var(Y)` requires **only** zero covariance, which independence guarantees but does not require. Uncorrelated is enough here."]
     ]},
 
     { t: "table",

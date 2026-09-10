@@ -27,7 +27,8 @@ EC.receiveLesson({
       ["Likelihood", "`P(data | θ)` — how well each parameter value explains what you saw. The same function maximum likelihood maximises."],
       ["Posterior", "`P(θ | data) ∝ likelihood × prior`. A distribution, not a point."],
       ["Conjugate prior", "A prior whose family the posterior shares, making the update pure arithmetic — Beta with a binomial, Gamma with a Poisson, Normal with a Normal."],
-      ["MAP estimate", "The posterior's peak. The Bayesian analogue of the MLE, and equal to it under a flat prior."]
+      ["MAP estimate", "The posterior's peak. The Bayesian analogue of the MLE, and equal to it under a flat prior."],
+      ["Beta-binomial", "The conjugate pair for a proportion: a Beta prior with a binomial likelihood gives a Beta posterior, so the update is `Beta(a+k, b+n−k)` — pure addition."]
     ]},
 
     { t: "viz",

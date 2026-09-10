@@ -27,7 +27,8 @@ EC.receiveLesson({
       ["Empirical distribution", "The observed data treated as a distribution. It converges to the true one, which is why the substitution works."],
       ["Resample", "One bootstrap draw. It contains about 63.2% of the distinct original points — `1 − 1/e`."],
       ["Out-of-bag", "The remaining 36.8%, left out of a given resample. Exactly what random forests validate on."],
-      ["Number of resamples", "About 2,000 for a standard error and 10,000 for a 95% interval. Monte Carlo noise falls as `1/√B`."]
+      ["Number of resamples", "About 2,000 for a standard error and 10,000 for a 95% interval. Monte Carlo noise falls as `1/√B`."],
+      ["Resampling", "Any method that reuses the observed data to estimate sampling behaviour — the bootstrap, the jackknife and permutation tests are all resampling."]
     ]},
 
     { t: "viz",

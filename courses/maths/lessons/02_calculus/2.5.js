@@ -123,7 +123,9 @@ r2 = minimize(f, [0.5, 0.5], constraints=[con2], bounds=[(0, None)]*2)
       ["Primal feasibility", "The solution satisfies every constraint."],
       ["Dual feasibility", "`λᵢ ≥ 0` for inequality constraints. They push in one direction only."],
       ["Complementary slackness", "`λᵢ · gᵢ(x) = 0`. Each constraint is either **active** — tight, with a positive price — or **inactive** — slack, and costing nothing."],
-      ["Active set", "The constraints that are tight at the optimum. Only these affect the answer, and it is usually a small subset."]
+      ["Active set", "The constraints that are tight at the optimum. Only these affect the answer, and it is usually a small subset."],
+      ["KKT conditions", "Karush-Kuhn-Tucker — the four conditions characterising a constrained optimum. Necessary in general, and sufficient too when the problem is convex."],
+      ["Duality", "Every constrained problem has a dual, whose variables are the multipliers. Its optimum lower-bounds the original's, and for convex problems the two coincide — which is what an SVM solver exploits."]
     ]},
 
     { t: "table",

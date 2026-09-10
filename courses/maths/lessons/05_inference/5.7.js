@@ -98,7 +98,8 @@ stats.fisher_exact([[66, 54], [51, 69]])[1]           # 0.0479
       ["False discovery rate", "`P(H₀ true | significant)`. It depends on how often hypotheses like yours turn out true — at a 10% base rate, over a third of significant findings are wrong."],
       ["Type M error", "Exaggeration of magnitude. At low power only large observed effects clear the threshold, so published effects are inflated — more than two-fold at 18% power."],
       ["Type S error", "Getting the **sign** wrong. Also a low-power phenomenon."],
-      ["Absence of evidence", "`p > 0.05` means the data is compatible with the null, not that the null is true."]
+      ["Absence of evidence", "`p > 0.05` means the data is compatible with the null, not that the null is true."],
+      ["Misinterpretation", "A conclusion the number does not support. The five here are common enough to appear in published work, and each has a specific correction."]
     ]},
 
     { t: "table",
@@ -246,7 +247,8 @@ np.percentile(null_ps, [5, 25, 50, 75, 95])
       ["Optional stopping", "Collecting data until the result is significant. Peeking alone reaches 28%, and with unlimited patience it converges to 100%."],
       ["HARKing", "Hypothesising After the Results are Known — presenting an exploratory finding as if it had been predicted."],
       ["Garden of forking paths", "The same problem without any explicit multiple testing: a single analysis, chosen from many that *would* have been run had the data differed."],
-      ["Pre-registration", "Writing down the metric, test, direction and subgroups before the data arrives. It costs a document and eliminates the entire class."]
+      ["Pre-registration", "Writing down the metric, test, direction and subgroups before the data arrives. It costs a document and eliminates the entire class."],
+      ["p-hacking", "Arriving at significance through analytic choices made after seeing the data. It rarely requires anyone to be dishonest, which is what makes a procedural defence necessary."]
     ]},
 
     { t: "code", lang: "python", title: "researcher degrees of freedom, measured", code: `

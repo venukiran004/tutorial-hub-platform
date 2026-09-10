@@ -119,7 +119,9 @@ np.allclose(A, U @ np.diag(s) @ Vt) # True
       ["Singular value", "`σᵢ`, the stretch factor for direction `i`. Always non-negative and conventionally sorted descending."],
       ["Rank-one piece", "`σᵢ uᵢ vᵢᵀ`. The matrix is the sum of these, each weighted by its singular value."],
       ["Truncated SVD", "Keeping only the largest `k` pieces. The Eckart-Young theorem says no other rank-`k` matrix is closer to the original."],
-      ["Spectrum decay", "How fast the singular values fall. Fast decay means the matrix has strong structure and compresses well; a flat spectrum means it does not."]
+      ["Spectrum decay", "How fast the singular values fall. Fast decay means the matrix has strong structure and compresses well; a flat spectrum means it does not."],
+      ["Low-rank approximation", "Replacing a matrix by one of rank `k` that is as close as possible. Keeping the largest `k` singular values gives it, and no other rank-`k` matrix does better."],
+      ["Compression ratio", "Storage as a fraction of the original. A rank-`k` approximation of an `m × n` matrix stores `k(m + n + 1)` numbers instead of `mn`."]
     ]},
 
     { t: "code", lang: "python", title: "the sum of rank-one pieces", code: `

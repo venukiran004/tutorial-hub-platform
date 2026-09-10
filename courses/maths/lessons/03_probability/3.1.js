@@ -28,7 +28,8 @@ EC.receiveLesson({
       ["Non-negativity", "`P(A) ≥ 0`. A probability is never negative."],
       ["Normalisation", "`P(S) = 1`. Some outcome occurs with certainty."],
       ["Countable additivity", "For **disjoint** events, `P(A or B) = P(A) + P(B)`. The word *disjoint* is what the union rule later has to repair."],
-      ["Equally likely", "A property of the sample space you chose, not a default. `P(A) = |A|/|S|` is valid only when it holds."]
+      ["Equally likely", "A property of the sample space you chose, not a default. `P(A) = |A|/|S|` is valid only when it holds."],
+      ["Kolmogorov's axioms", "The three assumptions above, named for their author. Everything else in probability is derived from them rather than assumed alongside."]
     ]},
 
     { t: "code", lang: "python", title: "the rules are consequences, not extra assumptions", code: `
@@ -96,7 +97,8 @@ sums[7] / 36                  # 0.1667
       ["Combination", "A selection where order does not matter. `C(n,k) = n!/(k!(n−k)!)`, read as \"n choose k\"."],
       ["With replacement", "Items may repeat. `nᵏ` if order matters — passwords, dice rolls."],
       ["Without replacement", "Each item used once. Cards dealt, people chosen for a committee."],
-      ["The bridge", "`C(n,k) = P(n,k)/k!`. Count the ordered arrangements, then divide out the orderings you did not want."]
+      ["The bridge", "`C(n,k) = P(n,k)/k!`. Count the ordered arrangements, then divide out the orderings you did not want."],
+      ["Combinatorics", "The mathematics of counting arrangements. Under equally likely outcomes, a probability question becomes a combinatorics question and nothing more."]
     ]},
 
     { t: "table",

@@ -190,7 +190,8 @@ for n_ in (25, 250, 25_000):
       ["Confidence level", "Going from 95% to 99.9% costs 68% more width. Cheap by comparison."],
       ["Variance reduction", "The free lever: pairing, stratifying or adjusting for a covariate narrows the interval without collecting anything."],
       ["Pairing", "Comparing each unit against itself. It multiplies the effective sample by `1/(1−ρ)` — five times at `ρ = 0.8`."],
-      ["CUPED", "Regressing out a pre-experiment covariate. Typically cuts variance 30–50% in online experiments, permanently and for free."]
+      ["CUPED", "Regressing out a pre-experiment covariate. Typically cuts variance 30–50% in online experiments, permanently and for free."],
+      ["Precision", "How narrow an interval is. Bought at `1/√n`, which is why halving the width costs four times the data."]
     ]},
 
     { t: "code", lang: "python", title: "the three levers, and their prices", code: `

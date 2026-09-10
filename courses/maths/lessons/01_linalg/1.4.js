@@ -26,7 +26,8 @@ EC.receiveLesson({
       ["Eigenvector", "A non-zero vector `v` with `Av = λv`. The transformation acts on it as pure scaling, with no rotation at all."],
       ["Eigenvalue", "The scalar `λ`. It is how much that direction stretches: `λ = 2` doubles, `λ = 0.5` halves, `λ = −1` flips."],
       ["Eigenvalue zero", "That direction is collapsed entirely, so the matrix is singular and the eigenvector lies in the null space (lesson 1.3)."],
-      ["Spectrum", "The full set of eigenvalues. Their signs and sizes characterise the transformation more compactly than the matrix does."]
+      ["Spectrum", "The full set of eigenvalues. Their signs and sizes characterise the transformation more compactly than the matrix does."],
+      ["Characteristic equation", "`det(A − λI) = 0`, whose roots are the eigenvalues. Useful for deriving them by hand at 2×2; never used numerically, because root-finding on a polynomial is unstable."]
     ]},
 
     { t: "p", text: "**Eigenvectors are the transformation's own coordinate system.** Expressed in that basis, a complicated matrix becomes a list of independent scale factors — which is why the decomposition makes so many problems tractable." },
@@ -173,7 +174,9 @@ max(abs(np.linalg.eigvals(grow)))          # 1.1  -> explodes
       ["Real eigenvalues", "Guaranteed for symmetric matrices — no complex numbers to interpret."],
       ["Orthogonal eigenvectors", "Also guaranteed. The eigenvectors are mutually perpendicular, so they form a clean coordinate system."],
       ["Positive definite", "All eigenvalues strictly positive. The matrix stretches every direction, never flipping or collapsing one — the condition that makes a quadratic a bowl rather than a saddle."],
-      ["Positive semi-definite", "All eigenvalues at least zero. Every covariance matrix is at minimum this, which is why a negative eigenvalue on one is proof of a numerical fault."]
+      ["Positive semi-definite", "All eigenvalues at least zero. Every covariance matrix is at minimum this, which is why a negative eigenvalue on one is proof of a numerical fault."],
+      ["Diagonalisation", "Writing `A = QΛQ⁻¹`, where `Λ` is diagonal and holds the eigenvalues. In that basis the transformation is just independent scaling — which is what makes it worth doing."],
+      ["Spectral theorem", "The guarantee that every symmetric matrix diagonalises with real eigenvalues and orthogonal eigenvectors, so `Q⁻¹ = Qᵀ`."]
     ]},
 
     { t: "ladder",

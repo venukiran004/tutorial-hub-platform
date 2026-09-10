@@ -27,7 +27,8 @@ EC.receiveLesson({
       ["Unit of randomisation", "What gets assigned — usually a user, sometimes a session or a region. It must match the unit of analysis."],
       ["Control and treatment", "The unchanged experience and the new one. The control is what makes the comparison causal."],
       ["Allocation", "The split between arms. Unequal allocation costs power by a factor of `1/(4k(1−k))` — a 5% canary needs 5.3× the traffic of a 50/50 test."],
-      ["Intention to treat", "Analysing by the arm someone was **assigned** to, not what they actually did. Analysing by behaviour reintroduces the confounding randomisation removed."]
+      ["Intention to treat", "Analysing by the arm someone was **assigned** to, not what they actually did. Analysing by behaviour reintroduces the confounding randomisation removed."],
+      ["A/B test", "A randomised controlled experiment comparing two variants of a product, usually run online and analysed on a per-user basis."]
     ]},
 
     { t: "viz",
@@ -146,7 +147,8 @@ for k in (0.5, 0.4, 0.2, 0.1, 0.05):
       ["Sample ratio mismatch", "An observed split differing from the intended one by more than chance allows. Tested with a chi-square on the assignment counts."],
       ["Why it is fatal", "Every cause — bot filtering, redirect latency, crashes in one arm — removes a **non-random** subset. It is selection bias with a count attached."],
       ["Strict threshold", "Use `α = 0.001`, because the check runs on every experiment and investigating a real SRM costs far less than trusting a broken test."],
-      ["What not to do", "Do not reweight to correct it. Reweighting assumes you know the mechanism, and if you knew it you would fix it."]
+      ["What not to do", "Do not reweight to correct it. Reweighting assumes you know the mechanism, and if you knew it you would fix it."],
+      ["SRM", "Sample ratio mismatch — the standard abbreviation, and the first thing to check on any experiment readout."]
     ]},
 
     { t: "callout", kind: "trap", title: "SRM invalidates the entire test, not just the counts", body: [

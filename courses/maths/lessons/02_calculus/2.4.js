@@ -26,7 +26,9 @@ EC.receiveLesson({
       ["Convex function", "One where `f(ta + (1−t)b) ≤ tf(a) + (1−t)f(b)` for every pair of points and every `t` in `[0,1]`. The chord lies on or above the curve."],
       ["Strictly convex", "The inequality is strict, so the minimum is unique rather than a flat region."],
       ["Concave", "The reverse — the chord lies below. `f` is concave exactly when `−f` is convex."],
-      ["Convex set", "A region containing the whole line segment between any two of its points. Convex optimisation needs both a convex function and a convex feasible set."]
+      ["Convex set", "A region containing the whole line segment between any two of its points. Convex optimisation needs both a convex function and a convex feasible set."],
+      ["Global minimum", "The lowest value anywhere. In a convex problem every local minimum is global, which is the property that makes such problems solvable rather than merely attemptable."],
+      ["Second-derivative test", "`f'' ≥ 0` everywhere proves convexity in one dimension; in many, it is the Hessian being positive semi-definite."]
     ]},
 
     { t: "viz",

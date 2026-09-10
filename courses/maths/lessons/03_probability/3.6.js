@@ -96,7 +96,8 @@ joint[("paid", "churn")] / p_churn               # 0.077
       ["Posterior", "`P(H|E)` — the updated belief. What the question was actually asking for."],
       ["Evidence", "`P(E)` — the normaliser, summed over every hypothesis. It makes the posterior a proper distribution."],
       ["Base rate neglect", "Ignoring the prior and reading the likelihood as the posterior. The single most consequential error in applied probability."],
-      ["Sensitivity / specificity", "`P(positive | disease)` and `P(negative | healthy)`. Both are properties of the test alone; **precision is not**, because it also depends on prevalence."]
+      ["Sensitivity / specificity", "`P(positive | disease)` and `P(negative | healthy)`. Both are properties of the test alone; **precision is not**, because it also depends on prevalence."],
+      ["Bayes' theorem", "`P(H|E) = P(E|H)P(H)/P(E)`. The rule for turning a likelihood into a posterior, and the only correct way to reverse a conditional."]
     ]},
 
     { t: "viz",
@@ -229,7 +230,8 @@ p_guilty_given_match(60_000_000)   # 1.6%   -- 60 expected false matches
       ["Conditionally independent", "`P(A ∩ B | C) = P(A|C)P(B|C)`. Independent *once you know* `C`."],
       ["Confounder", "A common **cause** of both variables. Conditioning on it removes a spurious association."],
       ["Collider", "A common **effect** of both. Conditioning on it *creates* an association that was not there — which is why \"control for everything\" is unsafe advice."],
-      ["Mutually exclusive ≠ independent", "Disjoint events are maximally dependent: knowing one occurred tells you the other did not."]
+      ["Mutually exclusive ≠ independent", "Disjoint events are maximally dependent: knowing one occurred tells you the other did not."],
+      ["Independence", "`P(A ∩ B) = P(A)P(B)`. Knowing one event tells you nothing about the other — a much stronger claim than being uncorrelated."]
     ]},
 
     { t: "code", lang: "python", title: "two ideas that are routinely confused", code: `

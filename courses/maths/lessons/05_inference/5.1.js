@@ -137,7 +137,9 @@ stats.skew(means)                 # 0.29
       ["Independence", "Observations must not influence one another. Broken by clustering, time series and network effects."],
       ["Identically distributed", "They must come from the same population. Broken when the population shifts mid-collection."],
       ["Finite variance", "Required, and it fails totally rather than gradually — the mean of a million Cauchy samples is distributed like a single one."],
-      ["Convergence rate", "Governed by skewness. The centre converges long before the tails, so `n > 25 × skew²` is the usable rule for trusting a tail probability."]
+      ["Convergence rate", "Governed by skewness. The centre converges long before the tails, so `n > 25 × skew²` is the usable rule for trusting a tail probability."],
+      ["CLT", "The usual abbreviation for the central limit theorem."],
+      ["Law of large numbers", "The related guarantee that a sample mean converges to the true mean as `n` grows. The LLN says *where* it lands; the CLT says how it is distributed on the way."]
     ]},
 
     { t: "code", lang: "python", title: "the conditions, and what each one does", code: `

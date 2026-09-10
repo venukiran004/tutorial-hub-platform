@@ -193,7 +193,9 @@ chi2_permutation(np.array([[8, 2], [1, 9]]))   # ~0.006, matching Fisher
       ["F statistic", "`MS_between / MS_within`. Near 1 under the null, because both then estimate the same `σ²`."],
       ["Omnibus test", "One test for \"are any of these different?\" — which is all a significant F establishes."],
       ["Eta squared", "`SS_between / SS_total` — the fraction of variance explained by group. The effect size, since F and p say nothing about magnitude."],
-      ["`F = t²`", "With two groups, ANOVA is exactly a t-test. It inherits Student's equal-variance assumption rather than Welch's."]
+      ["`F = t²`", "With two groups, ANOVA is exactly a t-test. It inherits Student's equal-variance assumption rather than Welch's."],
+      ["ANOVA", "Analysis of variance — comparing several group means by decomposing total variation into between-group and within-group parts."],
+      ["F-test", "Any test whose statistic is a ratio of two variance estimates. The ANOVA F-test is the common case."]
     ]},
 
     { t: "viz",
@@ -294,7 +296,8 @@ stats.ttest_ind(a, b).statistic**2                    # 7.31 -- F = t^2
       ["Tukey's HSD", "All pairwise comparisons, family-wise controlled. Uses the **studentised range** because the question is how large the *biggest* difference gets by chance."],
       ["Dunnett's test", "Every group against one control. Fewer comparisons than Tukey, so more power."],
       ["Fisher's LSD", "Run pairwise tests only if the omnibus is significant. Adequate for three groups and leaks for more."],
-      ["Planned contrast", "A specific comparison chosen before the data. It needs no correction beyond its own count."]
+      ["Planned contrast", "A specific comparison chosen before the data. It needs no correction beyond its own count."],
+      ["Post-hoc test", "A follow-up comparison run after a significant omnibus result, corrected so the family-wise error rate still holds."]
     ]},
 
     { t: "ladder",

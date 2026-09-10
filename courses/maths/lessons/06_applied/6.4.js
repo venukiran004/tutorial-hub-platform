@@ -164,7 +164,8 @@ score3[worst].mean() - score2[worst].mean()      # ~0.0
       ["Attrition", "The fraction of the original population missing from the sample. If it relates to the outcome, the sample is not the population."],
       ["Berkson's paradox", "Selecting on a **combination** of two conditions makes them appear negatively correlated even when independent. A collider (lesson 3.6) in sampling clothing."],
       ["Left truncation", "Cases that ended before observation began are absent entirely, which biases any duration estimate upward."],
-      ["The check", "Count who is missing, and ask whether both variables affected their absence."]
+      ["The check", "Count who is missing, and ask whether both variables affected their absence."],
+      ["Selection bias", "Any systematic difference between the sample and the population caused by how the sample was chosen. Survivorship and Berkson's paradox are both instances."]
     ]},
 
     { t: "code", lang: "python", title: "the data that is missing is the data that matters", code: `
@@ -335,7 +336,8 @@ simpson_check([81/87, 192/263], [234/270, 55/80], [87, 263], [270, 80])
       ["What is the effect size?", "In the units of the decision, with an interval. Not the p-value."],
       ["What is the power?", "For the effect **claimed**, not the effect observed. Below 50%, a significant result is probably exaggerated."],
       ["What is the unit?", "Does the unit of analysis match the unit of randomisation, and are rows independent?"],
-      ["What would falsify it?", "If the claim were false, what would the data look like? If the answer is \"the same\", it is not a finding."]
+      ["What would falsify it?", "If the claim were false, what would the data look like? If the answer is \"the same\", it is not a finding."],
+      ["Simpson's paradox", "A trend that holds in every subgroup and reverses when pooled. Which table to read depends on whether the grouping variable is a confounder or a mediator."]
     ]},
 
     { t: "table",

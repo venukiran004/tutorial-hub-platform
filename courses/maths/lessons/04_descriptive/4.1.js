@@ -28,7 +28,8 @@ EC.receiveLesson({
       ["Mode", "The most common value. The only one that works for categories, and the only one that can have several answers."],
       ["Mean/median ratio", "A free measure of skew. Around 1 means symmetric; above 1.2 means a tail is pulling the mean."],
       ["Geometric mean", "The `n`th root of the product. The correct average for **multiplicative** quantities such as growth rates."],
-      ["Harmonic mean", "`n / Σ(1/xᵢ)`. The correct average for **rates over a fixed amount of work**, such as speeds over equal distances."]
+      ["Harmonic mean", "`n / Σ(1/xᵢ)`. The correct average for **rates over a fixed amount of work**, such as speeds over equal distances."],
+      ["Skew", "Asymmetry in a distribution. Right-skewed data has a long upper tail and a mean above its median; left-skewed is the mirror image."]
     ]},
 
     { t: "code", lang: "python", title: "they are not competing estimates of the same thing", code: `
@@ -92,7 +93,8 @@ pay.mean() / np.median(pay)   # 1.646
       ["Breakdown point", "The fraction of observations that must be corrupted to move an estimator arbitrarily far. `1/n` for the mean, 50% for the median."],
       ["Robust estimator", "One with a breakdown point well above zero. It resists contamination at some cost in efficiency."],
       ["Trimmed mean", "Discard the extreme `k%` at each end, then average. The breakdown point is exactly the trim fraction, so you choose it deliberately."],
-      ["Efficiency", "How much data a robust estimator needs to match a non-robust one on clean data. The median needs about 57% more than the mean under normality."]
+      ["Efficiency", "How much data a robust estimator needs to match a non-robust one on clean data. The median needs about 57% more than the mean under normality."],
+      ["Outlier", "An observation far from the rest. Whether it is an error or a genuine rare case is a question about the data, not about the number — and only the first justifies removal."]
     ]},
 
     { t: "viz",

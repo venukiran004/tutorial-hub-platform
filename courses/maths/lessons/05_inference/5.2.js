@@ -28,7 +28,8 @@ EC.receiveLesson({
       ["Variance", "`Var(θ̂)`. How much the estimate moves from sample to sample."],
       ["Mean squared error", "`MSE = bias² + variance`. The expected squared error, and the thing worth minimising — unbiasedness is a constraint you may choose to impose."],
       ["Consistency", "Converging to the truth as `n → ∞`. A minimum requirement rather than a strong one."],
-      ["Shrinkage", "Deliberately biasing an estimate towards a prior guess to cut variance. For three or more parameters at once it provably beats estimating each independently."]
+      ["Shrinkage", "Deliberately biasing an estimate towards a prior guess to cut variance. For three or more parameters at once it provably beats estimating each independently."],
+      ["Efficiency", "How small an estimator's variance is relative to the best achievable. An efficient estimator extracts as much from the data as theory allows."]
     ]},
 
     { t: "table",

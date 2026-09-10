@@ -107,7 +107,8 @@ for lr in (0.1, 0.5, 0.9, 1.0, 1.1):
       ["Ill-conditioned surface", "One where curvature differs sharply between directions. Measured by the Hessian's condition number."],
       ["Zigzagging", "The characteristic path of gradient descent in a valley: large oscillations across it, tiny progress along it."],
       ["Momentum", "Accumulating a running average of past gradients. Oscillations cancel and consistent directions reinforce, so the valley floor is traversed faster."],
-      ["Adaptive methods", "Adam, RMSProp and relatives, which keep a per-parameter scale estimate so each coordinate gets an appropriate step."]
+      ["Adaptive methods", "Adam, RMSProp and relatives, which keep a per-parameter scale estimate so each coordinate gets an appropriate step."],
+      ["Adam", "The common adaptive optimiser: momentum plus a per-parameter running estimate of gradient scale, with a bias correction for the first few steps. Effectively a diagonal approximation to Newton's method."]
     ]},
 
     { t: "code", lang: "python", title: "the valley that defeats plain descent", code: `
@@ -198,7 +199,9 @@ for t in range(1, steps + 1):
       ["Batch gradient descent", "One update per pass over the whole dataset. Exact gradient, very few updates."],
       ["Stochastic gradient descent", "One update per example. Maximum noise, maximum updates per epoch."],
       ["Mini-batch", "The practical middle: 32 to 512 examples. Gradient noise falls as `1/√batch`, so returns diminish quickly."],
-      ["Gradient noise", "The difference between a batch gradient and the true one. It helps escape saddle points, which is why pure batch descent is not obviously better."]
+      ["Gradient noise", "The difference between a batch gradient and the true one. It helps escape saddle points, which is why pure batch descent is not obviously better."],
+      ["SGD", "Stochastic gradient descent — updating from a small random subset rather than the whole dataset. The noise it introduces is useful, not merely tolerated."],
+      ["Saddle point", "A critical point that is a minimum in some directions and a maximum in others. In high dimensions these vastly outnumber true minima, and gradient noise is what escapes them."]
     ]},
 
     { t: "table",
