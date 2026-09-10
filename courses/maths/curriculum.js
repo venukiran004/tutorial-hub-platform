@@ -17,17 +17,17 @@
     short: "MS",
     blurb: "The linear algebra, calculus, probability and inference that models actually rest on.",
 
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "3.1", "3.2", "3.3", "3.4"],
 
     modules: [
 
       /* ================================================================
-         PHASE 1 — THE LANGUAGE
+         PHASE 1 · THE MATHEMATICS A MODEL IS MADE OF — linear algebra
          ================================================================ */
       {
         id: "linalg",
         short: "M1",
-        phase: "Phase 1 · The language models are written in",
+        phase: "Phase 1 · The mathematics a model is made of",
         title: "Linear Algebra",
         blurb: "Vectors, matrices and decompositions, as geometry you can picture rather than notation you memorise.",
         outcome: "You can say what a matrix does to space, and derive PCA rather than recite it.",
@@ -57,12 +57,12 @@
       },
 
       /* ================================================================
-         PHASE 2 — CHANGE
+         PHASE 1 · THE MATHEMATICS A MODEL IS MADE OF — calculus
          ================================================================ */
       {
         id: "calculus",
         short: "M2",
-        phase: "Phase 2 · How a model learns",
+        phase: "Phase 1 · The mathematics a model is made of",
         title: "Calculus & Optimisation",
         blurb: "Derivatives, gradients and the optimisation that turns a loss surface into trained weights.",
         outcome: "You can derive a gradient, explain why an optimiser stalls, and recognise a problem convexity has already solved.",
@@ -89,12 +89,12 @@
       },
 
       /* ================================================================
-         PHASE 3 — UNCERTAINTY
+         PHASE 2 · UNCERTAINTY AND DATA — probability
          ================================================================ */
       {
         id: "probability",
         short: "M3",
-        phase: "Phase 3 · Describing uncertainty",
+        phase: "Phase 2 · Uncertainty and data",
         title: "Probability",
         blurb: "Random variables, distributions and the theorems that let a sample say something about a population.",
         outcome: "You can choose a distribution for a situation, and compute with it rather than gesture at it.",
@@ -130,12 +130,12 @@
       },
 
       /* ================================================================
-         PHASE 4 — DESCRIPTION
+         PHASE 2 · UNCERTAINTY AND DATA — descriptive statistics
          ================================================================ */
       {
         id: "descriptive",
         short: "M4",
-        phase: "Phase 4 · Describing data",
+        phase: "Phase 2 · Uncertainty and data",
         title: "Descriptive Statistics",
         blurb: "Summaries that inform and summaries that mislead, and how to tell which one you are looking at.",
         outcome: "You can summarise a distribution honestly, and spot a summary that is hiding its shape.",
@@ -159,12 +159,12 @@
       },
 
       /* ================================================================
-         PHASE 5 — INFERENCE
+         PHASE 3 · DECIDING WHAT IS REAL — statistical inference
          ================================================================ */
       {
         id: "inference",
         short: "M5",
-        phase: "Phase 5 · Deciding what is real",
+        phase: "Phase 3 · Deciding what is real",
         title: "Statistical Inference",
         blurb: "From a sample to a claim about the world, with the error rates stated rather than assumed.",
         outcome: "You can design a test, read its output honestly, and say what it does not license you to conclude.",
@@ -209,12 +209,12 @@
       },
 
       /* ================================================================
-         PHASE 6 — APPLIED
+         PHASE 3 · DECIDING WHAT IS REAL — applied statistics
          ================================================================ */
       {
         id: "applied",
         short: "M6",
-        phase: "Phase 6 · In production",
+        phase: "Phase 3 · Deciding what is real",
         title: "Applied Statistics",
         blurb: "Experiments and models as they are actually run, and the mistakes that survive code review.",
         outcome: "You can design and read an A/B test, and defend a regression against the objections that matter.",

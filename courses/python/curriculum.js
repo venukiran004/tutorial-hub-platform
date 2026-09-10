@@ -581,7 +581,7 @@
       {
         id: "aiml",
         short: "L15",
-        phase: "Phase 5 · Applied",
+        phase: "Phase 5 · Applied Python",
         title: "Python for Data, ML & AI Engineering",
         blurb: "The applied stack, taught as engineering rather than as notebook recipes.",
         outcome: "You can build a data or ML pipeline that runs on a schedule, in production, without you watching it.",
@@ -617,12 +617,12 @@
       },
 
       /* ==================================================================
-         APPENDIX
+         PHASE 5 (continued)
          ================================================================== */
       {
         id: "dsa",
         short: "A1",
-        phase: "Appendix · Practice",
+        phase: "Phase 5 · Applied Python",
         title: "Data Structures & Algorithms in Python",
         blurb: "The interview track, taught with Python's actual data structures.",
         outcome: "You can solve a standard algorithmic problem in idiomatic Python and analyse it out loud.",

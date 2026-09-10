@@ -27,7 +27,7 @@
     modules: [
       {
         id: "cp_basics", short: "C1",
-        phase: "Core Python",
+        phase: "Phase 1 · Core Python",
         title: "Basics and Data Types",
         blurb: "Data types, strings, control flow, tuples, sets and dictionaries.",
         outcome: "You can write any small Python program without looking up syntax.",
@@ -94,7 +94,7 @@
 
       {
         id: "cp_lists", short: "C2",
-        phase: "Core Python",
+        phase: "Phase 1 · Core Python",
         title: "Lists and Arrays",
         blurb: "Every list and array program: classic problems, array algorithms, matrices and grids.",
         outcome: "You reach for the right traversal instead of nesting two loops by reflex.",
@@ -134,7 +134,7 @@
 
       {
         id: "cp_functions", short: "C3",
-        phase: "Core Python",
+        phase: "Phase 1 · Core Python",
         title: "Functions and Functional",
         blurb: "Functions, arguments, lambdas, comprehensions and the functional toolkit.",
         outcome: "You can decompose a problem into functions that are worth testing.",
@@ -171,7 +171,7 @@
 
       {
         id: "cp_advanced", short: "C4",
-        phase: "Depth",
+        phase: "Phase 2 · Depth",
         title: "Decorators, Generators and Internals",
         blurb: "Decorators, generators, iterators, memory and the performance edge cases.",
         outcome: "The advanced features stop being trivia and become tools you choose.",
@@ -232,7 +232,7 @@
 
       {
         id: "cp_oop", short: "C5",
-        phase: "Depth",
+        phase: "Phase 2 · Depth",
         title: "OOP and Design Patterns",
         blurb: "Classes, inheritance, dunder methods and the design patterns built on them.",
         outcome: "You can turn a paragraph of requirements into classes that survive the next one.",
@@ -281,7 +281,7 @@
 
       {
         id: "cp_errors", short: "C6",
-        phase: "Depth",
+        phase: "Phase 2 · Depth",
         title: "Errors, I/O and Concurrency",
         blurb: "Exceptions, file input and output, serialisation, threading and async.",
         outcome: "You can make code fail correctly, and keep it fast without making it wrong.",
@@ -336,7 +336,7 @@
 
       {
         id: "cp_tooling", short: "C7",
-        phase: "Applied",
+        phase: "Phase 3 · Applied",
         title: "Modules, Regex, Testing and Tooling",
         blurb: "Modules, regular expressions, testing, command-line tools, sockets, HTTP and APIs.",
         outcome: "You can build and ship a Python project, not just write one.",
@@ -397,7 +397,7 @@
 
       {
         id: "cp_algorithms", short: "C8",
-        phase: "Applied",
+        phase: "Phase 3 · Applied",
         title: "Algorithms and Data Structures",
         blurb: "Sorting, searching, recursion, maths and cryptography problems.",
         outcome: "You can name the pattern a problem belongs to before you write a line.",
@@ -428,7 +428,7 @@
 
       {
         id: "cp_banks", short: "C9",
-        phase: "Interview",
+        phase: "Phase 4 · Senior and interview sets",
         title: "Topic-Wise and Scenario Sets",
         blurb: "The cross-topic coding sets: topic-by-topic problems and scenario-based questions that arrive as a situation rather than a specification.",
         outcome: "You can start a problem stated as a situation rather than a task.",
@@ -441,7 +441,7 @@
 
       {
         id: "cp_backend", short: "C10",
-        phase: "Interview",
+        phase: "Phase 4 · Senior and interview sets",
         title: "Backend, Databases and Production",
         blurb: "Databases and ORMs, caching, scaling, containers, observability, security and system design.",
         outcome: "You can answer the questions that come after 'and how would you deploy it?'",
