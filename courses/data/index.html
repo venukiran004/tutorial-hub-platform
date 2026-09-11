@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Data Handling — Tutorial Hub</title>
-<meta name="description" content="Linear algebra, calculus, probability and statistical inference for engineers and data scientists. 43 lessons, every formula worked on an actual number.">
+<meta name="description" content="NumPy, pandas and SQL, then data quality, feature engineering and the evaluation discipline that keeps a model honest. 57 lessons, every claim demonstrated on real-shaped data.">
 <script>try{var t=localStorage.getItem("th:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,18 +39,18 @@
     <span class="hero-eyebrow" id="hero-badge"></span>
     <h1>Real data, <span class="dim">and what it takes to trust it.</span></h1>
     <p class="hero-lede">
-      Linear algebra, calculus, probability and inference — the parts that decide whether a model
-      trains, whether a result is real, and whether a number in a report means what it says.
-      Every formula here is <b>evaluated on an actual number</b>, because a formula you have not
-      worked by hand is one you cannot debug.
+      Arrays and frames, getting data in and trusting it, turning it into features — and the
+      leakage, splits and thresholds that decide whether the score you report is one the live
+      model can keep. Every claim here is <b>demonstrated on data with a planted fault</b>, because
+      a check you have not watched fire is one you will not run.
     </p>
     <div class="hero-cta">
       <a class="cta primary" id="start-btn" href="lesson.html?id=1.1">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
-        <span id="start-label">Start with vectors</span>
+        <span id="start-label">Start with the array</span>
       </a>
       <a class="cta ghost" href="#curriculum">View full curriculum</a>
-      <span class="cta-note">43 lessons · no account, no sign-up.</span>
+      <span class="cta-note">57 lessons · no account, no sign-up.</span>
     </div>
 
     <div class="stats" id="stats"></div>
@@ -66,24 +66,24 @@
     </p>
     <div class="ladder-strip">
       <div class="ls-step" style="--c:var(--d-foundation)">
-        <div class="ls-n">01</div><div class="ls-t">I can read the notation</div>
-        <div class="ls-d">A matrix, a gradient and a distribution stop being symbols and start being objects you can picture.</div>
+        <div class="ls-n">01</div><div class="ls-t">I know what the object is</div>
+        <div class="ls-d">An ndarray is a buffer plus strides, a DataFrame is columns on an index, and a view is not a copy — you can say which you hold.</div>
       </div>
       <div class="ls-step" style="--c:var(--d-core)">
-        <div class="ls-n">02</div><div class="ls-t">I can work the number</div>
-        <div class="ls-d">You evaluate it by hand on a small case, which is the only way to know a library is lying to you.</div>
+        <div class="ls-n">02</div><div class="ls-t">I can get it in and reconcile it</div>
+        <div class="ls-d">CSV, JSON, Parquet and SQL arrive with explicit dtypes, validated joins and row counts that agree with the source.</div>
       </div>
       <div class="ls-step" style="--c:var(--accent)">
-        <div class="ls-n">03</div><div class="ls-t">I can derive it</div>
-        <div class="ls-d">PCA falls out of an eigenproblem and n minus 1 falls out of a bias calculation, rather than being asserted.</div>
+        <div class="ls-n">03</div><div class="ls-t">I can say what is wrong with it</div>
+        <div class="ls-d">Duplicates, sentinel nulls, MNAR missingness and outliers each get a cause before they get a treatment.</div>
       </div>
       <div class="ls-step" style="--c:var(--d-advanced)">
-        <div class="ls-n">04</div><div class="ls-t">I know what it assumes</div>
-        <div class="ls-d">Every test and every model carries assumptions; you can name them and say what breaks when they fail.</div>
+        <div class="ls-n">04</div><div class="ls-t">I can build features that hold</div>
+        <div class="ls-d">Encodings, scales, transforms and windows that are computed from each row's past and fitted inside the fold.</div>
       </div>
       <div class="ls-step" style="--c:var(--d-expert)">
-        <div class="ls-n">05</div><div class="ls-t">I can defend the conclusion</div>
-        <div class="ls-d">You can say what a result licenses, what it does not, and why the obvious reading is wrong.</div>
+        <div class="ls-n">05</div><div class="ls-t">I can defend the number</div>
+        <div class="ls-d">The split matches the deployment, the metric matches the base rate, and every leak has a check that would have caught it.</div>
       </div>
     </div>
   </section>
@@ -98,10 +98,10 @@
       <button class="ghost-btn" id="expand-all" type="button">Expand all</button>
     </div>
     <p class="sec-lede">
-      Six phases, each depending on the one before it: the algebra a model is written in, the
-      calculus that trains it, the probability that describes its uncertainty, and the statistics
-      that decides whether a measured difference is real. Modules marked <b>soon</b> are written
-      and scheduled — the shape of the whole course is visible from day one.
+      Four phases, each depending on the one before it: the array and the frame you compute in,
+      the ingestion and quality work that makes data trustworthy, the features a model actually
+      sees, and the discipline — leakage, splits, pipelines, imbalance — that decides whether the
+      score is real. The last lesson is the whole course folded into a review checklist.
     </p>
     <div id="curriculum-list"></div>
   </section>
@@ -153,7 +153,7 @@
     { v: C.modules.length, l: "Modules" },
     { v: C.allLessons.length, l: "Lessons" },
     { v: Math.round(totalMin / 60) + " hrs", l: "Guided content" },
-    { v: "Worked", l: "Every formula" }
+    { v: "Planted", l: "A fault per lesson" }
   ].map(function (s) {
     return '<div class="stat"><div class="stat-v">' + s.v + '</div><div class="stat-l">' + s.l + "</div></div>";
   }).join("");
@@ -263,17 +263,17 @@
 
   /* ---- fit ---- */
   var yes = [
-    "You use these results daily but could not derive one if a reviewer pushed back.",
-    "You are an engineer moving into ML and the notation is the part slowing you down.",
-    "You run experiments and want to read a p-value, an interval and a power calculation honestly.",
-    "You have met PCA, MLE and the CLT as recipes and want to see where they come from.",
-    "You are preparing for interviews where <em>why</em> is the follow-up to every <em>what</em>."
+    "You use pandas daily and have been bitten by a view, a silent dtype, or a join that doubled your rows.",
+    "You have shipped a model whose live score was nowhere near the notebook's and never found out why.",
+    "You write SQL and Python against the same warehouse and want the two to agree on NULL, time and duplicates.",
+    "You can call SMOTE, PCA and target encoding but could not say where each one leaks.",
+    "You are preparing for interviews where <em>how would you check</em> is the follow-up to every <em>what</em>."
   ];
   var no = [
-    "You want proofs in full rigour. This works numbers and states results; a textbook is better at the proofs.",
-    "You want a formula sheet. This teaches judgement; a reference card is faster for lookup.",
-    "You have never met algebra or a summation sign. Start lower, then come back.",
-    "You are looking for the machine-learning models themselves. Those are a separate course; this is the mathematics underneath them."
+    "You want the algorithms themselves. Those are a separate course; this is the data they are trained on and the evaluation they are judged by.",
+    "You want a pandas API reference. This teaches judgement; the documentation is faster for lookup.",
+    "You have never written Python. Start with the Python course, then come back.",
+    "You want deep SQL engine internals — query plans, indexing, schema design. Those have their own course; this covers the SQL a data scientist reads and writes."
   ];
   $("#fit-yes").innerHTML = yes.map(function (t) { return "<li>" + I.check + "<span>" + t + "</span></li>"; }).join("");
   $("#fit-no").innerHTML  = no.map(function (t) { return "<li>" + I.chevron + "<span>" + t + "</span></li>"; }).join("");
