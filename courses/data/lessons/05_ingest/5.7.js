@@ -449,6 +449,15 @@ with engine.begin() as conn:
       caption: "**`if_exists=\"replace\"` drops the table** — every index, constraint, default and grant with it. For a managed table, `TRUNCATE` then append inside one transaction."
     },
 
+    { t: "p", text: "Four terms from the database side of the table that a data scientist hears without owning. They belong to the SQL course; this is enough to hold the conversation and to know when they explain something in your extract." },
+
+    { t: "dl", items: [
+      ["Stored procedure / function", "Logic that lives in the database and runs there: a procedure is called for its effects, a function returns a value inside a query. Reading its output is like reading from a view whose definition you cannot see from pandas — ask for the source before trusting the numbers."],
+      ["Trigger", "Code the database runs automatically on an insert, update or delete. The reason a column can change after you thought the row was final, and a candidate cause when a feature's known_at (8.3) is later than the row's own timestamp."],
+      ["Denormalisation", "Storing the same fact in more than one place so reads avoid a join. The warehouse you extract from is usually denormalised on purpose; the duplicates and fan-outs of 3.6 and 6.4 are the price, and `validate=` is how you pay it consciously."],
+      ["CAP theorem", "A distributed store can guarantee at most two of consistency, availability and partition tolerance. In practice the replica you read may be seconds behind the writer, so two extracts a minute apart can disagree — one reason the extract timestamp goes on the run card (8.7)."]
+    ]},
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

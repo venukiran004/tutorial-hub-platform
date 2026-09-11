@@ -390,6 +390,34 @@ WHERE    prev_status = 'shipped' AND status = 'cancelled';
       caption: "**Every pandas group-and-broadcast operation has a window equivalent.** The SQL version runs where the data is, uses the index on the partition key, and never moves the table."
     },
 
+    { t: "p", text: "One more shape of query that a data scientist reads and occasionally writes: **a recursive CTE**, which is a `WITH` block that refers to itself. It has two uses that matter here. A **date spine** — every day between two dates, whether or not a row exists — is what a left join needs before a daily count can show its zeros instead of skipping them (the SQL form of `asfreq` in 4.4). A **hierarchy walk** — every report of a manager, every sub-category of a category — is the query a join cannot write, because the depth is not known in advance." },
+
+    { t: "code", lang: "sql", title: "A recursive CTE: a date spine, and a hierarchy of unknown depth",
+      code: `-- the spine: an anchor row, then a step that adds a day until the terminating condition
+WITH RECURSIVE days AS (
+    SELECT DATE '2025-01-01' AS d
+    UNION ALL
+    SELECT d + INTERVAL '1 day' FROM days WHERE d < DATE '2025-03-31'
+)
+SELECT days.d, COALESCE(COUNT(o.order_id), 0) AS orders
+FROM days
+LEFT JOIN orders o ON o.order_date = days.d          -- days with no orders keep a row and a zero
+GROUP BY days.d
+ORDER BY days.d;
+-- PostgreSQL has generate_series('2025-01-01', '2025-03-31', '1 day') for exactly this; BigQuery has GENERATE_DATE_ARRAY
+
+-- the walk: start from the root, then join each level's children until none are left
+WITH RECURSIVE reports AS (
+    SELECT id, manager_id, name, 0 AS depth FROM employees WHERE manager_id IS NULL
+    UNION ALL
+    SELECT e.id, e.manager_id, e.name, r.depth + 1
+    FROM employees e JOIN reports r ON e.manager_id = r.id
+)
+SELECT * FROM reports ORDER BY depth, name;
+-- a cycle in the data (a manages b manages a) recurses forever: guard with a depth limit or a visited path`,
+      caption: "The anchor query runs once; the recursive member runs on the previous iteration's rows until it returns nothing. A spine turns 'no row' into 'zero', which is the difference between a daily series with gaps and one a rolling window can use."
+    },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

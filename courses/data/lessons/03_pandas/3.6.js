@@ -347,6 +347,8 @@ df = df.drop(columns="_merge")`,
       ]
     },
 
+    { t: "p", text: "`merge_asof` has a sibling for a different question. **`pd.merge_ordered`** performs an outer join on a sorted key and can forward-fill the gaps per group (`fill_method=\"ffill\"`, `left_by=`) — the join for two series sampled on different grids when you want *both* sets of timestamps in the result rather than a lookup of one into the other. `merge_asof` answers 'what was the latest value at each of my times'; `merge_ordered` answers 'give me the union of the timelines, carried forward'." },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

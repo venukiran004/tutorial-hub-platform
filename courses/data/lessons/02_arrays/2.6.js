@@ -415,6 +415,25 @@ best_degree(x, y)[0]          # 2 -- the true degree, found honestly
       caption: "**Training error falls monotonically with degree.** It is not a model selection criterion — it is a measure of how much you overfitted, and only held-out data can tell you the degree."
     },
 
+    { t: "code", lang: "python", title: "Autocorrelation from correlate, and a better-conditioned polynomial fit",
+      code: `rng = np.random.default_rng(6)
+s = np.sin(np.linspace(0, 8 * np.pi, 400)) + rng.normal(0, 0.3, 400)     # four cycles in 400 samples
+s = s - s.mean()
+ac = np.correlate(s, s, mode="full")[len(s) - 1:]     # the signal against a lagged copy of itself: lags 0 .. n-1
+ac = ac / ac[0]                                       # normalise so lag 0 is 1
+print(np.argmax(ac[20:]) + 20)                        # ~100: the period in samples -- the FFT of section 03 agrees
+# pandas spells the single-lag version s.autocorr(lag) (4.3)
+
+# polyfit works in the monomial basis 1, x, x^2, x^3 -- whose columns span 1 to 1e9 when x reaches 1000.
+# The Chebyshev basis is orthogonal on a rescaled interval, so the same fit stays well conditioned.
+x = np.linspace(0, 1000, 200)
+y = 1e-6 * x ** 3 - 2e-3 * x ** 2 + x + rng.normal(0, 5, 200)
+c = np.polynomial.Chebyshev.fit(x, y, deg=3)          # maps x to [-1, 1] internally; Hermite and Legendre likewise
+print(np.abs(c(x) - y).mean().round(1))               # ~4: a residual the size of the noise
+print(c.convert().coef.round(6))                      # back to monomial coefficients if you must report them`,
+      caption: "`np.correlate` in full mode holds the autocorrelation at every lag; the first peak after zero is the period. `Chebyshev.fit` is the polynomial fit to use when x spans orders of magnitude — the monomial basis is only well conditioned near the origin."
+    },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

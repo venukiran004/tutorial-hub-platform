@@ -355,6 +355,16 @@ pd.read_csv.__defaults__                 # see na_values in 5.1
       { t: "p", text: "This is also what makes the imputation choice less critical: with the indicator present, a model can learn that the filled value is not to be trusted in the same way as an observed one." }
     ]},
 
+    { t: "code", lang: "python", title: "combine_first: patch the holes from a second source",
+      code: `primary = pd.DataFrame({"price": [10.0, np.nan, 12.0, np.nan]}, index=["a", "b", "c", "d"])
+backup  = pd.DataFrame({"price": [9.5, 11.0, 11.5, np.nan]},  index=["a", "b", "c", "d"])
+print(primary.combine_first(backup).price.tolist())    # [10.0, 11.0, 12.0, nan]
+# aligned on the index: primary wins wherever it has a value, the backup fills the rest -- an outer
+# join followed by a coalesce. fillna(backup) does the same for matching labels; combine_first also
+# keeps rows and columns that exist only in the backup.`,
+      caption: "The two-frame form of `COALESCE(primary, backup)`. Right when a second feed is authoritative for the gaps in the first; wrong when the gaps are informative (6.5)."
+    },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

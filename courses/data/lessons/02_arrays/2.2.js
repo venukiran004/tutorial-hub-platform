@@ -323,6 +323,8 @@ lookup = {10, 30}
       caption: "**`np.unique(X)` without `axis=0` flattens and returns unique scalars.** Deduplicating a feature matrix needs the axis argument, and forgetting it produces a 1-D array that fails much later."
     },
 
+    { t: "p", text: "One spelling to recognise in older code: **`np.in1d`** is the predecessor of `np.isin` — the same membership test, but it always returns a flat 1-D result. Use `isin`; it keeps the shape of its first argument and reads as what it is." },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

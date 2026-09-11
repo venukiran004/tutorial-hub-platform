@@ -307,6 +307,20 @@ np.isnan(X).sum(axis=0)       # [1, 0] -- report this next to the means
       caption: "**`np.nansum` of an all-nan slice returns 0.** In a revenue report, \"no data\" and \"totalled zero\" are very different claims, and this convention makes them identical."
     },
 
+    { t: "code", lang: "python", title: "argmax on a flattened array, and arrays built from their own indices",
+      code: `rng = np.random.default_rng(3)
+m = rng.normal(size=(4, 6))
+flat = m.argmax()                                   # a position in the flattened array
+print(np.unravel_index(flat, m.shape))              # (row, col) -- the coordinates a summary needs
+print(np.ravel_multi_index((2, 5), m.shape))        # 17: the inverse
+print(m.argmax(axis=1))                             # (4,) -- with an axis, one position per slice
+
+# an array from a function of its indices: the lambda receives index grids and runs once
+tri = np.fromfunction(lambda i, j: i >= j, (4, 4))  # lower-triangular mask
+print(tri.astype(int).sum())                        # 10`,
+      caption: "`argmax` without an axis reports a flat position; `unravel_index` converts it to coordinates. `fromfunction` passes whole index grids, so the function must be vectorised — it is not called per cell."
+    },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

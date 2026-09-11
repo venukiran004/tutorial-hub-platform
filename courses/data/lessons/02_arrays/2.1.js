@@ -263,6 +263,23 @@ feature_names = list(cols)`,
       ]
     },
 
+    { t: "p", text: "The rest of the shape toolbox, with the column that matters: whether the result shares the buffer. **`expand_dims`, `squeeze`, `flip` and `rot90` are strides tricks and cost nothing; `roll`, `tile`, `repeat`, `pad` and `kron` allocate.** If a shape operation copies and you did not expect it, ask whether a view could have said the same thing." },
+
+    { t: "table",
+      head: ["Function", "What it does", "View or copy", "Use it when"],
+      rows: [
+        ["`np.expand_dims(a, axis)` / `a[:, None]`", "Insert a length-1 axis", "View", "Lining shapes up for broadcasting"],
+        ["`np.squeeze(a, axis=)`", "Remove length-1 axes", "View", "Undoing a keepdims or a batch of one — name the axis, or it removes all of them"],
+        ["`np.flip` / `fliplr` / `flipud`", "Reverse along an axis", "View (negative stride)", "Reversing a time or image axis without a copy"],
+        ["`np.rot90(a, k)`", "Rotate the first two axes by 90° k times", "View", "Grid and image orientation"],
+        ["`np.roll(a, shift, axis)`", "Circular shift", "Copy", "Periodic data only — the wrapped element is garbage for a real lag; use shift semantics (4.3)"],
+        ["`np.tile` / `np.repeat`", "Repeat the whole array / each element", "Copy", "Test fixtures; broadcasting usually makes the tile unnecessary"],
+        ["`np.pad(a, width, mode=)`", "Add a border: constant, edge, reflect, wrap", "Copy", "Windows at the edges of a signal or image"],
+        ["`np.put` / `np.putmask`", "Assign at flat indices / where a mask holds", "In place", "Older spellings of `a.flat[idx] = v` and `a[mask] = v`"],
+        ["`np.kron(a, b)`", "Kronecker product: each element of a times all of b", "Copy", "Block-structured matrices; `scipy.linalg.block_diag` for blocks on a diagonal"]
+      ]
+    },
+
     { t: "h2", n: "03", text: "Practice", id: "practice" },
 
     { t: "exercise",

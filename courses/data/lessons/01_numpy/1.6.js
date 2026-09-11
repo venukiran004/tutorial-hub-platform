@@ -375,6 +375,8 @@ def chunked_mean(path, shape, dtype=np.float32, chunk=100_000):
       caption: "**A column of a C-contiguous memmap is strided across the entire file.** Reading it pulls in every page — which is exactly the problem columnar formats exist to solve."
     },
 
+    { t: "p", text: "Beyond Dask and Polars, three more names come up. **Modin** re-implements the pandas API over Ray or Dask, so `import modin.pandas as pd` parallelises existing code with no rewrite — and no guarantee that every method is faster. **cuDF** (RAPIDS) runs a pandas-like frame on the GPU; the win is real for large numeric groupbys and joins and absent for anything that ships data to and from the card per operation. **Vaex** memory-maps columnar files and evaluates lazily, which suits billion-row exploration on one machine. The question is the same for all of them: is the bottleneck memory, cores, or a Python loop — because only the first two are what they fix." },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

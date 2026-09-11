@@ -461,6 +461,33 @@ WHERE  LOWER(email) = 'a@x.com'                   -- does not, unless the index
       caption: "**`COUNT(*)` and `COUNT(col)` differ by exactly the number of NULLs in `col`.** That difference is a data-quality number, and it is free."
     },
 
+    { t: "p", text: "Two more constructs that appear in extract queries. **Grouping sets** compute several levels of aggregation in one pass — the subtotal rows a report wants, without three unioned queries — and they write a `NULL` into the grouping column to mark a subtotal, which is not the `NULL` of section 02 and is what `GROUPING()` exists to tell apart. **Regular expressions** are the full pattern language where `LIKE` has two wildcards; they cannot use a B-tree index, so they scan." },
+
+    { t: "code", lang: "sql", title: "Subtotals in one pass, and pattern matching beyond LIKE",
+      code: `-- ROLLUP: subtotals along a hierarchy, then the grand total
+SELECT region, plan, SUM(amount) AS revenue
+FROM orders
+GROUP BY ROLLUP (region, plan);          -- groups: (region, plan), (region), ()
+
+-- CUBE: every combination of the grouping columns
+GROUP BY CUBE (region, plan);            -- (region, plan), (region), (plan), ()
+
+-- GROUPING SETS: exactly the combinations you name
+GROUP BY GROUPING SETS ((region, plan), (region), ());
+
+-- GROUPING() = 1 on a subtotal row, so a real NULL in plan is not mistaken for one
+SELECT region, plan, SUM(amount) AS revenue, GROUPING(plan) AS is_plan_subtotal
+FROM orders
+GROUP BY ROLLUP (region, plan);
+
+-- LIKE: % is any run, _ is one character; a fixed prefix can use an index
+WHERE email LIKE 'ops%@example.com'
+-- a regular expression: PostgreSQL ~, MySQL REGEXP, BigQuery REGEXP_CONTAINS -- always a scan
+WHERE email ~ '^[a-z0-9._]+@example\\.(com|org)$'
+-- put the cheap filters first; the regex runs on what survives them`,
+      caption: "One `ROLLUP` replaces three unioned aggregates and a manual total. `GROUPING()` is the only honest way to label the subtotal rows when the grouping column can itself be `NULL`."
+    },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

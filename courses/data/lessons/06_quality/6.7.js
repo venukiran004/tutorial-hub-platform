@@ -27,7 +27,7 @@ EC.receiveLesson({
       ["z-score", "Distance from the mean in standard deviations: `(x − μ) / σ`. Flag `|z| > 3`. Both μ and σ are computed from data that includes the outlier."],
       ["Masking", "A large outlier inflates σ and shifts μ toward itself, so its own z-score comes out smaller than it should — it hides. Two large outliers can hide each other completely."],
       ["IQR rule", "Flag values below `Q1 − 1.5·IQR` or above `Q3 + 1.5·IQR`, where IQR is the interquartile range. Quartiles are unmoved by extreme values, so there is no masking."],
-      ["Robust z-score", "`(x − median) / (1.4826 · MAD)`, where MAD is the median absolute deviation. The 1.4826 makes it comparable to σ for normal data. Unmasked, and on the same scale as z."],
+      ["Robust z-score", "`(x − median) / (1.4826 · MAD)`, where MAD is the median absolute deviation. The 1.4826 makes it comparable to σ for normal data. Unmasked, and on the same scale as z. Also called the modified z-score, written `0.6745 · (x − median) / MAD` — the same number, since 0.6745 = 1 / 1.4826 — with 3.5 as the customary cut."],
       ["Breakdown point", "The fraction of the data that can be corrupted before an estimator becomes arbitrary. The mean's is 0 — one value can move it anywhere. The median's is 50%."]
     ]},
 

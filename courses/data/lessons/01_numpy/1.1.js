@@ -273,6 +273,29 @@ noisy.sum(dtype=np.float64)             # 1,000,000.0 -- one keyword
       caption: "**Store in `float32`, accumulate in `float64`.** The `dtype=` argument on `.sum()` is one keyword and it removes a whole class of quiet precision loss."
     },
 
+    { t: "p", text: "Three more ways to reach the buffer directly, each with a reason to be careful. **`as_strided`** builds a view from any shape and strides you name, with no bounds checking — it is the primitive underneath `sliding_window_view` (2.6), and the one that reads past the end of the buffer if a stride is wrong. **`tobytes()` / `np.frombuffer()`** round-trip the raw bytes, which is how arrays cross process and network boundaries without pickling the Python object. **`np.asfortranarray`** and `order=\"F\"` give a column-major layout, which LAPACK wants and will otherwise make for itself with a hidden copy." },
+
+    { t: "code", lang: "python", title: "as_strided, raw bytes, and layout on request",
+      code: `from numpy.lib.stride_tricks import as_strided, sliding_window_view
+
+a = np.arange(8, dtype=np.int64)
+w = as_strided(a, shape=(6, 3), strides=(8, 8))     # 3-wide windows, step 1: the same bytes, no copy
+print(w[5])                                          # [5 6 7]
+# as_strided(a, shape=(7, 3), strides=(8, 8)) reads one element past the buffer: garbage, or a crash
+print(sliding_window_view(a, 3).shape)               # (6, 3) -- the safe wrapper does the arithmetic for you
+
+raw = a.tobytes()                                    # 64 bytes, no header, no dtype
+back = np.frombuffer(raw, dtype=np.int64)            # a view over those bytes -- read-only, bytes are immutable
+print(back.flags.writeable, back.base is raw)        # False True
+
+f = np.asfortranarray(np.ones((1000, 1000)))
+print(f.flags.f_contiguous, f.strides)               # True (8, 8000): columns are contiguous now
+
+# storage dtypes: float16 halves float32 and keeps about three significant digits;
+# bfloat16 is not a NumPy dtype (the ml_dtypes package adds one). Store in half, compute in single.`,
+      caption: "`as_strided` trusts you completely; `sliding_window_view` is the same view with the shape computed for you. `frombuffer` is read-only because the bytes object is immutable — copy before writing."
+    },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

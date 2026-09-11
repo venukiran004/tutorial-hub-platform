@@ -344,6 +344,8 @@ pd.read_parquet("data.parquet", dtype_backend="pyarrow")
       caption: "**Pickle executes code when loaded and breaks across library versions.** It is a serialisation for a running process, not a storage format, and `pd.read_pickle` on a file you did not write is a security decision."
     },
 
+    { t: "p", text: "You will meet one older binary store. **HDF5**, through `pd.HDFStore` and `to_hdf`, is a hierarchical container with fast appends and a `where=` query on indexed columns — good on a single machine with a single writer, awkward across languages and object stores, and displaced by Parquet for anything that leaves the laptop. If a pipeline still writes `.h5`, the conversion is one `read_hdf` and one `to_parquet`, and the row-group statistics you gain are the reason to do it." },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

@@ -374,6 +374,28 @@ except np.linalg.LinAlgError:
       caption: "**Centring is not optional in PCA.** Without it the first component points at the mean rather than at the direction of greatest variance, and the result is dominated by an arbitrary offset."
     },
 
+    { t: "code", lang: "python", title: "QR, the tensor generalisations, and how a decomposition gets a unit test",
+      code: `rng = np.random.default_rng(5)
+A = rng.normal(size=(6, 3)); b = rng.normal(size=6)
+
+# QR: an orthonormal basis for the column space. Gram-Schmidt is the idea; Householder reflections are
+# how it is done without the catastrophic cancellation that the textbook procedure suffers.
+Q, R = np.linalg.qr(A)                      # Q (6, 3) orthonormal columns, R (3, 3) upper triangular
+print(np.allclose(Q.T @ Q, np.eye(3)), np.allclose(Q @ R, A))      # True True
+x_qr = np.linalg.solve(R, Q.T @ b)          # least squares via QR: what lstsq does when A is well conditioned
+print(np.allclose(x_qr, np.linalg.lstsq(A, b, rcond=None)[0]))     # True
+
+# tensordot: a matmul over any pair of axes -- einsum for the common case of one contraction
+T = rng.normal(size=(3, 4, 5)); M = rng.normal(size=(4, 5, 2))
+print(np.tensordot(T, M, axes=([1, 2], [0, 1])).shape)              # (3, 2): contracted over the (4, 5) axes
+print(np.allclose(np.tensordot(T, M, axes=([1, 2], [0, 1])), np.einsum("ijk,jkl->il", T, M)))   # True
+# np.linalg.tensorsolve solves a x = b where a is a tensor: the same reshaping to a matrix, done for you
+
+# floating-point equality in a test: never ==, and a tolerance you chose on purpose
+np.testing.assert_allclose(Q @ R, A, rtol=1e-12, atol=1e-12)        # raises with a diff when it fails`,
+      caption: "`qr` is Gram–Schmidt done stably, and the triangular factor records how the columns were built from each other. `tensordot` is `einsum` for a single contraction. `assert_allclose` is how a numerical routine gets a test that fails with a message rather than a False."
+    },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

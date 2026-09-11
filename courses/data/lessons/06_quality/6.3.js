@@ -211,6 +211,24 @@ accuracy(orders, reference_total=125.0)
       { t: "p", text: "Raising on the first failure is the worst design: it reports one problem on a file that may have five, and it stops the pipeline before the other four are known." }
     ]},
 
+    { t: "p", text: "The consistency dimension has a hard case: **the same fact coded under different systems by different sources** — one hospital on ICD-9, another on ICD-10; one warehouse on ISO country codes, another on names; product SKUs before and after a re-platforming. The fix is a **crosswalk**: a mapping table from each source code to one canonical code, with the source system and its version as part of the key. Two properties decide whether it is trustworthy. The mapping is rarely one-to-one — a single old code can split into several new ones, and the crosswalk has to say which, or map to the parent — and **every code the crosswalk does not know must be reported, not silently nulled**, because the unmapped share is the measure of how much of the data the harmonisation actually reached." },
+
+    { t: "code", lang: "python", title: "Harmonising two coding systems through a crosswalk",
+      code: `walk = pd.DataFrame({"system": ["icd9", "icd9", "icd9", "icd10"], "code": ["250.00", "250.01", "410", "E11.9"],
+                     "canonical": ["E11.9", "E10.9", "I21", "E11.9"], "walk_version": "2025.1"})
+dx = pd.DataFrame({"hospital": ["A", "A", "B", "B"], "system": ["icd9", "icd9", "icd10", "icd10"],
+                   "code": ["250.00", "999.9", "E11.9", "I21.0"]})
+
+out = dx.merge(walk, on=["system", "code"], how="left", validate="m:1")   # m:1 -- a crosswalk with duplicates is a fault
+unmapped = out.canonical.isna()
+print(out.loc[unmapped, ["hospital", "system", "code"]].to_dict("records"))
+# [{'hospital': 'A', 'system': 'icd9', 'code': '999.9'}, {'hospital': 'B', 'system': 'icd10', 'code': 'I21.0'}]
+print(f"unmapped share by hospital: {out.groupby('hospital').canonical.apply(lambda s: s.isna().mean()).to_dict()}")
+# {'A': 0.5, 'B': 0.5} -- the number that goes in the quality report, per source
+# I21.0 is a child of I21: a crosswalk that maps to the parent when the child is absent needs that rule written down`,
+      caption: "The crosswalk is data, versioned like data. `validate=\"m:1\"` guarantees it cannot multiply rows; the unmapped share per source is the consistency metric for the harmonised column."
+    },
+
     { t: "h2", n: "02", text: "Hard gates and soft gates", id: "gates" },
 
     { t: "p", text: "**Not every failure should stop the pipeline.** A duplicated primary key will corrupt every join downstream; a 0.3% rate of malformed emails will not. The quality gate needs two kinds of check — those that block, and those that are logged and trended — and the decision about which is which is a business decision recorded in code." },

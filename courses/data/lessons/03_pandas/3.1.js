@@ -366,6 +366,24 @@ g.swaplevel().sort_index()    # quarter outer, region inner
       caption: "**The blank repeated label is display only.** pandas suppresses repeats for readability, and `g.index[1]` shows both levels are present — this misleads almost everyone once."
     },
 
+    { t: "code", lang: "python", title: "Slicing an inner level with IndexSlice, and the index types .loc consults",
+      code: `sales = pd.DataFrame({"region": np.repeat(["north", "south", "west"], 4),
+                      "month":  np.tile(["2025-01", "2025-02", "2025-03", "2025-04"], 3),
+                      "amount": np.arange(12) * 10})
+wide = sales.set_index(["region", "month"]).sort_index()      # lexsorted levels are what slicing requires
+idx = pd.IndexSlice
+print(wide.loc[idx["north":"south", "2025-02":"2025-03"], :])   # a range on both levels at once
+print(wide.loc[idx[:, "2025-03"], "amount"].tolist())          # every region, one month: [20, 60, 100]
+
+# an index is typed, and the type decides what .loc understands
+pd.RangeIndex(0, 5)                          # the default: start, stop, step -- no array stored
+pd.DatetimeIndex(["2025-01-01"])             # partial-string slicing, resample, timezones (4.4)
+pd.CategoricalIndex(["a", "b"])              # fixed categories; reindex and groupby respect their order
+pd.IntervalIndex.from_breaks([0, 10, 20])    # what pd.cut produces; .loc[5] finds the bin containing 5
+pd.MultiIndex.from_product([["north", "south"], [1, 2]])`,
+      caption: "`IndexSlice` is the only way to write a slice on an inner level inside `.loc`. The list underneath is why `.loc` behaves differently on different frames — it asks the index type how to read the label."
+    },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

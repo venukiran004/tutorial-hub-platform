@@ -191,6 +191,8 @@ miss[miss.sum(axis=1) == 12].sum().sort_values(ascending=False).head(12)
       { t: "p", text: "Those rows will also distort every per-column statistic. Profiling them separately is the only way to see the rest of the data clearly." }
     ]},
 
+    { t: "p", text: "There are report generators — **ydata-profiling** (formerly pandas-profiling), **Sweetviz**, **D-Tale** — that run most of this sequence in one call and render it as HTML: per-column statistics, missingness maps, correlation matrices, constant and duplicate warnings. Use one for the first five minutes on a frame you have never seen; it replaces the typing, not the reading. **What a report cannot do is know which columns are identifiers, which nulls are sentinels, and which range is impossible for this business** — the checks in section 03 — and on a wide frame it takes longer to render than the checklist takes to run. Read the report for the columns it flags, then do the sequence by hand on those." },
+
     { t: "h2", n: "02", text: "Cardinality and distributions", id: "distributions" },
 
     { t: "code", lang: "python", title: "steps 4 and 5: what each column contains, by role", code: `
@@ -426,6 +428,8 @@ def drift(current, previous, cols):
       hl: [4, 40, 62, 80],
       caption: "**The sanity report never raises.** It shows every failure with the count and example rows, because a profile that stops at the first problem tells you one thing about a file that may have five things wrong with it."
     },
+
+    { t: "p", text: "For a notebook glance, `df.isna().mean().to_frame(\"null_rate\").style.bar()` or `df.corr(numeric_only=True).style.background_gradient(cmap=\"coolwarm\")` render the numbers as colour without leaving pandas. The **Styler** is display only — it produces HTML, not data — and it is the cheapest heatmap you will make. It is not a profiling tool; it is how the profiling numbers get looked at." },
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 

@@ -158,6 +158,20 @@ stats.spearmanr(x, y_lin)              # statistic=0.95, pvalue=0.0
       { t: "p", text: "Filter-method feature selection on correlation (see 8.1) makes exactly this mistake at scale." }
     ]},
 
+    { t: "code", lang: "python", title: "corrwith: every feature against one target, in one call",
+      code: `rng = np.random.default_rng(2)
+n = 2_000
+feat = pd.DataFrame(rng.normal(size=(n, 5)), columns=list("abcde"))
+target = 1.5 * feat.a - feat.b ** 2 + rng.normal(0, 1, n)         # linear in a, U-shaped in b
+
+print(feat.corrwith(target).round(2).to_dict())                     # {'a': 0.65, 'b': -0.02, 'c': 0.01, ...}
+print(feat.corrwith(target, method="spearman").round(2).to_dict())  # b still ~0: Spearman is monotonic only
+# corrwith aligns on the index, drops pairs with a missing value per column, and is the first table of a
+# bivariate pass -- and the single-feature scan of 8.3 in another form. b scores like noise under both
+# measures and is the second-strongest feature: the mutual-information check above is what finds it.`,
+      caption: "`corr()` builds the whole matrix; `corrwith(target)` builds the one column you read first. The U-shaped feature scoring zero under both measures is the reason the pass does not stop at this table."
+    },
+
     { t: "h2", n: "02", text: "Association for categorical columns", id: "categorical" },
 
     { t: "p", text: "**Correlation is undefined for two categorical columns — there is no order to correlate.** The tools are the contingency table, a chi-square test on it, Cramér's V for a normalised strength, and mutual information for the general case that covers every type combination." },

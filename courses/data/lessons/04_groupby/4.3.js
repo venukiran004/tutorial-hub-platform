@@ -363,6 +363,21 @@ df["recent"] = (df.groupby("user")["amount"]
       ]
     },
 
+    { t: "code", lang: "python", title: "Autocorrelation: the window question asked of the series itself",
+      code: `rng = np.random.default_rng(4)
+days = pd.date_range("2025-01-01", periods=365, freq="D")
+weekly = np.where(days.dayofweek < 5, 1.0, -1.5)                # a weekday/weekend pattern
+level = np.cumsum(rng.normal(0, 0.3, 365))                      # a slow drift
+s = pd.Series(level + weekly + rng.normal(0, 0.5, 365), index=days)
+
+print([round(s.autocorr(lag), 2) for lag in (1, 7, 30)])       # e.g. [0.69, 0.82, 0.55]
+# autocorr(lag) is the Pearson correlation of the series with itself shifted by lag. A value near 1 at
+# lag 1 says yesterday predicts today; a peak at 7 says the feature to build is shift(7) and a 7-day
+# window, not shift(1); a slow decay says long trailing windows still carry information.
+# Every lag at once: np.correlate on the centred values (2.6), or statsmodels.tsa.stattools.acf.`,
+      caption: "Autocorrelation is the diagnostic that decides which lags and which window lengths are worth building before you build any of them."
+    },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

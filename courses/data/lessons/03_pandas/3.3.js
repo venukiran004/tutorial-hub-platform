@@ -327,6 +327,8 @@ s.iloc[0] = "z"               # now fine
       caption: "**`observed=False` produces a row for every category combination, including ones that never occurred.** On two categorical keys that is a cartesian product, and the single most common cause of a `groupby` that explodes."
     },
 
+    { t: "p", text: "Two converters for a frame that arrived as `object` everywhere — a JSON payload, a scraped table, a `read_csv` with `dtype=str`. **`infer_objects()`** looks at each object column and, where every value is already a Python int, float or bool, gives it the proper NumPy dtype; it never parses strings. **`convert_dtypes()`** goes further and chooses the nullable extension types — `Int64`, `string`, `boolean` — so a column of integers with a gap stays integer. Neither turns `\"12\"` into 12; that is `pd.to_numeric`." },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

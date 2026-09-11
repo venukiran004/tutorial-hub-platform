@@ -137,6 +137,20 @@ EC.receiveLesson({
       ]
     },
 
+    { t: "p", text: "The catalogue's last column points back to lessons; this table points forward to the model. **What preparation a feature needs depends on what the model does with it**, and half the mistakes above are preparation done for a model that did not need it, or skipped for one that did." },
+
+    { t: "table",
+      head: ["Model family", "Scaling", "Categoricals", "Missing values", "Outliers", "Cyclical / interactions"],
+      rows: [
+        ["Linear, logistic, ridge, lasso", "**Required** — penalties and gradients see units", "One-hot (drop one with an intercept), or WoE / target encoding for high cardinality", "Impute, add a missing indicator", "Cap or robust-scale; a single point can move the fit", "Sin/cos for cycles; interactions must be built by hand (7.8, 7.9)"],
+        ["Tree, random forest, gradient boosting", "Not needed — splits are threshold comparisons", "Ordinal or target encoding; one-hot wastes splits; LightGBM and CatBoost take categories natively", "XGBoost / LightGBM route NaN natively; otherwise impute plus indicator", "Harmless — a split isolates them", "Learnt from splits; rotated coordinates and ratios still help (7.9)"],
+        ["k-NN, k-means, SVM with RBF", "**Critical** — the model is a distance", "One-hot, then scale; or Gower distance for mixed types", "Impute — distance to NaN is undefined", "Robust scaling; an outlier is a far neighbour for everyone", "Sin/cos; distances already capture interactions"],
+        ["Naive Bayes", "Not needed", "Counts or one-hot; the model is per feature", "Impute or treat missing as a category", "Bin or log heavy tails for the Gaussian variant", "None — independence is the assumption"],
+        ["Neural network", "**Required** — optimisation depends on it", "Entity embeddings for high cardinality; one-hot for low", "Impute plus indicator, or a learnt missing token", "Clip or transform; gradients follow the tail", "Sin/cos help; interactions are learnt, given enough data"],
+        ["Any model, on time-ordered rows", "As above", "As above", "As above — fitted inside the fold", "As above", "Every window trailing, every aggregate as-of, the split by time (8.3, 8.4)"]
+      ]
+    },
+
     { t: "callout", kind: "mental", title: "Which one to find first", body: [
       { t: "p", text: "A target-leak column makes every later number meaningless; a wrong split makes every metric optimistic; a wrong metric makes a right split unreadable. **Order the review by what invalidates the most**: reproduce, then the split, then every fit relative to it, then the label's timing, then time itself, then the score's plausibility, then the metric. Stop and report the first fault that invalidates the rest — the second-order fixes can wait until the first-order one is in." }
     ]},

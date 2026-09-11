@@ -385,6 +385,50 @@ def assert_causal(feature_fn, ev, at):
       caption: "**Two independent axes of leakage: the target, and time.** A feature can leak through either, and the windowed target aggregate can leak through both — its causal form is out-of-fold *and* shifted at once, which time ordering gives for free."
     },
 
+    { t: "p", text: "A pair of coordinates is the most common feature that arrives as two numbers and means neither of them. **Latitude and longitude are positions, not quantities**: a model that reads them raw learns a grid of axis-aligned splits or, worse, a linear effect of 'eastness'. The features that carry the signal are distances and densities computed *from* the position — and the profiling step that precedes them catches swapped columns, a `(0, 0)` sentinel in the Gulf of Guinea, and points outside the bounding box the data claims to cover." },
+
+    { t: "code", lang: "python", title: "Coordinates: distances and neighbourhoods, not degrees",
+      hl: [5, 15, 22, 28],
+      code: `rng = np.random.default_rng(9)
+n = 5_000
+lat = rng.normal(51.5, 0.12, n); lon = rng.normal(-0.12, 0.18, n)        # a city-sized cloud
+
+# --- profiling first: the three faults every coordinate column has had at least once ---
+box = dict(lat=(49.9, 58.7), lon=(-8.2, 1.8))                            # the region the data claims to cover
+print(((lat < box["lat"][0]) | (lat > box["lat"][1])).sum())             # rows outside the box: swapped lat/lon, or garbage
+print(((lat == 0) & (lon == 0)).sum())                                   # the (0, 0) sentinel: null, not a place
+print((np.abs(lat) > 90).sum(), (np.abs(lon) > 180).sum())               # impossible values
+
+# --- distance: haversine on the sphere, in kilometres, vectorised ---
+def haversine_km(lat1, lon1, lat2, lon2):
+    p1, p2 = np.radians(lat1), np.radians(lat2)
+    dphi, dlmb = p2 - p1, np.radians(lon2 - lon1)
+    h = np.sin(dphi / 2) ** 2 + np.cos(p1) * np.cos(p2) * np.sin(dlmb / 2) ** 2
+    return 2 * 6371.0 * np.arcsin(np.sqrt(h))
+
+hubs = np.array([[51.5074, -0.1278], [51.4700, -0.4543], [51.5033, 0.0553]])   # centre, airport, docks
+d = haversine_km(lat[:, None], lon[:, None], hubs[None, :, 0], hubs[None, :, 1])   # (n, 3) via broadcasting (1.2)
+feat = pd.DataFrame({"km_to_centre": d[:, 0], "km_to_nearest_hub": d.min(axis=1),
+                     "nearest_hub": d.argmin(axis=1)})
+
+# --- density: bin the map and count neighbours; rounding is a geohash with square cells ---
+cell = pd.Series(list(zip((lat / 0.01).round().astype(int), (lon / 0.015).round().astype(int))))   # ~1 km cells
+feat["points_in_cell"] = cell.map(cell.value_counts())                   # training rows only, in the pipeline (8.5)
+
+# --- rotation: tree models split on axis-aligned thresholds, so give them diagonals too ---
+for deg in (30, 60):
+    t = np.radians(deg)
+    feat[f"rot{deg}_x"] = lat * np.cos(t) - lon * np.sin(t)
+    feat[f"rot{deg}_y"] = lat * np.sin(t) + lon * np.cos(t)
+
+print(feat.describe().T[["mean", "min", "max"]].round(2))`,
+      caption: "Distance to the places that matter, the number of neighbours in a cell, and rotated axes for a tree — three features that say what a position *means* for the target. The cell count is a training-set statistic and belongs in a transformer; the distances are pure functions of the row and do not."
+    },
+
+    { t: "callout", kind: "insight", title: "Coordinates in a group aggregation are a leak in disguise", body: [
+      { t: "p", text: "A cell-level target mean — 'the default rate in this postcode' — is target encoding (7.2) on a spatial key, with every caveat that lesson attached: out-of-fold, smoothed, and never computed on rows the model will be scored on. The k-nearest-neighbours version ('the mean outcome of the ten closest training points') is the same thing with a softer boundary and the same leak if the point's own row is among the ten." }
+    ]},
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

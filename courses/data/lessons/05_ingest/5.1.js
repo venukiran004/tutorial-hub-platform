@@ -336,6 +336,8 @@ def rows_for(path, region, chunksize=500_000):
       caption: "**Type inference happens per chunk.** A column that is integer in chunk 1 and has a blank in chunk 2 is `int64` then `float64`, and the concatenation upcasts — or, for a string that looks numeric in one chunk, produces mixed types."
     },
 
+    { t: "p", text: "One more reader worth knowing exists: **`pd.read_html(page)`** returns a list of frames, one per `<table>` on a page. It needs `lxml` or `bs4`, applies the same type inference as `read_csv` — so `dtype=` and `thousands=` matter just as much — and a table scraped from a web page is the likeliest place to meet merged header cells, footnote markers inside numbers, and non-breaking spaces where you expected nulls." },
+
     { t: "h2", n: "04", text: "Writing", id: "write" },
 
     { t: "code", lang: "python", title: "to_csv, and the index that keeps coming back", code: `

@@ -410,6 +410,18 @@ assert local.index.tz is not None, "naive datetime index -- zone unknown"
       caption: "**`\"24h\"` is not `\"D\"`.** On an aware index, a calendar day is 23 or 25 hours twice a year, and a 24-hour bin drifts by an hour at each transition and never recovers."
     },
 
+    { t: "code", lang: "python", title: "Business days, and a calendar that knows your holidays",
+      code: `print(len(pd.bdate_range("2025-12-22", "2026-01-02")))            # 10: weekends dropped, holidays not
+print(len(pd.date_range("2025-12-22", "2026-01-02", freq="B")))    # 10: the same thing as a frequency
+
+from pandas.tseries.offsets import CustomBusinessDay
+uk = CustomBusinessDay(holidays=["2025-12-25", "2025-12-26", "2026-01-01"])
+print(len(pd.date_range("2025-12-22", "2026-01-02", freq=uk)))     # 7
+print(pd.Timestamp("2025-12-24") + 2 * uk)                          # 2025-12-30: two working days later
+# resample("B") and a rolling window over a business-day index treat weekends as absent, not as zeros`,
+      caption: "`bdate_range` and `freq=\"B\"` know about weekends and nothing else. Holidays are a calendar you supply, and `CustomBusinessDay` makes that calendar the unit of date arithmetic."
+    },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

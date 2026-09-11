@@ -345,6 +345,8 @@ out["above"] = out["amount"] > out["region_mean"]`,
       ]
     },
 
+    { t: "p", text: "The `total=(\"amount\", \"sum\")` spelling of named aggregation is a tuple pandas reads as *(column, function)*. The explicit form is **`pd.NamedAgg(column=\"amount\", aggfunc=\"sum\")`** — the same thing with names, and the one to use when the aggregation is built programmatically or the function is a lambda that needs a readable output column." },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",
