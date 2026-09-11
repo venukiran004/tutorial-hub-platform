@@ -47,7 +47,7 @@ EC.receiveLesson({
   </g>
 
   <g stroke-width="1.5">
-    <rect x="306" y="42" width="150" height="36" rx="6" style="fill:var(--acc);fill-opacity:.14;stroke:var(--acc)"/>
+    <rect x="306" y="42" width="150" height="36" rx="6" style="fill:var(--accent);fill-opacity:.14;stroke:var(--accent)"/>
     <rect x="306" y="97" width="150" height="36" rx="6" style="fill:var(--warn);fill-opacity:.14;stroke:var(--warn)"/>
     <rect x="306" y="152" width="150" height="36" rx="6" style="fill:var(--good);fill-opacity:.14;stroke:var(--good)"/>
     <rect x="306" y="207" width="150" height="36" rx="6" style="fill:var(--crit);fill-opacity:.12;stroke:var(--crit)"/>
@@ -64,7 +64,7 @@ EC.receiveLesson({
     <line x1="456" y1="225" x2="520" y2="225" marker-end="url(#md-a)"/>
   </g>
 
-  <text x="530" y="65" class="s-label" style="fill:var(--acc)">NaN</text>
+  <text x="530" y="65" class="s-label" style="fill:var(--accent)">NaN</text>
   <text x="600" y="65" class="s-sub" style="fill:var(--ink-3)">a float; NaN != NaN; NaN &gt; 1 is False</text>
   <text x="530" y="120" class="s-label" style="fill:var(--warn)">None</text>
   <text x="600" y="120" class="s-sub" style="fill:var(--ink-3)">stays a Python object; == None works</text>

@@ -110,7 +110,7 @@ X / np.linalg.norm(X, axis=1, keepdims=True)      # unit rows
       svg: `<svg viewBox="0 0 880 280" role="img" aria-label="Two well separated lines intersecting sharply, against two nearly parallel lines whose intersection moves a long way under a small perturbation">
   <text x="30" y="26" class="s-label" style="fill:var(--good)">Well conditioned — cond ≈ 1.6</text>
   <g style="stroke:var(--line);stroke-width:1"><line x1="40" y1="230" x2="380" y2="230"/><line x1="40" y1="50" x2="40" y2="230"/></g>
-  <line x1="50" y1="220" x2="370" y2="70" style="stroke:var(--acc);stroke-width:2"/>
+  <line x1="50" y1="220" x2="370" y2="70" style="stroke:var(--accent);stroke-width:2"/>
   <line x1="50" y1="70" x2="370" y2="215" style="stroke:var(--good);stroke-width:2"/>
   <circle cx="212" cy="146" r="6" style="fill:var(--good)"/>
   <text x="226" y="140" class="s-sub" style="fill:var(--good)">unambiguous</text>
@@ -118,7 +118,7 @@ X / np.linalg.norm(X, axis=1, keepdims=True)      # unit rows
 
   <text x="480" y="26" class="s-label" style="fill:var(--crit)">Ill conditioned — cond ≈ 10⁸</text>
   <g style="stroke:var(--line);stroke-width:1"><line x1="490" y1="230" x2="850" y2="230"/><line x1="490" y1="50" x2="490" y2="230"/></g>
-  <line x1="500" y1="200" x2="840" y2="110" style="stroke:var(--acc);stroke-width:2"/>
+  <line x1="500" y1="200" x2="840" y2="110" style="stroke:var(--accent);stroke-width:2"/>
   <line x1="500" y1="206" x2="840" y2="122" style="stroke:var(--good);stroke-width:2"/>
   <line x1="500" y1="203" x2="840" y2="104" style="stroke:var(--crit);stroke-width:1.5" stroke-dasharray="5 3"/>
   <circle cx="762" cy="130" r="6" style="fill:var(--crit)"/>

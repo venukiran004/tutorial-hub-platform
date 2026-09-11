@@ -72,10 +72,10 @@ EC.receiveLesson({
   </g>
   <text x="626" y="188" class="s-sub" style="fill:var(--good)">10 strings, once — total ≈ 1 MB</text>
 
-  <text x="30" y="240" class="s-label" style="fill:var(--acc)">string[pyarrow]</text>
-  <rect x="30" y="252" width="320" height="24" style="fill:var(--acc);fill-opacity:.20;stroke:var(--acc);stroke-width:1.5"/>
+  <text x="30" y="240" class="s-label" style="fill:var(--accent)">string[pyarrow]</text>
+  <rect x="30" y="252" width="320" height="24" style="fill:var(--accent);fill-opacity:.20;stroke:var(--accent);stroke-width:1.5"/>
   <text x="44" y="269" class="s-sub" style="fill:var(--ink-2)">northsouthnortheast… contiguous bytes + offsets</text>
-  <text x="370" y="269" class="s-sub" style="fill:var(--acc)">no Python objects — ~6 MB, and .str runs in C</text>
+  <text x="370" y="269" class="s-sub" style="fill:var(--accent)">no Python objects — ~6 MB, and .str runs in C</text>
 
   <defs><marker id="dt-c" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 z" style="fill:var(--crit)"/></marker></defs>
 </svg>`

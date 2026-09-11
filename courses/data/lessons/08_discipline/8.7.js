@@ -43,8 +43,8 @@ EC.receiveLesson({
     </marker>
   </defs>
   <g stroke-width="1.5">
-    <rect x="20" y="40" width="108" height="44" rx="7" style="fill:var(--acc);fill-opacity:.10;stroke:var(--acc)"/>
-    <rect x="144" y="40" width="108" height="44" rx="7" style="fill:var(--acc);fill-opacity:.10;stroke:var(--acc)"/>
+    <rect x="20" y="40" width="108" height="44" rx="7" style="fill:var(--accent);fill-opacity:.10;stroke:var(--accent)"/>
+    <rect x="144" y="40" width="108" height="44" rx="7" style="fill:var(--accent);fill-opacity:.10;stroke:var(--accent)"/>
     <rect x="268" y="40" width="108" height="44" rx="7" style="fill:var(--warn);fill-opacity:.10;stroke:var(--warn)"/>
     <rect x="392" y="40" width="108" height="44" rx="7" style="fill:var(--warn);fill-opacity:.10;stroke:var(--warn)"/>
     <rect x="516" y="40" width="108" height="44" rx="7" style="fill:var(--warn);fill-opacity:.10;stroke:var(--warn)"/>
@@ -73,7 +73,7 @@ EC.receiveLesson({
   <text x="20" y="240" class="s-sub">A feature leak survives every split. A wrong split survives every metric. A wrong metric survives every review that reads only the number.</text>
   <text x="20" y="262" class="s-sub">Read left to right: the earliest stage with a fault is the one that matters, because everything after it measured the fault.</text>
   <g class="s-sub">
-    <rect x="20" y="290" width="14" height="14" rx="3" style="fill:var(--acc);fill-opacity:.3;stroke:var(--acc)" stroke-width="1"/><text x="40" y="302">data (modules 5–7)</text>
+    <rect x="20" y="290" width="14" height="14" rx="3" style="fill:var(--accent);fill-opacity:.3;stroke:var(--accent)" stroke-width="1"/><text x="40" y="302">data (modules 5–7)</text>
     <rect x="200" y="290" width="14" height="14" rx="3" style="fill:var(--warn);fill-opacity:.3;stroke:var(--warn)" stroke-width="1"/><text x="220" y="302">evaluation (module 8)</text>
     <rect x="400" y="290" width="14" height="14" rx="3" style="fill:var(--good);fill-opacity:.3;stroke:var(--good)" stroke-width="1"/><text x="420" y="302">after shipping (this lesson)</text>
   </g>
@@ -229,7 +229,7 @@ def review(df, y, build_features, pipeline, time_col=None, group_col=None, seed=
     <rect x="205" y="54" width="100" height="196" rx="3" style="fill:var(--crit);fill-opacity:.28"/>
     <rect x="330" y="108" width="100" height="142" rx="3" style="fill:var(--warn);fill-opacity:.35"/>
     <rect x="455" y="150" width="100" height="100" rx="3" style="fill:var(--warn);fill-opacity:.28"/>
-    <rect x="580" y="163" width="100" height="87" rx="3" style="fill:var(--acc);fill-opacity:.35"/>
+    <rect x="580" y="163" width="100" height="87" rx="3" style="fill:var(--accent);fill-opacity:.35"/>
     <rect x="705" y="184" width="100" height="66" rx="3" style="fill:var(--good);fill-opacity:.55;stroke:var(--good)" stroke-width="1.5"/>
   </g>
   <g class="s-label" text-anchor="middle" style="font-weight:600">

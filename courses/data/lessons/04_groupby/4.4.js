@@ -116,13 +116,13 @@ pd.infer_freq(df.index)             # "D"
       caption: "Hourly readings resampled to daily produce one aggregated value per day. Daily values resampled to hourly produce one real value and 23 empty slots per day — what goes in them is a decision, not a default.",
       svg: `<svg viewBox="0 0 880 300" role="img" aria-label="Hourly points collapsing into a daily bar, and a daily point expanding into hourly slots that are mostly empty">
   <text x="30" y="26" class="s-label" style="fill:var(--ink-2)">downsample — hourly → daily, .sum()</text>
-  <g style="fill:var(--acc)">
+  <g style="fill:var(--accent)">
     <circle cx="40" cy="60" r="4"/><circle cx="56" cy="54" r="4"/><circle cx="72" cy="66" r="4"/><circle cx="88" cy="58" r="4"/>
     <circle cx="104" cy="62" r="4"/><circle cx="120" cy="50" r="4"/><circle cx="136" cy="64" r="4"/><circle cx="152" cy="56" r="4"/>
   </g>
   <text x="40" y="90" class="s-sub" style="fill:var(--ink-3)">24 readings on 03-01</text>
   <line x1="170" y1="60" x2="230" y2="60" style="stroke:var(--ink-3);stroke-width:1.5" marker-end="url(#rs-a)"/>
-  <rect x="240" y="44" width="70" height="32" rx="4" style="fill:var(--acc);fill-opacity:.25;stroke:var(--acc);stroke-width:1.5"/>
+  <rect x="240" y="44" width="70" height="32" rx="4" style="fill:var(--accent);fill-opacity:.25;stroke:var(--accent);stroke-width:1.5"/>
   <text x="256" y="65" class="s-sub" style="fill:var(--ink-2)">1 total</text>
   <text x="330" y="60" class="s-sub" style="fill:var(--ink-3)">every input contributes; the only decision is which aggregation</text>
   <text x="330" y="82" class="s-sub" style="fill:var(--ink-3)">— sum for counts, mean for rates, last for balances</text>

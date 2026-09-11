@@ -33,6 +33,9 @@
   --ink:           #e9edf4;
   --ink-2:         #a3aebf;
   --ink-3:         #6d7889;   /* 4.6:1 on --bg — the floor for any real text */
+  --ink-4:         #4a5566;   /* below the text floor: tile fills, faint guides, never words */
+  --line:          var(--border-strong);   /* diagram axes and guide lines */
+  --acc:           var(--accent);          /* short alias used inside SVG diagrams */
 
   --accent:        #4d8dff;
   --accent-ink:    #8fb4ff;   /* accent text on dark; raw accent is too dim */
@@ -101,6 +104,9 @@ html[data-theme="light"] {
   --ink:           #0f172a;
   --ink-2:         #475569;
   --ink-3:         #626f82;
+  --ink-4:         #94a3b8;
+  --line:          var(--border-strong);
+  --acc:           var(--accent);
 
   --accent:        #2563eb;
   --accent-ink:    #1d4ed8;

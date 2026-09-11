@@ -38,10 +38,10 @@ EC.receiveLesson({
   <text x="30" y="26" class="s-label" style="fill:var(--ink-2)">left keys: A, B, C      right keys: B, C, D</text>
 
   <g>
-    <text x="30" y="70" class="s-sub" style="fill:var(--acc)">inner</text>
+    <text x="30" y="70" class="s-sub" style="fill:var(--accent)">inner</text>
     <rect x="120" y="54" width="52" height="24" rx="3" style="fill:var(--ink-4);fill-opacity:.06;stroke:var(--line);stroke-dasharray:3 2"/>
-    <rect x="176" y="54" width="52" height="24" rx="3" style="fill:var(--acc);fill-opacity:.25;stroke:var(--acc)"/>
-    <rect x="232" y="54" width="52" height="24" rx="3" style="fill:var(--acc);fill-opacity:.25;stroke:var(--acc)"/>
+    <rect x="176" y="54" width="52" height="24" rx="3" style="fill:var(--accent);fill-opacity:.25;stroke:var(--accent)"/>
+    <rect x="232" y="54" width="52" height="24" rx="3" style="fill:var(--accent);fill-opacity:.25;stroke:var(--accent)"/>
     <rect x="288" y="54" width="52" height="24" rx="3" style="fill:var(--ink-4);fill-opacity:.06;stroke:var(--line);stroke-dasharray:3 2"/>
     <text x="196" y="71" class="s-sub" style="fill:var(--ink-2)">B</text><text x="252" y="71" class="s-sub" style="fill:var(--ink-2)">C</text>
     <text x="360" y="71" class="s-sub" style="fill:var(--ink-3)">2 rows — A and D dropped silently</text>

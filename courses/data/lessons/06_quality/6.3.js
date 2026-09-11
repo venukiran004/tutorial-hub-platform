@@ -46,10 +46,10 @@ EC.receiveLesson({
   <text x="392" y="80" class="s-sub" style="fill:var(--ink-3)">start</text>
   <text x="482" y="80" class="s-sub" style="fill:var(--ink-3)">end</text>
 
-  <rect x="292" y="126" width="86" height="28" style="fill:var(--acc);fill-opacity:.25;stroke:var(--acc);stroke-width:1.5"/>
-  <text x="30" y="145" class="s-label" style="fill:var(--acc)">validity</text>
+  <rect x="292" y="126" width="86" height="28" style="fill:var(--accent);fill-opacity:.25;stroke:var(--accent);stroke-width:1.5"/>
+  <text x="30" y="145" class="s-label" style="fill:var(--accent)">validity</text>
   <text x="30" y="163" class="s-sub" style="fill:var(--ink-3)">one cell: format, domain</text>
-  <line x1="130" y1="140" x2="290" y2="140" style="stroke:var(--acc);stroke-width:1.2" marker-end="url(#dq-a)"/>
+  <line x1="130" y1="140" x2="290" y2="140" style="stroke:var(--accent);stroke-width:1.2" marker-end="url(#dq-a)"/>
 
   <rect x="292" y="62" width="86" height="156" style="fill:var(--good);fill-opacity:.10;stroke:var(--good);stroke-width:1.5;stroke-dasharray:4 2"/>
   <text x="30" y="82" class="s-label" style="fill:var(--good)">completeness</text>
@@ -80,7 +80,7 @@ EC.receiveLesson({
   <text x="30" y="300" class="s-sub" style="fill:var(--ink-3)">The other five are cheap and automatic. Accuracy is a reconciliation, an audit sample, or a second source.</text>
 
   <defs>
-    <marker id="dq-a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--acc)"/></marker>
+    <marker id="dq-a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--accent)"/></marker>
     <marker id="dq-g" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--good)"/></marker>
     <marker id="dq-w" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--warn)"/></marker>
     <marker id="dq-c" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--crit)"/></marker>

@@ -41,13 +41,13 @@ EC.receiveLesson({
   <text x="440" y="145" class="s-sub" style="fill:var(--ink-3)">250</text>
   <text x="820" y="145" class="s-sub" style="fill:var(--ink-3)">500</text>
 
-  <g style="fill:var(--acc);fill-opacity:.6">
+  <g style="fill:var(--accent);fill-opacity:.6">
     <circle cx="100" cy="120" r="4"/><circle cx="108" cy="112" r="4"/><circle cx="112" cy="126" r="4"/><circle cx="116" cy="118" r="4"/>
     <circle cx="120" cy="110" r="4"/><circle cx="122" cy="128" r="4"/><circle cx="124" cy="116" r="4"/><circle cx="128" cy="122" r="4"/>
     <circle cx="130" cy="108" r="4"/><circle cx="132" cy="130" r="4"/><circle cx="134" cy="114" r="4"/><circle cx="136" cy="120" r="4"/>
     <circle cx="138" cy="126" r="4"/><circle cx="140" cy="112" r="4"/><circle cx="144" cy="118" r="4"/><circle cx="148" cy="124" r="4"/>
   </g>
-  <text x="96" y="94" class="s-sub" style="fill:var(--acc)">99 values, 40–60</text>
+  <text x="96" y="94" class="s-sub" style="fill:var(--accent)">99 values, 40–60</text>
   <circle cx="820" cy="120" r="6" style="fill:var(--crit)"/>
   <text x="760" y="94" class="s-sub" style="fill:var(--crit)">one at 500</text>
 
@@ -178,8 +178,8 @@ def pct_outliers(x, lo=0.5, hi=99.5):
       svg: `<svg viewBox="0 0 880 300" role="img" aria-label="A scatter of correlated points forming a diagonal ellipse, with one point inside both marginal ranges but far from the ellipse, and the marginal histograms on each axis showing nothing unusual">
   <g transform="translate(120,20)">
     <rect x="0" y="0" width="400" height="220" style="fill:none;stroke:var(--line);stroke-width:1.2"/>
-    <ellipse cx="200" cy="110" rx="170" ry="45" transform="rotate(-30 200 110)" style="fill:var(--acc);fill-opacity:.08;stroke:var(--acc);stroke-width:1;stroke-dasharray:4 3"/>
-    <g style="fill:var(--acc);fill-opacity:.65">
+    <ellipse cx="200" cy="110" rx="170" ry="45" transform="rotate(-30 200 110)" style="fill:var(--accent);fill-opacity:.08;stroke:var(--accent);stroke-width:1;stroke-dasharray:4 3"/>
+    <g style="fill:var(--accent);fill-opacity:.65">
       <circle cx="60" cy="180" r="4"/><circle cx="80" cy="172" r="4"/><circle cx="95" cy="160" r="4"/><circle cx="110" cy="165" r="4"/>
       <circle cx="125" cy="148" r="4"/><circle cx="140" cy="140" r="4"/><circle cx="150" cy="150" r="4"/><circle cx="165" cy="128" r="4"/>
       <circle cx="180" cy="120" r="4"/><circle cx="190" cy="132" r="4"/><circle cx="200" cy="110" r="4"/><circle cx="215" cy="100" r="4"/>
@@ -194,7 +194,7 @@ def pct_outliers(x, lo=0.5, hi=99.5):
     <text x="380" y="212" class="s-sub" style="fill:var(--ink-3)">x</text>
   </g>
   <g transform="translate(120,250)">
-    <g style="fill:var(--acc);fill-opacity:.3">
+    <g style="fill:var(--accent);fill-opacity:.3">
       <rect x="40" y="10" width="40" height="8"/><rect x="80" y="4" width="40" height="14"/><rect x="120" y="0" width="40" height="18"/>
       <rect x="160" y="0" width="40" height="18"/><rect x="200" y="0" width="40" height="18"/><rect x="240" y="2" width="40" height="16"/>
       <rect x="280" y="4" width="40" height="14"/><rect x="320" y="8" width="40" height="10"/>
@@ -203,7 +203,7 @@ def pct_outliers(x, lo=0.5, hi=99.5):
     <text x="0" y="16" class="s-sub" style="fill:var(--ink-3)">x marginal: the red point is well inside</text>
   </g>
   <g transform="translate(20,20)">
-    <g style="fill:var(--acc);fill-opacity:.3">
+    <g style="fill:var(--accent);fill-opacity:.3">
       <rect x="60" y="30" width="10" height="30"/><rect x="50" y="60" width="20" height="30"/><rect x="45" y="90" width="25" height="30"/>
       <rect x="45" y="120" width="25" height="30"/><rect x="50" y="150" width="20" height="30"/><rect x="58" y="180" width="12" height="30"/>
     </g>

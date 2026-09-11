@@ -37,9 +37,9 @@ EC.receiveLesson({
       svg: `<svg viewBox="0 0 880 320" role="img" aria-label="Six input rows in two groups shown flowing through agg, transform and filter with the resulting row counts">
   <text x="30" y="26" class="s-label" style="fill:var(--ink-2)">input — 6 rows, 2 groups</text>
   <g stroke-width="1.5">
-    <rect x="30" y="38" width="90" height="22" style="fill:var(--acc);fill-opacity:.18;stroke:var(--acc)"/>
-    <rect x="30" y="60" width="90" height="22" style="fill:var(--acc);fill-opacity:.18;stroke:var(--acc)"/>
-    <rect x="30" y="82" width="90" height="22" style="fill:var(--acc);fill-opacity:.18;stroke:var(--acc)"/>
+    <rect x="30" y="38" width="90" height="22" style="fill:var(--accent);fill-opacity:.18;stroke:var(--accent)"/>
+    <rect x="30" y="60" width="90" height="22" style="fill:var(--accent);fill-opacity:.18;stroke:var(--accent)"/>
+    <rect x="30" y="82" width="90" height="22" style="fill:var(--accent);fill-opacity:.18;stroke:var(--accent)"/>
     <rect x="30" y="104" width="90" height="22" style="fill:var(--good);fill-opacity:.18;stroke:var(--good)"/>
     <rect x="30" y="126" width="90" height="22" style="fill:var(--good);fill-opacity:.18;stroke:var(--good)"/>
     <rect x="30" y="148" width="90" height="22" style="fill:var(--good);fill-opacity:.18;stroke:var(--good)"/>
@@ -49,7 +49,7 @@ EC.receiveLesson({
 
   <text x="230" y="26" class="s-label" style="fill:var(--ink-2)">agg("sum") — 2 rows</text>
   <g stroke-width="1.5">
-    <rect x="230" y="38" width="90" height="22" style="fill:var(--acc);fill-opacity:.28;stroke:var(--acc)"/>
+    <rect x="230" y="38" width="90" height="22" style="fill:var(--accent);fill-opacity:.28;stroke:var(--accent)"/>
     <rect x="230" y="60" width="90" height="22" style="fill:var(--good);fill-opacity:.28;stroke:var(--good)"/>
   </g>
   <text x="242" y="54" class="s-sub" style="fill:var(--ink-2)">n  33</text><text x="242" y="76" class="s-sub" style="fill:var(--ink-2)">s  60</text>
@@ -58,9 +58,9 @@ EC.receiveLesson({
 
   <text x="430" y="26" class="s-label" style="fill:var(--ink-2)">transform("sum") — 6 rows</text>
   <g stroke-width="1.5">
-    <rect x="430" y="38" width="90" height="22" style="fill:var(--acc);fill-opacity:.18;stroke:var(--acc)"/>
-    <rect x="430" y="60" width="90" height="22" style="fill:var(--acc);fill-opacity:.18;stroke:var(--acc)"/>
-    <rect x="430" y="82" width="90" height="22" style="fill:var(--acc);fill-opacity:.18;stroke:var(--acc)"/>
+    <rect x="430" y="38" width="90" height="22" style="fill:var(--accent);fill-opacity:.18;stroke:var(--accent)"/>
+    <rect x="430" y="60" width="90" height="22" style="fill:var(--accent);fill-opacity:.18;stroke:var(--accent)"/>
+    <rect x="430" y="82" width="90" height="22" style="fill:var(--accent);fill-opacity:.18;stroke:var(--accent)"/>
     <rect x="430" y="104" width="90" height="22" style="fill:var(--good);fill-opacity:.18;stroke:var(--good)"/>
     <rect x="430" y="126" width="90" height="22" style="fill:var(--good);fill-opacity:.18;stroke:var(--good)"/>
     <rect x="430" y="148" width="90" height="22" style="fill:var(--good);fill-opacity:.18;stroke:var(--good)"/>

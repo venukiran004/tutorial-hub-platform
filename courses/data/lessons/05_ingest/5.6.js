@@ -38,9 +38,9 @@ EC.receiveLesson({
   <text x="30" y="26" class="s-label" style="fill:var(--ink-2)">orders</text>
   <g style="font-family:var(--mono,monospace)">
     <text x="30" y="52" class="s-sub" style="fill:var(--ink-3)">cust  amt</text>
-    <text x="30" y="74" class="s-sub" style="fill:var(--acc)">A     10</text>
-    <text x="30" y="94" class="s-sub" style="fill:var(--acc)">A     20</text>
-    <text x="30" y="114" class="s-sub" style="fill:var(--acc)">A     30</text>
+    <text x="30" y="74" class="s-sub" style="fill:var(--accent)">A     10</text>
+    <text x="30" y="94" class="s-sub" style="fill:var(--accent)">A     20</text>
+    <text x="30" y="114" class="s-sub" style="fill:var(--accent)">A     30</text>
     <text x="30" y="134" class="s-sub" style="fill:var(--good)">B     5</text>
     <text x="30" y="154" class="s-sub" style="fill:var(--good)">B     15</text>
     <text x="30" y="174" class="s-sub" style="fill:var(--good)">B     25</text>
@@ -49,7 +49,7 @@ EC.receiveLesson({
   <text x="250" y="26" class="s-label" style="fill:var(--ink-2)">SUM(amt) … GROUP BY cust</text>
   <g style="font-family:var(--mono,monospace)">
     <text x="250" y="52" class="s-sub" style="fill:var(--ink-3)">cust  total</text>
-    <text x="250" y="74" class="s-sub" style="fill:var(--acc)">A     60</text>
+    <text x="250" y="74" class="s-sub" style="fill:var(--accent)">A     60</text>
     <text x="250" y="94" class="s-sub" style="fill:var(--good)">B     45</text>
   </g>
   <text x="250" y="130" class="s-sub" style="fill:var(--ink-3)">2 rows — the detail is gone</text>
@@ -57,9 +57,9 @@ EC.receiveLesson({
   <text x="520" y="26" class="s-label" style="fill:var(--ink-2)">SUM(amt) OVER (PARTITION BY cust)</text>
   <g style="font-family:var(--mono,monospace)">
     <text x="520" y="52" class="s-sub" style="fill:var(--ink-3)">cust  amt  total  share</text>
-    <text x="520" y="74" class="s-sub" style="fill:var(--acc)">A     10   60     0.17</text>
-    <text x="520" y="94" class="s-sub" style="fill:var(--acc)">A     20   60     0.33</text>
-    <text x="520" y="114" class="s-sub" style="fill:var(--acc)">A     30   60     0.50</text>
+    <text x="520" y="74" class="s-sub" style="fill:var(--accent)">A     10   60     0.17</text>
+    <text x="520" y="94" class="s-sub" style="fill:var(--accent)">A     20   60     0.33</text>
+    <text x="520" y="114" class="s-sub" style="fill:var(--accent)">A     30   60     0.50</text>
     <text x="520" y="134" class="s-sub" style="fill:var(--good)">B     5    45     0.11</text>
     <text x="520" y="154" class="s-sub" style="fill:var(--good)">B     15   45     0.33</text>
     <text x="520" y="174" class="s-sub" style="fill:var(--good)">B     25   45     0.56</text>

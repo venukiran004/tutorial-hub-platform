@@ -44,8 +44,8 @@ EC.receiveLesson({
   <line x1="60" y1="300" x2="840" y2="300" style="stroke:var(--ink-3)" stroke-width="1.5" marker-end="url(#lk-ah-83)"/>
   <text x="60" y="322" class="s-sub">past</text>
   <text x="790" y="322" class="s-sub">future</text>
-  <line x1="470" y1="40" x2="470" y2="300" style="stroke:var(--acc)" stroke-width="2" stroke-dasharray="6 4"/>
-  <text x="478" y="56" class="s-label" style="fill:var(--acc);font-weight:600">t · prediction made</text>
+  <line x1="470" y1="40" x2="470" y2="300" style="stroke:var(--accent)" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="478" y="56" class="s-label" style="fill:var(--accent);font-weight:600">t · prediction made</text>
   <line x1="700" y1="150" x2="700" y2="300" style="stroke:var(--warn)" stroke-width="1.5" stroke-dasharray="3 3"/>
   <text x="706" y="166" class="s-sub" style="fill:var(--warn)">outcome occurs</text>
 

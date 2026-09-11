@@ -37,17 +37,17 @@ EC.receiveLesson({
   <text x="30" y="28" class="s-label" style="fill:var(--ink-2)">buffer  a = np.arange(10)</text>
   <g stroke-width="1.5">
     <rect x="30" y="40" width="56" height="30" style="fill:var(--ink-4);fill-opacity:.10;stroke:var(--line)"/>
-    <rect x="86" y="40" width="56" height="30" style="fill:var(--acc);fill-opacity:.22;stroke:var(--acc)"/>
+    <rect x="86" y="40" width="56" height="30" style="fill:var(--accent);fill-opacity:.22;stroke:var(--accent)"/>
     <rect x="142" y="40" width="56" height="30" style="fill:var(--ink-4);fill-opacity:.10;stroke:var(--line)"/>
-    <rect x="198" y="40" width="56" height="30" style="fill:var(--acc);fill-opacity:.22;stroke:var(--acc)"/>
+    <rect x="198" y="40" width="56" height="30" style="fill:var(--accent);fill-opacity:.22;stroke:var(--accent)"/>
     <rect x="254" y="40" width="56" height="30" style="fill:var(--ink-4);fill-opacity:.10;stroke:var(--line)"/>
-    <rect x="310" y="40" width="56" height="30" style="fill:var(--acc);fill-opacity:.22;stroke:var(--acc)"/>
+    <rect x="310" y="40" width="56" height="30" style="fill:var(--accent);fill-opacity:.22;stroke:var(--accent)"/>
     <rect x="366" y="40" width="56" height="30" style="fill:var(--ink-4);fill-opacity:.10;stroke:var(--line)"/>
-    <rect x="422" y="40" width="56" height="30" style="fill:var(--acc);fill-opacity:.22;stroke:var(--acc)"/>
+    <rect x="422" y="40" width="56" height="30" style="fill:var(--accent);fill-opacity:.22;stroke:var(--accent)"/>
     <rect x="478" y="40" width="56" height="30" style="fill:var(--ink-4);fill-opacity:.10;stroke:var(--line)"/>
     <rect x="534" y="40" width="56" height="30" style="fill:var(--ink-4);fill-opacity:.10;stroke:var(--line)"/>
   </g>
-  <text x="600" y="60" class="s-sub" style="fill:var(--acc)">a[1::2] — start 1, stride 16 bytes</text>
+  <text x="600" y="60" class="s-sub" style="fill:var(--accent)">a[1::2] — start 1, stride 16 bytes</text>
   <text x="600" y="82" class="s-sub" style="fill:var(--good)">VIEW: no new memory</text>
 
   <text x="30" y="140" class="s-label" style="fill:var(--ink-2)">same buffer</text>

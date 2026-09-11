@@ -35,12 +35,12 @@ EC.receiveLesson({
       title: "A DataFrame is columns sharing one index",
       caption: "The index is a first-class object, not a column and not a position. Two frames combine by matching these labels, not by matching row order.",
       svg: `<svg viewBox="0 0 880 260" role="img" aria-label="A DataFrame drawn as three typed column arrays sharing a single row index">
-  <text x="30" y="26" class="s-label" style="fill:var(--acc)">index</text>
+  <text x="30" y="26" class="s-label" style="fill:var(--accent)">index</text>
   <g stroke-width="1.5">
-    <rect x="30" y="38" width="100" height="30" style="fill:var(--acc);fill-opacity:.20;stroke:var(--acc)"/>
-    <rect x="30" y="68" width="100" height="30" style="fill:var(--acc);fill-opacity:.20;stroke:var(--acc)"/>
-    <rect x="30" y="98" width="100" height="30" style="fill:var(--acc);fill-opacity:.20;stroke:var(--acc)"/>
-    <rect x="30" y="128" width="100" height="30" style="fill:var(--acc);fill-opacity:.20;stroke:var(--acc)"/>
+    <rect x="30" y="38" width="100" height="30" style="fill:var(--accent);fill-opacity:.20;stroke:var(--accent)"/>
+    <rect x="30" y="68" width="100" height="30" style="fill:var(--accent);fill-opacity:.20;stroke:var(--accent)"/>
+    <rect x="30" y="98" width="100" height="30" style="fill:var(--accent);fill-opacity:.20;stroke:var(--accent)"/>
+    <rect x="30" y="128" width="100" height="30" style="fill:var(--accent);fill-opacity:.20;stroke:var(--accent)"/>
   </g>
   <text x="46" y="58" class="s-sub" style="fill:var(--ink-2)">"a"</text>
   <text x="46" y="88" class="s-sub" style="fill:var(--ink-2)">"b"</text>
@@ -62,8 +62,8 @@ EC.receiveLesson({
   <text x="290" y="182" class="s-sub" style="fill:var(--ink-3)">one Series</text>
   <text x="430" y="182" class="s-sub" style="fill:var(--ink-3)">one Series</text>
 
-  <line x1="30" y1="200" x2="550" y2="200" style="stroke:var(--acc);stroke-dasharray:4 3"/>
-  <text x="30" y="222" class="s-sub" style="fill:var(--acc)">every column shares this one index — that is what makes it a frame</text>
+  <line x1="30" y1="200" x2="550" y2="200" style="stroke:var(--accent);stroke-dasharray:4 3"/>
+  <text x="30" y="222" class="s-sub" style="fill:var(--accent)">every column shares this one index — that is what makes it a frame</text>
 
   <text x="600" y="58" class="s-sub" style="fill:var(--ink-3)">Each column is contiguous</text>
   <text x="600" y="80" class="s-sub" style="fill:var(--ink-3)">and separately typed.</text>

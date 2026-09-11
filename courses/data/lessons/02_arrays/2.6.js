@@ -36,7 +36,7 @@ EC.receiveLesson({
       caption: "Only `valid` uses positions where the whole kernel overlaps real data. `same` keeps the length by padding with zeros, and those padded ends are artefacts.",
       svg: `<svg viewBox="0 0 880 280" role="img" aria-label="A kernel sliding across a signal showing full, same and valid output regions">
   <text x="30" y="26" class="s-label" style="fill:var(--ink-2)">signal, n = 8    kernel, k = 3</text>
-  <g stroke-width="1.5" style="fill:var(--acc);fill-opacity:.18;stroke:var(--acc)">
+  <g stroke-width="1.5" style="fill:var(--accent);fill-opacity:.18;stroke:var(--accent)">
     <rect x="180" y="40" width="46" height="26"/><rect x="226" y="40" width="46" height="26"/>
     <rect x="272" y="40" width="46" height="26"/><rect x="318" y="40" width="46" height="26"/>
     <rect x="364" y="40" width="46" height="26"/><rect x="410" y="40" width="46" height="26"/>
@@ -53,8 +53,8 @@ EC.receiveLesson({
   </g>
   <text x="660" y="103" class="s-sub" style="fill:var(--warn)">partial overlap at both ends</text>
 
-  <text x="30" y="152" class="s-sub" style="fill:var(--acc)">same — n = 8</text>
-  <g stroke-width="1.5" style="fill:var(--acc);fill-opacity:.16;stroke:var(--acc)">
+  <text x="30" y="152" class="s-sub" style="fill:var(--accent)">same — n = 8</text>
+  <g stroke-width="1.5" style="fill:var(--accent);fill-opacity:.16;stroke:var(--accent)">
     <rect x="180" y="136" width="46" height="24"/>
     <rect x="226" y="136" width="276" height="24"/>
     <rect x="502" y="136" width="46" height="24"/>

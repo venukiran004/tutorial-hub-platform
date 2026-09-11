@@ -51,20 +51,20 @@ EC.receiveLesson({
     <rect x="186" y="108" width="52" height="34" style="fill:var(--ink-4);fill-opacity:.08;stroke:var(--line)"/>
   </g>
 
-  <g style="stroke:var(--acc);stroke-width:2">
+  <g style="stroke:var(--accent);stroke-width:2">
     <line x1="56" y1="34" x2="56" y2="150" marker-end="url(#ax-a)"/>
     <line x1="108" y1="34" x2="108" y2="150" marker-end="url(#ax-a)"/>
     <line x1="160" y1="34" x2="160" y2="150" marker-end="url(#ax-a)"/>
     <line x1="212" y1="34" x2="212" y2="150" marker-end="url(#ax-a)"/>
   </g>
-  <text x="30" y="184" class="s-label" style="fill:var(--acc)">X.sum(axis=0)</text>
+  <text x="30" y="184" class="s-label" style="fill:var(--accent)">X.sum(axis=0)</text>
   <g stroke-width="1.5">
-    <rect x="30" y="194" width="52" height="30" style="fill:var(--acc);fill-opacity:.22;stroke:var(--acc)"/>
-    <rect x="82" y="194" width="52" height="30" style="fill:var(--acc);fill-opacity:.22;stroke:var(--acc)"/>
-    <rect x="134" y="194" width="52" height="30" style="fill:var(--acc);fill-opacity:.22;stroke:var(--acc)"/>
-    <rect x="186" y="194" width="52" height="30" style="fill:var(--acc);fill-opacity:.22;stroke:var(--acc)"/>
+    <rect x="30" y="194" width="52" height="30" style="fill:var(--accent);fill-opacity:.22;stroke:var(--accent)"/>
+    <rect x="82" y="194" width="52" height="30" style="fill:var(--accent);fill-opacity:.22;stroke:var(--accent)"/>
+    <rect x="134" y="194" width="52" height="30" style="fill:var(--accent);fill-opacity:.22;stroke:var(--accent)"/>
+    <rect x="186" y="194" width="52" height="30" style="fill:var(--accent);fill-opacity:.22;stroke:var(--accent)"/>
   </g>
-  <text x="30" y="248" class="s-sub" style="fill:var(--acc)">(3, 4) → strike axis 0 → (4,)</text>
+  <text x="30" y="248" class="s-sub" style="fill:var(--accent)">(3, 4) → strike axis 0 → (4,)</text>
   <text x="30" y="272" class="s-sub" style="fill:var(--ink-3)">one value per COLUMN</text>
 
   <g style="stroke:var(--good);stroke-width:2">
@@ -96,7 +96,7 @@ EC.receiveLesson({
   <text x="470" y="272" class="s-sub" style="fill:var(--ink-3)">one value per ROW</text>
 
   <defs>
-    <marker id="ax-a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--acc)"/></marker>
+    <marker id="ax-a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--accent)"/></marker>
     <marker id="ax-g" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" style="fill:var(--good)"/></marker>
   </defs>
 </svg>`

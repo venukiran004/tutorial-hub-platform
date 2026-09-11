@@ -38,13 +38,13 @@ EC.receiveLesson({
   <text x="30" y="26" class="s-label" style="fill:var(--ink-2)">record</text>
   <g style="font-family:var(--mono,monospace)">
     <text x="30" y="52" class="s-sub" style="fill:var(--ink-2)">{ "order": 17,</text>
-    <text x="30" y="74" class="s-sub" style="fill:var(--acc)">  "customer": {"id": 4, "tier": "gold"},</text>
+    <text x="30" y="74" class="s-sub" style="fill:var(--accent)">  "customer": {"id": 4, "tier": "gold"},</text>
     <text x="30" y="96" class="s-sub" style="fill:var(--warn)">  "items": [</text>
     <text x="30" y="118" class="s-sub" style="fill:var(--warn)">    {"sku": "A", "qty": 2},</text>
     <text x="30" y="140" class="s-sub" style="fill:var(--warn)">    {"sku": "B", "qty": 1} ] }</text>
   </g>
 
-  <text x="400" y="26" class="s-label" style="fill:var(--acc)">json_normalize(rec) — objects become columns</text>
+  <text x="400" y="26" class="s-label" style="fill:var(--accent)">json_normalize(rec) — objects become columns</text>
   <g style="font-family:var(--mono,monospace)">
     <text x="400" y="52" class="s-sub" style="fill:var(--ink-3)">order  customer.id  customer.tier  items</text>
     <text x="400" y="74" class="s-sub" style="fill:var(--ink-2)">17     4            gold           [{...},{...}]</text>

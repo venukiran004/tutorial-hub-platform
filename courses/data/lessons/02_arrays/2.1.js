@@ -36,7 +36,7 @@ EC.receiveLesson({
       caption: "Two (2,3) arrays: concatenating on axis 0 gives (4,3), on axis 1 gives (2,6). Stacking gives (2,2,3) — a new dimension, with both inputs intact inside it.",
       svg: `<svg viewBox="0 0 880 300" role="img" aria-label="Two two-by-three arrays combined by concatenate on each axis and by stack">
   <text x="30" y="24" class="s-label" style="fill:var(--ink-2)">a (2,3)</text>
-  <g stroke-width="1.5" style="fill:var(--acc);fill-opacity:.20;stroke:var(--acc)">
+  <g stroke-width="1.5" style="fill:var(--accent);fill-opacity:.20;stroke:var(--accent)">
     <rect x="30" y="34" width="34" height="24"/><rect x="64" y="34" width="34" height="24"/><rect x="98" y="34" width="34" height="24"/>
     <rect x="30" y="58" width="34" height="24"/><rect x="64" y="58" width="34" height="24"/><rect x="98" y="58" width="34" height="24"/>
   </g>
@@ -47,7 +47,7 @@ EC.receiveLesson({
   </g>
 
   <text x="30" y="126" class="s-sub" style="fill:var(--ink-3)">concatenate(axis=0) → (4,3)</text>
-  <g stroke-width="1.5" style="fill:var(--acc);fill-opacity:.20;stroke:var(--acc)">
+  <g stroke-width="1.5" style="fill:var(--accent);fill-opacity:.20;stroke:var(--accent)">
     <rect x="30" y="136" width="34" height="24"/><rect x="64" y="136" width="34" height="24"/><rect x="98" y="136" width="34" height="24"/>
     <rect x="30" y="160" width="34" height="24"/><rect x="64" y="160" width="34" height="24"/><rect x="98" y="160" width="34" height="24"/>
   </g>
@@ -57,7 +57,7 @@ EC.receiveLesson({
   </g>
 
   <text x="300" y="126" class="s-sub" style="fill:var(--ink-3)">concatenate(axis=1) → (2,6)</text>
-  <g stroke-width="1.5" style="fill:var(--acc);fill-opacity:.20;stroke:var(--acc)">
+  <g stroke-width="1.5" style="fill:var(--accent);fill-opacity:.20;stroke:var(--accent)">
     <rect x="300" y="136" width="34" height="24"/><rect x="334" y="136" width="34" height="24"/><rect x="368" y="136" width="34" height="24"/>
     <rect x="300" y="160" width="34" height="24"/><rect x="334" y="160" width="34" height="24"/><rect x="368" y="160" width="34" height="24"/>
   </g>
@@ -71,7 +71,7 @@ EC.receiveLesson({
     <rect x="632" y="150" width="34" height="24"/><rect x="666" y="150" width="34" height="24"/><rect x="700" y="150" width="34" height="24"/>
     <rect x="632" y="174" width="34" height="24"/><rect x="666" y="174" width="34" height="24"/><rect x="700" y="174" width="34" height="24"/>
   </g>
-  <g stroke-width="1.5" style="fill:var(--acc);fill-opacity:.30;stroke:var(--acc)">
+  <g stroke-width="1.5" style="fill:var(--accent);fill-opacity:.30;stroke:var(--accent)">
     <rect x="614" y="136" width="34" height="24"/><rect x="648" y="136" width="34" height="24"/><rect x="682" y="136" width="34" height="24"/>
     <rect x="614" y="160" width="34" height="24"/><rect x="648" y="160" width="34" height="24"/><rect x="682" y="160" width="34" height="24"/>
   </g>

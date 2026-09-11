@@ -36,11 +36,11 @@ EC.receiveLesson({
       caption: "Each step answers one question and feeds the next. Skipping to distributions before knowing the column roles is how a timestamp gets a histogram and an identifier gets a mean.",
       svg: `<svg viewBox="0 0 880 300" role="img" aria-label="Six profiling steps in a row: shape, types and roles, missingness, cardinality, distributions, and sanity checks, each with the question it answers">
   <g stroke-width="1.5">
-    <rect x="30" y="60" width="125" height="70" rx="6" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc)"/>
-    <rect x="170" y="60" width="125" height="70" rx="6" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc)"/>
-    <rect x="310" y="60" width="125" height="70" rx="6" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc)"/>
-    <rect x="450" y="60" width="125" height="70" rx="6" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc)"/>
-    <rect x="590" y="60" width="125" height="70" rx="6" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc)"/>
+    <rect x="30" y="60" width="125" height="70" rx="6" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+    <rect x="170" y="60" width="125" height="70" rx="6" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+    <rect x="310" y="60" width="125" height="70" rx="6" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+    <rect x="450" y="60" width="125" height="70" rx="6" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+    <rect x="590" y="60" width="125" height="70" rx="6" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
     <rect x="730" y="60" width="125" height="70" rx="6" style="fill:var(--good);fill-opacity:.15;stroke:var(--good)"/>
   </g>
   <text x="44" y="84" class="s-label" style="fill:var(--ink-2)">1 shape</text>

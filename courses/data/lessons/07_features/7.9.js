@@ -38,9 +38,9 @@ EC.receiveLesson({
   <g transform="translate(40,40)">
     <text x="0" y="-12" class="s-label" style="fill:var(--ink-2)">truth: high iff x AND y high</text>
     <g>
-      <rect x="0" y="0" width="60" height="60" style="fill:var(--acc);fill-opacity:.06"/><rect x="60" y="0" width="60" height="60" style="fill:var(--acc);fill-opacity:.08"/><rect x="120" y="0" width="60" height="60" style="fill:var(--acc);fill-opacity:.85"/>
-      <rect x="0" y="60" width="60" height="60" style="fill:var(--acc);fill-opacity:.05"/><rect x="60" y="60" width="60" height="60" style="fill:var(--acc);fill-opacity:.06"/><rect x="120" y="60" width="60" height="60" style="fill:var(--acc);fill-opacity:.1"/>
-      <rect x="0" y="120" width="60" height="60" style="fill:var(--acc);fill-opacity:.04"/><rect x="60" y="120" width="60" height="60" style="fill:var(--acc);fill-opacity:.05"/><rect x="120" y="120" width="60" height="60" style="fill:var(--acc);fill-opacity:.06"/>
+      <rect x="0" y="0" width="60" height="60" style="fill:var(--accent);fill-opacity:.06"/><rect x="60" y="0" width="60" height="60" style="fill:var(--accent);fill-opacity:.08"/><rect x="120" y="0" width="60" height="60" style="fill:var(--accent);fill-opacity:.85"/>
+      <rect x="0" y="60" width="60" height="60" style="fill:var(--accent);fill-opacity:.05"/><rect x="60" y="60" width="60" height="60" style="fill:var(--accent);fill-opacity:.06"/><rect x="120" y="60" width="60" height="60" style="fill:var(--accent);fill-opacity:.1"/>
+      <rect x="0" y="120" width="60" height="60" style="fill:var(--accent);fill-opacity:.04"/><rect x="60" y="120" width="60" height="60" style="fill:var(--accent);fill-opacity:.05"/><rect x="120" y="120" width="60" height="60" style="fill:var(--accent);fill-opacity:.06"/>
     </g>
     <rect x="0" y="0" width="180" height="180" style="fill:none;stroke:var(--line)"/>
     <text x="0" y="200" class="s-sub" style="fill:var(--ink-3)">x →</text>

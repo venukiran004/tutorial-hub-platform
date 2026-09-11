@@ -37,13 +37,13 @@ EC.receiveLesson({
       svg: `<svg viewBox="0 0 880 260" role="img" aria-label="A structured array with interleaved fields per record, against a DataFrame with each column stored contiguously">
   <text x="30" y="26" class="s-label" style="fill:var(--warn)">structured array — one buffer, records side by side</text>
   <g stroke-width="1.5">
-    <rect x="30" y="40" width="70" height="28" style="fill:var(--acc);fill-opacity:.20;stroke:var(--acc)"/>
+    <rect x="30" y="40" width="70" height="28" style="fill:var(--accent);fill-opacity:.20;stroke:var(--accent)"/>
     <rect x="100" y="40" width="40" height="28" style="fill:var(--good);fill-opacity:.20;stroke:var(--good)"/>
     <rect x="140" y="40" width="50" height="28" style="fill:var(--warn);fill-opacity:.20;stroke:var(--warn)"/>
-    <rect x="190" y="40" width="70" height="28" style="fill:var(--acc);fill-opacity:.20;stroke:var(--acc)"/>
+    <rect x="190" y="40" width="70" height="28" style="fill:var(--accent);fill-opacity:.20;stroke:var(--accent)"/>
     <rect x="260" y="40" width="40" height="28" style="fill:var(--good);fill-opacity:.20;stroke:var(--good)"/>
     <rect x="300" y="40" width="50" height="28" style="fill:var(--warn);fill-opacity:.20;stroke:var(--warn)"/>
-    <rect x="350" y="40" width="70" height="28" style="fill:var(--acc);fill-opacity:.20;stroke:var(--acc)"/>
+    <rect x="350" y="40" width="70" height="28" style="fill:var(--accent);fill-opacity:.20;stroke:var(--accent)"/>
     <rect x="420" y="40" width="40" height="28" style="fill:var(--good);fill-opacity:.20;stroke:var(--good)"/>
     <rect x="460" y="40" width="50" height="28" style="fill:var(--warn);fill-opacity:.20;stroke:var(--warn)"/>
   </g>
@@ -61,7 +61,7 @@ EC.receiveLesson({
   <line x1="30" y1="126" x2="850" y2="126" style="stroke:var(--line);stroke-dasharray:3 3"/>
 
   <text x="30" y="156" class="s-label" style="fill:var(--good)">DataFrame — one buffer per column</text>
-  <g stroke-width="1.5" style="fill:var(--acc);fill-opacity:.20;stroke:var(--acc)">
+  <g stroke-width="1.5" style="fill:var(--accent);fill-opacity:.20;stroke:var(--accent)">
     <rect x="30" y="170" width="70" height="24"/><rect x="100" y="170" width="70" height="24"/><rect x="170" y="170" width="70" height="24"/>
   </g>
   <text x="252" y="187" class="s-sub" style="fill:var(--ink-3)">name column, contiguous</text>

@@ -35,7 +35,7 @@ EC.receiveLesson({
       title: "The same six values, two layouts",
       caption: "Long: six rows, one per (store, month). Wide: two rows with the months as columns. melt goes right to left; pivot goes left to right.",
       svg: `<svg viewBox="0 0 880 280" role="img" aria-label="A long table of store, month and sales beside a wide table with months as columns, with arrows labelled melt and pivot">
-  <text x="30" y="26" class="s-label" style="fill:var(--acc)">long — 6 rows</text>
+  <text x="30" y="26" class="s-label" style="fill:var(--accent)">long — 6 rows</text>
   <g style="font-family:var(--mono,monospace)">
     <text x="30" y="54" class="s-sub" style="fill:var(--ink-3)">store  month  sales</text>
     <text x="30" y="78" class="s-sub" style="fill:var(--ink-2)">A      jan    10</text>
@@ -45,7 +45,7 @@ EC.receiveLesson({
     <text x="30" y="166" class="s-sub" style="fill:var(--ink-2)">B      feb    18</text>
     <text x="30" y="188" class="s-sub" style="fill:var(--ink-2)">B      mar    22</text>
   </g>
-  <rect x="24" y="40" width="200" height="158" rx="6" style="fill:none;stroke:var(--acc);stroke-width:1.5"/>
+  <rect x="24" y="40" width="200" height="158" rx="6" style="fill:none;stroke:var(--accent);stroke-width:1.5"/>
 
   <line x1="250" y1="100" x2="430" y2="100" style="stroke:var(--good);stroke-width:2" marker-end="url(#rs-g)"/>
   <text x="290" y="90" class="s-sub" style="fill:var(--good)">pivot / unstack</text>

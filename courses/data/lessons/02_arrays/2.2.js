@@ -36,7 +36,7 @@ EC.receiveLesson({
       caption: "The index array is the reusable part. Applying it to values, labels and identifiers keeps every row's fields together — which sorting each array separately would destroy.",
       svg: `<svg viewBox="0 0 880 270" role="img" aria-label="An unsorted score array, its argsort index array, and the same permutation applied to a parallel name array">
   <text x="30" y="26" class="s-label" style="fill:var(--ink-2)">scores</text>
-  <g stroke-width="1.5" style="fill:var(--acc);fill-opacity:.18;stroke:var(--acc)">
+  <g stroke-width="1.5" style="fill:var(--accent);fill-opacity:.18;stroke:var(--accent)">
     <rect x="120" y="10" width="56" height="26"/><rect x="176" y="10" width="56" height="26"/>
     <rect x="232" y="10" width="56" height="26"/><rect x="288" y="10" width="56" height="26"/>
   </g>
@@ -60,7 +60,7 @@ EC.receiveLesson({
   <text x="30" y="132" class="s-sub" style="fill:var(--ink-3)">apply the SAME index array to every parallel array:</text>
 
   <text x="30" y="176" class="s-label" style="fill:var(--ink-2)">scores[idx]</text>
-  <g stroke-width="1.5" style="fill:var(--acc);fill-opacity:.18;stroke:var(--acc)">
+  <g stroke-width="1.5" style="fill:var(--accent);fill-opacity:.18;stroke:var(--accent)">
     <rect x="180" y="158" width="56" height="26"/><rect x="236" y="158" width="56" height="26"/>
     <rect x="292" y="158" width="56" height="26"/><rect x="348" y="158" width="56" height="26"/>
   </g>

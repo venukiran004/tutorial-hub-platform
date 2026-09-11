@@ -35,7 +35,7 @@ EC.receiveLesson({
       title: "The decision after detection",
       caption: "Detection is one box. Everything that matters happens in the diamond — and the two exits from it lead to opposite actions on the same value.",
       svg: `<svg viewBox="0 0 880 320" role="img" aria-label="A decision flow: a flagged value goes to an evidence step asking whether it is an error, branching to remove or correct if yes, and to keep with a mitigation choice if no">
-  <rect x="30" y="120" width="130" height="50" rx="6" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc);stroke-width:1.5"/>
+  <rect x="30" y="120" width="130" height="50" rx="6" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent);stroke-width:1.5"/>
   <text x="46" y="142" class="s-label" style="fill:var(--ink-2)">flagged</text>
   <text x="46" y="160" class="s-sub" style="fill:var(--ink-3)">by 6.7</text>
 

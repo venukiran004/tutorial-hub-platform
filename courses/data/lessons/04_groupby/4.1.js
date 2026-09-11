@@ -38,11 +38,11 @@ EC.receiveLesson({
   <text x="30" y="26" class="s-label" style="fill:var(--ink-2)">split</text>
   <g style="font-family:var(--mono,monospace)">
     <text x="30" y="52" class="s-sub" style="fill:var(--ink-3)">region  sales</text>
-    <text x="30" y="74" class="s-sub" style="fill:var(--acc)">n       10</text>
+    <text x="30" y="74" class="s-sub" style="fill:var(--accent)">n       10</text>
     <text x="30" y="94" class="s-sub" style="fill:var(--good)">s       20</text>
-    <text x="30" y="114" class="s-sub" style="fill:var(--acc)">n       12</text>
+    <text x="30" y="114" class="s-sub" style="fill:var(--accent)">n       12</text>
     <text x="30" y="134" class="s-sub" style="fill:var(--good)">s       18</text>
-    <text x="30" y="154" class="s-sub" style="fill:var(--acc)">n       11</text>
+    <text x="30" y="154" class="s-sub" style="fill:var(--accent)">n       11</text>
     <text x="30" y="174" class="s-sub" style="fill:var(--good)">s       22</text>
   </g>
 
@@ -52,9 +52,9 @@ EC.receiveLesson({
   </g>
 
   <text x="270" y="26" class="s-label" style="fill:var(--ink-2)">apply — sum()</text>
-  <rect x="264" y="56" width="150" height="56" rx="6" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc);stroke-width:1.5"/>
-  <text x="278" y="80" class="s-sub" style="fill:var(--acc)">n: 10, 12, 11</text>
-  <text x="278" y="100" class="s-sub" style="fill:var(--acc)">→ 33</text>
+  <rect x="264" y="56" width="150" height="56" rx="6" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent);stroke-width:1.5"/>
+  <text x="278" y="80" class="s-sub" style="fill:var(--accent)">n: 10, 12, 11</text>
+  <text x="278" y="100" class="s-sub" style="fill:var(--accent)">→ 33</text>
   <rect x="264" y="136" width="150" height="56" rx="6" style="fill:var(--good);fill-opacity:.12;stroke:var(--good);stroke-width:1.5"/>
   <text x="278" y="160" class="s-sub" style="fill:var(--good)">s: 20, 18, 22</text>
   <text x="278" y="180" class="s-sub" style="fill:var(--good)">→ 60</text>
@@ -67,7 +67,7 @@ EC.receiveLesson({
   <text x="520" y="26" class="s-label" style="fill:var(--ink-2)">combine</text>
   <g style="font-family:var(--mono,monospace)">
     <text x="520" y="100" class="s-sub" style="fill:var(--ink-3)">region  sales</text>
-    <text x="520" y="122" class="s-sub" style="fill:var(--acc)">n       33</text>
+    <text x="520" y="122" class="s-sub" style="fill:var(--accent)">n       33</text>
     <text x="520" y="142" class="s-sub" style="fill:var(--good)">s       60</text>
   </g>
   <text x="520" y="176" class="s-sub" style="fill:var(--ink-3)">region is the INDEX</text>

@@ -40,7 +40,7 @@ EC.receiveLesson({
     <rect x="0" y="0" width="340" height="200" style="fill:none;stroke:var(--line);stroke-width:1.2"/>
     <text x="4" y="196" class="s-sub" style="fill:var(--ink-3)">age 20…70 →</text>
     <text x="-30" y="12" class="s-sub" style="fill:var(--ink-3)">£</text>
-    <g style="fill:var(--acc);fill-opacity:.6">
+    <g style="fill:var(--accent);fill-opacity:.6">
       <circle cx="40" cy="180" r="4"/><circle cx="120" cy="178" r="4"/><circle cx="200" cy="181" r="4"/><circle cx="280" cy="179" r="4"/>
       <circle cx="60" cy="150" r="4"/><circle cx="150" cy="152" r="4"/><circle cx="240" cy="149" r="4"/><circle cx="310" cy="151" r="4"/>
       <circle cx="30" cy="110" r="4"/><circle cx="110" cy="112" r="4"/><circle cx="190" cy="109" r="4"/><circle cx="290" cy="111" r="4"/>

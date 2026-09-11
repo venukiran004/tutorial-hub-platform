@@ -37,7 +37,7 @@ EC.receiveLesson({
       svg: `<svg viewBox="0 0 880 300" role="img" aria-label="A number line from 1 to 12 with December and January far apart, beside a circle with twelve month points where December and January are adjacent">
   <text x="30" y="26" class="s-label" style="fill:var(--crit)">month as an integer</text>
   <line x1="40" y1="120" x2="400" y2="120" style="stroke:var(--line);stroke-width:1.5"/>
-  <g style="fill:var(--acc)">
+  <g style="fill:var(--accent)">
     <circle cx="52" cy="120" r="5"/><circle cx="84" cy="120" r="5"/><circle cx="116" cy="120" r="5"/><circle cx="148" cy="120" r="5"/>
     <circle cx="180" cy="120" r="5"/><circle cx="212" cy="120" r="5"/><circle cx="244" cy="120" r="5"/><circle cx="276" cy="120" r="5"/>
     <circle cx="308" cy="120" r="5"/><circle cx="340" cy="120" r="5"/><circle cx="372" cy="120" r="5"/>
@@ -54,7 +54,7 @@ EC.receiveLesson({
 
   <text x="500" y="26" class="s-label" style="fill:var(--good)">month on a circle — (sin, cos)</text>
   <circle cx="660" cy="150" r="90" style="fill:none;stroke:var(--line);stroke-width:1.5"/>
-  <g style="fill:var(--acc)">
+  <g style="fill:var(--accent)">
     <circle cx="660" cy="60" r="5"/><circle cx="705" cy="72" r="5"/><circle cx="738" cy="105" r="5"/><circle cx="750" cy="150" r="5"/>
     <circle cx="738" cy="195" r="5"/><circle cx="705" cy="228" r="5"/><circle cx="660" cy="240" r="5"/><circle cx="615" cy="228" r="5"/>
     <circle cx="582" cy="195" r="5"/><circle cx="570" cy="150" r="5"/><circle cx="582" cy="105" r="5"/><circle cx="615" cy="72" r="5"/>

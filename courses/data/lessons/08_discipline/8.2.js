@@ -38,7 +38,7 @@ EC.receiveLesson({
       svg: `<svg viewBox="0 0 880 320" role="img" aria-label="Left: a scatter cloud with the two principal directions drawn through its centre. Right: the same points projected onto the first component alone, with the discarded second component noted.">
   <defs>
     <marker id="pca-ah-82" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" style="fill:var(--acc)"/>
+      <path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/>
     </marker>
     <marker id="pca-ah2-82" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" style="fill:var(--warn)"/>
@@ -57,16 +57,16 @@ EC.receiveLesson({
     <circle cx="268" cy="125" r="4"/><circle cx="289" cy="143" r="4"/><circle cx="294" cy="131" r="4"/><circle cx="312" cy="141" r="4"/>
     <circle cx="305" cy="110" r="4"/><circle cx="323" cy="122" r="4"/><circle cx="196" cy="161" r="4"/><circle cx="269" cy="177" r="4"/>
   </g>
-  <line x1="126" y1="230" x2="334" y2="110" style="stroke:var(--acc)" stroke-width="2.5" marker-end="url(#pca-ah-82)"/>
+  <line x1="126" y1="230" x2="334" y2="110" style="stroke:var(--accent)" stroke-width="2.5" marker-end="url(#pca-ah-82)"/>
   <line x1="230" y1="170" x2="253" y2="209" style="stroke:var(--warn)" stroke-width="2.5" marker-end="url(#pca-ah2-82)"/>
-  <text x="340" y="104" class="s-label" style="fill:var(--acc);font-weight:600">PC1 · 96 %</text>
+  <text x="340" y="104" class="s-label" style="fill:var(--accent);font-weight:600">PC1 · 96 %</text>
   <text x="258" y="224" class="s-label" style="fill:var(--warn);font-weight:600">PC2 · 4 %</text>
 
   <line x1="440" y1="60" x2="440" y2="290" style="stroke:var(--line)" stroke-width="1" stroke-dasharray="4 4"/>
 
   <text x="470" y="34" class="s-label" style="font-weight:600">Keep k = 1</text>
-  <line x1="470" y1="150" x2="850" y2="150" style="stroke:var(--acc)" stroke-width="2"/>
-  <g style="fill:var(--acc)">
+  <line x1="470" y1="150" x2="850" y2="150" style="stroke:var(--accent)" stroke-width="2"/>
+  <g style="fill:var(--accent)">
     <circle cx="474" cy="150" r="4"/><circle cx="498" cy="150" r="4"/><circle cx="514" cy="150" r="4"/><circle cx="538" cy="150" r="4"/>
     <circle cx="554" cy="150" r="4"/><circle cx="570" cy="150" r="4"/><circle cx="586" cy="150" r="4"/><circle cx="602" cy="150" r="4"/>
     <circle cx="618" cy="150" r="4"/><circle cx="634" cy="150" r="4"/><circle cx="650" cy="150" r="4"/><circle cx="658" cy="150" r="4"/>
@@ -175,13 +175,13 @@ print(np.abs(pca.components_[:, 4]).max().round(4))   # 0.001 -- the quiet colum
     <text x="165" y="262">PC1 · 25 %</text><text x="305" y="262">PC2 · 25 %</text><text x="445" y="262">PC3 · 25 %</text><text x="585" y="262">PC4 · 25 %</text>
     <text x="725" y="262" style="fill:var(--crit);font-weight:600">PC5 · 0.2 %</text>
   </g>
-  <polyline points="165,195 305,150 445,105 585,60 725,60" fill="none" style="stroke:var(--acc)" stroke-width="2"/>
-  <g style="fill:var(--acc)">
+  <polyline points="165,195 305,150 445,105 585,60 725,60" fill="none" style="stroke:var(--accent)" stroke-width="2"/>
+  <g style="fill:var(--accent)">
     <circle cx="165" cy="195" r="4"/><circle cx="305" cy="150" r="4"/><circle cx="445" cy="105" r="4"/><circle cx="585" cy="60" r="4"/><circle cx="725" cy="60" r="4"/>
   </g>
   <line x1="80" y1="69" x2="840" y2="69" style="stroke:var(--warn)" stroke-width="1.5" stroke-dasharray="6 4"/>
   <text x="760" y="88" class="s-label" style="fill:var(--warn);font-weight:600">95 % kept here</text>
-  <text x="165" y="182" class="s-sub" text-anchor="middle" style="fill:var(--acc)">cumulative</text>
+  <text x="165" y="182" class="s-sub" text-anchor="middle" style="fill:var(--accent)">cumulative</text>
   <text x="725" y="222" class="s-label" text-anchor="middle" style="fill:var(--crit);font-weight:600">the only column</text>
   <text x="725" y="206" class="s-label" text-anchor="middle" style="fill:var(--crit);font-weight:600">correlated with y</text>
 </svg>`

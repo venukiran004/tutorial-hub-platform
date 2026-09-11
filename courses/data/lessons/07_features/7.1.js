@@ -50,7 +50,7 @@ EC.receiveLesson({
 
   <rect x="150" y="60" width="200" height="34" rx="4" style="fill:var(--good);fill-opacity:.2;stroke:var(--good);stroke-width:1.2"/>
   <text x="160" y="82" class="s-sub" style="fill:var(--ink-2)">one-hot (drop one for OLS)</text>
-  <rect x="150" y="104" width="200" height="30" rx="4" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc);stroke-width:1"/>
+  <rect x="150" y="104" width="200" height="30" rx="4" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent);stroke-width:1"/>
   <text x="160" y="124" class="s-sub" style="fill:var(--ink-3)">ordinal, only if ordered</text>
 
   <rect x="370" y="60" width="220" height="34" rx="4" style="fill:var(--good);fill-opacity:.2;stroke:var(--good);stroke-width:1.2"/>
@@ -65,17 +65,17 @@ EC.receiveLesson({
 
   <rect x="150" y="190" width="200" height="34" rx="4" style="fill:var(--good);fill-opacity:.2;stroke:var(--good);stroke-width:1.2"/>
   <text x="160" y="212" class="s-sub" style="fill:var(--ink-2)">ordinal codes, or one-hot</text>
-  <rect x="150" y="234" width="200" height="30" rx="4" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc);stroke-width:1"/>
+  <rect x="150" y="234" width="200" height="30" rx="4" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent);stroke-width:1"/>
   <text x="160" y="254" class="s-sub" style="fill:var(--ink-3)">native categorical (LightGBM)</text>
 
   <rect x="370" y="190" width="220" height="34" rx="4" style="fill:var(--good);fill-opacity:.2;stroke:var(--good);stroke-width:1.2"/>
   <text x="380" y="212" class="s-sub" style="fill:var(--ink-2)">ordinal codes + frequency</text>
-  <rect x="370" y="234" width="220" height="30" rx="4" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc);stroke-width:1"/>
+  <rect x="370" y="234" width="220" height="30" rx="4" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent);stroke-width:1"/>
   <text x="380" y="254" class="s-sub" style="fill:var(--ink-3)">native categorical, target enc.</text>
 
   <rect x="610" y="190" width="230" height="34" rx="4" style="fill:var(--warn);fill-opacity:.2;stroke:var(--warn);stroke-width:1.2"/>
   <text x="620" y="212" class="s-sub" style="fill:var(--ink-2)">target enc., frequency, hashing</text>
-  <rect x="610" y="234" width="230" height="30" rx="4" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc);stroke-width:1"/>
+  <rect x="610" y="234" width="230" height="30" rx="4" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent);stroke-width:1"/>
   <text x="620" y="254" class="s-sub" style="fill:var(--ink-3)">rare → "other" first, always</text>
 
   <text x="140" y="316" class="s-sub" style="fill:var(--ink-3)">Trees split on thresholds, so an arbitrary integer code is fine for them. A linear model multiplies the code by a weight, so it is fine only when the order is real.</text>

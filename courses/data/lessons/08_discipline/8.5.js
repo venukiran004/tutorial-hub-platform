@@ -49,11 +49,11 @@ EC.receiveLesson({
   <text x="162" y="50" class="s-sub">ColumnTransformer</text>
 
   <g stroke-width="1">
-    <rect x="170" y="62" width="120" height="40" rx="6" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc)"/>
-    <rect x="310" y="62" width="120" height="40" rx="6" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc)"/>
-    <rect x="450" y="62" width="120" height="40" rx="6" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc)"/>
-    <rect x="170" y="126" width="120" height="40" rx="6" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc)"/>
-    <rect x="310" y="126" width="120" height="40" rx="6" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc)"/>
+    <rect x="170" y="62" width="120" height="40" rx="6" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+    <rect x="310" y="62" width="120" height="40" rx="6" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+    <rect x="450" y="62" width="120" height="40" rx="6" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+    <rect x="170" y="126" width="120" height="40" rx="6" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
+    <rect x="310" y="126" width="120" height="40" rx="6" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent)"/>
   </g>
   <g class="s-label" text-anchor="middle">
     <text x="230" y="80">impute</text><text x="230" y="95" class="s-sub">median_</text>
@@ -62,8 +62,8 @@ EC.receiveLesson({
     <text x="230" y="144">impute</text><text x="230" y="159" class="s-sub">"missing"</text>
     <text x="370" y="144">one-hot</text><text x="370" y="159" class="s-sub">categories_</text>
   </g>
-  <text x="160" y="118" class="s-sub" style="fill:var(--acc)">numeric</text>
-  <text x="160" y="181" class="s-sub" style="fill:var(--acc)">categorical</text>
+  <text x="160" y="118" class="s-sub" style="fill:var(--accent)">numeric</text>
+  <text x="160" y="181" class="s-sub" style="fill:var(--accent)">categorical</text>
   <g style="stroke:var(--ink-3)" stroke-width="1.2" fill="none">
     <path d="M120,110 L150,110 L150,82 L170,82" marker-end="url(#pl-ah-85)"/>
     <path d="M120,110 L150,110 L150,146 L170,146" marker-end="url(#pl-ah-85)"/>
@@ -81,7 +81,7 @@ EC.receiveLesson({
 
   <line x1="30" y1="215" x2="850" y2="215" style="stroke:var(--line)" stroke-width="1"/>
   <g class="s-label" style="font-weight:600">
-    <text x="30" y="246" style="fill:var(--acc)">fit(X_train, y)</text>
+    <text x="30" y="246" style="fill:var(--accent)">fit(X_train, y)</text>
     <text x="30" y="296" style="fill:var(--good)">predict(X_new)</text>
   </g>
   <g class="s-sub">

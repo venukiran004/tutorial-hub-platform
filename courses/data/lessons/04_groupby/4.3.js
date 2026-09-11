@@ -49,8 +49,8 @@ EC.receiveLesson({
   <text x="412" y="30" class="s-sub" style="fill:var(--warn)">t</text>
   <text x="466" y="30" class="s-sub" style="fill:var(--ink-3)">future</text>
 
-  <text x="30" y="106" class="s-sub" style="fill:var(--acc)">rolling(3)</text>
-  <rect x="270" y="90" width="180" height="22" rx="3" style="fill:var(--acc);fill-opacity:.22;stroke:var(--acc);stroke-width:1.5"/>
+  <text x="30" y="106" class="s-sub" style="fill:var(--accent)">rolling(3)</text>
+  <rect x="270" y="90" width="180" height="22" rx="3" style="fill:var(--accent);fill-opacity:.22;stroke:var(--accent);stroke-width:1.5"/>
   <text x="600" y="106" class="s-sub" style="fill:var(--ink-3)">t−2, t−1, t — includes t</text>
 
   <text x="30" y="148" class="s-sub" style="fill:var(--good)">expanding()</text>
@@ -71,8 +71,8 @@ EC.receiveLesson({
   <text x="600" y="190" class="s-sub" style="fill:var(--ink-3)">all rows, decaying weight — includes t</text>
 
   <line x1="30" y1="220" x2="850" y2="220" style="stroke:var(--line);stroke-dasharray:3 3"/>
-  <text x="30" y="250" class="s-sub" style="fill:var(--acc)">rolling(3).mean().shift(1)</text>
-  <rect x="210" y="234" width="180" height="22" rx="3" style="fill:var(--acc);fill-opacity:.22;stroke:var(--acc);stroke-width:1.5"/>
+  <text x="30" y="250" class="s-sub" style="fill:var(--accent)">rolling(3).mean().shift(1)</text>
+  <rect x="210" y="234" width="180" height="22" rx="3" style="fill:var(--accent);fill-opacity:.22;stroke:var(--accent);stroke-width:1.5"/>
   <text x="600" y="250" class="s-sub" style="fill:var(--good)">t−3, t−2, t−1 — EXCLUDES t</text>
   <text x="30" y="282" class="s-sub" style="fill:var(--ink-3)">If the target at t is derived from the value at t, every unshifted window leaks it. shift(1) is the one-token fix.</text>
 </svg>`

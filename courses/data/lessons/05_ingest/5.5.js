@@ -46,21 +46,21 @@ EC.receiveLesson({
     <text x="30" y="240" class="s-sub" style="fill:var(--ink-2)">LIMIT 10</text>
   </g>
 
-  <text x="560" y="26" class="s-label" style="fill:var(--acc)">as executed</text>
+  <text x="560" y="26" class="s-label" style="fill:var(--accent)">as executed</text>
   <g>
-    <rect x="560" y="44" width="260" height="24" rx="4" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc);stroke-width:1.2"/>
+    <rect x="560" y="44" width="260" height="24" rx="4" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent);stroke-width:1.2"/>
     <text x="572" y="60" class="s-sub" style="fill:var(--ink-2)">1  FROM + JOIN  → the row set</text>
-    <rect x="560" y="74" width="260" height="24" rx="4" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc);stroke-width:1.2"/>
+    <rect x="560" y="74" width="260" height="24" rx="4" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent);stroke-width:1.2"/>
     <text x="572" y="90" class="s-sub" style="fill:var(--ink-2)">2  WHERE  → filter rows</text>
-    <rect x="560" y="104" width="260" height="24" rx="4" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc);stroke-width:1.2"/>
+    <rect x="560" y="104" width="260" height="24" rx="4" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent);stroke-width:1.2"/>
     <text x="572" y="120" class="s-sub" style="fill:var(--ink-2)">3  GROUP BY  → make groups</text>
-    <rect x="560" y="134" width="260" height="24" rx="4" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc);stroke-width:1.2"/>
+    <rect x="560" y="134" width="260" height="24" rx="4" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent);stroke-width:1.2"/>
     <text x="572" y="150" class="s-sub" style="fill:var(--ink-2)">4  HAVING  → filter groups</text>
     <rect x="560" y="164" width="260" height="24" rx="4" style="fill:var(--good);fill-opacity:.15;stroke:var(--good);stroke-width:1.2"/>
     <text x="572" y="180" class="s-sub" style="fill:var(--ink-2)">5  SELECT  → compute columns, aliases</text>
-    <rect x="560" y="194" width="260" height="24" rx="4" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc);stroke-width:1.2"/>
+    <rect x="560" y="194" width="260" height="24" rx="4" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent);stroke-width:1.2"/>
     <text x="572" y="210" class="s-sub" style="fill:var(--ink-2)">6  ORDER BY  → can use "total"</text>
-    <rect x="560" y="224" width="260" height="24" rx="4" style="fill:var(--acc);fill-opacity:.12;stroke:var(--acc);stroke-width:1.2"/>
+    <rect x="560" y="224" width="260" height="24" rx="4" style="fill:var(--accent);fill-opacity:.12;stroke:var(--accent);stroke-width:1.2"/>
     <text x="572" y="240" class="s-sub" style="fill:var(--ink-2)">7  LIMIT  → take the first N</text>
   </g>
 

@@ -36,11 +36,11 @@ EC.receiveLesson({
       caption: "Filters score one feature at a time against the target and miss anything that only shows up in combination. Wrappers see the model's full behaviour but pay a fit per subset. Embedded methods get the model's view for the price of one fit — for that model.",
       svg: `<svg viewBox="0 0 880 320" role="img" aria-label="Three columns for filter, wrapper and embedded selection, each listing what it detects, what it misses, and its cost">
   <g stroke-width="1.5">
-    <rect x="30" y="40" width="260" height="230" rx="8" style="fill:var(--acc);fill-opacity:.06;stroke:var(--acc)"/>
+    <rect x="30" y="40" width="260" height="230" rx="8" style="fill:var(--accent);fill-opacity:.06;stroke:var(--accent)"/>
     <rect x="310" y="40" width="260" height="230" rx="8" style="fill:var(--warn);fill-opacity:.06;stroke:var(--warn)"/>
     <rect x="590" y="40" width="260" height="230" rx="8" style="fill:var(--good);fill-opacity:.06;stroke:var(--good)"/>
   </g>
-  <text x="46" y="68" class="s-label" style="fill:var(--acc)">filter</text>
+  <text x="46" y="68" class="s-label" style="fill:var(--accent)">filter</text>
   <text x="46" y="92" class="s-sub" style="fill:var(--ink-3)">score each feature alone</text>
   <text x="46" y="122" class="s-sub" style="fill:var(--ink-2)">sees: marginal association</text>
   <text x="46" y="142" class="s-sub" style="fill:var(--ink-2)">(corr, MI, chi²)</text>

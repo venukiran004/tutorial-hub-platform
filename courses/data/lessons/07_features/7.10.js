@@ -41,7 +41,7 @@ EC.receiveLesson({
     <text x="30" y="70" class="s-sub" style="fill:var(--ink-2)">d3: "the order was great"</text>
   </g>
 
-  <text x="30" y="110" class="s-label" style="fill:var(--acc)">counts</text>
+  <text x="30" y="110" class="s-label" style="fill:var(--accent)">counts</text>
   <g style="font-family:var(--mono,monospace)">
     <text x="30" y="132" class="s-sub" style="fill:var(--ink-3)">       the  order  arrived  late  refund  was  great</text>
     <text x="30" y="152" class="s-sub" style="fill:var(--ink-2)">d1      1     1       1      1      0     0     0</text>

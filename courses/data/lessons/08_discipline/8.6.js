@@ -42,7 +42,7 @@ EC.receiveLesson({
   <line x1="60" y1="270" x2="400" y2="270" style="stroke:var(--line)" stroke-width="1"/>
   <line x1="60" y1="50" x2="60" y2="270" style="stroke:var(--line)" stroke-width="1"/>
   <line x1="60" y1="270" x2="400" y2="50" style="stroke:var(--ink-4)" stroke-width="1" stroke-dasharray="4 4"/>
-  <path d="M60,270 C80,150 120,100 200,80 C280,62 340,54 400,50" fill="none" style="stroke:var(--acc)" stroke-width="2.5"/>
+  <path d="M60,270 C80,150 120,100 200,80 C280,62 340,54 400,50" fill="none" style="stroke:var(--accent)" stroke-width="2.5"/>
   <text x="230" y="292" class="s-sub" text-anchor="middle">false positive rate</text>
   <text x="40" y="160" class="s-sub" text-anchor="middle" transform="rotate(-90 40 160)">true positive rate</text>
   <text x="250" y="200" class="s-sub" style="fill:var(--ink-4)">chance</text>
@@ -54,8 +54,8 @@ EC.receiveLesson({
   <line x1="500" y1="50" x2="500" y2="270" style="stroke:var(--line)" stroke-width="1"/>
   <line x1="500" y1="266" x2="840" y2="266" style="stroke:var(--crit)" stroke-width="1.5" stroke-dasharray="6 4"/>
   <text x="760" y="258" class="s-sub" style="fill:var(--crit)">base rate 0.02</text>
-  <path d="M500,60 C520,70 540,110 580,130 C640,160 700,205 760,230 C800,245 830,258 840,262" fill="none" style="stroke:var(--acc)" stroke-width="2.5"/>
-  <g style="fill:var(--acc)">
+  <path d="M500,60 C520,70 540,110 580,130 C640,160 700,205 760,230 C800,245 830,258 840,262" fill="none" style="stroke:var(--accent)" stroke-width="2.5"/>
+  <g style="fill:var(--accent)">
     <circle cx="527" cy="88" r="4"/><circle cx="600" cy="140" r="4"/><circle cx="690" cy="200" r="4"/><circle cx="785" cy="243" r="4"/>
   </g>
   <g class="s-sub">
@@ -197,15 +197,15 @@ print(pw.mean().round(3), p.mean().round(3), y_va.mean().round(3))     # 0.31  0
   <g style="stroke:var(--crit)" stroke-width="1" stroke-dasharray="3 3">
     <line x1="670" y1="170" x2="730" y2="200"/><line x1="670" y1="170" x2="710" y2="140"/>
   </g>
-  <circle cx="670" cy="170" r="8" style="fill:none;stroke:var(--acc)" stroke-width="2.5"/>
+  <circle cx="670" cy="170" r="8" style="fill:none;stroke:var(--accent)" stroke-width="2.5"/>
   <g style="fill:var(--crit)">
     <circle cx="670" cy="170" r="5"/><circle cx="730" cy="200" r="5"/><circle cx="710" cy="140" r="5"/>
   </g>
   <g style="fill:none;stroke:var(--crit)" stroke-width="1.5">
     <circle cx="695" cy="182" r="4"/><circle cx="686" cy="158" r="4"/><circle cx="712" cy="191" r="4"/>
   </g>
-  <text x="600" y="120" class="s-sub" style="fill:var(--acc);font-weight:600">validation row</text>
-  <path d="M655,124 L666,160" fill="none" style="stroke:var(--acc)" stroke-width="1"/>
+  <text x="600" y="120" class="s-sub" style="fill:var(--accent);font-weight:600">validation row</text>
+  <path d="M655,124 L666,160" fill="none" style="stroke:var(--accent)" stroke-width="1"/>
   <text x="720" y="240" class="s-sub" style="fill:var(--crit)">its synthetic offspring —</text>
   <text x="720" y="256" class="s-sub" style="fill:var(--crit)">in the training set</text>
 </svg>`

@@ -53,7 +53,7 @@ EC.receiveLesson({
     <text x="0" y="196" class="s-sub" style="fill:var(--warn)">the first holds everything</text>
   </g>
   <g transform="translate(320,30)">
-    <text x="0" y="-8" class="s-label" style="fill:var(--acc)">equal-frequency, 5 bins</text>
+    <text x="0" y="-8" class="s-label" style="fill:var(--accent)">equal-frequency, 5 bins</text>
     <g style="fill:var(--ink-4);fill-opacity:.15">
       <rect x="0" y="20" width="10" height="120"/><rect x="10" y="10" width="10" height="130"/><rect x="20" y="40" width="10" height="100"/>
       <rect x="30" y="70" width="10" height="70"/><rect x="40" y="90" width="10" height="50"/><rect x="50" y="105" width="10" height="35"/>
@@ -62,12 +62,12 @@ EC.receiveLesson({
       <rect x="120" y="137" width="10" height="3"/><rect x="130" y="138" width="10" height="2"/><rect x="140" y="139" width="120" height="1"/>
     </g>
     <line x1="0" y1="140" x2="260" y2="140" style="stroke:var(--line)"/>
-    <g style="stroke:var(--acc);stroke-width:1.5;stroke-dasharray:3 2">
+    <g style="stroke:var(--accent);stroke-width:1.5;stroke-dasharray:3 2">
       <line x1="9" y1="0" x2="9" y2="140"/><line x1="17" y1="0" x2="17" y2="140"/><line x1="28" y1="0" x2="28" y2="140"/><line x1="48" y1="0" x2="48" y2="140"/>
     </g>
     <text x="0" y="160" class="s-sub" style="fill:var(--ink-3)">20% 20% 20% 20%    20%</text>
-    <text x="0" y="180" class="s-sub" style="fill:var(--acc)">every bin populated; the</text>
-    <text x="0" y="196" class="s-sub" style="fill:var(--acc)">top bin spans 60 to 5,000</text>
+    <text x="0" y="180" class="s-sub" style="fill:var(--accent)">every bin populated; the</text>
+    <text x="0" y="196" class="s-sub" style="fill:var(--accent)">top bin spans 60 to 5,000</text>
   </g>
   <g transform="translate(610,30)">
     <text x="0" y="-8" class="s-label" style="fill:var(--good)">supervised, 4 bins</text>

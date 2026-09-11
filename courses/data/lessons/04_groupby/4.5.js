@@ -132,8 +132,8 @@ pd.Series([1.0, np.nan]).astype("string").tolist()     # ['1.0', <NA>]
 
   <text x="30" y="106" class="s-label" style="fill:var(--ink-2)">pattern</text>
   <text x="30" y="132" class="s-sub" style="fill:var(--ink-2)">r"SKU-</text>
-  <rect x="86" y="116" width="118" height="24" rx="3" style="fill:var(--acc);fill-opacity:.2;stroke:var(--acc);stroke-width:1.5"/>
-  <text x="92" y="132" class="s-sub" style="fill:var(--acc)">(?P&lt;id&gt;\\d+)</text>
+  <rect x="86" y="116" width="118" height="24" rx="3" style="fill:var(--accent);fill-opacity:.2;stroke:var(--accent);stroke-width:1.5"/>
+  <text x="92" y="132" class="s-sub" style="fill:var(--accent)">(?P&lt;id&gt;\\d+)</text>
   <text x="208" y="132" class="s-sub" style="fill:var(--ink-2)">-</text>
   <rect x="220" y="116" width="150" height="24" rx="3" style="fill:var(--good);fill-opacity:.2;stroke:var(--good);stroke-width:1.5"/>
   <text x="226" y="132" class="s-sub" style="fill:var(--good)">(?P&lt;size&gt;[A-Z]+)</text>
@@ -150,7 +150,7 @@ pd.Series([1.0, np.nan]).astype("string").tolist()     # ['1.0', <NA>]
 
   <text x="30" y="200" class="s-label" style="fill:var(--ink-2)">result</text>
   <g stroke-width="1.5">
-    <rect x="90" y="186" width="110" height="30" style="fill:var(--acc);fill-opacity:.18;stroke:var(--acc)"/>
+    <rect x="90" y="186" width="110" height="30" style="fill:var(--accent);fill-opacity:.18;stroke:var(--accent)"/>
     <rect x="240" y="186" width="110" height="30" style="fill:var(--good);fill-opacity:.18;stroke:var(--good)"/>
     <rect x="416" y="186" width="200" height="30" style="fill:var(--warn);fill-opacity:.18;stroke:var(--warn)"/>
   </g>
