@@ -11,7 +11,7 @@ for f in assets/js/*.js courses/*/curriculum.js courses/*/lessons/*/*.js; do
 done
 echo "syntax: all files parse"
 
-for course in python practice maths data sql; do
+for course in python practice maths data sql ml; do
   node .build/sync-published.js "courses/$course" > /dev/null
 done
 echo "published lists synced"
@@ -35,3 +35,7 @@ TH_COURSE=data node .build/rendertest.js | tail -4
 echo
 echo "=== sql ==="
 TH_COURSE=sql node .build/rendertest.js | tail -4
+
+echo
+echo "=== ml ==="
+TH_COURSE=ml node .build/rendertest.js | tail -4
