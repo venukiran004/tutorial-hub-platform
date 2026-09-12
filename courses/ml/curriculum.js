@@ -36,7 +36,7 @@
     short: "ML",
     blurb: "Algorithm by algorithm — derived, worked on a number, then run — with the evaluation you can trust, the leakage you can detect, and the baseline you cannot beat.",
 
-    published: [],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8"],
 
     modules: [
 
