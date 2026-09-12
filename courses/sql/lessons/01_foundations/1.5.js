@@ -113,6 +113,26 @@ SELECT DATE '2025-01-31' + INTERVAL '1 month' AS a, DATE '2025-03-31' - INTERVAL
       caption: "`DATE_TRUNC` gives the bucket, `EXTRACT` gives the feature, the subtraction gives the duration. Month arithmetic clamping means `d + 1 month - 1 month` is not always `d`; when the day of month matters, do the arithmetic on the truncated first-of-month and add the offset back."
     },
 
+    { t: "code", lang: "sql", title: "Differences between dates: days, boundaries crossed, and a person's age (executed on DuckDB)",
+      hl: [2, 3, 4, 10, 11, 12],
+      code: `SELECT customer_id, signed_up,
+       DATE '2025-04-30' - signed_up                        AS tenure_days,        -- 178 | 132 | 52     exact days
+       DATE_DIFF('month', signed_up, DATE '2025-04-30')     AS month_boundaries,   -- 5 | 4 | 1          1st-of-month crossings, not "months old"
+       AGE(DATE '2025-04-30', signed_up)                    AS tenure_interval     -- 177 days | 131 days | 51 days   calendar-aware, and a day less: AGE counts whole days elapsed
+FROM   customers WHERE customer_id IN (1, 2, 8);
+
+-- age in completed years from a date of birth: the classic. Boundary counting gets it wrong on the day before a birthday.
+WITH p AS (SELECT * FROM (VALUES (DATE '1990-05-01'), (DATE '1990-04-30'), (DATE '2000-02-29')) t(dob))
+SELECT dob,
+       DATE_DIFF('year', dob, DATE '2025-04-30')                      AS year_boundaries,   -- 35 | 35 | 25   <- the first is wrong: the birthday is tomorrow
+       EXTRACT(year FROM AGE(DATE '2025-04-30', dob))::INTEGER        AS age_years,         -- 34 | 35 | 25   PostgreSQL / DuckDB
+       (STRFTIME(DATE '2025-04-30', '%Y%m%d')::INTEGER - STRFTIME(dob, '%Y%m%d')::INTEGER) // 10000 AS age_portable   -- 34 | 35 | 25
+FROM   p;
+-- dialects: MySQL TIMESTAMPDIFF(YEAR, dob, CURDATE()) and DATEDIFF(d2, d1) in days;  SQL Server DATEDIFF(day, d1, d2) counts boundaries too;
+--           SQLite (JULIANDAY(d2) - JULIANDAY(d1)) for days, and the YYYYMMDD trick for years;  BigQuery DATE_DIFF(d2, d1, DAY)`,
+      caption: "Three different questions hide behind 'the difference between two dates': how many days, how many unit boundaries were crossed, and how many whole units have elapsed. DATEDIFF-style functions answer the second, which is why `DATE_DIFF('year', …)` calls someone 35 the day before their 35th birthday. AGE and the YYYYMMDD subtraction answer the third; use them for anything a person would count."
+    },
+
     { t: "h2", n: "04", text: "The date spine: months with nothing in them", id: "spine" },
 
     { t: "p", text: "A GROUP BY over dates produces a row for each period that has data and nothing for the periods that do not. November and December have no paid orders in the shop, so the monthly series above starts in January — and a chart, a rolling average or a forecast fed that series will silently treat the gap as absence rather than zero. **`generate_series` builds the calendar; a LEFT JOIN from it keeps every period.**" },

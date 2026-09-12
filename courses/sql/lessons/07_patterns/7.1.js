@@ -177,7 +177,11 @@ con.execute("SELECT c.name, p.score FROM customers c JOIN scores p USING (custom
 # [('Asha', 0.9), ('Bruno', 0.4)]
 
 con.execute("SELECT * FROM read_parquet('events/*.parquet') WHERE occurred_at >= ?", [cutoff]).pl()  # Polars out; files in
-con.execute("COPY (SELECT ...) TO 'out.parquet'")                                                  # Parquet out`,
+con.execute("COPY (SELECT ...) TO 'out.parquet'")                                                  # Parquet out
+
+# the pandas equivalents against any DB-API or SQLAlchemy connection: parameters still travel separately
+df = pd.read_sql("SELECT * FROM orders WHERE customer_id = %(cid)s", engine, params={"cid": 4})      # read_sql_query / read_sql_table
+df.to_sql("predictions", engine, if_exists="append", index=False, method="multi", chunksize=5_000)  # multi-row INSERTs per chunk; COPY is still faster`,
       caption: "This is the working pattern for a data scientist: load with pandas or Polars, do the joins, windows and aggregates in SQL where they are clearer, get a DataFrame back. Parameters work the same way, and the DataFrame-as-table trick means no temporary tables and no CSV round trips."
     },
 
