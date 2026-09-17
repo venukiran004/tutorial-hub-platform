@@ -309,7 +309,7 @@ stack = StackingClassifier(members, final_estimator=LogisticRegression(), cv=5) 
           "Stacking is bagging with a meta-model"
         ],
         answer: 1,
-        why: "Same models, three ways of manufacturing independent errors."
+        why: "The same base learners, three different ways of manufacturing independent errors — rows, sequence, and family."
       }
     ]
   },
