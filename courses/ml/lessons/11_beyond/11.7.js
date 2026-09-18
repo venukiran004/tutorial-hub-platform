@@ -74,6 +74,17 @@ with an UNMEASURED confounder (a hidden trait that raises both treatment and spe
 # no method on the observed data recovers +3; only randomised assignment does`,
       caption: "Adjustment works when the confounders are measured and the model of them is right — regression assumes the functional form, propensity methods assume overlap, and both assume no unmeasured confounder, which is an assumption about the world rather than the data. The last line is the honest one: the hidden trait is invisible in every table you have, and the estimate is wrong by a factor of two with no diagnostic that says so. Sensitivity analysis asks how strong an unmeasured confounder would have to be to explain the result away; randomisation makes the question moot, which is why 11.1's A/B test is the causal instrument of choice." },
 
+    { t: "code", lang: "text", title: "Simpson's paradox: the aggregate reverses the truth (executed)",
+      code: `segment            promo   n     converted   rate
+new customers        1    300       60       0.200        promo better by +0.050 within the segment
+new customers        0    100       15       0.150
+loyal customers      1    100       60       0.600        promo better by +0.050 within the segment
+loyal customers      0    300      165       0.550
+
+overall:  promo 120/400 = 0.300   no promo 180/400 = 0.450   ->  promo WORSE by −0.150
+segment-weighted effect: +0.050`,
+      caption: "The promotion went to 75 % of the new customers, who convert less, and 25 % of the loyal ones, who convert more; the aggregate compares a mostly-new treated group with a mostly-loyal untreated group. Segment is a confounder, the DAG says to adjust for it, and the adjusted effect has the opposite sign from the raw one. The reverse mistake exists too — stratifying on a collider or a mediator manufactures a reversal that is not there — which is why the DAG, not the table, decides what to condition on." },
+
     { t: "code", lang: "python", title: "A collider: conditioning on a consequence of both (executed)",
       code: `skill ~ N(0, 1), luck ~ N(0, 1), independent;   hired = skill + luck > 1
 correlation of skill and luck:  everyone −0.004;  among the hired −0.618

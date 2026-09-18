@@ -156,7 +156,7 @@ longest run of same-sign daily mean error: 14 days -> a 14-day bias rule fires o
 │   ├── 50-500 points
 │   │   ├── trend + one season ........... damped ETS or SARIMA (10.4, 10.5)
 │   │   ├── known-future covariates ...... SARIMAX (the store case: 6.29 % vs 7.90 % for boosting)
-│   │   └── several seasons .............. MSTL + ETS, or Fourier terms in SARIMAX
+│   │   └── several seasons .............. MSTL + ETS, Fourier terms in SARIMAX, or Prophet (additive trend + seasons + holidays; convenient, rarely the most accurate; not run here)
 │   └── 1,000+ points, non-linear ........ boosting on features, with a trend fix (10.6)
 └── MANY related series
     ├── rich covariates, tabular ......... ONE global boosting model (−11 % vs per-store in 10.6)
