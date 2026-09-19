@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deep Learning — Tutorial Hub</title>
+<meta name="description" content="Deep learning from one neuron upward — backpropagation derived and checked, the optimisers raced, then CNNs, RNNs, attention, generative, self-supervised, reinforcement and graph learning, audio, and compression — every number executed on the CPU.">
+<script>try{var t=localStorage.getItem("th:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/system.css">
+<link rel="stylesheet" href="../../assets/css/course.css">
+<link rel="stylesheet" href="../../assets/css/refine.css">
+<link rel="stylesheet" href="../../assets/css/home.css">
+<link rel="stylesheet" href="../../assets/css/aurora.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="../../index.html"><span class="brand-mark">TH</span>Tutorial<span class="brand-sub">Hub</span></a>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <span class="sep">/</span><a href="../../index.html">Courses</a>
+    <span class="sep">/</span><span class="cur">Deep Learning</span>
+  </nav>
+  <span class="topbar-spacer"></span>
+  <button class="ghost-btn search-trigger" data-cmdk type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+    <span class="label">Search lessons</span><span class="hint">Ctrl K</span>
+  </button>
+  <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
+</header>
+
+<main>
+<div class="page wide">
+
+  <!-- ------------------------------------------------------------- hero -- -->
+  <section class="hero">
+    <span class="hero-eyebrow" id="hero-badge"></span>
+    <h1>Deep learning, <span class="dim">built by hand and then trained.</span></h1>
+    <p class="hero-lede">
+      The neuron, the gradient and the optimiser; the training loop as a discipline; the
+      architectures for images, sequences and graphs; attention and the transformer as far as a
+      deep-learning course should take them; the generative, self-supervised and reinforcement
+      paradigms; audio; and compression and deployment. Every loss curve, gradient norm, latency
+      and parameter count here <b>was produced by running the code</b> — NumPy from scratch, then
+      PyTorch on a CPU — on data built so the failure exists: a ReLU that dies, a gradient that
+      vanishes at depth thirty, a GAN that collapses to one mode.
+    </p>
+    <div class="hero-cta">
+      <a class="cta primary" id="start-btn" href="lesson.html?id=1.1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+        <span id="start-label">Start with the perceptron</span>
+      </a>
+      <a class="cta ghost" href="#curriculum">View full curriculum</a>
+      <span class="cta-note">51 lessons · no account, no sign-up.</span>
+    </div>
+
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- outcomes -- -->
+  <section class="sec">
+    <div class="sec-kicker">The progression</div>
+    <div class="sec-h"><h2>Five states, in order</h2></div>
+    <p class="sec-lede">
+      Every level exists to move you from one of these states to the next. If a lesson does not
+      advance you along this line, it was cut.
+    </p>
+    <div class="ladder-strip">
+      <div class="ls-step" style="--c:var(--d-foundation)">
+        <div class="ls-n">01</div><div class="ls-t">I can derive the gradient</div>
+        <div class="ls-d">Backpropagation on paper for a two-layer network, checked against finite differences; you know why He initialisation works and what AdamW actually decouples.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-core)">
+        <div class="ls-n">02</div><div class="ls-t">I can make a run train</div>
+        <div class="ls-d">The loop is reproducible and resumable, a NaN has a cause you can name from the symptoms, and the overfit-one-batch test is the first thing you run.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--accent)">
+        <div class="ls-n">03</div><div class="ls-t">I can build the architecture by hand</div>
+        <div class="ls-d">A convolution with im2col, an LSTM cell gate by gate, multi-head attention with its masks, a GCN layer from the normalised adjacency — in NumPy or plain tensors, matching the framework to six decimals.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-advanced)">
+        <div class="ls-n">04</div><div class="ls-t">I can pick the paradigm</div>
+        <div class="ls-d">VAE, GAN or diffusion; linear probe or fine-tune; DQN or PPO; GCN or GAT — each choice made from an experiment you ran, not a slogan.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-expert)">
+        <div class="ls-n">05</div><div class="ls-t">I can ship it small and fast</div>
+        <div class="ls-d">Pruned and quantised with the accuracy cost measured, exported to ONNX with the latency timed, and an interview answer that ends in a number or a derivation.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ------------------------------------------------------- curriculum -- -->
+  <section class="sec" id="curriculum">
+    <div class="sec-kicker">Curriculum</div>
+    <div class="sec-h">
+      <h2>The full path</h2>
+      <span class="sp"></span>
+      <button class="ghost-btn" id="expand-all" type="button">Expand all</button>
+    </div>
+    <p class="sec-lede">
+      Five phases, each depending on the one before it: the neuron and the gradient, the
+      architectures for images and for sequences with attention at the end of the line, the other
+      paradigms — generative, self-supervised, reinforcement, graph — and then audio, production
+      and the interview. Every module builds the thing by hand before the framework does it.
+    </p>
+    <div id="curriculum-list"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- audience -- -->
+  <section class="sec">
+    <div class="sec-kicker">Fit</div>
+    <div class="sec-h"><h2>Who this is for</h2></div>
+    <div class="split">
+      <div class="split-box yes">
+        <div class="split-h">A good fit if</div>
+        <ul id="fit-yes"></ul>
+      </div>
+      <div class="split-box no">
+        <div class="split-h">Not the right course if</div>
+        <ul id="fit-no"></ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Tutorial Hub — Deep Learning</span>
+    <span class="sp"></span>
+    <span>Built as a single static site — no build step, no dependencies.</span>
+  </footer>
+
+</div>
+</main>
+
+<script src="../../assets/js/highlight.js"></script>
+<script src="../../assets/js/render.js"></script>
+<script src="../../assets/js/app.js"></script>
+<script src="curriculum.js"></script>
+<script>
+(function () {
+  "use strict";
+  var C = EC.course, I = EC.icons, $ = EC.$, $$ = EC.$$;
+
+  EC.initTheme();
+  EC.initCmdK("");
+
+  var ready = C.readyLessons;
+  var totalMin = C.allLessons.reduce(function (a, l) { return a + l.minutes; }, 0);
+
+  /* ---- hero badge + stats ---- */
+  $("#hero-badge").innerHTML = I.bulb + "<span>Course 07 · Deep Learning</span>";
+
+  $("#stats").innerHTML = [
+    { v: C.modules.length, l: "Modules" },
+    { v: C.allLessons.length, l: "Lessons" },
+    { v: Math.round(totalMin / 60) + " hrs", l: "Guided content" },
+    { v: "Executed", l: "Every reported number" }
+  ].map(function (s) {
+    return '<div class="stat"><div class="stat-v">' + s.v + '</div><div class="stat-l">' + s.l + "</div></div>";
+  }).join("");
+
+  /* ---- where to start ---- */
+  var nextLesson = ready[0] || C.allLessons[0];
+
+  /* ---- curriculum, per track ---- */
+  // One hue per module, so a section is recognisable by colour before its
+  // name is read -- the same device the home page uses for topics.
+  var MHUES = ["--t-blue", "--t-violet", "--t-cyan", "--t-orange", "--t-green",
+               "--t-amber", "--t-pink"];
+
+  function renderTrack() {
+  var html = "", lastPhase = null, phaseN = 0, modN = 0;
+  C.modules.forEach(function (m) {
+    if (m.phase !== lastPhase) {
+      phaseN++;
+      html += '<div class="phase-h"><span class="phase-n">' + String(phaseN).padStart(2, "0") + "</span>" +
+        '<span class="phase-t">' + EC.esc(m.phase) + '</span><span class="rule"></span></div>';
+      lastPhase = m.phase;
+    }
+    var rd = m.lessons.filter(function (l) { return l.ready !== false; });
+    var mins = m.lessons.reduce(function (a, l) { return a + l.minutes; }, 0);
+    modN++;
+
+    // What is inside, without expanding. Capped so a twelve-lesson module
+    // does not turn the card into a wall of chips.
+    var SHOWN = 7;
+    var tags = m.lessons.slice(0, SHOWN).map(function (l) {
+      return '<span class="mtag" title="' + EC.esc(l.title) + '">' +
+        EC.esc(l.title) + "</span>";
+    }).join("") + (m.lessons.length > SHOWN
+      ? '<span class="mtag more">+' + (m.lessons.length - SHOWN) + " more</span>" : "");
+
+    html +=
+      '<div class="mcard" data-m="' + m.id + '" style="--tc:var(' +
+          MHUES[(modN - 1) % MHUES.length] + ')">' +
+        '<button class="mcard-h" type="button" aria-expanded="false">' +
+          '<span class="mcard-lv">' + EC.esc(m.short) + "</span>" +
+          '<span class="mcard-main">' +
+            '<span class="mcard-t"><span class="mcard-num">' + modN + ".</span>" +
+              EC.esc(m.title) + "</span>" +
+            '<span class="mcard-b">' + EC.esc(m.blurb) + "</span>" +
+            '<span class="mcard-tags">' + tags + "</span>" +
+          "</span>" +
+          '<span class="mcard-right">' +
+            '<span class="mcard-count">' + m.lessons.length + " lessons</span>" +
+            '<span class="mcard-time">' + EC.fmtTime(mins) + "</span>" +
+            (rd.length < m.lessons.length
+              ? '<span class="mcard-soon">' + (m.lessons.length - rd.length) + " soon</span>" : "") +
+            '<span class="mcard-chev">' + I.chevron + "</span>" +
+          "</span>" +
+        "</button>" +
+        '<div class="mcard-body" hidden>' +
+          '<ul class="llist">' +
+            m.lessons.map(function (l) {
+              var soon = l.ready === false;
+              return "<li>" +
+                (soon ? '<a aria-disabled="true">' : '<a href="' + EC.lessonHref(l) + '">') +
+                  '<span class="ll-n">' + l.num + "</span>" +
+                  '<span class="ll-main"><span class="ll-t">' + EC.esc(l.title) + "</span>" +
+                  '<span class="ll-s">' + EC.esc(l.summary) + "</span></span>" +
+                  '<span class="ll-right">' +
+                    '<span class="badge ' + l.difficulty + '"><span class="dot"></span>' + l.difficulty + "</span>" +
+                    '<span class="ll-time">' + l.minutes + " min</span>" +
+                    (soon ? '<span class="lsn-soon">soon</span>' : "") +
+                  "</span>" +
+                "</a></li>";
+            }).join("") +
+          "</ul>" +
+        "</div>" +
+      "</div>";
+  });
+  $("#curriculum-list").innerHTML = html;
+    $("#expand-all").textContent = "Expand all";
+  }
+
+  renderTrack();
+
+  $("#curriculum-list").addEventListener("click", function (e) {
+    var b = e.target.closest(".mcard-h");
+    if (!b) return;
+    var card = b.parentElement;
+    var open = card.classList.toggle("open");
+    $(".mcard-body", card).hidden = !open;
+    b.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+
+  // Open the module containing the learner's next lesson, so the page lands
+  // on something actionable rather than a wall of closed accordions.
+  (function () {
+    var card = $('.mcard[data-m="' + nextLesson.module.id + '"]');
+    if (card) { card.classList.add("open"); $(".mcard-body", card).hidden = false; $(".mcard-h", card).setAttribute("aria-expanded", "true"); }
+  })();
+
+  var expanded = false;
+  $("#expand-all").addEventListener("click", function () {
+    expanded = !expanded;
+    $$(".mcard").forEach(function (c) {
+      c.classList.toggle("open", expanded);
+      $(".mcard-body", c).hidden = !expanded;
+      $(".mcard-h", c).setAttribute("aria-expanded", expanded ? "true" : "false");
+    });
+    this.textContent = expanded ? "Collapse all" : "Expand all";
+  });
+
+  /* ---- fit ---- */
+  var yes = [
+    "You can train a model in PyTorch and want to know what <code>loss.backward()</code> did — the derivation, on paper, checked against finite differences.",
+    "You have a run that will not train — a NaN at step 300, a loss that will not move, a validation curve that turns — and want the diagnosis, not a list of tips.",
+    "You know the names — ResNet, LSTM, attention, VAE, PPO, GCN — and want each one built by hand once so the framework version stops being magic.",
+    "You are preparing for interviews where the question after <em>what is batch normalisation</em> is <em>write the backward pass</em>."
+  ];
+  var no = [
+    "You want the transformer in depth — BERT, GPT, tokenisers, fine-tuning at scale. Attention and one small transformer are here; the NLP &amp; Transformers course takes it from there.",
+    "You want a PyTorch API reference. The library is used in every lesson, but the documentation is faster for looking up an argument.",
+    "You have not met NumPy, matrix calculus or the machine-learning basics — bias–variance, cross-validation, metrics. The Mathematics and Machine Learning courses come first.",
+    "You want a GPU cluster course — distributed training, sharding, serving at scale. The ideas appear here in one page each; the tooling is the MLOps course."
+  ];
+  $("#fit-yes").innerHTML = yes.map(function (t) { return "<li>" + I.check + "<span>" + t + "</span></li>"; }).join("");
+  $("#fit-no").innerHTML  = no.map(function (t) { return "<li>" + I.chevron + "<span>" + t + "</span></li>"; }).join("");
+
+})();
+</script>
+</body>
+</html>
