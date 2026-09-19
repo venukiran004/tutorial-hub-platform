@@ -1,0 +1,2 @@
+Train mode output: tensor([ 0.1155,  0.0544, -0.0496,  0.2441,  0.0806], grad_fn=<ViewBackward0>)
+Eval mode output: tensor([ 0.0704,  0.1579, -0.0205,  0.2373, -0.1730], grad_fn=<ViewBackward0>)

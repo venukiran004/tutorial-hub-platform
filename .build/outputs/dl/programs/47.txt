@@ -1,0 +1,1 @@
+[did not run here] torch.compile needs a C++ compiler (MSVC on Windows) to build the generated kernels, and this machine has none. On a machine with a compiler the program prints the compiled model's output shape and the speed-up of the second call over the first.

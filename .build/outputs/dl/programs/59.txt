@@ -1,0 +1,2 @@
+Kaiming: mean=-0.0002, std=0.0886
+Xavier:  mean=0.0001, std=0.0627

@@ -1,0 +1,2 @@
+FP32 size: 113,704 bytes
+Output: torch.Size([1, 10])

@@ -1,0 +1,4 @@
+LayerNorm — mean: 0.0000, std: 1.0079
+BatchNorm — mean: 0.0000, std: 1.0127
+LayerNorm: used in Transformers (batch-independent)
+BatchNorm: used in CNNs (channel-wise)

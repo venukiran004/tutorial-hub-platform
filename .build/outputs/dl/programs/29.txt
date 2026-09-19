@@ -1,0 +1,9 @@
+view: torch.Size([6, 4])
+permute: torch.Size([4, 2, 3])
+unsqueeze: torch.Size([1, 2, 3, 4])
+squeeze: torch.Size([2, 3, 4])
+flatten: torch.Size([24])
+matmul: torch.Size([3, 3])
+sum: 0.3594
+mean: 0.0399
+argmax: 2

@@ -1,0 +1,2 @@
+Input: torch.Size([8, 784]), Latent: torch.Size([8, 32]), Reconstructed: torch.Size([8, 784])
+Reconstruction error: 1.2350

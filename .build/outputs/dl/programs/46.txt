@@ -1,0 +1,4 @@
+Query (decoder): torch.Size([4, 10, 256])
+Key/Value (encoder): torch.Size([4, 50, 256])
+Cross-attention output: torch.Size([4, 10, 256])
+Attention weights: torch.Size([4, 10, 50])

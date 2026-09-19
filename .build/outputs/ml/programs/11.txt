@@ -1,0 +1,3 @@
+Original: 64 features
+Reduced: 29 features
+Variance retained: 0.9548

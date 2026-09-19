@@ -1,0 +1,2 @@
+Grad norm before clip: 16486.7617
+Grad norm after clip: 16486.7617

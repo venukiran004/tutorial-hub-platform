@@ -1,0 +1,5 @@
+Total: 203,530 | Trainable: 203,530 | Frozen: 0
+  0.weight: 200,704 ✓
+  0.bias: 256 ✓
+  2.weight: 2,560 ✓
+  2.bias: 10 ✓

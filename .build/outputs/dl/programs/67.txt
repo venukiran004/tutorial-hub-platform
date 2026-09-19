@@ -1,0 +1,60 @@
+Fancy index: torch.Size([3, 3])
+Positive values: torch.Size([21])
+In-place add: tensor([1., 1., 1.])
+z requires_grad: False
+ReLU via where: tensor([1.3138, 0.0000, 0.0000, 0.0000, 0.0000])
+One-hot:
+tensor([[1., 0., 0., 0.],
+        [0., 0., 1., 0.],
+        [0., 1., 0., 0.],
+        [0., 0., 0., 1.]])
+Original: tensor([ 1.1921, -1.6063,  1.0030,  3.3324,  1.4384]), Clamped: tensor([ 1., -1.,  1.,  1.,  1.])
+Cat: torch.Size([6, 4])
+Stack: torch.Size([2, 3, 4])
+Repeat: tensor([1, 2, 3, 1, 2, 3, 1, 2, 3])
+Expand: tensor([[1, 2, 3],
+        [1, 2, 3],
+        [1, 2, 3]])
+No grad output: torch.Size([3, 1]), requires_grad: False
+Named: ('batch', 'channel', 'width')
+Conv output: 112
+0.weight                       [256, 784]              200,704
+0.bias                         [256]                       256
+1.weight                       [10, 256]                 2,560
+1.bias                         [10]                         10
+Flip H: torch.Size([1, 3, 32, 32])
+Flip V: torch.Size([1, 3, 32, 32])
+Rot 90: torch.Size([1, 3, 32, 32])
+Top 5 values: tensor([2.3274, 2.1885, 2.1683, 2.1249, 2.0967])
+Top 5 indices: tensor([37, 88, 38, 66, 14])
+Batch cosine sim: torch.Size([8])
+Padded: torch.Size([3, 5, 10])
+Packed data: torch.Size([10, 10])
+Gathered: tensor([[1, 3],
+        [5, 4]])
+Weighted CE: 1.3034
+Multi-head output: torch.Size([2, 10, 64])
+dy/dx at x=3: 8.0
+Hinge loss: 0.2000
+Adaptive pool: torch.Size([1, 64, 13, 17]) → torch.Size([1, 64, 7, 7])
+Buffer: tensor([ 0.0310, -0.1287,  0.1400,  0.0719, -0.0586])
+GroupNorm: torch.Size([4, 64, 16, 16])
+PixelShuffle: torch.Size([1, 64, 8, 8]) → torch.Size([1, 16, 16, 16])
+Smooth L1: 1.0307
+Cumsum: tensor([ 1.,  3.,  6., 10.])
+Grid X:
+tensor([[0, 0, 0, 0],
+        [1, 1, 1, 1],
+        [2, 2, 2, 2]])
+Grid Y:
+tensor([[0, 1, 2, 3],
+        [0, 1, 2, 3],
+        [0, 1, 2, 3]])
+LR group 1: 0.01
+LR group 2: 0.001
+Mean: 0.0166, Std: 0.9544
+Mish: tensor([-0.0336, -0.0726, -0.1456, -0.2525, -0.3034,  0.0000,  0.8651,  1.9440,
+         2.9865,  3.9974,  4.9996])
+Solution: tensor([2., 3.])
+Tensor memory: 3.81 MB
+dtype: torch.float32, element_size: 4 bytes

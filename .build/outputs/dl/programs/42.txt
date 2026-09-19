@@ -1,0 +1,5 @@
+LR at step 1: 0.000001
+LR at step 500: 0.000699
+LR at step 1000: 0.001398
+LR at step 3000: 0.000807
+Peak LR at step: 1000

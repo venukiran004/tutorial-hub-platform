@@ -1,0 +1,4 @@
+Epoch 25: Loss=0.3363, Acc=0.9400
+Epoch 50: Loss=0.1035, Acc=0.9900
+Epoch 75: Loss=0.0433, Acc=1.0000
+Epoch 100: Loss=0.0272, Acc=1.0000

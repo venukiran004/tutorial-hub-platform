@@ -1,0 +1,1 @@
+Padded: torch.Size([3, 10, 32]), Labels: tensor([0, 1, 0]), Lengths: tensor([ 5, 10,  3])

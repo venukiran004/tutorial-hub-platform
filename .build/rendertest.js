@@ -194,8 +194,10 @@ for (const id of published) {
     } else {
       p("every drill has an answer", drills.every(d => (d.body || []).length > 0));
     }
-    p("drill numbering is sequential",
-      drills.every((d, i) => Number(d.n) === i + 1));
+    // Sequential for a generated set; a bank imported from a numbered source
+    // keeps the source's numbers, so what must hold is that they only rise.
+    p("drill numbering is increasing",
+      drills.every((d, i) => i === 0 || Number(d.n) > Number(drills[i - 1].n)));
   }
 
   const warned = [];

@@ -1,0 +1,67 @@
+ok         1  Simple Neural Network in PyTorch
+ok         2  Training Loop in PyTorch
+ok         3  Dataset and DataLoader
+ok         4  CNN for Image Classification
+ok         5  LSTM for Sequence Classification
+ok         6  Transfer Learning with Pretrained Model
+ok         7  Learning Rate Scheduler
+ok         8  Batch Normalization Effect
+ok         9  Dropout Regularization
+ok        10  Save and Load Model
+ok        11  Autoencoder
+ok        12  Attention Mechanism
+ok        13  Multi-Head Attention
+ok        14  Positional Encoding
+ok        15  GAN Generator and Discriminator
+ok        16  Weight Initialization
+ok        17  Gradient Clipping
+ok        18  Mixed Precision Training
+ok        19  Embedding Layer
+ok        20  ResNet Block
+ok        21  Depthwise Separable Convolution
+ok        22  Global Average Pooling
+ok        23  Label Smoothing Loss
+ok        24  Cosine Similarity Loss
+ok        25  Focal Loss for Imbalanced Data
+ok        26  Early Stopping Implementation
+ok        27  Data Augmentation with torchvision
+ok        28  Model Parameter Count
+ok        29  Tensor Operations Cheatsheet
+ok        30  Gradient Accumulation
+ok        31  1D Convolution for Time Series
+ok        32  U-Net Architecture (Simplified)
+ok        33  Weight Decay Comparison
+ok        34  Variational Autoencoder (VAE)
+ok        35  Transformer Encoder
+ok        36  Exponential Moving Average
+ok        37  Squeeze-and-Excitation Block
+ok        38  Knowledge Distillation Loss
+ok        39  Gradient Checkpointing
+ok        40  Spectral Normalization
+ok        41  Layer Normalization vs Batch Normalization
+ok        42  Warmup Learning Rate
+ok        43  Model Pruning
+ok        44  Contrastive Loss (SimCLR-style)
+ok        45  Channel Attention (CBAM-style)
+ok        46  Cross-Attention
+FAIL      47  Torch Compile (PyTorch 2.0+)
+ok        48  LoRA Weight Matrix
+ok        49  Dynamic Padding / Collate Function
+ok        50  Simple Diffusion Noise Schedule
+ok        51  Quick Reference Programs
+ok        52  Torch Device Management
+ok        53  Reproducibility Setup
+ok        54  Softmax Temperature
+ok        55  Model FLOPs Estimation
+ok        56  Torch Profiler
+ok        57  Custom Loss Function
+ok        58  Hook for Feature Extraction
+ok        59  Kaiming vs Xavier Init
+ok        60  Gradient Penalty (WGAN-GP)
+ok        61  Torch JIT Script
+ok        62  Multi-GPU DataParallel
+ok        63  Tokenizer Basics
+ok        64  Quantization Basics
+ok        65  Torch Einsum
+ok        66  Model Interpretability — GradCAM
+FAIL      67  Quick PyTorch Snippets

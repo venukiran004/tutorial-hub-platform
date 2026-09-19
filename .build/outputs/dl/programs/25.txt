@@ -1,0 +1,2 @@
+Focal Loss: 0.4345
+Cross Entropy: 2.1700

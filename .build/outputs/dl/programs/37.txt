@@ -1,0 +1,1 @@
+Input: torch.Size([4, 64, 16, 16]), Output: torch.Size([4, 64, 16, 16])

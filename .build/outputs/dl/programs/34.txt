@@ -1,0 +1,1 @@
+Reconstruction: torch.Size([8, 784]), KL Loss: 6.0604

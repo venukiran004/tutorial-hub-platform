@@ -1,0 +1,1 @@
+Noise: torch.Size([8, 100]) → Fake: torch.Size([8, 784]) → Valid: torch.Size([8, 1])

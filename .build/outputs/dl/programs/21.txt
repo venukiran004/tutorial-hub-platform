@@ -1,0 +1,2 @@
+Standard conv params: 73,856
+Depthwise sep params: 8,960

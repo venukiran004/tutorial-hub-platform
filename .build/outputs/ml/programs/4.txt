@@ -1,0 +1,3 @@
+Train Acc: 0.9583
+Test Acc: 1.0000
+Feature importances: [0.         0.         0.93462632 0.06537368]

@@ -1,0 +1,2 @@
+Input: torch.Size([4, 3, 32, 32]), Output: torch.Size([4, 10])
+Params: 94,538

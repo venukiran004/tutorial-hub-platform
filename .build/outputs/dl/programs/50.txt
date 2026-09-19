@@ -1,0 +1,5 @@
+Original std: 0.9940
+t=0: noisy std = 0.9740
+t=250: noisy std = 1.0123
+t=500: noisy std = 0.9831
+t=999: noisy std = 0.9912

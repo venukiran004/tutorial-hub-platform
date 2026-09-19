@@ -1,0 +1,2 @@
+R²: 0.9956
+Num non-zero coeffs: 19

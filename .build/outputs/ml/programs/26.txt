@@ -1,0 +1,1 @@
+Stratified KFold: 0.9467 ± 0.0267

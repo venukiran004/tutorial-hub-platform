@@ -1,0 +1,2 @@
+Best params: {'C': 1, 'gamma': 'scale', 'kernel': 'linear'}
+Best score: 0.9933

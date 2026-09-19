@@ -1,0 +1,2 @@
+Batch X: torch.Size([32, 10]), Batch y: torch.Size([32])
+Total batches: 16

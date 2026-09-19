@@ -1,0 +1,1 @@
+Augmented tensor: torch.Size([3, 224, 224]), range: [-2.12, 2.54]

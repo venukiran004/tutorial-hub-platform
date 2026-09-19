@@ -1,0 +1,3 @@
+Before pruning: non-zero = 5000
+After 30% pruning: non-zero = 3500
+After 50% more: non-zero = 1750

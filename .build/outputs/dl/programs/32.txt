@@ -1,0 +1,1 @@
+Encoder1: torch.Size([1, 64, 224, 224]), Encoder2: torch.Size([1, 128, 112, 112]), Decoder1: torch.Size([1, 64, 224, 224])

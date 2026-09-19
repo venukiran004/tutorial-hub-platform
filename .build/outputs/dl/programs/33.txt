@@ -1,0 +1,3 @@
+Adam (no decay): Adam
+AdamW (with decay): AdamW
+AdamW properly decouples weight decay from gradient update

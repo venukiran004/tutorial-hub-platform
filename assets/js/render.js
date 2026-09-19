@@ -331,6 +331,11 @@
     dl: function (b) { return '<dl class="deflist">' + b.items.map(function (p) { return "<dt>" + inline(p[0]) + "</dt><dd>" + inline(p[1]) + "</dd>"; }).join("") + "</dl>"; },
     quote: function (b) { return "<blockquote>" + inline(b.text) + (b.by ? '<br><span style="font-size:13px;color:var(--ink-3)">— ' + inline(b.by) + "</span>" : "") + "</blockquote>"; },
     pills: function (b) { return '<div class="pill-row">' + b.items.map(function (p) { return '<span class="pill">' + inline(p) + "</span>"; }).join("") + "</div>"; },
+    /* Display maths. The TeX is emitted between \[ \] as text; the lesson page
+       hands the article to KaTeX's auto-render afterwards, so the same block
+       degrades to readable TeX when the CDN is unreachable (or in the node
+       render test, which never loads KaTeX). */
+    math: function (b) { return '<div class="math">\[' + esc(b.tex) + '\]</div>'; },
     code: codeBlock,
     out: outBlock,
     callout: callout,

@@ -731,3 +731,27 @@ details.solution > summary { color: var(--good); }
    things. */
 .lsn a { border-left: 0; margin-left: 9px; }
 .lsn.cur a { border-left: 0; }
+
+/* ======================================================= maths + banks ===== */
+/* Display maths: KaTeX renders into this box; until it loads, or offline, the
+   TeX itself shows in the mono face so the formula is still readable. */
+.math { margin: 14px 0 20px; padding: 12px 18px; overflow-x: auto; border-radius: 10px;
+  background: var(--surface-2); border: 1px solid var(--border-soft);
+  font-family: var(--mono); font-size: 13px; color: var(--ink-2); text-align: center; }
+.math .katex-display { margin: 0; }
+.math .katex { font-size: 1.18em; color: var(--ink); }
+.katex { font-size: 1.02em; }
+
+/* Where a module's material comes from, shown on the card and in the lesson
+   header so the mirror of the reference is visible, not just claimed. */
+.mcard-src { display: inline-flex; align-items: center; gap: 6px; margin: 4px 0 6px;
+  font-family: var(--mono); font-size: 10.6px; color: var(--ink-3); }
+.mcard-src svg { width: 11px; height: 11px; opacity: .7; }
+.mcard-outcome { display: flex; gap: 9px; align-items: flex-start; margin: 4px 0 12px;
+  padding: 10px 12px; border-radius: 9px; background: var(--accent-soft);
+  color: var(--ink-2); font-size: 13px; line-height: 1.5; }
+.mcard-outcome svg { width: 15px; height: 15px; flex: none; margin-top: 2px; color: var(--accent-ink); }
+.ttab-b { font-size: 12.2px; color: var(--ink-3); line-height: 1.45; margin-top: 2px; }
+
+/* A program drill opens on code; give the summary the mono program number. */
+.drill.program > summary .drill-n { color: var(--accent-ink); }

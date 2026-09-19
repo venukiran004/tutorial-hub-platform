@@ -1,0 +1,2 @@
+Trainable: 2,565 / 11,179,077 (0.0%)
+Output: torch.Size([2, 5])

@@ -1,0 +1,2 @@
+Output: torch.Size([2, 10, 64]), Attention: torch.Size([2, 10, 10])
+Attention sum per query (should be 1): 1.0000

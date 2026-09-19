@@ -1,0 +1,3 @@
+Matmul: torch.Size([3, 5])
+Batch matmul: torch.Size([2, 3, 5])
+Trace: -1.3690

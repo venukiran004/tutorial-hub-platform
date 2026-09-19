@@ -1,0 +1,7 @@
+Epoch 0: loss=1.0, counter=0, stop=False
+Epoch 1: loss=0.9, counter=0, stop=False
+Epoch 2: loss=0.85, counter=0, stop=False
+Epoch 3: loss=0.86, counter=1, stop=False
+Epoch 4: loss=0.87, counter=2, stop=False
+Epoch 5: loss=0.88, counter=3, stop=True
+Epoch 6: loss=0.89, counter=4, stop=True

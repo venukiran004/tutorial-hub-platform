@@ -1,0 +1,2 @@
+Layer1 features: torch.Size([4, 64])
+Layer2 features: torch.Size([4, 32])

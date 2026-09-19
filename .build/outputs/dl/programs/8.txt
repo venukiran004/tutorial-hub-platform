@@ -1,0 +1,2 @@
+Without BN — Mean: -0.0062, Std: 0.0908
+With BN    — Mean: 0.1210, Std: 0.3467

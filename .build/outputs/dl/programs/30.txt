@@ -1,0 +1,2 @@
+Step 4: Updated weights (effective batch = 32)
+Step 8: Updated weights (effective batch = 32)

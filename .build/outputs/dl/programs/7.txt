@@ -1,0 +1,3 @@
+LR at epoch 0: 0.010000
+LR at epoch 25: 0.005000
+LR at epoch 49: 0.000010
