@@ -44,7 +44,7 @@
     short: "DL",
     blurb: "From one neuron upward — backpropagation derived and checked numerically, the optimisers raced, then the architectures for images, sequences, graphs and audio, each built by hand before PyTorch, with every failure mode reproduced on purpose.",
 
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "4.1", "4.8", "5.1"],
 
     modules: [
 
