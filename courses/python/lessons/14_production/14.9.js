@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "steps", "title": "Mitigate first, then diagnose", "caption": "During an incident the order is fixed: stop the bleeding, then understand. Rolling back, scaling, or shedding load buys the time to look inside the process without users paying for it.", "items": [{"label": "Mitigate", "desc": "roll back, restart, scale, feature-flag off", "tone": "crit"}, {"label": "Preserve evidence", "desc": "logs, metrics, a py-spy dump or core before the restart", "tone": "warn"}, {"label": "Diagnose", "desc": "correlate the change, the metric and the trace", "tone": "accent"}, {"label": "Fix and verify", "desc": "a test that reproduces it, then the postmortem", "tone": "good"}], "t": "diagram", "id": "dg-14_9-01-0"},
 
+
     { t: "viz",
       title: "The order that keeps you calm",
       caption: "Stopping the bleeding is not the same as understanding the wound. Teams that skip mitigation debug for forty minutes while users are down; teams that skip diagnosis have the same incident again next week.",

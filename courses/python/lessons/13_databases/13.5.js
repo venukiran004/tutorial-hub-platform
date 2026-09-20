@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "layers", "title": "SQLAlchemy's two layers", "caption": "Core builds and executes SQL as Python expressions over an engine and connection pool. The ORM sits on top, mapping classes to tables and tracking changes in a Session. You can use Core alone; the ORM always uses Core.", "items": [{"label": "ORM: mapped classes, Session, relationships", "sub": "unit of work, identity map", "tone": "good"}, {"label": "Core: select(), insert(), Table, Engine", "sub": "SQL as expressions", "tone": "accent"}, {"label": "DB-API driver: psycopg, asyncpg", "sub": "the wire protocol", "tone": "warn"}, {"label": "PostgreSQL", "tone": "violet"}], "t": "diagram", "id": "dg-13_5-01-0"},
 
+
     { t: "code", lang: "python", title: "the same query at each level", code: `
 # CORE -- a SQL expression language. Returns rows, not objects. No
 # session, no identity map, no change tracking, no surprises.
@@ -70,6 +71,7 @@ with Session(engine) as session:
     { t: "h2", n: "02", text: "The unit of work", id: "unit-of-work" },
 
     {"kind": "flow", "title": "The unit of work", "caption": "Changes to mapped objects are recorded, not sent. flush() turns them into SQL in dependency order; commit() flushes and ends the transaction. Nothing reaches the database until one of those.", "cols": 4, "nodes": [{"id": "a", "label": "session.add(obj) / obj.x = 1", "sub": "tracked in memory", "tone": "accent"}, {"id": "b", "label": "flush()", "sub": "SQL emitted, ids assigned", "tone": "warn"}, {"id": "c", "label": "commit()", "sub": "transaction ends", "tone": "good"}, {"id": "d", "label": "expired objects", "sub": "reloaded on next access"}], "edges": [["a", "b", "autoflush or explicit"], ["b", "c"], ["c", "d"]], "t": "diagram", "id": "dg-13_5-02-1"},
+
 
     { t: "viz",
       title: "What the Session is doing",

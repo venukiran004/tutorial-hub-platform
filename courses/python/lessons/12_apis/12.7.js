@@ -70,6 +70,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "async def, and when it hurts", id: "async" },
 
+    {"kind": "matrix", "title": "async def or def, by what the handler does", "caption": "FastAPI runs a plain def handler in a thread pool and an async def on the event loop. The wrong choice is silent: an async def that calls a synchronous library stalls every request.", "rows": ["awaits httpx / asyncpg", "calls requests / a sync driver", "pure CPU for seconds", "returns immediately"], "cols": ["async def", "def"], "cells": [[{"text": "right", "tone": "good"}, {"text": "works, wastes a thread", "tone": "warn"}], [{"text": "blocks the loop", "tone": "crit"}, {"text": "right", "tone": "good"}], [{"text": "blocks the loop", "tone": "crit"}, {"text": "blocks a thread — use a process or queue", "tone": "warn"}], [{"text": "fine", "tone": "good"}, {"text": "fine", "tone": "good"}]], "t": "diagram", "id": "dg-12_7-02-1"},
+
     { t: "table",
       head: ["The handler does", "Declare it", "Because"],
       rows: [
@@ -133,6 +135,7 @@ asyncio.get_event_loop().slow_callback_duration = 0.1
     { t: "h2", n: "03", text: "Accept the work, return a job", id: "accepted" },
 
     {"kind": "flow", "title": "Accept the work, return a job", "caption": "A slow operation should not hold an HTTP connection open. The handler validates, enqueues, and returns 202 with a job id; a worker does the work; the client polls or receives a webhook.", "cols": 5, "nodes": [{"id": "c", "label": "client POST /reports"}, {"id": "api", "label": "API: validate, enqueue", "sub": "returns 202 + job id", "tone": "accent"}, {"id": "q", "label": "queue", "sub": "Redis, RabbitMQ, SQS", "tone": "warn"}, {"id": "w", "label": "worker", "sub": "does the work, survives restarts", "tone": "good"}, {"id": "done", "label": "GET /jobs/{id} or webhook", "sub": "the result", "tone": "violet"}], "edges": [["c", "api"], ["api", "q"], ["q", "w"], ["w", "done"]], "t": "diagram", "id": "dg-12_7-03-0"},
+
 
     { t: "code", lang: "python", title: "202 Accepted, and a resource to poll", code: `
 class JobStatus(str, Enum):

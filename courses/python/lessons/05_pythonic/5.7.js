@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The body does not run on call", id: "suspension" },
 
+    {"kind": "trace", "title": "A generator runs only when asked", "caption": "Calling gen() executes nothing; each next() runs the body to the next yield and pauses there with its locals intact. After the last yield, the next call raises StopIteration.", "vars": ["body position", "n", "yielded"], "steps": [{"code": "g = countdown(3)", "state": ["not started", "", ""], "note": "no code has run"}, {"code": "next(g)", "state": ["paused at yield", "3", "3"], "changed": [0, 1, 2]}, {"code": "next(g)", "state": ["paused at yield", "2", "2"], "changed": [1, 2]}, {"code": "next(g)", "state": ["paused at yield", "1", "1"], "changed": [1, 2]}, {"code": "next(g)", "state": ["finished", "0", "StopIteration"], "changed": [0, 2], "tone": "warn"}], "t": "diagram", "id": "dg-5_7-01-1"},
+
     { t: "code", lang: "python", title: "watch when each line executes", code: `
 def counter(n: int):
     print("  body starts")
@@ -138,6 +140,7 @@ def naturals():
     { t: "h2", n: "02", text: "Pipelines", id: "pipelines" },
 
     {"kind": "flow", "title": "A generator pipeline pulls one item at a time", "caption": "Nothing runs until the consumer asks. Each stage yields one item to the next; no stage ever holds the whole dataset, so a ten-gigabyte file streams through in constant memory.", "cols": 4, "nodes": [{"id": "src", "label": "read_lines(path)", "sub": "yields one line", "tone": "accent"}, {"id": "p", "label": "parse(lines)", "sub": "yields one record", "tone": "good"}, {"id": "f", "label": "filter_valid(records)", "sub": "yields some", "tone": "good"}, {"id": "c", "label": "sum(...)", "sub": "the consumer pulls", "tone": "warn"}], "edges": [["src", "p"], ["p", "f"], ["f", "c"]], "t": "diagram", "id": "dg-5_7-02-0"},
+
 
 
     { t: "p", text: "The real value is composition. Each stage pulls one item from the stage before it, so a chain of generators processes a stream in constant memory — no stage ever holds the whole dataset." },

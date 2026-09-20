@@ -24,6 +24,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "Where an attribute comes from",
       caption: "Reading obj.x searches the instance __dict__, then the class, then each ancestor in MRO order, stopping at the first match. Writing obj.x = 1 always targets the instance __dict__ and never the class — which is why a class attribute behaves like a default that any instance can shadow.",
@@ -134,6 +135,8 @@ class ShoppingCart:
     ]},
 
     { t: "h2", n: "02", text: "When a class attribute is right", id: "when-right" },
+
+    {"kind": "trace", "title": "Instance attribute shadows class attribute", "caption": "Reading finds the class attribute through the instance; assigning through the instance creates an instance attribute that shadows it for that instance only. The mutable class attribute, appended to, is shared by all.", "vars": ["Dog.count", "a.count", "b.count"], "steps": [{"code": "class Dog: count = 0", "state": ["0", "0 (class)", "0 (class)"], "changed": [0]}, {"code": "a.count = 5", "state": ["0", "5 (instance)", "0 (class)"], "changed": [1], "note": "shadows, only on a"}, {"code": "Dog.count = 9", "state": ["9", "5 (instance)", "9 (class)"], "changed": [0, 2], "note": "b still reads the class"}, {"code": "class Dog: tricks = []; a.tricks.append('sit')", "state": ["['sit']", "['sit']", "['sit']"], "changed": [0, 1, 2], "tone": "crit", "note": "shared mutable"}], "t": "diagram", "id": "dg-4_2-02-1"},
 
     { t: "code", lang: "python", title: "the legitimate uses", code: `
 from typing import ClassVar, Final

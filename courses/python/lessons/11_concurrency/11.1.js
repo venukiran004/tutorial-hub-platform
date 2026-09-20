@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "matrix", "title": "Which model for which workload", "caption": "I/O-bound work waits; threads and asyncio overlap the waiting. CPU-bound work computes; only processes (or free-threaded Python) use a second core, because of the GIL.", "rows": ["threads", "asyncio", "multiprocessing"], "cols": ["I/O-bound", "CPU-bound"], "cells": [[{"text": "good — GIL released while waiting", "tone": "good"}, {"text": "no speed-up", "tone": "crit"}], [{"text": "best at scale — one thread, thousands of tasks", "tone": "good"}, {"text": "blocks the loop", "tone": "crit"}], [{"text": "works, heavy", "tone": "warn"}, {"text": "true parallelism", "tone": "good"}]], "t": "diagram", "id": "dg-11_1-01-0"},
 
+
     { t: "viz",
       title: "Concurrency is structure; parallelism is execution",
       caption: "A single core can be concurrent — it interleaves tasks, making progress on several by switching whenever one waits. Only more than one core can be parallel. Concurrency is a way of writing a program; parallelism is a property of how it runs.",
@@ -122,6 +123,7 @@ wall 8.10s   cpu 7.95s   cpu/wall 98%      -> CPU-bound`,
     { t: "h2", n: "03", text: "The benchmark that makes it concrete", id: "benchmark" },
 
     {"kind": "timeline", "title": "Concurrency versus parallelism", "caption": "Two I/O tasks on one core interleave their waits and finish in about the time of one. Two CPU tasks on one core just take turns; they need two cores to finish sooner.", "span": 8, "tick": 2, "lanes": [{"label": "I/O, 1 thread", "tone": "crit", "bars": [[0, 4, "wait A"], [4, 8, "wait B"]]}, {"label": "I/O, 2 threads", "tone": "good", "bars": [[0, 4, "wait A"], [0.2, 4.2, "wait B"]]}, {"label": "CPU, 2 threads, 1 core", "tone": "warn", "bars": [[0, 1, "A"], [1, 2, "B"], [2, 3, "A"], [3, 4, "B"], [4, 5, "A"], [5, 6, "B"], [6, 7, "A"], [7, 8, "B"]]}, {"label": "CPU, 2 processes", "tone": "good", "bars": [[0, 4, "A on core 1"], [0, 4, "B on core 2"]]}], "t": "diagram", "id": "dg-11_1-03-1"},
+
 
     { t: "code", lang: "python", title: "the same three approaches, two workloads", code: `
 import time

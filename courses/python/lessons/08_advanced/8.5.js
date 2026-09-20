@@ -23,6 +23,7 @@ EC.receiveLesson({
     {"kind": "steps", "title": "Attribute lookup, with descriptors", "caption": "The full order behind obj.x: data descriptors on the type win, then the instance dict, then non-data descriptors and plain class attributes. property is a data descriptor; a function is a non-data descriptor, which is why methods bind.", "items": [{"label": "type(obj).__mro__ has a data descriptor 'x'?", "desc": "__set__ or __delete__ defined — property, slots — call its __get__", "tone": "warn"}, {"label": "'x' in obj.__dict__?", "desc": "return the instance value", "tone": "good"}, {"label": "non-data descriptor or class attribute?", "desc": "functions bind here: func.__get__(obj, type) → bound method", "tone": "accent"}, {"label": "__getattr__(name) if defined", "desc": "else AttributeError", "tone": "crit"}], "t": "diagram", "id": "dg-8_5-01-0"},
 
 
+
     { t: "viz",
       title: "What `obj.x` actually does",
       caption: "The order is the whole lesson. A data descriptor on the class beats the instance dictionary; a non-data descriptor loses to it. That single distinction explains `property`, bound methods, and why `cached_property` can replace itself.",

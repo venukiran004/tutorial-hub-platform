@@ -60,6 +60,7 @@ True`,
 
 
 
+
     { t: "p", text: "Every class has a **method resolution order** — a flat, ordered list of itself and all its ancestors. Attribute lookup walks it front to back and stops at the first match. `__mro__` shows it." },
 
     { t: "code", lang: "python", title: "reading the order", code: `
@@ -180,6 +181,8 @@ B -> A`},
     ]},
 
     { t: "h2", n: "03", text: "Cooperative __init__", id: "cooperative" },
+
+    {"kind": "steps", "title": "Cooperative __init__ through the MRO", "caption": "Each __init__ calls super().__init__(**kwargs) and takes only its own arguments; super() follows the MRO, not the parent, so every class in the diamond runs exactly once.", "items": [{"label": "D.__init__(name, size, colour)", "desc": "takes name, passes the rest up", "tone": "good"}, {"label": "super() → B.__init__(size, colour)", "desc": "takes size", "tone": "accent"}, {"label": "super() → C.__init__(colour)", "desc": "takes colour — next in the MRO, not B's parent", "tone": "accent"}, {"label": "super() → A.__init__()", "desc": "runs once", "tone": "warn"}, {"label": "object.__init__()", "desc": "accepts no arguments: **kwargs must be empty by here", "tone": "violet"}], "t": "diagram", "id": "dg-4_5-03-1"},
 
     { t: "ladder",
       title: "Initialising a hierarchy",

@@ -72,6 +72,7 @@ source .venv/bin/activate && pip install -r requirements.txt
     {"kind": "tree", "title": "Direct versus transitive dependencies", "caption": "You declare the direct ones; the resolver pulls in their dependencies. A lock file records every resolved version so two installs on two machines are identical.", "root": {"label": "your project", "tone": "accent", "children": [{"label": "requests  (direct)", "tone": "good", "children": [{"label": "urllib3"}, {"label": "certifi"}, {"label": "charset-normalizer"}]}, {"label": "pandas  (direct)", "tone": "good", "children": [{"label": "numpy"}, {"label": "python-dateutil", "children": [{"label": "six"}]}]}]}, "t": "diagram", "id": "dg-7_6-02-0"},
 
 
+
     { t: "viz",
       title: "Two different lists, for two different jobs",
       caption: "You choose your direct dependencies; the resolver chooses everything underneath. Recording only the first gives a build that can change without you; recording only the second loses the distinction between what you asked for and what came along.",

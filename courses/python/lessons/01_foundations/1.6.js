@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "A `str` holds Unicode code points — the abstract idea of characters. A `bytes` holds integers 0–255. There is no automatic conversion between them, and that refusal is deliberate: Python 2 allowed it, and the resulting class of bug was severe enough to justify a breaking language change." },
 
     { t: "code", lang: "python", title: "the two types", code: `
@@ -183,6 +184,7 @@ cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))`,
     { t: "h2", n: "03", text: "The methods worth knowing", id: "methods" },
 
     {"kind": "cells", "title": "Indexing and slicing a string", "caption": "Positive indices count from 0 at the left; negative indices count from −1 at the right. s[1:4] takes indices 1, 2 and 3 — the stop is excluded.", "items": ["P", "y", "t", "h", "o", "n"], "highlight": [1, 2, 3], "label": "s = 'Python'   s[1:4] == 'yth'   s[-1] == 'n'", "t": "diagram", "id": "dg-1_6-03-1"},
+
 
 
 

@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "Reading a comprehension in the order it executes",
       caption: "Written output-first, executed loop-first. Reading it in execution order — for, then if, then the expression — is what makes a nested one tractable.",
@@ -120,6 +121,8 @@ print(labels)
 
     /* ================================================================== */
     { t: "h2", n: "03", text: "Where a comprehension stops helping", id: "limits" },
+
+    {"kind": "compare", "title": "When a comprehension stops helping", "caption": "A comprehension is for building one collection from one iterable with at most one condition. Side effects, nested logic and three-level nesting belong in a loop, where a reader can breathe.", "columns": [{"title": "keep the comprehension", "tone": "good", "items": ["[f(x) for x in xs if ok(x)]", "one input, one output", "fits on a line or two"]}, {"title": "write the loop", "tone": "warn", "items": ["calls with side effects", "try/except per item", "two nested fors with conditions", "when you needed a comment"]}], "t": "diagram", "id": "dg-2_11-03-1"},
 
     { t: "ladder",
       title: "Building a report from nested order data",

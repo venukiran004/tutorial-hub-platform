@@ -197,6 +197,7 @@ add(1, Decimal(2))           # mypy: cannot infer -- and correctly so,
     {"kind": "compare", "title": "Variance, on list and Sequence", "caption": "list is invariant: a list[Dog] is not a list[Animal], because the callee could append a Cat. Sequence is covariant: read-only, so the substitution is safe. Callable is contravariant in its arguments.", "columns": [{"title": "invariant · list[T]", "tone": "crit", "items": ["list[Dog] ≠ list[Animal]", "mutable — writes could break it"]}, {"title": "covariant · Sequence[T]", "tone": "good", "items": ["Sequence[Dog] ≤ Sequence[Animal]", "read-only, so safe"]}, {"title": "contravariant · Callable[[T], R]", "tone": "accent", "items": ["a handler of Animal accepts Dog", "arguments flip the direction"]}], "t": "diagram", "id": "dg-8_4-03-0"},
 
 
+
     { t: "p", text: "If `Dog` is an `Animal`, is `list[Dog]` a `list[Animal]`? **No** — and the reason is worth understanding, because it explains half the confusing errors people hit with generics." },
 
     { t: "code", lang: "python", title: "why mutability forbids it", code: `

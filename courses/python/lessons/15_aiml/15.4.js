@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "steps", "title": "The hidden-state problem", "caption": "Cells run in the order you clicked, not the order on the page. A notebook that passes 'Restart and run all' is reproducible; one that does not is a collection of results nobody can regenerate.", "items": [{"label": "cell 3 defines df", "desc": "run first"}, {"label": "cell 1 uses df", "desc": "works — because of the order you ran them", "tone": "warn"}, {"label": "cell 3 edited, not re-run", "desc": "cell 1's result is now stale", "tone": "crit"}, {"label": "Restart kernel, Run all", "desc": "the only test of a notebook", "tone": "good"}], "t": "diagram", "id": "dg-15_4-01-0"},
 
+
     { t: "viz",
       title: "What the numbers in the margin mean",
       caption: "The cells are displayed top to bottom and were executed in the order shown. The reader sees a story; the kernel executed something else entirely, and only the kernel's version produced the output.",

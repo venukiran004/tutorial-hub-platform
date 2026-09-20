@@ -24,6 +24,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "`Order(\"o-1\", 100)` looks like a function call, and it is — calling a class runs its metaclass's `__call__`, which does two things in sequence." },
 
     { t: "viz",

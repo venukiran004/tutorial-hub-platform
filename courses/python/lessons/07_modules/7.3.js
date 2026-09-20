@@ -24,6 +24,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "A pickle is an instruction stream", "caption": "pickle.loads runs a small stack machine whose opcodes can import any module and call any callable. Unpickling data you did not produce is executing code you did not write.", "cols": 4, "nodes": [{"id": "bytes", "label": "pickle bytes", "sub": "from a file or the network", "tone": "warn"}, {"id": "vm", "label": "the pickle VM", "sub": "GLOBAL, REDUCE, BUILD …", "tone": "accent"}, {"id": "imp", "label": "import os; os.system(...)", "sub": "an attacker's payload", "tone": "crit"}, {"id": "obj", "label": "'your object'", "sub": "whatever the stream says"}], "edges": [["bytes", "vm"], ["vm", "imp", "GLOBAL + REDUCE"], ["vm", "obj"]], "t": "diagram", "id": "dg-7_3-01-0"},
 
 
+
     { t: "p", text: "JSON is a description of a value. A pickle is a sequence of opcodes for a virtual machine that *builds* a value. The distinction sounds academic until you look at the opcodes." },
 
     { t: "code", lang: "python", title: "what is actually in the file", code: `

@@ -23,6 +23,7 @@ EC.receiveLesson({
     {"kind": "steps", "title": "What import actually does", "caption": "A module is executed exactly once and cached in sys.modules; every later import anywhere in the process returns the same module object. That cache is also what makes circular imports fail halfway.", "items": [{"label": "sys.modules['pkg.mod'] cached?", "desc": "yes → bind the name and stop", "tone": "good"}, {"label": "find it: sys.path, finders, loaders", "desc": "a .py, a package directory, a compiled extension", "tone": "accent"}, {"label": "create the module object and register it", "desc": "in sys.modules before executing — so cycles see a partial module", "tone": "warn"}, {"label": "execute the module body top to bottom", "desc": "def and class statements run; side effects happen here", "tone": "violet"}], "t": "diagram", "id": "dg-7_4-01-0"},
 
 
+
     { t: "viz",
       title: "The four steps, and where each failure comes from",
       caption: "The cache is the step people forget. A module executes exactly once per process, so import-time side effects happen once — and a module imported under two different names is two independent copies with separate state.",
@@ -126,6 +127,8 @@ def get_connection():
 
     { t: "h2", n: "02", text: "sys.path, and the two ways to run a program", id: "syspath" },
 
+    {"kind": "trace", "title": "sys.path depends on how you ran it", "caption": "python pkg/mod.py puts pkg/ first on sys.path and the package's own imports break; python -m pkg.mod puts the current directory first and everything resolves. The file is the same; the search path is not.", "vars": ["sys.path[0]", "import pkg.other"], "steps": [{"code": "python pkg/mod.py", "state": ["pkg/", "ModuleNotFoundError"], "changed": [0, 1], "tone": "crit", "note": "pkg is not on the path"}, {"code": "python -m pkg.mod", "state": ["'' (cwd)", "works"], "changed": [0, 1], "tone": "good"}, {"code": "pip install -e . then import pkg", "state": ["site-packages link", "works anywhere"], "changed": [0, 1], "tone": "good", "note": "the real fix"}], "t": "diagram", "id": "dg-7_4-02-2"},
+
     { t: "code", lang: "python", title: "where the first entry comes from", code: `
 import sys
 print(sys.path)
@@ -202,6 +205,7 @@ from models.order import Order                # WRONG: implicit relative,
     { t: "h2", n: "04", text: "Circular imports", id: "circular" },
 
     {"kind": "cycle", "title": "A circular import", "caption": "a imports b at the top; b imports a at the top; when b runs, a is in sys.modules but half-executed, so from a import thing fails with ImportError. Move the import inside the function, or move the shared thing to a third module.", "nodes": [{"label": "a.py starts", "sub": "registered, not finished", "tone": "accent"}, {"label": "import b", "sub": "b starts executing", "tone": "warn"}, {"label": "from a import thing", "sub": "a is only half done", "tone": "crit"}, {"label": "ImportError", "sub": "cannot import name 'thing'", "tone": "crit"}], "t": "diagram", "id": "dg-7_4-04-1"},
+
 
 
     { t: "p", text: "Two modules importing each other is not automatically an error — Python handles it whenever the *names* are needed later rather than at module execution time. It fails when one module needs something from the other **while that other is still executing**." },

@@ -79,6 +79,7 @@ sorted(already_sorted)          # O(n): one run found, nothing merged
 
     {"kind": "cells", "title": "Binary search halves the range", "caption": "lo and hi bound the candidates; mid is compared and half the range is discarded. log₂(1,000,000) ≈ 20 comparisons. bisect_left returns the insertion point, which is the idiom for 'first element ≥ x'.", "items": ["1", "3", "4", "7", "9", "12", "15", "18"], "highlight": [4, 5, 6, 7], "negative": false, "label": "target 12: mid=7 < 12 → search the right half; mid=12 → found at index 5", "t": "diagram", "id": "dg-16_5-02-0"},
 
+
     { t: "ladder",
       title: "Finding an insertion point in a sorted list",
       rungs: [

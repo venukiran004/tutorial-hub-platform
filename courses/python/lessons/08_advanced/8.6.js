@@ -23,6 +23,7 @@ EC.receiveLesson({
     {"kind": "steps", "title": "What a class statement does", "caption": "The body runs as a function to fill a namespace, then the metaclass — type unless you say otherwise — is called with the name, bases and namespace to build the class object. Hooks fire along the way.", "items": [{"label": "determine the metaclass", "desc": "from the bases and any metaclass= keyword"}, {"label": "metaclass.__prepare__(name, bases)", "desc": "the namespace the body will fill — usually a dict", "tone": "accent"}, {"label": "execute the class body", "desc": "def and assignments populate the namespace", "tone": "good"}, {"label": "cls = metaclass(name, bases, namespace)", "desc": "__new__ and __init__ of the metaclass; __set_name__ on descriptors; __init_subclass__ on the parent", "tone": "warn"}], "t": "diagram", "id": "dg-8_6-01-0"},
 
 
+
     { t: "viz",
       title: "Instance, class, metaclass",
       caption: "An object is an instance of its class; a class is an instance of its metaclass. `type` is its own metaclass, which is where the chain stops. Everything a metaclass can do, it does at the moment a class statement finishes executing.",
@@ -88,6 +89,8 @@ print(type(type))                              # <class 'type'>
     },
 
     { t: "h2", n: "02", text: "The simpler hooks first", id: "simpler" },
+
+    {"kind": "compare", "title": "The simpler hooks before a metaclass", "caption": "Most 'I need a metaclass' problems are solved by a hook that already exists. __init_subclass__ sees every subclass as it is created; __set_name__ tells a descriptor its attribute name; a class decorator rewrites a class after the fact.", "columns": [{"title": "__init_subclass__", "tone": "good", "items": ["runs on each subclass", "registries, validation", "no metaclass conflicts"]}, {"title": "__set_name__", "tone": "accent", "items": ["descriptor learns its name", "fields that know their key"]}, {"title": "class decorator", "tone": "warn", "items": ["transform a finished class", "dataclass is one"]}, {"title": "metaclass", "tone": "crit", "items": ["control class creation itself", "ORMs, enums, ABCs", "last resort"]}], "t": "diagram", "id": "dg-8_6-02-1"},
 
     { t: "code", lang: "python", title: "__init_subclass__ handles most of it", code: `
 class Plugin:

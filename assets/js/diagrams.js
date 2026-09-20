@@ -33,7 +33,7 @@
     return 'style="fill:var(' + v + ');fill-opacity:' + (strong ? ".22" : ".13") + ';stroke:var(' + v + ')" stroke-width="1.4"';
   }
   function marker(id) {
-    return '<defs><marker id="' + id + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--line)"/></marker></defs>';
+    return '<defs><marker id="' + id + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--line)"/></marker></defs>';
   }
   function arrow(id, x1, y1, x2, y2, label, dashed) {
     var s = '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" style="stroke:var(--line)' + (dashed ? ";stroke-dasharray:5 4" : "") + '" stroke-width="1.4" marker-end="url(#' + id + ')"/>';
@@ -77,7 +77,8 @@
   function flow(b) {
     var nodes = b.nodes || [], edges = b.edges || [];
     var cols = b.cols || Math.min(nodes.length, 5), rows = Math.ceil(nodes.length / cols);
-    var W = 760, gapX = 28, padX = 16;
+    var labelled = edges.some(function (e) { return e[2]; });
+    var W = 760, gapX = labelled ? 56 : 28, padX = 16;
     var bw = Math.min(200, Math.floor((W - 2 * padX - gapX * (cols - 1)) / cols)), bh = 54, gapY = 44;
     var pos = {}, id = "d" + Math.random().toString(36).slice(2, 7);
     var s = marker(id);
@@ -85,21 +86,24 @@
       var r = Math.floor(i / cols), c = i % cols;
       var inRow = Math.min(cols, nodes.length - r * cols);
       var rowW = inRow * bw + (inRow - 1) * gapX, x0 = (W - rowW) / 2;
-      var x = x0 + c * (bw + gapX), y = 16 + r * (bh + gapY);
+      var x = x0 + c * (bw + gapX), y = (labelled ? 24 : 16) + r * (bh + gapY);
       pos[n.id || String(i)] = { x: x, y: y, w: bw, h: bh };
       s += box(x, y, bw, bh, n.label, n.sub, n.tone);
     });
     edges.forEach(function (e) {
       var a = pos[e[0]], c = pos[e[1]]; if (!a || !c) return;
       var x1, y1, x2, y2;
-      if (Math.abs(a.y - c.y) < 1) {          // same row: side to side
+      if (Math.abs(a.y - c.y) < 1) {          // same row: side to side, label above the boxes
         if (a.x < c.x) { x1 = a.x + a.w; x2 = c.x; } else { x1 = a.x; x2 = c.x + c.w; }
         y1 = y2 = a.y + a.h / 2;
+        s += arrow(id, x1, y1, x2, y2, null, e[3] === "dashed");
+        if (e[2]) s += '<text x="' + ((x1 + x2) / 2) + '" y="' + (a.y - 5) + '" text-anchor="middle" class="s-sub">' + esc(e[2]) + "</text>";
+        return;
       } else if (a.y < c.y) { x1 = a.x + a.w / 2; y1 = a.y + a.h; x2 = c.x + c.w / 2; y2 = c.y; }
       else { x1 = a.x + a.w / 2; y1 = a.y; x2 = c.x + c.w / 2; y2 = c.y + c.h; }
       s += arrow(id, x1, y1, x2, y2, e[2], e[3] === "dashed");
     });
-    return wrap(W, 16 + rows * bh + (rows - 1) * gapY + 16, s, b.title);
+    return wrap(W, (labelled ? 24 : 16) + rows * bh + (rows - 1) * gapY + 16, s, b.title);
   }
 
   /* --------------------------------------------------------------- steps -- */
@@ -123,25 +127,64 @@
   function memory(b) {
     var names = b.names || [], objs = b.objects || [], W = 760;
     var rowH = 56, n = Math.max(names.length, objs.length), id = "d" + Math.random().toString(36).slice(2, 7);
-    var s = marker(id), ny = {}, oy = {};
-    s += '<text x="90" y="16" text-anchor="middle" class="s-sub">' + esc(b.left || "names") + "</text>";
-    s += '<text x="520" y="16" text-anchor="middle" class="s-sub">' + esc(b.right || "objects") + "</text>";
+    var s = marker(id), ny = {}, oy = {}, ox = {}, hits = {};
+    var nameW = Math.min(220, Math.max(120, 24 + names.reduce(function (a, nm) { return Math.max(a, tw(nm.name, 6.8)); }, 0)));
+    s += '<text x="' + (20 + nameW / 2) + '" y="16" text-anchor="middle" class="s-sub">' + esc(b.left || "names") + "</text>";
+    s += '<text x="' + (330 + 200) + '" y="16" text-anchor="middle" class="s-sub">' + esc(b.right || "objects") + "</text>";
     names.forEach(function (nm, i) {
       var y = 30 + i * rowH; ny[nm.name] = y + 20;
-      s += '<rect x="20" y="' + y + '" width="140" height="40" rx="8" class="s-fill s-stroke" stroke-width="1.3"/>';
-      s += '<text x="90" y="' + (y + 25) + '" text-anchor="middle" class="s-mono">' + esc(nm.name) + "</text>";
+      s += '<rect x="20" y="' + y + '" width="' + nameW + '" height="40" rx="8" class="s-fill s-stroke" stroke-width="1.3"/>';
+      s += '<text x="' + (20 + nameW / 2) + '" y="' + (y + 25) + '" text-anchor="middle" class="s-mono">' + esc(nm.name) + "</text>";
     });
     objs.forEach(function (o, i) {
-      var y = 30 + i * rowH; oy[o.id] = y + 20;
-      s += '<rect x="330" y="' + y + '" width="400" height="40" rx="8" ' + boxStyle(o.tone || "accent") + "/>";
-      s += '<text x="342" y="' + (y + 25) + '" class="s-sub">' + esc(o.type || "") + "</text>";
-      s += '<text x="' + (342 + tw(o.type || "", 6.2) + 14) + '" y="' + (y + 25) + '" class="s-mono">' + esc(o.value) + "</text>";
-      if (o.note) s += '<text x="722" y="' + (y + 25) + '" text-anchor="end" class="s-sub">' + esc(o.note) + "</text>";
+      var y = 30 + i * rowH; oy[o.id] = y;
+      var typeW = o.type ? tw(o.type, 6.2) + 10 : 0, valW = tw(o.value, 7.2) + 24;
+      var w = Math.max(150, Math.min(400, typeW + valW)); ox[o.id] = w;
+      s += '<rect x="330" y="' + y + '" width="' + w + '" height="40" rx="8" ' + boxStyle(o.tone || "accent") + "/>";
+      if (o.type) s += '<text x="342" y="' + (y + 25) + '" class="s-sub">' + esc(o.type) + "</text>";
+      s += '<text x="' + (342 + typeW) + '" y="' + (y + 25) + '" class="s-mono">' + esc(o.value) + "</text>";
+      if (o.note) s += '<text x="' + (330 + w + 12) + '" y="' + (y + 25) + '" class="s-sub">' + esc(o.note) + "</text>";
     });
     names.forEach(function (nm) {
-      if (nm.to && oy[nm.to] != null) s += arrow(id, 160, ny[nm.name], 328, oy[nm.to], nm.label, nm.dashed);
+      if (!nm.to || oy[nm.to] == null) return;
+      // several names on one object: spread the arrowheads down its left edge
+      var k = hits[nm.to] = (hits[nm.to] || 0) + 1;
+      var ty = oy[nm.to] + Math.min(32, 8 + (k - 1) * 12);
+      s += arrow(id, 20 + nameW, ny[nm.name], 328, ty, nm.label, nm.dashed);
     });
     return wrap(W, 30 + n * rowH, s, b.title);
+  }
+
+  /* --------------------------------------------------------------- trace -- */
+  /* A program on the left, the state of its names after each line on the
+     right — the static form of stepping through code in a debugger. */
+  function trace(b) {
+    var steps = b.steps || [], vars = b.vars || [], W = 760, rowH = b.rowH || 30, codeW = b.codeW || 330;
+    var noteW = steps.some(function (st) { return st.note; }) ? 150 : 0;
+    var colW = (W - codeW - 24 - noteW) / Math.max(vars.length, 1), s = "";
+    // headers wrap onto two lines when the column is narrow
+    var heads = vars.map(function (v) { return tw(v, 6.6) > colW - 8 ? wrapLines(v, colW - 8, 6.2).slice(0, 2) : [v]; });
+    var twoLine = heads.some(function (h) { return h.length > 1; });
+    var y0 = twoLine ? 38 : 26;
+    s += '<text x="20" y="16" class="s-sub">' + esc(b.left || "line executed") + "</text>";
+    heads.forEach(function (h, j) {
+      h.forEach(function (line, k) {
+        s += '<text x="' + (codeW + 12 + j * colW + colW / 2) + '" y="' + (16 + k * 12) + '" text-anchor="middle" class="s-mono" style="font-size:10px;fill:var(--ink)">' + esc(line) + "</text>";
+      });
+    });
+    steps.forEach(function (st, i) {
+      var y = y0 + i * rowH, hi = st.tone ? boxStyle(st.tone, true) : (i % 2 ? 'class="s-fill"' : 'class="s-fill-2"');
+      s += '<rect x="12" y="' + y + '" width="' + (W - 24) + '" height="' + (rowH - 2) + '" rx="5" ' + hi + (st.tone ? "" : ' style="fill-opacity:.5"') + "/>";
+      s += '<text x="20" y="' + (y + rowH / 2 + 4) + '" class="s-mono">' + esc(st.code) + "</text>";
+      (st.state || []).forEach(function (val, j) {
+        var changed = st.changed && st.changed.indexOf(j) !== -1;
+        var fit = tw(String(val == null ? "" : val), 7) > colW - 8 ? "font-size:9.5px;" : "";
+        s += '<text x="' + (codeW + 12 + j * colW + colW / 2) + '" y="' + (y + rowH / 2 + 4) + '" text-anchor="middle" class="s-mono" style="' + fit +
+          (changed ? 'fill:var(--good);font-weight:600' : (val === "" || val == null ? 'fill:var(--ink-4)' : "")) + '">' + esc(val === "" || val == null ? "—" : val) + "</text>";
+      });
+      if (st.note) s += '<text x="' + (W - 16) + '" y="' + (y + rowH / 2 + 4) + '" text-anchor="end" class="s-sub">' + esc(st.note) + "</text>";
+    });
+    return wrap(W, y0 + steps.length * rowH + 4, s, b.title);
   }
 
   /* --------------------------------------------------------------- cells -- */
@@ -275,7 +318,7 @@
     return wrap(W, 28 + rows.length * rh + 6, s, b.title);
   }
 
-  var KINDS = { flow: flow, steps: steps, memory: memory, cells: cells, tree: tree, layers: layers, compare: compare, timeline: timeline, cycle: cycle, matrix: matrix };
+  var KINDS = { flow: flow, steps: steps, memory: memory, trace: trace, cells: cells, tree: tree, layers: layers, compare: compare, timeline: timeline, cycle: cycle, matrix: matrix };
 
   EC.diagram = function (b) {
     var fn = KINDS[b.kind];

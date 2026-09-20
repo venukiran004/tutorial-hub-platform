@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "the mental model for indices", code: `
 items = ["a", "b", "c", "d", "e"]
 
@@ -170,6 +171,7 @@ print(alias)`,
     { t: "h2", n: "03", text: "What a copy actually copies", id: "copying" },
 
     {"kind": "memory", "title": "Shallow copy versus deep copy", "caption": "A shallow copy is a new outer list whose elements are the same inner objects; the nested lists are shared. copy.deepcopy copies recursively, so nothing is shared.", "names": [{"name": "orig", "to": "o1"}, {"name": "shallow = list(orig)", "to": "o2"}, {"name": "orig[0] and shallow[0]", "to": "o3", "label": "both point here"}], "objects": [{"id": "o1", "type": "list", "value": "[ →inner, 2 ]", "note": "the original"}, {"id": "o2", "type": "list", "value": "[ →inner, 2 ]", "note": "new outer, same inner", "tone": "warn"}, {"id": "o3", "type": "list", "value": "[9, 9]", "note": "inner — shared by both", "tone": "crit"}], "t": "diagram", "id": "dg-2_4-03-1"},
+
 
 
 

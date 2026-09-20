@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "A `for` loop is shorthand for a short conversation between two objects. Python calls `iter()` on whatever you gave it to obtain an **iterator**, then calls `next()` on that iterator repeatedly until it signals exhaustion by raising `StopIteration`." },
 
     { t: "code", lang: "python", title: "the loop, written out longhand", code: `
@@ -165,6 +166,7 @@ else:
 
 
 
+
     { t: "code", lang: "python", title: "the three, and what each is for", code: `
 for order in orders:
     if order.is_cancelled:
@@ -203,6 +205,8 @@ except TimeoutError:
 
     /* ================================================================== */
     { t: "h2", n: "04", text: "The loop `else`", id: "loop-else" },
+
+    {"kind": "trace", "title": "The loop else, stepped", "caption": "Searching for 7 in [3, 5, 9]: the loop runs to exhaustion, so else runs and reports 'not found'. Searching for 5, break fires on the second pass and else is skipped.", "vars": ["x", "broke?", "else runs?"], "steps": [{"code": "for x in [3, 5, 9]: if x == 7: break", "state": ["3", "no", ""], "changed": [0]}, {"code": "    (next)", "state": ["5", "no", ""], "changed": [0]}, {"code": "    (next)", "state": ["9", "no", ""], "changed": [0]}, {"code": "else: print('not found')", "state": ["—", "no", "yes"], "changed": [2], "tone": "good", "note": "exhausted without break"}, {"code": "for x in [3, 5, 9]: if x == 5: break", "state": ["5", "yes", "no"], "changed": [1, 2], "tone": "warn", "note": "break skips else"}], "t": "diagram", "id": "dg-2_7-04-2"},
 
     { t: "p", text: "Loops can have an `else` clause. It runs **when the loop finishes without hitting `break`** — which is a genuinely useful thing to express, and a genuinely confusing keyword for it. Read it as `no_break:` and it becomes obvious." },
 

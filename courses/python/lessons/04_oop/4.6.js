@@ -101,6 +101,7 @@ print(recorder.sent)
 
 
 
+
     { t: "p", text: "Python's own syntax is built on this. `len(x)`, `for i in x`, `x[k]`, `with x:` and `x + y` do not check types — they call a dunder method, and anything defining it participates." },
 
     { t: "table",

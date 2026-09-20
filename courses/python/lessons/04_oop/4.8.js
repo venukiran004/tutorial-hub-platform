@@ -121,6 +121,7 @@ True`},
 
 
 
+
     { t: "p", text: "The one pattern that genuinely needs an ABC is a fixed algorithm with variable steps. The base class owns the sequence — including the parts that must always happen — and subclasses fill in the pieces." },
 
     { t: "code", lang: "python", title: "the skeleton owns the invariants", code: `

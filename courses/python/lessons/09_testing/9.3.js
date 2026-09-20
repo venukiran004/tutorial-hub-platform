@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "tree", "title": "Fixtures form a dependency graph", "caption": "A test names the fixtures it needs; each fixture can name others. pytest builds them in dependency order, once per scope, and tears them down in reverse.", "root": {"label": "test_checkout(client, order)", "tone": "good", "children": [{"label": "client", "sub": "needs app", "tone": "accent", "children": [{"label": "app", "sub": "needs db", "tone": "warn", "children": [{"label": "db", "sub": "session scope", "tone": "crit"}]}]}, {"label": "order", "sub": "needs db", "tone": "accent"}]}, "t": "diagram", "id": "dg-9_3-01-0"},
 
+
     { t: "code", lang: "python", title: "fixtures request fixtures", code: `
 import pytest
 
@@ -158,6 +159,8 @@ def resources():
     ]},
 
     { t: "h2", n: "03", text: "Scope", id: "scope" },
+
+    {"kind": "timeline", "title": "Fixture scopes across a test session", "caption": "A session-scoped fixture is built once and torn down at the end; a module-scoped one per test file; a function-scoped one per test. Wider scope is faster and shares state — choose the narrowest that is not too slow.", "span": 8, "tick": 1, "lanes": [{"label": "session: db", "tone": "crit", "bars": [[0, 8, "built once"]]}, {"label": "module: app", "tone": "warn", "bars": [[0, 4, "test_a.py"], [4, 8, "test_b.py"]]}, {"label": "function: client", "tone": "good", "bars": [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8]]}], "t": "diagram", "id": "dg-9_3-03-1"},
 
     { t: "table",
       head: ["Scope", "Created once per", "Use for", "Risk"],

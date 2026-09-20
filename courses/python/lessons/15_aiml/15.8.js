@@ -67,6 +67,7 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "Streaming tokens from an LLM API", "caption": "With stream=True the response arrives as server-sent events, one chunk of tokens at a time; the client yields them to the user as they come instead of waiting for the whole completion.", "cols": 4, "nodes": [{"id": "req", "label": "request", "sub": "stream=True", "tone": "accent"}, {"id": "sse", "label": "SSE chunks", "sub": "data: {\"delta\": \"tok\"}", "tone": "warn"}, {"id": "gen", "label": "generator", "sub": "yields each delta", "tone": "good"}, {"id": "ui", "label": "user sees text appear", "tone": "violet"}], "edges": [["req", "sse"], ["sse", "gen"], ["gen", "ui"]], "t": "diagram", "id": "dg-15_8-02-0"},
 
+
     { t: "code", lang: "python", title: "server-sent events, end to end", code: `
 @app.post("/chat")
 async def chat(req: ChatRequest) -> StreamingResponse:
@@ -202,6 +203,8 @@ async def extract(doc: str, attempts: int = 3) -> Invoice:
     },
 
     { t: "h2", n: "04", text: "Tokens and the context window", id: "tokens" },
+
+    {"kind": "cells", "title": "The context window is a budget", "caption": "System prompt, retrieved context, the conversation so far and the answer all share one window. Count tokens before the call and leave room for the response, or the model truncates from the wrong end.", "items": ["system 800", "context 3,000", "history 2,200", "question 200", "answer ≤ 1,800"], "highlight": [4], "negative": false, "tone": "good", "label": "8,000-token window: what is reserved for the answer is what the model can say", "t": "diagram", "id": "dg-15_8-04-1"},
 
     { t: "code", lang: "python", title: "budget before you send", code: `
 # THE WINDOW IS SHARED: system prompt + history + documents + the

@@ -23,6 +23,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Iterable versus iterator", "caption": "An iterable knows how to make an iterator (__iter__); an iterator produces values (__next__) and is exhausted once. A list is iterable and reusable; a generator is an iterator and one-shot.", "cols": 3, "nodes": [{"id": "it", "label": "iterable", "sub": "__iter__ → iterator · reusable", "tone": "accent"}, {"id": "iter", "label": "iterator", "sub": "__next__ → value · one pass", "tone": "good"}, {"id": "stop", "label": "StopIteration", "sub": "exhausted", "tone": "warn"}], "edges": [["it", "iter", "iter()"], ["iter", "stop", "next() … next()"]], "t": "diagram", "id": "dg-5_6-01-0"},
 
 
+
     { t: "viz",
       title: "Iterable and iterator are separate roles",
       caption: "An iterable is a factory: ask it for an iterator and it hands you a fresh one each time. An iterator is a cursor: it holds a position, is consumed as you read it, and is exhausted permanently. A list is an iterable; the object list.__iter__() returns is the iterator.",

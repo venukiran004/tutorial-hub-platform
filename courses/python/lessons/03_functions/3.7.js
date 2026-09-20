@@ -24,6 +24,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Start with the two facts from earlier lessons: functions are values (3.4), and a nested function remembers its enclosing scope (3.6). A decorator is those two facts combined." },
 
     { t: "code", lang: "python", title: "step 1 — a function that wraps a function", code: `
@@ -320,6 +321,7 @@ def refund_order(order_id: str) -> Receipt:
     { t: "h2", n: "05", text: "Stacking, and order", id: "stacking" },
 
     {"kind": "layers", "title": "Stacked decorators apply bottom-up, run top-down", "caption": "@a above @b above def f is a(b(f)). b wraps f first, then a wraps that; on a call the outermost wrapper, a's, runs first.", "items": [{"label": "@a  — applied last, runs first on a call", "tone": "warn"}, {"label": "@b  — applied first, runs second", "tone": "accent"}, {"label": "def f  — the original, runs last", "tone": "good"}], "t": "diagram", "id": "dg-3_7-05-1"},
+
 
 
 

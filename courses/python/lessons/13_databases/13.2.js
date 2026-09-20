@@ -152,6 +152,7 @@ CREATE TABLE users (
 
     {"kind": "flow", "title": "Normalise, then stop", "caption": "Split repeating groups into their own table (1NF), move columns that depend on part of a key (2NF), then columns that depend on other non-key columns (3NF). Beyond that, denormalise deliberately for read performance and say so.", "cols": 4, "nodes": [{"id": "a", "label": "one wide table", "sub": "repeating columns, duplication", "tone": "crit"}, {"id": "b", "label": "1NF", "sub": "atomic values, one row per fact", "tone": "warn"}, {"id": "c", "label": "2NF / 3NF", "sub": "each fact stored once, keyed", "tone": "good"}, {"id": "d", "label": "deliberate denormalisation", "sub": "a cached total, documented", "tone": "accent"}], "edges": [["a", "b"], ["b", "c"], ["c", "d", "only when measured"]], "t": "diagram", "id": "dg-13_2-03-0"},
 
+
     { t: "ladder",
       title: "Storing an order's line items",
       rungs: [

@@ -42,6 +42,7 @@ EC.receiveLesson({
 
     {"kind": "layers", "title": "The test pyramid", "caption": "Many fast unit tests at the base, fewer integration tests, a handful of end-to-end checks at the top. The shape is about cost: a unit test runs in microseconds and pins one decision; an end-to-end test runs in seconds and pins nothing in particular.", "taper": true, "items": [{"label": "end-to-end", "sub": "a few · slow · the whole system", "tone": "crit"}, {"label": "integration", "sub": "some · real database, stubbed HTTP", "tone": "warn"}, {"label": "unit", "sub": "many · milliseconds · one function", "tone": "good"}], "t": "diagram", "id": "dg-9_1-02-0"},
 
+
     { t: "p", text: "The pyramid is not a statement about virtue. It is a statement about **cost per unit of confidence**: tests near the bottom are cheap to run and pinpoint the fault; tests near the top are expensive and slow but prove the parts actually fit. You want a lot of the cheap ones and enough of the expensive ones." },
 
     { t: "viz",

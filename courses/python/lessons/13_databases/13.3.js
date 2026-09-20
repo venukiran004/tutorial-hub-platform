@@ -113,6 +113,7 @@ cur.execute(
 
     {"kind": "compare", "title": "SQL injection, and the parameter that prevents it", "caption": "String formatting puts the user's text into the SQL; a parameter sends the SQL and the value separately, so the value can never be parsed as SQL. Every DB-API driver supports parameters; none require formatting.", "columns": [{"title": "f\"… WHERE name = '{name}'\"", "tone": "crit", "items": ["name = \"x' OR '1'='1\"", "the value becomes SQL", "one line from a breach"]}, {"title": "cur.execute(\"… WHERE name = %s\", (name,))", "tone": "good", "items": ["value sent separately", "never parsed as SQL", "also faster: plans are cached"]}], "t": "diagram", "id": "dg-13_3-02-0"},
 
+
     { t: "ladder",
       title: "Filtering orders by a status the user supplied",
       rungs: [
@@ -223,6 +224,8 @@ with conn.cursor(name="stream") as cur:       # naming it is the switch
     ]},
 
     { t: "h2", n: "04", text: "Writing efficiently", id: "writing" },
+
+    {"kind": "timeline", "title": "Row by row versus a batch", "caption": "A thousand single-row INSERTs are a thousand round trips; executemany or a multi-row VALUES sends them in one. COPY is faster still for bulk loads.", "span": 10, "tick": 2, "lanes": [{"label": "1,000 × execute()", "tone": "crit", "bars": [[0, 10, "1,000 round trips"]]}, {"label": "executemany(rows)", "tone": "warn", "bars": [[0, 1.6, "batched"]]}, {"label": "COPY FROM", "tone": "good", "bars": [[0, 0.5, "bulk"]]}], "t": "diagram", "id": "dg-13_3-04-1"},
 
     { t: "table",
       head: ["Approach", "10,000 rows", "Use when"],

@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "LEGB — the search order for reading a name",
       caption: "Python looks outward until it finds the name, and stops at the first match. It never searches inward, and it never searches the caller's scope — which is why a function cannot see its caller's local variables.",
@@ -97,6 +98,8 @@ global
 
     /* ================================================================== */
     { t: "h2", n: "02", text: "Assignment decides at compile time", id: "assignment-decides" },
+
+    {"kind": "trace", "title": "UnboundLocalError: assignment decides at compile time", "caption": "Because count is assigned somewhere in f, the compiler makes it local for the whole function; the read on the first line then finds an unassigned local. global (or nonlocal for an enclosing scope) changes the decision.", "vars": ["count (global)", "count (local in f)"], "steps": [{"code": "count = 0", "state": ["0", ""], "changed": [0]}, {"code": "def f(): print(count); count += 1", "state": ["0", "local, unbound"], "changed": [1], "note": "compile-time decision"}, {"code": "f()", "state": ["0", "UnboundLocalError"], "changed": [1], "tone": "crit", "note": "read before assignment"}, {"code": "def g(): global count; count += 1; g()", "state": ["1", "—"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-3_3-02-1"},
 
     { t: "p", text: "This is the rule that produces every scope surprise: **if a name is assigned anywhere in a function, it is local throughout that function** — decided when the function is compiled, not when the line runs." },
 

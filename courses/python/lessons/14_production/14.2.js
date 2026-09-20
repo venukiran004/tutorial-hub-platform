@@ -170,6 +170,7 @@ def test_something():
 
     {"kind": "flow", "title": "One artefact, many environments", "caption": "The same container image runs in dev, staging and production; only the configuration injected at start-up differs. Anything that differs by environment is configuration; anything that does not is code.", "cols": 4, "nodes": [{"id": "img", "label": "one image", "sub": "built once", "tone": "accent"}, {"id": "dev", "label": "dev", "sub": "DATABASE_URL=… DEBUG=1", "tone": "good"}, {"id": "stg", "label": "staging", "sub": "real-shaped data", "tone": "warn"}, {"id": "prod", "label": "production", "sub": "secrets from a vault", "tone": "crit"}], "edges": [["img", "dev"], ["img", "stg"], ["img", "prod"]], "t": "diagram", "id": "dg-14_2-03-0"},
 
+
     { t: "code", lang: "python", title: "layering, without duplicating", code: `
 # The precedence order pydantic-settings uses, highest first:
 #

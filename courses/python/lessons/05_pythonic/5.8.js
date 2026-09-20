@@ -24,6 +24,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "What `with` guarantees",
       caption: "The exit runs whether the block finishes, returns, or raises. That guarantee is the entire point — it is the difference between a file that is always closed and one that usually is.",

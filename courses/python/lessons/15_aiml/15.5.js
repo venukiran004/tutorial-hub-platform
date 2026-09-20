@@ -57,6 +57,7 @@ model.classes_
 
     {"kind": "flow", "title": "Leakage: fitting the scaler on all the data", "caption": "A scaler fit on train and test together has seen the test set's mean and variance. Fit every transformer on the training split only, inside a Pipeline, so cross-validation refits it per fold.", "cols": 4, "nodes": [{"id": "all", "label": "fit scaler on all rows", "sub": "test statistics leak in", "tone": "crit"}, {"id": "split", "label": "split first", "tone": "accent"}, {"id": "pipe", "label": "Pipeline(scaler, model).fit(train)", "sub": "transformers fit on train only", "tone": "good"}, {"id": "cv", "label": "cross_val_score(pipe)", "sub": "refit per fold", "tone": "warn"}], "edges": [["split", "pipe"], ["pipe", "cv"]], "t": "diagram", "id": "dg-15_5-02-0"},
 
+
     { t: "viz",
       title: "Three ways information crosses the boundary",
       caption: "Leakage inflates your validation score and leaves production performance unchanged. The gap between the two is the only symptom, and by the time you see it the model is already deployed.",
@@ -159,6 +160,8 @@ if auc > 0.95:
     ]},
 
     { t: "h2", n: "03", text: "ColumnTransformer", id: "columntransformer" },
+
+    {"kind": "flow", "title": "A ColumnTransformer inside a Pipeline", "caption": "Numeric columns are imputed and scaled, categorical columns one-hot encoded, the two blocks concatenated, and the model fit on the result — one object that fits and predicts consistently.", "cols": 4, "nodes": [{"id": "num", "label": "numeric columns", "sub": "SimpleImputer → StandardScaler", "tone": "accent"}, {"id": "cat", "label": "categorical columns", "sub": "OneHotEncoder(handle_unknown='ignore')", "tone": "warn"}, {"id": "ct", "label": "ColumnTransformer", "sub": "concatenates the blocks", "tone": "good"}, {"id": "m", "label": "model", "sub": "fit on the transformed matrix", "tone": "violet"}], "edges": [["num", "ct"], ["cat", "ct"], ["ct", "m"]], "t": "diagram", "id": "dg-15_5-03-1"},
 
     { t: "code", lang: "python", title: "different treatment per column, in one object", code: `
 numeric = ["age", "income", "tenure_months"]

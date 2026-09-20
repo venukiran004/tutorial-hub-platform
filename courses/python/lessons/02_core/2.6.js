@@ -90,6 +90,7 @@ elif score >= 80:
 
 
 
+
     { t: "p", text: "The most common shape in unmaintained Python is the *arrow*: each validation adds a level of indentation, and the actual work ends up six levels deep at the point of the arrowhead." },
 
     { t: "ladder",

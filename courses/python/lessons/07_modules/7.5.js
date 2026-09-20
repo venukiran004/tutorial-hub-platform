@@ -206,6 +206,7 @@ usage: myapp [-h] {import,report} ...`,
     {"kind": "tree", "title": "The src layout", "caption": "The package lives under src/, so tests import the installed package rather than the working directory by accident. pyproject.toml at the root describes how to build and install it.", "root": {"label": "myproject/", "tone": "accent", "children": [{"label": "pyproject.toml", "tone": "good"}, {"label": "src/", "children": [{"label": "myproject/", "tone": "warn", "children": [{"label": "__init__.py"}, {"label": "core.py"}, {"label": "cli.py"}]}]}, {"label": "tests/", "children": [{"label": "test_core.py"}]}, {"label": "README.md"}]}, "t": "diagram", "id": "dg-7_5-04-0"},
 
 
+
     { t: "tabs", items: [
       { label: "src layout (recommended)", blocks: [
         { t: "code", lang: "python", title: "the package is not importable by accident", numbered: false, code: `

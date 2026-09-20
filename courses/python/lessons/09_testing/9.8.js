@@ -284,6 +284,7 @@ jobs:
 
     {"kind": "steps", "title": "Handling a flaky test", "caption": "A test that passes on retry is measuring something outside the code: time, ordering, shared state or the network. Quarantine it, find the dependency, remove it — never just add a retry.", "items": [{"label": "Quarantine", "desc": "mark it, keep the suite green, keep it running", "tone": "warn"}, {"label": "Find the hidden input", "desc": "clock, random seed, test order, shared fixture, real network", "tone": "accent"}, {"label": "Make the input explicit", "desc": "freeze time, seed, isolate state, stub the network", "tone": "good"}, {"label": "Un-quarantine or delete", "desc": "a test nobody trusts is worse than no test", "tone": "crit"}], "t": "diagram", "id": "dg-9_8-05-0"},
 
+
     { t: "callout", kind: "trap", title: "A retry plugin is not a policy", body: [
       { t: "p", text: "`pytest-rerunfailures` makes the build green. It does not make the test deterministic, and a flaky test is usually a **real race in the code** rather than a defect in the test — so what you have muted is a production bug that reproduces once in fifty." },
       { t: "table",

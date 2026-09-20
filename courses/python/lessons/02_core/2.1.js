@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "A list is a contiguous block of memory holding **pointers to objects**, plus a count of how many slots are used and how many exist. The objects themselves live elsewhere on the heap — which is why a list can hold an int, a string and another list at once. Every slot is the same size, because every slot is a pointer." },
 
     { t: "viz",
@@ -102,6 +103,7 @@ len= 17  bytes=248`},
     { t: "h2", n: "02", text: "Operations and their cost", id: "operations" },
 
     {"kind": "matrix", "title": "Cost of the common list operations", "caption": "Green is O(1), amber O(n). The two that surprise people are 'in' and insert(0, x): both walk the whole list.", "rows": ["index / assign lst[i]", "append / pop()", "insert(0, x) / pop(0)", "x in lst", "len(lst)", "sort"], "cols": ["cost"], "cells": [[{"text": "O(1)", "tone": "good"}], [{"text": "O(1) amortised", "tone": "good"}], [{"text": "O(n)", "tone": "warn"}], [{"text": "O(n)", "tone": "warn"}], [{"text": "O(1)", "tone": "good"}], [{"text": "O(n log n)", "tone": "accent"}]], "t": "diagram", "id": "dg-2_1-02-1"},
+
 
 
 

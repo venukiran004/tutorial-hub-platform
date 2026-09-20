@@ -23,6 +23,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Naive and aware datetimes", "caption": "A naive datetime has no zone and means nothing until you attach one; an aware one carries a tzinfo. Store and compare in UTC; convert to a local zone only at the edge.", "cols": 3, "nodes": [{"id": "naive", "label": "naive", "sub": "datetime(2026, 9, 20, 9, 0) — 9 o'clock where?", "tone": "warn"}, {"id": "aware", "label": "aware, UTC", "sub": "tzinfo=timezone.utc — store this", "tone": "good"}, {"id": "local", "label": "aware, local", "sub": ".astimezone(ZoneInfo('Asia/Kolkata')) — display this", "tone": "accent"}], "edges": [["naive", "aware", ".replace(tzinfo=…)"], ["aware", "local", ".astimezone()"]], "t": "diagram", "id": "dg-7_8-01-0"},
 
 
+
     { t: "viz",
       title: "Naive and aware are different types in practice",
       caption: "A naive datetime has no time zone, so it names a wall-clock reading with no way to know which clock. Comparing or subtracting a naive and an aware datetime raises. Mixing them accidentally is the most common date bug in Python.",

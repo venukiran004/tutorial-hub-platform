@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "lru_cache in front of a function", "caption": "The decorator keeps a dict from arguments to results. A hit returns without calling the function; a miss calls it and stores the result; at maxsize the least recently used entry is evicted. Arguments must be hashable.", "cols": 4, "nodes": [{"id": "call", "label": "f(3, 'x')"}, {"id": "key", "label": "key = (3, 'x')", "sub": "args must hash", "tone": "accent"}, {"id": "hit", "label": "hit → return stored", "sub": "O(1)", "tone": "good"}, {"id": "miss", "label": "miss → call f, store", "sub": "evict LRU at maxsize", "tone": "warn"}], "edges": [["call", "key"], ["key", "hit"], ["key", "miss"]], "t": "diagram", "id": "dg-10_4-01-0"},
 
+
     { t: "table",
       head: ["", "`@cache`", "`@lru_cache(maxsize=n)`", "`@cached_property`"],
       rows: [
@@ -168,6 +169,8 @@ RATE = Decimal("0.25")                  # every cached value is now wrong`},
     ]},
 
     { t: "h2", n: "03", text: "Invalidation", id: "invalidation" },
+
+    {"kind": "steps", "title": "Invalidation, or a cache is a bug with a delay", "caption": "Every cached value is a claim that the underlying data has not changed. Something has to make that true: an explicit clear on write, a TTL, or a key that changes with the data.", "items": [{"label": "invalidate on write", "desc": "f.cache_clear() or delete the key when the source changes", "tone": "good"}, {"label": "time to live", "desc": "accept staleness for a bounded time — TTLCache, Redis EX", "tone": "accent"}, {"label": "versioned key", "desc": "put the data's version or hash in the key; old entries age out", "tone": "warn"}, {"label": "never cache what changes under you", "desc": "lru_cache on a method reading self.state is a classic trap", "tone": "crit"}], "t": "diagram", "id": "dg-10_4-03-1"},
 
     { t: "ladder",
       title: "Keeping a cached customer profile correct",

@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "A nested shape, and where it breaks",
       caption: "Every level is a place a key can be absent or a type can differ. Walking such a structure with plain indexing works until one record is shaped differently — which is what real data always contains.",

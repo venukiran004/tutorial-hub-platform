@@ -69,6 +69,7 @@ print(sys.getsizeof(2 ** 1000))`,
 
 
 
+
     { t: "p", text: "A Python `float` is a 64-bit IEEE-754 double. That is a binary format, and it cannot represent most decimal fractions exactly — for the same reason base-10 cannot represent one third exactly." },
 
     { t: "code", lang: "python", title: "the canonical demonstration", code: `
@@ -192,6 +193,7 @@ print(round(2.675, 2))  # 2.67 -- not 2.68`,
     { t: "h2", n: "03", text: "bool is an int", id: "bool" },
 
     {"kind": "tree", "title": "bool is a subclass of int", "caption": "True and False are the integers 1 and 0 with a different __repr__. That is why True + True == 2, why sum(flags) counts, and why isinstance(True, int) is True.", "root": {"label": "object", "children": [{"label": "int", "tone": "accent", "children": [{"label": "bool", "sub": "True = 1, False = 0", "tone": "good"}]}, {"label": "float"}, {"label": "NoneType", "sub": "one instance: None"}]}, "t": "diagram", "id": "dg-1_5-03-1"},
+
 
 
 

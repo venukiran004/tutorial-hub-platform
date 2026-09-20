@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Here is a failure from a small program. Before reading the explanation, decide which line contains the bug." },
 
     { t: "code", lang: "text", title: "the traceback", numbered: false, code: `

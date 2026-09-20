@@ -102,6 +102,7 @@ threading.excepthook = lambda args: log.exception(
 
     {"kind": "timeline", "title": "A race on counter += 1", "caption": "The += is three bytecodes: read, add, write. Two threads can both read 5, both write 6, and one increment is lost. A lock makes the three steps one.", "span": 6, "tick": 1, "lanes": [{"label": "thread A", "tone": "accent", "bars": [[0, 1, "read 5"], [1, 2, "add"], [2, 3, "write 6"]]}, {"label": "thread B", "tone": "warn", "bars": [[0.5, 1.5, "read 5"], [1.5, 2.5, "add"], [2.5, 3.5, "write 6", "crit"]]}], "t": "diagram", "id": "dg-11_3-02-0"},
 
+
     { t: "viz",
       title: "Where the update goes",
       caption: "Both threads read 5, both compute 6, both write 6. One increment is gone. Nothing raises, nothing logs, and the result is merely wrong — which is why races are found by reconciliation reports rather than by tracebacks.",
@@ -190,6 +191,7 @@ with lock:
     { t: "h2", n: "03", text: "Deadlock", id: "deadlock" },
 
     {"kind": "cycle", "title": "Deadlock: two locks, two orders", "caption": "A holds lock 1 and waits for lock 2; B holds lock 2 and waits for lock 1. Neither can proceed. The fix is one global lock order — or one lock.", "nodes": [{"label": "thread A holds L1", "tone": "accent"}, {"label": "A waits for L2", "tone": "warn"}, {"label": "thread B holds L2", "tone": "accent"}, {"label": "B waits for L1", "tone": "warn"}], "centre": "forever", "t": "diagram", "id": "dg-11_3-03-1"},
+
 
     { t: "ladder",
       title: "Transferring between two accounts",

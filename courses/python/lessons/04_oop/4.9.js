@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "__repr__ before anything else", id: "repr" },
 
+    {"kind": "compare", "title": "__repr__ versus __str__", "caption": "repr is for the developer and should be unambiguous, ideally valid Python; str is for the user. Define __repr__ first — str falls back to it, containers use it, and debuggers show it.", "columns": [{"title": "__repr__", "tone": "accent", "items": ["Point(x=1, y=2)", "shown in the REPL, lists, tracebacks", "unambiguous", "define this one first"]}, {"title": "__str__", "tone": "good", "items": ["(1, 2)", "print() and f-strings", "readable", "optional; falls back to repr"]}], "t": "diagram", "id": "dg-4_9-01-1"},
+
     { t: "p", text: "If you write one dunder method on a class, write this one. It is what appears in the debugger, in a failed test's assertion output, in a log line and in every `print` of a list of your objects." },
 
     { t: "code", lang: "python", title: "the difference it makes", code: `
@@ -79,6 +81,7 @@ print(f"{m} / {m!r}") # both, explicitly`}
     { t: "h2", n: "02", text: "__eq__ and __hash__ are one decision", id: "eq-hash" },
 
     {"kind": "matrix", "title": "__eq__ and __hash__ are one decision", "caption": "Defining __eq__ without __hash__ makes the class unhashable. Equal objects must hash equal, so hash the same fields you compare — and only if they are immutable.", "rows": ["define __eq__ only", "define both on the same fields", "mutable fields hashed"], "cols": ["usable in set/dict", "correct"], "cells": [[false, {"text": "unhashable", "tone": "warn"}], [true, true], [true, {"text": "breaks when mutated", "tone": "crit"}]], "t": "diagram", "id": "dg-4_9-02-0"},
+
 
 
 

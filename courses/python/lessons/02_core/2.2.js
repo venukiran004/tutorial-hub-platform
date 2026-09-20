@@ -121,6 +121,7 @@ id_, customer, *_ = order   # still unpacks`,
 
 
 
+
     { t: "p", text: "A set stores its elements in a hash table: it computes `hash(element)`, uses that to pick a slot directly, and looks only there. That is why membership does not depend on the size of the set." },
 
     { t: "viz",
@@ -221,6 +222,7 @@ print(list(dict.fromkeys(items)))`,
     { t: "h2", n: "03", text: "Set algebra replaces loops", id: "set-algebra" },
 
     {"kind": "compare", "title": "Set algebra", "caption": "Each operator has a method form that accepts any iterable; the operator form needs sets on both sides. All four are O(len(a) + len(b)) and replace a nested loop.", "columns": [{"title": "a | b  union", "tone": "accent", "items": ["everything in either", "a.union(iterable)"]}, {"title": "a & b  intersection", "tone": "good", "items": ["in both", "a.intersection(iterable)"]}, {"title": "a - b  difference", "tone": "warn", "items": ["in a, not in b", "a.difference(iterable)"]}, {"title": "a ^ b  symmetric", "tone": "violet", "items": ["in exactly one", "a.symmetric_difference()"]}], "t": "diagram", "id": "dg-2_2-03-1"},
+
 
 
 

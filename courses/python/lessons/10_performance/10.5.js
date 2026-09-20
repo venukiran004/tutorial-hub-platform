@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "timeline", "title": "N+1: one query per row", "caption": "Fetching 4 orders then each order's customer is 5 round trips; a join or a batched IN (...) is 1. At 400 orders the difference is 401 round trips against 1 — the same code, a hundred times slower.", "span": 10, "tick": 2, "lanes": [{"label": "N+1", "tone": "crit", "bars": [[0, 1, "orders"], [2, 3, "cust 1"], [4, 5, "cust 2"], [6, 7, "cust 3"], [8, 9, "cust 4"]]}, {"label": "one join", "tone": "good", "bars": [[0, 1.4, "orders ⋈ customers"]]}], "t": "diagram", "id": "dg-10_5-01-0"},
 
+
     { t: "viz",
       title: "One query, or a hundred and one",
       caption: "The loop looks like it touches memory. Each iteration is a network round trip to the database, so the cost is not the Python — it is 100 × the latency between your service and a machine in another rack.",

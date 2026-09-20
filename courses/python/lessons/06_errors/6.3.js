@@ -154,6 +154,7 @@ ConfigError: database_url is not set`,
     {"kind": "tree", "title": "Designing an exception hierarchy", "caption": "One base class per library lets callers catch everything from it in one clause; subclasses let them be specific. Two levels is nearly always enough.", "root": {"label": "PaymentError", "sub": "the library's base", "tone": "accent", "children": [{"label": "CardDeclined", "sub": "retry with another card", "tone": "warn"}, {"label": "GatewayTimeout", "sub": "retry later", "tone": "warn"}, {"label": "InvalidAmount", "sub": "a caller bug — do not retry", "tone": "crit"}]}, "t": "diagram", "id": "dg-6_3-03-0"},
 
 
+
     { t: "p", text: "The question is not \"what can go wrong here\". It is **\"what would a caller do differently\"**. Two failures that lead to the same handling do not need two exception types, however different their causes." },
 
     { t: "ladder",
@@ -269,6 +270,7 @@ time.sleep(err.retry_after)`},
     { t: "h2", n: "04", text: "Translating at the boundary", id: "boundary" },
 
     {"kind": "flow", "title": "Translate at the boundary", "caption": "A low-level exception from a dependency becomes your domain's exception, chained with 'from' so the cause survives in the traceback. Callers see one vocabulary.", "cols": 3, "nodes": [{"id": "lib", "label": "httpx.TimeoutException", "sub": "the dependency's error", "tone": "crit"}, {"id": "b", "label": "except … as e: raise GatewayTimeout(...) from e", "sub": "the boundary", "tone": "accent"}, {"id": "dom", "label": "GatewayTimeout", "sub": "your caller's vocabulary", "tone": "good"}], "edges": [["lib", "b"], ["b", "dom"]], "t": "diagram", "id": "dg-6_3-04-1"},
+
 
 
     { t: "code", lang: "python", title: "wrapping a dependency, correctly", code: `

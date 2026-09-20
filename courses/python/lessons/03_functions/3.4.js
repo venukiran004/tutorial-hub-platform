@@ -120,6 +120,7 @@ print(apply_all("  hello  ", [str.strip, str.title]))
 
 
 
+
     { t: "p", text: "Lesson 2.6 replaced a chain of `elif` with a dict mapping keys to *values*. The same move with functions as the values replaces a chain where each branch does work." },
 
     { t: "ladder",

@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "the definition, in six lines", code: `
 def make_multiplier(factor: int):
     def multiply(x: int) -> int:
@@ -116,6 +117,7 @@ None`,
 
 
 
+
     { t: "code", lang: "python", title: "the surprise, in every language with closures", code: `
 handlers = []
 for i in range(3):
@@ -167,6 +169,8 @@ handlers = [partial(print, i) for i in range(3)]`,
 
     /* ================================================================== */
     { t: "h2", n: "03", text: "Closures with state", id: "state" },
+
+    {"kind": "trace", "title": "A closure with state, stepped", "caption": "nonlocal lets inner rebind count in the enclosing cell. Each call to make_counter creates a new cell, so c1 and c2 count independently.", "vars": ["c1's cell", "c2's cell"], "steps": [{"code": "c1 = make_counter()", "state": ["0", ""], "changed": [0]}, {"code": "c1()", "state": ["1", ""], "changed": [0]}, {"code": "c1()", "state": ["2", ""], "changed": [0]}, {"code": "c2 = make_counter()", "state": ["2", "0"], "changed": [1], "note": "a new cell"}, {"code": "c2()", "state": ["2", "1"], "changed": [1], "tone": "good", "note": "independent"}], "t": "diagram", "id": "dg-3_6-03-2"},
 
     { t: "code", lang: "python", title: "nonlocal makes the cell writable", code: `
 def make_counter(start: int = 0):

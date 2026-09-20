@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "Where a conversion can silently change the value",
       caption: "Widening conversions keep the value; narrowing ones may not. `int(2.9)` truncates rather than rounding, and `float(large_int)` loses precision above 2⁵³.",
@@ -177,6 +178,7 @@ ValueError: quantity must be a whole number, got '12.5'`,
     { t: "h2", n: "03", text: "type() versus isinstance()", id: "type-vs-isinstance" },
 
     {"kind": "tree", "title": "isinstance respects the hierarchy; type() does not", "caption": "type(True) is bool, so type(True) == int is False — but isinstance(True, int) is True because bool inherits from int. Prefer isinstance, and prefer duck typing to either.", "root": {"label": "int", "tone": "accent", "children": [{"label": "bool", "tone": "good", "sub": "isinstance(True, int) → True"}]}, "t": "diagram", "id": "dg-1_8-03-1"},
+
 
 
 

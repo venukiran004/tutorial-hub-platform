@@ -187,6 +187,7 @@ uv export --no-dev | pip-audit -r /dev/stdin
 
     {"kind": "flow", "title": "Where a supply-chain attack gets in", "caption": "Typosquatted names, hijacked maintainer accounts, malicious install scripts and compromised build pipelines all deliver code through the same 'pip install'. Pinning with hashes, a private index and a lock file reviewed in code review narrow every entry.", "cols": 4, "nodes": [{"id": "a", "label": "typosquat", "sub": "requets, python-dateutils", "tone": "crit"}, {"id": "b", "label": "hijacked package", "sub": "a new malicious release", "tone": "crit"}, {"id": "c", "label": "pip install", "sub": "runs setup.py", "tone": "warn"}, {"id": "d", "label": "your CI and prod", "sub": "secrets, tokens", "tone": "accent"}], "edges": [["a", "c"], ["b", "c"], ["c", "d"]], "t": "diagram", "id": "dg-14_7-04-0"},
 
+
     { t: "viz",
       title: "Four ways a malicious package reaches you",
       caption: "None of these require a vulnerability in your code. The attack is on the path between the package author and your build machine — and in three of the four, nothing about your repository changes.",

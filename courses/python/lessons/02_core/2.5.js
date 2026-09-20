@@ -21,7 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "The complete rule", id: "the-rule" },
 
+    {"kind": "trace", "title": "The mutable default, stepped", "caption": "The default list is created once when def runs and shared by every call that omits the argument. The fix — None as the default and a fresh list inside — gives each call its own.", "vars": ["items (call 1)", "items (call 2)", "f.__defaults__[0]"], "steps": [{"code": "def f(x, items=[]):", "state": ["", "", "[]"], "changed": [2], "note": "evaluated once, at def"}, {"code": "f(1)  → items.append(1)", "state": ["[1]", "", "[1]"], "changed": [0, 2]}, {"code": "f(2)  → items.append(2)", "state": ["[1, 2]", "[1, 2]", "[1, 2]"], "changed": [1, 2], "tone": "crit", "note": "the same list"}, {"code": "def g(x, items=None): items = items or []", "state": ["[1]", "[2]", "None"], "changed": [0, 1], "tone": "good", "note": "fresh list per call"}], "t": "diagram", "id": "dg-2_5-01-2"},
+
     {"kind": "memory", "title": "The mutable default is created once", "caption": "def f(items=[]) evaluates [] when def runs, and every call without an argument gets that same list. The fix is None as the default and a fresh list inside the body.", "names": [{"name": "f.__defaults__[0]", "to": "o1"}, {"name": "items  (call 1)", "to": "o1"}, {"name": "items  (call 2)", "to": "o1", "label": "same list again"}], "objects": [{"id": "o1", "type": "list", "value": "['from call 1', 'from call 2']", "note": "grows across calls", "tone": "crit"}], "t": "diagram", "id": "dg-2_5-01-0"},
+
 
 
 
@@ -154,6 +157,7 @@ DEFAULT_TAGS = ("untagged",)                 # tuple, not list
     { t: "h2", n: "03", text: "The four defences", id: "defences" },
 
     {"kind": "compare", "title": "The four defences", "caption": "In order of preference: do not share, copy at the boundary, make it immutable, or document and own the sharing.", "columns": [{"title": "1 · Do not share", "tone": "good", "items": ["default None, build inside", "return new objects"]}, {"title": "2 · Copy at the boundary", "tone": "accent", "items": ["list(x), dict(x), copy()", "deepcopy for nested"]}, {"title": "3 · Make it immutable", "tone": "violet", "items": ["tuple, frozenset", "frozen dataclass"]}, {"title": "4 · Own the sharing", "tone": "warn", "items": ["name it in the docstring", "one owner mutates"]}], "t": "diagram", "id": "dg-2_5-03-1"},
+
 
 
 

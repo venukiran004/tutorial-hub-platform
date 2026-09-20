@@ -156,6 +156,7 @@ def next_greater(nums: list[int]) -> list[int]:
 
     {"kind": "tree", "title": "A min-heap is a complete tree in a list", "caption": "heapq keeps the list so that each parent is smaller than its children: the minimum is always at index 0. Push and pop are O(log n); the children of index i are 2i+1 and 2i+2.", "root": {"label": "1", "sub": "index 0 — the min", "tone": "good", "children": [{"label": "3", "sub": "index 1", "tone": "accent", "children": [{"label": "7", "sub": "3"}, {"label": "4", "sub": "4"}]}, {"label": "5", "sub": "index 2", "tone": "accent", "children": [{"label": "9", "sub": "5"}, {"label": "8", "sub": "6"}]}]}, "t": "diagram", "id": "dg-16_3-03-0"},
 
+
     { t: "code", lang: "python", title: "heapq, and its three sharp edges", code: `
 import heapq
 

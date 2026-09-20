@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "Parse, don't validate", "caption": "Untrusted JSON enters, a Pydantic model parses it once at the boundary, and everything inside works with a typed object that cannot be malformed. Validation logic lives in one place instead of every function.", "cols": 3, "nodes": [{"id": "raw", "label": "raw JSON", "sub": "anything at all", "tone": "crit"}, {"id": "model", "label": "Order.model_validate(data)", "sub": "parse once; 422 on failure", "tone": "accent"}, {"id": "typed", "label": "Order", "sub": "typed, trusted, everywhere inside", "tone": "good"}], "edges": [["raw", "model"], ["model", "typed"]], "t": "diagram", "id": "dg-12_3-01-0"},
 
+
     { t: "viz",
       title: "The line, and what it changes",
       caption: "Outside the line, everything is a `dict` of unknown shape and every function must be defensive. Inside, the type is the guarantee — so the checks disappear rather than being repeated.",

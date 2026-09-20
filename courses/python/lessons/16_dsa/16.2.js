@@ -23,6 +23,7 @@ EC.receiveLesson({
     {"kind": "compare", "title": "Trade memory for time", "caption": "The nested loop compares every pair — O(n²). One pass with a hash map remembers what has been seen — O(n) time, O(n) space. Nearly every 'find a pair' problem is this trade.", "columns": [{"title": "two loops", "tone": "crit", "items": ["for i: for j: if a[i]+a[j]==t", "O(n²) time", "O(1) space"]}, {"title": "one pass + dict", "tone": "good", "items": ["seen[t − x] tells you instantly", "O(n) time", "O(n) space"]}], "t": "diagram", "id": "dg-16_2-01-0"},
 
 
+
     { t: "viz",
       title: "Trading memory for time",
       caption: "The nested-loop scan re-reads the data for every element. One pass building a dict costs memory proportional to the input and turns the same problem linear.",

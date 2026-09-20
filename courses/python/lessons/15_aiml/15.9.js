@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "A semaphore bounds concurrency", "caption": "A thousand coroutines may exist, but only ten hold the semaphore at once; the rest wait. The API sees at most ten in-flight requests, which is the number you agreed to.", "cols": 3, "nodes": [{"id": "tasks", "label": "1,000 tasks", "sub": "created at once", "tone": "warn"}, {"id": "sem", "label": "asyncio.Semaphore(10)", "sub": "async with sem:", "tone": "accent"}, {"id": "api", "label": "≤ 10 in flight", "sub": "the rate the API allows", "tone": "good"}], "edges": [["tasks", "sem"], ["sem", "api"]], "t": "diagram", "id": "dg-15_9-01-0"},
 
+
     { t: "ladder",
       title: "Classifying ten thousand documents",
       rungs: [

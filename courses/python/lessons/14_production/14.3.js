@@ -168,6 +168,8 @@ logger.exception("failed")                # message AND traceback`},
 
     { t: "h2", n: "03", text: "Metrics", id: "metrics" },
 
+    {"kind": "compare", "title": "The four golden signals", "caption": "Latency, traffic, errors and saturation. If a dashboard shows these four per service, most incidents are visible before the pager goes off.", "columns": [{"title": "latency", "tone": "accent", "items": ["p50, p95, p99 per endpoint", "of successful and failed requests separately"]}, {"title": "traffic", "tone": "good", "items": ["requests per second", "queue depth, messages per second"]}, {"title": "errors", "tone": "crit", "items": ["5xx rate, exception rate", "by type and endpoint"]}, {"title": "saturation", "tone": "warn", "items": ["CPU, memory, pool usage", "how full is the service"]}], "t": "diagram", "id": "dg-14_3-03-1"},
+
     { t: "code", lang: "python", title: "the four instrument types", code: `
 from prometheus_client import Counter, Gauge, Histogram
 
@@ -215,6 +217,7 @@ request_duration = Histogram(
     { t: "h2", n: "04", text: "Tracing", id: "tracing" },
 
     {"kind": "timeline", "title": "A trace is spans nested in time", "caption": "One request becomes a root span with child spans for each call it makes. The gaps and the longest child are where the time went; the trace id ties the spans together across services.", "span": 10, "tick": 2, "lanes": [{"label": "GET /orders/42", "tone": "accent", "bars": [[0, 10, "root span 10 ms"]]}, {"label": "auth check", "tone": "good", "bars": [[0.5, 1.5, "1 ms"]]}, {"label": "SELECT orders", "tone": "warn", "bars": [[2, 6.5, "4.5 ms"]]}, {"label": "SELECT customer", "tone": "warn", "bars": [[6.8, 8.6, "1.8 ms"]]}, {"label": "serialise", "tone": "good", "bars": [[8.8, 9.8, "1 ms"]]}], "t": "diagram", "id": "dg-14_3-04-0"},
+
 
     { t: "viz",
       title: "Where the eight seconds went",

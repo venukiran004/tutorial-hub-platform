@@ -58,6 +58,7 @@ df.loc[0:3]                   # rows with LABELS 0..3 -- scattered,
 
     {"kind": "flow", "title": "Where SettingWithCopyWarning comes from", "caption": "df[df.x > 0] may be a copy or a view; assigning a column on it might modify a temporary that is thrown away. Use .loc[mask, 'col'] = value on the original, or .copy() explicitly when you mean a new frame.", "cols": 3, "nodes": [{"id": "df", "label": "df", "sub": "the original", "tone": "accent"}, {"id": "sub", "label": "df[df.x > 0]", "sub": "copy or view? pandas cannot promise", "tone": "warn"}, {"id": "set", "label": "['col'] = value", "sub": "may vanish — the warning", "tone": "crit"}], "edges": [["df", "sub"], ["sub", "set"]], "t": "diagram", "id": "dg-15_2-02-0"},
 
+
     { t: "viz",
       title: "Why chained assignment is unreliable",
       caption: "Each step returns a new object, and pandas cannot promise whether it shares memory with the original. The assignment lands somewhere; which somewhere depends on the data.",

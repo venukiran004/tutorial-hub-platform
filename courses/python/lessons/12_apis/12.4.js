@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "A FastAPI request, end to end", "caption": "The path is matched, parameters are parsed from the path, query and body according to the signature's annotations, dependencies run, the handler runs, and the return value is serialised through response_model.", "cols": 5, "nodes": [{"id": "req", "label": "HTTP request"}, {"id": "route", "label": "route match", "sub": "path + method", "tone": "accent"}, {"id": "parse", "label": "parse + validate", "sub": "from the annotations", "tone": "warn"}, {"id": "dep", "label": "dependencies", "sub": "Depends(...)", "tone": "violet"}, {"id": "h", "label": "handler → response_model", "sub": "serialised, documented", "tone": "good"}], "edges": [["req", "route"], ["route", "parse"], ["parse", "dep"], ["dep", "h"]], "t": "diagram", "id": "dg-12_4-01-0"},
 
+
     { t: "code", lang: "python", title: "where each parameter comes from", code: `
 from typing import Annotated
 from fastapi import FastAPI, Header, Path, Query
@@ -206,6 +207,8 @@ class OrderPublic(BaseModel):
     ]},
 
     { t: "h2", n: "04", text: "The four mistakes", id: "mistakes" },
+
+    {"kind": "compare", "title": "The four mistakes", "caption": "Each one passes a demo and fails in production. The signature is the contract; response_model is what makes the contract true on the way out.", "columns": [{"title": "1 · returning the ORM object", "tone": "crit", "items": ["leaks columns", "breaks when the model changes", "use response_model"]}, {"title": "2 · async def with sync I/O", "tone": "crit", "items": ["blocks the loop", "plain def, or run_in_threadpool"]}, {"title": "3 · business logic in the handler", "tone": "warn", "items": ["untestable without HTTP", "move it to a service"]}, {"title": "4 · one giant module", "tone": "warn", "items": ["routers by resource", "APIRouter with prefix and tags"]}], "t": "diagram", "id": "dg-12_4-04-1"},
 
     { t: "ladder",
       title: "An endpoint that queries a database",

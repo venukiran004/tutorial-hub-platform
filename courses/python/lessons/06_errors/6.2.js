@@ -21,7 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "All four clauses, and when each runs", id: "clauses" },
 
+    {"kind": "trace", "title": "Which clauses run", "caption": "Four ways a try block can end, and which of except, else and finally run in each. finally runs even when the block returns or raises something uncaught.", "vars": ["except", "else", "finally"], "steps": [{"code": "try body completes normally", "state": ["—", "runs", "runs"], "changed": [1, 2], "tone": "good"}, {"code": "try body raises a matching exception", "state": ["runs", "—", "runs"], "changed": [0, 2]}, {"code": "try body raises an unmatched exception", "state": ["—", "—", "runs, then it propagates"], "changed": [2], "tone": "warn"}, {"code": "try body returns early", "state": ["—", "—", "runs before the return"], "changed": [2], "note": "still runs"}], "t": "diagram", "id": "dg-6_2-01-1"},
+
     {"kind": "flow", "title": "try / except / else / finally", "caption": "except runs only on a matching exception, else only when the try body finished cleanly, finally always. Keeping the success path in else keeps the try block down to the one line that can fail.", "cols": 4, "nodes": [{"id": "try", "label": "try:", "sub": "the one call that can fail", "tone": "accent"}, {"id": "exc", "label": "except E:", "sub": "on a matching exception", "tone": "crit"}, {"id": "els", "label": "else:", "sub": "no exception — the success path", "tone": "good"}, {"id": "fin", "label": "finally:", "sub": "always — cleanup only", "tone": "warn"}], "edges": [["try", "exc", "raised"], ["try", "els", "clean"], ["exc", "fin"], ["els", "fin"]], "t": "diagram", "id": "dg-6_2-01-0"},
+
 
 
     { t: "code", lang: "python", title: "one function, both paths", code: `

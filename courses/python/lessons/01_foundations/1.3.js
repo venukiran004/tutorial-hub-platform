@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "The name suggests something elaborate — a container, a sandbox, a runtime feature. It is none of those. Create one and look inside:" },
 
     { t: "code", lang: "bash", title: "terminal", code: `

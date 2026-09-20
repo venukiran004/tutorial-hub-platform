@@ -165,6 +165,7 @@ top = min(counts.items(), key=lambda kv: (-kv[1], kv[0]))`},
     {"kind": "cells", "title": "deque: O(1) at both ends", "caption": "A deque is a doubly linked block list. appendleft and popleft are O(1) where a list's insert(0) and pop(0) are O(n); maxlen turns it into a rolling window that drops the oldest item automatically.", "items": ["appendleft →", "a", "b", "c", "d", "← append"], "highlight": [0, 5], "negative": false, "label": "deque(maxlen=4): a fifth append drops 'a' from the left", "t": "diagram", "id": "dg-5_9-03-0"},
 
 
+
     { t: "code", lang: "python", title: "O(1) at both ends, and bounded", code: `
 from collections import deque
 

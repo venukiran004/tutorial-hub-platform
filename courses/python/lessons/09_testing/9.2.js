@@ -139,6 +139,7 @@ def test_checkout(client):
 
     {"kind": "tree", "title": "What pytest collects", "caption": "Files matching test_*.py or *_test.py, then functions starting with test_ and methods of classes starting with Test. Anything else is invisible, which is the usual reason a new test 'does not run'.", "root": {"label": "rootdir", "tone": "accent", "children": [{"label": "tests/", "children": [{"label": "test_orders.py", "tone": "good", "children": [{"label": "test_total()", "tone": "good"}, {"label": "class TestRefund", "tone": "good"}, {"label": "helper()", "sub": "not collected", "tone": "warn"}]}, {"label": "orders_helpers.py", "sub": "not collected", "tone": "warn"}]}, {"label": "conftest.py", "sub": "fixtures, hooks"}]}, "t": "diagram", "id": "dg-9_2-02-0"},
 
+
     { t: "p", text: "A test that is never collected is indistinguishable from a test that passes. The rules are mechanical, and every one of them has a silent failure mode." },
 
     { t: "table",

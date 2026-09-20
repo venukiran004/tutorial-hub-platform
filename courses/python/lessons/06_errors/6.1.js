@@ -24,6 +24,7 @@ EC.receiveLesson({
     {"kind": "layers", "title": "raise unwinds the stack until a handler matches", "caption": "Each frame is checked for a try/except that matches the exception's type; frames without one are discarded on the way up. If nothing matches, the interpreter prints the traceback and exits.", "taper": true, "items": [{"label": "parse()  raises ValueError", "sub": "no handler here", "tone": "crit"}, {"label": "load()  no matching except", "sub": "frame discarded", "tone": "warn"}, {"label": "main()  except ValueError:", "sub": "caught here — execution continues after the try", "tone": "good"}, {"label": "the interpreter", "sub": "would print the traceback if nothing had caught it"}], "t": "diagram", "id": "dg-6_1-01-0"},
 
 
+
     { t: "p", text: "`raise` does two things. It creates (or takes) an exception **instance**, and it abandons the current expression. Python then walks back up the call stack looking for a `try` whose `except` matches. Every frame it passes is discarded — its local variables are gone — until a handler claims the exception or the stack runs out." },
 
     { t: "code", lang: "python", title: "three frames, one handler", code: `
@@ -110,6 +111,7 @@ main()
       sub: "An except clause is an isinstance check, so every base class in the tree is a catch group somebody designed for you." },
 
     {"kind": "tree", "title": "The hierarchy is an API", "caption": "Catching a class catches every subclass. except Exception catches almost everything; except BaseException also catches KeyboardInterrupt and SystemExit, which is almost never what you want.", "root": {"label": "BaseException", "tone": "crit", "children": [{"label": "SystemExit"}, {"label": "KeyboardInterrupt"}, {"label": "Exception", "tone": "accent", "children": [{"label": "ValueError", "tone": "good", "children": [{"label": "UnicodeError"}]}, {"label": "LookupError", "children": [{"label": "KeyError"}, {"label": "IndexError"}]}, {"label": "OSError", "tone": "warn", "children": [{"label": "FileNotFoundError"}]}]}]}, "t": "diagram", "id": "dg-6_1-02-1"},
+
 
 
     { t: "viz",

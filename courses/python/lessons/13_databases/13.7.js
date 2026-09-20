@@ -87,6 +87,7 @@ op.add_column("users", sa.Column("full_name", sa.String()))
 
     {"kind": "steps", "title": "A zero-downtime column rename", "caption": "A rename in one migration breaks the running old code. Expand, migrate, contract: add the new column, write to both, backfill, switch reads, drop the old one — each step deployable on its own.", "items": [{"label": "Add new column, nullable", "desc": "old code ignores it", "tone": "accent"}, {"label": "Deploy code that writes both", "desc": "reads still from the old column", "tone": "accent"}, {"label": "Backfill in batches", "desc": "small transactions, no long lock", "tone": "warn"}, {"label": "Deploy code that reads the new column", "desc": "then stop writing the old", "tone": "good"}, {"label": "Drop the old column", "desc": "a release later", "tone": "violet"}], "t": "diagram", "id": "dg-13_7-02-0"},
 
+
     { t: "viz",
       title: "Why a rename cannot be one migration",
       caption: "During a rolling deploy both versions run simultaneously. Any schema the old code cannot use is an outage for however long the rollout takes — and a failed rollout means it is an outage until someone rolls back.",
@@ -189,6 +190,7 @@ SET statement_timeout = '30s';`},
     { t: "h2", n: "03", text: "Sizing a pool", id: "pool" },
 
     {"kind": "flow", "title": "Sizing a connection pool", "caption": "Every worker holds up to pool_size + max_overflow connections. Workers × pool must stay under the database's max_connections with room for migrations and admins — a limit hit at 3 a.m. by a scaled-up deployment.", "cols": 3, "nodes": [{"id": "w", "label": "8 workers", "sub": "× (pool 5 + overflow 10)", "tone": "accent"}, {"id": "p", "label": "up to 120 connections", "sub": "from this service alone", "tone": "warn"}, {"id": "db", "label": "max_connections = 100", "sub": "exhausted", "tone": "crit"}], "edges": [["w", "p"], ["p", "db"]], "t": "diagram", "id": "dg-13_7-03-1"},
+
 
     { t: "code", lang: "python", title: "the arithmetic that prevents an outage", code: `
 engine = create_engine(

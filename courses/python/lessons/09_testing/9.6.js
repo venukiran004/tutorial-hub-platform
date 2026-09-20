@@ -84,6 +84,7 @@ class ReportService:
 
     {"kind": "flow", "title": "Functional core, imperative shell", "caption": "Pure functions in the middle take data and return data — trivially testable. The thin shell around them does the I/O: reads the file, calls the API, writes the database. Tests target the core; a few integration tests cover the shell.", "cols": 3, "nodes": [{"id": "in", "label": "shell: read input", "sub": "file, HTTP, DB", "tone": "warn"}, {"id": "core", "label": "core: pure functions", "sub": "data in, data out — unit tested", "tone": "good"}, {"id": "out", "label": "shell: write output", "sub": "DB, API, file", "tone": "warn"}], "edges": [["in", "core"], ["core", "out"]], "t": "diagram", "id": "dg-9_6-03-0"},
 
+
     { t: "viz",
       title: "Push decisions inward, push I/O outward",
       caption: "The shell reads, calls the core, and writes. The core takes data and returns data — no network, no clock, no database — so it is tested with plain values and no infrastructure at all. Most of the interesting logic lives there.",

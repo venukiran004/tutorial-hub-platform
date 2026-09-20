@@ -43,14 +43,21 @@ for lid, items in specs.items():
         lines = [l for l in lines if ('"id": "%s"' % marker) not in l]
         if len(lines) < before: replaced += 1
         else: added += 1
-        pat = re.compile(r'^\s*\{ t: "h2", n: "%s"' % re.escape(it["after"]))
-        idx = next((i for i, l in enumerate(lines) if pat.match(l)), None)
-        if idx is None:
-            print("no h2 %s in %s" % (it["after"], lid)); continue
-        # the h2 block may continue onto following lines (a sub: line); insert after its closing "},"
-        end = idx
-        while not lines[end].rstrip().endswith("},"):
-            end += 1
+        if it["after"] == "top":
+            # a bank lesson has no h2: place the figure first, right after "blocks": [
+            idx = next((i for i, l in enumerate(lines) if re.match(r'^\s*"?blocks"?: \[', l)), None)
+            if idx is None:
+                print("no blocks in %s" % lid); continue
+            end = idx
+        else:
+            pat = re.compile(r'^\s*\{ t: "h2", n: "%s"' % re.escape(it["after"]))
+            idx = next((i for i, l in enumerate(lines) if pat.match(l)), None)
+            if idx is None:
+                print("no h2 %s in %s" % (it["after"], lid)); continue
+            # the h2 block may continue onto following lines (a sub: line); insert after its closing "},"
+            end = idx
+            while not lines[end].rstrip().endswith("},"):
+                end += 1
         lines.insert(end + 1, "")
         lines.insert(end + 2, block)
     io.open(path, "w", encoding="utf-8", newline="\n").write("\n".join(lines))

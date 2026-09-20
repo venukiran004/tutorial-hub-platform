@@ -188,6 +188,7 @@ def _(node: And) -> str:
 
 
 
+
     { t: "p", text: "Observer survives because the problem is real: something needs to notify an unknown set of listeners. What dissolves is the machinery — no `Observer` interface, no `attach`/`detach` ceremony, just callables." },
 
     { t: "code", lang: "python", title: "the whole pattern", code: `
@@ -311,6 +312,7 @@ class LazyDataset:
     { t: "h2", n: "05", text: "State: the transitions are the design", id: "state" },
 
     {"kind": "cycle", "title": "State: the transitions are the design", "caption": "An order moves through states along allowed edges only; the state machine is a dict of transitions and a check, not a class per state.", "nodes": [{"label": "pending", "tone": "accent"}, {"label": "paid", "tone": "good"}, {"label": "shipped", "tone": "good"}, {"label": "delivered", "tone": "violet"}, {"label": "cancelled", "tone": "crit", "sub": "from pending or paid only"}], "t": "diagram", "id": "dg-4_12-05-1"},
+
 
 
 

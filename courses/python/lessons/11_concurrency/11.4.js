@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "Crossing the process boundary", "caption": "Arguments are pickled, sent through a pipe, unpickled in the child; results come back the same way. A large array crosses twice, which is why multiprocessing loses on small tasks with big inputs.", "cols": 4, "nodes": [{"id": "p", "label": "parent", "sub": "pool.map(f, items)"}, {"id": "pk", "label": "pickle", "sub": "items serialised", "tone": "warn"}, {"id": "pipe", "label": "pipe / queue", "sub": "bytes across processes", "tone": "accent"}, {"id": "c", "label": "child", "sub": "unpickle, run f, pickle result", "tone": "good"}], "edges": [["p", "pk"], ["pk", "pipe"], ["pipe", "c"], ["c", "pipe", "result"], ["pipe", "p"]], "t": "diagram", "id": "dg-11_4-01-0"},
 
+
     { t: "viz",
       title: "Every argument is pickled, sent and rebuilt",
       caption: "A thread passes a pointer. A process serialises the object, writes it to a pipe, and the far side rebuilds it — then does the same in reverse with the result. That round trip is the whole cost model, and it is why fine-grained tasks lose.",
@@ -119,6 +120,8 @@ False`},
     ]},
 
     { t: "h2", n: "02", text: "Start methods", id: "start" },
+
+    {"kind": "compare", "title": "Start methods", "caption": "fork copies the parent's memory instantly but inherits its locks and threads — unsafe with threads; spawn starts a fresh interpreter and pickles everything, which is slower but safe. macOS and Windows default to spawn; Linux switched its default in 3.14.", "columns": [{"title": "fork", "tone": "warn", "items": ["copy-on-write clone", "fast start", "inherits locks, open files, threads — deadlock risk", "Linux only"]}, {"title": "spawn", "tone": "good", "items": ["fresh interpreter", "imports the module again — guard with __main__", "arguments must pickle", "the safe default"]}, {"title": "forkserver", "tone": "accent", "items": ["a clean server process forks on request", "fast and safe on Linux"]}], "t": "diagram", "id": "dg-11_4-02-1"},
 
     { t: "table",
       head: ["", "`fork`", "`spawn`", "`forkserver`"],

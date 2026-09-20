@@ -131,6 +131,7 @@ def db(engine):
 
     {"kind": "layers", "title": "Stub HTTP at the right layer", "caption": "Replace the transport, not your own client code: respx or a fake transport answers httpx's requests, so serialisation, retries and error handling still run for real.", "items": [{"label": "your service code", "sub": "runs for real", "tone": "good"}, {"label": "your API client wrapper", "sub": "runs for real — retries, parsing", "tone": "good"}, {"label": "httpx / requests", "sub": "runs for real", "tone": "accent"}, {"label": "transport → stubbed here", "sub": "respx / responses / a MockTransport", "tone": "warn"}, {"label": "the network", "sub": "never touched in a test", "tone": "crit"}], "t": "diagram", "id": "dg-9_7-03-0"},
 
+
     { t: "ladder",
       title: "Testing a client that calls a payment API",
       rungs: [

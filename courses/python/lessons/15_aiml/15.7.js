@@ -231,6 +231,7 @@ def predict(f: Features, background: BackgroundTasks) -> Prediction:
 
     {"kind": "timeline", "title": "Batching requests at inference", "caption": "Predicting one row at a time pays the fixed cost per call; collecting requests for a few milliseconds and predicting the batch amortises it. Latency rises slightly, throughput rises a lot.", "span": 10, "tick": 2, "lanes": [{"label": "one at a time", "tone": "warn", "bars": [[0, 2, "r1"], [2, 4, "r2"], [4, 6, "r3"], [6, 8, "r4"]]}, {"label": "batched (wait 1 ms)", "tone": "good", "bars": [[0, 1, "collect"], [1, 3.2, "predict r1–r4"]]}], "t": "diagram", "id": "dg-15_7-04-0"},
 
+
     { t: "code", lang: "python", title: "trade a few milliseconds for several times the throughput", code: `
 class BatchPredictor:
     """Collect requests for a few milliseconds, run them as one

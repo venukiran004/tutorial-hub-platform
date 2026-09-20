@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "What @dataclass writes for you",
       caption: "Six methods from one decorator. The value is not the typing saved — it is that every one is generated consistently, so equality and repr cannot drift from the field list.",
@@ -263,6 +264,7 @@ print(asdict(base))                 # recursive dict, for JSON`,
     { t: "h2", n: "05", text: "Dataclass, NamedTuple or Pydantic", id: "choosing" },
 
     {"kind": "compare", "title": "Dataclass, NamedTuple or Pydantic", "caption": "Choose by what the object is for: a mutable record, an immutable lightweight tuple, or validated data crossing a boundary.", "columns": [{"title": "dataclass", "tone": "accent", "items": ["mutable by default", "frozen=True available", "no validation", "internal records"]}, {"title": "NamedTuple", "tone": "good", "items": ["immutable, is a tuple", "unpackable", "lightweight", "return values"]}, {"title": "Pydantic", "tone": "warn", "items": ["validates and coerces", "JSON in and out", "heavier", "API and config boundaries"]}], "t": "diagram", "id": "dg-4_10-05-1"},
+
 
 
 

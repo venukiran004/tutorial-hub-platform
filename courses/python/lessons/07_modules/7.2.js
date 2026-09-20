@@ -192,6 +192,7 @@ ValueError: could not convert string to float: ''
     {"kind": "matrix", "title": "JSON's type map", "caption": "JSON has six types; Python has more. Everything that is not in the table needs a default= encoder on the way out and a conversion on the way in — datetimes, Decimals, sets and dataclasses included.", "rows": ["dict", "list / tuple", "str", "int / float", "True / False", "None", "datetime, Decimal, set, dataclass"], "cols": ["JSON"], "cells": [[{"text": "object", "tone": "good"}], [{"text": "array (tuple → list)", "tone": "good"}], [{"text": "string", "tone": "good"}], [{"text": "number", "tone": "good"}], [{"text": "true / false", "tone": "good"}], [{"text": "null", "tone": "good"}], [{"text": "TypeError — needs default=", "tone": "crit"}]], "t": "diagram", "id": "dg-7_2-03-0"},
 
 
+
     { t: "p", text: "JSON has six types: object, array, string, number, boolean and null. Python has hundreds. The mapping is therefore *onto*, not one-to-one, and several Python types map to the same JSON type — which means the return trip cannot restore what you started with." },
 
     { t: "viz",

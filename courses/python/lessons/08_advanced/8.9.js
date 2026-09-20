@@ -23,6 +23,7 @@ EC.receiveLesson({
     {"kind": "steps", "title": "The five-step leak workflow", "caption": "Confirm the growth, find the allocating line, find the accumulating type, find who holds the reference, then fix. Each step has one tool.", "items": [{"label": "Confirm memory is growing", "desc": "psutil RSS over time — growth that never plateaus", "tone": "crit"}, {"label": "Find what line allocates it", "desc": "tracemalloc snapshots, compared", "tone": "warn"}, {"label": "Find which type accumulates", "desc": "gc.get_objects() counts, objgraph.show_most_common_types", "tone": "accent"}, {"label": "Find who holds the reference", "desc": "objgraph.show_backrefs on one instance", "tone": "accent"}, {"label": "Fix it", "desc": "a cache without a bound, a handler never removed, a closure in a global, a cycle with __del__", "tone": "good"}], "t": "diagram", "id": "dg-8_9-01-0"},
 
 
+
     { t: "code", lang: "python", title: "what the graph looks like", code: `
 # Container RSS, one pod, over 36 hours
 #

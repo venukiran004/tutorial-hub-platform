@@ -23,6 +23,7 @@ EC.receiveLesson({
     {"kind": "steps", "title": "Storing and checking a password", "caption": "Never store the password; store a slow, salted hash. argon2 or bcrypt take tens of milliseconds by design, so a stolen table cannot be brute-forced quickly. Verification hashes the attempt with the stored salt and compares in constant time.", "items": [{"label": "hash = argon2.hash(password)", "desc": "random salt, memory-hard, ~50 ms", "tone": "accent"}, {"label": "store the hash string only", "desc": "it contains the algorithm, parameters and salt", "tone": "good"}, {"label": "verify(hash, attempt)", "desc": "re-hash the attempt, constant-time compare", "tone": "warn"}, {"label": "rehash if parameters are outdated", "desc": "needs_rehash() after a successful login", "tone": "violet"}], "t": "diagram", "id": "dg-12_8-01-0"},
 
 
+
     { t: "viz",
       title: "Authentication, authorisation and secrets are three questions",
       caption: "They fail differently and are fixed differently. Conflating them is how an endpoint ends up correctly identifying a user and then letting them read someone else's record.",
@@ -146,6 +147,7 @@ refresh token   30 days       opaque, a row, revoked instantly
     { t: "h2", n: "03", text: "JWTs, without the four mistakes", id: "jwt" },
 
     {"kind": "cells", "title": "A JWT is three base64 parts", "caption": "header.payload.signature. The payload is readable by anyone — it is encoded, not encrypted — so it must not carry secrets. The signature is what the server checks; a token with alg 'none' or an unexpected algorithm must be rejected.", "items": ["header {alg, typ}", "payload {sub, exp, …}", "signature HMAC/RSA"], "highlight": [2], "negative": false, "tone": "good", "label": "verify: the signature, the algorithm you expect, exp, iss and aud — every time", "t": "diagram", "id": "dg-12_8-03-1"},
+
 
     { t: "code", lang: "python", title: "issuing and verifying", code: `
 import jwt

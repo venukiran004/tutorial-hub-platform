@@ -65,6 +65,7 @@ with ThreadPoolExecutor() as pool:
 
     {"kind": "flow", "title": "submit and as_completed", "caption": "submit returns a Future immediately; the pool runs the callable on a worker; as_completed yields futures in the order they finish, not the order they were submitted.", "cols": 4, "nodes": [{"id": "sub", "label": "executor.submit(f, x)", "sub": "returns a Future now", "tone": "accent"}, {"id": "q", "label": "work queue", "sub": "waits for a free worker"}, {"id": "w", "label": "worker thread/process", "sub": "runs f(x)", "tone": "good"}, {"id": "done", "label": "as_completed(futures)", "sub": "yields in finishing order", "tone": "warn"}], "edges": [["sub", "q"], ["q", "w"], ["w", "done", ".result()"]], "t": "diagram", "id": "dg-11_5-02-0"},
 
+
     { t: "viz",
       title: "Three ways to get results back",
       caption: "`map` preserves input order and yields lazily. `as_completed` yields whichever finishes first, so slow items stop blocking fast ones. `submit` alone gives you the futures to manage yourself.",

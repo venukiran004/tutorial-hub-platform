@@ -188,6 +188,7 @@ def f(...): ...
 
     {"kind": "tree", "title": "Backtracking explores and undoes", "caption": "Choose, recurse, un-choose. Each level of the tree is one decision; a branch that violates a constraint is pruned before it grows. The undo step is what makes the same partial state reusable across branches.", "root": {"label": "[]", "tone": "accent", "children": [{"label": "[1]", "tone": "good", "children": [{"label": "[1, 2]", "tone": "good"}, {"label": "[1, 3]", "sub": "pruned", "tone": "crit"}]}, {"label": "[2]", "tone": "good", "children": [{"label": "[2, 1]", "sub": "pruned", "tone": "crit"}, {"label": "[2, 3]", "tone": "good"}]}, {"label": "[3]", "sub": "pruned", "tone": "crit"}]}, "t": "diagram", "id": "dg-16_6-03-0"},
 
+
     { t: "code", lang: "python", title: "the template, and what makes it fast", code: `
 def solve(candidates, target):
     """Backtracking is DFS over a decision tree. The template is

@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "compare", "title": "gather versus TaskGroup", "caption": "gather runs coroutines concurrently and returns their results in order; if one fails the others keep running unless you cancel them. A TaskGroup cancels the siblings on the first failure and raises an ExceptionGroup — structured concurrency.", "columns": [{"title": "asyncio.gather", "tone": "warn", "items": ["results in submission order", "one failure: others continue", "return_exceptions=True to collect", "fire-and-collect"]}, {"title": "asyncio.TaskGroup", "tone": "good", "items": ["async with tg: tg.create_task(...)", "one failure cancels the rest", "raises ExceptionGroup", "the default since 3.11"]}], "t": "diagram", "id": "dg-11_7-01-0"},
 
+
     { t: "viz",
       title: "What happens to the siblings when one fails",
       caption: "`gather` reports the first exception and leaves the others running, so a dead dependency costs you three requests instead of one. A `TaskGroup` cancels the siblings and raises everything that went wrong together.",
@@ -140,6 +141,8 @@ def _log_if_failed(task: asyncio.Task) -> None:
     ]},
 
     { t: "h2", n: "03", text: "Cancellation", id: "cancellation" },
+
+    {"kind": "steps", "title": "Cancellation is cooperative", "caption": "task.cancel() schedules a CancelledError to be raised at the task's next await. The task can clean up in finally, but it must not swallow the error, or the caller waits forever.", "items": [{"label": "task.cancel()", "desc": "marks the task; nothing happens yet", "tone": "accent"}, {"label": "the task reaches an await", "desc": "CancelledError is raised there", "tone": "warn"}, {"label": "finally: blocks run", "desc": "close connections, release locks — keep it short", "tone": "good"}, {"label": "the error propagates", "desc": "except CancelledError: pass is the bug — re-raise", "tone": "crit"}], "t": "diagram", "id": "dg-11_7-03-1"},
 
     { t: "code", lang: "python", title: "cancellation is an exception, and it must win", code: `
 async def worker():

@@ -23,6 +23,7 @@ EC.receiveLesson({
     {"kind": "memory", "title": "Reference counting", "caption": "Every object carries a count of the names and containers that refer to it. When the count reaches zero the object is freed immediately — no collector involved. sys.getrefcount reports one extra for its own argument.", "names": [{"name": "a", "to": "o1"}, {"name": "b = a", "to": "o1"}, {"name": "lst = [a]", "to": "o2"}], "objects": [{"id": "o1", "type": "list", "value": "[1, 2, 3]", "note": "refcount 3: a, b, and lst[0]", "tone": "accent"}, {"id": "o2", "type": "list", "value": "[ →o1 ]", "note": "holds one of those references", "tone": "good"}], "t": "diagram", "id": "dg-8_8-01-0"},
 
 
+
     { t: "code", lang: "python", title: "the count is observable", code: `
 import sys
 
@@ -66,6 +67,7 @@ after del`,
     { t: "h2", n: "02", text: "Cycles and the collector", id: "cycles" },
 
     {"kind": "cycle", "title": "A reference cycle that counting cannot free", "caption": "a.partner = b and b.partner = a: each keeps the other's count at one even after every outside name is gone. The generational collector finds such cycles and frees them; weakref breaks them at the source.", "nodes": [{"label": "object a", "sub": "a.partner → b", "tone": "accent"}, {"label": "object b", "sub": "b.partner → a", "tone": "accent"}], "centre": "both refcounts stay ≥ 1", "t": "diagram", "id": "dg-8_8-02-1"},
+
 
 
     { t: "viz",
@@ -168,6 +170,8 @@ gc.disable()      # cycles now leak for the life of the process`},
     ]},
 
     { t: "h2", n: "03", text: "weakref", id: "weakref" },
+
+    {"kind": "memory", "title": "A weak reference does not keep its target alive", "caption": "cache holds a weakref to the object; when the last strong reference (obj) is dropped the object is freed and the weakref returns None. Caches and observer lists use this to avoid pinning objects in memory.", "names": [{"name": "obj (strong)", "to": "o1"}, {"name": "cache[k] = weakref.ref(obj)", "to": "o1", "dashed": true, "label": "weak"}], "objects": [{"id": "o1", "type": "Session", "value": "<Session 0x7f…>", "note": "refcount 1: only obj counts", "tone": "accent"}], "t": "diagram", "id": "dg-8_8-03-2"},
 
     { t: "code", lang: "python", title: "a reference that does not keep an object alive", code: `
 import weakref

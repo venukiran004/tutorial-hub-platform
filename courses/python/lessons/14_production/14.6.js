@@ -123,6 +123,7 @@ jobs:
 
     {"kind": "flow", "title": "Build once, promote", "caption": "Tests run on the same artefact that ships. The image built on the commit is tagged, tested, then promoted to staging and production by tag — never rebuilt per environment.", "cols": 5, "nodes": [{"id": "ci", "label": "commit → CI", "sub": "lint, type-check, unit tests", "tone": "accent"}, {"id": "build", "label": "build image :sha", "sub": "once", "tone": "good"}, {"id": "int", "label": "integration tests", "sub": "against the image", "tone": "warn"}, {"id": "stg", "label": "promote to staging", "sub": "same tag", "tone": "violet"}, {"id": "prod", "label": "promote to production", "sub": "same tag · rollback = previous tag", "tone": "crit"}], "edges": [["ci", "build"], ["build", "int"], ["int", "stg"], ["stg", "prod"]], "t": "diagram", "id": "dg-14_6-02-0"},
 
+
     { t: "ladder",
       title: "Getting the same code into staging and production",
       rungs: [

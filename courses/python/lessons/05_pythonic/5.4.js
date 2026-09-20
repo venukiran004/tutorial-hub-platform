@@ -24,6 +24,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "Unpacking, and where the star goes",
       caption: "A starred target absorbs whatever is left over, always as a list. Exactly one star is allowed, and it can sit anywhere — which is what makes head/tail and first/last splits one line each.",
@@ -155,6 +156,8 @@ print({**defaults, **override})     # port is GONE`,
     ]},
 
     { t: "h2", n: "03", text: "The walrus operator", id: "walrus" },
+
+    {"kind": "trace", "title": "The walrus operator in a loop", "caption": ":= binds a name inside an expression, so the read-then-test pattern needs no separate assignment line. The name is visible after the loop as well.", "vars": ["chunk", "loop runs?"], "steps": [{"code": "while (chunk := f.read(4096)):", "state": ["b'...4096 bytes'", "yes"], "changed": [0, 1]}, {"code": "    process(chunk)", "state": ["b'...4096 bytes'", "yes"]}, {"code": "while (chunk := f.read(4096)):", "state": ["b'...last 812'", "yes"], "changed": [0]}, {"code": "while (chunk := f.read(4096)):", "state": ["b''", "no"], "changed": [0, 1], "tone": "good", "note": "empty bytes is falsy"}], "t": "diagram", "id": "dg-5_4-03-1"},
 
     { t: "p", text: "`:=` assigns **as part of an expression**, so a value can be bound and used in the same place. It exists because three specific patterns previously required either duplication or an awkward restructure." },
 

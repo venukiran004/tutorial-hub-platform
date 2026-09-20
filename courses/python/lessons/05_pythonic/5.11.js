@@ -24,6 +24,7 @@ EC.receiveLesson({
     {"kind": "steps", "title": "Before reaching for a regex", "caption": "Most string questions have a method that is faster, clearer and impossible to get catastrophically wrong. The regex is the fourth option, not the first.", "items": [{"label": "str methods", "desc": "startswith, endswith, split, partition, strip, isdigit", "tone": "good"}, {"label": "in and find", "desc": "substring tests and positions", "tone": "good"}, {"label": "a real parser", "desc": "json, csv, urllib.parse, email — structured formats have libraries", "tone": "accent"}, {"label": "re — a compiled, commented, tested pattern", "desc": "when the shape is genuinely a pattern", "tone": "warn"}], "t": "diagram", "id": "dg-5_11-01-0"},
 
 
+
     { t: "table",
       head: ["You want to", "Reach for", "Not"],
       rows: [
@@ -168,6 +169,7 @@ print(CARD.sub(mask, "paid with 4111 1111 1111 1111 today"))`,
     { t: "h2", n: "04", text: "Catastrophic backtracking", id: "redos" },
 
     {"kind": "tree", "title": "Catastrophic backtracking", "caption": "(a+)+ against 'aaaa…b' tries every way of splitting the a's between the inner and outer groups before failing — 2ⁿ attempts. Possessive quantifiers, atomic groups or a rewritten pattern remove the ambiguity.", "root": {"label": "(a+)+ on 'aaab'", "tone": "crit", "children": [{"label": "(aaa)", "children": [{"label": "fail at b", "tone": "warn"}]}, {"label": "(aa)(a)", "children": [{"label": "fail at b", "tone": "warn"}]}, {"label": "(a)(aa)", "children": [{"label": "fail", "tone": "warn"}]}, {"label": "(a)(a)(a)", "children": [{"label": "fail", "tone": "warn"}]}]}, "t": "diagram", "id": "dg-5_11-04-1"},
+
 
 
     { t: "p", text: "Python's `re` is a **backtracking** engine. When a match fails, it retreats to the last choice point and tries the next alternative. For most patterns that costs a few extra steps. For a few shapes it costs an exponential number, and a 40-character input hangs a CPU core for minutes." },

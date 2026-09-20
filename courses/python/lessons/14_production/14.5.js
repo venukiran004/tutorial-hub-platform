@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "layers", "title": "Docker layers, and what invalidates them", "caption": "Each instruction is a cached layer; a change invalidates it and everything after it. Copy the dependency manifest and install before copying the source, so a code change does not reinstall every package.", "items": [{"label": "COPY . .   + CMD", "sub": "changes every commit — keep it last", "tone": "crit"}, {"label": "RUN pip install / uv sync", "sub": "changes when the lock file changes", "tone": "warn"}, {"label": "COPY pyproject.toml uv.lock", "sub": "just the manifest", "tone": "accent"}, {"label": "FROM python:3.12-slim", "sub": "changes rarely — the base", "tone": "good"}], "t": "diagram", "id": "dg-14_5-01-0"},
 
+
     { t: "viz",
       title: "Why instruction order decides your build time",
       caption: "Each instruction is a layer, cached by the hash of its inputs. Once one layer is invalidated, every layer after it rebuilds — so anything that changes often must come after anything that is expensive.",

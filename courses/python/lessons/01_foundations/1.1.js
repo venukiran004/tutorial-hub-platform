@@ -96,6 +96,7 @@ SyntaxError: invalid syntax`},
 
 
 
+
     { t: "viz",
       title: "Source to execution in CPython",
       caption: "Stages 1–3 happen once, up front, for the entire file. Stage 4 is a loop that runs until your program ends. The dashed path is the bytecode cache — written for imported modules, skipped for the script you launch directly.",
@@ -400,6 +401,7 @@ def normalise(values: list[float]) -> list[float]:
     { t: "h2", n: "06", text: "__pycache__, and the caching that trips people up", id: "pycache" },
 
     {"kind": "steps", "title": "What happens on import", "caption": "The cache is keyed on the source's modification time and size; a stale or missing .pyc is recompiled transparently, which is why deleting __pycache__ is never a fix.", "items": [{"label": "Find the module on sys.path", "code": "import mymod"}, {"label": "Look for __pycache__/mymod.cpython-312.pyc", "desc": "compare the header's mtime and size with the .py file"}, {"label": "Cache hit → load the code object", "desc": "skips tokenising, parsing and compiling", "tone": "good"}, {"label": "Cache miss → compile and write the .pyc", "desc": "then execute the module body once", "tone": "warn"}], "t": "diagram", "id": "dg-1_1-06-1"},
+
 
 
 

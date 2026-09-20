@@ -192,6 +192,7 @@ def test_parse_decimal(value: str, expected: Decimal) -> None:
 
     {"kind": "matrix", "title": "Stacked parametrize is a product", "caption": "Two @parametrize decorators multiply: three inputs by two modes is six test cases, each reported with its own id.", "rows": ["x=1", "x=2", "x=3"], "cols": ["mode='fast'", "mode='safe'"], "cells": [[{"text": "case", "tone": "good"}, {"text": "case", "tone": "good"}], [{"text": "case", "tone": "good"}, {"text": "case", "tone": "good"}], [{"text": "case", "tone": "good"}, {"text": "case", "tone": "good"}]], "t": "diagram", "id": "dg-9_4-04-0"},
 
+
     { t: "code", lang: "python", title: "the product, and when it is too much", code: `
 # Stacked decorators produce the CARTESIAN PRODUCT: 3 x 2 = 6 tests
 @pytest.mark.parametrize("currency", ["GBP", "USD", "EUR"])

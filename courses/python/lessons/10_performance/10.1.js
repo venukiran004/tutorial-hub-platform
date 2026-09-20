@@ -114,6 +114,7 @@ EC.receiveLesson({
 
     {"kind": "matrix", "title": "Growth classes at n = 1,000 and n = 1,000,000", "caption": "The constant does not matter; the column does. Quadratic at a million is a trillion steps — hours — which is why the accidental quadratic is the performance bug that reaches production.", "rows": ["O(1)", "O(log n)", "O(n)", "O(n log n)", "O(n²)"], "cols": ["n = 10³", "n = 10⁶"], "cells": [[{"text": "1", "tone": "good"}, {"text": "1", "tone": "good"}], [{"text": "10", "tone": "good"}, {"text": "20", "tone": "good"}], [{"text": "10³", "tone": "accent"}, {"text": "10⁶", "tone": "accent"}], [{"text": "10⁴", "tone": "warn"}, {"text": "2 × 10⁷", "tone": "warn"}], [{"text": "10⁶", "tone": "crit"}, {"text": "10¹² — hours", "tone": "crit"}]], "t": "diagram", "id": "dg-10_1-03-0"},
 
+
     { t: "dl", items: [
       ["Nesting multiplies", "A loop of n containing a loop of m costs n × m. If both loops walk the same data, that is n² — and the inner loop does not have to look like a loop. `x in some_list`, `some_list.index(x)`, `del some_list[0]`, `sorted(...)` and a slice are all loops in disguise."],
       ["Sequence adds, and the biggest term wins", "Three passes over the data one after another is 3n, which is `O(n)`. A sort followed by a single pass is `O(n log n) + O(n)`, which is `O(n log n)`. You keep the dominant term and drop the constant — but see section 07 for when dropping the constant misleads you."],
