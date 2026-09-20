@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What happens when you call a class", id: "instantiation" },
 
+    {"kind": "steps", "title": "What happens when you call a class", "caption": "Point(1, 2) is type.__call__: allocate with __new__, initialise with __init__, return the instance. __init__ never returns the object — it configures one that already exists.", "items": [{"label": "Point(1, 2)", "desc": "the class is callable because its metaclass defines __call__"}, {"label": "obj = Point.__new__(Point, 1, 2)", "desc": "allocate a bare instance — rarely overridden", "tone": "accent"}, {"label": "obj.__init__(1, 2)", "desc": "set attributes on the new instance; returns None", "tone": "good"}, {"label": "return obj", "desc": "the caller gets the initialised instance", "tone": "warn"}], "t": "diagram", "id": "dg-4_1-01-0"},
+
+
+
     { t: "p", text: "`Order(\"o-1\", 100)` looks like a function call, and it is — calling a class runs its metaclass's `__call__`, which does two things in sequence." },
 
     { t: "viz",

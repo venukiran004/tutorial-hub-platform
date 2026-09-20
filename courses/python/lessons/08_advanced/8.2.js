@@ -132,6 +132,9 @@ mydecorators
 
     { t: "h2", n: "02", text: "With or without arguments", id: "optional" },
 
+    {"kind": "layers", "title": "A decorator with arguments is three functions deep", "caption": "@retry(times=3) calls retry(3) first, which returns the actual decorator, which receives the function and returns the wrapper. Each layer closes over the one outside it.", "taper": true, "items": [{"label": "retry(times=3)", "sub": "the factory: runs at decoration, returns decorator", "tone": "warn"}, {"label": "decorator(func)", "sub": "receives the function, returns wrapper", "tone": "accent"}, {"label": "wrapper(*args, **kwargs)", "sub": "runs on every call; sees times and func", "tone": "good"}], "t": "diagram", "id": "dg-8_2-02-0"},
+
+
     { t: "code", lang: "python", title: "supporting both @deco and @deco(...)", code: `
 import functools
 

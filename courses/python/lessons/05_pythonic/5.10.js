@@ -113,6 +113,9 @@ for chunk in batched(rows, 500):
 
     { t: "h2", n: "03", text: "groupby, and why it surprises people", id: "groupby" },
 
+    {"kind": "cells", "title": "groupby groups consecutive equal keys only", "caption": "groupby does not sort. Adjacent runs of the same key become one group; a key that reappears later starts a new group. Sort by the key first if you want one group per key.", "items": ["a", "a", "b", "a", "a", "c"], "highlight": [2], "negative": false, "label": "groupby('aabaac') → ('a', 2), ('b', 1), ('a', 2), ('c', 1) — four groups, not three", "t": "diagram", "id": "dg-5_10-03-0"},
+
+
     { t: "viz",
       title: "groupby groups *runs*, not values",
       caption: "It walks the input once, starting a new group every time the key changes. On unsorted input the same key appears in several groups — which looks like data loss because later groups overwrite earlier ones in whatever dict you build.",

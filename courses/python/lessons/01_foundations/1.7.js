@@ -109,6 +109,10 @@ def make_request(retries: int | None = None, verbose: bool | None = None):
     /* ================================================================== */
     { t: "h2", n: "02", text: "Truthiness", id: "truthiness" },
 
+    {"kind": "compare", "title": "What counts as false", "caption": "Everything else is truthy — including the strings '0' and 'False', an empty-looking object with no __bool__ or __len__, and any object you define yourself.", "columns": [{"title": "Falsy", "tone": "crit", "items": ["None", "False", "0, 0.0, 0j", "'' (empty string)", "[] () {} set()", "range(0)", "objects with __bool__ → False or __len__ → 0"]}, {"title": "Truthy", "tone": "good", "items": ["everything else", "'0' and 'False' (non-empty strings)", "[0] and [None]", "any plain object", "-1 and 0.001"]}], "t": "diagram", "id": "dg-1_7-02-0"},
+
+
+
     { t: "p", text: "Any object can be used where a boolean is expected. Python asks the object what it thinks: it calls `__bool__` if defined, falls back to `__len__` if not, and otherwise treats the object as true." },
 
     { t: "table",
@@ -164,6 +168,10 @@ if not queue:
 
     /* ================================================================== */
     { t: "h2", n: "03", text: "Comparison chaining", id: "chaining" },
+
+    {"kind": "flow", "title": "a < b < c is one expression", "caption": "Python evaluates b once and ands the two comparisons; it is not (a < b) < c. The chain can mix operators, which is where 0 < x == y reads as a trap.", "cols": 3, "nodes": [{"id": "a", "label": "a < b", "tone": "accent"}, {"id": "and", "label": "and", "sub": "b evaluated once", "tone": "good"}, {"id": "b", "label": "b < c", "tone": "accent"}], "edges": [["a", "and"], ["and", "b"]], "t": "diagram", "id": "dg-1_7-03-1"},
+
+
 
     { t: "p", text: "Python allows mathematical-style comparison chains, and they mean what a mathematician expects — each operand is evaluated once, and adjacent pairs are compared with implicit `and`." },
 

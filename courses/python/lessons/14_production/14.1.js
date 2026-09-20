@@ -82,6 +82,8 @@ testpaths = ["tests"]
 
     { t: "h2", n: "02", text: "Layering", id: "layering" },
 
+    {"kind": "layers", "title": "Layering, with the dependencies pointing inward", "caption": "The domain knows nothing about the web or the database; the application layer orchestrates it; adapters translate to and from the outside world. Imports go downward only — an import from the API layer inside the domain is the smell to catch.", "items": [{"label": "interfaces: FastAPI routers, CLI", "sub": "parse, call, serialise", "tone": "warn"}, {"label": "application: use cases / services", "sub": "orchestrate the domain, own transactions", "tone": "accent"}, {"label": "domain: entities, rules, pure functions", "sub": "no framework imports", "tone": "good"}, {"label": "adapters: repositories, HTTP clients", "sub": "implement interfaces the domain declares", "tone": "violet"}], "t": "diagram", "id": "dg-14_1-02-0"},
+
     { t: "viz",
       title: "Dependencies point one way",
       caption: "Each layer may import the ones below it and never the ones above. That single rule is what makes the domain testable without a database and replaceable without touching business logic.",

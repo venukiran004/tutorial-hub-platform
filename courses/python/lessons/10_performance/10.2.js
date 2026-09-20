@@ -63,6 +63,8 @@ def summarise_deploys(path: Path) -> dict[str, int]:
     /* ================================================================== */
     { t: "h2", n: "02", text: "Four instruments, four questions", id: "instruments" },
 
+    {"kind": "compare", "title": "Four instruments, four questions", "caption": "Pick the tool by the question. Each answers one thing well and the others badly.", "columns": [{"title": "timeit", "tone": "accent", "items": ["how long does this expression take?", "microbenchmarks", "repeat, take the min"]}, {"title": "cProfile", "tone": "good", "items": ["which functions eat the time?", "whole-program", "tottime vs cumtime"]}, {"title": "line_profiler", "tone": "warn", "items": ["which line in this function?", "after cProfile named it"]}, {"title": "py-spy", "tone": "violet", "items": ["what is the live process doing?", "no restart, no code change", "flame graphs"]}], "t": "diagram", "id": "dg-10_2-02-0"},
+
     { t: "table",
       head: ["Instrument", "Answers", "Overhead", "Use it when"],
       rows: [

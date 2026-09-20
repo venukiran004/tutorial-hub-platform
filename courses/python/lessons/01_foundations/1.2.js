@@ -147,6 +147,10 @@ else:
     { t: "h2", n: "03", text: "The implementations, revisited", id: "implementations",
       sub: "Lesson 1.1 introduced these. Here is when you would actually reach for one." },
 
+    {"kind": "compare", "title": "The implementations", "caption": "Same language, different runtimes. The standard library is shared; the execution engine and the extension-module story are not.", "columns": [{"title": "CPython", "tone": "accent", "items": ["the reference implementation", "bytecode interpreter in C", "C extensions (NumPy) work", "what 'python' means"]}, {"title": "PyPy", "tone": "good", "items": ["JIT compiler", "often 4–10× faster pure Python", "C extensions slower or absent", "niche in production"]}, {"title": "Others", "tone": "warn", "items": ["MicroPython — microcontrollers", "GraalPy, Jython — JVM hosts", "Cython — Python → C", "Pyodide — the browser"]}], "t": "diagram", "id": "dg-1_2-03-0"},
+
+
+
     { t: "table",
       head: ["Runtime", "Reach for it when", "What it costs you"],
       rows: [

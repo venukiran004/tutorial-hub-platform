@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "First: is it Python?", id: "first" },
 
+    {"kind": "steps", "title": "Is it Python, and what then", "caption": "Profile first: most slow Python programs are slow because of an algorithm or I/O, not the interpreter. Only when the hot loop is genuinely numeric Python do the last three options apply.", "items": [{"label": "Profile", "desc": "is the time in your loop, in a library, or waiting on I/O?", "tone": "accent"}, {"label": "Fix the algorithm or the query", "desc": "the usual 10–1000× win", "tone": "good"}, {"label": "Vectorise", "desc": "NumPy, pandas, polars — the loop moves into C", "tone": "good"}, {"label": "Native code", "desc": "Cython, Rust via PyO3, a C extension", "tone": "warn"}, {"label": "Scale out", "desc": "more processes or machines — after the above, not instead", "tone": "crit"}], "t": "diagram", "id": "dg-10_6-01-0"},
+
     { t: "viz",
       title: "The decision, in order of cost",
       caption: "Each step is cheaper than the one below it and rules out the ones after. Teams that start at the bottom usually discover, several months in, that the answer was three steps up.",

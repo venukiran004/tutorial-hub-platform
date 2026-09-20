@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Idempotence", id: "idempotence" },
 
+    {"kind": "flow", "title": "An idempotent pipeline step", "caption": "Running the step twice for the same partition gives the same result: it overwrites its output partition rather than appending. Retries and backfills become safe by construction.", "cols": 4, "nodes": [{"id": "in", "label": "input partition", "sub": "date=2026-09-20"}, {"id": "tf", "label": "transform", "sub": "pure", "tone": "accent"}, {"id": "out", "label": "overwrite output partition", "sub": "not append", "tone": "good"}, {"id": "re", "label": "re-run", "sub": "same result, no duplicates", "tone": "warn"}], "edges": [["in", "tf"], ["tf", "out"], ["re", "in", "dashed"]], "t": "diagram", "id": "dg-15_3-01-0"},
+
     { t: "ladder",
       title: "Writing a day's aggregates",
       rungs: [

@@ -124,6 +124,9 @@ safe_join(Path("/srv/app/uploads"), "../../etc/passwd")
     { t: "h2", n: "02", text: "What text mode actually does", id: "text-mode",
       sub: "A file on disk contains bytes. A Python `str` contains code points. Something has to convert." },
 
+    {"kind": "flow", "title": "What text mode does", "caption": "open(p) in text mode decodes bytes with an encoding and translates newlines; 'rb' gives you the bytes untouched. Name the encoding every time, because the default depends on the machine.", "cols": 3, "nodes": [{"id": "disk", "label": "bytes on disk", "sub": "b'caf\\xc3\\xa9\\r\\n'", "tone": "warn"}, {"id": "dec", "label": "decode + newline translation", "sub": "encoding='utf-8', newline=None", "tone": "accent"}, {"id": "str", "label": "str in your program", "sub": "'café\\n'", "tone": "good"}], "edges": [["disk", "dec", "read"], ["dec", "str"]], "t": "diagram", "id": "dg-7_1-02-0"},
+
+
     { t: "p", text: "`open(path)` gives you a text file object, and reading from it yields `str`. But there are no `str` objects on a disk — only bytes. Text mode is a codec plus a newline translator wrapped around a byte stream, and both of those layers can fail or corrupt." },
 
     { t: "viz",
@@ -290,6 +293,9 @@ Path("out.txt").read_text()
 
     /* ================================================================== */
     { t: "h2", n: "04", text: "Writing without losing the old file", id: "atomic-writes" },
+
+    {"kind": "steps", "title": "Atomic write: temp file, then rename", "caption": "Writing straight into the target leaves a half-written file if the process dies. Write to a temporary file in the same directory, fsync, then rename — the rename is atomic on the same filesystem.", "items": [{"label": "write to target.tmp", "desc": "same directory, so the rename cannot cross filesystems", "tone": "accent"}, {"label": "flush and os.fsync()", "desc": "the bytes are on disk, not in a cache", "tone": "warn"}, {"label": "os.replace('target.tmp', 'target')", "desc": "atomic: readers see the old file or the new one, never a partial", "tone": "good"}], "t": "diagram", "id": "dg-7_1-04-1"},
+
 
     { t: "p", text: "`open(path, \"w\")` truncates the file **before** your first write. Between that truncation and a successful flush, the file on disk is shorter than it was and does not contain the data it used to. If the process is killed, the disk is full, or the serialiser raises halfway through, the old content is gone and the new content never arrived." },
 

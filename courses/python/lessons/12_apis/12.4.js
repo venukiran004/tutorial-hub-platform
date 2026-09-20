@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The signature is the contract", id: "signature" },
 
+    {"kind": "flow", "title": "A FastAPI request, end to end", "caption": "The path is matched, parameters are parsed from the path, query and body according to the signature's annotations, dependencies run, the handler runs, and the return value is serialised through response_model.", "cols": 5, "nodes": [{"id": "req", "label": "HTTP request"}, {"id": "route", "label": "route match", "sub": "path + method", "tone": "accent"}, {"id": "parse", "label": "parse + validate", "sub": "from the annotations", "tone": "warn"}, {"id": "dep", "label": "dependencies", "sub": "Depends(...)", "tone": "violet"}, {"id": "h", "label": "handler → response_model", "sub": "serialised, documented", "tone": "good"}], "edges": [["req", "route"], ["route", "parse"], ["parse", "dep"], ["dep", "h"]], "t": "diagram", "id": "dg-12_4-01-0"},
+
     { t: "code", lang: "python", title: "where each parameter comes from", code: `
 from typing import Annotated
 from fastapi import FastAPI, Header, Path, Query

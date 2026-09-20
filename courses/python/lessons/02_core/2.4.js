@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "Indexing and slice arithmetic", id: "indexing" },
 
+    {"kind": "cells", "title": "Slice arithmetic", "caption": "seq[start:stop:step] takes start, start+step, … while below stop. seq[2:6] is indices 2, 3, 4, 5 — four items, which is stop − start. Negative indices count from the end; seq[::-1] reverses.", "items": ["a", "b", "c", "d", "e", "f", "g", "h"], "highlight": [2, 3, 4, 5], "label": "seq[2:6] → ['c','d','e','f']   seq[-3:] → ['f','g','h']   seq[::2] → ['a','c','e','g']", "t": "diagram", "id": "dg-2_4-01-0"},
+
+
+
     { t: "code", lang: "python", title: "the mental model for indices", code: `
 items = ["a", "b", "c", "d", "e"]
 
@@ -164,6 +168,10 @@ print(alias)`,
 
     /* ================================================================== */
     { t: "h2", n: "03", text: "What a copy actually copies", id: "copying" },
+
+    {"kind": "memory", "title": "Shallow copy versus deep copy", "caption": "A shallow copy is a new outer list whose elements are the same inner objects; the nested lists are shared. copy.deepcopy copies recursively, so nothing is shared.", "names": [{"name": "orig", "to": "o1"}, {"name": "shallow = list(orig)", "to": "o2"}, {"name": "orig[0] and shallow[0]", "to": "o3", "label": "both point here"}], "objects": [{"id": "o1", "type": "list", "value": "[ →inner, 2 ]", "note": "the original"}, {"id": "o2", "type": "list", "value": "[ →inner, 2 ]", "note": "new outer, same inner", "tone": "warn"}, {"id": "o3", "type": "list", "value": "[9, 9]", "note": "inner — shared by both", "tone": "crit"}], "t": "diagram", "id": "dg-2_4-03-1"},
+
+
 
     { t: "p", text: "Every standard copying operation in Python is **shallow**: it creates a new outer container whose slots point at the *same objects* as the original." },
 

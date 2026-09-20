@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What survives and what changes", id: "overview" },
 
+    {"kind": "compare", "title": "SOLID in Python", "caption": "Two principles survive intact, one matters most, and two mostly dissolve because Python has first-class functions and duck typing.", "columns": [{"title": "Survives", "tone": "good", "items": ["S — one reason to change", "L — substitutability"]}, {"title": "Weakens", "tone": "accent", "items": ["O — extension via composition, not subclassing"]}, {"title": "Dissolves", "tone": "warn", "items": ["I — duck typing segregates for free", "D — pass a function or an object"]}], "t": "diagram", "id": "dg-4_11-01-0"},
+
+
+
 
     { t: "viz",
       title: "SOLID, with the Python translation",

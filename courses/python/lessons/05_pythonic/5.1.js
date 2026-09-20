@@ -39,6 +39,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Four tests you can apply in review", id: "four-tests",
       sub: "Each one names a cost. If a change does not satisfy one of them, it is a preference." },
 
+    {"kind": "compare", "title": "Four tests you can apply in review", "caption": "'Pythonic' is a judgement, but each of these is a yes/no question a reviewer can ask of a line of code.", "columns": [{"title": "Does it use the protocol?", "tone": "accent", "items": ["for x in xs, not indices", "with, not try/finally", "len(), not .size()"]}, {"title": "Is the intent on the line?", "tone": "good", "items": ["names say why", "no clever one-liners", "errors say what failed"]}, {"title": "Does the stdlib do it?", "tone": "warn", "items": ["Counter, not a dict loop", "pathlib, not os.path", "enumerate, not range(len)"]}, {"title": "Would a stranger predict it?", "tone": "violet", "items": ["no hidden mutation", "no surprising defaults", "EAFP where it is safe"]}], "t": "diagram", "id": "dg-5_1-02-0"},
+
+
     { t: "viz",
       title: "The review gate",
       caption: "Four questions, asked in this order. The first two are about the reader; the third is about the person debugging at 3am; the fourth is about the person changing the code next year. A review comment that satisfies none of them is taste, and should be marked as such.",

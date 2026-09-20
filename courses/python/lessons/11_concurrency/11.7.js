@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "gather and TaskGroup", id: "grouping" },
 
+    {"kind": "compare", "title": "gather versus TaskGroup", "caption": "gather runs coroutines concurrently and returns their results in order; if one fails the others keep running unless you cancel them. A TaskGroup cancels the siblings on the first failure and raises an ExceptionGroup — structured concurrency.", "columns": [{"title": "asyncio.gather", "tone": "warn", "items": ["results in submission order", "one failure: others continue", "return_exceptions=True to collect", "fire-and-collect"]}, {"title": "asyncio.TaskGroup", "tone": "good", "items": ["async with tg: tg.create_task(...)", "one failure cancels the rest", "raises ExceptionGroup", "the default since 3.11"]}], "t": "diagram", "id": "dg-11_7-01-0"},
+
     { t: "viz",
       title: "What happens to the siblings when one fails",
       caption: "`gather` reports the first exception and leaves the others running, so a dead dependency costs you three requests instead of one. A `TaskGroup` cancels the siblings and raises everything that went wrong together.",

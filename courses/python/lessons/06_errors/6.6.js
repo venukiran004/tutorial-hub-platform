@@ -174,6 +174,9 @@ line = OrderLine(sku='W-1', price=Decimal('9.99'), quantity='2')
 
     { t: "h2", n: "04", text: "A method, not a hunch", id: "method" },
 
+    {"kind": "steps", "title": "A method, not a hunch", "caption": "Reproduce, narrow, hypothesise, test the hypothesis, fix, and add the test that would have caught it. Skipping the reproduction is where most debugging time goes.", "items": [{"label": "Reproduce", "desc": "a failing test or a one-line script that fails every time", "tone": "crit"}, {"label": "Narrow", "desc": "bisect the input, the commit, or the code path", "tone": "warn"}, {"label": "Hypothesise, then check", "desc": "one hypothesis, one experiment — a print or a breakpoint", "tone": "accent"}, {"label": "Fix, and keep the reproduction", "desc": "the failing test becomes the regression test", "tone": "good"}], "t": "diagram", "id": "dg-6_6-04-0"},
+
+
     { t: "ol", items: [
       "**Reproduce it.** A bug you cannot trigger on demand cannot be verified as fixed. Spend the time here — a reliable reproduction is most of the work, and everything after it is mechanical.",
       "**Shrink the reproduction.** Smallest input, fewest steps, fastest run. Every element you remove without losing the failure is a candidate cause eliminated.",

@@ -56,6 +56,10 @@ True`,
 
     { t: "h2", n: "02", text: "The MRO", id: "mro" },
 
+    {"kind": "tree", "title": "The diamond, linearised by C3", "caption": "class D(B, C) with both B and C deriving from A gives the MRO D → B → C → A → object. Each class appears once, parents come after children, and the order of the bases is respected — which is what makes super() cooperative.", "root": {"label": "object", "children": [{"label": "A", "tone": "warn", "children": [{"label": "B", "tone": "accent", "children": [{"label": "D(B, C)", "sub": "MRO: D, B, C, A, object", "tone": "good"}]}, {"label": "C", "tone": "accent"}]}]}, "t": "diagram", "id": "dg-4_5-02-0"},
+
+
+
     { t: "p", text: "Every class has a **method resolution order** — a flat, ordered list of itself and all its ancestors. Attribute lookup walks it front to back and stops at the first match. `__mro__` shows it." },
 
     { t: "code", lang: "python", title: "reading the order", code: `

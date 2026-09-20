@@ -36,7 +36,7 @@
        "soon" in the rail and the curriculum, so the roadmap is visible in full
        without ever promising content that is not there yet. Add an id here the
        moment its lesson file lands — this is the single switch. */
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.8", "8.9", "9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8", "10.1", "10.2", "10.3", "10.4", "10.5", "10.6", "11.1", "11.2", "11.3", "11.4", "11.5", "11.6", "11.7", "11.8", "12.1", "12.2", "12.3", "12.4", "12.5", "12.6", "12.7", "12.8", "13.1", "13.2", "13.3", "13.4", "13.5", "13.6", "13.7", "14.1", "14.2", "14.3", "14.4", "14.5", "14.6", "14.7", "14.8", "14.9", "14.10", "15.1", "15.2", "15.3", "15.4", "15.5", "15.6", "15.7", "15.8", "15.9", "16.1", "16.2", "16.3", "16.4", "16.5", "16.6", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "i1.6", "i1.7", "i1.8", "i2.1", "i2.2", "i2.3", "i2.4", "i2.5", "i2.6", "i2.7", "i3.1", "i3.2", "i3.3", "i3.4", "i4.1", "i4.2", "i4.3", "i4.4", "i4.5", "i5.1", "i5.2", "i5.3", "i6.1", "i6.2", "i7.1", "i7.2", "i7.3", "i7.4", "i7.5", "i7.6", "i8.1", "i8.2", "i8.3", "i8.4"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.8", "8.9", "9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8", "10.1", "10.2", "10.3", "10.4", "10.5", "10.6", "11.1", "11.2", "11.3", "11.4", "11.5", "11.6", "11.7", "11.8", "12.1", "12.2", "12.3", "12.4", "12.5", "12.6", "12.7", "12.8", "12.9", "12.10", "13.1", "13.2", "13.3", "13.4", "13.5", "13.6", "13.7", "13.8", "14.1", "14.2", "14.3", "14.4", "14.5", "14.6", "14.7", "14.8", "14.9", "14.10", "15.1", "15.2", "15.3", "15.4", "15.5", "15.6", "15.7", "15.8", "15.9", "16.1", "16.2", "16.3", "16.4", "16.5", "16.6", "16.7", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "i1.6", "i1.7", "i1.8", "i2.1", "i2.2", "i2.3", "i2.4", "i2.5", "i2.6", "i2.7", "i3.1", "i3.2", "i3.3", "i3.4", "i4.1", "i4.2", "i4.3", "i4.4", "i4.5", "i5.1", "i5.2", "i5.3", "i6.1", "i6.2", "i7.1", "i7.2", "i7.3", "i7.4", "i7.5", "i7.6", "i8.1", "i8.2", "i8.3", "i8.4"],
 
     modules: [
 
@@ -498,7 +498,13 @@
             keywords: ["async", "background task", "celery", "queue", "worker", "webhook"] },
           { id: "12.8", title: "Authentication, Authorisation and Secrets", difficulty: "advanced", minutes: 40, tier: "must",
             summary: "Password hashing, sessions vs JWT, OAuth2 flows, scopes, and the security mistakes that show up in code review.",
-            keywords: ["auth", "jwt", "oauth2", "hashing", "bcrypt", "scope", "csrf", "secrets"] }
+            keywords: ["auth", "jwt", "oauth2", "hashing", "bcrypt", "scope", "csrf", "secrets"] },
+          { id: "12.9", title: "Backend System Design in Python", difficulty: "advanced", minutes: 44, tier: "should",
+            summary: "The reference's design guide: the approach, capacity estimation run on a Twitter-sized service, the patterns from monolith to sharding, queues and caches with their failure modes, CAP and sagas, resilience, and the four worked examples.",
+            keywords: ["system design", "capacity estimation", "api gateway", "event-driven", "cqrs", "cache stampede", "cap", "saga", "outbox", "circuit breaker", "url shortener", "rate limiter"] },
+          { id: "12.10", title: "Auth in Depth: OAuth2, Authorisation Models and the OWASP Top 10", difficulty: "advanced", minutes: 36, tier: "should",
+            summary: "secrets and timing-safe comparison, OAuth2 grant types and OIDC, RBAC, ABAC, scopes and the object-level check, service-to-service auth, transport defences, and the OWASP Top 10 mapped to Python.",
+            keywords: ["oauth2", "oidc", "pkce", "rbac", "abac", "scopes", "compare_digest", "secrets", "owasp", "cors", "csrf", "bandit", "pip-audit"] }
         ]
       },
 
@@ -530,7 +536,10 @@
             keywords: ["n+1", "explain", "index", "eager loading", "selectinload", "query plan"] },
           { id: "13.7", title: "Migrations and Connection Pooling", difficulty: "advanced", minutes: 34, tier: "should",
             summary: "Alembic, zero-downtime schema changes, pool sizing, and the connection exhaustion incident.",
-            keywords: ["alembic", "migration", "zero downtime", "pool", "pgbouncer", "connection"] }
+            keywords: ["alembic", "migration", "zero downtime", "pool", "pgbouncer", "connection"] },
+          { id: "13.8", title: "Sixteen Production Scenarios: FastAPI, Threads and the ORM", difficulty: "advanced", minutes: 40, tier: "should",
+            summary: "The reference's incident collection — blocked event loop, shared session, exhausted pool, MissingGreenlet, oversold inventory, lost background tasks, duplicate charges, deadlocks, lost updates, leaking caches, OOM exports, dropped shutdowns — as symptom, diagnosis and fix under five rules.",
+            keywords: ["event loop", "run_in_threadpool", "session", "pool exhaustion", "missinggreenlet", "selectinload", "race condition", "idempotency", "deadlock", "optimistic locking", "backgroundtasks", "graceful shutdown"] }
         ]
       },
 
@@ -644,7 +653,10 @@
             keywords: ["sort", "timsort", "binary search", "bisect", "key", "search space"] },
           { id: "16.6", title: "Recursion, Backtracking and Dynamic Programming", difficulty: "advanced", minutes: 44, tier: "adv",
             summary: "From brute force to memoised to tabulated, with a repeatable method rather than pattern recognition.",
-            keywords: ["backtracking", "dp", "memoization", "tabulation", "state", "subproblem"] }
+            keywords: ["backtracking", "dp", "memoization", "tabulation", "state", "subproblem"] },
+          { id: "16.7", title: "Algorithm Paradigms: Choosing the Approach", difficulty: "advanced", minutes: 38, tier: "should",
+            summary: "Brute force, divide and conquer, greedy, dynamic programming, backtracking and randomised algorithms — each with its signature problem and the case where it fails — plus the reference's decision guide.",
+            keywords: ["brute force", "divide and conquer", "greedy", "dynamic programming", "backtracking", "randomized", "monte carlo", "n-queens", "coin change", "merge sort", "paradigm"] }
         ]
       },
 

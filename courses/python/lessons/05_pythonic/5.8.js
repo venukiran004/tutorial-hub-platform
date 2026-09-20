@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The guarantee", id: "guarantee" },
 
+    {"kind": "steps", "title": "What `with` guarantees", "caption": "__enter__ runs, the block runs, and __exit__ runs no matter how the block ends — normally, by return, by break, or by an exception. That is the whole contract, and it is why files close and locks release.", "items": [{"label": "cm = expr; value = cm.__enter__()", "desc": "the 'as' name is bound to __enter__'s return", "tone": "accent"}, {"label": "the block runs", "desc": "return, break, continue, or an exception can all leave it"}, {"label": "cm.__exit__(type, value, tb)", "desc": "always runs; receives the exception if there was one", "tone": "good"}, {"label": "exception re-raised unless __exit__ returned True", "desc": "suppressing is a decision, and usually the wrong one", "tone": "warn"}], "t": "diagram", "id": "dg-5_8-01-0"},
+
+
 
     { t: "viz",
       title: "What `with` guarantees",

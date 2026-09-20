@@ -81,6 +81,9 @@ match event:
 
     { t: "h2", n: "02", text: "The pattern kinds", id: "kinds" },
 
+    {"kind": "tree", "title": "The pattern kinds", "caption": "A case clause is a pattern that either matches the subject's shape and binds names, or fails and falls through to the next case. Patterns nest, so a mapping pattern can contain a sequence pattern that contains a class pattern.", "root": {"label": "pattern", "children": [{"label": "literal", "sub": "case 0 | case 'quit'", "tone": "accent"}, {"label": "capture", "sub": "case x — binds", "tone": "good"}, {"label": "sequence", "sub": "case [x, y, *rest]", "tone": "warn"}, {"label": "mapping", "sub": "case {'type': t}", "tone": "warn"}, {"label": "class", "sub": "case Point(x=0)", "tone": "violet"}, {"label": "or / guard", "sub": "case A | B if cond"}]}, "t": "diagram", "id": "dg-5_5-02-0"},
+
+
     { t: "tabs", items: [
       { label: "Literal & capture", blocks: [
         { t: "code", lang: "python", title: "the two simplest, and the trap between them", code: `

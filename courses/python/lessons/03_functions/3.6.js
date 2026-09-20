@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "A function that outlives its scope", id: "what-is-a-closure" },
 
+    {"kind": "memory", "title": "A closure keeps its enclosing variables alive", "caption": "make_counter returns inner, and inner holds a cell for count. The cell outlives make_counter's frame; each call to make_counter makes a new cell, so counters are independent.", "names": [{"name": "c1 = make_counter()", "to": "o1"}, {"name": "c1.__closure__[0]", "to": "o2", "label": "cell"}, {"name": "c2 = make_counter()", "to": "o3"}], "objects": [{"id": "o1", "type": "function", "value": "inner", "note": "closure over one cell", "tone": "accent"}, {"id": "o2", "type": "cell", "value": "count = 3", "note": "shared by c1 only", "tone": "good"}, {"id": "o3", "type": "function", "value": "inner", "note": "a different cell, count = 0", "tone": "accent"}], "t": "diagram", "id": "dg-3_6-01-0"},
+
+
+
     { t: "code", lang: "python", title: "the definition, in six lines", code: `
 def make_multiplier(factor: int):
     def multiply(x: int) -> int:
@@ -107,6 +111,10 @@ None`,
 
     /* ================================================================== */
     { t: "h2", n: "02", text: "The late-binding trap", id: "late-binding" },
+
+    {"kind": "steps", "title": "The late-binding trap", "caption": "Lambdas in a loop close over the variable, not its value at that moment. All three see i's final value. The fix is a default argument, i=i, which captures the value at definition time.", "items": [{"label": "fns = [lambda: i for i in range(3)]", "desc": "three lambdas, all closing over the same i"}, {"label": "the loop finishes with i == 2", "desc": "one variable, one final value", "tone": "warn"}, {"label": "[f() for f in fns] → [2, 2, 2]", "desc": "each lambda reads i now, not then", "tone": "crit"}, {"label": "lambda i=i: i  → [0, 1, 2]", "desc": "the default is evaluated at definition", "tone": "good"}], "t": "diagram", "id": "dg-3_6-02-1"},
+
+
 
     { t: "code", lang: "python", title: "the surprise, in every language with closures", code: `
 handlers = []

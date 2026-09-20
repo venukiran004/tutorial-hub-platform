@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Two templates", id: "templates" },
 
+    {"kind": "compare", "title": "BFS versus DFS", "caption": "Breadth-first uses a queue and finds the shortest path in an unweighted graph; depth-first uses a stack (or recursion) and is the natural shape for exhaustive search and cycle detection. Both mark visited nodes to avoid loops.", "columns": [{"title": "BFS · deque", "tone": "accent", "items": ["level by level", "shortest path (unweighted)", "O(V + E)", "memory: the frontier"]}, {"title": "DFS · stack / recursion", "tone": "good", "items": ["as deep as possible first", "topological sort, cycles", "O(V + E)", "recursion depth = path length"]}], "t": "diagram", "id": "dg-16_4-01-0"},
+
     { t: "viz",
       title: "The same graph, two orders",
       caption: "The only difference in code is a queue versus a stack. That single substitution changes the traversal order, what the algorithm can guarantee, and which problems it solves.",

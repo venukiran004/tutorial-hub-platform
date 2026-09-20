@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The lookup order", id: "lookup" },
 
+    {"kind": "steps", "title": "Attribute lookup on an instance", "caption": "obj.x checks data descriptors on the type, then the instance __dict__, then the class and its MRO. Assignment always writes to the instance __dict__ — which is how an instance attribute shadows a class attribute.", "items": [{"label": "data descriptor on type(obj)?", "desc": "property, slots — wins over the instance", "tone": "warn"}, {"label": "obj.__dict__['x']?", "desc": "the instance's own attributes", "tone": "good"}, {"label": "class attribute along the MRO?", "desc": "methods live here; non-data descriptors bind", "tone": "accent"}, {"label": "__getattr__, else AttributeError", "desc": "the last resort"}], "t": "diagram", "id": "dg-4_2-01-0"},
+
+
+
     { t: "viz",
       title: "Where an attribute comes from",
       caption: "Reading obj.x searches the instance __dict__, then the class, then each ancestor in MRO order, stopping at the first match. Writing obj.x = 1 always targets the instance __dict__ and never the class — which is why a class attribute behaves like a default that any instance can shadow.",

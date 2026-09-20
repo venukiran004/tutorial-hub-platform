@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "A variable is not a box", id: "not-a-box" },
 
+    {"kind": "memory", "title": "A variable is a name bound to an object", "caption": "After a = [1, 2, 3] and b = a there is one list and two names for it. Appending through either name changes the one object; rebinding b = [] only moves the name.", "names": [{"name": "a", "to": "o1"}, {"name": "b", "to": "o1"}], "objects": [{"id": "o1", "type": "list", "value": "[1, 2, 3]", "note": "one object, refcount 2"}], "t": "diagram", "id": "dg-1_4-01-0"},
+
+
+
     { t: "p", text: "Most introductions to programming describe a variable as a box you put a value into. In languages like C that picture is roughly accurate: a variable names a piece of memory, and assigning writes bytes into it." },
 
     { t: "p", text: "In Python it is wrong, and it is the specific wrongness that produces the bugs in this lesson. A Python name is a **label**. Assignment attaches the label to an object that already exists somewhere in memory. The object does not live in the variable, and two labels can point at the same object." },
@@ -173,6 +177,10 @@ print(config)`,
     /* ================================================================== */
     { t: "h2", n: "03", text: "Passing arguments to functions", id: "arguments",
       sub: "Not pass-by-value, not pass-by-reference. Something simpler than either." },
+
+    {"kind": "memory", "title": "Arguments are passed by binding", "caption": "Calling f(a) binds the parameter name to the same object. Mutating it inside f is visible to the caller; assigning a new object to the parameter is not.", "left": "caller", "right": "objects", "names": [{"name": "a  (caller)", "to": "o1"}, {"name": "items  (inside f)", "to": "o1", "label": "same object"}, {"name": "items = []  (rebind)", "to": "o2", "dashed": true}], "objects": [{"id": "o1", "type": "list", "value": "[1, 2, 3]", "note": "mutations visible to both"}, {"id": "o2", "type": "list", "value": "[]", "note": "a new object; the caller never sees it", "tone": "warn"}], "t": "diagram", "id": "dg-1_4-03-1"},
+
+
 
     { t: "p", text: "Interview candidates spend a lot of energy on whether Python is \"pass by value\" or \"pass by reference\". Neither term fits, and trying to force one produces confusion. What actually happens is exactly what happens with `=`: **the parameter name is bound to the same object the caller passed.**" },
 

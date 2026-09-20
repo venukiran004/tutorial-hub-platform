@@ -78,6 +78,10 @@ print(f"{m} / {m!r}") # both, explicitly`}
 
     { t: "h2", n: "02", text: "__eq__ and __hash__ are one decision", id: "eq-hash" },
 
+    {"kind": "matrix", "title": "__eq__ and __hash__ are one decision", "caption": "Defining __eq__ without __hash__ makes the class unhashable. Equal objects must hash equal, so hash the same fields you compare — and only if they are immutable.", "rows": ["define __eq__ only", "define both on the same fields", "mutable fields hashed"], "cols": ["usable in set/dict", "correct"], "cells": [[false, {"text": "unhashable", "tone": "warn"}], [true, true], [true, {"text": "breaks when mutated", "tone": "crit"}]], "t": "diagram", "id": "dg-4_9-02-0"},
+
+
+
     { t: "code", lang: "python", title: "defining __eq__ alone breaks your class", code: `
 class Point:
     def __init__(self, x: int, y: int) -> None:

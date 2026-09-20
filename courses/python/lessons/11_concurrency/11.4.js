@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What crossing the boundary costs", id: "cost" },
 
+    {"kind": "flow", "title": "Crossing the process boundary", "caption": "Arguments are pickled, sent through a pipe, unpickled in the child; results come back the same way. A large array crosses twice, which is why multiprocessing loses on small tasks with big inputs.", "cols": 4, "nodes": [{"id": "p", "label": "parent", "sub": "pool.map(f, items)"}, {"id": "pk", "label": "pickle", "sub": "items serialised", "tone": "warn"}, {"id": "pipe", "label": "pipe / queue", "sub": "bytes across processes", "tone": "accent"}, {"id": "c", "label": "child", "sub": "unpickle, run f, pickle result", "tone": "good"}], "edges": [["p", "pk"], ["pk", "pipe"], ["pipe", "c"], ["c", "pipe", "result"], ["pipe", "p"]], "t": "diagram", "id": "dg-11_4-01-0"},
+
     { t: "viz",
       title: "Every argument is pickled, sent and rebuilt",
       caption: "A thread passes a pointer. A process serialises the object, writes it to a pipe, and the far side rebuilds it — then does the same in reverse with the result. That round trip is the whole cost model, and it is why fine-grained tasks lose.",

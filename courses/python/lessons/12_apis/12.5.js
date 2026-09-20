@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Depends", id: "depends" },
 
+    {"kind": "tree", "title": "Depends builds a graph per request", "caption": "A handler depends on a current user, which depends on a token, which depends on the request headers; a database session is shared by anything in the request that asks for it. FastAPI resolves the graph once per request and caches each node.", "root": {"label": "handler", "tone": "good", "children": [{"label": "current_user", "tone": "accent", "children": [{"label": "token", "children": [{"label": "Authorization header"}]}, {"label": "db session", "tone": "warn"}]}, {"label": "db session", "sub": "same instance, cached", "tone": "warn"}]}, "t": "diagram", "id": "dg-12_5-01-0"},
+
     { t: "code", lang: "python", title: "a dependency is just a callable", code: `
 from typing import Annotated
 from fastapi import Depends, HTTPException, status
@@ -144,6 +146,8 @@ def test_admin_only_route_is_forbidden(client):
     ]},
 
     { t: "h2", n: "03", text: "Middleware, and when not to use it", id: "middleware" },
+
+    {"kind": "layers", "title": "Middleware wraps every request", "caption": "Each middleware sees the request on the way in and the response on the way out, in nested order. Cross-cutting concerns — request IDs, timing, CORS — belong here; business logic does not.", "taper": true, "items": [{"label": "request-id middleware", "sub": "outermost: first in, last out", "tone": "warn"}, {"label": "timing / logging middleware", "tone": "accent"}, {"label": "CORS middleware", "tone": "accent"}, {"label": "router → dependencies → handler", "sub": "the innermost", "tone": "good"}], "t": "diagram", "id": "dg-12_5-03-1"},
 
     { t: "viz",
       title: "Where each mechanism sits",

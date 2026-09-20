@@ -60,6 +60,8 @@ def checkout(order_id):
 
     { t: "h2", n: "02", text: "Isolation levels", id: "isolation" },
 
+    {"kind": "matrix", "title": "Isolation levels and the anomalies they allow", "caption": "Higher isolation prevents more anomalies and costs more locking or retries. PostgreSQL's default is READ COMMITTED; SERIALIZABLE may abort a transaction that must then be retried.", "rows": ["READ UNCOMMITTED", "READ COMMITTED", "REPEATABLE READ", "SERIALIZABLE"], "cols": ["dirty read", "non-repeatable read", "phantom read", "serialisation anomaly"], "cells": [[{"text": "possible", "tone": "crit"}, {"text": "possible", "tone": "crit"}, {"text": "possible", "tone": "crit"}, {"text": "possible", "tone": "crit"}], [{"text": "prevented", "tone": "good"}, {"text": "possible", "tone": "warn"}, {"text": "possible", "tone": "warn"}, {"text": "possible", "tone": "warn"}], [{"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}, {"text": "pg: prevented", "tone": "good"}, {"text": "possible", "tone": "warn"}], [{"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}, {"text": "prevented — may abort", "tone": "good"}]], "t": "diagram", "id": "dg-13_4-02-0"},
+
     { t: "table",
       head: ["Level", "Dirty read", "Non-repeatable read", "Phantom", "Write skew"],
       rows: [
@@ -174,6 +176,8 @@ if result.rowcount == 0:
     ]},
 
     { t: "h2", n: "04", text: "Deadlocks", id: "deadlocks" },
+
+    {"kind": "cycle", "title": "A database deadlock", "caption": "Transaction 1 updates row A then wants row B; transaction 2 updated B and wants A. The database detects the cycle, aborts one, and the application must retry. Updating rows in a consistent order prevents it.", "nodes": [{"label": "T1 locks row A", "tone": "accent"}, {"label": "T1 waits for row B", "tone": "warn"}, {"label": "T2 locks row B", "tone": "accent"}, {"label": "T2 waits for row A", "tone": "warn"}], "centre": "detected → one is aborted", "t": "diagram", "id": "dg-13_4-04-1"},
 
     { t: "viz",
       title: "Two transactions, opposite lock order",

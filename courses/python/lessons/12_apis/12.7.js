@@ -132,6 +132,8 @@ asyncio.get_event_loop().slow_callback_duration = 0.1
 
     { t: "h2", n: "03", text: "Accept the work, return a job", id: "accepted" },
 
+    {"kind": "flow", "title": "Accept the work, return a job", "caption": "A slow operation should not hold an HTTP connection open. The handler validates, enqueues, and returns 202 with a job id; a worker does the work; the client polls or receives a webhook.", "cols": 5, "nodes": [{"id": "c", "label": "client POST /reports"}, {"id": "api", "label": "API: validate, enqueue", "sub": "returns 202 + job id", "tone": "accent"}, {"id": "q", "label": "queue", "sub": "Redis, RabbitMQ, SQS", "tone": "warn"}, {"id": "w", "label": "worker", "sub": "does the work, survives restarts", "tone": "good"}, {"id": "done", "label": "GET /jobs/{id} or webhook", "sub": "the result", "tone": "violet"}], "edges": [["c", "api"], ["api", "q"], ["q", "w"], ["w", "done"]], "t": "diagram", "id": "dg-12_7-03-0"},
+
     { t: "code", lang: "python", title: "202 Accepted, and a resource to poll", code: `
 class JobStatus(str, Enum):
     queued = "queued"

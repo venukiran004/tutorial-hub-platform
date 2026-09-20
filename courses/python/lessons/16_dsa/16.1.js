@@ -106,6 +106,8 @@ def is_palindrome(s: str) -> bool:
 
     { t: "h2", n: "02", text: "The sliding window", id: "window" },
 
+    {"kind": "cells", "title": "The sliding window", "caption": "Two indices bound a window that only moves forward. Extending the right edge adds an element; shrinking the left edge removes one; each element enters and leaves once, so the whole pass is O(n) instead of O(n²).", "items": ["3", "1", "4", "1", "5", "9", "2", "6"], "highlight": [2, 3, 4], "negative": false, "label": "window [2, 5) sums to 10; slide right: add 9, drop 4", "t": "diagram", "id": "dg-16_1-02-0"},
+
     { t: "code", lang: "python", title: "one template, two variants", code: `
 def longest_unique_substring(s: str) -> int:
     """VARIABLE window: grow right always, shrink left while the

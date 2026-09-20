@@ -97,6 +97,10 @@ print(recorder.sent)
 
     { t: "h2", n: "02", text: "The dunder protocols are duck typing", id: "protocols" },
 
+    {"kind": "compare", "title": "Duck typing, protocols and ABCs", "caption": "Three ways to say 'anything that behaves like X'. Duck typing checks nothing; a Protocol lets the type checker verify structure; an ABC verifies at runtime by inheritance or registration.", "columns": [{"title": "Duck typing", "tone": "accent", "items": ["just call .read()", "fails at the call site", "zero ceremony"]}, {"title": "Protocol", "tone": "good", "items": ["class Readable(Protocol)", "structural, static", "no inheritance needed"]}, {"title": "ABC", "tone": "warn", "items": ["class Readable(ABC)", "nominal, runtime", "isinstance works"]}], "t": "diagram", "id": "dg-4_6-02-0"},
+
+
+
     { t: "p", text: "Python's own syntax is built on this. `len(x)`, `for i in x`, `x[k]`, `with x:` and `x + y` do not check types — they call a dunder method, and anything defining it participates." },
 
     { t: "table",

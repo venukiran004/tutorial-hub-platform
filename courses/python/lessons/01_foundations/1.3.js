@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "What a virtual environment actually is", id: "what-is-a-venv" },
 
+    {"kind": "layers", "title": "Where a virtual environment sits", "caption": "An environment is a directory with its own site-packages and a python that points at the base interpreter. Activating it only edits PATH; nothing is copied or compiled.", "items": [{"label": "your project", "sub": "code, tests, pyproject.toml"}, {"label": ".venv/lib/site-packages", "sub": "this project's dependencies", "tone": "accent"}, {"label": ".venv/bin/python → base interpreter", "sub": "a symlink plus pyvenv.cfg", "tone": "good"}, {"label": "the base Python install", "sub": "never pip install here", "tone": "warn"}], "t": "diagram", "id": "dg-1_3-01-0"},
+
+
+
     { t: "p", text: "The name suggests something elaborate — a container, a sandbox, a runtime feature. It is none of those. Create one and look inside:" },
 
     { t: "code", lang: "bash", title: "terminal", code: `

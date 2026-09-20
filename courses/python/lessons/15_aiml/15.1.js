@@ -145,6 +145,8 @@ np.array([1, "two", 3.0])                 # dtype('<U32') -- STRINGS
 
     { t: "h2", n: "03", text: "Broadcasting", id: "broadcasting" },
 
+    {"kind": "cells", "title": "Broadcasting stretches the smaller shape", "caption": "Shapes are compared from the right; a dimension of 1 is stretched to match. (3, 4) + (4,) works; (3, 4) + (3,) does not, because 4 and 3 disagree — reshape to (3, 1) first.", "items": ["(3, 4)", "+ (4,)", "→ (3, 4)", "·", "(3, 4)", "+ (3, 1)", "→ (3, 4)"], "highlight": [2, 6], "negative": false, "tone": "good", "label": "(3, 4) + (3,) → ValueError: operands could not be broadcast", "t": "diagram", "id": "dg-15_1-03-0"},
+
     { t: "code", lang: "python", title: "the rule, and reading it off the shapes", code: `
 # THE RULE: compare shapes from the RIGHT. Two dimensions are
 # compatible if they are equal, or one of them is 1.

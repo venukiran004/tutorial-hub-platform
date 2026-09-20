@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "The four forms", id: "forms" },
 
+    {"kind": "compare", "title": "The four comprehension forms", "caption": "Same clause order in all four: expression, then for, then if. Brackets choose the result type; parentheses build a lazy generator that yields one item at a time.", "columns": [{"title": "[x*2 for x in xs]", "tone": "accent", "items": ["list — eager", "most common"]}, {"title": "{x for x in xs}", "tone": "good", "items": ["set — dedupes", "unordered"]}, {"title": "{k: v for k, v in ps}", "tone": "violet", "items": ["dict", "last key wins"]}, {"title": "(x for x in xs)", "tone": "warn", "items": ["generator — lazy", "one pass only"]}], "t": "diagram", "id": "dg-2_11-01-0"},
+
+
+
 
     { t: "viz",
       title: "Reading a comprehension in the order it executes",

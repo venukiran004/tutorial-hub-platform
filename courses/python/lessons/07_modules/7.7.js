@@ -140,6 +140,9 @@ name = "acme_billing"
 
     { t: "h2", n: "04", text: "Building", id: "building" },
 
+    {"kind": "flow", "title": "From source to a published package", "caption": "The build backend named in pyproject.toml turns the source tree into an sdist and a wheel; twine or uv uploads them; pip resolves and installs the wheel on the other side.", "cols": 4, "nodes": [{"id": "src", "label": "source tree", "sub": "pyproject.toml, src/"}, {"id": "build", "label": "python -m build", "sub": "the backend: hatchling, setuptools", "tone": "accent"}, {"id": "dist", "label": "dist/*.whl, *.tar.gz", "sub": "wheel and sdist", "tone": "good"}, {"id": "pypi", "label": "PyPI", "sub": "twine upload / uv publish", "tone": "warn"}], "edges": [["src", "build"], ["build", "dist"], ["dist", "pypi"]], "t": "diagram", "id": "dg-7_7-04-0"},
+
+
     { t: "viz",
       title: "sdist and wheel are different artefacts",
       caption: "An sdist is your source, packaged. A wheel is the installed layout, pre-built. pip prefers the wheel because installing it is an unzip — no build step, no compiler, no arbitrary code execution.",

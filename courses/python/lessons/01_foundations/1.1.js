@@ -92,6 +92,10 @@ SyntaxError: invalid syntax`},
     { t: "h2", n: "03", text: "The pipeline", id: "the-pipeline",
       sub: "Four transformations between the text you write and the effects you observe." },
 
+    {"kind": "flow", "title": "The CPython pipeline", "caption": "Source text is tokenised, parsed into an AST, compiled to bytecode, and only then executed by the evaluation loop. Every performance, GIL and typing question in the course traces back to one of these five stages.", "cols": 5, "nodes": [{"id": "src", "label": "source .py"}, {"id": "tok", "label": "tokens", "sub": "tokenizer", "tone": "accent"}, {"id": "ast", "label": "AST", "sub": "parser", "tone": "accent"}, {"id": "bc", "label": "bytecode", "sub": "compiler · .pyc", "tone": "good"}, {"id": "vm", "label": "eval loop", "sub": "the PVM", "tone": "warn"}], "edges": [["src", "tok"], ["tok", "ast"], ["ast", "bc"], ["bc", "vm"]], "t": "diagram", "id": "dg-1_1-03-0"},
+
+
+
     { t: "viz",
       title: "Source to execution in CPython",
       caption: "Stages 1–3 happen once, up front, for the entire file. Stage 4 is a loop that runs until your program ends. The dashed path is the bytecode cache — written for imported modules, skipped for the script you launch directly.",
@@ -394,6 +398,10 @@ def normalise(values: list[float]) -> list[float]:
 
     /* ================================================================== */
     { t: "h2", n: "06", text: "__pycache__, and the caching that trips people up", id: "pycache" },
+
+    {"kind": "steps", "title": "What happens on import", "caption": "The cache is keyed on the source's modification time and size; a stale or missing .pyc is recompiled transparently, which is why deleting __pycache__ is never a fix.", "items": [{"label": "Find the module on sys.path", "code": "import mymod"}, {"label": "Look for __pycache__/mymod.cpython-312.pyc", "desc": "compare the header's mtime and size with the .py file"}, {"label": "Cache hit → load the code object", "desc": "skips tokenising, parsing and compiling", "tone": "good"}, {"label": "Cache miss → compile and write the .pyc", "desc": "then execute the module body once", "tone": "warn"}], "t": "diagram", "id": "dg-1_1-06-1"},
+
+
 
     { t: "p", text: "Stages 1–3 are deterministic: the same source always produces the same bytecode. Redoing that work on every run would be waste, so CPython caches the result — but only in one specific case." },
 

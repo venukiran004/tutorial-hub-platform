@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "enumerate and zip", id: "enumerate-zip" },
 
+    {"kind": "cells", "title": "zip stops at the shortest", "caption": "zip pairs items by position and stops when the shortest input is exhausted; the leftover 'd' is silently dropped. Pass strict=True (3.10+) to make a length mismatch an error.", "items": ["(a, 1)", "(b, 2)", "(c, 3)", "d — dropped"], "highlight": [3], "negative": false, "tone": "crit", "label": "zip(['a','b','c','d'], [1, 2, 3])", "t": "diagram", "id": "dg-2_10-01-0"},
+
+
+
 
     { t: "viz",
       title: "The loop you were about to write, and the built-in that replaces it",

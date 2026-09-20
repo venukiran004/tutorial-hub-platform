@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "Dynamic and strong are different axes", id: "dynamic-vs-strong" },
 
+    {"kind": "matrix", "title": "Dynamic versus strong are different axes", "caption": "Python is dynamically typed (names carry no type) and strongly typed ('1' + 1 raises rather than guessing). JavaScript is dynamic and weak; C is static and weak; Rust is static and strong.", "rows": ["dynamic", "static"], "cols": ["strong", "weak"], "cells": [[{"text": "Python", "tone": "good"}, {"text": "JavaScript", "tone": "warn"}], [{"text": "Rust, Java", "tone": "accent"}, {"text": "C"}]], "t": "diagram", "id": "dg-1_8-01-0"},
+
+
+
 
     { t: "viz",
       title: "Where a conversion can silently change the value",
@@ -171,6 +175,10 @@ ValueError: quantity must be a whole number, got '12.5'`,
 
     /* ================================================================== */
     { t: "h2", n: "03", text: "type() versus isinstance()", id: "type-vs-isinstance" },
+
+    {"kind": "tree", "title": "isinstance respects the hierarchy; type() does not", "caption": "type(True) is bool, so type(True) == int is False — but isinstance(True, int) is True because bool inherits from int. Prefer isinstance, and prefer duck typing to either.", "root": {"label": "int", "tone": "accent", "children": [{"label": "bool", "tone": "good", "sub": "isinstance(True, int) → True"}]}, "t": "diagram", "id": "dg-1_8-03-1"},
+
+
 
     { t: "code", lang: "python", title: "the difference is inheritance", code: `
 class Animal: pass

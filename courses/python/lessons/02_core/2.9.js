@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "The shape of real data", id: "shapes" },
 
+    {"kind": "tree", "title": "Real data is nested", "caption": "An API response is dicts inside lists inside dicts. Each level is a separate object with its own lookup rules, and a missing key anywhere on the path raises unless you access it defensively.", "root": {"label": "response", "sub": "dict", "tone": "accent", "children": [{"label": "\"users\"", "sub": "list", "tone": "good", "children": [{"label": "[0]", "sub": "dict", "children": [{"label": "\"address\"", "sub": "dict", "children": [{"label": "\"city\"", "sub": "str", "tone": "warn"}]}]}]}, {"label": "\"meta\"", "sub": "dict", "children": [{"label": "\"page\"", "sub": "int"}]}]}, "t": "diagram", "id": "dg-2_9-01-0"},
+
+
+
 
     { t: "viz",
       title: "A nested shape, and where it breaks",

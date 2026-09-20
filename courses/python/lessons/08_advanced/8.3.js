@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Annotations are inert", id: "runtime" },
 
+    {"kind": "flow", "title": "Annotations are inert at runtime", "caption": "The interpreter stores annotations and never checks them. mypy or pyright reads the same annotations before the code runs; Pydantic and FastAPI read them at runtime to validate. Three consumers, one syntax.", "cols": 4, "nodes": [{"id": "src", "label": "def f(x: int) -> str", "sub": "annotations stored on f"}, {"id": "rt", "label": "CPython", "sub": "ignores them", "tone": "warn"}, {"id": "mypy", "label": "mypy / pyright", "sub": "checks before running", "tone": "good"}, {"id": "pyd", "label": "Pydantic / FastAPI", "sub": "validates at runtime", "tone": "accent"}], "edges": [["src", "rt"], ["src", "mypy"], ["src", "pyd"]], "t": "diagram", "id": "dg-8_3-01-0"},
+
+
     { t: "code", lang: "python", title: "nothing is enforced", code: `
 def charge(amount: int) -> str:
     return amount * 2                    # returns an int. No error.

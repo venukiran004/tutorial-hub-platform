@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Patch where it is looked up", id: "target" },
 
+    {"kind": "flow", "title": "Patch where it is looked up, not where it is defined", "caption": "orders.py did 'from payments import charge', so it holds its own name 'charge'. Patching payments.charge changes a name orders never reads; patching orders.charge is what the test needs.", "cols": 3, "nodes": [{"id": "pay", "label": "payments.charge", "sub": "defined here", "tone": "warn"}, {"id": "ord", "label": "orders.charge", "sub": "bound at import — the name the code uses", "tone": "good"}, {"id": "test", "label": "patch('orders.charge')", "sub": "the right target", "tone": "accent"}], "edges": [["pay", "ord", "from payments import charge"], ["test", "ord", "replaces"]], "t": "diagram", "id": "dg-9_5-01-0"},
+
     { t: "viz",
       title: "The import binds a name in *your* module",
       caption: "`from x import y` copies a reference into the importing module's namespace. Patching `x.y` afterwards replaces the original but not the copy the module under test is already holding — so the real function still runs.",

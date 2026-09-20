@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The defaults are the bugs", id: "defaults" },
 
+    {"kind": "flow", "title": "The defaults are the bugs", "caption": "requests.get(url) has no timeout, no retry policy and trusts whatever comes back. A production client sets a timeout, checks the status, retries only idempotent calls with backoff, and validates the body at the boundary.", "cols": 5, "nodes": [{"id": "t", "label": "timeout=(3, 10)", "sub": "connect, read", "tone": "crit"}, {"id": "s", "label": "raise_for_status()", "sub": "4xx/5xx are errors", "tone": "warn"}, {"id": "r", "label": "retry with backoff", "sub": "5xx and timeouts only", "tone": "accent"}, {"id": "v", "label": "validate the body", "sub": "a Pydantic model", "tone": "good"}, {"id": "c", "label": "reuse the session", "sub": "connection pooling", "tone": "violet"}], "edges": [["t", "s"], ["s", "r"], ["r", "v"], ["v", "c"]], "t": "diagram", "id": "dg-12_2-01-0"},
+
 
     { t: "viz",
       title: "Everything between your call and the response",

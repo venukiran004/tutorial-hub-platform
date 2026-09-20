@@ -57,6 +57,8 @@ async def application(scope, receive, send):
 
     { t: "h2", n: "02", text: "Worker models", id: "workers" },
 
+    {"kind": "compare", "title": "Worker models", "caption": "Sync workers handle one request each; async workers handle many I/O-bound requests on one loop; a process per core gives the CPU parallelism the GIL denies threads. Gunicorn with uvicorn workers combines processes and async loops.", "columns": [{"title": "sync worker", "tone": "warn", "items": ["one request at a time", "simple, robust", "needs many processes"]}, {"title": "async worker (uvicorn)", "tone": "good", "items": ["thousands of connections", "one blocking call stalls all", "async end to end"]}, {"title": "processes × workers", "tone": "accent", "items": ["one per core (2n+1 rule)", "memory × processes", "gunicorn -k uvicorn.workers.UvicornWorker"]}], "t": "diagram", "id": "dg-14_8-02-0"},
+
     { t: "table",
       head: ["Model", "Concurrency", "Right for"],
       rows: [

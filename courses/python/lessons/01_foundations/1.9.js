@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "Reading a traceback", id: "traceback" },
 
+    {"kind": "steps", "title": "Reading a traceback, bottom up", "caption": "The last line is the exception; the frame just above it is where it was raised; the frames above that are the callers. Read the bottom first, then walk up until you reach your own code.", "items": [{"label": "Traceback (most recent call last):", "desc": "the header — frames follow, outermost first"}, {"label": "File \"app.py\", line 12, in main", "desc": "your code: the caller"}, {"label": "File \"lib.py\", line 40, in parse", "desc": "the callee, where it actually raised", "tone": "warn"}, {"label": "ValueError: invalid literal for int()", "desc": "the exception type and message — read this first", "tone": "crit"}], "t": "diagram", "id": "dg-1_9-01-0"},
+
+
+
     { t: "p", text: "Here is a failure from a small program. Before reading the explanation, decide which line contains the bug." },
 
     { t: "code", lang: "text", title: "the traceback", numbered: false, code: `

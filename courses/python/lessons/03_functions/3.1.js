@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "def is a statement that runs", id: "def-runs" },
 
+    {"kind": "memory", "title": "def creates a function object and binds a name", "caption": "def runs like any other statement: it builds a function object (code, defaults, closure, docstring) and binds the name. That is why defaults are evaluated once, and why a function can be passed around like any value.", "names": [{"name": "greet", "to": "o1"}, {"name": "say_hi = greet", "to": "o1", "label": "same object"}], "objects": [{"id": "o1", "type": "function", "value": "greet(name, punct='!')", "note": "__code__, __defaults__, __doc__, __name__", "tone": "accent"}], "t": "diagram", "id": "dg-3_1-01-0"},
+
+
+
 
     { t: "viz",
       title: "What a call actually does",

@@ -116,6 +116,10 @@ print(apply_all("  hello  ", [str.strip, str.title]))
     /* ================================================================== */
     { t: "h2", n: "02", text: "Dispatch tables", id: "dispatch" },
 
+    {"kind": "flow", "title": "A dispatch table replaces an if-chain", "caption": "Functions are values, so a dict from key to function is a switch that can be extended without editing the caller. handlers[kind](payload) does the routing.", "cols": 4, "nodes": [{"id": "in", "label": "event.kind", "sub": "'created'"}, {"id": "tbl", "label": "handlers", "sub": "dict: str → function", "tone": "accent"}, {"id": "fn", "label": "on_created", "sub": "the looked-up function", "tone": "good"}, {"id": "out", "label": "result"}], "edges": [["in", "tbl"], ["tbl", "fn", "lookup"], ["fn", "out", "call"]], "t": "diagram", "id": "dg-3_4-02-0"},
+
+
+
     { t: "p", text: "Lesson 2.6 replaced a chain of `elif` with a dict mapping keys to *values*. The same move with functions as the values replaces a chain where each branch does work." },
 
     { t: "ladder",

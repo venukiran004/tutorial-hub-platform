@@ -58,6 +58,7 @@ function check(name, cond, detail) {
 console.log("loading runtime...");
 load("assets/js/highlight.js");
 load("assets/js/render.js");
+load("assets/js/diagrams.js");
 load("assets/js/app.js");
 const COURSE = process.env.TH_COURSE || "python";
 load(`courses/${COURSE}/curriculum.js`);

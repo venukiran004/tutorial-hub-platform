@@ -94,6 +94,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "02", text: "The comparison that matters", id: "comparison" },
 
+    {"kind": "matrix", "title": "Which structure, by the operation you need", "caption": "Choose by the operation that will run most often. Membership tests and key lookups want a hash table; ordered positional access wants a list; a fixed record wants a tuple.", "rows": ["x in c", "c[i] by position", "c[key] by key", "append at end", "insert at front", "keeps order", "hashable"], "cols": ["list", "tuple", "set", "dict"], "cells": [[{"text": "O(n)", "tone": "warn"}, {"text": "O(n)", "tone": "warn"}, {"text": "O(1)", "tone": "good"}, {"text": "O(1) on keys", "tone": "good"}], [true, true, false, false], [false, false, false, true], [{"text": "O(1)", "tone": "good"}, false, {"text": "add O(1)", "tone": "good"}, {"text": "O(1)", "tone": "good"}], [{"text": "O(n)", "tone": "warn"}, false, "n/a", "n/a"], [true, true, false, true], [false, true, false, false]], "t": "diagram", "id": "dg-2_8-02-0"},
+
+
+
     { t: "table",
       head: ["Operation", "list", "tuple", "set", "dict", "deque"],
       rows: [

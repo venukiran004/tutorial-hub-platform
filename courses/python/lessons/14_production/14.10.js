@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Coupling, in concrete terms", id: "coupling" },
 
+    {"kind": "compare", "title": "Coupling, in concrete terms", "caption": "Coupling is how much of B you must know to change A. Low coupling is a narrow interface with data crossing it; high coupling is shared mutable state and reaching into internals.", "columns": [{"title": "loose", "tone": "good", "items": ["calls a function with data", "depends on an interface", "can be tested alone"]}, {"title": "tight", "tone": "crit", "items": ["reads B's private attributes", "shares a global", "must be deployed together"]}], "t": "diagram", "id": "dg-14_10-01-0"},
+
 
     { t: "viz",
       title: "What actually makes code maintainable",

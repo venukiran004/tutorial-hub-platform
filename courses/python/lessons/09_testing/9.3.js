@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Setup as a dependency graph", id: "graph" },
 
+    {"kind": "tree", "title": "Fixtures form a dependency graph", "caption": "A test names the fixtures it needs; each fixture can name others. pytest builds them in dependency order, once per scope, and tears them down in reverse.", "root": {"label": "test_checkout(client, order)", "tone": "good", "children": [{"label": "client", "sub": "needs app", "tone": "accent", "children": [{"label": "app", "sub": "needs db", "tone": "warn", "children": [{"label": "db", "sub": "session scope", "tone": "crit"}]}]}, {"label": "order", "sub": "needs db", "tone": "accent"}]}, "t": "diagram", "id": "dg-9_3-01-0"},
+
     { t: "code", lang: "python", title: "fixtures request fixtures", code: `
 import pytest
 

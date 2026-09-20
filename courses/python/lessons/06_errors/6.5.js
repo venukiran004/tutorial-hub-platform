@@ -202,6 +202,9 @@ orders = client.get("/orders", timeout=budget.remaining())`},
 
     { t: "h2", n: "04", text: "Retries", id: "retries" },
 
+    {"kind": "timeline", "title": "Exponential backoff with jitter", "caption": "Each retry waits roughly twice as long as the last, with random jitter so a thousand clients do not retry in lockstep. Cap the total and give up: a retry is not a fix for a bug.", "span": 16, "tick": 2, "lanes": [{"label": "attempt 1", "tone": "crit", "bars": [[0, 1, "fail"]]}, {"label": "wait 1 s", "tone": "accent", "bars": [[1, 2]]}, {"label": "attempt 2", "tone": "crit", "bars": [[2, 3, "fail"]]}, {"label": "wait 2 s ± jitter", "tone": "accent", "bars": [[3, 5.4]]}, {"label": "attempt 3", "tone": "crit", "bars": [[5.4, 6.4, "fail"]]}, {"label": "wait 4 s ± jitter", "tone": "accent", "bars": [[6.4, 10]]}, {"label": "attempt 4", "tone": "good", "bars": [[10, 11, "ok"]]}], "t": "diagram", "id": "dg-6_5-04-0"},
+
+
     { t: "p", text: "A retry is a bet that the same request will succeed later. That bet is only safe when the operation is **idempotent** — running it twice has the same effect as running it once — and only useful when the failure was **transient**. Retrying anything else multiplies damage." },
 
     { t: "table",

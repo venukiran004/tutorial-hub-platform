@@ -234,6 +234,10 @@ def search(filters=None):
     /* ================================================================== */
     { t: "h2", n: "05", text: "Evolving a signature", id: "evolving" },
 
+    {"kind": "steps", "title": "Evolving a signature without breaking callers", "caption": "Add the new parameter as keyword-only with a default; deprecate the old one with a warning; remove it a release later. Callers that used keywords never notice.", "items": [{"label": "def send(msg, *, retries=3)", "desc": "new parameter, keyword-only, defaulted", "tone": "good"}, {"label": "accept the old name, warn", "desc": "warnings.warn('use retries=', DeprecationWarning)", "tone": "warn"}, {"label": "remove the old name next release", "desc": "the warning gave callers a version to migrate in", "tone": "accent"}], "t": "diagram", "id": "dg-3_9-05-0"},
+
+
+
     { t: "table",
       head: ["Change", "Breaking?", "Note"],
       rows: [

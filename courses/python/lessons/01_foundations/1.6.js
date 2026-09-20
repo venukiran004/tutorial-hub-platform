@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "str and bytes are different types", id: "str-vs-bytes" },
 
+    {"kind": "flow", "title": "str and bytes: encode one way, decode the other", "caption": "Text is a sequence of code points; bytes are a sequence of integers 0–255. The only bridge is an encoding, and UTF-8 is the one to name explicitly.", "cols": 3, "nodes": [{"id": "s", "label": "str", "sub": "'héllo' · code points", "tone": "accent"}, {"id": "enc", "label": "UTF-8", "sub": ".encode() → · ← .decode()", "tone": "good"}, {"id": "b", "label": "bytes", "sub": "b'h\\xc3\\xa9llo' · 6 bytes", "tone": "warn"}], "edges": [["s", "enc", "encode"], ["enc", "b"], ["b", "enc", "decode"], ["enc", "s"]], "t": "diagram", "id": "dg-1_6-01-0"},
+
+
+
     { t: "p", text: "A `str` holds Unicode code points — the abstract idea of characters. A `bytes` holds integers 0–255. There is no automatic conversion between them, and that refusal is deliberate: Python 2 allowed it, and the resulting class of bug was severe enough to justify a breaking language change." },
 
     { t: "code", lang: "python", title: "the two types", code: `
@@ -177,6 +181,10 @@ cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))`,
 
     /* ================================================================== */
     { t: "h2", n: "03", text: "The methods worth knowing", id: "methods" },
+
+    {"kind": "cells", "title": "Indexing and slicing a string", "caption": "Positive indices count from 0 at the left; negative indices count from −1 at the right. s[1:4] takes indices 1, 2 and 3 — the stop is excluded.", "items": ["P", "y", "t", "h", "o", "n"], "highlight": [1, 2, 3], "label": "s = 'Python'   s[1:4] == 'yth'   s[-1] == 'n'", "t": "diagram", "id": "dg-1_6-03-1"},
+
+
 
     { t: "p", text: "Strings are immutable, so **every method returns a new string** and none modify in place. `text.upper()` on its own line does nothing at all — a mistake that survives review surprisingly often." },
 

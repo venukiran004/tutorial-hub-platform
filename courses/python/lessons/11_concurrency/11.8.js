@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The procedure", id: "procedure" },
 
+    {"kind": "steps", "title": "The procedure for choosing a model", "caption": "Answer the questions in order; the first yes decides. Most services end at step 2 or 3.", "items": [{"label": "Is it CPU-bound Python?", "desc": "yes → multiprocessing (or native code); the GIL rules out threads", "tone": "crit"}, {"label": "Is it I/O-bound with a few tasks?", "desc": "yes → ThreadPoolExecutor; simplest, works with any library", "tone": "accent"}, {"label": "Is it I/O-bound with thousands of connections?", "desc": "yes → asyncio, with async libraries end to end", "tone": "good"}, {"label": "Is it mixed?", "desc": "asyncio for the I/O, run_in_executor or a process pool for the CPU parts", "tone": "warn"}], "t": "diagram", "id": "dg-11_8-01-0"},
+
     { t: "viz",
       title: "Four questions, in order",
       caption: "Each question rules out branches below it. Most decisions are settled by the first two, and the ones that reach the fourth are the ones worth thinking hard about.",

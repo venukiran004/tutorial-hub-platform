@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The only difference is the first argument", id: "the-difference" },
 
+    {"kind": "compare", "title": "Three kinds of method, one difference", "caption": "The decorator decides what arrives as the first argument: the instance, the class, or nothing. Everything else about them is the same function machinery.", "columns": [{"title": "instance method", "tone": "accent", "items": ["def m(self, …)", "first arg: the instance", "the default"]}, {"title": "@classmethod", "tone": "good", "items": ["def m(cls, …)", "first arg: the class", "alternative constructors, registries"]}, {"title": "@staticmethod", "tone": "warn", "items": ["def m(…)", "no implicit first arg", "usually a module function in disguise"]}], "t": "diagram", "id": "dg-4_3-01-0"},
+
+
+
     { t: "code", lang: "python", title: "all three, side by side", code: `
 class Order:
     TAX_RATE = 0.2

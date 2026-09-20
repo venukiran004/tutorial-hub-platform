@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "What `for` actually does", id: "the-protocol" },
 
+    {"kind": "cycle", "title": "What `for` actually does", "caption": "for calls iter() once, then next() until StopIteration. Any object with __iter__ can be looped over; the loop never uses indices unless you ask for them with enumerate.", "nodes": [{"label": "iter(obj)", "sub": "once, at the start", "tone": "accent"}, {"label": "next(it)", "sub": "each pass", "tone": "good"}, {"label": "body runs", "sub": "with the yielded value"}, {"label": "StopIteration", "sub": "loop ends; else: runs", "tone": "warn"}], "t": "diagram", "id": "dg-2_7-01-0"},
+
+
+
     { t: "p", text: "A `for` loop is shorthand for a short conversation between two objects. Python calls `iter()` on whatever you gave it to obtain an **iterator**, then calls `next()` on that iterator repeatedly until it signals exhaustion by raising `StopIteration`." },
 
     { t: "code", lang: "python", title: "the loop, written out longhand", code: `
@@ -156,6 +160,10 @@ else:
 
     /* ================================================================== */
     { t: "h2", n: "03", text: "break, continue, pass", id: "break-continue" },
+
+    {"kind": "flow", "title": "break, continue and the loop else", "caption": "else runs only when the loop finished without break — the 'search failed' branch. continue jumps to the next iteration; pass does nothing at all.", "cols": 4, "nodes": [{"id": "body", "label": "loop body"}, {"id": "cont", "label": "continue", "sub": "next iteration", "tone": "accent"}, {"id": "brk", "label": "break", "sub": "leave the loop, skip else", "tone": "crit"}, {"id": "els", "label": "else:", "sub": "ran to the end without break", "tone": "good"}], "edges": [["body", "cont"], ["body", "brk"], ["body", "els", "exhausted"]], "t": "diagram", "id": "dg-2_7-03-1"},
+
+
 
     { t: "code", lang: "python", title: "the three, and what each is for", code: `
 for order in orders:

@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What a model actually is", id: "what" },
 
+    {"kind": "layers", "title": "What a trained model actually is", "caption": "A model artefact is the learned parameters plus the code that interprets them plus the preprocessing that produced its inputs. Save and version all three together, or the loaded model silently disagrees with training.", "items": [{"label": "the parameters", "sub": "weights, trees, coefficients", "tone": "accent"}, {"label": "the preprocessing", "sub": "scaler statistics, vocabularies, encoders", "tone": "warn"}, {"label": "the code version", "sub": "library versions, feature code — pinned", "tone": "good"}, {"label": "the data version and seed", "sub": "what it was trained on", "tone": "violet"}], "t": "diagram", "id": "dg-15_6-01-0"},
+
     { t: "viz",
       title: "Five inputs, and every one of them drifts",
       caption: "Recording the model file records one of the five. The other four move on their own schedules — a library upgrade, a backfill, a refactor, an unseeded shuffle — and each moves the result.",

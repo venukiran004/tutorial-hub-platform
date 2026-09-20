@@ -111,6 +111,8 @@ cur.execute(
 
     { t: "h2", n: "02", text: "SQL injection", id: "injection" },
 
+    {"kind": "compare", "title": "SQL injection, and the parameter that prevents it", "caption": "String formatting puts the user's text into the SQL; a parameter sends the SQL and the value separately, so the value can never be parsed as SQL. Every DB-API driver supports parameters; none require formatting.", "columns": [{"title": "f\"… WHERE name = '{name}'\"", "tone": "crit", "items": ["name = \"x' OR '1'='1\"", "the value becomes SQL", "one line from a breach"]}, {"title": "cur.execute(\"… WHERE name = %s\", (name,))", "tone": "good", "items": ["value sent separately", "never parsed as SQL", "also faster: plans are cached"]}], "t": "diagram", "id": "dg-13_3-02-0"},
+
     { t: "ladder",
       title: "Filtering orders by a status the user supplied",
       rungs: [

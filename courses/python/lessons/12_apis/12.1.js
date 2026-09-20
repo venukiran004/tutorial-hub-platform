@@ -136,6 +136,8 @@ if not body.get("success"):          # a second, bespoke error check
 
     { t: "h2", n: "03", text: "Idempotency", id: "idempotency" },
 
+    {"kind": "matrix", "title": "Safe and idempotent methods", "caption": "Safe: no state change. Idempotent: repeating has the same effect as doing it once. A client may retry idempotent requests freely; POST needs an idempotency key to be retried safely.", "rows": ["GET", "PUT", "DELETE", "POST", "PATCH"], "cols": ["safe", "idempotent"], "cells": [[true, true], [false, true], [false, true], [false, false], [false, {"text": "not guaranteed", "tone": "warn"}]], "t": "diagram", "id": "dg-12_1-03-0"},
+
     { t: "viz",
       title: "The timeout that charges twice",
       caption: "A read timeout tells you the answer did not come back. It tells you nothing about whether the server processed the request — so a retry without an idempotency key is a second charge.",

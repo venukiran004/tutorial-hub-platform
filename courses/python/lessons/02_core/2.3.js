@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "How a dict finds a key", id: "how-it-works" },
 
+    {"kind": "flow", "title": "How a dict finds a key", "caption": "Since 3.6 a dict is two arrays: a sparse index table and a dense array of entries in insertion order. Lookup hashes the key, finds the slot, and compares; iteration walks the dense array — which is why order is preserved.", "cols": 4, "nodes": [{"id": "k", "label": "key"}, {"id": "h", "label": "hash(key)", "tone": "accent"}, {"id": "idx", "label": "sparse index table", "sub": "slot → entry number", "tone": "good"}, {"id": "ent", "label": "dense entries", "sub": "(hash, key, value) in insertion order", "tone": "warn"}], "edges": [["k", "h"], ["h", "idx"], ["idx", "ent"]], "t": "diagram", "id": "dg-2_3-01-0"},
+
+
+
     { t: "p", text: "A dict computes `hash(key)`, uses part of that hash to pick a slot in an index array, and looks there. If the slot holds a different key — a **collision** — it probes further until it finds the right one or an empty slot. Because the number of probes does not grow with the size of the dict, lookup is O(1)." },
 
     { t: "viz",
@@ -157,6 +161,10 @@ def remember(key, value, limit=100):
 
     /* ================================================================== */
     { t: "h2", n: "03", text: "Reading a key: four options", id: "access" },
+
+    {"kind": "compare", "title": "Four ways to read a key", "caption": "Pick by what a missing key means: a bug (d[k]), a default (get), a default to store (setdefault), or something the structure should handle for you (defaultdict).", "columns": [{"title": "d[k]", "tone": "crit", "items": ["KeyError if absent", "use when absence is a bug"]}, {"title": "d.get(k, default)", "tone": "accent", "items": ["returns default", "does not store it"]}, {"title": "d.setdefault(k, v)", "tone": "good", "items": ["stores v if absent", "returns the value"]}, {"title": "defaultdict", "tone": "violet", "items": ["factory called on miss", "for grouping and counting"]}], "t": "diagram", "id": "dg-2_3-03-1"},
+
+
 
     { t: "code", lang: "python", title: "each says something different", code: `
 config = {"host": "localhost", "port": 8080}

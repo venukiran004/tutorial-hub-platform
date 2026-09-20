@@ -166,6 +166,9 @@ typing.get_type_hints(handler)
 
     { t: "h2", n: "04", text: "Stack frames", id: "frames" },
 
+    {"kind": "layers", "title": "Stack frames, as inspect sees them", "caption": "inspect.stack() returns the frames from the current one outward; each carries its code object, locals, line number and the caller. Reading frames is how debuggers, loggers with caller info and tracebacks work.", "items": [{"label": "frame 0 — where inspect.stack() was called", "sub": "f_locals, f_lineno, f_code", "tone": "good"}, {"label": "frame 1 — the caller", "tone": "accent"}, {"label": "frame 2 — its caller", "tone": "accent"}, {"label": "… up to <module>", "sub": "the outermost frame", "tone": "warn"}], "t": "diagram", "id": "dg-8_7-04-0"},
+
+
     { t: "code", lang: "python", title: "possible, and rarely right", code: `
 import inspect
 

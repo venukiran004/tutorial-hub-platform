@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Reference counting", id: "refcount" },
 
+    {"kind": "memory", "title": "Reference counting", "caption": "Every object carries a count of the names and containers that refer to it. When the count reaches zero the object is freed immediately — no collector involved. sys.getrefcount reports one extra for its own argument.", "names": [{"name": "a", "to": "o1"}, {"name": "b = a", "to": "o1"}, {"name": "lst = [a]", "to": "o2"}], "objects": [{"id": "o1", "type": "list", "value": "[1, 2, 3]", "note": "refcount 3: a, b, and lst[0]", "tone": "accent"}, {"id": "o2", "type": "list", "value": "[ →o1 ]", "note": "holds one of those references", "tone": "good"}], "t": "diagram", "id": "dg-8_8-01-0"},
+
+
     { t: "code", lang: "python", title: "the count is observable", code: `
 import sys
 
@@ -61,6 +64,9 @@ after del`,
     ]},
 
     { t: "h2", n: "02", text: "Cycles and the collector", id: "cycles" },
+
+    {"kind": "cycle", "title": "A reference cycle that counting cannot free", "caption": "a.partner = b and b.partner = a: each keeps the other's count at one even after every outside name is gone. The generational collector finds such cycles and frees them; weakref breaks them at the source.", "nodes": [{"label": "object a", "sub": "a.partner → b", "tone": "accent"}, {"label": "object b", "sub": "b.partner → a", "tone": "accent"}], "centre": "both refcounts stay ≥ 1", "t": "diagram", "id": "dg-8_8-02-1"},
+
 
     { t: "viz",
       title: "Why the collector exists",

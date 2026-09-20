@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What it generates", id: "generates" },
 
+    {"kind": "flow", "title": "What @dataclass generates", "caption": "From the annotated fields it writes __init__, __repr__ and __eq__ (and __hash__, ordering and __slots__ on request). The class body stays a declaration of fields.", "cols": 4, "nodes": [{"id": "src", "label": "@dataclass class P", "sub": "x: int, y: int = 0"}, {"id": "init", "label": "__init__(self, x, y=0)", "tone": "accent"}, {"id": "repr", "label": "__repr__", "sub": "P(x=1, y=0)", "tone": "good"}, {"id": "eq", "label": "__eq__", "sub": "field by field", "tone": "warn"}], "edges": [["src", "init"], ["src", "repr"], ["src", "eq"]], "t": "diagram", "id": "dg-4_10-01-0"},
+
+
+
 
     { t: "viz",
       title: "What @dataclass writes for you",
@@ -257,6 +261,10 @@ print(asdict(base))                 # recursive dict, for JSON`,
     ]},
 
     { t: "h2", n: "05", text: "Dataclass, NamedTuple or Pydantic", id: "choosing" },
+
+    {"kind": "compare", "title": "Dataclass, NamedTuple or Pydantic", "caption": "Choose by what the object is for: a mutable record, an immutable lightweight tuple, or validated data crossing a boundary.", "columns": [{"title": "dataclass", "tone": "accent", "items": ["mutable by default", "frozen=True available", "no validation", "internal records"]}, {"title": "NamedTuple", "tone": "good", "items": ["immutable, is a tuple", "unpackable", "lightweight", "return values"]}, {"title": "Pydantic", "tone": "warn", "items": ["validates and coerces", "JSON in and out", "heavier", "API and config boundaries"]}], "t": "diagram", "id": "dg-4_10-05-1"},
+
+
 
     { t: "ladder",
       title: "Representing an API response",

@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What a class statement does", id: "creation" },
 
+    {"kind": "steps", "title": "What a class statement does", "caption": "The body runs as a function to fill a namespace, then the metaclass — type unless you say otherwise — is called with the name, bases and namespace to build the class object. Hooks fire along the way.", "items": [{"label": "determine the metaclass", "desc": "from the bases and any metaclass= keyword"}, {"label": "metaclass.__prepare__(name, bases)", "desc": "the namespace the body will fill — usually a dict", "tone": "accent"}, {"label": "execute the class body", "desc": "def and assignments populate the namespace", "tone": "good"}, {"label": "cls = metaclass(name, bases, namespace)", "desc": "__new__ and __init__ of the metaclass; __set_name__ on descriptors; __init_subclass__ on the parent", "tone": "warn"}], "t": "diagram", "id": "dg-8_6-01-0"},
+
+
     { t: "viz",
       title: "Instance, class, metaclass",
       caption: "An object is an instance of its class; a class is an instance of its metaclass. `type` is its own metaclass, which is where the chain stops. Everything a metaclass can do, it does at the moment a class statement finishes executing.",

@@ -101,6 +101,8 @@ total: int                            -> total: float
 
     { t: "h2", n: "03", text: "Versioning", id: "versioning" },
 
+    {"kind": "compare", "title": "Three ways to version an API", "caption": "Path versions are visible and cacheable; header versions keep URLs stable; additive change avoids versioning altogether for as long as it can.", "columns": [{"title": "/v1/orders", "tone": "accent", "items": ["explicit, cacheable", "two code paths to maintain", "the common choice"]}, {"title": "Accept: application/vnd.api+json;version=2", "tone": "warn", "items": ["clean URLs", "invisible in logs and browsers", "harder to test by hand"]}, {"title": "additive only", "tone": "good", "items": ["add fields, never remove", "deprecate with headers", "no version until you must"]}], "t": "diagram", "id": "dg-12_6-03-0"},
+
     { t: "ladder",
       title: "Shipping a change that would break clients",
       rungs: [

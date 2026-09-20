@@ -80,6 +80,8 @@ print(peak_bytes(lambda: [{"id": i, "name": "x" * 20} for i in range(1000)]))
 
     { t: "h2", n: "02", text: "Where the bytes go", id: "where" },
 
+    {"kind": "compare", "title": "Where the bytes go", "caption": "An int is 28 bytes; a list of a million ints is 8 MB of pointers plus 28 MB of ints. The same numbers in a NumPy array are 8 MB total, and __slots__ removes the per-instance dict from objects.", "columns": [{"title": "list of 1M ints", "tone": "crit", "items": ["8 MB of pointers", "+ 28 MB of int objects", "≈ 36 MB"]}, {"title": "array / numpy int64", "tone": "good", "items": ["8 bytes each, contiguous", "≈ 8 MB"]}, {"title": "1M small objects", "tone": "warn", "items": ["~56 bytes + __dict__ each", "__slots__: ~48 bytes, no dict"]}], "t": "diagram", "id": "dg-10_3-02-0"},
+
     { t: "viz",
       title: "The cost of one record, four ways",
       caption: "Every Python object carries a header — a reference count and a type pointer — before any of its data. That fixed cost is what makes a million small objects expensive, and it is the cost an array eliminates rather than reduces.",

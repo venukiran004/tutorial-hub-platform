@@ -218,6 +218,8 @@ def total(raw: str) -> Decimal:
 
     { t: "h2", n: "03", text: "pre-commit", id: "pre-commit" },
 
+    {"kind": "flow", "title": "pre-commit, in the loop", "caption": "The hooks run on the staged files before the commit is created: format, lint, type-check. A failure stops the commit; the same hooks run in CI so nothing depends on every developer having installed them.", "cols": 5, "nodes": [{"id": "stage", "label": "git commit"}, {"id": "fmt", "label": "ruff format", "sub": "rewrites", "tone": "accent"}, {"id": "lint", "label": "ruff check --fix", "sub": "lints, autofixes", "tone": "good"}, {"id": "ty", "label": "mypy", "sub": "on changed files", "tone": "warn"}, {"id": "ok", "label": "commit created", "sub": "or blocked", "tone": "violet"}], "edges": [["stage", "fmt"], ["fmt", "lint"], ["lint", "ty"], ["ty", "ok"]], "t": "diagram", "id": "dg-14_4-03-0"},
+
     { t: "code", lang: "toml", title: ".pre-commit-config.yaml", code: `
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit

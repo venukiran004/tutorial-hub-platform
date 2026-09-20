@@ -117,6 +117,10 @@ id_, customer, *_ = order   # still unpacks`,
     /* ================================================================== */
     { t: "h2", n: "02", text: "Sets are hash tables without values", id: "sets" },
 
+    {"kind": "flow", "title": "How a set finds an element", "caption": "hash(x) picks a slot; a collision probes onward. Membership is O(1) on average, which is why 'x in s' beats 'x in list' by orders of magnitude on large data — and why elements must be hashable.", "cols": 4, "nodes": [{"id": "x", "label": "x", "sub": "the element"}, {"id": "h", "label": "hash(x)", "sub": "an integer", "tone": "accent"}, {"id": "slot", "label": "slot = hash & mask", "sub": "index into the table", "tone": "good"}, {"id": "cmp", "label": "compare with ==", "sub": "probe on collision", "tone": "warn"}], "edges": [["x", "h"], ["h", "slot"], ["slot", "cmp"]], "t": "diagram", "id": "dg-2_2-02-0"},
+
+
+
     { t: "p", text: "A set stores its elements in a hash table: it computes `hash(element)`, uses that to pick a slot directly, and looks only there. That is why membership does not depend on the size of the set." },
 
     { t: "viz",
@@ -215,6 +219,10 @@ print(list(dict.fromkeys(items)))`,
 
     /* ================================================================== */
     { t: "h2", n: "03", text: "Set algebra replaces loops", id: "set-algebra" },
+
+    {"kind": "compare", "title": "Set algebra", "caption": "Each operator has a method form that accepts any iterable; the operator form needs sets on both sides. All four are O(len(a) + len(b)) and replace a nested loop.", "columns": [{"title": "a | b  union", "tone": "accent", "items": ["everything in either", "a.union(iterable)"]}, {"title": "a & b  intersection", "tone": "good", "items": ["in both", "a.intersection(iterable)"]}, {"title": "a - b  difference", "tone": "warn", "items": ["in a, not in b", "a.difference(iterable)"]}, {"title": "a ^ b  symmetric", "tone": "violet", "items": ["in exactly one", "a.symmetric_difference()"]}], "t": "diagram", "id": "dg-2_2-03-1"},
+
+
 
     { t: "code", lang: "python", title: "the four operations", code: `
 current = {"read", "write", "delete"}

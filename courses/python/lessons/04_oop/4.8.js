@@ -117,6 +117,10 @@ True`},
 
     { t: "h2", n: "03", text: "Template method: where an ABC earns it", id: "template-method" },
 
+    {"kind": "flow", "title": "Template method: the ABC owns the skeleton", "caption": "run() in the base class fixes the order of steps; subclasses fill in the abstract ones. The base never needs to know which subclass it is.", "cols": 4, "nodes": [{"id": "run", "label": "run()", "sub": "concrete, in the ABC", "tone": "accent"}, {"id": "a", "label": "load()", "sub": "abstract", "tone": "warn"}, {"id": "b", "label": "transform()", "sub": "abstract", "tone": "warn"}, {"id": "c", "label": "save()", "sub": "concrete default", "tone": "good"}], "edges": [["run", "a"], ["a", "b"], ["b", "c"]], "t": "diagram", "id": "dg-4_8-03-0"},
+
+
+
     { t: "p", text: "The one pattern that genuinely needs an ABC is a fixed algorithm with variable steps. The base class owns the sequence — including the parts that must always happen — and subclasses fill in the pieces." },
 
     { t: "code", lang: "python", title: "the skeleton owns the invariants", code: `

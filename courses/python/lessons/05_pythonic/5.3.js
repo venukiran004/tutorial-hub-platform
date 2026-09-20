@@ -47,6 +47,9 @@ timeout = config.get("timeout", 30)
 
     { t: "h2", n: "02", text: "The race LBYL cannot fix", id: "toctou" },
 
+    {"kind": "timeline", "title": "The race that look-before-you-leap cannot fix", "caption": "Between the check and the use, another process can change the world. EAFP does the operation and handles the failure, which closes the gap.", "span": 6, "lanes": [{"label": "your code", "tone": "accent", "bars": [[0, 2, "os.path.exists(p) → True"], [4, 6, "open(p) → FileNotFoundError", "crit"]]}, {"label": "other process", "tone": "warn", "bars": [[2, 4, "deletes p"]]}], "t": "diagram", "id": "dg-5_3-02-0"},
+
+
     { t: "p", text: "This is the substantive argument, and it is not about elegance. A check and the action it guards are two separate operations, and anything can happen between them." },
 
     { t: "viz",

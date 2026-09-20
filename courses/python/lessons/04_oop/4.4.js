@@ -109,6 +109,10 @@ print(sorted(vars(c)))`,
 
     { t: "h2", n: "02", text: "Start plain, add a property when needed", id: "start-plain" },
 
+    {"kind": "flow", "title": "A property looks like an attribute and runs code", "caption": "obj.area reads like a field; behind it a getter runs. Start with a plain attribute, and add a property only when reading or writing needs logic — callers never change.", "cols": 3, "nodes": [{"id": "call", "label": "obj.area", "sub": "attribute syntax"}, {"id": "prop", "label": "@property area", "sub": "a data descriptor on the class", "tone": "accent"}, {"id": "fn", "label": "return self.w * self.h", "sub": "computed on every read", "tone": "good"}], "edges": [["call", "prop"], ["prop", "fn"]], "t": "diagram", "id": "dg-4_4-02-0"},
+
+
+
     { t: "ladder",
       title: "A temperature reading",
       rungs: [

@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "Four namespaces, one order", id: "legb" },
 
+    {"kind": "layers", "title": "LEGB: the four namespaces, searched inside out", "caption": "A name is looked up in the local scope, then any enclosing function scopes, then the module's globals, then the builtins. The first hit wins — which is how a local can shadow print().", "taper": true, "items": [{"label": "Builtins", "sub": "print, len, range …", "tone": "warn"}, {"label": "Global", "sub": "the module's namespace", "tone": "violet"}, {"label": "Enclosing", "sub": "outer functions' locals (closures)", "tone": "accent"}, {"label": "Local", "sub": "this function's names — searched first", "tone": "good"}], "t": "diagram", "id": "dg-3_3-01-0"},
+
+
+
     { t: "viz",
       title: "LEGB — the search order for reading a name",
       caption: "Python looks outward until it finds the name, and stops at the first match. It never searches inward, and it never searches the caller's scope — which is why a function cannot see its caller's local variables.",

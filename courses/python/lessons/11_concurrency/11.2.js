@@ -92,6 +92,8 @@ f(some_object)           # incref for the argument, decref on return
 
     { t: "h2", n: "02", text: "When it is released", id: "released" },
 
+    {"kind": "timeline", "title": "The GIL is released during blocking I/O", "caption": "A thread that calls into a socket read, file read, sleep or a C extension that releases the lock lets another thread run. A thread computing in pure Python holds the lock until the interpreter switches it out.", "span": 8, "tick": 2, "lanes": [{"label": "thread 1", "tone": "accent", "bars": [[0, 2, "python"], [2, 6, "socket read — GIL free", "good"], [6, 8, "python"]]}, {"label": "thread 2", "tone": "warn", "bars": [[2, 6, "python — has the GIL"]]}], "t": "diagram", "id": "dg-11_2-02-0"},
+
     { t: "table",
       head: ["Situation", "Released?", "Consequence"],
       rows: [

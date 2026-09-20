@@ -69,6 +69,9 @@ run()
 
     { t: "h2", n: "02", text: "What is actually wrong", id: "wrong" },
 
+    {"kind": "steps", "title": "Three passes over a script", "caption": "Correctness first, then the seams that make it testable, then what production needs. Doing them in this order means each pass has something stable to work on.", "items": [{"label": "Pass 1 — correctness", "desc": "the mutable default, the bare except, the wrong encoding, the off-by-one", "tone": "crit"}, {"label": "Pass 2 — seams", "desc": "pure functions, injected I/O, a main() that takes arguments", "tone": "accent"}, {"label": "Pass 3 — production", "desc": "logging, config, exit codes, idempotence, a test", "tone": "good"}], "t": "diagram", "id": "dg-5_12-02-0"},
+
+
     { t: "p", text: "\"Clean it up\" is not a plan. Sort the problems into three buckets, because they get fixed in a specific order and mixing them is how refactors go wrong." },
 
     { t: "table",

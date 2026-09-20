@@ -86,6 +86,10 @@ elif score >= 80:
     /* ================================================================== */
     { t: "h2", n: "02", text: "Guard clauses flatten nesting", id: "guard-clauses" },
 
+    {"kind": "compare", "title": "Nested conditions versus guard clauses", "caption": "Guard clauses handle the exceptional cases first and return; the happy path is left flat at the end, where it can be read in one pass.", "columns": [{"title": "Nested", "tone": "crit", "items": ["if user:", "    if user.active:", "        if order.total > 0:", "            process()", "four levels deep"]}, {"title": "Guarded", "tone": "good", "items": ["if not user: return", "if not user.active: return", "if order.total <= 0: return", "process()", "one level, same logic"]}], "t": "diagram", "id": "dg-2_6-02-0"},
+
+
+
     { t: "p", text: "The most common shape in unmaintained Python is the *arrow*: each validation adds a level of indentation, and the actual work ends up six levels deep at the point of the arrowhead." },
 
     { t: "ladder",

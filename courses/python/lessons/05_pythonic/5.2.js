@@ -153,6 +153,9 @@ AttributeError: 'Child' object has no attribute '__token'`,
     { t: "h2", n: "03", text: "Module layout", id: "layout",
       sub: "There is a conventional order, and readers rely on it whether or not they could recite it." },
 
+    {"kind": "layers", "title": "Module layout, top to bottom", "caption": "The order a reader expects: what this module is, what it needs, what it exports, then the implementation. A module that opens with helper functions makes the reader scroll to find the point.", "items": [{"label": "docstring", "sub": "one paragraph: what and why", "tone": "accent"}, {"label": "imports", "sub": "stdlib, third-party, local — three groups", "tone": "good"}, {"label": "constants and __all__", "sub": "the public surface, declared"}, {"label": "public functions and classes", "sub": "in the order a reader needs them", "tone": "warn"}, {"label": "private helpers", "sub": "_leading underscore, after the code that uses them"}, {"label": "if __name__ == '__main__':", "sub": "the entry point, last", "tone": "violet"}], "t": "diagram", "id": "dg-5_2-03-0"},
+
+
     { t: "viz",
       title: "The shape of a module a Python reader expects",
       caption: "The order is not arbitrary: imports are grouped so that a dependency-related failure names its own group; constants sit above the code that uses them; the main guard is last so that importing the module runs nothing. A reader scanning an unfamiliar file navigates by this shape, and a file that violates it costs them a full read.",

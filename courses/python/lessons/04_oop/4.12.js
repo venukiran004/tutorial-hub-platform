@@ -184,6 +184,10 @@ def _(node: And) -> str:
 
     { t: "h2", n: "03", text: "Observer, simplified", id: "observer" },
 
+    {"kind": "flow", "title": "Observer, in Python", "caption": "Subscribers are just callables in a list. Publishing is a loop; no Observer interface, no abstract update method.", "cols": 3, "nodes": [{"id": "pub", "label": "subject", "sub": "handlers: list[Callable]", "tone": "accent"}, {"id": "ev", "label": "notify(event)", "sub": "for h in handlers: h(event)", "tone": "good"}, {"id": "subs", "label": "subscribers", "sub": "any function or bound method", "tone": "warn"}], "edges": [["pub", "ev"], ["ev", "subs"]], "t": "diagram", "id": "dg-4_12-03-0"},
+
+
+
     { t: "p", text: "Observer survives because the problem is real: something needs to notify an unknown set of listeners. What dissolves is the machinery — no `Observer` interface, no `attach`/`detach` ceremony, just callables." },
 
     { t: "code", lang: "python", title: "the whole pattern", code: `
@@ -305,6 +309,10 @@ class LazyDataset:
     },
 
     { t: "h2", n: "05", text: "State: the transitions are the design", id: "state" },
+
+    {"kind": "cycle", "title": "State: the transitions are the design", "caption": "An order moves through states along allowed edges only; the state machine is a dict of transitions and a check, not a class per state.", "nodes": [{"label": "pending", "tone": "accent"}, {"label": "paid", "tone": "good"}, {"label": "shipped", "tone": "good"}, {"label": "delivered", "tone": "violet"}, {"label": "cancelled", "tone": "crit", "sub": "from pending or paid only"}], "t": "diagram", "id": "dg-4_12-05-1"},
+
+
 
     { t: "ladder",
       title: "An order moving through its lifecycle",

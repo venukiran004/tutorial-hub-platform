@@ -35,6 +35,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The class explosion", id: "explosion" },
 
+    {"kind": "tree", "title": "The class explosion", "caption": "Every combination of two axes needs its own subclass: 2 × 3 today, 3 × 4 next quarter. Composition holds one object per axis and combines them at runtime.", "root": {"label": "Report", "children": [{"label": "PdfReport", "tone": "accent", "children": [{"label": "PdfSalesReport", "tone": "crit"}, {"label": "PdfStockReport", "tone": "crit"}]}, {"label": "HtmlReport", "tone": "accent", "children": [{"label": "HtmlSalesReport", "tone": "crit"}, {"label": "HtmlStockReport", "tone": "crit"}]}]}, "t": "diagram", "id": "dg-4_7-02-0"},
+
+
+
     { t: "p", text: "The clearest signal that inheritance is the wrong axis is combinatorial growth. Every new capability doubles the number of classes." },
 
     { t: "viz",
@@ -157,6 +161,10 @@ Report(rows, formatter=JsonFormatter())          # no compression`,
     },
 
     { t: "h2", n: "03", text: "Delegation without boilerplate", id: "delegation" },
+
+    {"kind": "flow", "title": "Composition: has-a instead of is-a", "caption": "Report holds a renderer and a data source; new combinations are constructor arguments, not new classes.", "cols": 3, "nodes": [{"id": "r", "label": "Report", "sub": "orchestrates", "tone": "good"}, {"id": "ren", "label": "renderer", "sub": "Pdf | Html", "tone": "accent"}, {"id": "src", "label": "source", "sub": "Sales | Stock", "tone": "warn"}], "edges": [["r", "ren", "has a"], ["r", "src", "has a"]], "t": "diagram", "id": "dg-4_7-03-1"},
+
+
 
     { t: "p", text: "The usual objection to composition is boilerplate: an inherited method comes free, a delegated one has to be forwarded. Python has three answers depending on how much of the interface you are exposing." },
 

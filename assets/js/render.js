@@ -343,6 +343,7 @@
     tabs: tabs,
     table: table,
     viz: viz,
+    diagram: function (b) { return EC.diagram ? EC.diagram(b) : ""; },
     disclose: disclose,
     drill: drill,
     exercise: exercise,

@@ -55,6 +55,8 @@ model.classes_
 
     { t: "h2", n: "02", text: "Leakage", id: "leakage" },
 
+    {"kind": "flow", "title": "Leakage: fitting the scaler on all the data", "caption": "A scaler fit on train and test together has seen the test set's mean and variance. Fit every transformer on the training split only, inside a Pipeline, so cross-validation refits it per fold.", "cols": 4, "nodes": [{"id": "all", "label": "fit scaler on all rows", "sub": "test statistics leak in", "tone": "crit"}, {"id": "split", "label": "split first", "tone": "accent"}, {"id": "pipe", "label": "Pipeline(scaler, model).fit(train)", "sub": "transformers fit on train only", "tone": "good"}, {"id": "cv", "label": "cross_val_score(pipe)", "sub": "refit per fold", "tone": "warn"}], "edges": [["split", "pipe"], ["pipe", "cv"]], "t": "diagram", "id": "dg-15_5-02-0"},
+
     { t: "viz",
       title: "Three ways information crosses the boundary",
       caption: "Leakage inflates your validation score and leaves production performance unchanged. The gap between the two is the only symptom, and by the time you see it the model is already deployed.",

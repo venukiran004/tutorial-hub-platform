@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Unpacking is a length assertion", id: "assertion" },
 
+    {"kind": "cells", "title": "Unpacking is a length assertion", "caption": "first, *middle, last = seq gives first and last one item each and middle whatever remains — an empty list for a two-item sequence. Without the star, the counts must match exactly or Python raises.", "items": ["first", "*middle", "*middle", "*middle", "last"], "highlight": [1, 2, 3], "negative": false, "label": "first, *middle, last = [1, 2, 3, 4, 5]   → first=1, middle=[2, 3, 4], last=5", "t": "diagram", "id": "dg-5_4-01-0"},
+
+
 
     { t: "viz",
       title: "Unpacking, and where the star goes",

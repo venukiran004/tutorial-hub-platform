@@ -80,6 +80,10 @@ def double(x: int) -> int:
     /* ================================================================== */
     { t: "h2", n: "02", text: "The comparison", id: "comparison" },
 
+    {"kind": "compare", "title": "map/filter versus a comprehension", "caption": "They are the same computation. The comprehension reads left to right and needs no lambda; map wins only when the function already exists and when laziness over a huge input matters.", "columns": [{"title": "map / filter", "tone": "warn", "items": ["list(map(str.upper, names))", "list(filter(None, xs))", "lazy iterators", "needs a callable"]}, {"title": "comprehension", "tone": "good", "items": ["[n.upper() for n in names]", "[x for x in xs if x]", "readable inline", "the default choice"]}], "t": "diagram", "id": "dg-3_5-02-0"},
+
+
+
     { t: "ladder",
       title: "Doubling the active users' scores",
       rungs: [

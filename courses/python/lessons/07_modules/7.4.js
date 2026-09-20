@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What import actually does", id: "what" },
 
+    {"kind": "steps", "title": "What import actually does", "caption": "A module is executed exactly once and cached in sys.modules; every later import anywhere in the process returns the same module object. That cache is also what makes circular imports fail halfway.", "items": [{"label": "sys.modules['pkg.mod'] cached?", "desc": "yes → bind the name and stop", "tone": "good"}, {"label": "find it: sys.path, finders, loaders", "desc": "a .py, a package directory, a compiled extension", "tone": "accent"}, {"label": "create the module object and register it", "desc": "in sys.modules before executing — so cycles see a partial module", "tone": "warn"}, {"label": "execute the module body top to bottom", "desc": "def and class statements run; side effects happen here", "tone": "violet"}], "t": "diagram", "id": "dg-7_4-01-0"},
+
+
     { t: "viz",
       title: "The four steps, and where each failure comes from",
       caption: "The cache is the step people forget. A module executes exactly once per process, so import-time side effects happen once — and a module imported under two different names is two independent copies with separate state.",
@@ -197,6 +200,9 @@ from models.order import Order                # WRONG: implicit relative,
     ]},
 
     { t: "h2", n: "04", text: "Circular imports", id: "circular" },
+
+    {"kind": "cycle", "title": "A circular import", "caption": "a imports b at the top; b imports a at the top; when b runs, a is in sys.modules but half-executed, so from a import thing fails with ImportError. Move the import inside the function, or move the shared thing to a third module.", "nodes": [{"label": "a.py starts", "sub": "registered, not finished", "tone": "accent"}, {"label": "import b", "sub": "b starts executing", "tone": "warn"}, {"label": "from a import thing", "sub": "a is only half done", "tone": "crit"}, {"label": "ImportError", "sub": "cannot import name 'thing'", "tone": "crit"}], "t": "diagram", "id": "dg-7_4-04-1"},
+
 
     { t: "p", text: "Two modules importing each other is not automatically an error — Python handles it whenever the *names* are needed later rather than at module execution time. It fails when one module needs something from the other **while that other is still executing**." },
 
