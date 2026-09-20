@@ -1,0 +1,2 @@
+Best params: {'max_depth': 8, 'min_samples_split': 16, 'n_estimators': 156}
+Best score: 0.9667

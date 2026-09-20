@@ -1,0 +1,2 @@
+BIRCH Adjusted Rand Index: 0.9521
+Subclusters: 73

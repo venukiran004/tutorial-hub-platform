@@ -1,0 +1,2 @@
+F-scores: {'sepal_l': np.float64(119.26), 'sepal_w': np.float64(49.16), 'petal_l': np.float64(1180.16), 'petal_w': np.float64(960.01)}
+Selected: ['petal_l', 'petal_w']

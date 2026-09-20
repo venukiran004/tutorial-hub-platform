@@ -1,0 +1,2 @@
+CV Predicted labels: [0 0 0 0 0 0 0 0 0 0]
+Overall accuracy: 0.9667

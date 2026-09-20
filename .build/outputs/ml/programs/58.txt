@@ -1,0 +1,5 @@
+Fold 0: Train[0..19], Test[20..35]
+Fold 1: Train[0..35], Test[36..51]
+Fold 2: Train[0..51], Test[52..67]
+Fold 3: Train[0..67], Test[68..83]
+Fold 4: Train[0..83], Test[84..99]

@@ -1,0 +1,4 @@
+Vocabulary: ['deep' 'great' 'is' 'learning' 'love' 'machine' 'of' 'subset' 'too']
+TF-IDF shape: (4, 9)
+Doc 0 vector: [[0.         0.         0.         0.4574528  0.69113141 0.55953044
+  0.         0.         0.        ]]

@@ -1,0 +1,9 @@
+k=1: Inertia=19953.77
+k=2: Inertia=9416.21
+k=3: Inertia=2110.41
+k=4: Inertia=564.91
+k=5: Inertia=512.39
+k=6: Inertia=460.31
+k=7: Inertia=408.95
+k=8: Inertia=360.82
+k=9: Inertia=325.37

@@ -1,0 +1,7 @@
+k=2: Silhouette=0.5902
+k=3: Silhouette=0.7569
+k=4: Silhouette=0.7916
+k=5: Silhouette=0.6890
+k=6: Silhouette=0.5514
+k=7: Silhouette=0.4297
+Best k: 4

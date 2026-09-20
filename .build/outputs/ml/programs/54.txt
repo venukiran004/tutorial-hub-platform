@@ -1,0 +1,1 @@
+[did not run to completion] TypeError: 'float' object is not iterable — MultiOutputRegressor.score returns one uniform-average R² (a float), not a list per target, so the comprehension in the print fails. With print(f"R² (uniform average): {model.score(X_test, y_test):.4f}") the program prints R² (uniform average): 0.9257 and Predictions shape: (40, 3).

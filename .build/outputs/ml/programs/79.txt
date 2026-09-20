@@ -1,0 +1,1 @@
+Adjusted Rand Index: 0.7383

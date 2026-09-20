@@ -1,0 +1,2 @@
+Topic 0: ['algorithms', 'training', 'data']
+Topic 1: ['championship', 'goal', 'soccer']

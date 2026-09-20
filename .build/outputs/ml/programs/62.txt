@@ -1,0 +1,4 @@
+petal_l: MI = 0.9926
+  petal_w: MI = 0.9856
+  sepal_l: MI = 0.5114
+  sepal_w: MI = 0.2994

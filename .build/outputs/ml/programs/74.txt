@@ -1,0 +1,3 @@
+Dummy (most_frequent): 0.3333
+Dummy (stratified): 0.3333
+Dummy (uniform): 0.3667

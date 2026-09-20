@@ -1,0 +1,5 @@
+Vocabulary: ['and' 'are' 'cat' 'dog' 'friends' 'log' 'mat' 'on' 'sat']
+BoW matrix:
+[[0 0 1 0 0 0 1 1 1]
+ [0 0 0 1 0 1 0 1 1]
+ [1 1 1 1 1 0 0 0 0]]

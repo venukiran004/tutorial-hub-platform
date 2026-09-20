@@ -1,0 +1,100 @@
+ok         1  Train-Test Split
+ok         2  Logistic Regression
+ok         3  Linear Regression
+ok         4  Decision Tree Classifier
+ok         5  Random Forest Classifier
+ok         6  K-Nearest Neighbors
+ok         7  Support Vector Machine
+ok         8  Naive Bayes Classifier
+ok         9  K-Means Clustering
+ok        10  DBSCAN Clustering
+ok        11  PCA Dimensionality Reduction
+ok        12  Cross-Validation
+ok        13  Grid Search Hyperparameter Tuning
+ok        14  Confusion Matrix
+ok        15  ROC Curve and AUC
+ok        16  Feature Scaling Pipeline
+ok        17  One-Hot Encoding
+ok        18  Label Encoding
+ok        19  Handling Missing Values with Imputer
+ok        20  Polynomial Features
+ok        21  Gradient Boosting Classifier
+ok        22  XGBoost Classifier
+ok        23  Ridge Regression (L2)
+ok        24  Lasso Regression (L1)
+ok        25  ElasticNet Regression
+ok        26  Stratified K-Fold Cross Validation
+ok        27  Learning Curve
+ok        28  Feature Importance Visualization
+ok        29  Multi-Class Classification Metrics
+ok        30  SMOTE for Imbalanced Data
+ok        31  Hierarchical Clustering
+ok        32  Gaussian Mixture Model
+ok        33  t-SNE Visualization
+ok        34  Isolation Forest for Anomaly Detection
+ok        35  Silhouette Score for Clustering
+ok        36  Permutation Importance
+ok        37  Stacking Ensemble
+ok        38  Voting Classifier
+ok        39  AdaBoost Classifier
+ok        40  Randomized Search
+ok        41  Column Transformer
+ok        42  Multivariate Linear Regression from Scratch
+ok        43  Logistic Regression from Scratch
+ok        44  K-Means from Scratch
+ok        45  KNN from Scratch
+ok        46  Decision Tree from Scratch (Simplified)
+ok        47  Precision-Recall Curve
+ok        48  Target Encoding
+ok        49  Bayesian Optimization with Optuna
+ok        50  Save and Load Model
+ok        51  Multiclass ROC AUC
+ok        52  MinMax Scaling
+ok        53  Robust Scaler (Outlier-Resistant)
+FAIL      54  Multi-Output Regression
+ok        55  Elbow Method for Optimal K
+ok        56  Mean Shift Clustering
+ok        57  Polynomial Regression
+ok        58  Time Series Train-Test Split
+ok        59  Calibrated Classifier
+ok        60  Recursive Feature Elimination
+ok        61  Custom Transformer in Pipeline
+ok        62  Mutual Information Feature Selection
+ok        63  Local Outlier Factor
+ok        64  Partial Dependence Plot Data
+ok        65  UMAP Dimensionality Reduction
+ok        66  SVD Decomposition
+ok        67  Label Binarizer
+ok        68  Variance Threshold Feature Selection
+ok        69  Kernel PCA
+ok        70  Multi-Label Classification
+ok        71  Bagging Classifier
+ok        72  Extra Trees Classifier
+ok        73  Nearest Centroid Classifier
+ok        74  Dummy Classifier (Baseline)
+ok        75  Train Multiple Models and Compare
+ok        76  Cosine Similarity
+ok        77  TF-IDF Vectorization
+ok        78  CountVectorizer (Bag of Words)
+ok        79  Spectral Clustering
+ok        80  LDA (Linear Discriminant Analysis)
+ok        81  Regression Metrics
+ok        82  Nearest Neighbors Search
+ok        83  Feature Hashing (FeatureHasher)
+ok        84  Incremental Learning (Partial Fit)
+ok        85  Quantile Regression
+ok        86  Ordinal Encoding
+ok        87  Power Transformer (Box-Cox)
+ok        88  K-Fold with Model Selection
+ok        89  Spline Regression
+ok        90  Cross-Validated Predictions
+ok        91  Successive Halving Search
+ok        92  Gaussian Process Classifier
+ok        93  BIRCH Clustering
+ok        94  IQR Outlier Detection
+ok        95  Pairwise Distance Matrix
+ok        96  Latent Dirichlet Allocation (Topic Modeling)
+ok        97  Normalizer (Row-wise L2)
+ok        98  SelectKBest Feature Selection
+ok        99  Cohen's Kappa Score
+ok       100  Full ML Pipeline End-to-End

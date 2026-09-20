@@ -1,0 +1,3 @@
+Variances: [0.   8.   0.24]
+Selected features: [False  True  True]
+Original shape: (5, 3), After: (5, 2)

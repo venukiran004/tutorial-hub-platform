@@ -1,0 +1,4 @@
+Degree 1: R² = 0.8913
+Degree 2: R² = 0.9702
+Degree 3: R² = 0.9703
+Degree 5: R² = 0.9707

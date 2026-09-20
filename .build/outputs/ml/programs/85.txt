@@ -1,0 +1,3 @@
+Quantile 0.1: coef=1.4222, intercept=-0.1430
+Quantile 0.5: coef=2.1612, intercept=-0.2885
+Quantile 0.9: coef=2.5829, intercept=-0.0298

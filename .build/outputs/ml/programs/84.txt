@@ -1,0 +1,15 @@
+Batch 0: Test acc = 0.6167
+Batch 1: Test acc = 0.8167
+Batch 2: Test acc = 0.6889
+Batch 3: Test acc = 0.8528
+Batch 4: Test acc = 0.8722
+Batch 5: Test acc = 0.8694
+Batch 6: Test acc = 0.8083
+Batch 7: Test acc = 0.8861
+Batch 8: Test acc = 0.8778
+Batch 9: Test acc = 0.8778
+Batch 10: Test acc = 0.8750
+Batch 11: Test acc = 0.9222
+Batch 12: Test acc = 0.9194
+Batch 13: Test acc = 0.8917
+Batch 14: Test acc = 0.8972

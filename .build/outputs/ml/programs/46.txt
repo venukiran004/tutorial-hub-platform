@@ -1,0 +1,2 @@
+Best split: Feature 2, Threshold 1.90
+Gini before: 0.6667

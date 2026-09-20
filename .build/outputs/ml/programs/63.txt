@@ -1,0 +1,1 @@
+Normal: 192, Outliers: 11

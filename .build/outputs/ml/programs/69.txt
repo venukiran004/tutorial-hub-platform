@@ -1,0 +1,2 @@
+Original X range: [-1.23, 2.14]
+KernelPCA X range: [-0.55, 0.82]

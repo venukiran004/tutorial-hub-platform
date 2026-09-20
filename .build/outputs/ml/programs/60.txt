@@ -1,0 +1,2 @@
+Selected features: ['petal_l', 'petal_w']
+Feature ranking: {'sepal_l': np.int64(2), 'sepal_w': np.int64(3), 'petal_l': np.int64(1), 'petal_w': np.int64(1)}
