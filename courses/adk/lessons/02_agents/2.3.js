@@ -29,6 +29,10 @@ EC.receiveLesson({
         { title: "LoopAgent", tone: "warn", items: ["children repeatedly", "until escalate or max_iterations", "refine-and-check patterns", "always set a cap"] }
       ] },
 
+    { t: "callout", kind: "warn", title: "All three are deprecated in favour of Workflow",
+      body: [{ t: "p", text: "Constructing any of them on google-adk 2.9.2 emits `SequentialAgent is deprecated in favor of Workflow and will be removed in a future version. Workflow cannot yet be used as an LlmAgent sub-agent.` — verbatim, with the class name swapped for the other two. Read that second sentence carefully, because it is the reason this lesson is not obsolete: `Workflow` (lesson 2.4) is the replacement, but it cannot yet sit under an `LlmAgent`, so a pipeline that a model must be able to transfer to still has to be one of these three today." },
+        { t: "p", text: "Write new top-level pipelines as a `Workflow` where you can, keep these where the graph must be a sub-agent, and expect to migrate. The concepts transfer intact — ordering, concurrency, iteration with a cap — which is why they are worth learning in this simpler form first." }] },
+
     { t: "h2", n: "02", text: "SequentialAgent", id: "sequential" },
 
     { t: "code", lang: "python", title: "Write, critique, revise",
