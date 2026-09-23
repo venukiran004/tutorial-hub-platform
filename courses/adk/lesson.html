@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson — Google ADK — Tutorial Hub</title>
+<script>try{var t=localStorage.getItem("th:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/system.css">
+<link rel="stylesheet" href="../../assets/css/course.css">
+<link rel="stylesheet" href="../../assets/css/lesson.css">
+<link rel="stylesheet" href="../../assets/css/refine.css">
+<link rel="stylesheet" href="../../assets/css/home.css">
+<link rel="stylesheet" href="../../assets/css/aurora.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="ghost-btn icon-only rail-toggle" data-rail-toggle type="button" aria-label="Open course navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
+  </button>
+  <a class="brand" href="../../index.html"><span class="brand-mark">TH</span>Tutorial<span class="brand-sub">Hub</span></a>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <span class="sep">/</span><a href="index.html">Google ADK</a>
+    <span class="sep">/</span><a href="index.html#curriculum" id="crumb-mod"></a>
+    <span class="sep">/</span><span class="cur" id="crumb-lesson"></span>
+  </nav>
+  <span class="topbar-spacer"></span>
+  <button class="ghost-btn search-trigger" data-cmdk type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+    <span class="label">Search lessons</span><span class="hint">Ctrl K</span>
+  </button>
+  <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
+</header>
+
+<div class="shell with-toc">
+
+  <!-- ------------------------------------------------------ course rail -- -->
+  <aside class="rail">
+    <div class="rail-head">
+      <div class="rail-course">
+        <span class="rail-course-mark" id="rail-mark"></span>
+        <div>
+          <div class="rail-course-name">Google ADK</div>
+          <div class="rail-course-meta" id="rail-meta"></div>
+        </div>
+      </div>
+    </div>
+    <div class="rail-filter">
+      <input id="rail-filter" type="text" placeholder="Filter lessons…" autocomplete="off" spellcheck="false" aria-label="Filter lessons">
+    </div>
+    <div class="track-switch" id="track-switch"></div>
+    <nav id="rail-nav" aria-label="Course navigation"></nav>
+  </aside>
+
+  <!-- ----------------------------------------------------------- lesson -- -->
+  <main>
+    <div class="page">
+      <header class="lh" id="lesson-head"></header>
+      <article class="body" id="lesson-body"></article>
+      <div id="lesson-foot"></div>
+    </div>
+  </main>
+
+  <!-- ------------------------------------------------------ on this page -- -->
+  <aside class="toc">
+    <div class="toc-h">On this page</div>
+    <ul id="toc-list"></ul>
+  </aside>
+
+</div>
+
+<script src="../../assets/js/highlight.js"></script>
+<script src="../../assets/js/render.js"></script>
+<script src="../../assets/js/diagrams.js"></script>
+<script src="../../assets/js/app.js"></script>
+<script src="curriculum.js"></script>
+<script src="../../assets/js/lesson-page.js"></script>
+<script>
+  EC.renderLessonPage({ icon: EC.icons.link, course: "Google ADK" });
+</script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Google ADK — Tutorial Hub</title>
+<meta name="description" content="Google's Agent Development Kit end to end: agents, models and tools; sessions, state, memory and context; callbacks, artifacts and structured output; RAG and agentic RAG; MCP and A2A; guardrails, human approval, streaming, observability, evaluation and deployment to Agent Engine.">
+<script>try{var t=localStorage.getItem("th:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/system.css">
+<link rel="stylesheet" href="../../assets/css/course.css">
+<link rel="stylesheet" href="../../assets/css/refine.css">
+<link rel="stylesheet" href="../../assets/css/home.css">
+<link rel="stylesheet" href="../../assets/css/aurora.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="../../index.html"><span class="brand-mark">TH</span>Tutorial<span class="brand-sub">Hub</span></a>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <span class="sep">/</span><a href="../../index.html">Courses</a>
+    <span class="sep">/</span><span class="cur">Google ADK</span>
+  </nav>
+  <span class="topbar-spacer"></span>
+  <button class="ghost-btn search-trigger" data-cmdk type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+    <span class="label">Search lessons</span><span class="hint">Ctrl K</span>
+  </button>
+  <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
+</header>
+
+<main>
+<div class="page wide">
+
+  <!-- ------------------------------------------------------------- hero -- -->
+  <section class="hero">
+    <span class="hero-eyebrow" id="hero-badge"></span>
+    <h1>Agents, <span class="dim">as a runtime rather than a prompt.</span></h1>
+    <p class="hero-lede">
+      Google's Agent Development Kit is not a wrapper around a chat completion: it is a runtime with
+      sessions, events, state, artifacts, callbacks, a tool contract and two interoperability
+      protocols. This course takes it apart in that order — the four objects everything is built
+      from, agents and the models behind them, tools in depth, the state–memory–context triangle,
+      the control hooks, retrieval, MCP and A2A, then safety, streaming, observability, evaluation
+      and deployment. <b>Every API here was introspected from the installed package</b> and
+      <b>every event trace was produced by running the code</b> against a scripted model, so the
+      traces are the real framework's — no API key required to follow along.
+    </p>
+    <div class="hero-cta">
+      <a class="cta primary" id="start-btn" href="lesson.html?id=1.1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+        <span id="start-label">Start with what ADK is</span>
+      </a>
+      <a class="cta ghost" href="#curriculum">View full curriculum</a>
+      <span class="cta-note" id="cta-note"></span>
+    </div>
+
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- outcomes -- -->
+  <section class="sec">
+    <div class="sec-kicker">The progression</div>
+    <div class="sec-h"><h2>Five states, in order</h2></div>
+    <p class="sec-lede">
+      Every module exists to move you from one of these states to the next. Most agent projects
+      stall between the third and the fourth.
+    </p>
+    <div class="ladder-strip">
+      <div class="ls-step" style="--c:var(--d-foundation)">
+        <div class="ls-n">01</div><div class="ls-t">I can run an agent</div>
+        <div class="ls-d">An agent with a tool, a runner, a session and an event stream you can read — and you can say which object did what.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-core)">
+        <div class="ls-n">02</div><div class="ls-t">I can make it reliable</div>
+        <div class="ls-d">Tools the model calls correctly because their declarations are right, state in the correct scope, and errors that return as data rather than end an invocation.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--accent)">
+        <div class="ls-n">03</div><div class="ls-t">I can compose several</div>
+        <div class="ls-d">Sequential, parallel and loop workflows; a coordinator that routes to specialists; agents as tools; and state passed between them deliberately.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-advanced)">
+        <div class="ls-n">04</div><div class="ls-t">I can make it safe and observable</div>
+        <div class="ls-d">Guardrail callbacks on input and output, a human approval step on the dangerous tool, a trace showing every model and tool call, and an evalset that fails in CI.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-expert)">
+        <div class="ls-n">05</div><div class="ls-t">I can ship it</div>
+        <div class="ls-d">Persistent sessions, memory across conversations, MCP and A2A for everything you did not write, and a deployment on Cloud Run or Agent Engine with the cost understood.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------- curriculum -- -->
+  <section class="sec" id="curriculum">
+    <div class="sec-kicker">Curriculum</div>
+    <div class="sec-h">
+      <h2>The full path</h2>
+      <span class="sp"></span>
+      <button class="ghost-btn" id="expand-all" type="button">Expand all</button>
+    </div>
+    <p class="sec-lede">
+      Eight phases: the framework, agents and models, tools, the state–memory–context triangle,
+      the control hooks, retrieval and the interoperability protocols, safety and the runtime,
+      and production. Modules marked <b>soon</b> are scheduled — the shape of the whole course is
+      visible from day one.
+    </p>
+    <div class="track-tabs" id="track-tabs"></div>
+    <div id="curriculum-list"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- audience -- -->
+  <section class="sec">
+    <div class="sec-kicker">Fit</div>
+    <div class="sec-h"><h2>Who this is for</h2></div>
+    <div class="split">
+      <div class="split-box yes">
+        <div class="split-h">A good fit if</div>
+        <ul id="fit-yes"></ul>
+      </div>
+      <div class="split-box no">
+        <div class="split-h">Not the right course if</div>
+        <ul id="fit-no"></ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Tutorial Hub — Google ADK</span>
+    <span class="sp"></span>
+    <span>Built as a single static site — no build step, no dependencies.</span>
+  </footer>
+
+</div>
+</main>
+
+<script src="../../assets/js/highlight.js"></script>
+<script src="../../assets/js/render.js"></script>
+<script src="../../assets/js/diagrams.js"></script>
+<script src="../../assets/js/app.js"></script>
+<script src="curriculum.js"></script>
+<script src="../../assets/js/course-page.js"></script>
+<script>
+(function () {
+  "use strict";
+  var I = EC.icons;
+  EC.renderCoursePage({
+    icon: I.link,
+    badge: "Course 12 · Google ADK",
+    startLabel: "Start with what ADK is",
+    statTail: "Executed",
+    statTailLabel: "Every trace and API",
+    fitYes: [
+      "You can write Python and have called an LLM API, and now need an agent that uses tools, remembers a user and survives a restart.",
+      "You have a prototype in a notebook and need the version with sessions, guardrails, approval, tracing and a deployment target.",
+      "You are choosing between ADK, LangGraph and a framework-free loop, and want the comparison made on the axes that matter.",
+      "You need MCP or A2A — tools from servers you did not write, or agents you do not host — wired into something that runs in production."
+    ],
+    fitNo: [
+      "You want prompt-engineering technique. Instructions get one lesson here; the rest of the course is the runtime around them.",
+      "You want a Gemini API reference. The model is used in every lesson, but the documentation is faster for looking up a parameter.",
+      "You have not written async Python. The whole framework is async generators; the Python course's concurrency module comes first.",
+      "You want a vendor-neutral survey of agent frameworks. This is ADK specifically, with one lesson placing it against the alternatives."
+    ]
+  });
+})();
+</script>
+</body>
+</html>
