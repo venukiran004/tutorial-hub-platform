@@ -45,9 +45,9 @@
      25 Evaluation ...................... M11.2
      26 Testing ......................... M11.3
      27 Deployment ...................... M12.1
-     28 Agent Engine .................... M12.2
-     29 Gemini + ADK .................... M12.3
-     30 Production architecture .......... M12.4
+     28 Agent Engine .................... M12.2 (deploy), M12.3 (invoke)
+     29 Gemini + ADK .................... M12.4
+     30 Production architecture .......... M12.5
         A2A protocol .................... M8.3–8.4
    ========================================================================= */
 (function () {
@@ -62,7 +62,7 @@
 
     blurb: "Google's Agent Development Kit, taken apart: agents, models and tools; the state, memory and context triangle; callbacks, artifacts and structured output; RAG and agentic RAG; MCP and A2A; guardrails, human approval, streaming, observability, evaluation and deployment to Agent Engine.",
 
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "3.1", "3.2", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "3.1", "3.2", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "12.2", "12.3"],
 
     modules: [
 
@@ -362,19 +362,22 @@
         dir: "12_production",
         phase: "Phase 8 · Production",
         title: "Deployment and Production Architecture",
-        blurb: "From a local dev UI to a running service: containers and Cloud Run, Agent Engine as the managed runtime, the Gemini capabilities worth building on, and the reference architecture that puts every previous module in one picture.",
-        outcome: "You can deploy an agent, choose between Cloud Run and Agent Engine with reasons, and draw the production architecture it belongs in.",
+        blurb: "From a local dev UI to a running service: containers and Cloud Run, deploying to Vertex AI Agent Engine and calling the deployed agent, the Gemini capabilities worth building on, and the reference architecture that puts every previous module in one picture.",
+        outcome: "You can deploy an agent to Agent Engine, invoke it from an application, choose between Cloud Run and Agent Engine with reasons, and draw the production architecture it belongs in.",
         lessons: [
           { id: "12.1", title: "Deployment: Local, Container, Cloud Run, Agent Engine", difficulty: "advanced", minutes: 34, tier: "must",
             summary: "The four deployment targets, what adk deploy generates, configuration and secrets per environment, and how sessions survive a restart.",
             keywords: ["deployment", "cloud run", "docker", "adk deploy", "agent engine", "api_server", "scaling"] },
-          { id: "12.2", title: "Agent Engine in Depth", difficulty: "advanced", minutes: 32, tier: "should",
-            summary: "The managed runtime: what it provides that you would otherwise build — sessions, memory bank, tracing, scaling — and what you give up.",
-            keywords: ["agent engine", "vertex ai", "managed runtime", "memory bank", "sessions", "deployment", "scaling"] },
-          { id: "12.3", title: "Gemini + ADK: The Capabilities That Matter", difficulty: "core", minutes: 30, tier: "should",
+          { id: "12.2", title: "Vertex AI Agent Engine: Deploying an Agent", difficulty: "advanced", minutes: 36, tier: "must",
+            summary: "The managed runtime end to end: what AdkApp wraps, agent_engines.create and adk deploy agent_engine, requirements and extra packages, service accounts, scaling and what it gives you for free.",
+            keywords: ["agent engine", "vertex ai", "adkapp", "agent_engines.create", "adk deploy", "reasoning engine", "managed runtime", "deployment"] },
+          { id: "12.3", title: "Invoking a Deployed Agent", difficulty: "advanced", minutes: 34, tier: "must",
+            summary: "Calling the deployed engine: the Python SDK, stream_query and async_stream_query, remote sessions, the REST surface, IAM and auth, and calling it from another agent.",
+            keywords: ["stream_query", "invoke", "agent_engines.get", "resource name", "rest", "streamQuery", "iam", "remote sessions", "client"] },
+          { id: "12.4", title: "Gemini + ADK: The Capabilities That Matter", difficulty: "core", minutes: 30, tier: "should",
             summary: "Function calling, structured output, long context, multimodal understanding, grounding, code execution and thinking — from the agent's point of view.",
             keywords: ["gemini", "function calling", "long context", "multimodal", "grounding", "code execution", "thinking"] },
-          { id: "12.4", title: "Production Architecture, End to End", difficulty: "expert", minutes: 40, tier: "must",
+          { id: "12.5", title: "Production Architecture, End to End", difficulty: "expert", minutes: 40, tier: "must",
             summary: "Client, API layer, root agent, specialists, retrieval, tools, guardrails, approval, observability and evaluation — one architecture with every choice named.",
             keywords: ["architecture", "production", "reference architecture", "scaling", "cost", "guardrails", "design"] }
         ]
