@@ -62,7 +62,7 @@
 
     blurb: "Google's Agent Development Kit, taken apart: agents, models and tools; the state, memory and context triangle; callbacks, artifacts and structured output; RAG and agentic RAG; MCP and A2A; guardrails, human approval, streaming, observability, evaluation and deployment to Agent Engine.",
 
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6"],
 
     modules: [
 
