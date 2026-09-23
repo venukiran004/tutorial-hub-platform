@@ -119,13 +119,18 @@
         EC.esc(m.module.title) + "</span></div>";
     }
 
+    /* `body` and `blocks` may be a bare string — render() accepts one and wraps
+       it in a <p>. Walking a string threw, and the throw blanked the entire
+       lesson, so every nested list is checked before it is walked. */
     function walk(bs, fn) {
-      (bs || []).forEach(function (b) {
+      if (!Array.isArray(bs)) return;
+      bs.forEach(function (b) {
+        if (!b || typeof b !== "object") return;
         fn(b);
         if (b.rungs) b.rungs.forEach(function (r) { fn({ t: "code" }); });
-        if (b.body) walk(b.body, fn);
-        if (b.blocks) walk(b.blocks, fn);
-        if (b.items) b.items.forEach(function (i) { if (i && i.blocks) walk(i.blocks, fn); });
+        walk(b.body, fn);
+        walk(b.blocks, fn);
+        if (Array.isArray(b.items)) b.items.forEach(function (i) { if (i && i.blocks) walk(i.blocks, fn); });
       });
     }
     function countCode(L) { var n = 0; walk(L.blocks, function (b) { if (b.t === "code") n++; }); return n; }

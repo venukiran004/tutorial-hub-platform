@@ -114,7 +114,7 @@ assistant = LlmAgent(
       caption: "The assistant's model chooses between three things, not ten. The research agent's model chooses among its eight with an instruction written only for research. Both decisions are easier than the one they replace." },
 
     { t: "callout", kind: "insight", title: "The tool-count heuristic",
-      body: "Accuracy falls as the declaration list grows, and the fall is steep somewhere past roughly ten tools — the exact number depends on the model and on how distinct the tools are. Treat a tool list that has grown past ten as a signal to group related tools behind an `AgentTool`, not as a prompt-tuning problem. It also cuts tokens: the sub-agent's eight declarations are sent only when the sub-agent runs." },
+      body: [{ t: "p", text: "Accuracy falls as the declaration list grows, and the fall is steep somewhere past roughly ten tools — the exact number depends on the model and on how distinct the tools are. Treat a tool list that has grown past ten as a signal to group related tools behind an `AgentTool`, not as a prompt-tuning problem. It also cuts tokens: the sub-agent's eight declarations are sent only when the sub-agent runs." }] },
 
     { t: "h2", n: "05", text: "Hierarchies, and their limit", id: "hierarchy" },
 

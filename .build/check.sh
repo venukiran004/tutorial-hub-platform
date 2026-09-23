@@ -47,3 +47,6 @@ TH_COURSE=dl node .build/rendertest.js | tail -4
 echo
 echo "=== adk ==="
 TH_COURSE=adk node .build/rendertest.js | tail -4
+
+echo "=== blocks that would render empty ==="
+node .build/check-blocks.js

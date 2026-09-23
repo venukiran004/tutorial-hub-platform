@@ -54,7 +54,7 @@ agent = LlmAgent(
       ] },
 
     { t: "callout", kind: "trap", title: "`description` is not a docstring",
-      body: "It is the only thing another agent's model knows about this one. `description=\"Handles billing\"` routes correctly; an empty description means the coordinator has nothing to choose on, and routing failures in multi-agent systems trace back to this field more often than to the instruction." },
+      body: [{ t: "p", text: "It is the only thing another agent's model knows about this one. `description=\"Handles billing\"` routes correctly; an empty description means the coordinator has nothing to choose on, and routing failures in multi-agent systems trace back to this field more often than to the instruction." }] },
 
     { t: "h2", n: "02", text: "output_key: an agent's answer as state", id: "outputkey" },
 

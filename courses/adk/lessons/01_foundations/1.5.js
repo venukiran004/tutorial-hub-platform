@@ -128,7 +128,7 @@ return final_text`,
       caption: "Everything else in the stream is observability. In a streaming UI you would additionally render `event.partial` text as it arrives (lesson 10.2), and in a multi-agent run remember that each participating agent can produce its own final response." },
 
     { t: "callout", kind: "trap", title: "Several agents, several 'final' events",
-      body: "The docstring of `is_final_response` says it plainly: when multiple agents take part in one invocation, one event per agent can report true. A UI that renders every final event will show the coordinator's answer *and* each specialist's. Filter by author, or by the last event of the invocation, when you build a multi-agent front end (lesson 2.6)." },
+      body: [{ t: "p", text: "The docstring of `is_final_response` says it plainly: when multiple agents take part in one invocation, one event per agent can report true. A UI that renders every final event will show the coordinator's answer *and* each specialist's. Filter by author, or by the last event of the invocation, when you build a multi-agent front end (lesson 2.6)." }] },
 
     { t: "h2", n: "06", text: "Where the time goes", id: "latency" },
 

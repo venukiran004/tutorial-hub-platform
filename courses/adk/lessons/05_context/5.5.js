@@ -31,7 +31,7 @@ print(ToolContext is CallbackContext is Context)` },
     { t: "out", text: "True" },
 
     { t: "callout", kind: "insight", title: "If you learned ADK 1.x, unlearn the hierarchy",
-      text: "`ToolContext` and `CallbackContext` used to be distinct classes with distinct capabilities, and a lot of writing about ADK still describes them that way. In 2.x they are aliases of one `Context`. Type hints written against either name still work and still read well — a tool taking `tool_context: ToolContext` documents itself — but do not reason about what a callback can do by assuming it has less than a tool. It has exactly the same object." },
+      body: [{ t: "p", text: "`ToolContext` and `CallbackContext` used to be distinct classes with distinct capabilities, and a lot of writing about ADK still describes them that way. In 2.x they are aliases of one `Context`. Type hints written against either name still work and still read well — a tool taking `tool_context: ToolContext` documents itself — but do not reason about what a callback can do by assuming it has less than a tool. It has exactly the same object." }] },
 
     { t: "h2", n: "02", text: "The one real boundary", id: "readonly" },
 
@@ -94,7 +94,7 @@ system instruction the model received:
     { t: "p", text: "The ordering is the lesson. `before_agent` ran **first** and wrote state; the instruction provider then ran and saw the world after that write; the tool saw `greeted=True` because state written by a callback is visible for the rest of the invocation. And the instruction provider ran **twice** — once per model request, since this turn made two — which is exactly why it must not have side effects. All of them shared one `invocation_id`, the thread that ties a turn together in logs." },
 
     { t: "callout", kind: "trap", title: "An instruction provider runs once per model call, not once per turn",
-      text: "A turn with three tool round trips builds the instruction four times. If your provider queries a database, you have made four queries; if it increments a counter, you have counted four times. Read state, format a string, return. Anything expensive should be computed in a `before_agent_callback`, written to state, and read from there." },
+      body: [{ t: "p", text: "A turn with three tool round trips builds the instruction four times. If your provider queries a database, you have made four queries; if it increments a counter, you have counted four times. Read state, format a string, return. Anything expensive should be computed in a `before_agent_callback`, written to state, and read from there." }] },
 
     { t: "h2", n: "04", text: "What you actually do with a context", id: "uses" },
 
@@ -124,7 +124,7 @@ system instruction the model received:
       caption: "A `{pending_booking}` template would raise when the key is absent; the function simply omits the sentence. Optional context is the main reason to reach for a provider." },
 
     { t: "callout", kind: "good", title: "State in the instruction beats state in the history",
-      text: "A fact stated in the system instruction is restated on every request, at the front, where the model attends to it. The same fact mentioned forty messages ago is one line in a long transcript competing with everything else. When an agent keeps 'forgetting' something, the fix is usually not a bigger context window — it is writing the fact to state and interpolating it into the instruction." },
+      body: [{ t: "p", text: "A fact stated in the system instruction is restated on every request, at the front, where the model attends to it. The same fact mentioned forty messages ago is one line in a long transcript competing with everything else. When an agent keeps 'forgetting' something, the fix is usually not a bigger context window — it is writing the fact to state and interpolating it into the instruction." }] },
 
     { t: "h2", n: "06", text: "InvocationContext, the one that is different", id: "invocation" },
 
@@ -144,7 +144,7 @@ system instruction the model received:
       caption: "Lesson 2.4 built custom agents properly; the point here is which context they receive and why it is a different object." },
 
     { t: "callout", kind: "note", title: "Getting from one to the other",
-      text: "`ctx.get_invocation_context()` on a writable context returns the `InvocationContext`. It is occasionally the right escape hatch — reaching the artifact service directly, say — and usually a sign you want a custom agent instead. If a tool needs to drive the invocation, it is doing an agent's job." },
+      body: [{ t: "p", text: "`ctx.get_invocation_context()` on a writable context returns the `InvocationContext`. It is occasionally the right escape hatch — reaching the artifact service directly, say — and usually a sign you want a custom agent instead. If a tool needs to drive the invocation, it is doing an agent's job." }] },
 
     { t: "exercise", kind: "practice", title: "Watch the contexts in order", difficulty: "core", minutes: 18,
       prompt: "Build an agent with an instruction provider, a before_agent_callback, a before_model_callback and one tool. Have each print its context's class name, the invocation id, and the current value of a state key that the callback increments. Run one turn that uses the tool, and explain the order and the repetition in the output.",

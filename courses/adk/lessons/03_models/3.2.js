@@ -52,7 +52,7 @@ async for event in runner.run_async(user_id="u1", session_id="s1", new_message=m
     ] },
 
     { t: "callout", kind: "tradeoff", title: "Multimodal or pre-process",
-      body: "A 40-page PDF sent to the model on every turn is re-read on every turn. If the agent needs one figure from it, extract that figure once in a tool and put the *answer* in state; if the agent needs to reason over the whole document's layout, send the document. The wrong choice is invisible until the bill arrives, because both work." },
+      body: [{ t: "p", text: "A 40-page PDF sent to the model on every turn is re-read on every turn. If the agent needs one figure from it, extract that figure once in a tool and put the *answer* in state; if the agent needs to reason over the whole document's layout, send the document. The wrong choice is invisible until the bill arrives, because both work." }] },
 
     { t: "h2", n: "02", text: "Other providers", id: "providers" },
 

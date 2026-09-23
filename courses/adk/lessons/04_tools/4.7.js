@@ -113,7 +113,7 @@ app = App(name="support", root_agent=root,
       caption: "Plugins apply to every agent and tool in the app (lesson 6.2). 'Reflect and retry' means the failure is fed back so the next attempt is informed rather than identical — which is what makes a second attempt worth anything when the first failed on a bad argument." },
 
     { t: "callout", kind: "trap", title: "Bound the retrying, or the model will not",
-      body: "A model that receives `retryable: true` will try again, and again. `RunConfig(max_llm_calls=…)` is the hard stop on an invocation; per-agent `timeout` and `retry_config` bound the parts; and a tool that has already failed twice in this invocation should return `retryable: false` on the third. Without a bound, a flaky upstream becomes an expensive infinite loop (lesson 10.3)." },
+      body: [{ t: "p", text: "A model that receives `retryable: true` will try again, and again. `RunConfig(max_llm_calls=…)` is the hard stop on an invocation; per-agent `timeout` and `retry_config` bound the parts; and a tool that has already failed twice in this invocation should return `retryable: false` on the third. Without a bound, a flaky upstream becomes an expensive infinite loop (lesson 10.3)." }] },
 
     { t: "h2", n: "05", text: "Restricting tools", id: "restrictions" },
 

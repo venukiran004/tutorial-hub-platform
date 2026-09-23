@@ -93,7 +93,7 @@ agent = LlmAgent(name="exporter", model=M, instruction="Export on request.",
       ] },
 
     { t: "callout", kind: "trap", title: "The work must be durable, not a background task",
-      body: "Returning pending and then doing the work in an `asyncio.create_task` inside the same process reproduces the FastAPI BackgroundTasks failure exactly: a deploy or a crash loses it, and nothing recorded that it existed. The tool should enqueue to something that survives a restart — a queue, a jobs table, a workflow service — and the worker should be able to deliver the result back by ticket." },
+      body: [{ t: "p", text: "Returning pending and then doing the work in an `asyncio.create_task` inside the same process reproduces the FastAPI BackgroundTasks failure exactly: a deploy or a crash loses it, and nothing recorded that it existed. The tool should enqueue to something that survives a restart — a queue, a jobs table, a workflow service — and the worker should be able to deliver the result back by ticket." }] },
 
     { t: "h2", n: "03", text: "Confirmation", id: "confirmation" },
 

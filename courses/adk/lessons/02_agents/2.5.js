@@ -84,7 +84,7 @@ root = LlmAgent(name="coordinator", model=M,
     { t: "p", text: "The two flags together turn a specialist into a terminal node: once the conversation is there, it stays there for the rest of the invocation. That is often what you want for a checkout or an authentication flow, where wandering off mid-transaction is the failure. The opposite arrangement — every agent free to transfer anywhere — produces conversations that ping-pong, and is the reason to shape the tree deliberately rather than making every agent a sibling of every other." },
 
     { t: "callout", kind: "trap", title: "A router with tools is not a router",
-      body: "If the coordinator has both sub-agents and tools of its own, its model must choose between answering and delegating on every turn — and models prefer answering. The result is a coordinator that quietly handles billing questions badly instead of transferring them. Keep routers toolless, or give them exactly one tool that cannot substitute for a specialist." },
+      body: [{ t: "p", text: "If the coordinator has both sub-agents and tools of its own, its model must choose between answering and delegating on every turn — and models prefer answering. The result is a coordinator that quietly handles billing questions badly instead of transferring them. Keep routers toolless, or give them exactly one tool that cannot substitute for a specialist." }] },
 
     { t: "h2", n: "04", text: "Transfer against AgentTool", id: "agenttool" },
 

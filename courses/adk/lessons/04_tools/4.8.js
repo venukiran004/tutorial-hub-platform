@@ -56,7 +56,7 @@ toolset = OpenAPIToolset(spec_str=spec, spec_str_type="yaml",
     { t: "p", text: "For a tool you write yourself, the simplest correct thing is often no ADK auth at all: read the credential from the environment or a secret manager inside the tool. The auth types earn their place when a *toolset* needs configuring, or when the flow is interactive." },
 
     { t: "callout", kind: "trap", title: "Never make a credential a tool parameter",
-      body: "`def fetch(api_key: str, query: str)` puts the key in the declaration, which means the model is asked to supply it, which means it appears in the conversation, in the session, in your logs and in the trace. Credentials come from the environment, from the credential service, or from `tool_context`; never from the model." },
+      body: [{ t: "p", text: "`def fetch(api_key: str, query: str)` puts the key in the declaration, which means the model is asked to supply it, which means it appears in the conversation, in the session, in your logs and in the trace. Credentials come from the environment, from the credential service, or from `tool_context`; never from the model." }] },
 
     { t: "h2", n: "03", text: "User credentials, interactively", id: "oauth" },
 
@@ -116,7 +116,7 @@ runner = Runner(agent=root, app_name="app",
       caption: "The base contract is two methods, `load_credential` and `save_credential`. The session-state service persists tokens wherever your session service persists state — which is convenient and means your session store now holds bearer tokens." },
 
     { t: "callout", kind: "trap", title: "Tokens in session state are tokens in your database",
-      body: "`session_state_credential_service` writes access and refresh tokens into session state, and `DatabaseSessionService` writes session state into your database — in plain text unless you encrypt it. For anything beyond a prototype, store user tokens in a secret manager or an encrypted store with a short-lived cache, and keep the session state holding a reference rather than the token itself (lesson 9.1)." },
+      body: [{ t: "p", text: "`session_state_credential_service` writes access and refresh tokens into session state, and `DatabaseSessionService` writes session state into your database — in plain text unless you encrypt it. For anything beyond a prototype, store user tokens in a secret manager or an encrypted store with a short-lived cache, and keep the session state holding a reference rather than the token itself (lesson 9.1)." }] },
 
     { t: "h2", n: "05", text: "The three leaks", id: "leaks" },
 

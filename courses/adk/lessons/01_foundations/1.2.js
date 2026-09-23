@@ -56,7 +56,7 @@ EC.receiveLesson({
       ] },
 
     { t: "callout", kind: "tradeoff", title: "The honest summary",
-      body: "If your agent is mostly *a conversation with tools and some delegation*, ADK's object model is less code and the services are already there. If your agent is mostly *a state machine with branches, retries and interrupts*, a graph framework expresses it more directly — and ADK's own graph API is newer and less battle-tested than LangGraph's. Both can do both; the question is which one you fight." },
+      body: [{ t: "p", text: "If your agent is mostly *a conversation with tools and some delegation*, ADK's object model is less code and the services are already there. If your agent is mostly *a state machine with branches, retries and interrupts*, a graph framework expresses it more directly — and ADK's own graph API is newer and less battle-tested than LangGraph's. Both can do both; the question is which one you fight." }] },
 
     { t: "h2", n: "03", text: "ADK and LangChain", id: "langchain" },
 
@@ -121,7 +121,7 @@ agent = LlmAgent(
       ] },
 
     { t: "callout", kind: "note", title: "A word on version drift",
-      body: "This lesson describes google-adk **2.9.2**, the version the whole course was written against. All four projects move quickly, and comparisons age badly — the *layer* argument in section 01 is stable, but any specific feature gap should be re-checked against current releases before you quote it in a design document." },
+      body: [{ t: "p", text: "This lesson describes google-adk **2.9.2**, the version the whole course was written against. All four projects move quickly, and comparisons age badly — the *layer* argument in section 01 is stable, but any specific feature gap should be re-checked against current releases before you quote it in a design document." }] },
 
     { t: "exercise", kind: "design", title: "Place four requirements", difficulty: "foundation", minutes: 12,
       body: [{ t: "p", text: "For each requirement, say whether it is a framework question or a runtime question, and which option you would reach for: (a) the agent must resume an approval that was requested yesterday; (b) it must autoscale to zero overnight; (c) it must remember a user's preferences across separate conversations; (d) it must ingest 40,000 PDFs into a vector store." }],

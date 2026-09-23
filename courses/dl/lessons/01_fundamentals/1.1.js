@@ -190,7 +190,7 @@ output:         y  = h₁ − 2·h₂
       ] },
 
     { t: "callout", kind: "mental", title: "Representable is not learnable",
-      body: "The hand-built XOR network above proves a two-unit hidden layer *can* compute XOR. Whether training from a random start *finds* those weights is a different question, and the answer depends on the activation, the width and the initialisation. Keep the two questions apart: the theorem answers the first, the rest of this module the second." },
+      body: [{ t: "p", text: "The hand-built XOR network above proves a two-unit hidden layer *can* compute XOR. Whether training from a random start *finds* those weights is a different question, and the answer depends on the activation, the width and the initialisation. Keep the two questions apart: the theorem answers the first, the rest of this module the second." }] },
 
     { t: "h2", n: "05", text: "Counting parameters", id: "params" },
 

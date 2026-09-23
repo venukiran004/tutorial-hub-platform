@@ -94,7 +94,7 @@ agent = LlmAgent(
     ] },
 
     { t: "callout", kind: "trap", title: "The two settings that move cost most are not in this config",
-      body: "`max_output_tokens` caps the reply; the bill is dominated by input. The two things that actually control it are **how much conversation you send** (`include_contents`, compaction and caching — lessons 2.1 and 5.6) and **how many tool declarations ride along on every call** (lesson 2.6). Tuning temperature and output caps while sending fifty turns and fourteen tools is optimising the wrong half." },
+      body: [{ t: "p", text: "`max_output_tokens` caps the reply; the bill is dominated by input. The two things that actually control it are **how much conversation you send** (`include_contents`, compaction and caching — lessons 2.1 and 5.6) and **how many tool declarations ride along on every call** (lesson 2.6). Tuning temperature and output caps while sending fifty turns and fourteen tools is optimising the wrong half." }] },
 
     { t: "h2", n: "04", text: "Thinking, and when to pay for it", id: "thinking" },
 

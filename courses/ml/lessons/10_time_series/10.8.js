@@ -157,7 +157,7 @@ arch_model(r, vol="GARCH", p=1, q=1, dist="t").fit()
       ["Matrix profile (STUMPY)", "motifs and discords", "repeated-pattern data"]
     ] },
 
-    { t: "callout", kind: "production", title: "The operational difference", body: "An anomaly is a one-off: page someone, exclude the point from training, add a regressor if it has a name. A changepoint means the model's assumptions have expired: retrain, or truncate the training window to start after the break, or add a step regressor — and until you do, the forecasts stay wrong by roughly the size of the change (10.3 measured +22.8 of bias for months after this shift with an expanding window). The CUSUM alarm four days after 1 September is the signal that should trigger that retraining, and the adaptive interval's doubling in 10.7 is the same signal seen from the uncertainty side." },
+    { t: "callout", kind: "production", title: "The operational difference", body: [{ t: "p", text: "An anomaly is a one-off: page someone, exclude the point from training, add a regressor if it has a name. A changepoint means the model's assumptions have expired: retrain, or truncate the training window to start after the break, or add a step regressor — and until you do, the forecasts stay wrong by roughly the size of the change (10.3 measured +22.8 of bias for months after this shift with an expanding window). The CUSUM alarm four days after 1 September is the signal that should trigger that retraining, and the adaptive interval's doubling in 10.7 is the same signal seen from the uncertainty side." }] },
 
     { t: "ladder",
       title: "Forecasting several related series that must add up",

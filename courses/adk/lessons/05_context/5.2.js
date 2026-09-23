@@ -74,7 +74,7 @@ state_delta on the tool-response event: {'app:hits': 3, 'user:name': 'Ada', 'tur
       ] },
 
     { t: "callout", kind: "insight", title: "app: is genuinely global — treat it as read-mostly",
-      text: "The executed trace shows one counter incremented by two different users. That is correct behaviour and it is also a warning: `app:` is shared mutable state across every concurrent conversation in your deployment, with no transaction around your read-modify-write. Use it for configuration you set deliberately, not for counters you expect to be accurate. If you need a correct count, count in a database that understands atomic increments." },
+      body: [{ t: "p", text: "The executed trace shows one counter incremented by two different users. That is correct behaviour and it is also a warning: `app:` is shared mutable state across every concurrent conversation in your deployment, with no transaction around your read-modify-write. Use it for configuration you set deliberately, not for counters you expect to be accurate. If you need a correct count, count in a database that understands atomic increments." }] },
 
     { t: "h2", n: "03", text: "Why changes travel as deltas", id: "delta" },
 
@@ -92,7 +92,7 @@ state_delta on the tool-response event: {'app:hits': 3, 'user:name': 'Ada', 'tur
       edges: [["a", "b"], ["b", "c", "temp: dropped"], ["c", "d"]] },
 
     { t: "callout", kind: "trap", title: "Mutating a nested object does not register",
-      text: "`state[\"cart\"][\"items\"].append(x)` mutates a list in place. The `State` object never sees an assignment, so nothing enters the delta, so nothing is committed — and it will appear to work, because the in-memory dictionary you just mutated is the one the rest of the turn reads. It fails on the next turn, when the value is reloaded from the store without your change. Always reassign: read the value, change it, then `state[\"cart\"] = new_cart`." },
+      body: [{ t: "p", text: "`state[\"cart\"][\"items\"].append(x)` mutates a list in place. The `State` object never sees an assignment, so nothing enters the delta, so nothing is committed — and it will appear to work, because the in-memory dictionary you just mutated is the one the rest of the turn reads. It fails on the next turn, when the value is reloaded from the store without your change. Always reassign: read the value, change it, then `state[\"cart\"] = new_cart`." }] },
 
     { t: "h2", n: "04", text: "Three ways to write state", id: "writes" },
 
@@ -115,7 +115,7 @@ pipeline = SequentialAgent(name="review", sub_agents=[summariser, critic])`,
       caption: "`{summary}` in an instruction is substituted from state before the request is built — the mechanism that makes a SequentialAgent more than a list. Lesson 2.3 ran this." },
 
     { t: "callout", kind: "note", title: "A missing key in an instruction template",
-      text: "`{summary}` with no `summary` in state does not silently render as an empty string — ADK raises rather than sending the model a sentence with a hole in it. If a key is genuinely optional, use an instruction provider function (lesson 5.5) and build the string yourself with `state.get(...)`." },
+      body: [{ t: "p", text: "`{summary}` with no `summary` in state does not silently render as an empty string — ADK raises rather than sending the model a sentence with a hole in it. If a key is genuinely optional, use an instruction provider function (lesson 5.5) and build the string yourself with `state.get(...)`." }] },
 
     { t: "h2", n: "05", text: "What state is not for", id: "not-for" },
 
@@ -127,7 +127,7 @@ pipeline = SequentialAgent(name="review", sub_agents=[summariser, critic])`,
     ] },
 
     { t: "callout", kind: "tradeoff", title: "state versus memory",
-      text: "Both survive the session, so the boundary is worth naming. `user:` state is a small set of keys you chose, written deliberately, read on every turn, and cheap. Memory is everything the user ever said, searched on demand, approximate, and paid for per query (lesson 5.4). A dietary requirement belongs in `user:` state because it must be true on every turn. What the user said about their holiday in March belongs in memory because it matters only when asked about." },
+      body: [{ t: "p", text: "Both survive the session, so the boundary is worth naming. `user:` state is a small set of keys you chose, written deliberately, read on every turn, and cheap. Memory is everything the user ever said, searched on demand, approximate, and paid for per query (lesson 5.4). A dietary requirement belongs in `user:` state because it must be true on every turn. What the user said about their holiday in March belongs in memory because it matters only when asked about." }] },
 
     { t: "exercise", kind: "practice", title: "Place eight facts", difficulty: "core", minutes: 18,
       prompt: "For each of these, choose session state, user: state, app: state, temp:, an artifact, or your own database — and say why. (1) The customer's delivery address for this order. (2) That the customer prefers email over SMS. (3) The feature flag enabling a new tool. (4) A 4 MB invoice PDF the agent generated. (5) The id of the order just created. (6) An intermediate score a before-model callback computed for an after-model callback. (7) The customer's saved payment token. (8) How many times any user has triggered the escalation path today.",

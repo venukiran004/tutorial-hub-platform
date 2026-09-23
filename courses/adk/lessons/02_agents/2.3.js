@@ -48,7 +48,7 @@ pipeline = SequentialAgent(name="pipeline", sub_agents=[w, c, r])`,
     { t: "p", text: "Three agents, three events, three state keys — and the confirmation that matters: the critic's assembled system instruction contained the writer's text, which is the templating of lesson 2.2 doing the hand-off. Note also that **each child reports `is_final_response()` as true**; in a pipeline the last one is the answer, which is the filtering problem lesson 1.5 warned about." },
 
     { t: "callout", kind: "insight", title: "Sequential removes model calls, not just uncertainty",
-      body: "An LLM coordinator that delegates to three specialists in order costs at least three extra model calls — one per routing decision — plus the risk that it routes wrongly on a bad day. A `SequentialAgent` costs zero extra calls and cannot mis-route. Whenever the order is genuinely fixed, this is both the cheaper and the more reliable design." },
+      body: [{ t: "p", text: "An LLM coordinator that delegates to three specialists in order costs at least three extra model calls — one per routing decision — plus the risk that it routes wrongly on a bad day. A `SequentialAgent` costs zero extra calls and cannot mis-route. Whenever the order is genuinely fixed, this is both the cheaper and the more reliable design." }] },
 
     { t: "h2", n: "03", text: "ParallelAgent", id: "parallel" },
 
@@ -86,7 +86,7 @@ fan = SequentialAgent(name="fanin", sub_agents=[
     { t: "out", text: `   summariser saw: Combine 22 C, clear and Heavy on ORR.` },
 
     { t: "callout", kind: "trap", title: "An agent has exactly one parent",
-      body: "Reusing an agent object in two different parents raises at construction: *Agent `weather` already has a parent agent, current parent: `gather`, trying to add: `gather2`*. Agents are tree nodes with a `parent_agent` back-reference, not reusable values. If two pipelines need the same behaviour, build the agent twice from a factory function — which is also what keeps their instructions and tool lists independently tunable." },
+      body: [{ t: "p", text: "Reusing an agent object in two different parents raises at construction: *Agent `weather` already has a parent agent, current parent: `gather`, trying to add: `gather2`*. Agents are tree nodes with a `parent_agent` back-reference, not reusable values. If two pipelines need the same behaviour, build the agent twice from a factory function — which is also what keeps their instructions and tool lists independently tunable." }] },
 
     { t: "h2", n: "04", text: "LoopAgent", id: "loop" },
 

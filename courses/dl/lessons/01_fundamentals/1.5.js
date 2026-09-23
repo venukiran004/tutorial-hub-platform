@@ -119,7 +119,7 @@ print(f" torch.optim.Adam after the same three gradients: θ = {p.item():.6f}")`
     { t: "p", text: "Three observations. **SGD** moves by 0.1 × gradient, so the third step, with a negative gradient, walks back. **Momentum** at the third step still moves *down* (v = 0.247 > 0) even though the gradient turned negative — the history outweighs one contrary gradient, which is what damps oscillation. **Adam's** steps are 0.001000, 0.000983, 0.000619 — all close to α = 0.001 despite gradients of 2.0, 1.5 and −0.5, because the step is m̂ / √v̂, a ratio of two quantities with the same units. That scale-invariance is why Adam's default learning rate transfers across problems and SGD's does not." },
 
     { t: "callout", kind: "trap", title: "PyTorch's momentum is not the reference's formula",
-      body: "The reference writes v = βv + (1 − β)g. `torch.optim.SGD(momentum=0.9)` uses v = βv + g, without the (1 − β) factor — so the same learning rate gives steps up to ten times larger. Run the three gradients through it and θ ends at 0.2230 rather than 0.9223. Both are momentum; the learning rates are simply on different scales, and a value copied from a paper that used one convention will be wrong by 1/(1 − β) in the other." },
+      body: [{ t: "p", text: "The reference writes v = βv + (1 − β)g. `torch.optim.SGD(momentum=0.9)` uses v = βv + g, without the (1 − β) factor — so the same learning rate gives steps up to ten times larger. Run the three gradients through it and θ ends at 0.2230 rather than 0.9223. Both are momentum; the learning rates are simply on different scales, and a value copied from a paper that used one convention will be wrong by 1/(1 − β) in the other." }] },
 
     { t: "h2", n: "03", text: "Adam + L2 is not AdamW", id: "adamw" },
 
@@ -163,7 +163,7 @@ for cls, kw in [(torch.optim.Adam, dict(weight_decay=0.1)), (torch.optim.AdamW, 
       ] },
 
     { t: "callout", kind: "tradeoff", title: "Adam versus SGD, as the reference frames it",
-      body: "Adam: adaptive per-parameter rates, fast convergence, a good default, robust to the learning rate. SGD with momentum: one global rate that needs tuning and a schedule, but often *generalises better* — it is empirically observed to find flatter minima. Use Adam to prototype and for transformers; use SGD for the final training of convolutional networks when you can afford the tuning; use AdamW when fine-tuning." },
+      body: [{ t: "p", text: "Adam: adaptive per-parameter rates, fast convergence, a good default, robust to the learning rate. SGD with momentum: one global rate that needs tuning and a schedule, but often *generalises better* — it is empirically observed to find flatter minima. Use Adam to prototype and for transformers; use SGD for the final training of convolutional networks when you can afford the tuning; use AdamW when fine-tuning." }] },
 
     { t: "exercise", kind: "practice", title: "RMSprop by hand, then Adam's ε", difficulty: "core", minutes: 15,
       body: [{ t: "p", text: "(a) Carry RMSprop through the three gradients 2.0, 1.5, −0.5 by hand with β = 0.9 and η = 0.01 (not 0.001), starting at θ = 1.0, and confirm with `torch.optim.RMSprop(lr=0.01, alpha=0.9)`. (b) Then explain what happens to Adam's step when a parameter's gradient is exactly zero for many steps and ε were also zero." }],

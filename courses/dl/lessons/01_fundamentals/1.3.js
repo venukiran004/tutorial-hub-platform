@@ -193,10 +193,10 @@ y=-1 score=+0.5: hinge 1.50` },
       ] },
 
     { t: "callout", kind: "mental", title: "Loss = negative log-likelihood",
-      body: "Cross-entropy is the negative log-likelihood of a Bernoulli (binary) or categorical model; MSE is the negative log-likelihood of a Gaussian with fixed variance. Minimising the loss is maximising the likelihood of the data under the model the output activation implies — which is why the activation and the loss come in pairs, and why the pairs cannot be mixed." },
+      body: [{ t: "p", text: "Cross-entropy is the negative log-likelihood of a Bernoulli (binary) or categorical model; MSE is the negative log-likelihood of a Gaussian with fixed variance. Minimising the loss is maximising the likelihood of the data under the model the output activation implies — which is why the activation and the loss come in pairs, and why the pairs cannot be mixed." }] },
 
     { t: "callout", kind: "trap", title: "In PyTorch the softmax is inside the loss",
-      body: "`nn.CrossEntropyLoss` expects raw logits and applies log-softmax itself, numerically stably; `nn.BCEWithLogitsLoss` does the same with the sigmoid. Put a softmax layer at the end of a model trained with CrossEntropyLoss and you apply it twice — the model still trains, slowly, with squashed gradients, and the bug is silent. The model's last layer should be `nn.Linear` and nothing else." },
+      body: [{ t: "p", text: "`nn.CrossEntropyLoss` expects raw logits and applies log-softmax itself, numerically stably; `nn.BCEWithLogitsLoss` does the same with the sigmoid. Put a softmax layer at the end of a model trained with CrossEntropyLoss and you apply it twice — the model still trains, slowly, with squashed gradients, and the bug is silent. The model's last layer should be `nn.Linear` and nothing else." }] },
 
     { t: "exercise", kind: "practice", title: "Carry a different input through", difficulty: "foundation", minutes: 12,
       body: [{ t: "p", text: "With the reference's weights, work the forward pass by hand for x = [2.0, 1.0]: z¹, a¹, z², ŷ, and the binary cross-entropy if the true label is 1. Check every number in NumPy." }],

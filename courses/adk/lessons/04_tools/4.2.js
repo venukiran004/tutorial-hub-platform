@@ -66,7 +66,7 @@ EC.receiveLesson({
     { t: "p", text: "The mechanism is the same as everywhere else: the assignment is collected into the event's `state_delta` and applied when the event is appended (lesson 1.4). A tool therefore cannot lose a state write by raising *after* the assignment — but it also cannot read another agent's write that has not yet been appended." },
 
     { t: "callout", kind: "insight", title: "State or return value?",
-      body: "Return what the model needs to compose its answer; write to state what *later turns or other agents* need. A retrieved document's three relevant sentences go in the return value; the fact that this user has now asked about refunds twice goes in `user:` state. Putting everything in the return value re-sends it on every later call; putting everything in state hides it from the model that needs it now." },
+      body: [{ t: "p", text: "Return what the model needs to compose its answer; write to state what *later turns or other agents* need. A retrieved document's three relevant sentences go in the return value; the fact that this user has now asked about refunds twice goes in `user:` state. Putting everything in the return value re-sends it on every later call; putting everything in state hides it from the model that needs it now." }] },
 
     { t: "h2", n: "03", text: "Actions: changing what happens next", id: "actions" },
 

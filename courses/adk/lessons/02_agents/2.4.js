@@ -68,7 +68,7 @@ router = RouterAgent(name="router", sub_agents=[urgent_agent, normal_agent])`,
     ] },
 
     { t: "callout", kind: "insight", title: "Custom agents are for control flow, not for logic",
-      body: "If the custom agent is doing work — calling an API, transforming data — that work belongs in a tool, where it is testable on its own and visible to the model. Reach for a custom agent when the *order* or *condition* of steps is the problem: a retry with a different strategy, a branch on a database value, a step skipped when state says it already ran." },
+      body: [{ t: "p", text: "If the custom agent is doing work — calling an API, transforming data — that work belongs in a tool, where it is testable on its own and visible to the model. Reach for a custom agent when the *order* or *condition* of steps is the problem: a retry with a different strategy, a branch on a database value, a step skipped when state says it already ran." }] },
 
     { t: "h2", n: "02", text: "The Workflow graph", id: "graph" },
 
@@ -145,7 +145,7 @@ runner = InMemoryRunner(node=wf, app_name="wfapp")      # note: node=, not agent
       ] },
 
     { t: "callout", kind: "note", title: "New, and moving",
-      body: "The graph API arrived with ADK 2.x and is less settled than the agent tree — the field names and the routing mechanics in this lesson are from 2.9.2 and were verified by running them, but treat them as more likely to shift than `SequentialAgent`. For most systems the agent tree plus the three workflow agents is still the path of least surprise; reach for the graph when the shape genuinely is a graph." },
+      body: [{ t: "p", text: "The graph API arrived with ADK 2.x and is less settled than the agent tree — the field names and the routing mechanics in this lesson are from 2.9.2 and were verified by running them, but treat them as more likely to shift than `SequentialAgent`. For most systems the agent tree plus the three workflow agents is still the path of least surprise; reach for the graph when the shape genuinely is a graph." }] },
 
     { t: "h2", n: "03", text: "Three ways to express control flow", id: "choosing" },
 

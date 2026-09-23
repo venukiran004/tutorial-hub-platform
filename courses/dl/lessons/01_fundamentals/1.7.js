@@ -44,7 +44,7 @@ gradient λW =
         [ 0.0200,  0.0010]])` },
 
     { t: "callout", kind: "note", title: "In PyTorch: weight_decay",
-      body: "`torch.optim.SGD(..., weight_decay=λ)` adds λW to the gradient, which is exactly this penalty. With Adam the same argument is L2-in-the-gradient and behaves unevenly across parameters; `AdamW` applies the decay to the weights directly (lesson 1.5). Either way, the usual practice is to decay weights but not biases or normalisation parameters." },
+      body: [{ t: "p", text: "`torch.optim.SGD(..., weight_decay=λ)` adds λW to the gradient, which is exactly this penalty. With Adam the same argument is L2-in-the-gradient and behaves unevenly across parameters; `AdamW` applies the decay to the weights directly (lesson 1.5). Either way, the usual practice is to decay weights but not biases or normalisation parameters." }] },
 
     { t: "h2", n: "02", text: "Dropout", id: "dropout" },
 
@@ -232,7 +232,7 @@ restored epoch 11: val acc 0.9316, test acc 0.9337` },
     { t: "p", text: "Two things the trace shows that a description does not. The counter resets on *any* improvement, however small — epoch 11 beat epoch 7 by 0.0018 and bought five more epochs. And the validation loss is noisy: epochs 5 and 8 were near-misses that a longer patience would have ridden through, which is why the reference's default is 10. Restoring the checkpoint matters: the model at epoch 16 is worse than the model at epoch 11, and without the `load_state_dict` you would ship the worse one." },
 
     { t: "callout", kind: "insight", title: "The reference's ordered checklist for overfitting",
-      body: "Training loss falling while validation loss rises means overfitting. In order: (1) more data, or augmentation if there is no more; (2) more regularisation — raise dropout from 0.3 towards 0.5, add or increase weight decay; (3) early stopping with a checkpoint at the best validation loss; (4) reduce capacity — fewer layers or units; (5) batch normalisation if not already present; (6) check for data leakage, because a suspiciously low training loss can mean the answer is in the features; (7) cross-validate, in case the split was unlucky." },
+      body: [{ t: "p", text: "Training loss falling while validation loss rises means overfitting. In order: (1) more data, or augmentation if there is no more; (2) more regularisation — raise dropout from 0.3 towards 0.5, add or increase weight decay; (3) early stopping with a checkpoint at the best validation loss; (4) reduce capacity — fewer layers or units; (5) batch normalisation if not already present; (6) check for data leakage, because a suspiciously low training loss can mean the answer is in the features; (7) cross-validate, in case the split was unlucky." }] },
 
     { t: "exercise", kind: "practice", title: "Read a dropout rate off the gap", difficulty: "core", minutes: 15,
       body: [{ t: "p", text: "Train the reference's Net on the same 5,000 MNIST digits with dropout 0.0, 0.3 and 0.5 for 30 epochs each, and report training, validation and test accuracy. Then answer: at which rate is the train–validation gap smallest, and does that rate also give the best test accuracy?" }],

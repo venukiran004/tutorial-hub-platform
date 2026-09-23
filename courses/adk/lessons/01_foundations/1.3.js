@@ -78,7 +78,7 @@ root_agent = Agent(
       ] },
 
     { t: "callout", kind: "trap", title: "Two backends, two sets of environment variables",
-      body: "`GOOGLE_GENAI_USE_VERTEXAI=FALSE` with a `GOOGLE_API_KEY` uses the Gemini API directly — fastest to start. `GOOGLE_GENAI_USE_VERTEXAI=TRUE` with `GOOGLE_CLOUD_PROJECT` and `GOOGLE_CLOUD_LOCATION` uses Vertex AI with application-default credentials, which is what you need for IAM, VPC controls and the Vertex-backed services. The same agent code runs on both; only the .env changes. A missing variable here produces an authentication error at the first model call, not at import." },
+      body: [{ t: "p", text: "`GOOGLE_GENAI_USE_VERTEXAI=FALSE` with a `GOOGLE_API_KEY` uses the Gemini API directly — fastest to start. `GOOGLE_GENAI_USE_VERTEXAI=TRUE` with `GOOGLE_CLOUD_PROJECT` and `GOOGLE_CLOUD_LOCATION` uses Vertex AI with application-default credentials, which is what you need for IAM, VPC controls and the Vertex-backed services. The same agent code runs on both; only the .env changes. A missing variable here produces an authentication error at the first model call, not at import." }] },
 
     { t: "h2", n: "03", text: "The CLI", id: "cli" },
 
@@ -131,7 +131,7 @@ adk web . --eval_storage_uri …  # keep evalsets somewhere other than the local
       ] },
 
     { t: "callout", kind: "insight", title: "Save the failure as a test while you are looking at it",
-      body: "The first time an agent calls the wrong tool, the dev UI lets you turn that exact conversation into an eval case. That habit — every bug becomes a case in the evalset before it is fixed — is what stops agent development from being an endless manual re-test, and it is the same discipline as writing a failing test first." },
+      body: [{ t: "p", text: "The first time an agent calls the wrong tool, the dev UI lets you turn that exact conversation into an eval case. That habit — every bug becomes a case in the evalset before it is fixed — is what stops agent development from being an endless manual re-test, and it is the same discipline as writing a failing test first." }] },
 
     { t: "h2", n: "05", text: "The programmatic equivalent", id: "programmatic" },
 

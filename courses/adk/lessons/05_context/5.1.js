@@ -34,7 +34,7 @@ EC.receiveLesson({
       ] },
 
     { t: "callout", kind: "trap", title: "user_id is your identity, not ADK's",
-      text: "ADK never authenticates anybody. Whatever string you pass as `user_id` is taken as gospel, and it is the key that selects which person's state and memory the agent can read. If that string comes from a request body rather than from a verified session cookie or token, any caller can read any user's data by typing their id. Derive `user_id` server-side from the authenticated principal, always. Lesson 9.1 returns to this." },
+      body: [{ t: "p", text: "ADK never authenticates anybody. Whatever string you pass as `user_id` is taken as gospel, and it is the key that selects which person's state and memory the agent can read. If that string comes from a request body rather than from a verified session cookie or token, any caller can read any user's data by typing their id. Derive `user_id` server-side from the authenticated principal, always. Lesson 9.1 returns to this." }] },
 
     { t: "h2", n: "02", text: "What a Session actually holds", id: "fields" },
 
@@ -54,7 +54,7 @@ print(list(Session.model_fields))`,
     ] },
 
     { t: "callout", kind: "insight", title: "Six fields is the whole abstraction",
-      text: "There is no `history`, no `summary`, no `context` field and no hidden buffer. Everything the agent knows about this conversation is derivable from `events` and `state`. When you are debugging a session that behaves oddly, printing those two lists is not a first step towards the answer — it is the answer." },
+      body: [{ t: "p", text: "There is no `history`, no `summary`, no `context` field and no hidden buffer. Everything the agent knows about this conversation is derivable from `events` and `state`. When you are debugging a session that behaves oddly, printing those two lists is not a first step towards the answer — it is the answer." }] },
 
     { t: "h2", n: "03", text: "A session, traced", id: "trace" },
 
@@ -126,7 +126,7 @@ history the 2nd turn saw: 5 contents` },
       ] },
 
     { t: "callout", kind: "mental", title: "The agent is a pure function of (session, message)",
-      text: "Given the same session and the same new message, the same agent produces the same behaviour up to model sampling. This is why ADK is testable at all (lesson 11.3), why a replayed production session reproduces a bug, and why 'the agent forgot' is never really true — either the information was never written to the session, or the request did not include the events that held it." },
+      body: [{ t: "p", text: "Given the same session and the same new message, the same agent produces the same behaviour up to model sampling. This is why ADK is testable at all (lesson 11.3), why a replayed production session reproduces a bug, and why 'the agent forgot' is never really true — either the information was never written to the session, or the request did not include the events that held it." }] },
 
     { t: "h2", n: "05", text: "The lifecycle", id: "lifecycle" },
 
@@ -140,7 +140,7 @@ history the 2nd turn saw: 5 contents` },
       ] },
 
     { t: "callout", kind: "tradeoff", title: "When to continue a session and when to start a new one",
-      text: "Continue while the conversation is about the same thing: the transcript is the context, and that is the point. Start a new session when the subject changes, when the old session has grown long enough to be expensive (lesson 5.6), or when a support ticket closes. What you must not do is start a new session to 'clear' something the user asked you to forget while leaving it in `user:` state or in memory — those survive the session boundary by design, and deleting the conversation does not delete them." },
+      body: [{ t: "p", text: "Continue while the conversation is about the same thing: the transcript is the context, and that is the point. Start a new session when the subject changes, when the old session has grown long enough to be expensive (lesson 5.6), or when a support ticket closes. What you must not do is start a new session to 'clear' something the user asked you to forget while leaving it in `user:` state or in memory — those survive the session boundary by design, and deleting the conversation does not delete them." }] },
 
     { t: "h2", n: "06", text: "Sessions are per user, and the key enforces it", id: "isolation" },
 
@@ -167,7 +167,7 @@ for i, e in enumerate(back.events):
       } },
 
     { t: "callout", kind: "note", title: "Where the runner gets its session service",
-      text: "`Runner(app_name=…, agent=…, session_service=…)` takes it explicitly, and `InMemoryRunner` constructs an in-memory one for you. The dev UI and `adk web` do the same thing with whatever `--session_service_uri` you pass. There is no global default and no implicit singleton, which is deliberate: a process that talks to two stores should not have an ambient one." }
+      body: [{ t: "p", text: "`Runner(app_name=…, agent=…, session_service=…)` takes it explicitly, and `InMemoryRunner` constructs an in-memory one for you. The dev UI and `adk web` do the same thing with whatever `--session_service_uri` you pass. There is no global default and no implicit singleton, which is deliberate: a process that talks to two stores should not have an ambient one." }] }
 
   ],
 

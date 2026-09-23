@@ -172,7 +172,7 @@ with BatchNorm after every layer, ReLU, N(0, 4/n):  depth 5: 1.345e-01  depth 20
       ] },
 
     { t: "callout", kind: "mental", title: "Residual connections, in one derivative",
-      body: "A residual block computes x + F(x), and ∂(x + F(x))/∂x = 1 + ∂F/∂x. The 1 is a path through the layer that no weight scale and no activation derivative can shrink; the gradient reaches the bottom of a hundred-layer network along the identity path even if every F contributes nothing. That is why ResNets (module 2) train at depths that plain stacks cannot, and why transformers wrap every sub-layer in one." },
+      body: [{ t: "p", text: "A residual block computes x + F(x), and ∂(x + F(x))/∂x = 1 + ∂F/∂x. The 1 is a path through the layer that no weight scale and no activation derivative can shrink; the gradient reaches the bottom of a hundred-layer network along the identity path even if every F contributes nothing. That is why ResNets (module 2) train at depths that plain stacks cannot, and why transformers wrap every sub-layer in one." }] },
 
     { t: "exercise", kind: "practice", title: "Batch norm's γ and β at work", difficulty: "core", minutes: 12,
       body: [{ t: "p", text: "Set the batch-norm layer's γ to [2, 1, 0.5] and β to [1, 0, −1], apply it in train mode to the 4 × 3 batch, and verify by hand that each column is γ·x̂ + β. Then explain why a network is free to learn γ = σ_B and β = μ_B and thereby undo the normalisation entirely — and why it usually does not." }],

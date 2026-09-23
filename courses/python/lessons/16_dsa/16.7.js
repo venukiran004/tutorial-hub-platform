@@ -165,7 +165,7 @@ print(4 * inside / N)      # 3.1372 — within 0.15 % of π; the error shrinks l
     ] },
 
     { t: "callout", kind: "mental", title: "A correct answer beats an elegant wrong one",
-      body: "In an interview, say the brute-force approach and its complexity first, then improve it. Interviewers want to see that you can get *an* answer, that you can see what is being recomputed, and that you can name what the improvement costs. Skipping to the clever version and getting it wrong scores lower than the plain version done right." },
+      body: [{ t: "p", text: "In an interview, say the brute-force approach and its complexity first, then improve it. Interviewers want to see that you can get *an* answer, that you can see what is being recomputed, and that you can name what the improvement costs. Skipping to the clever version and getting it wrong scores lower than the plain version done right." }] },
 
     { t: "exercise", kind: "practice", title: "Greedy or DP?", difficulty: "advanced", minutes: 20,
       body: [{ t: "p", text: "For each problem decide whether greedy is correct, and if not write the DP: (a) schedule the maximum number of non-overlapping meetings from a list of (start, end); (b) fewest coins for an amount with coins {1, 7, 10}; (c) the maximum sum of a contiguous subarray. Give the paradigm, the complexity, and a test case where the wrong paradigm fails if there is one." }],

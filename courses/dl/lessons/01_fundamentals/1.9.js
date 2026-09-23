@@ -134,10 +134,10 @@ scheduler = LambdaLR(optimizer, lr_factor)   # multiplies the optimiser's base l
       ] },
 
     { t: "callout", kind: "trap", title: "Order and frequency",
-      body: "Call `optimizer.step()` before `scheduler.step()` — PyTorch warns if you reverse them, and the first scheduled rate is skipped. Epoch-based schedulers step once per epoch; OneCycleLR steps once per batch and needs total_steps to match, or it raises an error partway through the run. ReduceLROnPlateau must be given the metric, `scheduler.step(val_loss)`, and it should be the validation metric — stepping it on the training loss makes it react to noise." },
+      body: [{ t: "p", text: "Call `optimizer.step()` before `scheduler.step()` — PyTorch warns if you reverse them, and the first scheduled rate is skipped. Epoch-based schedulers step once per epoch; OneCycleLR steps once per batch and needs total_steps to match, or it raises an error partway through the run. ReduceLROnPlateau must be given the metric, `scheduler.step(val_loss)`, and it should be the validation metric — stepping it on the training loss makes it react to noise." }] },
 
     { t: "callout", kind: "insight", title: "Read the loss curve against the schedule",
-      body: "A step-decay run whose loss plunges at every cliff was running too hot between them. A cosine run whose loss is still falling steeply at the end was cut short — extend T_max. A plateau scheduler that halves the rate five times in a row is telling you the model has converged and the remaining epochs are wasted. The schedule is a plan; the loss curve is the review of it." },
+      body: [{ t: "p", text: "A step-decay run whose loss plunges at every cliff was running too hot between them. A cosine run whose loss is still falling steeply at the end was cut short — extend T_max. A plateau scheduler that halves the rate five times in a row is telling you the model has converged and the remaining epochs are wasted. The schedule is a plan; the loss curve is the review of it." }] },
 
     { t: "exercise", kind: "practice", title: "Build the warm-up schedule and check it", difficulty: "core", minutes: 12,
       body: [{ t: "p", text: "Using LambdaLR, build a schedule that warms up linearly for 5 epochs to lr = 3 × 10⁻⁴, holds for 15 epochs, then decays linearly to zero at epoch 50. Record the rate every epoch and print it at epochs 0, 2, 5, 10, 20, 35 and 49." }],

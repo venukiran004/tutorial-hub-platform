@@ -66,7 +66,7 @@ agent = LlmAgent(name="concierge", model=M, instruction="…", tools=[book_table
       edges: [] },
 
     { t: "callout", kind: "insight", title: "The docstring is the prompt",
-      body: "A model choosing between eight tools reads eight descriptions. `\"\"\"Process.\"\"\"` gives it nothing; a first line that says what the tool *does to the world*, plus an Args section with units, formats and limits, removes most tool-selection and argument errors without a word of instruction text. This is the highest-value writing in an agent codebase." },
+      body: [{ t: "p", text: "A model choosing between eight tools reads eight descriptions. `\"\"\"Process.\"\"\"` gives it nothing; a first line that says what the tool *does to the world*, plus an Args section with units, formats and limits, removes most tool-selection and argument errors without a word of instruction text. This is the highest-value writing in an agent codebase." }] },
 
     { t: "h2", n: "02", text: "Types that translate, and types that do not", id: "types" },
 
@@ -167,7 +167,7 @@ LongRunningFunctionTool(func=start_export)                 # returns immediately
       caption: "`require_confirmation` takes a bool or a predicate over `(args, tool_context)`, so \"confirm only above ten thousand\" is a lambda rather than a branch inside the tool." },
 
     { t: "callout", kind: "trap", title: "Async tools are first class; blocking ones are not",
-      body: "A tool may be `def` or `async def`. An `async def` tool that awaits an async client is the right shape — several tool calls in one turn then run concurrently (lesson 4.3). A `def` tool that blocks on `requests.get` holds the event loop for its duration, stalling every other agent and every other user's turn in the same process. Either make it async, or keep it genuinely fast." },
+      body: [{ t: "p", text: "A tool may be `def` or `async def`. An `async def` tool that awaits an async client is the right shape — several tool calls in one turn then run concurrently (lesson 4.3). A `def` tool that blocks on `requests.get` holds the event loop for its duration, stalling every other agent and every other user's turn in the same process. Either make it async, or keep it genuinely fast." }] },
 
     { t: "exercise", kind: "practice", title: "Print your own declaration", difficulty: "core", minutes: 15,
       body: [{ t: "p", text: "Write a tool for cancelling a subscription with four parameters, one of them optional, one of them a list. Print the generated declaration. Then make three deliberate mistakes — remove the type hints, shorten the docstring to one word, and add a `dict[str, Any]` parameter — and print it again. Describe what the model lost each time." }],

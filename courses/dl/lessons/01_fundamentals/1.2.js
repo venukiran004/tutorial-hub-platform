@@ -126,7 +126,7 @@ mish             -0.1456  -0.3034  -0.2207   0.0000   0.3752   0.8651   2.9865
     { t: "p", text: "Three things to read off the numbers. **The sigmoid's derivative peaks at 0.25 and is already 0.045 at |z| = 3**: ten sigmoid layers in a row multiply the gradient by at most 0.25¹⁰ ≈ 10⁻⁶, which is the vanishing-gradient problem in one line (lesson 1.8). Tanh peaks at 1 and is zero-centred, which is why it beat sigmoid in hidden layers before ReLU arrived, but it saturates just as hard: 0.0099 at |z| = 3. **ReLU's derivative is 1 for every positive input** — no shrinking, however deep — and 0 for every negative one, which is both its virtue and its failure mode. GELU and SiLU are ReLU with the corner rounded off: a small negative output around z ≈ −0.75 and a derivative that passes smoothly through 0.5 at zero, which is what transformers and EfficientNet use." },
 
     { t: "callout", kind: "note", title: "Softmax is different in kind",
-      body: "Every other row is applied to one number at a time. Softmax takes a whole vector of logits and returns a probability distribution: softmax([2, 1, 0.1]) = [0.659, 0.242, 0.099], summing to 1. Its derivative is a matrix (the Jacobian ∂pᵢ/∂zⱼ = pᵢ(δᵢⱼ − pⱼ)), which is why it lives at the output and is paired with cross-entropy, where the two combine into the clean gradient p − y (lesson 1.4)." },
+      body: [{ t: "p", text: "Every other row is applied to one number at a time. Softmax takes a whole vector of logits and returns a probability distribution: softmax([2, 1, 0.1]) = [0.659, 0.242, 0.099], summing to 1. Its derivative is a matrix (the Jacobian ∂pᵢ/∂zⱼ = pᵢ(δᵢⱼ − pⱼ)), which is why it lives at the output and is paired with cross-entropy, where the two combine into the clean gradient p − y (lesson 1.4)." }] },
 
     { t: "h2", n: "03", text: "Which one where", id: "which" },
 
@@ -174,7 +174,7 @@ bias -5: fraction of zero activations 0.841` },
     ] },
 
     { t: "callout", kind: "trap", title: "A dying network looks like a slow one",
-      body: "The symptom is a loss that falls at first and then stalls well above where it should, or a training accuracy that plateaus early. Nothing errors. The only way to see it is to measure the activations — which is why the debugging lesson (1.12) puts activation statistics on the checklist." },
+      body: [{ t: "p", text: "The symptom is a loss that falls at first and then stalls well above where it should, or a training accuracy that plateaus early. Nothing errors. The only way to see it is to measure the activations — which is why the debugging lesson (1.12) puts activation statistics on the checklist." }] },
 
     { t: "exercise", kind: "practice", title: "The 0.25 ceiling", difficulty: "foundation", minutes: 12,
       body: [{ t: "p", text: "Using the derivative column, work out the largest possible factor by which a gradient can be scaled as it passes back through (a) one sigmoid layer, (b) five sigmoid layers, (c) five tanh layers, (d) five ReLU layers, ignoring the weight matrices. Then confirm (a) numerically by evaluating σ′(z) = σ(z)(1 − σ(z)) at z = 0, 1 and 3." }],

@@ -70,7 +70,7 @@ agent = LlmAgent(
     ] },
 
     { t: "callout", kind: "trap", title: "Built-in tools have combination limits",
-      body: "Server-side tools have historically come with restrictions on being combined with each other or with function tools in a single agent, and the rules differ by model version. The robust pattern when you hit one is the same as for tool-count problems: put the built-in tool on its own small agent and expose that agent to the parent as an `AgentTool` (lesson 2.6). The parent then sees one ordinary tool, and the restriction applies only inside the child." },
+      body: [{ t: "p", text: "Server-side tools have historically come with restrictions on being combined with each other or with function tools in a single agent, and the rules differ by model version. The robust pattern when you hit one is the same as for tool-count problems: put the built-in tool on its own small agent and expose that agent to the parent as an `AgentTool` (lesson 2.6). The parent then sees one ordinary tool, and the restriction applies only inside the child." }] },
 
     { t: "h2", n: "03", text: "Code execution", id: "code" },
 
@@ -101,7 +101,7 @@ analyst = LlmAgent(name="analyst", model="gemini-2.5-pro",
       ] },
 
     { t: "callout", kind: "trap", title: "UnsafeLocalCodeExecutor in production is a remote-code-execution vulnerability",
-      body: "It executes model-generated Python in your server process. Anyone who can influence the model's input — that is, any user — can influence what runs, with your service's credentials and network access. It exists for local experiments. The safe choices are the built-in or Vertex AI sandboxes; a container or GKE executor is acceptable when the pod has no credentials and no egress (lesson 9.2)." },
+      body: [{ t: "p", text: "It executes model-generated Python in your server process. Anyone who can influence the model's input — that is, any user — can influence what runs, with your service's credentials and network access. It exists for local experiments. The safe choices are the built-in or Vertex AI sandboxes; a container or GKE executor is acceptable when the pod has no credentials and no egress (lesson 9.2)." }] },
 
     { t: "h2", n: "04", text: "What you lose with server-side tools", id: "tradeoffs" },
 

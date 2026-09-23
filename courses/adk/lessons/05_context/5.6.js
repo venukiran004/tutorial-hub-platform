@@ -38,7 +38,7 @@ print("contents sent per request:", [len(r.contents) for r in llm.seen])` },
       items: ["1", "3", "5", "7", "9"], highlight: [4], tone: "warn", negative: false },
 
     { t: "callout", kind: "insight", title: "Three separate problems, often confused",
-      text: "**Cost** is tokens billed per request, and it grows first. **Latency** grows with input length too, though more gently. **Quality** degrades last and least predictably: a model given forty thousand tokens of history attends less reliably to any particular fact in it, which is why a long conversation starts 'forgetting' things that are demonstrably still in the context. Compaction helps all three; caching helps only the first two." },
+      body: [{ t: "p", text: "**Cost** is tokens billed per request, and it grows first. **Latency** grows with input length too, though more gently. **Quality** degrades last and least predictably: a model given forty thousand tokens of history attends less reliably to any particular fact in it, which is why a long conversation starts 'forgetting' things that are demonstrably still in the context. Compaction helps all three; caching helps only the first two." }] },
 
     { t: "h2", n: "02", text: "Compaction", id: "compaction" },
 
@@ -71,7 +71,7 @@ events stored: 14
       ] },
 
     { t: "callout", kind: "trap", title: "Compaction is lossy, and the loss is chosen by a model",
-      text: "A summariser writing 'the user discussed their booking' has silently discarded the booking reference. Anything that must survive the whole conversation should be in **state**, not left in the transcript hoping a summary preserves it — state is never compacted. Write the identifiers, the decisions and the constraints to state as they are established, and let compaction take the prose." },
+      body: [{ t: "p", text: "A summariser writing 'the user discussed their booking' has silently discarded the booking reference. Anything that must survive the whole conversation should be in **state**, not left in the transcript hoping a summary preserves it — state is never compacted. Write the identifiers, the decisions and the constraints to state as they are established, and let compaction take the prose." }] },
 
     { t: "diagram", kind: "timeline", title: "What the model sees on turn 12, with and without compaction",
       caption: "Compaction keeps the recent turns exact and replaces the distant past with prose. The choice is not whether to lose detail — a long prompt loses it too, by dilution — but whether you control which detail.",
@@ -102,7 +102,7 @@ print({k: (str(v.annotation), v.default) for k, v in ContextCacheConfig.model_fi
     ] },
 
     { t: "callout", kind: "tradeoff", title: "Caching and compaction pull in opposite directions",
-      text: "Caching rewards a prefix that does not change; compaction rewrites the prefix every time it runs. Used together with an aggressive `compaction_interval`, you invalidate the cache constantly and pay for both. Prefer caching when conversations are long-running and active with a large stable instruction and tool set; prefer compaction when they run long enough that the window itself is the problem. If you use both, compact rarely." },
+      body: [{ t: "p", text: "Caching rewards a prefix that does not change; compaction rewrites the prefix every time it runs. Used together with an aggressive `compaction_interval`, you invalidate the cache constantly and pay for both. Prefer caching when conversations are long-running and active with a large stable instruction and tool set; prefer compaction when they run long enough that the window itself is the problem. If you use both, compact rarely." }] },
 
     { t: "h2", n: "04", text: "Sending nothing at all", id: "none" },
 
@@ -132,7 +132,7 @@ print({k: (str(v.annotation), v.default) for k, v in ContextCacheConfig.model_fi
       edges: [["a", "b"], ["b", "c"], ["c", "d"], ["d", "e"]] },
 
     { t: "callout", kind: "good", title: "The cheapest context management is a new session",
-      text: "When the user changes subject, the previous forty turns are not context — they are noise you are paying to send. A product that quietly starts a new session at a natural boundary, carrying the durable facts in `user:` state, outperforms one that maintains a single endless thread on cost, latency and answer quality at once. The transcript is not sacred; the facts are." },
+      body: [{ t: "p", text: "When the user changes subject, the previous forty turns are not context — they are noise you are paying to send. A product that quietly starts a new session at a natural boundary, carrying the durable facts in `user:` state, outperforms one that maintains a single endless thread on cost, latency and answer quality at once. The transcript is not sacred; the facts are." }] },
 
     { t: "exercise", kind: "practice", title: "Measure the sawtooth yourself", difficulty: "advanced", minutes: 24,
       prompt: "Run ten turns through a scripted model with no compaction and record the contents count per request. Turn on compaction with an interval of 3 and an overlap of 1 and run the same ten turns. Plot both. Then count how many model requests each run made, and explain the difference. Finally, set event_retention_size to 4 and describe what changes about the last few turns.",

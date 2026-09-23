@@ -119,7 +119,7 @@ session now holds 4 events` },
     ] },
 
     { t: "callout", kind: "mental", title: "The one-sentence model",
-      body: "An **agent** decides, a **runner** executes, a **session** remembers, an **event** records, and **services** persist. Every question in this course is which of those five is responsible — and almost every bug is a mistake about which one owns a particular piece of information." },
+      body: [{ t: "p", text: "An **agent** decides, a **runner** executes, a **session** remembers, an **event** records, and **services** persist. Every question in this course is which of those five is responsible — and almost every bug is a mistake about which one owns a particular piece of information." }] },
 
     { t: "h2", n: "05", text: "Why async, everywhere", id: "async" },
 

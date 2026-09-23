@@ -58,7 +58,7 @@ agent = LlmAgent(name="store", model=M, instruction="Help with the pet store.",
       edges: [["s", "t"], ["t", "d"], ["d", "m"]] },
 
     { t: "callout", kind: "trap", title: "A 60-operation API is not a 60-tool agent",
-      body: "Generating every operation gives the model sixty near-identical declarations, which is well past the point where tool selection degrades (lesson 2.6), and sends all sixty schemas on every call. Filter to the handful the agent actually needs, or wrap the toolset in a sub-agent exposed as an `AgentTool`. The ease of generating them is exactly what makes this mistake easy." },
+      body: [{ t: "p", text: "Generating every operation gives the model sixty near-identical declarations, which is well past the point where tool selection degrades (lesson 2.6), and sends all sixty schemas on every call. Filter to the handful the agent actually needs, or wrap the toolset in a sub-agent exposed as an `AgentTool`. The ease of generating them is exactly what makes this mistake easy." }] },
 
     { t: "h2", n: "03", text: "Filtering", id: "filtering" },
 

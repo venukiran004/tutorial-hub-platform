@@ -141,7 +141,7 @@ every event shares invocation_id: True → e-09e4d662-00c9-412f-b732-839ea0c525c
     { t: "p", text: "A runner is built once, at start-up, and serves every conversation: `run_async` takes the `user_id` and `session_id` per call. Sessions are not objects you hold — you ask the session service for them by key. That is what lets a horizontally scaled service answer turn five on a different instance from turn four, provided the session service is a shared one (lesson 5.3)." },
 
     { t: "callout", kind: "trap", title: "InMemoryRunner is not a starting point you can grow",
-      body: "It keeps sessions, artifacts and memory in the process. Restart and the conversation is gone; run two replicas and half the turns land on an instance that has never heard of the session. It is correct for tests and the dev loop, and wrong for anything with a user. The change is one constructor — `Runner(agent=…, session_service=DatabaseSessionService(db_url=…), …)` — which is exactly why the services are injected." },
+      body: [{ t: "p", text: "It keeps sessions, artifacts and memory in the process. Restart and the conversation is gone; run two replicas and half the turns land on an instance that has never heard of the session. It is correct for tests and the dev loop, and wrong for anything with a user. The change is one constructor — `Runner(agent=…, session_service=DatabaseSessionService(db_url=…), …)` — which is exactly why the services are injected." }] },
 
     { t: "h2", n: "05", text: "App: the fifth object you will meet", id: "app" },
 

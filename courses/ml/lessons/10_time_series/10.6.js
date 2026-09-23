@@ -107,7 +107,7 @@ MIMO:       one RandomForest with 28 outputs (multi-output is native to forests)
       ["DirRec", "h", "partly", "competitions; the most accurate and the most complex"]
     ] },
 
-    { t: "callout", kind: "insight", title: "Report the error per horizon, not one number", body: "A model with MAE 3 at h = 1 and 40 at h = 28 and a model flat at 20 average the same and are completely different products. The per-horizon curve — or, with few origins, the error by horizon block — is the single most useful plot in a forecasting review, and the recursive strategy's compounding is invisible without it: 18.7 overall hides the 25.0 at the end of the month." },
+    { t: "callout", kind: "insight", title: "Report the error per horizon, not one number", body: [{ t: "p", text: "A model with MAE 3 at h = 1 and 40 at h = 28 and a model flat at 20 average the same and are completely different products. The per-horizon curve — or, with few origins, the error by horizon block — is the single most useful plot in a forecasting review, and the recursive strategy's compounding is invisible without it: 18.7 overall hides the 25.0 at the end of the month." }] },
 
     { t: "h2", n: "03", text: "One global model over many series", id: "global" },
 

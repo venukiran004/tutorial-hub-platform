@@ -65,7 +65,7 @@ name is "root".   You have a list of other agents to transfer to:   Agen…` },
     { t: "p", text: "The global instruction comes first, and the same text will be prepended when `child` runs. That is the point: a refusal rule or a compliance line written once at the root cannot be forgotten in a specialist three levels down. Note also the transfer guidance appended at the end — ADK adds it because this agent has a sub-agent, and it carries the sub-agents' `description` fields (lesson 2.5)." },
 
     { t: "callout", kind: "insight", title: "static_instruction is the cacheable half",
-      body: "Anything in `instruction` is re-rendered on every call because state may have changed, so it cannot be cached by the model provider. `static_instruction` is fixed content placed ahead of it, which is exactly what context caching needs (lesson 5.6). If you have two thousand tokens of style guide or schema, moving it from `instruction` to `static_instruction` changes nothing about behaviour and a great deal about cost." },
+      body: [{ t: "p", text: "Anything in `instruction` is re-rendered on every call because state may have changed, so it cannot be cached by the model provider. `static_instruction` is fixed content placed ahead of it, which is exactly what context caching needs (lesson 5.6). If you have two thousand tokens of style guide or schema, moving it from `instruction` to `static_instruction` changes nothing about behaviour and a great deal about cost." }] },
 
     { t: "h2", n: "03", text: "State templating", id: "templating" },
 
@@ -103,7 +103,7 @@ agent = LlmAgent(name="dynamic", model=llm, instruction=instruction_for)`,
     { t: "out", text: `You are helping Ravi. Session daef72.` },
 
     { t: "callout", kind: "trap", title: "A dynamic instruction is still a prompt, not a policy engine",
-      body: "It is tempting to compute permissions here — *if the user is not an admin, tell the model not to use the delete tool*. A model may ignore it. Access control belongs in a `before_tool_callback` that refuses the call, or in not giving that agent the tool at all (lessons 6.1 and 9.2). Use dynamic instructions for context, not for enforcement." },
+      body: [{ t: "p", text: "It is tempting to compute permissions here — *if the user is not an admin, tell the model not to use the delete tool*. A model may ignore it. Access control belongs in a `before_tool_callback` that refuses the call, or in not giving that agent the tool at all (lessons 6.1 and 9.2). Use dynamic instructions for context, not for enforcement." }] },
 
     { t: "h2", n: "05", text: "The prompt surface you did not think of", id: "surface" },
 

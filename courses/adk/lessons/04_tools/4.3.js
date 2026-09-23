@@ -82,7 +82,7 @@ async def slow_b(x: int) -> dict:
     { t: "p", text: "0.22 seconds, not 0.4: they ran together. And the whole answer cost **two** model calls rather than three, because one round handled both tools. Note also that both calls arrived as parts of one event and both results came back in one event — the framework groups them." },
 
     { t: "callout", kind: "trap", title: "Concurrency only helps if your tools are async",
-      body: "Two `async def` tools awaiting network calls overlap. Two `def` tools that block — `requests.get`, a synchronous database driver, `time.sleep` — do not: they hold the event loop one after the other, and they also stall every other user's turn in the same process for their duration. If a tool does I/O, it should be `async def` with an async client (lesson 10.1)." },
+      body: [{ t: "p", text: "Two `async def` tools awaiting network calls overlap. Two `def` tools that block — `requests.get`, a synchronous database driver, `time.sleep` — do not: they hold the event loop one after the other, and they also stall every other user's turn in the same process for their duration. If a tool does I/O, it should be `async def` with an async client (lesson 10.1)." }] },
 
     { t: "h2", n: "04", text: "What ends the loop", id: "end" },
 

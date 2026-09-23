@@ -47,7 +47,7 @@ delete_session(self, *, app_name: str, user_id: str, session_id: str) -> None` }
       ] },
 
     { t: "callout", kind: "trap", title: "In-memory is not just 'not persistent' — it is not shared",
-      text: "Two replicas behind a load balancer each have their own dictionary. A user's second message lands on the other pod and the conversation is empty, which presents as an agent that forgets roughly half the time. This is the single most common cause of 'it worked locally' in agent deployments, and it appears the moment you scale past one instance — not when you restart." },
+      body: [{ t: "p", text: "Two replicas behind a load balancer each have their own dictionary. A user's second message lands on the other pod and the conversation is empty, which presents as an agent that forgets roughly half the time. This is the single most common cause of 'it worked locally' in agent deployments, and it appears the moment you scale past one instance — not when you restart." }] },
 
     { t: "h2", n: "03", text: "A database service, end to end", id: "database" },
 
@@ -72,7 +72,7 @@ list_sessions -> ['6fe553ef'] (events omitted: 0 )` },
     { t: "p", text: "Two details in that output are worth holding on to. The reconstructed session has **all four events and the state the tool wrote**, so a restart mid-conversation is invisible to the user. And `list_sessions` returned the session with **zero events** — listing is deliberately shallow, so rendering a sidebar of fifty past conversations does not load fifty transcripts." },
 
     { t: "callout", kind: "trap", title: "ADK 2.x requires an async driver",
-      text: "`sqlite:///sess.db` fails at construction with `Database URL resolves to a synchronous driver, but this service requires an asynchronous one. Use a 'sqlite+aiosqlite://' URL instead.` The service is async all the way down, so the SQLAlchemy engine must be too: `sqlite+aiosqlite://`, `postgresql+asyncpg://`, `mysql+aiomysql://`. The error is clear, but it arrives at startup rather than on first use, so a misconfigured URL takes the process down on deploy — which is, on balance, the right time to find out." },
+      body: [{ t: "p", text: "`sqlite:///sess.db` fails at construction with `Database URL resolves to a synchronous driver, but this service requires an asynchronous one. Use a 'sqlite+aiosqlite://' URL instead.` The service is async all the way down, so the SQLAlchemy engine must be too: `sqlite+aiosqlite://`, `postgresql+asyncpg://`, `mysql+aiomysql://`. The error is clear, but it arrives at startup rather than on first use, so a misconfigured URL takes the process down on deploy — which is, on balance, the right time to find out." }] },
 
     { t: "h2", n: "04", text: "What it creates in the database", id: "schema" },
 
@@ -112,10 +112,10 @@ user_states ['app_name', 'user_id', 'state', 'update_time']` },
       ] },
 
     { t: "callout", kind: "tradeoff", title: "Managed sessions versus your own database",
-      text: "`VertexAiSessionService` removes the database from your operational surface entirely, which is worth a great deal if you have no platform team — and it is what an Agent Engine deployment uses by default. The cost is that your conversation data lives in a managed store you query through their API rather than a table you can join against your own orders and users. If your analytics need 'which conversations preceded a refund', a database you own makes that a SQL join; managed sessions make it an export pipeline." },
+      body: [{ t: "p", text: "`VertexAiSessionService` removes the database from your operational surface entirely, which is worth a great deal if you have no platform team — and it is what an Agent Engine deployment uses by default. The cost is that your conversation data lives in a managed store you query through their API rather than a table you can join against your own orders and users. If your analytics need 'which conversations preceded a refund', a database you own makes that a SQL join; managed sessions make it an export pipeline." }] },
 
     { t: "callout", kind: "note", title: "The dev UI takes a URI",
-      text: "`adk web --session_service_uri=\"postgresql+asyncpg://…\"` points the dev UI at a real store, which is how you inspect production-shaped sessions locally. Point it at a copy, not at production." },
+      body: [{ t: "p", text: "`adk web --session_service_uri=\"postgresql+asyncpg://…\"` points the dev UI at a real store, which is how you inspect production-shaped sessions locally. Point it at a copy, not at production." }] },
 
     { t: "exercise", kind: "practice", title: "Prove the swap is free", difficulty: "core", minutes: 20,
       prompt: "Write one agent and one function that takes a session service as a parameter, runs two turns, and prints the resulting event count and state. Call it twice — once with InMemorySessionService and once with DatabaseSessionService against a SQLite file — and confirm the output is identical. Then construct a second database service, read the session back, and confirm it survived. Finally, try a plain `sqlite:///` URL and read the error.",
