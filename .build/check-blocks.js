@@ -136,6 +136,28 @@ function scan(dir) {
   }
 }
 
+/* Renderer self-test: the math block must emit the KaTeX delimiter. Writing
+   it as '\[' in a JS string yields a bare '[', which silently disabled every
+   math block in the course until 2026-09-24. */
+(function checkMathDelimiter() {
+  const src = fs.readFileSync(path.join("assets", "js", "render.js"), "utf8");
+  const m = src.match(/math: function \(b\) \{ return ([^;]+); \}/);
+  if (!m) {
+    problems++;
+    console.log("  RENDERER  could not find the math block renderer in render.js");
+    return;
+  }
+  const esc = x => x;
+  const b = { tex: "TEX" };
+  let out = "";
+  try { out = eval(m[1]); } catch (e) { out = ""; }
+  if (out.indexOf("\[") === -1) {
+    problems++;
+    console.log("  RENDERER  math blocks emit " + JSON.stringify(out) +
+                " — KaTeX needs a literal backslash-bracket, so use '\\[' in the JS source");
+  }
+})();
+
 const roots = process.argv.slice(2);
 if (roots.length) {
   roots.forEach(scan);
