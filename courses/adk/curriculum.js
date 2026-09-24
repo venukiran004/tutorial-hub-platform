@@ -20,7 +20,7 @@
    Syllabus coverage (the thirty sections of the study plan, plus A2A):
       1 ADK fundamentals ................ M1
       2 Agents ........................... M2.1, M2.4, M2.5
-      3 Models .......................... M3
+      3 Models .......................... M3.1–3.4
       4 Tools ........................... M4.1–4.2, M4.4–4.8
       5 Agent-tool interaction ........... M4.3
       6 Sessions ........................ M5.1–5.3
@@ -62,7 +62,7 @@
 
     blurb: "Google's Agent Development Kit, taken apart: agents, models and tools; the state, memory and context triangle; callbacks, artifacts and structured output; RAG and agentic RAG; MCP and A2A; guardrails, human approval, streaming, observability, evaluation and deployment to Agent Engine.",
 
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "3.1", "3.2", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "6.1", "6.2", "6.3", "6.4", "7.1", "7.2", "8.1", "8.2", "8.3", "8.4", "9.1", "9.2", "9.3", "10.1", "10.2", "10.3", "11.1", "11.2", "11.3", "12.1", "12.2", "12.3", "12.4", "12.5"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "3.1", "3.2", "3.3", "3.4", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "6.1", "6.2", "6.3", "6.4", "7.1", "7.2", "8.1", "8.2", "8.3", "8.4", "9.1", "9.2", "9.3", "10.1", "10.2", "10.3", "11.1", "11.2", "11.3", "12.1", "12.2", "12.3", "12.4", "12.5"],
 
     modules: [
 
@@ -134,15 +134,21 @@
         dir: "03_models",
         phase: "Phase 2 · Agents and models",
         title: "Models",
-        blurb: "The Gemini models behind an agent, the generation config that shapes every call, multimodal input, and the other providers ADK can drive through LiteLLM and the registry.",
-        outcome: "You can pick a model and a generation config for a given agent and justify both.",
+        blurb: "The Gemini models behind an agent, the generation config that shapes every call, multimodal input, the other providers ADK can drive through LiteLLM, the planners that make reasoning explicit, and the registry that turns a model string into a class you can write yourself.",
+        outcome: "You can pick a model, a generation config and a planner for a given agent, justify all three, and write your own model implementation when you need one.",
         lessons: [
           { id: "3.1", title: "Gemini, Generation Config and Model Choice", difficulty: "core", minutes: 32, tier: "must",
             summary: "Model ids and what they cost you, temperature, token limits, safety settings and thinking config — set where ADK actually reads them.",
             keywords: ["gemini", "model", "temperature", "max_output_tokens", "generate_content_config", "thinking", "safety"] },
           { id: "3.2", title: "Multimodal, Other Providers and Fallbacks", difficulty: "core", minutes: 30, tier: "should",
             summary: "Images, audio, documents and video as input; Claude, Ollama and anything LiteLLM drives; the LLM registry and the fallback model.",
-            keywords: ["multimodal", "litellm", "claude", "ollama", "llmregistry", "fallbackmodel", "vision"] }
+            keywords: ["multimodal", "litellm", "claude", "ollama", "llmregistry", "fallbackmodel", "vision"] },
+          { id: "3.3", title: "Planners: Thinking, Plan-Act and Reasoning Control", difficulty: "advanced", minutes: 32, tier: "should",
+            summary: "The planner field, BuiltInPlanner against PlanReActPlanner, what each one injects into the request, thought parts, and when explicit reasoning earns its cost.",
+            keywords: ["planner", "builtinplanner", "planreactplanner", "thinking_config", "thought", "reasoning", "plan"] },
+          { id: "3.4", title: "The Registry, and Writing Your Own Model", difficulty: "advanced", minutes: 30, tier: "should",
+            summary: "How a model string becomes a class, registering your own BaseLlm subclass, the two methods that matter, and adding a live connection.",
+            keywords: ["llmregistry", "resolve", "register", "basellm", "supported_models", "custom model", "connect"] }
         ]
       },
 

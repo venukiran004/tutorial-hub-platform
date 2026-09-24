@@ -102,6 +102,7 @@ agent = LlmAgent(name="trip_agent", model=llm,
     {"kind": "cells", "title": "The session after one tool-using turn", "caption": "Four events for one question. Every later turn replays all of them, which is where the cost of a long conversation comes from (lesson 5.6).", "items": ["user msg", "call", "response", "answer"], "highlight": [3], "tone": "good", "negative": false, "t": "diagram", "id": "dg-1_5-04-0"},
 
 
+
     { t: "out", text: `session transcript:
   user       user text    invocation=4f2196e3e3b5
   trip_agent call         invocation=4f2196e3e3b5

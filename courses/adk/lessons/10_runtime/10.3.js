@@ -61,6 +61,7 @@ agent = LlmAgent(name="a", model=llm, tools=[flaky],
 
 
 
+
     { t: "diagram", kind: "compare", title: "Information, or fault?",
       caption: "The test: could the agent sensibly do something about it? If yes, it is information. If the only sensible response is a human fixing code, it is a fault.",
       columns: [
@@ -74,6 +75,7 @@ agent = LlmAgent(name="a", model=llm, tools=[flaky],
     { t: "h2", n: "04", text: "Retrying", id: "retrying" },
 
     {"kind": "steps", "title": "Retry where the failure is", "caption": "Three attempts inside one tool call cost zero extra model calls and keep the transcript clean. Returning retryable: True three times costs three model round trips and fills the log with failures the user never needed to see.", "items": [{"label": "Attempt 1", "sub": "timeout", "tone": "crit"}, {"label": "sleep 0.2s", "sub": "backoff"}, {"label": "Attempt 2", "sub": "timeout", "tone": "crit"}, {"label": "sleep 0.4s", "sub": "backoff"}, {"label": "Attempt 3", "sub": "succeeds — the model never saw the failures", "tone": "good"}], "t": "diagram", "id": "dg-10_3-04-1"},
+
 
 
 

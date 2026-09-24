@@ -28,6 +28,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["ADK feature", "Model capability", "Where it was executed"],
       rows: [
         ["Tools", "Function calling with JSON-Schema declarations", "4.1 — the generated declaration printed"],

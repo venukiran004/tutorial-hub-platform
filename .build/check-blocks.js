@@ -90,6 +90,27 @@ function check(blocks, id, file) {
       }
     }
 
+    if (b.t === "diagram") {
+      /* title and caption go through the inline markdown formatter; the SVG
+         text inside a diagram does not, so **bold**, `code` and [links](…)
+         render as literal characters. A lone ** (Python's **kwargs) is fine. */
+      const MD = /\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\(/;
+      const texts = [];
+      (function collect(o) {
+        if (typeof o === "string") { texts.push(o); return; }
+        if (Array.isArray(o)) { o.forEach(collect); return; }
+        if (o && typeof o === "object") {
+          for (const k of Object.keys(o)) { if (k !== "title" && k !== "caption") collect(o[k]); }
+        }
+      })(b);
+      texts.forEach(t => {
+        if (MD.test(t)) {
+          problems++;
+          console.log(`  MARKDOWN IN DIAGRAM  ${file}  ${id}  [${b.kind}] ${JSON.stringify(t).slice(0, 62)}`);
+        }
+      });
+    }
+
     if (b.blocks) check(b.blocks, id, file);
     if (b.body && Array.isArray(b.body)) check(b.body, id, file);
     if (b.solution && Array.isArray(b.solution.notes)) check(b.solution.notes, id, file);

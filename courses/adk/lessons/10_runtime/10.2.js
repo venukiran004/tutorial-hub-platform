@@ -2,7 +2,9 @@
    LESSON 10.2 — Streaming
    The partial events, the final event and the two-event session are executed
    output from scratchpad/adk/n1.py on google-adk 2.9.2, with a model that
-   yields fragments the way a streaming provider does.
+   yields fragments the way a streaming provider does. The BIDI trace is from
+   scratchpad/adk/b1.py, which implements BaseLlmConnection against a script so
+   run_live can be driven without a live-capable provider.
    ========================================================================= */
 EC.receiveLesson({
   id: "10.2",
@@ -46,6 +48,7 @@ StreamingMode.NONE` },
 
 
 
+
     { t: "code", lang: "python", title: "n1.py — running with SSE",
       code: `async for e in runner.run_async(
         user_id="u1", session_id=sid,
@@ -64,8 +67,8 @@ StreamingMode.NONE` },
     { t: "diagram", kind: "compare", title: "Fragments are for the screen; the final event is the record",
       caption: "A client that appends every text event it sees renders the answer twice — three fragments and then the complete sentence again.",
       columns: [
-        { title: "Partial events", tone: "accent", items: ["`partial=True`", "`is_final_response()` false", "Fragments to append as they arrive", "**Not persisted to the session**"] },
-        { title: "The final event", tone: "good", items: ["`partial` unset", "`is_final_response()` true", "The complete text", "Persisted — this is the transcript"] }
+        { title: "Partial events", tone: "accent", items: ["partial=True", "is_final_response() false", "Fragments to append as they arrive", "NOT persisted to the session"] },
+        { title: "The final event", tone: "good", items: ["partial unset", "is_final_response() true", "The complete text", "Persisted — this is the transcript"] }
       ] },
 
     { t: "callout", kind: "insight", title: "Two events in the session, not five",
@@ -130,6 +133,43 @@ queue.send_content(types.Content(...))
 queue.close()`,
       caption: "The queue is the upward channel: audio, activity signals and content pushed while the agent is already responding. `run_live` yields the downward one." },
 
+    { t: "p", text: "The trace below was produced by implementing `BaseLlmConnection` against a script (lesson 3.4) so `run_live` could be driven without a live-capable provider. Everything around the connection — the queue, the event flow, the interruption handling — is the real runtime." },
+
+    { t: "out", text: `user sends text:
+  partial=True  complete=False interrupted=False text='It is '
+  partial=True  complete=False interrupted=False text='fourteen degrees '
+  partial=True  complete=False interrupted=False text='and raining.'
+  partial=False complete=False interrupted=False text='It is fourteen degrees and raining.'
+  partial=False complete=True  interrupted=False text=None
+
+user speaks over the agent (a 320-byte audio chunk):
+  partial=False complete=True  interrupted=True  text=None
+  partial=False complete=False interrupted=False text='Sorry - go ahead.'
+  partial=False complete=True  interrupted=False text=None
+
+what the runtime sent UP the connection:
+   content('what is the weather?')
+   realtime(320 bytes of audio/pcm)
+   close()
+
+events persisted: 6` },
+
+    { t: "p", text: "Three things in that output are specific to BIDI and worth reading carefully. **`turn_complete`** appears as its own event with no text — that is the signal a turn has ended, and in SSE you would have used `is_final_response()` instead. **`interrupted=True`** arrived the moment a realtime audio chunk reached the queue while the agent was mid-answer: the runtime cut the current turn short rather than talking over the user. And the upward channel shows exactly two kinds of traffic plus a close — text content and raw audio bytes — which is the whole of what a client has to send." },
+
+    { t: "diagram", kind: "flow", title: "Two channels, open at once",
+      caption: "The queue and the event stream are independent, which is what 'bidirectional' means: the user can send while the agent is still responding, and that is what produces an interruption.",
+      cols: 3,
+      nodes: [
+        { id: "c", label: "Your transport", sub: "websocket to the client", tone: "accent" },
+        { id: "q", label: "LiveRequestQueue", sub: "send_content / send_realtime", tone: "good" },
+        { id: "r", label: "run_live", sub: "yields events downward", tone: "violet" },
+        { id: "i", label: "interrupted=True", sub: "audio arrived mid-answer", tone: "crit" }
+      ],
+      edges: [["c", "q", "up"], ["q", "r"], ["r", "i"], ["r", "c", "down"]] },
+
+    { t: "callout", kind: "trap", title: "An interruption is an event, not an exception",
+      body: [{ t: "p", text: "The cut-short turn arrives as an ordinary event carrying `interrupted=True` and `turn_complete=True`, and your client has to handle it: stop rendering the partial answer, discard the buffer, and be ready for the next turn. A client that only understands partial-then-final will leave half a sentence on screen forever. This is a real share of why BIDI needs more client code than SSE." }] },
+
     { t: "table", head: ["BIDI gives you", "And requires"],
       rows: [
         ["Audio in and audio out", "A model with a live API — not every model supports it"],
@@ -163,7 +203,8 @@ queue.close()`,
     "Partial events carry `partial=True` and are not final; the final event carries the complete text.",
     "Partials are never persisted — the executed run rendered four text events and stored two.",
     "Append on partials and replace on the final event, or the answer renders twice.",
-    "Streaming tool-call status is usually a bigger perceived-latency win than streaming tokens."
+    "Streaming tool-call status is usually a bigger perceived-latency win than streaming tokens.",
+    "In BIDI, `turn_complete` is its own event and an interruption arrives as `interrupted=True` — not as an exception."
   ],
 
   quiz: { title: "Check your understanding", questions: [

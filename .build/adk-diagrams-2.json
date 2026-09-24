@@ -6,14 +6,20 @@
         "kind": "cells",
         "title": "The session after one tool-using turn",
         "caption": "Four events for one question. Every later turn replays all of them, which is where the cost of a long conversation comes from (lesson 5.6).",
-        "items": ["user msg", "call", "response", "answer"],
-        "highlight": [3],
+        "items": [
+          "user msg",
+          "call",
+          "response",
+          "answer"
+        ],
+        "highlight": [
+          3
+        ],
         "tone": "good",
         "negative": false
       }
     }
   ],
-
   "2.1": [
     {
       "after": "01",
@@ -21,20 +27,65 @@
         "kind": "matrix",
         "title": "The fields you will actually set",
         "caption": "Thirty-three fields exist; these are the ones that change behaviour on the first day. Everything else is a refinement of one of these.",
-        "cols": ["Decides", "Covered in"],
-        "rows": ["model", "instruction", "tools", "sub_agents", "output_key", "include_contents"],
+        "cols": [
+          "Decides",
+          "Covered in"
+        ],
+        "rows": [
+          "model",
+          "instruction",
+          "tools",
+          "sub_agents",
+          "output_key",
+          "include_contents"
+        ],
         "cells": [
-          [{ "text": "capability and cost", "tone": "accent" }, "3.1"],
-          [{ "text": "behaviour, every request", "tone": "good" }, "2.2"],
-          [{ "text": "what it can do", "tone": "good" }, "4.1"],
-          [{ "text": "who it can hand off to", "tone": "violet" }, "2.5"],
-          [{ "text": "what the next agent reads", "tone": "warn" }, "5.2"],
-          [{ "text": "whether it sees history", "tone": "warn" }, "5.6"]
+          [
+            {
+              "text": "capability and cost",
+              "tone": "accent"
+            },
+            "3.1"
+          ],
+          [
+            {
+              "text": "behaviour, every request",
+              "tone": "good"
+            },
+            "2.2"
+          ],
+          [
+            {
+              "text": "what it can do",
+              "tone": "good"
+            },
+            "4.1"
+          ],
+          [
+            {
+              "text": "who it can hand off to",
+              "tone": "violet"
+            },
+            "2.5"
+          ],
+          [
+            {
+              "text": "what the next agent reads",
+              "tone": "warn"
+            },
+            "5.2"
+          ],
+          [
+            {
+              "text": "whether it sees history",
+              "tone": "warn"
+            },
+            "5.6"
+          ]
         ]
       }
     }
   ],
-
   "2.4": [
     {
       "after": "03",
@@ -43,14 +94,40 @@
         "title": "Three ways to express control flow",
         "caption": "Pick the least powerful one that works. A model deciding the order is flexible and unpredictable; a graph is predictable and rigid; Python is both, and yours to maintain.",
         "columns": [
-          { "title": "Workflow agents", "tone": "good", "items": ["Sequential, parallel, loop", "Declarative", "Deprecated for Workflow", "Most pipelines"] },
-          { "title": "Workflow graph", "tone": "accent", "items": ["Nodes, edges, routes", "Conditional branching", "Cannot yet be a sub-agent", "Real branching logic"] },
-          { "title": "A custom agent", "tone": "violet", "items": ["_run_async_impl", "Arbitrary Python", "You own every edge case", "When the other two cannot"] }
+          {
+            "title": "Workflow agents",
+            "tone": "good",
+            "items": [
+              "Sequential, parallel, loop",
+              "Declarative",
+              "Deprecated for Workflow",
+              "Most pipelines"
+            ]
+          },
+          {
+            "title": "Workflow graph",
+            "tone": "accent",
+            "items": [
+              "Nodes, edges, routes",
+              "Conditional branching",
+              "Cannot yet be a sub-agent",
+              "Real branching logic"
+            ]
+          },
+          {
+            "title": "A custom agent",
+            "tone": "violet",
+            "items": [
+              "_run_async_impl",
+              "Arbitrary Python",
+              "You own every edge case",
+              "When the other two cannot"
+            ]
+          }
         ]
       }
     }
   ],
-
   "3.1": [
     {
       "after": "02",
@@ -58,18 +135,61 @@
         "kind": "matrix",
         "title": "Different agents want different models",
         "caption": "In a multi-agent system these are separate LlmAgent objects, so they can be separate models. Moving the deterministic-shaped agents to a cheaper one is usually the largest available saving (lesson 12.4).",
-        "cols": ["Wants", "Tolerates"],
-        "rows": ["Classifier", "Coordinator", "Tool user", "Drafting agent"],
+        "cols": [
+          "Wants",
+          "Tolerates"
+        ],
+        "rows": [
+          "Classifier",
+          "Coordinator",
+          "Tool user",
+          "Drafting agent"
+        ],
         "cells": [
-          [{ "text": "cheap and fast", "tone": "good" }, { "text": "a small model", "tone": "good" }],
-          [{ "text": "good routing", "tone": "warn" }, { "text": "no shortcuts", "tone": "crit" }],
-          [{ "text": "function calling", "tone": "crit" }, { "text": "no shortcuts", "tone": "crit" }],
-          [{ "text": "strong writing", "tone": "accent" }, { "text": "higher latency", "tone": "good" }]
+          [
+            {
+              "text": "cheap and fast",
+              "tone": "good"
+            },
+            {
+              "text": "a small model",
+              "tone": "good"
+            }
+          ],
+          [
+            {
+              "text": "good routing",
+              "tone": "warn"
+            },
+            {
+              "text": "no shortcuts",
+              "tone": "crit"
+            }
+          ],
+          [
+            {
+              "text": "function calling",
+              "tone": "crit"
+            },
+            {
+              "text": "no shortcuts",
+              "tone": "crit"
+            }
+          ],
+          [
+            {
+              "text": "strong writing",
+              "tone": "accent"
+            },
+            {
+              "text": "higher latency",
+              "tone": "good"
+            }
+          ]
         ]
       }
     }
   ],
-
   "4.1": [
     {
       "after": "02",
@@ -77,20 +197,83 @@
         "kind": "matrix",
         "title": "What survives the trip to a JSON Schema",
         "caption": "The declaration is generated from your annotations, so a type the schema cannot express becomes a parameter the model has to guess at. Prefer the top rows.",
-        "cols": ["In the schema", "Verdict"],
-        "rows": ["str, int, float, bool", "Literal[...]", "list[str], dict", "Pydantic model", "datetime", "Union / Any"],
+        "cols": [
+          "In the schema",
+          "Verdict"
+        ],
+        "rows": [
+          "str, int, float, bool",
+          "Literal[...]",
+          "list[str], dict",
+          "Pydantic model",
+          "datetime",
+          "Union / Any"
+        ],
         "cells": [
-          [{ "text": "exactly", "tone": "good" }, { "text": "use freely", "tone": "good" }],
-          [{ "text": "an enum", "tone": "good" }, { "text": "best of all", "tone": "good" }],
-          [{ "text": "array / object", "tone": "good" }, { "text": "fine", "tone": "good" }],
-          [{ "text": "nested object", "tone": "accent" }, { "text": "good, keep it flat", "tone": "accent" }],
-          [{ "text": "a string", "tone": "warn" }, { "text": "say the format", "tone": "warn" }],
-          [{ "text": "vaguely", "tone": "crit" }, { "text": "avoid", "tone": "crit" }]
+          [
+            {
+              "text": "exactly",
+              "tone": "good"
+            },
+            {
+              "text": "use freely",
+              "tone": "good"
+            }
+          ],
+          [
+            {
+              "text": "an enum",
+              "tone": "good"
+            },
+            {
+              "text": "best of all",
+              "tone": "good"
+            }
+          ],
+          [
+            {
+              "text": "array / object",
+              "tone": "good"
+            },
+            {
+              "text": "fine",
+              "tone": "good"
+            }
+          ],
+          [
+            {
+              "text": "nested object",
+              "tone": "accent"
+            },
+            {
+              "text": "good, keep it flat",
+              "tone": "accent"
+            }
+          ],
+          [
+            {
+              "text": "a string",
+              "tone": "warn"
+            },
+            {
+              "text": "say the format",
+              "tone": "warn"
+            }
+          ],
+          [
+            {
+              "text": "vaguely",
+              "tone": "crit"
+            },
+            {
+              "text": "avoid",
+              "tone": "crit"
+            }
+          ]
         ]
       }
     }
   ],
-
   "4.2": [
     {
       "after": "03",
@@ -100,16 +283,48 @@
         "caption": "A tool that only returns a value is a function. Setting an action is how a tool participates in the control flow — and skip_summarization was measured at one model call instead of two.",
         "cols": 4,
         "nodes": [
-          { "id": "t", "label": "Tool returns", "sub": "plus actions set on the context", "tone": "accent" },
-          { "id": "s", "label": "skip_summarization", "sub": "the result IS the answer", "tone": "good" },
-          { "id": "e", "label": "escalate", "sub": "ends the enclosing loop", "tone": "warn" },
-          { "id": "x", "label": "transfer_to_agent", "sub": "hands the turn to another agent", "tone": "violet" }
+          {
+            "id": "t",
+            "label": "Tool returns",
+            "sub": "plus actions set on the context",
+            "tone": "accent"
+          },
+          {
+            "id": "s",
+            "label": "skip_summarization",
+            "sub": "the result IS the answer",
+            "tone": "good"
+          },
+          {
+            "id": "e",
+            "label": "escalate",
+            "sub": "ends the enclosing loop",
+            "tone": "warn"
+          },
+          {
+            "id": "x",
+            "label": "transfer_to_agent",
+            "sub": "hands the turn to another agent",
+            "tone": "violet"
+          }
         ],
-        "edges": [["t", "s"], ["t", "e"], ["t", "x"]]
+        "edges": [
+          [
+            "t",
+            "s"
+          ],
+          [
+            "t",
+            "e"
+          ],
+          [
+            "t",
+            "x"
+          ]
+        ]
       }
     }
   ],
-
   "4.4": [
     {
       "after": "04",
@@ -119,16 +334,48 @@
         "caption": "The restriction applies inside the child agent where the built-in lives. The parent sees one ordinary function tool and keeps its own toolbox — the same encapsulation that keeps tool lists short in lesson 2.6.",
         "cols": 3,
         "nodes": [
-          { "id": "p", "label": "Parent agent", "sub": "its own tools, unrestricted", "tone": "accent" },
-          { "id": "a", "label": "AgentTool", "sub": "looks like one function", "tone": "good" },
-          { "id": "c", "label": "Child agent", "sub": "holds google_search alone", "tone": "violet" },
-          { "id": "g", "label": "Grounded result", "sub": "with grounding metadata", "tone": "warn" }
+          {
+            "id": "p",
+            "label": "Parent agent",
+            "sub": "its own tools, unrestricted",
+            "tone": "accent"
+          },
+          {
+            "id": "a",
+            "label": "AgentTool",
+            "sub": "looks like one function",
+            "tone": "good"
+          },
+          {
+            "id": "c",
+            "label": "Child agent",
+            "sub": "holds google_search alone",
+            "tone": "violet"
+          },
+          {
+            "id": "g",
+            "label": "Grounded result",
+            "sub": "with grounding metadata",
+            "tone": "warn"
+          }
         ],
-        "edges": [["p", "a"], ["a", "c"], ["c", "g"]]
+        "edges": [
+          [
+            "p",
+            "a"
+          ],
+          [
+            "a",
+            "c"
+          ],
+          [
+            "c",
+            "g"
+          ]
+        ]
       }
     }
   ],
-
   "4.6": [
     {
       "after": "01",
@@ -139,13 +386,44 @@
         "span": 10,
         "tick": 2,
         "lanes": [
-          { "label": "Toolset", "bars": [[0, 10, "constructed once, closed on shutdown", "violet"]] },
-          { "label": "get_tools", "bars": [[1, 1.7, "user A: read-only", "accent"], [4, 4.7, "user B: + write", "warn"], [7.3, 8, "user A again", "accent"]] }
+          {
+            "label": "Toolset",
+            "bars": [
+              [
+                0,
+                10,
+                "constructed once, closed on shutdown",
+                "violet"
+              ]
+            ]
+          },
+          {
+            "label": "get_tools",
+            "bars": [
+              [
+                1,
+                1.7,
+                "user A: read-only",
+                "accent"
+              ],
+              [
+                4,
+                4.7,
+                "user B: + write",
+                "warn"
+              ],
+              [
+                7.3,
+                8,
+                "user A again",
+                "accent"
+              ]
+            ]
+          }
         ]
       }
     }
   ],
-
   "4.7": [
     {
       "after": "05",
@@ -154,15 +432,30 @@
         "title": "Four ways to stop a tool being used, strongest first",
         "caption": "Only the top three are controls. An instruction is a preference, and a sufficiently persuasive message can talk a model out of a preference.",
         "items": [
-          { "label": "Do not give the agent the tool", "sub": "nothing can call what is not there", "tone": "good" },
-          { "label": "Filter the toolset", "sub": "resolved per request, so it can depend on the user", "tone": "accent" },
-          { "label": "before_tool_callback", "sub": "refuse with a reason and retryable: false", "tone": "warn" },
-          { "label": "Say so in the instruction", "sub": "not a control", "tone": "crit" }
+          {
+            "label": "Do not give the agent the tool",
+            "sub": "nothing can call what is not there",
+            "tone": "good"
+          },
+          {
+            "label": "Filter the toolset",
+            "sub": "resolved per request, so it can depend on the user",
+            "tone": "accent"
+          },
+          {
+            "label": "before_tool_callback",
+            "sub": "refuse with a reason and retryable: false",
+            "tone": "warn"
+          },
+          {
+            "label": "Say so in the instruction",
+            "sub": "not a control",
+            "tone": "crit"
+          }
         ]
       }
     }
   ],
-
   "5.2": [
     {
       "after": "02",
@@ -170,18 +463,45 @@
         "kind": "matrix",
         "title": "The measured result, as a table",
         "caption": "Executed across two sessions and two users. temp: never appeared anywhere — not in the session, not even in the delta on the event.",
-        "cols": ["Same session", "New session", "Other user"],
-        "rows": ["turn (no prefix)", "user:name", "app:hits", "temp:scratch"],
+        "cols": [
+          "Same session",
+          "New session",
+          "Other user"
+        ],
+        "rows": [
+          "turn (no prefix)",
+          "user:name",
+          "app:hits",
+          "temp:scratch"
+        ],
         "cells": [
-          [true, false, false],
-          [true, true, false],
-          [true, true, true],
-          [{ "text": "within the turn", "tone": "warn" }, false, false]
+          [
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            true,
+            false
+          ],
+          [
+            true,
+            true,
+            true
+          ],
+          [
+            {
+              "text": "within the turn",
+              "tone": "warn"
+            },
+            false,
+            false
+          ]
         ]
       }
     }
   ],
-
   "5.3": [
     {
       "after": "03",
@@ -190,15 +510,30 @@
         "title": "The restart test, executed",
         "caption": "A second service object reading the same file stands in for a process that has restarted. All four events and the state the tool wrote came back, so a restart mid-conversation is invisible to the user.",
         "items": [
-          { "label": "create_session", "sub": "a row in sessions", "tone": "accent" },
-          { "label": "One turn", "sub": "4 events; a tool writes state", "tone": "good" },
-          { "label": "New service object", "sub": "as if the process died", "tone": "crit" },
-          { "label": "get_session", "sub": "events = 4, state intact", "tone": "violet" }
+          {
+            "label": "create_session",
+            "sub": "a row in sessions",
+            "tone": "accent"
+          },
+          {
+            "label": "One turn",
+            "sub": "4 events; a tool writes state",
+            "tone": "good"
+          },
+          {
+            "label": "New service object",
+            "sub": "as if the process died",
+            "tone": "crit"
+          },
+          {
+            "label": "get_session",
+            "sub": "events = 4, state intact",
+            "tone": "violet"
+          }
         ]
       }
     }
   ],
-
   "5.4": [
     {
       "after": "04",
@@ -208,16 +543,44 @@
         "caption": "The in-memory service tokenises both sides into lowercased words and scores one point per query word present. 'allergy' is not 'allergic', so the score is zero and the entry is dropped.",
         "left": "query",
         "codeW": 300,
-        "vars": ["tokens matched", "result"],
+        "vars": [
+          "tokens matched",
+          "result"
+        ],
         "steps": [
-          { "code": "\"penicillin\"", "state": ["1", "2 entries"], "tone": "good" },
-          { "code": "\"allergy\"", "state": ["0", "nothing"], "changed": [1], "tone": "crit", "note": "prototype only" },
-          { "code": "\"what am I allergic to\"", "state": ["1", "2 entries"], "tone": "good", "note": "by luck of phrasing" }
+          {
+            "code": "\"penicillin\"",
+            "state": [
+              "1",
+              "2 entries"
+            ],
+            "tone": "good"
+          },
+          {
+            "code": "\"allergy\"",
+            "state": [
+              "0",
+              "nothing"
+            ],
+            "changed": [
+              1
+            ],
+            "tone": "crit",
+            "note": "prototype only"
+          },
+          {
+            "code": "\"what am I allergic to\"",
+            "state": [
+              "1",
+              "2 entries"
+            ],
+            "tone": "good",
+            "note": "by luck of phrasing"
+          }
         ]
       }
     }
   ],
-
   "6.1": [
     {
       "after": "03",
@@ -227,17 +590,62 @@
         "caption": "There is no third mechanism — no raise Skip, no boolean flag. Once you have this, every one of the eight hooks reads the same way.",
         "cols": 3,
         "nodes": [
-          { "id": "h", "label": "Your hook runs", "sub": "before_* or after_*", "tone": "accent" },
-          { "id": "n", "label": "return None", "sub": "the framework carries on", "tone": "good" },
-          { "id": "v", "label": "return a value", "sub": "yours is used instead", "tone": "warn" },
-          { "id": "w", "label": "The work", "sub": "model call or tool call" },
-          { "id": "r", "label": "Result", "sub": "either way, the turn continues", "tone": "violet" }
+          {
+            "id": "h",
+            "label": "Your hook runs",
+            "sub": "before_* or after_*",
+            "tone": "accent"
+          },
+          {
+            "id": "n",
+            "label": "return None",
+            "sub": "the framework carries on",
+            "tone": "good"
+          },
+          {
+            "id": "v",
+            "label": "return a value",
+            "sub": "yours is used instead",
+            "tone": "warn"
+          },
+          {
+            "id": "w",
+            "label": "The work",
+            "sub": "model call or tool call"
+          },
+          {
+            "id": "r",
+            "label": "Result",
+            "sub": "either way, the turn continues",
+            "tone": "violet"
+          }
         ],
-        "edges": [["h", "n"], ["h", "v"], ["n", "w"], ["w", "r"], ["v", "r", "skipped"]]
+        "edges": [
+          [
+            "h",
+            "n"
+          ],
+          [
+            "h",
+            "v"
+          ],
+          [
+            "n",
+            "w"
+          ],
+          [
+            "w",
+            "r"
+          ],
+          [
+            "v",
+            "r",
+            "skipped"
+          ]
+        ]
       }
     }
   ],
-
   "6.4": [
     {
       "after": "01",
@@ -247,16 +655,48 @@
         "caption": "The constraint travels to the provider as response_schema rather than sitting in the prompt as a wish — verified on the wire. What lands in state is a plain dict, not a model instance.",
         "cols": 4,
         "nodes": [
-          { "id": "m", "label": "Pydantic model", "sub": "fields + descriptions", "tone": "good" },
-          { "id": "j", "label": "JSON Schema", "sub": "descriptions included", "tone": "accent" },
-          { "id": "r", "label": "On the request", "sub": "response_schema + mime type", "tone": "violet" },
-          { "id": "s", "label": "state[output_key]", "sub": "a parsed dict", "tone": "warn" }
+          {
+            "id": "m",
+            "label": "Pydantic model",
+            "sub": "fields + descriptions",
+            "tone": "good"
+          },
+          {
+            "id": "j",
+            "label": "JSON Schema",
+            "sub": "descriptions included",
+            "tone": "accent"
+          },
+          {
+            "id": "r",
+            "label": "On the request",
+            "sub": "response_schema + mime type",
+            "tone": "violet"
+          },
+          {
+            "id": "s",
+            "label": "state[output_key]",
+            "sub": "a parsed dict",
+            "tone": "warn"
+          }
         ],
-        "edges": [["m", "j"], ["j", "r"], ["r", "s"]]
+        "edges": [
+          [
+            "m",
+            "j"
+          ],
+          [
+            "j",
+            "r"
+          ],
+          [
+            "r",
+            "s"
+          ]
+        ]
       }
     }
   ],
-
   "9.1": [
     {
       "after": "02",
@@ -266,16 +706,50 @@
         "caption": "user_id is not validated by anything — it is simply the key under which sessions, state and memory are stored. Everything else in this lesson assumes this line is right.",
         "cols": 3,
         "nodes": [
-          { "id": "b", "label": "request.json['user_id']", "sub": "the caller picks whose data to read", "tone": "crit" },
-          { "id": "c", "label": "verified cookie / token", "sub": "the caller cannot forge it", "tone": "good" },
-          { "id": "r", "label": "run_async(user_id=…)", "sub": "ADK takes it at face value", "tone": "accent" },
-          { "id": "s", "label": "Their sessions, state, memory", "sub": "all keyed by that string", "tone": "violet" }
+          {
+            "id": "b",
+            "label": "request.json['user_id']",
+            "sub": "the caller picks whose data to read",
+            "tone": "crit"
+          },
+          {
+            "id": "c",
+            "label": "verified cookie / token",
+            "sub": "the caller cannot forge it",
+            "tone": "good"
+          },
+          {
+            "id": "r",
+            "label": "run_async(user_id=…)",
+            "sub": "ADK takes it at face value",
+            "tone": "accent"
+          },
+          {
+            "id": "s",
+            "label": "Their sessions, state, memory",
+            "sub": "all keyed by that string",
+            "tone": "violet"
+          }
         ],
-        "edges": [["b", "r", "wrong"], ["c", "r", "right"], ["r", "s"]]
+        "edges": [
+          [
+            "b",
+            "r",
+            "wrong"
+          ],
+          [
+            "c",
+            "r",
+            "right"
+          ],
+          [
+            "r",
+            "s"
+          ]
+        ]
       }
     }
   ],
-
   "9.2": [
     {
       "after": "02",
@@ -284,17 +758,40 @@
         "title": "Six doors untrusted text walks through",
         "caption": "Only the first is the one people defend. The rest arrive through parts of the system that feel like infrastructure — a database read, a search hit, a memory lookup — which is exactly why they work.",
         "items": [
-          { "label": "The user's message", "sub": "the one everybody checks", "tone": "accent" },
-          { "label": "A tool result", "sub": "whoever wrote the record the tool read", "tone": "crit" },
-          { "label": "Retrieved documents", "sub": "including any user-generated part of the corpus", "tone": "crit" },
-          { "label": "Memory", "sub": "the user, weeks ago, retrieved into today's prompt", "tone": "warn" },
-          { "label": "An MCP tool description", "sub": "the server author's text, in your prompt", "tone": "warn" },
-          { "label": "A remote agent's reply", "sub": "another team's model, possibly relaying its own users", "tone": "violet" }
+          {
+            "label": "The user's message",
+            "sub": "the one everybody checks",
+            "tone": "accent"
+          },
+          {
+            "label": "A tool result",
+            "sub": "whoever wrote the record the tool read",
+            "tone": "crit"
+          },
+          {
+            "label": "Retrieved documents",
+            "sub": "including any user-generated part of the corpus",
+            "tone": "crit"
+          },
+          {
+            "label": "Memory",
+            "sub": "the user, weeks ago, retrieved into today's prompt",
+            "tone": "warn"
+          },
+          {
+            "label": "An MCP tool description",
+            "sub": "the server author's text, in your prompt",
+            "tone": "warn"
+          },
+          {
+            "label": "A remote agent's reply",
+            "sub": "another team's model, possibly relaying its own users",
+            "tone": "violet"
+          }
         ]
       }
     }
   ],
-
   "9.3": [
     {
       "after": "03",
@@ -304,17 +801,39 @@
         "caption": "Executed both halves. The pending request is an event in the session rather than a coroutine in memory, which is what lets an approval arrive after a deploy and still work.",
         "centre": "durable",
         "nodes": [
-          { "label": "Model calls the tool", "sub": "ordinary function call", "tone": "accent" },
-          { "label": "ADK intercepts", "sub": "the body does not run", "tone": "crit" },
-          { "label": "Turn ends", "sub": "pending confirmation recorded", "tone": "warn" },
-          { "label": "A human decides", "sub": "your queue, your authorisation", "tone": "violet" },
-          { "label": "Function response", "sub": "confirmed: true | false" },
-          { "label": "Tool runs", "sub": "the reviewed arguments", "tone": "good" }
+          {
+            "label": "Model calls the tool",
+            "sub": "ordinary function call",
+            "tone": "accent"
+          },
+          {
+            "label": "ADK intercepts",
+            "sub": "the body does not run",
+            "tone": "crit"
+          },
+          {
+            "label": "Turn ends",
+            "sub": "pending confirmation recorded",
+            "tone": "warn"
+          },
+          {
+            "label": "A human decides",
+            "sub": "your queue, your authorisation",
+            "tone": "violet"
+          },
+          {
+            "label": "Function response",
+            "sub": "confirmed: true | false"
+          },
+          {
+            "label": "Tool runs",
+            "sub": "the reviewed arguments",
+            "tone": "good"
+          }
         ]
       }
     }
   ],
-
   "11.3": [
     {
       "after": "03",
@@ -322,19 +841,57 @@
         "kind": "matrix",
         "title": "Assert on the things with consequences",
         "caption": "The text is a string you scripted yourself, so asserting on it tests nothing and breaks on rewording. Everything else here stays true when someone improves the phrasing.",
-        "cols": ["Worth asserting", "Why"],
-        "rows": ["Tool called + args", "state delta", "is_final_response()", "The assembled instruction", "The answer's wording"],
+        "cols": [
+          "Worth asserting",
+          "Why"
+        ],
+        "rows": [
+          "Tool called + args",
+          "state delta",
+          "is_final_response()",
+          "The assembled instruction",
+          "The answer's wording"
+        ],
         "cells": [
-          [true, { "text": "what actually happened", "tone": "good" }],
-          [true, { "text": "what persisted", "tone": "good" }],
-          [true, { "text": "what a client renders", "tone": "good" }],
-          [true, { "text": "catches a renamed state key", "tone": "accent" }],
-          [false, { "text": "you wrote the script", "tone": "crit" }]
+          [
+            true,
+            {
+              "text": "what actually happened",
+              "tone": "good"
+            }
+          ],
+          [
+            true,
+            {
+              "text": "what persisted",
+              "tone": "good"
+            }
+          ],
+          [
+            true,
+            {
+              "text": "what a client renders",
+              "tone": "good"
+            }
+          ],
+          [
+            true,
+            {
+              "text": "catches a renamed state key",
+              "tone": "accent"
+            }
+          ],
+          [
+            false,
+            {
+              "text": "you wrote the script",
+              "tone": "crit"
+            }
+          ]
         ]
       }
     }
   ],
-
   "12.1": [
     {
       "after": "03",
@@ -343,15 +900,30 @@
         "title": "The local ladder, in the order you climb it",
         "caption": "Each rung catches a different class of problem, and the last one catches packaging bugs in seconds rather than in a cloud build.",
         "items": [
-          { "label": "adk run", "sub": "a terminal conversation — instructions and tools", "tone": "good" },
-          { "label": "adk web", "sub": "events, state, traces, the eval tab", "tone": "accent" },
-          { "label": "adk api_server", "sub": "the HTTP surface your client should develop against", "tone": "violet" },
-          { "label": "adk deploy docker", "sub": "the real image, locally", "tone": "warn" }
+          {
+            "label": "adk run",
+            "sub": "a terminal conversation — instructions and tools",
+            "tone": "good"
+          },
+          {
+            "label": "adk web",
+            "sub": "events, state, traces, the eval tab",
+            "tone": "accent"
+          },
+          {
+            "label": "adk api_server",
+            "sub": "the HTTP surface your client should develop against",
+            "tone": "violet"
+          },
+          {
+            "label": "adk deploy docker",
+            "sub": "the real image, locally",
+            "tone": "warn"
+          }
         ]
       }
     }
   ],
-
   "12.2": [
     {
       "after": "06",
@@ -361,11 +933,100 @@
         "caption": "Calling create twice makes a second engine with its own sessions and its own bill while your application keeps talking to the first. Deploys update one resource whose name lives in configuration.",
         "centre": "one resource",
         "nodes": [
-          { "label": "create", "sub": "once — returns a resource name", "tone": "good" },
-          { "label": "Name in config", "sub": "not in deploy output", "tone": "accent" },
-          { "label": "get / query", "sub": "your application calls it", "tone": "violet" },
-          { "label": "update", "sub": "every subsequent deploy", "tone": "warn" },
-          { "label": "delete(force)", "sub": "also removes its sessions", "tone": "crit" }
+          {
+            "label": "create",
+            "sub": "once — returns a resource name",
+            "tone": "good"
+          },
+          {
+            "label": "Name in config",
+            "sub": "not in deploy output",
+            "tone": "accent"
+          },
+          {
+            "label": "get / query",
+            "sub": "your application calls it",
+            "tone": "violet"
+          },
+          {
+            "label": "update",
+            "sub": "every subsequent deploy",
+            "tone": "warn"
+          },
+          {
+            "label": "delete(force)",
+            "sub": "also removes its sessions",
+            "tone": "crit"
+          }
+        ]
+      }
+    }
+  ],
+  "3.3": [
+    {
+      "after": "02",
+      "d": {
+        "kind": "steps",
+        "title": "One planned turn, as PlanReAct asks for it",
+        "caption": "All five section names were found in the injected instruction. The last one is what people forget when they build this by hand — a plan that cannot be revised is worse than no plan.",
+        "items": [
+          {
+            "label": "/*PLANNING*/",
+            "sub": "the plan, in natural language",
+            "tone": "accent"
+          },
+          {
+            "label": "/*ACTION*/",
+            "sub": "a tool call",
+            "tone": "good"
+          },
+          {
+            "label": "/*REASONING*/",
+            "sub": "what the result means",
+            "tone": "good"
+          },
+          {
+            "label": "/*REPLANNING*/",
+            "sub": "revise when a tool surprises it",
+            "tone": "crit"
+          },
+          {
+            "label": "/*FINAL_ANSWER*/",
+            "sub": "the only part the user should see",
+            "tone": "violet"
+          }
+        ]
+      }
+    }
+  ],
+  "3.4": [
+    {
+      "after": "02",
+      "d": {
+        "kind": "steps",
+        "title": "Write, register, resolve, run",
+        "caption": "Executed end to end: the agent was constructed with model=\"echo-1\", the registry resolved it to EchoLlm, and the reply came back through the ordinary event machinery.",
+        "items": [
+          {
+            "label": "Subclass BaseLlm",
+            "sub": "generate_content_async + supported_models",
+            "tone": "good"
+          },
+          {
+            "label": "LLMRegistry.register",
+            "sub": "process-wide — keep the pattern narrow",
+            "tone": "warn"
+          },
+          {
+            "label": "resolve('echo-1')",
+            "sub": "-> EchoLlm",
+            "tone": "accent"
+          },
+          {
+            "label": "The agent replies",
+            "sub": "'echo: hello there'",
+            "tone": "violet"
+          }
         ]
       }
     }

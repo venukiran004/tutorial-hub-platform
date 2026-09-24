@@ -24,6 +24,7 @@ EC.receiveLesson({
     {"kind": "timeline", "title": "Why get_tools runs per request", "caption": "A toolset is one entry in the agent's tools list that expands when each model request is assembled. That is what lets the set differ per user and lets a remote server change what it offers without a redeploy.", "span": 10, "tick": 2, "lanes": [{"label": "Toolset", "bars": [[0, 10, "constructed once, closed on shutdown", "violet"]]}, {"label": "get_tools", "bars": [[1, 1.7, "user A: read-only", "accent"], [4, 4.7, "user B: + write", "warn"], [7.3, 8, "user A again", "accent"]]}], "t": "diagram", "id": "dg-4_6-01-0"},
 
 
+
     { t: "code", lang: "python", title: "What every toolset implements",
       code: `from google.adk.tools.base_toolset import BaseToolset
 print([n for n in dir(BaseToolset) if not n.startswith("_")])

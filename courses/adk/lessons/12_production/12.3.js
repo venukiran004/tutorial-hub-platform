@@ -28,6 +28,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "From a resource name to something you can call",
       code: `import vertexai
 from vertexai import agent_engines

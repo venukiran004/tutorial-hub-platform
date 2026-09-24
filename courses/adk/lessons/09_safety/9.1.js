@@ -38,6 +38,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "The most security-critical line in the application", "caption": "user_id is not validated by anything — it is simply the key under which sessions, state and memory are stored. Everything else in this lesson assumes this line is right.", "cols": 3, "nodes": [{"id": "b", "label": "request.json['user_id']", "sub": "the caller picks whose data to read", "tone": "crit"}, {"id": "c", "label": "verified cookie / token", "sub": "the caller cannot forge it", "tone": "good"}, {"id": "r", "label": "run_async(user_id=…)", "sub": "ADK takes it at face value", "tone": "accent"}, {"id": "s", "label": "Their sessions, state, memory", "sub": "all keyed by that string", "tone": "violet"}], "edges": [["b", "r", "wrong"], ["c", "r", "right"], ["r", "s"]], "t": "diagram", "id": "dg-9_1-02-0"},
 
 
+
     { t: "p", text: "`run_async(user_id=…, session_id=…)` takes a string. It is not validated, not signed and not checked against anything — it is simply the key under which state, memory and sessions are stored and retrieved. Pass `\"u2\"` and you get user 2's data, whoever you are." },
 
     { t: "code", lang: "python", title: "The only line that matters",

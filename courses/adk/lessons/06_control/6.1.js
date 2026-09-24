@@ -96,6 +96,7 @@ on_tool_error_callback` },
     {"kind": "flow", "title": "The one rule", "caption": "There is no third mechanism — no raise Skip, no boolean flag. Once you have this, every one of the eight hooks reads the same way.", "cols": 3, "nodes": [{"id": "h", "label": "Your hook runs", "sub": "before_* or after_*", "tone": "accent"}, {"id": "n", "label": "return None", "sub": "the framework carries on", "tone": "good"}, {"id": "v", "label": "return a value", "sub": "yours is used instead", "tone": "warn"}, {"id": "w", "label": "The work", "sub": "model call or tool call"}, {"id": "r", "label": "Result", "sub": "either way, the turn continues", "tone": "violet"}], "edges": [["h", "n"], ["h", "v"], ["n", "w"], ["w", "r"], ["v", "r", "skipped"]], "t": "diagram", "id": "dg-6_1-03-0"},
 
 
+
     { t: "callout", kind: "mental", title: "The one rule that makes callbacks make sense",
       body: [{ t: "p", text: "**Return `None` and the framework carries on. Return a value and the framework uses yours instead of doing the work.** A `before_tool_callback` returning a dict means the tool never runs and your dict is the result. A `before_model_callback` returning an `LlmResponse` means no request is sent and your response is the answer. An after hook returning a value replaces what actually happened. There is no third mechanism — no `raise Skip`, no boolean flag — and once you have this, every hook reads the same way." }] },
 

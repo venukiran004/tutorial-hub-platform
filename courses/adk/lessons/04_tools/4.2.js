@@ -73,6 +73,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "actions change what the framework does next", "caption": "A tool that only returns a value is a function. Setting an action is how a tool participates in the control flow — and skip_summarization was measured at one model call instead of two.", "cols": 4, "nodes": [{"id": "t", "label": "Tool returns", "sub": "plus actions set on the context", "tone": "accent"}, {"id": "s", "label": "skip_summarization", "sub": "the result IS the answer", "tone": "good"}, {"id": "e", "label": "escalate", "sub": "ends the enclosing loop", "tone": "warn"}, {"id": "x", "label": "transfer_to_agent", "sub": "hands the turn to another agent", "tone": "violet"}], "edges": [["t", "s"], ["t", "e"], ["t", "x"]], "t": "diagram", "id": "dg-4_2-03-0"},
 
 
+
     { t: "code", lang: "python", title: "skip_summarization — the tool's result is the answer",
       code: `def raw(q: str, tool_context: ToolContext) -> dict:
     """Returns data the user should see verbatim.

@@ -44,6 +44,7 @@ print(State.APP_PREFIX, State.USER_PREFIX, State.TEMP_PREFIX)`,
     {"kind": "matrix", "title": "The measured result, as a table", "caption": "Executed across two sessions and two users. temp: never appeared anywhere — not in the session, not even in the delta on the event.", "cols": ["Same session", "New session", "Other user"], "rows": ["turn (no prefix)", "user:name", "app:hits", "temp:scratch"], "cells": [[true, false, false], [true, true, false], [true, true, true], [{"text": "within the turn", "tone": "warn"}, false, false]], "t": "diagram", "id": "dg-5_2-02-0"},
 
 
+
     { t: "p", text: "One tool writes one key in each scope and returns. It is then run in three places: a session, a second session belonging to the same user, and a session belonging to a different user. Nothing here is asserted from the documentation — the output is what the framework did." },
 
     { t: "code", lang: "python", title: "s2.py — one tool, four writes",

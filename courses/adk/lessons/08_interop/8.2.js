@@ -27,6 +27,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "m1.py — a stdio server, discovered and used",
       code: `from google.adk.tools.mcp_tool import McpToolset, StdioConnectionParams
 from mcp import StdioServerParameters
@@ -92,6 +93,7 @@ github = McpToolset(connection_params=gh_params, tool_name_prefix="gh")
 
 
 
+
     { t: "p", text: "A toolset holds a connection: a spawned process for stdio, an HTTP session otherwise. `BaseToolset` therefore has a `close`, and it is not decorative — a long-running service that constructs toolsets per request and never closes them accumulates child processes until something gives out." },
 
     { t: "code", lang: "python", title: "Where the toolset should live",
@@ -110,6 +112,7 @@ await FINANCE.close()`,
     { t: "h2", n: "04", text: "The other direction: publishing a server", id: "publishing" },
 
     {"kind": "flow", "title": "Both directions, one implementation", "caption": "Nothing stops the same function being an ADK function tool in your agent and an MCP tool in your server — one implementation, one set of tests, two consumers.", "cols": 3, "nodes": [{"id": "f", "label": "Your function", "sub": "check_fraud(order_id)", "tone": "good"}, {"id": "a", "label": "Function tool", "sub": "in your own agent", "tone": "accent"}, {"id": "m", "label": "MCP server", "sub": "@mcp.tool()", "tone": "violet"}, {"id": "o", "label": "Other teams", "sub": "any framework, any language", "tone": "warn"}], "edges": [["f", "a"], ["f", "m"], ["m", "o"]], "t": "diagram", "id": "dg-8_2-04-2"},
+
 
 
 

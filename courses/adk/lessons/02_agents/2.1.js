@@ -25,6 +25,7 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "The fields you will actually set", "caption": "Thirty-three fields exist; these are the ones that change behaviour on the first day. Everything else is a refinement of one of these.", "cols": ["Decides", "Covered in"], "rows": ["model", "instruction", "tools", "sub_agents", "output_key", "include_contents"], "cells": [[{"text": "capability and cost", "tone": "accent"}, "3.1"], [{"text": "behaviour, every request", "tone": "good"}, "2.2"], [{"text": "what it can do", "tone": "good"}, "4.1"], [{"text": "who it can hand off to", "tone": "violet"}, "2.5"], [{"text": "what the next agent reads", "tone": "warn"}, "5.2"], [{"text": "whether it sees history", "tone": "warn"}, "5.6"]], "t": "diagram", "id": "dg-2_1-01-0"},
 
 
+
     { t: "code", lang: "python", title: "An agent with everything you usually need",
       code: `from google.adk.agents import LlmAgent
 

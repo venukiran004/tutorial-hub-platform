@@ -27,6 +27,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["Classic RAG stage", "In ADK", "Who owns it"],
       rows: [
         ["Ingest and chunk documents", "Offline, before the agent exists", "You — a batch job, not an agent concern"],
@@ -106,6 +107,7 @@ on it and continue the turn.
     { t: "h2", n: "05", text: "What to use in production", id: "production" },
 
     {"kind": "matrix", "title": "Choosing a retriever", "caption": "Interception means a before_tool_callback fires and the query appears in your trace as an argument you can audit. Portability means the agent still works on another provider.", "cols": ["You run it", "Interceptable", "Citations"], "rows": ["FilesRetrieval", "Your BaseRetrievalTool", "VertexAiRagRetrieval", "google_search"], "cells": [[true, true, {"text": "you add ids", "tone": "warn"}], [true, true, {"text": "you add ids", "tone": "warn"}], [false, true, {"text": "from the corpus", "tone": "good"}], [false, false, {"text": "grounding metadata", "tone": "good"}]], "t": "diagram", "id": "dg-7_1-05-1"},
+
 
 
 

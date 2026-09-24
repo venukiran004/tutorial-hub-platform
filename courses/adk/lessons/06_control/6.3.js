@@ -44,6 +44,7 @@ delete_artifact(self, *, app_name, user_id, filename, session_id=None) -> None` 
 
 
 
+
     { t: "code", lang: "python", title: "c3.py — a tool that generates a file",
       code: `async def make_report(title: str, tool_context) -> dict:
     """Generates a report and saves it as an artifact."""
@@ -89,6 +90,7 @@ delete_artifact(self, *, app_name, user_id, filename, session_id=None) -> None` 
     { t: "h2", n: "04", text: "artifact_delta", id: "delta" },
 
     {"kind": "flow", "title": "A save leaves a trail", "caption": "The same mechanism as state_delta, applied to files. This is what makes 'which turn produced the report the user is complaining about' answerable from the transcript alone.", "cols": 4, "nodes": [{"id": "t", "label": "save_artifact(...)", "sub": "await, inside the tool", "tone": "accent"}, {"id": "s", "label": "Artifact store", "sub": "bytes, versioned", "tone": "violet"}, {"id": "d", "label": "artifact_delta", "sub": "{'report.md': 1}", "tone": "good"}, {"id": "e", "label": "On the event", "sub": "in the session, auditable", "tone": "warn"}], "edges": [["t", "s"], ["s", "d"], ["d", "e"]], "t": "diagram", "id": "dg-6_3-04-1"},
+
 
 
 

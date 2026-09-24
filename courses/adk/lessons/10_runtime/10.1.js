@@ -40,6 +40,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Two tools that each sleep for 0.4 seconds. In the first run, the model asks for both in a single response; in the second, it asks for one, gets the answer, and asks for the other." },
 
     { t: "code", lang: "python", title: "n1.py — the two shapes",

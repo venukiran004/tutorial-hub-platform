@@ -134,6 +134,7 @@ print(remote.resource_name)
     {"kind": "cycle", "title": "The lifecycle of a deployed engine", "caption": "Calling create twice makes a second engine with its own sessions and its own bill while your application keeps talking to the first. Deploys update one resource whose name lives in configuration.", "centre": "one resource", "nodes": [{"label": "create", "sub": "once — returns a resource name", "tone": "good"}, {"label": "Name in config", "sub": "not in deploy output", "tone": "accent"}, {"label": "get / query", "sub": "your application calls it", "tone": "violet"}, {"label": "update", "sub": "every subsequent deploy", "tone": "warn"}, {"label": "delete(force)", "sub": "also removes its sessions", "tone": "crit"}], "t": "diagram", "id": "dg-12_2-06-0"},
 
 
+
     { t: "code", lang: "python", title: "Create, list, update, delete",
       code: `from vertexai import agent_engines
 

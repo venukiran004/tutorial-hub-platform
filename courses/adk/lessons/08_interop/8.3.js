@@ -40,6 +40,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "An A2A agent publishes a card at a well-known URL describing what it is and how to talk to it. This one is served by a real ADK agent — the `to_a2a` call in the next lesson generated it from the agent object." },
 
     { t: "code", lang: "bash", title: "Fetching it",
@@ -85,6 +86,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Tasks, not calls", id: "tasks" },
 
     {"kind": "flow", "title": "The task state machine", "caption": "A function call has two states: pending and returned. The branch that makes A2A different is 'input required' — a remote agent can stop and ask you a question, then carry on.", "cols": 3, "nodes": [{"id": "s", "label": "Submitted", "sub": "the caller holds a task id", "tone": "accent"}, {"id": "w", "label": "Working", "sub": "progress, streamed if supported", "tone": "good"}, {"id": "i", "label": "Input required", "sub": "it asks; you answer", "tone": "warn"}, {"id": "c", "label": "Completed", "sub": "result + artifacts", "tone": "violet"}, {"id": "f", "label": "Failed / cancelled", "sub": "an outcome you must handle", "tone": "crit"}], "edges": [["s", "w"], ["w", "i", "needs more"], ["i", "w", "answered"], ["w", "c"], ["w", "f"]], "t": "diagram", "id": "dg-8_3-03-1"},
+
 
 
 

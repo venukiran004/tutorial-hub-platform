@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "The whole surface",
       code: `from google.adk.plugins import BasePlugin
 print([n for n in dir(BasePlugin) if not n.startswith("_")])` },
@@ -91,6 +92,7 @@ runner = Runner(app=app, session_service=svc)`,
     { t: "h2", n: "03", text: "Order, and who wins", id: "order" },
 
     {"kind": "flow", "title": "Outer ring, inner ring", "caption": "Going in, the plugin decides first — which is what makes a plugin guardrail genuinely global. Coming out, the agent callback runs first, so a plugin timing a call measures the agent callbacks too.", "cols": 4, "nodes": [{"id": "p1", "label": "Plugin before_*", "sub": "can short-circuit here", "tone": "violet"}, {"id": "c1", "label": "Agent before_*", "sub": "consulted only if the plugin passed", "tone": "accent"}, {"id": "w", "label": "The work", "sub": "model call or tool call", "tone": "good"}, {"id": "c2", "label": "Agent after_*", "sub": "sees the result first"}, {"id": "p2", "label": "Plugin after_*", "sub": "sees it last", "tone": "violet"}], "edges": [["p1", "c1"], ["c1", "w"], ["w", "c2"], ["c2", "p2"]], "t": "diagram", "id": "dg-6_2-03-1"},
+
 
 
 

@@ -27,6 +27,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "a2a_server.py — an ordinary agent, exposed",
       code: `from google.adk.agents import LlmAgent
 from google.adk.a2a.utils.agent_to_a2a import to_a2a
@@ -94,6 +95,7 @@ if __name__ == "__main__":
 
 
 
+
     { t: "code", lang: "python", title: "a2a_client.py — a remote agent is a BaseAgent",
       code: `from google.adk.agents.remote_a2a_agent import RemoteA2aAgent
 
@@ -156,6 +158,7 @@ same origin as the location the card was fetched from
     { t: "h2", n: "06", text: "Operational settings", id: "operational" },
 
     {"kind": "matrix", "title": "The settings whose defaults will hurt you", "caption": "Two of these are the same lesson as InMemorySessionService one layer up: a default that works perfectly on one machine and fails quietly the moment there are two.", "cols": ["Default", "What it costs", "Set it to"], "rows": ["timeout", "task_store", "auth_credential", "card host/port"], "cells": [[{"text": "600s", "tone": "crit"}, "10 min of a spinner", {"text": "what the UI tolerates", "tone": "good"}], [{"text": "in-process", "tone": "crit"}, "replicas do not share", {"text": "a shared store", "tone": "good"}], [{"text": "none", "tone": "crit"}, "unauthenticated calls", {"text": "service credentials", "tone": "good"}], [{"text": "localhost", "tone": "warn"}, "clients refuse the card", {"text": "the public origin", "tone": "good"}]], "t": "diagram", "id": "dg-8_4-06-2"},
+
 
 
 

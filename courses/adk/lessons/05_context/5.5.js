@@ -66,6 +66,7 @@ Context adds 34 more: ['actions', 'add_memory', 'add_session_to_memory', 'attemp
 
 
 
+
     { t: "code", lang: "python", title: "s5.py — an agent that narrates its own contexts",
       code: `def instruction(ctx: ReadonlyContext) -> str:
     print(f"  [instruction provider] agent={ctx.agent_name} invocation={ctx.invocation_id[:8]} "
@@ -133,6 +134,7 @@ system instruction the model received:
     { t: "h2", n: "06", text: "InvocationContext, the one that is different", id: "invocation" },
 
     {"kind": "flow", "title": "Getting from one context to the other", "caption": "A writable context can reach the InvocationContext, which carries the services themselves. Needing that from inside a tool is usually a sign the work belongs in a custom agent.", "cols": 3, "nodes": [{"id": "t", "label": "ToolContext", "sub": "= CallbackContext = Context", "tone": "good"}, {"id": "i", "label": "InvocationContext", "sub": "get_invocation_context()", "tone": "violet"}, {"id": "s", "label": "The services", "sub": "session, artifact, memory, credential", "tone": "accent"}, {"id": "e", "label": "end_invocation", "sub": "stop the whole turn", "tone": "crit"}], "edges": [["t", "i"], ["i", "s"], ["i", "e"]], "t": "diagram", "id": "dg-5_5-06-1"},
+
 
 
 

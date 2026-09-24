@@ -92,6 +92,7 @@ same query as user u2 -> 0 entries` },
     {"kind": "trace", "title": "Why 'allergy' found nothing", "caption": "The in-memory service tokenises both sides into lowercased words and scores one point per query word present. 'allergy' is not 'allergic', so the score is zero and the entry is dropped.", "left": "query", "codeW": 300, "vars": ["tokens matched", "result"], "steps": [{"code": "\"penicillin\"", "state": ["1", "2 entries"], "tone": "good"}, {"code": "\"allergy\"", "state": ["0", "nothing"], "changed": [1], "tone": "crit", "note": "prototype only"}, {"code": "\"what am I allergic to\"", "state": ["1", "2 entries"], "tone": "good", "note": "by luck of phrasing"}], "t": "diagram", "id": "dg-5_4-04-0"},
 
 
+
     { t: "p", text: "Its own docstring says 'uses keyword matching instead of semantic search', and the implementation is literal about it: both the query and each event's text are split into lowercased word tokens, an event scores one point per query token it contains, anything scoring zero is dropped, and the top ten are returned." },
 
     { t: "code", lang: "python", title: "The matching rule, from the source",

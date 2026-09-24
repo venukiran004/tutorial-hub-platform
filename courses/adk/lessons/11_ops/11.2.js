@@ -27,6 +27,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "json", title: "evaldemo/weather.test.json",
       code: `[
   {
@@ -88,6 +89,7 @@ response_match_score for evaldemo Failed. Expected 0.8, but got 0.46153846153846
     { t: "h2", n: "04", text: "The metrics that ship", id: "metrics" },
 
     {"kind": "matrix", "title": "Which metric to reach for", "caption": "Start at the top row: it is deterministic, needs no extra model calls, and catches the changes that break agents most often. The executed failing run scored two contradictory answers at 0.46 on response_match.", "cols": ["Needs a model", "Catches"], "rows": ["tool_trajectory_avg_score", "response_match_score", "final_response_match_v2", "hallucinations_v1", "rubric_based_*"], "cells": [[false, {"text": "wrong tool, wrong args", "tone": "good"}], [false, {"text": "large rewrites only", "tone": "warn"}], [true, {"text": "actually-wrong answers", "tone": "good"}], [true, {"text": "unsupported claims", "tone": "good"}], [true, {"text": "tone, house style", "tone": "accent"}]], "t": "diagram", "id": "dg-11_2-04-1"},
+
 
 
 
