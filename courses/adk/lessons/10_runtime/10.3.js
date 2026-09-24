@@ -57,6 +57,10 @@ agent = LlmAgent(name="a", model=llm, tools=[flaky],
 
     { t: "h2", n: "03", text: "Which failures get which treatment", id: "which" },
 
+    {"kind": "flow", "title": "Convert it, or let it fly?", "caption": "The test is whether the agent could sensibly do anything about it. Converting everything makes your own bugs look like flaky dependencies, and nothing reaches your error tracker.", "cols": 3, "nodes": [{"id": "e", "label": "A tool raised", "sub": "in on_tool_error", "tone": "accent"}, {"id": "q", "label": "Could the agent act on it?", "sub": "timeout, 404, rate limit, denied", "tone": "warn"}, {"id": "c", "label": "Return a dict", "sub": "generic text + retryable", "tone": "good"}, {"id": "p", "label": "Return None", "sub": "report, then let it propagate", "tone": "crit"}], "edges": [["e", "q"], ["q", "c", "yes"], ["q", "p", "no — it is a bug"]], "t": "diagram", "id": "dg-10_3-03-0"},
+
+
+
     { t: "diagram", kind: "compare", title: "Information, or fault?",
       caption: "The test: could the agent sensibly do something about it? If yes, it is information. If the only sensible response is a human fixing code, it is a fault.",
       columns: [
@@ -68,6 +72,10 @@ agent = LlmAgent(name="a", model=llm, tools=[flaky],
       body: [{ t: "p", text: "An `on_tool_error` that converts every exception into \"something went wrong\" makes a `KeyError` in your own code look exactly like a flaky upstream: the agent apologises politely, the user retries, and nothing reaches your error tracker. Catch the exception types you expect to see from the outside world, and let the rest through. If you must have a catch-all, report it to your tracker inside the callback so it is at worst hidden from the user, not from you." }] },
 
     { t: "h2", n: "04", text: "Retrying", id: "retrying" },
+
+    {"kind": "steps", "title": "Retry where the failure is", "caption": "Three attempts inside one tool call cost zero extra model calls and keep the transcript clean. Returning retryable: True three times costs three model round trips and fills the log with failures the user never needed to see.", "items": [{"label": "Attempt 1", "sub": "timeout", "tone": "crit"}, {"label": "sleep 0.2s", "sub": "backoff"}, {"label": "Attempt 2", "sub": "timeout", "tone": "crit"}, {"label": "sleep 0.4s", "sub": "backoff"}, {"label": "Attempt 3", "sub": "succeeds — the model never saw the failures", "tone": "good"}], "t": "diagram", "id": "dg-10_3-04-1"},
+
+
 
     { t: "code", lang: "python", title: "Retry inside the tool, not in the loop",
       code: `async def fetch_rate(pair: str) -> dict:

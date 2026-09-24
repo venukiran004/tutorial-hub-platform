@@ -23,6 +23,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Serving", id: "serving" },
 
+    {"kind": "layers", "title": "What to_a2a wraps around your agent", "caption": "The agent is unchanged. Everything above it is generated — which is why serving an agent over A2A is one function call and why the settings that matter are the ones describing where it is reachable.", "items": [{"label": "Starlette ASGI app", "sub": "what you hand to uvicorn", "tone": "violet"}, {"label": "Agent card at /.well-known/", "sub": "generated from the agent — name, skills, interfaces", "tone": "warn"}, {"label": "A2A executor + task store", "sub": "the task lifecycle; in-process by default", "tone": "crit"}, {"label": "Runner", "sub": "your session, artifact and memory services", "tone": "accent"}, {"label": "Your LlmAgent", "sub": "unchanged", "tone": "good"}], "t": "diagram", "id": "dg-8_4-01-0"},
+
+
+
     { t: "code", lang: "python", title: "a2a_server.py — an ordinary agent, exposed",
       code: `from google.adk.agents import LlmAgent
 from google.adk.a2a.utils.agent_to_a2a import to_a2a
@@ -86,6 +90,10 @@ if __name__ == "__main__":
 
     { t: "h2", n: "03", text: "Consuming", id: "consuming" },
 
+    {"kind": "flow", "title": "One question, across two processes", "caption": "Executed. The remote agent's own tool call and its result arrive as events in YOUR session — which is what makes a delegation debuggable. What does not cross is its state, your state, or your user's identity.", "cols": 3, "nodes": [{"id": "u", "label": "Your runner", "sub": "RemoteA2aAgent as root", "tone": "accent"}, {"id": "c", "label": "Card fetch", "sub": "origin must match", "tone": "crit"}, {"id": "r", "label": "Remote agent", "sub": "another process entirely", "tone": "violet"}, {"id": "t", "label": "Its tool runs", "sub": "check_stock(sku='X1')", "tone": "good"}, {"id": "e", "label": "Events, locally", "sub": "call + result + answer, in your session", "tone": "warn"}], "edges": [["u", "c"], ["c", "r", "JSON-RPC"], ["r", "t"], ["t", "e"]], "t": "diagram", "id": "dg-8_4-03-1"},
+
+
+
     { t: "code", lang: "python", title: "a2a_client.py — a remote agent is a BaseAgent",
       code: `from google.adk.agents.remote_a2a_agent import RemoteA2aAgent
 
@@ -146,6 +154,10 @@ same origin as the location the card was fetched from
       body: [{ t: "p", text: "It receives a message from your service. Not your `user_id`, not your session, not your authenticated principal — nothing but what you put in the message or in request metadata. For an inventory lookup that is fine. For anything where the answer depends on who is asking, you have to carry identity deliberately and the remote side has to verify it, which means an agreement between two teams rather than a constructor argument. `RemoteA2aAgent` accepts `auth_scheme` and `auth_credential` for the service-to-service half of that." }] },
 
     { t: "h2", n: "06", text: "Operational settings", id: "operational" },
+
+    {"kind": "matrix", "title": "The settings whose defaults will hurt you", "caption": "Two of these are the same lesson as InMemorySessionService one layer up: a default that works perfectly on one machine and fails quietly the moment there are two.", "cols": ["Default", "What it costs", "Set it to"], "rows": ["timeout", "task_store", "auth_credential", "card host/port"], "cells": [[{"text": "600s", "tone": "crit"}, "10 min of a spinner", {"text": "what the UI tolerates", "tone": "good"}], [{"text": "in-process", "tone": "crit"}, "replicas do not share", {"text": "a shared store", "tone": "good"}], [{"text": "none", "tone": "crit"}, "unauthenticated calls", {"text": "service credentials", "tone": "good"}], [{"text": "localhost", "tone": "warn"}, "clients refuse the card", {"text": "the public origin", "tone": "good"}]], "t": "diagram", "id": "dg-8_4-06-2"},
+
+
 
     { t: "table", head: ["Setting", "Default", "What to do"],
       rows: [

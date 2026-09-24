@@ -24,6 +24,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The handle", id: "handle" },
 
+    {"kind": "steps", "title": "The four calls an application makes", "caption": "Executed against AdkApp — the same wrapper Agent Engine deploys. It is deliberately not a question-in, answer-out endpoint: a turn is a sequence of things happening, and a decent interface wants to show them.", "items": [{"label": "agent_engines.get(name)", "sub": "resource name from configuration", "tone": "accent"}, {"label": "async_create_session", "sub": "returns a dict — store its id", "tone": "violet"}, {"label": "async_stream_query", "sub": "message + user_id + session_id", "tone": "good"}, {"label": "async_get_session", "sub": "the transcript, on their side", "tone": "warn"}], "t": "diagram", "id": "dg-12_3-01-0"},
+
+
+
     { t: "code", lang: "python", title: "From a resource name to something you can call",
       code: `import vertexai
 from vertexai import agent_engines

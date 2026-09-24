@@ -22,6 +22,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Fifteen hooks", id: "hooks" },
 
+    {"kind": "layers", "title": "Fifteen hooks, grouped by what they wrap", "caption": "The middle three rows are the agent callbacks lifted to application scope. The top and bottom rows have no per-agent equivalent at all, and they are the reason plugins are not merely a convenience.", "items": [{"label": "before_run / after_run / on_run_error", "sub": "the whole invocation — every agent, every transfer", "tone": "violet"}, {"label": "on_user_message", "sub": "before any agent runs — an unbypassable input check", "tone": "crit"}, {"label": "before_agent / after_agent / on_agent_error", "sub": "per agent", "tone": "accent"}, {"label": "before_model / after_model / on_model_error", "sub": "per model request", "tone": "accent"}, {"label": "before_tool / after_tool / on_tool_error", "sub": "per tool call", "tone": "good"}, {"label": "on_event / close", "sub": "every event emitted; shutdown flush", "tone": "warn"}], "t": "diagram", "id": "dg-6_2-01-0"},
+
+
+
     { t: "code", lang: "python", title: "The whole surface",
       code: `from google.adk.plugins import BasePlugin
 print([n for n in dir(BasePlugin) if not n.startswith("_")])` },
@@ -85,6 +89,10 @@ runner = Runner(app=app, session_service=svc)`,
       ] },
 
     { t: "h2", n: "03", text: "Order, and who wins", id: "order" },
+
+    {"kind": "flow", "title": "Outer ring, inner ring", "caption": "Going in, the plugin decides first — which is what makes a plugin guardrail genuinely global. Coming out, the agent callback runs first, so a plugin timing a call measures the agent callbacks too.", "cols": 4, "nodes": [{"id": "p1", "label": "Plugin before_*", "sub": "can short-circuit here", "tone": "violet"}, {"id": "c1", "label": "Agent before_*", "sub": "consulted only if the plugin passed", "tone": "accent"}, {"id": "w", "label": "The work", "sub": "model call or tool call", "tone": "good"}, {"id": "c2", "label": "Agent after_*", "sub": "sees the result first"}, {"id": "p2", "label": "Plugin after_*", "sub": "sees it last", "tone": "violet"}], "edges": [["p1", "c1"], ["c1", "w"], ["w", "c2"], ["c2", "p2"]], "t": "diagram", "id": "dg-6_2-03-1"},
+
+
 
     { t: "p", text: "Both mechanisms can short-circuit by returning a value, so ordering decides who gets the chance. Plugins run around the agent-level callbacks: a plugin's `before_*` sees the call first, and if it returns a value the agent's own callback never runs. On the way out, the agent callback runs first and the plugin sees the result afterwards." },
 

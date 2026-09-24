@@ -46,6 +46,9 @@ system instruction still says: 'Summarise the ticket. Never issue refunds.'` },
 
     { t: "h2", n: "02", text: "Where untrusted text comes from", id: "sources" },
 
+    {"kind": "layers", "title": "Six doors untrusted text walks through", "caption": "Only the first is the one people defend. The rest arrive through parts of the system that feel like infrastructure — a database read, a search hit, a memory lookup — which is exactly why they work.", "items": [{"label": "The user's message", "sub": "the one everybody checks", "tone": "accent"}, {"label": "A tool result", "sub": "whoever wrote the record the tool read", "tone": "crit"}, {"label": "Retrieved documents", "sub": "including any user-generated part of the corpus", "tone": "crit"}, {"label": "Memory", "sub": "the user, weeks ago, retrieved into today's prompt", "tone": "warn"}, {"label": "An MCP tool description", "sub": "the server author's text, in your prompt", "tone": "warn"}, {"label": "A remote agent's reply", "sub": "another team's model, possibly relaying its own users", "tone": "violet"}], "t": "diagram", "id": "dg-9_2-02-0"},
+
+
     { t: "table", head: ["Source", "Who wrote it", "Covered in"],
       rows: [
         ["The user's message", "Your user — possibly adversarial", "This lesson"],

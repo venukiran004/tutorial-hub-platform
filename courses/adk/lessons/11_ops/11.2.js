@@ -23,6 +23,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "A case is a question and what should happen", id: "case" },
 
+    {"kind": "flow", "title": "What an evaluation run does", "caption": "Trajectory and response are scored separately because they fail for different reasons: the wrong tool is a routing problem, the right tool badly summarised is a prompting one.", "cols": 3, "nodes": [{"id": "c", "label": "Cases", "sub": "query + expected tools + reference", "tone": "accent"}, {"id": "r", "label": "Run the agent", "sub": "num_runs times — models are stochastic", "tone": "violet"}, {"id": "t", "label": "Score trajectory", "sub": "threshold 1.0 — exact", "tone": "good"}, {"id": "s", "label": "Score response", "sub": "threshold 0.8 — ROUGE overlap", "tone": "warn"}, {"id": "a", "label": "AssertionError", "sub": "listing every failure", "tone": "crit"}], "edges": [["c", "r"], ["r", "t"], ["r", "s"], ["t", "a"], ["s", "a"]], "t": "diagram", "id": "dg-11_2-01-0"},
+
+
+
     { t: "code", lang: "json", title: "evaldemo/weather.test.json",
       code: `[
   {
@@ -82,6 +86,10 @@ response_match_score for evaldemo Failed. Expected 0.8, but got 0.46153846153846
       body: [{ t: "p", text: "It compares n-grams. Two sentences sharing \"London\", \"is\" and \"and\" score well regardless of whether one says raining and the other says sunny. A high score does not mean the answer is right, and a low score does not mean it is wrong — a correct answer phrased differently from your reference scores badly. Use it to catch large regressions, set the threshold with that in mind, and reach for a model-graded metric when you need to know whether an answer is actually correct." }] },
 
     { t: "h2", n: "04", text: "The metrics that ship", id: "metrics" },
+
+    {"kind": "matrix", "title": "Which metric to reach for", "caption": "Start at the top row: it is deterministic, needs no extra model calls, and catches the changes that break agents most often. The executed failing run scored two contradictory answers at 0.46 on response_match.", "cols": ["Needs a model", "Catches"], "rows": ["tool_trajectory_avg_score", "response_match_score", "final_response_match_v2", "hallucinations_v1", "rubric_based_*"], "cells": [[false, {"text": "wrong tool, wrong args", "tone": "good"}], [false, {"text": "large rewrites only", "tone": "warn"}], [true, {"text": "actually-wrong answers", "tone": "good"}], [true, {"text": "unsupported claims", "tone": "good"}], [true, {"text": "tone, house style", "tone": "accent"}]], "t": "diagram", "id": "dg-11_2-04-1"},
+
+
 
     { t: "code", lang: "python", title: "All of them",
       code: `from google.adk.evaluation.eval_metrics import PrebuiltMetrics

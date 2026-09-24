@@ -51,6 +51,9 @@ Gemma` },
 
     { t: "h2", n: "02", text: "Which model for which agent", id: "choice" },
 
+    {"kind": "matrix", "title": "Different agents want different models", "caption": "In a multi-agent system these are separate LlmAgent objects, so they can be separate models. Moving the deterministic-shaped agents to a cheaper one is usually the largest available saving (lesson 12.4).", "cols": ["Wants", "Tolerates"], "rows": ["Classifier", "Coordinator", "Tool user", "Drafting agent"], "cells": [[{"text": "cheap and fast", "tone": "good"}, {"text": "a small model", "tone": "good"}], [{"text": "good routing", "tone": "warn"}, {"text": "no shortcuts", "tone": "crit"}], [{"text": "function calling", "tone": "crit"}, {"text": "no shortcuts", "tone": "crit"}], [{"text": "strong writing", "tone": "accent"}, {"text": "higher latency", "tone": "good"}]], "t": "diagram", "id": "dg-3_1-02-0"},
+
+
     { t: "table", head: ["Job", "Wants", "Typical choice"],
       rows: [
         ["Routing / classification", "Speed and cost; the decision is easy", "The smallest current Flash-class model; often the cheapest tier available"],

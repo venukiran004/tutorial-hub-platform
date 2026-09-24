@@ -117,6 +117,9 @@ app = App(name="support", root_agent=root,
 
     { t: "h2", n: "05", text: "Restricting tools", id: "restrictions" },
 
+    {"kind": "layers", "title": "Four ways to stop a tool being used, strongest first", "caption": "Only the top three are controls. An instruction is a preference, and a sufficiently persuasive message can talk a model out of a preference.", "items": [{"label": "Do not give the agent the tool", "sub": "nothing can call what is not there", "tone": "good"}, {"label": "Filter the toolset", "sub": "resolved per request, so it can depend on the user", "tone": "accent"}, {"label": "before_tool_callback", "sub": "refuse with a reason and retryable: false", "tone": "warn"}, {"label": "Say so in the instruction", "sub": "not a control", "tone": "crit"}], "t": "diagram", "id": "dg-4_7-05-0"},
+
+
     { t: "table", head: ["Restriction", "How", "When"],
       rows: [
         ["Do not give the agent the tool", "Construct a different agent per role or per user tier", "The strongest control — nothing can call what is not there"],

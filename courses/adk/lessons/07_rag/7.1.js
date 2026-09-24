@@ -23,6 +23,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The pipeline, and where it goes", id: "pipeline" },
 
+    {"kind": "steps", "title": "The classic pipeline, and who owns each stage in ADK", "caption": "The first two stages happen before the agent exists. The last one has no equivalent in a pipeline at all, and it is where agentic RAG succeeds or fails.", "items": [{"label": "Ingest and chunk", "sub": "offline batch job — not an agent concern"}, {"label": "Embed and index", "sub": "offline, into a vector store"}, {"label": "Decide whether to search", "sub": "THE MODEL — your instruction, indirectly", "tone": "crit"}, {"label": "Embed query and search", "sub": "inside the tool's run_async", "tone": "good"}, {"label": "Chunks become an event", "sub": "the framework — auditable in the session", "tone": "accent"}, {"label": "Generate the answer", "sub": "the next model call in the same turn", "tone": "accent"}], "t": "diagram", "id": "dg-7_1-01-0"},
+
+
+
     { t: "table", head: ["Classic RAG stage", "In ADK", "Who owns it"],
       rows: [
         ["Ingest and chunk documents", "Offline, before the agent exists", "You — a batch job, not an agent concern"],
@@ -100,6 +104,10 @@ on it and continue the turn.
       body: [{ t: "p", text: "A model handed \"No matching document found.\" and no instruction about what to do with it will frequently answer from its own weights, fluently and without hedging. This is the single most common RAG failure in production and it is invisible in testing, because the answer looks exactly like a good one. The instruction must say it explicitly — answer only from the documents, and say when nothing matched — and you should evaluate that behaviour deliberately (lesson 11.2) rather than assuming the sentence worked." }] },
 
     { t: "h2", n: "05", text: "What to use in production", id: "production" },
+
+    {"kind": "matrix", "title": "Choosing a retriever", "caption": "Interception means a before_tool_callback fires and the query appears in your trace as an argument you can audit. Portability means the agent still works on another provider.", "cols": ["You run it", "Interceptable", "Citations"], "rows": ["FilesRetrieval", "Your BaseRetrievalTool", "VertexAiRagRetrieval", "google_search"], "cells": [[true, true, {"text": "you add ids", "tone": "warn"}], [true, true, {"text": "you add ids", "tone": "warn"}], [false, true, {"text": "from the corpus", "tone": "good"}], [false, false, {"text": "grounding metadata", "tone": "good"}]], "t": "diagram", "id": "dg-7_1-05-1"},
+
+
 
     { t: "table", head: ["Option", "What it is", "When"],
       rows: [

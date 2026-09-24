@@ -23,6 +23,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Connecting", id: "connecting" },
 
+    {"kind": "steps", "title": "What one McpToolset entry actually does", "caption": "Executed against a FastMCP server over stdio. Steps 2 and 5 are the protocol; everything else is the agent behaving exactly as it would with a local function.", "items": [{"label": "Connect", "sub": "spawn the process, or open the HTTP session", "tone": "violet"}, {"label": "ListTools", "sub": "names, descriptions and JSON Schemas", "tone": "accent"}, {"label": "Filter", "sub": "tool_filter allow-list, resolved per request", "tone": "crit"}, {"label": "Declare", "sub": "each becomes a function declaration for the model"}, {"label": "CallTool", "sub": "name and arguments cross the wire", "tone": "accent"}, {"label": "Envelope back", "sub": "content list + isError", "tone": "good"}], "t": "diagram", "id": "dg-8_2-01-0"},
+
+
+
     { t: "code", lang: "python", title: "m1.py — a stdio server, discovered and used",
       code: `from google.adk.tools.mcp_tool import McpToolset, StdioConnectionParams
 from mcp import StdioServerParameters
@@ -84,6 +88,10 @@ github = McpToolset(connection_params=gh_params, tool_name_prefix="gh")
 
     { t: "h2", n: "03", text: "Lifecycle", id: "lifecycle" },
 
+    {"kind": "timeline", "title": "Where the toolset should live", "caption": "Construct once for the process and close on shutdown. A service that builds a toolset per request without closing it leaks a child process per request — which presents as memory exhaustion hours later with nothing in the agent logs.", "span": 10, "tick": 2, "lanes": [{"label": "Connection", "bars": [[0, 10, "one spawned process for the process lifetime", "violet"]]}, {"label": "get_tools", "bars": [[1, 1.6, "req 1", "accent"], [3.4, 4, "req 2", "accent"], [6, 6.6, "req 3", "accent"], [8.4, 9, "req 4", "accent"]]}, {"label": "close()", "bars": [[9.6, 10, "shutdown", "good"]]}], "t": "diagram", "id": "dg-8_2-03-1"},
+
+
+
     { t: "p", text: "A toolset holds a connection: a spawned process for stdio, an HTTP session otherwise. `BaseToolset` therefore has a `close`, and it is not decorative — a long-running service that constructs toolsets per request and never closes them accumulates child processes until something gives out." },
 
     { t: "code", lang: "python", title: "Where the toolset should live",
@@ -100,6 +108,10 @@ await FINANCE.close()`,
       body: [{ t: "p", text: "Your agent now fails when someone else's process fails, and the failure surfaces during `get_tools` — while the model request is being assembled, before the model has said anything. Decide what should happen: a missing toolset means the agent quietly loses a capability, which is often better than a failed turn, but only if the instruction does not promise that capability. Test it by killing the server mid-conversation, because you will find out eventually and it is cheaper to find out now." }] },
 
     { t: "h2", n: "04", text: "The other direction: publishing a server", id: "publishing" },
+
+    {"kind": "flow", "title": "Both directions, one implementation", "caption": "Nothing stops the same function being an ADK function tool in your agent and an MCP tool in your server — one implementation, one set of tests, two consumers.", "cols": 3, "nodes": [{"id": "f", "label": "Your function", "sub": "check_fraud(order_id)", "tone": "good"}, {"id": "a", "label": "Function tool", "sub": "in your own agent", "tone": "accent"}, {"id": "m", "label": "MCP server", "sub": "@mcp.tool()", "tone": "violet"}, {"id": "o", "label": "Other teams", "sub": "any framework, any language", "tone": "warn"}], "edges": [["f", "a"], ["f", "m"], ["m", "o"]], "t": "diagram", "id": "dg-8_2-04-2"},
+
+
 
     { t: "p", text: "Everything so far treats MCP as a way to get tools in. It is equally a way to send tools out. If your team owns a capability that other teams keep asking for — a fraud check, a pricing calculation, a customer lookup with the right joins — wrapping it in an MCP server means they consume it instead of reimplementing it, whatever framework they use." },
 

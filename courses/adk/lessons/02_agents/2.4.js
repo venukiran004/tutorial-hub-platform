@@ -149,6 +149,9 @@ runner = InMemoryRunner(node=wf, app_name="wfapp")      # note: node=, not agent
 
     { t: "h2", n: "03", text: "Three ways to express control flow", id: "choosing" },
 
+    {"kind": "compare", "title": "Three ways to express control flow", "caption": "Pick the least powerful one that works. A model deciding the order is flexible and unpredictable; a graph is predictable and rigid; Python is both, and yours to maintain.", "columns": [{"title": "Workflow agents", "tone": "good", "items": ["Sequential, parallel, loop", "Declarative", "Deprecated for Workflow", "Most pipelines"]}, {"title": "Workflow graph", "tone": "accent", "items": ["Nodes, edges, routes", "Conditional branching", "Cannot yet be a sub-agent", "Real branching logic"]}, {"title": "A custom agent", "tone": "violet", "items": ["_run_async_impl", "Arbitrary Python", "You own every edge case", "When the other two cannot"]}], "t": "diagram", "id": "dg-2_4-03-0"},
+
+
     { t: "diagram", kind: "matrix", title: "Which mechanism for which property",
       caption: "Read down the column you care about. Most systems use workflow agents for the spine, LLM transfer for the one genuinely content-dependent branch, and a custom agent or graph for the awkward part that remains.",
       rows: ["Workflow agents", "Custom BaseAgent", "Workflow graph", "LLM transfer"],

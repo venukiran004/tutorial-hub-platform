@@ -61,6 +61,10 @@ print(list(Event.model_fields))` },
 
     { t: "h2", n: "03", text: "Tracing", id: "tracing" },
 
+    {"kind": "tree", "title": "Spans that nest like the agents", "caption": "A flat list of model calls cannot answer 'which agent did the expensive thing'. Building the spans in a plugin means a newly added agent appears in the trace without anyone remembering to instrument it.", "root": {"label": "agent.turn", "sub": "before_run → after_run", "tone": "violet", "children": [{"label": "coordinator", "sub": "before_agent", "tone": "accent", "children": [{"label": "model call", "sub": "usage_metadata", "tone": "good"}, {"label": "returns agent", "sub": "after transfer", "tone": "accent", "children": [{"label": "search_docs", "sub": "before_tool", "tone": "warn"}, {"label": "model call", "sub": "usage_metadata", "tone": "good"}]}]}]}, "t": "diagram", "id": "dg-11_1-03-0"},
+
+
+
     { t: "p", text: "A flat list of model calls is nearly useless in a multi-agent system, because the question is always *which agent* did the expensive or wrong thing. Spans that nest the way the agents do make that visible at a glance, and a plugin (lesson 6.2) is the right place to build them because it covers every agent including ones added later." },
 
     { t: "code", lang: "python", title: "A tracing plugin, in outline",
@@ -108,6 +112,10 @@ print(list(Event.model_fields))` },
       ] },
 
     { t: "h2", n: "05", text: "What to alert on", id: "alerts" },
+
+    {"kind": "matrix", "title": "What each signal tells you", "caption": "Every row is operational. None of them says whether the answers are right — that needs an evaluation set, which is the next lesson.", "cols": ["Warns you of", "Before"], "rows": ["Model calls/turn, p95", "Tool errors by tool", "Blocked guardrail calls", "Stale approvals"], "cells": [[{"text": "loops and retries", "tone": "warn"}, {"text": "the bill does", "tone": "good"}], [{"text": "one degrading upstream", "tone": "warn"}, {"text": "the aggregate moves", "tone": "good"}], [{"text": "someone probing", "tone": "crit"}, {"text": "they find a gap", "tone": "good"}], [{"text": "a stuck conversation", "tone": "warn"}, {"text": "the user gives up", "tone": "good"}]], "t": "diagram", "id": "dg-11_1-05-1"},
+
+
 
     { t: "dl", items: [
       ["Model calls per turn, at the tail", "The 95th percentile rising means loops or retries, and it rises before the bill does."],

@@ -105,6 +105,9 @@ analyst = LlmAgent(name="analyst", model="gemini-2.5-pro",
 
     { t: "h2", n: "04", text: "What you lose with server-side tools", id: "tradeoffs" },
 
+    {"kind": "flow", "title": "Keeping a built-in from constraining the whole agent", "caption": "The restriction applies inside the child agent where the built-in lives. The parent sees one ordinary function tool and keeps its own toolbox — the same encapsulation that keeps tool lists short in lesson 2.6.", "cols": 3, "nodes": [{"id": "p", "label": "Parent agent", "sub": "its own tools, unrestricted", "tone": "accent"}, {"id": "a", "label": "AgentTool", "sub": "looks like one function", "tone": "good"}, {"id": "c", "label": "Child agent", "sub": "holds google_search alone", "tone": "violet"}, {"id": "g", "label": "Grounded result", "sub": "with grounding metadata", "tone": "warn"}], "edges": [["p", "a"], ["a", "c"], ["c", "g"]], "t": "diagram", "id": "dg-4_4-04-0"},
+
+
     { t: "table", head: ["You lose", "Because", "Mitigation"],
       rows: [
         ["Interception", "No `before_tool_callback` fires for a tool your process never ran", "Validate the *answer* in an `after_model_callback` instead (lesson 6.1)"],

@@ -36,6 +36,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The agent card", id: "card" },
 
+    {"kind": "tree", "title": "The agent card, as served", "caption": "Fetched from a running ADK agent. Note that ADK generated a skill per tool from its docstring — including the argument documentation — and serves all of it at a well-known path with no authentication.", "root": {"label": "agent-card.json", "sub": "/.well-known/", "tone": "violet", "children": [{"label": "identity", "sub": "name, description, version", "tone": "accent"}, {"label": "transport", "sub": "interfaces, capabilities, modes", "tone": "good"}, {"label": "skills", "sub": "what it can be asked for", "tone": "warn", "children": [{"label": "inventory", "sub": "the agent itself"}, {"label": "check_stock", "sub": "from the docstring", "tone": "crit"}]}]}, "t": "diagram", "id": "dg-8_3-02-0"},
+
+
+
     { t: "p", text: "An A2A agent publishes a card at a well-known URL describing what it is and how to talk to it. This one is served by a real ADK agent — the `to_a2a` call in the next lesson generated it from the agent object." },
 
     { t: "code", lang: "bash", title: "Fetching it",
@@ -79,6 +83,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "That skills list was generated from tool docstrings, and it is served publicly at a well-known path. Everything in it — internal tool names, parameter documentation, the shape of your system — is now readable by anyone who can reach the endpoint. That is fine for an agent inside a private network and a disclosure decision for one on the internet. Build the card deliberately with `AgentCardBuilder` when the default one says more than you meant it to." }] },
 
     { t: "h2", n: "03", text: "Tasks, not calls", id: "tasks" },
+
+    {"kind": "flow", "title": "The task state machine", "caption": "A function call has two states: pending and returned. The branch that makes A2A different is 'input required' — a remote agent can stop and ask you a question, then carry on.", "cols": 3, "nodes": [{"id": "s", "label": "Submitted", "sub": "the caller holds a task id", "tone": "accent"}, {"id": "w", "label": "Working", "sub": "progress, streamed if supported", "tone": "good"}, {"id": "i", "label": "Input required", "sub": "it asks; you answer", "tone": "warn"}, {"id": "c", "label": "Completed", "sub": "result + artifacts", "tone": "violet"}, {"id": "f", "label": "Failed / cancelled", "sub": "an outcome you must handle", "tone": "crit"}], "edges": [["s", "w"], ["w", "i", "needs more"], ["i", "w", "answered"], ["w", "c"], ["w", "f"]], "t": "diagram", "id": "dg-8_3-03-1"},
+
+
 
     { t: "p", text: "A2A models work as a **task** with a lifecycle rather than a request with a response. That is what makes it suitable for work that takes real time: the task is created, it progresses, it may need input, and eventually it completes or fails. A caller can subscribe to updates rather than blocking." },
 

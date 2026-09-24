@@ -71,6 +71,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "The local ladder", id: "local" },
 
+    {"kind": "steps", "title": "The local ladder, in the order you climb it", "caption": "Each rung catches a different class of problem, and the last one catches packaging bugs in seconds rather than in a cloud build.", "items": [{"label": "adk run", "sub": "a terminal conversation — instructions and tools", "tone": "good"}, {"label": "adk web", "sub": "events, state, traces, the eval tab", "tone": "accent"}, {"label": "adk api_server", "sub": "the HTTP surface your client should develop against", "tone": "violet"}, {"label": "adk deploy docker", "sub": "the real image, locally", "tone": "warn"}], "t": "diagram", "id": "dg-12_1-03-0"},
+
+
     { t: "table", head: ["Command", "What it is for"],
       rows: [
         ["`adk run my_agent`", "A terminal conversation. Fastest loop for instruction and tool work"],

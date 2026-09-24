@@ -24,6 +24,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The capability underneath each feature", id: "map" },
 
+    {"kind": "matrix", "title": "Remove the capability, lose the feature", "caption": "Function calling is the load-bearing one: without it there are no tools, no transfer, no retrieval and no human approval, because all four are function calls.", "cols": ["Without it you lose", "Workaround"], "rows": ["Function calling", "Constrained decoding", "Server-side grounding", "Prefix caching", "Live API"], "cells": [[{"text": "tools, transfer, RAG, approval", "tone": "crit"}, {"text": "none", "tone": "crit"}], [{"text": "output_schema guarantees", "tone": "warn"}, {"text": "parse and validate", "tone": "warn"}], [{"text": "citations for free", "tone": "warn"}, {"text": "your own retriever", "tone": "good"}], [{"text": "cheap stable prefixes", "tone": "warn"}, {"text": "compaction", "tone": "good"}], [{"text": "BIDI audio", "tone": "warn"}, {"text": "SSE text", "tone": "good"}]], "t": "diagram", "id": "dg-12_4-01-0"},
+
+
+
     { t: "table", head: ["ADK feature", "Model capability", "Where it was executed"],
       rows: [
         ["Tools", "Function calling with JSON-Schema declarations", "4.1 — the generated declaration printed"],

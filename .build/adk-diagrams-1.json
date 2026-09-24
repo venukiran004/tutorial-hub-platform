@@ -1,0 +1,1302 @@
+{
+  "5.5": [
+    {
+      "after": "03",
+      "d": {
+        "kind": "steps",
+        "title": "The order the executed run printed",
+        "caption": "Nine lines of output for one tool-using turn. The instruction provider appears twice because the turn made two model requests — which is exactly why it must not have side effects.",
+        "items": [
+          {
+            "label": "before_agent",
+            "sub": "writes state; runs once",
+            "tone": "violet"
+          },
+          {
+            "label": "instruction(ctx)",
+            "sub": "ReadonlyContext — sees the state just written",
+            "tone": "accent"
+          },
+          {
+            "label": "tool(tool_context)",
+            "sub": "sees greeted=True from the callback",
+            "tone": "good"
+          },
+          {
+            "label": "instruction(ctx)",
+            "sub": "again — second model request",
+            "tone": "accent"
+          }
+        ]
+      }
+    },
+    {
+      "after": "06",
+      "d": {
+        "kind": "flow",
+        "title": "Getting from one context to the other",
+        "caption": "A writable context can reach the InvocationContext, which carries the services themselves. Needing that from inside a tool is usually a sign the work belongs in a custom agent.",
+        "cols": 3,
+        "nodes": [
+          {
+            "id": "t",
+            "label": "ToolContext",
+            "sub": "= CallbackContext = Context",
+            "tone": "good"
+          },
+          {
+            "id": "i",
+            "label": "InvocationContext",
+            "sub": "get_invocation_context()",
+            "tone": "violet"
+          },
+          {
+            "id": "s",
+            "label": "The services",
+            "sub": "session, artifact, memory, credential",
+            "tone": "accent"
+          },
+          {
+            "id": "e",
+            "label": "end_invocation",
+            "sub": "stop the whole turn",
+            "tone": "crit"
+          }
+        ],
+        "edges": [
+          [
+            "t",
+            "i"
+          ],
+          [
+            "i",
+            "s"
+          ],
+          [
+            "i",
+            "e"
+          ]
+        ]
+      }
+    }
+  ],
+  "6.2": [
+    {
+      "after": "01",
+      "d": {
+        "kind": "layers",
+        "title": "Fifteen hooks, grouped by what they wrap",
+        "caption": "The middle three rows are the agent callbacks lifted to application scope. The top and bottom rows have no per-agent equivalent at all, and they are the reason plugins are not merely a convenience.",
+        "items": [
+          {
+            "label": "before_run / after_run / on_run_error",
+            "sub": "the whole invocation — every agent, every transfer",
+            "tone": "violet"
+          },
+          {
+            "label": "on_user_message",
+            "sub": "before any agent runs — an unbypassable input check",
+            "tone": "crit"
+          },
+          {
+            "label": "before_agent / after_agent / on_agent_error",
+            "sub": "per agent",
+            "tone": "accent"
+          },
+          {
+            "label": "before_model / after_model / on_model_error",
+            "sub": "per model request",
+            "tone": "accent"
+          },
+          {
+            "label": "before_tool / after_tool / on_tool_error",
+            "sub": "per tool call",
+            "tone": "good"
+          },
+          {
+            "label": "on_event / close",
+            "sub": "every event emitted; shutdown flush",
+            "tone": "warn"
+          }
+        ]
+      }
+    },
+    {
+      "after": "03",
+      "d": {
+        "kind": "flow",
+        "title": "Outer ring, inner ring",
+        "caption": "Going in, the plugin decides first — which is what makes a plugin guardrail genuinely global. Coming out, the agent callback runs first, so a plugin timing a call measures the agent callbacks too.",
+        "cols": 4,
+        "nodes": [
+          {
+            "id": "p1",
+            "label": "Plugin before_*",
+            "sub": "can short-circuit here",
+            "tone": "violet"
+          },
+          {
+            "id": "c1",
+            "label": "Agent before_*",
+            "sub": "consulted only if the plugin passed",
+            "tone": "accent"
+          },
+          {
+            "id": "w",
+            "label": "The work",
+            "sub": "model call or tool call",
+            "tone": "good"
+          },
+          {
+            "id": "c2",
+            "label": "Agent after_*",
+            "sub": "sees the result first"
+          },
+          {
+            "id": "p2",
+            "label": "Plugin after_*",
+            "sub": "sees it last",
+            "tone": "violet"
+          }
+        ],
+        "edges": [
+          [
+            "p1",
+            "c1"
+          ],
+          [
+            "c1",
+            "w"
+          ],
+          [
+            "w",
+            "c2"
+          ],
+          [
+            "c2",
+            "p2"
+          ]
+        ]
+      }
+    }
+  ],
+  "6.3": [
+    {
+      "after": "02",
+      "d": {
+        "kind": "cells",
+        "title": "One filename, versions assigned by the service",
+        "caption": "Executed: the same tool run twice returned 0 and then 1, and list_versions reported both. load_artifact with no version gives the newest; passing a version gives that one.",
+        "items": [
+          "report.md v0",
+          "report.md v1",
+          "report.md v2"
+        ],
+        "highlight": [
+          2
+        ],
+        "tone": "accent",
+        "negative": false
+      }
+    },
+    {
+      "after": "04",
+      "d": {
+        "kind": "flow",
+        "title": "A save leaves a trail",
+        "caption": "The same mechanism as state_delta, applied to files. This is what makes 'which turn produced the report the user is complaining about' answerable from the transcript alone.",
+        "cols": 4,
+        "nodes": [
+          {
+            "id": "t",
+            "label": "save_artifact(...)",
+            "sub": "await, inside the tool",
+            "tone": "accent"
+          },
+          {
+            "id": "s",
+            "label": "Artifact store",
+            "sub": "bytes, versioned",
+            "tone": "violet"
+          },
+          {
+            "id": "d",
+            "label": "artifact_delta",
+            "sub": "{'report.md': 1}",
+            "tone": "good"
+          },
+          {
+            "id": "e",
+            "label": "On the event",
+            "sub": "in the session, auditable",
+            "tone": "warn"
+          }
+        ],
+        "edges": [
+          [
+            "t",
+            "s"
+          ],
+          [
+            "s",
+            "d"
+          ],
+          [
+            "d",
+            "e"
+          ]
+        ]
+      }
+    }
+  ],
+  "7.1": [
+    {
+      "after": "01",
+      "d": {
+        "kind": "steps",
+        "title": "The classic pipeline, and who owns each stage in ADK",
+        "caption": "The first two stages happen before the agent exists. The last one has no equivalent in a pipeline at all, and it is where agentic RAG succeeds or fails.",
+        "items": [
+          {
+            "label": "Ingest and chunk",
+            "sub": "offline batch job — not an agent concern"
+          },
+          {
+            "label": "Embed and index",
+            "sub": "offline, into a vector store"
+          },
+          {
+            "label": "Decide whether to search",
+            "sub": "THE MODEL — your instruction, indirectly",
+            "tone": "crit"
+          },
+          {
+            "label": "Embed query and search",
+            "sub": "inside the tool's run_async",
+            "tone": "good"
+          },
+          {
+            "label": "Chunks become an event",
+            "sub": "the framework — auditable in the session",
+            "tone": "accent"
+          },
+          {
+            "label": "Generate the answer",
+            "sub": "the next model call in the same turn",
+            "tone": "accent"
+          }
+        ]
+      }
+    },
+    {
+      "after": "05",
+      "d": {
+        "kind": "matrix",
+        "title": "Choosing a retriever",
+        "caption": "Interception means a before_tool_callback fires and the query appears in your trace as an argument you can audit. Portability means the agent still works on another provider.",
+        "cols": [
+          "You run it",
+          "Interceptable",
+          "Citations"
+        ],
+        "rows": [
+          "FilesRetrieval",
+          "Your BaseRetrievalTool",
+          "VertexAiRagRetrieval",
+          "google_search"
+        ],
+        "cells": [
+          [
+            true,
+            true,
+            {
+              "text": "you add ids",
+              "tone": "warn"
+            }
+          ],
+          [
+            true,
+            true,
+            {
+              "text": "you add ids",
+              "tone": "warn"
+            }
+          ],
+          [
+            false,
+            true,
+            {
+              "text": "from the corpus",
+              "tone": "good"
+            }
+          ],
+          [
+            false,
+            false,
+            {
+              "text": "grounding metadata",
+              "tone": "good"
+            }
+          ]
+        ]
+      }
+    }
+  ],
+  "8.2": [
+    {
+      "after": "01",
+      "d": {
+        "kind": "steps",
+        "title": "What one McpToolset entry actually does",
+        "caption": "Executed against a FastMCP server over stdio. Steps 2 and 5 are the protocol; everything else is the agent behaving exactly as it would with a local function.",
+        "items": [
+          {
+            "label": "Connect",
+            "sub": "spawn the process, or open the HTTP session",
+            "tone": "violet"
+          },
+          {
+            "label": "ListTools",
+            "sub": "names, descriptions and JSON Schemas",
+            "tone": "accent"
+          },
+          {
+            "label": "Filter",
+            "sub": "tool_filter allow-list, resolved per request",
+            "tone": "crit"
+          },
+          {
+            "label": "Declare",
+            "sub": "each becomes a function declaration for the model"
+          },
+          {
+            "label": "CallTool",
+            "sub": "name and arguments cross the wire",
+            "tone": "accent"
+          },
+          {
+            "label": "Envelope back",
+            "sub": "content list + isError",
+            "tone": "good"
+          }
+        ]
+      }
+    },
+    {
+      "after": "03",
+      "d": {
+        "kind": "timeline",
+        "title": "Where the toolset should live",
+        "caption": "Construct once for the process and close on shutdown. A service that builds a toolset per request without closing it leaks a child process per request — which presents as memory exhaustion hours later with nothing in the agent logs.",
+        "span": 10,
+        "tick": 2,
+        "lanes": [
+          {
+            "label": "Connection",
+            "bars": [
+              [
+                0,
+                10,
+                "one spawned process for the process lifetime",
+                "violet"
+              ]
+            ]
+          },
+          {
+            "label": "get_tools",
+            "bars": [
+              [
+                1,
+                1.6,
+                "req 1",
+                "accent"
+              ],
+              [
+                3.4,
+                4,
+                "req 2",
+                "accent"
+              ],
+              [
+                6,
+                6.6,
+                "req 3",
+                "accent"
+              ],
+              [
+                8.4,
+                9,
+                "req 4",
+                "accent"
+              ]
+            ]
+          },
+          {
+            "label": "close()",
+            "bars": [
+              [
+                9.6,
+                10,
+                "shutdown",
+                "good"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "after": "04",
+      "d": {
+        "kind": "flow",
+        "title": "Both directions, one implementation",
+        "caption": "Nothing stops the same function being an ADK function tool in your agent and an MCP tool in your server — one implementation, one set of tests, two consumers.",
+        "cols": 3,
+        "nodes": [
+          {
+            "id": "f",
+            "label": "Your function",
+            "sub": "check_fraud(order_id)",
+            "tone": "good"
+          },
+          {
+            "id": "a",
+            "label": "Function tool",
+            "sub": "in your own agent",
+            "tone": "accent"
+          },
+          {
+            "id": "m",
+            "label": "MCP server",
+            "sub": "@mcp.tool()",
+            "tone": "violet"
+          },
+          {
+            "id": "o",
+            "label": "Other teams",
+            "sub": "any framework, any language",
+            "tone": "warn"
+          }
+        ],
+        "edges": [
+          [
+            "f",
+            "a"
+          ],
+          [
+            "f",
+            "m"
+          ],
+          [
+            "m",
+            "o"
+          ]
+        ]
+      }
+    }
+  ],
+  "8.3": [
+    {
+      "after": "02",
+      "d": {
+        "kind": "tree",
+        "title": "The agent card, as served",
+        "caption": "Fetched from a running ADK agent. Note that ADK generated a skill per tool from its docstring — including the argument documentation — and serves all of it at a well-known path with no authentication.",
+        "root": {
+          "label": "agent-card.json",
+          "sub": "/.well-known/",
+          "tone": "violet",
+          "children": [
+            {
+              "label": "identity",
+              "sub": "name, description, version",
+              "tone": "accent"
+            },
+            {
+              "label": "transport",
+              "sub": "interfaces, capabilities, modes",
+              "tone": "good"
+            },
+            {
+              "label": "skills",
+              "sub": "what it can be asked for",
+              "tone": "warn",
+              "children": [
+                {
+                  "label": "inventory",
+                  "sub": "the agent itself"
+                },
+                {
+                  "label": "check_stock",
+                  "sub": "from the docstring",
+                  "tone": "crit"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "after": "03",
+      "d": {
+        "kind": "flow",
+        "title": "The task state machine",
+        "caption": "A function call has two states: pending and returned. The branch that makes A2A different is 'input required' — a remote agent can stop and ask you a question, then carry on.",
+        "cols": 3,
+        "nodes": [
+          {
+            "id": "s",
+            "label": "Submitted",
+            "sub": "the caller holds a task id",
+            "tone": "accent"
+          },
+          {
+            "id": "w",
+            "label": "Working",
+            "sub": "progress, streamed if supported",
+            "tone": "good"
+          },
+          {
+            "id": "i",
+            "label": "Input required",
+            "sub": "it asks; you answer",
+            "tone": "warn"
+          },
+          {
+            "id": "c",
+            "label": "Completed",
+            "sub": "result + artifacts",
+            "tone": "violet"
+          },
+          {
+            "id": "f",
+            "label": "Failed / cancelled",
+            "sub": "an outcome you must handle",
+            "tone": "crit"
+          }
+        ],
+        "edges": [
+          [
+            "s",
+            "w"
+          ],
+          [
+            "w",
+            "i",
+            "needs more"
+          ],
+          [
+            "i",
+            "w",
+            "answered"
+          ],
+          [
+            "w",
+            "c"
+          ],
+          [
+            "w",
+            "f"
+          ]
+        ]
+      }
+    }
+  ],
+  "8.4": [
+    {
+      "after": "01",
+      "d": {
+        "kind": "layers",
+        "title": "What to_a2a wraps around your agent",
+        "caption": "The agent is unchanged. Everything above it is generated — which is why serving an agent over A2A is one function call and why the settings that matter are the ones describing where it is reachable.",
+        "items": [
+          {
+            "label": "Starlette ASGI app",
+            "sub": "what you hand to uvicorn",
+            "tone": "violet"
+          },
+          {
+            "label": "Agent card at /.well-known/",
+            "sub": "generated from the agent — name, skills, interfaces",
+            "tone": "warn"
+          },
+          {
+            "label": "A2A executor + task store",
+            "sub": "the task lifecycle; in-process by default",
+            "tone": "crit"
+          },
+          {
+            "label": "Runner",
+            "sub": "your session, artifact and memory services",
+            "tone": "accent"
+          },
+          {
+            "label": "Your LlmAgent",
+            "sub": "unchanged",
+            "tone": "good"
+          }
+        ]
+      }
+    },
+    {
+      "after": "03",
+      "d": {
+        "kind": "flow",
+        "title": "One question, across two processes",
+        "caption": "Executed. The remote agent's own tool call and its result arrive as events in YOUR session — which is what makes a delegation debuggable. What does not cross is its state, your state, or your user's identity.",
+        "cols": 3,
+        "nodes": [
+          {
+            "id": "u",
+            "label": "Your runner",
+            "sub": "RemoteA2aAgent as root",
+            "tone": "accent"
+          },
+          {
+            "id": "c",
+            "label": "Card fetch",
+            "sub": "origin must match",
+            "tone": "crit"
+          },
+          {
+            "id": "r",
+            "label": "Remote agent",
+            "sub": "another process entirely",
+            "tone": "violet"
+          },
+          {
+            "id": "t",
+            "label": "Its tool runs",
+            "sub": "check_stock(sku='X1')",
+            "tone": "good"
+          },
+          {
+            "id": "e",
+            "label": "Events, locally",
+            "sub": "call + result + answer, in your session",
+            "tone": "warn"
+          }
+        ],
+        "edges": [
+          [
+            "u",
+            "c"
+          ],
+          [
+            "c",
+            "r",
+            "JSON-RPC"
+          ],
+          [
+            "r",
+            "t"
+          ],
+          [
+            "t",
+            "e"
+          ]
+        ]
+      }
+    },
+    {
+      "after": "06",
+      "d": {
+        "kind": "matrix",
+        "title": "The settings whose defaults will hurt you",
+        "caption": "Two of these are the same lesson as InMemorySessionService one layer up: a default that works perfectly on one machine and fails quietly the moment there are two.",
+        "cols": [
+          "Default",
+          "What it costs",
+          "Set it to"
+        ],
+        "rows": [
+          "timeout",
+          "task_store",
+          "auth_credential",
+          "card host/port"
+        ],
+        "cells": [
+          [
+            {
+              "text": "600s",
+              "tone": "crit"
+            },
+            "10 min of a spinner",
+            {
+              "text": "what the UI tolerates",
+              "tone": "good"
+            }
+          ],
+          [
+            {
+              "text": "in-process",
+              "tone": "crit"
+            },
+            "replicas do not share",
+            {
+              "text": "a shared store",
+              "tone": "good"
+            }
+          ],
+          [
+            {
+              "text": "none",
+              "tone": "crit"
+            },
+            "unauthenticated calls",
+            {
+              "text": "service credentials",
+              "tone": "good"
+            }
+          ],
+          [
+            {
+              "text": "localhost",
+              "tone": "warn"
+            },
+            "clients refuse the card",
+            {
+              "text": "the public origin",
+              "tone": "good"
+            }
+          ]
+        ]
+      }
+    }
+  ],
+  "10.1": [
+    {
+      "after": "02",
+      "d": {
+        "kind": "timeline",
+        "title": "The same two tools, two shapes of turn",
+        "caption": "Measured: 0.41s against 0.83s. The model decides which shape you get by emitting one function call or two in a single response — which is an argument for tools the model can ask for all at once.",
+        "span": 1,
+        "tick": 0.2,
+        "lanes": [
+          {
+            "label": "One response",
+            "bars": [
+              [
+                0,
+                0.4,
+                "slow_a",
+                "good"
+              ],
+              [
+                0,
+                0.4,
+                "slow_b",
+                "good"
+              ],
+              [
+                0.4,
+                0.41,
+                "",
+                "accent"
+              ]
+            ]
+          },
+          {
+            "label": "Sequential",
+            "bars": [
+              [
+                0,
+                0.4,
+                "slow_a",
+                "warn"
+              ],
+              [
+                0.4,
+                0.42,
+                "model",
+                "accent"
+              ],
+              [
+                0.42,
+                0.82,
+                "slow_b",
+                "warn"
+              ]
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "10.2": [
+    {
+      "after": "02",
+      "d": {
+        "kind": "trace",
+        "title": "Four text events, two of them stored",
+        "caption": "Executed with StreamingMode.SSE. A client that appends every text event renders the answer twice — append on partials, replace on the final one.",
+        "left": "event",
+        "codeW": 300,
+        "vars": [
+          "partial",
+          "final",
+          "persisted"
+        ],
+        "steps": [
+          {
+            "code": "text 'The weather '",
+            "state": [
+              "True",
+              "False",
+              "no"
+            ]
+          },
+          {
+            "code": "text 'in London '",
+            "state": [
+              "True",
+              "False",
+              "no"
+            ]
+          },
+          {
+            "code": "text 'is mild.'",
+            "state": [
+              "True",
+              "False",
+              "no"
+            ]
+          },
+          {
+            "code": "text 'The weather in London is mild.'",
+            "state": [
+              "None",
+              "True",
+              "yes"
+            ],
+            "changed": [
+              2
+            ],
+            "tone": "good",
+            "note": "the record"
+          }
+        ]
+      }
+    }
+  ],
+  "10.3": [
+    {
+      "after": "03",
+      "d": {
+        "kind": "flow",
+        "title": "Convert it, or let it fly?",
+        "caption": "The test is whether the agent could sensibly do anything about it. Converting everything makes your own bugs look like flaky dependencies, and nothing reaches your error tracker.",
+        "cols": 3,
+        "nodes": [
+          {
+            "id": "e",
+            "label": "A tool raised",
+            "sub": "in on_tool_error",
+            "tone": "accent"
+          },
+          {
+            "id": "q",
+            "label": "Could the agent act on it?",
+            "sub": "timeout, 404, rate limit, denied",
+            "tone": "warn"
+          },
+          {
+            "id": "c",
+            "label": "Return a dict",
+            "sub": "generic text + retryable",
+            "tone": "good"
+          },
+          {
+            "id": "p",
+            "label": "Return None",
+            "sub": "report, then let it propagate",
+            "tone": "crit"
+          }
+        ],
+        "edges": [
+          [
+            "e",
+            "q"
+          ],
+          [
+            "q",
+            "c",
+            "yes"
+          ],
+          [
+            "q",
+            "p",
+            "no — it is a bug"
+          ]
+        ]
+      }
+    },
+    {
+      "after": "04",
+      "d": {
+        "kind": "steps",
+        "title": "Retry where the failure is",
+        "caption": "Three attempts inside one tool call cost zero extra model calls and keep the transcript clean. Returning retryable: True three times costs three model round trips and fills the log with failures the user never needed to see.",
+        "items": [
+          {
+            "label": "Attempt 1",
+            "sub": "timeout",
+            "tone": "crit"
+          },
+          {
+            "label": "sleep 0.2s",
+            "sub": "backoff"
+          },
+          {
+            "label": "Attempt 2",
+            "sub": "timeout",
+            "tone": "crit"
+          },
+          {
+            "label": "sleep 0.4s",
+            "sub": "backoff"
+          },
+          {
+            "label": "Attempt 3",
+            "sub": "succeeds — the model never saw the failures",
+            "tone": "good"
+          }
+        ]
+      }
+    }
+  ],
+  "11.1": [
+    {
+      "after": "03",
+      "d": {
+        "kind": "tree",
+        "title": "Spans that nest like the agents",
+        "caption": "A flat list of model calls cannot answer 'which agent did the expensive thing'. Building the spans in a plugin means a newly added agent appears in the trace without anyone remembering to instrument it.",
+        "root": {
+          "label": "agent.turn",
+          "sub": "before_run → after_run",
+          "tone": "violet",
+          "children": [
+            {
+              "label": "coordinator",
+              "sub": "before_agent",
+              "tone": "accent",
+              "children": [
+                {
+                  "label": "model call",
+                  "sub": "usage_metadata",
+                  "tone": "good"
+                },
+                {
+                  "label": "returns agent",
+                  "sub": "after transfer",
+                  "tone": "accent",
+                  "children": [
+                    {
+                      "label": "search_docs",
+                      "sub": "before_tool",
+                      "tone": "warn"
+                    },
+                    {
+                      "label": "model call",
+                      "sub": "usage_metadata",
+                      "tone": "good"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "after": "05",
+      "d": {
+        "kind": "matrix",
+        "title": "What each signal tells you",
+        "caption": "Every row is operational. None of them says whether the answers are right — that needs an evaluation set, which is the next lesson.",
+        "cols": [
+          "Warns you of",
+          "Before"
+        ],
+        "rows": [
+          "Model calls/turn, p95",
+          "Tool errors by tool",
+          "Blocked guardrail calls",
+          "Stale approvals"
+        ],
+        "cells": [
+          [
+            {
+              "text": "loops and retries",
+              "tone": "warn"
+            },
+            {
+              "text": "the bill does",
+              "tone": "good"
+            }
+          ],
+          [
+            {
+              "text": "one degrading upstream",
+              "tone": "warn"
+            },
+            {
+              "text": "the aggregate moves",
+              "tone": "good"
+            }
+          ],
+          [
+            {
+              "text": "someone probing",
+              "tone": "crit"
+            },
+            {
+              "text": "they find a gap",
+              "tone": "good"
+            }
+          ],
+          [
+            {
+              "text": "a stuck conversation",
+              "tone": "warn"
+            },
+            {
+              "text": "the user gives up",
+              "tone": "good"
+            }
+          ]
+        ]
+      }
+    }
+  ],
+  "11.2": [
+    {
+      "after": "01",
+      "d": {
+        "kind": "flow",
+        "title": "What an evaluation run does",
+        "caption": "Trajectory and response are scored separately because they fail for different reasons: the wrong tool is a routing problem, the right tool badly summarised is a prompting one.",
+        "cols": 3,
+        "nodes": [
+          {
+            "id": "c",
+            "label": "Cases",
+            "sub": "query + expected tools + reference",
+            "tone": "accent"
+          },
+          {
+            "id": "r",
+            "label": "Run the agent",
+            "sub": "num_runs times — models are stochastic",
+            "tone": "violet"
+          },
+          {
+            "id": "t",
+            "label": "Score trajectory",
+            "sub": "threshold 1.0 — exact",
+            "tone": "good"
+          },
+          {
+            "id": "s",
+            "label": "Score response",
+            "sub": "threshold 0.8 — ROUGE overlap",
+            "tone": "warn"
+          },
+          {
+            "id": "a",
+            "label": "AssertionError",
+            "sub": "listing every failure",
+            "tone": "crit"
+          }
+        ],
+        "edges": [
+          [
+            "c",
+            "r"
+          ],
+          [
+            "r",
+            "t"
+          ],
+          [
+            "r",
+            "s"
+          ],
+          [
+            "t",
+            "a"
+          ],
+          [
+            "s",
+            "a"
+          ]
+        ]
+      }
+    },
+    {
+      "after": "04",
+      "d": {
+        "kind": "matrix",
+        "title": "Which metric to reach for",
+        "caption": "Start at the top row: it is deterministic, needs no extra model calls, and catches the changes that break agents most often. The executed failing run scored two contradictory answers at 0.46 on response_match.",
+        "cols": [
+          "Needs a model",
+          "Catches"
+        ],
+        "rows": [
+          "tool_trajectory_avg_score",
+          "response_match_score",
+          "final_response_match_v2",
+          "hallucinations_v1",
+          "rubric_based_*"
+        ],
+        "cells": [
+          [
+            false,
+            {
+              "text": "wrong tool, wrong args",
+              "tone": "good"
+            }
+          ],
+          [
+            false,
+            {
+              "text": "large rewrites only",
+              "tone": "warn"
+            }
+          ],
+          [
+            true,
+            {
+              "text": "actually-wrong answers",
+              "tone": "good"
+            }
+          ],
+          [
+            true,
+            {
+              "text": "unsupported claims",
+              "tone": "good"
+            }
+          ],
+          [
+            true,
+            {
+              "text": "tone, house style",
+              "tone": "accent"
+            }
+          ]
+        ]
+      }
+    }
+  ],
+  "12.3": [
+    {
+      "after": "01",
+      "d": {
+        "kind": "steps",
+        "title": "The four calls an application makes",
+        "caption": "Executed against AdkApp — the same wrapper Agent Engine deploys. It is deliberately not a question-in, answer-out endpoint: a turn is a sequence of things happening, and a decent interface wants to show them.",
+        "items": [
+          {
+            "label": "agent_engines.get(name)",
+            "sub": "resource name from configuration",
+            "tone": "accent"
+          },
+          {
+            "label": "async_create_session",
+            "sub": "returns a dict — store its id",
+            "tone": "violet"
+          },
+          {
+            "label": "async_stream_query",
+            "sub": "message + user_id + session_id",
+            "tone": "good"
+          },
+          {
+            "label": "async_get_session",
+            "sub": "the transcript, on their side",
+            "tone": "warn"
+          }
+        ]
+      }
+    }
+  ],
+  "12.4": [
+    {
+      "after": "01",
+      "d": {
+        "kind": "matrix",
+        "title": "Remove the capability, lose the feature",
+        "caption": "Function calling is the load-bearing one: without it there are no tools, no transfer, no retrieval and no human approval, because all four are function calls.",
+        "cols": [
+          "Without it you lose",
+          "Workaround"
+        ],
+        "rows": [
+          "Function calling",
+          "Constrained decoding",
+          "Server-side grounding",
+          "Prefix caching",
+          "Live API"
+        ],
+        "cells": [
+          [
+            {
+              "text": "tools, transfer, RAG, approval",
+              "tone": "crit"
+            },
+            {
+              "text": "none",
+              "tone": "crit"
+            }
+          ],
+          [
+            {
+              "text": "output_schema guarantees",
+              "tone": "warn"
+            },
+            {
+              "text": "parse and validate",
+              "tone": "warn"
+            }
+          ],
+          [
+            {
+              "text": "citations for free",
+              "tone": "warn"
+            },
+            {
+              "text": "your own retriever",
+              "tone": "good"
+            }
+          ],
+          [
+            {
+              "text": "cheap stable prefixes",
+              "tone": "warn"
+            },
+            {
+              "text": "compaction",
+              "tone": "good"
+            }
+          ],
+          [
+            {
+              "text": "BIDI audio",
+              "tone": "warn"
+            },
+            {
+              "text": "SSE text",
+              "tone": "good"
+            }
+          ]
+        ]
+      }
+    }
+  ]
+}

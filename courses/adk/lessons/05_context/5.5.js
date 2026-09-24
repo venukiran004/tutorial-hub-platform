@@ -62,6 +62,10 @@ Context adds 34 more: ['actions', 'add_memory', 'add_session_to_memory', 'attemp
 
     { t: "h2", n: "03", text: "All three, in one run", id: "run" },
 
+    {"kind": "steps", "title": "The order the executed run printed", "caption": "Nine lines of output for one tool-using turn. The instruction provider appears twice because the turn made two model requests — which is exactly why it must not have side effects.", "items": [{"label": "before_agent", "sub": "writes state; runs once", "tone": "violet"}, {"label": "instruction(ctx)", "sub": "ReadonlyContext — sees the state just written", "tone": "accent"}, {"label": "tool(tool_context)", "sub": "sees greeted=True from the callback", "tone": "good"}, {"label": "instruction(ctx)", "sub": "again — second model request", "tone": "accent"}], "t": "diagram", "id": "dg-5_5-03-0"},
+
+
+
     { t: "code", lang: "python", title: "s5.py — an agent that narrates its own contexts",
       code: `def instruction(ctx: ReadonlyContext) -> str:
     print(f"  [instruction provider] agent={ctx.agent_name} invocation={ctx.invocation_id[:8]} "
@@ -127,6 +131,10 @@ system instruction the model received:
       body: [{ t: "p", text: "A fact stated in the system instruction is restated on every request, at the front, where the model attends to it. The same fact mentioned forty messages ago is one line in a long transcript competing with everything else. When an agent keeps 'forgetting' something, the fix is usually not a bigger context window — it is writing the fact to state and interpolating it into the instruction." }] },
 
     { t: "h2", n: "06", text: "InvocationContext, the one that is different", id: "invocation" },
+
+    {"kind": "flow", "title": "Getting from one context to the other", "caption": "A writable context can reach the InvocationContext, which carries the services themselves. Needing that from inside a tool is usually a sign the work belongs in a custom agent.", "cols": 3, "nodes": [{"id": "t", "label": "ToolContext", "sub": "= CallbackContext = Context", "tone": "good"}, {"id": "i", "label": "InvocationContext", "sub": "get_invocation_context()", "tone": "violet"}, {"id": "s", "label": "The services", "sub": "session, artifact, memory, credential", "tone": "accent"}, {"id": "e", "label": "end_invocation", "sub": "stop the whole turn", "tone": "crit"}], "edges": [["t", "i"], ["i", "s"], ["i", "e"]], "t": "diagram", "id": "dg-5_5-06-1"},
+
+
 
     { t: "p", text: "A custom agent's `_run_async_impl` receives an `InvocationContext`. This is the framework's own record of the turn, and it carries things the per-call contexts deliberately do not: the **services themselves** (`session_service`, `artifact_service`, `memory_service`, `credential_service`), the `run_config`, the resumability and compaction configuration, and `end_invocation` — the flag a custom agent sets to stop the whole turn." },
 

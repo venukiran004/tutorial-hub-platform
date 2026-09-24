@@ -23,6 +23,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "A schema is a Pydantic model", id: "model" },
 
+    {"kind": "flow", "title": "From a Python class to a constrained answer", "caption": "The constraint travels to the provider as response_schema rather than sitting in the prompt as a wish — verified on the wire. What lands in state is a plain dict, not a model instance.", "cols": 4, "nodes": [{"id": "m", "label": "Pydantic model", "sub": "fields + descriptions", "tone": "good"}, {"id": "j", "label": "JSON Schema", "sub": "descriptions included", "tone": "accent"}, {"id": "r", "label": "On the request", "sub": "response_schema + mime type", "tone": "violet"}, {"id": "s", "label": "state[output_key]", "sub": "a parsed dict", "tone": "warn"}], "edges": [["m", "j"], ["j", "r"], ["r", "s"]], "t": "diagram", "id": "dg-6_4-01-0"},
+
+
     { t: "code", lang: "python", title: "c3.py — a parsing agent",
       code: `from pydantic import BaseModel, Field
 

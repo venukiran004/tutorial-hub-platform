@@ -204,10 +204,15 @@
 
   /* ---------------------------------------------------------------- tree -- */
   function tree(b) {
-    var root = b.root || { label: "" }, W = 760, levelH = 74, bw = 150, bh = 44;
+    var root = b.root || { label: "" }, W = 760, levelH = 74, bh = 44;
     // count leaves to allocate width, then place top-down
     function leaves(n) { return n.children && n.children.length ? n.children.reduce(function (a, c) { return a + leaves(c); }, 0) : 1; }
-    var total = leaves(root), unit = Math.max(bw + 12, W / total), id = "d" + Math.random().toString(36).slice(2, 7), s = marker(id), depth = 0;
+    var total = leaves(root);
+    // A fixed 150px box overflowed the canvas past four leaves and the outer
+    // nodes were clipped off both edges. Divide the width instead and let the
+    // boxes shrink; box() already shrinks and wraps the label to fit.
+    var unit = W / total, bw = Math.max(64, Math.min(150, unit - 12));
+    var id = "d" + Math.random().toString(36).slice(2, 7), s = marker(id), depth = 0;
     function place(n, x0, d) {
       depth = Math.max(depth, d);
       var span = leaves(n) * unit, cx = x0 + span / 2, y = 10 + d * levelH;

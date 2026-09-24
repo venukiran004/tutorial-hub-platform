@@ -70,6 +70,9 @@ agent = LlmAgent(name="concierge", model=M, instruction="…", tools=[book_table
 
     { t: "h2", n: "02", text: "Types that translate, and types that do not", id: "types" },
 
+    {"kind": "matrix", "title": "What survives the trip to a JSON Schema", "caption": "The declaration is generated from your annotations, so a type the schema cannot express becomes a parameter the model has to guess at. Prefer the top rows.", "cols": ["In the schema", "Verdict"], "rows": ["str, int, float, bool", "Literal[...]", "list[str], dict", "Pydantic model", "datetime", "Union / Any"], "cells": [[{"text": "exactly", "tone": "good"}, {"text": "use freely", "tone": "good"}], [{"text": "an enum", "tone": "good"}, {"text": "best of all", "tone": "good"}], [{"text": "array / object", "tone": "good"}, {"text": "fine", "tone": "good"}], [{"text": "nested object", "tone": "accent"}, {"text": "good, keep it flat", "tone": "accent"}], [{"text": "a string", "tone": "warn"}, {"text": "say the format", "tone": "warn"}], [{"text": "vaguely", "tone": "crit"}, {"text": "avoid", "tone": "crit"}]], "t": "diagram", "id": "dg-4_1-02-0"},
+
+
     { t: "code", lang: "python", title: "Containers, optionals and defaults",
       code: `def typed(items: list[str], count: Optional[int] = None, flag: bool = False) -> dict:
     """Does a thing.

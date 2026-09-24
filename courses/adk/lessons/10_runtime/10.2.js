@@ -42,6 +42,10 @@ StreamingMode.NONE` },
 
     { t: "h2", n: "02", text: "Partial events, traced", id: "partials" },
 
+    {"kind": "trace", "title": "Four text events, two of them stored", "caption": "Executed with StreamingMode.SSE. A client that appends every text event renders the answer twice — append on partials, replace on the final one.", "left": "event", "codeW": 300, "vars": ["partial", "final", "persisted"], "steps": [{"code": "text 'The weather '", "state": ["True", "False", "no"]}, {"code": "text 'in London '", "state": ["True", "False", "no"]}, {"code": "text 'is mild.'", "state": ["True", "False", "no"]}, {"code": "text 'The weather in London is mild.'", "state": ["None", "True", "yes"], "changed": [2], "tone": "good", "note": "the record"}], "t": "diagram", "id": "dg-10_2-02-0"},
+
+
+
     { t: "code", lang: "python", title: "n1.py — running with SSE",
       code: `async for e in runner.run_async(
         user_id="u1", session_id=sid,

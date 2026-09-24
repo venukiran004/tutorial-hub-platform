@@ -69,6 +69,9 @@ class FakeLlm(BaseLlm):
 
     { t: "h2", n: "03", text: "A test that is worth having", id: "test" },
 
+    {"kind": "matrix", "title": "Assert on the things with consequences", "caption": "The text is a string you scripted yourself, so asserting on it tests nothing and breaks on rewording. Everything else here stays true when someone improves the phrasing.", "cols": ["Worth asserting", "Why"], "rows": ["Tool called + args", "state delta", "is_final_response()", "The assembled instruction", "The answer's wording"], "cells": [[true, {"text": "what actually happened", "tone": "good"}], [true, {"text": "what persisted", "tone": "good"}], [true, {"text": "what a client renders", "tone": "good"}], [true, {"text": "catches a renamed state key", "tone": "accent"}], [false, {"text": "you wrote the script", "tone": "crit"}]], "t": "diagram", "id": "dg-11_3-03-0"},
+
+
     { t: "code", lang: "python", title: "pytest, no network",
       code: `import pytest
 from google.genai import types

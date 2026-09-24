@@ -51,6 +51,9 @@ delete_session(self, *, app_name: str, user_id: str, session_id: str) -> None` }
 
     { t: "h2", n: "03", text: "A database service, end to end", id: "database" },
 
+    {"kind": "steps", "title": "The restart test, executed", "caption": "A second service object reading the same file stands in for a process that has restarted. All four events and the state the tool wrote came back, so a restart mid-conversation is invisible to the user.", "items": [{"label": "create_session", "sub": "a row in sessions", "tone": "accent"}, {"label": "One turn", "sub": "4 events; a tool writes state", "tone": "good"}, {"label": "New service object", "sub": "as if the process died", "tone": "crit"}, {"label": "get_session", "sub": "events = 4, state intact", "tone": "violet"}], "t": "diagram", "id": "dg-5_3-03-0"},
+
+
     { t: "p", text: "The script below runs one tool-using turn against SQLite, then constructs a **second** service object — standing in for a process that has restarted — and reads the conversation back through it." },
 
     { t: "code", lang: "python", title: "s3.py — write, 'restart', read",

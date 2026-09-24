@@ -69,6 +69,17 @@ function check(blocks, id, file) {
         if (!b.root || !b.root.label) {
           problems++;
           console.log(`  EMPTY DIAGRAM  ${file}  ${id}  kind="tree" needs a "root" with a label`);
+        } else {
+          /* diagrams.js divides the 760px canvas by the leaf count and shrinks
+             the boxes to fit, down to a 64px floor. Past ~9 leaves the labels
+             are too small to read, so group children instead. */
+          const leaves = n => (n.children && n.children.length
+            ? n.children.reduce((a, c) => a + leaves(c), 0) : 1);
+          const n = leaves(b.root);
+          if (n > 9) {
+            problems++;
+            console.log(`  WIDE TREE  ${file}  ${id}  ${n} leaves leaves boxes under 64px — group them`);
+          }
         }
       } else if (!key) {
         problems++;

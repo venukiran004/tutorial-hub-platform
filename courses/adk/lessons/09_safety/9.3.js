@@ -70,6 +70,9 @@ events after turn 1: 4
 
     { t: "h2", n: "03", text: "The approval", id: "approval" },
 
+    {"kind": "cycle", "title": "The pause and the resume", "caption": "Executed both halves. The pending request is an event in the session rather than a coroutine in memory, which is what lets an approval arrive after a deploy and still work.", "centre": "durable", "nodes": [{"label": "Model calls the tool", "sub": "ordinary function call", "tone": "accent"}, {"label": "ADK intercepts", "sub": "the body does not run", "tone": "crit"}, {"label": "Turn ends", "sub": "pending confirmation recorded", "tone": "warn"}, {"label": "A human decides", "sub": "your queue, your authorisation", "tone": "violet"}, {"label": "Function response", "sub": "confirmed: true | false"}, {"label": "Tool runs", "sub": "the reviewed arguments", "tone": "good"}], "t": "diagram", "id": "dg-9_3-03-0"},
+
+
     { t: "code", lang: "python", title: "Resuming with a decision",
       code: `approval = types.Content(role="user", parts=[types.Part(
     function_response=types.FunctionResponse(

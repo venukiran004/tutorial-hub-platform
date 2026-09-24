@@ -40,6 +40,10 @@ delete_artifact(self, *, app_name, user_id, filename, session_id=None) -> None` 
 
     { t: "h2", n: "02", text: "Saving from a tool", id: "saving" },
 
+    {"kind": "cells", "title": "One filename, versions assigned by the service", "caption": "Executed: the same tool run twice returned 0 and then 1, and list_versions reported both. load_artifact with no version gives the newest; passing a version gives that one.", "items": ["report.md v0", "report.md v1", "report.md v2"], "highlight": [2], "tone": "accent", "negative": false, "t": "diagram", "id": "dg-6_3-02-0"},
+
+
+
     { t: "code", lang: "python", title: "c3.py — a tool that generates a file",
       code: `async def make_report(title: str, tool_context) -> dict:
     """Generates a report and saves it as an artifact."""
@@ -83,6 +87,10 @@ delete_artifact(self, *, app_name, user_id, filename, session_id=None) -> None` 
       ] },
 
     { t: "h2", n: "04", text: "artifact_delta", id: "delta" },
+
+    {"kind": "flow", "title": "A save leaves a trail", "caption": "The same mechanism as state_delta, applied to files. This is what makes 'which turn produced the report the user is complaining about' answerable from the transcript alone.", "cols": 4, "nodes": [{"id": "t", "label": "save_artifact(...)", "sub": "await, inside the tool", "tone": "accent"}, {"id": "s", "label": "Artifact store", "sub": "bytes, versioned", "tone": "violet"}, {"id": "d", "label": "artifact_delta", "sub": "{'report.md': 1}", "tone": "good"}, {"id": "e", "label": "On the event", "sub": "in the session, auditable", "tone": "warn"}], "edges": [["t", "s"], ["s", "d"], ["d", "e"]], "t": "diagram", "id": "dg-6_3-04-1"},
+
+
 
     { t: "p", text: "Each save put `{'report.md': 0}` and then `{'report.md': 1}` on the event the tool produced — the same mechanism as `state_delta` in lesson 5.2, applied to files. The event log therefore records not just that a tool ran but which file version it produced, so 'which turn generated the report the user is complaining about' is answerable from the transcript alone." },
 
