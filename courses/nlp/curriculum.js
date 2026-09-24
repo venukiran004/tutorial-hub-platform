@@ -44,7 +44,7 @@
       interview: "One hundred questions across NLP, transformers, applications and HuggingFace, answers hidden until you ask."
     },
 
-    published: ["1.1", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "p1.1", "p1.2"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "p1.1", "p1.2"],
 
     modules: [
 
