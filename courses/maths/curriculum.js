@@ -21,10 +21,10 @@
     trackBlurbs: {
       learn: "Six modules, in the order the ideas depend on each other — every formula evaluated on a number.",
       practice: "Fifty scenarios where the mathematics decides the answer, with the working folded away.",
-      interview: "One hundred questions across linear algebra, calculus, probability, statistics and A/B testing."
+      interview: "One hundred and eleven questions across linear algebra, calculus, probability, statistics and A/B testing."
     },
 
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "i1.6", "p1.1", "p1.2", "p1.3", "p1.4", "p1.5"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "i1.6", "i2.1", "p1.1", "p1.2", "p1.3", "p1.4", "p1.5"],
 
     modules: [
 
@@ -292,6 +292,19 @@
           { id: "i1.6", title: "Section 6: Applied Math for ML", difficulty: "advanced", minutes: 30, tier: "should",
             summary: "15 questions with hidden answers, from mathematics and statistics interview bank.",
             keywords: ["mathematics", "statistics", "interview", "bank"] }
+        ]
+      },
+      {
+        id: "iv_deep", short: "I2", dir: "02_iv_deep", track: "interview", numPrefix: "I",
+        phase: "Interview \u00b7 Question banks",
+        title: "Deep Dive: The Questions Asked Most",
+        blurb: "The eleven questions the reference singles out at the end of the statistics chapters — population versus sample, Bayes, MLE, the CLT, designing an A/B test, and reading a confidence interval against a p-value.",
+        outcome: "You can give the long answer to the questions that come up in almost every interview.",
+        source: "02_Descriptive_Stats_and_Probability.md + 03_Inference_and_Testing.md",
+        lessons: [
+          { id: "i2.1", title: "Deep Dive", difficulty: "advanced", minutes: 22, tier: "should",
+            summary: "11 questions with hidden answers, from deep dive: the questions asked most.",
+            keywords: ["deep", "dive", "questions", "asked", "most"] }
         ]
       }
     ]

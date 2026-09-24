@@ -100,6 +100,10 @@ SPECS = {
        "Mathematics and Statistics Interview Bank",
        "One hundred questions across linear algebra, calculus and optimisation, probability, statistics, A/B testing and the applied mathematics of ML.",
        "You can answer a maths or statistics question with the definition, the formula and the reason it matters.", "advanced"),
+      (["02_Descriptive_Stats_and_Probability.md", "03_Inference_and_Testing.md"], "deepdive",
+       "iv_deep", "I2", "Deep Dive: The Questions Asked Most",
+       "The eleven questions the reference singles out at the end of the statistics chapters — population versus sample, Bayes, MLE, the CLT, designing an A/B test, and reading a confidence interval against a p-value.",
+       "You can give the long answer to the questions that come up in almost every interview.", "advanced"),
     ],
   },
   "ml": {
@@ -335,6 +339,34 @@ def parse_scenarios_sec(lines):
     return items
 
 
+def parse_deepdive(lines):
+    """The "## N. Interview Deep Dive" sections inside the learn reference
+    files: ### Q1: question, with the answer in the body. Several files may be
+    concatenated, so every such section is collected, not just the first."""
+    items = []
+    spans = []
+    open_at = None
+    for i, l in enumerate(lines):
+        if re.match(r"^## (?:\d+\. )?Interview Deep Dive\s*$", l):
+            if open_at is not None:
+                spans.append((open_at, i))
+            open_at = i
+        elif open_at is not None and l.startswith("## "):
+            spans.append((open_at, i))
+            open_at = None
+    if open_at is not None:
+        spans.append((open_at, len(lines)))
+    for a, b in spans:
+        body = lines[a:b]
+        for i, l in enumerate(body):
+            m = re.match(r"^### Q(\d+)[:.]\s*(.*)$", l)
+            if m:
+                blk, _ = body_until(body, i + 1, r"^#{2,3} ")
+                items.append((str(len(items) + 1), inline_md(m.group(2)),
+                              md_blocks(blk), "Deep Dive"))
+    return items
+
+
 def parse_iv_h3(lines):
     """## Section / ### Qn. question  (DL interview bank)."""
     items = []; section = None
@@ -393,6 +425,7 @@ def parse_glassdoor(lines):
 
 PARSERS = {"programs": parse_programs, "scenarios": parse_scenarios,
            "scenarios_sec": parse_scenarios_sec,
+           "deepdive": parse_deepdive,
            "iv_h3": parse_iv_h3, "iv_bold": parse_iv_bold, "glassdoor": parse_glassdoor}
 
 
@@ -401,7 +434,7 @@ PARSERS = {"programs": parse_programs, "scenarios": parse_scenarios,
 def chunk(items, kind):
     """Cut a bank into lessons of at most MAX drills, on section boundaries
     when the bank has sections, folding a tiny tail into its predecessor."""
-    if kind in ("iv_h3", "iv_bold", "glassdoor", "scenarios_sec"):
+    if kind in ("iv_h3", "iv_bold", "glassdoor", "scenarios_sec", "deepdive"):
         groups = []
         for it in items:
             if not groups or groups[-1][0] != it[3]:
@@ -484,8 +517,13 @@ def emit(course):
     counts = []
     for track in ("practice", "interview"):
         for mi, (fname, kind, mid, short, title, blurb, outcome, diff) in enumerate(spec[track]):
-            path = os.path.join(src, fname)
-            lines = read(path)
+            if isinstance(fname, (list, tuple)):
+                lines = []
+                for one in fname:
+                    lines.extend(read(os.path.join(src, one)))
+                fname = " + ".join(fname)
+            else:
+                lines = read(os.path.join(src, fname))
             if kind == "mixed":
                 items = [(n, q, b, "Programs") for n, q, b, _ in parse_programs(lines)]
                 scen = [(n, q, b, "Scenarios") for n, q, b, _ in parse_scenarios(lines)]

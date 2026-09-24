@@ -50,4 +50,17 @@
             summary: "15 questions with hidden answers, from mathematics and statistics interview bank.",
             keywords: ["mathematics", "statistics", "interview", "bank"] }
         ]
+      },
+      {
+        id: "iv_deep", short: "I2", dir: "02_iv_deep", track: "interview", numPrefix: "I",
+        phase: "Interview \u00b7 Question banks",
+        title: "Deep Dive: The Questions Asked Most",
+        blurb: "The eleven questions the reference singles out at the end of the statistics chapters — population versus sample, Bayes, MLE, the CLT, designing an A/B test, and reading a confidence interval against a p-value.",
+        outcome: "You can give the long answer to the questions that come up in almost every interview.",
+        source: "02_Descriptive_Stats_and_Probability.md + 03_Inference_and_Testing.md",
+        lessons: [
+          { id: "i2.1", title: "Deep Dive", difficulty: "advanced", minutes: 22, tier: "should",
+            summary: "11 questions with hidden answers, from deep dive: the questions asked most.",
+            keywords: ["deep", "dive", "questions", "asked", "most"] }
+        ]
       }
