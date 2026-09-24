@@ -14,6 +14,10 @@
 (function () {
   "use strict";
 
+  /* "1 module" rather than "1 modules" — a single-module track is common now
+     that the practice and interview banks import as one module each. */
+  function plural(n, word) { return n + " " + word + (n === 1 ? "" : "s"); }
+
   // One hue per module, so a section is recognisable by colour before its
   // name is read — the same device the home page uses for topics.
   var MHUES = ["--t-blue", "--t-violet", "--t-cyan", "--t-orange", "--t-green",
@@ -68,7 +72,7 @@
           var mins = tr.lessons.reduce(function (a, l) { return a + l.minutes; }, 0);
           return '<button class="ttab' + (i === 0 ? " on" : "") + '" type="button" data-track="' + t + '">' +
             '<span class="ttab-t">' + EC.esc(tr.label) + "</span>" +
-            '<span class="ttab-m">' + tr.modules.length + " modules · " + tr.lessons.length + " lessons · " +
+            '<span class="ttab-m">' + plural(tr.modules.length, "module") + " · " + plural(tr.lessons.length, "lesson") + " · " +
               EC.fmtTime(mins) + "</span>" +
             (tr.blurb ? '<span class="ttab-b">' + EC.esc(tr.blurb) + "</span>" : "") +
             "</button>";

@@ -287,7 +287,25 @@ stats.ttest_ind(a, b).statistic**2                    # 7.31 -- F = t^2
       caption: "**`F = t²` when there are two groups.** ANOVA is the two-group comparison generalised — which is also why it inherits Student's equal-variance assumption rather than Welch's."
     },
 
-    { t: "h2", n: "03", text: "Why not just run all the t-tests", id: "post-hoc" },
+    { t: "h2", n: "03", text: "Two factors, and the interaction between them", id: "two-way" },
+
+    { t: "p", text: "One-way ANOVA compares groups on a single factor. **Two-way ANOVA takes two factors at once and asks a third question neither can answer alone**: whether the effect of one depends on the level of the other. That third question is usually the interesting one." },
+
+    { t: "math", tex: "X_{ijk} = \mu + \alpha_i + \beta_j + (\alpha\beta)_{ij} + \varepsilon_{ijk}" },
+
+    { t: "dl", items: [
+      ["`αᵢ` — main effect of A", "Does factor A shift the mean at all, averaging over B? `H₀: all αᵢ = 0`."],
+      ["`βⱼ` — main effect of B", "The same question for factor B."],
+      ["`(αβ)ᵢⱼ` — interaction", "Does A's effect *change* with B's level? `H₀: all (αβ)ᵢⱼ = 0`. This is the term that does not exist in a one-way design."],
+      ["`εᵢⱼₖ` — error", "What is left. The F-tests are each a ratio of an effect's variance to this."]
+    ]},
+
+    { t: "callout", kind: "trap", title: "Read the interaction first, or the main effects will mislead you",
+      body: [{ t: "p", text: "If the interaction is significant, a main effect is an average over conditions in which the factor did *different things* — and an average of +10 and −10 is zero. A drug that helps one group and harms another shows no main effect at all while being extremely consequential. So the order of reading is fixed: interaction first, and only if it is absent do the main effects mean what they appear to mean." }] },
+
+    { t: "p", text: "The pattern generalises the reason ANOVA exists at all. Running separate one-way tests on A and B would miss the interaction entirely, because neither test has a term for it — the same argument as section 02, one level up." },
+
+    { t: "h2", n: "04", text: "Why not just run all the t-tests", id: "post-hoc" },
 
     { t: "p", text: "Running every pairwise comparison instead of one omnibus test would find something by construction — **ten tests at `α = 0.05` give a 40% chance of a false positive**. A post-hoc procedure controls that while still telling you *which* groups differ." },
 
@@ -431,7 +449,7 @@ stats.kruskal(*groups).pvalue`},
       { t: "p", text: "**Equal group sizes protect ANOVA from unequal variance; unequal sizes do not.** With the small group being the variable one, the true error rate reaches 15.6% — the same failure as Student's t-test, with the same fix." }
     ]},
 
-    { t: "h2", n: "04", text: "Practice", id: "practice" },
+    { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",
       kind: "Challenge",

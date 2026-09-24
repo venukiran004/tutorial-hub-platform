@@ -161,7 +161,31 @@ g @ u_perp                                 # 0.0
       caption: "**Steepest ascent is a fact about dot products, not a definition.** It also tells you the magnitude: the fastest rate available is `‖grad‖`, which is why gradient norm is the natural measure of how far from flat you are."
     },
 
-    { t: "h2", n: "03", text: "The Hessian is curvature", id: "hessian" },
+    { t: "h2", n: "03", text: "The identities worth memorising", id: "identities" },
+
+    { t: "p", text: "Differentiating with respect to a vector looks unfamiliar and is mostly four results. Learn these and the derivations in the rest of this course stop needing a reference — every one is checkable by writing the scalar sum out and differentiating one component." },
+
+    { t: "table",
+      head: ["Expression", "Derivative", "Check it by"],
+      rows: [
+        ["`aᵀx`", "`a`", "Writing `Σ aᵢxᵢ` and taking `∂/∂xⱼ` — only the `j`-th term survives"],
+        ["`xᵀx`", "`2x`", "The same sum with `aᵢ = xᵢ`, so the term appears twice"],
+        ["`xᵀAx`", "`(A + Aᵀ)x`, which is `2Ax` when `A` is symmetric", "Expanding the double sum; every off-diagonal pair contributes twice"],
+        ["`tr(AXB)`", "`AᵀBᵀ`", "Trace is linear, so this is bookkeeping rather than calculus"]
+      ],
+      caption: "**The symmetric case is the one you meet.** Covariance matrices, Gram matrices and Hessians are all symmetric, so `xᵀAx` differentiating to `2Ax` covers almost every appearance in practice."
+    },
+
+    { t: "p", text: "Those four give you the normal equations in three lines, which is worth doing once because every regression result in the course rests on it." },
+
+    { t: "math", tex: "L = \lVert Xw - y \rVert^2 = w^\top X^\top X w - 2 w^\top X^\top y + y^\top y" },
+
+    { t: "math", tex: "\frac{\partial L}{\partial w} = 2X^\top X w - 2X^\top y = 0 \;\Longrightarrow\; w^* = (X^\top X)^{-1} X^\top y" },
+
+    { t: "callout", kind: "insight", title: "The closed form is a derivation, not a recipe",
+      body: [{ t: "p", text: "`XᵀX` is symmetric, so the middle term differentiates to `2XᵀXw` by the third identity, and the linear term to `2Xᵀy` by the first. Setting the gradient to zero is what makes it a minimum — and it only *is* a minimum because `XᵀX` is positive semi-definite, which is the Hessian argument of the next section. Lesson 1.7 explains why you should never actually compute that inverse." }] },
+
+    { t: "h2", n: "04", text: "The Hessian is curvature", id: "hessian" },
 
     { t: "p", text: "**The Hessian measures curvature — how the slope itself changes as you move.** It is what distinguishes a minimum from a maximum from a saddle, and its eigenvalues (lesson 1.4) set the largest step size an optimiser can safely take." },
 
@@ -304,7 +328,7 @@ def sgd_step(w, g, lr):
       { t: "p", text: "**A gradient always has the shape of the thing it differentiates.** That single invariant catches most of these, and asserting it costs nothing compared with debugging a model that trains to a plausible wrong answer." }
     ]},
 
-    { t: "h2", n: "05", text: "Practice", id: "practice" },
+    { t: "h2", n: "06", text: "Practice", id: "practice" },
 
     { t: "exercise",
       kind: "Challenge",

@@ -1,0 +1,53 @@
+      {
+        id: "sc_math", short: "P1", dir: "01_sc_math", track: "practice", numPrefix: "P",
+        phase: "Practice \u00b7 Programs and scenarios",
+        title: "Mathematics and Statistics Scenarios",
+        blurb: "Fifty situations where the mathematics decides the answer — A/B tests that mislead, models that will not converge, distributions that break an assumption.",
+        outcome: "You can say what a number means, and what it does not, before anyone ships a decision on it.",
+        source: "Practice/01_Math_and_Stats_Scenarios.md",
+        lessons: [
+          { id: "p1.1", title: "A/B Testing & Experimentation", difficulty: "advanced", minutes: 20, tier: "should",
+            summary: "10 questions with hidden answers, from mathematics and statistics scenarios.",
+            keywords: ["mathematics", "statistics", "scenarios"] },
+          { id: "p1.2", title: "Statistical Modeling", difficulty: "advanced", minutes: 20, tier: "should",
+            summary: "10 questions with hidden answers, from mathematics and statistics scenarios.",
+            keywords: ["mathematics", "statistics", "scenarios"] },
+          { id: "p1.3", title: "Probability & Distributions", difficulty: "advanced", minutes: 20, tier: "should",
+            summary: "10 questions with hidden answers, from mathematics and statistics scenarios.",
+            keywords: ["mathematics", "statistics", "scenarios"] },
+          { id: "p1.4", title: "Feature Engineering & Modeling Math", difficulty: "advanced", minutes: 20, tier: "should",
+            summary: "10 questions with hidden answers, from mathematics and statistics scenarios.",
+            keywords: ["mathematics", "statistics", "scenarios"] },
+          { id: "p1.5", title: "Advanced & Edge Cases", difficulty: "advanced", minutes: 20, tier: "should",
+            summary: "10 questions with hidden answers, from mathematics and statistics scenarios.",
+            keywords: ["mathematics", "statistics", "scenarios"] }
+        ]
+      },
+      {
+        id: "iv_math", short: "I1", dir: "01_iv_math", track: "interview", numPrefix: "I",
+        phase: "Interview \u00b7 Question banks",
+        title: "Mathematics and Statistics Interview Bank",
+        blurb: "One hundred questions across linear algebra, calculus and optimisation, probability, statistics, A/B testing and the applied mathematics of ML.",
+        outcome: "You can answer a maths or statistics question with the definition, the formula and the reason it matters.",
+        source: "00_Interview_Bank/01_Math_and_Stats_Interview.md",
+        lessons: [
+          { id: "i1.1", title: "Section 1: Linear Algebra", difficulty: "advanced", minutes: 30, tier: "should",
+            summary: "15 questions with hidden answers, from mathematics and statistics interview bank.",
+            keywords: ["mathematics", "statistics", "interview", "bank"] },
+          { id: "i1.2", title: "Section 2: Calculus & Optimization", difficulty: "advanced", minutes: 30, tier: "should",
+            summary: "15 questions with hidden answers, from mathematics and statistics interview bank.",
+            keywords: ["mathematics", "statistics", "interview", "bank"] },
+          { id: "i1.3", title: "Section 3: Probability", difficulty: "advanced", minutes: 40, tier: "should",
+            summary: "20 questions with hidden answers, from mathematics and statistics interview bank.",
+            keywords: ["mathematics", "statistics", "interview", "bank"] },
+          { id: "i1.4", title: "Section 4: Statistics", difficulty: "advanced", minutes: 40, tier: "should",
+            summary: "20 questions with hidden answers, from mathematics and statistics interview bank.",
+            keywords: ["mathematics", "statistics", "interview", "bank"] },
+          { id: "i1.5", title: "Section 5: A/B Testing", difficulty: "advanced", minutes: 30, tier: "should",
+            summary: "15 questions with hidden answers, from mathematics and statistics interview bank.",
+            keywords: ["mathematics", "statistics", "interview", "bank"] },
+          { id: "i1.6", title: "Section 6: Applied Math for ML", difficulty: "advanced", minutes: 30, tier: "should",
+            summary: "15 questions with hidden answers, from mathematics and statistics interview bank.",
+            keywords: ["mathematics", "statistics", "interview", "bank"] }
+        ]
+      }

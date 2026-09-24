@@ -17,7 +17,14 @@
     short: "MS",
     blurb: "The linear algebra, calculus, probability and inference that models actually rest on.",
 
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4"],
+    trackLabels: { learn: "Mathematics", practice: "Practice", interview: "Interview" },
+    trackBlurbs: {
+      learn: "Six modules, in the order the ideas depend on each other — every formula evaluated on a number.",
+      practice: "Fifty scenarios where the mathematics decides the answer, with the working folded away.",
+      interview: "One hundred questions across linear algebra, calculus, probability, statistics and A/B testing."
+    },
+
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "i1.6", "p1.1", "p1.2", "p1.3", "p1.4", "p1.5"],
 
     modules: [
 
@@ -233,7 +240,60 @@
             keywords: ["simpson", "survivorship", "regression to mean", "selection bias", "berkson"] }
         ]
       }
-
+,
+      {
+        id: "sc_math", short: "P1", dir: "01_sc_math", track: "practice", numPrefix: "P",
+        phase: "Practice \u00b7 Programs and scenarios",
+        title: "Mathematics and Statistics Scenarios",
+        blurb: "Fifty situations where the mathematics decides the answer — A/B tests that mislead, models that will not converge, distributions that break an assumption.",
+        outcome: "You can say what a number means, and what it does not, before anyone ships a decision on it.",
+        source: "Practice/01_Math_and_Stats_Scenarios.md",
+        lessons: [
+          { id: "p1.1", title: "A/B Testing & Experimentation", difficulty: "advanced", minutes: 20, tier: "should",
+            summary: "10 questions with hidden answers, from mathematics and statistics scenarios.",
+            keywords: ["mathematics", "statistics", "scenarios"] },
+          { id: "p1.2", title: "Statistical Modeling", difficulty: "advanced", minutes: 20, tier: "should",
+            summary: "10 questions with hidden answers, from mathematics and statistics scenarios.",
+            keywords: ["mathematics", "statistics", "scenarios"] },
+          { id: "p1.3", title: "Probability & Distributions", difficulty: "advanced", minutes: 20, tier: "should",
+            summary: "10 questions with hidden answers, from mathematics and statistics scenarios.",
+            keywords: ["mathematics", "statistics", "scenarios"] },
+          { id: "p1.4", title: "Feature Engineering & Modeling Math", difficulty: "advanced", minutes: 20, tier: "should",
+            summary: "10 questions with hidden answers, from mathematics and statistics scenarios.",
+            keywords: ["mathematics", "statistics", "scenarios"] },
+          { id: "p1.5", title: "Advanced & Edge Cases", difficulty: "advanced", minutes: 20, tier: "should",
+            summary: "10 questions with hidden answers, from mathematics and statistics scenarios.",
+            keywords: ["mathematics", "statistics", "scenarios"] }
+        ]
+      },
+      {
+        id: "iv_math", short: "I1", dir: "01_iv_math", track: "interview", numPrefix: "I",
+        phase: "Interview \u00b7 Question banks",
+        title: "Mathematics and Statistics Interview Bank",
+        blurb: "One hundred questions across linear algebra, calculus and optimisation, probability, statistics, A/B testing and the applied mathematics of ML.",
+        outcome: "You can answer a maths or statistics question with the definition, the formula and the reason it matters.",
+        source: "00_Interview_Bank/01_Math_and_Stats_Interview.md",
+        lessons: [
+          { id: "i1.1", title: "Section 1: Linear Algebra", difficulty: "advanced", minutes: 30, tier: "should",
+            summary: "15 questions with hidden answers, from mathematics and statistics interview bank.",
+            keywords: ["mathematics", "statistics", "interview", "bank"] },
+          { id: "i1.2", title: "Section 2: Calculus & Optimization", difficulty: "advanced", minutes: 30, tier: "should",
+            summary: "15 questions with hidden answers, from mathematics and statistics interview bank.",
+            keywords: ["mathematics", "statistics", "interview", "bank"] },
+          { id: "i1.3", title: "Section 3: Probability", difficulty: "advanced", minutes: 40, tier: "should",
+            summary: "20 questions with hidden answers, from mathematics and statistics interview bank.",
+            keywords: ["mathematics", "statistics", "interview", "bank"] },
+          { id: "i1.4", title: "Section 4: Statistics", difficulty: "advanced", minutes: 40, tier: "should",
+            summary: "20 questions with hidden answers, from mathematics and statistics interview bank.",
+            keywords: ["mathematics", "statistics", "interview", "bank"] },
+          { id: "i1.5", title: "Section 5: A/B Testing", difficulty: "advanced", minutes: 30, tier: "should",
+            summary: "15 questions with hidden answers, from mathematics and statistics interview bank.",
+            keywords: ["mathematics", "statistics", "interview", "bank"] },
+          { id: "i1.6", title: "Section 6: Applied Math for ML", difficulty: "advanced", minutes: 30, tier: "should",
+            summary: "15 questions with hidden answers, from mathematics and statistics interview bank.",
+            keywords: ["mathematics", "statistics", "interview", "bank"] }
+        ]
+      }
     ]
   });
 })();

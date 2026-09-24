@@ -50,7 +50,7 @@
         <span id="start-label">Start with vectors</span>
       </a>
       <a class="cta ghost" href="#curriculum">View full curriculum</a>
-      <span class="cta-note">43 lessons · no account, no sign-up.</span>
+      <span class="cta-note" id="cta-note"></span>
     </div>
 
     <div class="stats" id="stats"></div>
@@ -98,11 +98,14 @@
       <button class="ghost-btn" id="expand-all" type="button">Expand all</button>
     </div>
     <p class="sec-lede">
-      Six phases, each depending on the one before it: the algebra a model is written in, the
-      calculus that trains it, the probability that describes its uncertainty, and the statistics
-      that decides whether a measured difference is real. Modules marked <b>soon</b> are written
-      and scheduled — the shape of the whole course is visible from day one.
+      Three tracks, taken in any order or in parallel. <b>Mathematics</b> derives the results in six
+      phases, each depending on the one before it: the algebra a model is written in, the calculus
+      that trains it, the probability that describes its uncertainty, and the statistics that decides
+      whether a measured difference is real. <b>Practice</b> puts fifty scenarios in front of you where
+      the mathematics decides the answer, and <b>Interview</b> is a hundred questions with the working
+      folded away.
     </p>
+    <div class="track-tabs" id="track-tabs"></div>
     <div id="curriculum-list"></div>
   </section>
 
@@ -136,149 +139,29 @@
 <script src="../../assets/js/diagrams.js"></script>
 <script src="../../assets/js/app.js"></script>
 <script src="curriculum.js"></script>
+<script src="../../assets/js/course-page.js"></script>
 <script>
 (function () {
   "use strict";
-  var C = EC.course, I = EC.icons, $ = EC.$, $$ = EC.$$;
-
-  EC.initTheme();
-  EC.initCmdK("");
-
-  var ready = C.readyLessons;
-  var totalMin = C.allLessons.reduce(function (a, l) { return a + l.minutes; }, 0);
-
-  /* ---- hero badge + stats ---- */
-  $("#hero-badge").innerHTML = I.scale + "<span>Course 02 · Mathematics & Statistics</span>";
-
-  $("#stats").innerHTML = [
-    { v: C.modules.length, l: "Modules" },
-    { v: C.allLessons.length, l: "Lessons" },
-    { v: Math.round(totalMin / 60) + " hrs", l: "Guided content" },
-    { v: "Worked", l: "Every formula" }
-  ].map(function (s) {
-    return '<div class="stat"><div class="stat-v">' + s.v + '</div><div class="stat-l">' + s.l + "</div></div>";
-  }).join("");
-
-  /* ---- where to start ---- */
-  var nextLesson = ready[0] || C.allLessons[0];
-
-  /* ---- curriculum, per track ---- */
-  // One hue per module, so a section is recognisable by colour before its
-  // name is read -- the same device the home page uses for topics.
-  var MHUES = ["--t-blue", "--t-violet", "--t-cyan", "--t-orange", "--t-green",
-               "--t-amber", "--t-pink"];
-
-  function renderTrack() {
-  var html = "", lastPhase = null, phaseN = 0, modN = 0;
-  C.modules.forEach(function (m) {
-    if (m.phase !== lastPhase) {
-      phaseN++;
-      html += '<div class="phase-h"><span class="phase-n">' + String(phaseN).padStart(2, "0") + "</span>" +
-        '<span class="phase-t">' + EC.esc(m.phase) + '</span><span class="rule"></span></div>';
-      lastPhase = m.phase;
-    }
-    var rd = m.lessons.filter(function (l) { return l.ready !== false; });
-    var mins = m.lessons.reduce(function (a, l) { return a + l.minutes; }, 0);
-    modN++;
-
-    // What is inside, without expanding. Capped so a twelve-lesson module
-    // does not turn the card into a wall of chips.
-    var SHOWN = 7;
-    var tags = m.lessons.slice(0, SHOWN).map(function (l) {
-      return '<span class="mtag" title="' + EC.esc(l.title) + '">' +
-        EC.esc(l.title) + "</span>";
-    }).join("") + (m.lessons.length > SHOWN
-      ? '<span class="mtag more">+' + (m.lessons.length - SHOWN) + " more</span>" : "");
-
-    html +=
-      '<div class="mcard" data-m="' + m.id + '" style="--tc:var(' +
-          MHUES[(modN - 1) % MHUES.length] + ')">' +
-        '<button class="mcard-h" type="button" aria-expanded="false">' +
-          '<span class="mcard-lv">' + EC.esc(m.short) + "</span>" +
-          '<span class="mcard-main">' +
-            '<span class="mcard-t"><span class="mcard-num">' + modN + ".</span>" +
-              EC.esc(m.title) + "</span>" +
-            '<span class="mcard-b">' + EC.esc(m.blurb) + "</span>" +
-            '<span class="mcard-tags">' + tags + "</span>" +
-          "</span>" +
-          '<span class="mcard-right">' +
-            '<span class="mcard-count">' + m.lessons.length + " lessons</span>" +
-            '<span class="mcard-time">' + EC.fmtTime(mins) + "</span>" +
-            (rd.length < m.lessons.length
-              ? '<span class="mcard-soon">' + (m.lessons.length - rd.length) + " soon</span>" : "") +
-            '<span class="mcard-chev">' + I.chevron + "</span>" +
-          "</span>" +
-        "</button>" +
-        '<div class="mcard-body" hidden>' +
-          '<ul class="llist">' +
-            m.lessons.map(function (l) {
-              var soon = l.ready === false;
-              return "<li>" +
-                (soon ? '<a aria-disabled="true">' : '<a href="' + EC.lessonHref(l) + '">') +
-                  '<span class="ll-n">' + l.num + "</span>" +
-                  '<span class="ll-main"><span class="ll-t">' + EC.esc(l.title) + "</span>" +
-                  '<span class="ll-s">' + EC.esc(l.summary) + "</span></span>" +
-                  '<span class="ll-right">' +
-                    '<span class="badge ' + l.difficulty + '"><span class="dot"></span>' + l.difficulty + "</span>" +
-                    '<span class="ll-time">' + l.minutes + " min</span>" +
-                    (soon ? '<span class="lsn-soon">soon</span>' : "") +
-                  "</span>" +
-                "</a></li>";
-            }).join("") +
-          "</ul>" +
-        "</div>" +
-      "</div>";
+  var I = EC.icons;
+  EC.renderCoursePage({
+    icon: I.scale,
+    badge: "Course 02 · Mathematics & Statistics",
+    startLabel: "Start with vectors",
+    fitYes: [
+      "You use these results daily but could not derive one if a reviewer pushed back.",
+      "You are an engineer moving into ML and the notation is the part slowing you down.",
+      "You run experiments and want to read a p-value, an interval and a power calculation honestly.",
+      "You have met PCA, MLE and the CLT as recipes and want to see where they come from.",
+      "You are preparing for interviews where <em>why</em> is the follow-up to every <em>what</em>."
+    ],
+    fitNo: [
+      "You want proofs in full rigour. This works numbers and states results; a textbook is better at the proofs.",
+      "You want a formula sheet. This teaches judgement; a reference card is faster for lookup.",
+      "You have never met algebra or a summation sign. Start lower, then come back.",
+      "You are looking for the machine-learning models themselves. Those are a separate course; this is the mathematics underneath them."
+    ]
   });
-  $("#curriculum-list").innerHTML = html;
-    $("#expand-all").textContent = "Expand all";
-  }
-
-  renderTrack();
-
-  $("#curriculum-list").addEventListener("click", function (e) {
-    var b = e.target.closest(".mcard-h");
-    if (!b) return;
-    var card = b.parentElement;
-    var open = card.classList.toggle("open");
-    $(".mcard-body", card).hidden = !open;
-    b.setAttribute("aria-expanded", open ? "true" : "false");
-  });
-
-  // Open the module containing the learner's next lesson, so the page lands
-  // on something actionable rather than a wall of closed accordions.
-  (function () {
-    var card = $('.mcard[data-m="' + nextLesson.module.id + '"]');
-    if (card) { card.classList.add("open"); $(".mcard-body", card).hidden = false; $(".mcard-h", card).setAttribute("aria-expanded", "true"); }
-  })();
-
-  var expanded = false;
-  $("#expand-all").addEventListener("click", function () {
-    expanded = !expanded;
-    $$(".mcard").forEach(function (c) {
-      c.classList.toggle("open", expanded);
-      $(".mcard-body", c).hidden = !expanded;
-      $(".mcard-h", c).setAttribute("aria-expanded", expanded ? "true" : "false");
-    });
-    this.textContent = expanded ? "Collapse all" : "Expand all";
-  });
-
-  /* ---- fit ---- */
-  var yes = [
-    "You use these results daily but could not derive one if a reviewer pushed back.",
-    "You are an engineer moving into ML and the notation is the part slowing you down.",
-    "You run experiments and want to read a p-value, an interval and a power calculation honestly.",
-    "You have met PCA, MLE and the CLT as recipes and want to see where they come from.",
-    "You are preparing for interviews where <em>why</em> is the follow-up to every <em>what</em>."
-  ];
-  var no = [
-    "You want proofs in full rigour. This works numbers and states results; a textbook is better at the proofs.",
-    "You want a formula sheet. This teaches judgement; a reference card is faster for lookup.",
-    "You have never met algebra or a summation sign. Start lower, then come back.",
-    "You are looking for the machine-learning models themselves. Those are a separate course; this is the mathematics underneath them."
-  ];
-  $("#fit-yes").innerHTML = yes.map(function (t) { return "<li>" + I.check + "<span>" + t + "</span></li>"; }).join("");
-  $("#fit-no").innerHTML  = no.map(function (t) { return "<li>" + I.chevron + "<span>" + t + "</span></li>"; }).join("");
-
 })();
 </script>
 </body>

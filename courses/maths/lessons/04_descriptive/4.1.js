@@ -18,7 +18,39 @@ EC.receiveLesson({
 
   blocks: [
 
-    { t: "h2", n: "01", text: "Three summaries, three questions", id: "three" },
+    { t: "h2", n: "01", text: "What kind of variable is it?", id: "scales" },
+
+    { t: "p", text: "Before any summary is chosen, the variable's **scale of measurement** decides which summaries are even meaningful. This is the question people skip, and it is why you see a mean reported for a five-point satisfaction rating — a number that is arithmetically computable and interpretively empty." },
+
+    { t: "diagram", kind: "tree", title: "The four scales, and what each one licenses",
+      caption: "Each scale permits everything the ones above it permit, plus one more operation. The mean needs interval or better; the median needs ordinal or better; the mode works on anything.",
+      root: { label: "Variable", sub: "what was measured", tone: "violet", children: [
+        { label: "Categorical", sub: "labels", tone: "warn", children: [
+          { label: "Nominal", sub: "colour, city — no order", tone: "crit" },
+          { label: "Ordinal", sub: "rating, education — order, no spacing", tone: "warn" }
+        ]},
+        { label: "Quantitative", sub: "numbers", tone: "good", children: [
+          { label: "Interval", sub: "°C, dates — spacing, no true zero", tone: "accent" },
+          { label: "Ratio", sub: "height, salary — a true zero", tone: "good" }
+        ]}
+      ]}
+    },
+
+    { t: "table",
+      head: ["Scale", "Example", "Meaningful", "Not meaningful"],
+      rows: [
+        ["Nominal", "Payment method, city", "Counts, mode", "Mean, median, ordering"],
+        ["Ordinal", "Satisfaction 1–5, education level", "Mode, median, percentiles, rank tests", "**Mean** — the gap from 1 to 2 is not the gap from 4 to 5"],
+        ["Interval", "Temperature in °C, calendar dates", "Mean, standard deviation, differences", "**Ratios** — 20 °C is not twice as warm as 10 °C"],
+        ["Ratio", "Height, salary, counts, duration", "Everything, including ratios and the CV", "—"]
+      ],
+      caption: "**The interval/ratio line is about zero.** A true zero means \"none of the quantity\", which is what makes a ratio interpretable. Celsius has an arbitrary zero, so its differences are meaningful and its ratios are not; Kelvin has a true one, so both are."
+    },
+
+    { t: "callout", kind: "trap", title: "The mean of a Likert scale",
+      body: [{ t: "p", text: "Averaging a 1–5 satisfaction rating to 3.7 assumes the distance from \"neutral\" to \"satisfied\" equals the distance from \"satisfied\" to \"very satisfied\". Nothing about the measurement guarantees that, so the number is not wrong so much as unfounded — and it moves when you relabel the scale. Report the median and the full distribution, and if you must compare groups use a rank test (lesson 5.9). This is done everywhere in industry, which makes it a convention rather than a justification." }] },
+
+    { t: "h2", n: "02", text: "Three summaries, three questions", id: "three" },
 
     { t: "p", text: "**Mean, median and mode are not three attempts at the same number** — they answer three different questions, and for skewed data they give very different answers. Choosing between them is a decision about which question you meant to ask." },
 
@@ -223,7 +255,7 @@ hmean([1,2,4]), gmean([1,2,4]), np.mean([1,2,4])   # 1.714, 2.0, 2.333`},
       { t: "p", text: "**The arithmetic mean of returns always exceeds the geometric mean**, and the gap grows with volatility — so quoting it overstates what an investor actually earned, every time, without being incorrect arithmetic." }
     ]},
 
-    { t: "h2", n: "03", text: "When no single number is honest", id: "multimodal" },
+    { t: "h2", n: "04", text: "When no single number is honest", id: "multimodal" },
 
     { t: "p", text: "Sometimes no single number is honest, because the data is a **mixture of distinct populations**. A mean that falls in the empty gap between two groups describes a case that does not exist, and the right response is to report the structure instead." },
 
@@ -293,7 +325,7 @@ for hit_rate in (0.70, 0.85, 0.95):
       caption: "**A sixfold jump between p70 and p75 is the signature of a mixture.** A smooth distribution cannot do that, and the location of the jump tells you the mixing proportion."
     },
 
-    { t: "h2", n: "04", text: "Practice", id: "practice" },
+    { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",
       kind: "Challenge",

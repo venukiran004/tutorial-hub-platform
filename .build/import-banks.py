@@ -87,6 +87,21 @@ SPECS = {
        "You have seen the question before it is asked.", "advanced"),
     ],
   },
+  "maths": {
+    "src": "02_Mathematics_and_Statistics",
+    "practice": [
+      ("Practice/01_Math_and_Stats_Scenarios.md", "scenarios_sec", "sc_math", "P1",
+       "Mathematics and Statistics Scenarios",
+       "Fifty situations where the mathematics decides the answer — A/B tests that mislead, models that will not converge, distributions that break an assumption.",
+       "You can say what a number means, and what it does not, before anyone ships a decision on it.", "advanced"),
+    ],
+    "interview": [
+      ("00_Interview_Bank/01_Math_and_Stats_Interview.md", "iv_h3", "iv_math", "I1",
+       "Mathematics and Statistics Interview Bank",
+       "One hundred questions across linear algebra, calculus and optimisation, probability, statistics, A/B testing and the applied mathematics of ML.",
+       "You can answer a maths or statistics question with the definition, the formula and the reason it matters.", "advanced"),
+    ],
+  },
   "ml": {
     "src": "04_Machine_Learning",
     "practice": [
@@ -305,6 +320,21 @@ def parse_scenarios(lines):
     return items
 
 
+def parse_scenarios_sec(lines):
+    """Like parse_scenarios, but records the enclosing "## Part ..." heading so
+    each part of the bank becomes its own lesson instead of an unnamed chunk."""
+    items = []; section = None
+    for i, l in enumerate(lines):
+        if l.startswith("## ") and not l.startswith("## Contents"):
+            section = re.sub(r"\s*\(Scenarios? \d+[–-]\d+\)\s*$", "", l[3:].strip())
+            section = re.sub(r"^Part [A-Z]:\s*", "", section)
+        m = re.match(r"^### Scenario (\d+)[.:]\s*(.*)$", l)
+        if m:
+            body, _ = body_until(lines, i + 1, r"^#{2,3} ")
+            items.append((m.group(1), inline_md(m.group(2)), md_blocks(body), section))
+    return items
+
+
 def parse_iv_h3(lines):
     """## Section / ### Qn. question  (DL interview bank)."""
     items = []; section = None
@@ -362,6 +392,7 @@ def parse_glassdoor(lines):
 
 
 PARSERS = {"programs": parse_programs, "scenarios": parse_scenarios,
+           "scenarios_sec": parse_scenarios_sec,
            "iv_h3": parse_iv_h3, "iv_bold": parse_iv_bold, "glassdoor": parse_glassdoor}
 
 
@@ -370,7 +401,7 @@ PARSERS = {"programs": parse_programs, "scenarios": parse_scenarios,
 def chunk(items, kind):
     """Cut a bank into lessons of at most MAX drills, on section boundaries
     when the bank has sections, folding a tiny tail into its predecessor."""
-    if kind in ("iv_h3", "iv_bold", "glassdoor"):
+    if kind in ("iv_h3", "iv_bold", "glassdoor", "scenarios_sec"):
         groups = []
         for it in items:
             if not groups or groups[-1][0] != it[3]:
