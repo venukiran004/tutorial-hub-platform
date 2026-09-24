@@ -6,9 +6,9 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "i4.4",
- "lede": "**16 interview questions on behavioural patterns**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
+ "lede": "**19 interview questions on behavioural patterns**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
  "objectives": [
-  "Answer 16 questions on behavioural patterns without prompting",
+  "Answer 19 questions on behavioural patterns without prompting",
   "Name the force each pattern resolves, not only its shape",
   "Say when the pattern is the wrong choice",
   "Give the Python-idiomatic form rather than the textbook one"
@@ -453,6 +453,111 @@ EC.receiveLesson({
      "lang": "python",
      "code": "class Command(ABC):\n    @abstractmethod\n    def execute(self): ...\n    @abstractmethod\n    def undo(self): ...\n\nclass InsertTextCommand(Command):\n    def __init__(self, editor, text, position):\n        self.editor, self.text, self.position = editor, text, position\n    def execute(self): self.editor.insert(self.text, self.position)\n    def undo(self): self.editor.delete(self.position, len(self.text))",
      "numbered": false
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "17",
+   "q": "What is the Interpreter pattern, and when is a small language the right answer?",
+   "terms": [
+    "Answer",
+    "Interpreter",
+    "grammar",
+    "evaluate",
+    "DSL",
+    "data not code"
+   ],
+   "body": [
+    {
+     "t": "p",
+     "text": "**Answer:**"
+    },
+    {
+     "t": "p",
+     "text": "Interpreter models a tiny language as a tree of small objects, each of which knows how to **evaluate itself**. A rule like `(is_complex or is_premium) and not is_rate_limited` stops being Python that only a programmer can change and becomes **data** you can build, store, edit and audit."
+    },
+    {
+     "t": "p",
+     "text": "That is the whole motivation. A routing rule hard-coded in a function needs a deploy to change; the same rule as an expression tree can be edited by an operations team, versioned in a database, and shown in a user interface. Feature flags, metadata filters over retrieved chunks and permission expressions are all the same shape."
+    },
+    {
+     "t": "p",
+     "text": "The cost is real: you have written a language, so you now own its grammar, its error messages and its security. The reason people reach for `eval()` instead is that it is one line — and the reason that is a mistake is that it executes arbitrary Python from whatever wrote the rule."
+    },
+    {
+     "t": "p",
+     "text": "**Key takeaway:** use it when non-programmers must change the rule, or the rule must be stored and audited. For anything else, a function is clearer and free."
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "18",
+   "q": "Explain Memento. What does it give you that saving fields by hand does not?",
+   "terms": [
+    "Answer",
+    "Memento",
+    "snapshot",
+    "opaque",
+    "encapsulation",
+    "checkpoint"
+   ],
+   "body": [
+    {
+     "t": "p",
+     "text": "**Answer:**"
+    },
+    {
+     "t": "p",
+     "text": "Memento takes an **opaque snapshot** of an object's full state so it can be restored later, without exposing the object's internals to whoever holds the snapshot. The analogy is a save file: the caller does not parse it, it just saves and loads."
+    },
+    {
+     "t": "p",
+     "text": "The contrast with the hand-rolled version is the point. Stashing `saved_messages, saved_step = sess.messages[:], sess.step` works until somebody adds a third field — and then restore silently produces a half-old, half-new object, which is worse than failing. A snapshot taken by the object itself cannot drift from the object's own shape."
+    },
+    {
+     "t": "p",
+     "text": "Modern instances are everywhere: checkpointing agent or graph state so a run can resume or roll back, and snapshotting a conversation before a risky tool call so a failure can be reverted."
+    },
+    {
+     "t": "p",
+     "text": "**Key takeaway:** the value is encapsulation, not storage. The object decides what its state is, so restore stays correct as the object grows."
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "19",
+   "q": "What does Visitor buy you, and why is it rare in Python?",
+   "terms": [
+    "Answer",
+    "Visitor",
+    "double dispatch",
+    "accept",
+    "singledispatch",
+    "fixed types"
+   ],
+   "body": [
+    {
+     "t": "p",
+     "text": "**Answer:**"
+    },
+    {
+     "t": "p",
+     "text": "Visitor is for a **fixed set of element types with a growing set of operations**. Instead of editing every element class each time you add an operation, each operation becomes one visitor object and elements `accept` it. Adding an operation is adding one file; adding an element type means editing every visitor — which is exactly the trade-off, and why it fits ASTs and compilers."
+    },
+    {
+     "t": "p",
+     "text": "A concrete modern case: walking the content blocks of a multimodal message — text, image, tool use — to render them, estimate token cost or validate them. Each new operation is one visitor with no edits to the block classes."
+    },
+    {
+     "t": "p",
+     "text": "It is rare in Python because the mechanism it exists to fake, double dispatch, is available more directly. `functools.singledispatch` dispatches on the argument's type, and structural pattern matching (lesson 5.5) destructures a node and branches in a few readable lines. Both express the same idea without the `accept`/`visit` ceremony."
+    },
+    {
+     "t": "p",
+     "text": "**Key takeaway:** know the force it resolves — operations changing faster than types — then implement it with `singledispatch` or `match`."
     }
    ]
   }

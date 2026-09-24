@@ -261,7 +261,30 @@ def main(argv: Sequence[str] | None = None) -> int:
       ]}
     ]},
 
-    { t: "h2", n: "05", text: "The rest of the tour", id: "rest" },
+    { t: "h2", n: "05", text: "sqlite3 and shelve: persistence with no server", id: "sqlite" },
+
+    { t: "p", text: "`sqlite3` is a complete SQL database in the standard library, storing everything in one file — no server, no configuration, no dependency. It is the right answer far more often than people expect: a local cache, a desktop application's storage, a scratch database in a script, and above all **tests**, where `:memory:` gives you a real SQL engine that vanishes when the connection closes." },
+
+    { t: "code", lang: "python", title: "A real database in four lines",
+      code: `import sqlite3
+
+conn = sqlite3.connect("app.db")          # or ":memory:" for tests
+conn.execute("CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, email TEXT UNIQUE)")
+conn.execute("INSERT INTO users(email) VALUES(?)", ("ada@example.com",))   # parameterised
+conn.commit()
+
+conn.row_factory = sqlite3.Row            # rows you can index by column name
+for row in conn.execute("SELECT id, email FROM users"):
+    print(row["id"], row["email"])`,
+      caption: "`row_factory = sqlite3.Row` is the first thing to set — without it rows are plain tuples and every query result is positional. Note the `?` placeholder: the same parameterisation discipline as Lesson 13.1, and the same reason." },
+
+    { t: "callout", kind: "trap", title: "sqlite3 does not autocommit the way you expect",
+      body: [{ t: "p", text: "The module opens an implicit transaction before data-modifying statements and leaves it open until you call `commit()`. A script that inserts and exits without committing loses the writes silently, with no error. Use the connection as a context manager — `with conn:` commits on success and rolls back on an exception — rather than remembering to call `commit()` on every path." }] },
+
+    { t: "callout", kind: "note", title: "shelve: a dictionary that persists",
+      body: [{ t: "p", text: "`shelve.open(\"cache\")` gives you a dict-like object backed by a file, so `db[\"config\"] = {...}` survives the process. It is convenient and it is pickle underneath, which means it carries every warning from Lesson 7.3: never open a shelf written by anything you do not control. For a cache of your own data in your own process it is fine; for anything crossing a trust boundary, use `sqlite3` or JSON." }] },
+
+    { t: "h2", n: "06", text: "The rest of the tour", id: "rest" },
 
     { t: "table",
       head: ["Instead of", "Use", "For"],
@@ -286,7 +309,7 @@ def main(argv: Sequence[str] | None = None) -> int:
       ]}
     ]},
 
-    { t: "h2", n: "06", text: "Practice", id: "practice" },
+    { t: "h2", n: "07", text: "Practice", id: "practice" },
 
     { t: "exercise",
       kind: "Challenge",

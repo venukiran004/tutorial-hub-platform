@@ -6,9 +6,9 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "i4.5",
- "lede": "**9 interview questions on architectural patterns**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
+ "lede": "**10 interview questions on architectural patterns**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
  "objectives": [
-  "Answer 9 questions on architectural patterns without prompting",
+  "Answer 10 questions on architectural patterns without prompting",
   "Name the force each pattern resolves, not only its shape",
   "Say when the pattern is the wrong choice",
   "Give the Python-idiomatic form rather than the textbook one"
@@ -335,6 +335,45 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "**Key takeaway:** Retries handle *transient* blips; circuit breakers handle a dependency that's *down* — fail fast and protect your own service from cascading failure."
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "10",
+   "q": "What is the Specification pattern, and what does it fix about filtering code?",
+   "terms": [
+    "Answer",
+    "Specification",
+    "composable",
+    "predicate",
+    "and or not",
+    "reusable"
+   ],
+   "body": [
+    {
+     "t": "p",
+     "text": "**Answer:**"
+    },
+    {
+     "t": "p",
+     "text": "Specification turns each business rule into a small object that can be combined with `&`, `|` and `~`. Rather than one tangled boolean expression copy-pasted across every query, you build filters out of named, reusable pieces: `high_quality = ScoreAbove(0.8) & ~FromSource(\"web\")`."
+    },
+    {
+     "t": "p",
+     "text": "Two things improve immediately. The rules acquire **names**, so `ScoreAbove(0.8)` documents itself where `d[\"score\"] >= 0.8` does not. And they become **testable in isolation** — a specification is a pure predicate with an obvious unit test, while an inline comprehension can only be tested through whatever contains it."
+    },
+    {
+     "t": "p",
+     "text": "It pairs naturally with Repository: the repository takes a specification rather than a growing set of `find_by_*` methods, which is what stops a data-access class acquiring forty near-identical query functions."
+    },
+    {
+     "t": "p",
+     "text": "In Python the idiomatic form is usually lighter than the GoF one — implement `__and__`, `__or__` and `__invert__` on a small base class, or compose plain predicate functions — but the discipline of naming each rule is what you are actually buying."
+    },
+    {
+     "t": "p",
+     "text": "**Key takeaway:** reach for it when the same conditions recombine across several queries. For one filter used once, a comprehension is clearer."
     }
    ]
   }

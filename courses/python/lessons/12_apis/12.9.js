@@ -19,7 +19,7 @@ EC.receiveLesson({
     "Sketch the URL shortener, distributed rate limiter, notification system and news feed, each around its deciding design choice"
   ],
 
-  prerequisites: ["12.6", "12.7", "13.4"],
+  prerequisites: ["12.6", "12.7", "11.8"],
 
   blocks: [
 

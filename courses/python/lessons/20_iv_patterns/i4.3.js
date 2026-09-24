@@ -6,9 +6,9 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "i4.3",
- "lede": "**7 interview questions on structural patterns**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
+ "lede": "**8 interview questions on structural patterns**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
  "objectives": [
-  "Answer 7 questions on structural patterns without prompting",
+  "Answer 8 questions on structural patterns without prompting",
   "Name the force each pattern resolves, not only its shape",
   "Say when the pattern is the wrong choice",
   "Give the Python-idiomatic form rather than the textbook one"
@@ -260,6 +260,41 @@ EC.receiveLesson({
      "lang": "python",
      "code": "class LoggingProxy:\n    def __init__(self, target):\n        self._target = target\n\n    def __getattr__(self, name):\n        attr = getattr(self._target, name)\n        if callable(attr):\n            def wrapper(*args, **kwargs):\n                print(f\"Calling {name}({args}, {kwargs})\")\n                return attr(*args, **kwargs)\n            return wrapper\n        return attr\n\nproxied_list = LoggingProxy([1, 2, 3])\nproxied_list.append(4)    # Calling append((4,), {})",
      "numbered": false
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "8",
+   "q": "What problem does Flyweight solve, and what is the Python-idiomatic form?",
+   "terms": [
+    "Answer",
+    "Flyweight",
+    "intrinsic",
+    "extrinsic",
+    "interning",
+    "lru_cache"
+   ],
+   "body": [
+    {
+     "t": "p",
+     "text": "**Answer:**"
+    },
+    {
+     "t": "p",
+     "text": "When thousands of objects each carry the same heavy, unchanging data, Flyweight stores that data **once** and lets every object point at the shared copy. The vocabulary is the useful part: the shared, immutable part is the **intrinsic** state and the small per-object difference is the **extrinsic** state, passed in at call time rather than stored."
+    },
+    {
+     "t": "p",
+     "text": "The classic example is a print shop reusing one metal stamp for every letter 'a' rather than carving a new one. The modern one is sharing a single tokenizer, embedding table or long system prompt across thousands of request objects, where only the user's message differs."
+    },
+    {
+     "t": "p",
+     "text": "In Python you rarely write the GoF class. You reach for `functools.lru_cache` on a factory, a module-level constant, or `sys.intern` for strings — and because Python strings and small integers are already interned, you have been using the pattern without naming it."
+    },
+    {
+     "t": "p",
+     "text": "**Key takeaway:** Flyweight is a memory optimisation, not a design principle. Reach for it when a profiler says identical objects dominate the heap (lesson 10.3), never before."
     }
    ]
   }

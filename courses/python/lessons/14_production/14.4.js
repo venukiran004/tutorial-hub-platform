@@ -289,6 +289,9 @@ git add -u && git commit -m "..."   # now it passes
       { t: "p", text: "**The hook is an optimisation; CI is the contract.** Treating the hook as the enforcement point means anyone who has not installed it, or who passes `--no-verify`, is exempt." }
     ]},
 
+    { t: "callout", kind: "note", title: "tox, when you support more than one Python",
+      body: [{ t: "p", text: "A library that claims to support 3.10 through 3.13 has to be tested on all of them, and `tox` is the standard way: an `envlist` of interpreters, a `[testenv]` section saying what to install and run, then `tox` for everything or `tox -e py312` for one. It matters for libraries and rarely for applications — a service pinned to one interpreter in one container gets nothing from it. The modern alternative is a CI matrix, which does the same job on someone else's machines; `tox` is what lets you reproduce a matrix failure locally instead of pushing commits to find out." }] },
+
     { t: "h2", n: "04", text: "Adopting on a legacy codebase", id: "legacy" },
 
     { t: "code", lang: "bash", title: "the sequence that does not produce a 4,000-file diff", code: `
