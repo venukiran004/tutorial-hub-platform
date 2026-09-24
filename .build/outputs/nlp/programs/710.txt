@@ -1,0 +1,2 @@
+Jaccard: 0.3333
+Cosine:  0.5000

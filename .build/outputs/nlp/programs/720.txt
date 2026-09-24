@@ -1,0 +1,2 @@
+Best score: -9.0654
+Best sequence: [1, 16, 42, 21, 18, 2]

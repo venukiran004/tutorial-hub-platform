@@ -1,0 +1,2 @@
+Original: This is a sample text with many stop words in it
+Filtered: sample text many stop words

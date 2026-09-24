@@ -1,0 +1,2 @@
+Prefill output: torch.Size([1, 10, 64])
+Decode output: torch.Size([1, 1, 64]), KV cache: torch.Size([1, 11, 64])

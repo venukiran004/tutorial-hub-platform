@@ -1,0 +1,6 @@
+Causal mask (True = can attend):
+  'I' can see: ['I']
+  'love' can see: ['I', 'love']
+  'deep' can see: ['I', 'love', 'deep']
+  'learn' can see: ['I', 'love', 'deep', 'learn']
+  'ing' can see: ['I', 'love', 'deep', 'learn', 'ing']

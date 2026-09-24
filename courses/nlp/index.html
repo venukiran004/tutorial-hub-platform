@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NLP and Transformers — Tutorial Hub</title>
+<meta name="description" content="Natural language processing from the reference notes, section by section: preprocessing, tokenization, embeddings and the classical task catalogue; then the transformer derived from the dot product and traced on real numbers; the modern stack from GQA to Mamba; multimodal models; and fuzzy matching — every matrix worked and every program run.">
+<script>try{var t=localStorage.getItem("th:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/system.css">
+<link rel="stylesheet" href="../../assets/css/course.css">
+<link rel="stylesheet" href="../../assets/css/refine.css">
+<link rel="stylesheet" href="../../assets/css/home.css">
+<link rel="stylesheet" href="../../assets/css/aurora.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="../../index.html"><span class="brand-mark">TH</span>Tutorial<span class="brand-sub">Hub</span></a>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <span class="sep">/</span><a href="../../index.html">Courses</a>
+    <span class="sep">/</span><span class="cur">NLP and Transformers</span>
+  </nav>
+  <span class="topbar-spacer"></span>
+  <button class="ghost-btn search-trigger" data-cmdk type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+    <span class="label">Search lessons</span><span class="hint">Ctrl K</span>
+  </button>
+  <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
+</header>
+
+<main>
+<div class="page wide">
+
+  <!-- ------------------------------------------------------------- hero -- -->
+  <section class="hero">
+    <span class="hero-eyebrow" id="hero-badge"></span>
+    <h1>Language, <span class="dim">taken apart matrix by matrix.</span></h1>
+    <p class="hero-lede">
+      The reference notes, section by section, in their own order: text turned into tokens and
+      tokens into vectors; the classical task catalogue from classification to translation; the
+      transformer derived from a dot product and then <b>traced on real numbers</b>, twice — a
+      decoder-only forward pass and a full encoder–decoder translation where every matrix is
+      printed; the modern stack from GQA and RoPE to MoE and Mamba; multimodal models; and the
+      fuzzy matching that still runs in production. Every formula is <b>carried through on
+      numbers</b> and every program is the reference's own, <b>run here with its output
+      shown</b> — then the practice programs and the interview bank, every answer folded away
+      until you ask.
+    </p>
+    <div class="hero-cta">
+      <a class="cta primary" id="start-btn" href="lesson.html?id=1.1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+        <span id="start-label">Start with the pipeline</span>
+      </a>
+      <a class="cta ghost" href="#curriculum">View full curriculum</a>
+      <span class="cta-note" id="cta-note"></span>
+    </div>
+
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- outcomes -- -->
+  <section class="sec">
+    <div class="sec-kicker">The progression</div>
+    <div class="sec-h"><h2>Five states, in order</h2></div>
+    <p class="sec-lede">
+      Every module exists to move you from one of these states to the next. The learn track takes
+      you through them; the practice and interview tracks are where you find out whether it held.
+    </p>
+    <div class="ladder-strip">
+      <div class="ls-step" style="--c:var(--d-foundation)">
+        <div class="ls-n">01</div><div class="ls-t">I can turn text into numbers</div>
+        <div class="ls-d">A preprocessing pipeline whose every step has a reason, BPE merges computed by hand, TF-IDF worked on a small corpus, and embeddings whose geometry you can check.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-core)">
+        <div class="ls-n">02</div><div class="ls-t">I can solve the classical task</div>
+        <div class="ls-d">Classification, NER, topic models, semantic search, summarisation and QA — each with the metric that judges it and the baseline it has to beat.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--accent)">
+        <div class="ls-n">03</div><div class="ls-t">I can derive attention</div>
+        <div class="ls-d">Scaled dot-product attention from the dot product up, multi-head as a partition, masking and cross-attention, and the parameter count of a block computed exactly.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-advanced)">
+        <div class="ls-n">04</div><div class="ls-t">I can trace one end to end</div>
+        <div class="ls-d">Every matrix in a decoder-only forward pass and in a full encoder–decoder translation, reproduced in NumPy and checked against the reference's own numbers.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-expert)">
+        <div class="ls-n">05</div><div class="ls-t">I can reason about the modern stack</div>
+        <div class="ls-d">Why GQA exists and what it costs, what RoPE does that sinusoids do not, when MoE pays, where Mamba wins — and an answer for any question in the bank.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------- curriculum -- -->
+  <section class="sec" id="curriculum">
+    <div class="sec-kicker">Curriculum</div>
+    <div class="sec-h">
+      <h2>The full path</h2>
+      <span class="sp"></span>
+      <button class="ghost-btn" id="expand-all" type="button">Expand all</button>
+    </div>
+    <p class="sec-lede">
+      Three tracks. <b>NLP &amp; Transformers</b> is the course — one module per reference file,
+      one lesson per section, in the reference's order. <b>Practice</b> holds the NLP programs with
+      their output and the scenario questions. <b>Interview</b> holds the question bank, answers
+      hidden until you ask. Modules marked <b>soon</b> are scheduled — the shape of the whole
+      course is visible from day one.
+    </p>
+    <div class="track-tabs" id="track-tabs"></div>
+    <div id="curriculum-list"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- audience -- -->
+  <section class="sec">
+    <div class="sec-kicker">Fit</div>
+    <div class="sec-h"><h2>Who this is for</h2></div>
+    <div class="split">
+      <div class="split-box yes">
+        <div class="split-h">A good fit if</div>
+        <ul id="fit-yes"></ul>
+      </div>
+      <div class="split-box no">
+        <div class="split-h">Not the right course if</div>
+        <ul id="fit-no"></ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Tutorial Hub — NLP and Transformers</span>
+    <span class="sp"></span>
+    <span>Built as a single static site — no build step, no dependencies.</span>
+  </footer>
+
+</div>
+</main>
+
+<script src="../../assets/js/highlight.js"></script>
+<script src="../../assets/js/render.js"></script>
+<script src="../../assets/js/diagrams.js"></script>
+<script src="../../assets/js/app.js"></script>
+<script src="curriculum.js"></script>
+<script src="../../assets/js/course-page.js"></script>
+<script>
+(function () {
+  "use strict";
+  var I = EC.icons;
+  EC.renderCoursePage({
+    icon: I.search,
+    badge: "Course 08 · NLP and Transformers",
+    startLabel: "Start with the pipeline",
+    fitYes: [
+      "You have called <code>model.generate()</code> and want to know what happened between the prompt and the token — every matrix, on numbers, twice over.",
+      "You can name attention, BPE, RoPE and GQA but could not derive any of them, and want each one built once so the library stops being magic.",
+      "You are shipping something that reads text — search, extraction, classification, matching — and want the classical methods that still win alongside the ones that replaced them.",
+      "You are preparing for interviews where the question after <em>what is self-attention</em> is <em>why divide by the square root of d_k</em>, and want the bank to practise on."
+    ],
+    fitNo: [
+      "You want prompting, RAG, agents and serving. The transformer is built and traced here; the GenAI &amp; LLMs course takes it from there.",
+      "You have not met neural networks — backpropagation, embeddings, a training loop. The Deep Learning course comes first and this one assumes it.",
+      "You want a HuggingFace API reference. The library is used throughout, but the documentation is faster for looking up an argument.",
+      "You want to fine-tune a large model on your own hardware. The architecture is here; the training infrastructure is the MLOps course."
+    ]
+  });
+})();
+</script>
+</body>
+</html>

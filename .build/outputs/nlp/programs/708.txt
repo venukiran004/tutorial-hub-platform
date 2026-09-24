@@ -1,0 +1,6 @@
+EMAIL: ['john@example.com']
+PHONE: ['555-123-4567']
+URL: ['https://example.com']
+DATE: ['12/25/2024']
+MONEY: ['$49.99']
+HASHTAG: ['#BlackFriday', '#Sale']

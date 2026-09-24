@@ -1,0 +1,2 @@
+Input: torch.Size([4, 20]), Logits: torch.Size([4, 20, 100])
+Masked positions: 21

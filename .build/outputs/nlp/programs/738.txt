@@ -1,0 +1,2 @@
+Sentence embeddings: torch.Size([1, 64]), torch.Size([1, 64])
+Similarity: 0.1223

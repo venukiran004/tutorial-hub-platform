@@ -1,0 +1,2 @@
+Input: torch.Size([4, 30]), Tag logits: torch.Size([4, 30, 9])
+Predicted tags: tensor([1, 0, 0, 0, 2, 2, 1, 1, 0, 0])

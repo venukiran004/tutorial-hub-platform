@@ -1,0 +1,2 @@
+Word embeddings: torch.Size([3, 10, 64])
+Document embedding: torch.Size([1, 64])

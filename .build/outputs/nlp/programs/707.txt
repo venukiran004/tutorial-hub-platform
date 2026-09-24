@@ -1,0 +1,4 @@
+positive (+1.00): This movie is great and amazing!
+negative (-1.00): Terrible acting and horrible plot
+ neutral (+0.00): The weather is okay today
+positive (+1.00): Best restaurant, excellent food, love it

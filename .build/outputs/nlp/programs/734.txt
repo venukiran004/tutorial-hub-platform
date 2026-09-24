@@ -1,0 +1,10 @@
+Fixed-size chunks:
+  0: This is sentence one. This
+  1: This is sentence two. Third
+  2: Third sentence here. Fourth one.
+  3: one. Fifth one. Sixth.
+
+Sentence chunks:
+  0: This is sentence one. This is sentence two.
+  1: Third sentence here. Fourth one.
+  2: Fifth one. Sixth.

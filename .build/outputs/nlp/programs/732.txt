@@ -1,0 +1,1 @@
+Source: torch.Size([4, 20]), Target: torch.Size([4, 15]), Output: torch.Size([4, 15, 1000])

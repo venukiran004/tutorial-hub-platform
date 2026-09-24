@@ -20,7 +20,8 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 HUB = os.path.join(os.path.expanduser("~"), "Desktop", "CLAUDE LEARNING", "tutorial-hub")
 SRC = {"dl": "05_Deep_Learning/Practice/00_PyTorch_Programs.md",
-       "ml": "04_Machine_Learning/Practice/01_Fundamentals.md"}
+       "ml": "04_Machine_Learning/Practice/01_Fundamentals.md",
+       "nlp": "06_NLP_and_Transformers/Sample_Programs/Part_08_NLP_and_Text_Processing.md"}
 WORKDIR = os.environ.get("TH_WORKDIR") or os.getcwd()
 TIMEOUT = int(os.environ.get("TH_TIMEOUT", "600"))
 

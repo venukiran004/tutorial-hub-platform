@@ -1,0 +1,6 @@
+Merges:
+  w + e → we
+  l + o → lo
+  n + e → ne
+  w + </w> → w</w>
+  lo + we → lowe

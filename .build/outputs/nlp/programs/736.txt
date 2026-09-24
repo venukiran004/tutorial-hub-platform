@@ -1,0 +1,7 @@
+running         → runn
+  happiness       → happi
+  beautiful       → beauti
+  effectively     → effective
+  processed       → process
+  computers       → computer
+  learning        → learn

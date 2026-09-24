@@ -87,6 +87,21 @@ SPECS = {
        "You have seen the question before it is asked.", "advanced"),
     ],
   },
+  "nlp": {
+    "src": "06_NLP_and_Transformers",
+    "practice": [
+      ("Sample_Programs/Part_08_NLP_and_Text_Processing.md", "programs", "nlp_programs", "P1",
+       "NLP and Text Processing Programs",
+       "The reference's NLP programs — preprocessing, TF-IDF and BPE from scratch, BLEU and ROUGE, RoPE, a KV cache, beam search and the retrieval patterns — each run, with what it printed.",
+       "You can write the code for any standard NLP operation from memory, and you have seen what it prints.", "core"),
+    ],
+    "interview": [
+      ("Interview_Questions/06_NLP_Interview.md", "iv_h3", "iv_nlp", "I1",
+       "NLP and Transformers Interview Bank",
+       "One hundred questions across NLP fundamentals, advanced NLP and transformers, the transformer internals, applications and production, and HuggingFace in practice.",
+       "You can answer an NLP or transformer interview question with the formula, the shape and the reason.", "advanced"),
+    ],
+  },
   "maths": {
     "src": "02_Mathematics_and_Statistics",
     "practice": [

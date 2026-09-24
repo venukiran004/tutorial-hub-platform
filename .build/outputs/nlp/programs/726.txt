@@ -1,0 +1,2 @@
+With positional encoding: torch.Size([4, 20, 64])
+Learnable params: torch.Size([512, 64])

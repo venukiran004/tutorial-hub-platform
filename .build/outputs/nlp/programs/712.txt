@@ -1,0 +1,2 @@
+BLEU (good): 0.0019
+BLEU (bad):  0.0000
