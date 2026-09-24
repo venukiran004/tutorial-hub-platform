@@ -38,6 +38,24 @@ function check(blocks, id, file) {
       }
     }
 
+    if (b.t === "ladder") {
+      checked++;
+      const rungs = b.rungs || [];
+      if (!rungs.length) {
+        problems++;
+        console.log(`  EMPTY LADDER  ${file}  ${id}  "${(b.title || "").slice(0, 46)}"`);
+      }
+      rungs.forEach(r => {
+        /* render.js reads label/why/code/note — a rung written with title/body
+           renders an empty code block and silently loses its prose. */
+        if (!r.label || !r.code) {
+          problems++;
+          console.log(`  BAD RUNG  ${file}  ${id}  level="${r.level}" needs "label" and "code"` +
+                      (r.title || r.body ? ' (found title/body — render.js reads label/why/note)' : ""));
+        }
+      });
+    }
+
     if (b.t === "diagram") {
       checked++;
       /* The input key each kind reads, from assets/js/diagrams.js. */
