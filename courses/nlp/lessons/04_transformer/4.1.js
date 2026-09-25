@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 4.1 — Why Transformers
-   Mirrors 02_Transformers_InDepth.md · §1-3. The sequential bottleneck is
-   benchmarked against attention, and the reference's sqrt(d_model) scaling
-   rationale is checked against the actual magnitudes (scratchpad/nlp/n41.py).
+   Mirrors 02_Transformers_InDepth.md · §1-2. The sequential bottleneck is
+   benchmarked against attention: it wins at short lengths and LOSES at 512
+   (scratchpad/nlp/n41.py). Embeddings move to 4.2.
    ========================================================================= */
 EC.receiveLesson({
   id: "4.1",
@@ -14,7 +14,7 @@ EC.receiveLesson({
     "Measure the crossover where attention's quadratic cost overtakes recurrence",
     "Explain why constant path length matters for gradients",
     "Read the original paper's configuration and its parameter split",
-    "Check the sqrt(d_model) embedding-scaling rationale against real magnitudes"
+    "Place the architecture in the timeline of what branched from it"
   ],
 
   prerequisites: ["3.6", "3.3"],
@@ -105,26 +105,9 @@ EC.receiveLesson({
 "per encoder block, at the paper's configuration\n\n  attention (4 projections of 512x512)   1,050,624 params\n  FFN (512->2048->512)                    2,099,712 params\n\n  the FFN is 2.00x the attention block" },
 
     { t: "callout", kind: "insight", title: "Two-thirds of a block is the feed-forward network",
-      body: [{ t: "p", text: "Attention gets all the attention, and it holds a third of the parameters. The FFN — two linear layers with a non-linearity between them, applied identically at every position — holds twice as many. That ratio is fixed by `d_ff = 4 x d_model`, a convention from the original paper that nearly every model since has kept. It matters practically: when you are budgeting memory or choosing what to quantise, the FFN is the larger target, and much of the recent efficiency work (mixture of experts in particular, which lesson 5.9 covers) is about making those specific parameters cheaper to use." }] },
+      body: [{ t: "p", text: "Attention gets all the attention, and it holds a third of the parameters. The FFN — two linear layers with a non-linearity between them, applied identically at every position — holds twice as many. That ratio is fixed by `d_ff = 4 x d_model`, a convention from the original paper that nearly every model since has kept. It matters practically: when you are budgeting memory or choosing what to quantise, the FFN is the larger target, and much of the recent efficiency work (mixture of experts in particular, which lesson 5.10 covers) is about making those specific parameters cheaper to use." }] },
 
-    { t: "h2", n: "06", text: "Embeddings and the scaling factor", id: "scaling" },
-
-    { t: "code", lang: "python", title: "Token embedding plus sinusoidal positional encoding", code:
-"class TransformerEmbedding(nn.Module):\n    def __init__(self, vocab_size, d_model, max_len=5000, dropout=0.1):\n        super().__init__()\n        self.token_embed = nn.Embedding(vocab_size, d_model)\n        self.pos_encoding = self._sinusoidal_encoding(max_len, d_model)\n        self.dropout = nn.Dropout(dropout)\n        self.scale = math.sqrt(d_model)\n\n    def _sinusoidal_encoding(self, max_len, d_model):\n        pe = torch.zeros(max_len, d_model)\n        position = torch.arange(0, max_len).unsqueeze(1).float()\n        div_term = torch.exp(torch.arange(0, d_model, 2).float() *\n                             -(math.log(10000.0) / d_model))\n        pe[:, 0::2] = torch.sin(position * div_term)   # even dimensions\n        pe[:, 1::2] = torch.cos(position * div_term)   # odd dimensions\n        return pe.unsqueeze(0)\n\n    def forward(self, x):\n        tok = self.token_embed(x) * self.scale\n        pos = self.pos_encoding[:, :x.size(1), :].to(x.device)\n        return self.dropout(tok + pos)",
-      caption: "The reference's implementation. Note that position enters by **addition**, not concatenation — the positional signal shares the same dimensions as the content." },
-
-    { t: "p", text: "The reference justifies the `sqrt(d_model)` multiplier by saying that without it the positional encoding would dominate the embeddings. That is a checkable claim, so I checked it." },
-
-    { t: "out", text:
-"nn.Embedding default init is N(0,1):  mean -0.0003  std 0.9994\n\n  token embedding    std 0.9988   max |v| 3.8884\n  positional enc     std 0.5864   max |v| 1.0000\n  scale = sqrt(512) = 22.6274\n  scaled embedding   std 22.6003  max |v| 87.9844\n\nRMS ratio embedding:PE without scaling  = 1.4125\nRMS ratio embedding:PE with    scaling  = 31.9623" },
-
-    { t: "callout", kind: "warn", title: "The mechanism is right; the stated reason is not",
-      body: [{ t: "p", text: "Unscaled, the embedding is already **1.41x** the positional encoding in RMS — comparable to it, not dominated by it. So \"PE would dominate\" does not hold at this initialisation. What the scaling actually does is the *reverse* of the framing: it pushes the ratio to **31.96x**, making the positional encoding a small perturbation on a much larger content signal rather than an equal partner. That is a real and deliberate design choice — the paper also ties the embedding matrix to the output projection, where the scale interacts with the softmax — but it is not compensating for a positional signal that would otherwise drown the tokens." }] },
-
-    { t: "callout", kind: "note", title: "And modern models mostly do not do this",
-      body: [{ t: "p", text: "`bert-base-uncased`'s word embeddings have a standard deviation of **0.0427**, not 1.0 — they are learned, and they settle far smaller than the initialisation. BERT also uses *learned* positional embeddings rather than sinusoidal ones, and applies no `sqrt(d_model)` scaling at all; it relies on the LayerNorm immediately after the embedding sum to fix the scale instead. So treat the scaling factor as a detail of the original architecture rather than a rule, and check what your actual model does before reproducing it." }] },
-
-    { t: "h2", n: "07", text: "The timeline", id: "timeline" },
+    { t: "h2", n: "06", text: "The timeline", id: "timeline" },
 
     { t: "diagram", kind: "timeline", title: "From one paper to everything", span: [2017, 2024], tick: 1,
       lanes: [
@@ -151,10 +134,7 @@ EC.receiveLesson({
     "The paper's 10-100x is a GPU training claim: recurrence leaves hardware idle between sequential steps, attention saturates it.",
     "The durable advantage is path length — 1 step between any two positions against up to T-1 — which removes vanishing gradients along the time axis.",
     "Original configuration: d_model 512, 8 heads, d_ff 2048, 6 layers, d_k = d_v = 64.",
-    "The FFN holds 2.00x the parameters of the attention block; two-thirds of each block is not attention.",
-    "The reference's rationale for sqrt(d_model) does not hold — unscaled, embeddings are already 1.41x the PE in RMS, not dominated by it.",
-    "What the scaling does do is push that ratio to 31.96x, making position a small perturbation on content.",
-    "BERT's learned embeddings have std 0.0427, use learned positional encodings, and apply no sqrt scaling — the factor is paper-specific, not a rule."
+    "The FFN holds 2.00x the parameters of the attention block; two-thirds of each block is not attention."
   ],
 
   quiz: { title: "Check yourself", questions: [
@@ -169,11 +149,7 @@ EC.receiveLesson({
     { stem: "Where are most of a transformer block's parameters?",
       options: ["In the attention projections", "In the feed-forward network, at 2.00x the attention block", "In the layer norms", "Split evenly"],
       answer: 1,
-      why: "At the paper's configuration, attention holds 1,050,624 parameters per encoder block and the FFN holds 2,099,712. The ratio follows from d_ff = 4 x d_model, a convention nearly every later model kept. It matters when budgeting memory or choosing what to quantise." },
-    { stem: "Does the reference's justification for multiplying embeddings by sqrt(d_model) hold up?",
-      options: ["Yes, PE dominates without it", "No — unscaled, embeddings are already 1.41x the PE in RMS; the scaling instead makes position a small perturbation at 31.96x", "No, the scaling does nothing", "Only for learned positional encodings"],
-      answer: 1,
-      why: "The measured RMS ratio without scaling was 1.4125 — comparable, not dominated. Scaling pushes it to 31.9623, which is the reverse of the stated framing: it makes the positional signal small relative to content. BERT skips the scaling entirely and relies on the following LayerNorm." }
+      why: "At the paper's configuration, attention holds 1,050,624 parameters per encoder block and the FFN holds 2,099,712. The ratio follows from d_ff = 4 x d_model, a convention nearly every later model kept. It matters when budgeting memory or choosing what to quantise." }
   ] },
 
   interview: { title: "Interview", sub: "Transformer motivation", questions: [

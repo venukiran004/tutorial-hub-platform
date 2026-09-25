@@ -1,191 +1,150 @@
 /* ============================================================================
-   LESSON 4.4 — Masked and Cross-Attention
-   Mirrors 02_Transformers_InDepth.md · §6. The masked-softmax example is
-   verified, the training/inference asymmetry is measured at 74.2x, and
-   exposure bias is shown on GPT-2 (scratchpad/nlp/n44.py).
+   LESSON 4.4 — Multi-Head Attention
+   Mirrors 02_Transformers_InDepth.md · §5. The reference's implementation is
+   run, the parameter count is shown to be independent of head count, and the
+   "heads learn different things" claim is probed on a real BERT — finding a
+   previous-token head and a [SEP] sink (scratchpad/nlp/n43.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.4",
 
-  lede: "**The same model, the same 128 tokens: one training pass took 2.12 ms and generating them took 157.21 ms — 74.2x slower.** Nothing about the architecture changed. Training scores all 128 next-token predictions in a single parallel pass because the causal mask makes that safe; generation cannot, because token *t+1* does not exist until token *t* has been produced. That asymmetry is created by one triangular matrix, and it is the root cause of nearly every LLM serving optimisation you will ever read about.",
+  lede: "**Going from 1 head to 64 changes the parameter count by exactly zero.** Multi-head attention is a reshape, not extra capacity — `h × d_k = d_model` always, so the projections are `4 × d_model²` whatever `h` is. What the split buys is *independent* attention patterns, and they are real: probing BERT, layer 3 head 5 turned out to be a clean previous-token head, sending 0.7165 of its weight one position back. But the tidy story of one head per linguistic relationship does not survive contact with the data, as the rest of this lesson shows.",
 
   objectives: [
-    "Apply a causal mask and verify that masked positions receive exactly zero weight",
-    "Explain why masking makes parallel training equivalent to sequential inference",
-    "Measure the cost gap between a training pass and free-running generation",
-    "Describe exposure bias and see it in a real model's probabilities",
-    "Distinguish cross-attention from self-attention by where Q, K and V come from"
+    "Write multi-head attention and trace every reshape",
+    "Show that head count does not change the parameter count",
+    "Explain what splitting into heads actually buys",
+    "Probe a trained model's heads and identify an interpretable one",
+    "Recognise attention sinks and why they complicate head interpretation"
   ],
 
   prerequisites: ["4.3"],
 
   blocks: [
 
-    { t: "h2", n: "01", text: "The causal mask", id: "mask" },
+    { t: "h2", n: "01", text: "The definition", id: "definition" },
 
-    { t: "p", text: "A decoder must not see the future. Position `i` may attend only to positions up to and including `i`, which is a lower-triangular pattern." },
+    { t: "math", tex: "\\text{MultiHead}(Q,K,V) = \\text{Concat}(\\text{head}_1, \\ldots, \\text{head}_h)\\,W^{O}, \\qquad \\text{head}_i = \\text{Attention}(QW_i^{Q}, KW_i^{K}, VW_i^{V})" },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n44.py — the mask", code:
-"def create_causal_mask(seq_len):\n    \"\"\"Lower triangular mask for autoregressive decoding.\"\"\"\n    return torch.tril(torch.ones(seq_len, seq_len)).unsqueeze(0).unsqueeze(0)\n\n# applied inside attention, before the softmax\nscores = scores.masked_fill(mask == 0, float('-inf'))",
-      caption: "The two `unsqueeze` calls add batch and head dimensions so the mask broadcasts across both." },
+    { t: "p", text: "Run attention `h` times on different learned projections of the same input, concatenate the results, and pass them through one more linear layer. In practice nobody implements `h` separate projections — one `d_model × d_model` matrix per role is projected and then *reshaped* into heads, which is mathematically identical and far faster." },
 
-    { t: "out", text:
-"tril(ones(5,5))\n  token 0 sees 1 of 5: [1, 0, 0, 0, 0]\n  token 1 sees 2 of 5: [1, 1, 0, 0, 0]\n  token 2 sees 3 of 5: [1, 1, 1, 0, 0]\n  token 3 sees 4 of 5: [1, 1, 1, 1, 0]\n  token 4 sees 5 of 5: [1, 1, 1, 1, 1]" },
+    { t: "h2", n: "02", text: "The implementation", id: "implementation" },
 
-    { t: "h2", n: "02", text: "What masking does to the softmax", id: "softmax" },
-
-    { t: "p", text: "The reference works one row: token *sat* attending to `[The, cat, sat, future]` with scaled scores `[0.40, 0.53, 0.59, 0.95]`. Recomputed:" },
+    { t: "code", lang: "python", title: "scratchpad/nlp/n43.py — the reference's MultiHeadAttention", code:
+"class MultiHeadAttention(nn.Module):\n    def __init__(self, d_model, n_heads, dropout=0.1):\n        super().__init__()\n        assert d_model % n_heads == 0\n        self.d_k = d_model // n_heads\n        self.n_heads = n_heads\n        self.W_Q = nn.Linear(d_model, d_model)\n        self.W_K = nn.Linear(d_model, d_model)\n        self.W_V = nn.Linear(d_model, d_model)\n        self.W_O = nn.Linear(d_model, d_model)\n        self.dropout = nn.Dropout(dropout)\n\n    def forward(self, Q, K, V, mask=None):\n        B = Q.size(0)\n        # (B, seq, d_model) -> (B, n_heads, seq, d_k)\n        Q = self.W_Q(Q).view(B, -1, self.n_heads, self.d_k).transpose(1, 2)\n        K = self.W_K(K).view(B, -1, self.n_heads, self.d_k).transpose(1, 2)\n        V = self.W_V(V).view(B, -1, self.n_heads, self.d_k).transpose(1, 2)\n\n        scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(self.d_k)\n        if mask is not None:\n            scores = scores.masked_fill(mask == 0, float('-inf'))\n        weights = self.dropout(torch.softmax(scores, dim=-1))\n\n        context = torch.matmul(weights, V)          # (B, n_heads, seq, d_k)\n        context = context.transpose(1, 2).contiguous() \\\n                         .view(B, -1, self.n_heads * self.d_k)\n        return self.W_O(context), weights",
+      caption: "The `.contiguous()` before `.view()` is required, not decorative — `transpose` returns a non-contiguous view and `view` refuses to operate on one." },
 
     { t: "out", text:
-"after the causal mask   [0.40, 0.53, 0.59, -inf]\nexponentials            [1.4918, 1.6989, 1.8040, 0.0]\nsum                     4.9947\nweights                 [0.2987, 0.3401, 0.3612, 0.0000]\n\nreference says          [0.299, 0.340, 0.361, 0.000]   reproduces exactly\n\nwithout the mask        [0.1968, 0.2241, 0.2380, 0.3411]" },
+"input   (2, 10, 512)\noutput  (2, 10, 512)      weights (2, 8, 10, 10)\n\nevery attention row sums to 1: max deviation 2.38e-07\n\nparameters 1,050,624\n  4 x 512 x 512 = 1,048,576 weights, plus 4 x 512 = 2,048 biases" },
 
-    { t: "callout", kind: "crit", title: "The future token would have taken the largest share",
-      body: [{ t: "p", text: "Unmasked, position 3 receives **34.11%** of the attention — more than any real token in the row. The model would be predicting *sat* partly by looking at what comes after *sat*, which at training time is the answer it is being asked for. It would score beautifully on the training objective and be useless at generation, because at inference that position does not exist yet. The mask is what makes teacher-forced parallel training measure the same thing that sequential inference will do." }] },
+    { t: "p", text: "The weights tensor is `(batch, heads, seq, seq)` — one complete attention map per head, which is exactly what makes head-level interpretation possible. The reference quotes 1,048,576 parameters; that is the weight count, and `nn.Linear` adds 2,048 bias terms on top." },
 
-    { t: "h2", n: "03", text: "Why negative infinity and not a large negative number", id: "neginf" },
-
-    { t: "out", text:
-"scores [2.0, 1.0, 0.5], masking the third\n\nfill     weights                            masked weight\n-inf     [0.731059, 0.268941, 0.000000]     0.000e+00\n-1e9     [0.731059, 0.268941, 0.000000]     0.000e+00\n-1e4     [0.731059, 0.268941, 0.000000]     0.000e+00\n-10      [0.731055, 0.268940, 0.000004]     4.492e-06" },
-
-    { t: "p", text: "In float32, anything below roughly `-1e4` underflows to exactly zero after the exponential, so `-inf` and `-1e9` are equivalent. A merely *large* negative number like `-10` is not: it leaks `4.49e-06` of the weight to a position the model must not see. Small, but it is a leak of exactly the information the mask exists to hide, and it compounds across layers." },
-
-    { t: "callout", kind: "warn", title: "In float16 this becomes a real bug",
-      body: [{ t: "p", text: "`-1e9` is outside float16's range and overflows to `-inf`, which happens to be the behaviour you wanted. But masking with float16's finite minimum, `-65504`, returned **`[nan, nan, nan]`** in my test — the intermediate arithmetic overflows and poisons the whole row. NaNs then propagate through every subsequent layer and the loss becomes NaN with no indication of where it started. If you write your own attention and run it in mixed precision, use `torch.finfo(dtype).min` rather than a hard-coded constant, and check for NaNs immediately after the softmax while you still know which operation produced them." }] },
-
-    { t: "h2", n: "04", text: "Autoregression is the chain rule", id: "autoregressive" },
-
-    { t: "math", tex: "p(x_1, x_2, \\ldots, x_n) = \\prod_{t=1}^{n} p(x_t \\mid x_1, \\ldots, x_{t-1})" },
-
-    { t: "p", text: "Any joint distribution factorises this way — it is an identity, not an assumption. An autoregressive model learns each conditional, and maximising the log-likelihood of the sequence is exactly minimising next-token cross-entropy. `p(\"the cat sat\") = p(\"the\") · p(\"cat\" | \"the\") · p(\"sat\" | \"the\", \"cat\")`." },
-
-    { t: "h2", n: "05", text: "The asymmetry, measured", id: "asymmetry" },
-
-    { t: "out", text:
-"one transformer layer, d_model 256, 8 heads, T = 128\n\ntraining   : ONE forward pass over all 128 positions      2.12 ms\ngeneration : 128 sequential passes, no KV cache         157.21 ms\n\n74.2x slower, same model, same sequence" },
-
-    { t: "diagram", kind: "compare", title: "Same weights, two regimes",
-      columns: [
-        { title: "Training, teacher forced", tone: "good", items: [
-          "Whole gold sequence in at once",
-          "Causal mask blocks the future",
-          "All n predictions in ONE pass",
-          "O(1) sequential steps",
-          "Conditions on CORRECT prefixes",
-          "Compute-bound: big matmuls"
-        ] },
-        { title: "Inference, free running", tone: "warn", items: [
-          "Only the prompt to start",
-          "Append each token, feed back",
-          "One pass per generated token",
-          "O(n) sequential steps",
-          "Conditions on its OWN outputs",
-          "Memory-bandwidth-bound"
-        ] }
-      ] },
-
-    { t: "callout", kind: "insight", title: "This is why every serving optimisation exists",
-      body: [{ t: "p", text: "Decoding is sequential and each step needs a full model pass, so the bottleneck is not arithmetic — it is moving the weights from memory to the compute units, once per token, to do a tiny amount of work. Decode is **memory-bandwidth-bound**. Every major serving technique follows directly: the **KV cache** stops you recomputing keys and values for the whole prefix at each step; **speculative decoding** drafts several tokens cheaply and verifies them in one parallel pass, converting sequential steps into batch work; **continuous batching** fills the idle bandwidth with other requests. Lesson 5.7 covers all three. The 74.2x above is the un-optimised baseline they are all attacking." }] },
-
-    { t: "h2", n: "06", text: "Exposure bias", id: "exposure" },
-
-    { t: "p", text: "Training always conditions on a correct prefix. Inference conditions on whatever the model produced, mistakes included. The gap between those two regimes is exposure bias, and it is visible in a real model." },
-
-    { t: "out", text:
-"prompt: \"The capital of France is Paris. The capital of Germany is\"\n\ngpt2 greedy continuation:\n  \" Berlin. The capital of the United States is Washington. The capital of\n   the United Kingdom is London. The capital of the United\"" },
-
-    { t: "out", text:
-"probability gpt2 assigns to a DIFFERENT gold continuation, scored\nwith teacher forcing\n\n  step 0   ' Berlin'    p=0.2667\n  step 1   '.'          p=0.8150\n  step 2   ' The'       p=0.3570\n  step 3   ' capital'   p=0.8242\n  step 4   ' of'        p=0.9911\n  step 5   ' Italy'     p=0.0836\n  step 6   ' is'        p=0.9586\n  step 7   ' Rome'      p=0.4107\n  step 8   '.'          p=0.9276\n\n  mean 0.6488   min 0.0836" },
-
-    { t: "callout", kind: "insight", title: "Teacher forcing scores a prefix the model would never have written",
-      body: [{ t: "p", text: "Left to itself the model went to *the United States*, not *Italy*. Teacher forcing nevertheless hands it ` Italy` as step 5 and asks for the next token — and the model assigns that gold token only **0.0836**. At every subsequent step it is conditioning on a prefix it disagrees with, yet the loss is computed as though that prefix were its own. At inference nothing corrects it: an early low-probability choice becomes the context for everything after, and errors compound. That is exposure bias. The mitigations are scheduled sampling (mix in the model's own predictions during training), sequence-level or RL fine-tuning (optimise the whole output, not each token against a gold prefix), and better decoding — the subject of lesson 4.10." }] },
-
-    { t: "h2", n: "07", text: "Four ways to model a sequence", id: "families" },
-
-    { t: "table",
-      head: ["Family", "How it generates", "Strength", "Weakness"],
-      rows: [
-        ["Autoregressive (GPT, LLaMA)", "Left to right, one token per step", "Best generation quality", "Sequential — O(n) passes"],
-        ["Bidirectional / MLM (BERT)", "Fills masked positions, sees both sides", "Excellent encoder", "Cannot generate"],
-        ["Non-autoregressive (NAR MT)", "Emits every token in parallel", "Very fast", "Weaker — no left context while deciding"],
-        ["Diffusion / masked-diffusion LM", "Iteratively denoises the whole sequence", "Parallel-ish, improving fast", "Quality still behind AR"]
-      ] },
-
-    { t: "h2", n: "08", text: "Cross-attention", id: "cross" },
-
-    { t: "p", text: "Self-attention derives Q, K and V from the same sequence. Cross-attention does not — and that single change is the entire encoder-decoder connection." },
-
-    { t: "diagram", kind: "flow", title: "Where the three inputs come from", cols: 3,
+    { t: "diagram", kind: "flow", title: "The reshape, step by step", cols: 3,
       nodes: [
-        { id: "s", text: "Source: Le chat", tone: "accent" },
-        { id: "e", text: "Encoder", tone: "teal" },
-        { id: "kv", text: "K and V from the encoder output", tone: "teal" },
-        { id: "d", text: "Decoder state so far", tone: "violet" },
-        { id: "q", text: "Q from the decoder", tone: "violet" },
-        { id: "o", text: "Blend of source values, weighted by relevance", tone: "good" }
+        { id: "x", text: "X: (B, seq, 512)", tone: "accent" },
+        { id: "p", text: "W_Q, W_K, W_V: still (B, seq, 512)", tone: "accent" },
+        { id: "v", text: "view: (B, seq, 8, 64)", tone: "violet" },
+        { id: "t", text: "transpose: (B, 8, seq, 64)", tone: "violet" },
+        { id: "a", text: "attention per head, in parallel", tone: "teal" },
+        { id: "c", text: "transpose and view back: (B, seq, 512)", tone: "teal" },
+        { id: "o", text: "W_O: (B, seq, 512)", tone: "good" }
       ],
-      edges: [["s","e"],["e","kv"],["d","q"],["q","o"],["kv","o"]] },
+      edges: [["x","p"],["p","v"],["v","t"],["t","a"],["a","c"],["c","o"]] },
 
-    { t: "dl", items: [
-      ["Q from the decoder", "What the position currently being generated is looking for in the source."],
-      ["K and V from the encoder", "What each source token advertises, and what it delivers. Computed once for the whole source."],
-      ["Not masked", "The decoder may attend to the entire source — all of it already exists. Only *self*-attention in the decoder is causally masked."],
-      ["Shape", "(target_len × source_len) rather than square. This is the alignment matrix, and it is what you visualise to see which source word produced which output word."]
-    ] },
+    { t: "h2", n: "03", text: "Heads are free", id: "free" },
 
-    { t: "callout", kind: "insight", title: "K and V are computed once, then reused for every output token",
-      body: [{ t: "p", text: "The encoder runs once per input. Its output becomes the keys and values for every decoder step, so cross-attention costs one projection of the source up front and then only the query projection per generated token. This is the same structural idea as the KV cache in a decoder-only model — the expensive, reusable part is computed once and held. It is also why encoder-decoder models remain strong for translation and summarisation: the source is fully encoded bidirectionally before a single output token is produced." }] },
+    { t: "out", text:
+"d_model = 512\n\nh      d_k    Q/K/V each    W_O        total\n1      512    262,144       262,144    1,048,576\n2      256    262,144       262,144    1,048,576\n4      128    262,144       262,144    1,048,576\n8       64    262,144       262,144    1,048,576\n16      32    262,144       262,144    1,048,576\n64       8    262,144       262,144    1,048,576" },
 
-    { t: "exercise", title: "Verify the masking and the gap",
+    { t: "callout", kind: "insight", title: "The head count is a partition, not an addition",
+      body: [{ t: "p", text: "Because `h × d_k = d_model` by construction, the projection matrices are `d_model × d_model` no matter how you slice them. Eight heads of 64 dimensions and one head of 512 use **identical** parameter counts and nearly identical arithmetic. So multi-head attention is not more expressive in the capacity sense — the extra structure comes entirely from computing `h` *separate* softmaxes instead of one. A single head must produce one attention distribution, which is one answer to \"what is relevant here\". Eight heads produce eight, and `W_O` learns how to combine them. The constraint is what creates the diversity." }] },
+
+    { t: "callout", kind: "tradeoff", title: "But d_k shrinks as h grows",
+      body: [{ t: "p", text: "At `h = 64` each head has `d_k = 8`. A query-key comparison in 8 dimensions is a much blunter instrument than one in 64 — there is simply less room to encode what a token is looking for, and the scores become noisier. That is the real cost of more heads, and it is why 8 to 16 is the usual range for `d_model = 512` to `1024` rather than 64. Empirically, many trained heads turn out to be prunable with little loss, which suggests the useful number is lower than the configured one." }] },
+
+    { t: "h2", n: "04", text: "Do heads really specialise?", id: "specialise" },
+
+    { t: "p", text: "The reference claims head 1 learns syntax, head 2 semantics, head 3 proximity, head 4 coreference. That is a testable claim, so I ran a sentence with a centre-embedded clause through `bert-base-uncased` with `output_attentions=True` and summarised every head." },
+
+    { t: "out", text:
+"\"The cat that the dog chased sat on the mat quietly.\"\n['[CLS]','the','cat','that','the','dog','chased','sat','on','the','mat','quietly','.','[SEP]']\n\nlayer 4, all 12 heads\nhead   offset    entropy   ->[CLS]   ->[SEP]   self\n0      5.64      1.4482    0.0196    0.5157    0.0846\n1      4.36      2.1780    0.0175    0.2083    0.1119\n2      4.79      1.6884    0.0829    0.5097    0.0832\n3      5.86      0.7883    0.0160    0.7180    0.2173\n5      3.64      0.9155    0.0251    0.4348    0.0889\n9      5.29      1.8671    0.1040    0.4210    0.1168\n10     2.07      1.6155    0.0591    0.3588    0.0893\n11     4.36      1.0731    0.0425    0.5324    0.0906" },
+
+    { t: "callout", kind: "crit", title: "Most of layer 4 is pointing at [SEP]",
+      body: [{ t: "p", text: "Head 3 sends **71.8%** of its attention mass to the `[SEP]` token. Most other heads in the layer send 35–53%. `[SEP]` carries no content — it is a structural marker — so these heads are not attending to anything meaningful. This is the **attention sink**: when a head has nothing it wants to attend to for a given token, softmax still forces its weights to sum to 1, so the mass has to go somewhere, and models learn to dump it on a semantically empty position. Tracing further, head 0 at layer 11 sends **86.4%** to `[SEP]`. Any interpretation of \"what this head does\" has to account for the sink first, and the neat one-relationship-per-head story does not." }] },
+
+    { t: "h2", n: "05", text: "A head that does something legible", id: "legible" },
+
+    { t: "p", text: "Sinks are the common case, but genuinely interpretable heads do exist. Searching all 144 heads for the one with the highest average weight on the immediately preceding token found a clean example." },
+
+    { t: "out", text:
+"strongest previous-token head: layer 3, head 5, mean weight 0.7165\n\nwhere each token looks\n  the        -> [CLS]      0.856\n  cat        -> [CLS]      0.663\n  that       -> cat        0.967\n  the        -> that       0.959\n  dog        -> the        0.621\n  chased     -> dog        0.732\n  sat        -> chased     0.941\n  on         -> sat        0.984" },
+
+    { t: "callout", kind: "insight", title: "An induction-style head, found empirically",
+      body: [{ t: "p", text: "From *that* onward, every token attends to the one immediately before it, at weights between 0.62 and 0.98. This head is implementing \"look at the previous token\" as a reusable primitive — one of the building blocks the mechanistic-interpretability literature identifies, and a component of the induction circuits that let models copy repeated patterns. Note it is a *positional* relationship, not a semantic one, and note also that the first two tokens fall back to `[CLS]`, because there is no meaningful previous token for them. Even the clean head has a sink." }] },
+
+    { t: "out", text:
+"layer 4: 66 head pairs, cosine between flattened attention maps\n  mean 0.7132   min 0.4511   max 0.9004" },
+
+    { t: "p", text: "So heads are genuinely different from one another — a mean pairwise cosine of 0.71 with some pairs as low as 0.45 — but they are also substantially correlated, and no pair is independent. The honest summary is that the split produces real diversity without producing the clean division of labour the diagram in every tutorial implies." },
+
+    { t: "h2", n: "06", text: "Depth changes the behaviour more than head index", id: "depth" },
+
+    { t: "out", text:
+"head 0, traced through all 12 layers\nlayer  offset    entropy   ->[CLS]   ->[SEP]   self\n0      0.93      2.5284    0.0595    0.0760    0.0815\n1     -2.07      1.9673    0.3225    0.1293    0.0423\n2     -0.07      0.0220    0.1401    0.0730    0.0713\n3      1.71      1.2052    0.3051    0.4018    0.1824\n4      5.64      1.4482    0.0196    0.5157    0.0846\n6      4.79      0.7493    0.0046    0.7441    0.0946\n9      6.07      1.1729    0.0108    0.5936    0.1893\n11     6.50      0.5773    0.0428    0.8644    0.0970" },
+
+    { t: "callout", kind: "insight", title: "Layer 2 head 0 has entropy 0.0220",
+      body: [{ t: "p", text: "Out of a possible 2.64 at 14 tokens, that is essentially a deterministic pointer — it attends to one position and nothing else, with a mean offset of −0.07, meaning roughly to itself. Early layers do this kind of sharp, local, positional work; later layers drift toward the `[SEP]` sink, from 7.6% at layer 0 to 86.4% at layer 11. This echoes what lesson 3.6 measured about sense separation peaking mid-stack: the interesting representational work happens in the middle, and the top layers specialise toward the pretraining objective." }] },
+
+    { t: "exercise", title: "Probe your own model's heads",
       tasks: [
-        "Apply a causal mask and assert that every masked weight is exactly 0.0, not merely small.",
-        "Mask with -10, -1e4 and -inf in float32, then repeat in float16, and record which combinations leak or produce NaN.",
-        "Time a single teacher-forced pass against naive token-by-token generation for the same sequence, and compute your own ratio.",
-        "Add a KV cache to the generation loop and re-measure. Compare the improvement against the 74.2x baseline.",
-        "Score a gold continuation token by token with teacher forcing and mark every step where the model's own argmax differs from the gold token."
+        "Run a sentence through a model with `output_attentions=True` and compute the [SEP] mass for all heads. Rank them.",
+        "Search all heads for the strongest previous-token, next-token and self-attention behaviours.",
+        "Compute the pairwise cosine between heads in one layer and find the most and least similar pair.",
+        "Zero out a single head's output and measure the change in the model's predictions. Find a head that can be removed for free.",
+        "Repeat the previous-token search on a decoder-only model and compare what you find against BERT."
       ] }
   ],
 
   takeaways: [
-    "The causal mask is lower-triangular: position i attends only to positions up to i.",
-    "The reference's masked-softmax example reproduces exactly — [0.2987, 0.3401, 0.3612, 0.0000].",
-    "Unmasked, the future position would have taken 34.11% of the weight, the largest share in the row.",
-    "In float32, -1e4 and below underflow to exactly zero; -10 leaks 4.49e-06 of the weight.",
-    "In float16, masking with the finite minimum -65504 returned [nan, nan, nan] — use `torch.finfo(dtype).min`.",
-    "Autoregression is the chain rule of probability, so next-token cross-entropy is exactly sequence log-likelihood.",
-    "Training took 2.12 ms and free-running generation 157.21 ms for the same 128 tokens — 74.2x, and that gap is why KV caching, speculative decoding and continuous batching exist.",
-    "Decode is memory-bandwidth-bound, not compute-bound, because each sequential step moves all the weights to do very little work.",
-    "Exposure bias: gpt2 assigned only 0.0836 to a gold token it would never have chosen, then kept being scored on a prefix it disagreed with.",
-    "Cross-attention takes Q from the decoder and K, V from the encoder, is not causally masked, and produces a (target × source) alignment matrix."
+    "Multi-head attention costs 4 × d_model² parameters regardless of the head count — 1 head and 64 heads are identical in size.",
+    "Splitting into heads is a reshape; the gain comes from computing h separate softmaxes, not from extra capacity.",
+    "More heads means smaller d_k — at h = 64 each head compares queries and keys in 8 dimensions, which is a blunt instrument.",
+    "The weights tensor is (batch, heads, seq, seq), one full map per head, which is what makes head-level interpretation possible.",
+    "Most of BERT's layer-4 heads send 35-72% of their attention to [SEP] — the attention sink, where softmax's sum-to-one forces idle mass somewhere.",
+    "Layer 11 head 0 sends 86.4% to [SEP]; sink behaviour grows with depth from 7.6% at layer 0.",
+    "Layer 3 head 5 is a clean previous-token head at mean weight 0.7165, with individual weights up to 0.984.",
+    "Pairwise head cosines at layer 4 average 0.7132 — genuinely different maps, but correlated, not the clean one-relationship-per-head story.",
+    "Layer 2 head 0 has entropy 0.0220, a nearly deterministic pointer; early layers are sharp and positional, late layers drift to the sink."
   ],
 
   quiz: { title: "Check yourself", questions: [
-    { stem: "What does the causal mask make possible?",
-      options: ["Faster inference", "Computing all n next-token predictions in one parallel training pass without any position seeing its own answer", "Longer context", "Lower memory use"],
+    { stem: "How does going from 8 heads to 16 change the parameter count?",
+      options: ["It doubles", "Not at all — h × d_k = d_model, so the projections stay d_model × d_model", "It halves", "It grows by d_model"],
       answer: 1,
-      why: "Without it, position i would attend to position i+1 — the very token it is being asked to predict. In the worked row the future position took 34.11% of the weight, the largest share. The mask is what makes teacher-forced parallel training measure the same quantity that sequential inference will later compute." },
-    { stem: "Why was generation 74.2x slower than training on the same sequence?",
-      options: ["Generation uses a bigger model", "Training is one parallel pass over all positions; generation needs one full pass per token because token t+1 depends on token t existing", "Dropout is enabled", "The mask is recomputed"],
+      why: "At d_model = 512, every head count from 1 to 64 gives exactly 1,048,576 projection weights. The head split partitions the same matrices rather than adding new ones. What changes is d_k per head, which shrinks as h grows — at h = 64 each head compares in only 8 dimensions." },
+    { stem: "What does splitting attention into heads actually buy?",
+      options: ["More parameters", "h independent softmax distributions instead of one, so the layer can express several notions of relevance at once", "Faster computation", "Lower memory use"],
       answer: 1,
-      why: "2.12 ms against 157.21 ms for 128 tokens, identical weights. The dependency is inherent to autoregression, not to the architecture. Because each step moves all the weights to do a tiny amount of work, decode is memory-bandwidth-bound — which is the root cause of KV caching, speculative decoding and continuous batching." },
-    { stem: "Why mask with -inf rather than a large negative number?",
-      options: ["It is faster", "Because a merely large value leaks weight — -10 left 4.49e-06 on a position the model must not see", "It uses less memory", "There is no difference"],
+      why: "A single head must commit to one attention distribution — one answer to what is relevant for this token. Eight heads produce eight, and W_O learns to combine them. The capacity is identical; the structural constraint of separate normalisations is what creates the diversity." },
+    { stem: "Why do so many BERT heads send most of their attention to [SEP]?",
+      options: ["[SEP] carries sentence-level meaning", "Softmax forces weights to sum to 1, so a head with nothing to attend to must dump the mass somewhere — the attention sink", "A tokenisation bug", "[SEP] is the highest-magnitude embedding"],
       answer: 1,
-      why: "In float32 anything below about -1e4 underflows to exactly zero after exp, so -inf and -1e9 agree. -10 does not, and the leak is of precisely the information the mask exists to hide. In float16 there is a further trap: masking with the finite minimum -65504 produced NaN, so use torch.finfo(dtype).min." },
-    { stem: "What is exposure bias?",
-      options: ["Overfitting to frequent tokens", "Training always conditions on correct prefixes while inference conditions on the model's own output, so early errors compound", "Bias in the training corpus", "Attention leaking to future tokens"],
+      why: "Layer 4 heads sent 35-72% there and layer 11 head 0 sent 86.4%. [SEP] is a structural marker with no content, which makes it a convenient place to put idle mass. Any claim about what a head does has to account for the sink first — it is the reason the tidy one-relationship-per-head picture does not survive measurement." },
+    { stem: "What is layer 3 head 5 doing?",
+      options: ["Coreference resolution", "Attending to the immediately preceding token, at mean weight 0.7165", "Attending to [CLS]", "Nothing interpretable"],
       answer: 1,
-      why: "Scoring a gold continuation, gpt2 assigned just 0.0836 to a token it would never have generated, then continued to be scored on a prefix it disagreed with. At inference nothing supplies the correction. Mitigations are scheduled sampling, sequence-level or RL fine-tuning, and better decoding strategies." }
+      why: "From the third token onward every position attends to the one before it, with individual weights from 0.621 to 0.984. It implements 'look at the previous token' as a reusable positional primitive — a building block of the induction circuits that let models copy repeated patterns. The first two tokens fall back to [CLS], having no meaningful predecessor." }
   ] },
 
-  interview: { title: "Interview", sub: "Masking and autoregression", questions: [
-    { level: "Core", q: "What is the causal mask and why is it needed?",
-      strong: "A lower-triangular mask that stops a position attending to its own future, making parallel training valid.",
-      answer: [{ t: "p", text: "It's a lower-triangular mask applied to the attention scores before the softmax, setting everything above the diagonal to negative infinity so position i can only attend to positions up to i. The reason it's needed is subtle and worth stating precisely: it isn't about inference, it's about making training valid. At inference the future genuinely doesn't exist, so nothing could leak. At training you feed the whole gold sequence at once for parallelism, and without the mask position i would attend to position i+1 — the exact token it's being asked to predict. I worked an example where the future position took 34.11% of the attention, the largest share in the row. The model would score wonderfully on the training objective by copying the answer and be useless at generation. So the mask is what makes teacher-forced parallel training measure the same thing sequential inference will do. One implementation detail: mask with negative infinity or the dtype's minimum, not just a large negative number — I measured -10 leaking 4.49e-06 of the weight, and in float16 a hard-coded -65504 produced NaN." }] },
-    { level: "Core", q: "What is the difference between self-attention and cross-attention?",
-      strong: "Where Q, K and V come from — cross-attention takes Q from the decoder and K, V from the encoder.",
-      answer: [{ t: "p", text: "Purely where the three inputs come from. In self-attention, Q, K and V are all projections of the same sequence, so each token attends to its own context. In cross-attention the queries come from the decoder — what the position being generated is looking for — while the keys and values come from the encoder output, representing what the source contains. That's the only place the two stacks meet in an encoder-decoder model. Two consequences follow. First, the attention matrix is target length by source length rather than square, which makes it an alignment matrix — visualise it and you see which source word produced which output word, which is genuinely useful for debugging a translation model. Second, cross-attention is not causally masked, because the whole source already exists; only the decoder's self-attention is masked. There's also a nice efficiency property: the encoder runs once and its keys and values are reused for every decoder step, so you pay the source projection once. That's structurally the same idea as a KV cache." }] },
-    { level: "Senior", q: "Why is LLM decoding slow, and what do you do about it?",
-      strong: "It is sequential and memory-bandwidth-bound; KV cache, speculative decoding and continuous batching each attack that.",
-      answer: [{ t: "p", text: "It's slow for a structural reason rather than an implementation one: autoregression means token t+1 can't start until token t exists, so you need a full model forward pass per generated token. I measured the un-optimised gap — one teacher-forced training pass over 128 tokens took 2.12 ms, and generating the same 128 tokens one at a time took 157.21 ms, 74 times slower with identical weights. The key insight for optimisation is what the bottleneck actually is. Each decode step does a tiny amount of arithmetic — one token's worth — but has to stream every weight in the model from memory to do it. So decode is memory-bandwidth-bound, not compute-bound, and that tells you which fixes work. KV caching is the first and biggest: the keys and values for the prefix don't change, so cache them instead of recomputing attention over the whole context every step. Speculative decoding attacks the sequential dependency itself — a small draft model proposes several tokens, the large model verifies them all in one parallel pass, and you get multiple tokens per expensive pass when the draft is right. Continuous batching attacks utilisation: since you're bandwidth-bound, the compute units are idle, so interleave other requests to fill them. Quantisation helps here more than people expect too, because halving the weight bytes directly halves the thing you're bottlenecked on." }] }
+  interview: { title: "Interview", sub: "Multi-head attention", questions: [
+    { level: "Core", q: "Why use multiple attention heads rather than one?",
+      strong: "To get several independent notions of relevance for the same parameter budget.",
+      answer: [{ t: "p", text: "Because one head can only produce one attention distribution — one answer to the question 'what is relevant to this token'. Splitting into h heads gives you h separate softmaxes, so the layer can simultaneously attend to a syntactic dependency, a nearby token and something semantically related, and the output projection learns how to combine them. The point people often miss is that this is free in parameters. Since h times d_k equals d_model by construction, the projection matrices are d_model by d_model whatever h is — I checked it from 1 head to 64 and got exactly 1,048,576 projection weights every time. So it isn't extra capacity; it's the same capacity partitioned, and the separate normalisation is what creates the diversity. The cost is that d_k shrinks as h grows: at 64 heads each one compares queries and keys in 8 dimensions, which is a much blunter instrument. That's why 8 to 16 heads is typical rather than 64, and why a lot of trained heads turn out to be prunable with almost no loss." }] },
+    { level: "Senior", q: "Do attention heads specialise the way the diagrams suggest?",
+      strong: "Partly — some heads are cleanly interpretable, but most are dominated by attention sinks.",
+      answer: [{ t: "p", text: "Partly, and less tidily than the standard diagram implies. Interpretable heads genuinely exist: I searched all 144 heads of bert-base for previous-token behaviour and found layer 3 head 5 sending 0.7165 of its weight one position back, with individual weights up to 0.984 — a clean positional primitive, and one of the components that make up induction circuits. But when I summarised every head in a middle layer, the dominant pattern wasn't linguistic specialisation, it was the attention sink: most heads sent 35 to 72 percent of their mass to [SEP], and one head at layer 11 sent 86.4 percent. [SEP] has no content. What's happening is that softmax forces the weights to sum to one, so a head with nothing it wants to attend to for a given token still has to put the mass somewhere, and models learn to dump it on a semantically empty position. So before claiming a head does coreference or syntax, you have to account for how much of its behaviour is just sink. The pairwise cosine between heads in one layer averaged 0.71, with the most distinct pair at 0.45 — genuinely different maps, but correlated, not the clean division of labour. I'd treat head interpretation as a real research technique with real findings, and treat the four-heads-four-relationships diagram as a teaching simplification." }] },
+    { level: "Senior", q: "How would you decide how many heads to use?",
+      strong: "Keep d_k around 64, then validate empirically — and check for prunable heads.",
+      answer: [{ t: "p", text: "I'd start from d_k rather than from h, because d_k is what actually determines whether a head can discriminate. The convention of d_k around 64 is well established and worth following: it's large enough that a query-key dot product is meaningful, and it's the value the original paper used with 8 heads at d_model 512. So pick h as d_model over 64 and validate from there. Since the parameter count doesn't change with h, the sweep is cheap — you're comparing configurations of identical size, which makes it a clean experiment. What I'd actually watch for is the failure mode at each end. Too few heads and the layer can only express one notion of relevance per layer, which shows up as worse performance on tasks needing several simultaneous relationships. Too many and d_k gets small enough that scores become noisy — at 64 heads on d_model 512 you're comparing in 8 dimensions. I'd also run a head-pruning analysis on the trained model: zero each head's contribution in turn and measure the change in validation loss. The literature consistently finds many heads can be removed with little or no degradation, and if a large fraction of yours are prunable that's evidence the head count is higher than useful — which matters for inference cost, since pruned heads are real savings." }] }
   ] }
 });

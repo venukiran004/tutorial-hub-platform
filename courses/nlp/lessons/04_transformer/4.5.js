@@ -1,172 +1,191 @@
 /* ============================================================================
-   LESSON 4.5 — Feed-Forward Network and Normalisation
-   Mirrors 02_Transformers_InDepth.md · §7. Both worked norm examples
-   reproduce; the SwiGLU 2/3 budget rule is verified to 0.9999; RMSNorm's
-   speed claim did NOT reproduce on CPU; Pre-LN vs Post-LN gradient flow
-   differs by ~780,000x (scratchpad/nlp/n45.py).
+   LESSON 4.5 — Masked and Cross-Attention
+   Mirrors 02_Transformers_InDepth.md · §6. The masked-softmax example is
+   verified, the training/inference asymmetry is measured at 74.2x, and
+   exposure bias is shown on GPT-2 (scratchpad/nlp/n44.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.5",
 
-  lede: "**Post-LN gradients reached the first of 24 blocks at 1.918e-07. Pre-LN reached it at 1.495e-01 — about 780,000 times larger.** Same depth, same width, same data; the only difference is whether the normalisation sits inside the residual branch or after the addition. That one placement decision is why the original transformer needed learning-rate warmup to train at all and why every model since GPT-2 moved the layer norm. This lesson covers the two-thirds of each block that is not attention: the feed-forward network, its activations, and the normalisation around it.",
+  lede: "**The same model, the same 128 tokens: one training pass took 2.12 ms and generating them took 157.21 ms — 74.2x slower.** Nothing about the architecture changed. Training scores all 128 next-token predictions in a single parallel pass because the causal mask makes that safe; generation cannot, because token *t+1* does not exist until token *t* has been produced. That asymmetry is created by one triangular matrix, and it is the root cause of nearly every LLM serving optimisation you will ever read about.",
 
   objectives: [
-    "Explain what the position-wise FFN does that attention does not",
-    "Compute LayerNorm and RMSNorm by hand and verify against PyTorch",
-    "Derive SwiGLU's two-thirds rule and check it against LLaMA's actual dimensions",
-    "Measure the gradient difference between Pre-LN and Post-LN",
-    "Judge normalisation speed claims against your own hardware"
+    "Apply a causal mask and verify that masked positions receive exactly zero weight",
+    "Explain why masking makes parallel training equivalent to sequential inference",
+    "Measure the cost gap between a training pass and free-running generation",
+    "Describe exposure bias and see it in a real model's probabilities",
+    "Distinguish cross-attention from self-attention by where Q, K and V come from"
   ],
 
-  prerequisites: ["4.4", "4.1"],
+  prerequisites: ["4.4"],
 
   blocks: [
 
-    { t: "h2", n: "01", text: "The position-wise FFN", id: "ffn" },
+    { t: "h2", n: "01", text: "The causal mask", id: "mask" },
 
-    { t: "math", tex: "\\text{FFN}(x) = \\text{GELU}(xW_1 + b_1)\\,W_2 + b_2" },
+    { t: "p", text: "A decoder must not see the future. Position `i` may attend only to positions up to and including `i`, which is a lower-triangular pattern." },
 
-    { t: "p", text: "Applied independently and identically to every position — hence *position-wise*. It has no idea other tokens exist. That division of labour is the point: attention **mixes** information between tokens, the FFN **transforms** each token on its own, and a block alternates between the two." },
-
-    { t: "out", text:
-"d_model -> d_ff -> d_model     512 -> 2048 -> 512\n\n  x    (512,)\n  W1   (512, 2048)     expand\n  W2   (2048, 512)     project back\n\n  parameters = 2 x 512 x 2048 = 2,097,152 per layer\n  about two-thirds of all non-embedding parameters" },
-
-    { t: "callout", kind: "mental", title: "The FFN as key-value memory",
-      body: [{ t: "p", text: "A productive way to read it: the rows of `W_1` act as **keys** that detect patterns in the token's representation, the hidden activation records *which* patterns fired, and the columns of `W_2` are the **values** written back into the residual stream. Under that reading, pretraining stores facts in these weights — the association from *Paris* to *France* lives in a set of `W_1` rows that fire and `W_2` columns that respond. It is consistent with the finding from lesson 4.1 that the FFN holds twice the parameters of the attention block: attention decides what to look at, the FFN holds what is known." }] },
-
-    { t: "h2", n: "02", text: "Activations", id: "activations" },
+    { t: "code", lang: "python", title: "scratchpad/nlp/n44.py — the mask", code:
+"def create_causal_mask(seq_len):\n    \"\"\"Lower triangular mask for autoregressive decoding.\"\"\"\n    return torch.tril(torch.ones(seq_len, seq_len)).unsqueeze(0).unsqueeze(0)\n\n# applied inside attention, before the softmax\nscores = scores.masked_fill(mask == 0, float('-inf'))",
+      caption: "The two `unsqueeze` calls add batch and head dimensions so the mask broadcasts across both." },
 
     { t: "out", text:
-"x       ReLU      GELU      GELU-tanh   SiLU\n-3.0    0.0000    -0.0041   -0.0036     -0.1423\n-2.0    0.0000    -0.0455   -0.0454     -0.2384\n-1.0    0.0000    -0.1587   -0.1588     -0.2689\n-0.5    0.0000    -0.1543   -0.1543     -0.1888\n 0.0    0.0000     0.0000    0.0000      0.0000\n 0.5    0.5000     0.3457    0.3457      0.3112\n 1.0    1.0000     0.8413    0.8412      0.7311\n 2.0    2.0000     1.9545    1.9546      1.7616\n 3.0    3.0000     2.9959    2.9964      2.8577\n\nmax |GELU exact - tanh approximation| = 4.13e-04" },
+"tril(ones(5,5))\n  token 0 sees 1 of 5: [1, 0, 0, 0, 0]\n  token 1 sees 2 of 5: [1, 1, 0, 0, 0]\n  token 2 sees 3 of 5: [1, 1, 1, 0, 0]\n  token 3 sees 4 of 5: [1, 1, 1, 1, 0]\n  token 4 sees 5 of 5: [1, 1, 1, 1, 1]" },
 
-    { t: "math", tex: "\\text{GELU}(x) = x\\,\\Phi(x) = x \\cdot \\tfrac{1}{2}\\left[1 + \\operatorname{erf}\\!\\left(\\tfrac{x}{\\sqrt{2}}\\right)\\right]" },
+    { t: "h2", n: "02", text: "What masking does to the softmax", id: "softmax" },
 
-    { t: "p", text: "GELU weights the input by the probability that a standard normal falls below it — a smooth gate rather than ReLU's hard cutoff. Note that GELU and SiLU go *negative* for small negative inputs and return toward zero further out; they do not hard-zero, so the gradient never dies completely the way ReLU's does. The tanh approximation agrees with the exact form to 4.13e-04, which is why it is used without concern." },
-
-    { t: "h2", n: "03", text: "SwiGLU and the two-thirds rule", id: "swiglu" },
-
-    { t: "math", tex: "\\text{FFN}_{\\text{SwiGLU}}(x) = \\big(\\text{Swish}(xW_1) \\odot (xW_3)\\big) W_2" },
-
-    { t: "p", text: "A gated linear unit splits the up-projection into two branches and multiplies them elementwise, one acting as a learned gate. That is three weight matrices instead of two, so to keep the budget fixed `d_ff` shrinks by a factor of two-thirds. The reference states the rule; here is whether it actually balances." },
+    { t: "p", text: "The reference works one row: token *sat* attending to `[The, cat, sat, future]` with scaled scores `[0.40, 0.53, 0.59, 0.95]`. Recomputed:" },
 
     { t: "out", text:
-"d_model 512    standard  d_ff 2048    params   2,097,152\n               SwiGLU    d_ff 1365    params   2,096,640    0.9998x\n\nd_model 4096   standard  d_ff 16384   params 134,217,728\n               SwiGLU    d_ff 10922   params 134,209,536    0.9999x" },
+"after the causal mask   [0.40, 0.53, 0.59, -inf]\nexponentials            [1.4918, 1.6989, 1.8040, 0.0]\nsum                     4.9947\nweights                 [0.2987, 0.3401, 0.3612, 0.0000]\n\nreference says          [0.299, 0.340, 0.361, 0.000]   reproduces exactly\n\nwithout the mask        [0.1968, 0.2241, 0.2380, 0.3411]" },
 
-    { t: "callout", kind: "insight", title: "Why LLaMA's hidden size is 11008",
-      body: [{ t: "p", text: "The rule balances to within 0.02%. And it explains a number that looks arbitrary: LLaMA-7B has `d_model = 4096` and an FFN hidden size of **11008**. Compute `(8/3) × 4096 = 10922.7`, then round up to a multiple of 256 for hardware alignment and you get exactly **11008** — which is 43 × 256. The odd-looking dimension is two-thirds of four times the model width, rounded for tensor cores. The payoff is roughly 1–2% better perplexity for the same parameter count and FLOPs, which is why LLaMA, PaLM and Mistral all use it." }] },
+    { t: "callout", kind: "crit", title: "The future token would have taken the largest share",
+      body: [{ t: "p", text: "Unmasked, position 3 receives **34.11%** of the attention — more than any real token in the row. The model would be predicting *sat* partly by looking at what comes after *sat*, which at training time is the answer it is being asked for. It would score beautifully on the training objective and be useless at generation, because at inference that position does not exist yet. The mask is what makes teacher-forced parallel training measure the same thing that sequential inference will do." }] },
 
-    { t: "h2", n: "04", text: "LayerNorm", id: "layernorm" },
-
-    { t: "math", tex: "\\mu = \\frac{1}{d}\\sum_{i=1}^{d} x_i, \\quad \\sigma^2 = \\frac{1}{d}\\sum_{i=1}^{d}(x_i - \\mu)^2, \\quad \\text{LN}(x) = \\gamma \\odot \\frac{x - \\mu}{\\sqrt{\\sigma^2 + \\epsilon}} + \\beta" },
-
-    { t: "p", text: "Normalisation runs **across the feature dimension, per token** — not across the batch. That independence from batch statistics is what makes it safe with variable sequence lengths and at batch size 1, which BatchNorm is not." },
+    { t: "h2", n: "03", text: "Why negative infinity and not a large negative number", id: "neginf" },
 
     { t: "out", text:
-"x = [2, 4, 4, 4, 5, 5, 7, 9],  d = 8\n\n  mu    = 5.0000                  reference says 5\n  var   = 4.0000   sigma = 2.0000  reference says 4 and 2\n  x_hat = [-1.5, -0.5, -0.5, -0.5, 0.0, 0.0, 1.0, 2.0]\n\n  reference: [-1.5, -0.5, -0.5, -0.5, 0, 0, 1.0, 2.0]   reproduces exactly\n  resulting mean 0.00e+00, variance 1.0000\n  nn.LayerNorm agrees to four decimal places" },
+"scores [2.0, 1.0, 0.5], masking the third\n\nfill     weights                            masked weight\n-inf     [0.731059, 0.268941, 0.000000]     0.000e+00\n-1e9     [0.731059, 0.268941, 0.000000]     0.000e+00\n-1e4     [0.731059, 0.268941, 0.000000]     0.000e+00\n-10      [0.731055, 0.268940, 0.000004]     4.492e-06" },
 
-    { t: "h2", n: "05", text: "RMSNorm", id: "rmsnorm" },
+    { t: "p", text: "In float32, anything below roughly `-1e4` underflows to exactly zero after the exponential, so `-inf` and `-1e9` are equivalent. A merely *large* negative number like `-10` is not: it leaks `4.49e-06` of the weight to a position the model must not see. Small, but it is a leak of exactly the information the mask exists to hide, and it compounds across layers." },
 
-    { t: "math", tex: "\\text{RMSNorm}(x) = \\gamma \\odot \\frac{x}{\\sqrt{\\frac{1}{d}\\sum_i x_i^2 + \\epsilon}}" },
+    { t: "callout", kind: "warn", title: "In float16 this becomes a real bug",
+      body: [{ t: "p", text: "`-1e9` is outside float16's range and overflows to `-inf`, which happens to be the behaviour you wanted. But masking with float16's finite minimum, `-65504`, returned **`[nan, nan, nan]`** in my test — the intermediate arithmetic overflows and poisons the whole row. NaNs then propagate through every subsequent layer and the loss becomes NaN with no indication of where it started. If you write your own attention and run it in mixed precision, use `torch.finfo(dtype).min` rather than a hard-coded constant, and check for NaNs immediately after the softmax while you still know which operation produced them." }] },
 
-    { t: "out", text:
-"same x = [2, 4, 4, 4, 5, 5, 7, 9]\n\n  mean of squares = 29.0000          reference: 232/8 = 29\n  RMS = sqrt(29)  = 5.3852           reference says 5.385\n  out = [0.3714, 0.7428, 0.7428, 0.7428, 0.9285, 0.9285, 1.2999, 1.6713]\n\n  reference: [0.371, 0.743, 0.743, 0.743, 0.928, 0.928, 1.300, 1.671]  exact\n\n  output mean = 0.9285, NOT 0" },
+    { t: "h2", n: "04", text: "Autoregression is the chain rule", id: "autoregressive" },
 
-    { t: "callout", kind: "insight", title: "RMSNorm does not centre, and that turns out not to matter",
-      body: [{ t: "p", text: "Drop the mean subtraction and the `beta` shift, and normalise by root-mean-square alone. The output mean is **0.9285** rather than 0 — the vector is rescaled but not recentred. The empirical finding that made RMSNorm standard is that re-centring contributes essentially nothing to training stability; the *rescaling* is what matters. So you get half the parameters (`gamma` only, no `beta`) and one fewer reduction pass over the vector, at equal quality. Every recent LLM — LLaMA, Mistral, Gemma, Qwen — uses it." }] },
+    { t: "math", tex: "p(x_1, x_2, \\ldots, x_n) = \\prod_{t=1}^{n} p(x_t \\mid x_1, \\ldots, x_{t-1})" },
 
-    { t: "out", text:
-"d = 4096, batch 64 x 512, torch 2.10 CPU, 4 threads\n\n  LayerNorm (ATen fused)          43.80 ms\n  RMSNorm, naive composed ops    114.32 ms    +161.0%\n  RMSNorm, nn.RMSNorm             114.73 ms    +161.9%\n\n  parameters: LayerNorm 8,192 (gamma + beta)\n              RMSNorm   4,096 (gamma only)" },
+    { t: "p", text: "Any joint distribution factorises this way — it is an identity, not an assumption. An autoregressive model learns each conditional, and maximising the log-likelihood of the sequence is exactly minimising next-token cross-entropy. `p(\"the cat sat\") = p(\"the\") · p(\"cat\" | \"the\") · p(\"sat\" | \"the\", \"cat\")`." },
 
-    { t: "callout", kind: "warn", title: "The 10-15% speed claim did not reproduce here",
-      body: [{ t: "p", text: "RMSNorm was **2.6x slower** than LayerNorm on this setup, and using PyTorch's own `nn.RMSNorm` rather than a hand-composed version changed nothing. The reason is not the mathematics — RMSNorm genuinely does less arithmetic — but that ATen's `LayerNorm` CPU kernel is heavily optimised while its `RMSNorm` path is not. The reference's figure comes from GPU training of large models with custom fused kernels, where the saved reduction is real. The lesson generalises: **an operator's theoretical cost and its measured cost are different things**, and which one you get depends on whether somebody wrote a good kernel for your backend. The parameter saving, by contrast, is exactly half and holds everywhere." }] },
-
-    { t: "h2", n: "06", text: "Pre-LN against Post-LN", id: "preln" },
+    { t: "h2", n: "05", text: "The asymmetry, measured", id: "asymmetry" },
 
     { t: "out", text:
-"ORIGINAL (Post-LN)                   MODERN (Pre-LN)\n  x -> SubLayer -> Add(x) -> LN        x -> LN -> SubLayer -> Add(x)\n\n  x = LN(x + SubLayer(x))              x = x + SubLayer(LN(x))" },
+"one transformer layer, d_model 256, 8 heads, T = 128\n\ntraining   : ONE forward pass over all 128 positions      2.12 ms\ngeneration : 128 sequential passes, no KV cache         157.21 ms\n\n74.2x slower, same model, same sequence" },
 
-    { t: "p", text: "In Pre-LN the residual path is never normalised — it is a clean identity from the input all the way to the output. In Post-LN every residual addition passes through a normalisation on its way up the stack. Twenty-four blocks of that makes a measurable difference." },
-
-    { t: "out", text:
-"24 blocks, d = 128, identical initialisation and input\n\nPost-LN   grad norm at block 0   1.918e-07\n          grad norm at block 23  1.045e-06\n          first six: 1.92e-07 1.95e-07 2.00e-07 1.99e-07 2.05e-07 2.12e-07\n\nPre-LN    grad norm at block 0   1.495e-01\n          grad norm at block 23  1.410e-01\n          first six: 1.50e-01 1.45e-01 1.48e-01 1.48e-01 1.47e-01 1.51e-01" },
-
-    { t: "callout", kind: "crit", title: "Roughly 780,000x more gradient reaches the bottom",
-      body: [{ t: "p", text: "Post-LN delivers **1.918e-07** to the first block; Pre-LN delivers **1.495e-01**. Pre-LN is also essentially *flat* across depth — 0.150 at the bottom, 0.141 at the top, a ratio of 0.9 — because the unobstructed residual path carries gradient straight through. Post-LN's profile is not merely smaller but structurally different: the normalisation sits on the trunk, and every block attenuates what passes through it. This is exactly why the original transformer needed a learning-rate warmup schedule — the early updates with a cold optimiser and attenuated gradients would otherwise diverge — and why deep Post-LN stacks were notoriously unstable. Pre-LN needs no warmup, which is why GPT-2 onward, LLaMA and ViT all use it." }] },
-
-    { t: "diagram", kind: "compare", title: "Where the normalisation sits",
+    { t: "diagram", kind: "compare", title: "Same weights, two regimes",
       columns: [
-        { title: "Post-LN, the original", tone: "warn", items: [
-          "x = LN(x + SubLayer(x))",
-          "Normalisation on the residual trunk",
-          "Gradient at block 0: 1.918e-07",
-          "Needs learning-rate warmup",
-          "Deep stacks can diverge",
-          "Original Transformer, BERT"
+        { title: "Training, teacher forced", tone: "good", items: [
+          "Whole gold sequence in at once",
+          "Causal mask blocks the future",
+          "All n predictions in ONE pass",
+          "O(1) sequential steps",
+          "Conditions on CORRECT prefixes",
+          "Compute-bound: big matmuls"
         ] },
-        { title: "Pre-LN, the modern default", tone: "good", items: [
-          "x = x + SubLayer(LN(x))",
-          "Residual path is a clean identity",
-          "Gradient at block 0: 1.495e-01",
-          "No warmup required",
-          "Flat gradient profile with depth",
-          "GPT-2 onward, LLaMA, ViT"
+        { title: "Inference, free running", tone: "warn", items: [
+          "Only the prompt to start",
+          "Append each token, feed back",
+          "One pass per generated token",
+          "O(n) sequential steps",
+          "Conditions on its OWN outputs",
+          "Memory-bandwidth-bound"
         ] }
       ] },
 
-    { t: "callout", kind: "note", title: "Pre-LN is not strictly better",
-      body: [{ t: "p", text: "The trade is real: because the residual stream is never normalised, its magnitude *grows* with depth in a Pre-LN model, and the relative contribution of later blocks shrinks. Some work finds Post-LN reaches slightly better final quality when you can afford to tune the warmup carefully. The reason Pre-LN won is not that it produces better models but that it produces models that train reliably without a schedule you have to get right — which at scale, where a diverged run costs weeks, matters more. Hybrids exist, and some recent models normalise in both places." }] },
+    { t: "callout", kind: "insight", title: "This is why every serving optimisation exists",
+      body: [{ t: "p", text: "Decoding is sequential and each step needs a full model pass, so the bottleneck is not arithmetic — it is moving the weights from memory to the compute units, once per token, to do a tiny amount of work. Decode is **memory-bandwidth-bound**. Every major serving technique follows directly: the **KV cache** stops you recomputing keys and values for the whole prefix at each step; **speculative decoding** drafts several tokens cheaply and verifies them in one parallel pass, converting sequential steps into batch work; **continuous batching** fills the idle bandwidth with other requests. Lesson 5.3 covers all three. The 74.2x above is the un-optimised baseline they are all attacking." }] },
 
-    { t: "exercise", title: "Measure the block yourself",
+    { t: "h2", n: "06", text: "Exposure bias", id: "exposure" },
+
+    { t: "p", text: "Training always conditions on a correct prefix. Inference conditions on whatever the model produced, mistakes included. The gap between those two regimes is exposure bias, and it is visible in a real model." },
+
+    { t: "out", text:
+"prompt: \"The capital of France is Paris. The capital of Germany is\"\n\ngpt2 greedy continuation:\n  \" Berlin. The capital of the United States is Washington. The capital of\n   the United Kingdom is London. The capital of the United\"" },
+
+    { t: "out", text:
+"probability gpt2 assigns to a DIFFERENT gold continuation, scored\nwith teacher forcing\n\n  step 0   ' Berlin'    p=0.2667\n  step 1   '.'          p=0.8150\n  step 2   ' The'       p=0.3570\n  step 3   ' capital'   p=0.8242\n  step 4   ' of'        p=0.9911\n  step 5   ' Italy'     p=0.0836\n  step 6   ' is'        p=0.9586\n  step 7   ' Rome'      p=0.4107\n  step 8   '.'          p=0.9276\n\n  mean 0.6488   min 0.0836" },
+
+    { t: "callout", kind: "insight", title: "Teacher forcing scores a prefix the model would never have written",
+      body: [{ t: "p", text: "Left to itself the model went to *the United States*, not *Italy*. Teacher forcing nevertheless hands it ` Italy` as step 5 and asks for the next token — and the model assigns that gold token only **0.0836**. At every subsequent step it is conditioning on a prefix it disagrees with, yet the loss is computed as though that prefix were its own. At inference nothing corrects it: an early low-probability choice becomes the context for everything after, and errors compound. That is exposure bias. The mitigations are scheduled sampling (mix in the model's own predictions during training), sequence-level or RL fine-tuning (optimise the whole output, not each token against a gold prefix), and better decoding, which lesson 5.8 traces end to end." }] },
+
+    { t: "h2", n: "07", text: "Four ways to model a sequence", id: "families" },
+
+    { t: "table",
+      head: ["Family", "How it generates", "Strength", "Weakness"],
+      rows: [
+        ["Autoregressive (GPT, LLaMA)", "Left to right, one token per step", "Best generation quality", "Sequential — O(n) passes"],
+        ["Bidirectional / MLM (BERT)", "Fills masked positions, sees both sides", "Excellent encoder", "Cannot generate"],
+        ["Non-autoregressive (NAR MT)", "Emits every token in parallel", "Very fast", "Weaker — no left context while deciding"],
+        ["Diffusion / masked-diffusion LM", "Iteratively denoises the whole sequence", "Parallel-ish, improving fast", "Quality still behind AR"]
+      ] },
+
+    { t: "h2", n: "08", text: "Cross-attention", id: "cross" },
+
+    { t: "p", text: "Self-attention derives Q, K and V from the same sequence. Cross-attention does not — and that single change is the entire encoder-decoder connection." },
+
+    { t: "diagram", kind: "flow", title: "Where the three inputs come from", cols: 3,
+      nodes: [
+        { id: "s", text: "Source: Le chat", tone: "accent" },
+        { id: "e", text: "Encoder", tone: "teal" },
+        { id: "kv", text: "K and V from the encoder output", tone: "teal" },
+        { id: "d", text: "Decoder state so far", tone: "violet" },
+        { id: "q", text: "Q from the decoder", tone: "violet" },
+        { id: "o", text: "Blend of source values, weighted by relevance", tone: "good" }
+      ],
+      edges: [["s","e"],["e","kv"],["d","q"],["q","o"],["kv","o"]] },
+
+    { t: "dl", items: [
+      ["Q from the decoder", "What the position currently being generated is looking for in the source."],
+      ["K and V from the encoder", "What each source token advertises, and what it delivers. Computed once for the whole source."],
+      ["Not masked", "The decoder may attend to the entire source — all of it already exists. Only *self*-attention in the decoder is causally masked."],
+      ["Shape", "(target_len × source_len) rather than square. This is the alignment matrix, and it is what you visualise to see which source word produced which output word."]
+    ] },
+
+    { t: "callout", kind: "insight", title: "K and V are computed once, then reused for every output token",
+      body: [{ t: "p", text: "The encoder runs once per input. Its output becomes the keys and values for every decoder step, so cross-attention costs one projection of the source up front and then only the query projection per generated token. This is the same structural idea as the KV cache in a decoder-only model — the expensive, reusable part is computed once and held. It is also why encoder-decoder models remain strong for translation and summarisation: the source is fully encoded bidirectionally before a single output token is produced." }] },
+
+    { t: "exercise", title: "Verify the masking and the gap",
       tasks: [
-        "Compute LayerNorm and RMSNorm by hand on a vector and check both against PyTorch, including the eps term.",
-        "Benchmark LayerNorm against nn.RMSNorm on your hardware and backend, and record which is faster.",
-        "Compute the SwiGLU d_ff for a model you use and check it against the published hidden size.",
-        "Build 24-block Pre-LN and Post-LN stacks, backpropagate, and plot the gradient norm against depth.",
-        "Track the residual stream's magnitude layer by layer in a Pre-LN model and confirm it grows with depth."
+        "Apply a causal mask and assert that every masked weight is exactly 0.0, not merely small.",
+        "Mask with -10, -1e4 and -inf in float32, then repeat in float16, and record which combinations leak or produce NaN.",
+        "Time a single teacher-forced pass against naive token-by-token generation for the same sequence, and compute your own ratio.",
+        "Add a KV cache to the generation loop and re-measure. Compare the improvement against the 74.2x baseline.",
+        "Score a gold continuation token by token with teacher forcing and mark every step where the model's own argmax differs from the gold token."
       ] }
   ],
 
   takeaways: [
-    "The FFN is position-wise — attention mixes tokens, the FFN transforms each one alone; it holds about two-thirds of non-embedding parameters.",
-    "Read it as key-value memory: W_1 rows detect patterns, W_2 columns write values back, and pretrained facts live there.",
-    "GELU and SiLU go negative for small negative inputs rather than hard-zeroing; the GELU tanh approximation agrees to 4.13e-04.",
-    "SwiGLU's two-thirds rule balances the budget to 0.9998-0.9999 of a standard FFN.",
-    "LLaMA-7B's 11008 is (8/3) x 4096 = 10922.7 rounded up to a multiple of 256 — 43 x 256.",
-    "Both the LayerNorm and RMSNorm worked examples reproduce exactly; RMSNorm's output mean is 0.9285, not 0, because it rescales without recentring.",
-    "RMSNorm was 2.6x SLOWER than LayerNorm on torch 2.10 CPU even using nn.RMSNorm — the 10-15% claim is a GPU fused-kernel result. The half-parameter saving is universal.",
-    "Post-LN delivered 1.918e-07 of gradient to the first of 24 blocks; Pre-LN delivered 1.495e-01, roughly 780,000x more.",
-    "Pre-LN's gradient profile is flat with depth (ratio 0.9 top to bottom) because the residual path is an unobstructed identity.",
-    "Pre-LN won for reliability without warmup, not because it produces strictly better models."
+    "The causal mask is lower-triangular: position i attends only to positions up to i.",
+    "The reference's masked-softmax example reproduces exactly — [0.2987, 0.3401, 0.3612, 0.0000].",
+    "Unmasked, the future position would have taken 34.11% of the weight, the largest share in the row.",
+    "In float32, -1e4 and below underflow to exactly zero; -10 leaks 4.49e-06 of the weight.",
+    "In float16, masking with the finite minimum -65504 returned [nan, nan, nan] — use `torch.finfo(dtype).min`.",
+    "Autoregression is the chain rule of probability, so next-token cross-entropy is exactly sequence log-likelihood.",
+    "Training took 2.12 ms and free-running generation 157.21 ms for the same 128 tokens — 74.2x, and that gap is why KV caching, speculative decoding and continuous batching exist.",
+    "Decode is memory-bandwidth-bound, not compute-bound, because each sequential step moves all the weights to do very little work.",
+    "Exposure bias: gpt2 assigned only 0.0836 to a gold token it would never have chosen, then kept being scored on a prefix it disagreed with.",
+    "Cross-attention takes Q from the decoder and K, V from the encoder, is not causally masked, and produces a (target × source) alignment matrix."
   ],
 
   quiz: { title: "Check yourself", questions: [
-    { stem: "What does the position-wise FFN do that attention does not?",
-      options: ["It mixes information between tokens", "It transforms each token independently, with no access to any other position", "It normalises the activations", "It computes attention weights"],
+    { stem: "What does the causal mask make possible?",
+      options: ["Faster inference", "Computing all n next-token predictions in one parallel training pass without any position seeing its own answer", "Longer context", "Lower memory use"],
       answer: 1,
-      why: "A block alternates between the two roles: attention mixes across positions, the FFN transforms each position alone. The FFN is where most parameters sit — roughly two-thirds of the non-embedding total — and under the key-value memory reading it is where pretrained factual associations are stored." },
-    { stem: "Why is LLaMA-7B's FFN hidden size 11008?",
-      options: ["An arbitrary choice", "It is (8/3) x 4096 = 10922.7 rounded up to a multiple of 256 for hardware alignment", "It is 4 x d_model minus overhead", "It matches the vocabulary size"],
+      why: "Without it, position i would attend to position i+1 — the very token it is being asked to predict. In the worked row the future position took 34.11% of the weight, the largest share. The mask is what makes teacher-forced parallel training measure the same quantity that sequential inference will later compute." },
+    { stem: "Why was generation 74.2x slower than training on the same sequence?",
+      options: ["Generation uses a bigger model", "Training is one parallel pass over all positions; generation needs one full pass per token because token t+1 depends on token t existing", "Dropout is enabled", "The mask is recomputed"],
       answer: 1,
-      why: "SwiGLU uses three weight matrices instead of two, so d_ff shrinks by two-thirds to hold the parameter budget fixed — verified at 0.9999 of a standard FFN. (8/3) x 4096 is 10922.7, and rounding up to a 256 multiple gives 11008, which is 43 x 256." },
-    { stem: "What did benchmarking RMSNorm against LayerNorm on CPU show?",
-      options: ["RMSNorm was 10-15% faster as claimed", "RMSNorm was 2.6x slower, because ATen's LayerNorm kernel is optimised and its RMSNorm path is not", "They were identical", "RMSNorm failed to run"],
+      why: "2.12 ms against 157.21 ms for 128 tokens, identical weights. The dependency is inherent to autoregression, not to the architecture. Because each step moves all the weights to do a tiny amount of work, decode is memory-bandwidth-bound — which is the root cause of KV caching, speculative decoding and continuous batching." },
+    { stem: "Why mask with -inf rather than a large negative number?",
+      options: ["It is faster", "Because a merely large value leaks weight — -10 left 4.49e-06 on a position the model must not see", "It uses less memory", "There is no difference"],
       answer: 1,
-      why: "43.80 ms against 114.73 ms, and using nn.RMSNorm rather than composed ops changed nothing. RMSNorm genuinely does less arithmetic; whether that becomes speed depends on whether someone wrote a good kernel for your backend. The parameter saving — exactly half, gamma only — holds everywhere." },
-    { stem: "Why did Pre-LN replace Post-LN?",
-      options: ["It produces better final quality", "Because the residual path stays an unobstructed identity, so gradients reach early layers — 1.495e-01 against 1.918e-07 — and no warmup is needed", "It uses fewer parameters", "It is faster"],
+      why: "In float32 anything below about -1e4 underflows to exactly zero after exp, so -inf and -1e9 agree. -10 does not, and the leak is of precisely the information the mask exists to hide. In float16 there is a further trap: masking with the finite minimum -65504 produced NaN, so use torch.finfo(dtype).min." },
+    { stem: "What is exposure bias?",
+      options: ["Overfitting to frequent tokens", "Training always conditions on correct prefixes while inference conditions on the model's own output, so early errors compound", "Bias in the training corpus", "Attention leaking to future tokens"],
       answer: 1,
-      why: "Post-LN puts normalisation on the residual trunk, so every block attenuates what passes through. Pre-LN's gradient profile is flat with depth, ratio 0.9 top to bottom. Some work finds Post-LN reaches slightly better quality with carefully tuned warmup — Pre-LN won on reliability, which matters more when a diverged run costs weeks." }
+      why: "Scoring a gold continuation, gpt2 assigned just 0.0836 to a token it would never have generated, then continued to be scored on a prefix it disagreed with. At inference nothing supplies the correction. Mitigations are scheduled sampling, sequence-level or RL fine-tuning, and better decoding strategies." }
   ] },
 
-  interview: { title: "Interview", sub: "FFN and normalisation", questions: [
-    { level: "Core", q: "Why does a transformer block need a feed-forward network at all?",
-      strong: "Attention only mixes and reweights; the FFN provides the per-token non-linear transformation.",
-      answer: [{ t: "p", text: "Because attention on its own is close to a weighted average — it mixes and reweights information across positions, but the mixing itself is linear once the weights are fixed, and it does nothing to transform a token's representation in isolation. The FFN provides that: two linear layers with a non-linearity between them, applied identically and independently at every position. So the block alternates roles — attention decides what each token should look at, the FFN processes what it found. The useful mental model is key-value memory: the rows of the first matrix act as pattern detectors, the hidden activation records which fired, and the columns of the second write values back into the residual stream. Under that reading, pretrained facts live in FFN weights rather than in attention, which is consistent with where the parameters are — the FFN holds about two-thirds of the non-embedding total, roughly 2.1M against 1.05M per block at the original configuration. When people talk about editing facts in a model, the FFN layers are what they're editing." }] },
-    { level: "Senior", q: "What is the difference between Pre-LN and Post-LN, and which would you use?",
-      strong: "Pre-LN keeps the residual path clean so gradients reach the bottom; use it unless you have a reason not to.",
-      answer: [{ t: "p", text: "Post-LN, the original, normalises after the residual addition: x becomes LN of x plus SubLayer of x. Pre-LN moves the norm inside the branch: x becomes x plus SubLayer of LN of x. The consequence is that in Pre-LN the residual path is a clean identity from input to output, never passing through a normalisation, whereas in Post-LN every block attenuates what flows along the trunk. I measured it on 24 blocks with matched initialisation: gradient norm reaching the first block was 1.918e-07 for Post-LN and 1.495e-01 for Pre-LN, roughly 780,000 times larger. Pre-LN's profile is also flat with depth — 0.150 at the bottom against 0.141 at the top — while Post-LN's is uniformly tiny. That's exactly why the original transformer needed learning-rate warmup and why deep Post-LN stacks were unstable. I'd default to Pre-LN, which is what GPT-2 onward, LLaMA and ViT all do. But I'd be honest that it isn't strictly better: because the residual stream is never normalised its magnitude grows with depth, later blocks contribute proportionally less, and some work finds Post-LN reaching slightly better final quality when the warmup is tuned well. Pre-LN won on reliability rather than peak quality, and at scale reliability is worth more." }] },
-    { level: "Senior", q: "A paper claims a 15% speedup from a new normalisation layer. How do you evaluate that?",
-      strong: "Reproduce it on your hardware and backend — theoretical op count and measured time diverge routinely.",
-      answer: [{ t: "p", text: "I'd reproduce it before believing it, because an operator's arithmetic cost and its wall-clock cost are different quantities and the gap is whether someone wrote a good kernel for your backend. I have a concrete case: RMSNorm does strictly less work than LayerNorm — no mean, no beta, one fewer reduction — and the literature reports 10 to 15 percent savings. On torch 2.10 CPU I measured it 2.6 times slower, 114.73 ms against 43.80 ms, and switching from a hand-composed implementation to PyTorch's own nn.RMSNorm changed nothing. ATen's LayerNorm CPU kernel is heavily optimised and the RMSNorm path isn't. So the reported speedup is real on the hardware and kernels it was measured on, and absent on mine. The questions I'd ask of any such claim: what hardware and precision, what batch and dimension shapes, is it a fused kernel or composed ops, and is it measured in isolation or end to end in a training step where it may be a rounding error against the matmuls. I'd also separate claims that are hardware-dependent from ones that aren't — RMSNorm's halving of parameters, gamma only instead of gamma and beta, is exact and holds everywhere, so if memory is my constraint I'd adopt it regardless of the speed result." }] }
+  interview: { title: "Interview", sub: "Masking and autoregression", questions: [
+    { level: "Core", q: "What is the causal mask and why is it needed?",
+      strong: "A lower-triangular mask that stops a position attending to its own future, making parallel training valid.",
+      answer: [{ t: "p", text: "It's a lower-triangular mask applied to the attention scores before the softmax, setting everything above the diagonal to negative infinity so position i can only attend to positions up to i. The reason it's needed is subtle and worth stating precisely: it isn't about inference, it's about making training valid. At inference the future genuinely doesn't exist, so nothing could leak. At training you feed the whole gold sequence at once for parallelism, and without the mask position i would attend to position i+1 — the exact token it's being asked to predict. I worked an example where the future position took 34.11% of the attention, the largest share in the row. The model would score wonderfully on the training objective by copying the answer and be useless at generation. So the mask is what makes teacher-forced parallel training measure the same thing sequential inference will do. One implementation detail: mask with negative infinity or the dtype's minimum, not just a large negative number — I measured -10 leaking 4.49e-06 of the weight, and in float16 a hard-coded -65504 produced NaN." }] },
+    { level: "Core", q: "What is the difference between self-attention and cross-attention?",
+      strong: "Where Q, K and V come from — cross-attention takes Q from the decoder and K, V from the encoder.",
+      answer: [{ t: "p", text: "Purely where the three inputs come from. In self-attention, Q, K and V are all projections of the same sequence, so each token attends to its own context. In cross-attention the queries come from the decoder — what the position being generated is looking for — while the keys and values come from the encoder output, representing what the source contains. That's the only place the two stacks meet in an encoder-decoder model. Two consequences follow. First, the attention matrix is target length by source length rather than square, which makes it an alignment matrix — visualise it and you see which source word produced which output word, which is genuinely useful for debugging a translation model. Second, cross-attention is not causally masked, because the whole source already exists; only the decoder's self-attention is masked. There's also a nice efficiency property: the encoder runs once and its keys and values are reused for every decoder step, so you pay the source projection once. That's structurally the same idea as a KV cache." }] },
+    { level: "Senior", q: "Why is LLM decoding slow, and what do you do about it?",
+      strong: "It is sequential and memory-bandwidth-bound; KV cache, speculative decoding and continuous batching each attack that.",
+      answer: [{ t: "p", text: "It's slow for a structural reason rather than an implementation one: autoregression means token t+1 can't start until token t exists, so you need a full model forward pass per generated token. I measured the un-optimised gap — one teacher-forced training pass over 128 tokens took 2.12 ms, and generating the same 128 tokens one at a time took 157.21 ms, 74 times slower with identical weights. The key insight for optimisation is what the bottleneck actually is. Each decode step does a tiny amount of arithmetic — one token's worth — but has to stream every weight in the model from memory to do it. So decode is memory-bandwidth-bound, not compute-bound, and that tells you which fixes work. KV caching is the first and biggest: the keys and values for the prefix don't change, so cache them instead of recomputing attention over the whole context every step. Speculative decoding attacks the sequential dependency itself — a small draft model proposes several tokens, the large model verifies them all in one parallel pass, and you get multiple tokens per expensive pass when the draft is right. Continuous batching attacks utilisation: since you're bandwidth-bound, the compute units are idle, so interleave other requests to fill them. Quantisation helps here more than people expect too, because halving the weight bytes directly halves the thing you're bottlenecked on." }] }
   ] }
 });
