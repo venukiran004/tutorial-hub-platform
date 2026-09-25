@@ -19,7 +19,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Cross product, then filter", id: "cross" },
 
-    { t: "p", text: "`FROM customers CROSS JOIN products` produces 8 × 6 = 48 rows: every customer next to every product. Every other join is that product with a condition applied. `FROM customers c JOIN orders o ON o.customer_id = c.customer_id` conceptually forms 8 × 12 = 96 pairs and keeps the 12 where the ids agree. **The engine never builds the 96** — it uses a hash or an index (5.2) — but the result is defined as if it had, which is what lets you reason about it.**" },
+    { t: "p", text: "`FROM customers CROSS JOIN products` produces 8 × 6 = 48 rows: every customer next to every product. Every other join is that product with a condition applied. `FROM customers c JOIN orders o ON o.customer_id = c.customer_id` conceptually forms 8 × 12 = 96 pairs and keeps the 12 where the ids agree. **The engine never builds the 96** — it uses a hash or an index (5.2) — but the result is defined as if it had, which is what lets you reason about it." },
 
     { t: "code", lang: "sql", title: "The product, the filter, and the old syntax that shows they are the same thing",
       hl: [1, 3, 6],

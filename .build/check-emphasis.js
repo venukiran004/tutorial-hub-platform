@@ -1,113 +1,116 @@
 /* ============================================================================
-   check-emphasis.js — catches **bold** that never becomes bold.
+   check-emphasis.js — catches markdown emphasis that never becomes emphasis.
 
-   render.js matches bold with a pattern whose inner class excludes asterisks,
-   so a bold span may not contain one. A nested italic — "**the *best* rank-k
-   approximation**" — therefore fails to match and the reader sees literal
-   asterisks on the page. Put another way: bold and italic do not nest.
+   A bold span that the renderer cannot match leaves literal asterisks on the
+   page. Nothing else catches it: the lesson loads, the block shape is valid,
+   and the render test passes. It is otherwise only visible in a screenshot.
 
-   Nothing else catches it: the lesson loads, the block shape is valid, and
-   the render test passes. It is otherwise only visible in a screenshot.
+   This does not reimplement the renderer. It loads the real runtime, renders
+   every published lesson exactly as the browser does, removes the places
+   where a literal ** is correct — code spans, code blocks and the raw text
+   of a diagram, none of which run markdown — and reports whatever ** is left
+   sitting in prose.
 
-   This runs render.js's own inline() over every markdown-bearing string and
-   reports any that still contain ** afterwards. Code spans are vaulted first,
-   exactly as the renderer does, so `a ** b` inside backticks is not a finding.
-
-   Usage:  node .build/check-emphasis.js courses/nlp/lessons
+   Usage:  node .build/check-emphasis.js nlp maths
            node .build/check-emphasis.js            # every course
    ========================================================================= */
+"use strict";
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 
+const root = path.join(__dirname, "..");
+const noop = () => {};
+const el = {
+  setAttribute: noop, removeAttribute: noop, addEventListener: noop,
+  appendChild: noop, style: {}, classList: { toggle: noop, add: noop, remove: noop }
+};
+
+/* app.js owns defineCourse and touches the document at load time; these stubs
+   are the same ones rendertest.js uses. */
+function runtime() {
+  const sb = {
+    console: { log: noop, warn: noop, error: noop },
+    setTimeout, requestAnimationFrame: noop,
+    document: {
+      documentElement: el, body: el, head: el,
+      querySelector: () => null, querySelectorAll: () => [],
+      createElement: () => el, addEventListener: noop, getElementById: () => null
+    },
+    localStorage: { getItem: () => null, setItem: noop, removeItem: noop },
+    navigator: {}, location: { search: "", href: "" },
+    URLSearchParams: class { get() { return null; } }
+  };
+  sb.window = sb;
+  vm.createContext(sb);
+  for (const rel of ["assets/js/highlight.js", "assets/js/render.js",
+                     "assets/js/diagrams.js", "assets/js/app.js"]) {
+    vm.runInContext(fs.readFileSync(path.join(root, rel), "utf8"), sb, { filename: rel });
+  }
+  return sb;
+}
+
+/* Everywhere a literal asterisk is the author's intent rather than a failed
+   span: highlighted source, inline code, and the text inside a diagram, which
+   is drawn straight into the SVG and never sees the markdown pass. */
+function prose(html) {
+  return html
+    .replace(/<pre[\s\S]*?<\/pre>/g, "")
+    .replace(/<code>[\s\S]*?<\/code>/g, "")
+    .replace(/<svg[\s\S]*?<\/svg>/g, "")
+    .replace(/<span class="rung-label">[\s\S]*?<\/span>/g, "");
+}
+
 let problems = 0;
-let checked = 0;
+let lessons = 0;
 
-/* The inline formatter, lifted from assets/js/render.js. Kept in sync by the
-   self-test below, which fails if render.js's bold rule stops matching. */
-const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" };
-function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, c => ESC[c]); }
-
-function inline(s) {
-  if (s == null) return "";
-  const vault = [];
-  let out = String(s).replace(/`([^`]+)`/g, (_, c) => {
-    vault.push("<code>" + esc(c) + "</code>");
-    return "\u0000" + (vault.length - 1) + "\u0000";
-  });
-  out = esc(out);
-  out = out.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, t, h) => '<a href="' + esc(h) + '">' + t + "</a>");
-  out = out.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  out = out.replace(/(^|\s)\*([^*\n]+)\*/g, "$1<em>$2</em>");
-  out = out.replace(/\u0000(\d+)\u0000/g, (_, i) => vault[+i]);
-  return out;
-}
-
-/* Keys whose values the renderer passes through inline(). `code` and `out`
-   are raw and must never be scanned — ** there is Python exponentiation. */
-const RAW = new Set(["code", "out", "tex", "lang", "id", "t", "kind"]);
-
-function walk(node, id, file, key) {
-  if (typeof node === "string") {
-    if (RAW.has(key)) return;
-    checked++;
-    /* A surviving PAIR of ** means a bold span failed to match — almost always
-       an asterisk inside it, from a nested italic or from COUNT(*). A single
-       surviving ** is unpaired: Python's **kwargs written in prose, which is
-       meant to read literally. Only the pair is a bug. */
-    const left = (inline(node).match(/\*\*/g) || []).length;
-    if (left >= 2) {
-      problems++;
-      const span = (node.match(/\*\*[^\n]{0,86}?\*\*/) || node.match(/\*\*[^\n]{0,90}/) || [node])[0];
-      console.log(`  BOLD NEVER RENDERS  ${file}  ${id}  [${key}] ${JSON.stringify(span).slice(0, 100)}`);
-    }
-    return;
-  }
-  if (Array.isArray(node)) { node.forEach(n => walk(n, id, file, key)); return; }
-  if (node && typeof node === "object") {
-    for (const k of Object.keys(node)) walk(node[k], id, file, k);
-  }
-}
-
-function scan(dir) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const p = path.join(dir, entry.name);
-    if (entry.isDirectory()) { scan(p); continue; }
-    if (!entry.name.endsWith(".js")) continue;
-    const rel = path.relative(process.cwd(), p).replace(/\\/g, "/");
-    const ctx = { EC: { receiveLesson: L => walk(L, L.id, rel, "lesson") }, console };
-    vm.createContext(ctx);
+function checkCourse(course) {
+  const sb = runtime();
+  vm.runInContext(fs.readFileSync(path.join(root, "courses", course, "curriculum.js"), "utf8"),
+    sb, { filename: course });
+  const EC = sb.EC, C = EC.course;
+  for (const id of (C.published || [])) {
+    let L = null;
+    EC.receiveLesson = l => { L = l; };
+    const rel = `courses/${course}/lessons/${EC.lessonDir(C.lessonById[id])}/${id}.js`;
     try {
-      vm.runInContext(fs.readFileSync(p, "utf8"), ctx);
+      vm.runInContext(fs.readFileSync(path.join(root, rel), "utf8"), sb, { filename: rel });
     } catch (err) {
       problems++;
       console.log(`  LOAD FAILED  ${rel}  ${err.message}`);
+      continue;
+    }
+    if (!L) continue;
+    lessons++;
+    let html;
+    try {
+      html = EC.render((L.blocks || []).concat([
+        { t: "takeaways", items: L.takeaways || [] },
+        { t: "quiz", questions: (L.quiz || {}).questions || [] },
+        { t: "interview", questions: (L.interview || {}).questions || [] }
+      ]));
+    } catch (err) {
+      problems++;
+      console.log(`  RENDER FAILED  ${rel}  ${err.message}`);
+      continue;
+    }
+    for (const m of prose(html).matchAll(/\*\*/g)) {
+      problems++;
+      const from = Math.max(0, m.index - 60);
+      const snippet = prose(html).slice(from, m.index + 60).replace(/\s+/g, " ");
+      console.log(`  LITERAL **  ${course}/${id}  ...${snippet}...`);
     }
   }
 }
 
-/* Self-test: if render.js ever allows asterisks inside bold, this checker is
-   reporting findings that are no longer real. Fail loudly rather than lie. */
-(function checkRuleInSync() {
-  const src = fs.readFileSync(path.join("assets", "js", "render.js"), "utf8");
-  if (src.indexOf("replace(/\\*\\*([^*]+)\\*\\*/g") === -1) {
-    problems++;
-    console.log("  RENDERER  render.js's bold rule changed — re-check this script's copy of inline()");
-  }
-})();
-
-const roots = process.argv.slice(2);
-if (roots.length) {
-  roots.forEach(scan);
-} else {
-  for (const c of fs.readdirSync("courses", { withFileTypes: true })) {
-    const lessons = path.join("courses", c.name, "lessons");
-    if (c.isDirectory() && fs.existsSync(lessons)) scan(lessons);
-  }
-}
+const named = process.argv.slice(2);
+const courses = named.length ? named
+  : fs.readdirSync(path.join(root, "courses"))
+      .filter(c => fs.existsSync(path.join(root, "courses", c, "curriculum.js")));
+courses.forEach(checkCourse);
 
 if (problems) {
-  console.log(`check-emphasis: FAILED — ${problems} span(s) render as literal asterisks, in ${checked} strings`);
+  console.log(`check-emphasis: FAILED — ${problems} literal ** in prose, across ${lessons} lessons`);
   process.exit(1);
 }
-console.log(`check-emphasis: ok — ${checked} strings, every ** resolves to bold`);
+console.log(`check-emphasis: ok — ${lessons} lessons, no markdown emphasis left unrendered`);

@@ -54,3 +54,6 @@ TH_COURSE=nlp node .build/rendertest.js | tail -4
 
 echo "=== blocks that would render empty ==="
 node .build/check-blocks.js
+
+echo "=== markdown emphasis that never renders ==="
+node .build/check-emphasis.js

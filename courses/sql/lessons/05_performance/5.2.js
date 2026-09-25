@@ -118,7 +118,7 @@ SELECT c.country, COUNT(*) FROM orders o JOIN customers c ON c.customer_id = o.c
 
     { t: "h2", n: "03", text: "Three things to look at first", id: "first" },
 
-    { t: "p", text: "A long plan has one or two lines that matter. **First, the widest node** — the largest `actual rows × loops` — because that is where the work is. **Second, the worst estimate** — the node where `rows=` and `actual rows` differ by the most, since every choice above it was made on the wrong number. **Third, anything that touched disk** — `Sort Method: external merge`, `Batches: 2` or more, `Buffers: … read=` in the thousands — because memory and disk differ by a hundred times.** Time on the top line tells you the query is slow; these three tell you why." },
+    { t: "p", text: "A long plan has one or two lines that matter. **First, the widest node** — the largest `actual rows × loops` — because that is where the work is. **Second, the worst estimate** — the node where `rows=` and `actual rows` differ by the most, since every choice above it was made on the wrong number. **Third, anything that touched disk** — `Sort Method: external merge`, `Batches: 2` or more, `Buffers: … read=` in the thousands — because memory and disk differ by a hundred times. Time on the top line tells you the query is slow; these three tell you why." },
 
     { t: "code", lang: "sql", title: "The loops trap, and a sort that spilled",
       hl: [4, 5, 6, 12, 13],

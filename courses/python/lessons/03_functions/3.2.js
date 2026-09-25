@@ -21,7 +21,7 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "The six kinds", id: "the-six" },
 
-    {"kind": "cells", "title": "The six kinds of parameter, in the order they must appear", "caption": "Everything before / is positional-only; everything after * is keyword-only; *args and **kwargs collect whatever is left over. A signature is read left to right in exactly this order.", "items": ["pos-only", "/", "pos-or-kw", "*args", "kw-only", "**kwargs"], "highlight": [1, 3], "negative": false, "label": "def f(a, /, b, *args, c, **kwargs)", "t": "diagram", "id": "dg-3_2-01-0"},
+    {"kind": "cells", "title": "The six kinds of parameter, in the order they must appear", "caption": "Everything before `/` is positional-only; everything after `*` is keyword-only; `*args` and `**kwargs` collect whatever is left over. A signature is read left to right in exactly this order.", "items": ["pos-only", "/", "pos-or-kw", "*args", "kw-only", "**kwargs"], "highlight": [1, 3], "negative": false, "label": "def f(a, /, b, *args, c, **kwargs)", "t": "diagram", "id": "dg-3_2-01-0"},
 
 
 

@@ -82,7 +82,9 @@ EC.receiveLesson({
 ```js
 { t: "h2", n: "01", text: "Section title", id: "slug", sub: "optional subtitle" }
 { t: "h3", text: "..." }
-{ t: "p",  text: "Prose. `inline code`, **bold**, [link](x.html)." }
+{ t: "p",  text: "Prose. `inline code`, **bold**, *italic*, [link](x.html)." }
+//         Italic nests inside bold. An asterisk meant literally -- *args,
+//         COUNT(*), 2 ** 3 -- goes in backticks, or it is read as markup.
 { t: "ul", items: ["...", "..."] }          // also "ol"
 { t: "dl", items: [["term", "definition"], ...] }
 { t: "table", head: ["A","B"], rows: [["1","2"]], caption: "..." }

@@ -48,7 +48,7 @@ WHERE  c.country = 'NG';
 
     { t: "h2", n: "02", text: "Aggregate before you join", id: "preagg" },
 
-    { t: "p", text: "Revenue per customer joins orders to items — one row per item — and groups by customer. Every item row carries the customer id through the join before the GROUP BY collapses it. **Aggregate items to one row per order first, and the join carries one row per order instead**: fewer rows through the join, and the fan-out of 2.2 cannot happen because nothing is many any more.** The planner sometimes does this rewrite itself (eager aggregation); writing it out guarantees it, and it makes the grain of every step visible." },
+    { t: "p", text: "Revenue per customer joins orders to items — one row per item — and groups by customer. Every item row carries the customer id through the join before the GROUP BY collapses it. **Aggregate items to one row per order first, and the join carries one row per order instead**: fewer rows through the join, and the fan-out of 2.2 cannot happen because nothing is many any more. The planner sometimes does this rewrite itself (eager aggregation); writing it out guarantees it, and it makes the grain of every step visible." },
 
     { t: "code", lang: "sql", title: "Group after the join, and group before it (measured)",
       hl: [2, 6, 7],

@@ -377,7 +377,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Formula includes k1, b parameters controlling saturation and length normalization."
+     "text": "**Formula:** includes k1, b parameters controlling saturation and length normalization."
     },
     {
      "t": "p",

@@ -110,7 +110,7 @@ r2 = minimize(f, [0.5, 0.5], constraints=[con2], bounds=[(0, None)]*2)
     },
 
     { t: "callout", kind: "insight", title: "λ is what the constraint costs you", body: [
-      { t: "p", text: "**λ = ∂f\\*/∂c** — the rate at which the optimal value improves as the constraint is relaxed. That makes it directly actionable: a shadow price of 0.857 reach per budget unit tells you what an extra unit is worth, and therefore whether to buy it." },
+      { t: "p", text: "**λ = ∂f*/∂c** — the rate at which the optimal value improves as the constraint is relaxed. That makes it directly actionable: a shadow price of 0.857 reach per budget unit tells you what an extra unit is worth, and therefore whether to buy it." },
       { t: "p", text: "A multiplier near zero means the constraint is barely biting, so effort spent relaxing it is wasted. **The large multiplier marks the constraint that is actually limiting you** — which, in a system with many, is the one to attack." }
     ]},
 

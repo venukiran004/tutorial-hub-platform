@@ -201,7 +201,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** `['.tar', '.gz']`, `archive.tar`, `.tar.gz`, `` **Explanation:**`suffixes`returns list of all extensions.`suffix` returns only last one."
+     "text": "**Answer:** `['.tar', '.gz']`, `archive.tar`, `.tar.gz`, `''` **Explanation:** `suffixes` returns a list of all extensions. `suffix` returns only the last one."
     }
    ],
    "terms": [

@@ -354,8 +354,8 @@ EC.receiveLesson({
       ],
       [
        "Insert at end",
-       "O(1)*",
-       "O(1)**",
+       "O(1)†",
+       "O(1)‡",
        "O(1) avg"
       ],
       [
@@ -367,7 +367,7 @@ EC.receiveLesson({
       [
        "Delete",
        "O(n)",
-       "O(1)**",
+       "O(1)‡",
        "O(1) avg"
       ],
       [
@@ -380,7 +380,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "*amortized, **if pointer to position is known"
+     "text": "† amortized; ‡ if pointer to position is known"
     }
    ],
    "kind": ""

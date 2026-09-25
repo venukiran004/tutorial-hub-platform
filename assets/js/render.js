@@ -65,7 +65,15 @@
     out = out.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, function (_, t, h) {
       return '<a href="' + esc(h) + '">' + t + "</a>";
     });
-    out = out.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    // Lazy, and deliberately not [^*]+: a bold span is allowed to contain an
+    // italic one. With a negated class the inner asterisks stopped the match
+    // and the reader saw literal ** in the page. The italic pass runs after,
+    // so it picks up the *word* now sitting inside <strong>.
+    //
+    // (?!\*) so that a run of three -- an italic ending flush against the end
+    // of the bold, **a *b*** -- closes on the last two, not the first two,
+    // which would otherwise cut the <em> in half.
+    out = out.replace(/\*\*([\s\S]+?)\*\*(?!\*)/g, "<strong>$1</strong>");
     out = out.replace(/(^|\s)\*([^*\n]+)\*/g, "$1<em>$2</em>");
     out = out.replace(/\u0000(\d+)\u0000/g, function (_, i) { return vault[+i]; });
     return out;
