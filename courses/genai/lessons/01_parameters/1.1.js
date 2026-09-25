@@ -288,7 +288,7 @@ for i in set(already):
   ' Paris' is not among them, so its logit is unchanged at -101.2143.`,
       caption: "A penalty is a subtraction on a subset of the vector chosen by the history, not by the scores. Which subset, and how much — by count or by appearance, additively or by division — is 1.4." },
 
-    { t: "p", text: "Note what that implies for a long generation: the penalised set grows with every token emitted. After 500 tokens a significant fraction of the vocabulary carries a penalty, which is why aggressive penalty settings degrade long outputs in a way they never do on short ones." },
+    { t: "p", text: "Note what that implies for a long generation: the penalised set grows with every token emitted. Measured on a 400-token sample, only 165 distinct tokens end up penalised — 0.328% of the vocabulary — but they are the 165 you need most, because the tokens a text repeats are `the`, `a`, `of` and the punctuation. That is why aggressive penalty settings degrade long outputs in a way they never do on short ones, and 1.4 measures the damage." },
 
     /* ============================================================ 06 */
     { t: "h2", n: "06", id: "greedy", text: "Greedy decoding is not the model's best answer",
