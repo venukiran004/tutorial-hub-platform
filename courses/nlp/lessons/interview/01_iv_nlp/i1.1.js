@@ -485,13 +485,13 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Encoder-only — bidirectional, *understanding* models.** Every token attends to *all* tokens (left and right), so each output embedding is a context-aware representation of the whole input. Trained by **masking ~15% of tokens and predicting them** (MLM) — this requires seeing both sides, which is why it can't generate left-to-right. You read the input *once* in parallel; there's no autoregressive loop. → Best when you need to *understand or score* a fixed input: sentiment/intent classification, NER, sentence embeddings for **semantic search / RAG retrieval**, re-rankers (cross-encoders). Not for free-form generation."
+      "**Encoder-only — bidirectional, understanding models.** Every token attends to *all* tokens (left and right), so each output embedding is a context-aware representation of the whole input. Trained by **masking ~15% of tokens and predicting them** (MLM) — this requires seeing both sides, which is why it can't generate left-to-right. You read the input *once* in parallel; there's no autoregressive loop. → Best when you need to *understand or score* a fixed input: sentiment/intent classification, NER, sentence embeddings for **semantic search / RAG retrieval**, re-rankers (cross-encoders). Not for free-form generation."
      ]
     },
     {
      "t": "ul",
      "items": [
-      "**Decoder-only — causal, *generative* models.** A **causal mask** lets position \\(i\\) attend only to positions \\(\\leq i\\), so the model never \"sees the future.\" Trained by **next-token prediction**; at inference it generates **autoregressively** (feed output back in, one token at a time). This single objective scales beautifully and gives in-context/few-shot learning, which is why all modern LLMs (GPT, LLaMA, Claude) are decoder-only. → Best for anything *open-ended*: chat, instruction following, reasoning, code generation, agents, summarization-by-prompting."
+      "**Decoder-only — causal, generative models.** A **causal mask** lets position \\(i\\) attend only to positions \\(\\leq i\\), so the model never \"sees the future.\" Trained by **next-token prediction**; at inference it generates **autoregressively** (feed output back in, one token at a time). This single objective scales beautifully and gives in-context/few-shot learning, which is why all modern LLMs (GPT, LLaMA, Claude) are decoder-only. → Best for anything *open-ended*: chat, instruction following, reasoning, code generation, agents, summarization-by-prompting."
      ]
     },
     {
