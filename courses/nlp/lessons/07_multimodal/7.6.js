@@ -8,7 +8,7 @@
 EC.receiveLesson({
   id: "7.6",
 
-  lede: "**CLIP's loss only ever compared images against text, yet text-to-text similarity orders correctly: *dog*/*puppy* 0.9594 against *dog*/*engine* 0.8323.** Alignment transfers to pairings the objective never touched. That transfer is the entire bet behind ImageBind, which uses images as an anchor to bind six modalities without ever training most of the pairs. But look at the second number — 0.8323 for *dog* and *engine* is **higher** than 0.6762 for a red circle and a blue square. The ordering is reliable; the absolute scale is not, and that distinction decides how you build retrieval on top.",
+  lede: "**CLIP's loss only ever compared images against text, yet text-to-text similarity orders correctly: `dog`/`puppy` 0.9594 against `dog`/`engine` 0.8323.** Alignment transfers to pairings the objective never touched. That transfer is the entire bet behind ImageBind, which uses images as an anchor to bind six modalities without ever training most of the pairs. But look at the second number — 0.8323 for *dog* and *engine* is higher than 0.6762 for a red circle and a blue square. The ordering is reliable; the absolute scale is not, and that distinction decides how you build retrieval on top.",
 
   objectives: [
     "Explain what a unified embedding space enables",
