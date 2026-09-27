@@ -262,6 +262,15 @@ room for images: 125500 tokens
           { t: "p", text: "Two passes. All pages at `detail=\"low\"`, which is 85 tokens each and enough to tell which pages contain what you need, then high detail on the two or three that do. I measured that at 3.8× cheaper than all-high at twenty pages, and it wins at every size I tested because the selection pass is 85 tokens against 1,105 for a full-detail A4 page." },
           { t: "p", text: "The thing that surprised me when I worked it out is that the context window is not the constraint: 113 A4 pages at high detail fit in a 128K window. Nobody sends 113 pages, so the planning question is cost and latency rather than capacity, which inverts the usual multimodal worry." },
           { t: "p", text: "I would also split per page rather than sending eight images in one call — it gives failures a location, which is the same argument as decomposition in 2.8, and it makes retries cheap. And I would run OCR alongside, sending the text and the image together: the text gives exact strings, the image gives the layout OCR threw away." }
+        ] },
+      { level: "core",
+        q: "How would you reduce the cost of a vision-heavy pipeline?",
+        strong: "A strong answer knows the detail setting is the dominant lever and that resizing above the threshold saves bandwidth rather than tokens.",
+        answer: [
+          { t: "p", text: "First, question `detail`. It is 9× between low and high, and it defaults to `auto`, which resolves to high on large images — so a pipeline that never set it is on the expensive branch by accident. I would run fifty real images at both settings and compare answers; for a surprising number of tasks they are identical." },
+          { t: "p", text: "Second, a two-pass structure where there are many images: all pages at low detail to find the ones that matter, then high detail on those. Measured on A4 pages that was 3.8× cheaper at twenty pages." },
+          { t: "p", text: "Third — and this one saves latency rather than tokens, which people get backwards — resize client-side. A 4K photograph and a 1K one both cost the same after the server shrinks the shortest side to 768, so the extra megabytes buy nothing and cost upload time." },
+          { t: "p", text: "And I would preprocess where I can: cropping to the region, deskewing, and running OCR alongside so the model gets exact strings as well as layout. That is work done once in code rather than on every request." }
         ] }
     ]
   }

@@ -269,6 +269,14 @@ Simple+CoT        162          -          -         -`,
           { t: "p", text: "Two things beyond the obvious setup cost. First, the metric is the whole system and nothing validates it — every optimiser maximises a function you wrote, so a bad metric produces a confidently optimised bad prompt. Automation removes exactly the step where a human looks at outputs and notices the measurement is wrong." },
           { t: "p", text: "Second, the reproducibility claim has a trap in it. Versioning the signature and the metric is not enough: compilation is a search whose result depends on model behaviour and sampling, so if it runs in your build, every deploy gets a different prompt. I have seen a team lose a good prompt and be unable to recover it three months later from identical inputs — the artefact has to be compiled deliberately, committed, and loaded at runtime." },
           { t: "p", text: "And the conditions for it paying off are narrower than people assume: labelled data, many calls, and an expectation of changing models. If only one or two hold, a versioned template plus a test set gets most of the reproducibility for a fraction of the setup." }
+        ] },
+      { level: "core",
+        q: "What does a DSPy signature replace, and what does it not?",
+        strong: "A strong answer separates the interface from the content, and knows the metric is still yours to write.",
+        answer: [
+          { t: "p", text: "It replaces the prompt string — the formatting instructions, the output-shape directions, the parsing contract. Those are generated from the field declarations, which is why the same module runs on a different model without a rewrite." },
+          { t: "p", text: "What it does not replace is the specification. The docstring still has to say what the module does, the field descriptions still carry the semantics, and above all the **metric** is yours to write and nothing validates it. That is where the real work moves to." },
+          { t: "p", text: "So it is not accurate to say DSPy removes prompt engineering. It relocates it: from tuning a string to defining an interface and a measurement, which is better work if you have labelled data and worse work if you do not." }
         ] }
     ]
   }

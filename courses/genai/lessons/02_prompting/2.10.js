@@ -282,6 +282,14 @@ closest five overall:
           { t: "p", text: "So: embed the descriptions and sort every pair by cosine similarity. On a ten-tool catalogue I tried, it surfaced `issue_refund` and `cancel_order` at 0.66 — two irreversible actions on the same object, which I had not planted and which is the pair I would fix first. It also missed one I had planted, because those two descriptions read differently while competing for the same intent. So it is a cheap screen that finds real problems, not a substitute for looking at traces." },
           { t: "p", text: "Then boundary clauses on the close pairs, and routing if the set is genuinely large — a cheap call picks five candidates and the expensive call sees only those, which improves accuracy and cost at once." },
           { t: "p", text: "The thing I would push for beyond the fix is putting that audit in CI. A new tool whose description is too close to an existing one fails the build until it has a boundary clause. I have seen a search tool's call rate fall from 60% to 22% over two weeks because another team shipped a similar tool, and nothing tested the set as a set." }
+        ] },
+      { level: "core",
+        q: "What goes in a tool description, and what does not?",
+        strong: "A strong answer names the boundary clause and excludes implementation detail.",
+        answer: [
+          { t: "p", text: "Four things: the action and the object, what it returns, the boundary — when not to use it and which tool to use instead — and any precondition the model can act on, such as needing an account id that another tool supplies." },
+          { t: "p", text: "The boundary is the one that earns its tokens, because mis-selection is almost always a neighbour winning rather than the tool being unclear in isolation. Naming the neighbour explicitly is what separates them." },
+          { t: "p", text: "What does not belong is implementation detail. \"Calls the v2 API with a 5-second timeout\" is true, costs tokens on every request of every turn, and has no bearing on whether the model should pick it. The audience for a description is the model, not a maintainer — that is what the code comments are for." }
         ] }
     ]
   }

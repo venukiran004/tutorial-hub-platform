@@ -291,6 +291,14 @@ for n in (30, 50, 100, 500, 1000, 5000):
           { t: "p", text: "The outcome is a prompt overfitted to forty examples by something that looks exactly like engineering rigour: a documented metric, a golden set, every change evaluated before merge. I have seen this end with the current prompt measuring worse on production data than the version from eighteen months earlier." },
           { t: "p", text: "The general point is the one I would want to land: a measurement too small to detect your effect size does not produce no information. It produces confident wrong information, and a process built on it moves steadily in a random direction while generating a record that reads like progress." },
           { t: "p", text: "The fix is not more discipline — they had discipline. It is a bigger set, grown from failures, a paired test, and moving the acceptance gate to production where the sample size arrives on its own." },
+        ] },
+      { level: "core",
+        q: "What goes in a prompt test set?",
+        strong: "A strong answer resists \"representative\" and explains why a typical-only set cannot discriminate.",
+        answer: [
+          { t: "p", text: "Not just representative cases, which is the usual advice and produces a set every candidate passes. Roughly 40% typical, and then the parts that make it discriminate: edge cases such as empty or maximum-length input, known production failures, adversarial inputs, and cases where the correct behaviour is to decline or say it does not know." },
+          { t: "p", text: "That last category is the most often missing and the most useful. A set with no unanswerable questions in it cannot detect a prompt change that made the model more willing to guess — which is one of the commonest regressions." },
+          { t: "p", text: "And I would grow it from production failures rather than assembling it once. Every incident and every flagged output goes in with the right answer attached, which makes it a regression suite as well as a benchmark and means it drifts toward the inputs the system is actually bad at rather than away from them." }
         ] }
     ]
   }
