@@ -75,11 +75,11 @@ look-alike rules merged, then one of them changes:
     { t: "diagram", kind: "matrix", title: "What a feature built in advance costs you",
       caption: "Martin Fowler's breakdown of a presumptive feature. Even a correct guess delays everything else that could have shipped instead and makes every change until then pay for the extra code. A wrong guess adds the cost of reworking or removing it — which is the common case, because requirements arrive differently from how they were imagined.",
       cols: ["Build", "Delay", "Carry", "Repair"],
-      rows: ["Needed later, exactly as guessed", "Needed later, but differently", "Never needed"],
+      rows: ["Needed, as guessed", "Needed, but differently", "Never needed"],
       cells: [
-        [{ text: "paid early", tone: "warn" }, { text: "other work waits", tone: "crit" }, { text: "every change works around it", tone: "crit" }, { text: "none", tone: "good" }],
-        [{ text: "paid early", tone: "warn" }, { text: "other work waits", tone: "crit" }, { text: "every change works around it", tone: "crit" }, { text: "rework it", tone: "crit" }],
-        [{ text: "wasted", tone: "crit" }, { text: "other work waits", tone: "crit" }, { text: "every change works around it", tone: "crit" }, { text: "remove it", tone: "crit" }]
+        [{ text: "paid early", tone: "warn" }, { text: "other work waits", tone: "crit" }, { text: "slows every change", tone: "crit" }, { text: "none", tone: "good" }],
+        [{ text: "paid early", tone: "warn" }, { text: "other work waits", tone: "crit" }, { text: "slows every change", tone: "crit" }, { text: "rework it", tone: "crit" }],
+        [{ text: "wasted", tone: "crit" }, { text: "other work waits", tone: "crit" }, { text: "slows every change", tone: "crit" }, { text: "remove it", tone: "crit" }]
       ] },
 
     { t: "callout", kind: "tradeoff", title: "YAGNI is not \"don't design\"",
@@ -370,8 +370,8 @@ eager:
       caption: "Lazily read configuration passes every health check, so the rollout reaches every instance; the bad value is only parsed when the first refund arrives in the small hours, when every instance fails at once. Validated at start-up, the first new instance refuses to start, never becomes ready, and the deployment stops with the old version still serving.",
       span: 20, tick: 4, unit: "hours after a 09:00 deploy",
       lanes: [
-        { label: "Lazy config", bars: [[0, 0.6, "deploy", "accent"], [0.6, 17.8, "serving; every check green; the typo waits", "warn"], [17.8, 20, "failing", "crit"]] },
-        { label: "Validated", bars: [[0, 0.6, "refused", "crit"], [0.6, 20, "old version keeps serving; the typo is fixed at 09:05", "good"]] }
+        { label: "Lazy config", bars: [[0, 17.8, "deployed 09:00; serving, every check green; the typo waits", "warn"], [17.8, 20, "failing", "crit"]] },
+        { label: "Validated", bars: [[0, 20, "refused at 09:00; the old version keeps serving; typo fixed 09:05", "good"]] }
       ] },
 
     { t: "callout", kind: "insight", title: "Fail fast, then degrade gracefully",

@@ -94,9 +94,9 @@ dashboard, revenue per product over 30 days
     { t: "diagram", kind: "matrix", title: "Four ways to maintain a derived value",
       caption: "In-transaction updates are the default for counts on the same database. Triggers guarantee the update but hide logic in the database. Events and CDC suit copies in other services or stores. A scheduled rebuild suits aggregates where minutes of staleness are acceptable — and doubles as drift repair for the others.",
       cols: ["Freshness", "Can drift?", "Cost"],
-      rows: ["Same transaction as the write", "Database trigger", "Event / CDC consumer (6.4)", "Scheduled rebuild"],
+      rows: ["Same transaction", "Database trigger", "Event / CDC consumer (6.4)", "Scheduled rebuild"],
       cells: [
-        [{ text: "immediate", tone: "good" }, { text: "only via code paths that skip it", tone: "warn" }, { text: "write contention on hot rows", tone: "warn" }],
+        [{ text: "immediate", tone: "good" }, { text: "only if a code path skips it", tone: "warn" }, { text: "write contention on hot rows", tone: "warn" }],
         [{ text: "immediate", tone: "good" }, { text: "no", tone: "good" }, { text: "hidden logic, slower writes", tone: "warn" }],
         [{ text: "seconds", tone: "warn" }, { text: "if events are lost", tone: "warn" }, { text: "a pipeline to run", tone: "warn" }],
         [{ text: "as old as the schedule", tone: "crit" }, { text: "repaired each run", tone: "good" }, { text: "periodic heavy query", tone: "accent" }]

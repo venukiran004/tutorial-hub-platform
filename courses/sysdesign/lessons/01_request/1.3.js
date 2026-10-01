@@ -189,9 +189,9 @@ L7 routes to: api-pool-canary  (by path + cookie)`,
       cols: ["Client → proxy", "Proxy → server", "Proxy can route on path?", "Cost"],
       rows: ["Terminate at edge", "Re-encrypt (TLS bridging)", "Passthrough (L4)"],
       cells: [
-        [{ text: "TLS", tone: "good" }, { text: "plain HTTP", tone: "warn" }, { text: "yes", tone: "good" }, { text: "cheapest; inside is unencrypted" }],
-        [{ text: "TLS", tone: "good" }, { text: "TLS again", tone: "good" }, { text: "yes", tone: "good" }, { text: "two handshakes; certificates inside" }],
-        [{ text: "TLS", tone: "good" }, { text: "same TLS", tone: "good" }, { text: "no", tone: "crit" }, { text: "server holds the key; no L7 features" }]
+        [{ text: "TLS", tone: "good" }, { text: "plain HTTP", tone: "warn" }, { text: "yes", tone: "good" }, { text: "cheap; plain inside" }],
+        [{ text: "TLS", tone: "good" }, { text: "TLS again", tone: "good" }, { text: "yes", tone: "good" }, { text: "costs two handshakes" }],
+        [{ text: "TLS", tone: "good" }, { text: "same TLS", tone: "good" }, { text: "no", tone: "crit" }, { text: "keys on servers, no L7" }]
       ] },
 
     { t: "callout", kind: "insight", title: "Terminating TLS at the edge is also a latency decision",

@@ -115,7 +115,7 @@ write skew
     { t: "diagram", kind: "matrix", title: "Which level prevents which anomaly",
       caption: "Prevented is ✓, possible is ✗. The SQL standard defines levels by the anomalies they exclude; real databases implement them differently — PostgreSQL's REPEATABLE READ is snapshot isolation and also prevents phantoms; MySQL InnoDB's default is REPEATABLE READ with different locking behaviour.",
       cols: ["Dirty read", "Non-repeatable", "Lost update", "Phantom", "Write skew"],
-      rows: ["READ UNCOMMITTED", "READ COMMITTED", "REPEATABLE READ / snapshot", "SERIALIZABLE"],
+      rows: ["READ UNCOMMITTED", "READ COMMITTED", "REPEATABLE READ", "SERIALIZABLE"],
       cells: [
         [false, false, false, false, false],
         [true, false, false, false, false],

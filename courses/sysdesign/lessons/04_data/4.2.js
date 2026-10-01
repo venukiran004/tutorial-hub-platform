@@ -52,8 +52,8 @@ EC.receiveLesson({
       cols: ["Maps a key by", "Balance", "Range queries", "Resharding"],
       rows: ["Hash", "Range", "Directory (lookup)"],
       cells: [
-        [{ text: "hash(key) → shard" }, { text: "even", tone: "good" }, { text: "fan out to all", tone: "crit" }, { text: "consistent hashing (4.3)", tone: "warn" }],
-        [{ text: "key in [lo, hi) → shard" }, { text: "hot spots on new keys", tone: "crit" }, { text: "one or few shards", tone: "good" }, { text: "split a range", tone: "good" }],
+        [{ text: "hash(key) → shard" }, { text: "even", tone: "good" }, { text: "fan out to all", tone: "crit" }, { text: "consistent hash (4.3)", tone: "warn" }],
+        [{ text: "[lo, hi) → shard" }, { text: "hot spots on new keys", tone: "crit" }, { text: "one or few shards", tone: "good" }, { text: "split a range", tone: "good" }],
         [{ text: "a table: key → shard" }, { text: "whatever you choose", tone: "good" }, { text: "depends", tone: "warn" }, { text: "move one entry", tone: "good" }]
       ] },
 

@@ -75,7 +75,7 @@ for timeout in (0.05, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0):
     { t: "diagram", kind: "matrix", title: "Peter Deutsch's eight fallacies (1994), with the response this course gives each",
       caption: "Each fallacy is a design decision made by default when nobody makes it deliberately. The rightmost column points at where the deliberate version is taught.",
       cols: ["What actually happens", "Design response"],
-      rows: ["The network is reliable", "Latency is zero", "Bandwidth is infinite", "The network is secure", "Topology doesn't change", "There is one administrator", "Transport cost is zero", "The network is homogeneous"],
+      rows: ["The network is reliable", "Latency is zero", "Bandwidth is infinite", "The network is secure", "Topology doesn't change", "There is one admin", "Transport cost is zero", "Network is homogeneous"],
       cells: [
         [{ text: "packets lost, connections reset", tone: "crit" }, { text: "timeouts, retries, idempotency (7.1, 6.3)" }],
         [{ text: "0.5 ms in a DC, 150 ms across oceans", tone: "crit" }, { text: "fewer round trips, caches, locality (1.2)" }],
@@ -93,11 +93,11 @@ for timeout in (0.05, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0):
     { t: "diagram", kind: "layers", title: "Failure models, from easiest to hardest to tolerate",
       caption: "A protocol is correct only under the failures it assumes. Raft and Paxos assume crash-recovery with durable storage; they are not safe if a node lies. Byzantine tolerance (8.6) is far more expensive and is used where nodes may be malicious or corrupted.",
       items: [
-        { label: "Crash-stop", sub: "a node halts and never returns", tone: "good", side: "simplest to reason about" },
-        { label: "Crash-recovery", sub: "a node halts, restarts, and resumes from what it saved durably", tone: "accent", side: "the realistic default" },
-        { label: "Omission", sub: "a node or link drops some messages", tone: "accent", side: "lost packets, full buffers" },
-        { label: "Timing", sub: "a node or link is arbitrarily slow — pauses, congestion", tone: "warn", side: "indistinguishable from dead" },
-        { label: "Byzantine", sub: "a node behaves arbitrarily: corrupt data, lies, two faces", tone: "crit", side: "needs 3f + 1 nodes (8.6)" }
+        { label: "Crash-stop", sub: "a node halts and never returns · simplest to reason about", tone: "good" },
+        { label: "Crash-recovery", sub: "a node halts, restarts, and resumes from what it saved durably · the realistic default", tone: "accent" },
+        { label: "Omission", sub: "a node or link drops some messages · lost packets, full buffers", tone: "accent" },
+        { label: "Timing", sub: "a node or link is arbitrarily slow — pauses, congestion · indistinguishable from dead", tone: "warn" },
+        { label: "Byzantine", sub: "a node behaves arbitrarily: corrupt data, lies, two faces · needs 3f + 1 nodes (8.6)", tone: "crit" }
       ] },
 
     { t: "callout", kind: "insight", title: "The impossibility results, in one paragraph each",

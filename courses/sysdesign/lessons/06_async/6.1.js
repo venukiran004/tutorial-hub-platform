@@ -169,9 +169,9 @@ with a DLQ       processed [1, 3, 4, 5, 6, 7, 8]    dead-lettered [2]    after 1
       cols: ["Model", "Ordering", "After consuming", "Typical use"],
       rows: ["Amazon SQS", "RabbitMQ", "Kafka", "Redis Streams"],
       cells: [
-        [{ text: "managed queue" }, { text: "best effort (FIFO option)", tone: "warn" }, { text: "deleted", tone: "accent" }, { text: "work queues, decoupling" }],
-        [{ text: "broker, routing" }, { text: "per queue", tone: "good" }, { text: "deleted", tone: "accent" }, { text: "task routing, RPC, priorities" }],
-        [{ text: "partitioned log" }, { text: "per partition", tone: "good" }, { text: "retained", tone: "violet" }, { text: "event streams, replay, many readers" }],
+        [{ text: "managed queue" }, { text: "best effort / FIFO", tone: "warn" }, { text: "deleted", tone: "accent" }, { text: "work queues" }],
+        [{ text: "broker, routing" }, { text: "per queue", tone: "good" }, { text: "deleted", tone: "accent" }, { text: "routing, priorities" }],
+        [{ text: "partitioned log" }, { text: "per partition", tone: "good" }, { text: "retained", tone: "violet" }, { text: "streams, replay" }],
         [{ text: "log in Redis" }, { text: "per stream", tone: "good" }, { text: "retained (capped)", tone: "violet" }, { text: "lightweight streams" }]
       ] },
 

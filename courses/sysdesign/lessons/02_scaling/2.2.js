@@ -168,8 +168,8 @@ passive + one retry elsewhere                  same                  0`,
       rows: ["Liveness", "Readiness", "Deep"],
       cells: [
         [{ text: "the process answers at all", tone: "good" }, { text: "restart if dead" }, { text: "misses a broken dependency", tone: "warn" }],
-        [{ text: "it can do its own job now", tone: "good" }, { text: "route traffic or not", tone: "good" }, { text: "low, if it excludes shared deps" }],
-        [{ text: "every dependency: DB, cache, APIs", tone: "warn" }, { text: "dashboards, alerting", tone: "accent" }, { text: "one DB blip ejects the whole fleet", tone: "crit" }]
+        [{ text: "it can do its own job now", tone: "good" }, { text: "route traffic or not", tone: "good" }, { text: "low, if no shared deps" }],
+        [{ text: "every dependency: DB, cache", tone: "warn" }, { text: "dashboards, alerting", tone: "accent" }, { text: "a DB blip ejects the fleet", tone: "crit" }]
       ] },
 
     { t: "callout", kind: "trap", title: "The deep health check that turned a database blip into a total outage",

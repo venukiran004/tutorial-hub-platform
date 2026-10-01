@@ -395,9 +395,9 @@ print(f"3 tests in {(time.perf_counter() - start) * 1000:.2f} ms: no network, no
       cols: ["Smell in code", "Repair", "The same idea at scale"],
       rows: ["Single responsibility", "Open/closed", "Liskov substitution", "Interface segregation", "Dependency inversion"],
       cells: [
-        [{ text: "one class changed by many teams", tone: "crit" }, { text: "split by actor", tone: "good" }, { text: "service per team or capability" }],
-        [{ text: "a growing if/elif on type", tone: "crit" }, { text: "registry or strategy", tone: "good" }, { text: "plugins, webhooks, event consumers" }],
-        [{ text: "subclass weakens a promise", tone: "crit" }, { text: "contract tests", tone: "good" }, { text: "swapping a store with weaker consistency" }],
+        [{ text: "one class, many teams", tone: "crit" }, { text: "split by actor", tone: "good" }, { text: "service per team or capability" }],
+        [{ text: "a growing if/elif on type", tone: "crit" }, { text: "registry or strategy", tone: "good" }, { text: "plugins, webhooks, consumers" }],
+        [{ text: "subclass weakens a promise", tone: "crit" }, { text: "contract tests", tone: "good" }, { text: "swapping in a weaker store" }],
         [{ text: "stubs that raise", tone: "crit" }, { text: "role interfaces", tone: "good" }, { text: "an API per consumer, CQRS" }],
         [{ text: "vendor client built inside the logic", tone: "crit" }, { text: "inject a port", tone: "good" }, { text: "hexagonal architecture" }]
       ] },

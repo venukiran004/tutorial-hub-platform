@@ -144,12 +144,12 @@ for h in (0.0, 0.5, 0.8, 0.9, 0.95, 0.99, 0.995):
     { t: "diagram", kind: "layers", title: "Cache layers, nearest the user first",
       caption: "Each layer is faster and closer than the one below, and each serves fewer users with the same copy. A request answered by an upper layer never reaches the lower ones — which is the whole point, and also why invalidation has to reach every layer that might hold a copy (3.3).",
       items: [
-        { label: "Browser and app cache", sub: "Cache-Control headers; zero network", tone: "good", side: "one user · 0 ms" },
-        { label: "CDN edge", sub: "static assets, cacheable API responses (3.5)", tone: "good", side: "a city · ~10 ms" },
-        { label: "Gateway / reverse proxy cache", sub: "whole responses by URL", tone: "accent", side: "everyone · < 1 ms hop" },
-        { label: "In-process cache", sub: "a dict or LRU inside each app server", tone: "accent", side: "one server · ~0.0001 ms" },
-        { label: "Distributed cache", sub: "Redis, Memcached: shared by every server", tone: "violet", side: "all servers · ~0.5–1 ms" },
-        { label: "Database buffer pool", sub: "hot pages already in the database's RAM", tone: "warn", side: "automatic" }
+        { label: "Browser and app cache", sub: "Cache-Control headers; zero network · one user, 0 ms", tone: "good" },
+        { label: "CDN edge", sub: "static assets, cacheable API responses (3.5) · a city, ~10 ms", tone: "good" },
+        { label: "Gateway / reverse proxy cache", sub: "whole responses by URL · everyone, < 1 ms hop", tone: "accent" },
+        { label: "In-process cache", sub: "a dict or LRU inside each app server · one server, ~0.0001 ms", tone: "accent" },
+        { label: "Distributed cache", sub: "Redis, Memcached: shared by every server · all servers, ~0.5–1 ms", tone: "violet" },
+        { label: "Database buffer pool", sub: "hot pages already in the database's RAM · automatic", tone: "warn" }
       ] },
 
     { t: "callout", kind: "tradeoff", title: "In-process or distributed?",

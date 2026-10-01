@@ -24,11 +24,11 @@ EC.receiveLesson({
     { t: "diagram", kind: "layers", title: "Consistency models, strongest first",
       caption: "Each rung implies everything below it. The session guarantees in the middle (4.1) are what users notice — seeing their own write, never going backwards — and they are cheap to provide with sticky routing or version tokens, even on top of an eventually consistent store.",
       items: [
-        { label: "Linearizable", sub: "one copy, real time: a read sees every write that completed before it began", tone: "accent", side: "etcd, Spanner, a single primary" },
-        { label: "Sequential", sub: "one order all clients agree on, but not tied to real time", tone: "accent", side: "rarely offered alone" },
-        { label: "Causal", sub: "if A could have influenced B, everyone sees A before B", tone: "violet", side: "MongoDB causal sessions, CRDT stores" },
-        { label: "Session guarantees", sub: "read-your-writes · monotonic reads · writes follow reads", tone: "teal", side: "sticky or token-based routing" },
-        { label: "Eventual", sub: "if writes stop, replicas converge — no promise about when or what you read meanwhile", tone: "warn", side: "Cassandra/DynamoDB defaults, DNS" }
+        { label: "Linearizable", sub: "a read sees every write that completed before it began · etcd, Spanner", tone: "accent" },
+        { label: "Sequential", sub: "one order all clients agree on, but not tied to real time · rarely offered alone", tone: "accent" },
+        { label: "Causal", sub: "if A could have influenced B, everyone sees A before B · MongoDB causal sessions", tone: "violet" },
+        { label: "Session guarantees", sub: "read-your-writes · monotonic reads · writes follow reads · sticky or token-based routing", tone: "teal" },
+        { label: "Eventual", sub: "replicas converge once writes stop; no promise meanwhile · Cassandra, DynamoDB, DNS", tone: "warn" }
       ] },
 
     { t: "h3", text: "What a linearizability violation looks like" },

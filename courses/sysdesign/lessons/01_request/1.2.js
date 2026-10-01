@@ -201,7 +201,7 @@ BETTER: batch the orders, cache prices locally, run branches in parallel
       span: 230, tick: 20, unit: "milliseconds",
       lanes: [
         { label: "Sequential", bars: [[0, 6, "", "accent"], [6, 106, "20 order queries (N+1)", "warn"], [106, 146, "recs", "accent"], [146, 226, "pricing ×-region", "crit"]] },
-        { label: "Parallel: data", bars: [[1, 14, "user+orders", "good"]] },
+        { label: "Parallel: data", bars: [[1, 14, "", "good"]] },
         { label: "Parallel: recs", bars: [[1, 41, "recs", "accent"]] },
         { label: "Parallel: price", bars: [[1, 2, "", "good"]] }
       ] },

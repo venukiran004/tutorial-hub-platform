@@ -22,9 +22,9 @@ EC.receiveLesson({
       sub: "The order of two steps decides what a crash costs" },
 
     { t: "diagram", kind: "matrix", title: "Where the consumer crashes, and what each ordering does about it",
-      caption: "A consumer does two things: applies the effect and records its progress (commits the offset or acknowledges). Whichever comes first, a crash between them leaves one done and one not. Commit first and the effect is lost; process first and it will be applied again.",
+      caption: "A consumer does two things: applies the effect and records its progress (commits the offset or acknowledges). Whichever comes first, a crash between them leaves one done and one not. Commit first and the effect is lost (at-most-once); process first and it will be applied again (at-least-once); an idempotent consumer makes the repeat harmless (effectively once).",
       cols: ["Crash before effect", "Crash between", "Crash after both"],
-      rows: ["Commit, then process (at-most-once)", "Process, then commit (at-least-once)", "Idempotent consumer (effectively once)"],
+      rows: ["Commit, then process", "Process, then commit", "Idempotent consumer"],
       cells: [
         [{ text: "lost", tone: "crit" }, { text: "lost", tone: "crit" }, { text: "fine", tone: "good" }],
         [{ text: "retried: fine", tone: "good" }, { text: "applied twice", tone: "warn" }, { text: "fine", tone: "good" }],

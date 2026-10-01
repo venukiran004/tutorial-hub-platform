@@ -250,8 +250,8 @@ LRU + frequency admission            64.4%                    62.7%`,
       cells: [
         [{ text: "newest inserted" }, { text: "no", tone: "crit" }, { text: "trivial", tone: "good" }, { text: "simple buffers" }],
         [{ text: "whatever survives" }, { text: "no", tone: "crit" }, { text: "trivial", tone: "good" }, { text: "Redis allkeys-random" }],
-        [{ text: "recently used" }, { text: "no", tone: "crit" }, { text: "a linked list", tone: "good" }, { text: "the default almost everywhere", tone: "accent" }],
-        [{ text: "often used" }, { text: "yes", tone: "good" }, { text: "counters; slow to adapt", tone: "warn" }, { text: "Redis allkeys-lfu" }],
+        [{ text: "recently used" }, { text: "no", tone: "crit" }, { text: "a linked list", tone: "good" }, { text: "the usual default", tone: "accent" }],
+        [{ text: "often used" }, { text: "yes", tone: "good" }, { text: "slow to adapt", tone: "warn" }, { text: "Redis allkeys-lfu" }],
         [{ text: "recent and frequent" }, { text: "yes", tone: "good" }, { text: "a sketch of counts", tone: "good" }, { text: "Caffeine, Ristretto", tone: "good" }]
       ] },
 

@@ -25,9 +25,9 @@ EC.receiveLesson({
       caption: "RPO looks backwards from the failure: the window of writes that existed only on the failed node — for asynchronous replication, the replication lag (4.1). RTO looks forwards: the time until service is restored. They are set by the business and achieved by design; neither is free.",
       span: 20, tick: 2, unit: "minutes",
       lanes: [
-        { label: "writes", bars: [[0, 7.5, "replicated", "good"], [7.5, 8, "lost", "crit"]] },
+        { label: "writes", bars: [[0, 6.5, "replicated", "good"], [6.5, 8, "lost", "crit"]] },
         { label: "service", bars: [[0, 8, "up", "good"], [8, 13, "down: RTO", "crit"], [13, 20, "restored", "good"]] },
-        { label: "objective", bars: [[7.5, 8, "RPO", "warn"], [8, 13, "RTO", "warn"]] }
+        { label: "objective", bars: [[6.5, 8, "RPO", "warn"], [8, 13, "RTO", "warn"]] }
       ] },
 
     { t: "table",

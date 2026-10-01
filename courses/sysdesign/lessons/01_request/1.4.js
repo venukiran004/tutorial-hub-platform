@@ -77,7 +77,7 @@ Cache-Control: private, max-age=30
       caption: "Each layer wraps the one above it. A layer-4 balancer reads the TCP and IP layers; a layer-7 proxy decrypts TLS to read the HTTP inside (1.3).",
       items: [
         { label: "HTTP: GET /orders/42, headers, body", sub: "the application's conversation", tone: "good", side: "L7 reads this" },
-        { label: "TLS: encryption, integrity, server identity", sub: "the S in HTTPS", tone: "violet", side: "terminated by L7 proxies" },
+        { label: "TLS: encryption, integrity, server identity", sub: "the S in HTTPS", tone: "violet", side: "L7 terminates" },
         { label: "TCP: ordered, reliable byte stream, port 443", sub: "connection set-up costs a round trip", tone: "accent", side: "L4 reads this" },
         { label: "IP: addresses, routing between networks", sub: "best effort, may drop or reorder", side: "" }
       ] },
@@ -94,9 +94,9 @@ Cache-Control: private, max-age=30
       cells: [
         [true, true, true, { text: "read a resource" }],
         [true, true, true, { text: "headers only" }],
-        [false, true, false, { text: "replace the whole resource" }],
+        [false, true, false, { text: "replace it entirely" }],
         [false, true, false, { text: "remove it" }],
-        [false, false, { text: "rarely", tone: "warn" }, { text: "create, or run an action" }],
+        [false, false, { text: "rarely", tone: "warn" }, { text: "create, or trigger" }],
         [false, { text: "not promised", tone: "warn" }, false, { text: "change part of it" }]
       ] },
 

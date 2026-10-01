@@ -156,7 +156,7 @@ for name, a in stages:
     { t: "diagram", kind: "matrix", title: "Where the resilient core will run out next",
       caption: "The core is correct and redundant, but every request still reaches the database, and the database has one primary. That is the next bottleneck — and the order in which the course removes it.",
       cols: ["Symptom", "Fixed by"],
-      rows: ["Reads saturate the primary", "Same data read repeatedly", "Users far away are slow", "Writes saturate the primary", "Slow work inside requests", "A dependency is slow, not down"],
+      rows: ["Reads saturate primary", "Same data read repeatedly", "Users far away are slow", "Writes saturate primary", "Slow work inside requests", "A dependency is slow"],
       cells: [
         [{ text: "CPU high on SELECTs", tone: "warn" }, { text: "read replicas (4.1)", tone: "good" }],
         [{ text: "90% of reads hit 1% of rows", tone: "warn" }, { text: "caching (Module 3)", tone: "good" }],

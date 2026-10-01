@@ -29,7 +29,7 @@ EC.receiveLesson({
       lanes: [
         { label: "A's lease", bars: [[0, 300, "valid", "good"], [300, 600, "expired", "crit"]] },
         { label: "A", bars: [[0, 40, "work", "accent"], [40, 540, "paused (GC) — believes it holds the lock", "warn"], [540, 600, "writes!", "crit"]] },
-        { label: "B", bars: [[300, 360, "acquires, works", "violet"], [360, 400, "writes", "good"]] }
+        { label: "B", bars: [[300, 370, "takes lock", "violet"], [370, 410, "writes", "good"]] }
       ] },
 
     { t: "p", text: "The same sequence on a real Redis lease lock (`SET key value NX PX 300`), with A's pause simulated by a sleep, and a storage layer with and without fencing:" },

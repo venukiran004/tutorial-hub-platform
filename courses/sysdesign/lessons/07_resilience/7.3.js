@@ -128,11 +128,11 @@ LeakyBucket                        11 of 20                       11            
       cols: ["Boundary burst", "Burst after idle", "State per client", "Use for"],
       rows: ["Fixed window", "Sliding log", "Sliding counter", "Token bucket", "Leaky bucket"],
       cells: [
-        [{ text: "up to 2× limit", tone: "crit" }, { text: "full window", tone: "warn" }, { text: "1 counter", tone: "good" }, { text: "coarse quotas (per day)" }],
-        [{ text: "exact", tone: "good" }, { text: "none beyond limit", tone: "good" }, { text: "every timestamp", tone: "crit" }, { text: "low limits needing precision" }],
+        [{ text: "up to 2× limit", tone: "crit" }, { text: "full window", tone: "warn" }, { text: "1 counter", tone: "good" }, { text: "daily quotas" }],
+        [{ text: "exact", tone: "good" }, { text: "none beyond limit", tone: "good" }, { text: "every timestamp", tone: "crit" }, { text: "low, precise limits" }],
         [{ text: "≈ exact", tone: "good" }, { text: "none beyond limit", tone: "good" }, { text: "2 counters", tone: "good" }, { text: "high-volume APIs", tone: "accent" }],
-        [{ text: "≤ capacity", tone: "good" }, { text: "capacity, by design", tone: "accent" }, { text: "2 numbers", tone: "good" }, { text: "API gateways, cloud APIs", tone: "accent" }],
-        [{ text: "smoothed", tone: "good" }, { text: "queued, not burst", tone: "accent" }, { text: "a queue", tone: "warn" }, { text: "protecting a fragile downstream" }]
+        [{ text: "≤ capacity", tone: "good" }, { text: "capacity, by design", tone: "accent" }, { text: "2 numbers", tone: "good" }, { text: "API gateways", tone: "accent" }],
+        [{ text: "smoothed", tone: "good" }, { text: "queued, not burst", tone: "accent" }, { text: "a queue", tone: "warn" }, { text: "a fragile downstream" }]
       ] },
 
     { t: "h2", n: "02", id: "distributed", text: "Rate limiting across a fleet",

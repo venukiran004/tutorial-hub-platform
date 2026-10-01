@@ -149,8 +149,8 @@ ideal when going from 10 to 11 nodes: 9.1% of keys move`,
       rows: ["hash % N", "Ring + virtual nodes", "Rendezvous (HRW)"],
       cells: [
         [{ text: "≈ all keys", tone: "crit" }, { text: "perfect", tone: "good" }, { text: "O(1)", tone: "good" }, { text: "fixed-size pools only" }],
-        [{ text: "≈ 1/N", tone: "good" }, { text: "good with ~100+ vnodes", tone: "good" }, { text: "O(log points)", tone: "good" }, { text: "Cassandra, DynamoDB, Envoy ring hash" }],
-        [{ text: "≈ 1/N", tone: "good" }, { text: "good, no vnodes", tone: "good" }, { text: "O(N) hashes", tone: "warn" }, { text: "client-side shard routing, CDNs" }]
+        [{ text: "≈ 1/N", tone: "good" }, { text: "good with ~100+ vnodes", tone: "good" }, { text: "O(log points)", tone: "good" }, { text: "Cassandra, DynamoDB" }],
+        [{ text: "≈ 1/N", tone: "good" }, { text: "good, no vnodes", tone: "good" }, { text: "O(N) hashes", tone: "warn" }, { text: "client routing, CDNs" }]
       ] },
 
     { t: "callout", kind: "trap", title: "Consistent hashing does not move the data for you",

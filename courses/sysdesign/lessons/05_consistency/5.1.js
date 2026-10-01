@@ -155,7 +155,7 @@ cross-continent              0.5 ms                 150.5 ms`,
     { t: "diagram", kind: "matrix", title: "Systems by PACELC, in their typical configuration",
       caption: "Most of these are configurable per request — Cassandra and DynamoDB offer strongly consistent reads at higher latency; Spanner offers bounded-staleness reads that skip the wait. The table describes defaults, which is what most code actually uses.",
       cols: ["If partitioned", "Else", "Typical use"],
-      rows: ["Cassandra, DynamoDB (default)", "Spanner, CockroachDB", "etcd, ZooKeeper", "PostgreSQL + async replicas"],
+      rows: ["Cassandra, DynamoDB", "Spanner, CockroachDB", "etcd, ZooKeeper", "Postgres + async replicas"],
       cells: [
         [{ text: "available", tone: "warn" }, { text: "latency", tone: "warn" }, { text: "high-volume, mergeable data" }],
         [{ text: "consistent", tone: "accent" }, { text: "consistency", tone: "accent" }, { text: "global transactions" }],

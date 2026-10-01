@@ -22,10 +22,10 @@ EC.receiveLesson({
       sub: "Asking repeatedly, asking and waiting, or keeping a line open" },
 
     { t: "diagram", kind: "timeline", title: "Sixty seconds of each mechanism, with two events at 17 s and 44 s",
-      caption: "Short polling asks every 10 seconds and is told nothing most of the time. Long polling asks once and the server holds the request until an event or a timeout. SSE and WebSockets open one connection and keep it; events flow the moment they happen.",
+      caption: "Short polling asks every 10 seconds and is told nothing most of the time (green: a poll that found an event). Long polling asks once and the server holds the request until an event or a timeout. SSE and WebSockets open one connection and keep it; events flow the moment they happen.",
       span: 60, tick: 10, unit: "seconds",
       lanes: [
-        { label: "Short poll", bars: [[0, 1, "", "warn"], [10, 11, "", "warn"], [20, 21, "event", "good"], [30, 31, "", "warn"], [40, 41, "", "warn"], [50, 51, "event", "good"]] },
+        { label: "Short poll", bars: [[0, 1, "", "warn"], [10, 11, "", "warn"], [20, 21, "", "good"], [30, 31, "", "warn"], [40, 41, "", "warn"], [50, 51, "", "good"]] },
         { label: "Long poll", bars: [[0, 17, "held… event", "accent"], [17, 44, "held… event", "accent"], [44, 60, "held…", "accent"]] },
         { label: "SSE", bars: [[0, 60, "one connection, server → client", "violet"]] },
         { label: "WebSocket", bars: [[0, 60, "one connection, both directions", "good"]] }
@@ -72,10 +72,10 @@ memory to hold 1,000,000 connections at 30 KB: 30 GB across the fleet`,
       cols: ["Direction", "Over plain HTTP", "Auto-reconnect", "Best for"],
       rows: ["Short polling", "Long polling", "Server-sent events", "WebSockets", "Webhooks"],
       cells: [
-        [{ text: "client asks" }, { text: "yes", tone: "good" }, { text: "n/a" }, { text: "rare changes, simple clients", tone: "warn" }],
-        [{ text: "client asks, server waits" }, { text: "yes", tone: "good" }, { text: "by hand" }, { text: "fallback when nothing else works" }],
-        [{ text: "server → client" }, { text: "yes", tone: "good" }, { text: "built in", tone: "good" }, { text: "feeds, progress, LLM tokens", tone: "violet" }],
-        [{ text: "both ways" }, { text: "upgrade, then not", tone: "warn" }, { text: "by hand" }, { text: "chat, games, collaboration", tone: "good" }],
+        [{ text: "client asks" }, { text: "yes", tone: "good" }, { text: "n/a" }, { text: "rarely changing data", tone: "warn" }],
+        [{ text: "client asks, server waits" }, { text: "yes", tone: "good" }, { text: "by hand" }, { text: "last-resort fallback" }],
+        [{ text: "server → client" }, { text: "yes", tone: "good" }, { text: "built in", tone: "good" }, { text: "feeds, LLM tokens", tone: "violet" }],
+        [{ text: "both ways" }, { text: "upgrade, then not", tone: "warn" }, { text: "by hand" }, { text: "chat, games, editors", tone: "good" }],
         [{ text: "server → server" }, { text: "yes", tone: "good" }, { text: "sender retries" }, { text: "payments, integrations", tone: "accent" }]
       ] },
 
