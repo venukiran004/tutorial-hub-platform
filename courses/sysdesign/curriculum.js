@@ -44,7 +44,7 @@
       interview: "The two-hundred-question bank, general, ML and LLM design, answers hidden until you ask."
     },
 
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "2.1", "2.2", "2.3", "2.4", "2.5"],
 
     modules: [
 
