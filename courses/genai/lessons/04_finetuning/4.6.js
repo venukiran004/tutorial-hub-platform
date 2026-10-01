@@ -134,7 +134,7 @@ print(lay.A.grad.norm(), lay.B.grad.norm())`,
     { t: "h2", n: "05", id: "frozen", text: "Is the base actually frozen?",
       sub: "The claim everything else depends on" },
 
-    { t: "p", text: "4.3 argued that a frozen base makes 4.1\u2019s catastrophic forgetting structurally impossible. That is only true if \u201cfrozen\u201d means what it says, which is easy to get wrong \u2014 a stray `requires_grad`, an optimizer constructed over `model.parameters()` instead of the trainable subset, a library that re-enables gradients. So I snapshotted the base matrices before training and compared afterwards." },
+    { t: "p", text: "4.3 argued that a frozen base makes 4.1\u2019s catastrophic forgetting reversible rather than permanent. That is only true if \u201cfrozen\u201d means what it says, which is easy to get wrong \u2014 a stray `requires_grad`, an optimizer constructed over `model.parameters()` instead of the trainable subset, a library that re-enables gradients. So I snapshotted the base matrices before training and compared afterwards." },
 
     { t: "code", lang: "python", title: "g46.py \u2014 snapshot, train, compare", code: `before = {i: blk.attn.c_attn.base.weight.detach().clone()
           for i, blk in enumerate(m.transformer.h)}

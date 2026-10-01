@@ -159,7 +159,7 @@ sr = torch.linalg.svdvals(rnd)`,
     { t: "callout", kind: "insight", title: "The forgetting result from 4.1 is the strongest argument for LoRA",
       body: [
         { t: "p", text: "Cheap training is the headline, and it is not the most valuable property. 4.1 measured twelve examples and eight epochs costing 25% of GPT-2\u2019s general perplexity, with the training loss improving throughout \u2014 damage that was invisible to the only metric on screen." },
-        { t: "p", text: "A frozen base makes that failure mode structurally impossible. The adapter can be bad, and a bad adapter is a file you delete. The base model is exactly as capable afterwards as it was before, which is a guarantee no amount of careful full fine-tuning can give you." },
+        { t: "p", text: "A frozen base makes that damage **reversible**. The adapter can be bad \u2014 4.8 measures a LoRA run taking generic perplexity from 5.282 to 10.777 at its best-validation epoch, so an adapter is quite capable of degrading the deployed model. What it cannot do is make the degradation permanent: detach the adapter and the original model is back exactly, bit for bit. A bad adapter is a file you delete rather than a model you rebuild." },
         { t: "p", text: "This is also why LoRA is the right default even when you *can* afford full fine-tuning. The cost argument has a threshold; the safety argument does not." }
       ] },
 
@@ -253,7 +253,7 @@ for r in (1, 2, 4, 8, 16, 32, 64):
     "**So the update is 18\u00d7 more concentrated than chance at rank 8**, and that concentration \u2014 not literal low rank \u2014 is what the method exploits.",
     "**Energy is not linear in parameters.** Rank 8 buys 45.2% for 1.39% of the parameters; rank 64 buys 84.0% for 11.11%. The first directions are worth far more than the last.",
     "**Attention output projections are the most concentrated** (44\u201378 directions for 90%) and MLP input projections the least (122\u2013131), which is a hint about where to spend rank.",
-    "**A frozen base cannot be damaged.** 4.1's 25% perplexity regression is structurally impossible under LoRA, and a bad adapter is a file you delete.",
+    "**A frozen base makes damage reversible, not impossible.** The adapter applies on every forward pass and can degrade the model \u2014 4.8 measures 5.282 \u2192 10.777 generic perplexity \u2014 but detaching it restores the base exactly.",
     "**Adapters are small, swappable and mergeable** \u2014 tens of megabytes, several servable from one base, and foldable into `W\u2080` for zero inference overhead.",
     "**The safety argument has no threshold**, unlike the cost argument, which is why LoRA is the right default even when full fine-tuning is affordable."
   ],
@@ -294,12 +294,12 @@ for r in (1, 2, 4, 8, 16, 32, 64):
       { stem: "Beyond cheaper training, what is the strongest argument for LoRA over full fine-tuning?",
         options: [
           "It reaches a lower loss on the training data",
-          "The base weights are never written to, so catastrophic forgetting is structurally impossible and a bad run is a file you delete",
+          "The base weights are never written to, so any degradation is reversible \u2014 a bad run is a file you delete rather than a model you rebuild",
           "It converges in fewer epochs",
           "It removes the need for a held-out evaluation set"
         ],
         answer: 1,
-        why: "4.1 measured a full fine-tune costing 25% of general perplexity while the training loss improved throughout \u2014 permanent damage, invisible to the metric on screen. A frozen base makes that impossible: remove the adapter and the original model is back exactly. Unlike the cost argument, which has a volume threshold, this one holds at any scale, which is why LoRA is a sensible default even when full fine-tuning is affordable. It typically reaches a slightly higher training loss, not lower, and a held-out set is just as necessary." }
+        why: "4.1 measured a full fine-tune costing 25% of general perplexity while the training loss improved throughout \u2014 permanent damage, invisible to the metric on screen. A frozen base does not prevent degradation, which 4.8 measures reaching 2.04\u00d7 baseline perplexity under LoRA, but it does make it reversible: remove the adapter and the original model is back exactly. Unlike the cost argument, which has a volume threshold, this one holds at any scale, which is why LoRA is a sensible default even when full fine-tuning is affordable. It typically reaches a slightly higher training loss, not lower, and a held-out set is just as necessary." }
     ]
   },
 
