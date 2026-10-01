@@ -11,7 +11,7 @@ for f in assets/js/*.js courses/*/curriculum.js courses/*/lessons/*/*.js; do
 done
 echo "syntax: all files parse"
 
-for course in python practice maths data sql ml dl adk nlp genai; do
+for course in python practice maths data sql ml dl adk nlp genai sysdesign; do
   node .build/sync-published.js "courses/$course" > /dev/null
 done
 echo "published lists synced"
@@ -55,6 +55,10 @@ TH_COURSE=nlp node .build/rendertest.js | tail -4
 echo
 echo "=== genai ==="
 TH_COURSE=genai node .build/rendertest.js | tail -4
+
+echo
+echo "=== sysdesign ==="
+TH_COURSE=sysdesign node .build/rendertest.js | tail -4
 
 echo "=== blocks that would render empty ==="
 node .build/check-blocks.js
