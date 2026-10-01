@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Design — Tutorial Hub</title>
+<meta name="description" content="System design from a single server to millions of users: the request path, scaling, caching, replication and sharding, consistency and transactions, queues and streams, resilience, distributed-systems theory, code and architecture patterns, performance and reliability, security and cloud, ML and LLM systems, real-world architectures and the interview — every idea drawn before it is explained.">
+<script>try{var t=localStorage.getItem("th:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/system.css">
+<link rel="stylesheet" href="../../assets/css/course.css">
+<link rel="stylesheet" href="../../assets/css/refine.css">
+<link rel="stylesheet" href="../../assets/css/home.css">
+<link rel="stylesheet" href="../../assets/css/aurora.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="../../index.html"><span class="brand-mark">TH</span>Tutorial<span class="brand-sub">Hub</span></a>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <span class="sep">/</span><a href="../../index.html">Courses</a>
+    <span class="sep">/</span><span class="cur">System Design</span>
+  </nav>
+  <span class="topbar-spacer"></span>
+  <button class="ghost-btn search-trigger" data-cmdk type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+    <span class="label">Search lessons</span><span class="hint">Ctrl K</span>
+  </button>
+  <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
+</header>
+
+<main>
+<div class="page wide">
+
+  <!-- ------------------------------------------------------------- hero -- -->
+  <section class="hero">
+    <span class="hero-eyebrow" id="hero-badge"></span>
+    <h1>Systems, <span class="dim">drawn before they are explained.</span></h1>
+    <p class="hero-lede">
+      System design is a subject people reason about in boxes and arrows, so this course draws
+      first and writes second. It starts with one request travelling through DNS, a load balancer
+      and an app tier, then adds each piece a growing system needs — caches, replicas, shards,
+      queues, circuit breakers — with <b>the number that justifies it</b> and <b>the failure it
+      introduces</b>. Then the theory underneath: consistency, consensus, clocks and locks. Then
+      design at every scale, from a class to a fleet of services; the operating numbers — tail
+      latency, Little's Law, SLOs; security and the cloud; ML and LLM systems; how the large
+      companies built theirs; and the interview, run as a method rather than a recital.
+    </p>
+    <div class="hero-cta">
+      <a class="cta primary" id="start-btn" href="lesson.html?id=1.1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+        <span id="start-label">Start with one request</span>
+      </a>
+      <a class="cta ghost" href="#curriculum">View full curriculum</a>
+      <span class="cta-note" id="cta-note"></span>
+    </div>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- outcomes -- -->
+  <section class="sec">
+    <div class="sec-kicker">The progression</div>
+    <div class="sec-h"><h2>Five states, in order</h2></div>
+    <p class="sec-lede">
+      Every module exists to move you from one of these states to the next. Most engineers can
+      do the first two; interviews and incidents are decided by the last three.
+    </p>
+    <div class="ladder-strip">
+      <div class="ls-step" style="--c:var(--d-foundation)">
+        <div class="ls-n">01</div><div class="ls-t">I can name every box</div>
+        <div class="ls-d">The read path end to end — DNS, CDN, load balancer, app tier, cache, database — with a latency on every hop and the reason each box exists.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-core)">
+        <div class="ls-n">02</div><div class="ls-t">I can make it fast</div>
+        <div class="ls-d">Stateless scale-out, a caching strategy with its staleness stated, replicas with their lag, and a shard key that does not create a hot partition.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--accent)">
+        <div class="ls-n">03</div><div class="ls-t">I can keep it correct</div>
+        <div class="ls-d">The consistency a feature needs, the isolation level that gives it, a queue consumer that is safe to run twice, and a slow dependency that cannot take the system down.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-advanced)">
+        <div class="ls-n">04</div><div class="ls-t">I can reason about the theory</div>
+        <div class="ls-d">Clocks that lie, Raft through a partition, the fencing token a lock needs, CRDTs that merge without asking — and design from a class up to a fleet of services.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-expert)">
+        <div class="ls-n">05</div><div class="ls-t">I can defend a design</div>
+        <div class="ls-d">Capacity numbers, SLOs and the error budget, security and the cloud, ML and LLM systems, and a forty-five-minute interview run as a method.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------- curriculum -- -->
+  <section class="sec" id="curriculum">
+    <div class="sec-kicker">Curriculum</div>
+    <div class="sec-h">
+      <h2>The full path</h2>
+      <span class="sp"></span>
+      <button class="ghost-btn" id="expand-all" type="button">Expand all</button>
+    </div>
+    <p class="sec-lede">
+      Three tracks. <b>System Design</b> is the course — fifteen modules ordered by concept, each
+      idea taught once at the depth of the deepest reference that covers it. <b>Practice</b> holds
+      the production scenarios and the pattern programs. <b>Interview</b> holds the
+      two-hundred-question bank, answers hidden until you ask. Modules marked <b>soon</b> are
+      scheduled — the shape of the whole course is visible from day one.
+    </p>
+    <div class="track-tabs" id="track-tabs"></div>
+    <div id="curriculum-list"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- audience -- -->
+  <section class="sec">
+    <div class="sec-kicker">Fit</div>
+    <div class="sec-h"><h2>Who this is for</h2></div>
+    <div class="split">
+      <div class="split-box yes">
+        <div class="split-h">A good fit if</div>
+        <ul id="fit-yes"></ul>
+      </div>
+      <div class="split-box no">
+        <div class="split-h">Not the right course if</div>
+        <ul id="fit-no"></ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Tutorial Hub — System Design</span>
+    <span class="sp"></span>
+    <span>Built as a single static site — no build step, no dependencies.</span>
+  </footer>
+
+</div>
+</main>
+
+<script src="../../assets/js/highlight.js"></script>
+<script src="../../assets/js/render.js"></script>
+<script src="../../assets/js/diagrams.js"></script>
+<script src="../../assets/js/app.js"></script>
+<script src="curriculum.js"></script>
+<script src="../../assets/js/course-page.js"></script>
+<script>
+(function () {
+  "use strict";
+  var I = EC.icons;
+  EC.renderCoursePage({
+    icon: I.layers,
+    badge: "Course 11 · System Design",
+    startLabel: "Start with one request",
+    fitYes: [
+      "You can build a web service and now need to say what happens to it at a thousand times the traffic — and what breaks first.",
+      "You have a system design interview coming and want a method and the numbers, not a list of buzzwords to recite.",
+      "You have heard <em>CAP</em>, <em>Raft</em>, <em>outbox</em> and <em>fencing token</em> and want each one drawn until it is obvious why it exists.",
+      "You design ML or LLM features and need the serving, caching and failure-mode thinking that surrounds the model."
+    ],
+    fitNo: [
+      "You have never written a web service. The request–response cycle is drawn here, but building an API is the Python course's job.",
+      "You want a cloud provider's console walkthrough. Services are named where they help; the course is about the decisions, not the clicks.",
+      "You want to implement Raft or a database engine. The mechanisms are traced on paper; writing one is a different course.",
+      "You want SQL itself. Indexes, plans and isolation are covered as design inputs; queries are the SQL course."
+    ]
+  });
+})();
+</script>
+</body>
+</html>
