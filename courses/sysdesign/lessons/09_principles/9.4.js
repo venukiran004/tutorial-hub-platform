@@ -189,7 +189,7 @@ without functools.wraps: {'wrapper': '/orders'} | endpoint 'wrapper' is already 
 
     { t: "callout", kind: "trap", title: "Decorators that change the contract",
       body: [
-        { t: "p", text: "A decorator is supposed to keep the interface, and some quietly do not. A retry decorator on a non-idempotent call turns one payment into three (7.2). A cache decorator like `functools.lru_cache` on a method keeps every `self` it has seen alive for the life of the process, and returns the same mutable object to every caller. A decorator that swallows exceptions changes what callers can rely on. Review a decorator as you would a subclass: does everything that worked with the original still work, and mean the same thing (9.1's Liskov)?" }
+        { t: "p", text: "A decorator is supposed to keep the interface, and some quietly do not. A retry decorator on a non-idempotent call turns one payment into three (7.1). A cache decorator like `functools.lru_cache` on a method keeps every `self` it has seen alive for the life of the process, and returns the same mutable object to every caller. A decorator that swallows exceptions changes what callers can rely on. Review a decorator as you would a subclass: does everything that worked with the original still work, and mean the same thing (9.1's Liskov)?" }
       ] },
 
     { t: "h2", n: "03", id: "facade", text: "Facade",

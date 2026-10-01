@@ -184,7 +184,7 @@ TTL 30 s, cache 30 s + eject after 3 failures  failed requests     4   errors un
     { t: "h2", n: "04", id: "mesh", text: "Sidecars and the service mesh",
       sub: "Networking moved out of the application" },
 
-    { t: "p", text: "Every service needs the same networking behaviour: timeouts, retries with backoff, circuit breaking (7.1), mutual TLS, load balancing, metrics and traces. Implemented as a library, it must be written for every language and upgraded by redeploying every service. A **sidecar** proxy runs beside each instance and intercepts its traffic, so the behaviour is language-independent and upgraded separately; a **mesh** manages all the sidecars centrally, which also gives every call a consistent identity for zero-trust authorisation (12.3)." },
+    { t: "p", text: "Every service needs the same networking behaviour: timeouts, retries with backoff, circuit breaking (7.2), mutual TLS, load balancing, metrics and traces. Implemented as a library, it must be written for every language and upgraded by redeploying every service. A **sidecar** proxy runs beside each instance and intercepts its traffic, so the behaviour is language-independent and upgraded separately; a **mesh** manages all the sidecars centrally, which also gives every call a consistent identity for zero-trust authorisation (12.3)." },
 
     { t: "p", text: "Centralised retry policy creates a trap of its own: retries are now configured in the client library, the sidecar and the gateway — each reasonable alone. When the backend is down, they multiply:" },
 
@@ -231,7 +231,7 @@ for layers in (1, 2, 3, 4):
                3                             27.0                        1.3
                4                             81.0                        1.5` },
 
-    { t: "p", text: "Three retrying layers turned each user request into **27** calls to a backend that was already failing, and four layers into **81** — a retry storm that keeps a recovering service down (7.2). A **retry budget** — retry only while retries are under 10% of requests — held it to about one call per request at any depth. Configure retries in **one** layer, usually the sidecar nearest the caller, and make the others pass errors through." },
+    { t: "p", text: "Three retrying layers turned each user request into **27** calls to a backend that was already failing, and four layers into **81** — a retry storm that keeps a recovering service down (7.1). A **retry budget** — retry only while retries are under 10% of requests — held it to about one call per request at any depth. Configure retries in **one** layer, usually the sidecar nearest the caller, and make the others pass errors through." },
 
     { t: "callout", kind: "tradeoff", title: "Library, sidecar or mesh?",
       body: [

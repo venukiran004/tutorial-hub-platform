@@ -69,7 +69,7 @@ for label, fn, n in (("function call", lambda i: price(f"sku-{i}"), 100_000),
       out: `function call              median       0.2 µs   p99       0.4 µs
 HTTP + JSON, same machine  median     629.0 µs   p99     911.9 µs` },
 
-    { t: "p", text: "The direct call took a fraction of a microsecond; the same work over HTTP on the **same machine** took around 0.6 ms — roughly **3,000 times** longer, before adding a real network's half a millisecond or more per round trip inside a data centre. That is affordable for one call per request and ruinous for a loop that used to make hundreds of them. Latency is only the first cost. Each remote call can also **fail independently**, and callers must now handle timeouts, retries and idempotency (7.2) for something that used to be a function." },
+    { t: "p", text: "The direct call took a fraction of a microsecond; the same work over HTTP on the **same machine** took around 0.6 ms — roughly **3,000 times** longer, before adding a real network's half a millisecond or more per round trip inside a data centre. That is affordable for one call per request and ruinous for a loop that used to make hundreds of them. Latency is only the first cost. Each remote call can also **fail independently**, and callers must now handle timeouts, retries and idempotency (7.1, 6.3) for something that used to be a function." },
 
     { t: "p", text: "Chain those calls synchronously — the API calls orders, which calls pricing, which calls catalog — and the costs compound. A simulation of requests passing through 1 to 20 services in sequence, each **99.9% available** with a realistic latency tail:" },
 
@@ -206,7 +206,7 @@ for hops in (1, 3, 5, 10, 20):
 </svg>` },
 
     { t: "dl", items: [
-      { term: "Shared database", def: "Two services writing the same tables are one service with two deploy pipelines: neither can change the schema alone. Each service owns its data; others get it through an API or events (4.4's CDC)." },
+      { term: "Shared database", def: "Two services writing the same tables are one service with two deploy pipelines: neither can change the schema alone. Each service owns its data; others get it through an API or events (6.4's CDC)." },
       { term: "Synchronous call chains", def: "A request that needs five services up at once is only as available as their product. Prefer events and local copies for data another service owns." },
       { term: "Lockstep releases", def: "If services must deploy together, the boundary is in the wrong place, or contracts are not versioned. Version APIs and events, and make consumers tolerate unknown fields." },
       { term: "Shared domain libraries", def: "A common library of domain models (9.2's incident) couples every service to every model change." },

@@ -21,7 +21,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "strategy", text: "Strategy",
       sub: "An algorithm as a swappable part" },
 
-    { t: "p", text: "A strategy is a family of interchangeable algorithms behind one interface, chosen at run time: how to rank search results, which load-balancing policy to use (2.2), which eviction policy (3.3), how to back off (7.2). In Python a strategy is usually just a function, and the registry of 9.1 holds them. The interesting decision is not how to swap strategies but **how to choose one** — and for an A/B experiment, choosing per request is a bug:" },
+    { t: "p", text: "A strategy is a family of interchangeable algorithms behind one interface, chosen at run time: how to rank search results, which load-balancing policy to use (2.2), which eviction policy (3.3), how to back off (7.1). In Python a strategy is usually just a function, and the registry of 9.1 holds them. The interesting decision is not how to swap strategies but **how to choose one** — and for an A/B experiment, choosing per request is a bug:" },
 
     { t: "code", lang: "python", title: "strategy.py — two ranking strategies, chosen per request or per user", code: `import hashlib, random
 

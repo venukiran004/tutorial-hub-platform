@@ -384,7 +384,7 @@ print(f"3 tests in {(time.perf_counter() - start) * 1000:.2f} ms: no network, no
   ok  test_key_is_the_order_id
 3 tests in 0.06 ms: no network, no vendor sandbox, timeouts on demand` },
 
-    { t: "p", text: "The three tests ran in a fraction of a millisecond, and the most important one — a timeout must not be recorded as a successful payment, the ambiguity of 7.2 — is a single line to stage with a fake, and nearly impossible to stage against a real vendor on demand. The Stripe adapter is small and dumb on purpose; it is tested separately, against the vendor's sandbox, with a contract test like 03's." },
+    { t: "p", text: "The three tests ran in a fraction of a millisecond, and the most important one — a timeout must not be recorded as a successful payment, the ambiguity of 7.1 — is a single line to stage with a fake, and nearly impossible to stage against a real vendor on demand. The Stripe adapter is small and dumb on purpose; it is tested separately, against the vendor's sandbox, with a contract test like 03's." },
 
     { t: "callout", kind: "insight", title: "Hexagonal architecture is DIP for a whole service",
       body: [

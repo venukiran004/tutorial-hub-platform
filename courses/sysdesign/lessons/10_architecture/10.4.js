@@ -261,7 +261,7 @@ query 'at least position 4':  4 orders, 5500 pence  (read model at position 4, w
 
     { t: "callout", kind: "trap", title: "Sequence numbers commit out of order",
       body: [
-        { t: "p", text: "The demo's projector reads `position > checkpoint`. With concurrent writers that is subtly wrong: transaction A takes position 7, transaction B takes 8 and commits first, the projector reads 8 and moves its checkpoint past 7 — and when A commits, event 7 is never projected. Production event stores close this gap by reading in **commit order** (PostgreSQL logical replication or CDC, 4.4), by serialising appends through one writer, or by only reading positions older than the oldest in-flight transaction. Kafka-based designs avoid it because a partition's offsets are assigned in append order." }
+        { t: "p", text: "The demo's projector reads `position > checkpoint`. With concurrent writers that is subtly wrong: transaction A takes position 7, transaction B takes 8 and commits first, the projector reads 8 and moves its checkpoint past 7 — and when A commits, event 7 is never projected. Production event stores close this gap by reading in **commit order** (PostgreSQL logical replication or CDC, 6.4), by serialising appends through one writer, or by only reading positions older than the oldest in-flight transaction. Kafka-based designs avoid it because a partition's offsets are assigned in append order." }
       ] },
 
     { t: "h2", n: "03", id: "costs", text: "The costs",

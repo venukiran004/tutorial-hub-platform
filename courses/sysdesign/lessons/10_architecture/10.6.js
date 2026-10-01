@@ -106,7 +106,7 @@ cut over 100% of users -> 10,000 of 10,000 served by the new service` },
 
     { t: "callout", kind: "trap", title: "Data is the hard part",
       body: [
-        { t: "p", text: "Routing requests is easy; moving the data the slice owns is not. The usual sequence: the new service first reads the legacy tables (or a view), then keeps its own copy in sync through CDC (4.4), then becomes the writer with changes flowing back to the legacy tables for code that still reads them, and finally the legacy tables are dropped. At every step exactly one side is the source of truth for each piece of data, and the reconciliation job that proves they agree runs until the end." }
+        { t: "p", text: "Routing requests is easy; moving the data the slice owns is not. The usual sequence: the new service first reads the legacy tables (or a view), then keeps its own copy in sync through CDC (6.4), then becomes the writer with changes flowing back to the legacy tables for code that still reads them, and finally the legacy tables are dropped. At every step exactly one side is the source of truth for each piece of data, and the reconciliation job that proves they agree runs until the end." }
       ] },
 
     { t: "h2", n: "02", id: "expand", text: "Expand–contract",
