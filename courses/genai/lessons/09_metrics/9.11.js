@@ -143,7 +143,7 @@ def both_orders(judge, pairs):
             "flip_rate": flips / n}
 
 def strip_formatting(s):
-    s = re.sub(r"[*_`#>]+", "", s)
+    s = re.sub(r"[*_#>]+", "", s)        # also strip backticks in practice
     return re.sub(r"\s+", " ", s).strip()
 
 m = both_orders(JUDGE, PAIRS)
