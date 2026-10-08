@@ -1,0 +1,172 @@
+EC.receiveLesson({
+  id: "8.7",
+  lede: "A routing function returns a key, and the path map translates it to a node name. The failure worth measuring is a router that can return a key the map lacks: `compile()` **succeeds**, because a function's return values are not knowable statically, and it fails at runtime on one branch only \u2014 so a router with four outcomes and a three-entry map works perfectly until the fourth outcome occurs, which may be rare and may be in production. And the deadlock I expected when a router skips a fan-in branch **does not happen**: the join node ran with one branch complete. The risk moves somewhere quieter \u2014 it then read a key only the skipped branch writes and got `'<unset>'`, with no error.",
+  objectives: [
+    "Write a routing function and explain the path map's indirection",
+    "Show that a missing map entry is a runtime failure on one branch",
+    "Decide whether to omit the path map",
+    "Route to END and fan out to several nodes from a router",
+    "Explain what happens when a router skips a fan-in branch"
+  ],
+  prerequisites: ["8.6"],
+  blocks: [
+    { t: "h2", n: "01", id: "routing", text: "A routing function returns a key", sub: "And the map translates it" },
+    { t: "code", lang: "python", title: "Conditional edges",
+      code: 'def route(state):\n    return "small" if state["n"] < 10 else "large"\n\ng.add_conditional_edges("classify", route,\n                        {"small": "small", "large": "large"})',
+      out: "  n=5   -> ['classified 5', 'small']\n  n=50  -> ['classified 50', 'large']",
+      caption: "The router returns a key; the map turns it into a node name." },
+    { t: "p", text: "The indirection looks redundant when the key and the node name are the same string, and what it buys is that the router can return a **domain word** \u2014 `needs_review`, `escalate`, `retry` \u2014 rather than a node name. That keeps the routing decision independent of the graph's topology." },
+    { t: "h2", n: "02", id: "missing", text: "The missing map entry", sub: "Compiles, then fails on one branch" },
+    { t: "code", lang: "text", title: "A router that can return \u201cmedium\u201d, with no \u201cmedium\u201d in the map",
+      code: "compile() : succeeded -- the map is not checked against the function,\n            because the function's return values are not knowable\n            statically.\ninvoke    : RAISED InvalidUpdateError / ValueError on the branch that\n            returns 'medium'",
+      caption: "A runtime failure, on one branch only." },
+    { t: "callout", kind: "trap", title: "Works perfectly until the fourth outcome occurs", body: [
+      { t: "p", text: "A router with four outcomes and a three-entry map is correct for three quarters of its inputs. If the fourth outcome is rare \u2014 an error path, an unusual classification \u2014 the graph passes every test and every day of traffic until it does not." },
+      { t: "p", text: "`compile()` cannot help, and that is not a gap in the implementation: the set of values a Python function can return is not computable. The check has to come from how you write the router." }
+    ] },
+    { t: "ol", items: [
+      "**Return an `Enum` or `Literal`** from the router, so the set of outcomes is enumerable and a test can cover every member.",
+      "**Make the map total by construction** \u2014 build it from the same enumeration the router returns, so adding an outcome without a destination is impossible.",
+      "**Test every branch**, which is cheap because a router is a pure function of state (8.5) and needs no graph to exercise."
+    ] },
+    { t: "h2", n: "03", id: "nomap", text: "Omitting the path map", sub: "Shorter, and it couples" },
+    { t: "code", lang: "python", title: "If the router returns node names",
+      code: 'g.add_conditional_edges("classify", route)   # no map',
+      out: "    n=5  -> ['classified 5', 'small']",
+      caption: "Works, and now the router knows node names." },
+    { t: "p", text: "Renaming a node now means editing the router. The map is the **seam** between a routing decision and the graph's topology, and it earns its verbosity as soon as more than one edge routes on the same decision \u2014 or as soon as the routing logic is worth testing independently of the graph." },
+    { t: "h2", n: "04", id: "more", text: "Routing to END, and to several nodes", sub: "Two more things a router can return" },
+    { t: "code", lang: "python", title: "END as a destination",
+      code: 'def route_end(state):\n    return END if state["n"] < 10 else "large"\n\ng.add_conditional_edges("classify", route_end, {END: END, "large": "large"})',
+      out: "    n=5  -> ['classified 5']",
+      caption: "A router can finish the run." },
+    { t: "code", lang: "python", title: "A list fans out",
+      code: 'def route_both(state):\n    return ["small", "large"]',
+      out: "    return ['small','large'] -> ['classified 5', 'small', 'large']",
+      caption: "Both run in the next superstep." },
+    { t: "callout", kind: "insight", title: "Which is how you fan out a variable number of branches", body: [
+      { t: "p", text: "A statically wired set of parallel edges has a fixed count. A router returning a list decides the count **at runtime from state** \u2014 so \u201cone branch per retrieved document\u201d is expressible, and a fixed topology cannot say that." },
+      { t: "p", text: "The returned nodes all run in the same superstep, with everything 8.6 established: they see the same snapshot, they cannot observe each other, and their updates to a shared key need a reducer." }
+    ] },
+    { t: "h2", n: "05", id: "skipped", text: "When a router skips a fan-in branch", sub: "No deadlock, and a quieter problem" },
+    { t: "p", text: "8.6 said a fan-in node waits for every incoming path. Combine that with a router that only ever selects one branch, and the obvious worry is a hang \u2014 the join waiting forever for a branch that will never run." },
+    { t: "code", lang: "text", title: "Router always picks \u201ca\u201d; \u201cjoin\u201d has edges from both a and b",
+      code: "-> {'trace': ['start', 'a', 'join']}",
+      caption: "No deadlock. `join` **ran**, with only `a` complete." },
+    { t: "callout", kind: "insight", title: "Scheduled, not declared", body: [
+      { t: "p", text: "So 8.6's rule needs stating more precisely: a fan-in node waits for every incoming path that was **scheduled**, not every path that was declared. A branch the router skipped is not pending, so there is nothing to wait for." },
+      { t: "p", text: "That is the right behaviour \u2014 the alternative is a hang \u2014 and it moves the risk somewhere less obvious." }
+    ] },
+    { t: "code", lang: "text", title: "What the join node then reads",
+      code: "join reads from_b, which only the skipped branch writes:\n\n-> ['start', 'a', \"join saw from_b='<unset>'\"]",
+      caption: "The initial value, with **no error**." },
+    { t: "callout", kind: "warn", title: "A missing contribution is indistinguishable from one that was never coming", body: [
+      { t: "p", text: "The join read a key that only `b` writes and saw the initial state's value. Nothing raised, because the runtime has no way to tell the difference between a contribution that is late and one that will never arrive." },
+      { t: "p", text: "So a fan-in node after a conditional branch has to be written to **tolerate partial input** \u2014 checking which keys are set rather than assuming every incoming path ran. That is a node-level concern the topology does not express, which makes it exactly the kind of thing a diagram review will miss." }
+    ] },
+    { t: "exercise", kind: "build", title: "Route, then break the routing",
+      difficulty: "core", minutes: 32,
+      body: "Write a routing function with a path map and confirm both branches. Then give the router an outcome the map lacks, and determine whether that fails at compile time or at run time. Try omitting the path map and say what it couples. Route to END, and route to a list of nodes. Finally build a fan-in whose incoming branch is skipped by a router, and find out whether it deadlocks and what the join node reads.",
+      requirements: ["Write a routing function with a path map and confirm both branches",
+        "Explain what the map's indirection buys",
+        "Give the router an unmapped outcome and determine when it fails",
+        "Explain why compile() cannot catch it and give at least two mitigations",
+        "Omit the path map and say what that couples",
+        "Route to END and to a list of nodes",
+        "Build a skipped fan-in branch and report whether it deadlocks",
+        "Show what the join node reads from the skipped branch's key"],
+      hint: "For the skipped fan-in, have the join node read a key only the skipped branch writes. Whether it deadlocks is the first question and what it reads is the more useful one.",
+      solution: { lang: "python", title: "x0807.py \u2014 no deadlock, and join saw '<unset>'",
+        code: 'def route(state):\n    return "small" if state["n"] < 10 else "large"\n\ng.add_conditional_edges("classify", route,\n                        {"small": "small", "large": "large"})\n\n# a router that can return a key the map lacks: compiles, fails at runtime\ndef route_bad(state):\n    return "medium" if 10 <= state["n"] < 100 else "small"\n\n# and a fan-in whose b branch is never scheduled\ng6.add_conditional_edges("start", lambda s: "a", {"a": "a", "b": "b"})\ng6.add_edge("a", "join")\ng6.add_edge("b", "join")',
+        out: "==============================================================================\nPART 1 -- a routing function returns the name of the next node\n==============================================================================\n  def route(state): return 'small' if state['n'] < 10 else 'large'\n  g.add_conditional_edges('classify', route, {'small': 'small', 'large': 'large'})\n\n  n=5   -> ['classified 5', 'small']\n  n=50  -> ['classified 50', 'large']\n\n  the routing function returns a KEY, and the path map translates it\n  to a node name. the indirection looks redundant when they are the\n  same string, and it is what lets the function return a domain word\n  like 'needs_review' rather than a node name.\n==============================================================================\nPART 2 -- the missing map entry\n==============================================================================\n  the router can return 'medium'; the path map has no 'medium' key.\n\n  compile() : succeeded -- the map is not checked against the\n              function, because the function's return values are not\n              knowable statically.\n  invoke    : RAISED KeyError: 'medium'\n\n  so this is a RUNTIME failure on one branch. a router with four\n  outcomes and a three-entry map works perfectly until the fourth\n  outcome occurs, which may be in production and may be rare.\n\n  the mitigations, in order of how much they actually help:\n    - return an Enum or Literal from the router so the set is\n      enumerable and a test can cover every member\n    - make the map total by construction: build it from the same\n      enumeration the router returns\n    - test every branch, which is cheap because a router is a pure\n      function of state (8.5)\n==============================================================================\nPART 3 -- omitting the path map entirely\n==============================================================================\n  if the router returns node names, the map is optional:\n\n    g.add_conditional_edges('classify', route)   # no map\n    n=5  -> ['classified 5', 'small']\n\n  shorter, and it couples the router to node names -- renaming a node\n  now means editing the router. the map is the seam between a routing\n  DECISION and the graph's topology, and it earns its verbosity as\n  soon as more than one edge routes on the same decision.\n==============================================================================\nPART 4 -- routing to END, and routing to several nodes\n==============================================================================\n  a router can return END to finish the run:\n\n    n=5  -> ['classified 5']\n\n  and it can return a LIST of names, which fans out to all of them in\n  the next superstep:\n\n    return ['small','large'] -> ['classified 5', 'large', 'small']\n\n  so conditional edges are also how you fan out a variable number of\n  branches -- the count is decided at runtime from state, which a\n  statically-wired parallel edge cannot do.\n==============================================================================\nPART 5 -- the deadlock a skipped branch causes\n==============================================================================\n  8.6 said a fan-in node waits for every incoming path. combine that\n  with a router that skips one of those paths:\n\n  router always picks 'a'; 'join' has incoming edges from a AND b.\n    -> {'trace': ['start', 'a', 'join']}\n\n  no deadlock. 'join' RAN, with only 'a' complete.\n\n  so the rule from 8.6 needs stating more precisely: a fan-in node\n  waits for every incoming path that was SCHEDULED, not every path\n  that was declared. a branch the router skipped is not pending, so\n  there is nothing to wait for.\n\n  that is the right behaviour -- the alternative is a hang -- and it\n  moves the risk somewhere less obvious. 'join' now runs with 'b' s\n  contribution absent, so if it reads a key only 'b' writes it gets\n  whatever the initial state had:\n\n    -> ['start', 'a', \"join saw from_b='<unset>'\"]\n\n  'join' read a key that only the skipped branch writes and saw the\n  initial value. no error, because a missing contribution is\n  indistinguishable from one that was never going to arrive.\n\n  so a fan-in node after a conditional branch has to be written to\n  tolerate partial input -- check which keys are set rather than\n  assuming every incoming path ran. that is a node-level concern the\n  topology does not express.",
+        notes: [
+          { t: "p", text: "**The router returns a key and the path map translates it to a node name**, which lets the router return a domain word rather than a node name." },
+          { t: "p", text: "**A missing map entry compiles and fails at runtime, on one branch only** \u2014 so a router with four outcomes and a three-entry map is correct for three quarters of its inputs." },
+          { t: "p", text: "**`compile()` cannot catch it**, because the set of values a function can return is not computable. Return an `Enum` or `Literal`, build the map from that enumeration, and test every branch." },
+          { t: "p", text: "**Omitting the map couples the router to node names**, so renaming a node means editing the router. The map is the seam between a decision and the topology." },
+          { t: "p", text: "**A router can return `END`** to finish the run, **or a list** to fan out \u2014 which is how you fan out a count decided at runtime from state." },
+          { t: "p", text: "**No deadlock when a router skips a fan-in branch**: `join` ran with only `a` complete. A fan-in waits for every SCHEDULED incoming path, not every declared one." },
+          { t: "p", text: "**The risk moves instead**: `join` read a key only the skipped branch writes and saw the initial value, `'<unset>'`, with no error." },
+          { t: "p", text: "**A missing contribution is indistinguishable from one that was never coming**, so a fan-in after a conditional branch must tolerate partial input \u2014 a node-level concern the topology does not express." }
+        ] } },
+    { t: "callout", kind: "scenario", title: "Scenario: the router outcome nobody had seen", body: [
+      { t: "p", text: "A triage graph routes support tickets to `billing`, `technical` or `account`. Six months in, a ticket classified `unknown` by the model reaches it, the router returns `\"unknown\"`, and the graph raises. The path map has three entries." },
+      { t: "p", text: "`compile()` accepted it because the router's possible return values are not statically knowable, and every test used tickets that classified cleanly. The failure rate is exactly the rate at which the model is unsure, which is low and nonzero." },
+      { t: "p", text: "The structural fix is to make the map total by construction: define the outcomes as an enum, build the path map by iterating it, and give the router a default branch. Then an outcome without a destination becomes impossible rather than untested. And since a router is a pure function of state, covering every member is a parametrised test with no graph in it \u2014 which is the cheapest test in the module and the one most often skipped." }
+    ] }
+  ],
+  takeaways: [
+    "**A routing function returns a key; the path map translates it to a node name.**",
+    "**The indirection lets the router return a domain word** rather than a node name.",
+    "**A missing map entry compiles and fails at runtime, on one branch only.**",
+    "**So a four-outcome router with a three-entry map is correct for three quarters of its inputs.**",
+    "**`compile()` cannot catch it** \u2014 a function's return values are not computable.",
+    "**Return an `Enum` or `Literal`, build the map from it, and test every branch.**",
+    "**A router is a pure function of state**, so covering every branch needs no graph.",
+    "**Omitting the map couples the router to node names** \u2014 renaming a node then edits the router.",
+    "**A router can return `END`** to finish the run.",
+    "**A router can return a list**, fanning out a count decided at runtime from state.",
+    "**No deadlock when a router skips a fan-in branch** \u2014 `join` ran with one branch complete.",
+    "**A fan-in waits for every SCHEDULED incoming path, not every declared one.**",
+    "**The join then read the skipped branch's key and saw the initial value, with no error.**",
+    "**So a fan-in after a conditional branch must tolerate partial input** \u2014 which the topology does not express."
+  ],
+  quiz: { title: "Check yourself", questions: [
+    { stem: "A routing function can return four values and the path map has three entries. When does this fail?",
+      options: ["At compile time, since the map is checked against the function",
+            "At runtime, on the one branch that returns the unmapped value",
+        "Never \u2014 unmapped values route to END",
+        "At the first invoke, regardless of which branch is taken"],
+      answer: 1,
+      why: "compile() cannot check the map against the router, because the set of values a Python function may return is not computable. So the graph is correct for the three mapped outcomes and raises only when the fourth occurs \u2014 which, if that outcome is an error path or an unusual classification, may be rare and may be in production. The fix is to make the outcomes enumerable and build the map from them." },
+    { stem: "What does the path map's indirection buy when the keys and node names are identical?",
+      options: ["Nothing \u2014 it should be omitted in that case",
+        "It keeps the routing decision independent of the topology, so the router can return a domain word and node renames do not touch it",
+        "It allows multiple routers to share one map",
+        "It enables compile-time validation of the destinations"],
+      answer: 1,
+      why: "Without the map, the router must return node names, so the routing logic knows the graph's structure and a rename becomes an edit to the decision function. With it, a router can return 'needs_review' or 'escalate' \u2014 words from the problem domain \u2014 and the map is the single place that connects decisions to destinations. It earns the verbosity as soon as the routing logic is worth testing on its own." },
+    { stem: "A router always selects branch `a`, and a join node has incoming edges from both `a` and `b`. What happens?",
+      options: ["The graph deadlocks waiting for b",
+        "The join runs with only a complete \u2014 a fan-in waits for scheduled paths, not declared ones",
+        "compile() rejects the unreachable edge",
+        "The join runs twice, once per declared edge"],
+      answer: 1,
+      why: "A branch the router never selects is not pending, so there is nothing for the join to wait on and it executes normally. That is better than hanging, and it relocates the problem: the join then runs with b's contribution absent, reading whatever the initial state held for b's keys, with no error raised. Partial input has to be handled in the node." },
+    { stem: "Why does the join node not raise when it reads a key only the skipped branch writes?",
+      options: ["The key has a default value in the schema",
+        "The runtime cannot distinguish a contribution that is missing from one that was never going to arrive",
+        "Reducers substitute a zero value for absent updates",
+        "Conditional edges initialise all possible branches' keys"],
+      answer: 1,
+      why: "From the runtime's perspective there is no difference between a branch that was skipped and a branch that simply had nothing to add, so the state retains whatever value it already held. In the measured case the join read '<unset>' \u2014 the initial value \u2014 and proceeded. The node therefore has to check which keys are set rather than assume every declared incoming path ran." }
+  ] },
+  interview: { title: "Interview practice", sub: "Conditional routing", questions: [
+    { level: "core", q: "How do you make conditional routing in a graph reliable?",
+      strong: "A strong answer makes the outcome set enumerable.",
+      answer: [
+        { t: "p", text: "By making the set of routing outcomes enumerable, because the default failure mode here is a runtime error on a branch nobody tested." },
+        { t: "p", text: "A routing function returns a key and a path map turns it into a node name. If the router can return a key the map lacks, compile() accepts the graph \u2014 it cannot check, because the set of values a Python function may return is not computable \u2014 and it fails at runtime on that branch only. So a router with four outcomes and a three-entry map is correct for three quarters of its inputs, and if the fourth outcome is an error path it may be months before anyone sees it." },
+        { t: "p", text: "So I would have the router return an Enum or a Literal, and build the path map by iterating that same enumeration. Then an outcome without a destination is impossible rather than untested." },
+        { t: "p", text: "And I would test every branch, which is the cheapest test available \u2014 a router is a pure function of the state, so it is a parametrised test with no graph in it at all. That is also the test people skip, because it looks too trivial to write." }
+      ] },
+    { level: "advanced", q: "What happens to a fan-in when a router skips one of its incoming branches?",
+      strong: "A strong answer knows there is no deadlock and where the risk went.",
+      answer: [
+        { t: "p", text: "It does not deadlock \u2014 the join runs with the branches that were actually scheduled. I checked this expecting a hang and it just proceeds." },
+        { t: "p", text: "So the rule is more precise than 'a fan-in waits for all its incoming paths': it waits for every path that was scheduled, not every path that was declared. A branch the router never selected is not pending, so there is nothing to wait for." },
+        { t: "p", text: "That is clearly the right behaviour, and it moves the problem somewhere quieter. The join now runs with one branch's contribution absent. I had it read a key only the skipped branch writes, and it got the initial state's value \u2014 '<unset>' \u2014 with no error at all." },
+        { t: "p", text: "The reason nothing raises is that the runtime cannot distinguish a contribution that is missing from one that was never going to arrive. Both look like a key that simply was not updated." },
+        { t: "p", text: "So a fan-in node downstream of a conditional branch has to tolerate partial input explicitly \u2014 check which keys are set rather than assume every declared path ran. And that is a node-level concern the topology does not express, which means reviewing the diagram will not catch it. I would treat any join after a router as requiring that check." }
+      ] },
+    { level: "core", q: "How would you implement a retry loop in a graph?",
+      strong: "A strong answer puts the counter in state and the exit in the router.",
+      answer: [
+        { t: "p", text: "An attempt counter in the state, a conditional edge from the work node, and the exit condition in the router rather than in the recursion limit." },
+        { t: "p", text: "So the router reads the result and the attempt count and returns one of three outcomes: succeeded, retry, or gave up. Succeeded and gave-up both go to END or to different terminal nodes; retry points back at the work node." },
+        { t: "p", text: "Having 'gave up' as an explicit outcome is the part I would insist on. If the only exit after repeated failure is the recursion limit, then the graph's normal failure path is an exception and you cannot distinguish a legitimate long run from a runaway. With an explicit outcome, failure is a state you can route on, record and return to the caller." },
+        { t: "p", text: "I would make those three outcomes an Enum and build the path map from it, because a router with an outcome the map lacks compiles cleanly and fails at runtime on that branch only \u2014 and 'gave up' is exactly the rare branch nobody tests." },
+        { t: "p", text: "Then set recursion_limit explicitly and low, as a backstop for the case where my own counter logic is wrong. The default on the version I measured allows over ten thousand supersteps, all of which execute real node bodies." }
+      ] }
+  ] }
+});
