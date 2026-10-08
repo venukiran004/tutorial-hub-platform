@@ -1,0 +1,152 @@
+EC.receiveLesson({
+  id: "11.5",
+  lede: "Reflexion is reflection plus memory **across** attempts \u2014 so the mechanism is 9.6's store rather than 9.5's thread state, because the memory has to outlive the conversation or there is nothing new here. The run wrote a real lesson: *\u201cWhen asked about refunds, always state the destination of the money.\u201d* Then a **different** task passed first time with that lesson in its prompt. That is \u201cverbal reinforcement\u201d \u2014 no weights change, the improvement is a sentence in the context. And it inherits 9.6's worst failure hardest: a lesson written by the model from a **single** failure is overfitted by construction, and it is injected into every future attempt.",
+  objectives: [
+    "Distinguish reflexion from reflection by where the memory lives",
+    "Build an attempt loop that writes a lesson on failure",
+    "Show a later task benefiting from the stored lesson",
+    "Explain why a lesson is overfitted by construction",
+    "Say what reflexion requires to work at all"
+  ],
+  prerequisites: ["11.4", "9.6"],
+  blocks: [
+    { t: "h2", n: "01", id: "difference", text: "Reflection plus memory across attempts", sub: "So the store, not the thread" },
+    { t: "p", text: "11.4's reflection critiques within one attempt. Reflexion writes the lesson down and carries it into the **next** attempt at a similar task \u2014 which means 9.6's store, because 9.5 showed the whole graph state is scoped to one `thread_id`. If the lesson lives in thread state there is nothing new here." },
+    { t: "h2", n: "02", id: "loop", text: "The attempt loop", sub: "Recall, solve, judge, reflect" },
+    { t: "code", lang: "text", title: "The first task",
+      code: "no lessons yet\nsolve (with 0 lesson(s)) -> '30 days'\njudge: FAIL: did not say where the money goes\nwrote lesson: 'When asked about refunds, always state th'\nsolve (with 1 lesson(s)) -> '30 days, to the original payment method'\njudge: PASS\n\nattempts: 2\nverdict : 'PASS'",
+      caption: "The lesson was written to the store, then injected into the retry." },
+    { t: "code", lang: "python", title: "The reflect node writes to the store",
+      code: 'def reflect(state):\n    out = reflector.invoke([HumanMessage(content="Why did this fail? %s"\n                                        % state["verdict"])])\n    store.put(("lessons", "refunds"), "lesson-%d" % state["attempt"],\n              {"text": out.content})\n    return {"trace": ["wrote lesson: %r" % out.content[:44]]}',
+      caption: "A namespace tuple (9.6), keyed by attempt." },
+    { t: "h2", n: "03", id: "store", text: "What is in the store afterwards", sub: "A sentence" },
+    { t: "code", lang: "text", title: "The lesson",
+      code: "lesson-1   'When asked about refunds, always state the destination of the money.'",
+      caption: "Written by the model, stored outside the run." },
+    { t: "callout", kind: "insight", title: "Verbal reinforcement", body: [
+      { t: "p", text: "That is the whole idea: the lesson is **text**, written by the model, stored outside the run, and injected into the next attempt's prompt. No weights change \u2014 the improvement is a sentence in the context." },
+      { t: "p", text: "Which is why it is cheap to try and hard to evaluate. Nothing about the mechanism distinguishes a generalisable lesson from a wrong one, because both are sentences that get prepended." }
+    ] },
+    { t: "h2", n: "04", id: "transfer", text: "The second task", sub: "A different question, first time" },
+    { t: "code", lang: "text", title: "With the lesson in the prompt",
+      code: "solve (with 1 lesson(s)) -> 'Within 30 days, refunded to the original card.'\njudge: PASS",
+      caption: "A **different** question, passed on the first attempt." },
+    { t: "p", text: "That is the payoff, and it is also the measurement problem: this only works if the lesson **generalises**, and nothing checks that it does. The judge confirmed the answer, not the lesson." },
+    { t: "h2", n: "05", id: "failures", text: "The failure modes", sub: "9.6's, and the worst one applies hardest" },
+    { t: "callout", kind: "trap", title: "A lesson from one failure is a sample of size one", body: [
+      { t: "p", text: "9.6 listed *remember wrong* as the worst memory failure: a mistaken fact persists across every future conversation and nobody is looking, because the system is doing exactly what it was told." },
+      { t: "p", text: "Reflexion hits it hardest, because the lesson was written **by the model, from a single failure**. It is overfitted by construction \u2014 a conclusion drawn from one example, phrased as a general rule, and then applied to everything." }
+    ] },
+    { t: "p", text: "So reflexion wants lessons scoped narrowly in the namespace (9.6), a **cap** on how many are injected or the prompt fills with them, and an expiry or review path \u2014 because nothing else removes a bad lesson." },
+    { t: "h2", n: "06", id: "honest", text: "The honest note", sub: "What it requires" },
+    { t: "callout", kind: "warn", title: "It needs a reliable judge, and that is the hard part", body: [
+      { t: "p", text: "This is a research pattern. It works in benchmarks with a clear pass/fail signal, and the **signal** is the difficulty: without a reliable judge there is nothing to reflect on." },
+      { t: "p", text: "And 7.4 measured exactly where self-judging fails \u2014 a model scoring a claim its own document contradicts gave it **+5.293**, strongly positive. So a self-judged reflexion loop can write lessons from failures it misdiagnosed, which is worse than not reflecting at all." }
+    ] },
+    { t: "p", text: "Where reflexion is genuinely applicable is where the judge is **external and cheap**: tests pass or fail, a schema validates or does not, an API returns 200 or 400. Those are the settings where the pattern's benchmark results come from, and the resemblance to a production task with a fuzzy quality bar is superficial." },
+    { t: "exercise", kind: "build", title: "Build reflexion with a real store",
+      difficulty: "advanced", minutes: 34,
+      body: "Build an attempt loop that recalls lessons from a store, solves with them in the prompt, judges the result, and on failure asks the model to write a lesson which it stores. Run it on a task that fails first time and show the lesson being written and used. Then run a different task with that lesson present and show it passing first time. Explain why a lesson is overfitted by construction, and say what reflexion requires to work at all.",
+      requirements: ["Build the recall-solve-judge-reflect loop with a real store",
+        "Show a task failing, a lesson being written, and the retry passing",
+        "Show the lesson's contents in the store",
+        "Explain what 'verbal reinforcement' means mechanically",
+        "Run a different task and show it benefiting from the lesson",
+        "Explain why a lesson is overfitted by construction",
+        "Say what reflexion needs to work, and where self-judging fails"],
+      hint: "Run a second, different task after the lesson is written. Whether it transfers is the whole question, and nothing in the mechanism checks it.",
+      solution: { lang: "python", title: "x1105.py \u2014 a lesson that transferred",
+        code: 'def solve(state):\n    lessons = [i.value["text"] for i in store.search(("lessons", "refunds"))]\n    prompt = [HumanMessage(content=state["task"])]\n    for l in lessons:\n        prompt.append(SystemMessage(content="Lesson learned: %s" % l))\n    out = solver.invoke(prompt)\n    return {"answer": out.content, "attempt": 1, ...}\n\ndef reflect(state):\n    out = reflector.invoke([HumanMessage(content="Why did this fail? %s"\n                                        % state["verdict"])])\n    store.put(("lessons", "refunds"), "lesson-%d" % state["attempt"],\n              {"text": out.content})',
+        out: "==============================================================================\nPART 1 -- reflexion = reflection + memory ACROSS attempts\n==============================================================================\n  11.4's reflection critiques within one attempt. reflexion writes\n  the lesson down and carries it into the NEXT attempt at a\n  similar task.\n\n  so the mechanism is 9.6's store, not 9.5's thread state -- the\n  memory has to outlive the conversation or there is nothing new\n  here.\n==============================================================================\nPART 2 -- the attempt loop, with a lesson written at the end\n==============================================================================\n    no lessons yet\n    solve (with 0 lesson(s)) -> '30 days'\n    judge: FAIL: did not say where the money goes\n    wrote lesson: 'When asked about refunds, always state the d'\n    solve (with 1 lesson(s)) -> '30 days, to the original payment method'\n    judge: PASS\n\n  attempts: 2\n  verdict : 'PASS'\n==============================================================================\nPART 3 -- what is in the store afterwards\n==============================================================================\n    lesson-1     'When asked about refunds, always state the destination of the money.'\n\n  THAT is the whole idea: the lesson is text, written by the model,\n  stored outside the run, and injected into the next attempt's\n  prompt. 'verbal reinforcement' -- no weights change, the\n  improvement is a sentence in the context.\n==============================================================================\nPART 4 -- the second attempt at a similar task\n==============================================================================\n    solve (with 1 lesson(s)) -> 'Within 30 days, refunded to the original card.'\n    judge: PASS\n\n  it passed FIRST TIME, with the lesson from the previous task in\n  the prompt. that is the payoff, and it is also the measurement\n  problem: this only works if the lesson generalises, and nothing\n  checks that it does.\n==============================================================================\nPART 5 -- the failure modes, which are 9.6's\n==============================================================================\n  a lesson is a long-term memory, so it inherits every problem 9.6\n  listed -- and the worst one applies hardest here:\n\n    remember wrong   a mistaken lesson is injected into every\n                     future attempt. and because it was written by\n                     the model from a single failure, it is\n                     OVERFITTED by construction.\n\n  a lesson learned from one bad answer is a sample of size one. so\n  reflexion wants:\n    - lessons scoped narrowly (the namespace, 9.6)\n    - a cap on how many are injected, or the prompt fills with them\n    - an expiry or a review path, because nothing else removes a\n      bad lesson\n\n  and the honest note: this is a research pattern. it works in\n  benchmarks with a clear pass/fail signal, and the signal is the\n  hard part -- without a reliable judge there is nothing to reflect\n  on, and 7.4 showed self-judging is exactly where a model shares\n  the error it is checking for.",
+        notes: [
+          { t: "p", text: "**Reflexion is reflection plus memory across attempts**, so it needs 9.6's store \u2014 thread state is scoped to one conversation (9.5)." },
+          { t: "p", text: "**The run wrote a real lesson** \u2014 \u2018When asked about refunds, always state the destination of the money\u2019 \u2014 and the retry passed." },
+          { t: "p", text: "**That is verbal reinforcement**: the lesson is text, written by the model, stored outside the run, injected into the next prompt. No weights change." },
+          { t: "p", text: "**A different task then passed first time** with the lesson in its prompt \u2014 which is the payoff." },
+          { t: "p", text: "**And the measurement problem**: this works only if the lesson generalises, and nothing checks that. The judge confirmed the answer, not the lesson." },
+          { t: "p", text: "**A lesson is overfitted by construction** \u2014 written by the model from a single failure, phrased as a general rule, applied to everything." },
+          { t: "p", text: "**So: narrow namespaces, a cap on injected lessons, and an expiry or review path**, because nothing else removes a bad one." },
+          { t: "p", text: "**It needs a reliable judge, and that is the hard part.** 7.4 measured self-judging scoring a contradiction at +5.293, so a self-judged loop can write lessons from failures it misdiagnosed." }
+        ] } },
+    { t: "callout", kind: "scenario", title: "Scenario: the lesson that made everything worse", body: [
+      { t: "p", text: "A support assistant uses reflexion. One failure was a user complaining that an answer was too short. The model wrote the lesson *\u201calways give detailed, comprehensive answers\u201d*. Over the following weeks every answer grows, users complain about verbosity, and nobody connects it to a memory written once." },
+      { t: "p", text: "The lesson is a reasonable conclusion from a sample of size one, phrased as a universal rule, and then applied to every question including the ones a sentence would answer. It is doing exactly what it was asked to do, which is why nothing flags it \u2014 9.6's *remember wrong*, with the model as the author." },
+      { t: "p", text: "Three defences, and they are structural rather than clever. Scope lessons narrowly in the namespace so a lesson about answer length for one topic does not reach all of them. Cap how many are injected, since an unbounded set of behavioural rules is a prompt nobody wrote. And keep provenance \u2014 when it was written and what failure produced it \u2014 because a bad lesson is otherwise unfindable, and the only thing that removes it is someone noticing." }
+    ] }
+  ],
+  takeaways: [
+    "**Reflexion is reflection plus memory across attempts**, so it needs the store, not thread state.",
+    "**The lesson is text, written by the model, stored outside the run, injected into the next prompt.**",
+    "**That is \u2018verbal reinforcement\u2019** \u2014 no weights change, the improvement is a sentence.",
+    "**A measured lesson transferred**: a different task passed first time with it in the prompt.",
+    "**And nothing checks that a lesson generalises** \u2014 the judge confirmed the answer, not the lesson.",
+    "**A lesson is overfitted by construction**: written from a single failure, phrased as a general rule.",
+    "**And injected into every future attempt**, which is 9.6's \u2018remember wrong\u2019 at its worst.",
+    "**So scope lessons narrowly in the namespace** (9.6).",
+    "**Cap how many are injected**, or the prompt fills with rules nobody wrote.",
+    "**Keep provenance and an expiry**, because nothing else removes a bad lesson.",
+    "**It needs a reliable judge, and the signal is the hard part.**",
+    "**7.4 measured self-judging scoring a contradiction at +5.293**, so a self-judged loop misdiagnoses failures.",
+    "**It is genuinely applicable where the judge is external and cheap** \u2014 tests, schemas, status codes.",
+    "**Which is where its benchmark results come from**, and production quality bars rarely look like that."
+  ],
+  quiz: { title: "Check yourself", questions: [
+    { stem: "What makes reflexion different from reflection?",
+      options: ["It uses a separate critic model",
+        "The lesson persists across attempts in a store, outliving the conversation",
+        "It runs more rounds before giving up",
+        "It writes the critique into the message history"],
+      answer: 1,
+      why: "Reflection critiques within a single attempt and the critique dies with it. Reflexion writes a lesson to a store so it can be injected into a later attempt at a similar task. That requires the store rather than graph state, since graph state is scoped to one thread \u2014 and if the lesson lives in thread state the pattern reduces to reflection." },
+    { stem: "Why is a reflexion lesson overfitted by construction?",
+      options: ["Models generalise poorly from text",
+        "It is written by the model from a single failure, phrased as a general rule, and then applied to everything",
+        "The store has no mechanism for weighting lessons",
+        "Lessons are injected before the question"],
+      answer: 1,
+      why: "The sample size is one. A conclusion drawn from a single failed answer, expressed as a universal instruction, then prepended to every future prompt \u2014 as with 'always give detailed, comprehensive answers' written after one complaint about brevity. Nothing in the mechanism distinguishes a generalisable lesson from an overfitted one, since both are sentences." },
+    { stem: "What does reflexion fundamentally require?",
+      options: ["A large store and fast retrieval",
+        "A reliable judge \u2014 without a trustworthy pass/fail signal there is nothing to reflect on",
+        "A different model for the reflector than the solver",
+        "Persistent threads across sessions"],
+      answer: 1,
+      why: "The loop reflects on failures, so a misdiagnosed failure produces a lesson that encodes the misdiagnosis. Self-judging is measurably weak here \u2014 a model scoring a claim its own source contradicts rated it strongly positive \u2014 so a self-judged reflexion loop can be worse than not reflecting. The pattern's benchmark results come from settings with external, cheap judges." },
+    { stem: "Which defence against a bad lesson is structural rather than hopeful?",
+      options: ["Asking the model to write only generalisable lessons",
+        "Scoping lessons narrowly in the namespace, capping how many are injected, and keeping provenance",
+        "Running more attempts before writing a lesson",
+        "Reviewing lessons with the same model that wrote them"],
+      answer: 1,
+      why: "A narrow namespace limits a lesson's reach to the topic it came from; a cap bounds how much of the prompt is model-authored behavioural rules; and provenance is what makes a bad lesson findable when someone eventually notices the symptom. Asking the model to self-restrict is a request, and reviewing with the same model shares the judgement that produced the lesson." }
+  ] },
+  interview: { title: "Interview practice", sub: "Reflexion", questions: [
+    { level: "core", q: "What is reflexion and how does it work mechanically?",
+      strong: "A strong answer says it is text in a store, not learning.",
+      answer: [
+        { t: "p", text: "Reflection with memory across attempts. On a failure, the model is asked why it failed, and that answer is stored as a lesson. The next attempt at a similar task gets the lesson injected into its prompt." },
+        { t: "p", text: "Mechanically it is nothing more than that \u2014 the lesson is text, written by the model, kept in a store outside the run. No weights change, which is why it is sometimes called verbal reinforcement. The improvement is a sentence in the context." },
+        { t: "p", text: "It needs the store rather than graph state, because graph state is scoped to one thread. If the lesson lives in the conversation it dies with it, and the pattern reduces to plain reflection." },
+        { t: "p", text: "I built it and it worked: a task failed, the model wrote 'always state the destination of the money' as a lesson, the retry passed, and then a different refund question passed on its first attempt with that lesson present. So the transfer is real \u2014 and nothing in the mechanism checked that the lesson generalises. The judge confirmed the answer, not the lesson." }
+      ] },
+    { level: "advanced", q: "Would you put reflexion in production?",
+      strong: "A strong answer is cautious and says why, specifically.",
+      answer: [
+        { t: "p", text: "Rarely, and only where the judge is external and cheap \u2014 tests passing, a schema validating, an API returning 200. That is where its benchmark results come from, and the resemblance to a production task with a fuzzy quality bar is superficial." },
+        { t: "p", text: "The reason for caution is the asymmetry of the failure. A lesson is written by the model from a single failure, phrased as a general rule, and then applied to every future attempt. It is overfitted by construction." },
+        { t: "p", text: "And it is unfindable, because the system is doing exactly what it was told. I have seen a lesson like 'always give detailed, comprehensive answers' written after one complaint about brevity, and every answer growing for weeks with nobody connecting it to a memory written once." },
+        { t: "p", text: "The judge is the deeper problem. The loop reflects on failures, so a misdiagnosed failure encodes the misdiagnosis as a rule. Self-judging is measurably weak \u2014 a model scoring a claim its own source contradicted rated it strongly positive \u2014 so a self-judged reflexion loop can be worse than not reflecting at all." },
+        { t: "p", text: "If I did deploy it, I would scope lessons narrowly in the namespace, cap how many are injected, keep provenance on each, and have an expiry \u2014 because nothing else removes a bad lesson, and the prompt is otherwise filling with behavioural rules nobody wrote." }
+      ] },
+    { level: "core", q: "What is the lightest version of reflexion you would actually ship?",
+      strong: "A strong answer ships a human-curated version of it.",
+      answer: [
+        { t: "p", text: "Human-curated lessons rather than model-written ones \u2014 which keeps the mechanism and removes the failure mode." },
+        { t: "p", text: "The valuable part of reflexion is the mechanism: a short, retrievable instruction injected into the prompt for a class of task, improving behaviour with no retraining. That part works and is cheap." },
+        { t: "p", text: "The dangerous part is the authorship. A lesson written by the model from a single failure is overfitted by construction and injected into every future attempt, and nothing removes it because the system is doing exactly what it was told." },
+        { t: "p", text: "So I would have the loop SURFACE candidate lessons rather than store them. On a failure, write the model's diagnosis to a review queue with the failing input and the verdict attached. A person promotes the ones that generalise." },
+        { t: "p", text: "That keeps the benefit, bounds the set of injected rules to things someone chose, and gives every lesson provenance \u2014 which is what makes a bad one findable later." },
+        { t: "p", text: "Fully automatic reflexion I would only run where the judge is external and cheap: tests passing, a schema validating, a status code. Those are the settings its benchmark results come from, and a production quality bar rarely looks like that." }
+      ] }
+  ] }
+});
