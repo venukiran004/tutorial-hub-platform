@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LangChain and LangGraph — Tutorial Hub</title>
+<meta name="description" content="Large language models as engineering: every inference parameter demonstrated on real logits, prompting as a tested discipline, serving and the economics of a token, LoRA and QLoRA, retrieval from chunking to GraphRAG, the post-training stack from SFT to GRPO, the metrics that judge all of it, observability, the production failure modes, and voice agents.">
+<script>try{var t=localStorage.getItem("th:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/system.css">
+<link rel="stylesheet" href="../../assets/css/course.css">
+<link rel="stylesheet" href="../../assets/css/refine.css">
+<link rel="stylesheet" href="../../assets/css/home.css">
+<link rel="stylesheet" href="../../assets/css/aurora.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="../../index.html"><span class="brand-mark">TH</span>Tutorial<span class="brand-sub">Hub</span></a>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <span class="sep">/</span><a href="../../index.html">Courses</a>
+    <span class="sep">/</span><span class="cur">LangChain and LangGraph</span>
+  </nav>
+  <span class="topbar-spacer"></span>
+  <button class="ghost-btn search-trigger" data-cmdk type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+    <span class="label">Search lessons</span><span class="hint">Ctrl K</span>
+  </button>
+  <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
+</header>
+
+<main>
+<div class="page wide">
+
+  <!-- ------------------------------------------------------------- hero -- -->
+  <section class="hero">
+    <span class="hero-eyebrow" id="hero-badge"></span>
+    <h1>Composition, state, <span class="dim">and what an agent breaks.</span></h1>
+    <p class="hero-lede">
+      The reference notes, file by file and section by section: the Runnable protocol and what
+      <b>LCEL actually builds</b>, retrieval taken from a baseline pipeline to BM25, rank fusion and
+      cross-encoder reranking with <b>every formula implemented from scratch</b>, LangGraph's state
+      machine with reducers, checkpoints and a human in the middle of a run, the agent patterns from
+      router to swarm as the smallest graph that demonstrates each, context engineering as a budget,
+      and the failure surfaces that only exist once an agent can act. Every chain, graph and retriever
+      here is <b>executed against a scripted model and its real output shown</b> — the token generation
+      is faked so no key is needed, and nothing else is.
+    </p>
+    <div class="hero-cta">
+      <a class="cta primary" id="start-btn" href="lesson.html?id=1.1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+        <span id="start-label">Start with the Runnable</span>
+      </a>
+      <a class="cta ghost" href="#curriculum">View full curriculum</a>
+      <span class="cta-note" id="cta-note"></span>
+    </div>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- outcomes -- -->
+  <section class="sec">
+    <div class="sec-kicker">The progression</div>
+    <div class="sec-h"><h2>Five states, in order</h2></div>
+    <p class="sec-lede">
+      Every module exists to move you from one of these states to the next. The learn track takes
+      you through them; the scenario and interview tracks are where you find out whether it held.
+    </p>
+    <div class="ladder-strip">
+      <div class="ls-step" style="--c:var(--d-foundation)">
+        <div class="ls-n">01</div><div class="ls-t">I can control a model</div>
+        <div class="ls-d">Every parameter on a request, what each does to the probability distribution, and the token arithmetic that tells you what the call will cost before you send it.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-core)">
+        <div class="ls-n">02</div><div class="ls-t">I can serve and adapt one</div>
+        <div class="ls-d">Prefill against decode, the KV cache and its memory, quantization and batching — then LoRA, where the update is low-rank and the settings each have a reason.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--accent)">
+        <div class="ls-n">03</div><div class="ls-t">I can give it something to read</div>
+        <div class="ls-d">Chunking, embeddings and the index underneath; hybrid search and re-ranking; the advanced patterns; and RAGAS computed rather than imported.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-advanced)">
+        <div class="ls-n">04</div><div class="ls-t">I can say how it learnt to answer</div>
+        <div class="ls-d">Pretraining and Chinchilla, SFT and its loss mask, the Bradley-Terry reward model, PPO's KL leash, DPO derived to the line where the partition function cancels, then GRPO.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-expert)">
+        <div class="ls-n">05</div><div class="ls-t">I can run it in front of users</div>
+        <div class="ls-d">Metrics computed by hand, traces that make a regression diagnosable, hallucination detected rather than hoped away, a bill that is under control, and guardrails that do not refuse everyone.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------- curriculum -- -->
+  <section class="sec" id="curriculum">
+    <div class="sec-kicker">Curriculum</div>
+    <div class="sec-h">
+      <h2>The full path</h2>
+      <span class="sp"></span>
+      <button class="ghost-btn" id="expand-all" type="button">Expand all</button>
+    </div>
+    <p class="sec-lede">
+      Three tracks. <b>LangChain &amp; LangGraph</b> is the course — one module per reference
+      file, one lesson per section, in the reference's order. <b>Scenarios</b> holds the 50
+      runnable programs and the 500 agentic scenarios. <b>Interview</b> holds the LangChain,
+      LangGraph and agentic banks, answers hidden until you ask. Modules marked <b>soon</b> are
+      scheduled — the shape of the whole course is visible from day one.
+    </p>
+    <div class="track-tabs" id="track-tabs"></div>
+    <div id="curriculum-list"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- audience -- -->
+  <section class="sec">
+    <div class="sec-kicker">Fit</div>
+    <div class="sec-h"><h2>Who this is for</h2></div>
+    <div class="split">
+      <div class="split-box yes">
+        <div class="split-h">A good fit if</div>
+        <ul id="fit-yes"></ul>
+      </div>
+      <div class="split-box no">
+        <div class="split-h">Not the right course if</div>
+        <ul id="fit-no"></ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Tutorial Hub — LangChain and LangGraph</span>
+    <span class="sp"></span>
+    <span>Built as a single static site — no build step, no dependencies.</span>
+  </footer>
+
+</div>
+</main>
+
+<script src="../../assets/js/highlight.js"></script>
+<script src="../../assets/js/render.js"></script>
+<script src="../../assets/js/diagrams.js"></script>
+<script src="../../assets/js/app.js"></script>
+<script src="curriculum.js"></script>
+<script src="../../assets/js/course-page.js"></script>
+<script>
+(function () {
+  "use strict";
+  var I = EC.icons;
+  EC.renderCoursePage({
+    icon: I.link,
+    badge: "Course 10 · LangChain and LangGraph",
+    startLabel: "Start with the Runnable",
+    fitYes: [
+      "You have written a few LangChain chains by copying examples, and want to know what <code>|</code> actually constructs and why the protocol is the whole point.",
+      "You have a RAG system whose answers are wrong often enough to matter, and want the retrieval strategies implemented from the formula rather than imported and hoped over.",
+      "You are moving from chains to agents and want LangGraph's state model — reducers, checkpoints, interrupts — understood rather than copied from a quickstart.",
+      "You are preparing for interviews where the question after <em>what is an agent</em> is <em>your supervisor loops between two workers — why, and how do you stop it</em>."
+    ],
+    fitNo: [
+      "You have not used an LLM API directly. The GenAI and LLMs course covers the model itself; this one is about composing it.",
+      "You want a LangChain API reference. The documentation is faster for an argument's exact name — this course is about what the pieces are for.",
+      "You want to avoid frameworks entirely. That is a legitimate choice and 1.8 argues it fairly, but the other 117 lessons assume you have made the other one.",
+      "You want vendor-neutral agent theory. The patterns generalise, but every implementation here is LangChain and LangGraph."
+    ]
+  });
+})();
+</script>
+</body>
+</html>
