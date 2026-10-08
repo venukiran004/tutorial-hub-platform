@@ -1,0 +1,173 @@
+EC.receiveLesson({
+  id: "10.7",
+  lede: "The dict form \u2014 a node reading `config[\"configurable\"].get(\"model\")` \u2014 still works, and `config_schema` is now **deprecated in LangGraph V1.0** in favour of `context_schema`. The V1 form is better in three specific ways: the context is its own `invoke(state, context={...})` argument rather than buried alongside `thread_id`, the node reads **typed attributes** off `runtime.context`, and the defaults live once on a dataclass instead of being repeated at every `.get()` call site. And there are **three** cases, not two: omitting `context` entirely leaves `runtime.context` as **`None`**, so a node reading an attribute raises `AttributeError` rather than quietly getting defaults \u2014 which, for once in this course, is the loud failure.",
+  objectives: [
+    "Read per-invocation configuration from a node",
+    "Use context_schema and a typed Runtime instead of the deprecated config_schema",
+    "Say what else Runtime exposes",
+    "Draw the line between context and state",
+    "Explain what happens when context is omitted"
+  ],
+  prerequisites: ["8.4", "9.6"],
+  blocks: [
+    { t: "h2", n: "01", id: "old", text: "The dict form", sub: "Works, and config_schema is deprecated" },
+    { t: "code", lang: "python", title: "A node taking a RunnableConfig",
+      code: 'def old_node(state, config: RunnableConfig):\n    c = config["configurable"]\n    return {"out": ["model=%s tone=%s" % (c.get("model", "<default>"),\n                                          c.get("tone", "<default>"))]}',
+      out: "    {}                        -> ['model=<default> tone=<default>']\n    {'model': 'fast', ...}    -> ['model=fast tone=brief']",
+      caption: "Dict-shaped all the way through: `.get()` with defaults, no types." },
+    { t: "p", text: "Declaring the dials with `config_schema=` used to be the fix, and in this version that emits `LangGraphDeprecatedSinceV10: config_schema is deprecated \u2026 Please use context_schema instead. Deprecated in LangGraph V1.0 to be removed in V2.0.`" },
+    { t: "h2", n: "02", id: "new", text: "The V1 form", sub: "A typed context and a Runtime" },
+    { t: "code", lang: "python", title: "A dataclass and runtime.context",
+      code: '@dataclass\nclass Ctx:\n    model: str = "<default>"\n    tone: str = "<default>"\n\ndef node(state, runtime: Runtime[Ctx]):\n    c = runtime.context\n    return {"out": [... c.model ... c.tone ...]}\n\ng = StateGraph(S, context_schema=Ctx)',
+      out: "    context={}                         -> ['model=<default> tone=<default>']\n    context={'model': 'fast', ...}     -> ['model=fast tone=brief']",
+      caption: "`invoke(state, context={\u2026})` \u2014 its own argument." },
+    { t: "callout", kind: "good", title: "Three things changed and all three matter", body: [
+      { t: "p", text: "**One.** The context is passed as its own argument rather than buried inside a config dict alongside `thread_id` and callbacks \u2014 so your dials and the framework's plumbing are no longer the same namespace." },
+      { t: "p", text: "**Two.** The node reads typed attributes, `c.model`, not `c.get(\"model\")`." },
+      { t: "p", text: "**Three.** The defaults live on the dataclass, in one place, instead of being repeated at every call site. That third one is the quiet win: with the dict form, a default spelled differently in two nodes is two behaviours and no error." }
+    ] },
+    { t: "h2", n: "03", id: "runtime", text: "Runtime is the accessor for everything ambient", sub: "Not just context" },
+    { t: "dl", items: [
+      ["`runtime.context`", "the typed per-invocation configuration"],
+      ["`runtime.store`", "the long-term memory store (9.6)"],
+      ["`runtime.stream_writer`", "custom stream output (10.3)"],
+      ["`runtime.previous`", "the previous return, for the functional API (10.8)"]
+    ] },
+    { t: "p", text: "So a node that needs the store no longer takes it as a closure or a global \u2014 it asks the runtime. Which makes the node testable with a constructed `Runtime` rather than needing a fully wired graph, and it unifies three things earlier modules reached for by different means." },
+    { t: "h2", n: "04", id: "line", text: "Context against state", sub: "The line" },
+    { t: "table", head: ["context", "state"], rows: [
+      ["the **caller** sets it", "**nodes** write it"],
+      ["nodes read it, never write it", "nodes read and write"],
+      ["not persisted in checkpoints", "persisted every superstep (9.4)"],
+      ["not part of the data flow", "**is** the data flow"]
+    ] },
+    { t: "callout", kind: "mental", title: "Would a node ever want to change this?", body: [
+      { t: "p", text: "If yes it is state. If it is a dial the caller sets and nobody inside touches \u2014 a model name, a user id, a feature flag \u2014 it is context." },
+      { t: "p", text: "And 9.4's cost argument points the same way: anything in state is serialised on every superstep, so a feature flag kept there is written to storage once per step, forever, for no reason." }
+    ] },
+    { t: "p", text: "What belongs in context: which model and temperature, the user and tenant ids for 9.6's namespace, feature flags, a request id for tracing. What does not: anything a node computes, anything that should persist across turns, and secrets \u2014 which belong in the process environment rather than a per-request object that ends up in logs and traces." },
+    { t: "h2", n: "05", id: "omitted", text: "Three cases, not two", sub: "And the failure is loud" },
+    { t: "code", lang: "text", title: "Omitted, empty, and populated",
+      code: "omitted entirely         -> context=None type=NoneType\ncontext={}               -> Ctx(model='<default>', tone='<default>')\ncontext={'model':'x'}    -> Ctx(model='x', tone='<default>')",
+      caption: "Omitting it is **not** the same as passing an empty dict." },
+    { t: "code", lang: "text", title: "So a node reading an attribute",
+      code: "first call with a context  -> 'model=fast tone=brief'\nsecond call, context omitted:\n  RAISED AttributeError: 'NoneType' object has no attribute 'model'",
+      caption: "Loud, not silent." },
+    { t: "callout", kind: "good", title: "Which is the opposite of most of this course's failures", body: [
+      { t: "p", text: "Context is per-invocation, so a conversational graph must be passed its context on **every** call. A caller that sets it once at the start of a conversation and omits it later gets an error rather than silently different behaviour from turn two onward." },
+      { t: "p", text: "Contrast 9.4's `thread_id` with no checkpointer, which is accepted and ignored, and 8.2's dropped key. Here the framework refuses \u2014 and 9.7 drew the same line: refuse when there is no sensible degraded behaviour." }
+    ] },
+    { t: "p", text: "If a node must tolerate a missing context, `c = runtime.context or Ctx()` makes the default explicit at the one place that reads it. And if context is **required**, letting it raise is correct \u2014 the error names the attribute, which is enough to find the caller. Either way: a setting that should survive a turn belongs in the state, and one that should survive the conversation belongs in the store (9.6)." },
+    { t: "h2", n: "06", id: "filters", text: "And it still filters rather than validates", sub: "8.4's pattern again" },
+    { t: "code", lang: "text", title: "An undeclared context key",
+      code: "accepted -> ['model=x tone=<default>']",
+      caption: "Not rejected." },
+    { t: "p", text: "So like 8.4's input schema, the declaration documents and shapes rather than rejects. The value is discoverability and types at the read site, not enforcement at the boundary \u2014 and if you want enforcement, that is a Pydantic context schema or a check in the caller." },
+    { t: "exercise", kind: "build", title: "Configure a graph at runtime",
+      difficulty: "core", minutes: 28,
+      body: "Read per-invocation configuration from a node using the dict form, and note the deprecation on config_schema. Then rewrite it with a dataclass context_schema and a typed Runtime, listing what changed. Say what else Runtime exposes. Draw the line between context and state. Then determine what happens when context is omitted entirely, as against passed empty, and show how a node reading an attribute behaves in each case. Finally check whether an undeclared context key is rejected.",
+      requirements: ["Read configuration from a node via config['configurable']",
+        "Note what config_schema now emits",
+        "Rewrite with context_schema and Runtime, listing three things that changed",
+        "Say what else Runtime exposes and why that matters",
+        "Compare context against state on at least three properties",
+        "Determine the three cases for omitted, empty and populated context",
+        "Show a node reading an attribute when context is omitted",
+        "Check whether an undeclared context key is rejected"],
+      hint: "Omitting context and passing an empty dict are not the same thing. Find out what runtime.context is in each case.",
+      solution: { lang: "python", title: "x1007.py \u2014 omitted context is None, not defaults",
+        code: 'from dataclasses import dataclass\nfrom langgraph.runtime import Runtime\n\n@dataclass\nclass Ctx:\n    model: str = "<default>"\n    tone: str = "<default>"\n\ndef node(state, runtime: Runtime[Ctx]):\n    c = runtime.context\n    return {"out": ["model=%s tone=%s" % (c.model, c.tone)]}\n\ng = StateGraph(S, context_schema=Ctx)\napp.invoke({"out": []}, context={"model": "fast"})\n\n# three cases, not two\ndef probe(state, runtime: Runtime[Ctx]):\n    c = runtime.context\n    return {"out": ["context=%r type=%s" % (c, type(c).__name__)]}',
+        out: "==============================================================================\nPART 1 -- the old way -- config['configurable'], and it is deprecated\n==============================================================================\n  a node taking a RunnableConfig second parameter can read whatever\n  the caller put in config['configurable']:\n\n    {}                                           -> ['model=<default> tone=<default>']\n    {'model': 'fast', 'tone': 'brief'}           -> ['model=fast tone=brief']\n\n  it works, and it is dict-shaped all the way through: .get() with\n  defaults, no types, and the available keys discoverable only by\n  reading every node.\n\n  declaring them with config_schema= used to be the fix. in this\n  version that emits:\n\n    LangGraphDeprecatedSinceV10: `config_schema` is deprecated and\n    will be removed. Please use `context_schema` instead.\n    Deprecated in LangGraph V1.0 to be removed in V2.0.\n==============================================================================\nPART 2 -- the V1 way -- a typed context and a Runtime\n==============================================================================\n    @dataclass\n    class Ctx:\n        model: str = '<default>'\n        tone: str = '<default>'\n\n    def node(state, runtime: Runtime[Ctx]):\n        c = runtime.context\n        return {'out': [... c.model ... c.tone ...]}\n\n    g = StateGraph(S, context_schema=Ctx)\n\n    context={}                                 -> ['model=<default> tone=<default>']\n    context={'model': 'fast', 'tone': 'brief'} -> ['model=fast tone=brief']\n\n  three things changed and all three matter:\n\n    1. the context is passed as its OWN argument -- invoke(state,\n       context={...}) -- rather than buried inside a config dict\n       alongside thread_id and callbacks\n    2. the node reads TYPED ATTRIBUTES, c.model, not c.get('model')\n    3. the defaults live on the dataclass, in one place, instead of\n       being repeated at every .get() call site\n\n  that third one is the quiet win. with the dict form, a default\n  spelled differently in two nodes is two behaviours and no error.\n==============================================================================\nPART 3 -- Runtime is the accessor for everything ambient\n==============================================================================\n  runtime.context is one of several. the others are things earlier\n  modules reached for by other means:\n\n    available on Runtime: context, control, drain_reason, drain_requested, execution_info, heartbeat, merge, override, patch_execution_info\n\n    runtime.context         the typed per-invocation config\n    runtime.store           the long-term memory store (9.6)\n    runtime.stream_writer   custom stream output (10.3)\n    runtime.previous        the previous return, for the functional\n                            API (10.8)\n\n  so a node that needs the store no longer takes it as a closure or\n  a global -- it asks the runtime. which makes the node testable\n  with a constructed Runtime rather than needing a wired-up graph.\n==============================================================================\nPART 4 -- context against state -- the line\n==============================================================================\n  both are per-invocation. the difference is who writes them:\n\n  context                          state\n  the CALLER sets it               NODES write it\n  nodes read it, never write it    nodes read and write\n  not persisted in checkpoints     persisted every superstep (9.4)\n  not part of the data flow        IS the data flow\n\n  so the test is: would a node ever want to CHANGE this? if yes it\n  is state. if it is a dial the caller sets and nobody inside\n  touches -- a model name, a user id, a feature flag -- it is\n  context.\n\n  and the cost argument from 9.4 applies: anything in state is\n  serialised on every superstep. a feature flag in state is written\n  to storage once per step, forever, for no reason.\n==============================================================================\nPART 5 -- what belongs there\n==============================================================================\n  context:\n    - which model, which temperature\n    - the user id and tenant id, for the store's namespace (9.6)\n    - feature flags and A/B assignment\n    - a request id for tracing\n\n  NOT context:\n    - anything a node computes (that is state)\n    - anything that should persist across turns (state, or the\n      store -- see part 6)\n    - secrets, which belong in the process environment rather than\n      a per-request object that ends up in logs and traces\n==============================================================================\nPART 6 -- the mistake: context is not persisted\n==============================================================================\n  context is per-invocation, so a conversational graph must be\n  passed its context on EVERY call. and the way that fails is worth\n  knowing exactly, because it is not what you would guess.\n\n    omitted entirely         -> context=None type=NoneType\n    context={}               -> context=x07.<locals>.Ctx(model='<default>', tone='<default>') type=Ctx\n    context={'model':'x'}    -> context=x07.<locals>.Ctx(model='x', tone='<default>') type=Ctx\n\n  so there are THREE cases, not two:\n\n    context omitted      runtime.context is None\n    context={}           a Ctx with the dataclass defaults\n    context={...}        a Ctx with your values\n\n  which means a node written as runtime.context.model raises\n  AttributeError on NoneType when the caller forgets the context\n  entirely -- it does NOT quietly get the defaults.\n\n  the probe above only REPORTED the context. a node that reads an\n  attribute off it, which is what a real node does, behaves\n  differently:\n\n    first call with a context  -> 'model=fast tone=brief'\n    second call, context omitted:\n      RAISED AttributeError: 'NoneType' object has no attribute 'model'\n\n  that is GOOD behaviour and worth appreciating, because it is the\n  opposite of most of this course's silent failures. a caller that\n  sets the context once at the start of a conversation and omits it\n  on later turns gets a loud error rather than silently different\n  behaviour from turn two onward.\n\n  contrast 9.4's thread_id with no checkpointer, which is accepted\n  and ignored, and 8.2's dropped key. here the framework refuses --\n  and 9.7 drew the same line: refuse when there is no sensible\n  degraded behaviour.\n\n  the defensive pattern, if a node must tolerate a missing context:\n\n    c = runtime.context or Ctx()\n\n  which makes the default explicit at the one place that reads it.\n  and if context is REQUIRED, leaving it to raise is correct -- the\n  error names the attribute, which is enough to find the caller.\n\n  either way: a setting that should survive a turn belongs in the\n  state, and one that should survive the conversation belongs in\n  the store (9.6).\n==============================================================================\nPART 7 -- and it still filters rather than validates\n==============================================================================\n  passing an undeclared context key:\n    RAISED TypeError: x07.<locals>.Ctx.__init__() got an unexpected keyword argument 'bogus'\n\n  so like 8.4's input schema, the declaration documents and shapes\n  rather than rejects. the value is discoverability and types at\n  the read site, not enforcement at the boundary -- and if you want\n  enforcement, that is a Pydantic context schema or a check in the\n  caller.",
+        notes: [
+          { t: "p", text: "**`config_schema` is deprecated in LangGraph V1.0** in favour of `context_schema`, to be removed in V2.0." },
+          { t: "p", text: "**Three things improve in the V1 form**: the context is its own `invoke` argument, the node reads typed attributes, and the defaults live once on the dataclass." },
+          { t: "p", text: "**That third one is the quiet win** \u2014 with `.get()` defaults, a default spelled differently in two nodes is two behaviours and no error." },
+          { t: "p", text: "**`Runtime` is the accessor for everything ambient**: `context`, `store` (9.6), `stream_writer` (10.3) and `previous` (10.8)." },
+          { t: "p", text: "**So a node that needs the store asks the runtime** rather than taking a closure or a global, which makes it testable with a constructed `Runtime`." },
+          { t: "p", text: "**Context is what the caller sets and nodes only read; state is what nodes write** \u2014 and only state is persisted per superstep." },
+          { t: "p", text: "**There are three cases, not two**: omitting `context` gives `None`, while `context={}` constructs the dataclass defaults." },
+          { t: "p", text: "**So a node reading an attribute raises `AttributeError` when the caller forgets** \u2014 loud, which is the opposite of 9.4's silently ignored `thread_id` and 8.2's dropped key." },
+          { t: "p", text: "**And an undeclared context key is accepted and ignored**, so the declaration documents and shapes rather than validates (8.4)." }
+        ] } },
+    { t: "callout", kind: "scenario", title: "Scenario: the model choice that reverted on turn two", body: [
+      { t: "p", text: "A chat application lets a user pick a model. The choice is passed as context on the first request of a conversation and the handler does not pass it again on subsequent turns. With the older dict-based form, every turn after the first silently used the default model \u2014 cheaper, different, and nobody noticed for weeks." },
+      { t: "p", text: "Context is per-invocation and is not part of the checkpointed state, so there is nothing for it to persist into. With the dict form and `.get()` defaults the fallback is silent by construction, which is why this survived." },
+      { t: "p", text: "The typed form turns it into an immediate `AttributeError` on turn two, which is the better failure. And the real fix is to decide where the setting lives: a per-conversation choice belongs in the state so it is checkpointed with the thread, or in the store keyed by user if it should outlive the conversation. Context is for what the caller decides **per call**, and a setting the user chose once is not that." }
+    ] }
+  ],
+  takeaways: [
+    "**`config_schema` is deprecated in V1.0** in favour of `context_schema`.",
+    "**The dict form still works**: a node taking a `RunnableConfig` reads `config[\"configurable\"]`.",
+    "**The V1 form passes context as its own `invoke` argument**, separate from `thread_id` and callbacks.",
+    "**The node reads typed attributes** off `runtime.context`, not `.get()` with inline defaults.",
+    "**And the defaults live once on the dataclass** \u2014 a default spelled two ways is two behaviours, silently.",
+    "**`Runtime` also exposes `store`, `stream_writer` and `previous`** \u2014 one accessor for everything ambient.",
+    "**So a node asks the runtime for the store** rather than taking a closure or a global.",
+    "**Context is what the caller sets; state is what nodes write.**",
+    "**Only state is persisted per superstep**, so a feature flag in state is written forever for no reason.",
+    "**Three cases, not two**: omitted gives `None`, `context={}` gives the dataclass defaults.",
+    "**So a node reading an attribute raises `AttributeError` when the caller forgets.**",
+    "**Which is loud** \u2014 the opposite of 9.4's ignored `thread_id` and 8.2's dropped key.",
+    "**`runtime.context or Ctx()`** makes a tolerated default explicit at the read site.",
+    "**An undeclared context key is accepted and ignored** \u2014 the schema documents, it does not validate."
+  ],
+  quiz: { title: "Check yourself", questions: [
+    { stem: "What is the difference between omitting context and passing context={}?",
+      options: ["Nothing \u2014 both produce the dataclass defaults",
+        "Omitting gives runtime.context = None; context={} constructs the dataclass with its defaults",
+        "Omitting raises at invoke time; context={} is accepted",
+        "context={} is rejected as an empty schema"],
+      answer: 1,
+      why: "There are three cases rather than two, and the distinction matters because a node reading runtime.context.model raises AttributeError on NoneType when the caller forgets entirely. That is loud rather than silent, which is unusual for this class of mistake and makes it the better of the two failure modes available." },
+    { stem: "Why is the typed context form better than config['configurable'] beyond style?",
+      options: ["It validates values at the boundary",
+        "The defaults live once on the dataclass, so a default spelled differently in two nodes cannot become two behaviours",
+        "It is persisted in checkpoints",
+        "It allows nodes to write back to the context"],
+      answer: 1,
+      why: "With .get('model', '<default>') repeated at each call site, two nodes can disagree about the default with no error anywhere. A dataclass puts the default in one place. The other two gains are that context becomes its own invoke argument rather than sharing a namespace with thread_id and callbacks, and that reads are typed attribute access." },
+    { stem: "A user picks a model on turn one and it reverts to the default from turn two onward. Why?",
+      options: ["The checkpointer does not persist configurable values",
+        "Context is per-invocation and not part of state, so it must be passed on every call",
+        "The context schema filtered the key out",
+        "The store namespace was wrong"],
+      answer: 1,
+      why: "There is nothing for context to persist into \u2014 it is not state and the checkpointer records state. With the dict form and .get() defaults the reversion is silent; with typed context it raises. The real fix is to put a per-conversation choice in the state so it is checkpointed, or in the store keyed by user if it should outlive the conversation." },
+    { stem: "What else does Runtime give a node besides the context?",
+      options: ["The checkpointer and the compiled graph",
+        "The store, the stream writer and the previous return value",
+        "The current node's name and its retry count",
+        "The full config dict and the thread_id"],
+      answer: 1,
+      why: "Runtime unifies several things earlier lessons reached for by other means: the long-term memory store, the writer used for custom streaming, and the previous return value used by the functional API. The practical benefit is that a node needing the store asks for it rather than closing over a global, which makes the node testable with a constructed Runtime." }
+  ] },
+  interview: { title: "Interview practice", sub: "Runtime configuration", questions: [
+    { level: "core", q: "How do you pass per-request configuration into a graph?",
+      strong: "A strong answer uses the V1 context API and knows config_schema is deprecated.",
+      answer: [
+        { t: "p", text: "A dataclass as the context schema, and nodes taking a Runtime parameter and reading typed attributes off runtime.context." },
+        { t: "p", text: "The older form \u2014 a node taking a RunnableConfig and reading config['configurable'] with .get() and inline defaults \u2014 still works, and config_schema for declaring those keys is deprecated in LangGraph V1.0, to be removed in V2.0." },
+        { t: "p", text: "The new form is better in three concrete ways. The context is its own invoke argument rather than sharing a dict with thread_id and callbacks. Reads are typed attribute access. And the defaults live once on the dataclass instead of being repeated at every call site \u2014 which is the quiet one, because a default spelled differently in two nodes is two behaviours and no error." },
+        { t: "p", text: "Runtime also exposes the store, the stream writer and the previous return value, so a node that needs long-term memory asks the runtime for it rather than closing over a global. That makes the node testable with a constructed Runtime." }
+      ] },
+    { level: "advanced", q: "What belongs in context rather than state, and what goes wrong?",
+      strong: "A strong answer gives the test and the non-persistence trap.",
+      answer: [
+        { t: "p", text: "The test I use is: would a node ever want to change this? If yes it is state. If it is a dial the caller sets and nobody inside touches \u2014 a model name, a user id, a feature flag, a request id \u2014 it is context." },
+        { t: "p", text: "There is a cost argument pointing the same way. State is serialised on every superstep, so a feature flag kept there is written to storage once per step forever for no reason." },
+        { t: "p", text: "What goes wrong is that context is per-invocation and is not persisted. So a conversational graph must be passed its context on every call, and a handler that sets it once at the start of a conversation silently falls back from turn two onward \u2014 I have seen a user's model choice revert that way and go unnoticed for weeks, because .get() defaults make the fallback invisible." },
+        { t: "p", text: "The typed form actually helps here, and it is one of the few loud failures in this area: omitting context entirely leaves runtime.context as None, so a node reading an attribute raises AttributeError rather than quietly using a default. That is the opposite of a thread_id with no checkpointer, which is accepted and ignored." },
+        { t: "p", text: "And the real fix is placement rather than defensiveness: a per-conversation setting belongs in the state so it is checkpointed with the thread, and one that should outlive the conversation belongs in the store keyed by user." }
+      ] },
+    { level: "core", q: "How would you make one graph serve several tenants with different settings?",
+      strong: "A strong answer splits the settings by lifetime.",
+      answer: [
+        { t: "p", text: "By splitting the settings according to how long each one should live, because they do not all belong in the same place." },
+        { t: "p", text: "Per-request dials go in the context: which model, the tenant id, the user id, feature flags. Those are things the caller knows and no node should change, and the typed context schema makes them discoverable instead of a dict everyone has to read the source to understand." },
+        { t: "p", text: "Per-conversation settings go in the state, because context is not persisted. A choice made on turn one and not re-sent on turn two is simply absent \u2014 and with the typed form that is at least a loud AttributeError rather than a silent fallback to a default." },
+        { t: "p", text: "Per-tenant configuration that outlives conversations goes in the store, keyed by a namespace that starts with the tenant \u2014 which also gives per-tenant deletion as a prefix operation rather than a scan." },
+        { t: "p", text: "The thing I would be strict about is deriving the tenant id server-side from the authenticated session and never from the request body, for exactly the reason the thread_id has to be derived that way: it is the only boundary, and nothing validates it." },
+        { t: "p", text: "And I would keep secrets out of all three. They belong in the process environment, not in a per-request object that ends up in logs and traces." }
+      ] }
+  ] }
+});

@@ -1,0 +1,160 @@
+EC.receiveLesson({
+  id: "10.5",
+  lede: "8.7 measured the thing most people expect to be a deadlock and found it is not: when a router skips one branch of a fan-in, the join **runs** with whatever was scheduled. So the hazards in a graph are not hangs \u2014 they are a loop with no exit, a loop that exits having achieved nothing, and a join running on partial input. The second is the one that gets missed: a refiner bounded at four attempts ran the **full budget producing identical output**, because a counter bounds iterations and notices nothing about progress. A cyclic graph wants **two** guards, and only one of the five guards in this lesson is something the framework provides.",
+  objectives: [
+    "Show the cost of a loop with no exit condition",
+    "Put an iteration budget in the router",
+    "Add a progress check and say what it catches that a budget does not",
+    "Explain why a skipped fan-in branch is not a deadlock",
+    "Collect the guards and say where each one lives"
+  ],
+  prerequisites: ["8.9", "8.7"],
+  blocks: [
+    { t: "h2", n: "01", id: "noexit", text: "The loop with no exit", sub: "And every superstep ran the node" },
+    { t: "code", lang: "text", title: "An unconditional cycle, recursion_limit=20",
+      code: "RAISED GraphRecursionError: Recursion limit of 20 reached without\nhitting a stop condition.\n  took 0.004 s",
+      caption: "Fast here, because the node does nothing." },
+    { t: "p", text: "8.9's point with the cost attached: every one of those supersteps ran the node body. At the measured default of 10007, with a node that calls a model, that is thousands of paid calls before anything stops it \u2014 and the 0.004 s here is only because this node is arithmetic." },
+    { t: "h2", n: "02", id: "budget", text: "The budget belongs in the router", sub: "So the graph returns" },
+    { t: "code", lang: "python", title: "A counter and an exit condition",
+      code: 'def guarded(state):\n    if state["n"] >= 3:\n        return END\n    return "tick"',
+      out: "    ['tick', 'tick', 'tick']  (n=3)",
+      caption: "The graph now **returns** rather than raising." },
+    { t: "p", text: "Which is 8.9's whole argument: success and runaway become distinguishable, and \u201cbudget exhausted\u201d is a state you can route on, record and return to the caller rather than an exception that looks identical to an infinite loop." },
+    { t: "h2", n: "03", id: "progress", text: "The progress guard", sub: "The one people miss" },
+    { t: "p", text: "A counter bounds the **iterations**. It does not notice that the loop is making no progress." },
+    { t: "code", lang: "text", title: "A refiner that never changes the draft, bounded at 4",
+      code: "refine (len=4)\nrefine (len=4)\nrefine (len=4)\nrefine (len=4)",
+      caption: "It ran the full budget producing identical output." },
+    { t: "callout", kind: "insight", title: "The counter did its job and wasted every attempt", body: [
+      { t: "p", text: "So a cyclic graph wants **two** guards: a budget that stops after N iterations, and a progress check that stops if this iteration changed nothing." },
+      { t: "p", text: "The progress check is cheap \u2014 compare the key the loop is supposed to improve against its previous value and exit if it is unchanged. On the measured loop that turns four wasted model calls into one, and in 9.3's evaluator-optimiser it is the difference between a quality loop and an expensive no-op." }
+    ] },
+    { t: "p", text: "Keeping the previous value needs a state key, which is a legitimate use of state rather than the smell 8.8 warned about \u2014 the comparison is genuinely a property of the run rather than something a node already knew." },
+    { t: "h2", n: "04", id: "fanin", text: "The fan-in that is not a deadlock", sub: "8.7's measurement, reconfirmed" },
+    { t: "code", lang: "text", title: "Router always picks \u201ca\u201d; \u201cjoin\u201d has edges from a and b",
+      code: "['start', 'a', \"join saw '<unset>'\"]",
+      caption: "No hang. The join ran, and read the skipped branch's key as its initial value." },
+    { t: "callout", kind: "mental", title: "So the guard is in the node, not the graph", body: [
+      { t: "p", text: "A fan-in waits for every **scheduled** incoming path, not every declared one \u2014 so there is nothing to hang on. The risk is partial input, and it is silent because a missing contribution is indistinguishable from one that was never coming." },
+      { t: "p", text: "Which means a fan-in after a conditional branch has to check which keys are set rather than assume every declared path ran. That is a node-level concern the topology does not express, so reviewing the diagram will not catch it." }
+    ] },
+    { t: "h2", n: "05", id: "guards", text: "The guards, collected", sub: "And only one is a framework setting" },
+    { t: "table", head: ["guard", "where it goes", "catches"], rows: [
+      ["iteration budget", "the router", "a loop that never exits"],
+      ["progress check", "the router", "a loop that exits and achieves nothing"],
+      ["`recursion_limit`", "compile or invoke", "everything else, as a backstop"],
+      ["partial-input check", "the fan-in node", "a skipped branch"],
+      ["retry attempts", "the node", "a flaky dependency"]
+    ] },
+    { t: "callout", kind: "good", title: "The framework provides exactly one", body: [
+      { t: "p", text: "`recursion_limit` is the only guard the runtime gives you, and it is the one that should fire **least** often \u2014 because it firing means every other guard failed." },
+      { t: "p", text: "That is the summary worth carrying: a safe cyclic graph is mostly guards you wrote, in routers and nodes. Reaching for a lower recursion limit as the primary control is treating the backstop as the mechanism." }
+    ] },
+    { t: "exercise", kind: "build", title: "Guard a cyclic graph",
+      difficulty: "advanced", minutes: 30,
+      body: "Build an unconditional cycle and run it against a low recursion limit, noting that every superstep executed the node. Add a counter and an exit condition to the router and show the graph returning rather than raising. Then build a loop that makes no progress, bound it with a counter, and show that it consumes the whole budget. Add a progress check. Confirm that a skipped fan-in branch does not deadlock and show what the join reads. Finally collect the guards and say where each lives.",
+      requirements: ["Run an unconditional cycle and report what stopped it",
+        "Note that every superstep executed the node body",
+        "Add a budget to the router and show the graph returning",
+        "Build a loop that makes no progress and show it consuming the budget",
+        "Explain what a progress check catches that a budget does not",
+        "Confirm a skipped fan-in branch does not deadlock",
+        "Show what the join node reads from the skipped branch",
+        "Collect at least four guards and say where each belongs"],
+      hint: "Build a loop whose output never changes and bound it with a counter only. Watching it burn the full budget is the lesson.",
+      solution: { lang: "python", title: "x1005.py \u2014 four identical iterations",
+        code: '# a budget in the router, so the graph RETURNS\ndef guarded(state):\n    if state["n"] >= 3:\n        return END\n    return "tick"\n\n# but a budget notices nothing about progress\ndef refine(state):\n    return {"draft": state["draft"],      # unchanged\n            "attempts": 1,\n            "trace": ["refine (len=%d)" % len(state["draft"])]}\n\ndef check(state):\n    if state["attempts"] >= 4:\n        return END\n    return "refine"                        # 4 identical iterations',
+        out: "==============================================================================\nPART 1 -- the loop with no exit\n==============================================================================\n  an unconditional cycle, recursion_limit=20:\n    RAISED GraphRecursionError: Recursion limit of 20 reached without hitting a stop condition. You c\n    took 0.025 s\n\n  8.9's point with the cost attached: every one of those supersteps\n  ran the node body. at the default limit, and with a node that\n  calls a model, that is thousands of paid calls.\n==============================================================================\nPART 2 -- the loop guard that belongs in the router\n==============================================================================\n  the same graph with a counter and an exit condition:\n    ['tick', 'tick', 'tick']  (n=3)\n\n  the graph now RETURNS rather than raising, so success and runaway\n  are distinguishable -- which is the whole argument from 8.9.\n==============================================================================\nPART 3 -- the progress guard, which is the one people miss\n==============================================================================\n  a counter bounds the ITERATIONS. it does not notice that the loop\n  is not making progress.\n\n  a refiner that never changes the draft, bounded at 4 attempts:\n    refine (len=4)\n    refine (len=4)\n    refine (len=4)\n    refine (len=4)\n\n  it ran the full budget producing identical output. the counter did\n  its job and wasted every attempt.\n\n  so a cyclic graph wants TWO guards:\n    a budget       -- stop after N iterations\n    a progress check -- stop if this iteration changed nothing\n\n  the progress check is cheap: compare the key the loop is supposed\n  to improve against its previous value, and exit if it is\n  unchanged. that turns 4 wasted model calls into 1.\n==============================================================================\nPART 4 -- the fan-in that waits for a branch that never runs\n==============================================================================\n  8.7 measured this: no deadlock -- the join runs with whatever\n  branches were scheduled. the risk is partial input, not a hang.\n\n    ['start', 'a', \"join saw '<unset>'\"]\n\n  so the guard here is in the NODE, not the graph: a fan-in after a\n  conditional branch has to check which keys are set rather than\n  assume every declared path ran.\n==============================================================================\nPART 5 -- the guards, collected\n==============================================================================\n  guard                    where it goes        catches\n  iteration budget         the router           a loop that never exits\n  progress check           the router           a loop that exits but\n                                                achieves nothing\n  recursion_limit          compile/invoke       everything else, as a\n                                                backstop\n  partial-input check      the fan-in node      a skipped branch\n  retry attempts           the node             a flaky dependency\n\n  note how few of these are framework settings. the recursion limit\n  is the only one the framework provides, and it is the one that\n  should fire least often -- it means every other guard failed.",
+        notes: [
+          { t: "p", text: "**An unconditional cycle ran the node body on every superstep** before the recursion limit stopped it \u2014 with a model-calling node that is thousands of paid calls." },
+          { t: "p", text: "**A counter and an exit condition in the router make the graph RETURN** rather than raise, so success and runaway become distinguishable (8.9)." },
+          { t: "p", text: "**A counter bounds iterations and notices nothing about progress**: a refiner that never changed the draft ran the full budget of four identical iterations." },
+          { t: "p", text: "**So a cyclic graph wants two guards** \u2014 a budget, and a progress check that exits when the iteration changed nothing." },
+          { t: "p", text: "**The progress check is cheap**: compare the key the loop should improve against its previous value, which turns four wasted model calls into one." },
+          { t: "p", text: "**A skipped fan-in branch does not deadlock** \u2014 the join ran and read the skipped branch's key as its initial value, `'<unset>'`." },
+          { t: "p", text: "**So that guard is in the node**: a fan-in after a conditional branch must check which keys are set, which the topology does not express." },
+          { t: "p", text: "**Of the five guards, `recursion_limit` is the only one the framework provides** \u2014 and the one that should fire least often, because it firing means every other guard failed." }
+        ] } },
+    { t: "callout", kind: "scenario", title: "Scenario: the self-improving loop that improved nothing", body: [
+      { t: "p", text: "A content pipeline has a generate-evaluate-refine loop bounded at five iterations. It always runs five. Costs are five times a single generation and the output quality is indistinguishable from the first attempt." },
+      { t: "p", text: "The evaluator's threshold is set higher than the generator can reach, so the quality exit never fires and the loop always terminates on the budget. The counter is working perfectly \u2014 it is the only exit, and it is doing its job every single time." },
+      { t: "p", text: "A progress check surfaces it immediately: compare the draft against the previous iteration's and exit when unchanged, and the loop collapses to one or two iterations with a clear signal that refinement is not working. The general rule is that a loop whose budget is always the exit is a loop with no real exit condition \u2014 so it is worth recording **which** exit fired, because \u2018budget\u2019 and \u2018good enough\u2019 being indistinguishable in the output is how this hides for months." }
+    ] }
+  ],
+  takeaways: [
+    "**An unconditional cycle runs the node body on every superstep** until the recursion limit.",
+    "**With a model-calling node that is thousands of paid calls at the default limit.**",
+    "**A budget in the router makes the graph return rather than raise.**",
+    "**So success and runaway become distinguishable** (8.9).",
+    "**A counter bounds iterations and notices nothing about progress.**",
+    "**A refiner that never changed its draft ran the full budget of four identical iterations.**",
+    "**So a cyclic graph wants two guards**: a budget and a progress check.",
+    "**The progress check is cheap** \u2014 compare the key the loop should improve against its previous value.",
+    "**A skipped fan-in branch does not deadlock** \u2014 the join ran on partial input.",
+    "**And read the skipped branch's key as its initial value, silently.**",
+    "**So that guard is in the node**, which the topology does not express.",
+    "**`recursion_limit` is the only guard the framework provides.**",
+    "**And it should fire least often**, because it firing means every other guard failed.",
+    "**Record which exit fired** \u2014 \u2018budget\u2019 and \u2018good enough\u2019 being indistinguishable is how a dead loop hides."
+  ],
+  quiz: { title: "Check yourself", questions: [
+    { stem: "A refinement loop bounded at four attempts produces four identical outputs. What guard is missing?",
+      options: ["A lower recursion limit",
+        "A progress check \u2014 a counter bounds iterations but notices nothing about whether anything changed",
+        "A retry policy on the refining node",
+        "A longer budget, so the loop can converge"],
+      answer: 1,
+      why: "The counter is working exactly as designed: it permitted four iterations and stopped. What it cannot see is that each iteration produced the same draft, so all four were wasted. Comparing the key the loop is supposed to improve against its previous value and exiting when unchanged turns four model calls into one, and surfaces that refinement is not working." },
+    { stem: "Why is a skipped fan-in branch not a deadlock?",
+      options: ["The runtime times out and proceeds",
+        "A fan-in waits for scheduled paths, not declared ones \u2014 a skipped branch is not pending",
+        "Conditional edges automatically run all mapped branches",
+        "The join node is retried until all branches complete"],
+      answer: 1,
+      why: "There is nothing to wait for, so the join executes with whatever completed. That is better than hanging, and it relocates the hazard: the join runs with the skipped branch's contribution absent, reading whatever the initial state held, with no error \u2014 because a missing contribution is indistinguishable from one that was never going to arrive." },
+    { stem: "Which of these guards does the framework provide?",
+      options: ["The iteration budget",
+        "recursion_limit \u2014 and it is the one that should fire least often",
+        "The progress check",
+        "The partial-input check on a fan-in"],
+      answer: 1,
+      why: "The budget and progress check live in routers you write, and the partial-input check lives in a node you write. recursion_limit is the runtime's only contribution, and it is a backstop: it firing means the budget, the progress check and the routing logic all failed to stop the loop first. Treating it as the primary control is using the backstop as the mechanism." },
+    { stem: "A loop always terminates on its iteration budget. What does that indicate?",
+      options: ["The budget is set too low",
+        "It has no real exit condition \u2014 the intended one never fires, so every run is maximally expensive",
+        "The loop is converging slowly and needs more attempts",
+        "The recursion limit is interfering"],
+      answer: 1,
+      why: "If the quality or completion condition never triggers, the budget is the only exit and every run pays the full cost regardless of whether the work succeeded. It hides because the output looks the same either way \u2014 which is why recording which exit fired is worth the one field it costs, since 'good enough' and 'gave up' being indistinguishable is the actual problem." }
+  ] },
+  interview: { title: "Interview practice", sub: "Loop guards", questions: [
+    { level: "core", q: "How do you make a cyclic graph safe?",
+      strong: "A strong answer gives two guards and keeps the limit as a backstop.",
+      answer: [
+        { t: "p", text: "Two guards in the router, with the recursion limit as a backstop rather than the mechanism." },
+        { t: "p", text: "The first is an iteration budget \u2014 a counter in the state and a router that returns END when it is reached. That matters because it makes the graph return rather than raise, so a successful run and a runaway are distinguishable. If the only exit is the recursion limit, the normal failure path is an exception and you cannot alert on one without the other." },
+        { t: "p", text: "The second is a progress check, and it is the one people skip. A counter bounds the iterations and notices nothing about whether anything is improving. I measured a refiner that never changed its draft running its full budget of four identical iterations \u2014 the counter did its job and wasted every attempt." },
+        { t: "p", text: "The check itself is cheap: keep the previous value of the key the loop is supposed to improve and exit if this iteration did not change it. That turned four model calls into one." }
+      ] },
+    { level: "advanced", q: "What hazards does a graph actually have, if not deadlocks?",
+      strong: "A strong answer corrects the deadlock expectation and lists the real ones.",
+      answer: [
+        { t: "p", text: "Deadlock is the one people expect and it is mostly not there. I checked the obvious case \u2014 a router that skips one branch of a fan-in \u2014 expecting a hang, and the join just runs with whatever was scheduled." },
+        { t: "p", text: "So a fan-in waits for scheduled incoming paths, not declared ones. That is the right behaviour and it moves the hazard somewhere quieter: the join now runs with one branch's contribution missing, reading whatever the initial state held, with no error. A missing contribution is indistinguishable from one that was never coming." },
+        { t: "p", text: "The real hazards are three. A loop with no exit, which burns supersteps until the recursion limit \u2014 and every one of those supersteps runs the node body, so with a model call it is expensive before anything stops it. A loop that exits having achieved nothing, which the budget cannot see. And a join on partial input." },
+        { t: "p", text: "What I find clarifying is where the guards live. The budget and the progress check are in routers; the partial-input check is in a node. Of the five guards worth having, the recursion limit is the only one the framework provides \u2014 and it is the one that should fire least often, because it firing means all the others failed." },
+        { t: "p", text: "So a safe cyclic graph is mostly code you wrote, and reaching for a lower recursion limit as the primary control is treating the backstop as the mechanism." }
+      ] },
+    { level: "core", q: "What would you put on a dashboard for a graph-based agent?",
+      strong: "A strong answer instruments the guards, not just latency.",
+      answer: [
+        { t: "p", text: "The things that tell me a guard fired, because those are the signals that distinguish a healthy run from an expensive one \u2014 and none of them is latency." },
+        { t: "p", text: "Which exit fired, as a labelled counter: finished normally, budget exhausted, progress check tripped, recursion limit hit. That distinction is the whole reason to put a budget in the router rather than rely on the limit, and it is useless unless something records which one happened. A loop whose budget is always the exit is a loop with no real exit condition, and that is invisible from the output." },
+        { t: "p", text: "Iterations per run as a distribution rather than a mean, because an agent's step count is not something you can bound by reading the code \u2014 the p99 is the number that tells me whether the guards are doing work." },
+        { t: "p", text: "Model calls per request, for the same reason, and because that is what the bill is." },
+        { t: "p", text: "Retry counts per node, split by whether they succeeded, since retries that always exhaust mean the error is not transient and the policy is just latency." },
+        { t: "p", text: "And retrieval quality against a labelled set, continuously \u2014 because the usual response to a latency problem is cutting the expensive stages, and every one of those cuts is a quality decision that appears on no latency dashboard." }
+      ] }
+  ] }
+});
