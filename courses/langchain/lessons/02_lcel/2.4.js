@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["2.3"],
   blocks: [
     { t: "h2", n: "01", id: "problem", text: "The step that eats its input", sub: "Where everyone hits this" },
+
+    {"kind": "compare", "title": "Two primitives, and they are not interchangeable", "caption": "The common frustration is a step eating its input: pipe a dict through a prompt, a model and a parser and what comes out is a string, so anything downstream that needed the original cannot have it.", "columns": [{"title": "RunnablePassthrough", "tone": "accent", "items": ["forwards its input unchanged", "used as a branch of a parallel, to keep the original alongside a computed value", "{“q”: passthrough, “docs”: retriever}", "the input survives the step"]}, {"title": "RunnableAssign", "tone": "good", "items": ["adds keys to the dict it receives", "the input must BE a dict — it merges rather than replaces", "passthrough.assign(docs=retriever)", "the dict grows as it flows"]}], "t": "diagram", "id": "dg-2_4-01-0"},
+
+
+
+
     { t: "code", lang: "python", title: "The original is gone",
       code: 'naive = prompt | model | StrOutputParser()\nnaive.invoke({"text: "long doc"})',
       out: "naive.invoke({'text': ...}) -> 'a summary'",
@@ -49,20 +55,6 @@ EC.receiveLesson({
       ["add a key, keep everything else", "`RunnablePassthrough.assign(k=fn)`"],
       ["take one key from a dict", "`itemgetter(\"k\")`"]
     ] },
-    { t: "diagram", kind: "compare", title: "Two primitives, and they are not interchangeable",
-      caption: "The common frustration is a step eating its input: pipe a dict through a prompt, a model and a parser and what comes out is a string, so anything downstream that needed the original cannot have it.",
-      columns: [
-        { title: "RunnablePassthrough", tone: "accent", items: [
-          "forwards its input unchanged",
-          "used as a branch of a parallel, to keep the original alongside a computed value",
-          "{“q”: passthrough, “docs”: retriever}",
-          "the input survives the step" ] },
-        { title: "RunnableAssign", tone: "good", items: [
-          "adds keys to the dict it receives",
-          "the input must BE a dict — it merges rather than replaces",
-          "passthrough.assign(docs=retriever)",
-          "the dict grows as it flows" ] }
-      ] },
     { t: "exercise", kind: "build", title: "Keep what the chain eats",
       difficulty: "core", minutes: 24,
       body: "Show the problem first: a chain whose output no longer contains its input. Then fix it two ways — with a passthrough branch in a fan-out, and with .assign. Chain two assigns so the second reads a key the first produced. Use itemgetter to select a key, including as part of a multi-step branch.",

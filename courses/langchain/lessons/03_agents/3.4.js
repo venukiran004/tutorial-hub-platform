@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["3.3"],
   blocks: [
     { t: "h2", n: "01", id: "gives", text: "What you get", sub: "The loop is the cheap part" },
+
+    {"kind": "matrix", "title": "What the prebuilt agent supplies", "caption": "The loop in 3.3 is the easy part; everything around it is why you should not ship it. Seven mechanisms, from a two-line construction — and each one of them is a failure this course measures somewhere.", "cols": ["the 9-line loop", "create_react_agent"], "rows": ["an iteration cap", "tool error handling", "an unknown-tool guard", "parallel tool calls", "state and a checkpointer", "step streaming", "a pause point"], "cells": [[false, {"text": "recursion_limit", "tone": "good"}], [false, {"text": "ToolMessage, status=error", "tone": "good"}], [false, {"text": "a list of valid names", "tone": "good"}], [{"text": "sequential only", "tone": "warn"}, {"text": "all calls in one step", "tone": "good"}], [false, {"text": "a real StateGraph", "tone": "good"}], [false, {"text": "every stream mode", "tone": "good"}], [false, {"text": "interrupt", "tone": "good"}]], "t": "diagram", "id": "dg-3_4-01-0"},
+
+
+
+
     { t: "table", head: ["Feature", "Note"], rows: [
       ["the loop itself", "identical in shape to 3.3"],
       ["an iteration cap", "a recursion limit, so it terminates"],
@@ -50,20 +56,6 @@ EC.receiveLesson({
       { t: "p", text: "The `langchain` umbrella package installed here is 0.2.10 against `langchain-core` 1.4.7, and `import langchain.agents` fails with `ModuleNotFoundError`. So the middleware API is described in this lesson **from the reference and not executed**, unlike everything else in this course." },
       { t: "p", text: "The prebuilt agent above *is* executed, through `langgraph`. Where a lesson cannot run something, it says so rather than presenting untested code as verified \u2014 and module 9 builds the same capabilities on machinery that does run here." }
     ] },
-    { t: "diagram", kind: "matrix", title: "What the prebuilt agent supplies",
-      caption: "The loop in 3.3 is the easy part; everything around it is why you should not ship it. Seven mechanisms, from a two-line construction — and each one of them is a failure this course measures somewhere.",
-      cols: ["the 9-line loop", "create_react_agent"],
-      rows: ["an iteration cap", "tool error handling", "an unknown-tool guard",
-             "parallel tool calls", "state and a checkpointer", "step streaming", "a pause point"],
-      cells: [
-        [false, { text: "recursion_limit", tone: "good" }],
-        [false, { text: "ToolMessage, status=error", tone: "good" }],
-        [false, { text: "a list of valid names", tone: "good" }],
-        [{ text: "sequential only", tone: "warn" }, { text: "all calls in one step", tone: "good" }],
-        [false, { text: "a real StateGraph", tone: "good" }],
-        [false, { text: "every stream mode", tone: "good" }],
-        [false, { text: "interrupt", tone: "good" }]
-      ] },
     { t: "exercise", kind: "analysis", title: "Compare the prebuilt against the hand-written loop",
       difficulty: "core", minutes: 24,
       body: "Tabulate what a prebuilt agent provides against what the 3.3 loop had. Build and run a prebuilt agent on the same question and compare the resulting messages. Record the deprecation warning it emits and what it points to. Then list what middleware is for and say what each item corresponds to in graph terms.",

@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["14.7", "14.3"],
   blocks: [
     { t: "h2", n: "01", id: "tree", text: "The span tree an agent run produces", sub: "Measured, not described" },
+
+    {"kind": "tree", "title": "The span tree a two-call agent run produces", "caption": "Nine real spans, collected from LangChain callbacks, nested three deep. A flat log says a tool failed; the **tree** says which agent turn called it with what — and the conditional edge is its own span, so the routing decision is observable.", "root": {"label": "LangGraph", "sub": "the run", "tone": "accent", "children": [{"label": "agent", "sub": "turn 1", "tone": "good", "children": [{"label": "model", "sub": "llm", "tone": "violet"}, {"label": "route", "sub": "→ tools", "tone": "teal"}]}, {"label": "tools", "sub": "ToolNode", "tone": "warn", "children": [{"label": "get_order", "sub": "tool", "tone": "violet"}]}, {"label": "agent", "sub": "turn 2", "tone": "good", "children": [{"label": "model", "sub": "llm", "tone": "violet"}, {"label": "route", "sub": "→ END", "tone": "teal"}]}]}, "t": "diagram", "id": "dg-14_8-01-0"},
+
+
+
+
     { t: "code", lang: "text", title: "9 spans from two model calls",
       code: "chain LangGraph\n  chain agent\n    llm   model\n    chain route\n  chain tools\n    tool  get_order\n  chain agent\n    llm   model\n    chain route\n\nby kind: [('chain', 6), ('llm', 2), ('tool', 1)]",
       caption: "Collected with a `BaseCallbackHandler` recording `run_id` and `parent_run_id`." },
@@ -57,18 +63,6 @@ EC.receiveLesson({
       { t: "p", text: "For the good reason in the previous section. The compromise that works is the hash plus token count always, full text on a sample and on **every failure** \u2014 which is what makes the one question answerable without logging every prompt." },
       { t: "p", text: "Designing observability from that question rather than from a list of metrics is also what stops you collecting five dashboards that cannot answer it. Every attribute above is there because its absence turns that answer into a guess." }
     ] },
-    { t: "diagram", kind: "tree", title: "The span tree a two-call agent run produces",
-      caption: "Nine real spans, collected from LangChain callbacks, nested three deep. A flat log says a tool failed; the **tree** says which agent turn called it with what — and the conditional edge is its own span, so the routing decision is observable.",
-      root: { label: "LangGraph", sub: "the run", tone: "accent", children: [
-        { label: "agent", sub: "turn 1", tone: "good", children: [
-          { label: "model", sub: "llm", tone: "violet" },
-          { label: "route", sub: "→ tools", tone: "teal" } ] },
-        { label: "tools", sub: "ToolNode", tone: "warn", children: [
-          { label: "get_order", sub: "tool", tone: "violet" } ] },
-        { label: "agent", sub: "turn 2", tone: "good", children: [
-          { label: "model", sub: "llm", tone: "violet" },
-          { label: "route", sub: "→ END", tone: "teal" } ] }
-      ] } },
     { t: "exercise", kind: "build", title: "Instrument an agent run",
       difficulty: "core", minutes: 32,
       body: "Attach a callback handler to a real agent graph that records each span's id and parent id, run it, and print the resulting tree along with a count by kind. Then list the attributes that make a failed run diagnosable and identify the one whose absence corrupts your metrics. Build the metric that detects a loop in a run that succeeded. Decide what to log at the run, turn and tool levels, and say what should not be logged on every span and why. Finally state the one question the whole setup has to answer.",

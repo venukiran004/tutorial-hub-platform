@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["6.2"],
   blocks: [
     { t: "h2", n: "01", id: "formula", text: "The formula", sub: "Term by term" },
+
+    {"kind": "matrix", "title": "Three things worth more than the formula", "caption": "Implemented term by term it correlates **0.9999** with `rank_bm25`. The surprise is the stopword handling: BM25Okapi does **not** floor a negative IDF to zero — it substitutes `epsilon × average_idf`, so *“the”* scores **0.7621** where a floor-to-zero variant gives 0.1681.", "cols": ["my implementation", "rank_bm25"], "rows": ["correlation overall", "IDF of a stopword", "score for “the”", "what k₁ and b control"], "cells": [[{"text": "0.9999", "tone": "good"}, {"text": "the reference", "tone": "good"}], [{"text": "floored to 0", "tone": "warn"}, {"text": "epsilon x average_idf", "tone": "crit"}], [{"text": "0.1681", "tone": "warn"}, {"text": "0.7621", "tone": "crit"}], ["saturation and length", {"text": "the same — not the surprise", "tone": "good"}]], "t": "diagram", "id": "dg-6_3-01-0"},
+
+
+
+
     { t: "math", tex: "\\mathrm{score}(q,d) = \\sum_{t \\in q} \\mathrm{IDF}(t) \\cdot \\frac{f(t,d)\\,(k_1+1)}{f(t,d) + k_1\\left(1 - b + b\\,\\frac{|d|}{\\mathrm{avgdl}}\\right)}" },
     { t: "code", lang: "python", title: "The implementation",
       code: 'def idf(self, t):\n    n = self.df.get(t, 0)\n    return math.log((self.N - n + 0.5) / (n + 0.5) + 1.0)\n\ndef score(self, query, i):\n    d = self.docs[i]\n    total = 0.0\n    for t in tok(query):\n        f = d.count(t)\n        if f == 0:\n            continue\n        num = f * (self.k1 + 1)\n        den = f + self.k1 * (1 - self.b + self.b * self.dl[i] / self.avgdl)\n        total += self.idf(t) * num / den\n    return total',
@@ -63,16 +69,6 @@ EC.receiveLesson({
       code: "exact terms   : R@5 1.000  MRR 1.000   (dense was 0.875 / 0.781)\nnatural       : R@5 0.357  MRR 0.286   (dense was 1.000 / 0.964)",
       caption: "Perfect on the class dense missed; far worse on the class dense handled." },
     { t: "p", text: "The worst single case is `I forgot my password`, which scores above zero on **0 of 41** documents. The relevant document says *\u201cCredential recovery \u2026 signed recovery link\u201d* and contains neither *forgot* nor *password*. No value of `k1` or `b` reaches that, because the term is not in the document at all \u2014 it is the one failure lexical tuning cannot touch, and 6.4 shows what BM25 returns anyway." },
-    { t: "diagram", kind: "matrix", title: "Three things worth more than the formula",
-      caption: "Implemented term by term it correlates **0.9999** with `rank_bm25`. The surprise is the stopword handling: BM25Okapi does **not** floor a negative IDF to zero — it substitutes `epsilon × average_idf`, so *“the”* scores **0.7621** where a floor-to-zero variant gives 0.1681.",
-      cols: ["my implementation", "rank_bm25"],
-      rows: ["correlation overall", "IDF of a stopword", "score for “the”", "what k₁ and b control"],
-      cells: [
-        [{ text: "0.9999", tone: "good" }, { text: "the reference", tone: "good" }],
-        [{ text: "floored to 0", tone: "warn" }, { text: "epsilon x average_idf", tone: "crit" }],
-        [{ text: "0.1681", tone: "warn" }, { text: "0.7621", tone: "crit" }],
-        ["saturation and length", { text: "the same — not the surprise", tone: "good" }]
-      ] },
     { t: "exercise", kind: "build", title: "Implement BM25 from the formula",
       difficulty: "advanced", minutes: 36,
       body: "Implement BM25 scoring term by term and show each query term's contribution to one document. Verify against rank_bm25, being careful about tied scores. Compare the two IDF variants on rare and common terms, and find the corpus size where the library's variant breaks down. Sweep k1 and b, explain the result algebraically, and construct a corpus where k1 does reorder. Finally, measure both query classes.",

@@ -1,0 +1,5691 @@
+{
+ "1.2": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "layers",
+    "title": "One method, and everything the base class gives you",
+    "caption": "You implement `_generate` — a function from a list of messages to a message. Every other capability on a chat model is inherited, which is why a thirty-line fake model supports batching, streaming and tool binding without another line.",
+    "items": [
+     {
+      "label": "with_retry · with_fallbacks",
+      "sub": "resilience, composed as methods",
+      "tone": "violet",
+      "side": "free"
+     },
+     {
+      "label": "bind_tools · with_structured_output",
+      "sub": "the tool protocol",
+      "tone": "teal",
+      "side": "free"
+     },
+     {
+      "label": "batch · abatch",
+      "sub": "concurrency over a list of inputs",
+      "tone": "good",
+      "side": "free"
+     },
+     {
+      "label": "stream · astream · ainvoke",
+      "sub": "incremental and async delivery",
+      "tone": "good",
+      "side": "free"
+     },
+     {
+      "label": "_generate(messages) -> ChatResult",
+      "sub": "the ONE method you write",
+      "tone": "accent",
+      "side": "yours"
+     }
+    ]
+   }
+  }
+ ],
+ "1.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Why a template rather than an f-string",
+    "caption": "The argument is not tidiness. A template declares its variables, so braces in **user input** are data; string formatting treats them as syntax and raises on an ordinary question about Python dict literals.",
+    "cols": [
+     "f-string + .format()",
+     "PromptTemplate"
+    ],
+    "rows": [
+     "a plain question",
+     "a question about {“a”: 1}",
+     "declares its inputs",
+     "validates a missing var"
+    ],
+    "cells": [
+     [
+      {
+       "text": "works",
+       "tone": "good"
+      },
+      {
+       "text": "works",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "KeyError — crashes",
+       "tone": "crit"
+      },
+      {
+       "text": "works — braces are data",
+       "tone": "good"
+      }
+     ],
+     [
+      false,
+      {
+       "text": "input_variables",
+       "tone": "good"
+      }
+     ],
+     [
+      false,
+      {
+       "text": "raises at format time",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "1.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Nine outputs, and the two surprises",
+    "caption": "Five parsed and four raised. Prose **before** the JSON fails and prose **after** it succeeds — so a preamble breaks the chain and a sign-off does not. And truncation does not raise: `“rating”: 8.` becomes `8`, a different value, silently.",
+    "cols": [
+     "JsonOutputParser",
+     "what you get"
+    ],
+    "rows": [
+     "clean JSON",
+     "prose BEFORE the JSON",
+     "prose AFTER the JSON",
+     "fenced in ```json",
+     "truncated mid-number"
+    ],
+    "cells": [
+     [
+      {
+       "text": "parses",
+       "tone": "good"
+      },
+      "the right value"
+     ],
+     [
+      {
+       "text": "RAISES",
+       "tone": "crit"
+      },
+      "a preamble breaks it"
+     ],
+     [
+      {
+       "text": "parses",
+       "tone": "good"
+      },
+      {
+       "text": "a sign-off does not",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "parses",
+       "tone": "good"
+      },
+      "the fence is stripped"
+     ],
+     [
+      {
+       "text": "parses",
+       "tone": "crit"
+      },
+      {
+       "text": "8 instead of 8.4 — SILENT",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "1.5": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "tree",
+    "title": "A structured-output call has three outcomes, not two",
+    "caption": "The third is the one almost no code guards. When the model answers in prose instead of calling the tool it returns **`None`** — no exception, and `include_raw=True` reports `parsed=None` with `parsing_error=None`, because nothing failed to parse: nothing was offered to the parser.",
+    "root": {
+     "label": "with_structured_output(Schema)",
+     "sub": "the schema is bound as a tool",
+     "tone": "accent",
+     "children": [
+      {
+       "label": "valid arguments",
+       "sub": "Pydantic validates → your object",
+       "tone": "good",
+       "edge": "the model calls the tool"
+      },
+      {
+       "label": "ValidationError",
+       "sub": "a rating of 48.8 raises",
+       "tone": "warn",
+       "edge": "out of range"
+      },
+      {
+       "label": "returns None",
+       "sub": "no exception, no parsing_error",
+       "tone": "crit",
+       "edge": "answers in prose"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "1.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Five objects, and the half of each that people under-use",
+    "caption": "Every other part of the library passes these around. The right-hand column is where the course's later findings come from — metadata is access control, and `Embeddings` having two methods is a silent accuracy bug.",
+    "cols": [
+     "what it is",
+     "the half people miss"
+    ],
+    "rows": [
+     "Document",
+     "Embeddings",
+     "Retriever",
+     "Tool",
+     "Callback"
+    ],
+    "cells": [
+     [
+      "text plus metadata",
+      {
+       "text": "metadata is ACCESS CONTROL",
+       "tone": "crit"
+      }
+     ],
+     [
+      "text → a vector",
+      {
+       "text": "TWO methods — wrong one costs accuracy",
+       "tone": "crit"
+      }
+     ],
+     [
+      "a Runnable returning Documents",
+      {
+       "text": "so it composes like anything else",
+       "tone": "good"
+      }
+     ],
+     [
+      "a callable the model may invoke",
+      {
+       "text": "its description IS prompt",
+       "tone": "warn"
+      }
+     ],
+     [
+      "the only view inside a run",
+      {
+       "text": "3 chain events for a 2-step chain",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "1.7": [
+  {
+   "after": "06",
+   "d": {
+    "kind": "matrix",
+    "title": "What the protocol demands of an implementer",
+    "caption": "One method, usually — and in exchange each component gets batching, streaming, async and the composition operators. That trade is the whole argument for implementing the interface rather than wrapping it.",
+    "cols": [
+     "the one method you write",
+     "what you get in exchange"
+    ],
+    "rows": [
+     "a Runnable",
+     "an output parser",
+     "a chat model",
+     "a retriever"
+    ],
+    "cells": [
+     [
+      {
+       "text": "invoke",
+       "tone": "accent"
+      },
+      {
+       "text": "batch, stream, async, |",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "parse",
+       "tone": "accent"
+      },
+      {
+       "text": "the same, plus streaming",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "_generate",
+       "tone": "accent"
+      },
+      {
+       "text": "bind_tools, structured output",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "_get_relevant_documents",
+       "tone": "accent"
+      },
+      {
+       "text": "composes into any chain",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "2.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The composite satisfies the same interface as its parts",
+    "caption": "This is the property that matters, not the method list. A three-step chain is a Runnable, so it pipes into another chain, retries as a unit and configures as a unit — composition is **closed**, which is what makes the operators worth having.",
+    "cols": [
+     "a chat model",
+     "a 3-step chain"
+    ],
+    "rows": [
+     "invoke",
+     "batch",
+     "stream",
+     "with_retry",
+     "with_fallbacks",
+     "configurable_fields"
+    ],
+    "cells": [
+     [
+      true,
+      true
+     ],
+     [
+      true,
+      true
+     ],
+     [
+      true,
+      true
+     ],
+     [
+      true,
+      true
+     ],
+     [
+      true,
+      true
+     ],
+     [
+      true,
+      true
+     ]
+    ]
+   }
+  }
+ ],
+ "2.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "What the pipe actually builds",
+    "cols": 3,
+    "caption": "`prompt | model | parser` is `prompt.__or__(model).__or__(parser)`, and it returns a `RunnableSequence` holding a **flat** list of three steps — not nested pairs. The chain is a value built when the expression evaluates, so you can print it and read its steps.",
+    "nodes": [
+     {
+      "id": "p",
+      "label": "prompt",
+      "sub": "dict → PromptValue",
+      "tone": "accent"
+     },
+     {
+      "id": "m",
+      "label": "model",
+      "sub": "messages → AIMessage",
+      "tone": "violet"
+     },
+     {
+      "id": "o",
+      "label": "parser",
+      "sub": "AIMessage → str",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "p",
+      "m"
+     ],
+     [
+      "m",
+      "o"
+     ]
+    ]
+   }
+  }
+ ],
+ "2.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "compare",
+    "title": "Two primitives, and they are not interchangeable",
+    "caption": "The common frustration is a step eating its input: pipe a dict through a prompt, a model and a parser and what comes out is a string, so anything downstream that needed the original cannot have it.",
+    "columns": [
+     {
+      "title": "RunnablePassthrough",
+      "tone": "accent",
+      "items": [
+       "forwards its input unchanged",
+       "used as a branch of a parallel, to keep the original alongside a computed value",
+       "{“q”: passthrough, “docs”: retriever}",
+       "the input survives the step"
+      ]
+     },
+     {
+      "title": "RunnableAssign",
+      "tone": "good",
+      "items": [
+       "adds keys to the dict it receives",
+       "the input must BE a dict — it merges rather than replaces",
+       "passthrough.assign(docs=retriever)",
+       "the dict grows as it flows"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "2.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "tree",
+    "title": "Routing: two forms, one capability",
+    "caption": "The choice is readability, not capability. `RunnableBranch` is an if/elif/else built from condition-and-chain tuples; a plain function returning a Runnable does the same thing, because LCEL invokes whatever a `RunnableLambda` returns.",
+    "root": {
+     "label": "classify the question",
+     "sub": "RunnableBranch, or a function",
+     "tone": "accent",
+     "children": [
+      {
+       "label": "billing",
+       "sub": "the billing chain",
+       "tone": "good",
+       "edge": "matches"
+      },
+      {
+       "label": "technical",
+       "sub": "the support chain",
+       "tone": "good",
+       "edge": "matches"
+      },
+      {
+       "label": "default",
+       "sub": "the catch-all — NOT optional",
+       "tone": "crit",
+       "edge": "nothing matched"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "2.7": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "One ordinary step ends the stream",
+    "caption": "A chain streams only if **every** step after the model is a streaming transform, and most are not. `StrOutputParser` passes chunks through; a plain `RunnableLambda` buffers the whole thing and yields once — a latency change that reads as a one-line addition in a diff.",
+    "cols": [
+     "chunks yielded",
+     "streams?"
+    ],
+    "rows": [
+     "prompt | model",
+     "… | StrOutputParser",
+     "… | RunnableLambda(…)"
+    ],
+    "cells": [
+     [
+      {
+       "text": "5 for a 5-word answer",
+       "tone": "good"
+      },
+      true
+     ],
+     [
+      {
+       "text": "5 — passes through",
+       "tone": "good"
+      },
+      true
+     ],
+     [
+      {
+       "text": "1 — buffered",
+       "tone": "crit"
+      },
+      false
+     ]
+    ]
+   }
+  }
+ ],
+ "2.8": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "timeline",
+    "title": "Awaiting in a loop is serial",
+    "caption": "The same trap as batching, wearing a different keyword. `for i in ...: await chain.ainvoke(...)` awaits each call before starting the next, so four 100 ms calls took **0.407 s**. `asyncio.gather` overlaps them and the cost becomes the maximum rather than the sum.",
+    "span": 420,
+    "tick": 100,
+    "unit": "milliseconds",
+    "lanes": [
+     {
+      "label": "await in a loop",
+      "bars": [
+       [
+        0,
+        100,
+        "1",
+        "warn"
+       ],
+       [
+        100,
+        200,
+        "2",
+        "warn"
+       ],
+       [
+        200,
+        300,
+        "3",
+        "warn"
+       ],
+       [
+        300,
+        407,
+        "4",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "asyncio.gather",
+      "bars": [
+       [
+        0,
+        103,
+        "all four, concurrently",
+        "good"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "2.9": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "compare",
+    "title": "Two kinds of runtime configuration",
+    "caption": "A chain is built once and deployed once; the things that vary — a customer's model tier, an experiment's prompt, a request's tenant — vary per call. Both of these are config rather than input, which is 2.9's test: two concurrent users differ on it and it is not part of the question.",
+    "columns": [
+     {
+      "title": "configurable_fields",
+      "tone": "accent",
+      "items": [
+       "exposes a VALUE for override at call time",
+       "temperature, max_tokens, a model name",
+       "chain.invoke(x, {“configurable”: {“temperature”: 0}})",
+       "same shape, different setting"
+      ]
+     },
+     {
+      "title": "configurable_alternatives",
+      "tone": "violet",
+      "items": [
+       "swaps a whole COMPONENT for another",
+       "a different model, a different prompt, a different retriever",
+       "declared with a default and named options",
+       "same interface, different implementation"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "3.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "tree",
+    "title": "What the decorator sends to the model",
+    "caption": "All three parts are sent. The **description** is the field that decides whether the tool gets called at all — which makes it prompt, written in a docstring, and the only part of a tool that is tuned rather than implemented.",
+    "root": {
+     "label": "@tool",
+     "sub": "def lookup_order(order_id: str) -> str",
+     "tone": "accent",
+     "children": [
+      {
+       "label": "name",
+       "sub": "the function name",
+       "tone": "good",
+       "edge": "sent"
+      },
+      {
+       "label": "description",
+       "sub": "the docstring — decides IF it is called",
+       "tone": "crit",
+       "edge": "sent"
+      },
+      {
+       "label": "argument schema",
+       "sub": "from the type hints",
+       "tone": "good",
+       "edge": "sent"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "3.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "The tool protocol is two messages and an id",
+    "caption": "There is no hidden machinery. The `tool_call_id` is the whole correspondence mechanism — it is how a result is matched to the request that asked for it, which is what makes parallel tool calls possible at all.",
+    "items": [
+     {
+      "label": "bind_tools([lookup_order])",
+      "desc": "attaches the definitions to the model; returns a new bound model",
+      "tone": "accent",
+      "code": "your code"
+     },
+     {
+      "label": "AIMessage(content=“”, tool_calls=[…])",
+      "desc": "content is EMPTY and tool_calls is populated — the model asked, it did not answer",
+      "tone": "violet",
+      "code": "the model"
+     },
+     {
+      "label": "execute the call yourself",
+      "desc": "the model cannot run anything; nothing happens unless you do it",
+      "tone": "warn",
+      "code": "your code"
+     },
+     {
+      "label": "ToolMessage(content, tool_call_id=…)",
+      "desc": "appended to the history, carrying the id it is answering",
+      "tone": "good",
+      "code": "your code"
+     }
+    ]
+   }
+  }
+ ],
+ "3.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "cycle",
+    "title": "The agent loop is nine lines",
+    "centre": "until no tools",
+    "caption": "Every agent framework in existence is this loop plus error handling, state, observability and a pause point. Knowing that is what makes the frameworks legible rather than magical — and what makes 3.4's argument about not shipping this one land.",
+    "nodes": [
+     {
+      "label": "call the model",
+      "sub": "with the whole history",
+      "tone": "violet",
+      "edge": "asked for tools"
+     },
+     {
+      "label": "execute every call",
+      "sub": "in the order returned",
+      "tone": "warn",
+      "edge": "one result each"
+     },
+     {
+      "label": "append the results",
+      "sub": "as ToolMessages",
+      "tone": "good",
+      "edge": "and go again"
+     }
+    ]
+   }
+  }
+ ],
+ "3.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "What the prebuilt agent supplies",
+    "caption": "The loop in 3.3 is the easy part; everything around it is why you should not ship it. Seven mechanisms, from a two-line construction — and each one of them is a failure this course measures somewhere.",
+    "cols": [
+     "the 9-line loop",
+     "create_react_agent"
+    ],
+    "rows": [
+     "an iteration cap",
+     "tool error handling",
+     "an unknown-tool guard",
+     "parallel tool calls",
+     "state and a checkpointer",
+     "step streaming",
+     "a pause point"
+    ],
+    "cells": [
+     [
+      false,
+      {
+       "text": "recursion_limit",
+       "tone": "good"
+      }
+     ],
+     [
+      false,
+      {
+       "text": "ToolMessage, status=error",
+       "tone": "good"
+      }
+     ],
+     [
+      false,
+      {
+       "text": "a list of valid names",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "sequential only",
+       "tone": "warn"
+      },
+      {
+       "text": "all calls in one step",
+       "tone": "good"
+      }
+     ],
+     [
+      false,
+      {
+       "text": "a real StateGraph",
+       "tone": "good"
+      }
+     ],
+     [
+      false,
+      {
+       "text": "every stream mode",
+       "tone": "good"
+      }
+     ],
+     [
+      false,
+      {
+       "text": "interrupt",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "3.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "timeline",
+    "title": "Why a buffer is the wrong default",
+    "caption": "Arithmetic rather than taste. You resend the whole history every turn, so per-turn cost grows **linearly** and cumulative cost grows **quadratically** — a 12th turn costs about 11× the first, and ten times the length cost roughly **90×** the money.",
+    "span": 12,
+    "tick": 2,
+    "unit": "cost of one turn, relative to the first",
+    "lanes": [
+     {
+      "label": "turn 1",
+      "bars": [
+       [
+        0,
+        1,
+        "1x",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "turn 4",
+      "bars": [
+       [
+        0,
+        3.7,
+        "~4x",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "turn 8",
+      "bars": [
+       [
+        0,
+        7.5,
+        "~7x",
+        "warn"
+       ]
+      ]
+     },
+     {
+      "label": "turn 12",
+      "bars": [
+       [
+        0,
+        11,
+        "~11x",
+        "crit"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "3.6": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Trimming strategies, and what each one loses",
+    "caption": "`RunnableWithMessageHistory` keys a store by `session_id` — config, not input, exactly as 2.9's test predicts. What it does not decide is which messages survive, and that choice is the one with consequences (13.3 measures them).",
+    "cols": [
+     "per-turn cost",
+     "what it loses"
+    ],
+    "rows": [
+     "the full buffer",
+     "last-k messages",
+     "a token-budget trim",
+     "a running summary"
+    ],
+    "cells": [
+     [
+      {
+       "text": "grows every turn",
+       "tone": "crit"
+      },
+      {
+       "text": "nothing — until the window",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "constant",
+       "tone": "good"
+      },
+      {
+       "text": "the beginning, where the facts are",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "bounded",
+       "tone": "good"
+      },
+      {
+       "text": "the same, but by the right unit",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "bounded + a call",
+       "tone": "warn"
+      },
+      {
+       "text": "whatever the prompt omitted",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "3.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Three guards for three failures",
+    "caption": "The 3.3 loop was **correct and unsafe**. Each guard turns an unbounded or fatal failure into a bounded one the model can act on — which is the whole shape of agent resilience, and 14.1 generalises it.",
+    "cols": [
+     "without the guard",
+     "with it"
+    ],
+    "rows": [
+     "always asks for a tool",
+     "a tool raises",
+     "a hallucinated name"
+    ],
+    "cells": [
+     [
+      {
+       "text": "an unbounded loop",
+       "tone": "crit"
+      },
+      {
+       "text": "an iteration cap stops it",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "the run crashes",
+       "tone": "crit"
+      },
+      {
+       "text": "a message the model can act on",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "KeyError",
+       "tone": "crit"
+      },
+      {
+       "text": "“no such tool, try one of…”",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "3.8": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "compare",
+    "title": "The honest summary of the module",
+    "caption": "An agent is a more expensive way to be less reliable, bought for the cases where you genuinely cannot write the steps down. That is a real set of cases, and it is much smaller than the number of systems using one.",
+    "columns": [
+     {
+      "title": "a chain — the default",
+      "tone": "good",
+      "items": [
+       "the steps are known before the request arrives",
+       "one model call per unit of work",
+       "the control flow is in your code, so it is readable and testable",
+       "a failure has one place to be"
+      ]
+     },
+     {
+      "title": "an agent — when earned",
+      "tone": "warn",
+      "items": [
+       "the next step genuinely depends on what the last one returned",
+       "3+ model calls, and a variable number",
+       "the control flow is a model's decision, so a trace is the only record",
+       "needs a cap, a budget and a guard before it ships"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "4.1": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "tree",
+    "title": "Event counts are not call counts",
+    "caption": "A three-step chain fires `on_chain_start` **three** times, because the sequence is a chain and so is each non-model step. So an event count is a statement about the structure of your chain, not about how much work was done — which is the first thing a handler teaches.",
+    "root": {
+     "label": "RunnableSequence",
+     "sub": "on_chain_start #1",
+     "tone": "accent",
+     "children": [
+      {
+       "label": "prompt",
+       "sub": "on_chain_start #2",
+       "tone": "good"
+      },
+      {
+       "label": "model",
+       "sub": "on_chat_model_start",
+       "tone": "violet"
+      },
+      {
+       "label": "parser",
+       "sub": "on_chain_start #3",
+       "tone": "good"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "4.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "timeline",
+    "title": "A run is a tree, and the tree is what makes it diagnosable",
+    "caption": "Built from callback events: the model call is the deepest row **and** the slowest — 51.5 ms of a 59.9 ms run, **86%** — with everything above it mostly waiting on it. A flat list of timings cannot show you that the parent's cost *is* the child's.",
+    "span": 62,
+    "tick": 10,
+    "unit": "milliseconds",
+    "lanes": [
+     {
+      "label": "the whole run",
+      "bars": [
+       [
+        0,
+        59.9,
+        "59.9 ms total",
+        "accent"
+       ]
+      ]
+     },
+     {
+      "label": "inner chain",
+      "bars": [
+       [
+        1.5,
+        56,
+        "54.5 ms — waiting",
+        "teal"
+       ]
+      ]
+     },
+     {
+      "label": "the model call",
+      "bars": [
+       [
+        3,
+        54.5,
+        "51.5 ms — 86%",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "the parser",
+      "bars": [
+       [
+        56,
+        59,
+        "",
+        "good"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "4.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "An exact-match cache is exactly exact",
+    "caption": "A trailing space is a different key. On ten real-looking queries all asking the same thing, exact matching got a **20%** hit rate; loosening the match bought up to **80%** — and bought a new failure that has no analogue in an exact cache (7.7).",
+    "cols": [
+     "hit rate",
+     "the new failure"
+    ],
+    "rows": [
+     "exact match",
+     "normalised key",
+     "semantic, strict",
+     "semantic, permissive"
+    ],
+    "cells": [
+     [
+      {
+       "text": "20%",
+       "tone": "crit"
+      },
+      {
+       "text": "none — it cannot be wrong",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "higher, still exact",
+       "tone": "warn"
+      },
+      {
+       "text": "none",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "moderate",
+       "tone": "warn"
+      },
+      {
+       "text": "a near-miss answered wrongly",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "80%",
+       "tone": "good"
+      },
+      {
+       "text": "confidently wrong answers",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "4.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "timeline",
+    "title": "Four characters per token is wrong where it matters",
+    "caption": "Prose runs around four characters per token; **JSON runs at 2.23**, because punctuation and rare strings cost a token each. So the rule of thumb undercounts **structured data by nearly half** — which is exactly what tool results and retrieved chunks are.",
+    "span": 4.5,
+    "tick": 1,
+    "unit": "characters per token — higher is cheaper",
+    "lanes": [
+     {
+      "label": "English prose",
+      "bars": [
+       [
+        0,
+        4,
+        "4.00 — the rule holds",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "the rule of thumb",
+      "bars": [
+       [
+        0,
+        4,
+        "assumed everywhere",
+        "accent"
+       ]
+      ]
+     },
+     {
+      "label": "JSON",
+      "bars": [
+       [
+        0,
+        2.23,
+        "2.23 — undercounts",
+        "crit"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "4.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Two token-bucket behaviours you would not guess",
+    "caption": "Ten acquisitions at five per second took **2.01 s**, not the 1.0 s a full bucket predicts — because the bucket starts **empty**. And varying `max_bucket_size` made no difference at a steady rate, because burst capacity only matters if there is a burst.",
+    "cols": [
+     "expected",
+     "measured"
+    ],
+    "rows": [
+     "10 acquisitions at 5/sec",
+     "raising max_bucket_size",
+     "the first acquisition"
+    ],
+    "cells": [
+     [
+      {
+       "text": "1.0 s — a full bucket",
+       "tone": "warn"
+      },
+      {
+       "text": "2.01 s",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "faster bursts",
+       "tone": "warn"
+      },
+      {
+       "text": "no difference at a steady rate",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "immediate",
+       "tone": "warn"
+      },
+      {
+       "text": "waits — the bucket starts empty",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "4.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "layers",
+    "title": "Five mechanisms, and the order is the behaviour",
+    "caption": "Read outward from the call. Each wrapper changes what the layers inside it see — 2.6 measured the inner two: retry inside fallback gives the primary three attempts, and reversing them gives it one.",
+    "items": [
+     {
+      "label": "cache",
+      "sub": "outermost — a hit skips everything below",
+      "tone": "good",
+      "side": "no call"
+     },
+     {
+      "label": "rate limit",
+      "sub": "shapes what reaches the provider",
+      "tone": "teal",
+      "side": "shapes"
+     },
+     {
+      "label": "circuit breaker",
+      "sub": "refuses locally once the dependency is down",
+      "tone": "violet",
+      "side": "refuses"
+     },
+     {
+      "label": "fallback",
+      "sub": "chooses WHICH provider is attempted",
+      "tone": "warn",
+      "side": "chooses"
+     },
+     {
+      "label": "retry",
+      "sub": "innermost — attempts the one it was given",
+      "tone": "accent",
+      "side": "attempts"
+     }
+    ]
+   }
+  }
+ ],
+ "4.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "A pattern filter fails in both directions at once",
+    "caption": "The same five-row table shows both: a base64-encoded instruction passes undetected while an ordinary user question gets flagged. That is not a threshold to tune — it is the wrong **kind** of check, because the attack is semantic and the filter is lexical.",
+    "cols": [
+     "the filter says",
+     "the truth"
+    ],
+    "rows": [
+     "“ignore previous…”",
+     "the same, base64-encoded",
+     "the same, translated",
+     "“ignore the rules?”",
+     "a question about injection"
+    ],
+    "cells": [
+     [
+      {
+       "text": "BLOCKED",
+       "tone": "good"
+      },
+      {
+       "text": "correct",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "allowed",
+       "tone": "crit"
+      },
+      {
+       "text": "an attack, undetected",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "allowed",
+       "tone": "crit"
+      },
+      {
+       "text": "an attack, undetected",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "BLOCKED",
+       "tone": "crit"
+      },
+      {
+       "text": "a real user, refused",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "BLOCKED",
+       "tone": "crit"
+      },
+      {
+       "text": "a real user, refused",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "4.8": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "steps",
+    "title": "The highest-value test asserts on what the model was sent",
+    "caption": "1.2 established that the chain's source is not evidence about the request — only the resolved message list is. A scripted model makes that list available, which turns prompt construction from something you read into something you assert on.",
+    "items": [
+     {
+      "label": "script the model",
+      "desc": "a FakeChatModel that records every message list it receives",
+      "tone": "accent",
+      "code": "no API key"
+     },
+     {
+      "label": "invoke the real chain",
+      "desc": "the prompt, the parser and the composition are all genuine",
+      "tone": "good",
+      "code": "real machinery"
+     },
+     {
+      "label": "assert on model.seen[0]",
+      "desc": "the system message, the retrieved context, the question — as actually sent",
+      "tone": "good",
+      "code": "the point"
+     },
+     {
+      "label": "assert on the parsed result",
+      "desc": "and on what happens when the scripted reply is malformed (1.4)",
+      "tone": "violet",
+      "code": "both halves"
+     }
+    ]
+   }
+  }
+ ],
+ "5.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Cast wide cheaply, then narrow expensively",
+    "cols": 4,
+    "caption": "The order is not a preference. **Precision can only remove**, so a document stage one did not return cannot be recovered by stage two — which makes recall at the first stage the ceiling on everything after it.",
+    "nodes": [
+     {
+      "id": "a",
+      "label": "the corpus",
+      "sub": "41 documents",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "cast wide",
+      "sub": "fetch 20 — cheap, high recall",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "narrow",
+      "sub": "rerank — expensive, high precision",
+      "tone": "warn"
+     },
+     {
+      "id": "d",
+      "label": "the context",
+      "sub": "top 5 — what the model sees",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "b",
+      "recall"
+     ],
+     [
+      "b",
+      "c",
+      "precision"
+     ],
+     [
+      "c",
+      "d"
+     ]
+    ]
+   }
+  }
+ ],
+ "5.2": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "The metadata is the half that decides what you can build",
+    "caption": "Each field is nearly free at load time and effectively impossible to reconstruct afterwards. The `visibility` row is the one that matters most — 7.5 measures what happens when it is missing, and it is a data-exposure bug rather than a quality one.",
+    "cols": [
+     "cost at load",
+     "what it enables later"
+    ],
+    "rows": [
+     "source",
+     "page",
+     "owner",
+     "visibility",
+     "last_updated"
+    ],
+    "cells": [
+     [
+      {
+       "text": "free",
+       "tone": "good"
+      },
+      "a citation the user can follow"
+     ],
+     [
+      {
+       "text": "free",
+       "tone": "good"
+      },
+      "a citation that lands in the right place"
+     ],
+     [
+      {
+       "text": "free",
+       "tone": "good"
+      },
+      "per-tenant filtering"
+     ],
+     [
+      {
+       "text": "free",
+       "tone": "good"
+      },
+      {
+       "text": "ACCESS CONTROL — see 7.5",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "free",
+       "tone": "good"
+      },
+      {
+       "text": "staleness detection",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "5.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "On this corpus, splitting made retrieval worse",
+    "caption": "Chunking is usually taught as tuning. The measurement is more pointed: at 300 characters and above **nothing is split** — 41 chunks for 41 documents — so the honest finding is that a corpus of short documents has no chunking decision to make.",
+    "cols": [
+     "chunks",
+     "what happened"
+    ],
+    "rows": [
+     "no splitting",
+     "chunk_size 300+",
+     "chunk_size 150",
+     "chunk_size 80"
+    ],
+    "cells": [
+     [
+      {
+       "text": "41 for 41 docs",
+       "tone": "good"
+      },
+      {
+       "text": "the baseline",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "41 — unchanged",
+       "tone": "good"
+      },
+      {
+       "text": "nothing is split at all",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "more",
+       "tone": "warn"
+      },
+      {
+       "text": "retrieval got WORSE",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "many",
+       "tone": "crit"
+      },
+      {
+       "text": "worse again — context is lost",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "5.4": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "steps",
+    "title": "Similarity is not relevance",
+    "caption": "They correlate and they are not the same thing. Against *“how do I reset my password”* an embedding ranks by surface resemblance — which is why a document that merely **talks about** passwords can outscore the one that tells you how to reset yours.",
+    "items": [
+     {
+      "label": "the query is embedded",
+      "desc": "one vector, ~104 ms — a fixed cost per query (7.9)",
+      "tone": "accent",
+      "code": "bi-encoder"
+     },
+     {
+      "label": "cosine against every document",
+      "desc": "no cleverness inside it — 6.2 reproduces the ranking by hand",
+      "tone": "good",
+      "code": "a dot product"
+     },
+     {
+      "label": "the top k come back",
+      "desc": "always k of them, however irrelevant — which is why 7.1 exists",
+      "tone": "warn",
+      "code": "no “no”"
+     },
+     {
+      "label": "and the order is by RESEMBLANCE",
+      "desc": "so vocabulary mismatch and topical drift both rank high",
+      "tone": "crit",
+      "code": "the gap"
+     }
+    ]
+   }
+  }
+ ],
+ "5.5": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "compare",
+    "title": "A vector store does two jobs, and the attention goes to the wrong one",
+    "caption": "The index is a performance decision that does not matter below a few hundred thousand vectors. The metadata filter is a **correctness** decision that matters from the first document — and 7.5 measures what it costs to get the order wrong.",
+    "columns": [
+     {
+      "title": "the index — over-discussed",
+      "tone": "warn",
+      "items": [
+       "exact or approximate; flat, IVF or HNSW",
+       "a latency and memory trade",
+       "irrelevant below a few hundred thousand vectors",
+       "easy to change later: re-index and measure"
+      ]
+     },
+     {
+      "title": "the metadata filter — under-discussed",
+      "tone": "crit",
+      "items": [
+       "which documents this user may see at all",
+       "a correctness and security decision",
+       "matters from the very first document",
+       "must run BEFORE similarity, not after (7.5)"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "5.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "A retriever is one method, and that narrowness is the point",
+    "cols": 3,
+    "caption": "Query in, `List[Document]` out. Because it is a `Runnable` it composes with everything from module 2 — which is what lets 5.7 write the whole pipeline as one expression rather than a function with six steps in it.",
+    "nodes": [
+     {
+      "id": "q",
+      "label": "a query string",
+      "sub": "the only input",
+      "tone": "accent"
+     },
+     {
+      "id": "r",
+      "label": "Retriever",
+      "sub": "a Runnable — so it pipes",
+      "tone": "violet"
+     },
+     {
+      "id": "d",
+      "label": "List[Document]",
+      "sub": "always k of them (7.1)",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "q",
+      "r"
+     ],
+     [
+      "r",
+      "d"
+     ]
+    ]
+   }
+  }
+ ],
+ "5.7": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "steps",
+    "title": "Everything load-bearing is in the prompt, not the plumbing",
+    "caption": "The pipeline is one LCEL expression. Three instructions do the actual work, and the third is the only one that produces something you can **check** — which is what 7.4 collects on.",
+    "items": [
+     {
+      "label": "“answer using only the context”",
+      "desc": "bounds the answer to retrieved text — a request, not a guarantee",
+      "tone": "accent",
+      "code": "grounding"
+     },
+     {
+      "label": "“say you do not know”",
+      "desc": "gives the model an exit, because the retriever has none (7.1)",
+      "tone": "warn",
+      "code": "abstention"
+     },
+     {
+      "label": "“cite the id of each source”",
+      "desc": "the one VERIFIABLE part — a cited id either was retrieved or was not",
+      "tone": "good",
+      "code": "checkable"
+     },
+     {
+      "label": "and the context goes in the SYSTEM message",
+      "desc": "next to the instruction it could contradict — which is 7.6's whole problem",
+      "tone": "crit",
+      "code": "placement"
+     }
+    ]
+   }
+  }
+ ],
+ "5.8": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The baseline looks finished, and two things are wrong with that",
+    "caption": "Recall@5 of 1.000 and MRR of 0.964 on natural questions. But **P@5 of 0.214 is at its arithmetic ceiling**, not failing — 13 of 14 queries have exactly one relevant document, so 1/5 is the maximum achievable. A metric that cannot move is not evidence.",
+    "cols": [
+     "measured",
+     "what it actually tells you"
+    ],
+    "rows": [
+     "Recall@5",
+     "MRR",
+     "NDCG@5",
+     "P@5"
+    ],
+    "cells": [
+     [
+      {
+       "text": "1.000",
+       "tone": "good"
+      },
+      "the relevant doc is always in the top 5"
+     ],
+     [
+      {
+       "text": "0.964",
+       "tone": "good"
+      },
+      "and nearly always first"
+     ],
+     [
+      {
+       "text": "0.974",
+       "tone": "good"
+      },
+      "the ranking is good"
+     ],
+     [
+      {
+       "text": "0.214",
+       "tone": "crit"
+      },
+      {
+       "text": "AT CEILING — cannot move",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "6.1": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Separate the one-off, the per-query and the per-document cost",
+    "caption": "End-to-end timing gave only 29×, because the dense query is dominated by **104 ms of query encoding** — a fixed cost paid once per query. Separating the three kinds of cost gives the honest number: **37,088× per document**.",
+    "cols": [
+     "bi-encoder",
+     "cross-encoder"
+    ],
+    "rows": [
+     "cost per document, once",
+     "cost per query",
+     "cost per candidate document",
+     "so it can run over"
+    ],
+    "cells": [
+     [
+      {
+       "text": "embed once, reuse forever",
+       "tone": "good"
+      },
+      {
+       "text": "nothing to precompute",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "~104 ms encoding — fixed",
+       "tone": "warn"
+      },
+      {
+       "text": "none",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "a dot product",
+       "tone": "good"
+      },
+      {
+       "text": "37,088x more",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "the whole corpus",
+       "tone": "good"
+      },
+      {
+       "text": "a shortlist only",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "6.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "There is no cleverness inside a vector search",
+    "caption": "Computing cosine by hand in a Python loop reproduced the library's ranking to within **8.3 × 10⁻⁸** — float32 rounding. The only difference is that the library's loop is written in C, which is a performance fact and not a conceptual one.",
+    "items": [
+     {
+      "label": "normalise both vectors",
+      "desc": "so the dot product IS the cosine",
+      "tone": "accent",
+      "code": "numpy"
+     },
+     {
+      "label": "dot the query against every document",
+      "desc": "one multiply-add per dimension, 384 of them",
+      "tone": "good",
+      "code": "a loop"
+     },
+     {
+      "label": "sort descending, take k",
+      "desc": "and k results always come back, however irrelevant",
+      "tone": "warn",
+      "code": "argsort"
+     },
+     {
+      "label": "the ranking matched to 8.3e-08",
+      "desc": "float32 rounding — so the library adds speed, not insight",
+      "tone": "good",
+      "code": "verified"
+     }
+    ]
+   }
+  }
+ ],
+ "6.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Three things worth more than the formula",
+    "caption": "Implemented term by term it correlates **0.9999** with `rank_bm25`. The surprise is the stopword handling: BM25Okapi does **not** floor a negative IDF to zero — it substitutes `epsilon × average_idf`, so *“the”* scores **0.7621** where a floor-to-zero variant gives 0.1681.",
+    "cols": [
+     "my implementation",
+     "rank_bm25"
+    ],
+    "rows": [
+     "correlation overall",
+     "IDF of a stopword",
+     "score for “the”",
+     "what k₁ and b control"
+    ],
+    "cells": [
+     [
+      {
+       "text": "0.9999",
+       "tone": "good"
+      },
+      {
+       "text": "the reference",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "floored to 0",
+       "tone": "warn"
+      },
+      {
+       "text": "epsilon x average_idf",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "0.1681",
+       "tone": "warn"
+      },
+      {
+       "text": "0.7621",
+       "tone": "crit"
+      }
+     ],
+     [
+      "saturation and length",
+      {
+       "text": "the same — not the surprise",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "6.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "BM25’s magnitude is anti-correlated with its usefulness",
+    "caption": "The obvious way to combine dense and sparse is wrong three times over, and the third reason is the one nobody mentions: cosine is bounded and BM25 is not, so a weighted sum is **uncalibrated**. Worse, a high BM25 score can mean the query was all stopwords.",
+    "cols": [
+     "BM25 score",
+     "tokens kept",
+     "what it means"
+    ],
+    "rows": [
+     "“I forgot my password”",
+     "“how long do you keep…”"
+    ],
+    "cells": [
+     [
+      {
+       "text": "a 41-way tie at 0.0000",
+       "tone": "crit"
+      },
+      {
+       "text": "ZERO",
+       "tone": "crit"
+      },
+      {
+       "text": "still returns a top-3",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "3.8583 — confident",
+       "tone": "crit"
+      },
+      {
+       "text": "stopwords only",
+       "tone": "crit"
+      },
+      {
+       "text": "high score, no signal",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "6.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "RRF dissolves the calibration problem by never reading a score",
+    "caption": "`RRF(d) = Σ wᵣ / (k + rankᵣ(d))`. Five lines, no normalisation, no tuning — because a rank is already on a common scale and a score is not. This is also where the module's largest finding lives.",
+    "items": [
+     {
+      "label": "run each retriever independently",
+      "desc": "dense and BM25, each producing its own ranked list",
+      "tone": "accent",
+      "code": "two lists"
+     },
+     {
+      "label": "throw the scores away",
+      "desc": "keep only the RANK — which is why no normalisation is needed",
+      "tone": "good",
+      "code": "the trick"
+     },
+     {
+      "label": "sum 1 / (k + rank) across lists",
+      "desc": "k dampens the top; a document ranked well by both wins",
+      "tone": "good",
+      "code": "5 lines"
+     },
+     {
+      "label": "and fusion is not free",
+      "desc": "it cannot promote what neither member retrieved — recall is still the ceiling (5.1)",
+      "tone": "warn",
+      "code": "the limit"
+     }
+    ]
+   }
+  }
+ ],
+ "6.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "timeline",
+    "title": "Four ways to say the same thing, in five slots",
+    "caption": "For *“stop my plan renewing”*, four documents about cancelling fill the top five and their pairwise similarity runs as high as **0.59**. The right one ranks first and the model still receives four cancellation procedures — so relevance is satisfied and the context is wasted.",
+    "span": 0.7,
+    "tick": 0.1,
+    "unit": "similarity to the top result",
+    "lanes": [
+     {
+      "label": "#2 cancel-trial",
+      "bars": [
+       [
+        0,
+        0.59,
+        "0.59 — near-duplicate",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "#3 cancel-refund",
+      "bars": [
+       [
+        0,
+        0.52,
+        "0.52",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "#4 cancel-policy",
+      "bars": [
+       [
+        0,
+        0.48,
+        "0.48",
+        "warn"
+       ]
+      ]
+     },
+     {
+      "label": "#5 billing-cycle",
+      "bars": [
+       [
+        0,
+        0.31,
+        "0.31 — adds something",
+        "good"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "6.7": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Reranking is not monotonic",
+    "caption": "It does exactly what it promises on the case it exists for: `Retry-After`’s document sat at candidate rank **11**, outside the top five, and the cross-encoder moved it to **1**. But on another query it **demoted** the right answer from 1st to 3rd — at fetch 5, 20 and 41 alike, so fetching more does not fix it.",
+    "cols": [
+     "dense rank",
+     "after reranking"
+    ],
+    "rows": [
+     "Retry-After — the win",
+     "auth-reset at fetch 5",
+     "auth-reset at fetch 20",
+     "auth-reset at fetch 41"
+    ],
+    "cells": [
+     [
+      {
+       "text": "11 — outside top 5",
+       "tone": "crit"
+      },
+      {
+       "text": "1",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      {
+       "text": "3 — demoted",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      {
+       "text": "3 — demoted",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      {
+       "text": "3 — demoted",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "6.8": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "timeline",
+    "title": "Three results I did not expect",
+    "caption": "Assembled in order and measured at every step. Reranking on top of dense made natural queries **worse** — 0.964 down to 0.845 — which is the opposite of the advertised effect, and why every stage has to be measured on **your** queries rather than adopted.",
+    "span": 1,
+    "tick": 0.2,
+    "unit": "MRR on the 14 natural queries",
+    "lanes": [
+     {
+      "label": "dense alone",
+      "bars": [
+       [
+        0,
+        0.964,
+        "0.964 — the baseline",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "+ rerank",
+      "bars": [
+       [
+        0,
+        0.845,
+        "0.845 — WORSE",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "+ hybrid fusion",
+      "bars": [
+       [
+        0,
+        0.88,
+        "helps keyword only",
+        "warn"
+       ]
+      ]
+     },
+     {
+      "label": "+ MMR",
+      "bars": [
+       [
+        0,
+        0.88,
+        "coverage, not relevance",
+        "warn"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "6.9": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Can this metric move, and does it matter to the user?",
+    "caption": "The question that matters more than any of the values. On this label set **P@5 is at its arithmetic ceiling** — with one relevant document per query the maximum is 0.200, so a “poor” score is a property of the labels, not the system.",
+    "cols": [
+     "measured",
+     "can it move?",
+     "matters to the user?"
+    ],
+    "rows": [
+     "Recall@5",
+     "MRR",
+     "NDCG@5",
+     "P@5"
+    ],
+    "cells": [
+     [
+      {
+       "text": "1.000",
+       "tone": "good"
+      },
+      {
+       "text": "at ceiling",
+       "tone": "warn"
+      },
+      {
+       "text": "yes — the gate",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "0.964",
+       "tone": "good"
+      },
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      {
+       "text": "yes — position",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "0.974",
+       "tone": "good"
+      },
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      {
+       "text": "partly",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "0.214",
+       "tone": "crit"
+      },
+      {
+       "text": "NO — max is 0.200",
+       "tone": "crit"
+      },
+      {
+       "text": "not here",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "7.1": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "timeline",
+    "title": "A correction to my own reasoning",
+    "caption": "I expected the **gap** between rank 1 and rank 2 to be the signal — a confident retrieval should separate its winner. It is not. The plain absolute score separates answerable from unanswerable far better, and a plausible mechanism is not evidence.",
+    "span": 1,
+    "tick": 0.1,
+    "unit": "AUC — answerable against unanswerable",
+    "lanes": [
+     {
+      "label": "the rank 1-2 gap",
+      "bars": [
+       [
+        0,
+        0.614,
+        "0.614 — near chance",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "the top score",
+      "bars": [
+       [
+        0,
+        0.943,
+        "0.943 — threshold on this",
+        "good"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "7.2": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Where query transformation is NOT needed",
+    "caption": "Dense retrieval already handles ordinary phrasing at MRR 0.964, so rewriting those queries is cost without benefit. The real failures are vague and colloquial — and a **blind** rewrite, done without seeing the corpus, scored **0/5** on one of them.",
+    "cols": [
+     "baseline",
+     "after rewriting"
+    ],
+    "rows": [
+     "14 natural queries",
+     "a vague colloquial query",
+     "a blind rewrite",
+     "the union of variants"
+    ],
+    "cells": [
+     [
+      {
+       "text": "MRR 0.964",
+       "tone": "good"
+      },
+      {
+       "text": "no gain — pure cost",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "fails",
+       "tone": "crit"
+      },
+      {
+       "text": "this is the real case",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "—",
+       "tone": "warn"
+      },
+      {
+       "text": "0 of 5 — worse",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "—",
+       "tone": "warn"
+      },
+      {
+       "text": "worse than its best member",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "7.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "layers",
+    "title": "The budget is arithmetic, and it discards by rank",
+    "caption": "*“How many chunks fit”* is the wrong question. If only `n` chunks fit, **every chunk ranked below `n` is discarded no matter how relevant it is** — so the budget, not the retriever, sets the real k. And the reserve is not optional.",
+    "items": [
+     {
+      "label": "the context window",
+      "sub": "the hard limit — exceeding it fails the request",
+      "tone": "accent",
+      "side": "total"
+     },
+     {
+      "label": "reserve for the answer",
+      "sub": "omit this and the failure is at GENERATION time",
+      "tone": "crit",
+      "side": "not optional"
+     },
+     {
+      "label": "the system prompt + instructions",
+      "sub": "fixed per call",
+      "tone": "teal",
+      "side": "fixed"
+     },
+     {
+      "label": "the question",
+      "sub": "paid once",
+      "tone": "good",
+      "side": "small"
+     },
+     {
+      "label": "= what is left for chunks",
+      "sub": "and this number IS your k",
+      "tone": "violet",
+      "side": "the real k"
+     }
+    ]
+   }
+  }
+ ],
+ "7.4": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "One grounding check is certain, the rest are judgement",
+    "caption": "Checking whether a cited id was actually retrieved costs a **regex** and catches a fabricated citation with **certainty**. Everything else — whether the claim is supported by the cited text — needs a model, and inherits that model's judgement.",
+    "cols": [
+     "cost",
+     "certainty"
+    ],
+    "rows": [
+     "was the cited id retrieved?",
+     "does it support the claim?",
+     "is anything uncited?",
+     "is the answer complete?"
+    ],
+    "cells": [
+     [
+      {
+       "text": "a regex",
+       "tone": "good"
+      },
+      {
+       "text": "CERTAIN",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "a model call",
+       "tone": "warn"
+      },
+      {
+       "text": "judgement",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "a regex",
+       "tone": "good"
+      },
+      {
+       "text": "certain, but noisy",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "a model call",
+       "tone": "crit"
+      },
+      {
+       "text": "judgement, unreliable",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "7.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "Delete a document and the index does not notice",
+    "caption": "`ntotal` is unchanged, the deleted document is still the top result, and it will be retrieved, placed in the context and **cited** — pointing at something that no longer exists. Which is the same mechanism as the permission bug: the index is a stale copy.",
+    "items": [
+     {
+      "label": "delete it from the source system",
+      "desc": "the row is gone; the vector is not",
+      "tone": "accent",
+      "code": "source"
+     },
+     {
+      "label": "ntotal is unchanged",
+      "desc": "nothing in the store reports a discrepancy",
+      "tone": "warn",
+      "code": "silent"
+     },
+     {
+      "label": "it is still the top result",
+      "desc": "and still the most similar vector, because similarity knows nothing about existence",
+      "tone": "crit",
+      "code": "retrieved"
+     },
+     {
+      "label": "and the answer CITES it",
+      "desc": "a verifiable-looking citation pointing at a deleted document",
+      "tone": "crit",
+      "code": "the damage"
+     }
+    ]
+   }
+  }
+ ],
+ "7.6": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Why input sanitisation misses it entirely",
+    "caption": "The payload arrives in the **system message**, next to the instruction it contradicts — and it never passes through the input filter, because it is not input. Measured, the injected text cost only **0.0126** in similarity: inside ordinary variation, and attacker-controlled by padding.",
+    "cols": [
+     "checked by an input filter?",
+     "where it ends up"
+    ],
+    "rows": [
+     "the user’s question",
+     "a retrieved document",
+     "the injected sentence"
+    ],
+    "cells": [
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "the human message"
+     ],
+     [
+      {
+       "text": "NO — it is not input",
+       "tone": "crit"
+      },
+      {
+       "text": "the SYSTEM message (5.7)",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "NO",
+       "tone": "crit"
+      },
+      {
+       "text": "beside the instruction it breaks",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "7.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Both failure modes are reachable with ordinary queries",
+    "caption": "A semantic cache is a threshold on paraphrase similarity. *“is retention 30 days”* against *“is retention 90 days”* scores **0.8762** — two questions with different answers, above most thresholds. There is no setting that separates these.",
+    "cols": [
+     "similarity",
+     "same answer?",
+     "what a threshold does"
+    ],
+    "rows": [
+     "30 days vs 90 days",
+     "a true paraphrase"
+    ],
+    "cells": [
+     [
+      {
+       "text": "0.8762",
+       "tone": "crit"
+      },
+      {
+       "text": "NO",
+       "tone": "crit"
+      },
+      {
+       "text": "serves the wrong one",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "similar range",
+       "tone": "warn"
+      },
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      {
+       "text": "a correct hit",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "7.8": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "A table is the worst case for text extraction",
+    "caption": "The extracted text is **syntactically fine and semantically destroyed**. *“What is the rate limit on Growth”* needs the association between `Growth` and `2400/min`, and row-major extraction separates them — so the document retrieves and cannot answer.",
+    "items": [
+     {
+      "label": "the table in the source",
+      "desc": "Growth and 2400/min are in the same ROW — the association is spatial",
+      "tone": "good",
+      "code": "intact"
+     },
+     {
+      "label": "row-major text extraction",
+      "desc": "produces valid text with the cells in reading order",
+      "tone": "warn",
+      "code": "lossy"
+     },
+     {
+      "label": "the association is gone",
+      "desc": "Growth and 2400/min are now far apart in one long line",
+      "tone": "crit",
+      "code": "destroyed"
+     },
+     {
+      "label": "so it retrieves and cannot answer",
+      "desc": "and the summary written at ingest sets the ceiling on everything after (7.8)",
+      "tone": "crit",
+      "code": "the ceiling"
+     }
+    ]
+   }
+  }
+ ],
+ "7.9": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "timeline",
+    "title": "Where the per-query budget actually goes",
+    "caption": "Assembled from module 6's measurements, and it says something unexpected about where to start: the **cross-encoder dominates everything except generation**, and the query embedding is a *fixed* cost that caching cannot reduce per-document.",
+    "span": 1450,
+    "tick": 250,
+    "unit": "milliseconds per query",
+    "lanes": [
+     {
+      "label": "rerank 20 cands",
+      "bars": [
+       [
+        0,
+        1362,
+        "~1362 ms — dominates",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "query embedding",
+      "bars": [
+       [
+        0,
+        104,
+        "fixed",
+        "warn"
+       ]
+      ]
+     },
+     {
+      "label": "vector search",
+      "bars": [
+       [
+        0,
+        45,
+        "",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "BM25",
+      "bars": [
+       [
+        0,
+        20,
+        "",
+        "good"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "8.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Three things a chain cannot do",
+    "caption": "Worth seeing as failures first, because each has a workaround that **works** — the cost is what matters. Wrapping a chain in a `while` loop gives you the cycle and loses the state, the pause point and any view inside it.",
+    "cols": [
+     "the chain workaround",
+     "what it costs"
+    ],
+    "rows": [
+     "cycle",
+     "branch on state",
+     "pause"
+    ],
+    "cells": [
+     [
+      {
+       "text": "a while loop around it",
+       "tone": "warn"
+      },
+      {
+       "text": "no state, no trace, no pause",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "a function returning a chain",
+       "tone": "warn"
+      },
+      {
+       "text": "the branch is invisible to tooling",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "there isn’t one",
+       "tone": "crit"
+      },
+      {
+       "text": "you cannot resume mid-run at all",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "8.2": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "What the runtime actually validates: almost nothing",
+    "caption": "The schema is a **contract between nodes**, not a validator. An unknown input key is accepted and filtered out; a wrong type raises from the node body rather than at the boundary, so the traceback points at your code instead of at the caller who sent it.",
+    "cols": [
+     "what happens",
+     "where you find out"
+    ],
+    "rows": [
+     "a key not in the schema",
+     "a wrong type",
+     "a missing key",
+     "an extra key from a node"
+    ],
+    "cells": [
+     [
+      {
+       "text": "accepted, then filtered out",
+       "tone": "crit"
+      },
+      {
+       "text": "nowhere — silent",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "TypeError",
+       "tone": "warn"
+      },
+      {
+       "text": "the node body, not the edge",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "KeyError in the node",
+       "tone": "warn"
+      },
+      {
+       "text": "at run time",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "silently discarded",
+       "tone": "crit"
+      },
+      {
+       "text": "nowhere — silent",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "8.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "The default reducer is replacement",
+    "caption": "The most common source of LangGraph bugs. Two nodes appending to a `List[str]` in sequence leaves you with **`['from b']`** — the first update is gone, the types are correct and nothing raises.",
+    "left": "what runs",
+    "codeW": 300,
+    "vars": [
+     "without a reducer",
+     "with add"
+    ],
+    "steps": [
+     {
+      "code": "initial state",
+      "state": [
+       "[]",
+       "[]"
+      ]
+     },
+     {
+      "code": "node_a returns {“log”: [“from a”]}",
+      "state": [
+       "['from a']",
+       "['from a']"
+      ],
+      "changed": [
+       0,
+       1
+      ]
+     },
+     {
+      "code": "node_b returns {“log”: [“from b”]}",
+      "state": [
+       "['from b']",
+       "['from a', 'from b']"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "note": "a’s update is gone",
+      "tone": "crit"
+     }
+    ]
+   }
+  }
+ ],
+ "8.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Every key is effectively public",
+    "caption": "8.2 established that the schema is the only contract, so a single-schema graph returns its internals to the caller — measured: the retry count, the debug timings and **8 KB of raw API response**. Three schemas fix it, and the split is a design statement.",
+    "cols": [
+     "single schema",
+     "input/output/private"
+    ],
+    "rows": [
+     "the answer",
+     "retry_count",
+     "debug_timings",
+     "8 KB raw API response"
+    ],
+    "cells": [
+     [
+      {
+       "text": "returned",
+       "tone": "good"
+      },
+      {
+       "text": "returned",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "returned",
+       "tone": "crit"
+      },
+      {
+       "text": "private",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "returned",
+       "tone": "crit"
+      },
+      {
+       "text": "private",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "RETURNED",
+       "tone": "crit"
+      },
+      {
+       "text": "private",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "8.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "A node is a dict in and a dict out",
+    "caption": "Which makes its unit test exactly that — no runtime, no compile, nothing to mock. That is the main practical benefit of the node signature, and it comes with three mistakes that follow directly from it.",
+    "cols": [
+     "the mistake",
+     "what happens"
+    ],
+    "rows": [
+     "return the whole state",
+     "mutate the state in place",
+     "return an unknown key"
+    ],
+    "cells": [
+     [
+      {
+       "text": "works, but fights the reducers",
+       "tone": "warn"
+      },
+      {
+       "text": "an append becomes a duplicate",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "no update is recorded",
+       "tone": "crit"
+      },
+      {
+       "text": "the change vanishes",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "accepted",
+       "tone": "crit"
+      },
+      {
+       "text": "silently discarded (8.2)",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "8.6": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "timeline",
+    "title": "The superstep: a consistent snapshot, then one commit",
+    "caption": "Two parallel nodes **both saw `counter=0`**. Neither saw the other's update, and the node after them saw **`counter=2`** — both increments applied together by the reducer. Read a snapshot, run everything scheduled, commit once.",
+    "span": 3,
+    "tick": 1,
+    "unit": "supersteps",
+    "lanes": [
+     {
+      "label": "node_a",
+      "bars": [
+       [
+        1,
+        2,
+        "reads 0, writes +1",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "node_b",
+      "bars": [
+       [
+        1,
+        2,
+        "reads 0, writes +1",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "the reducer",
+      "bars": [
+       [
+        2,
+        2.4,
+        "merges",
+        "violet"
+       ]
+      ]
+     },
+     {
+      "label": "node_c",
+      "bars": [
+       [
+        2.4,
+        3,
+        "reads counter=2",
+        "accent"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "8.7": [
+  {
+   "after": "05",
+   "d": {
+    "kind": "tree",
+    "title": "The router failure compile() cannot catch",
+    "caption": "A function's return values are not knowable statically, so **`compile()` succeeds** on a router that can return a key the path map lacks. The failure arrives at run time, on whichever input takes that branch — which may be the rare one.",
+    "root": {
+     "label": "route(state)",
+     "sub": "returns a key",
+     "tone": "accent",
+     "children": [
+      {
+       "label": "“billing”",
+       "sub": "in the map → billing_node",
+       "tone": "good",
+       "edge": "mapped"
+      },
+      {
+       "label": "“tech”",
+       "sub": "in the map → tech_node",
+       "tone": "good",
+       "edge": "mapped"
+      },
+      {
+       "label": "“other”",
+       "sub": "NOT in the map → raises at run time",
+       "tone": "crit",
+       "edge": "compiles fine"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "8.8": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "compare",
+    "title": "Command, or a conditional edge",
+    "caption": "A node returning a `Command` carries an update and a destination together — and then there is no `add_conditional_edges` call at all, because the routing came from the return value. The useful question is what each one makes visible.",
+    "columns": [
+     {
+      "title": "add_conditional_edges",
+      "tone": "good",
+      "items": [
+       "the routing is declared in the graph",
+       "so the drawn graph shows every possible path",
+       "the update and the decision are separate steps",
+       "a path map gives you a place for a default"
+      ]
+     },
+     {
+      "title": "a node returning Command",
+      "tone": "warn",
+      "items": [
+       "update and destination in one return",
+       "the routing is INSIDE the node, so the drawn graph shows nothing",
+       "fewer moving parts for a genuine state-machine transition",
+       "annotate the destinations or you lose the diagram"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "8.9": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "compile() checks the topology and nothing else",
+    "caption": "It insists on an edge from `START` and rejects an edge pointing at a name that does not exist. It happily compiles a node with **no path to `END`** — and the recursion limit that would eventually stop that run defaults to **10007** supersteps, measured.",
+    "cols": [
+     "compile()",
+     "run time"
+    ],
+    "rows": [
+     "no edge from START",
+     "an edge to a missing node",
+     "a node with no path to END",
+     "no nodes at all"
+    ],
+    "cells": [
+     [
+      {
+       "text": "RAISES",
+       "tone": "good"
+      },
+      "—"
+     ],
+     [
+      {
+       "text": "RAISES",
+       "tone": "good"
+      },
+      "—"
+     ],
+     [
+      {
+       "text": "compiles fine",
+       "tone": "crit"
+      },
+      {
+       "text": "10007 supersteps, then raises",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "compiles fine",
+       "tone": "crit"
+      },
+      {
+       "text": "returns the input",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "9.1": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "The agent loop, as a graph you can see inside",
+    "cols": 3,
+    "caption": "3.3's loop was something you could not inspect. Here it is two nodes plus a conditional edge — and the `tools → agent` edge is the **cycle a chain could not express** (8.1), which is the whole reason this module exists.",
+    "nodes": [
+     {
+      "id": "a",
+      "label": "agent",
+      "sub": "calls the model",
+      "tone": "violet"
+     },
+     {
+      "id": "t",
+      "label": "tools",
+      "sub": "executes every call",
+      "tone": "warn"
+     },
+     {
+      "id": "e",
+      "label": "END",
+      "sub": "no tools requested",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "t",
+      "asked for tools"
+     ],
+     [
+      "t",
+      "a",
+      "the cycle",
+      "dashed"
+     ],
+     [
+      "a",
+      "e",
+      "answered"
+     ]
+    ]
+   }
+  }
+ ],
+ "9.2": [
+  {
+   "after": "06",
+   "d": {
+    "kind": "matrix",
+    "title": "An asymmetry worth knowing before you rely on them",
+    "caption": "`ToolNode` **cannot be invoked on its own** — no config, an empty `configurable` and a `thread_id` all raise. It has to run inside a compiled graph. `tools_condition` is directly callable, which is why one is easy to unit test and the other is not.",
+    "cols": [
+     "callable on its own?",
+     "how you test it"
+    ],
+    "rows": [
+     "ToolNode",
+     "tools_condition"
+    ],
+    "cells": [
+     [
+      {
+       "text": "NO — raises under every config",
+       "tone": "crit"
+      },
+      {
+       "text": "a 3-line throwaway graph",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      {
+       "text": "call it with a state dict",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "9.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "layers",
+    "title": "A spectrum, and the useful question is where the decision lives",
+    "caption": "A workflow is control flow **you** wrote with the model filling in steps; an agent is control flow the **model** decides with tools you wrote. Most real systems are somewhere in the middle, and naming the point is more useful than picking a label.",
+    "items": [
+     {
+      "label": "a chain",
+      "sub": "every step fixed before the request arrives",
+      "tone": "good",
+      "side": "you decide"
+     },
+     {
+      "label": "a workflow with a router",
+      "sub": "you wrote the branches; the model picks one",
+      "tone": "teal",
+      "side": "you decide"
+     },
+     {
+      "label": "a workflow with an agent step",
+      "sub": "one node inside it is free to loop",
+      "tone": "warn",
+      "side": "mixed"
+     },
+     {
+      "label": "an agent with constrained tools",
+      "sub": "the model drives; the tool list is the limit",
+      "tone": "violet",
+      "side": "model decides"
+     },
+     {
+      "label": "an open agent",
+      "sub": "the model decides the whole path",
+      "tone": "crit",
+      "side": "model decides"
+     }
+    ]
+   }
+  }
+ ],
+ "9.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "cells",
+    "title": "A two-node run wrote four checkpoints",
+    "caption": "One per superstep, plus the input. Each carries a `next` field, which is what makes a checkpoint a **program counter** rather than just data — and the cost is 8.4's warning with a storage bill attached, because each one holds the whole state.",
+    "items": [
+     "input",
+     "after a",
+     "after b",
+     "done"
+    ],
+    "highlight": [
+     0,
+     3
+    ],
+    "tone": "accent",
+    "negative": false,
+    "label": "next = ('a',) · ('b',) · () — the program counter"
+   }
+  }
+ ],
+ "9.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "thread_id is the only thing separating two users",
+    "caption": "Whatever the caller passes, with **nothing validating it**. Three ways that goes wrong, and all three are the same bug: an identifier chosen by the client is a security boundary chosen by the client.",
+    "cols": [
+     "what happens",
+     "severity"
+    ],
+    "rows": [
+     "two users share an id",
+     "an id is guessable",
+     "an id is reused",
+     "an id is omitted"
+    ],
+    "cells": [
+     [
+      {
+       "text": "they share a conversation",
+       "tone": "crit"
+      },
+      {
+       "text": "data exposure",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "anyone can read the thread",
+       "tone": "crit"
+      },
+      {
+       "text": "data exposure",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "the next user sees the history",
+       "tone": "crit"
+      },
+      {
+       "text": "data exposure",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "no persistence at all",
+       "tone": "warn"
+      },
+      {
+       "text": "silent memory loss",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "9.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "tree",
+    "title": "The Store is keyed by a path, which is why it searches",
+    "caption": "A namespace **tuple is a path**, so it supports prefix search — `search((“users”, “alice”, “prefs”))` returns alice's preferences and nothing else. That one design decision is what everything else about the Store follows from.",
+    "root": {
+     "label": "(“users”,)",
+     "sub": "the namespace root",
+     "tone": "accent",
+     "children": [
+      {
+       "label": "(… “alice”)",
+       "sub": "one user’s subtree",
+       "tone": "good",
+       "children": [
+        {
+         "label": "“prefs”",
+         "sub": "searchable by prefix",
+         "tone": "teal"
+        },
+        {
+         "label": "“facts”",
+         "sub": "and outlives the thread",
+         "tone": "teal"
+        }
+       ]
+      },
+      {
+       "label": "(… “bob”)",
+       "sub": "a sibling subtree",
+       "tone": "good",
+       "children": [
+        {
+         "label": "“prefs”",
+         "sub": "never returned to alice",
+         "tone": "violet"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "9.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "interrupt() stops the graph mid-node",
+    "caption": "`invoke()` returns **without finishing**, the thread's `next` is still `('ask',)`, and the question the node asked sits in the state for a human to read. That is the pause a chain had no way to express (8.1).",
+    "items": [
+     {
+      "label": "the node calls interrupt(question)",
+      "desc": "execution stops inside the node, not after it",
+      "tone": "accent",
+      "code": "mid-node"
+     },
+     {
+      "label": "invoke() RETURNS",
+      "desc": "without finishing — and next is still ('ask',), so the run is resumable",
+      "tone": "warn",
+      "code": "not done"
+     },
+     {
+      "label": "the question is in the state",
+      "desc": "a human reads it from the checkpoint; no socket is held open",
+      "tone": "good",
+      "code": "durable"
+     },
+     {
+      "label": "Command(resume=“approved”)",
+      "desc": "sends the answer back and the node continues from the interrupt",
+      "tone": "good",
+      "code": "resumed"
+     }
+    ]
+   }
+  }
+ ],
+ "9.8": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "A static breakpoint is configuration, not code",
+    "caption": "`interrupt_before=[“execute”]` pauses with **no `interrupt()` call anywhere**, and you resume with `invoke(None)` rather than `Command(resume=…)`. Two mechanisms that look alike and take different resume calls.",
+    "cols": [
+     "where it is declared",
+     "how you resume"
+    ],
+    "rows": [
+     "interrupt() in a node",
+     "interrupt_before at compile"
+    ],
+    "cells": [
+     [
+      {
+       "text": "in the node body",
+       "tone": "accent"
+      },
+      {
+       "text": "Command(resume=value)",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "in compile() — config",
+       "tone": "violet"
+      },
+      {
+       "text": "invoke(None)",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "9.9": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "tree",
+    "title": "A checkpoint_id is an address you can go back to",
+    "caption": "Pass an earlier checkpoint's config to `invoke` and the graph continues from there. The measured fork **preserved the history before the fork** — so time travel is a branch, not an edit, and the original path is still there.",
+    "root": {
+     "label": "checkpoint 1",
+     "sub": "the input",
+     "tone": "accent",
+     "children": [
+      {
+       "label": "checkpoint 2",
+       "sub": "after node a",
+       "tone": "good",
+       "children": [
+        {
+         "label": "checkpoint 3",
+         "sub": "the original path",
+         "tone": "teal",
+         "edge": "ran once"
+        },
+        {
+         "label": "checkpoint 3′",
+         "sub": "the fork — a new branch",
+         "tone": "violet",
+         "edge": "re-invoked here"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "10.1": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "State crosses a subgraph boundary by key NAME",
+    "caption": "`add_node(“inner”, compiled_graph)` is the whole of composition, because a compiled graph satisfies the node interface. The catch is the boundary: matching keys merge, and a key the parent does not declare is **discarded without a word** (8.2).",
+    "items": [
+     {
+      "label": "the parent passes the whole state in",
+      "desc": "not a selection — the subgraph sees everything the parent has",
+      "tone": "accent",
+      "code": "in"
+     },
+     {
+      "label": "the subgraph runs its own supersteps",
+      "desc": "its internal steps are ONE superstep of the parent",
+      "tone": "violet",
+      "code": "opaque"
+     },
+     {
+      "label": "matching keys merge upward",
+      "desc": "through the parent's reducer for that key, not the child's",
+      "tone": "good",
+      "code": "out"
+     },
+     {
+      "label": "unmatched keys are discarded",
+      "desc": "silently — which looks exactly like a worker producing nothing",
+      "tone": "crit",
+      "code": "the trap"
+     }
+    ]
+   }
+  }
+ ],
+ "10.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Send decides the worker count at run time",
+    "cols": 4,
+    "caption": "8.6's statically wired parallel edges have a count fixed when you write the graph. `Send` reads it from **state**, which is what makes map-reduce possible — and each worker receives its own payload rather than the whole state.",
+    "nodes": [
+     {
+      "id": "p",
+      "label": "plan",
+      "sub": "state decides N",
+      "tone": "accent"
+     },
+     {
+      "id": "w1",
+      "label": "worker",
+      "sub": "its own payload",
+      "tone": "good"
+     },
+     {
+      "id": "w2",
+      "label": "worker",
+      "sub": "… N of them",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "gather",
+      "sub": "a reducer collects them",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "p",
+      "w1",
+      "Send"
+     ],
+     [
+      "w1",
+      "w2"
+     ],
+     [
+      "w2",
+      "g"
+     ],
+     [
+      "p",
+      "g",
+      "",
+      "dashed"
+     ]
+    ]
+   }
+  }
+ ],
+ "10.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "layers",
+    "title": "Five streaming modes, by what each is FOR",
+    "caption": "More useful than what each emits. `values` is the progress view and emits the input state **first**, so a two-node graph yields **three** chunks — a detail that becomes an off-by-one in a progress bar if you assume one chunk per node.",
+    "items": [
+     {
+      "label": "values",
+      "sub": "the progress view — the whole state each superstep",
+      "tone": "accent",
+      "side": "3 chunks"
+     },
+     {
+      "label": "updates",
+      "sub": "only what each node changed",
+      "tone": "good",
+      "side": "2 chunks"
+     },
+     {
+      "label": "messages",
+      "sub": "token by token, for a UI",
+      "tone": "violet",
+      "side": "per token"
+     },
+     {
+      "label": "custom",
+      "sub": "your own progress events from inside a node",
+      "tone": "teal",
+      "side": "yours"
+     },
+     {
+      "label": "debug",
+      "sub": "tasks and checkpoints — verbose",
+      "tone": "warn",
+      "side": "verbose"
+     }
+    ]
+   }
+  }
+ ],
+ "10.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Why max_attempts=3 ran the body once",
+    "caption": "A node with `RetryPolicy(max_attempts=3)` raised a `RuntimeError` and **did not retry**. `default_retry_on` is a **deny list** of deterministic programming errors — so the names mislead in both directions, and the predicate is worth writing rather than taking.",
+    "cols": [
+     "retried by default?",
+     "should it be?"
+    ],
+    "rows": [
+     "ConnectionError",
+     "TimeoutError",
+     "RuntimeError",
+     "AttributeError",
+     "ValueError"
+    ],
+    "cells": [
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      {
+       "text": "yes",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "NO — it is an OSError",
+       "tone": "crit"
+      },
+      {
+       "text": "yes — very",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "warn"
+      },
+      {
+       "text": "depends",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "YES",
+       "tone": "crit"
+      },
+      {
+       "text": "no — it is a typo",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      {
+       "text": "no",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "10.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The hazards are not hangs",
+    "caption": "8.7 measured the thing everyone expects to deadlock and found it does not: when a router skips one branch of a fan-in, the join **runs with whatever was scheduled** — and reads the unset key silently. So the real hazards are partial inputs and loops, not hangs.",
+    "cols": [
+     "what you expect",
+     "what happens"
+    ],
+    "rows": [
+     "a router skips one branch",
+     "a cycle with no exit",
+     "a loop making progress",
+     "a node that never returns"
+    ],
+    "cells": [
+     [
+      {
+       "text": "a deadlock",
+       "tone": "warn"
+      },
+      {
+       "text": "the join runs on partial input",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "a hang",
+       "tone": "warn"
+      },
+      {
+       "text": "10007 supersteps, then raises",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "the recursion limit stops it",
+       "tone": "warn"
+      },
+      {
+       "text": "it never triggers — use a call budget",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "a hang",
+       "tone": "warn"
+      },
+      {
+       "text": "a real hang — needs a timeout",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "10.6": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "layers",
+    "title": "Three layers, divided by what only the runtime does",
+    "caption": "Nodes and routers are plain functions, so they test as a dict in and a dict out — cheap, and covering most of the logic. Reserve the expensive layers for what **only** the runtime can show you: reducers merging, and interrupts resuming.",
+    "items": [
+     {
+      "label": "nodes and routers",
+      "sub": "a dict in, a dict out — no runtime, nothing to mock",
+      "tone": "good",
+      "side": "most tests"
+     },
+     {
+      "label": "a compiled graph",
+      "sub": "reducers, supersteps, routing — what only the runtime does",
+      "tone": "warn",
+      "side": "some"
+     },
+     {
+      "label": "with a checkpointer",
+      "sub": "interrupts, resume, time travel",
+      "tone": "crit",
+      "side": "a few"
+     }
+    ]
+   }
+  }
+ ],
+ "10.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "config_schema is deprecated; context_schema is better in three ways",
+    "caption": "The dict form — a node reading `config[“configurable”].get(“model”)` — still works. The typed form fails **loudly** instead: a missing field raises an `AttributeError` at the access rather than returning `None` and flowing onward.",
+    "cols": [
+     "the dict form",
+     "Runtime[Ctx]"
+    ],
+    "rows": [
+     "a missing field",
+     "discoverability",
+     "type checking"
+    ],
+    "cells": [
+     [
+      {
+       "text": "returns None, flows on",
+       "tone": "crit"
+      },
+      {
+       "text": "AttributeError at the access",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "read every node to find out",
+       "tone": "warn"
+      },
+      {
+       "text": "one dataclass declares it",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "none",
+       "tone": "warn"
+      },
+      {
+       "text": "static",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "10.8": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "The call form decides whether you replay",
+    "caption": "My own expectation was wrong here. `invoke(input, cfg)` starts a **new run** on the same thread — the step counter reached 2. Only `invoke(None, cfg)` replays from the checkpoint, where completed tasks are returned from cache rather than re-executed.",
+    "cols": [
+     "what it does",
+     "step_a ran"
+    ],
+    "rows": [
+     "invoke(input, cfg)",
+     "invoke(None, cfg)"
+    ],
+    "cells": [
+     [
+      {
+       "text": "starts a NEW run",
+       "tone": "crit"
+      },
+      {
+       "text": "twice",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "replays from the checkpoint",
+       "tone": "good"
+      },
+      {
+       "text": "once — cached",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "10.9": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "compare",
+    "title": "Three things an in-process tool never had",
+    "caption": "A tool in another process is a tool you cannot call directly, and the new failures are not variations of the old ones — they are a different category. Which is why a remote tool needs a timeout and a breaker where a local one needed neither.",
+    "columns": [
+     {
+      "title": "in-process",
+      "tone": "good",
+      "items": [
+       "arguments are Python objects",
+       "the cost is a function call",
+       "the only failure is the tool raising",
+       "and you get a traceback that points at it",
+       "no timeout needed"
+      ]
+     },
+     {
+      "title": "across a process",
+      "tone": "crit",
+      "items": [
+       "arguments are serialised — JSON only, so a type must survive the trip",
+       "the cost is a round trip",
+       "plus transport errors, timeouts and a dead peer",
+       "and the error arrives as a string, if at all",
+       "needs a timeout and a breaker (14.2)"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "11.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "timeline",
+    "title": "The ladder, in model calls",
+    "caption": "The rungs are not equivalent in anything except capability — **each step down trades a bound for a freedom**. Measured on one question, which is the comparison worth having before reaching for the top rung.",
+    "span": 7,
+    "tick": 1,
+    "unit": "model calls for the same question",
+    "lanes": [
+     {
+      "label": "a single call",
+      "bars": [
+       [
+        0,
+        1,
+        "1",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "a chain",
+      "bars": [
+       [
+        0,
+        2,
+        "2",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "a router",
+      "bars": [
+       [
+        0,
+        2,
+        "2 — bounded",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "one tool call",
+      "bars": [
+       [
+        0,
+        2,
+        "2",
+        "teal"
+       ]
+      ]
+     },
+     {
+      "label": "ReAct, 2 tools",
+      "bars": [
+       [
+        0,
+        3,
+        "3",
+        "warn"
+       ]
+      ]
+     },
+     {
+      "label": "a full agent",
+      "bars": [
+       [
+        0,
+        6.5,
+        "unbounded",
+        "crit"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "11.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "tree",
+    "title": "The cheapest pattern that still lets the model decide",
+    "caption": "One classification and one branch — and it keeps every property an agent gives up: a fixed call count, a readable path, a testable decision. The ceiling is **one** failure, and it is the one you must design for.",
+    "root": {
+     "label": "classify once",
+     "sub": "a Literal over known labels",
+     "tone": "accent",
+     "children": [
+      {
+       "label": "billing",
+       "sub": "a specialist prompt",
+       "tone": "good",
+       "edge": "matched"
+      },
+      {
+       "label": "technical",
+       "sub": "a specialist prompt",
+       "tone": "good",
+       "edge": "matched"
+      },
+      {
+       "label": "default",
+       "sub": "the model returned something unmapped",
+       "tone": "crit",
+       "edge": "MUST exist"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "11.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "The reasoning IS the message history",
+    "caption": "ReAct is 9.1's loop with the reasoning made explicit — and that is the whole mechanism, not a separate feature. The first `AIMessage` carries **both** content and `tool_calls`, which is why dropping that content removes the pattern and leaves the loop (13.6).",
+    "items": [
+     {
+      "label": "AIMessage(content + tool_calls)",
+      "desc": "“I should look up the order” AND the call itself, in one message",
+      "tone": "violet",
+      "code": "the thought"
+     },
+     {
+      "label": "ToolMessage(result)",
+      "desc": "the observation, matched by tool_call_id",
+      "tone": "warn",
+      "code": "the observation"
+     },
+     {
+      "label": "the model reads BOTH next turn",
+      "desc": "its own stated intent plus what came back — that is the reasoning trace",
+      "tone": "accent",
+      "code": "the loop"
+     },
+     {
+      "label": "so a window that drops content breaks it",
+      "desc": "the observations are the bulky part, so a window keeps the JSON and evicts the intent",
+      "tone": "crit",
+      "code": "13.6"
+     }
+    ]
+   }
+  }
+ ],
+ "11.4": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "timeline",
+    "title": "Reflection costs 6 calls where 1 would do",
+    "caption": "Generate, critique, revise — and the cost is the part worth measuring first. Three rounds took **3 generator calls plus 3 critic calls**, so six model calls against one, and the token count grows faster still because each round carries the critique.",
+    "span": 7,
+    "tick": 1,
+    "unit": "model calls",
+    "lanes": [
+     {
+      "label": "a single call",
+      "bars": [
+       [
+        0,
+        1,
+        "1",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "1 round",
+      "bars": [
+       [
+        0,
+        2,
+        "2",
+        "teal"
+       ]
+      ]
+     },
+     {
+      "label": "2 rounds",
+      "bars": [
+       [
+        0,
+        4,
+        "4",
+        "warn"
+       ]
+      ]
+     },
+     {
+      "label": "3 rounds",
+      "bars": [
+       [
+        0,
+        6,
+        "6 — for one answer",
+        "crit"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "11.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Reflexion is reflection plus memory ACROSS attempts",
+    "caption": "So the mechanism is the **Store** (9.6) rather than thread state (9.5) — because the memory has to outlive the conversation or there is nothing new here. That one choice is the whole difference between the two patterns.",
+    "cols": [
+     "reflection (11.4)",
+     "reflexion"
+    ],
+    "rows": [
+     "the critique lives in",
+     "survives the thread?",
+     "helps the NEXT task?",
+     "the extra cost"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the message history",
+       "tone": "warn"
+      },
+      {
+       "text": "the Store (9.6)",
+       "tone": "good"
+      }
+     ],
+     [
+      false,
+      true
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      {
+       "text": "yes — that is the point",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "2 calls per round",
+       "tone": "warn"
+      },
+      {
+       "text": "+ a write and a read",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "11.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Plan once, execute many",
+    "cols": 4,
+    "caption": "One planner call produced three steps and three worker calls executed them — **4 model calls**. The difference from ReAct is what the workers **saw**: each got one step and nothing else, so their prompt is constant and 13.1's quadratic growth never reaches them.",
+    "nodes": [
+     {
+      "id": "p",
+      "label": "planner",
+      "sub": "1 call — the whole plan",
+      "tone": "accent"
+     },
+     {
+      "id": "w",
+      "label": "worker",
+      "sub": "one step, NO history",
+      "tone": "good"
+     },
+     {
+      "id": "w2",
+      "label": "worker",
+      "sub": "constant prompt",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "gather",
+      "sub": "4 calls in total",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "p",
+      "w"
+     ],
+     [
+      "w",
+      "w2"
+     ],
+     [
+      "w2",
+      "g"
+     ]
+    ]
+   }
+  }
+ ],
+ "11.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "tree",
+    "title": "Retrieval as a decision with four outcomes",
+    "caption": "Module 5's baseline retrieves once and generates. Run against the real corpus, **all three interesting paths are visible** — which is what makes this pattern worth its extra calls, and also what makes it hard to evaluate.",
+    "root": {
+     "label": "the question arrives",
+     "sub": "retrieve at all?",
+     "tone": "accent",
+     "children": [
+      {
+       "label": "answer directly",
+       "sub": "no retrieval needed",
+       "tone": "good",
+       "edge": "no"
+      },
+      {
+       "label": "retrieve, then answer",
+       "sub": "the baseline path",
+       "tone": "good",
+       "edge": "yes"
+      },
+      {
+       "label": "retrieve, reject, re-query",
+       "sub": "the grading loop",
+       "tone": "warn",
+       "edge": "not relevant"
+      },
+      {
+       "label": "say I do not know",
+       "sub": "the 7.1 guard, as a decision",
+       "tone": "crit",
+       "edge": "nothing found"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "11.8": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The comparison, with the costs measured rather than asserted",
+    "caption": "On the same question against a corpus containing the answer. Each row buys a freedom and pays a bound — and the right choice is the **lowest** row that can answer the question, which is almost never the bottom one.",
+    "cols": [
+     "model calls",
+     "bounded?",
+     "when it is right"
+    ],
+    "rows": [
+     "a single call",
+     "a router",
+     "one tool call",
+     "ReAct",
+     "plan-and-execute",
+     "a full agent"
+    ],
+    "cells": [
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      true,
+      "the answer is in the prompt"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      true,
+      "a known set of kinds"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      true,
+      "one lookup answers it"
+     ],
+     [
+      {
+       "text": "3+",
+       "tone": "warn"
+      },
+      false,
+      "the next step depends"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "warn"
+      },
+      {
+       "text": "mostly",
+       "tone": "warn"
+      },
+      "independent steps"
+     ],
+     [
+      {
+       "text": "unbounded",
+       "tone": "crit"
+      },
+      false,
+      {
+       "text": "rarely",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "12.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "timeline",
+    "title": "The coordination cost, measured",
+    "caption": "The same task two ways: one agent with both tools took **3** model calls; a supervisor plus two specialists took **5** — 3 supervisor turns and 2 worker turns. So coordination costs **2 extra calls for identical output**, and that is the number the decision rests on.",
+    "span": 6,
+    "tick": 1,
+    "unit": "model calls for the same task",
+    "lanes": [
+     {
+      "label": "one agent",
+      "bars": [
+       [
+        0,
+        3,
+        "3 calls",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "supervisor turns",
+      "bars": [
+       [
+        0,
+        3,
+        "3 — pure overhead",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "worker turns",
+      "bars": [
+       [
+        3,
+        5,
+        "2 — the work",
+        "good"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "12.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "A supervisor is a router with memory",
+    "caption": "11.2's router classifies once and branches once; a supervisor decides **who acts next on every turn**, seeing everything so far. Which means 11.2's classification failure now compounds with the turn count rather than happening once.",
+    "cols": [
+     "a router (11.2)",
+     "a supervisor"
+    ],
+    "rows": [
+     "how often it decides",
+     "what it sees",
+     "an unmapped output",
+     "the default branch"
+    ],
+    "cells": [
+     [
+      {
+       "text": "once",
+       "tone": "good"
+      },
+      {
+       "text": "every turn",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "the question",
+       "tone": "good"
+      },
+      {
+       "text": "the whole history",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "one wrong answer",
+       "tone": "warn"
+      },
+      {
+       "text": "compounds with turns",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "required",
+       "tone": "good"
+      },
+      {
+       "text": "required, and more so",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "12.3": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "cycle",
+    "title": "A swarm has no supervisor",
+    "centre": "no coordinator",
+    "caption": "Each agent decides whether to answer or hand off, and the handoff is a `Command` (8.8) carrying the reason with the destination. That removes the coordination turn — **one** model call per step — and removes the place policy would have lived.",
+    "nodes": [
+     {
+      "label": "triage",
+      "sub": "answers or hands off",
+      "tone": "accent",
+      "edge": "Command(goto)"
+     },
+     {
+      "label": "billing",
+      "sub": "same choice again",
+      "tone": "good",
+      "edge": "hands back"
+     },
+     {
+      "label": "technical",
+      "sub": "and the loop is possible",
+      "tone": "warn",
+      "edge": "hands on"
+     }
+    ]
+   }
+  }
+ ],
+ "12.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "tree",
+    "title": "A team is a subgraph with agents inside",
+    "caption": "10.1's subgraph, which the top-level supervisor treats as one node — so the arithmetic **compounds**: a two-level hierarchy pays two coordination turns per unit of work. And the team's internal decisions are one superstep of the parent, so the default trace hides them.",
+    "root": {
+     "label": "top supervisor",
+     "sub": "coordination turn #1",
+     "tone": "crit",
+     "children": [
+      {
+       "label": "research team",
+       "sub": "its own supervisor — turn #2",
+       "tone": "warn",
+       "children": [
+        {
+         "label": "searcher",
+         "sub": "the actual work",
+         "tone": "good"
+        },
+        {
+         "label": "reader",
+         "sub": "the actual work",
+         "tone": "good"
+        }
+       ]
+      },
+      {
+       "label": "writing team",
+       "sub": "its own supervisor — turn #2",
+       "tone": "warn",
+       "children": [
+        {
+         "label": "drafter",
+         "sub": "the actual work",
+         "tone": "good"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "12.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "compare",
+    "title": "Who decides, and when",
+    "caption": "The distinction is crisp, and it decides the call count. A supervisor's total is unknown until the run ends; an orchestrator's is known as soon as the plan exists — which is what makes one budgetable and the other not.",
+    "columns": [
+     {
+      "title": "supervisor — a router in a loop",
+      "tone": "warn",
+      "items": [
+       "decides who acts NEXT, one turn at a time",
+       "sees everything that has happened so far",
+       "can adapt to what a worker just found",
+       "call count unknown until it finishes"
+      ]
+     },
+     {
+      "title": "orchestrator — decides up front",
+      "tone": "accent",
+      "items": [
+       "decides the whole DECOMPOSITION once",
+       "fans the pieces out, often in parallel",
+       "cannot react to what a piece discovers",
+       "call count known as soon as the plan exists"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "12.6": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "The registry turns the worker set into data",
+    "caption": "`add_node` is a build-time call, so *“add a worker”* normally means editing the graph and redeploying. One generic executor plus a dict of specs removes that — and the safety comes from what a row **cannot** say.",
+    "items": [
+     {
+      "label": "one generic executor node",
+      "desc": "it reads a spec and runs it; the graph topology never changes",
+      "tone": "accent",
+      "code": "build time"
+     },
+     {
+      "label": "a dict of worker specs",
+      "desc": "a prompt, a tool list from an ALLOWLIST, and a few flags",
+      "tone": "good",
+      "code": "data"
+     },
+     {
+      "label": "nothing else may be expressed",
+      "desc": "no code, no new tool, no permission — or the registry grants capabilities without review",
+      "tone": "crit",
+      "code": "the limit"
+     },
+     {
+      "label": "enabled defaults to OFF",
+      "desc": "so adding a row and turning it on are two deliberate steps",
+      "tone": "good",
+      "code": "safety"
+     }
+    ]
+   }
+  }
+ ],
+ "12.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "layers",
+    "title": "Three options, in increasing isolation",
+    "caption": "The question each one answers is what a downstream agent can **tell apart**. In a shared message list a retrieved quotation and a hedged guess have the same form — both are assistant turns — so provenance has to be structure rather than prose.",
+    "items": [
+     {
+      "label": "shared state",
+      "sub": "every agent reads and writes one message list",
+      "tone": "warn",
+      "side": "no isolation"
+     },
+     {
+      "label": "filtered state",
+      "sub": "each agent receives a constructed view",
+      "tone": "good",
+      "side": "some"
+     },
+     {
+      "label": "message passing",
+      "sub": "necessary once they are separate services",
+      "tone": "accent",
+      "side": "full"
+     }
+    ]
+   }
+  }
+ ],
+ "12.8": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Four failure modes, and no agent is broken",
+    "caption": "That is the striking thing about all of them. Each is a property of the **composition** — of a pair, of a payload choice, of there being no shared record — which is why the instrumentation belongs on the gaps rather than on the agents.",
+    "cols": [
+     "whose fault",
+     "what detects it"
+    ],
+    "rows": [
+     "an infinite handoff",
+     "context loss",
+     "duplicated work",
+     "nobody to blame"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the PAIR (12.3)",
+       "tone": "crit"
+      },
+      {
+       "text": "a hop budget + the handoff graph",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "the payload choice",
+       "tone": "crit"
+      },
+      {
+       "text": "provenance as structure (12.7)",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "no shared record",
+       "tone": "crit"
+      },
+      {
+       "text": "same tool, same args, one run",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "the composition",
+       "tone": "crit"
+      },
+      {
+       "text": "per-agent scores on a labelled set",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "13.1": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "timeline",
+    "title": "A conversation costs the sum of its prefixes",
+    "caption": "Cumulative tokens sent divided by the final prompt size, measured. At 40 turns the conversation has sent **21.6×** its own final length — which is not the number anyone quotes.",
+    "span": 22,
+    "tick": 2,
+    "unit": "cumulative tokens ÷ final prompt",
+    "lanes": [
+     {
+      "label": "1 turn",
+      "bars": [
+       [
+        0,
+        1,
+        "1.0x",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "5 turns",
+      "bars": [
+       [
+        0,
+        3.7,
+        "3.7x",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "10 turns",
+      "bars": [
+       [
+        0,
+        6.4,
+        "6.4x",
+        "accent"
+       ]
+      ]
+     },
+     {
+      "label": "20 turns",
+      "bars": [
+       [
+        0,
+        11.6,
+        "11.6x",
+        "warn"
+       ]
+      ]
+     },
+     {
+      "label": "40 turns",
+      "bars": [
+       [
+        0,
+        21.6,
+        "21.6x",
+        "crit"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "13.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "compare",
+    "title": "Three triggers, and why tokens win",
+    "caption": "The turn count is a proxy measured in a unit that varied **25.5×** between a short turn and a long one. Drift matches the intent best and is the hardest to measure, so tokens are the practical default.",
+    "columns": [
+     {
+      "title": "token count",
+      "tone": "good",
+      "items": [
+       "tracks the window and the cost directly",
+       "cannot be fooled by turn size",
+       "must fire at 60-70% of available history",
+       "because summarising needs the history as INPUT",
+       "the practical default"
+      ]
+     },
+     {
+      "title": "turn count",
+      "tone": "crit",
+      "items": [
+       "a proxy for the thing that matters",
+       "a short turn was 2 tokens, a long one 51",
+       "so 'every 10 turns' means 20 tokens or 510",
+       "fires too early on chat, too late on logs",
+       "keep only as a backstop for one huge turn"
+      ]
+     },
+     {
+      "title": "semantic drift",
+      "tone": "warn",
+      "items": [
+       "asks the RIGHT question: is the old history still relevant",
+       "embed the first N turns against the last N",
+       "but an embedding measures similarity, not relevance (5.4)",
+       "two turns about one order look dissimilar",
+       "so it drops the turn holding the order id"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "13.3": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "The measurement a token count cannot give you",
+    "caption": "The same conversation, five facts stated in the first human turn. The sliding window reports a **68% token saving** and a **100% information loss**, and nothing in the token column distinguishes them.",
+    "cols": [
+     "tokens",
+     "facts kept",
+     "answers “which order?”"
+    ],
+    "rows": [
+     "the full conversation",
+     "sliding window (last 6)",
+     "a vague summary",
+     "a detailed summary"
+    ],
+    "cells": [
+     [
+      "489",
+      {
+       "text": "5 of 5",
+       "tone": "good"
+      },
+      true
+     ],
+     [
+      {
+       "text": "156",
+       "tone": "good"
+      },
+      {
+       "text": "NONE",
+       "tone": "crit"
+      },
+      false
+     ],
+     [
+      {
+       "text": "80",
+       "tone": "good"
+      },
+      {
+       "text": "1 of 5",
+       "tone": "crit"
+      },
+      false
+     ],
+     [
+      {
+       "text": "106",
+       "tone": "good"
+      },
+      {
+       "text": "5 of 5",
+       "tone": "good"
+      },
+      true
+     ]
+    ]
+   }
+  }
+ ],
+ "13.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "tree",
+    "title": "Hierarchical summarisation, and where the loss compounds",
+    "caption": "85 tokens of segment summaries became **46**, bounded by its prompt rather than its input — so the cost stops growing. But each level is lossy and level 2 can only keep what level 1 kept, so **the detail requirement belongs at level 1**.",
+    "root": {
+     "label": "level 2 — one summary",
+     "sub": "46 tokens — 4 of 5 facts",
+     "tone": "accent",
+     "children": [
+      {
+       "label": "turns 1-4",
+       "sub": "34 tok",
+       "tone": "good",
+       "edge": "summarised"
+      },
+      {
+       "label": "turns 5-8",
+       "sub": "18 tok",
+       "tone": "good"
+      },
+      {
+       "label": "turns 9-12",
+       "sub": "16 tok",
+       "tone": "good"
+      },
+      {
+       "label": "turns 13-16",
+       "sub": "17 tok",
+       "tone": "good"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "13.5": [
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "Compression ratio is anti-correlated with safety",
+    "caption": "The **largest** saving is the **destructive** one, because dense information-bearing text is exactly the text that cannot be shortened. So a compressor tuned to maximise its ratio converges on destroying what cannot be reconstructed.",
+    "cols": [
+     "before",
+     "after",
+     "saved",
+     "facts kept",
+     "verdict"
+    ],
+    "rows": [
+     "assistant courtesy",
+     "a tool result",
+     "the user’s own words"
+    ],
+    "cells": [
+     [
+      "20 tok",
+      "4 tok",
+      {
+       "text": "80%",
+       "tone": "good"
+      },
+      "none to keep",
+      {
+       "text": "safe",
+       "tone": "good"
+      }
+     ],
+     [
+      "42 tok",
+      "20 tok",
+      {
+       "text": "52%",
+       "tone": "good"
+      },
+      {
+       "text": "all",
+       "tone": "good"
+      },
+      {
+       "text": "safe — best win",
+       "tone": "good"
+      }
+     ],
+     [
+      "28 tok",
+      "4 tok",
+      {
+       "text": "86%",
+       "tone": "crit"
+      },
+      {
+       "text": "NONE",
+       "tone": "crit"
+      },
+      {
+       "text": "destructive",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "13.6": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "The strategies are not interchangeable across patterns",
+    "caption": "A sliding window on a ReAct agent is actively wrong: reasoning lives in `AIMessage` content and is **not** the bulky part, so the window evicts intent and keeps the JSON. Plan-and-execute has no context problem at all.",
+    "cols": [
+     "what it needs from context",
+     "the wrong strategy"
+    ],
+    "rows": [
+     "ReAct",
+     "plan-and-execute",
+     "supervisor",
+     "swarm"
+    ],
+    "cells": [
+     [
+      {
+       "text": "reasoning + results",
+       "tone": "accent"
+      },
+      {
+       "text": "an aggressive window",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "the current step only",
+       "tone": "good"
+      },
+      {
+       "text": "any — no history to manage",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "worker OUTPUTS, not reasoning",
+       "tone": "accent"
+      },
+      {
+       "text": "dropping worker messages",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "the handoff payload",
+       "tone": "accent"
+      },
+      {
+       "text": "none — its risk is LOSS",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "14.1": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Five of nine surfaces are silent",
+    "caption": "The column that matters is not the cause — it is whether anything tells you. The three that raise are the easy ones. The tool surface is **both**, split by whose fault the failure is.",
+    "cols": [
+     "the signal",
+     "what you get"
+    ],
+    "rows": [
+     "the model call",
+     "a tool raising",
+     "a tool called wrongly",
+     "the state boundary",
+     "the graph looping",
+     "the process dying",
+     "a sub-agent",
+     "retrieval",
+     "the context strategy",
+     "cost"
+    ],
+    "cells": [
+     [
+      {
+       "text": "RAISES",
+       "tone": "good"
+      },
+      "RuntimeError"
+     ],
+     [
+      {
+       "text": "RAISES",
+       "tone": "good"
+      },
+      "the tool’s own exception"
+     ],
+     [
+      {
+       "text": "silent",
+       "tone": "warn"
+      },
+      "ToolMessage status=error"
+     ],
+     [
+      {
+       "text": "SILENT",
+       "tone": "crit"
+      },
+      "the key is discarded"
+     ],
+     [
+      {
+       "text": "RAISES",
+       "tone": "good"
+      },
+      "GraphRecursionError"
+     ],
+     [
+      {
+       "text": "RAISES",
+       "tone": "good"
+      },
+      "the checkpoint survives"
+     ],
+     [
+      {
+       "text": "SILENT",
+       "tone": "crit"
+      },
+      "plausible nonsense"
+     ],
+     [
+      {
+       "text": "SILENT",
+       "tone": "crit"
+      },
+      "k docs, none relevant"
+     ],
+     [
+      {
+       "text": "SILENT",
+       "tone": "crit"
+      },
+      "a healthy token count"
+     ],
+     [
+      {
+       "text": "SILENT",
+       "tone": "crit"
+      },
+      "only the bill"
+     ]
+    ]
+   }
+  }
+ ],
+ "14.2": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "cycle",
+    "title": "The breaker’s state machine",
+    "centre": "measured",
+    "caption": "100 requests at 3 attempts each made **300** doomed calls to a dead dependency; the breaker made **5** and skipped 295. Half-open sends **one** probe, and a single failure there re-opens immediately rather than spending the threshold again.",
+    "nodes": [
+     {
+      "label": "closed",
+      "sub": "calls pass through",
+      "tone": "good",
+      "edge": "5 failures"
+     },
+     {
+      "label": "open",
+      "sub": "295 refused locally",
+      "tone": "crit",
+      "edge": "cooldown expires"
+     },
+     {
+      "label": "half-open",
+      "sub": "exactly ONE probe",
+      "tone": "warn",
+      "edge": "probe succeeds"
+     }
+    ]
+   }
+  }
+ ],
+ "14.3": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Where the idempotency key has to live",
+    "caption": "Graph state is **structurally unable** to hold one: a node’s writes commit only on success, so the key written on attempt 1 read `None` on attempts 2 and 3. Measured — three attempts, three emails.",
+    "cols": [
+     "survives a retry",
+     "survives a restart",
+     "verdict"
+    ],
+    "rows": [
+     "a dict in memory",
+     "graph state",
+     "a store (9.6)",
+     "the external system"
+    ],
+    "cells": [
+     [
+      true,
+      false,
+      {
+       "text": "lost on restart",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "NO — always None",
+       "tone": "crit"
+      },
+      false,
+      {
+       "text": "cannot work",
+       "tone": "crit"
+      }
+     ],
+     [
+      true,
+      true,
+      {
+       "text": "works",
+       "tone": "good"
+      }
+     ],
+     [
+      true,
+      true,
+      {
+       "text": "the only real one",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "14.4": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "steps",
+    "title": "Non-compensable steps go last",
+    "caption": "Not a style choice — a **correctness property**. With the email last, a failure anywhere is recoverable. Move it to step 1 and any failure after it is not, because a correction email is a second effect rather than an undo.",
+    "items": [
+     {
+      "label": "reserve stock",
+      "desc": "compensation: release the reservation",
+      "tone": "good",
+      "code": "reversible"
+     },
+     {
+      "label": "charge the card",
+      "desc": "compensation: refund txn_8841 — capture the handle NOW",
+      "tone": "good",
+      "code": "reversible"
+     },
+     {
+      "label": "create the shipment",
+      "desc": "compensation: cancel the shipment",
+      "tone": "good",
+      "code": "reversible"
+     },
+     {
+      "label": "email the customer",
+      "desc": "nothing can un-send it — so it must go last",
+      "tone": "crit",
+      "code": "FINAL"
+     }
+    ]
+   }
+  }
+ ],
+ "14.5": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "k-of-N needs the catch INSIDE the node",
+    "cols": 5,
+    "caption": "Letting the branches raise failed the whole superstep and the three that had **already succeeded** lost their writes — correct transactional behaviour, and the opposite of what partial results need. Guarded, 3 of 5 arrived and the run completed.",
+    "nodes": [
+     {
+      "id": "docs",
+      "label": "docs",
+      "sub": "ok",
+      "tone": "good"
+     },
+     {
+      "id": "tix",
+      "label": "tickets",
+      "sub": "ok",
+      "tone": "good"
+     },
+     {
+      "id": "wiki",
+      "label": "wiki",
+      "sub": "ok",
+      "tone": "good"
+     },
+     {
+      "id": "crm",
+      "label": "crm",
+      "sub": "down",
+      "tone": "crit"
+     },
+     {
+      "id": "bill",
+      "label": "billing",
+      "sub": "down",
+      "tone": "crit"
+     },
+     {
+      "id": "gather",
+      "label": "gather",
+      "sub": "3 of 5 — proceed, and LABEL it",
+      "tone": "accent"
+     }
+    ],
+    "edges": [
+     [
+      "docs",
+      "gather"
+     ],
+     [
+      "tix",
+      "gather"
+     ],
+     [
+      "wiki",
+      "gather"
+     ],
+     [
+      "crm",
+      "gather",
+      null,
+      "dashed"
+     ],
+     [
+      "bill",
+      "gather",
+      null,
+      "dashed"
+     ]
+    ]
+   }
+  }
+ ],
+ "14.6": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "steps",
+    "title": "The escalation path, with a condition at each hop",
+    "caption": "The condition is the useful part — *“retry then escalate”* is not a policy because it does not say when the retry is **wrong**. And the page hop is distinguished by blast radius, which is a count rather than a judgement.",
+    "items": [
+     {
+      "label": "retry",
+      "desc": "the error is transient AND the step is idempotent",
+      "tone": "good",
+      "code": "automatic"
+     },
+     {
+      "label": "degrade",
+      "desc": "a partial answer is useful AND can be labelled",
+      "tone": "good",
+      "code": "automatic"
+     },
+     {
+      "label": "compensate",
+      "desc": "effects applied AND every one is reversible",
+      "tone": "warn",
+      "code": "automatic"
+     },
+     {
+      "label": "dead letter",
+      "desc": "none of the above, and the record is actionable",
+      "tone": "crit",
+      "code": "a human, eventually"
+     },
+     {
+      "label": "page",
+      "desc": "many runs are failing, not one",
+      "tone": "crit",
+      "code": "a human, now"
+     }
+    ]
+   }
+  }
+ ],
+ "14.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The two scores disagreed on three of four runs",
+    "caption": "Each disagreement is a different bug. *“Right answer, wrong source”* justifies trajectory scoring on its own, because it is indistinguishable from success on **every** output metric — exact match, an LLM judge, a human reading the answer.",
+    "cols": [
+     "outcome",
+     "trajectory",
+     "duplicates",
+     "what it means"
+    ],
+    "rows": [
+     "run 1 — the ideal path",
+     "run 2 — search_web only",
+     "run 3 — 3x get_order",
+     "run 4 — no answer"
+    ],
+    "cells": [
+     [
+      {
+       "text": "1.0",
+       "tone": "good"
+      },
+      {
+       "text": "1.0",
+       "tone": "good"
+      },
+      "no",
+      {
+       "text": "pass",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "1.0",
+       "tone": "good"
+      },
+      {
+       "text": "0.0",
+       "tone": "crit"
+      },
+      "no",
+      {
+       "text": "it GUESSED",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "1.0",
+       "tone": "good"
+      },
+      {
+       "text": "subset 1.0",
+       "tone": "warn"
+      },
+      {
+       "text": "yes",
+       "tone": "crit"
+      },
+      {
+       "text": "a cost bug",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "0.0",
+       "tone": "crit"
+      },
+      {
+       "text": "1.0",
+       "tone": "good"
+      },
+      "no",
+      {
+       "text": "fails at generation",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "14.8": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "tree",
+    "title": "The span tree a two-call agent run produces",
+    "caption": "Nine real spans, collected from LangChain callbacks, nested three deep. A flat log says a tool failed; the **tree** says which agent turn called it with what — and the conditional edge is its own span, so the routing decision is observable.",
+    "root": {
+     "label": "LangGraph",
+     "sub": "the run",
+     "tone": "accent",
+     "children": [
+      {
+       "label": "agent",
+       "sub": "turn 1",
+       "tone": "good",
+       "children": [
+        {
+         "label": "model",
+         "sub": "llm",
+         "tone": "violet"
+        },
+        {
+         "label": "route",
+         "sub": "→ tools",
+         "tone": "teal"
+        }
+       ]
+      },
+      {
+       "label": "tools",
+       "sub": "ToolNode",
+       "tone": "warn",
+       "children": [
+        {
+         "label": "get_order",
+         "sub": "tool",
+         "tone": "violet"
+        }
+       ]
+      },
+      {
+       "label": "agent",
+       "sub": "turn 2",
+       "tone": "good",
+       "children": [
+        {
+         "label": "model",
+         "sub": "llm",
+         "tone": "violet"
+        },
+        {
+         "label": "route",
+         "sub": "→ END",
+         "tone": "teal"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "14.9": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "timeline",
+    "title": "Where the time goes in one agent turn",
+    "caption": "Representative figures — the **shape** is the finding and it does not depend on the exact values. Graph overhead is **0.2%** of the turn, so optimising the framework optimises nothing. The levers are fewer calls and smaller prompts.",
+    "span": 1250,
+    "tick": 250,
+    "unit": "milliseconds",
+    "lanes": [
+     {
+      "label": "the model call",
+      "bars": [
+       [
+        0,
+        1200,
+        "1200 ms — 79%",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "a tool call",
+      "bars": [
+       [
+        0,
+        180,
+        "180",
+        "warn"
+       ]
+      ]
+     },
+     {
+      "label": "reranking",
+      "bars": [
+       [
+        0,
+        90,
+        "90",
+        "accent"
+       ]
+      ]
+     },
+     {
+      "label": "retrieval",
+      "bars": [
+       [
+        0,
+        45,
+        "",
+        "accent"
+       ]
+      ]
+     },
+     {
+      "label": "graph overhead",
+      "bars": [
+       [
+        0,
+        3,
+        "",
+        "good"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "14.10": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "layers",
+    "title": "Twenty-two items in five sections",
+    "caption": "Each carries the **measurement** behind it rather than a rationale, because an item you can check is worth more than a principle you can agree with. The side column is the cheapest check in each section.",
+    "items": [
+     {
+      "label": "CORRECTNESS — 4 items",
+      "sub": "fallback branches, your own queries, fact survival, trajectory",
+      "tone": "accent",
+      "side": "count the facts"
+     },
+     {
+      "label": "SAFETY — 4 items",
+      "sub": "filter before similarity, scoped caches, gated effects, untrusted text",
+      "tone": "crit",
+      "side": "read the query"
+     },
+     {
+      "label": "RESILIENCE — 6 items",
+      "sub": "retry predicate, idempotency, ordering, k-of-N, labels, dead letters",
+      "tone": "warn",
+      "side": "the key"
+     },
+     {
+      "label": "COST — 4 items",
+      "sub": "cumulative pricing, a call budget, compression, coordination overhead",
+      "tone": "good",
+      "side": "prefixes"
+     },
+     {
+      "label": "OBSERVABILITY — 5 items",
+      "sub": "span attributes, tool arguments, distinct pairs, sampling, fallback rate",
+      "tone": "violet",
+      "side": "attempt number"
+     }
+    ]
+   }
+  }
+ ]
+}

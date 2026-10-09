@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["9.1", "10.5"],
   blocks: [
     { t: "h2", n: "01", id: "cycle", text: "Reason, act, observe, repeat", sub: "And the reasoning is content" },
+
+    {"kind": "steps", "title": "The reasoning IS the message history", "caption": "ReAct is 9.1's loop with the reasoning made explicit — and that is the whole mechanism, not a separate feature. The first `AIMessage` carries **both** content and `tool_calls`, which is why dropping that content removes the pattern and leaves the loop (13.6).", "items": [{"label": "AIMessage(content + tool_calls)", "desc": "“I should look up the order” AND the call itself, in one message", "tone": "violet", "code": "the thought"}, {"label": "ToolMessage(result)", "desc": "the observation, matched by tool_call_id", "tone": "warn", "code": "the observation"}, {"label": "the model reads BOTH next turn", "desc": "its own stated intent plus what came back — that is the reasoning trace", "tone": "accent", "code": "the loop"}, {"label": "so a window that drops content breaks it", "desc": "the observations are the bulky part, so a window keeps the JSON and evicts the intent", "tone": "crit", "code": "13.6"}], "t": "diagram", "id": "dg-11_3-01-0"},
+
+
+
+
     { t: "code", lang: "text", title: "One cycle",
       code: "HumanMessage('refund policy?')\nAIMessage(tool_calls=['lookup_policy'])        <- content: 'I should look up\n                                                  the refund policy first.'\nToolMessage('Refunds are available within 30 days of purchase.')\nAIMessage('The policy says 30 days, which answers the question.')",
       caption: "The first `AIMessage` has **both** content and a tool call." },
@@ -49,14 +55,6 @@ EC.receiveLesson({
       { t: "p", text: "Not in your design. If you can draw the sequence, draw it \u2014 and that is 11.1's test restated: the loop earns its cost only when the next action depends on the last result in a way you cannot enumerate." },
       { t: "p", text: "The no-commitment property is the one that surprises people. ReAct re-decides everything every turn, which is why it recovers well from a failed tool and why it wanders on a six-step task \u2014 and it is exactly what 11.6's plan-and-execute fixes." }
     ] },
-    { t: "diagram", kind: "steps", title: "The reasoning IS the message history",
-      caption: "ReAct is 9.1's loop with the reasoning made explicit — and that is the whole mechanism, not a separate feature. The first `AIMessage` carries **both** content and `tool_calls`, which is why dropping that content removes the pattern and leaves the loop (13.6).",
-      items: [
-        { label: "AIMessage(content + tool_calls)", desc: "“I should look up the order” AND the call itself, in one message", tone: "violet", code: "the thought" },
-        { label: "ToolMessage(result)", desc: "the observation, matched by tool_call_id", tone: "warn", code: "the observation" },
-        { label: "the model reads BOTH next turn", desc: "its own stated intent plus what came back — that is the reasoning trace", tone: "accent", code: "the loop" },
-        { label: "so a window that drops content breaks it", desc: "the observations are the bulky part, so a window keeps the JSON and evicts the intent", tone: "crit", code: "13.6" }
-      ] },
     { t: "exercise", kind: "build", title: "Build ReAct and guard it",
       difficulty: "core", minutes: 34,
       body: "Build a ReAct agent with a scripted model whose first message carries both reasoning content and a tool call, and show the full message history. Report what the model received on each call and say where the reasoning lives. Design the state schema and say what does not belong in it. Then add a step budget to the router and a give-up node, run it against a model that never stops asking, and show that the graph returns a usable answer. Finally say what ReAct is good and bad at.",

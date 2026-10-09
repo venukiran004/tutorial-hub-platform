@@ -24,6 +24,12 @@ EC.receiveLesson({
       { t: "p", text: "Longer documents tend to produce larger-magnitude vectors in some models, so the practical effect is a quiet bias toward long documents. There is no error, and the symptom is retrieval quality that is slightly and inexplicably worse." }
     ] },
     { t: "h2", n: "03", id: "notrelevance", text: "Similarity is not relevance", sub: "Demonstrated, and the number is uncomfortable" },
+
+    {"kind": "steps", "title": "Similarity is not relevance", "caption": "They correlate and they are not the same thing. Against *“how do I reset my password”* an embedding ranks by surface resemblance — which is why a document that merely **talks about** passwords can outscore the one that tells you how to reset yours.", "items": [{"label": "the query is embedded", "desc": "one vector, ~104 ms — a fixed cost per query (7.9)", "tone": "accent", "code": "bi-encoder"}, {"label": "cosine against every document", "desc": "no cleverness inside it — 6.2 reproduces the ranking by hand", "tone": "good", "code": "a dot product"}, {"label": "the top k come back", "desc": "always k of them, however irrelevant — which is why 7.1 exists", "tone": "warn", "code": "no “no”"}, {"label": "and the order is by RESEMBLANCE", "desc": "so vocabulary mismatch and topical drift both rank high", "tone": "crit", "code": "the gap"}], "t": "diagram", "id": "dg-5_4-03-0"},
+
+
+
+
     { t: "code", lang: "text", title: "Four pairs against the same query",
       code: 'pair                                           cosine\nhow do I reset my pass / credential recovery   0.3449\nhow do I reset my pass / how do I change my p  0.8768\nhow do I reset my pass / how do I reset my ro  0.5330\nhow do I reset my pass / the weather in Berli  -0.0018',
       caption: "Row 3 \u2014 \u201creset my router\u201d \u2014 outscores row 1, which is the genuinely relevant text." },
@@ -38,14 +44,6 @@ EC.receiveLesson({
       { t: "p", text: "The model used throughout this course is symmetric, so calling the wrong method changes nothing here. That is precisely why it is worth stating before you swap models \u2014 the bug is invisible in development on a symmetric model and appears as unexplained quality loss after a migration." },
       { t: "p", text: "The guard is one assertion: the query path and the index path must use the matching methods of the same model instance. It rules out a failure that is otherwise only findable by suspecting it." }
     ] },
-    { t: "diagram", kind: "steps", title: "Similarity is not relevance",
-      caption: "They correlate and they are not the same thing. Against *“how do I reset my password”* an embedding ranks by surface resemblance — which is why a document that merely **talks about** passwords can outscore the one that tells you how to reset yours.",
-      items: [
-        { label: "the query is embedded", desc: "one vector, ~104 ms — a fixed cost per query (7.9)", tone: "accent", code: "bi-encoder" },
-        { label: "cosine against every document", desc: "no cleverness inside it — 6.2 reproduces the ranking by hand", tone: "good", code: "a dot product" },
-        { label: "the top k come back", desc: "always k of them, however irrelevant — which is why 7.1 exists", tone: "warn", code: "no “no”" },
-        { label: "and the order is by RESEMBLANCE", desc: "so vocabulary mismatch and topical drift both rank high", tone: "crit", code: "the gap" }
-      ] },
     { t: "exercise", kind: "analysis", title: "Show that similarity is not relevance",
       difficulty: "core", minutes: 24,
       body: "Encode a query and report the vector's dimension and norm. Compute cosine similarity by hand and confirm it equals the dot product for normalised vectors. Then score four pairs against one query, including a genuinely relevant text with no shared vocabulary and an irrelevant text with high lexical overlap, and report what that shows. Finally, explain the two-method embedding interface and the failure it prevents.",

@@ -13,6 +13,12 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "why", text: "Why 13.3 is not enough", sub: "Linear, not constant" },
     { t: "p", text: "A flat summary grows with the conversation: summarise every 8 turns and a 200-turn conversation carries 25 summaries. Smaller than the history, still **linear** \u2014 so it postpones the problem by a constant factor rather than removing it." },
     { t: "h2", n: "02", id: "hier", text: "Hierarchical summarisation", sub: "Summaries of summaries" },
+
+    {"kind": "tree", "title": "Hierarchical summarisation, and where the loss compounds", "caption": "85 tokens of segment summaries became **46**, bounded by its prompt rather than its input — so the cost stops growing. But each level is lossy and level 2 can only keep what level 1 kept, so **the detail requirement belongs at level 1**.", "root": {"label": "level 2 — one summary", "sub": "46 tokens — 4 of 5 facts", "tone": "accent", "children": [{"label": "turns 1-4", "sub": "34 tok", "tone": "good", "edge": "summarised"}, {"label": "turns 5-8", "sub": "18 tok", "tone": "good"}, {"label": "turns 9-12", "sub": "16 tok", "tone": "good"}, {"label": "turns 13-16", "sub": "17 tok", "tone": "good"}]}, "t": "diagram", "id": "dg-13_4-02-0"},
+
+
+
+
     { t: "code", lang: "text", title: "Two levels",
       code: "level 1 -- four segment summaries:\n  34 tok  Turns 1-4: customer reported a duplicate charge on order O...\n  18 tok  Turns 5-8: payments team investigating; customer confirmed...\n  16 tok  Turns 9-12: reversal scheduled; customer asked about the t...\n  17 tok  Turns 13-16: customer asked whether the card would be char...\n  total: 85 tokens\n\nlevel 2 -- one summary of those four:\n  46 tokens\n  facts kept: ['order id', 'the amount', 'the card', 'the date']",
       caption: "85 tokens of summaries became 46 \u2014 and the cost stops growing." },
@@ -61,14 +67,6 @@ EC.receiveLesson({
       { t: "p", text: "Hierarchical **compresses** the past; retrieval **leaves it somewhere** and fetches it. So the question is whether this should outlive the conversation \u2014 a summary is in the thread, and a store of turns is not, and can be searched across threads." },
       { t: "p", text: "That is the same distinction as thread state versus a store, arriving from a different direction. Which is a sign it is the real axis rather than an implementation detail." }
     ] },
-    { t: "diagram", kind: "tree", title: "Hierarchical summarisation, and where the loss compounds",
-      caption: "85 tokens of segment summaries became **46**, bounded by its prompt rather than its input — so the cost stops growing. But each level is lossy and level 2 can only keep what level 1 kept, so **the detail requirement belongs at level 1**.",
-      root: { label: "level 2 — one summary", sub: "46 tokens — 4 of 5 facts", tone: "accent", children: [
-        { label: "turns 1-4", sub: "34 tok", tone: "good", edge: "summarised" },
-        { label: "turns 5-8", sub: "18 tok", tone: "good" },
-        { label: "turns 9-12", sub: "16 tok", tone: "good" },
-        { label: "turns 13-16", sub: "17 tok", tone: "good" }
-      ] } },
     { t: "exercise", kind: "build", title: "Scale context management indefinitely",
       difficulty: "advanced", minutes: 35,
       body: "Implement hierarchical summarisation: summarise segments of a conversation, then summarise those summaries, reporting token counts and facts kept at each level. Show that the loss compounds by running the same structure with a vague level-1 prompt. Then describe retrieval from history and list what it inherits from modules 5 to 7, including the objection that matters most. Say what retrieval is and is not good for, and rank all five strategies by how far they scale.",

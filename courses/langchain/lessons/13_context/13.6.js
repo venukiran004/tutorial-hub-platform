@@ -18,6 +18,12 @@ EC.receiveLesson({
       ["**swarm** needs whatever the handoff passed", "Which is a design decision rather than an accumulation (12.7)."]
     ] },
     { t: "h2", n: "02", id: "notinter", text: "So they are not interchangeable", sub: "And one row is surprising" },
+
+    {"kind": "matrix", "title": "The strategies are not interchangeable across patterns", "caption": "A sliding window on a ReAct agent is actively wrong: reasoning lives in `AIMessage` content and is **not** the bulky part, so the window evicts intent and keeps the JSON. Plan-and-execute has no context problem at all.", "cols": ["what it needs from context", "the wrong strategy"], "rows": ["ReAct", "plan-and-execute", "supervisor", "swarm"], "cells": [[{"text": "reasoning + results", "tone": "accent"}, {"text": "an aggressive window", "tone": "crit"}], [{"text": "the current step only", "tone": "good"}, {"text": "any — no history to manage", "tone": "good"}], [{"text": "worker OUTPUTS, not reasoning", "tone": "accent"}, {"text": "dropping worker messages", "tone": "crit"}], [{"text": "the handoff payload", "tone": "accent"}, {"text": "none — its risk is LOSS", "tone": "warn"}]], "t": "diagram", "id": "dg-13_6-02-0"},
+
+
+
+
     { t: "table", head: ["pattern", "what it needs", "wrong strategy"], rows: [
       ["ReAct", "reasoning + results", "**an aggressive window**, or a vague summary"],
       ["plan-and-execute", "the current step", "any \u2014 **it has no history to manage**"],
@@ -53,16 +59,6 @@ EC.receiveLesson({
       { t: "p", text: "13.3 measured a sliding window destroying **all five facts** of a conversation while reporting a healthy token count. A token count cannot tell you that a strategy removed the subject of the conversation, and no amount of tuning the window size finds it." },
       { t: "p", text: "So the fact-survival check is the one measurement this module insists on, and it is three lines of code. Everything else here \u2014 the triggers, the hierarchy, the compression ordering \u2014 is a choice you can revisit. This is the check that tells you whether the choice was wrong." }
     ] },
-    { t: "diagram", kind: "matrix", title: "The strategies are not interchangeable across patterns",
-      caption: "A sliding window on a ReAct agent is actively wrong: reasoning lives in `AIMessage` content and is **not** the bulky part, so the window evicts intent and keeps the JSON. Plan-and-execute has no context problem at all.",
-      cols: ["what it needs from context", "the wrong strategy"],
-      rows: ["ReAct", "plan-and-execute", "supervisor", "swarm"],
-      cells: [
-        [{ text: "reasoning + results", tone: "accent" }, { text: "an aggressive window", tone: "crit" }],
-        [{ text: "the current step only", tone: "good" }, { text: "any — no history to manage", tone: "good" }],
-        [{ text: "worker OUTPUTS, not reasoning", tone: "accent" }, { text: "dropping worker messages", tone: "crit" }],
-        [{ text: "the handoff payload", tone: "accent" }, { text: "none — its risk is LOSS", tone: "warn" }]
-      ] },
     { t: "exercise", kind: "analysis", title: "Match the strategy to the pattern",
       difficulty: "advanced", minutes: 30,
       body: "State what each of the four agent patterns needs from context and which strategy would be wrong for it. Identify the one combination that is actively harmful and explain the mechanism and the symptom. Explain why one pattern has no context problem at all and where that property comes from. Give a per-pattern recommendation, including which field is load-bearing for a supervisor. Finally state the one measurement that applies regardless of pattern or strategy.",

@@ -20,6 +20,12 @@ EC.receiveLesson({
       { t: "p", text: "`abatch` also returns results in input order without zipping them back against the inputs, and it carries callbacks and config through to each call, which `gather` over bare `ainvoke` calls does only if you pass the config to every one." }
     ] },
     { t: "h2", n: "02", id: "trap", text: "The loop that looks concurrent", sub: "The same trap as 1.2, with a keyword in front of it" },
+
+    {"kind": "timeline", "title": "Awaiting in a loop is serial", "caption": "The same trap as batching, wearing a different keyword. `for i in ...: await chain.ainvoke(...)` awaits each call before starting the next, so four 100 ms calls took **0.407 s**. `asyncio.gather` overlaps them and the cost becomes the maximum rather than the sum.", "span": 420, "tick": 100, "unit": "milliseconds", "lanes": [{"label": "await in a loop", "bars": [[0, 100, "1", "warn"], [100, 200, "2", "warn"], [200, 300, "3", "warn"], [300, 407, "4", "crit"]]}, {"label": "asyncio.gather", "bars": [[0, 103, "all four, concurrently", "good"]]}], "t": "diagram", "id": "dg-2_8-02-0"},
+
+
+
+
     { t: "code", lang: "python", title: "Async and serial",
       code: 'for i in range(4):\n    await chain.ainvoke({"q": str(i)})       # serial\n\nawait chain.abatch([{"q": str(i)} for i in range(4)])   # concurrent',
       out: "for i in ...: await chain.ainvoke(...)   0.407 s\nawait chain.abatch([...])                0.106 s\n3.8x",
@@ -46,14 +52,6 @@ EC.receiveLesson({
       ["one call in a script", "no \u2014 `invoke` is simpler and identical in speed"]
     ] },
     { t: "p", text: "The honest summary is that the sync API is already concurrent where it matters: `batch` uses a thread pool and `RunnableParallel` runs branches in parallel. Async matters most when **something else** needs the thread \u2014 a server handling other requests while this one waits on a model." },
-    { t: "diagram", kind: "timeline", title: "Awaiting in a loop is serial",
-      caption: "The same trap as batching, wearing a different keyword. `for i in ...: await chain.ainvoke(...)` awaits each call before starting the next, so four 100 ms calls took **0.407 s**. `asyncio.gather` overlaps them and the cost becomes the maximum rather than the sum.",
-      span: 420, tick: 100, unit: "milliseconds",
-      lanes: [
-        { label: "await in a loop", bars: [[0, 100, "1", "warn"], [100, 200, "2", "warn"],
-                                           [200, 300, "3", "warn"], [300, 407, "4", "crit"]] },
-        { label: "asyncio.gather", bars: [[0, 103, "all four, concurrently", "good"]] }
-      ] },
     { t: "exercise", kind: "analysis", title: "Measure the async trap",
       difficulty: "core", minutes: 24,
       body: "Time ainvoke on one input, abatch on six, and asyncio.gather on the same six. Then time an await inside a loop against abatch on the same inputs and report the ratio. Finally, run abatch at four concurrency limits and show that the timings match the wave structure.",

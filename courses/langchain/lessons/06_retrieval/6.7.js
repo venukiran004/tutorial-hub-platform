@@ -36,6 +36,12 @@ EC.receiveLesson({
       { t: "p", text: "The reason is that a cross-encoder is also a surface-similarity model, just a better-calibrated one. The relevant document says *\u201cCredential recovery \u2026 signed recovery link\u201d* and the query says *\u201cforgot my password\u201d* \u2014 5.4's vocabulary mismatch. The cross-encoder reads that mismatch too, and because it is **confident** it overrules a dense ranking that happened to be right. Better calibration is not the same as better judgement." }
     ] },
     { t: "h2", n: "04", id: "summary", text: "What reranking can and cannot do", sub: "Three statements" },
+
+    {"kind": "matrix", "title": "Reranking is not monotonic", "caption": "It does exactly what it promises on the case it exists for: `Retry-After`’s document sat at candidate rank **11**, outside the top five, and the cross-encoder moved it to **1**. But on another query it **demoted** the right answer from 1st to 3rd — at fetch 5, 20 and 41 alike, so fetching more does not fix it.", "cols": ["dense rank", "after reranking"], "rows": ["Retry-After — the win", "auth-reset at fetch 5", "auth-reset at fetch 20", "auth-reset at fetch 41"], "cells": [[{"text": "11 — outside top 5", "tone": "crit"}, {"text": "1", "tone": "good"}], [{"text": "1", "tone": "good"}, {"text": "3 — demoted", "tone": "crit"}], [{"text": "1", "tone": "good"}, {"text": "3 — demoted", "tone": "crit"}], [{"text": "1", "tone": "good"}, {"text": "3 — demoted", "tone": "crit"}]], "t": "diagram", "id": "dg-6_7-04-0"},
+
+
+
+
     { t: "dl", items: [
       ["it can **promote** a document stage one misranked", "`Retry-After`: candidate rank 11 \u2192 1. This is why you buy it."],
       ["it can **demote** a document stage one got right", "`auth-reset`: rank 1 \u2192 3, at every depth. This is why you measure it per query class."],
@@ -50,16 +56,6 @@ EC.receiveLesson({
       { t: "p", text: "Every fetch value leaves natural MRR below the 0.964 that dense alone achieved. So the fix for that regression is **not** a bigger candidate set \u2014 it is not reranking those queries at all." },
       { t: "p", text: "Which makes reranking a routing decision rather than a pipeline stage, the same conclusion 6.5 reached about fusion from a different direction. Both techniques help one query class and harm another, and in both cases the remedy is to decide per query rather than to tune a parameter." }
     ] },
-    { t: "diagram", kind: "matrix", title: "Reranking is not monotonic",
-      caption: "It does exactly what it promises on the case it exists for: `Retry-After`’s document sat at candidate rank **11**, outside the top five, and the cross-encoder moved it to **1**. But on another query it **demoted** the right answer from 1st to 3rd — at fetch 5, 20 and 41 alike, so fetching more does not fix it.",
-      cols: ["dense rank", "after reranking"],
-      rows: ["Retry-After — the win", "auth-reset at fetch 5", "auth-reset at fetch 20", "auth-reset at fetch 41"],
-      cells: [
-        [{ text: "11 — outside top 5", tone: "crit" }, { text: "1", tone: "good" }],
-        [{ text: "1", tone: "good" }, { text: "3 — demoted", tone: "crit" }],
-        [{ text: "1", tone: "good" }, { text: "3 — demoted", tone: "crit" }],
-        [{ text: "1", tone: "good" }, { text: "3 — demoted", tone: "crit" }]
-      ] },
     { t: "exercise", kind: "build", title: "Rerank, then find what it broke",
       difficulty: "core", minutes: 32,
       body: "Rerank a candidate set with a real cross-encoder and show a query where the relevant document was promoted from outside the top five. Measure reranking against the baseline on both query classes separately. Then, per query, find every natural query whose relevant document changed rank and identify the demotions. For the clearest demotion, vary the candidate depth and explain the result. Finally sweep the candidate count against accuracy and latency.",

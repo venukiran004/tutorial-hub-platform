@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["7.2", "4.4"],
   blocks: [
     { t: "h2", n: "01", id: "budget", text: "The budget", sub: "And the reserve people forget" },
+
+    {"kind": "layers", "title": "The budget is arithmetic, and it discards by rank", "caption": "*“How many chunks fit”* is the wrong question. If only `n` chunks fit, **every chunk ranked below `n` is discarded no matter how relevant it is** — so the budget, not the retriever, sets the real k. And the reserve is not optional.", "items": [{"label": "the context window", "sub": "the hard limit — exceeding it fails the request", "tone": "accent", "side": "total"}, {"label": "reserve for the answer", "sub": "omit this and the failure is at GENERATION time", "tone": "crit", "side": "not optional"}, {"label": "the system prompt + instructions", "sub": "fixed per call", "tone": "teal", "side": "fixed"}, {"label": "the question", "sub": "paid once", "tone": "good", "side": "small"}, {"label": "= what is left for chunks", "sub": "and this number IS your k", "tone": "violet", "side": "the real k"}], "t": "diagram", "id": "dg-7_3-01-0"},
+
+
+
+
     { t: "code", lang: "text", title: "What fits, on this corpus",
       code: "corpus: 41 documents\ntokens per document: min 20  mean 31.1  max 46\n\nbudget   reserve   available   chunks that fit (at mean)\n4096     1000      3096        99\n8192     1000      7192        231\n32768    1000      31768       1020\n128000   1000      127000      4080",
       caption: "These are 158-character support documents. A corpus of PDF pages runs 500\u20131500 tokens each." },
@@ -46,15 +52,6 @@ EC.receiveLesson({
       ["forgetting per-message overhead", "A chat format adds tokens per message for roles and delimiters, which matters when the history is many short turns."],
       ["reserving nothing for the answer", "Fails at generation time, after the input tokens are paid for."]
     ] },
-    { t: "diagram", kind: "layers", title: "The budget is arithmetic, and it discards by rank",
-      caption: "*“How many chunks fit”* is the wrong question. If only `n` chunks fit, **every chunk ranked below `n` is discarded no matter how relevant it is** — so the budget, not the retriever, sets the real k. And the reserve is not optional.",
-      items: [
-        { label: "the context window", sub: "the hard limit — exceeding it fails the request", tone: "accent", side: "total" },
-        { label: "reserve for the answer", sub: "omit this and the failure is at GENERATION time", tone: "crit", side: "not optional" },
-        { label: "the system prompt + instructions", sub: "fixed per call", tone: "teal", side: "fixed" },
-        { label: "the question", sub: "paid once", tone: "good", side: "small" },
-        { label: "= what is left for chunks", sub: "and this number IS your k", tone: "violet", side: "the real k" }
-      ] },
     { t: "exercise", kind: "analysis", title: "Budget a context window",
       difficulty: "core", minutes: 30,
       body: "Measure the token length distribution of your corpus and compute how many chunks fit in several context budgets, reserving space for the output. Then show that the budget sets an effective k by measuring recall at each value. Explain what that implies for reranking under a tight budget. Construct an ordering that places the weakest documents in the middle. Finally compare a character-based token estimate against a real count.",

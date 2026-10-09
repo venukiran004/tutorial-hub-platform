@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["1.6"],
   blocks: [
     { t: "h2", n: "01", id: "two", text: "Two stages", sub: "And the order is forced" },
+
+    {"kind": "flow", "title": "Cast wide cheaply, then narrow expensively", "cols": 4, "caption": "The order is not a preference. **Precision can only remove**, so a document stage one did not return cannot be recovered by stage two — which makes recall at the first stage the ceiling on everything after it.", "nodes": [{"id": "a", "label": "the corpus", "sub": "41 documents", "tone": "accent"}, {"id": "b", "label": "cast wide", "sub": "fetch 20 — cheap, high recall", "tone": "good"}, {"id": "c", "label": "narrow", "sub": "rerank — expensive, high precision", "tone": "warn"}, {"id": "d", "label": "the context", "sub": "top 5 — what the model sees", "tone": "violet"}], "edges": [["a", "b", "recall"], ["b", "c", "precision"], ["c", "d"]], "t": "diagram", "id": "dg-5_1-01-0"},
+
+
+
+
     { t: "table", head: ["Stage", "Goal", "Cost"], rows: [
       ["recall", "cast wide; miss nothing you need", "cheap, over everything"],
       ["precision", "narrow and order what you kept", "expensive, over few"]
@@ -31,15 +37,6 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "cost", text: "The cost ratio", sub: "Which is what forces the split" },
     { t: "p", text: "Dense retrieval over the whole corpus took a few milliseconds per query. A cross-encoder scores a **query-document pair** rather than embedding documents once, so it costs roughly a hundred times more per document scored \u2014 6.1 measures it." },
     { t: "p", text: "That ratio is the entire argument. You cannot afford the expensive model over every document, and you cannot trust the cheap model's ordering. So: cheap over everything to build a candidate set, expensive over the candidates to order them." },
-    { t: "diagram", kind: "flow", title: "Cast wide cheaply, then narrow expensively", cols: 4,
-      caption: "The order is not a preference. **Precision can only remove**, so a document stage one did not return cannot be recovered by stage two — which makes recall at the first stage the ceiling on everything after it.",
-      nodes: [
-        { id: "a", label: "the corpus", sub: "41 documents", tone: "accent" },
-        { id: "b", label: "cast wide", sub: "fetch 20 — cheap, high recall", tone: "good" },
-        { id: "c", label: "narrow", sub: "rerank — expensive, high precision", tone: "warn" },
-        { id: "d", label: "the context", sub: "top 5 — what the model sees", tone: "violet" }
-      ],
-      edges: [["a", "b", "recall"], ["b", "c", "precision"], ["c", "d"]] },
     { t: "exercise", kind: "analysis", title: "Measure the recall curve",
       difficulty: "core", minutes: 22,
       body: "Run dense retrieval over the corpus at several values of k and record recall at each. Identify where recall stops improving and explain what the extra candidates are for beyond that point. Then time stage one per query and state why the two-stage design is forced.",

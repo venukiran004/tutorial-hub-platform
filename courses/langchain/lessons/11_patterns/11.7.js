@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["7.1", "7.2", "11.2"],
   blocks: [
     { t: "h2", n: "01", id: "decision", text: "Retrieval as a decision", sub: "Four outcomes" },
+
+    {"kind": "tree", "title": "Retrieval as a decision with four outcomes", "caption": "Module 5's baseline retrieves once and generates. Run against the real corpus, **all three interesting paths are visible** — which is what makes this pattern worth its extra calls, and also what makes it hard to evaluate.", "root": {"label": "the question arrives", "sub": "retrieve at all?", "tone": "accent", "children": [{"label": "answer directly", "sub": "no retrieval needed", "tone": "good", "edge": "no"}, {"label": "retrieve, then answer", "sub": "the baseline path", "tone": "good", "edge": "yes"}, {"label": "retrieve, reject, re-query", "sub": "the grading loop", "tone": "warn", "edge": "not relevant"}, {"label": "say I do not know", "sub": "the 7.1 guard, as a decision", "tone": "crit", "edge": "nothing found"}]}, "t": "diagram", "id": "dg-11_7-01-0"},
+
+
+
+
     { t: "dl", items: [
       ["the documents are good", "\u2192 generate"],
       ["the documents are off-topic", "\u2192 rewrite the query, retrieve again (7.2)"],
@@ -48,14 +54,6 @@ EC.receiveLesson({
       { t: "p", text: "Use the score threshold as the first grader \u2014 it is free and 7.1 measured it at AUC 0.943 \u2014 and escalate to a model call only when the cheap grader says the retrieval was weak." },
       { t: "p", text: "That is 7.2's conclusion \u2014 retrieve first, transform only on failure \u2014 expressed as a graph, and it is what makes the pattern affordable. A corrective loop that grades expensively on every query has spent its budget on the queries that did not need it." }
     ] },
-    { t: "diagram", kind: "tree", title: "Retrieval as a decision with four outcomes",
-      caption: "Module 5's baseline retrieves once and generates. Run against the real corpus, **all three interesting paths are visible** — which is what makes this pattern worth its extra calls, and also what makes it hard to evaluate.",
-      root: { label: "the question arrives", sub: "retrieve at all?", tone: "accent", children: [
-        { label: "answer directly", sub: "no retrieval needed", tone: "good", edge: "no" },
-        { label: "retrieve, then answer", sub: "the baseline path", tone: "good", edge: "yes" },
-        { label: "retrieve, reject, re-query", sub: "the grading loop", tone: "warn", edge: "not relevant" },
-        { label: "say I do not know", sub: "the 7.1 guard, as a decision", tone: "crit", edge: "nothing found" }
-      ] } },
     { t: "exercise", kind: "build", title: "Build corrective RAG",
       difficulty: "advanced", minutes: 34,
       body: "Build a graph where retrieval is followed by a grading node that routes to generate, rewrite-and-retry, or give up. Use a score threshold as the grader and a real corpus. Run it on a query the baseline handles, a query that needs a rewrite, and a query the corpus cannot answer, and trace all three. Then compare the three kinds of grader and what each inherits from module 7. Finally say how to gate the expensive grading.",

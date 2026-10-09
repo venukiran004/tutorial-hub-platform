@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["2.8"],
   blocks: [
     { t: "h2", n: "01", id: "empty", text: "The bucket starts empty", sub: "A prediction, and a measurement that disagreed" },
+
+    {"kind": "matrix", "title": "Two token-bucket behaviours you would not guess", "caption": "Ten acquisitions at five per second took **2.01 s**, not the 1.0 s a full bucket predicts — because the bucket starts **empty**. And varying `max_bucket_size` made no difference at a steady rate, because burst capacity only matters if there is a burst.", "cols": ["expected", "measured"], "rows": ["10 acquisitions at 5/sec", "raising max_bucket_size", "the first acquisition"], "cells": [[{"text": "1.0 s — a full bucket", "tone": "warn"}, {"text": "2.01 s", "tone": "crit"}], [{"text": "faster bursts", "tone": "warn"}, {"text": "no difference at a steady rate", "tone": "crit"}], [{"text": "immediate", "tone": "warn"}, {"text": "waits — the bucket starts empty", "tone": "crit"}]], "t": "diagram", "id": "dg-4_5-01-0"},
+
+
+
+
     { t: "code", lang: "text", title: "Ten acquisitions at five per second",
       code: 'elapsed: 2.01 s\n\nI predicted ~1.0 s: five instant from a full bucket, then five more\nat 0.2 s each. the measurement says 2.01 s, which is 10 / 5 -- so\nEVERY acquisition waited for a token.',
       caption: "10 / 5 exactly. No request was free." },
@@ -42,15 +48,6 @@ EC.receiveLesson({
       { t: "p", text: "A constant in the source is wrong the first time someone changes the replica count, and nothing connects the two. The limit belongs in configuration derived from the deployment's worker count, so scaling up does not silently multiply your request rate." },
       { t: "p", text: "At real scale the correct answer is a shared limiter backed by something like Redis, so the budget is global rather than per-process. The in-memory one is right for a single worker or a batch job, and it is worth being clear which situation you are in." }
     ] },
-    { t: "diagram", kind: "matrix", title: "Two token-bucket behaviours you would not guess",
-      caption: "Ten acquisitions at five per second took **2.01 s**, not the 1.0 s a full bucket predicts — because the bucket starts **empty**. And varying `max_bucket_size` made no difference at a steady rate, because burst capacity only matters if there is a burst.",
-      cols: ["expected", "measured"],
-      rows: ["10 acquisitions at 5/sec", "raising max_bucket_size", "the first acquisition"],
-      cells: [
-        [{ text: "1.0 s — a full bucket", tone: "warn" }, { text: "2.01 s", tone: "crit" }],
-        [{ text: "faster bursts", tone: "warn" }, { text: "no difference at a steady rate", tone: "crit" }],
-        [{ text: "immediate", tone: "warn" }, { text: "waits — the bucket starts empty", tone: "crit" }]
-      ] },
     { t: "exercise", kind: "analysis", title: "Measure a token bucket, including the part that surprises you",
       difficulty: "advanced", minutes: 26,
       body: "Time ten acquisitions against a limiter and compare the result with what a full bucket would predict. Then try to demonstrate the burst allowance by varying max_bucket_size, notice that it makes no difference, find out why from the implementation, and measure it correctly. Finally, tabulate client-side limiting against handling 429s, and work out what the per-process scope means for configuration.",

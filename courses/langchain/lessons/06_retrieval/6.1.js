@@ -11,6 +11,7 @@ EC.receiveLesson({
   prerequisites: ["5.4", "5.1"],
   blocks: [
     { t: "h2", n: "01", id: "arch", text: "The architectural difference", sub: "And what follows from it" },
+
     { t: "table", head: ["", "Bi-encoder", "Cross-encoder"], rows: [
       ["computes", "`embed(doc)`, `embed(query)` separately", "`score(query, doc)` jointly"],
       ["precomputable", "yes \u2014 documents embedded once", "**no** \u2014 nothing to cache"],
@@ -19,6 +20,10 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "The accuracy difference has the same cause as the cost difference. A bi-encoder must compress a document into a vector *without knowing the query*, so the comparison happens between two summaries. A cross-encoder reads both together and can attend from one to the other \u2014 which is why it is better, and why there is nothing to store." },
     { t: "h2", n: "02", id: "cost", text: "Three costs, not one", sub: "Separating them is the whole measurement" },
+
+    {"kind": "matrix", "title": "Separate the one-off, the per-query and the per-document cost", "caption": "End-to-end timing gave only 29×, because the dense query is dominated by **104 ms of query encoding** — a fixed cost paid once per query. Separating the three kinds of cost gives the honest number: **37,088× per document**.", "cols": ["bi-encoder", "cross-encoder"], "rows": ["cost per document, once", "cost per query", "cost per candidate document", "so it can run over"], "cells": [[{"text": "embed once, reuse forever", "tone": "good"}, {"text": "nothing to precompute", "tone": "crit"}], [{"text": "~104 ms encoding — fixed", "tone": "warn"}, {"text": "none", "tone": "good"}], [{"text": "a dot product", "tone": "good"}, {"text": "37,088x more", "tone": "crit"}], [{"text": "the whole corpus", "tone": "good"}, {"text": "a shortlist only", "tone": "warn"}]], "t": "diagram", "id": "dg-6_1-02-0"},
+
+
     { t: "code", lang: "text", title: "Measured on this machine, 41 documents",
       code: "ONE-OFF, reused by every query afterwards\n  embedding all 41  documents            2915.8 ms\n\nPER QUERY, fixed -- paid once whatever the corpus size\n  encoding the query                     104.5 ms\n\nPER QUERY, scales with documents scored\n  vector search over 41  precomputed     0.082 ms   (0.00200 ms/doc)\n  cross-encoding 20  candidates         1362.1 ms   (68.10 ms/doc)\n  cross-encoding all 41  documents      3036.8 ms   (74.07 ms/doc)",
       caption: "CPU timings, illustrative in absolute terms. The **ratio** is the durable result." },
@@ -47,16 +52,6 @@ EC.receiveLesson({
       { t: "p", text: "Nothing here is bounded to [0, 1], most values are strongly negative, and the top score for one well-answered question sits 7.7 points below the top score for another. A cross-encoder score is a **within-query ranking signal**, not a cross-query confidence." },
       { t: "p", text: "Any threshold picked from these numbers \u2014 \u201creject anything below zero\u201d \u2014 would discard a correct answer for the second question while accepting the first. 7.1 needs either per-query calibration or a relative signal such as the gap between rank 1 and rank 2, which this lesson shows is the more informative quantity anyway." }
     ] },
-    { t: "diagram", kind: "matrix", title: "Separate the one-off, the per-query and the per-document cost",
-      caption: "End-to-end timing gave only 29×, because the dense query is dominated by **104 ms of query encoding** — a fixed cost paid once per query. Separating the three kinds of cost gives the honest number: **37,088× per document**.",
-      cols: ["bi-encoder", "cross-encoder"],
-      rows: ["cost per document, once", "cost per query", "cost per candidate document", "so it can run over"],
-      cells: [
-        [{ text: "embed once, reuse forever", tone: "good" }, { text: "nothing to precompute", tone: "crit" }],
-        [{ text: "~104 ms encoding — fixed", tone: "warn" }, { text: "none", tone: "good" }],
-        [{ text: "a dot product", tone: "good" }, { text: "37,088x more", tone: "crit" }],
-        [{ text: "the whole corpus", tone: "good" }, { text: "a shortlist only", tone: "warn" }]
-      ] },
     { t: "exercise", kind: "analysis", title: "Measure the cost ratio honestly",
       difficulty: "core", minutes: 30,
       body: "Time the bi-encoder index build, the per-query query encoding, the vector search and cross-encoder scoring at two candidate counts. Separate the one-off, fixed-per-query and per-document costs, and compute the ratio that matters. Then score one query against the whole corpus with the cross-encoder, report the score distribution, and compare the top score against a second well-answered query.",

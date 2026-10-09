@@ -11,6 +11,7 @@ EC.receiveLesson({
   prerequisites: ["5.4", "1.6"],
   blocks: [
     { t: "h2", n: "01", id: "exact", text: "Exact search first", sub: "Because it is correct and usually enough" },
+
     { t: "code", lang: "python", title: "An exact index over the corpus",
       code: 'import faiss\n\nindex = faiss.IndexFlatIP(EMB.shape[1])   # inner product; vectors are normalised\nindex.add(EMB)\n\nD, I = index.search(v.reshape(1, -1), 5)',
       out: "  IndexFlatIP over 41 vectors of dim 384\n    1. data-retention     0.4429\n    2. data-deletion      0.4111\n    3. auth-session       0.3701\n    4. ops-backup         0.3654\n    5. data-audit         0.3571",
@@ -27,6 +28,10 @@ EC.receiveLesson({
       { t: "p", text: "It is still often the right trade, because at ten million vectors exact search is not available at any price. The point is to make it knowingly, and to notice that at 41 documents \u2014 or 41,000 \u2014 you are accepting a correctness cost to solve a performance problem you do not have." }
     ] },
     { t: "h2", n: "03", id: "filter", text: "The filter that matters more than the index", sub: "Measured, and the result is a leak" },
+
+    {"kind": "compare", "title": "A vector store does two jobs, and the attention goes to the wrong one", "caption": "The index is a performance decision that does not matter below a few hundred thousand vectors. The metadata filter is a **correctness** decision that matters from the first document — and 7.5 measures what it costs to get the order wrong.", "columns": [{"title": "the index — over-discussed", "tone": "warn", "items": ["exact or approximate; flat, IVF or HNSW", "a latency and memory trade", "irrelevant below a few hundred thousand vectors", "easy to change later: re-index and measure"]}, {"title": "the metadata filter — under-discussed", "tone": "crit", "items": ["which documents this user may see at all", "a correctness and security decision", "matters from the very first document", "must run BEFORE similarity, not after (7.5)"]}], "t": "diagram", "id": "dg-5_5-03-0"},
+
+
     { t: "code", lang: "text", title: "One query, with and without a filter",
       code: "the corpus contains 3 restricted documents:\n  int-salary     Internal only. Engineering salary bands for the\n  int-incident   Internal only. Post-incident review for the Apri\n  int-roadmap    Internal only. Unannounced roadmap items for the\n\nquery: 'what are the engineering salary bands'\n  unfiltered search returns : ['int-salary', 'ops-sla', 'data-export']\n  filtered to public        : ['ops-sla', 'data-export', 'auth-mfa']",
       caption: "`int-salary` is the top unfiltered result \u2014 because it is genuinely the best answer." },
@@ -35,20 +40,6 @@ EC.receiveLesson({
       { t: "p", text: "A metadata filter answers the permission question **before retrieval runs**, so the document never enters the candidate set. A prompt instruction answers it after the text is already in the context window \u2014 which is 1.6's distinction between a structural guarantee and a polite request, and 7.6 shows what an injection does to the request." }
     ] },
     { t: "p", text: "The filter is also the only place this can live. The embedding knows nothing about permissions; the index knows nothing about who is asking. The metadata captured in 5.2 is the entire mechanism, which is why that lesson insisted on capturing visibility even before anyone had a filter in mind." },
-    { t: "diagram", kind: "compare", title: "A vector store does two jobs, and the attention goes to the wrong one",
-      caption: "The index is a performance decision that does not matter below a few hundred thousand vectors. The metadata filter is a **correctness** decision that matters from the first document — and 7.5 measures what it costs to get the order wrong.",
-      columns: [
-        { title: "the index — over-discussed", tone: "warn", items: [
-          "exact or approximate; flat, IVF or HNSW",
-          "a latency and memory trade",
-          "irrelevant below a few hundred thousand vectors",
-          "easy to change later: re-index and measure" ] },
-        { title: "the metadata filter — under-discussed", tone: "crit", items: [
-          "which documents this user may see at all",
-          "a correctness and security decision",
-          "matters from the very first document",
-          "must run BEFORE similarity, not after (7.5)" ] }
-      ] },
     { t: "exercise", kind: "build", title: "Index, then filter",
       difficulty: "core", minutes: 26,
       body: "Build an exact FAISS index over the corpus embeddings and show what it returns for a query. Tabulate exact against approximate index types with what each trades. Then query for something only a restricted document answers, with and without a metadata filter, and report what the unfiltered search returns.",

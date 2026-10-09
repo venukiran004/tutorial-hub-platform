@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["8.7", "8.8"],
   blocks: [
     { t: "h2", n: "01", id: "compile", text: "What compile() checks", sub: "Topology only" },
+
+    {"kind": "matrix", "title": "compile() checks the topology and nothing else", "caption": "It insists on an edge from `START` and rejects an edge pointing at a name that does not exist. It happily compiles a node with **no path to `END`** — and the recursion limit that would eventually stop that run defaults to **10007** supersteps, measured.", "cols": ["compile()", "run time"], "rows": ["no edge from START", "an edge to a missing node", "a node with no path to END", "no nodes at all"], "cells": [[{"text": "RAISES", "tone": "good"}, "—"], [{"text": "RAISES", "tone": "good"}, "—"], [{"text": "compiles fine", "tone": "crit"}, {"text": "10007 supersteps, then raises", "tone": "crit"}], [{"text": "compiles fine", "tone": "crit"}, {"text": "returns the input", "tone": "warn"}]], "t": "diagram", "id": "dg-8_9-01-0"},
+
+
+
+
     { t: "code", lang: "text", title: "Four malformed graphs",
       code: "a node with no edge from START         RAISED ValueError: Graph must have an\n                                       entrypoint: add at least one edge\n                                       from START to another node\na node with no edge to END             compiled\nan edge to a node that does not exist  RAISED ValueError: Found edge ending\n                                       at unknown node `nonexistent`\na graph with no nodes at all           compiled",
       caption: "Two structural facts it can see; two it does not care about." },
@@ -47,16 +53,6 @@ EC.receiveLesson({
       { t: "p", text: "The drawing shows a node you wired up and forgot to connect to `END`, and a branch that is unreachable because a router never returns its key \u2014 both of which compile cleanly. It is the fastest way into an unfamiliar graph." },
       { t: "p", text: "8.8's caveat applies: destinations set by `Command` do not appear unless the node is annotated with its possible targets. So a graph that draws as disconnected nodes is usually not broken \u2014 it is routing through `Command` without annotations." }
     ] },
-    { t: "diagram", kind: "matrix", title: "compile() checks the topology and nothing else",
-      caption: "It insists on an edge from `START` and rejects an edge pointing at a name that does not exist. It happily compiles a node with **no path to `END`** — and the recursion limit that would eventually stop that run defaults to **10007** supersteps, measured.",
-      cols: ["compile()", "run time"],
-      rows: ["no edge from START", "an edge to a missing node", "a node with no path to END", "no nodes at all"],
-      cells: [
-        [{ text: "RAISES", tone: "good" }, "—"],
-        [{ text: "RAISES", tone: "good" }, "—"],
-        [{ text: "compiles fine", tone: "crit" }, { text: "10007 supersteps, then raises", tone: "crit" }],
-        [{ text: "compiles fine", tone: "crit" }, { text: "returns the input", tone: "warn" }]
-      ] },
     { t: "exercise", kind: "build", title: "Find out what compile checks, and what the limit really is",
       difficulty: "core", minutes: 28,
       body: "Try to compile four malformed graphs and record which ones are rejected. Then build an unconditional cycle and measure the recursion limit rather than assuming it, including how many supersteps actually executed. Explain why the limit is a backstop rather than a loop condition. Compare invoke against both stream modes on the same graph and say what each is for. Finally draw a graph and say what the drawing catches that compile does not.",

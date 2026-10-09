@@ -18,6 +18,12 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "nine", text: "Nine outputs, five parses",
       sub: "What actually arrives from a model" },
 
+    {"kind": "matrix", "title": "Nine outputs, and the two surprises", "caption": "Five parsed and four raised. Prose **before** the JSON fails and prose **after** it succeeds — so a preamble breaks the chain and a sign-off does not. And truncation does not raise: `“rating”: 8.` becomes `8`, a different value, silently.", "cols": ["JsonOutputParser", "what you get"], "rows": ["clean JSON", "prose BEFORE the JSON", "prose AFTER the JSON", "fenced in ```json", "truncated mid-number"], "cells": [[{"text": "parses", "tone": "good"}, "the right value"], [{"text": "RAISES", "tone": "crit"}, "a preamble breaks it"], [{"text": "parses", "tone": "good"}, {"text": "a sign-off does not", "tone": "warn"}], [{"text": "parses", "tone": "good"}, "the fence is stripped"], [{"text": "parses", "tone": "crit"}, {"text": "8 instead of 8.4 — SILENT", "tone": "crit"}]], "t": "diagram", "id": "dg-1_4-01-0"},
+
+
+
+
+
     { t: "p", text: "A parser's job is to survive what a model really produces, which is rarely the clean JSON the prompt asked for. Here are nine outputs that all occur in practice." },
 
     { t: "code", lang: "text", title: "JsonOutputParser on realistic output",
@@ -96,18 +102,6 @@ EC.receiveLesson({
         { t: "p", text: "A rising repair rate is one of the better early-warning signals available, because it moves before accuracy does: the model's output shape drifts before its answers get worse. 4.1 builds the callback that counts it." }
       ] },
 
-    { t: "diagram", kind: "matrix", title: "Nine outputs, and the two surprises",
-      caption: "Five parsed and four raised. Prose **before** the JSON fails and prose **after** it succeeds — so a preamble breaks the chain and a sign-off does not. And truncation does not raise: `“rating”: 8.` becomes `8`, a different value, silently.",
-      cols: ["JsonOutputParser", "what you get"],
-      rows: ["clean JSON", "prose BEFORE the JSON", "prose AFTER the JSON",
-             "fenced in ```json", "truncated mid-number"],
-      cells: [
-        [{ text: "parses", tone: "good" }, "the right value"],
-        [{ text: "RAISES", tone: "crit" }, "a preamble breaks it"],
-        [{ text: "parses", tone: "good" }, { text: "a sign-off does not", tone: "warn" }],
-        [{ text: "parses", tone: "good" }, "the fence is stripped"],
-        [{ text: "parses", tone: "crit" }, { text: "8 instead of 8.4 — SILENT", tone: "crit" }]
-      ] },
     { t: "exercise", kind: "analysis", title: "Find the parse that lies",
       difficulty: "core", minutes: 26,
       body: "Run nine realistic model outputs through JsonOutputParser and record which parse and which raise. Investigate the two surprising results: the asymmetry between leading and trailing prose, and the case that succeeds with wrong data. Then show what a comma-separated list parser does with bulleted input, read the format instructions the parser injects, and price the recovery parsers against a failure rate.",

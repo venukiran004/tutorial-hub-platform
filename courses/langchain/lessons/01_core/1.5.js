@@ -18,6 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "happy", text: "The schema becomes a tool",
       sub: "Which is why there is nothing to parse" },
 
+
     { t: "p", text: "`with_structured_output` does not ask the model for JSON and then parse it. It binds your schema as a **tool definition**, the model emits a tool call, and the call's arguments are validated into your type. The model's text output is empty; the data arrives in a structured field that was never a string." },
 
     { t: "code", lang: "python", title: "A typed object back",
@@ -42,6 +43,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", id: "none", text: "The third outcome",
       sub: "The one nobody writes a branch for" },
+
+    {"kind": "tree", "title": "A structured-output call has three outcomes, not two", "caption": "The third is the one almost no code guards. When the model answers in prose instead of calling the tool it returns **`None`** — no exception, and `include_raw=True` reports `parsed=None` with `parsing_error=None`, because nothing failed to parse: nothing was offered to the parser.", "root": {"label": "with_structured_output(Schema)", "sub": "the schema is bound as a tool", "tone": "accent", "children": [{"label": "valid arguments", "sub": "Pydantic validates → your object", "tone": "good", "edge": "the model calls the tool"}, {"label": "ValidationError", "sub": "a rating of 48.8 raises", "tone": "warn", "edge": "out of range"}, {"label": "returns None", "sub": "no exception, no parsing_error", "tone": "crit", "edge": "answers in prose"}]}, "t": "diagram", "id": "dg-1_5-03-0"},
+
+
 
     { t: "p", text: "Everything above assumes the model called the tool. It may not. Models decline for ordinary reasons: the request was ambiguous, it decided a refusal was appropriate, the input did not contain a movie to review. When that happens, there is no tool call to read." },
 
@@ -104,13 +109,6 @@ EC.receiveLesson({
 
     { t: "p", text: "A `Literal` does two jobs from one declaration: it appears as an enum in the tool schema, so the model is **told** the allowed values, and it is enforced on the way back, so a model that invents a fourth category raises rather than widening your data. Writing \u201canswer positive, negative or neutral\u201d in the prompt does only the first job, and does it less reliably." },
 
-    { t: "diagram", kind: "tree", title: "A structured-output call has three outcomes, not two",
-      caption: "The third is the one almost no code guards. When the model answers in prose instead of calling the tool it returns **`None`** — no exception, and `include_raw=True` reports `parsed=None` with `parsing_error=None`, because nothing failed to parse: nothing was offered to the parser.",
-      root: { label: "with_structured_output(Schema)", sub: "the schema is bound as a tool", tone: "accent", children: [
-        { label: "valid arguments", sub: "Pydantic validates → your object", tone: "good", edge: "the model calls the tool" },
-        { label: "ValidationError", sub: "a rating of 48.8 raises", tone: "warn", edge: "out of range" },
-        { label: "returns None", sub: "no exception, no parsing_error", tone: "crit", edge: "answers in prose" }
-      ] } },
     { t: "exercise", kind: "build", title: "Find the third outcome",
       difficulty: "core", minutes: 28,
       body: "Build a Pydantic schema with a constrained numeric field and use it with structured output. Confirm the happy path returns a typed object. Then feed four malformed tool calls and confirm validation fires on each. Then make the model answer in prose instead of calling the tool, and report exactly what comes back — including what include_raw says about it. Finally, show a Literal field being communicated and enforced.",

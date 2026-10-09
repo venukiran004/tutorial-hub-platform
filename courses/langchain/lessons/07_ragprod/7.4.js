@@ -29,6 +29,12 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "So the component you would reach for does not do the job. A real faithfulness check needs a model trained on entailment, or a model prompted specifically to judge support with the document in front of it \u2014 and either way it is a model call, which brings the cost question." },
     { t: "h2", n: "03", id: "cost", text: "What a faithfulness check costs", sub: "Per claim, not per answer" },
+
+    {"kind": "matrix", "title": "One grounding check is certain, the rest are judgement", "caption": "Checking whether a cited id was actually retrieved costs a **regex** and catches a fabricated citation with **certainty**. Everything else — whether the claim is supported by the cited text — needs a model, and inherits that model's judgement.", "cols": ["cost", "certainty"], "rows": ["was the cited id retrieved?", "does it support the claim?", "is anything uncited?", "is the answer complete?"], "cells": [[{"text": "a regex", "tone": "good"}, {"text": "CERTAIN", "tone": "good"}], [{"text": "a model call", "tone": "warn"}, {"text": "judgement", "tone": "warn"}], [{"text": "a regex", "tone": "good"}, {"text": "certain, but noisy", "tone": "warn"}], [{"text": "a model call", "tone": "crit"}, {"text": "judgement, unreliable", "tone": "crit"}]], "t": "diagram", "id": "dg-7_4-03-0"},
+
+
+
+
     { t: "code", lang: "text", title: "A four-sentence answer",
       code: "- Retention defaults to 90 days\n- Enterprise tenants can configure between 30 and 730 days\n- Deletion requests complete within 30 days\n- Backups are retained separately for 35 days\n\nclaims to verify : 4\nat 1 call each   : 4x the generation cost of the answer itself",
       caption: "Checking at the answer level passes if **any** part is grounded." },
@@ -48,16 +54,6 @@ EC.receiveLesson({
       { t: "p", text: "When you cannot enforce a behaviour, ask for an output that makes it auditable \u2014 and then **audit the cheap part always and the expensive part sometimes**." },
       { t: "p", text: "The citation requirement is what makes any of this possible. Without it there is nothing to check: you cannot determine from an answer alone whether the model confined itself to the context. With it, three of the four checks above are free, and the fourth has a well-defined target." }
     ] },
-    { t: "diagram", kind: "matrix", title: "One grounding check is certain, the rest are judgement",
-      caption: "Checking whether a cited id was actually retrieved costs a **regex** and catches a fabricated citation with **certainty**. Everything else — whether the claim is supported by the cited text — needs a model, and inherits that model's judgement.",
-      cols: ["cost", "certainty"],
-      rows: ["was the cited id retrieved?", "does it support the claim?", "is anything uncited?", "is the answer complete?"],
-      cells: [
-        [{ text: "a regex", tone: "good" }, { text: "CERTAIN", tone: "good" }],
-        [{ text: "a model call", tone: "warn" }, { text: "judgement", tone: "warn" }],
-        [{ text: "a regex", tone: "good" }, { text: "certain, but noisy", tone: "warn" }],
-        [{ text: "a model call", tone: "crit" }, { text: "judgement, unreliable", tone: "crit" }]
-      ] },
     { t: "exercise", kind: "build", title: "Check an answer against its sources",
       difficulty: "advanced", minutes: 32,
       body: "Take several answers against a known retrieved context and classify the ways each citation can be wrong. Implement the free check and state exactly which failures it catches. Then attempt a support check with a cross-encoder, including a claim the document contradicts, and report what happens. Count what a per-claim check costs on a multi-sentence answer, and produce a layering of checks by cost against coverage.",

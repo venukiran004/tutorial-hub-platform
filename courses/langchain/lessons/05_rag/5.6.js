@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["5.5", "2.2"],
   blocks: [
     { t: "h2", n: "01", id: "interface", text: "One method", sub: "Query in, documents out" },
+
+    {"kind": "flow", "title": "A retriever is one method, and that narrowness is the point", "cols": 3, "caption": "Query in, `List[Document]` out. Because it is a `Runnable` it composes with everything from module 2 — which is what lets 5.7 write the whole pipeline as one expression rather than a function with six steps in it.", "nodes": [{"id": "q", "label": "a query string", "sub": "the only input", "tone": "accent"}, {"id": "r", "label": "Retriever", "sub": "a Runnable — so it pipes", "tone": "violet"}, {"id": "d", "label": "List[Document]", "sub": "always k of them (7.1)", "tone": "teal"}], "edges": [["q", "r"], ["r", "d"]], "t": "diagram", "id": "dg-5_6-01-0"},
+
+
+
+
     { t: "code", lang: "python", title: "The whole interface",
       code: 'r = store.as_retriever(search_kwargs={"k": 3})\ndocs = r.invoke("how do I stop duplicate charges")',
       out: "  invoke() ->\n    api-idempotency    Supply an Idempotency-Key header on write requ\n    auth-signin-fail   Authentication failures. Repeated invalid cred\n    data-deletion      Erasure requests complete within 30 days in pr",
@@ -38,14 +44,6 @@ EC.receiveLesson({
       { t: "p", text: "Two users searching at the same moment need different filters and may want different values of `k`; neither can want a different embedding model, because the vectors are already written. That is the same separation 2.9 drew between configuration and construction, arriving from a different direction." }
     ] },
     { t: "p", text: "The practical consequence is that a per-request filter must be a retriever-level argument, not a store-level one. A store built per request to carry a tenant filter rebuilds or re-wraps the index on every call, which is the structural mistake behind a surprising number of slow RAG systems." },
-    { t: "diagram", kind: "flow", title: "A retriever is one method, and that narrowness is the point", cols: 3,
-      caption: "Query in, `List[Document]` out. Because it is a `Runnable` it composes with everything from module 2 — which is what lets 5.7 write the whole pipeline as one expression rather than a function with six steps in it.",
-      nodes: [
-        { id: "q", label: "a query string", sub: "the only input", tone: "accent" },
-        { id: "r", label: "Retriever", sub: "a Runnable — so it pipes", tone: "violet" },
-        { id: "d", label: "List[Document]", sub: "always k of them (7.1)", tone: "teal" }
-      ],
-      edges: [["q", "r"], ["r", "d"]] },
     { t: "exercise", kind: "build", title: "Compose a retriever",
       difficulty: "core", minutes: 22,
       body: "Build a retriever from a vector store and call it. Confirm it is a Runnable by checking for the standard methods, then compose it with a formatting function in a pipe and show the result. Finally, classify five configuration settings as retriever-level or store-level and state the rule that decides.",

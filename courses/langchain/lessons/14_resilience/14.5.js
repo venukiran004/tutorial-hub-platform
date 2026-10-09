@@ -19,6 +19,12 @@ EC.receiveLesson({
       { t: "p", text: "It is the same property that makes 14.3's retry transparent \u2014 a failed attempt leaves no trace. Correct, and the exact opposite of what partial results need, which is why k-of-N is not a configuration setting." }
     ] },
     { t: "h2", n: "02", id: "inside", text: "So catch inside the node", sub: "Failure becomes data" },
+
+    {"kind": "flow", "title": "k-of-N needs the catch INSIDE the node", "cols": 5, "caption": "Letting the branches raise failed the whole superstep and the three that had **already succeeded** lost their writes — correct transactional behaviour, and the opposite of what partial results need. Guarded, 3 of 5 arrived and the run completed.", "nodes": [{"id": "docs", "label": "docs", "sub": "ok", "tone": "good"}, {"id": "tix", "label": "tickets", "sub": "ok", "tone": "good"}, {"id": "wiki", "label": "wiki", "sub": "ok", "tone": "good"}, {"id": "crm", "label": "crm", "sub": "down", "tone": "crit"}, {"id": "bill", "label": "billing", "sub": "down", "tone": "crit"}, {"id": "gather", "label": "gather", "sub": "3 of 5 — proceed, and LABEL it", "tone": "accent"}], "edges": [["docs", "gather"], ["tix", "gather"], ["wiki", "gather"], ["crm", "gather", null, "dashed"], ["bill", "gather", null, "dashed"]], "t": "diagram", "id": "dg-14_5-02-0"},
+
+
+
+
     { t: "code", lang: "text", title: "The same five sources, guarded",
       code: "succeeded : ['docs', 'tickets', 'wiki']\nfailed    : ['crm: crm is down', 'billing: billing is down']\nratio     : 3 of 5",
       caption: "The run **completed**." },
@@ -53,18 +59,6 @@ EC.receiveLesson({
       { t: "p", text: "A loop that is **making progress** by LangGraph's reckoning never hits the recursion limit \u2014 and that default is **10007** supersteps, which at $0.012 a call is roughly $120 before anything stops it." },
       { t: "p", text: "So: a recursion limit for **structural** loops and a call budget for **semantic** ones, and the call budget is the much smaller number. All three belong in the config and are read in the router, which also makes them testable without reaching into the graph." }
     ] },
-    { t: "diagram", kind: "flow", title: "k-of-N needs the catch INSIDE the node", cols: 5,
-      caption: "Letting the branches raise failed the whole superstep and the three that had **already succeeded** lost their writes — correct transactional behaviour, and the opposite of what partial results need. Guarded, 3 of 5 arrived and the run completed.",
-      nodes: [
-        { id: "docs", label: "docs", sub: "ok", tone: "good" },
-        { id: "tix", label: "tickets", sub: "ok", tone: "good" },
-        { id: "wiki", label: "wiki", sub: "ok", tone: "good" },
-        { id: "crm", label: "crm", sub: "down", tone: "crit" },
-        { id: "bill", label: "billing", sub: "down", tone: "crit" },
-        { id: "gather", label: "gather", sub: "3 of 5 — proceed, and LABEL it", tone: "accent" }
-      ],
-      edges: [["docs", "gather"], ["tix", "gather"], ["wiki", "gather"],
-              ["crm", "gather", null, "dashed"], ["bill", "gather", null, "dashed"]] },
     { t: "exercise", kind: "build", title: "Degrade instead of failing",
       difficulty: "core", minutes: 30,
       body: "Fan out to several sources where some fail, first by letting the exceptions propagate, and report what happens to the successful branches. Then rebuild it so partial results are possible, and report the ratio. Put the k-of-N threshold decision where it belongs and show how different thresholds change the verdict. Implement a spend budget that stops a run, checking it in the right place and exiting in the right way. Finally name the three budgets worth having and say which one catches a loop that is succeeding.",

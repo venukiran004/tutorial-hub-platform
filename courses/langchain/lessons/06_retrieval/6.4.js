@@ -11,10 +11,15 @@ EC.receiveLesson({
   prerequisites: ["6.2", "6.3"],
   blocks: [
     { t: "h2", n: "01", id: "disagree", text: "They disagree by design", sub: "And one of these lists is not a ranking" },
+
     { t: "code", lang: "text", title: "Two retrievers, two query classes",
       code: "query: 'Retry-After'\n  dense: ['api-idempotency', 'api-webhooks', 'bill-refund']\n  bm25 : ['api-limits', 'ops-backup', 'ops-sla']\n\nquery: 'I forgot my password'\n  dense: ['auth-reset', 'auth-signin-fail', 'bill-cancel-trial']\n  bm25 : ['ops-backup', 'ops-sla', 'ops-status']",
       caption: "`api-limits` is relevant for the first; `auth-reset` for the second. Each retriever gets one right." },
     { t: "h2", n: "02", id: "survives", text: "How much of each query survives", sub: "The column that explains everything else" },
+
+    {"kind": "matrix", "title": "BM25’s magnitude is anti-correlated with its usefulness", "caption": "The obvious way to combine dense and sparse is wrong three times over, and the third reason is the one nobody mentions: cosine is bounded and BM25 is not, so a weighted sum is **uncalibrated**. Worse, a high BM25 score can mean the query was all stopwords.", "cols": ["BM25 score", "tokens kept", "what it means"], "rows": ["“I forgot my password”", "“how long do you keep…”"], "cells": [[{"text": "a 41-way tie at 0.0000", "tone": "crit"}, {"text": "ZERO", "tone": "crit"}, {"text": "still returns a top-3", "tone": "crit"}], [{"text": "3.8583 — confident", "tone": "crit"}, {"text": "stopwords only", "tone": "crit"}, {"text": "high score, no signal", "tone": "crit"}]], "t": "diagram", "id": "dg-6_4-02-0"},
+
+
     { t: "code", lang: "text", title: "Surviving terms, per query",
       code: "query                                  max     docs>0  surviving terms\n'Idempotency-Key header'               5.1527  4       ['idempotency-key', 'header']\n'mTLS'                                 3.3009  1       ['mtls']\n'Retry-After'                          2.9871  1       ['retry-after']\n'stop my plan renewing'                2.8963  2       ['plan']\n'how long do you keep my information'  3.8583  5       ['do', 'you']\n'I forgot my password'                 0.0000  0       []",
       caption: "Two rows deserve attention, and both are fatal to weighted fusion." },
@@ -50,14 +55,6 @@ EC.receiveLesson({
       { t: "p", text: "A rank over 41 tied zeros is still a rank. `I forgot my password` hands the fusion a rank-1 document chosen by a sort tie-break, and RRF awards it **exactly the same** `1/(k+1)` as the document dense ranked first correctly." },
       { t: "p", text: "The other cost is that rank fusion discards magnitude: *\u201cscored far above everything else\u201d* and *\u201cbarely won\u201d* both become rank 1, which is precisely what a confidence threshold needs (7.1). So fusing by rank trades a calibration problem for a credibility problem." }
     ] },
-    { t: "diagram", kind: "matrix", title: "BM25’s magnitude is anti-correlated with its usefulness",
-      caption: "The obvious way to combine dense and sparse is wrong three times over, and the third reason is the one nobody mentions: cosine is bounded and BM25 is not, so a weighted sum is **uncalibrated**. Worse, a high BM25 score can mean the query was all stopwords.",
-      cols: ["BM25 score", "tokens kept", "what it means"],
-      rows: ["“I forgot my password”", "“how long do you keep…”"],
-      cells: [
-        [{ text: "a 41-way tie at 0.0000", tone: "crit" }, { text: "ZERO", tone: "crit" }, { text: "still returns a top-3", tone: "crit" }],
-        [{ text: "3.8583 — confident", tone: "crit" }, { text: "stopwords only", tone: "crit" }, { text: "high score, no signal", tone: "crit" }]
-      ] },
     { t: "exercise", kind: "analysis", title: "Find out why the scores cannot be added",
       difficulty: "core", minutes: 30,
       body: "Run dense and sparse retrieval on queries from both classes. Then, for several queries, report the BM25 maximum, how many documents score above zero, and which query terms survived tokenisation. Identify the query that keeps no terms and say what its returned ranking actually is. Identify the query whose score comes entirely from stopwords. Then give the three reasons a weighted sum fails, show what per-query normalisation does to the degenerate query, and state what EnsembleRetriever fixes and what it does not.",

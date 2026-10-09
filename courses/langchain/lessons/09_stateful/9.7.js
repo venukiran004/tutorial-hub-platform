@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["9.4", "8.8"],
   blocks: [
     { t: "h2", n: "01", id: "pause", text: "interrupt() stops mid-node", sub: "And invoke returns" },
+
+    {"kind": "steps", "title": "interrupt() stops the graph mid-node", "caption": "`invoke()` returns **without finishing**, the thread's `next` is still `('ask',)`, and the question the node asked sits in the state for a human to read. That is the pause a chain had no way to express (8.1).", "items": [{"label": "the node calls interrupt(question)", "desc": "execution stops inside the node, not after it", "tone": "accent", "code": "mid-node"}, {"label": "invoke() RETURNS", "desc": "without finishing — and next is still ('ask',), so the run is resumable", "tone": "warn", "code": "not done"}, {"label": "the question is in the state", "desc": "a human reads it from the checkpoint; no socket is held open", "tone": "good", "code": "durable"}, {"label": "Command(resume=“approved”)", "desc": "sends the answer back and the node continues from the interrupt", "tone": "good", "code": "resumed"}], "t": "diagram", "id": "dg-9_7-01-0"},
+
+
+
+
     { t: "code", lang: "python", title: "A node that asks",
       code: 'def ask(state):\n    answer = interrupt({"question": "approve %r?" % state["value"]})\n    return {"value": answer, "trace": ["ask ran"]}',
       out: "  first invoke returns WITHOUT finishing:\n    {'value': 'draft', 'trace': [],\n     '__interrupt__': [Interrupt(value={'question': \"approve 'draft'?\"}, ...)]}\n\n  state says what it is waiting at:\n    next      : ('ask',)\n    interrupts: [{'question': \"approve 'draft'?\"}]",
@@ -46,14 +52,6 @@ EC.receiveLesson({
       code: "resume='approve'                              -> ['approved', ...]\nresume='reject'                               -> ['rejected', ...]\nresume={'action': 'edit', 'value': 'corrected'} -> ['edited', ...]",
       caption: "One interrupt, three resume values \u2014 not three mechanisms." },
     { t: "p", text: "The node inspects whatever it was handed and branches on it, so approve, reject and edit are three *values* rather than three features. Which is why 9.8's approval gate is a single reusable node \u2014 and why the resume payload is worth designing as a small schema rather than a bare string." },
-    { t: "diagram", kind: "steps", title: "interrupt() stops the graph mid-node",
-      caption: "`invoke()` returns **without finishing**, the thread's `next` is still `('ask',)`, and the question the node asked sits in the state for a human to read. That is the pause a chain had no way to express (8.1).",
-      items: [
-        { label: "the node calls interrupt(question)", desc: "execution stops inside the node, not after it", tone: "accent", code: "mid-node" },
-        { label: "invoke() RETURNS", desc: "without finishing — and next is still ('ask',), so the run is resumable", tone: "warn", code: "not done" },
-        { label: "the question is in the state", desc: "a human reads it from the checkpoint; no socket is held open", tone: "good", code: "durable" },
-        { label: "Command(resume=“approved”)", desc: "sends the answer back and the node continues from the interrupt", tone: "good", code: "resumed" }
-      ] },
     { t: "exercise", kind: "build", title: "Pause a graph for a human",
       difficulty: "advanced", minutes: 34,
       body: "Write a node that calls interrupt() and run the graph, showing that invoke returns without finishing and that the paused state records both the position and the question. Resume with Command(resume=...) and show where the value arrives. Then count how many times the node body executed for one logical run, and explain what that implies for side effects. Try interrupt() with no checkpointer. Finally handle approve, reject and edit through a single interrupt.",

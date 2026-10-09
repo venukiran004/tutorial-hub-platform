@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["11.1", "11.8"],
   blocks: [
     { t: "h2", n: "01", id: "measured", text: "The same task, one agent and two", sub: "Measured" },
+
+    {"kind": "timeline", "title": "The coordination cost, measured", "caption": "The same task two ways: one agent with both tools took **3** model calls; a supervisor plus two specialists took **5** — 3 supervisor turns and 2 worker turns. So coordination costs **2 extra calls for identical output**, and that is the number the decision rests on.", "span": 6, "tick": 1, "unit": "model calls for the same task", "lanes": [{"label": "one agent", "bars": [[0, 3, "3 calls", "good"]]}, {"label": "supervisor turns", "bars": [[0, 3, "3 — pure overhead", "crit"]]}, {"label": "worker turns", "bars": [[3, 5, "2 — the work", "good"]]}], "t": "diagram", "id": "dg-12_1-01-0"},
+
+
+
+
     { t: "code", lang: "text", title: "One agent with both tools",
       code: "model calls : 3\nmessages    : 6",
       caption: "Two tool calls and a final answer." },
@@ -49,14 +55,6 @@ EC.receiveLesson({
       { t: "p", text: "The question is whether a **single agent cannot** \u2014 which is 11.1's ladder reasoning applied one level up. Multiple agents will usually work; so will one, more cheaply and with fewer gaps." },
       { t: "p", text: "And the same asymmetry holds: splitting later is additive, while merging later means discovering which boundaries were load-bearing \u2014 which requires measurements nobody took." }
     ] },
-    { t: "diagram", kind: "timeline", title: "The coordination cost, measured",
-      caption: "The same task two ways: one agent with both tools took **3** model calls; a supervisor plus two specialists took **5** — 3 supervisor turns and 2 worker turns. So coordination costs **2 extra calls for identical output**, and that is the number the decision rests on.",
-      span: 6, tick: 1, unit: "model calls for the same task",
-      lanes: [
-        { label: "one agent", bars: [[0, 3, "3 calls", "good"]] },
-        { label: "supervisor turns", bars: [[0, 3, "3 — pure overhead", "crit"]] },
-        { label: "worker turns", bars: [[3, 5, "2 — the work", "good"]] }
-      ] },
     { t: "exercise", kind: "analysis", title: "Measure the coordination overhead",
       difficulty: "core", minutes: 30,
       body: "Implement the same two-part task twice: once as a single agent with both tools, and once as a supervisor with two specialist workers, using scripted models so the comparison is deterministic. Count the model calls in each and state the coordination overhead. Then give the three structural reasons that justify multiple agents and at least three reasons that do not, explaining for each why it does or does not hold. Finally state the default and the question it rests on.",

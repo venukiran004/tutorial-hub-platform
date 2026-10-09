@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["9.4"],
   blocks: [
     { t: "h2", n: "01", id: "key", text: "thread_id is the conversation key", sub: "And the only boundary" },
+
+    {"kind": "matrix", "title": "thread_id is the only thing separating two users", "caption": "Whatever the caller passes, with **nothing validating it**. Three ways that goes wrong, and all three are the same bug: an identifier chosen by the client is a security boundary chosen by the client.", "cols": ["what happens", "severity"], "rows": ["two users share an id", "an id is guessable", "an id is reused", "an id is omitted"], "cells": [[{"text": "they share a conversation", "tone": "crit"}, {"text": "data exposure", "tone": "crit"}], [{"text": "anyone can read the thread", "tone": "crit"}, {"text": "data exposure", "tone": "crit"}], [{"text": "the next user sees the history", "tone": "crit"}, {"text": "data exposure", "tone": "crit"}], [{"text": "no persistence at all", "tone": "warn"}, {"text": "silent memory loss", "tone": "warn"}]], "t": "diagram", "id": "dg-9_5-01-0"},
+
+
+
+
     { t: "code", lang: "text", title: "Three invocations across two threads",
       code: "thread=alice  sent 'hello'    -> 2 messages in state\nthread=alice  sent 'again'    -> 4 messages in state\nthread=bob    sent 'hi'       -> 2 messages in state\n\nthread=alice  [HumanMessage('hello'), AIMessage('you said: hello'),\n               HumanMessage('again'), AIMessage('you said: again')]\nthread=bob    [HumanMessage('hi'), AIMessage('you said: hi')]",
       caption: "Alice's second message landed in a four-message conversation; Bob's first in a two-message one." },
@@ -56,16 +62,6 @@ EC.receiveLesson({
       ["summarise older turns", "A node that replaces a run of old messages with one summary message. This is what 8.3's **id-based replacement** in `add_messages` is for \u2014 you are editing history, not appending to it."]
     ] },
     { t: "p", text: "Both are nodes in the graph, which means they are also places where a decision gets made and can be got wrong. A trimming node that drops a tool call but keeps its `ToolMessage` leaves the history malformed \u2014 so trimming has to respect message pairing, which is the detail that makes the naive version fail." },
-    { t: "diagram", kind: "matrix", title: "thread_id is the only thing separating two users",
-      caption: "Whatever the caller passes, with **nothing validating it**. Three ways that goes wrong, and all three are the same bug: an identifier chosen by the client is a security boundary chosen by the client.",
-      cols: ["what happens", "severity"],
-      rows: ["two users share an id", "an id is guessable", "an id is reused", "an id is omitted"],
-      cells: [
-        [{ text: "they share a conversation", tone: "crit" }, { text: "data exposure", tone: "crit" }],
-        [{ text: "anyone can read the thread", tone: "crit" }, { text: "data exposure", tone: "crit" }],
-        [{ text: "the next user sees the history", tone: "crit" }, { text: "data exposure", tone: "crit" }],
-        [{ text: "no persistence at all", tone: "warn" }, { text: "silent memory loss", tone: "warn" }]
-      ] },
     { t: "exercise", kind: "build", title: "Scope conversations, then break the scoping",
       difficulty: "core", minutes: 28,
       body: "Run a graph across two thread_ids and confirm each conversation accumulates independently. Then say what is scoped to a thread and give the test for whether a key belongs there. Demonstrate the default-thread_id leak with two users. Name the three ways multi-user scoping goes wrong, including the one that hides the others. Finally run several turns on one thread and measure both the message count and the checkpoint count, and explain what that means for storage.",

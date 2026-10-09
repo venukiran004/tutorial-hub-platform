@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["9.3", "9.1"],
   blocks: [
     { t: "h2", n: "01", id: "ladder", text: "The ladder", sub: "Each rung trades a bound for a freedom" },
+
+    {"kind": "timeline", "title": "The ladder, in model calls", "caption": "The rungs are not equivalent in anything except capability — **each step down trades a bound for a freedom**. Measured on one question, which is the comparison worth having before reaching for the top rung.", "span": 7, "tick": 1, "unit": "model calls for the same question", "lanes": [{"label": "a single call", "bars": [[0, 1, "1", "good"]]}, {"label": "a chain", "bars": [[0, 2, "2", "good"]]}, {"label": "a router", "bars": [[0, 2, "2 — bounded", "good"]]}, {"label": "one tool call", "bars": [[0, 2, "2", "teal"]]}, {"label": "ReAct, 2 tools", "bars": [[0, 3, "3", "warn"]]}, {"label": "a full agent", "bars": [[0, 6.5, "unbounded", "crit"]]}], "t": "diagram", "id": "dg-11_1-01-0"},
+
+
+
+
     { t: "table", head: ["rung", "model calls", "control", "can it loop?"], rows: [
       ["1 one call", "1", "yours", "no"],
       ["2 one call + tools", "2+", "yours", "no"],
@@ -44,17 +50,6 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "asymmetry", text: "Why the mistake is asymmetric", sub: "Which is the real argument" },
     { t: "p", text: "A bounded pattern that nearly works is **one branch away** from working \u2014 the gap is visible and the fix is local. An agent that works unpredictably is a measurement problem, a cost problem and a debugging problem at once, and none of those is one change away from fixed." },
     { t: "p", text: "That asymmetry is why the rule is *stop at the lowest rung that works* rather than *choose the appropriate rung*. Guessing low costs you a branch; guessing high costs you the ability to say anything about the system's behaviour." },
-    { t: "diagram", kind: "timeline", title: "The ladder, in model calls",
-      caption: "The rungs are not equivalent in anything except capability — **each step down trades a bound for a freedom**. Measured on one question, which is the comparison worth having before reaching for the top rung.",
-      span: 7, tick: 1, unit: "model calls for the same question",
-      lanes: [
-        { label: "a single call", bars: [[0, 1, "1", "good"]] },
-        { label: "a chain", bars: [[0, 2, "2", "good"]] },
-        { label: "a router", bars: [[0, 2, "2 — bounded", "good"]] },
-        { label: "one tool call", bars: [[0, 2, "2", "teal"]] },
-        { label: "ReAct, 2 tools", bars: [[0, 3, "3", "warn"]] },
-        { label: "a full agent", bars: [[0, 6.5, "unbounded", "crit"]] }
-      ] },
     { t: "exercise", kind: "analysis", title: "Measure the ladder",
       difficulty: "core", minutes: 28,
       body: "Implement the same task at four rungs \u2014 a single call, a single tool-calling turn, a router, and an agent loop \u2014 using a scripted model so the comparison is deterministic. Count the model calls at each. Explain why a single tool-calling turn is not an agent and what class of task it covers. Explain what the agent's second model call buys. Then state the rule and the test, and say why the mistake is asymmetric.",

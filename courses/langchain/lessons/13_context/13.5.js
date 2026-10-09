@@ -44,6 +44,12 @@ EC.receiveLesson({
       { t: "p", text: "Worth running on a handful of cases even when you have a fact list, because the fact list only contains what you thought to write down." }
     ] },
     { t: "h2", n: "05", id: "first", text: "Where compression sits", sub: "First" },
+
+    {"kind": "matrix", "title": "Compression ratio is anti-correlated with safety", "caption": "The **largest** saving is the **destructive** one, because dense information-bearing text is exactly the text that cannot be shortened. So a compressor tuned to maximise its ratio converges on destroying what cannot be reconstructed.", "cols": ["before", "after", "saved", "facts kept", "verdict"], "rows": ["assistant courtesy", "a tool result", "the user’s own words"], "cells": [["20 tok", "4 tok", {"text": "80%", "tone": "good"}, "none to keep", {"text": "safe", "tone": "good"}], ["42 tok", "20 tok", {"text": "52%", "tone": "good"}, {"text": "all", "tone": "good"}, {"text": "safe — best win", "tone": "good"}], ["28 tok", "4 tok", {"text": "86%", "tone": "crit"}, {"text": "NONE", "tone": "crit"}, {"text": "destructive", "tone": "crit"}]], "t": "diagram", "id": "dg-13_5-05-0"},
+
+
+
+
     { t: "ol", items: [
       "**compress** \u2014 no information loss, if done on the right text.",
       "**summarise** \u2014 lossy, with the prompt deciding what survives (13.3).",
@@ -54,15 +60,6 @@ EC.receiveLesson({
       { t: "p", text: "Compressing tool results by 50% roughly **doubles** the number of turns that fit before summarisation has to fire at all (13.2). So the cheapest strategy is also the one that buys the most room for the others." },
       { t: "p", text: "The honest caveat: compression is itself a model call unless the text has a known structure. A tool result does \u2014 so that case is free. Compressing prose needs a model, which makes it a summarisation step wearing a different name, and it should be judged as one." }
     ] },
-    { t: "diagram", kind: "matrix", title: "Compression ratio is anti-correlated with safety",
-      caption: "The **largest** saving is the **destructive** one, because dense information-bearing text is exactly the text that cannot be shortened. So a compressor tuned to maximise its ratio converges on destroying what cannot be reconstructed.",
-      cols: ["before", "after", "saved", "facts kept", "verdict"],
-      rows: ["assistant courtesy", "a tool result", "the user’s own words"],
-      cells: [
-        ["20 tok", "4 tok", { text: "80%", tone: "good" }, "none to keep", { text: "safe", tone: "good" }],
-        ["42 tok", "20 tok", { text: "52%", tone: "good" }, { text: "all", tone: "good" }, { text: "safe — best win", tone: "good" }],
-        ["28 tok", "4 tok", { text: "86%", tone: "crit" }, { text: "NONE", tone: "crit" }, { text: "destructive", tone: "crit" }]
-      ] },
     { t: "exercise", kind: "build", title: "Compress rather than drop",
       difficulty: "core", minutes: 28,
       body: "Compress a verbose assistant turn and report the token saving and whether anything was lost. Then compress three different kinds of content \u2014 assistant courtesy, a tool result, and the user's own words \u2014 reporting the saving and facts kept for each, and explain what the pattern in those numbers means. Quantify the tool-result case across several subsequent turns. Give the measurement that decides whether a compression was lossy, and place compression among the other strategies.",

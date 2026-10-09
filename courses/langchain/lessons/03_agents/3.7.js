@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["3.3", "3.1"],
   blocks: [
     { t: "h2", n: "01", id: "guarded", text: "The loop, guarded", sub: "Three additions to 3.3" },
+
+    {"kind": "matrix", "title": "Three guards for three failures", "caption": "The 3.3 loop was **correct and unsafe**. Each guard turns an unbounded or fatal failure into a bounded one the model can act on — which is the whole shape of agent resilience, and 14.1 generalises it.", "cols": ["without the guard", "with it"], "rows": ["always asks for a tool", "a tool raises", "a hallucinated name"], "cells": [[{"text": "an unbounded loop", "tone": "crit"}, {"text": "an iteration cap stops it", "tone": "good"}], [{"text": "the run crashes", "tone": "crit"}, {"text": "a message the model can act on", "tone": "good"}], [{"text": "KeyError", "tone": "crit"}, {"text": "“no such tool, try one of…”", "tone": "good"}]], "t": "diagram", "id": "dg-3_7-01-0"},
+
+
+
+
     { t: "code", lang: "python", title: "What the guards look like",
       code: 'for i in range(max_iters):                       # 1. a cap\n    ai = bound.invoke(messages)\n    messages.append(ai)\n    if not ai.tool_calls:\n        return messages\n    for c in ai.tool_calls:\n        if c["name"] not in tool_map:                # 2. unknown tool\n            messages.append(ToolMessage(\n                content="error: no tool named %r. available: %s"\n                        % (c["name"], list(tool_map)),\n                tool_call_id=c["id"]))\n            continue\n        try:\n            out = tool_map[c["name"]].invoke(c["args"])\n        except Exception as e:                       # 3. tool errors\n            out = "error: %s" % e\n        messages.append(ToolMessage(content=str(out), tool_call_id=c["id"]))',
       hl: [1, 7, 15],
@@ -42,15 +48,6 @@ EC.receiveLesson({
       { t: "p", text: "It is also the hardest failure to notice, because the answer **claims** the tool was used. \u201cI looked up order A-1\u201d reads as evidence of a lookup, so a human reviewing the transcript sees a successful tool-using run unless they check the message list." }
     ] },
     { t: "p", text: "Two defences apply and neither is a guard. **Evaluation** (14.7) can score the trajectory rather than the answer, catching runs that reached a plausible conclusion by the wrong path. And **tool design**: a tool whose output the model cannot plausibly guess is one it has to call \u2014 an order id it has never seen, a live balance, a number from your database. A tool that returns something the model could invent is a tool it will sometimes invent." },
-    { t: "diagram", kind: "matrix", title: "Three guards for three failures",
-      caption: "The 3.3 loop was **correct and unsafe**. Each guard turns an unbounded or fatal failure into a bounded one the model can act on — which is the whole shape of agent resilience, and 14.1 generalises it.",
-      cols: ["without the guard", "with it"],
-      rows: ["always asks for a tool", "a tool raises", "a hallucinated name"],
-      cells: [
-        [{ text: "an unbounded loop", tone: "crit" }, { text: "an iteration cap stops it", tone: "good" }],
-        [{ text: "the run crashes", tone: "crit" }, { text: "a message the model can act on", tone: "good" }],
-        [{ text: "KeyError", tone: "crit" }, { text: "“no such tool, try one of…”", tone: "good" }]
-      ] },
     { t: "exercise", kind: "build", title: "Guard the loop, then find what you cannot guard",
       difficulty: "advanced", minutes: 30,
       body: "Take the 3.3 loop and add three guards: an iteration cap, tool error handling and an unknown-tool guard. Demonstrate each one catching its failure, and show at least one of them failing without the guard. Then construct the failure that no guard catches and explain why none of them fire.",

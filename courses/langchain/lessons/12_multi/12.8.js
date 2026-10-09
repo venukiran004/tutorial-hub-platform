@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["12.3", "12.7"],
   blocks: [
     { t: "h2", n: "01", id: "handoff", text: "Failure 1: the infinite handoff", sub: "A property of the pair" },
+
+    {"kind": "matrix", "title": "Four failure modes, and no agent is broken", "caption": "That is the striking thing about all of them. Each is a property of the **composition** — of a pair, of a payload choice, of there being no shared record — which is why the instrumentation belongs on the gaps rather than on the agents.", "cols": ["whose fault", "what detects it"], "rows": ["an infinite handoff", "context loss", "duplicated work", "nobody to blame"], "cells": [[{"text": "the PAIR (12.3)", "tone": "crit"}, {"text": "a hop budget + the handoff graph", "tone": "good"}], [{"text": "the payload choice", "tone": "crit"}, {"text": "provenance as structure (12.7)", "tone": "good"}], [{"text": "no shared record", "tone": "crit"}, {"text": "same tool, same args, one run", "tone": "good"}], [{"text": "the composition", "tone": "crit"}, {"text": "per-agent scores on a labelled set", "tone": "good"}]], "t": "diagram", "id": "dg-12_8-01-0"},
+
+
+
+
     { t: "p", text: "12.3 measured it: two agents each handing to the other, bounded only by the recursion limit \u2014 and **neither agent is broken**, since each correctly declines a request outside its area." },
     { t: "p", text: "**Guard**: a hop budget in the **shared** state, plus an escalation node. It has to be shared because no single agent can see the other's handoffs." },
     { t: "h2", n: "02", id: "context", text: "Failure 2: context loss at a boundary", sub: "Which is a choice" },
@@ -51,16 +57,6 @@ EC.receiveLesson({
       { t: "p", text: "Five of the six are **shared-state or trace** concerns rather than agent concerns. Which is the summary of this whole module: in a multi-agent system the failures are properties of the system, and the gaps are where nobody is looking because no single agent owns them." },
       { t: "p", text: "It is also 12.1's warning realised. *\u201cEach agent is simpler\u201d* is true, and the complexity moved to exactly the place with no owner \u2014 so the guards have to be designed deliberately rather than emerging from any individual agent being well written." }
     ] },
-    { t: "diagram", kind: "matrix", title: "Four failure modes, and no agent is broken",
-      caption: "That is the striking thing about all of them. Each is a property of the **composition** — of a pair, of a payload choice, of there being no shared record — which is why the instrumentation belongs on the gaps rather than on the agents.",
-      cols: ["whose fault", "what detects it"],
-      rows: ["an infinite handoff", "context loss", "duplicated work", "nobody to blame"],
-      cells: [
-        [{ text: "the PAIR (12.3)", tone: "crit" }, { text: "a hop budget + the handoff graph", tone: "good" }],
-        [{ text: "the payload choice", tone: "crit" }, { text: "provenance as structure (12.7)", tone: "good" }],
-        [{ text: "no shared record", tone: "crit" }, { text: "same tool, same args, one run", tone: "good" }],
-        [{ text: "the composition", tone: "crit" }, { text: "per-agent scores on a labelled set", tone: "good" }]
-      ] },
     { t: "exercise", kind: "build", title: "Build the four failures and their guards",
       difficulty: "advanced", minutes: 32,
       body: "Demonstrate each of the four multi-agent failure modes and the guard for each. For context loss, show the same handoff with shared state and with a task payload and explain why neither is wrong. For duplicated work, show a work-done check preventing a second search, and explain where that guard fails. For the blame problem, show attribution with and without the name field and explain what attribution still does not solve. Finally collect the guards and say where each lives.",

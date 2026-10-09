@@ -36,6 +36,12 @@ EC.receiveLesson({
       { t: "p", text: "So the gain from rewriting is real and bounded by how well the rewriter can guess vocabulary it has not seen. And you cannot tell in advance which guesses land, which is the honest argument for multi-query: issue several and hope one is right." }
     ] },
     { t: "h2", n: "04", id: "multiquery", text: "Multi-query", sub: "And the union is not free" },
+
+    {"kind": "matrix", "title": "Where query transformation is NOT needed", "caption": "Dense retrieval already handles ordinary phrasing at MRR 0.964, so rewriting those queries is cost without benefit. The real failures are vague and colloquial — and a **blind** rewrite, done without seeing the corpus, scored **0/5** on one of them.", "cols": ["baseline", "after rewriting"], "rows": ["14 natural queries", "a vague colloquial query", "a blind rewrite", "the union of variants"], "cells": [[{"text": "MRR 0.964", "tone": "good"}, {"text": "no gain — pure cost", "tone": "warn"}], [{"text": "fails", "tone": "crit"}, {"text": "this is the real case", "tone": "good"}], [{"text": "—", "tone": "warn"}, {"text": "0 of 5 — worse", "tone": "crit"}], [{"text": "—", "tone": "warn"}, {"text": "worse than its best member", "tone": "crit"}]], "t": "diagram", "id": "dg-7_2-04-0"},
+
+
+
+
     { t: "code", lang: "text", title: "Union of five variants",
       code: "'I want out'\n   best single variant : rr=1.00\n   union of 5 variants : 7 docs, rr=0.50\n   recall of the union : 1.00",
       caption: "The union is **worse** than one of its own members." },
@@ -61,16 +67,6 @@ EC.receiveLesson({
       { t: "p", text: "Every one of these adds at least one model call **before** retrieval, so it sits on the critical path for every query \u2014 including the 14 natural queries already answered at MRR 0.964 that needed no help at all." },
       { t: "p", text: "7.1's guard is what makes the better pattern possible: retrieve, check the signal, and transform only when the guard says retrieval failed. The guard measured AUC 0.943, so this is a decision that can actually be made \u2014 which is exactly why the guard comes before this lesson rather than after it." }
     ] },
-    { t: "diagram", kind: "matrix", title: "Where query transformation is NOT needed",
-      caption: "Dense retrieval already handles ordinary phrasing at MRR 0.964, so rewriting those queries is cost without benefit. The real failures are vague and colloquial — and a **blind** rewrite, done without seeing the corpus, scored **0/5** on one of them.",
-      cols: ["baseline", "after rewriting"],
-      rows: ["14 natural queries", "a vague colloquial query", "a blind rewrite", "the union of variants"],
-      cells: [
-        [{ text: "MRR 0.964", tone: "good" }, { text: "no gain — pure cost", tone: "warn" }],
-        [{ text: "fails", tone: "crit" }, { text: "this is the real case", tone: "good" }],
-        [{ text: "—", tone: "warn" }, { text: "0 of 5 — worse", tone: "crit" }],
-        [{ text: "—", tone: "warn" }, { text: "worse than its best member", tone: "crit" }]
-      ] },
     { t: "exercise", kind: "build", title: "Measure query transformation honestly",
       difficulty: "core", minutes: 32,
       body: "Find the queries your retriever genuinely fails, and note which classes they belong to. Rewrite them into the corpus's vocabulary and measure the gain. Then quantify the circularity: produce rewrites a model would generate without having seen the corpus, and measure how many land. Union several variants and compare the union against its best member. Finally tabulate what each technique costs and say where the decision belongs.",

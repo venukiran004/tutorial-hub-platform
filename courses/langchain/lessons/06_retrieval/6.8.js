@@ -11,11 +11,16 @@ EC.receiveLesson({
   prerequisites: ["6.5", "6.6", "6.7"],
   blocks: [
     { t: "h2", n: "01", id: "order", text: "The pipeline, in order", sub: "Each stage narrows" },
+
     { t: "code", lang: "text", title: "Four stages",
       code: "retrieve (wide)  ->  fuse  ->  diversify  ->  rerank  ->  k=5\n   41 docs           20        20 -> 8       8 -> 5",
       caption: "Each stage is more expensive per document than the one before it." },
     { t: "p", text: "That ordering is 5.1's principle applied four times: never let an expensive stage see more documents than it must. The arithmetic of that turns out to matter more than any accuracy figure in this lesson." },
     { t: "h2", n: "02", id: "ablation", text: "The ablation", sub: "Each addition has to justify itself" },
+
+    {"kind": "timeline", "title": "Three results I did not expect", "caption": "Assembled in order and measured at every step. Reranking on top of dense made natural queries **worse** — 0.964 down to 0.845 — which is the opposite of the advertised effect, and why every stage has to be measured on **your** queries rather than adopted.", "span": 1, "tick": 0.2, "unit": "MRR on the 14 natural queries", "lanes": [{"label": "dense alone", "bars": [[0, 0.964, "0.964 — the baseline", "good"]]}, {"label": "+ rerank", "bars": [[0, 0.845, "0.845 — WORSE", "crit"]]}, {"label": "+ hybrid fusion", "bars": [[0, 0.88, "helps keyword only", "warn"]]}, {"label": "+ MMR", "bars": [[0, 0.88, "coverage, not relevance", "warn"]]}], "t": "diagram", "id": "dg-6_8-02-0"},
+
+
     { t: "table", head: ["config", "nat MRR", "exact MRR", "nat R@5", "exact R@5", "s/query"], rows: [
       ["dense k=5", "**0.964**", "0.781", "1.000", "0.875", "**0.076**"],
       ["hybrid RRF", "0.393", "1.000", "0.429", "1.000", "0.098"],
@@ -50,15 +55,6 @@ EC.receiveLesson({
       "When a stage helps one class and harms another, treat it as a routing decision rather than a pipeline stage."
     ] },
     { t: "p", text: "Step four is the one this lesson adds. `hybrid` genuinely helped before reranking existed and contributed nothing after, so a stage's value is not a property of the stage \u2014 it is a property of the pipeline it sits in. A pipeline assembled from a blog post is a pipeline nobody has ablated." },
-    { t: "diagram", kind: "timeline", title: "Three results I did not expect",
-      caption: "Assembled in order and measured at every step. Reranking on top of dense made natural queries **worse** — 0.964 down to 0.845 — which is the opposite of the advertised effect, and why every stage has to be measured on **your** queries rather than adopted.",
-      span: 1.0, tick: 0.2, unit: "MRR on the 14 natural queries",
-      lanes: [
-        { label: "dense alone", bars: [[0, 0.964, "0.964 — the baseline", "good"]] },
-        { label: "+ rerank", bars: [[0, 0.845, "0.845 — WORSE", "crit"]] },
-        { label: "+ hybrid fusion", bars: [[0, 0.88, "helps keyword only", "warn"]] },
-        { label: "+ MMR", bars: [[0, 0.88, "coverage, not relevance", "warn"]] }
-      ] },
     { t: "exercise", kind: "build", title: "Assemble and ablate the full pipeline",
       difficulty: "advanced", minutes: 34,
       body: "Assemble a retrieval pipeline of hybrid retrieval, rank fusion, MMR diversity and cross-encoder reranking, in cost order. Then ablate it: measure dense alone, hybrid alone, dense plus rerank, hybrid plus rerank, and the full pipeline, reporting both query classes and latency per query. Identify a stage that adds nothing, a stage that helps one class and harms another, and explain why the full pipeline is faster than a shorter one.",

@@ -11,11 +11,16 @@ EC.receiveLesson({
   prerequisites: ["7.3", "9.5"],
   blocks: [
     { t: "h2", n: "01", id: "where", text: "Where the tokens go", sub: "In one agent turn" },
+
     { t: "code", lang: "text", title: "Four components",
       code: "component                   tokens    share\nthe system prompt           13        2.3%\nthe tool descriptions       53        9.3%\nthe question                13        2.3%\nthe conversation history    489       86.0%\nTOTAL                       568",
       caption: "The history dominates, and it is the only part that **grows**." },
     { t: "p", text: "The system prompt and the tool descriptions are a fixed cost per turn (11.3), and the question is paid once. So every strategy in this module is about the 86% \u2014 which is also why 11.3's advice to keep the tool list short matters less than it sounds for a long conversation." },
     { t: "h2", n: "02", id: "quadratic", text: "The quadratic growth", sub: "The sum of the prefixes" },
+
+    {"kind": "timeline", "title": "A conversation costs the sum of its prefixes", "caption": "Cumulative tokens sent divided by the final prompt size, measured. At 40 turns the conversation has sent **21.6×** its own final length — which is not the number anyone quotes.", "span": 22, "tick": 2, "unit": "cumulative tokens ÷ final prompt", "lanes": [{"label": "1 turn", "bars": [[0, 1, "1.0x", "good"]]}, {"label": "5 turns", "bars": [[0, 3.7, "3.7x", "good"]]}, {"label": "10 turns", "bars": [[0, 6.4, "6.4x", "accent"]]}, {"label": "20 turns", "bars": [[0, 11.6, "11.6x", "warn"]]}, {"label": "40 turns", "bars": [[0, 21.6, "21.6x", "crit"]]}], "t": "diagram", "id": "dg-13_1-02-0"},
+
+
     { t: "code", lang: "text", title: "Measured",
       code: "turns   final prompt   cumulative tokens sent   ratio\n1       171            171                      1.0x\n2       220            391                      1.8x\n5       367            1345                     3.7x\n10      612            3915                     6.4x\n20      1102           12730                    11.6x\n40      2082           45060                    21.6x",
       caption: "At 40 turns the conversation has sent **21.6\u00d7** its own final length." },
@@ -41,16 +46,6 @@ EC.receiveLesson({
       { t: "p", text: "The available history is a fixed number of tokens, and the strategies in 13.2 to 13.5 are all ways of deciding **which** tokens they are. That is the whole of context engineering stated as one sentence." },
       { t: "p", text: "Note also that this corpus's turns are small, so even 40 turns fits an 8K window \u2014 the cost problem bites long before the window does, which is exactly the point of the previous section. A conversation with pasted logs or tool results reverses that." }
     ] },
-    { t: "diagram", kind: "timeline", title: "A conversation costs the sum of its prefixes",
-      caption: "Cumulative tokens sent divided by the final prompt size, measured. At 40 turns the conversation has sent **21.6×** its own final length — which is not the number anyone quotes.",
-      span: 22, tick: 2, unit: "cumulative tokens ÷ final prompt",
-      lanes: [
-        { label: "1 turn",   bars: [[0, 1.0, "1.0x", "good"]] },
-        { label: "5 turns",  bars: [[0, 3.7, "3.7x", "good"]] },
-        { label: "10 turns", bars: [[0, 6.4, "6.4x", "accent"]] },
-        { label: "20 turns", bars: [[0, 11.6, "11.6x", "warn"]] },
-        { label: "40 turns", bars: [[0, 21.6, "21.6x", "crit"]] }
-      ] },
     { t: "exercise", kind: "analysis", title: "Measure the context budget",
       difficulty: "core", minutes: 30,
       body: "Break one agent turn into its components and report each one's token count and share. Then measure the cumulative tokens a conversation sends across several lengths and compare against its final prompt size. Separate the three pressures that grow with history and say which one announces itself. Finally compute the available history budget for a given window as arithmetic, including a reserve for the answer.",

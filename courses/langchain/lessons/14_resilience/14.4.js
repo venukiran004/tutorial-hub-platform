@@ -11,6 +11,7 @@ EC.receiveLesson({
   prerequisites: ["14.3", "11.6"],
   blocks: [
     { t: "h2", n: "01", id: "halfway", text: "A plan that fails halfway", sub: "And why doing nothing is worse" },
+
     { t: "code", lang: "text", title: "Four steps, failing at the third",
       code: "completed: ['reserve stock', 'charge the card']\nfailed at: ship (ConnectionError: warehouse API down)\nworld    : {'reserved': True, 'charged': True,\n            'emailed': False, 'shipped': False}",
       caption: "The card is charged and nothing has shipped." },
@@ -32,6 +33,10 @@ EC.receiveLesson({
       { t: "p", text: "Which is why the category matters more than the mechanism. Most of the saga literature is about **how** to compensate; the part that decides whether your plan is correct is **which steps you cannot**." }
     ] },
     { t: "h2", n: "04", id: "rule", text: "So the ordering rule is forced", sub: "Non-compensable steps go last" },
+
+    {"kind": "steps", "title": "Non-compensable steps go last", "caption": "Not a style choice — a **correctness property**. With the email last, a failure anywhere is recoverable. Move it to step 1 and any failure after it is not, because a correction email is a second effect rather than an undo.", "items": [{"label": "reserve stock", "desc": "compensation: release the reservation", "tone": "good", "code": "reversible"}, {"label": "charge the card", "desc": "compensation: refund txn_8841 — capture the handle NOW", "tone": "good", "code": "reversible"}, {"label": "create the shipment", "desc": "compensation: cancel the shipment", "tone": "good", "code": "reversible"}, {"label": "email the customer", "desc": "nothing can un-send it — so it must go last", "tone": "crit", "code": "FINAL"}], "t": "diagram", "id": "dg-14_4-04-0"},
+
+
     { t: "code", lang: "text", title: "Same steps, same compensations, different semantics",
       code: "reserve, charge, ship, email     a failure anywhere is recoverable\nemail, reserve, charge, ship     a failure after step 1 is not",
       caption: "The ordering is a **correctness property**, not a style choice." },
@@ -48,14 +53,6 @@ EC.receiveLesson({
       { t: "p", text: "*\u201cRefund transaction `txn_8841`\u201d* is. So the record has to capture whatever identifier the compensation will need, at the moment the step runs \u2014 because it may not be derivable afterwards, especially if the failure is the system that would have told you." },
       { t: "p", text: "And if compensation itself fails, that is a **dead letter** (14.6), not a retry loop. A failed compensation is the one case where a human genuinely has to look, because the system is now in a state no code path anticipated." }
     ] },
-    { t: "diagram", kind: "steps", title: "Non-compensable steps go last",
-      caption: "Not a style choice — a **correctness property**. With the email last, a failure anywhere is recoverable. Move it to step 1 and any failure after it is not, because a correction email is a second effect rather than an undo.",
-      items: [
-        { label: "reserve stock", desc: "compensation: release the reservation", tone: "good", code: "reversible" },
-        { label: "charge the card", desc: "compensation: refund txn_8841 — capture the handle NOW", tone: "good", code: "reversible" },
-        { label: "create the shipment", desc: "compensation: cancel the shipment", tone: "good", code: "reversible" },
-        { label: "email the customer", desc: "nothing can un-send it — so it must go last", tone: "crit", code: "FINAL" }
-      ] },
     { t: "exercise", kind: "build", title: "Undo a half-finished plan",
       difficulty: "advanced", minutes: 32,
       body: "Run a multi-step plan that fails partway and report which steps completed, where it failed, and the resulting state. Explain why doing nothing is worse than the original failure. Compensate in reverse order and say why the order matters. Then reorder the plan so a non-compensable step runs first, run it again, and show that the failure is now unrecoverable. Derive the ordering rule, make it mechanically checkable, and say what the saga has to record and where.",

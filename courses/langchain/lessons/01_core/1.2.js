@@ -38,6 +38,12 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "contract", text: "A model is one method",
       sub: "And the base class does the rest" },
 
+    {"kind": "layers", "title": "One method, and everything the base class gives you", "caption": "You implement `_generate` — a function from a list of messages to a message. Every other capability on a chat model is inherited, which is why a thirty-line fake model supports batching, streaming and tool binding without another line.", "items": [{"label": "with_retry · with_fallbacks", "sub": "resilience, composed as methods", "tone": "violet", "side": "free"}, {"label": "bind_tools · with_structured_output", "sub": "the tool protocol", "tone": "teal", "side": "free"}, {"label": "batch · abatch", "sub": "concurrency over a list of inputs", "tone": "good", "side": "free"}, {"label": "stream · astream · ainvoke", "sub": "incremental and async delivery", "tone": "good", "side": "free"}, {"label": "_generate(messages) -> ChatResult", "sub": "the ONE method you write", "tone": "accent", "side": "yours"}], "t": "diagram", "id": "dg-1_2-02-0"},
+
+
+
+
+
     { t: "p", text: "The contract for a chat model is smaller than it looks. Implement `_generate`, which takes a list of messages and returns a result wrapping one message, and `BaseChatModel` supplies everything else." },
 
     { t: "code", lang: "python", title: "The scripted model this course runs on",
@@ -108,15 +114,6 @@ EC.receiveLesson({
 
     { t: "p", text: "The rule of thumb: **if a tutorial imports a `*Chain` class, reach for the LCEL or LangGraph equivalent.** You get streaming, async, batching and tracing for free, none of which the legacy classes support." },
 
-    { t: "diagram", kind: "layers", title: "One method, and everything the base class gives you",
-      caption: "You implement `_generate` — a function from a list of messages to a message. Every other capability on a chat model is inherited, which is why a thirty-line fake model supports batching, streaming and tool binding without another line.",
-      items: [
-        { label: "with_retry · with_fallbacks", sub: "resilience, composed as methods", tone: "violet", side: "free" },
-        { label: "bind_tools · with_structured_output", sub: "the tool protocol", tone: "teal", side: "free" },
-        { label: "batch · abatch", sub: "concurrency over a list of inputs", tone: "good", side: "free" },
-        { label: "stream · astream · ainvoke", sub: "incremental and async delivery", tone: "good", side: "free" },
-        { label: "_generate(messages) -> ChatResult", sub: "the ONE method you write", tone: "accent", side: "yours" }
-      ] },
     { t: "exercise", kind: "build", title: "Implement a chat model and measure the protocol",
       difficulty: "core", minutes: 28,
       body: "Build a scripted chat model by implementing the one required method, and confirm which protocol methods the base class then provides. Show the four message types including a tool-call pair. Then demonstrate that three different chain constructions produce an identical message list, and measure what invoke, batch and batch-with-concurrency-limit actually cost on the same six inputs.",

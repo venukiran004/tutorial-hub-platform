@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["6.2", "5.8"],
   blocks: [
     { t: "h2", n: "01", id: "problem", text: "The problem it exists for", sub: "Measured inside the result set" },
+
+    {"kind": "timeline", "title": "Four ways to say the same thing, in five slots", "caption": "For *“stop my plan renewing”*, four documents about cancelling fill the top five and their pairwise similarity runs as high as **0.59**. The right one ranks first and the model still receives four cancellation procedures — so relevance is satisfied and the context is wasted.", "span": 0.7, "tick": 0.1, "unit": "similarity to the top result", "lanes": [{"label": "#2 cancel-trial", "bars": [[0, 0.59, "0.59 — near-duplicate", "crit"]]}, {"label": "#3 cancel-refund", "bars": [[0, 0.52, "0.52", "crit"]]}, {"label": "#4 cancel-policy", "bars": [[0, 0.48, "0.48", "warn"]]}, {"label": "#5 billing-cycle", "bars": [[0, 0.31, "0.31 — adds something", "good"]]}], "t": "diagram", "id": "dg-6_6-01-0"},
+
+
+
+
     { t: "code", lang: "text", title: "Pairwise similarity among the top 5",
       code: "query: 'stop my plan renewing'\nplain top 5: ['bill-cancel-sub', 'bill-cancel-trial', 'bill-overage',\n              'ops-cancel-report', 'bill-cancel-order']\n\n  bill-cancel-sub      1.00 0.59 0.32 0.43 0.53\n  bill-cancel-trial    0.59 1.00 0.32 0.32 0.47\n  bill-overage         0.32 0.32 1.00 0.11 0.10\n  ops-cancel-report    0.43 0.32 0.11 1.00 0.48\n  bill-cancel-order    0.53 0.47 0.10 0.48 1.00",
       caption: "The slots are filled with documents similar to **each other**, not just to the query." },
@@ -44,15 +50,6 @@ EC.receiveLesson({
       { t: "p", text: "At `fetch_k=5` MMR returns the same five documents in a different order, so the set reaching the model is unchanged and the diversity it was added for cannot happen. This is 5.1's `fetch_k > k` rule in its second instance \u2014 the first was reranking." },
       { t: "p", text: "The rule generalises to every stage that **selects** rather than ranks: the gap between what it fetches and what it returns is the amount of work it is permitted to do. If they are equal, the stage is a sort." }
     ] },
-    { t: "diagram", kind: "timeline", title: "Four ways to say the same thing, in five slots",
-      caption: "For *“stop my plan renewing”*, four documents about cancelling fill the top five and their pairwise similarity runs as high as **0.59**. The right one ranks first and the model still receives four cancellation procedures — so relevance is satisfied and the context is wasted.",
-      span: 0.7, tick: 0.1, unit: "similarity to the top result",
-      lanes: [
-        { label: "#2 cancel-trial", bars: [[0, 0.59, "0.59 — near-duplicate", "crit"]] },
-        { label: "#3 cancel-refund", bars: [[0, 0.52, "0.52", "crit"]] },
-        { label: "#4 cancel-policy", bars: [[0, 0.48, "0.48", "warn"]] },
-        { label: "#5 billing-cycle", bars: [[0, 0.31, "0.31 — adds something", "good"]] }
-      ] },
     { t: "exercise", kind: "build", title: "Implement MMR and measure it honestly",
       difficulty: "core", minutes: 30,
       body: "Show redundancy inside a plain top-5 result set by printing the pairwise similarity matrix among the results. Implement MMR from the formula and sweep lambda, explaining why every setting returns the same first document. Then measure MMR against the baseline on the labelled query set and explain what the numbers can and cannot show. Finally vary fetch_k and say what happens when it equals k.",

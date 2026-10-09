@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["11.3", "10.2"],
   blocks: [
     { t: "h2", n: "01", id: "plan", text: "Plan once, execute many", sub: "Four model calls" },
+
+    {"kind": "flow", "title": "Plan once, execute many", "cols": 4, "caption": "One planner call produced three steps and three worker calls executed them — **4 model calls**. The difference from ReAct is what the workers **saw**: each got one step and nothing else, so their prompt is constant and 13.1's quadratic growth never reaches them.", "nodes": [{"id": "p", "label": "planner", "sub": "1 call — the whole plan", "tone": "accent"}, {"id": "w", "label": "worker", "sub": "one step, NO history", "tone": "good"}, {"id": "w2", "label": "worker", "sub": "constant prompt", "tone": "good"}, {"id": "g", "label": "gather", "sub": "4 calls in total", "tone": "violet"}], "edges": [["p", "w"], ["w", "w2"], ["w2", "g"]], "t": "diagram", "id": "dg-11_6-01-0"},
+
+
+
+
     { t: "code", lang: "text", title: "The trace",
       code: "planned 3 steps\nstep 1: 'look up the refund window'\nstep 2: 'look up the payment destination'\nstep 3: 'write the answer'\n\nplanner calls: 1\nworker calls : 3\ntotal        : 4",
       caption: "One planning call, then one call per step." },
@@ -54,15 +60,6 @@ EC.receiveLesson({
       { t: "p", text: "ReAct cannot offer it, because ReAct has no plan to show anyone \u2014 it decides the next action one turn at a time. A plan is an artefact, and 9.8's approval gate can pause on it." },
       { t: "p", text: "The parallelism case is the other real win: independent steps become a `Send` fan-out (10.2), so a five-step plan is one superstep rather than five. That is where plan-and-execute beats ReAct on latency rather than just on predictability." }
     ] },
-    { t: "diagram", kind: "flow", title: "Plan once, execute many", cols: 4,
-      caption: "One planner call produced three steps and three worker calls executed them — **4 model calls**. The difference from ReAct is what the workers **saw**: each got one step and nothing else, so their prompt is constant and 13.1's quadratic growth never reaches them.",
-      nodes: [
-        { id: "p", label: "planner", sub: "1 call — the whole plan", tone: "accent" },
-        { id: "w", label: "worker", sub: "one step, NO history", tone: "good" },
-        { id: "w2", label: "worker", sub: "constant prompt", tone: "good" },
-        { id: "g", label: "gather", sub: "4 calls in total", tone: "violet" }
-      ],
-      edges: [["p", "w"], ["w", "w2"], ["w2", "g"]] },
     { t: "exercise", kind: "build", title: "Plan, execute, and replan",
       difficulty: "advanced", minutes: 34,
       body: "Build a plan-and-execute graph where a planner produces a list of steps and an executor runs them one at a time, and count the model calls. Report what each worker received and explain why that differs from ReAct. Compare the two patterns on sequence decisions, prompt size, commitment and predictability. Then add a replan path with a budget, and identify the state bug that only appears when replanning happens.",

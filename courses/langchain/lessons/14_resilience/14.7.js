@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["14.6", "12.8"],
   blocks: [
     { t: "h2", n: "01", id: "four", text: "Four runs, two scores", sub: "Disagreeing on three" },
+
+    {"kind": "matrix", "title": "The two scores disagreed on three of four runs", "caption": "Each disagreement is a different bug. *“Right answer, wrong source”* justifies trajectory scoring on its own, because it is indistinguishable from success on **every** output metric — exact match, an LLM judge, a human reading the answer.", "cols": ["outcome", "trajectory", "duplicates", "what it means"], "rows": ["run 1 — the ideal path", "run 2 — search_web only", "run 3 — 3x get_order", "run 4 — no answer"], "cells": [[{"text": "1.0", "tone": "good"}, {"text": "1.0", "tone": "good"}, "no", {"text": "pass", "tone": "good"}], [{"text": "1.0", "tone": "good"}, {"text": "0.0", "tone": "crit"}, "no", {"text": "it GUESSED", "tone": "crit"}], [{"text": "1.0", "tone": "good"}, {"text": "subset 1.0", "tone": "warn"}, {"text": "yes", "tone": "crit"}, {"text": "a cost bug", "tone": "warn"}], [{"text": "0.0", "tone": "crit"}, {"text": "1.0", "tone": "good"}, "no", {"text": "fails at generation", "tone": "warn"}]], "t": "diagram", "id": "dg-14_7-01-0"},
+
+
+
+
     { t: "code", lang: "text", title: "The same question, four trajectories",
       code: "run    outcome  traj(exact)  traj(subset)  trajectory\nrun 1    1.0      1.0          1.0         get_order -> get_policy\nrun 2    1.0      0.0          0.0         search_web\nrun 3    1.0      0.0          1.0         get_order -> get_order ->\n                                           get_order -> get_policy\nrun 4    0.0      1.0          1.0         get_order -> get_policy",
       caption: "Only run 1 is unambiguous." },
@@ -53,17 +59,6 @@ EC.receiveLesson({
       { t: "p", text: "And all of them tell you something an outcome score cannot. So they are worth having **before** a labelled set exists \u2014 which is the practical order most teams end up in anyway, and there is no reason to treat it as a compromise." },
       { t: "p", text: "They also come from traces you are already producing (14.8), so the marginal cost is a group-by rather than a labelling project." }
     ] },
-    { t: "diagram", kind: "matrix", title: "The two scores disagreed on three of four runs",
-      caption: "Each disagreement is a different bug. *“Right answer, wrong source”* justifies trajectory scoring on its own, because it is indistinguishable from success on **every** output metric — exact match, an LLM judge, a human reading the answer.",
-      cols: ["outcome", "trajectory", "duplicates", "what it means"],
-      rows: ["run 1 — the ideal path", "run 2 — search_web only",
-             "run 3 — 3x get_order", "run 4 — no answer"],
-      cells: [
-        [{ text: "1.0", tone: "good" }, { text: "1.0", tone: "good" }, "no", { text: "pass", tone: "good" }],
-        [{ text: "1.0", tone: "good" }, { text: "0.0", tone: "crit" }, "no", { text: "it GUESSED", tone: "crit" }],
-        [{ text: "1.0", tone: "good" }, { text: "subset 1.0", tone: "warn" }, { text: "yes", tone: "crit" }, { text: "a cost bug", tone: "warn" }],
-        [{ text: "0.0", tone: "crit" }, { text: "1.0", tone: "good" }, "no", { text: "fails at generation", tone: "warn" }]
-      ] },
     { t: "exercise", kind: "analysis", title: "Evaluate an agent two ways",
       difficulty: "advanced", minutes: 36,
       body: "Take several runs of the same question with different trajectories and score each on outcome and on trajectory, using both exact-match and subset trajectory scoring. Identify each disagreement and say which bug it indicates. Aggregate the scores and explain what each aggregate hides. Explain why exact-match trajectory scoring fights improvements to the agent. Build a composite verdict from three measurements. Say what a labelled set must contain, give a cheap approximation, and list the measurements that need no labels.",

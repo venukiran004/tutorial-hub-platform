@@ -49,6 +49,12 @@ EC.receiveLesson({
       code: 'g.add_node("agent", agent)\ng.add_node("tools", ToolNode(tools))\ng.add_edge(START, "agent")\ng.add_conditional_edges("agent", tools_condition)\ng.add_edge("tools", "agent")',
       caption: "Same run, same messages." },
     { t: "h2", n: "06", id: "unroll", text: "When to write them out", sub: "Six requirements that force it" },
+
+    {"kind": "matrix", "title": "An asymmetry worth knowing before you rely on them", "caption": "`ToolNode` **cannot be invoked on its own** — no config, an empty `configurable` and a `thread_id` all raise. It has to run inside a compiled graph. `tools_condition` is directly callable, which is why one is easy to unit test and the other is not.", "cols": ["callable on its own?", "how you test it"], "rows": ["ToolNode", "tools_condition"], "cells": [[{"text": "NO — raises under every config", "tone": "crit"}, {"text": "a 3-line throwaway graph", "tone": "warn"}], [{"text": "yes", "tone": "good"}, {"text": "call it with a state dict", "tone": "good"}]], "t": "diagram", "id": "dg-9_2-06-0"},
+
+
+
+
     { t: "table", head: ["requirement", "why the prebuilt cannot"], rows: [
       ["a step budget in the router", "`tools_condition` has no notion of a budget"],
       ["per-tool approval (9.7)", "`interrupt()` goes inside the tool node, per call"],
@@ -61,14 +67,6 @@ EC.receiveLesson({
       { t: "p", text: "The prebuilts are the right answer for the common case, and they get the `tool_call_id` bookkeeping and parallel-call handling right, which is genuinely easy to botch by hand." },
       { t: "p", text: "But every one of those six is a real production requirement, and each needs one of the two nodes opened up. So the sequence is: understand the long form, ship the short one, unroll the specific node a requirement touches \u2014 rather than choosing between them up front." }
     ] },
-    { t: "diagram", kind: "matrix", title: "An asymmetry worth knowing before you rely on them",
-      caption: "`ToolNode` **cannot be invoked on its own** — no config, an empty `configurable` and a `thread_id` all raise. It has to run inside a compiled graph. `tools_condition` is directly callable, which is why one is easy to unit test and the other is not.",
-      cols: ["callable on its own?", "how you test it"],
-      rows: ["ToolNode", "tools_condition"],
-      cells: [
-        [{ text: "NO — raises under every config", tone: "crit" }, { text: "a 3-line throwaway graph", tone: "warn" }],
-        [{ text: "yes", tone: "good" }, { text: "call it with a state dict", tone: "good" }]
-      ] },
     { t: "exercise", kind: "build", title: "Probe the prebuilts",
       difficulty: "core", minutes: 28,
       body: "Try to invoke ToolNode directly with no config, an empty configurable and a thread_id, and record what happens. Build the smallest graph that exercises it and confirm the tool_call_id is preserved. Then give it two tool calls in one message, a tool that raises, and a tool name that does not exist. Call tools_condition directly and identify what it returns and what that couples. Finally list the requirements that force you to unroll the prebuilts.",

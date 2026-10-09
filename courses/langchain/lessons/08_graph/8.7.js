@@ -49,6 +49,12 @@ EC.receiveLesson({
       { t: "p", text: "The returned nodes all run in the same superstep, with everything 8.6 established: they see the same snapshot, they cannot observe each other, and their updates to a shared key need a reducer." }
     ] },
     { t: "h2", n: "05", id: "skipped", text: "When a router skips a fan-in branch", sub: "No deadlock, and a quieter problem" },
+
+    {"kind": "tree", "title": "The router failure compile() cannot catch", "caption": "A function's return values are not knowable statically, so **`compile()` succeeds** on a router that can return a key the path map lacks. The failure arrives at run time, on whichever input takes that branch — which may be the rare one.", "root": {"label": "route(state)", "sub": "returns a key", "tone": "accent", "children": [{"label": "“billing”", "sub": "in the map → billing_node", "tone": "good", "edge": "mapped"}, {"label": "“tech”", "sub": "in the map → tech_node", "tone": "good", "edge": "mapped"}, {"label": "“other”", "sub": "NOT in the map → raises at run time", "tone": "crit", "edge": "compiles fine"}]}, "t": "diagram", "id": "dg-8_7-05-0"},
+
+
+
+
     { t: "p", text: "8.6 said a fan-in node waits for every incoming path. Combine that with a router that only ever selects one branch, and the obvious worry is a hang \u2014 the join waiting forever for a branch that will never run." },
     { t: "code", lang: "text", title: "Router always picks \u201ca\u201d; \u201cjoin\u201d has edges from both a and b",
       code: "-> {'trace': ['start', 'a', 'join']}",
@@ -64,13 +70,6 @@ EC.receiveLesson({
       { t: "p", text: "The join read a key that only `b` writes and saw the initial state's value. Nothing raised, because the runtime has no way to tell the difference between a contribution that is late and one that will never arrive." },
       { t: "p", text: "So a fan-in node after a conditional branch has to be written to **tolerate partial input** \u2014 checking which keys are set rather than assuming every incoming path ran. That is a node-level concern the topology does not express, which makes it exactly the kind of thing a diagram review will miss." }
     ] },
-    { t: "diagram", kind: "tree", title: "The router failure compile() cannot catch",
-      caption: "A function's return values are not knowable statically, so **`compile()` succeeds** on a router that can return a key the path map lacks. The failure arrives at run time, on whichever input takes that branch — which may be the rare one.",
-      root: { label: "route(state)", sub: "returns a key", tone: "accent", children: [
-        { label: "“billing”", sub: "in the map → billing_node", tone: "good", edge: "mapped" },
-        { label: "“tech”", sub: "in the map → tech_node", tone: "good", edge: "mapped" },
-        { label: "“other”", sub: "NOT in the map → raises at run time", tone: "crit", edge: "compiles fine" }
-      ] } },
     { t: "exercise", kind: "build", title: "Route, then break the routing",
       difficulty: "core", minutes: 32,
       body: "Write a routing function with a path map and confirm both branches. Then give the router an outcome the map lacks, and determine whether that fails at compile time or at run time. Try omitting the path map and say what it couples. Route to END, and route to a list of nodes. Finally build a fan-in whose incoming branch is skipped by a router, and find out whether it deadlocks and what the join node reads.",

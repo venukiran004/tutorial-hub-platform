@@ -34,6 +34,12 @@ EC.receiveLesson({
       { t: "p", text: "And the escalation path is the swarm's give-up node (11.3): without it, exhausting the budget is an exception rather than an answer. Here it escalates to a human, which is both a usable outcome and the right one \u2014 two agents that cannot place a request is exactly the case a person should see." }
     ] },
     { t: "h2", n: "04", id: "compare", text: "Swarm against supervisor", sub: "Five dimensions" },
+
+    {"kind": "cycle", "title": "A swarm has no supervisor", "centre": "no coordinator", "caption": "Each agent decides whether to answer or hand off, and the handoff is a `Command` (8.8) carrying the reason with the destination. That removes the coordination turn — **one** model call per step — and removes the place policy would have lived.", "nodes": [{"label": "triage", "sub": "answers or hands off", "tone": "accent", "edge": "Command(goto)"}, {"label": "billing", "sub": "same choice again", "tone": "good", "edge": "hands back"}, {"label": "technical", "sub": "and the loop is possible", "tone": "warn", "edge": "hands on"}], "t": "diagram", "id": "dg-12_3-04-0"},
+
+
+
+
     { t: "table", head: ["", "supervisor", "swarm"], rows: [
       ["who decides", "one central agent", "each agent, for itself"],
       ["model calls per turn", "2 (supervisor + worker)", "**1** (the agent)"],
@@ -45,13 +51,6 @@ EC.receiveLesson({
       { t: "p", text: "The model-call column is the swarm's genuine advantage \u2014 no coordination turn. The topology column is 8.8's warning: `Command` destinations do not appear in the drawing unless each node is annotated with its possible targets." },
       { t: "p", text: "But *policy point: nowhere central* is the one that usually settles it. A permission check, a budget check or an approval gate needs somewhere to live, and a swarm has no such place \u2014 so **each agent** has to implement it, consistently, forever. That is a duplication problem that grows with the agent count." }
     ] },
-    { t: "diagram", kind: "cycle", title: "A swarm has no supervisor", centre: "no coordinator",
-      caption: "Each agent decides whether to answer or hand off, and the handoff is a `Command` (8.8) carrying the reason with the destination. That removes the coordination turn — **one** model call per step — and removes the place policy would have lived.",
-      nodes: [
-        { label: "triage", sub: "answers or hands off", tone: "accent", edge: "Command(goto)" },
-        { label: "billing", sub: "same choice again", tone: "good", edge: "hands back" },
-        { label: "technical", sub: "and the loop is possible", tone: "warn", edge: "hands on" }
-      ] },
     { t: "exercise", kind: "build", title: "Build a swarm and find its loop",
       difficulty: "advanced", minutes: 32,
       body: "Build two agents that hand off to each other with Command, carrying the reason, and show a successful handoff. Then make each agent hand off to the other unconditionally and run it against a low recursion limit. Explain why neither agent is at fault. Add a hop budget and an escalation path, and explain why the budget cannot live in an agent. Finally compare swarm against supervisor on who decides, model calls, policy, topology visibility and the characteristic bug.",

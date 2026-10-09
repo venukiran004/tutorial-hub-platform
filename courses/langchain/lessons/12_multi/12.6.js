@@ -11,11 +11,16 @@ EC.receiveLesson({
   prerequisites: ["12.2", "8.9", "10.7"],
   blocks: [
     { t: "h2", n: "01", id: "problem", text: "add_node is a build-time call", sub: "So the worker set is topology" },
+
     { t: "code", lang: "python", title: "One generic executor, and a dict",
       code: 'REGISTRY = {\n    "docs":    {"prompt": "You answer from the documentation.", "enabled": True},\n    "account": {"prompt": "You answer about accounts.",         "enabled": True},\n}\n\ndef executor(state):\n    spec = REGISTRY.get(state["worker"])\n    if spec is None or not spec["enabled"]:\n        return {"trace": ["executor: %r unavailable" % state["worker"]]}\n    return {"results": [...], "trace": ["executor ran %s" % state["worker"]]}',
       out: "    worker=docs      -> ['executor ran docs']\n    worker=account   -> ['executor ran account']",
       caption: "The worker set is now runtime state rather than topology." },
     { t: "h2", n: "02", id: "runtime", text: "Adding one at runtime", sub: "No recompile" },
+
+    {"kind": "steps", "title": "The registry turns the worker set into data", "caption": "`add_node` is a build-time call, so *“add a worker”* normally means editing the graph and redeploying. One generic executor plus a dict of specs removes that — and the safety comes from what a row **cannot** say.", "items": [{"label": "one generic executor node", "desc": "it reads a spec and runs it; the graph topology never changes", "tone": "accent", "code": "build time"}, {"label": "a dict of worker specs", "desc": "a prompt, a tool list from an ALLOWLIST, and a few flags", "tone": "good", "code": "data"}, {"label": "nothing else may be expressed", "desc": "no code, no new tool, no permission — or the registry grants capabilities without review", "tone": "crit", "code": "the limit"}, {"label": "enabled defaults to OFF", "desc": "so adding a row and turning it on are two deliberate steps", "tone": "good", "code": "safety"}], "t": "diagram", "id": "dg-12_6-02-0"},
+
+
     { t: "code", lang: "text", title: "The same compiled graph",
       code: "added 'billing' to the registry, then invoked the SAME compiled graph:\n  ['executor ran billing']",
       caption: "The graph never changed." },
@@ -56,14 +61,6 @@ EC.receiveLesson({
       { t: "p", text: "If it needs an `if`-statement per worker, the registry is giving up the topology and **not** buying the flexibility \u2014 you have the opacity of a data-driven system and the rigidity of a coded one." },
       { t: "p", text: "That test also tells you when to stop: the first worker that needs special handling in the executor is the signal that this worker belongs as a real node, not a registry row." }
     ] },
-    { t: "diagram", kind: "steps", title: "The registry turns the worker set into data",
-      caption: "`add_node` is a build-time call, so *“add a worker”* normally means editing the graph and redeploying. One generic executor plus a dict of specs removes that — and the safety comes from what a row **cannot** say.",
-      items: [
-        { label: "one generic executor node", desc: "it reads a spec and runs it; the graph topology never changes", tone: "accent", code: "build time" },
-        { label: "a dict of worker specs", desc: "a prompt, a tool list from an ALLOWLIST, and a few flags", tone: "good", code: "data" },
-        { label: "nothing else may be expressed", desc: "no code, no new tool, no permission — or the registry grants capabilities without review", tone: "crit", code: "the limit" },
-        { label: "enabled defaults to OFF", desc: "so adding a row and turning it on are two deliberate steps", tone: "good", code: "safety" }
-      ] },
     { t: "exercise", kind: "build", title: "Add a worker without recompiling",
       difficulty: "advanced", minutes: 34,
       body: "Replace fixed worker nodes with a single generic executor that reads a registry of worker specs, and confirm it runs two workers. Add a third at runtime and invoke the same compiled graph. Then draw the graph and say what the drawing tells you. Explain why the registry read must be atomic per run and what goes wrong otherwise. Demonstrate a kill switch and say why degrading is the right default. Finally give the test for whether the pattern is worth it.",

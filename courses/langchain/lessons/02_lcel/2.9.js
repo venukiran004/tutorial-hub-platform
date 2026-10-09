@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["2.8"],
   blocks: [
     { t: "h2", n: "01", id: "fields", text: "configurable_fields", sub: "Change a value per call" },
+
+    {"kind": "compare", "title": "Two kinds of runtime configuration", "caption": "A chain is built once and deployed once; the things that vary — a customer's model tier, an experiment's prompt, a request's tenant — vary per call. Both of these are config rather than input, which is 2.9's test: two concurrent users differ on it and it is not part of the question.", "columns": [{"title": "configurable_fields", "tone": "accent", "items": ["exposes a VALUE for override at call time", "temperature, max_tokens, a model name", "chain.invoke(x, {“configurable”: {“temperature”: 0}})", "same shape, different setting"]}, {"title": "configurable_alternatives", "tone": "violet", "items": ["swaps a whole COMPONENT for another", "a different model, a different prompt, a different retriever", "declared with a default and named options", "same interface, different implementation"]}], "t": "diagram", "id": "dg-2_9-01-0"},
+
+
+
+
     { t: "code", lang: "python", title: "One chain, two behaviours",
       code: 'model = base_model.configurable_fields(\n    script=ConfigurableField(id="script", name="Script",\n                             description="what the model returns"))\n\nmodel.invoke(msgs)                                        # default\nmodel.invoke(msgs, config={"configurable": {"script": ["overridden"]}})',
       out: "default        : default\nwith config    : overridden",
@@ -50,20 +56,6 @@ EC.receiveLesson({
       { t: "p", text: "**If two concurrent calls could legitimately differ on it, and it is not part of the question being asked, it is config.** A tenant id differs per call and is not part of the question \u2014 config. The document to summarise differs per call and *is* the question \u2014 input." },
       { t: "p", text: "Getting it wrong in one direction puts operational concerns into your prompt variables, where they leak into the model's context. Getting it wrong in the other direction puts data into config, where it does not reach the prompt template at all and fails as a missing variable." }
     ] },
-    { t: "diagram", kind: "compare", title: "Two kinds of runtime configuration",
-      caption: "A chain is built once and deployed once; the things that vary — a customer's model tier, an experiment's prompt, a request's tenant — vary per call. Both of these are config rather than input, which is 2.9's test: two concurrent users differ on it and it is not part of the question.",
-      columns: [
-        { title: "configurable_fields", tone: "accent", items: [
-          "exposes a VALUE for override at call time",
-          "temperature, max_tokens, a model name",
-          "chain.invoke(x, {“configurable”: {“temperature”: 0}})",
-          "same shape, different setting" ] },
-        { title: "configurable_alternatives", tone: "violet", items: [
-          "swaps a whole COMPONENT for another",
-          "a different model, a different prompt, a different retriever",
-          "declared with a default and named options",
-          "same interface, different implementation" ] }
-      ] },
     { t: "exercise", kind: "build", title: "One chain, many behaviours",
       difficulty: "core", minutes: 24,
       body: "Expose a value on a model with configurable_fields and change it at call time without rebuilding the chain. Then register an alternative component with configurable_alternatives and select it from config. Attach a run name, tags and metadata with with_config and confirm they are carried. Finally, classify a list of values into config and input.",

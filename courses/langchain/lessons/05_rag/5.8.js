@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["5.7", "5.1"],
   blocks: [
     { t: "h2", n: "01", id: "baseline", text: "The baseline, measured", sub: "And one of the numbers is lying" },
+
+    {"kind": "matrix", "title": "The baseline looks finished, and two things are wrong with that", "caption": "Recall@5 of 1.000 and MRR of 0.964 on natural questions. But **P@5 of 0.214 is at its arithmetic ceiling**, not failing — 13 of 14 queries have exactly one relevant document, so 1/5 is the maximum achievable. A metric that cannot move is not evidence.", "cols": ["measured", "what it actually tells you"], "rows": ["Recall@5", "MRR", "NDCG@5", "P@5"], "cells": [[{"text": "1.000", "tone": "good"}, "the relevant doc is always in the top 5"], [{"text": "0.964", "tone": "good"}, "and nearly always first"], [{"text": "0.974", "tone": "good"}, "the ranking is good"], [{"text": "0.214", "tone": "crit"}, {"text": "AT CEILING — cannot move", "tone": "crit"}]], "t": "diagram", "id": "dg-5_8-01-0"},
+
+
+
+
     { t: "code", lang: "text", title: "14 natural queries, k=5",
       code: "Recall@5 = 1.000   P@5 = 0.214   MRR = 0.964   NDCG@5 = 0.974",
       caption: "Three of these are genuinely good. One is at ceiling." },
@@ -41,16 +47,6 @@ EC.receiveLesson({
       ["P@5 is at ceiling", "the metric cannot show improvement", "metric choice (6.9)"]
     ] },
     { t: "p", text: "Each row came from a measurement in this module rather than from a list of techniques to cover. That ordering matters: module 6 is not a tour of retrieval methods, it is six specific repairs to a baseline whose failures you have now seen." },
-    { t: "diagram", kind: "matrix", title: "The baseline looks finished, and two things are wrong with that",
-      caption: "Recall@5 of 1.000 and MRR of 0.964 on natural questions. But **P@5 of 0.214 is at its arithmetic ceiling**, not failing — 13 of 14 queries have exactly one relevant document, so 1/5 is the maximum achievable. A metric that cannot move is not evidence.",
-      cols: ["measured", "what it actually tells you"],
-      rows: ["Recall@5", "MRR", "NDCG@5", "P@5"],
-      cells: [
-        [{ text: "1.000", tone: "good" }, "the relevant doc is always in the top 5"],
-        [{ text: "0.964", tone: "good" }, "and nearly always first"],
-        [{ text: "0.974", tone: "good" }, "the ranking is good"],
-        [{ text: "0.214", tone: "crit" }, { text: "AT CEILING — cannot move", tone: "crit" }]
-      ] },
     { t: "exercise", kind: "analysis", title: "Measure the baseline and derive the problem list",
       difficulty: "advanced", minutes: 32,
       body: "Evaluate the baseline retriever on natural queries across recall, precision, MRR and NDCG. Identify which metric is at ceiling and explain why. Then evaluate the same retriever on rare exact terms and report per-query reciprocal rank. Show how near-duplicate documents consume the candidate slots even when ranking is perfect. Finally, derive a problem list from what you measured.",

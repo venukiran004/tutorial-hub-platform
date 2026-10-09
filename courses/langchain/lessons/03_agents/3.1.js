@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["1.6", "2.9"],
   blocks: [
     { t: "h2", n: "01", id: "builds", text: "What @tool builds", sub: "Three things, all sent to the model" },
+
+    {"kind": "tree", "title": "What the decorator sends to the model", "caption": "All three parts are sent. The **description** is the field that decides whether the tool gets called at all — which makes it prompt, written in a docstring, and the only part of a tool that is tuned rather than implemented.", "root": {"label": "@tool", "sub": "def lookup_order(order_id: str) -> str", "tone": "accent", "children": [{"label": "name", "sub": "the function name", "tone": "good", "edge": "sent"}, {"label": "description", "sub": "the docstring — decides IF it is called", "tone": "crit", "edge": "sent"}, {"label": "argument schema", "sub": "from the type hints", "tone": "good", "edge": "sent"}]}, "t": "diagram", "id": "dg-3_1-01-0"},
+
+
+
+
     { t: "code", lang: "python", title: "A function becomes a tool",
       code: '@tool\ndef calculate(expression: str) -> str:\n    """Evaluate a mathematical expression. Use for any arithmetic."""\n    return str(eval(expression, {"__builtins__": {}}, {}))\n\nprint(calculate.name)\nprint(calculate.description)\nprint(calculate.args)',
       out: "name        : calculate\ndescription : Evaluate a mathematical expression. Use for any arithmetic.\nargs        : {'expression': {'title': 'Expression', 'type': 'string'}}",
@@ -42,13 +48,6 @@ EC.receiveLesson({
       { t: "p", text: "Inside an agent, a `ToolException` is caught and returned to the model as a `ToolMessage`, so the model sees the text and can correct its own argument and try again. That makes the message a prompt: \u201cuser_id must be numeric, got 'alice'\u201d tells it what to fix; \u201cinvalid input\u201d does not." },
       { t: "p", text: "An unhandled exception does the opposite \u2014 it propagates out of the loop and kills the run. 3.7 shows both, and the difference between a self-correcting agent and a 500 is which kind of exception a tool raises." }
     ] },
-    { t: "diagram", kind: "tree", title: "What the decorator sends to the model",
-      caption: "All three parts are sent. The **description** is the field that decides whether the tool gets called at all — which makes it prompt, written in a docstring, and the only part of a tool that is tuned rather than implemented.",
-      root: { label: "@tool", sub: "def lookup_order(order_id: str) -> str", tone: "accent", children: [
-        { label: "name", sub: "the function name", tone: "good", edge: "sent" },
-        { label: "description", sub: "the docstring — decides IF it is called", tone: "crit", edge: "sent" },
-        { label: "argument schema", sub: "from the type hints", tone: "good", edge: "sent" }
-      ] } },
     { t: "exercise", kind: "build", title: "Write a tool the model will actually call",
       difficulty: "core", minutes: 24,
       body: "Define a tool with the decorator and inspect everything it sends to the model. Compare three descriptions of the same function and say what each lets the model infer. Build a tool with a Pydantic args_schema including a bounded integer, and confirm the bound is enforced. Then raise a ToolException on a bad argument and explain what an agent does with it.",

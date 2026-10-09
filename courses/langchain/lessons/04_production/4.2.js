@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["4.1", "2.9"],
   blocks: [
     { t: "h2", n: "01", id: "tree", text: "A run is a tree", sub: "Built from the nesting a flat log throws away" },
+
+    {"kind": "timeline", "title": "A run is a tree, and the tree is what makes it diagnosable", "caption": "Built from callback events: the model call is the deepest row **and** the slowest — 51.5 ms of a 59.9 ms run, **86%** — with everything above it mostly waiting on it. A flat list of timings cannot show you that the parent's cost *is* the child's.", "span": 62, "tick": 10, "unit": "milliseconds", "lanes": [{"label": "the whole run", "bars": [[0, 59.9, "59.9 ms total", "accent"]]}, {"label": "inner chain", "bars": [[1.5, 56, "54.5 ms — waiting", "teal"]]}, {"label": "the model call", "bars": [[3, 54.5, "51.5 ms — 86%", "crit"]]}, {"label": "the parser", "bars": [[56, 59, "", "good"]]}], "t": "diagram", "id": "dg-4_2-01-0"},
+
+
+
+
     { t: "code", lang: "text", title: "The span tree for a nested chain",
       code: 'chain  chain          59.9 ms\n  chain  chain           0.9 ms\n  chain  chain          54.3 ms\n    chain  ChatPromptTemplate    0.4 ms\n    llm    model          51.5 ms\n    chain  chain           0.4 ms\n  chain  chain           2.4 ms',
       caption: "The model call is the deepest row and the slowest. That is the usual shape." },
@@ -38,15 +44,6 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "readable", text: "Readable against queryable", sub: "Two different problems" },
     { t: "p", text: "A `run_name` makes a span **readable** \u2014 you are not staring at forty rows called `RunnableSequence` trying to match step indices. Tags and metadata make a trace **queryable**, which is the thing that matters once there is volume: show me the failures for this tenant, this version, this experiment arm." },
     { t: "p", text: "Readable helps one person debugging one run. Queryable is what lets you ask whether a problem is general, which is almost always the first question. Both are one method call, and only the second degrades as traffic grows." },
-    { t: "diagram", kind: "timeline", title: "A run is a tree, and the tree is what makes it diagnosable",
-      caption: "Built from callback events: the model call is the deepest row **and** the slowest — 51.5 ms of a 59.9 ms run, **86%** — with everything above it mostly waiting on it. A flat list of timings cannot show you that the parent's cost *is* the child's.",
-      span: 62, tick: 10, unit: "milliseconds",
-      lanes: [
-        { label: "the whole run", bars: [[0, 59.9, "59.9 ms total", "accent"]] },
-        { label: "inner chain", bars: [[1.5, 56, "54.5 ms — waiting", "teal"]] },
-        { label: "the model call", bars: [[3, 54.5, "51.5 ms — 86%", "crit"]] },
-        { label: "the parser", bars: [[56, 59, "", "good"]] }
-      ] },
     { t: "exercise", kind: "build", title: "Build a tracer and read it",
       difficulty: "advanced", minutes: 26,
       body: "Write a callback handler that maintains a depth counter and records each span's name and duration, producing an indented tree. Run it on a nested chain containing a deliberately slow model call. Print the tree, then compute what share of the run the model call took and what was left for everything else. Finally, list the attributes worth attaching and say why they cannot be added later.",

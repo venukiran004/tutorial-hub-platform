@@ -28,6 +28,12 @@ EC.receiveLesson({
       { t: "p", text: "So the predicate is worth writing explicitly rather than taking. The default's shape \u2014 deny the things we recognise, retry the rest \u2014 is defensible for a library that cannot know your dependencies, and it is not a policy for a system that can." }
     ] },
     { t: "h2", n: "03", id: "breaker", text: "The circuit breaker", sub: "Measured against a dead dependency" },
+
+    {"kind": "cycle", "title": "The breaker’s state machine", "centre": "measured", "caption": "100 requests at 3 attempts each made **300** doomed calls to a dead dependency; the breaker made **5** and skipped 295. Half-open sends **one** probe, and a single failure there re-opens immediately rather than spending the threshold again.", "nodes": [{"label": "closed", "sub": "calls pass through", "tone": "good", "edge": "5 failures"}, {"label": "open", "sub": "295 refused locally", "tone": "crit", "edge": "cooldown expires"}, {"label": "half-open", "sub": "exactly ONE probe", "tone": "warn", "edge": "probe succeeds"}], "t": "diagram", "id": "dg-14_2-03-0"},
+
+
+
+
     { t: "code", lang: "text", title: "100 requests, 3 attempts each",
       code: "no breaker   : 300 calls to a dependency that is down\nwith breaker : 5 attempted, 295 skipped\ntransitions  : [('closed', 'open')]",
       caption: "**300 doomed calls became 5.**" },
@@ -50,13 +56,6 @@ EC.receiveLesson({
       { t: "p", text: "An `AttributeError`, a bare `Exception` subclass you defined, anything not on the deny list. Each of those is deterministic, so the retry is pure cost \u2014 and with backoff it is cost plus latency." },
       { t: "p", text: "The practical rule: write `retry_on` as an explicit allow list of the transport failures your dependencies actually produce. That is usually three or four exception types, and it is shorter than the deny list it replaces." }
     ] },
-    { t: "diagram", kind: "cycle", title: "The breaker’s state machine", centre: "measured",
-      caption: "100 requests at 3 attempts each made **300** doomed calls to a dead dependency; the breaker made **5** and skipped 295. Half-open sends **one** probe, and a single failure there re-opens immediately rather than spending the threshold again.",
-      nodes: [
-        { label: "closed", sub: "calls pass through", tone: "good", edge: "5 failures" },
-        { label: "open", sub: "295 refused locally", tone: "crit", edge: "cooldown expires" },
-        { label: "half-open", sub: "exactly ONE probe", tone: "warn", edge: "probe succeeds" }
-      ] },
     { t: "exercise", kind: "build", title: "Retry correctly",
       difficulty: "core", minutes: 32,
       body: "Compute exponential backoff delays and show the problem with determinism by measuring how many of 60 clients land in the same short window with no jitter, full jitter and equal jitter. Read LangGraph's default retry predicate and report what it does with several common exception types. Then implement a circuit breaker with closed, open and half-open states, measure how many calls it saves against a dead dependency, and exercise the half-open transition in both directions. Finally classify what should and should not be retried.",

@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["4.1"],
   blocks: [
     { t: "h2", n: "01", id: "exact", text: "Exact means exact", sub: "A trailing space is a different question" },
+
+    {"kind": "matrix", "title": "An exact-match cache is exactly exact", "caption": "A trailing space is a different key. On ten real-looking queries all asking the same thing, exact matching got a **20%** hit rate; loosening the match bought up to **80%** — and bought a new failure that has no analogue in an exact cache (7.7).", "cols": ["hit rate", "the new failure"], "rows": ["exact match", "normalised key", "semantic, strict", "semantic, permissive"], "cells": [[{"text": "20%", "tone": "crit"}, {"text": "none — it cannot be wrong", "tone": "good"}], [{"text": "higher, still exact", "tone": "warn"}, {"text": "none", "tone": "good"}], [{"text": "moderate", "tone": "warn"}, {"text": "a near-miss answered wrongly", "tone": "warn"}], [{"text": "80%", "tone": "good"}, {"text": "confidently wrong answers", "tone": "crit"}]], "t": "diagram", "id": "dg-4_3-01-0"},
+
+
+
+
     { t: "code", lang: "python", title: "Setting a cache and hitting it",
       code: 'set_llm_cache(InMemoryCache())\nchain.invoke({"q": "what is LCEL?"})      # model called\nchain.invoke({"q": "what is LCEL?"})      # cache hit, no model call\nchain.invoke({"q": "what is LCEL? "})     # trailing space -> model called',
       out: "first  invoke -> 'cached answer'   (model calls: 1)\nsecond invoke -> 'cached answer'   (model calls: 1)\nthe second call hit the cache: True\na trailing space is a different key -> model calls: 1",
@@ -43,16 +49,6 @@ EC.receiveLesson({
       { t: "p", text: "A RAG answer looks like a good caching candidate: the same question, the same answer. But the answer was grounded in documents that can change, so a cached response is correct until the index is updated and silently stale afterwards \u2014 with no mechanism to notice." },
       { t: "p", text: "If you cache RAG answers, the cache key has to include something that changes when the index does, which is 7.5's freshness problem arriving a lesson early. The simplest version is an index version in the key, which makes a reindex invalidate everything \u2014 blunt, correct, and usually right." }
     ] },
-    { t: "diagram", kind: "matrix", title: "An exact-match cache is exactly exact",
-      caption: "A trailing space is a different key. On ten real-looking queries all asking the same thing, exact matching got a **20%** hit rate; loosening the match bought up to **80%** — and bought a new failure that has no analogue in an exact cache (7.7).",
-      cols: ["hit rate", "the new failure"],
-      rows: ["exact match", "normalised key", "semantic, strict", "semantic, permissive"],
-      cells: [
-        [{ text: "20%", tone: "crit" }, { text: "none — it cannot be wrong", tone: "good" }],
-        [{ text: "higher, still exact", tone: "warn" }, { text: "none", tone: "good" }],
-        [{ text: "moderate", tone: "warn" }, { text: "a near-miss answered wrongly", tone: "warn" }],
-        [{ text: "80%", tone: "good" }, { text: "confidently wrong answers", tone: "crit" }]
-      ] },
     { t: "exercise", kind: "analysis", title: "Measure a cache honestly",
       difficulty: "core", minutes: 24,
       body: "Set an exact-match cache and confirm a repeat invocation does not call the model. Show that a trivially different prompt is a different key. Then take ten realistic queries that all ask the same thing and measure the exact-match hit rate, and the hit rate at three similarity thresholds. Then construct pairs that a loose threshold would merge wrongly, and state the asymmetry between a miss and a wrong hit.",

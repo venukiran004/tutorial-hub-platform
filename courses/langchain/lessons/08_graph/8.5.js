@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["8.3"],
   blocks: [
     { t: "h2", n: "01", id: "function", text: "A node is a function", sub: "So it tests without a graph" },
+
+    {"kind": "matrix", "title": "A node is a dict in and a dict out", "caption": "Which makes its unit test exactly that — no runtime, no compile, nothing to mock. That is the main practical benefit of the node signature, and it comes with three mistakes that follow directly from it.", "cols": ["the mistake", "what happens"], "rows": ["return the whole state", "mutate the state in place", "return an unknown key"], "cells": [[{"text": "works, but fights the reducers", "tone": "warn"}, {"text": "an append becomes a duplicate", "tone": "crit"}], [{"text": "no update is recorded", "tone": "crit"}, {"text": "the change vanishes", "tone": "crit"}], [{"text": "accepted", "tone": "crit"}, {"text": "silently discarded (8.2)", "tone": "crit"}]], "t": "diagram", "id": "dg-8_5-01-0"},
+
+
+
+
     { t: "code", lang: "python", title: "No runtime required",
       code: 'def double(state):\n    return {"n": state["n"] * 2,\n            "log": ["doubled to %d" % (state["n"] * 2)]}\n\ndouble({"n": 5, "log": []})',
       out: "    {'n': 10, 'log': ['doubled to 10']}",
@@ -48,15 +54,6 @@ EC.receiveLesson({
     ] },
     { t: "h2", n: "06", id: "names", text: "The name is the identity", sub: "And it is public structure" },
     { t: "p", text: "A node's name is what edges refer to, what a trace shows, and what `interrupt_before` takes in 9.x. So renaming a node changes the interrupt configuration and any persisted checkpoint's node references \u2014 it is part of the graph's public structure rather than a local label." },
-    { t: "diagram", kind: "matrix", title: "A node is a dict in and a dict out",
-      caption: "Which makes its unit test exactly that — no runtime, no compile, nothing to mock. That is the main practical benefit of the node signature, and it comes with three mistakes that follow directly from it.",
-      cols: ["the mistake", "what happens"],
-      rows: ["return the whole state", "mutate the state in place", "return an unknown key"],
-      cells: [
-        [{ text: "works, but fights the reducers", tone: "warn" }, { text: "an append becomes a duplicate", tone: "crit" }],
-        [{ text: "no update is recorded", tone: "crit" }, { text: "the change vanishes", tone: "crit" }],
-        [{ text: "accepted", tone: "crit" }, { text: "silently discarded (8.2)", tone: "crit" }]
-      ] },
     { t: "exercise", kind: "build", title: "Make the three node mistakes on purpose",
       difficulty: "core", minutes: 28,
       body: "Write a node as a plain function and test it without building a graph. Then make each of the three mistakes deliberately and record what the runtime does: return the whole state with an append reducer present, mutate the state in place, and return None. Explain why each is wrong even where it appears to work. Finally give the discipline that makes a node's dependencies visible, and say why a node's name is public structure.",

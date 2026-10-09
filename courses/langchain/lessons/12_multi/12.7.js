@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["12.2", "10.2", "10.9"],
   blocks: [
     { t: "h2", n: "01", id: "three", text: "Three options", sub: "In increasing isolation" },
+
+    {"kind": "layers", "title": "Three options, in increasing isolation", "caption": "The question each one answers is what a downstream agent can **tell apart**. In a shared message list a retrieved quotation and a hedged guess have the same form — both are assistant turns — so provenance has to be structure rather than prose.", "items": [{"label": "shared state", "sub": "every agent reads and writes one message list", "tone": "warn", "side": "no isolation"}, {"label": "filtered state", "sub": "each agent receives a constructed view", "tone": "good", "side": "some"}, {"label": "message passing", "sub": "necessary once they are separate services", "tone": "accent", "side": "full"}], "t": "diagram", "id": "dg-12_7-01-0"},
+
+
+
+
     { t: "dl", items: [
       ["**shared state**", "Every agent reads and writes one message list. Simplest, and every agent's output is in every later agent's prompt whether relevant or not."],
       ["**filtered state**", "Each agent receives a constructed view \u2014 10.2's `Send`, which gives a worker exactly what you passed and nothing else."],
@@ -55,13 +61,6 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "recommend", text: "The practical recommendation", sub: "Two settings" },
     { t: "p", text: "**Inside one graph**: shared state for the conversation, `Send` for anything a worker should not see, and `name` on every message so attribution survives." },
     { t: "p", text: "**Across services**: an explicit task payload with a schema, plus the conversation id so the receiving side can fetch history. And whichever you choose, **record the handoff itself** \u2014 who handed to whom and why, which is the trace 12.8 needs and the reason 8.8 argued for `Command` carrying the reason with the destination." },
-    { t: "diagram", kind: "layers", title: "Three options, in increasing isolation",
-      caption: "The question each one answers is what a downstream agent can **tell apart**. In a shared message list a retrieved quotation and a hedged guess have the same form — both are assistant turns — so provenance has to be structure rather than prose.",
-      items: [
-        { label: "shared state", sub: "every agent reads and writes one message list", tone: "warn", side: "no isolation" },
-        { label: "filtered state", sub: "each agent receives a constructed view", tone: "good", side: "some" },
-        { label: "message passing", sub: "necessary once they are separate services", tone: "accent", side: "full" }
-      ] },
     { t: "exercise", kind: "build", title: "Compare the three channels",
       difficulty: "advanced", minutes: 30,
       body: "Build two agents sharing one message list and report what the second one received. Then fan out with Send from a state containing a key the worker should not see, and report which keys the worker got. Show the message list with and without the name field and explain the two reasons attribution matters. Finally say what changes once the agents are separate services, and decide what the payload should be.",

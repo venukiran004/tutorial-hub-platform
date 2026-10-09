@@ -17,6 +17,12 @@ EC.receiveLesson({
       caption: "An edge from `START` says \u201cthis runs first\u201d; an edge to `END` says \u201cthis path is done\u201d." },
     { t: "p", text: "`START` and `END` are sentinels rather than nodes \u2014 nothing executes for them. 8.9 shows that a graph without an edge from `START` fails to compile, because the runtime needs to know where to begin, and that a node without a path to `END` compiles fine." },
     { t: "h2", n: "02", id: "superstep", text: "The superstep", sub: "Two parallel nodes see the same input state" },
+
+    {"kind": "timeline", "title": "The superstep: a consistent snapshot, then one commit", "caption": "Two parallel nodes **both saw `counter=0`**. Neither saw the other's update, and the node after them saw **`counter=2`** — both increments applied together by the reducer. Read a snapshot, run everything scheduled, commit once.", "span": 3, "tick": 1, "unit": "supersteps", "lanes": [{"label": "node_a", "bars": [[1, 2, "reads 0, writes +1", "good"]]}, {"label": "node_b", "bars": [[1, 2, "reads 0, writes +1", "good"]]}, {"label": "the reducer", "bars": [[2, 2.4, "merges", "violet"]]}, {"label": "node_c", "bars": [[2.4, 3, "reads counter=2", "accent"]]}], "t": "diagram", "id": "dg-8_6-02-0"},
+
+
+
+
     { t: "code", lang: "python", title: "Both increment, and both report what they saw",
       code: 'class S2(TypedDict):\n    counter: Annotated[int, operator.add]\n    saw: Annotated[List[str], operator.add]\n\ndef left(state):\n    return {"counter": 1, "saw": ["left saw counter=%d" % state["counter"]]}\n\ndef right(state):\n    return {"counter": 1, "saw": ["right saw counter=%d" % state["counter"]]}',
       out: "    left saw counter=0\n    right saw counter=0\n    after saw counter=2\n    final counter = 2",
@@ -41,15 +47,6 @@ EC.receiveLesson({
       { t: "p", text: "So you can add a pair that points backwards, giving a cycle. You can compute the next pair from state, giving a conditional branch (8.7). And you can stop between steps and write the state down, giving a pause (9.x). All three of 8.1's requirements are consequences of representing control flow as data." }
     ] },
     { t: "p", text: "The honest cost is also visible in that comparison: four lines of `add_edge` against one expression, plus a schema. Which is why 8.1's rule stands \u2014 pay that only when you need at least one of the three." },
-    { t: "diagram", kind: "timeline", title: "The superstep: a consistent snapshot, then one commit",
-      caption: "Two parallel nodes **both saw `counter=0`**. Neither saw the other's update, and the node after them saw **`counter=2`** — both increments applied together by the reducer. Read a snapshot, run everything scheduled, commit once.",
-      span: 3, tick: 1, unit: "supersteps",
-      lanes: [
-        { label: "node_a", bars: [[1, 2, "reads 0, writes +1", "good"]] },
-        { label: "node_b", bars: [[1, 2, "reads 0, writes +1", "good"]] },
-        { label: "the reducer", bars: [[2, 2.4, "merges", "violet"]] },
-        { label: "node_c", bars: [[2.4, 3, "reads counter=2", "accent"]] }
-      ] },
     { t: "exercise", kind: "build", title: "Measure the superstep",
       difficulty: "core", minutes: 30,
       body: "Build a linear graph with START and END and confirm the execution order. Then build a graph with two parallel nodes that both read and write the same counter, and have each report what it saw. Determine whether either saw the other's update, and what the node after them saw. State the superstep model in one sentence. Then confirm how many times a fan-in node runs, and explain why a graph's sequence being data rather than shape is what enables cycles and conditional branches.",

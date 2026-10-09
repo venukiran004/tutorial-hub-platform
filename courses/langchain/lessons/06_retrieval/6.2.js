@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["5.4", "6.1"],
   blocks: [
     { t: "h2", n: "01", id: "scratch", text: "Cosine, by hand", sub: "And it matches to float noise" },
+
+    {"kind": "steps", "title": "There is no cleverness inside a vector search", "caption": "Computing cosine by hand in a Python loop reproduced the library's ranking to within **8.3 × 10⁻⁸** — float32 rounding. The only difference is that the library's loop is written in C, which is a performance fact and not a conceptual one.", "items": [{"label": "normalise both vectors", "desc": "so the dot product IS the cosine", "tone": "accent", "code": "numpy"}, {"label": "dot the query against every document", "desc": "one multiply-add per dimension, 384 of them", "tone": "good", "code": "a loop"}, {"label": "sort descending, take k", "desc": "and k results always come back, however irrelevant", "tone": "warn", "code": "argsort"}, {"label": "the ranking matched to 8.3e-08", "desc": "float32 rounding — so the library adds speed, not insight", "tone": "good", "code": "verified"}], "t": "diagram", "id": "dg-6_2-01-0"},
+
+
+
+
     { t: "code", lang: "python", title: "The whole of a vector search",
       code: 'mine = []\nfor i, t in enumerate(TXT):\n    d = EMB[i]\n    num = sum(float(a) * float(b) for a, b in zip(v, d))\n    den = (math.sqrt(sum(float(a) * a for a in v))\n           * math.sqrt(sum(float(b) * b for b in d)))\n    mine.append(num / den)',
       out: "  top 3 by hand-written cosine:\n    api-limits           0.463018\n    bill-cancel-sub      0.333873\n    bill-overage         0.284438\n  max absolute difference from the library: 8.28e-08",
@@ -37,14 +43,6 @@ EC.receiveLesson({
       { t: "p", text: "`k=5` is a promise to return five documents, and it is kept regardless of whether anything in the corpus is relevant. The retriever has no output that means *no*, so a question the corpus cannot answer produces five documents and a confident answer grounded in them." },
       { t: "p", text: "And the three scores are not comparable the way they look. 0.4445 for `Retry-After` is a failure \u2014 the relevant document is not in the list at all \u2014 while 0.1279 for nonsense is a correct non-answer wearing a low number. Any threshold that rejects the nonsense accepts the failure. That is the problem 7.1 has to solve, and it cannot be solved with one number." }
     ] },
-    { t: "diagram", kind: "steps", title: "There is no cleverness inside a vector search",
-      caption: "Computing cosine by hand in a Python loop reproduced the library's ranking to within **8.3 × 10⁻⁸** — float32 rounding. The only difference is that the library's loop is written in C, which is a performance fact and not a conceptual one.",
-      items: [
-        { label: "normalise both vectors", desc: "so the dot product IS the cosine", tone: "accent", code: "numpy" },
-        { label: "dot the query against every document", desc: "one multiply-add per dimension, 384 of them", tone: "good", code: "a loop" },
-        { label: "sort descending, take k", desc: "and k results always come back, however irrelevant", tone: "warn", code: "argsort" },
-        { label: "the ranking matched to 8.3e-08", desc: "float32 rounding — so the library adds speed, not insight", tone: "good", code: "verified" }
-      ] },
     { t: "exercise", kind: "build", title: "Implement cosine, then find the limits",
       difficulty: "core", minutes: 26,
       body: "Compute cosine similarity in a plain Python loop and verify the maximum absolute difference against the library's vectorised result. Then measure the dense baseline on natural queries and on rare exact terms, and show one worked case for each of the three failure classes. Finally, show what the retriever returns for a query the corpus cannot answer, and compare that score against a failed retrieval.",

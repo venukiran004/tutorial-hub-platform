@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["8.2"],
   blocks: [
     { t: "h2", n: "01", id: "default", text: "The default overwrites", sub: "Silently, with the right types" },
+
+    {"kind": "trace", "title": "The default reducer is replacement", "caption": "The most common source of LangGraph bugs. Two nodes appending to a `List[str]` in sequence leaves you with **`['from b']`** — the first update is gone, the types are correct and nothing raises.", "left": "what runs", "codeW": 300, "vars": ["without a reducer", "with add"], "steps": [{"code": "initial state", "state": ["[]", "[]"]}, {"code": "node_a returns {“log”: [“from a”]}", "state": ["['from a']", "['from a']"], "changed": [0, 1]}, {"code": "node_b returns {“log”: [“from b”]}", "state": ["['from b']", "['from a', 'from b']"], "changed": [0, 1], "note": "a’s update is gone", "tone": "crit"}], "t": "diagram", "id": "dg-8_3-01-0"},
+
+
+
+
     { t: "code", lang: "python", title: "Two nodes, one key, no reducer",
       code: 'class S(TypedDict):\n    messages: List[str]        # NO reducer\n\ndef a(state: S):\n    return {"messages": ["from a"]}\n\ndef b(state: S):\n    return {"messages": ["from b"]}\n\n# START -> a -> b -> END',
       out: "  result: {'messages': ['from b']}",
@@ -60,16 +66,6 @@ EC.receiveLesson({
       { t: "p", text: "Appending is the common case; updating a message in place is how you correct one. That is what human-in-the-loop editing needs in 9.x \u2014 a reviewer changes a message and the state reflects the edit rather than accumulating both versions." },
       { t: "p", text: "So using `operator.add` on a message list gives you appending only, and silently removes the ability to correct a message later. It will look correct for as long as nothing tries to edit history." }
     ] },
-    { t: "diagram", kind: "trace", title: "The default reducer is replacement",
-      caption: "The most common source of LangGraph bugs. Two nodes appending to a `List[str]` in sequence leaves you with **`['from b']`** — the first update is gone, the types are correct and nothing raises.",
-      left: "what runs", codeW: 300,
-      vars: ["without a reducer", "with add"],
-      steps: [
-        { code: "initial state", state: ["[]", "[]"] },
-        { code: "node_a returns {“log”: [“from a”]}", state: ["['from a']", "['from a']"], changed: [0, 1] },
-        { code: "node_b returns {“log”: [“from b”]}", state: ["['from b']", "['from a', 'from b']"], changed: [0, 1],
-          note: "a’s update is gone", tone: "crit" }
-      ] },
     { t: "exercise", kind: "build", title: "Make a reducer necessary, then write one",
       difficulty: "advanced", minutes: 34,
       body: "Build a two-node sequential graph whose nodes both write a list key with no reducer, and show what happens to the first update. Add a reducer and show the difference. Then build the same thing with two parallel nodes and compare the failure. Explain which reducers are safe when updates are reordered. Write a custom reducer that deduplicates a fan-in. Finally compare add_messages against operator.add on a message with a matching id.",

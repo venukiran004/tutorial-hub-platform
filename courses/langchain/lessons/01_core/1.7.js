@@ -82,6 +82,12 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "contract", text: "What each base class demands",
       sub: "One or two methods, which is why the ecosystem is large" },
 
+    {"kind": "matrix", "title": "What the protocol demands of an implementer", "caption": "One method, usually — and in exchange each component gets batching, streaming, async and the composition operators. That trade is the whole argument for implementing the interface rather than wrapping it.", "cols": ["the one method you write", "what you get in exchange"], "rows": ["a Runnable", "an output parser", "a chat model", "a retriever"], "cells": [[{"text": "invoke", "tone": "accent"}, {"text": "batch, stream, async, |", "tone": "good"}], [{"text": "parse", "tone": "accent"}, {"text": "the same, plus streaming", "tone": "good"}], [{"text": "_generate", "tone": "accent"}, {"text": "bind_tools, structured output", "tone": "good"}], [{"text": "_get_relevant_documents", "tone": "accent"}, {"text": "composes into any chain", "tone": "good"}]], "t": "diagram", "id": "dg-1_7-06-0"},
+
+
+
+
+
     { t: "table",
       head: ["Base class", "You implement", "You receive"],
       rows: [
@@ -94,16 +100,6 @@ EC.receiveLesson({
 
     { t: "p", text: "That ratio is the reason the ecosystem has as many integrations as it does. The cost of making something a first-class component is a single method, so people pay it \u2014 and the same mechanism is available to you for anything the library does not already have." },
 
-    { t: "diagram", kind: "matrix", title: "What the protocol demands of an implementer",
-      caption: "One method, usually — and in exchange each component gets batching, streaming, async and the composition operators. That trade is the whole argument for implementing the interface rather than wrapping it.",
-      cols: ["the one method you write", "what you get in exchange"],
-      rows: ["a Runnable", "an output parser", "a chat model", "a retriever"],
-      cells: [
-        [{ text: "invoke", tone: "accent" }, { text: "batch, stream, async, |", tone: "good" }],
-        [{ text: "parse", tone: "accent" }, { text: "the same, plus streaming", tone: "good" }],
-        [{ text: "_generate", tone: "accent" }, { text: "bind_tools, structured output", tone: "good" }],
-        [{ text: "_get_relevant_documents", tone: "accent" }, { text: "composes into any chain", tone: "good" }]
-      ] },
     { t: "exercise", kind: "build", title: "Write three components and find the bug",
       difficulty: "advanced", minutes: 30,
       body: "Build a custom component three ways: a function wrapped in RunnableLambda, a Runnable subclass with configuration, and an output parser with its own format instructions. Compose all three with library components into one chain and run it. Then look carefully at the result, work out why it is wrong, and make the failure loud.",

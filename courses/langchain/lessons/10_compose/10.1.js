@@ -16,6 +16,12 @@ EC.receiveLesson({
       out: "    {'text': 'HELLO', 'steps': ['prepare', 'clean', 'upper', 'finish']}",
       caption: "The inner graph ran as one node, and its steps merged into the outer state." },
     { t: "h2", n: "02", id: "keys", text: "The shared-key rule", sub: "And it is a real coupling" },
+
+    {"kind": "steps", "title": "State crosses a subgraph boundary by key NAME", "caption": "`add_node(“inner”, compiled_graph)` is the whole of composition, because a compiled graph satisfies the node interface. The catch is the boundary: matching keys merge, and a key the parent does not declare is **discarded without a word** (8.2).", "items": [{"label": "the parent passes the whole state in", "desc": "not a selection — the subgraph sees everything the parent has", "tone": "accent", "code": "in"}, {"label": "the subgraph runs its own supersteps", "desc": "its internal steps are ONE superstep of the parent", "tone": "violet", "code": "opaque"}, {"label": "matching keys merge upward", "desc": "through the parent's reducer for that key, not the child's", "tone": "good", "code": "out"}, {"label": "unmatched keys are discarded", "desc": "silently — which looks exactly like a worker producing nothing", "tone": "crit", "code": "the trap"}], "t": "diagram", "id": "dg-10_1-02-0"},
+
+
+
+
     { t: "p", text: "That worked because both schemas declare `text` and `steps`. The parent passes the whole state in and merges the whole state out, matching on **key names** \u2014 there is no mapping layer." },
     { t: "code", lang: "text", title: "No shared data key",
       code: "inner declares 'content'; outer declares 'text'.\n  -> {'text': 'hi', 'steps': ['innerb']}",
@@ -48,14 +54,6 @@ EC.receiveLesson({
       { t: "p", text: "If the inner graph is never invoked on its own, the nesting costs legibility \u2014 the control flow is now spread across two definitions and the parent's drawing has an opaque box \u2014 and buys nothing." },
       { t: "p", text: "Splitting a long graph is particularly tempting and particularly unhelpful: it does not reduce the number of nodes, the key-name coupling remains, and the reader now has to hold two files in their head instead of one long one." }
     ] },
-    { t: "diagram", kind: "steps", title: "State crosses a subgraph boundary by key NAME",
-      caption: "`add_node(“inner”, compiled_graph)` is the whole of composition, because a compiled graph satisfies the node interface. The catch is the boundary: matching keys merge, and a key the parent does not declare is **discarded without a word** (8.2).",
-      items: [
-        { label: "the parent passes the whole state in", desc: "not a selection — the subgraph sees everything the parent has", tone: "accent", code: "in" },
-        { label: "the subgraph runs its own supersteps", desc: "its internal steps are ONE superstep of the parent", tone: "violet", code: "opaque" },
-        { label: "matching keys merge upward", desc: "through the parent's reducer for that key, not the child's", tone: "good", code: "out" },
-        { label: "unmatched keys are discarded", desc: "silently — which looks exactly like a worker producing nothing", tone: "crit", code: "the trap" }
-      ] },
     { t: "exercise", kind: "build", title: "Nest a graph, then uncouple it",
       difficulty: "advanced", minutes: 32,
       body: "Compile a graph and use it as a node in another graph whose schema shares its keys, and confirm the inner updates merge. Then change the inner schema so no data key is shared and report what happens. Rewrite it as a function that calls the subgraph with an explicit mapping. Run the parent with a checkpointer and show whether the inner nodes appear in its history. Finally give the test for whether nesting is worth its cost.",

@@ -47,25 +47,17 @@ EC.receiveLesson({
       { t: "p", text: "The reason it was built as an agent is rarely that the task needed it. It is that the agent abstraction was what the examples used, and it works, so nobody revisited it \u2014 which is the same drift 1.8 warned about from the other direction." }
     ] },
     { t: "h2", n: "04", id: "honest", text: "The honest version", sub: "What the module adds up to" },
+
+    {"kind": "compare", "title": "The honest summary of the module", "caption": "An agent is a more expensive way to be less reliable, bought for the cases where you genuinely cannot write the steps down. That is a real set of cases, and it is much smaller than the number of systems using one.", "columns": [{"title": "a chain — the default", "tone": "good", "items": ["the steps are known before the request arrives", "one model call per unit of work", "the control flow is in your code, so it is readable and testable", "a failure has one place to be"]}, {"title": "an agent — when earned", "tone": "warn", "items": ["the next step genuinely depends on what the last one returned", "3+ model calls, and a variable number", "the control flow is a model's decision, so a trace is the only record", "needs a cap, a budget and a guard before it ships"]}], "t": "diagram", "id": "dg-3_8-04-0"},
+
+
+
+
     { t: "p", text: "Across this module: the loop is nine lines and the termination condition is a model judgement (3.3). The transcript grows by two per round and is re-sent every time (3.3, 3.5). Three guards are mandatory and a fourth failure cannot be guarded at all (3.7). Memory is a deferred outage unless bounded (3.5). None of that is an argument against agents; it is an argument for knowing what one costs before choosing it." },
     { t: "callout", kind: "mental", title: "Mental model: an agent buys adaptability with predictability", body: [
       { t: "p", text: "Everything on the give-up list is a form of predictability, and the thing you get in exchange is the ability to handle inputs you did not anticipate. That is a good trade exactly when the inputs are genuinely unanticipated and a bad one when you simply did not enumerate them." },
       { t: "p", text: "So the question to ask is not \u201ccould an agent do this?\u201d \u2014 it almost always could \u2014 but \u201cdo I actually not know the steps?\u201d. If you can write them down, writing them down is cheaper, faster, testable and debuggable." }
     ] },
-    { t: "diagram", kind: "compare", title: "The honest summary of the module",
-      caption: "An agent is a more expensive way to be less reliable, bought for the cases where you genuinely cannot write the steps down. That is a real set of cases, and it is much smaller than the number of systems using one.",
-      columns: [
-        { title: "a chain — the default", tone: "good", items: [
-          "the steps are known before the request arrives",
-          "one model call per unit of work",
-          "the control flow is in your code, so it is readable and testable",
-          "a failure has one place to be" ] },
-        { title: "an agent — when earned", tone: "warn", items: [
-          "the next step genuinely depends on what the last one returned",
-          "3+ model calls, and a variable number",
-          "the control flow is a model's decision, so a trace is the only record",
-          "needs a cap, a budget and a guard before it ships" ] }
-      ] },
     { t: "exercise", kind: "analysis", title: "Choose between a chain and an agent",
       difficulty: "core", minutes: 24,
       body: "Compare four approaches to the same task on calls at p50 and p95, and explain why the agent's two numbers differ. List what an agent gives up. Then write out a four-question test and map each answer to an approach, and state when a router is the right answer.",

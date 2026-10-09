@@ -35,6 +35,12 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "`end_on=\"human\"` is the other parameter worth knowing. A history that ends on a tool call or an incomplete exchange can confuse the next turn, so trimming to a clean boundary is safer than trimming to an exact count \u2014 which is why the last row kept four messages rather than the five it was allowed." },
     { t: "h2", n: "04", id: "loses", text: "What each strategy loses", sub: "The decision this is really about" },
+
+    {"kind": "matrix", "title": "Trimming strategies, and what each one loses", "caption": "`RunnableWithMessageHistory` keys a store by `session_id` — config, not input, exactly as 2.9's test predicts. What it does not decide is which messages survive, and that choice is the one with consequences (13.3 measures them).", "cols": ["per-turn cost", "what it loses"], "rows": ["the full buffer", "last-k messages", "a token-budget trim", "a running summary"], "cells": [[{"text": "grows every turn", "tone": "crit"}, {"text": "nothing — until the window", "tone": "good"}], [{"text": "constant", "tone": "good"}, {"text": "the beginning, where the facts are", "tone": "crit"}], [{"text": "bounded", "tone": "good"}, {"text": "the same, but by the right unit", "tone": "warn"}], [{"text": "bounded + a call", "tone": "warn"}, {"text": "whatever the prompt omitted", "tone": "warn"}]], "t": "diagram", "id": "dg-3_6-04-0"},
+
+
+
+
     { t: "table", head: ["Strategy", "Loses"], rows: [
       ["drop oldest (`last`)", "early facts: a name, an order id, a constraint stated once"],
       ["keep oldest (`first`)", "everything recent, which is usually what the question is about"],
@@ -42,16 +48,6 @@ EC.receiveLesson({
       ["retrieve from history", "nothing, but adds a lookup and can retrieve the wrong turn"]
     ] },
     { t: "p", text: "`strategy=\"first\"` is listed for completeness and is almost never right for a conversation \u2014 it keeps the opening and discards everything the user has said since, which inverts the usual relevance ordering. It exists for cases where the beginning is the specification and the rest is working." },
-    { t: "diagram", kind: "matrix", title: "Trimming strategies, and what each one loses",
-      caption: "`RunnableWithMessageHistory` keys a store by `session_id` — config, not input, exactly as 2.9's test predicts. What it does not decide is which messages survive, and that choice is the one with consequences (13.3 measures them).",
-      cols: ["per-turn cost", "what it loses"],
-      rows: ["the full buffer", "last-k messages", "a token-budget trim", "a running summary"],
-      cells: [
-        [{ text: "grows every turn", tone: "crit" }, { text: "nothing — until the window", tone: "good" }],
-        [{ text: "constant", tone: "good" }, { text: "the beginning, where the facts are", tone: "crit" }],
-        [{ text: "bounded", tone: "good" }, { text: "the same, but by the right unit", tone: "warn" }],
-        [{ text: "bounded + a call", tone: "warn" }, { text: "whatever the prompt omitted", tone: "warn" }]
-      ] },
     { t: "exercise", kind: "build", title: "Wire history, then trim it",
       difficulty: "core", minutes: 26,
       body: "Wire a message store into a chain with RunnableWithMessageHistory and run three turns against one session, then inspect what was stored. Note the deprecation warning and what it points at. Then build a long history and trim it four ways, reporting which messages survive each strategy. Explain which parameter matters most and what each strategy loses.",

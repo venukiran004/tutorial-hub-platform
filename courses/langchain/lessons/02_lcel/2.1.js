@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["1.7"],
   blocks: [
     { t: "h2", n: "01", id: "six", text: "Six methods, on everything", sub: "Including the chain itself" },
+
+    {"kind": "matrix", "title": "The composite satisfies the same interface as its parts", "caption": "This is the property that matters, not the method list. A three-step chain is a Runnable, so it pipes into another chain, retries as a unit and configures as a unit — composition is **closed**, which is what makes the operators worth having.", "cols": ["a chat model", "a 3-step chain"], "rows": ["invoke", "batch", "stream", "with_retry", "with_fallbacks", "configurable_fields"], "cells": [[true, true], [true, true], [true, true], [true, true], [true, true], [true, true]], "t": "diagram", "id": "dg-2_1-01-0"},
+
+
+
+
     { t: "p", text: "The contract is small: three ways to call a Runnable, each with an async twin." },
     { t: "table", head: ["Method", "What it does", "Returns"], rows: [
       ["`invoke(input)`", "run once, synchronously", "one output"],
@@ -50,11 +56,6 @@ EC.receiveLesson({
       out: "upper.map().invoke(['a','b','c']) -> ['A', 'B', 'C']",
       caption: "Identical results, different things entirely." },
     { t: "p", text: "`.map()` returns a **Runnable whose input is a list**, so it composes into a chain: `retriever | summarise.map() | join` is a valid pipeline. `.batch()` is a **method you call**, not a step you compose. Reach for map when the list is flowing through the chain, and batch when you have many separate inputs to run." },
-    { t: "diagram", kind: "matrix", title: "The composite satisfies the same interface as its parts",
-      caption: "This is the property that matters, not the method list. A three-step chain is a Runnable, so it pipes into another chain, retries as a unit and configures as a unit — composition is **closed**, which is what makes the operators worth having.",
-      cols: ["a chat model", "a 3-step chain"],
-      rows: ["invoke", "batch", "stream", "with_retry", "with_fallbacks", "configurable_fields"],
-      cells: [[true, true], [true, true], [true, true], [true, true], [true, true], [true, true]] },
     { t: "exercise", kind: "analysis", title: "Check the protocol on five objects",
       difficulty: "core", minutes: 22,
       body: "Take a prompt template, a chat model, a parser, a lambda and a complete chain, and confirm which of the six protocol methods each exposes. Do the same for the composition helpers. Then implement a Runnable with only invoke and confirm what the base class derives. Finally show the difference between map and batch.",

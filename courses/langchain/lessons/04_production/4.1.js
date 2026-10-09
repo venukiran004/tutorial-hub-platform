@@ -18,6 +18,12 @@ EC.receiveLesson({
       caption: "`run_id` is what pairs a start with its end \u2014 concurrent calls interleave." },
     { t: "p", text: "The `prompts` argument is the resolved prompt as it was actually sent, which is the evidence 1.2 argued is the only thing that tells you what a chain really did. A handler is how you capture it in production." },
     { t: "h2", n: "02", id: "counts", text: "Event counts are not call counts", sub: "Three chain starts for a three-step chain" },
+
+    {"kind": "tree", "title": "Event counts are not call counts", "caption": "A three-step chain fires `on_chain_start` **three** times, because the sequence is a chain and so is each non-model step. So an event count is a statement about the structure of your chain, not about how much work was done — which is the first thing a handler teaches.", "root": {"label": "RunnableSequence", "sub": "on_chain_start #1", "tone": "accent", "children": [{"label": "prompt", "sub": "on_chain_start #2", "tone": "good"}, {"label": "model", "sub": "on_chat_model_start", "tone": "violet"}, {"label": "parser", "sub": "on_chain_start #3", "tone": "good"}]}, "t": "diagram", "id": "dg-4_1-02-0"},
+
+
+
+
     { t: "callout", kind: "trap", title: "The sequence is a chain, and so is each step", body: [
       { t: "p", text: "1.6 found a two-step chain emitting three `on_chain_start` events. The same nesting applies here: a prompt-model-parser chain fires chain events for the sequence and for the non-model steps, and exactly one `on_llm_start`." },
       { t: "p", text: "So if you are counting model calls \u2014 for cost, for rate limiting, for an alert \u2014 count `on_llm_start`. Counting chain events gives you a number that tracks chain *structure* rather than provider usage, and it changes when someone refactors a chain into sub-chains without changing what it does." }
@@ -40,13 +46,6 @@ EC.receiveLesson({
       { t: "p", text: "Build a fresh `Recorder` per request. A module-level handler shared between concurrent invocations interleaves their events, and the `run_id` pairing will still match starts to ends correctly while every aggregate \u2014 total calls, total characters \u2014 is the sum across requests that happened to overlap." },
       { t: "p", text: "That bug is invisible in testing, where requests are sequential, and produces inflated per-request metrics in production. Same shape as the session-id mistake in 3.6." }
     ] },
-    { t: "diagram", kind: "tree", title: "Event counts are not call counts",
-      caption: "A three-step chain fires `on_chain_start` **three** times, because the sequence is a chain and so is each non-model step. So an event count is a statement about the structure of your chain, not about how much work was done — which is the first thing a handler teaches.",
-      root: { label: "RunnableSequence", sub: "on_chain_start #1", tone: "accent", children: [
-        { label: "prompt", sub: "on_chain_start #2", tone: "good" },
-        { label: "model", sub: "on_chat_model_start", tone: "violet" },
-        { label: "parser", sub: "on_chain_start #3", tone: "good" }
-      ] } },
     { t: "exercise", kind: "build", title: "Build a recorder",
       difficulty: "core", minutes: 24,
       body: "Implement a callback handler that records every event in order, counts model calls, and measures the characters in and out plus the time of each model call. Run it on a three-step chain and print the event sequence. Explain why the chain-event count differs from the model-call count, and tabulate what a callback can and cannot see.",

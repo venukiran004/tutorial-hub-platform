@@ -11,6 +11,7 @@ EC.receiveLesson({
   prerequisites: ["6.2", "6.1"],
   blocks: [
     { t: "h2", n: "01", id: "populations", text: "The two populations", sub: "And they overlap" },
+
     { t: "code", lang: "text", title: "Top-1 cosine, answerable against unanswerable",
       code: "answerable  : min 0.2461  mean 0.4581  max 0.6431\nunanswerable: min 0.0764  mean 0.2187  max 0.3900\n\nthe worst answerable query scores 0.2461\nthe best unanswerable scores        0.3900",
       caption: "The ranges overlap, so no threshold separates them cleanly." },
@@ -24,6 +25,10 @@ EC.receiveLesson({
       { t: "p", text: "For a support bot, wrongly answering is usually worse \u2014 a confident wrong answer about a refund policy costs more than *\u201cI could not find that\u201d*. For an internal research tool the opposite often holds, because the user can judge a weak result and a refusal wastes their time. The threshold encodes that judgement, so it belongs with the people who own the consequence." }
     ] },
     { t: "h2", n: "03", id: "signals", text: "Two signals, compared properly", sub: "And I was wrong about which wins" },
+
+    {"kind": "timeline", "title": "A correction to my own reasoning", "caption": "I expected the **gap** between rank 1 and rank 2 to be the signal — a confident retrieval should separate its winner. It is not. The plain absolute score separates answerable from unanswerable far better, and a plausible mechanism is not evidence.", "span": 1, "tick": 0.1, "unit": "AUC — answerable against unanswerable", "lanes": [{"label": "the rank 1-2 gap", "bars": [[0, 0.614, "0.614 — near chance", "crit"]]}, {"label": "the top score", "bars": [[0, 0.943, "0.943 — threshold on this", "good"]]}], "t": "diagram", "id": "dg-7_1-03-0"},
+
+
     { t: "code", lang: "text", title: "AUC \u2014 the probability an answerable query outscores an unanswerable one",
       code: "signal              answerable  unanswerable  AUC     overlapping pairs\nabsolute top-1      0.4581      0.2187        0.943   4 of 70\ntop1 - top2 gap     0.1140      0.0664        0.614   27 of 70",
       caption: "1.0 is perfect separation; 0.5 is a coin flip." },
@@ -47,13 +52,6 @@ EC.receiveLesson({
       ["the retrieval score, at a conservative threshold", "AUC 0.943 is good enough to be useful and not good enough to be alone."]
     ] },
     { t: "p", text: "Layering these is not the same as having a reliable guard \u2014 it is accepting that each individual signal is weak and that their failures are partly independent. The honest framing is that abstention is a risk-management problem, not a solved one." },
-    { t: "diagram", kind: "timeline", title: "A correction to my own reasoning",
-      caption: "I expected the **gap** between rank 1 and rank 2 to be the signal — a confident retrieval should separate its winner. It is not. The plain absolute score separates answerable from unanswerable far better, and a plausible mechanism is not evidence.",
-      span: 1.0, tick: 0.1, unit: "AUC — answerable against unanswerable",
-      lanes: [
-        { label: "the rank 1-2 gap", bars: [[0, 0.614, "0.614 — near chance", "crit"]] },
-        { label: "the top score", bars: [[0, 0.943, "0.943 — threshold on this", "good"]] }
-      ] },
     { t: "exercise", kind: "build", title: "Build a guard and measure what it costs",
       difficulty: "core", minutes: 30,
       body: "Assemble a set of queries the corpus genuinely cannot answer alongside the labelled answerable ones. Measure the top-1 similarity distribution of each population and report whether they overlap. Sweep a threshold and report both error rates at every setting. Then compare the absolute score against the rank-1 minus rank-2 gap using a proper separation metric, and say which wins. Finally test a cross-encoder as the guard signal and identify which queries it would wrongly refuse.",

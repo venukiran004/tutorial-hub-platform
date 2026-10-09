@@ -11,6 +11,12 @@ EC.receiveLesson({
   prerequisites: ["8.9", "8.7"],
   blocks: [
     { t: "h2", n: "01", id: "noexit", text: "The loop with no exit", sub: "And every superstep ran the node" },
+
+    {"kind": "matrix", "title": "The hazards are not hangs", "caption": "8.7 measured the thing everyone expects to deadlock and found it does not: when a router skips one branch of a fan-in, the join **runs with whatever was scheduled** — and reads the unset key silently. So the real hazards are partial inputs and loops, not hangs.", "cols": ["what you expect", "what happens"], "rows": ["a router skips one branch", "a cycle with no exit", "a loop making progress", "a node that never returns"], "cells": [[{"text": "a deadlock", "tone": "warn"}, {"text": "the join runs on partial input", "tone": "crit"}], [{"text": "a hang", "tone": "warn"}, {"text": "10007 supersteps, then raises", "tone": "warn"}], [{"text": "the recursion limit stops it", "tone": "warn"}, {"text": "it never triggers — use a call budget", "tone": "crit"}], [{"text": "a hang", "tone": "warn"}, {"text": "a real hang — needs a timeout", "tone": "crit"}]], "t": "diagram", "id": "dg-10_5-01-0"},
+
+
+
+
     { t: "code", lang: "text", title: "An unconditional cycle, recursion_limit=20",
       code: "RAISED GraphRecursionError: Recursion limit of 20 reached without\nhitting a stop condition.\n  took 0.004 s",
       caption: "Fast here, because the node does nothing." },
@@ -51,16 +57,6 @@ EC.receiveLesson({
       { t: "p", text: "`recursion_limit` is the only guard the runtime gives you, and it is the one that should fire **least** often \u2014 because it firing means every other guard failed." },
       { t: "p", text: "That is the summary worth carrying: a safe cyclic graph is mostly guards you wrote, in routers and nodes. Reaching for a lower recursion limit as the primary control is treating the backstop as the mechanism." }
     ] },
-    { t: "diagram", kind: "matrix", title: "The hazards are not hangs",
-      caption: "8.7 measured the thing everyone expects to deadlock and found it does not: when a router skips one branch of a fan-in, the join **runs with whatever was scheduled** — and reads the unset key silently. So the real hazards are partial inputs and loops, not hangs.",
-      cols: ["what you expect", "what happens"],
-      rows: ["a router skips one branch", "a cycle with no exit", "a loop making progress", "a node that never returns"],
-      cells: [
-        [{ text: "a deadlock", tone: "warn" }, { text: "the join runs on partial input", tone: "crit" }],
-        [{ text: "a hang", tone: "warn" }, { text: "10007 supersteps, then raises", tone: "warn" }],
-        [{ text: "the recursion limit stops it", tone: "warn" }, { text: "it never triggers — use a call budget", tone: "crit" }],
-        [{ text: "a hang", tone: "warn" }, { text: "a real hang — needs a timeout", tone: "crit" }]
-      ] },
     { t: "exercise", kind: "build", title: "Guard a cyclic graph",
       difficulty: "advanced", minutes: 30,
       body: "Build an unconditional cycle and run it against a low recursion limit, noting that every superstep executed the node. Add a counter and an exit condition to the router and show the graph returning rather than raising. Then build a loop that makes no progress, bound it with a counter, and show that it consumes the whole budget. Add a progress check. Confirm that a skipped fan-in branch does not deadlock and show what the join reads. Finally collect the guards and say where each lives.",

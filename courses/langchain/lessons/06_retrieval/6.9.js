@@ -16,6 +16,12 @@ EC.receiveLesson({
       caption: "NDCG is 1.000 because both relevant documents are already in the best possible positions." },
     { t: "math", tex: "\\mathrm{DCG}@k = \\sum_{i=1}^{k} \\frac{h_i}{\\log_2(i+2)} \\qquad \\mathrm{NDCG}@k = \\frac{\\mathrm{DCG}@k}{\\mathrm{IDCG}@k}" },
     { t: "h2", n: "02", id: "blind", text: "What each metric is blind to", sub: "Which decides when to use it" },
+
+    {"kind": "matrix", "title": "Can this metric move, and does it matter to the user?", "caption": "The question that matters more than any of the values. On this label set **P@5 is at its arithmetic ceiling** — with one relevant document per query the maximum is 0.200, so a “poor” score is a property of the labels, not the system.", "cols": ["measured", "can it move?", "matters to the user?"], "rows": ["Recall@5", "MRR", "NDCG@5", "P@5"], "cells": [[{"text": "1.000", "tone": "good"}, {"text": "at ceiling", "tone": "warn"}, {"text": "yes — the gate", "tone": "good"}], [{"text": "0.964", "tone": "good"}, {"text": "yes", "tone": "good"}, {"text": "yes — position", "tone": "good"}], [{"text": "0.974", "tone": "good"}, {"text": "yes", "tone": "good"}, {"text": "partly", "tone": "warn"}], [{"text": "0.214", "tone": "crit"}, {"text": "NO — max is 0.200", "tone": "crit"}, {"text": "not here", "tone": "crit"}]], "t": "diagram", "id": "dg-6_9-02-0"},
+
+
+
+
     { t: "table", head: ["Metric", "Answers", "Blind to"], rows: [
       ["Recall@k", "did we fetch it at all", "where it ranked"],
       ["Precision@k", "how much of k was useful", "**ceilinged by |relevant|**"],
@@ -57,16 +63,6 @@ EC.receiveLesson({
       { t: "p", text: "No row dominates. Dense wins every natural-query column and loses both exact-term columns; BM25 is the exact mirror; and the fusion inherits BM25's exact-term perfection while sitting far below dense on natural queries." },
       { t: "p", text: "That is why 7.2 routes rather than tuning a weight, and it is the result the whole module was assembling. A single configuration cannot be optimal when the query population is a mixture, and the only remaining lever is to decide which retriever a query goes to." }
     ] },
-    { t: "diagram", kind: "matrix", title: "Can this metric move, and does it matter to the user?",
-      caption: "The question that matters more than any of the values. On this label set **P@5 is at its arithmetic ceiling** — with one relevant document per query the maximum is 0.200, so a “poor” score is a property of the labels, not the system.",
-      cols: ["measured", "can it move?", "matters to the user?"],
-      rows: ["Recall@5", "MRR", "NDCG@5", "P@5"],
-      cells: [
-        [{ text: "1.000", tone: "good" }, { text: "at ceiling", tone: "warn" }, { text: "yes — the gate", tone: "good" }],
-        [{ text: "0.964", tone: "good" }, { text: "yes", tone: "good" }, { text: "yes — position", tone: "good" }],
-        [{ text: "0.974", tone: "good" }, { text: "yes", tone: "good" }, { text: "partly", tone: "warn" }],
-        [{ text: "0.214", tone: "crit" }, { text: "NO — max is 0.200", tone: "crit" }, { text: "not here", tone: "crit" }]
-      ] },
     { t: "exercise", kind: "build", title: "Compute the metrics, then compute their ceilings",
       difficulty: "advanced", minutes: 34,
       body: "Compute Recall@k, Precision@k, reciprocal rank and NDCG@k from their definitions on one result set, showing the intermediate DCG and IDCG. Tabulate what each metric is blind to, and construct two rankings that MRR scores identically but recall distinguishes. Then compute the maximum achievable mean P@5 against your label counts and compare it to the measured value. Finally build a symptom-to-fix table and measure every retriever in the module on both query classes.",
