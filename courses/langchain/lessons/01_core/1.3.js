@@ -80,6 +80,16 @@ EC.receiveLesson({
 
     { t: "p", text: "The cost is that **every example is in every request, forever**. Ten examples at thirty tokens each is three hundred tokens on every call for the lifetime of the service. That is the argument for `SemanticSimilarityExampleSelector`, which picks the k most relevant examples per query rather than sending all of them \u2014 trading a retrieval step for a smaller prompt." },
 
+    { t: "diagram", kind: "matrix", title: "Why a template rather than an f-string",
+      caption: "The argument is not tidiness. A template declares its variables, so braces in **user input** are data; string formatting treats them as syntax and raises on an ordinary question about Python dict literals.",
+      cols: ["f-string + .format()", "PromptTemplate"],
+      rows: ["a plain question", "a question about {“a”: 1}", "declares its inputs", "validates a missing var"],
+      cells: [
+        [{ text: "works", tone: "good" }, { text: "works", tone: "good" }],
+        [{ text: "KeyError — crashes", tone: "crit" }, { text: "works — braces are data", tone: "good" }],
+        [false, { text: "input_variables", tone: "good" }],
+        [false, { text: "raises at format time", tone: "good" }]
+      ] },
     { t: "exercise", kind: "analysis", title: "Break a template four ways",
       difficulty: "core", minutes: 26,
       body: "Take two user inputs containing braces \u2014 one an injection attempt, one an ordinary Python question \u2014 and run them through four constructions: substituted as a value, concatenated into a format string, concatenated into a ChatPromptTemplate, and placed in a proper message slot. Report what each does. Then show what a partial changes about a template's interface, measure the growth a MessagesPlaceholder produces over eight turns, and render a few-shot template to see what the model receives.",

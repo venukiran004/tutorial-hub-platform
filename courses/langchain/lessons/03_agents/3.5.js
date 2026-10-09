@@ -40,6 +40,15 @@ EC.receiveLesson({
       ["retrieve from history", "everything, on demand", "nothing, but adds a lookup and can retrieve the wrong turn"]
     ] },
     { t: "p", text: "There is no strategy that loses nothing, which makes this a product decision rather than a technical one. 3.6 implements trimming, 13.3 implements summarisation and measures what each one can no longer answer, and 13.4 covers retrieval over history." },
+    { t: "diagram", kind: "timeline", title: "Why a buffer is the wrong default",
+      caption: "Arithmetic rather than taste. You resend the whole history every turn, so per-turn cost grows **linearly** and cumulative cost grows **quadratically** — a 12th turn costs about 11× the first, and ten times the length cost roughly **90×** the money.",
+      span: 12, tick: 2, unit: "cost of one turn, relative to the first",
+      lanes: [
+        { label: "turn 1", bars: [[0, 1, "1x", "good"]] },
+        { label: "turn 4", bars: [[0, 3.7, "~4x", "good"]] },
+        { label: "turn 8", bars: [[0, 7.5, "~7x", "warn"]] },
+        { label: "turn 12", bars: [[0, 11, "~11x", "crit"]] }
+      ] },
     { t: "exercise", kind: "analysis", title: "Price a conversation",
       difficulty: "core", minutes: 24,
       body: "Grow a conversation buffer over twelve turns and record the message count, the prompt size and the cumulative characters at each turn. Then price several conversation lengths in input tokens and dollars. Explain the shape of the growth, identify which users hit the context limit first, and list the three ways out with what each one loses.",

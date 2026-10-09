@@ -45,6 +45,14 @@ EC.receiveLesson({
       { t: "p", text: "`tool_choice=\"calculate\"` turns the model into an argument extractor: it is not deciding anything, it is filling a schema from natural language. That is exactly what `with_structured_output` does in 1.5 \u2014 same mechanism, different entry point." },
       { t: "p", text: "Which is useful to know, because it means the failure mode is the same too. If the model cannot produce the arguments it may produce none, and you are back to checking for an empty `tool_calls` list rather than assuming one is there." }
     ] },
+    { t: "diagram", kind: "steps", title: "The tool protocol is two messages and an id",
+      caption: "There is no hidden machinery. The `tool_call_id` is the whole correspondence mechanism — it is how a result is matched to the request that asked for it, which is what makes parallel tool calls possible at all.",
+      items: [
+        { label: "bind_tools([lookup_order])", desc: "attaches the definitions to the model; returns a new bound model", tone: "accent", code: "your code" },
+        { label: "AIMessage(content=“”, tool_calls=[…])", desc: "content is EMPTY and tool_calls is populated — the model asked, it did not answer", tone: "violet", code: "the model" },
+        { label: "execute the call yourself", desc: "the model cannot run anything; nothing happens unless you do it", tone: "warn", code: "your code" },
+        { label: "ToolMessage(content, tool_call_id=…)", desc: "appended to the history, carrying the id it is answering", tone: "good", code: "your code" }
+      ] },
     { t: "exercise", kind: "build", title: "Run the protocol by hand",
       difficulty: "core", minutes: 26,
       body: "Bind two tools to a model and inspect the response's type, content and tool_calls. Execute the call, build a correctly matched ToolMessage, and print the resulting three-message transcript. Then handle an AIMessage containing two parallel calls, producing one ToolMessage for each. Finally, tabulate the tool_choice settings and say what each is for.",

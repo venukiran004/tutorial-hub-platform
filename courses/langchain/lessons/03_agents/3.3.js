@@ -39,6 +39,13 @@ EC.receiveLesson({
       ["no unknown-tool guard", "a hallucinated name is a `KeyError`"]
     ] },
     { t: "p", text: "All three are in 3.7, and all three are why you should use a prebuilt agent rather than this. The loop is worth writing once so that every prebuilt afterwards is recognisable \u2014 and so that when one misbehaves, you know what it is doing." },
+    { t: "diagram", kind: "cycle", title: "The agent loop is nine lines", centre: "until no tools",
+      caption: "Every agent framework in existence is this loop plus error handling, state, observability and a pause point. Knowing that is what makes the frameworks legible rather than magical — and what makes 3.4's argument about not shipping this one land.",
+      nodes: [
+        { label: "call the model", sub: "with the whole history", tone: "violet", edge: "asked for tools" },
+        { label: "execute every call", sub: "in the order returned", tone: "warn", edge: "one result each" },
+        { label: "append the results", sub: "as ToolMessages", tone: "good", edge: "and go again" }
+      ] },
     { t: "exercise", kind: "build", title: "Write the loop and trace it",
       difficulty: "advanced", minutes: 30,
       body: "Implement the agent loop by hand against two tools and a scripted model that requests both before answering. Print a trace of each step. Then account for every message in the final list, and report what the model received on each of its calls. Finally, name what the loop is missing and what each omission costs.",

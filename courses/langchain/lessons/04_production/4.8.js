@@ -48,6 +48,14 @@ EC.receiveLesson({
       { t: "p", text: "Conflating them produces one of two bad outcomes. Assert on model output in CI and you get a brittle suite that breaks every time the model rephrases something, which trains people to ignore it. Rely on an eval set for everything and you have no coverage of the wiring, where module 1 found four silent failures." },
       { t: "p", text: "The split is clean because the boundary is clean: everything up to and including what was sent is deterministic and testable; everything the model decides is a distribution and needs a graded set with a threshold." }
     ] },
+    { t: "diagram", kind: "steps", title: "The highest-value test asserts on what the model was sent",
+      caption: "1.2 established that the chain's source is not evidence about the request — only the resolved message list is. A scripted model makes that list available, which turns prompt construction from something you read into something you assert on.",
+      items: [
+        { label: "script the model", desc: "a FakeChatModel that records every message list it receives", tone: "accent", code: "no API key" },
+        { label: "invoke the real chain", desc: "the prompt, the parser and the composition are all genuine", tone: "good", code: "real machinery" },
+        { label: "assert on model.seen[0]", desc: "the system message, the retrieved context, the question — as actually sent", tone: "good", code: "the point" },
+        { label: "assert on the parsed result", desc: "and on what happens when the scripted reply is malformed (1.4)", tone: "violet", code: "both halves" }
+      ] },
     { t: "exercise", kind: "build", title: "Test the machinery, not the model",
       difficulty: "core", minutes: 26,
       body: "Show that a scripted model makes a chain deterministic. Then write assertions on the resolved message list covering message count, an unchanged system message and a correctly interpolated variable. Write a property test that the system message survives trimming. Finally, list what a scripted model cannot test and state the split between testing and evaluation.",

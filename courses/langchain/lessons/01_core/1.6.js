@@ -92,6 +92,17 @@ EC.receiveLesson({
       code: 'loader    ->  Document(page_content, metadata)\nsplitter  ->  more Documents, same metadata, smaller page_content   [5.3]\nEmbeddings.embed_documents  ->  vectors                             [5.4]\nvector store holds (vector, Document)                               [5.5]\nRetriever.invoke(query)     ->  List[Document]                      [5.6]\nDocuments formatted into a prompt                                   [5.7]\n\nTool      ->  what the model may call instead of answering          [3.1]\nCallback  ->  what watched all of it happen                         [4.1]',
       caption: "Every arrow is a Runnable boundary, which is why it is an expression rather than a function." },
 
+    { t: "diagram", kind: "matrix", title: "Five objects, and the half of each that people under-use",
+      caption: "Every other part of the library passes these around. The right-hand column is where the course's later findings come from — metadata is access control, and `Embeddings` having two methods is a silent accuracy bug.",
+      cols: ["what it is", "the half people miss"],
+      rows: ["Document", "Embeddings", "Retriever", "Tool", "Callback"],
+      cells: [
+        ["text plus metadata", { text: "metadata is ACCESS CONTROL", tone: "crit" }],
+        ["text → a vector", { text: "TWO methods — wrong one costs accuracy", tone: "crit" }],
+        ["a Runnable returning Documents", { text: "so it composes like anything else", tone: "good" }],
+        ["a callable the model may invoke", { text: "its description IS prompt", tone: "warn" }],
+        ["the only view inside a run", { text: "3 chain events for a 2-step chain", tone: "warn" }]
+      ] },
     { t: "exercise", kind: "build", title: "Build one of each",
       difficulty: "core", minutes: 24,
       body: "Construct each of the five core types and show what it carries. Build three Documents with differing metadata and filter them three ways without touching the text. Implement a minimal Embeddings and show the two methods. Implement a keyword retriever and confirm it is a Runnable. Define a tool and print what the model would be shown. Attach a callback handler to a two-step chain and account for the event count.",

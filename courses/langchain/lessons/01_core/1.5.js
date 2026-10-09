@@ -104,6 +104,13 @@ EC.receiveLesson({
 
     { t: "p", text: "A `Literal` does two jobs from one declaration: it appears as an enum in the tool schema, so the model is **told** the allowed values, and it is enforced on the way back, so a model that invents a fourth category raises rather than widening your data. Writing \u201canswer positive, negative or neutral\u201d in the prompt does only the first job, and does it less reliably." },
 
+    { t: "diagram", kind: "tree", title: "A structured-output call has three outcomes, not two",
+      caption: "The third is the one almost no code guards. When the model answers in prose instead of calling the tool it returns **`None`** — no exception, and `include_raw=True` reports `parsed=None` with `parsing_error=None`, because nothing failed to parse: nothing was offered to the parser.",
+      root: { label: "with_structured_output(Schema)", sub: "the schema is bound as a tool", tone: "accent", children: [
+        { label: "valid arguments", sub: "Pydantic validates → your object", tone: "good", edge: "the model calls the tool" },
+        { label: "ValidationError", sub: "a rating of 48.8 raises", tone: "warn", edge: "out of range" },
+        { label: "returns None", sub: "no exception, no parsing_error", tone: "crit", edge: "answers in prose" }
+      ] } },
     { t: "exercise", kind: "build", title: "Find the third outcome",
       difficulty: "core", minutes: 28,
       body: "Build a Pydantic schema with a constrained numeric field and use it with structured output. Confirm the happy path returns a typed object. Then feed four malformed tool calls and confirm validation fires on each. Then make the model answer in prose instead of calling the tool, and report exactly what comes back — including what include_raw says about it. Finally, show a Literal field being communicated and enforced.",

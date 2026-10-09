@@ -40,6 +40,14 @@ EC.receiveLesson({
       code: 'with a 2000-token input budget:\n  fixed cost (system + question) : 30 tokens\n  per chunk                      : 61 tokens\n  chunks that fit                : 32',
       caption: "Count, decide, drop the rest \u2014 before sending rather than after failing." },
     { t: "p", text: "The point is not the number, it is that it is **computed**. A system that counts before sending can refuse an over-long request with a useful message, drop the lowest-scoring chunks deliberately, or summarise instead \u2014 and a system that does not count discovers the limit as a provider error, which 3.5 showed is unrecoverable mid-conversation." },
+    { t: "diagram", kind: "timeline", title: "Four characters per token is wrong where it matters",
+      caption: "Prose runs around four characters per token; **JSON runs at 2.23**, because punctuation and rare strings cost a token each. So the rule of thumb undercounts **structured data by nearly half** — which is exactly what tool results and retrieved chunks are.",
+      span: 4.5, tick: 1, unit: "characters per token — higher is cheaper",
+      lanes: [
+        { label: "English prose", bars: [[0, 4.0, "4.00 — the rule holds", "good"]] },
+        { label: "the rule of thumb", bars: [[0, 4.0, "assumed everywhere", "accent"]] },
+        { label: "JSON", bars: [[0, 2.23, "2.23 — undercounts", "crit"]] }
+      ] },
     { t: "exercise", kind: "build", title: "Count, attribute, budget",
       difficulty: "core", minutes: 26,
       body: "Count tokens locally for four kinds of content and report the characters-per-token ratio for each. Explain why they differ and which direction the common rule of thumb errs in. Then attribute the input tokens of a RAG request to its parts and report each part's share. Finally, compute how many retrieved chunks fit inside a fixed input budget.",

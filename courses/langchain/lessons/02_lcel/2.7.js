@@ -44,6 +44,15 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "events", text: "stream against astream_events", sub: "Two different questions" },
     { t: "p", text: "`stream` gives you the **final output** incrementally. `astream_events` gives you **every internal step** \u2014 model tokens, tool calls, retriever hits, each sub-chain starting and ending \u2014 as a structured event stream." },
     { t: "p", text: "Use `stream` when you are rendering an answer. Use `astream_events` when you are rendering **progress**: showing that a retrieval happened, that a tool is running, that the agent is on its third step. Those are the things a user staring at an eight-second agent run actually wants, and `stream` cannot show them because they are not the final output." },
+    { t: "diagram", kind: "matrix", title: "One ordinary step ends the stream",
+      caption: "A chain streams only if **every** step after the model is a streaming transform, and most are not. `StrOutputParser` passes chunks through; a plain `RunnableLambda` buffers the whole thing and yields once — a latency change that reads as a one-line addition in a diff.",
+      cols: ["chunks yielded", "streams?"],
+      rows: ["prompt | model", "… | StrOutputParser", "… | RunnableLambda(…)"],
+      cells: [
+        [{ text: "5 for a 5-word answer", tone: "good" }, true],
+        [{ text: "5 — passes through", tone: "good" }, true],
+        [{ text: "1 — buffered", tone: "crit" }, false]
+      ] },
     { t: "exercise", kind: "analysis", title: "Find the step that stops the stream",
       difficulty: "core", minutes: 24,
       body: "Stream a prompt-model-parser chain and record the chunks. Then add a plain RunnableLambda at the end and stream again. Then swap the parser for JsonOutputParser and stream a third time. Report the chunk count and the chunk type for each, and state the rule that predicts them.",

@@ -50,6 +50,13 @@ EC.receiveLesson({
       { t: "p", text: "An `AttributeError`, a bare `Exception` subclass you defined, anything not on the deny list. Each of those is deterministic, so the retry is pure cost \u2014 and with backoff it is cost plus latency." },
       { t: "p", text: "The practical rule: write `retry_on` as an explicit allow list of the transport failures your dependencies actually produce. That is usually three or four exception types, and it is shorter than the deny list it replaces." }
     ] },
+    { t: "diagram", kind: "cycle", title: "The breaker’s state machine", centre: "measured",
+      caption: "100 requests at 3 attempts each made **300** doomed calls to a dead dependency; the breaker made **5** and skipped 295. Half-open sends **one** probe, and a single failure there re-opens immediately rather than spending the threshold again.",
+      nodes: [
+        { label: "closed", sub: "calls pass through", tone: "good", edge: "5 failures" },
+        { label: "open", sub: "295 refused locally", tone: "crit", edge: "cooldown expires" },
+        { label: "half-open", sub: "exactly ONE probe", tone: "warn", edge: "probe succeeds" }
+      ] },
     { t: "exercise", kind: "build", title: "Retry correctly",
       difficulty: "core", minutes: 32,
       body: "Compute exponential backoff delays and show the problem with determinism by measuring how many of 60 clients land in the same short window with no jitter, full jitter and equal jitter. Read LangGraph's default retry predicate and report what it does with several common exception types. Then implement a circuit breaker with closed, open and half-open states, measure how many calls it saves against a dead dependency, and exercise the half-open transition in both directions. Finally classify what should and should not be retried.",

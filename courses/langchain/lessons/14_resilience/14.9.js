@@ -58,6 +58,16 @@ EC.receiveLesson({
       { t: "p", text: "An HTTP concurrency limit of 200 with a provider limit of 20 means 180 requests racing to discover a 429 \u2014 each after paying for retrieval, reranking and whatever else happens before the model call." },
       { t: "p", text: "What to watch, in order: model-call queue depth, 429 rate, cost per run (13.1), p99 turn count, and the retrieval index's memory. The last is the only non-model component that genuinely saturates, and it does so **suddenly**." }
     ] },
+    { t: "diagram", kind: "timeline", title: "Where the time goes in one agent turn",
+      caption: "Representative figures — the **shape** is the finding and it does not depend on the exact values. Graph overhead is **0.2%** of the turn, so optimising the framework optimises nothing. The levers are fewer calls and smaller prompts.",
+      span: 1250, tick: 250, unit: "milliseconds",
+      lanes: [
+        { label: "the model call", bars: [[0, 1200, "1200 ms — 79%", "crit"]] },
+        { label: "a tool call", bars: [[0, 180, "180", "warn"]] },
+        { label: "reranking", bars: [[0, 90, "90", "accent"]] },
+        { label: "retrieval", bars: [[0, 45, "", "accent"]] },
+        { label: "graph overhead", bars: [[0, 3, "", "good"]] }
+      ] },
     { t: "exercise", kind: "analysis", title: "Find where an agent breaks under load",
       difficulty: "advanced", minutes: 32,
       body: "Decompose one agent turn into its stages with timings and shares, and say which stages are worth optimising. Connect the call count per unit of work to the architectural patterns measured earlier in the course. Then measure a cache hit rate on realistic repeated traffic and explain why that cache is safe. Classify several cache candidates as safe, conditional or forbidden, and explain the one that is a security problem rather than a correctness one. Finally name the component that saturates first and say where the concurrency limit belongs.",

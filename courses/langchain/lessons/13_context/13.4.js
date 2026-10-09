@@ -61,6 +61,14 @@ EC.receiveLesson({
       { t: "p", text: "Hierarchical **compresses** the past; retrieval **leaves it somewhere** and fetches it. So the question is whether this should outlive the conversation \u2014 a summary is in the thread, and a store of turns is not, and can be searched across threads." },
       { t: "p", text: "That is the same distinction as thread state versus a store, arriving from a different direction. Which is a sign it is the real axis rather than an implementation detail." }
     ] },
+    { t: "diagram", kind: "tree", title: "Hierarchical summarisation, and where the loss compounds",
+      caption: "85 tokens of segment summaries became **46**, bounded by its prompt rather than its input — so the cost stops growing. But each level is lossy and level 2 can only keep what level 1 kept, so **the detail requirement belongs at level 1**.",
+      root: { label: "level 2 — one summary", sub: "46 tokens — 4 of 5 facts", tone: "accent", children: [
+        { label: "turns 1-4", sub: "34 tok", tone: "good", edge: "summarised" },
+        { label: "turns 5-8", sub: "18 tok", tone: "good" },
+        { label: "turns 9-12", sub: "16 tok", tone: "good" },
+        { label: "turns 13-16", sub: "17 tok", tone: "good" }
+      ] } },
     { t: "exercise", kind: "build", title: "Scale context management indefinitely",
       difficulty: "advanced", minutes: 35,
       body: "Implement hierarchical summarisation: summarise segments of a conversation, then summarise those summaries, reporting token counts and facts kept at each level. Show that the loss compounds by running the same structure with a vague level-1 prompt. Then describe retrieval from history and list what it inherits from modules 5 to 7, including the objection that matters most. Say what retrieval is and is not good for, and rank all five strategies by how far they scale.",

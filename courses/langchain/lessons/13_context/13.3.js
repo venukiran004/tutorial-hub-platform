@@ -51,6 +51,16 @@ EC.receiveLesson({
       { t: "p", text: "List the facts the conversation contains, apply the strategy, and check which survive. Three lines of code, and the only thing that distinguishes a 70% token saving from a 70% information loss." },
       { t: "p", text: "The sliding window reported 156 tokens against 489 \u2014 a 68% saving and a complete loss. Nothing in the token metric indicates which it was." }
     ] },
+    { t: "diagram", kind: "matrix", title: "The measurement a token count cannot give you",
+      caption: "The same conversation, five facts stated in the first human turn. The sliding window reports a **68% token saving** and a **100% information loss**, and nothing in the token column distinguishes them.",
+      cols: ["tokens", "facts kept", "answers “which order?”"],
+      rows: ["the full conversation", "sliding window (last 6)", "a vague summary", "a detailed summary"],
+      cells: [
+        ["489", { text: "5 of 5", tone: "good" }, true],
+        [{ text: "156", tone: "good" }, { text: "NONE", tone: "crit" }, false],
+        [{ text: "80", tone: "good" }, { text: "1 of 5", tone: "crit" }, false],
+        [{ text: "106", tone: "good" }, { text: "5 of 5", tone: "good" }, true]
+      ] },
     { t: "exercise", kind: "build", title: "Measure what each strategy destroys",
       difficulty: "core", minutes: 30,
       body: "Build a conversation containing several specific facts stated in the first turn. Apply a sliding window at several sizes and report both the token count and which facts survive. Then apply summarisation with a vague prompt and a detailed one, and report the same two measurements. Compare all the strategies on tokens, facts kept and whether the conversation remains answerable. Finally give the combination that covers both blind spots.",

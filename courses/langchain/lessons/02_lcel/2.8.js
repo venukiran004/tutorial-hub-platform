@@ -46,6 +46,14 @@ EC.receiveLesson({
       ["one call in a script", "no \u2014 `invoke` is simpler and identical in speed"]
     ] },
     { t: "p", text: "The honest summary is that the sync API is already concurrent where it matters: `batch` uses a thread pool and `RunnableParallel` runs branches in parallel. Async matters most when **something else** needs the thread \u2014 a server handling other requests while this one waits on a model." },
+    { t: "diagram", kind: "timeline", title: "Awaiting in a loop is serial",
+      caption: "The same trap as batching, wearing a different keyword. `for i in ...: await chain.ainvoke(...)` awaits each call before starting the next, so four 100 ms calls took **0.407 s**. `asyncio.gather` overlaps them and the cost becomes the maximum rather than the sum.",
+      span: 420, tick: 100, unit: "milliseconds",
+      lanes: [
+        { label: "await in a loop", bars: [[0, 100, "1", "warn"], [100, 200, "2", "warn"],
+                                           [200, 300, "3", "warn"], [300, 407, "4", "crit"]] },
+        { label: "asyncio.gather", bars: [[0, 103, "all four, concurrently", "good"]] }
+      ] },
     { t: "exercise", kind: "analysis", title: "Measure the async trap",
       difficulty: "core", minutes: 24,
       body: "Time ainvoke on one input, abatch on six, and asyncio.gather on the same six. Then time an await inside a loop against abatch on the same inputs and report the ratio. Finally, run abatch at four concurrency limits and show that the timings match the wave structure.",

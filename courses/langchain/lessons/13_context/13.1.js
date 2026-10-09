@@ -41,6 +41,16 @@ EC.receiveLesson({
       { t: "p", text: "The available history is a fixed number of tokens, and the strategies in 13.2 to 13.5 are all ways of deciding **which** tokens they are. That is the whole of context engineering stated as one sentence." },
       { t: "p", text: "Note also that this corpus's turns are small, so even 40 turns fits an 8K window \u2014 the cost problem bites long before the window does, which is exactly the point of the previous section. A conversation with pasted logs or tool results reverses that." }
     ] },
+    { t: "diagram", kind: "timeline", title: "A conversation costs the sum of its prefixes",
+      caption: "Cumulative tokens sent divided by the final prompt size, measured. At 40 turns the conversation has sent **21.6×** its own final length — which is not the number anyone quotes.",
+      span: 22, tick: 2, unit: "cumulative tokens ÷ final prompt",
+      lanes: [
+        { label: "1 turn",   bars: [[0, 1.0, "1.0x", "good"]] },
+        { label: "5 turns",  bars: [[0, 3.7, "3.7x", "good"]] },
+        { label: "10 turns", bars: [[0, 6.4, "6.4x", "accent"]] },
+        { label: "20 turns", bars: [[0, 11.6, "11.6x", "warn"]] },
+        { label: "40 turns", bars: [[0, 21.6, "21.6x", "crit"]] }
+      ] },
     { t: "exercise", kind: "analysis", title: "Measure the context budget",
       difficulty: "core", minutes: 30,
       body: "Break one agent turn into its components and report each one's token count and share. Then measure the cumulative tokens a conversation sends across several lengths and compare against its final prompt size. Separate the three pressures that grow with history and say which one announces itself. Finally compute the available history budget for a given window as arithmetic, including a reserve for the answer.",

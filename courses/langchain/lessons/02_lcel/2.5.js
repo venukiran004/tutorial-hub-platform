@@ -43,6 +43,13 @@ EC.receiveLesson({
       out: "I am not sure which specialist handles that.",
       caption: "A default that declines beats a default that guesses." },
     { t: "p", text: "The temptation is to make the default a general-purpose chain, so that something always gets answered. That converts every routing failure into a plausible answer from the wrong specialist \u2014 which is invisible in metrics and arrives as a complaint. A default that says it does not know is a measurable signal, and the rate at which it fires tells you whether the router needs work." },
+    { t: "diagram", kind: "tree", title: "Routing: two forms, one capability",
+      caption: "The choice is readability, not capability. `RunnableBranch` is an if/elif/else built from condition-and-chain tuples; a plain function returning a Runnable does the same thing, because LCEL invokes whatever a `RunnableLambda` returns.",
+      root: { label: "classify the question", sub: "RunnableBranch, or a function", tone: "accent", children: [
+        { label: "billing", sub: "the billing chain", tone: "good", edge: "matches" },
+        { label: "technical", sub: "the support chain", tone: "good", edge: "matches" },
+        { label: "default", sub: "the catch-all — NOT optional", tone: "crit", edge: "nothing matched" }
+      ] } },
     { t: "exercise", kind: "build", title: "Route two ways, then find the wall",
       difficulty: "core", minutes: 22,
       body: "Implement the same three-way router with RunnableBranch and with a plain function returning a Runnable, and confirm they behave identically. Then write down what neither can express, and build a router whose default declines rather than guessing.",

@@ -50,6 +50,15 @@ EC.receiveLesson({
       { t: "p", text: "A rate limiter bounds requests per second, not spend. A single request with a 100,000-token context costs far more than fifty short ones and consumes one token from the bucket. If the problem is cost, the controls are 4.4's token budget and 4.3's cache \u2014 not the limiter." },
       { t: "p", text: "The two get conflated because both are described as \u201climiting\u201d, and a team that adds a rate limiter to control spend will find spend roughly unchanged and latency worse." }
     ] },
+    { t: "diagram", kind: "layers", title: "Five mechanisms, and the order is the behaviour",
+      caption: "Read outward from the call. Each wrapper changes what the layers inside it see — 2.6 measured the inner two: retry inside fallback gives the primary three attempts, and reversing them gives it one.",
+      items: [
+        { label: "cache", sub: "outermost — a hit skips everything below", tone: "good", side: "no call" },
+        { label: "rate limit", sub: "shapes what reaches the provider", tone: "teal", side: "shapes" },
+        { label: "circuit breaker", sub: "refuses locally once the dependency is down", tone: "violet", side: "refuses" },
+        { label: "fallback", sub: "chooses WHICH provider is attempted", tone: "warn", side: "chooses" },
+        { label: "retry", sub: "innermost — attempts the one it was given", tone: "accent", side: "attempts" }
+      ] },
     { t: "exercise", kind: "build", title: "Compose the stack and find the silent ordering bug",
       difficulty: "advanced", minutes: 26,
       body: "Write out the resilience stack in the correct nesting order and justify each placement. Then enumerate the wrong orderings and say what each one does, identifying the one that degrades silently. Verify that a correctly composed retry absorbs transient failures without the fallback firing. Finally, state what each mechanism is not for.",

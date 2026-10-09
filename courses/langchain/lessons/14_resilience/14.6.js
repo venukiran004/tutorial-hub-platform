@@ -59,6 +59,15 @@ EC.receiveLesson({
       { t: "p", text: "What **fraction** of dead letters were resolved by a human action that could have been automated. If it is high, the escalation condition is too eager \u2014 usually a retry predicate that excluded something it should have retried, which 14.2's deny-list default makes likely." },
       { t: "p", text: "That is the one metric that tells you the escalation path is mis-tuned rather than that the system is failing, and the two look identical from the queue depth." }
     ] },
+    { t: "diagram", kind: "steps", title: "The escalation path, with a condition at each hop",
+      caption: "The condition is the useful part — *“retry then escalate”* is not a policy because it does not say when the retry is **wrong**. And the page hop is distinguished by blast radius, which is a count rather than a judgement.",
+      items: [
+        { label: "retry", desc: "the error is transient AND the step is idempotent", tone: "good", code: "automatic" },
+        { label: "degrade", desc: "a partial answer is useful AND can be labelled", tone: "good", code: "automatic" },
+        { label: "compensate", desc: "effects applied AND every one is reversible", tone: "warn", code: "automatic" },
+        { label: "dead letter", desc: "none of the above, and the record is actionable", tone: "crit", code: "a human, eventually" },
+        { label: "page", desc: "many runs are failing, not one", tone: "crit", code: "a human, now" }
+      ] },
     { t: "exercise", kind: "build", title: "Build a dead letter path",
       difficulty: "core", minutes: 28,
       body: "Run a multi-step graph that fails at a step after one with an effect, and report both what the caller saw and what the checkpointer still holds. Build a dead letter record from it, including the fields a human needs that are not obvious. Then fix the dependency and resume the run rather than re-running it, showing which steps executed. Give the escalation path a condition at each hop. Finally name the two things that make a dead letter queue useless and the metric that reveals a mis-tuned escalation.",

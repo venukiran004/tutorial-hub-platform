@@ -49,6 +49,14 @@ EC.receiveLesson({
       { t: "p", text: "When a chain fails, the traceback goes through `RunnableSequence.invoke`, which 1.8 listed as a genuine cost of the framework. Knowing the chain is an object with a readable `.steps` list is what converts that from opaque to navigable: you can match the failing step index to a name." },
       { t: "p", text: "The habit worth forming is naming chains with `with_config(run_name=...)` as you build them. It costs nothing, changes no behaviour, and is the difference between a span tree you can filter and one that is forty rows of `RunnableSequence`." }
     ] },
+    { t: "diagram", kind: "flow", title: "What the pipe actually builds", cols: 3,
+      caption: "`prompt | model | parser` is `prompt.__or__(model).__or__(parser)`, and it returns a `RunnableSequence` holding a **flat** list of three steps — not nested pairs. The chain is a value built when the expression evaluates, so you can print it and read its steps.",
+      nodes: [
+        { id: "p", label: "prompt", sub: "dict → PromptValue", tone: "accent" },
+        { id: "m", label: "model", sub: "messages → AIMessage", tone: "violet" },
+        { id: "o", label: "parser", sub: "AIMessage → str", tone: "teal" }
+      ],
+      edges: [["p", "m"], ["m", "o"]] },
     { t: "exercise", kind: "analysis", title: "Take a chain apart",
       difficulty: "core", minutes: 22,
       body: "Build a three-step chain and inspect what the pipe constructed. Confirm the step list is flat rather than nested, then extract a sub-chain into a variable and confirm the composed result is still flat. Demonstrate both coercions the pipe performs. Finally, inspect the chain's schema and graph without invoking it.",

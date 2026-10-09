@@ -40,6 +40,13 @@ EC.receiveLesson({
       { t: "p", text: "Build a fresh `Recorder` per request. A module-level handler shared between concurrent invocations interleaves their events, and the `run_id` pairing will still match starts to ends correctly while every aggregate \u2014 total calls, total characters \u2014 is the sum across requests that happened to overlap." },
       { t: "p", text: "That bug is invisible in testing, where requests are sequential, and produces inflated per-request metrics in production. Same shape as the session-id mistake in 3.6." }
     ] },
+    { t: "diagram", kind: "tree", title: "Event counts are not call counts",
+      caption: "A three-step chain fires `on_chain_start` **three** times, because the sequence is a chain and so is each non-model step. So an event count is a statement about the structure of your chain, not about how much work was done — which is the first thing a handler teaches.",
+      root: { label: "RunnableSequence", sub: "on_chain_start #1", tone: "accent", children: [
+        { label: "prompt", sub: "on_chain_start #2", tone: "good" },
+        { label: "model", sub: "on_chat_model_start", tone: "violet" },
+        { label: "parser", sub: "on_chain_start #3", tone: "good" }
+      ] } },
     { t: "exercise", kind: "build", title: "Build a recorder",
       difficulty: "core", minutes: 24,
       body: "Implement a callback handler that records every event in order, counts model calls, and measures the characters in and out plus the time of each model call. Run it on a three-step chain and print the event sequence. Explain why the chain-event count differs from the model-call count, and tabulate what a callback can and cannot see.",

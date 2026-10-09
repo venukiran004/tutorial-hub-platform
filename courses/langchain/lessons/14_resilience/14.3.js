@@ -53,6 +53,16 @@ EC.receiveLesson({
       { t: "p", text: "The strongest version available is **at-least-once delivery plus a deduplicating receiver**, and the receiver is usually not yours. A payment provider refusing a duplicate idempotency key is a real guarantee; your dict is a hope." },
       { t: "p", text: "Which is why the best answer to *\u201cwhere does the key go\u201d* is *\u201cin the request to the external system\u201d*. Every other location is a layer of your own that can be lost, and the one that cannot be lost is the one on the far side of the call." }
     ] },
+    { t: "diagram", kind: "matrix", title: "Where the idempotency key has to live",
+      caption: "Graph state is **structurally unable** to hold one: a node’s writes commit only on success, so the key written on attempt 1 read `None` on attempts 2 and 3. Measured — three attempts, three emails.",
+      cols: ["survives a retry", "survives a restart", "verdict"],
+      rows: ["a dict in memory", "graph state", "a store (9.6)", "the external system"],
+      cells: [
+        [true, false, { text: "lost on restart", tone: "warn" }],
+        [{ text: "NO — always None", tone: "crit" }, false, { text: "cannot work", tone: "crit" }],
+        [true, true, { text: "works", tone: "good" }],
+        [true, true, { text: "the only real one", tone: "good" }]
+      ] },
     { t: "exercise", kind: "build", title: "Make a side effect safe to retry",
       difficulty: "advanced", minutes: 34,
       body: "Build a node that performs a side effect and then fails, give it a retry policy, and measure how many times the effect happens. Then try to protect it with an idempotency key stored in graph state, recording what the key looked like on each attempt, and explain the result. Move the key outside the graph's transaction and measure again, including the attempt count. Say where the key must come from and why a key generated in the node cannot work. Finally distinguish a retry from a restart for each possible location of the key.",

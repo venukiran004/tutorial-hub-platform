@@ -52,6 +52,15 @@ EC.receiveLesson({
       { t: "p", text: "Which is not an argument against agents \u2014 it is the argument for reaching for one only when the problem requires it. The list is long because the capability is genuinely powerful and genuinely expensive to operate." },
       { t: "p", text: "And if you do need one: the twenty-two items are not aspirational. Each of them exists because something measured in this course failed in a way that nothing reported." }
     ] },
+    { t: "diagram", kind: "layers", title: "Twenty-two items in five sections",
+      caption: "Each carries the **measurement** behind it rather than a rationale, because an item you can check is worth more than a principle you can agree with. The side column is the cheapest check in each section.",
+      items: [
+        { label: "CORRECTNESS — 4 items", sub: "fallback branches, your own queries, fact survival, trajectory", tone: "accent", side: "count the facts" },
+        { label: "SAFETY — 4 items", sub: "filter before similarity, scoped caches, gated effects, untrusted text", tone: "crit", side: "read the query" },
+        { label: "RESILIENCE — 6 items", sub: "retry predicate, idempotency, ordering, k-of-N, labels, dead letters", tone: "warn", side: "the key" },
+        { label: "COST — 4 items", sub: "cumulative pricing, a call budget, compression, coordination overhead", tone: "good", side: "prefixes" },
+        { label: "OBSERVABILITY — 5 items", sub: "span attributes, tool arguments, distinct pairs, sampling, fallback rate", tone: "violet", side: "attempt number" }
+      ] },
     { t: "exercise", kind: "analysis", title: "Run the production checklist",
       difficulty: "core", minutes: 30,
       body: "Assemble a readiness checklist across correctness, safety, resilience, cost and observability, with the specific measurement behind each line rather than a rationale. Identify the four items that are cheapest to check and highest-yield, and say which of them requires writing code. State what the checklist deliberately omits and why those omissions make it durable. Explain why a checklist catches something a test suite cannot. Finally state the question that comes before every item on it.",

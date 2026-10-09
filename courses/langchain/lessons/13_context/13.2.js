@@ -48,6 +48,28 @@ EC.receiveLesson({
       { t: "p", text: "It is whether the summarised conversation can still answer the questions the full one could \u2014 which is 13.3's measurement, and the one a token count cannot give you." },
       { t: "p", text: "A trigger that fires at the right time and a summary that destroys the subject of the conversation is a worse outcome than firing late, because it is harder to notice." }
     ] },
+    { t: "diagram", kind: "compare", title: "Three triggers, and why tokens win",
+      caption: "The turn count is a proxy measured in a unit that varied **25.5×** between a short turn and a long one. Drift matches the intent best and is the hardest to measure, so tokens are the practical default.",
+      columns: [
+        { title: "token count", tone: "good", items: [
+          "tracks the window and the cost directly",
+          "cannot be fooled by turn size",
+          "must fire at 60-70% of available history",
+          "because summarising needs the history as INPUT",
+          "the practical default" ] },
+        { title: "turn count", tone: "crit", items: [
+          "a proxy for the thing that matters",
+          "a short turn was 2 tokens, a long one 51",
+          "so 'every 10 turns' means 20 tokens or 510",
+          "fires too early on chat, too late on logs",
+          "keep only as a backstop for one huge turn" ] },
+        { title: "semantic drift", tone: "warn", items: [
+          "asks the RIGHT question: is the old history still relevant",
+          "embed the first N turns against the last N",
+          "but an embedding measures similarity, not relevance (5.4)",
+          "two turns about one order look dissimilar",
+          "so it drops the turn holding the order id" ] }
+      ] },
     { t: "exercise", kind: "analysis", title: "Choose a summarisation trigger",
       difficulty: "core", minutes: 28,
       body: "Compare a token-count trigger against a turn-count trigger by measuring the token size of a short turn and a long turn from the same conversation. Explain why the turn count fires at the wrong time in both directions. Then compute token thresholds at several fractions of the available history and explain why a trigger at the limit is unusable. Describe how semantic drift would be measured and why it is unreliable. Finally give a recommendation and say what to measure afterwards.",
