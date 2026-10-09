@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 4.1 — Why Transformers
-   Mirrors 02_Transformers_InDepth.md · §1-2. The sequential bottleneck is
-   benchmarked against attention: it wins at short lengths and LOSES at 512
-   (scratchpad/nlp/n41.py). Embeddings move to 4.2.
+   The sequential bottleneck is benchmarked against attention: it wins at
+   short lengths and LOSES at 512 (scratchpad/nlp/n41.py). Embeddings move
+   to 4.2.
    ========================================================================= */
 EC.receiveLesson({
   id: "4.1",
@@ -43,7 +43,7 @@ EC.receiveLesson({
     { t: "out", text:
 "seq len   LSTM ms    attention ms   ratio\n32        3.21       1.75           1.84x\n64        7.05       4.51           1.56x\n128      12.76      10.26           1.24x\n256      24.01      22.62           1.06x\n512      47.79      63.36           0.75x" },
 
-    { t: "callout", kind: "warn", title: "The reference's \"10-100x faster\" is about training on GPUs, not this",
+    { t: "callout", kind: "warn", title: "The \"10-100x faster\" is about training on GPUs, not this",
       body: [{ t: "p", text: "Attention's advantage *shrinks* with sequence length here and reverses by 512. That is exactly what the complexities predict: the LSTM is **O(T)** in sequential steps but each step is cheap, while attention is **O(T²)** in arithmetic but perfectly parallel. On a CPU forward pass there is little parallelism to exploit, so the quadratic term simply wins. The paper's speedup is a *training* claim on GPUs, where the RNN's sequential dependency leaves the hardware idle between steps and the transformer's matrix multiplies saturate it. Both statements are true; they measure different things, and conflating them is how people end up surprised that a transformer is slow on long inputs." }] },
 
     { t: "h2", n: "03", text: "Path length", id: "path" },

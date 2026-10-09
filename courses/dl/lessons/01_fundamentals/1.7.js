@@ -1,15 +1,10 @@
 /* ============================================================================
    LESSON 1.7 — Regularisation
-   Mirrors 01_Neural_Network_Fundamentals.md · §8 (L2 Regularization,
-   Dropout with the PyTorch Net, MC Dropout with the reference's function,
-   Early Stopping with the reference's loop) and §21 Q5 and Q8. The
-   reference's Net is trained on MNIST with and without each technique; its
-   mc_dropout_predict and early-stopping loop are run as written.
    ========================================================================= */
 EC.receiveLesson({
   id: "1.7",
 
-  lede: "**Regularisation is whatever stops a network memorising the training set instead of learning what generalises, and the reference gives four ways: penalise large weights, switch units off at random, stop when validation loss turns, and augment the data.** Each attacks overfitting from a different side. This lesson works the L2 penalty and its gradient on a matrix, shows exactly what `nn.Dropout` does to a tensor in training and in evaluation, runs the reference's dropout network on MNIST four ways, runs its Monte Carlo dropout function to get uncertainty out of the same network, and runs its early-stopping loop until the patience counter fires.",
+  lede: "**Regularisation is whatever stops a network memorising the training set instead of learning what generalises, and the reference gives four ways: penalise large weights, switch units off at random, stop when validation loss turns, and augment the data.** Each attacks overfitting from a different side. This lesson works the L2 penalty and its gradient on a matrix, shows exactly what `nn.Dropout` does to a tensor in training and in evaluation, runs the dropout network on MNIST four ways, runs its Monte Carlo dropout function to get uncertainty out of the same network, and runs its early-stopping loop until the patience counter fires.",
 
   objectives: [
     "Write the L2-regularised loss and its gradient, and relate λ to weight decay",
@@ -120,9 +115,9 @@ fraction zeroed 0.3007, surviving value 1.4286 = 1/(1-0.3), mean 0.9990` },
   <text x="380" y="232" text-anchor="middle" class="s-sub">dashed units are dropped for that pass; with 4 hidden units there are 2⁴ = 16 possible sub-networks</text>
 </g></svg>` },
 
-    { t: "h3", text: "The reference's network, trained four ways" },
+    { t: "h3", text: "The network, trained four ways" },
 
-    { t: "code", lang: "python", title: "Dropout in a module — the reference's Net",
+    { t: "code", lang: "python", title: "Dropout in a module — the Net",
       code: `import torch.nn as nn, torch.nn.functional as F
 
 class Net(nn.Module):
@@ -150,13 +145,13 @@ class Net(nn.Module):
   L2 weight_decay 1e-3   train 0.9968  val 0.9334  test 0.9351
   dropout 0.3 + decay    train 0.9984  val 0.9446  test 0.9445` },
 
-    { t: "p", text: "Every variant fits the 5,000 training digits essentially perfectly — the gap between training and validation accuracy is the overfitting. Dropout closes about a fifth of that gap (94.7 % against 93.6 % on validation, 94.8 % against 94.2 % on test), which is what the reference's ensemble argument predicts: a modest, reliable gain from averaging sub-networks. Weight decay at 10⁻³ inside Adam did nothing useful here, for the reason lesson 1.5 gave — L2 inside Adam's normalisation is not real weight decay. The gains are small because the network is small and the task is easy; on a large model with scarce data dropout is often the difference between working and not." },
+    { t: "p", text: "Every variant fits the 5,000 training digits essentially perfectly — the gap between training and validation accuracy is the overfitting. Dropout closes about a fifth of that gap (94.7 % against 93.6 % on validation, 94.8 % against 94.2 % on test), which is what the ensemble argument predicts: a modest, reliable gain from averaging sub-networks. Weight decay at 10⁻³ inside Adam did nothing useful here, for the reason lesson 1.5 gave — L2 inside Adam's normalisation is not real weight decay. The gains are small because the network is small and the task is easy; on a large model with scarce data dropout is often the difference between working and not." },
 
     { t: "h2", n: "03", text: "Monte Carlo dropout: uncertainty from the same network", id: "mc" },
 
     { t: "p", text: "Keep dropout switched on at inference, run the same input through N times, and the predictions vary — each pass is a different sub-network's opinion. Their mean is a better prediction than any single pass and their standard deviation is a measure of how much the sub-networks disagree, which approximates Bayesian uncertainty. A high standard deviation is a flag: the model does not know, and a human should look." },
 
-    { t: "code", lang: "python", title: "The reference's function, run on the trained dropout network",
+    { t: "code", lang: "python", title: "The function, run on the trained dropout network",
       code: `import torch, numpy as np
 
 def mc_dropout_predict(model, x, n_forward=50):
@@ -187,9 +182,9 @@ most uncertain digit: true 5, mean probs top-3 [0.606 0.392 0.002] for classes [
 
     { t: "h2", n: "04", text: "Early stopping", id: "early" },
 
-    { t: "p", text: "The cheapest regulariser: watch the validation loss every epoch, keep the weights from the best epoch, and stop when it has not improved for `patience` epochs in a row. The reference's loop, run on the no-dropout network:" },
+    { t: "p", text: "The cheapest regulariser: watch the validation loss every epoch, keep the weights from the best epoch, and stop when it has not improved for `patience` epochs in a row. The loop, run on the no-dropout network:" },
 
-    { t: "code", lang: "python", title: "The reference's early-stopping loop",
+    { t: "code", lang: "python", title: "The early-stopping loop",
       code: `best_val_loss = float('inf')
 patience, counter = 5, 0
 
@@ -208,7 +203,7 @@ for epoch in range(max_epochs):
             break
 
 model.load_state_dict(torch.load('best_model.pt'))  # restore best`,
-      caption: "Patience 5 rather than the reference's 10, so the run is short enough to read in full. Every epoch's validation loss and the counter's state:" },
+      caption: "Patience 5 rather than the 10, so the run is short enough to read in full. Every epoch's validation loss and the counter's state:" },
 
     { t: "out", text: `  epoch  1: val loss 0.4082  <- best, saved
   epoch  2: val loss 0.3570  <- best, saved
@@ -229,13 +224,13 @@ model.load_state_dict(torch.load('best_model.pt'))  # restore best`,
 Early stopping at epoch 16
 restored epoch 11: val acc 0.9316, test acc 0.9337` },
 
-    { t: "p", text: "Two things the trace shows that a description does not. The counter resets on *any* improvement, however small — epoch 11 beat epoch 7 by 0.0018 and bought five more epochs. And the validation loss is noisy: epochs 5 and 8 were near-misses that a longer patience would have ridden through, which is why the reference's default is 10. Restoring the checkpoint matters: the model at epoch 16 is worse than the model at epoch 11, and without the `load_state_dict` you would ship the worse one." },
+    { t: "p", text: "Two things the trace shows that a description does not. The counter resets on *any* improvement, however small — epoch 11 beat epoch 7 by 0.0018 and bought five more epochs. And the validation loss is noisy: epochs 5 and 8 were near-misses that a longer patience would have ridden through, which is why the default is 10. Restoring the checkpoint matters: the model at epoch 16 is worse than the model at epoch 11, and without the `load_state_dict` you would ship the worse one." },
 
-    { t: "callout", kind: "insight", title: "The reference's ordered checklist for overfitting",
+    { t: "callout", kind: "insight", title: "The ordered checklist for overfitting",
       body: [{ t: "p", text: "Training loss falling while validation loss rises means overfitting. In order: (1) more data, or augmentation if there is no more; (2) more regularisation — raise dropout from 0.3 towards 0.5, add or increase weight decay; (3) early stopping with a checkpoint at the best validation loss; (4) reduce capacity — fewer layers or units; (5) batch normalisation if not already present; (6) check for data leakage, because a suspiciously low training loss can mean the answer is in the features; (7) cross-validate, in case the split was unlucky." }] },
 
     { t: "exercise", kind: "practice", title: "Read a dropout rate off the gap", difficulty: "core", minutes: 15,
-      body: [{ t: "p", text: "Train the reference's Net on the same 5,000 MNIST digits with dropout 0.0, 0.3 and 0.5 for 30 epochs each, and report training, validation and test accuracy. Then answer: at which rate is the train–validation gap smallest, and does that rate also give the best test accuracy?" }],
+      body: [{ t: "p", text: "Train the Net on the same 5,000 MNIST digits with dropout 0.0, 0.3 and 0.5 for 30 epochs each, and report training, validation and test accuracy. Then answer: at which rate is the train–validation gap smallest, and does that rate also give the best test accuracy?" }],
       requirements: [
         "Three runs with the same seed",
         "A table of train / val / test accuracy",
@@ -257,7 +252,7 @@ restored epoch 11: val acc 0.9316, test acc 0.9337` },
     "Typical rates: 0–0.2 at the input, 0.2–0.5 in hidden layers; on 5,000 MNIST digits, p = 0.3 lifted validation accuracy from 93.6 % to 94.7 % with training accuracy at 100 % either way.",
     "model.train() enables dropout and model.eval() disables it; MC dropout keeps it on deliberately and uses the spread of 50 passes as an uncertainty — five times larger on wrong predictions than on right ones.",
     "Early stopping keeps the best-validation checkpoint and halts after `patience` epochs without improvement; restore the checkpoint, because the final epoch is worse than the best one.",
-    "Against overfitting, in the reference's order: more data or augmentation, more regularisation, early stopping, less capacity, batch norm, a leakage check, cross-validation."
+    "Against overfitting, in the order: more data or augmentation, more regularisation, early stopping, less capacity, batch norm, a leakage check, cross-validation."
   ],
 
   quiz: { title: "Check your understanding", questions: [
@@ -279,7 +274,7 @@ restored epoch 11: val acc 0.9316, test acc 0.9337` },
       why: "The loop halts only after `patience` epochs without improvement, so by then the model has moved on from its best point — in the trace, it stopped at epoch 16 while the best validation loss was at epoch 11. Restoring the checkpoint returns the weights that actually had the lowest validation loss." }
   ] },
 
-  interview: { title: "Interview", sub: "The reference's Q5 and Q8", questions: [
+  interview: { title: "Interview", sub: "The Q5 and Q8", questions: [
     { level: "Core", q: "Training loss is decreasing but validation loss is increasing. What do you do?",
       strong: "Overfitting; work the ordered checklist — data, regularisation, early stopping, capacity, batch norm, leakage check, cross-validation.",
       answer: [{ t: "p", text: "The divergence is overfitting: the model is fitting training noise. In order of preference: get more data, or augment what you have; increase regularisation — dropout from 0.3 to 0.5, add or raise weight decay; early-stop, checkpointing at the best validation loss; reduce capacity with fewer layers or units; add batch normalisation if absent; check for leakage, since a suspiciously low training loss can mean a feature encodes the label; and cross-validate to be sure the split was not simply unlucky. I would also confirm that model.eval() is called during validation so dropout and batch norm are in inference mode — otherwise the validation numbers themselves are wrong." }] },

@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.10 — CTC Loss
-   Mirrors 03_Sequence_Models.md · §11. Collapsing verified by implementation,
-   torch.nn.CTCLoss run with gradients (scratchpad/dl/d39.py).
+   Collapsing verified by implementation, torch.nn.CTCLoss run with
+   gradients (scratchpad/dl/d39.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.10",

@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.1 — The Vanilla RNN
-   Mirrors 03_Sequence_Models.md · §1. The recurrence is implemented by hand
-   and checked against nn.RNN (scratchpad/dl/d31.py).
+   The recurrence is implemented by hand and checked against nn.RNN
+   (scratchpad/dl/d31.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.1",

@@ -547,7 +547,7 @@ def test_public_surface_is_what_all_says() -> None:
             { t: "p", text: "A `main()` that reads `sys.argv` and calls `sys.exit` can only be tested by monkeypatching a global and catching `SystemExit`. Both are possible and both make the test about the test harness rather than about the behaviour." },
             { t: "p", text: "Taking `argv` and returning a code makes the entry point an ordinary function: `assert main([\"--base-url\", ...]) == 0`. The two lines that translate that into a process exit live in `__main__.py`, where nothing needs testing." }
           ]},
-          { t: "p", text: "**Declaring `anyio` as an optional dependency mirrors the lazy import.** If the code can run without it, the package should not require it — `pip install mylib[async]` makes the relationship explicit, and someone installing the sync client does not pull in a dependency they will never execute." }
+          { t: "p", text: "**Declaring `anyio` as an optional dependency Covers the lazy import.** If the code can run without it, the package should not require it — `pip install mylib[async]` makes the relationship explicit, and someone installing the sync client does not pull in a dependency they will never execute." }
         ]
       }
     },

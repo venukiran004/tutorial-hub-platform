@@ -1,8 +1,6 @@
 /* ============================================================================
    LESSON 3.2 — NLP with NLTK
-   Mirrors 01_NLP_Notes.md · §18. Tokenisers, stemmers, WordNet and
-   collocations run for real. The reference's ne_chunk output did not
-   reproduce — see §03 (scratchpad/nlp/n32.py).
+   Tokenisers, stemmers, WordNet and collocations run for real.
    ========================================================================= */
 EC.receiveLesson({
   id: "3.2",
@@ -34,7 +32,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Tokenising and tagging", id: "tokenising" },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n32.py — the reference's example", code:
+    { t: "code", lang: "python", title: "scratchpad/nlp/n32.py — the worked example", code:
 "import nltk\nfrom nltk.tokenize import word_tokenize, sent_tokenize\nfrom nltk import pos_tag, ne_chunk\n\n# nltk.download('punkt'); nltk.download('averaged_perceptron_tagger')\n# nltk.download('maxent_ne_chunker'); nltk.download('words')\n\ntext = \"Steve Jobs founded Apple Inc. in Cupertino. He was a visionary leader.\"\n\nprint(sent_tokenize(text))\ntokens = word_tokenize(text)\ntagged = pos_tag(tokens)\n\ntree = ne_chunk(tagged)\nfor subtree in tree:\n    if hasattr(subtree, \"label\"):\n        entity = \" \".join(word for word, tag in subtree.leaves())\n        print(entity, subtree.label())",
       caption: "On NLTK 3.9 and later the downloads are `punkt_tab`, `averaged_perceptron_tagger_eng` and `maxent_ne_chunker_tab` — the older names still resolve but the data layout changed." },
 
@@ -43,7 +41,7 @@ EC.receiveLesson({
 
     { t: "p", text: "The tokeniser handled the hard part correctly: `Inc.` keeps its full stop as one token, and the sentence splitter still broke after `Cupertino.` rather than after `Inc.`. That is the Punkt model, which is trained rather than rule-based, doing exactly what it should." },
 
-    { t: "h2", n: "03", text: "Where the reference's output did not reproduce", id: "nechunk" },
+    { t: "h2", n: "03", text: "Where the output did not reproduce", id: "nechunk" },
 
     { t: "p", text: "The reference states that `ne_chunk` returns *Steve Jobs (PERSON)*, *Apple Inc. (ORGANIZATION)* and *Cupertino (GPE)*. Run on NLTK 3.10.3, it does not." },
 
@@ -51,7 +49,7 @@ EC.receiveLesson({
 "NLTK ne_chunk:\n  Steve            PERSON\n  Jobs             PERSON        <- split into two entities\n  Apple Inc.       PERSON        <- should be ORGANIZATION\n  Cupertino        GPE\n\nspaCy en_core_web_sm:\n  Steve Jobs       PERSON\n  Apple Inc.       ORG\n  Cupertino        GPE" },
 
     { t: "callout", kind: "warn", title: "Two of three entities wrong",
-      body: [{ t: "p", text: "`ne_chunk` split *Steve Jobs* into two separate PERSON entities and labelled *Apple Inc.* as a PERSON. Only *Cupertino* came out right. spaCy got all three correct on the same sentence. This is not a dig at NLTK — the maximum-entropy chunker dates from an earlier era and was never the library's selling point — but it is a concrete reason not to use NLTK's NER for anything real, and a reminder to run the reference's examples rather than quoting their claimed output. The sentence is about as easy as NER gets." }] },
+      body: [{ t: "p", text: "`ne_chunk` split *Steve Jobs* into two separate PERSON entities and labelled *Apple Inc.* as a PERSON. Only *Cupertino* came out right. spaCy got all three correct on the same sentence. This is not a dig at NLTK — the maximum-entropy chunker dates from an earlier era and was never the library's selling point — but it is a concrete reason not to use NLTK's NER for anything real, and a reminder to run the worked examples rather than quoting their claimed output. The sentence is about as easy as NER gets." }] },
 
     { t: "h2", n: "04", text: "Stemming against lemmatisation", id: "stemming" },
 
@@ -137,7 +135,7 @@ EC.receiveLesson({
     "Porter stems universal, university and universe all to `univers`, and was to `wa` — stemmers over-merge and produce non-words.",
     "WordNet's lemmatiser assumes nouns: `ran` stays `ran` until you pass `pos=\"v\"`, which is why lemmatisation so often looks broken.",
     "Snowball is the better default stemmer — same author, more edge cases handled, fifteen languages.",
-    "NLTK's `ne_chunk` split 'Steve Jobs' and called 'Apple Inc.' a PERSON; the reference's quoted output did not reproduce, and spaCy got all three right.",
+    "NLTK's `ne_chunk` split 'Steve Jobs' and called 'Apple Inc.' a PERSON; the quoted output did not reproduce, and spaCy got all three right.",
     "WordNet records 18 senses for `bank` and 57 for `run` — the explicit version of the polysemy that static embeddings average away.",
     "WordNet gives antonyms, which distributional methods get wrong because `good` and `bad` share contexts.",
     "PMI collocations surface fixed phrases and proper nouns; raw frequency surfaces function-word pairs and tells you nothing about the text.",

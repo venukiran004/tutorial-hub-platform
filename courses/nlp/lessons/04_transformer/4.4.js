@@ -1,9 +1,5 @@
 /* ============================================================================
    LESSON 4.4 — Multi-Head Attention
-   Mirrors 02_Transformers_InDepth.md · §5. The reference's implementation is
-   run, the parameter count is shown to be independent of head count, and the
-   "heads learn different things" claim is probed on a real BERT — finding a
-   previous-token head and a [SEP] sink (scratchpad/nlp/n43.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.4",
@@ -30,7 +26,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The implementation", id: "implementation" },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n43.py — the reference's MultiHeadAttention", code:
+    { t: "code", lang: "python", title: "scratchpad/nlp/n43.py — the MultiHeadAttention", code:
 "class MultiHeadAttention(nn.Module):\n    def __init__(self, d_model, n_heads, dropout=0.1):\n        super().__init__()\n        assert d_model % n_heads == 0\n        self.d_k = d_model // n_heads\n        self.n_heads = n_heads\n        self.W_Q = nn.Linear(d_model, d_model)\n        self.W_K = nn.Linear(d_model, d_model)\n        self.W_V = nn.Linear(d_model, d_model)\n        self.W_O = nn.Linear(d_model, d_model)\n        self.dropout = nn.Dropout(dropout)\n\n    def forward(self, Q, K, V, mask=None):\n        B = Q.size(0)\n        # (B, seq, d_model) -> (B, n_heads, seq, d_k)\n        Q = self.W_Q(Q).view(B, -1, self.n_heads, self.d_k).transpose(1, 2)\n        K = self.W_K(K).view(B, -1, self.n_heads, self.d_k).transpose(1, 2)\n        V = self.W_V(V).view(B, -1, self.n_heads, self.d_k).transpose(1, 2)\n\n        scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(self.d_k)\n        if mask is not None:\n            scores = scores.masked_fill(mask == 0, float('-inf'))\n        weights = self.dropout(torch.softmax(scores, dim=-1))\n\n        context = torch.matmul(weights, V)          # (B, n_heads, seq, d_k)\n        context = context.transpose(1, 2).contiguous() \\\n                         .view(B, -1, self.n_heads * self.d_k)\n        return self.W_O(context), weights",
       caption: "The `.contiguous()` before `.view()` is required, not decorative — `transpose` returns a non-contiguous view and `view` refuses to operate on one." },
 

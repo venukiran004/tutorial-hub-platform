@@ -1148,7 +1148,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Scikit-learn** is no longer a `01_Python` topic — it's an ML library, now in **`04_Machine_Learning`** (`15_Scikit_Learn.md` reference, `16_Scikit_Learn_Model_Building.md` hands-on, and `00_Interview_Bank/01_ML_Core_Interview.md`)."
+     "text": "**Scikit-learn** is no longer a `01_Python` topic — it's an ML library, now in **`04_Machine_Learning`** (the reference reference, the reference hands-on, and `00_Interview_Bank/the reference notes`)."
     }
    ]
   },
@@ -1169,7 +1169,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Core path:** 01–16 (language) → 17 Concurrency → 18 Memory → 19 Best Practices → 21 Design Patterns → 22 Testing → 25 FastAPI → 26 Pydantic → 34 Auth & Security → 29 Backend Concepts → 30 Database/ORM (+ Transactions) → 33 API Consumption → 31/32 stdlib & tooling → 27/28 DSA. (Task queues are folded into 25 FastAPI §11.) **Signature skills:** async vs threads vs processes, FastAPI + Pydantic, ORM/transactions/locking, auth (password hashing, JWT/OAuth2, RBAC), idempotency, retries/circuit breakers, task queues. The cross-cutting incident scenarios live in `29_Backend_Web_Concepts/Python_FastAPI_Threading_ORM_Scenarios.md`."
+     "text": "**Core path:** 01–16 (language) → 17 Concurrency → 18 Memory → 19 Best Practices → 21 Design Patterns → 22 Testing → 25 FastAPI → 26 Pydantic → 34 Auth & Security → 29 Backend Concepts → 30 Database/ORM (+ Transactions) → 33 API Consumption → 31/32 stdlib & tooling → 27/28 DSA. (Task queues are folded into 25 FastAPI §11.) **Signature skills:** async vs threads vs processes, FastAPI + Pydantic, ORM/transactions/locking, auth (password hashing, JWT/OAuth2, RBAC), idempotency, retries/circuit breakers, task queues. The cross-cutting incident scenarios are covered in the backend and concurrency scenario sets."
     },
     {
      "t": "p",
@@ -1185,7 +1185,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Core path:** 01–16 → 10 Generators (data streaming) → 13 File I/O → 17 Concurrency (multiprocessing for data prep) → 22 Testing → 23 NumPy → 24 Pandas → 26 Pydantic (config/validation) → 25 FastAPI (model serving) → 30 Database/ORM (feature/metadata stores) → 32 Tooling. **Then:** `04_Machine_Learning` (incl. **scikit-learn** — `15_Scikit_Learn.md` / `16_Scikit_Learn_Model_Building.md`), `05_Deep_Learning`, and `10_MLOps_and_Deployment` for the rest."
+     "text": "**Core path:** 01–16 → 10 Generators (data streaming) → 13 File I/O → 17 Concurrency (multiprocessing for data prep) → 22 Testing → 23 NumPy → 24 Pandas → 26 Pydantic (config/validation) → 25 FastAPI (model serving) → 30 Database/ORM (feature/metadata stores) → 32 Tooling. **Then:** `04_Machine_Learning` (incl. **scikit-learn** — the reference / the reference), `05_Deep_Learning`, and `10_MLOps_and_Deployment` for the rest."
     },
     {
      "t": "p",
@@ -1249,7 +1249,7 @@ EC.receiveLesson({
       [
        "**Model serialization/serving formats** (joblib/ONNX)",
        "Partial",
-       "`04_Machine_Learning/16_Scikit_Learn_Model_Building.md` (persistence) + `10_MLOps_and_Deployment`."
+       "`04_Machine_Learning/the reference notes` (persistence) + `10_MLOps_and_Deployment`."
       ]
      ]
     },

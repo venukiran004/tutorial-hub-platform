@@ -85,7 +85,7 @@ At $5 / 1M input and $15 / 1M output:
         { t: "p", text: "And the system prompt at 600 tokens is small, load-bearing and the one place a prompt cache applies cleanly \u2014 it is a fixed prefix on every call, which is exactly what provider prompt caching is for." }
       ] },
 
-    { t: "viz", title: "The bill, and what each lever removes", caption: "Verified from the reference's own line items, with the 200-token correction.",
+    { t: "viz", title: "The bill, and what each lever removes", caption: "Verified from the line items, with the 200-token correction.",
       svg: `<svg viewBox="0 0 760 320" width="100%" role="img" aria-label="Monthly LLM bill decomposed by line item with each cost lever applied">
   <text x="16" y="20" class="s-label">BASELINE &#183; 8,000 INPUT + 400 OUTPUT &#183; $46,000/MONTH</text>
   <rect x="16" y="30" width="46" height="24" rx="2" class="s-fill" style="stroke:var(--good)" stroke-width="1.4"/>
@@ -199,7 +199,7 @@ for label, tin in steps:
              format(int(cost(tin) * CALLS), ","), flag))
 
 print()
-print("the 8->3 rerank step does not follow from the reference's own numbers:")
+print("the 8->3 rerank step does not follow from the numbers:")
 print("  8 chunks = 3,200 tokens, so 400 each; keeping 3 removes 5 x 400 = 2,000")
 print("  6,250 - 2,000 = 4,250, not 4,450. the reference is 200 tokens high.")
 print("  it then computes cost from 4,450, so everything downstream inherits it.")
@@ -247,7 +247,7 @@ Trim few-shot 10->3            6250       6250         +0      0.03725     37,25
 Rerank chunks 8->3             4250       4450       -200      0.02725     27,250  <-- MISMATCH
 Summarize history              3200       3400       -200      0.02200     22,000  <-- MISMATCH
 
-the 8->3 rerank step does not follow from the reference's own numbers:
+the 8->3 rerank step does not follow from the numbers:
   8 chunks = 3,200 tokens, so 400 each; keeping 3 removes 5 x 400 = 2,000
   6,250 - 2,000 = 4,250, not 4,450. the reference is 200 tokens high.
   it then computes cost from 4,450, so everything downstream inherits it.
@@ -260,7 +260,7 @@ corrected chain:
 
   + cache 40% of calls      $13,200    saving  71.3%
 
-the reference's headline 70%% total saving survives: with the corrected
+the headline 70%% total saving survives: with the corrected
 3,200-token prompt the figure is 71.3%, slightly better than its 70%.
 
 -- is input really 'the bigger half'? --
@@ -302,7 +302,7 @@ the reference's headline 70%% total saving survives: with the corrected
     "**Verified: 8,000 in and 400 out at $5/$15 per million is $0.046 a call, $46,000 a month.**",
     "**Input is 87.0% of the baseline bill**, and most of it is not the user's question.",
     "**Derive the per-unit figures**: 250 tokens per few-shot example, 400 per RAG chunk \u2014 then levers are arithmetic.",
-    "**The reference's rerank row is 200 tokens high**: its own line items give 4,250, not 4,450, and the slip propagates.",
+    "**The rerank row is 200 tokens high**: its own line items give 4,250, not 4,450, and the slip propagates.",
     "**Its 70% headline survives at 71.3%** on the corrected chain, reaching $13,200.",
     "**The input levers erode their own premise**: input falls from 87.0% to 72.7% of the bill.",
     "**Output never changed by a token and went from 13.0% to 27.3% of cost** \u2014 so `max_tokens` is the next lever.",

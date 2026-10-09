@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 1.6 — Word Embeddings
-   Mirrors 01_NLP_Notes.md · §6. A skip-gram model with negative sampling is
-   trained from scratch in NumPy on a corpus with known structure, and it
-   recovers the categories from co-occurrence alone (scratchpad/nlp/n16.py).
+   A skip-gram model with negative sampling is trained from scratch in NumPy
+   on a corpus with known structure, and it recovers the categories from co-
+   occurrence alone (scratchpad/nlp/n16.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "1.6",

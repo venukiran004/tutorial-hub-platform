@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 5.4 — Reference Card: the LSTM
-   Mirrors Architectures/lstm.md. Parameter formula checked; the forget-gate
-   bias item is backed by the measured result from lesson 3.3.
+   Parameter formula checked; the forget-gate bias item is backed by the
+   measured result from lesson 3.3.
    ========================================================================= */
 EC.receiveLesson({
   id: "5.4",
@@ -36,9 +36,9 @@ EC.receiveLesson({
 
     { t: "math", tex: "\\text{params} = 4H(H + D + 1), \\qquad \\text{compute} = O(T \\cdot H^2) \\; \\text{— not parallel over } T" },
 
-    { t: "out", text: `  lstm.md  H=128 D=64 : formula 98,816  pytorch 99,328  (+512)` },
+    { t: "out", text: `  lstm  H=128 D=64 : formula 98,816  pytorch 99,328  (+512)` },
 
-    { t: "p", text: "The reference's worked example checks out exactly: `4·128·193 = 98,816`. PyTorch's extra 512 is `4H` — the second bias vector, one chunk per gate. Four gate transforms means exactly 4× a vanilla RNN and 4/3× a GRU, ratios that hold at every size." },
+    { t: "p", text: "The worked example checks out exactly: `4·128·193 = 98,816`. PyTorch's extra 512 is `4H` — the second bias vector, one chunk per gate. Four gate transforms means exactly 4× a vanilla RNN and 4/3× a GRU, ratios that hold at every size." },
 
     { t: "h2", n: "03", text: "The one that bites", id: "forget-bias" },
 

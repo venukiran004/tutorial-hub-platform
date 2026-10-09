@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.2 — Backpropagation Through Time
-   Mirrors 03_Sequence_Models.md · §2. Gradient decay across sequence length
-   and clipping behaviour measured in scratchpad/dl/d31.py.
+   Gradient decay across sequence length and clipping behaviour measured in
+   scratchpad/dl/d31.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "3.2",

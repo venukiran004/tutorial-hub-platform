@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.7 — Sequence-to-Sequence and Teacher Forcing
-   Mirrors 03_Sequence_Models.md · §8. The teacher-forcing / free-running
-   input divergence is executed in scratchpad/dl/d37.py.
+   The teacher-forcing / free-running input divergence is executed in
+   scratchpad/dl/d37.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "3.7",

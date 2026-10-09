@@ -79,7 +79,7 @@ structured_cot = """Analyze this problem step by step:
 5. Verify the answer
 
 Problem: {problem}"""`,
-      caption: "From 04_Prompt_Engineering.md §3. The three differ in how much of the reasoning structure you supply rather than in what they ask the model to do." },
+      caption: "From the reference notes §3. The three differ in how much of the reasoning structure you supply rather than in what they ask the model to do." },
 
     { t: "table",
       head: ["Form", "Use when", "Cost"],
@@ -88,7 +88,7 @@ Problem: {problem}"""`,
         ["Few-shot CoT", "The reasoning has a shape you want followed, or zero-shot reasoning is going astray", "59 extra prompt tokens, measured"],
         ["Structured CoT", "The steps are known and always the same — a checklist you want applied", "42 extra prompt tokens, measured"]
       ],
-      caption: "Measured costs are for the reference's own examples, tokenised with `o200k_base`. The ordering of technique-strength and cost is not the same, which is the useful part." },
+      caption: "Measured costs are for the worked examples, tokenised with `o200k_base`. The ordering of technique-strength and cost is not the same, which is the useful part." },
 
     { t: "code", lang: "python", title: "g21.py — the prompt cost of each form", code: `for label, text in (("direct", direct), ("zero-shot CoT", cot_zero),
                     ("few-shot CoT", cot_few), ("structured CoT", structured)):
@@ -112,7 +112,7 @@ Problem: {problem}"""`,
       out: `    bare answer '18'         1 output tokens -> $0.000010 at $10/1M
     one-line working        25 output tokens -> $0.000250 at $10/1M
     five numbered steps     90 output tokens -> $0.000900 at $10/1M`,
-      caption: "A 90× increase in output tokens for the structured form. At the reference's quoted $10 per million output tokens that is $0.0009 against $0.00001 — still fractions of a penny per call, and a 90× multiple on whatever your volume is." },
+      caption: "A 90× increase in output tokens for the structured form. At the quoted $10 per million output tokens that is $0.0009 against $0.00001 — still fractions of a penny per call, and a 90× multiple on whatever your volume is." },
 
     { t: "p", text: "There is a latency cost too, and it is the one users feel. From 1.12, each output token is its own forward pass: a 90-token answer takes roughly ninety times as long to finish as a one-token answer. Streaming (1.12) hides some of that by showing the reasoning as it arrives, which is one reason CoT output is often left visible even when it is untidy." },
 

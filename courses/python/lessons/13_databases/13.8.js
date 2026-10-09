@@ -1,8 +1,5 @@
 /* ============================================================================
    LESSON 13.8 — Sixteen Production Scenarios: FastAPI, Threads and the ORM
-   Mirrors 29_Backend_Web_Concepts/Python_FastAPI_Threading_ORM_Scenarios.md:
-   each scenario as symptom → diagnosis → fix, and the five recurring
-   lessons the reference draws from them.
    ========================================================================= */
 EC.receiveLesson({
   id: "13.8",
@@ -13,7 +10,7 @@ EC.receiveLesson({
     "Recognise each of the sixteen scenarios from its symptom and name the diagnosis",
     "Apply the fix: run_in_threadpool, per-request sessions, pool sizing, eager loading, atomic updates and row locks, a process pool, a durable queue, idempotency keys, a semaphore, a bounded cache, a rollback-on-exception dependency, streaming queries, graceful shutdown",
     "State the five recurring lessons and map any new incident onto one of them",
-    "Choose threads, processes or async for a given endpoint using the reference's decision table"
+    "Choose threads, processes or async for a given endpoint using the decision table"
   ],
 
   prerequisites: ["11.8", "12.7", "13.5", "13.7"],

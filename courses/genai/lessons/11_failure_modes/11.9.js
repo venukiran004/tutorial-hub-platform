@@ -110,7 +110,7 @@ query ------+                                         +---------------> answer
 
   <circle cx="525" cy="200" r="4" class="s-fill" style="stroke:var(--warn)" stroke-width="1.6"/>
   <text x="525" y="248" text-anchor="middle" class="s-mono" style="font-size:8px;fill:var(--warn)">0.8526</text>
-  <text x="525" y="260" text-anchor="middle" class="s-sub">the reference's OWN</text>
+  <text x="525" y="260" text-anchor="middle" class="s-sub">the OWN</text>
   <text x="525" y="270" text-anchor="middle" class="s-sub">example pair &#8212; a MISS at 0.95</text>
 
   <circle cx="340" cy="200" r="4" class="s-fill" style="stroke:var(--crit)" stroke-width="1.6"/>
@@ -171,7 +171,7 @@ CANDIDATES = [
     ("How do I reset my password?",             "MUST HIT  case only"),
     ("how can I reset my password",             "MUST HIT  trivial reword"),
     ("password reset",                          "MUST HIT  keyword form"),
-    ("I forgot my password, what do I do?",     "should hit - the reference's example"),
+    ("I forgot my password, what do I do?",     "should hit - the worked example"),
     ("how do I change my password?",            "borderline - change != reset"),
     ("how do I reset my PIN?",                  "MUST MISS different credential"),
     ("how do I reset my username?",             "MUST MISS different field"),
@@ -240,7 +240,7 @@ and gives this pair as the motivating example of a semantic hit:
   cosine = 0.8526
   threshold 0.95 -> MISS
 
-  so the reference's own example FAILS its own recommended threshold.
+  so the worked example FAILS its own recommended threshold.
   the advice and the illustration are inconsistent.
 
 -- what else sits near that query, and where a threshold would land --
@@ -248,7 +248,7 @@ candidate                                      cosine  note
 how do I reset my password?                    1.0000  IDENTICAL -- must hit
 How do I reset my password?                    1.0000  case only -- must hit
 how can I reset my password                    0.9850  trivial reword -- should hit
-I forgot my password, what do I do?            0.8526  same intent -- the reference's example
+I forgot my password, what do I do?            0.8526  same intent -- the worked example
 password reset                                 0.8673  keyword form -- should hit
 how do I reset my PIN?                         0.6225  DIFFERENT credential -- must MISS
 how do I change my password?                   0.8741  change != reset -- borderline
@@ -312,7 +312,7 @@ the dangerous neighbour is the one to name:
     "**That argument weakens as the price gap narrows**, which is when you most want the saving.",
     "**A cascade that escalates pays both latencies in series**, so p95 is the sum rather than the max.",
     "**Enable exact caching first** \u2014 trivially correct, instant, and 11.7 priced a 40% hit rate as the largest remaining saving.",
-    "**The reference's own cache example scores 0.8526 against its own \u22650.95 advice** \u2014 the advice and the illustration disagree.",
+    "**The cache example scores 0.8526 against its own \u22650.95 advice** \u2014 the advice and the illustration disagree.",
     "**Measured: 0.95 gives 3 of 4 intended hits**, losing the keyword form and the motivating example.",
     "**The safe band on `all-MiniLM-L6-v2` is roughly 0.72\u20130.85** \u2014 so the threshold is model-dependent and must be measured.",
     "**A wrong cache hit answers a different question confidently** \u2014 it does not degrade gracefully.",

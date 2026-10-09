@@ -1,9 +1,7 @@
 /* ============================================================================
    LESSON 1.5 — Optimisers: SGD to AdamW
-   Mirrors 01_Neural_Network_Fundamentals.md · §6 (SGD with Momentum, Adam,
-   AdamW, RMSprop, Nesterov, the Adam+L2 ≠ AdamW note, optimiser selection
-   and default hyperparameters) and §21 Q3. Every update rule is worked by
-   hand on one parameter and checked against torch.optim.
+   Every update rule is worked by hand on one parameter and checked against
+   torch.optim.
    ========================================================================= */
 EC.receiveLesson({
   id: "1.5",
@@ -118,7 +116,7 @@ print(f" torch.optim.Adam after the same three gradients: θ = {p.item():.6f}")`
 
     { t: "p", text: "Three observations. **SGD** moves by 0.1 × gradient, so the third step, with a negative gradient, walks back. **Momentum** at the third step still moves *down* (v = 0.247 > 0) even though the gradient turned negative — the history outweighs one contrary gradient, which is what damps oscillation. **Adam's** steps are 0.001000, 0.000983, 0.000619 — all close to α = 0.001 despite gradients of 2.0, 1.5 and −0.5, because the step is m̂ / √v̂, a ratio of two quantities with the same units. That scale-invariance is why Adam's default learning rate transfers across problems and SGD's does not." },
 
-    { t: "callout", kind: "trap", title: "PyTorch's momentum is not the reference's formula",
+    { t: "callout", kind: "trap", title: "PyTorch's momentum is not the formula",
       body: [{ t: "p", text: "The reference writes v = βv + (1 − β)g. `torch.optim.SGD(momentum=0.9)` uses v = βv + g, without the (1 − β) factor — so the same learning rate gives steps up to ten times larger. Run the three gradients through it and θ ends at 0.2230 rather than 0.9223. Both are momentum; the learning rates are simply on different scales, and a value copied from a paper that used one convention will be wrong by 1/(1 − β) in the other." }] },
 
     { t: "h2", n: "03", text: "Adam + L2 is not AdamW", id: "adamw" },
@@ -172,7 +170,7 @@ for cls, kw in [(torch.optim.Adam, dict(weight_decay=0.1)), (torch.optim.AdamW, 
         "Match PyTorch to four decimals",
         "Answer (b) in two sentences"
       ],
-      hint: "PyTorch's RMSprop uses v = αv + (1 − α)g² with `alpha` as the decay, and divides by √v + ε (ε outside the root), which differs from the reference's √(v + ε) only at the 10⁻⁸ level.",
+      hint: "PyTorch's RMSprop uses v = αv + (1 − α)g² with `alpha` as the decay, and divides by √v + ε (ε outside the root), which differs from the √(v + ε) only at the 10⁻⁸ level.",
       solution: { lang: "python", title: "Solution",
         code: `import numpy as np, torch
 th, v = 1.0, 0.0
@@ -214,7 +212,7 @@ print(p.item())   # 0.9555`,
       why: "Fine-tuning moves a pretrained model a short distance, so the learning rate is a hundred times smaller than a from-scratch Adam default, and decoupled weight decay keeps the regularisation honest across parameters with very different gradient scales. AdamW at 10⁻⁵–5 × 10⁻⁵ is the standard." }
   ] },
 
-  interview: { title: "Interview", sub: "The reference's Q3, and where it leads", questions: [
+  interview: { title: "Interview", sub: "The Q3, and where it leads", questions: [
     { level: "Core", q: "Compare Adam and SGD. When would you prefer each?",
       strong: "Adam for a fast, robust default and for transformers; SGD with momentum and a schedule for the best generalisation on CNNs when you can afford to tune it; AdamW for fine-tuning.",
       answer: [{ t: "p", text: "Adam keeps per-parameter adaptive learning rates from a second-moment estimate plus momentum from a first-moment estimate, so it converges quickly with the defaults lr = 10⁻³, β = (0.9, 0.999) and is forgiving of the learning rate. SGD with momentum has one global rate, needs tuning and a schedule, but is repeatedly observed to generalise better — it tends to settle in flatter minima. In practice: Adam for prototyping and for transformers, SGD + momentum + cosine for the final training of convolutional networks, and AdamW — decoupled weight decay — as the standard for fine-tuning pretrained models." }] },

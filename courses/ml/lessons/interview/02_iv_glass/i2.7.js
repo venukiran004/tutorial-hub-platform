@@ -1,8 +1,6 @@
 /* ============================================================================
    INTERVIEW I2.7 — Additional ML Theory & Depth · Additional System Design for ML · Additional MLOps & Production
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/04_Machine_Learning/00_Interview_Bank/02_Glassdoor_DS_and_MLE.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "i2.7",

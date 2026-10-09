@@ -54,7 +54,7 @@ CANDS = [
     ("WRONG, high overlap",        "The retrieval stage costs about eleven milliseconds and the cross-encoder costs about eleven milliseconds."),
 ]`,
       hl: [9, 10],
-      caption: "The fourth candidate swaps the two figures, so it states the opposite of the truth in the reference's own words." },
+      caption: "The fourth candidate swaps the two figures, so it states the opposite of the truth in the usual phrasing." },
 
     { t: "code", lang: "python", title: "g82.py \u00a7E \u2014 the scores", code: `b = sentence_bleu([REF.lower().split()], c.lower().split(), smoothing_function=sm)
 r = rs.score(REF, c)      # rouge_score, with stemming`,
@@ -165,7 +165,7 @@ r = rs.score(REF, c)      # rouge_score, with stemming`,
       ] },
 
     { t: "exercise", kind: "build", title: "Test your own metric against a paraphrase and an inversion", difficulty: "core", minutes: 30,
-      body: "For whatever automatic metric you currently rely on, construct a small adversarial set: for each reference, one correct paraphrase and one factually inverted sentence that reuses the reference's wording. Score all of them and report whether the metric ranks correctness above overlap.",
+      body: "For whatever automatic metric you currently rely on, construct a small adversarial set: for each reference, one correct paraphrase and one factually inverted sentence that reuses the wording. Score all of them and report whether the metric ranks correctness above overlap.",
       requirements: [
         "At least five references, each with a correct paraphrase and an inverted version",
         "Score with your actual metric, not a reimplementation",

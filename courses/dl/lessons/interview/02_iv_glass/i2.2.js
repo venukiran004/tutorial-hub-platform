@@ -1,8 +1,6 @@
 /* ============================================================================
    INTERVIEW I2.2 — NLP & Generative AI · Computer Vision · System Design for AI · AI Ethics & Responsible AI · Data Preprocessing & Engineering · Projects & Behavioral · Additional Algorithms & Coding
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/05_Deep_Learning/00_Interview_Bank/02_Glassdoor_AI_Engineer.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "i2.2",

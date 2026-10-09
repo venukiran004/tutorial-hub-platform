@@ -1,13 +1,11 @@
 /* ============================================================================
    LESSON 1.2 — Text Preprocessing
-   Mirrors 01_NLP_Notes.md · §2. The reference's own pipeline is run; its
-   worked example's output does not match what it claims, and its elongation
-   regex over-collapses. Both reported (scratchpad/nlp/n12.py).
+   Both reported (scratchpad/nlp/n12.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "1.2",
 
-  lede: "**Preprocessing is a sequence of regular expressions, and every one of them is a decision about text you have not seen yet.** Running the reference's own pipeline on the reference's own example produces something different from what it claims — the emoji survive, because `string.punctuation` is ASCII-only. That is not a criticism so much as the point of the lesson: these rules are easy to write, easy to get subtly wrong, and applied to millions of documents nobody reads.",
+  lede: "**Preprocessing is a sequence of regular expressions, and every one of them is a decision about text you have not seen yet.** Running the pipeline on the worked example produces something different from what it claims — the emoji survive, because `string.punctuation` is ASCII-only. That is not a criticism so much as the point of the lesson: these rules are easy to write, easy to get subtly wrong, and applied to millions of documents nobody reads.",
 
   objectives: [
     "Build a preprocessing pipeline and measure what each flag removes",
@@ -23,7 +21,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The pipeline", id: "pipeline" },
 
-    { t: "code", lang: "python", title: "The reference's preprocessing function",
+    { t: "code", lang: "python", title: "The preprocessing function",
       code: `def preprocess_text(text, lowercase=True, remove_html=True, remove_urls=True,
                     remove_emails=True, remove_numbers=False,
                     remove_punctuation=True, remove_extra_spaces=True,
@@ -136,7 +134,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "`(.)\\1{2,}` matches a character followed by two or more of itself — a run of three or more — and replaces the whole run with one. So `sooooo` correctly becomes `so`, and `heyyyy` correctly becomes `hey`. But `cooool` has four `o`s, which is a run of four, so it collapses to a single `o` and you get **`col`** — not a word, and not `cool`. The fix is to collapse to *two* rather than one, `r\"\\1\\1\"`, since English has plenty of legitimate doubled letters and almost no legitimate tripled ones. It is a one-character change and the difference between `cool` and `col` in your vocabulary." }] },
 
     { t: "exercise", kind: "practice", title: "Break your own cleaner", difficulty: "foundation", minutes: 30,
-      prompt: "Take the reference's preprocessing function and run it over a corpus containing emoji, prices, dates, URLs with `@` in them, and elongated words. For each, record what came out and decide whether it is what you wanted. Then fix the three problems this lesson names: make punctuation removal Unicode-aware, protect numeric punctuation, and change the elongation regex to collapse to two characters. Re-run and compare vocabulary sizes.",
+      prompt: "Take the preprocessing function and run it over a corpus containing emoji, prices, dates, URLs with `@` in them, and elongated words. For each, record what came out and decide whether it is what you wanted. Then fix the three problems this lesson names: make punctuation removal Unicode-aware, protect numeric punctuation, and change the elongation regex to collapse to two characters. Re-run and compare vocabulary sizes.",
       hints: [
         "`unicodedata.category(c)[0] == 'P'` identifies punctuation across Unicode.",
         "Substitute a placeholder like `<NUM>` before stripping punctuation, or exclude `.` and `,`.",
@@ -153,7 +151,7 @@ EC.receiveLesson({
   ],
 
   takeaways: [
-    "The reference's worked example does not reproduce: `string.punctuation` is ASCII-only, so emoji survive.",
+    "The worked example does not reproduce: `string.punctuation` is ASCII-only, so emoji survive.",
     "Stripping punctuation turned `$30.50` into `3050` — a wrong number that looks like a right one.",
     "Stage order is not commutative: HTML before URLs, URLs before emails, lowercase after any case-sensitive pattern.",
     "A stemmer has no dictionary: `studies → studi`, `was → wa`, and irregulars like `mice` and `children` pass through untouched.",
@@ -167,7 +165,7 @@ EC.receiveLesson({
     { stem: "Why do emoji survive `text.translate(str.maketrans(\"\", \"\", string.punctuation))`?",
       options: ["They are letters", "`string.punctuation` contains only 32 ASCII characters", "The translate call is wrong", "NFKD removed them already"],
       answer: 1,
-      why: "`string.punctuation` is an ASCII constant and knows nothing about emoji, CJK punctuation or mathematical symbols. Running the reference's own example gives `check out its amazing 🎉🎉🎉`, not the `check out its amazing` it claims. Unicode-aware removal needs `unicodedata.category`." },
+      why: "`string.punctuation` is an ASCII constant and knows nothing about emoji, CJK punctuation or mathematical symbols. Running the worked example gives `check out its amazing 🎉🎉🎉`, not the `check out its amazing` it claims. Unicode-aware removal needs `unicodedata.category`." },
     { stem: "Your preprocessed corpus contains the token `3050` where the original said `$30.50`. What happened?",
       options: ["The tokenizer merged two numbers", "Punctuation removal deleted the decimal point", "NFKD normalisation", "Number removal was enabled"],
       answer: 1,

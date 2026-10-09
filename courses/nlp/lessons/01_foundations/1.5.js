@@ -1,13 +1,10 @@
 /* ============================================================================
    LESSON 1.5 — N-grams and Classical Language Models
-   Mirrors 01_NLP_Notes.md · §5. The reference's BigramLM is run; add-1
-   smoothing is measured and found to give 61.5% of the probability mass to
-   events never observed (scratchpad/nlp/n15.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "1.5",
 
-  lede: "**A classical language model is a counting exercise with one fatal problem, and almost everything written about them is about the fix.** Count how often each word follows each context, divide, and you have probabilities. Then the first unseen bigram in your test set makes the whole sentence probability zero and the log-likelihood negative infinity. Add-one smoothing solves that — and, measured on the reference's own model, hands **61.5 % of the probability mass to events that were never observed at all**.",
+  lede: "**A classical language model is a counting exercise with one fatal problem, and almost everything written about them is about the fix.** Count how often each word follows each context, divide, and you have probabilities. Then the first unseen bigram in your test set makes the whole sentence probability zero and the log-likelihood negative infinity. Add-one smoothing solves that — and, measured on the model, hands **61.5 % of the probability mass to events that were never observed at all**.",
 
   objectives: [
     "Generate n-grams and compute maximum-likelihood conditional probabilities",
@@ -33,7 +30,7 @@ EC.receiveLesson({
   P('mat' | 'the') = count('the mat')/count('the') = 1/2 = 0.5
   P('cat' | 'the') = 1/2 = 0.5` },
 
-    { t: "p", text: "A sequence of `T` tokens yields `T − n + 1` n-grams. The conditional probability is a ratio of counts, and the reference's worked value reproduces: `the` is followed by `cat` once and `mat` once, so each has probability 0.5 and the two sum to 1." },
+    { t: "p", text: "A sequence of `T` tokens yields `T − n + 1` n-grams. The conditional probability is a ratio of counts, and the worked value reproduces: `the` is followed by `cat` once and `mat` once, so each has probability 0.5 and the two sum to 1." },
 
     { t: "math", tex: "P(w_1, \\dots, w_T) \\approx \\prod_{t=1}^{T} P(w_t \\mid w_{t-n+1}, \\dots, w_{t-1})" },
 
@@ -53,7 +50,7 @@ EC.receiveLesson({
 
     { t: "math", tex: "P_{\\text{add-1}}(w \\mid c) = \\frac{\\text{count}(c, w) + 1}{\\text{count}(c) + |V|}" },
 
-    { t: "code", lang: "python", title: "The reference's implementation",
+    { t: "code", lang: "python", title: "The implementation",
       code: `def prob(self, word, context):
     """P(word | context) with add-1 smoothing."""
     vocab_size = len(self.unigram_counts)
@@ -130,7 +127,7 @@ EC.receiveLesson({
 
   takeaways: [
     "An n-gram model applies the Markov assumption: the next word depends only on the previous `n−1`.",
-    "MLE probabilities are ratios of counts — the reference's `P('mat'|'the') = 1/2 = 0.5` reproduces exactly.",
+    "MLE probabilities are ratios of counts — the `P('mat'|'the') = 1/2 = 0.5` reproduces exactly.",
     "One unseen bigram makes the sentence probability zero and the log-probability negative infinity.",
     "Add-one smoothing removes the zeros and gave the observed continuations only 0.385 of the mass — 61.5 % went to events never seen.",
     "Use add-`k` with `k` well below 1, or Kneser-Ney, which models how likely a word is in a *novel* context.",
@@ -144,7 +141,7 @@ EC.receiveLesson({
       options: ["It overfits the training vocabulary", "A single unseen n-gram makes the whole sentence probability zero and the log-probability −∞", "It runs out of memory", "The counts become too large"],
       answer: 1,
       why: "Sentence probability is a product of conditionals, so one zero factor zeroes everything. The model does not think the sentence is unlikely — it thinks it is impossible. Since held-out text always contains unseen n-grams, perplexity is infinite and the model cannot be evaluated at all." },
-    { stem: "After add-one smoothing on the reference's model, how much probability mass do the actually-observed continuations retain?",
+    { stem: "After add-one smoothing on the model, how much probability mass do the actually-observed continuations retain?",
       options: ["All of it", "0.385 — the other 61.5 % went to unseen events", "0.95", "It depends on the corpus size only"],
       answer: 1,
       why: "Measured directly: before smoothing the two continuations seen after `cat` held all the mass; after, they hold 0.385. The rest is spread over every vocabulary word that never followed `cat`. This over-smoothing worsens as the vocabulary grows, which is why production systems use add-`k` with small `k`, or Kneser-Ney." },

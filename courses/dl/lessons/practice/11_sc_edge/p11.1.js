@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P11.1 — Advanced and Edge Cases · 1
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/05_Deep_Learning/Practice/10_Advanced_Edge_Cases.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p11.1",

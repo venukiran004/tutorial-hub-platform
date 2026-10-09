@@ -16,7 +16,7 @@ EC.receiveLesson({
   blocks: [
 
     { t: "h2", n: "01", id: "cheatsheet", text: "Metric, keyed on the question",
-      sub: "The reference's table, with what this module measured about each" },
+      sub: "The table, with what this module measured about each" },
 
     { t: "table",
       head: ["You want to know\u2026", "Use", "Measured in this module"],

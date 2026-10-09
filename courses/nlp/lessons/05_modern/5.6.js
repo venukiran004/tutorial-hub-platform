@@ -1,9 +1,8 @@
 /* ============================================================================
    LESSON 5.6 — HuggingFace in Practice
-   Mirrors 02_Transformers_InDepth.md · §17. LoRA's arithmetic is computed
-   (0.271% of BERT trainable, 4x less training memory), the low-rank premise
-   is checked honestly (§04), and distillation temperature is measured
-   (scratchpad/nlp/n56.py).
+   LoRA's arithmetic is computed (0.271% of BERT trainable, 4x less training
+   memory), the low-rank premise is checked honestly (§04), and distillation
+   temperature is measured (scratchpad/nlp/n56.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "5.6",

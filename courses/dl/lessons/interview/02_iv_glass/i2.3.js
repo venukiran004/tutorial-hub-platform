@@ -1,8 +1,6 @@
 /* ============================================================================
    INTERVIEW I2.3 — Additional Deep Learning · Additional NLP & GenAI · Additional System Design & Production AI · Additional Ethics & Responsible AI · Additional Behavioral & Projects · Additional NLP & Text Processing
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/05_Deep_Learning/00_Interview_Bank/02_Glassdoor_AI_Engineer.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "i2.3",

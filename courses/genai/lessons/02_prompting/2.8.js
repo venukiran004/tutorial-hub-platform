@@ -19,10 +19,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "sequential", text: "The sequential chain",
       sub: "Each step's output is the next step's input" },
 
-    { t: "code", lang: "python", title: "chain.py — the reference's example", code: `step1 = model.invoke("Extract all technical claims from this paper: {paper}")
+    { t: "code", lang: "python", title: "chain.py — the worked example", code: `step1 = model.invoke("Extract all technical claims from this paper: {paper}")
 step2 = model.invoke(f"For each claim, find supporting evidence: {step1}")
 step3 = model.invoke(f"Write a critical review based on: {step2}")`,
-      caption: "From 04_Prompt_Engineering.md §8. Three calls where a single \"review this paper\" prompt would have been one — and the paper itself appears only in the first." },
+      caption: "From the reference notes §8. Three calls where a single \"review this paper\" prompt would have been one — and the paper itself appears only in the first." },
 
     { t: "p", text: "That last detail is the key to the economics. A naive expectation is that three calls cost three times one call, and they do not, because the large input — the paper — is consumed once and replaced by a much smaller intermediate. Step 2 sees a list of claims, not the document." },
 
@@ -237,7 +237,7 @@ base per-step accuracy 0.95
   ],
 
   takeaways: [
-    "**Decomposition is not 3× the cost.** Measured on the reference's three-step chain: 1.90×, because the large document is consumed once and replaced by a small intermediate.",
+    "**Decomposition is not 3× the cost.** Measured on the three-step chain: 1.90×, because the large document is consumed once and replaced by a small intermediate.",
     "Input rose 34% and output rose 3× — so a chain's cost is dominated by its **intermediates**, and the lever is making them terse rather than making prompts shorter.",
     "The economics improve as the source document grows, because reading it once is amortised across a fixed number of steps.",
     "Three patterns: **sequential** transforms, **routing** selects a specialist prompt and model, **critique-and-refine** loops.",
@@ -283,7 +283,7 @@ base per-step accuracy 0.95
         strong: "A strong answer gives reasons that are about capability rather than tidiness, and names the cost.",
         answer: [
           { t: "p", text: "Three good reasons. When steps need different parameters — extraction wants temperature 0 and a schema, the summary wants 0.7 and prose, and one call has to compromise on both. When steps want different models, where the expensive one does the reasoning and a cheap one does extraction and formatting. And when you need a failure location: \"the output is wrong\" is not debuggable, \"step 2 returned an empty list\" is." },
-          { t: "p", text: "The cost is smaller than people expect. I measured the reference's three-step chain at 1.90× a single call, not 3×, because the source document is read once and replaced by a much smaller intermediate. Input rose 34% and output tripled." },
+          { t: "p", text: "The cost is smaller than people expect. I measured the three-step chain at 1.90× a single call, not 3×, because the source document is read once and replaced by a much smaller intermediate. Input rose 34% and output tripled." },
           { t: "p", text: "The reason I would not do it is tidiness. Splitting a call because the prompt got long moves complexity rather than reducing it, and adds two more places to fail." }
         ] },
 

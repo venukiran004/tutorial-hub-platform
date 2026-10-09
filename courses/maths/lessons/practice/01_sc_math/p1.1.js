@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P1.1 — A/B Testing & Experimentation
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/02_Mathematics_and_Statistics/Practice/01_Math_and_Stats_Scenarios.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p1.1",

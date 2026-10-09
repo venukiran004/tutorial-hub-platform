@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "2.7",
 
-  lede: "1.8 established the ranking: a schema is a guarantee and a prompt is a request. This lesson is about the request — because there are real situations where a schema is unavailable, and because even when one is available, the prompt still has to describe the *semantics* that the schema cannot. Measured here: the reference's prompt-described JSON is 58 tokens and the equivalent generated schema is 176, three times as much — and only one of them is a constraint the model cannot violate.",
+  lede: "1.8 established the ranking: a schema is a guarantee and a prompt is a request. This lesson is about the request — because there are real situations where a schema is unavailable, and because even when one is available, the prompt still has to describe the *semantics* that the schema cannot. Measured here: the prompt-described JSON is 58 tokens and the equivalent generated schema is 176, three times as much — and only one of them is a constraint the model cannot violate.",
 
   objectives: [
     "Write a prompt that specifies an output format without a schema, and say what it guarantees",
@@ -21,7 +21,7 @@ EC.receiveLesson({
 
     { t: "p", text: "The single most effective thing in a format prompt is a literal example of the output. Describing a structure in prose invites interpretation; showing it does not — which is the same mechanism as few-shot prompting (2.2), applied to shape rather than to task." },
 
-    { t: "code", lang: "python", title: "format.py — the reference's pattern", code: `prompt = """Extract information from this text and return as JSON:
+    { t: "code", lang: "python", title: "format.py — the pattern", code: `prompt = """Extract information from this text and return as JSON:
 {
   "entities": [{"name": "...", "type": "person|org|location"}],
   "sentiment": "positive|negative|neutral",
@@ -29,7 +29,7 @@ EC.receiveLesson({
 }
 
 Text: {text}"""`,
-      caption: "From 04_Prompt_Engineering.md §7. Note the two devices: the shape is shown as literal JSON, and the permitted values are given as a pipe-separated enumeration rather than described." },
+      caption: "From the reference notes §7. Note the two devices: the shape is shown as literal JSON, and the permitted values are given as a pipe-separated enumeration rather than described." },
 
     { t: "code", lang: "python", title: "g25.py — what each form costs", code: `P("  prompt-described JSON : %3d tokens (a request)" % n(prompt_json))
 P("  generated JSON Schema : %3d tokens (a guarantee)" % n(schema))`,
@@ -219,7 +219,7 @@ the schema replaces 8 of 14 clauses (57%)`,
 
   takeaways: [
     "**Show the literal output, do not describe it.** A JSON object with placeholders beats prose about the same object, for the same reason few-shot examples beat instructions.",
-    "Measured: the reference's prompt-described JSON is **58 tokens**; the equivalent generated schema is **176** — 3.0× the cost, for a guarantee the prompt cannot give.",
+    "Measured: the prompt-described JSON is **58 tokens**; the equivalent generated schema is **176** — 3.0× the cost, for a guarantee the prompt cannot give.",
     "Four devices make a format prompt work: show the shape, enumerate values inline, **say what to do when a value is absent**, and forbid the preamble explicitly.",
     "**A schema covers shape, not semantics.** Types, enums, formats and required-ness are enforceable; \"one sentence\", \"use null rather than guessing\" and cross-field rules are not.",
     "`description` is the highest-leverage instruction channel there is, because it sits **where the field is generated** rather than hundreds of tokens earlier.",

@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 6.5 — The Encoder, Traced
-   Mirrors 02c_Transformer_Translation_Step_by_Step.md · §0-2. The encoder
-   half of a translation model, computed on real numbers; its output becomes
-   the memory every decoder step reads (scratchpad/nlp/n65.py).
+   The encoder half of a translation model, computed on real numbers; its
+   output becomes the memory every decoder step reads
+   (scratchpad/nlp/n65.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "6.5",
@@ -85,7 +85,7 @@ EC.receiveLesson({
 
     { t: "exercise", title: "Trace the encoder",
       tasks: [
-        "Run the reference's NumPy and confirm the memory matrix to three decimal places.",
+        "Run the NumPy and confirm the memory matrix to three decimal places.",
         "Add a causal mask to the encoder's self-attention and see how the memory changes.",
         "Extend the source to four words and confirm the memory shape follows the source, not the target.",
         "Compute memory @ W_K and memory @ W_V once, and verify they are what cross-attention needs.",

@@ -30,7 +30,7 @@ EC.receiveLesson({
         ["Long context", "128K typical", "200K typical", "**1M+** — a different design point"],
         ["Safety controls", "Fixed filters, `content_filter` finish reason", "Fixed", "**Configurable per category**"]
       ],
-      caption: "From 04_Prompt_Engineering.md section 14. The bolded cells are the ones that change how you write the prompt rather than how you call the API." },
+      caption: "From the reference notes section 14. The bolded cells are the ones that change how you write the prompt rather than how you call the API." },
 
     { t: "callout", kind: "insight", title: "Anthropic's system prompt is not a message",
       body: [
@@ -129,7 +129,7 @@ text = cand.content.parts[0].text`,
       ["Specialise: reasoning instructions", "Explicit chain-of-thought on a normal model, and its absence on a reasoning one."]
     ] },
 
-    { t: "p", text: "The reference's advice — test the same prompt across providers before committing — is the operational version of this, and 1.15's warning is the reason it matters: a prompt that appears to port cleanly may be silently losing a parameter, a system-prompt privilege or a safety configuration, and the only thing that surfaces it is an evaluation run on the target." },
+    { t: "p", text: "The advice — test the same prompt across providers before committing — is the operational version of this, and 1.15's warning is the reason it matters: a prompt that appears to port cleanly may be silently losing a parameter, a system-prompt privilege or a safety configuration, and the only thing that surfaces it is an evaluation run on the target." },
 
     { t: "exercise", kind: "Challenge", title: "Build a provider-portability checklist from a real prompt",
       difficulty: "core", minutes: 20,
@@ -251,7 +251,7 @@ least portable element: 'JSON schema for the output'`,
 
   interview: {
     title: "In an interview",
-    sub: "The reference's Q8. A strong answer separates API shape from prompt content, because they migrate differently.",
+    sub: "The Q8. A strong answer separates API shape from prompt content, because they migrate differently.",
     questions: [
       { level: "core",
         q: "What differs when prompting OpenAI, Anthropic and Google models?",

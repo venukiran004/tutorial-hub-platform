@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P4.2 — Trees and Ensembles · 2
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/04_Machine_Learning/Practice/04_Trees_and_Ensembles.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p4.2",

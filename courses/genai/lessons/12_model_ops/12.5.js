@@ -288,7 +288,7 @@ both changed                   UNKNOWN      you cannot attribute it -- and you w
 neither logged                 UNKNOWN      you cannot even tell which case you are in
 
 a prompt is only valid against a model, so the pair is the unit. logged
-separately, a regression is unattributable -- which is the reference's point,
+separately, a regression is unattributable -- which is the point,
 and it is why 12.2 puts the model INSIDE the prompt artefact.`,
         notes: [
           { t: "p", text: "**Seven of eight detectors are free** \u2014 they read fields the response already carries, or counts you already have. Only the nightly golden-set eval needs building, which makes this one of the cheapest instrumentation lists in the course." },

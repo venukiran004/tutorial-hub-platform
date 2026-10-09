@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "13.10",
 
-  lede: "A tool call in a chat agent is a spinner. In a voice agent it is silence, and silence in a conversation means something \u2014 that you did not hear, or are confused, or have hung up. The mechanism that fixes it is almost free: say something canned first, then make the call. A filler does not hide the latency, it **splits one long silence into two short ones** \u2014 and worked through the real timeline, a 900 ms filler keeps every silence inside the responsive band for tool calls up to **800 ms**, where without it even a zero-latency tool leaves a 1,650 ms wait. The reference says the filler arrives at 300 ms. From end of speech it is **760 ms**, because the filler cannot start before the endpointer commits \u2014 the same measurement-boundary slip 13.3 warns about, in the reference's own claim.",
+  lede: "A tool call in a chat agent is a spinner. In a voice agent it is silence, and silence in a conversation means something \u2014 that you did not hear, or are confused, or have hung up. The mechanism that fixes it is almost free: say something canned first, then make the call. A filler does not hide the latency, it **splits one long silence into two short ones** \u2014 and worked through the real timeline, a 900 ms filler keeps every silence inside the responsive band for tool calls up to **800 ms**, where without it even a zero-latency tool leaves a 1,650 ms wait. The reference says the filler arrives at 300 ms. From end of speech it is **760 ms**, because the filler cannot start before the endpointer commits \u2014 the same measurement-boundary slip 13.3 warns about, in the claim.",
 
   objectives: [
     "Explain why a tool call is a different problem in voice than in chat",
@@ -49,11 +49,11 @@ EC.receiveLesson({
       hl: [10, 11, 12, 13],
       caption: "The filler covers the base pipeline entirely, so the leftover gap is roughly the tool time alone." },
 
-    { t: "callout", kind: "trap", title: "The reference's 300 ms is measured from the wrong place",
+    { t: "callout", kind: "trap", title: "The 300 ms is measured from the wrong place",
       body: [
         { t: "p", text: "The reference states that a filler \u201cat 300 ms covers a 900 ms tool\u201d. The structure of the claim is right and worth keeping. The 300 ms is not reachable from end of speech, because the filler cannot be spoken until the endpointer has committed \u2014 and that is 700 ms with a fixed threshold. With pre-rendered audio the filler's first sound lands at **760 ms**." },
         { t: "p", text: "This is exactly the instrumentation error 13.3 warns about, appearing in the module's own worked claim: a figure measured from the endpointer firing rather than from the user stopping, which silently excludes the single largest term in the budget. 760 ms is still inside the responsive band, so the design holds \u2014 but only just, and if you promise 300 you will miss it by 460." },
-        { t: "p", text: "The 300 ms figure *is* reachable with a semantic endpointer: a 300 ms backstop timer plus 60 ms of playout gives 360 ms. So the reference's number describes the system 13.5 tells you to build, rather than the one the budget describes." }
+        { t: "p", text: "The 300 ms figure *is* reachable with a semantic endpointer: a 300 ms backstop timer plus 60 ms of playout gives 360 ms. So the number describes the system 13.5 tells you to build, rather than the one the budget describes." }
       ] },
 
     { t: "viz", title: "One long silence, or two short ones",
@@ -141,13 +141,13 @@ EC.receiveLesson({
 
     { t: "exercise", kind: "analysis", title: "Work out what a filler is worth, and where it stops",
       difficulty: "advanced", minutes: 24,
-      body: "Model the timeline of a tool-backed turn from end of speech, with and without a filler phrase. Report the longest silence the user experiences in each case across a range of tool latencies, and find the tool latency at which the filler stops keeping every silence inside the responsive band. Then check the reference's claim that the filler arrives at 300 ms, classify a set of candidate fillers as safe or unsafe, and compute how many phrases you need for variety.",
+      body: "Model the timeline of a tool-backed turn from end of speech, with and without a filler phrase. Report the longest silence the user experiences in each case across a range of tool latencies, and find the tool latency at which the filler stops keeping every silence inside the responsive band. Then check the claim that the filler arrives at 300 ms, classify a set of candidate fillers as safe or unsafe, and compute how many phrases you need for variety.",
       requirements: [
         "Model the base pipeline as endpoint 700 plus 950 ms of downstream work",
         "A filler needs no prefill or generation, and pre-rendered audio needs no synthesis",
         "Report first audio and the longest silence, with and without, across tool latencies",
         "Find the tool latency at which the worst silence reaches 800 ms",
-        "Check the filler's own first-audio figure against the reference's 300 ms claim",
+        "Check the filler's own first-audio figure against the 300 ms claim",
         "Classify candidate fillers by whether they commit to an outcome",
         "Compute P(the user hears a phrase repeated back-to-back) for 1, 3, 6 and 12 phrases"
       ],
@@ -158,7 +158,7 @@ EC.receiveLesson({
         notes: [
           { t: "p", text: "**A filler does not hide latency, it splits one long silence into two short ones.** With a 900 ms tool, the longest silence goes from 2,550 ms \u2014 the band where users say \u201chello?\u201d \u2014 to 890 ms. Total duration is unchanged; the user's experience is completely different, because perception is banded rather than linear." },
           { t: "p", text: "**It keeps every silence inside the responsive band for tool calls up to 800 ms.** Note how much that is worth: without a filler, even a zero-latency tool leaves a 1,650 ms wait, so the filler is doing work on turns that have no tool latency problem at all." },
-          { t: "p", text: "**The reference's \u201cfiller at 300 ms\u201d is measured from the endpointer firing, not from end of speech.** The filler cannot be spoken until the endpointer commits, which is 700 ms with a fixed threshold, so with pre-rendered audio its first sound lands at 760 ms. That is the same instrumentation error 13.3 warns about, appearing in the module's own worked claim \u2014 and 300 ms *is* reachable, but only with the semantic endpointer from 13.5, where a 300 ms backstop plus 60 ms of playout gives 360 ms." },
+          { t: "p", text: "**The \u201cfiller at 300 ms\u201d is measured from the endpointer firing, not from end of speech.** The filler cannot be spoken until the endpointer commits, which is 700 ms with a fixed threshold, so with pre-rendered audio its first sound lands at 760 ms. That is the same instrumentation error 13.3 warns about, appearing in the module's own worked claim \u2014 and 300 ms *is* reachable, but only with the semantic endpointer from 13.5, where a 300 ms backstop plus 60 ms of playout gives 360 ms." },
           { t: "p", text: "**Pre-rendering the filler audio saves 180 ms and removes it from the TTS bill.** A canned phrase can be synthesised once at build time and served as a cached clip \u2014 and 180 ms is the difference between the filler's first audio being responsive at 760 ms and merely noticeable at 940 ms, so it is not a micro-optimisation." },
           { t: "p", text: "**Six phrases is roughly the point where variety stops being noticeable.** With one phrase a repeat is certain; the probability falls steeply with the first few additions and then flattens, so there is little value in going past about a dozen." },
           { t: "p", text: "**Past ~3 s of leftover silence a filler is insufficient**, and the fix is structural rather than longer: a second utterance at around 2 s, and an honest offer to call back past about 8 s. This is the only version that designs for the tail, and the tail is what decides how the agent feels \u2014 a p50 of 300 ms with a p95 of 3,000 ms is not \u201cmostly fast\u201d, it is an agent that periodically appears to have hung up." }
@@ -184,7 +184,7 @@ EC.receiveLesson({
     "**A filler needs no model call**: it is a fixed string, so no prefill and no generation, and pre-rendered audio needs no synthesis either.",
     "**A filler splits one long silence into two short ones** \u2014 with a 900 ms tool, 2,550 ms becomes 890 ms for the same total duration.",
     "**It keeps every silence responsive for tool calls up to 800 ms**, and without it even a zero-latency tool leaves a 1,650 ms wait.",
-    "**The reference's \u201cfiller at 300 ms\u201d is measured from the endpointer firing**; from end of speech it is 760 ms \u2014 the same boundary error 13.3 warns about.",
+    "**The \u201cfiller at 300 ms\u201d is measured from the endpointer firing**; from end of speech it is 760 ms \u2014 the same boundary error 13.3 warns about.",
     "**300 ms is reachable with a semantic endpointer** \u2014 a 300 ms backstop plus 60 ms playout gives 360 ms, so the claim describes the system 13.5 tells you to build.",
     "**Pre-rendering saves 180 ms and removes the filler from the TTS bill** \u2014 the difference between responsive at 760 ms and noticeable at 940.",
     "**A filler may describe what the agent is doing, never what it has done or will find** \u2014 everything spoken before the result cannot be retracted.",

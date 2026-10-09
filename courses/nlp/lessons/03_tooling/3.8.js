@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 3.8 — Natural Language Inference and Text Augmentation
-   Mirrors 01_NLP_Notes.md · §25-26. roberta-large-mnli is run as a task, as
-   a faithfulness checker, and as a validator for augmented data — where it
-   caught two of three corrupted sentences (scratchpad/nlp/n38.py).
+   roberta-large-mnli is run as a task, as a faithfulness checker, and as a
+   validator for augmented data — where it caught two of three corrupted
+   sentences (scratchpad/nlp/n38.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.8",

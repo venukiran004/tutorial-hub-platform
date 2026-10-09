@@ -231,7 +231,7 @@ print("paraphrase with smoothing: %.6f"
   quiz: {
     title: "Check yourself",
     questions: [
-      { stem: "Why does BLEU clip n-gram matches to the reference's count?",
+      { stem: "Why does BLEU clip n-gram matches to the count?",
         options: [
           "To normalise for differing candidate and reference lengths",
           "Because without it a repetitive candidate scores perfectly \u2014 five occurrences of \u201cthe\u201d against two in the reference would give 5/5 unigram precision instead of 2/5",
@@ -239,7 +239,7 @@ print("paraphrase with smoothing: %.6f"
           "Because the brevity penalty assumes unique n-grams"
         ],
         answer: 1,
-        why: "Precision counts matches over candidate n-grams, so repeating a correct token inflates the numerator without bound unless each match is capped at the reference's own count. The `min(candidate_count, reference_count)` term closes that degenerate optimum. Length is handled separately by the brevity penalty, and precisions cannot exceed 1.0 once clipped by construction." },
+        why: "Precision counts matches over candidate n-grams, so repeating a correct token inflates the numerator without bound unless each match is capped at the count. The `min(candidate_count, reference_count)` term closes that degenerate optimum. Length is handled separately by the brevity penalty, and precisions cannot exceed 1.0 once clipped by construction." },
 
       { stem: "A correct paraphrase of the reference scores BLEU-4 of exactly 0.000000. Why zero rather than merely low?",
         options: [

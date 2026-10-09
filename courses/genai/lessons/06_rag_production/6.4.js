@@ -265,7 +265,7 @@ for it in range(20):
         ["Large interconnected corpus", "Struggles", "**Yes**", "This is the case the whole approach was built for"]
       ] },
 
-    { t: "callout", kind: "tradeoff", title: "The reference's table has an implicit row",
+    { t: "callout", kind: "tradeoff", title: "The table has an implicit row",
       body: [
         { t: "p", text: "Read down the columns and GraphRAG wins four rows outright. Read the *traffic* instead and the picture inverts: in most products the overwhelming majority of questions are the first row, simple factual Q&A, where the table says GraphRAG is overkill." },
         { t: "p", text: "So this is rarely a replacement decision. It is 5.9\u2019s hybrid pattern again \u2014 run both retrievers, fuse the rankings \u2014 or 5.11\u2019s routing, where a classifier sends multi-hop and thematic questions to the graph and everything else to the vector index." },

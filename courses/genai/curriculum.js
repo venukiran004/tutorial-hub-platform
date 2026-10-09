@@ -1,41 +1,11 @@
 /* ============================================================================
    GENERATIVE AI AND LLMS — CURRICULUM
    ----------------------------------------------------------------------------
-   The course mirrors the reference folder tutorial-hub/07_GenAI_and_LLMs file
-   for file and section for section, in the reference's own order, rewritten in
-   this site's voice. Nothing is added to the topic list and nothing in the
-   reference is left out:
-
-     LEARN track (one module per reference file, or per run of that file's
-     sections where one file carries two modules' worth; each file's
-     "Interview Deep Dive" section is folded into the interview block of the
-     lesson it belongs to)
-
-       M1   01_LLM_Parameters.md              §1-16   -> 1.1-1.16
-       M2   04_Prompt_Engineering.md          §1-19   -> 2.1-2.19
-       M3   02_LLM_Inference_Optimization.md  §1-14   -> 3.1-3.14
-       M4   03_Fine_Tuning_LLM.md             §1-9    -> 4.1-4.8
-       M5   05_RAG_and_Vector_Stores.md       §1-13.5 -> 5.1-5.13
-       M6   05_RAG_and_Vector_Stores.md       §14-22  -> 6.1-6.8
-       M7   07_LLM_Training_and_Alignment.md  §0-14   -> 7.1-7.15
-       M8   06_LLM_Evaluation.md              §0-F    -> 8.1-8.13
-       M9   26_LLM_Metrics_and_LLM_as_Judge   §1-18   -> 9.1-9.17
-       M10  27_LLM_Observability_and_Tracing  §1-15   -> 10.1-10.14
-       M11  20_Hallucination + 21_Cost + 23_Guardrails -> 11.1-11.17
-       M12  22_Eval_Prompts_and_Finetuning + 25_Deprecation -> 12.1-12.7
-       M13  28_Voice_Agents_and_Realtime      §1-16   -> 13.1-13.15
-
-     PRACTICE track (00_Scenario_Based_Questions_GenAI.md,
-       18_Production_Scenarios_LLM_APIs.md, 19_Client_Round_Prompting.md)
-
-     INTERVIEW track (Interview_Questions/ plus 24_LLM_Systems_Interview_Notes)
-
-   The reference's API examples are written against provider endpoints. Where a
-   claim can be checked without a key it is checked: sampling, penalties,
-   token counting and cost arithmetic are run locally on GPT-2 logits and on
-   tiktoken, and the printed output beneath a program is what it printed here.
-   Where a number can only come from a provider, the lesson says whose number
-   it is and when it was quoted.
+   Where a claim can be checked without a key it is checked: sampling,
+   penalties, token counting and cost arithmetic are run locally on GPT-2
+   logits and on tiktoken, and the printed output beneath a program is what
+   it printed here. Where a number can only come from a provider, the lesson
+   says whose number it is and when it was quoted.
    ========================================================================= */
 (function () {
   EC.defineCourse({
@@ -47,7 +17,7 @@
     trackLabels: { learn: "GenAI and LLMs", practice: "Scenarios", interview: "Interview" },
     trackBlurbs: {
       learn: "The reference notes, section by section — every parameter demonstrated on real logits, every cost carried through on numbers.",
-      practice: "The reference's GenAI scenario challenges and production situations, answers folded away.",
+      practice: "The GenAI scenario challenges and production situations, answers folded away.",
       interview: "The Glassdoor banks, the topic bank and the systems notes, answers hidden until you ask."
     },
 
@@ -56,7 +26,7 @@
     modules: [
 
       /* ================================================================
-         M1 · 01_LLM_Parameters.md §1–16
+  M1 ·  §1–16
          ================================================================ */
       {
         id: "parameters",
@@ -66,7 +36,6 @@
         title: "The Controls on a Model",
         blurb: "Everything you are allowed to change at inference time, in the order the sampler applies it: temperature on the logits, top-k and top-p on the candidate set, penalties on what has already been said, then the limits and the structure — max tokens, stop sequences, logit bias, seed, JSON mode, function calling, reasoning tokens, images, streaming, batching, and the token arithmetic that turns all of it into a bill.",
         outcome: "You can name every parameter on a chat completion, say what it does to the probability distribution, and predict what a request will cost before you send it.",
-        source: "01_LLM_Parameters.md",
         lessons: [
           { id: "1.1", title: "The Sampling Pipeline", difficulty: "foundation", minutes: 30, tier: "must",
             summary: "Logits, softmax, and the four stages that stand between a model's raw scores and the token it emits — built once on real GPT-2 logits so every later parameter has somewhere to attach.",
@@ -120,7 +89,7 @@
       },
 
       /* ================================================================
-         M2 · 04_Prompt_Engineering.md §1–19
+  M2 ·  §1–19
          ================================================================ */
       {
         id: "prompting",
@@ -130,7 +99,6 @@
         title: "Prompt Engineering",
         blurb: "Prompting treated as engineering rather than folklore: the shot patterns, chain-of-thought and its descendants, ReAct, decomposition, structured and multimodal prompts, DSPy's optimisation, then the parts that only matter in production — evaluation, caching, versioning, injection defence and debugging.",
         outcome: "You can choose a prompting pattern from the shape of the task, test a prompt like code, and defend one against a user who is trying to break it.",
-        source: "04_Prompt_Engineering.md",
         lessons: [
           { id: "2.1", title: "What a Prompt Is Made Of", difficulty: "foundation", minutes: 28, tier: "must",
             summary: "The anatomy of a prompt, the roles, and the principles that survive across models.", keywords: ["prompt", "system", "user", "instruction", "context", "delimiter"] },
@@ -167,14 +135,14 @@
           { id: "2.17", title: "Production Prompt Management", difficulty: "core", minutes: 28, tier: "must",
             summary: "Versioning, rollout and rollback for text that behaves like code but is not reviewed like it.", keywords: ["versioning", "registry", "rollout", "rollback", "a/b test"] },
           { id: "2.18", title: "Templates for Common Tasks", difficulty: "foundation", minutes: 24, tier: "should",
-            summary: "The reference's worked templates for extraction, classification, summarisation and the rest.", keywords: ["template", "extraction", "classification", "summarization", "rewriting"] },
+            summary: "The worked templates for extraction, classification, summarisation and the rest.", keywords: ["template", "extraction", "classification", "summarization", "rewriting"] },
           { id: "2.19", title: "Debugging and Common Failure Modes", difficulty: "core", minutes: 28, tier: "must",
             summary: "Reading a bad output back to the instruction that caused it.", keywords: ["debugging", "failure mode", "ambiguity", "conflict", "overlong"] }
         ]
       },
 
       /* ================================================================
-         M3 · 02_LLM_Inference_Optimization.md §1–14
+  M3 ·  §1–14
          ================================================================ */
       {
         id: "inference",
@@ -184,7 +152,6 @@
         title: "Serving and Inference",
         blurb: "What happens on the server between a request and a token: the prefill and decode phases and why they are bound by different resources, the KV cache that makes decoding possible and the memory it eats, quantization, attention kernels, batching, speculative decoding, the serving frameworks, distributed inference, and the benchmarking that tells you which of these actually helped.",
         outcome: "You can read a serving benchmark, say which phase a workload is bound by, and pick the optimisation that addresses it rather than the fashionable one.",
-        source: "02_LLM_Inference_Optimization.md",
         lessons: [
           { id: "3.1", title: "Prefill and Decode", difficulty: "core", minutes: 30, tier: "must",
             summary: "The two phases of generation, why one is compute-bound and the other memory-bound, and the metrics each one owns.", keywords: ["prefill", "decode", "ttft", "tpot", "memory bandwidth", "arithmetic intensity"] },
@@ -218,7 +185,7 @@
       },
 
       /* ================================================================
-         M4 · 03_Fine_Tuning_LLM.md §1–9
+  M4 ·  §1–9
          ================================================================ */
       {
         id: "finetuning",
@@ -228,7 +195,6 @@
         title: "Adapting a Model with LoRA",
         blurb: "The parameter question: how to change a model's behaviour without retraining it. What fine-tuning is and when it beats retrieval or prompting, the one low-rank idea behind LoRA, the formula and why the scaling is alpha over r, QLoRA's four-bit base, and one complete worked run from data to merged weights.",
         outcome: "You can decide between prompting, retrieval and fine-tuning on evidence, and run a LoRA job whose settings you can each justify.",
-        source: "03_Fine_Tuning_LLM.md",
         lessons: [
           { id: "4.1", title: "What Fine-Tuning Is", difficulty: "foundation", minutes: 26, tier: "must",
             summary: "Changing weights rather than context, and what that can and cannot teach a model.", keywords: ["fine tuning", "weights", "adaptation", "catastrophic forgetting"] },
@@ -243,14 +209,14 @@
           { id: "4.6", title: "What Happens During Training", difficulty: "core", minutes: 28, tier: "should",
             summary: "The data flow through a LoRA step, what is frozen, and what the loss curve should look like.", keywords: ["training loop", "gradient", "frozen", "loss curve", "trainable parameters"] },
           { id: "4.7", title: "One Complete Example", difficulty: "core", minutes: 36, tier: "must",
-            summary: "The reference's worked QLoRA run end to end — data, train, test, merge.", keywords: ["worked example", "dataset", "peft", "trl", "merge", "inference"] },
+            summary: "The worked QLoRA run end to end — data, train, test, merge.", keywords: ["worked example", "dataset", "peft", "trl", "merge", "inference"] },
           { id: "4.8", title: "The Settings That Matter", difficulty: "core", minutes: 28, tier: "must",
-            summary: "The handful of hyperparameters worth touching, sensible defaults, and the reference's FAQ.", keywords: ["rank", "alpha", "learning rate", "epochs", "target modules", "faq"] }
+            summary: "The handful of hyperparameters worth touching, sensible defaults, and the FAQ.", keywords: ["rank", "alpha", "learning rate", "epochs", "target modules", "faq"] }
         ]
       },
 
       /* ================================================================
-         M5 · 05_RAG_and_Vector_Stores.md §1–13.5
+  M5 ·  §1–13.5
          ================================================================ */
       {
         id: "rag",
@@ -260,7 +226,6 @@
         title: "Retrieval-Augmented Generation",
         blurb: "Retrieval from the ground up: what RAG is for and what it is not, embeddings and the chunking decisions that determine everything downstream, the vector stores and their index structures, the similarity metrics, the naive pipeline, then query transformation, hybrid search, re-ranking, the advanced patterns, agentic retrieval, structured data and caching.",
         outcome: "You can build a retrieval pipeline whose every stage you can justify, and diagnose a bad answer to the stage that produced it.",
-        source: "05_RAG_and_Vector_Stores.md",
         lessons: [
           { id: "5.1", title: "RAG Fundamentals", difficulty: "foundation", minutes: 28, tier: "must",
             summary: "Retrieve, then generate — the shape of the pipeline and the problem it solves.", keywords: ["rag", "retrieval", "grounding", "context", "pipeline"] },
@@ -292,7 +257,7 @@
       },
 
       /* ================================================================
-         M6 · 05_RAG_and_Vector_Stores.md §14–22
+  M6 ·  §14–22
          ================================================================ */
       {
         id: "rag_production",
@@ -302,14 +267,13 @@
         title: "Retrieval in Production",
         blurb: "What happens to a retrieval system once it has users: RAGAS and the four scores, scaling and cost, knowledge graphs, multimodal and code retrieval, the operational questions about traffic and coordination, and the real incidents the reference collected.",
         outcome: "You can measure a retrieval system, run it at volume, and recognise the failure that caused an incident from its symptoms.",
-        source: "05_RAG_and_Vector_Stores.md",
         lessons: [
           { id: "6.1", title: "Evaluation with RAGAS", difficulty: "advanced", minutes: 34, tier: "must",
             summary: "Faithfulness, answer relevancy, context precision and recall — each computed, not just named.", keywords: ["ragas", "faithfulness", "answer relevancy", "context precision", "context recall"] },
           { id: "6.2", title: "Production and Scalability", difficulty: "core", minutes: 28, tier: "must",
             summary: "Index size, update strategy, sharding and the latency budget of a retrieval call.", keywords: ["scalability", "index", "reindex", "sharding", "latency", "throughput"] },
           { id: "6.3", title: "Additional RAG Topics", difficulty: "core", minutes: 28, tier: "should",
-            summary: "The reference's collection of things that do not fit elsewhere but bite in practice.", keywords: ["metadata", "filtering", "access control", "freshness", "deduplication"] },
+            summary: "The collection of things that do not fit elsewhere but bite in practice.", keywords: ["metadata", "filtering", "access control", "freshness", "deduplication"] },
           { id: "6.4", title: "Knowledge Graphs and GraphRAG", difficulty: "advanced", minutes: 32, tier: "should",
             summary: "Retrieval over entities and relations, and the questions a vector index cannot answer.", keywords: ["knowledge graph", "graphrag", "entity", "relation", "community", "neo4j"] },
           { id: "6.5", title: "Multimodal RAG", difficulty: "advanced", minutes: 30, tier: "should",
@@ -319,12 +283,12 @@
           { id: "6.7", title: "Traffic, Cost and Guardrails", difficulty: "core", minutes: 28, tier: "must",
             summary: "The operational questions: who pays, what happens at peak, and who is allowed to see what.", keywords: ["traffic", "cost", "rate limit", "access control", "guardrail", "coordination"] },
           { id: "6.8", title: "Real Production Incidents", difficulty: "advanced", minutes: 30, tier: "must",
-            summary: "The reference's incident write-ups, each traced to the stage that broke.", keywords: ["incident", "postmortem", "regression", "stale index", "embedding drift"] }
+            summary: "The incident write-ups, each traced to the stage that broke.", keywords: ["incident", "postmortem", "regression", "stale index", "embedding drift"] }
         ]
       },
 
       /* ================================================================
-         M7 · 07_LLM_Training_and_Alignment.md §0–14
+  M7 ·  §0–14
          ================================================================ */
       {
         id: "alignment",
@@ -334,7 +298,6 @@
         title: "Training and Alignment",
         blurb: "The objective question: how a model learns what a good answer is. Pretraining and Chinchilla, supervised fine-tuning and its loss masking, the reward model derived from Bradley-Terry, RLHF with PPO and its KL leash, DPO with the derivation that deletes the reward model, the DPO family, GRPO, RLVR and reasoning models, test-time compute, reward hacking, RLAIF, and distillation.",
         outcome: "You can derive DPO from the RLHF objective, say what each method in the family removes, and choose one from the data you actually have.",
-        source: "07_LLM_Training_and_Alignment.md",
         lessons: [
           { id: "7.1", title: "The One Idea", difficulty: "foundation", minutes: 26, tier: "must",
             summary: "Pretraining gives a model language; everything after it gives the model a preference.", keywords: ["alignment", "post-training", "preference", "objective", "stages"] },
@@ -370,7 +333,7 @@
       },
 
       /* ================================================================
-         M8 · 06_LLM_Evaluation.md
+  M8 ·
          ================================================================ */
       {
         id: "evaluation",
@@ -380,7 +343,6 @@
         title: "Evaluating Models and Applications",
         blurb: "Two different jobs that share a word: evaluating a model — perplexity, reference metrics, benchmarks, leaderboards, the judge, safety and calibration — and evaluating an application, where the unit is a RAG answer, an agent trajectory or a guardrail, and where online evaluation is the only ground truth.",
         outcome: "You can tell which of the two jobs a question is about, pick the metric that answers it, and say what that metric cannot see.",
-        source: "06_LLM_Evaluation.md",
         lessons: [
           { id: "8.1", title: "The One Idea", difficulty: "foundation", minutes: 24, tier: "must",
             summary: "Evaluating a model and evaluating an application are different jobs with different units.", keywords: ["evaluation", "model", "application", "unit", "ground truth"] },
@@ -405,14 +367,14 @@
           { id: "8.11", title: "Online Evaluation", difficulty: "core", minutes: 28, tier: "must",
             summary: "Implicit signals, A/B tests and live scoring — the only evaluation on real traffic.", keywords: ["online evaluation", "a/b test", "implicit feedback", "thumbs", "live"] },
           { id: "8.12", title: "A RAG Answer Evaluated End to End", difficulty: "advanced", minutes: 32, tier: "must",
-            summary: "The reference's worked example, every score computed on one real answer.", keywords: ["worked example", "rag", "faithfulness", "relevancy", "scoring"] },
+            summary: "The worked example, every score computed on one real answer.", keywords: ["worked example", "rag", "faithfulness", "relevancy", "scoring"] },
           { id: "8.13", title: "Choosing a Metric, and the Tooling", difficulty: "core", minutes: 26, tier: "must",
             summary: "The cheat sheet, the frameworks, and the pitfalls the reference keeps as soundbites.", keywords: ["metric selection", "tooling", "ragas", "deepeval", "pitfalls"] }
         ]
       },
 
       /* ================================================================
-         M9 · 26_LLM_Metrics_and_LLM_as_Judge.md §1–18
+  M9 ·  §1–18
          ================================================================ */
       {
         id: "metrics",
@@ -422,7 +384,6 @@
         title: "Metrics and the Judge",
         blurb: "Every metric that gets quoted about a language model, computed rather than cited: perplexity, BLEU, ROUGE, METEOR, chrF and BERTScore, exact match and F1, pass@k, the retrieval family from precision@k to NDCG, the RAG scores, then the judge itself — its biases, its calibration against humans, and the statistics nobody runs.",
         outcome: "You can compute any metric in the field by hand, and say what a reported number leaves out.",
-        source: "26_LLM_Metrics_and_LLM_as_Judge.md",
         lessons: [
           { id: "9.1", title: "The Map: Four Families", difficulty: "foundation", minutes: 24, tier: "must",
             summary: "Every metric belongs to one of four families; knowing which tells you what it can see.", keywords: ["metrics", "taxonomy", "intrinsic", "reference", "retrieval", "judge"] },
@@ -462,7 +423,7 @@
       },
 
       /* ================================================================
-         M10 · 27_LLM_Observability_and_Tracing.md §1–15
+  M10 ·  §1–15
          ================================================================ */
       {
         id: "observability",
@@ -472,7 +433,6 @@
         title: "Observability and Tracing",
         blurb: "Why a non-deterministic system needs different instrumentation: the four signals, the four layers worth measuring, traces and spans and what each span must carry, a tracer written from scratch, the OpenTelemetry GenAI conventions, sampling and PII, online evals on live traffic, alerts that fire for a reason, and one long worked incident.",
         outcome: "You can instrument an LLM application so that a quality regression is diagnosable from its traces rather than from guesswork.",
-        source: "27_LLM_Observability_and_Tracing.md",
         lessons: [
           { id: "10.1", title: "Why LLM Systems Need Their Own Observability", difficulty: "core", minutes: 26, tier: "must",
             summary: "The failures are silent and the output is different every time, so the usual signals do not fire.", keywords: ["observability", "non-determinism", "silent failure", "quality", "monitoring"] },
@@ -487,7 +447,7 @@
           { id: "10.6", title: "What Every Span Must Carry", difficulty: "core", minutes: 26, tier: "must",
             summary: "The attributes without which a trace cannot answer a question later.", keywords: ["attributes", "model", "tokens", "cost", "prompt version", "user"] },
           { id: "10.7", title: "A Tracer From Scratch", difficulty: "advanced", minutes: 32, tier: "should",
-            summary: "The reference's 25-line tracer, built and run, so the vendors stop being magic.", keywords: ["tracer", "context var", "decorator", "span", "from scratch"] },
+            summary: "The 25-line tracer, built and run, so the vendors stop being magic.", keywords: ["tracer", "context var", "decorator", "span", "from scratch"] },
           { id: "10.8", title: "OpenTelemetry and the GenAI Conventions", difficulty: "core", minutes: 28, tier: "should",
             summary: "The standard attribute names, and why using them is what makes a trace portable.", keywords: ["opentelemetry", "otel", "semantic conventions", "gen_ai", "exporter"] },
           { id: "10.9", title: "The Tool Landscape", difficulty: "foundation", minutes: 24, tier: "should",
@@ -499,7 +459,7 @@
           { id: "10.12", title: "Alerts That Actually Fire", difficulty: "core", minutes: 28, tier: "must",
             summary: "Thresholds on metrics that move for a reason, and the ones that only page you at 3am.", keywords: ["alerting", "threshold", "false positive", "slo", "paging"] },
           { id: "10.13", title: "When Accuracy Fell From 95% to 60%", difficulty: "advanced", minutes: 36, tier: "must",
-            summary: "The reference's long incident, decomposed hypothesis by hypothesis to the cause.", keywords: ["incident", "decomposition", "hypothesis", "regression", "root cause"] },
+            summary: "The long incident, decomposed hypothesis by hypothesis to the cause.", keywords: ["incident", "decomposition", "hypothesis", "regression", "root cause"] },
           { id: "10.14", title: "The Runbook and the Pitfalls", difficulty: "core", minutes: 26, tier: "must",
             summary: "The condensed procedure, and the instrumentation mistakes that make it useless.", keywords: ["runbook", "procedure", "pitfalls", "triage", "checklist"] }
         ]
@@ -516,14 +476,13 @@
         title: "Hallucination, Cost and Guardrails",
         blurb: "The three production issues that arrive first. Why models state things that are not true and why retrieval does not stop it; where an LLM bill actually comes from and the five levers that reduce it; and the guardrail pipeline on both sides of the model, including the over-refusal that a careless one creates.",
         outcome: "You can detect an unfaithful answer, cut a bill without cutting quality, and build a guardrail that blocks attacks without blocking users.",
-        source: "20_LLM_Hallucination_and_Faithfulness.md · 21_LLM_Cost_and_Token_Optimization.md · 23_LLM_Guardrails_and_Safety.md",
         lessons: [
           { id: "11.1", title: "Why Models Hallucinate", difficulty: "core", minutes: 28, tier: "must",
             summary: "The mechanism, not the metaphor: what next-token prediction does when it does not know.", keywords: ["hallucination", "confabulation", "next token", "uncertainty", "mechanism"] },
           { id: "11.2", title: "Why RAG Still Hallucinates", difficulty: "core", minutes: 28, tier: "must",
             summary: "Grounding is not a guarantee — the four ways an answer departs from its context.", keywords: ["rag", "faithfulness", "grounding", "context", "unsupported"] },
           { id: "11.3", title: "Hallucination in Production", difficulty: "core", minutes: 28, tier: "should",
-            summary: "The reference's real scenarios, each with what the user saw and what caused it.", keywords: ["scenario", "production", "incident", "citation", "fabrication"] },
+            summary: "The real scenarios, each with what the user saw and what caused it.", keywords: ["scenario", "production", "incident", "citation", "fabrication"] },
           { id: "11.4", title: "Detecting Hallucination From Scratch", difficulty: "advanced", minutes: 34, tier: "must",
             summary: "Claim extraction, entailment against the context, and self-consistency — implemented.", keywords: ["detection", "claim", "entailment", "nli", "self consistency"] },
           { id: "11.5", title: "Mitigation in Depth", difficulty: "core", minutes: 30, tier: "must",
@@ -566,7 +525,6 @@
         title: "Prompt, Eval and Model Operations",
         blurb: "The operational half of the work: running evaluation as a process rather than a one-off, managing prompts like deployable artefacts, keeping fine-tuning maintainable, and surviving the day a provider deprecates the model your product is built on.",
         outcome: "You can run an LLM feature through change — a new prompt, a new model, a deprecation notice — without a regression reaching users.",
-        source: "22_LLM_Eval_Prompts_and_Finetuning.md · 25_Model_Deprecation_and_Migration.md",
         lessons: [
           { id: "12.1", title: "Evaluating LLMs in Production", difficulty: "core", minutes: 30, tier: "must",
             summary: "Turning evaluation into a pipeline that runs on every change, not a spreadsheet.", keywords: ["evaluation", "pipeline", "ci", "dataset", "regression"] },
@@ -581,12 +539,12 @@
           { id: "12.6", title: "The Migration Playbook", difficulty: "advanced", minutes: 32, tier: "must",
             summary: "Shadow traffic, paired evaluation and the staged cutover.", keywords: ["migration", "shadow", "cutover", "paired eval", "rollback"] },
           { id: "12.7", title: "A 90-Day Migration", difficulty: "advanced", minutes: 30, tier: "must",
-            summary: "The reference's worked timeline, with what happens in each window.", keywords: ["migration", "timeline", "worked example", "checklist", "risk"] }
+            summary: "The worked timeline, with what happens in each window.", keywords: ["migration", "timeline", "worked example", "checklist", "risk"] }
         ]
       },
 
       /* ================================================================
-         M13 · 28_Voice_Agents_and_Realtime.md §1–16
+  M13 ·  §1–16
          ================================================================ */
       {
         id: "voice",
@@ -596,7 +554,6 @@
         title: "Voice Agents and Real Time",
         blurb: "What changes when the interface is speech and the budget is measured in hundreds of milliseconds: the two architectures, the latency budget worked end to end, endpointing, barge-in and echo cancellation, streaming every stage, prompting for speech, living with transcription errors, the conversation state machine, and what a call costs.",
         outcome: "You can budget a voice turn, choose between a cascade and a speech-native model on the numbers, and name where a laggy agent is losing its time.",
-        source: "28_Voice_Agents_and_Realtime.md",
         lessons: [
           { id: "13.1", title: "Why Voice Is a Different Problem", difficulty: "core", minutes: 26, tier: "must",
             summary: "Turn-taking, latency tolerance and the absence of a delete key.", keywords: ["voice", "latency", "turn taking", "realtime", "conversation"] },
@@ -605,7 +562,7 @@
           { id: "13.3", title: "The Latency Budget, Worked", difficulty: "advanced", minutes: 30, tier: "must",
             summary: "Every millisecond of a turn accounted for, and where the budget is usually lost.", keywords: ["latency", "budget", "ttft", "endpointing", "network", "ms"] },
           { id: "13.4", title: "The Program", difficulty: "advanced", minutes: 34, tier: "must",
-            summary: "The reference's working voice agent, read stage by stage.", keywords: ["program", "pipeline", "streaming", "audio", "implementation"] },
+            summary: "The working voice agent, read stage by stage.", keywords: ["program", "pipeline", "streaming", "audio", "implementation"] },
           { id: "13.5", title: "Endpointing", difficulty: "advanced", minutes: 30, tier: "must",
             summary: "Deciding the user has stopped talking — the hardest problem in the stack.", keywords: ["endpointing", "vad", "silence", "turn detection", "false trigger"] },
           { id: "13.6", title: "Barge-In and Echo Cancellation", difficulty: "advanced", minutes: 28, tier: "must",

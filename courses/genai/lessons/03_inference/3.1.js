@@ -88,25 +88,25 @@ for n in (16, 32, 64, 128, 256, 512):
         ["**Throughput**", "Tokens per second across all requests", "**Decode**, mostly", "Maximise"],
         ["**Total latency**", "`TTFT + output_tokens × TPOT`", "Both", "Minimise"]
       ],
-      caption: "From 02_LLM_Inference_Optimization.md section 1. TTFT and throughput pull in opposite directions, which is the central tension of serving — and section 04 is about why." },
+      caption: "From the reference notes section 1. TTFT and throughput pull in opposite directions, which is the central tension of serving — and section 04 is about why." },
 
     { t: "p", text: "The practical value of this table is diagnostic. \"It is slow\" is not actionable; \"TTFT is 3 seconds\" points at the prompt and at prefill, and \"TPOT is 140 ms\" points at the model size and at memory bandwidth. They have almost no fixes in common." },
 
     { t: "h2", n: "03", id: "memory", text: "Where the memory goes",
       sub: "Weights, and then the cache that grows per request" },
 
-    { t: "code", lang: "python", title: "memory.py — the reference's formulas", code: `# Model weights
+    { t: "code", lang: "python", title: "memory.py — the formulas", code: `# Model weights
 memory_weights = num_params * 2          # bytes, at float16
 
 # KV cache, per request
 memory_kv = 2 * n_layers * n_heads * head_dim * seq_len * 2
 #           ^ K and V                                    ^ float16`,
-      out: `  the reference's 7B table, checked against the same arithmetic:
+      out: `  the 7B table, checked against the same arithmetic:
     FP32  7B x 4.0 =  28.0 GB
     FP16  7B x 2.0 =  14.0 GB
     INT8  7B x 1.0 =   7.0 GB
     INT4  7B x 0.5 =   3.5 GB`,
-      caption: "The weights table checks out exactly. The KV cache formula is where the reference's own worked example goes wrong, and 3.2 has that measurement." },
+      caption: "The weights table checks out exactly. The KV cache formula is where the worked example goes wrong, and 3.2 has that measurement." },
 
     { t: "p", text: "The distinction that matters operationally: **weights are a fixed cost and the KV cache is a per-request cost that grows with sequence length**. A server has enough memory for the model and then a budget for concurrent requests, and 3.2 is about how that budget is spent and how PagedAttention stops it being wasted." },
 

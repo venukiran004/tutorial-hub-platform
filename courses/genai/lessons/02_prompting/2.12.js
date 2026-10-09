@@ -54,7 +54,7 @@ EC.receiveLesson({
       ],
       caption: "The third row is the trap 1.8 and 2.7 both end on: schema validity is a metric that cannot fail once a schema is in place, so it reads 100% regardless of correctness." },
 
-    { t: "code", lang: "python", title: "judge.py — the reference's LLM-as-judge prompt", code: `eval_prompt = """Rate this response on a scale of 1-5:
+    { t: "code", lang: "python", title: "judge.py — the LLM-as-judge prompt", code: `eval_prompt = """Rate this response on a scale of 1-5:
 - Accuracy: Is the information correct?
 - Completeness: Does it address all parts of the question?
 - Clarity: Is it well-written and easy to understand?
@@ -63,7 +63,7 @@ Question: {question}
 Response: {response}
 
 Provide ratings as JSON: {"accuracy": X, "completeness": X, "clarity": X}"""`,
-      caption: "From 04_Prompt_Engineering.md §12. A reasonable starting rubric — and a judge is a model, so everything in 9.10 and 9.11 applies to it, including that it must be calibrated against human labels before its scores mean anything." },
+      caption: "From the reference notes §12. A reasonable starting rubric — and a judge is a model, so everything in 9.10 and 9.11 applies to it, including that it must be calibrated against human labels before its scores mean anything." },
 
     { t: "p", text: "The practical rule: prefer a cheap deterministic metric where one exists. An exact-match check on an extracted field costs nothing, is perfectly reproducible, and cannot drift. Reach for a judge when the output is genuinely open-ended — and then treat the judge as a component that needs its own evaluation, because it is one." },
 
@@ -89,7 +89,7 @@ def n_needed(p1, p2, alpha=0.05, power=0.80):
       hl: [3, 4, 5],
       caption: "Per arm, at 95% confidence and 80% power. Detecting a 2-point improvement from a 0.85 baseline needs **4,724 cases**. (The 0.95 row is flat because the lift is clamped at 0.999 — a 20-point rise from 0.95 is impossible.)" },
 
-    { t: "p", text: "Now read the reference's advice against that table. It suggests 30–50 test cases, which is entirely standard and appears in most guidance on this subject. Here is what a set that size can detect:" },
+    { t: "p", text: "Now read the advice against that table. It suggests 30–50 test cases, which is entirely standard and appears in most guidance on this subject. Here is what a set that size can detect:" },
 
     { t: "code", lang: "python", title: "g29.py — what 30 to 50 cases buys", code: `for n in (30, 50, 100):
     d = 0.01
@@ -140,7 +140,7 @@ def n_needed(p1, p2, alpha=0.05, power=0.80):
     { t: "h2", n: "05", id: "production", text: "A/B testing in production",
       sub: "Where the sample size arrives on its own" },
 
-    { t: "code", lang: "python", title: "ab.py — the reference's pattern, with the missing parts", code: `PROMPTS = {
+    { t: "code", lang: "python", title: "ab.py — the pattern, with the missing parts", code: `PROMPTS = {
     "A": "Summarize this article in 3 bullet points: {text}",
     "B": "You are a senior editor. Summarize the key takeaways from this "
          "article in exactly 3 bullet points. Be concise and specific: {text}",
@@ -158,7 +158,7 @@ def handle(request):
     })
     return output`,
       hl: [7, 11],
-      caption: "Two changes from the reference's sketch. Assignment is stable per user, so one person does not see two different behaviours in one session. And the variant is logged — an unlogged experiment produces no data." },
+      caption: "Two changes from the sketch. Assignment is stable per user, so one person does not see two different behaviours in one session. And the variant is logged — an unlogged experiment produces no data." },
 
     { t: "p", text: "What production adds over an offline set is real inputs and real outcomes. The offline set measures whether the output matches what you expected; production measures whether users accepted it, edited it, retried, or escalated. Those are the signals that actually matter, and no offline metric is a substitute (8.11)." },
 
@@ -272,7 +272,7 @@ for n in (30, 50, 100, 500, 1000, 5000):
 
   interview: {
     title: "In an interview",
-    sub: "The reference's Q3. Most answers describe a process; the ones that stand out know whether the process can detect anything.",
+    sub: "The Q3. Most answers describe a process; the ones that stand out know whether the process can detect anything.",
     questions: [
       { level: "core",
         q: "How do you evaluate and iterate on prompts?",

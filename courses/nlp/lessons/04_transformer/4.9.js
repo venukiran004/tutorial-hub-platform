@@ -1,9 +1,9 @@
 /* ============================================================================
    LESSON 4.9 — Positional Encoding Deep Dive
-   Mirrors 02_Transformers_InDepth.md · §10. Permutation equivariance is
-   proved numerically, RoPE's relative property verified to 6 decimals, the
-   ALiBi slopes and PI/NTK arithmetic reproduced. RoPE's "long-range decay"
-   holds only for aligned q,k (§06) — scratchpad/nlp/n49.py.
+   Permutation equivariance is proved numerically, RoPE's relative property
+   verified to 6 decimals, the ALiBi slopes and PI/NTK arithmetic
+   reproduced. RoPE's "long-range decay" holds only for aligned q,k (§06) —
+   scratchpad/nlp/n49.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "4.9",
@@ -85,7 +85,7 @@ EC.receiveLesson({
     { t: "math", tex: "\\langle \\tilde q_m, \\tilde k_n \\rangle = (R_m q)^{\\top}(R_n k) = q^{\\top} R_m^{\\top} R_n k = q^{\\top} R_{\\,n-m}\\, k" },
 
     { t: "out", text:
-"the reference's d=2 check\n\n  q=[1,0] at m=2 -> [-0.4161,  0.9093]    reference [-0.416,  0.909]\n  k=[1,0] at n=5 -> [ 0.2837, -0.9589]    reference [ 0.284, -0.959]\n\n  <q~, k~> = -0.9900     cos(m - n) = cos(-3) = -0.9900" },
+"the d=2 check\n\n  q=[1,0] at m=2 -> [-0.4161,  0.9093]    reference [-0.416,  0.909]\n  k=[1,0] at n=5 -> [ 0.2837, -0.9589]    reference [ 0.284, -0.959]\n\n  <q~, k~> = -0.9900     cos(m - n) = cos(-3) = -0.9900" },
 
     { t: "out", text:
 "d = 64, same random q and k, same relative distance of 3\n\n  m=0     n=3       score 2.803810\n  m=10    n=13      score 2.803811\n  m=100   n=103     score 2.803815\n  m=5000  n=5003    score 2.804198\n\ndifferent distances give genuinely different scores\n  distance 0    -0.726951\n  distance 1     0.271698\n  distance 2     1.760896\n  distance 5     0.952095\n  distance 10   -0.492164" },

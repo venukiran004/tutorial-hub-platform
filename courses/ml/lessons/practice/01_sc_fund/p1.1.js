@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P1.1 — Programs · 1
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/04_Machine_Learning/Practice/01_Fundamentals.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p1.1",

@@ -1,9 +1,8 @@
 /* ============================================================================
    LESSON 4.9 — Project: Four Architectures on Real Text
-   Mirrors rnn-lstm-gru-transformer-guide.md · §9. Run on real 20-newsgroups
-   data rather than the reference's handful of sample sentences. The first
-   run produced a wrong conclusion; the debugging that corrected it is the
-   substance of the lesson (scratchpad/dl/d49.py, d49c.py, fixed.txt).
+   The first run produced a wrong conclusion; the debugging that corrected
+   it is the substance of the lesson (scratchpad/dl/d49.py, d49c.py,
+   fixed.txt).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.9",

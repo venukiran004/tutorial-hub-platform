@@ -21,7 +21,7 @@ EC.receiveLesson({
 
     { t: "p", text: "A reasoning model — o1, o3, o4-mini and their equivalents elsewhere — generates a chain of thought internally before producing the answer. Mechanically these are ordinary output tokens: each one costs a forward pass, each one is billed at the output rate. What is different is that they are stripped from the response, so you pay for text you cannot read." },
 
-    { t: "viz", title: "Where the budget goes", caption: "Both bars are the same request. The reference's own example is 500 reasoning tokens for 50 visible ones — 90.9% of what you pay for is removed before the response reaches you.",
+    { t: "viz", title: "Where the budget goes", caption: "Both bars are the same request. The worked example is 500 reasoning tokens for 50 visible ones — 90.9% of what you pay for is removed before the response reaches you.",
       svg: `<svg viewBox="0 0 760 210" width="100%" role="img" aria-label="Reasoning tokens against visible output">
   <text x="20" y="28" class="s-label">what you are billed for</text>
   <rect x="20" y="38" width="654" height="34" rx="5" style="fill:var(--violet)" opacity="0.7"/>
@@ -62,7 +62,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "the-arithmetic", text: "What it costs, carried through",
       sub: "The multiplier is on the output rate, which is the expensive one" },
 
-    { t: "code", lang: "python", title: "g18.py — the reference's example and its neighbours", code: `print("the reference's example: 500 reasoning + 50 visible")
+    { t: "code", lang: "python", title: "g18.py — the worked example and its neighbours", code: `print("the worked example: 500 reasoning + 50 visible")
 print("  billed output tokens : 550")
 print("  visible to the user  : 50")
 print("  paid-for-but-unseen  : %.1f%%" % (100.0 * 500 / 550))
@@ -70,7 +70,7 @@ print("  paid-for-but-unseen  : %.1f%%" % (100.0 * 500 / 550))
 for r, v in ((0, 500), (500, 50), (2000, 200), (10000, 400)):
     print("reasoning %5d + visible %4d = %5d billed -> $%.5f per call, $%.2f per 10k"
           % (r, v, r + v, (r + v) * 10 / 1_000_000, (r + v) * 10 / 1_000_000 * 10000))`,
-      out: `the reference's example: 500 reasoning + 50 visible
+      out: `the worked example: 500 reasoning + 50 visible
   billed output tokens : 550
   visible to the user  : 50
   paid-for-but-unseen  : 90.9%
@@ -80,7 +80,7 @@ at $10 per 1M output tokens (GPT-4o rate):
   reasoning   500 + visible   50 =   550 billed -> $0.00550 per call, $55.00 per 10k calls
   reasoning  2000 + visible  200 =  2200 billed -> $0.02200 per call, $220.00 per 10k calls
   reasoning 10000 + visible  400 = 10400 billed -> $0.10400 per call, $1040.00 per 10k calls`,
-      caption: "The rate used is GPT-4o's $10 per million output tokens, quoted in 01_LLM_Parameters.md §14 and dated there to 2024. Reasoning models are priced higher still, so these are floors rather than estimates." },
+      caption: "The rate used is GPT-4o's $10 per million output tokens, quoted in the reference notes §14 and dated there to 2024. Reasoning models are priced higher still, so these are floors rather than estimates." },
 
     { t: "p", text: "The reference puts the reasoning at 10–100× the visible output. Applying that range to a fixed 200-token answer gives the spread that matters for capacity planning:" },
 
@@ -169,7 +169,7 @@ at $10 per 1M output tokens (GPT-4o rate):
         { t: "p", text: "Model the failure and work out what margin a production cap needs, given a distribution of reasoning lengths." }
       ],
       requirements: [
-        "Model reasoning length as a distribution: use the reference's 10-100x range over a 200-token answer",
+        "Model reasoning length as a distribution: use the 10-100x range over a 200-token answer",
         "For caps from 1,000 to 25,000, compute the fraction of requests that would return an empty answer",
         "Report the cap needed for a 99% success rate, and for 99.9%",
         "Report the cost of that cap's worth of tokens at $10 per 1M, in the worst case",
@@ -235,9 +235,9 @@ for 99.9% success you need a cap of 20152 tokens
 
   takeaways: [
     "Reasoning tokens are **generated, billed at the output rate, counted against `max_completion_tokens`, and stripped from the response**. They are ordinary output tokens you cannot read.",
-    "The reference's example is 500 reasoning tokens for 50 visible ones — **90.9% of the bill is invisible**.",
+    "The worked example is 500 reasoning tokens for 50 visible ones — **90.9% of the bill is invisible**.",
     "`max_completion_tokens` covers reasoning and answer **together**, so a cap that is too low produces an empty answer with `finish_reason: \"length\"` and a full charge. Nothing raises.",
-    "At the reference's quoted 10–100× ratio, a 200-token answer costs between **2,200 and 20,200 billed tokens** — 2.2¢ to 20.2¢ at $10 per million.",
+    "At the quoted 10–100× ratio, a 200-token answer costs between **2,200 and 20,200 billed tokens** — 2.2¢ to 20.2¢ at $10 per million.",
     "**The variance is the planning problem.** A tenfold spread means per-request cost is a distribution, and the hard inputs that justified the reasoning model are the ones a small test set under-represents.",
     "Log `usage.completion_tokens_details.reasoning_tokens` from day one — it is the only view of the dominant cost.",
     "`reasoning_effort` controls inference-time compute, which only helps where there is a genuine search. For extraction, classification and formatting, **do not use a reasoning model at all**.",
@@ -254,7 +254,7 @@ for 99.9% success you need a cap of 20152 tokens
         answer: 1,
         why: "The cap covers reasoning and answer together, and reasoning goes first — so a cap below the reasoning length leaves nothing for the answer, and the response arrives with `finish_reason: \"length\"`, empty content, and a charge for every token generated. The first option would retry into the same wall, since the failure is deterministic in the cap. The third mistakes an exhausted budget for a model with no answer. A content filter returns `finish_reason: \"content_filter\"`, which is a different and distinguishable case." },
 
-      { stem: "At the reference's 10–100× ratio, what does a 200-token visible answer cost in billed output tokens?",
+      { stem: "At the 10–100× ratio, what does a 200-token visible answer cost in billed output tokens?",
         options: ["200, since only visible tokens are billed", "Between 2,200 and 20,200", "Exactly 2,200", "Between 210 and 300"],
         answer: 1,
         why: "Reasoning tokens are billed as output, so the total is `200 × multiplier + 200` — 2,200 at 10× and 20,200 at 100×, a tenfold spread for identical visible output. The first option is the misconception the whole lesson addresses: hidden does not mean free. The third picks one end of the range as if the multiplier were fixed, and it is not something you control beyond `reasoning_effort`. The fourth treats reasoning as a small overhead rather than the dominant term." },
@@ -273,7 +273,7 @@ for 99.9% success you need a cap of 20152 tokens
 
   interview: {
     title: "In an interview",
-    sub: "The reference's Q3. The answer that stands out is the one that treats the cap as a failure mode rather than a cost setting.",
+    sub: "The Q3. The answer that stands out is the one that treats the cap as a failure mode rather than a cost setting.",
     questions: [
       { level: "core",
         q: "What are reasoning tokens and how do they affect cost?",

@@ -1,8 +1,5 @@
 /* ============================================================================
    LESSON 4.8 — Project: House Prices with a Dense Network
-   Mirrors rnn-lstm-gru-transformer-guide.md · §8. The reference's ANN is run
-   on real California Housing data and compared against baselines it does not
-   include — one of which beats it decisively (scratchpad/dl/d48.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.8",
@@ -50,7 +47,7 @@ X_test  = scaler.transform(X_test)          # transform only on TEST`,
 
     { t: "h2", n: "03", text: "The model", id: "model" },
 
-    { t: "code", lang: "python", title: "The reference's architecture",
+    { t: "code", lang: "python", title: "The architecture",
       code: `class HousePriceANN(nn.Module):
     def __init__(self, input_features=8):
         super().__init__()
@@ -68,7 +65,7 @@ X_test  = scaler.transform(X_test)          # transform only on TEST`,
   hand check: 8*128+128 + 128*64+64 + 64*32+32 + 32*1+1 = 11,521 weights+biases,
               plus BatchNorm 384` },
 
-    { t: "p", text: "The reference's own formula, `(n_in + 1) × n_out` per layer, gives 11,521; the remaining 384 is the two BatchNorm layers' scale and shift, `2 × 128 + 2 × 64`. Being able to account for every parameter is a good habit — an unexplained discrepancy usually means a layer is not the shape you think it is." },
+    { t: "p", text: "The formula, `(n_in + 1) × n_out` per layer, gives 11,521; the remaining 384 is the two BatchNorm layers' scale and shift, `2 × 128 + 2 × 64`. Being able to account for every parameter is a good habit — an unexplained discrepancy usually means a layer is not the shape you think it is." },
 
     { t: "h2", n: "04", text: "Results", id: "results" },
 
@@ -114,7 +111,7 @@ X_test  = scaler.transform(X_test)          # transform only on TEST`,
 
   takeaways: [
     "Fit the scaler on training data only; correctly scaled test data is near but not exactly mean 0, std 1.",
-    "The reference's ANN has 11,905 parameters — 11,521 from `(n_in+1)×n_out` plus 384 of BatchNorm.",
+    "The ANN has 11,905 parameters — 11,521 from `(n_in+1)×n_out` plus 384 of BatchNorm.",
     "A regression head must have no final activation.",
     "Measured: ANN R² 0.629, linear 0.576, and HistGBDT 0.837 with no tuning at all.",
     "Gradient boosting cut RMSE from $69,726 to $46,179 — always run this baseline on tabular data.",

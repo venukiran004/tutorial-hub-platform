@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P5.2 — Transformers and Attention · 2
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/05_Deep_Learning/Practice/04_Transformers_and_Attention.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p5.2",

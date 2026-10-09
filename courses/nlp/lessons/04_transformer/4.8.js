@@ -1,14 +1,10 @@
 /* ============================================================================
    LESSON 4.8 — Tokenization Deep Dive
-   Mirrors 02_Transformers_InDepth.md · §9. BPE training is implemented from
-   scratch on the reference's corpus; strict greedy merging gives a different
-   order from the reference's (§03), and the reference's BERT id list is
-   inconsistent with its own token list (§05) — scratchpad/nlp/n48.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "4.8",
 
-  lede: "**The same Hindi sentence costs BERT 11 tokens and GPT-2 26.** Sixteen characters, and one tokenizer needs more than twice the context window of the other to hold them. Tokenisation is the least glamorous part of a transformer and it silently sets your context length, your inference bill and which languages your model is affordable in. This lesson implements BPE training from scratch on the reference's corpus, then measures what the real tokenizers actually do.",
+  lede: "**The same Hindi sentence costs BERT 11 tokens and GPT-2 26.** Sixteen characters, and one tokenizer needs more than twice the context window of the other to hold them. Tokenisation is the least glamorous part of a transformer and it silently sets your context length, your inference bill and which languages your model is affordable in. This lesson implements BPE training from scratch on the corpus, then measures what the real tokenizers actually do.",
 
   objectives: [
     "Implement BPE training and encoding from scratch, with the merge rules in order",
@@ -37,7 +33,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Training BPE, worked", id: "training" },
 
     { t: "out", text:
-"the reference's tiny corpus, characters plus an end marker\n\n  5 x  l o w </w>\n  2 x  l o w e s t </w>\n  6 x  n e w e r </w>\n  3 x  w i d e r </w>" },
+"the tiny corpus, characters plus an end marker\n\n  5 x  l o w </w>\n  2 x  l o w e s t </w>\n  6 x  n e w e r </w>\n  3 x  w i d e r </w>" },
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n48.py — counting pairs and merging", code:
 "def pair_counts(vocab):\n    c = collections.Counter()\n    for word, n in vocab.items():\n        for i in range(len(word) - 1):\n            c[(word[i], word[i+1])] += n      # weighted by word frequency\n    return c\n\ndef merge(vocab, pair):\n    new = {}\n    for word, n in vocab.items():\n        i, w = 0, []\n        while i < len(word):\n            if i < len(word) - 1 and (word[i], word[i+1]) == pair:\n                w.append(word[i] + word[i+1]); i += 2\n            else:\n                w.append(word[i]); i += 1\n        new[tuple(w)] = n\n    return new",
@@ -49,7 +45,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Where strict greedy diverges from the reference", id: "divergence" },
 
     { t: "out", text:
-"always merging the most frequent pair\n\n  merge 1   (e,r)        -> 'er'          freq 9\n  merge 2   (er,</w>)    -> 'er</w>'     freq 9\n  merge 3   (l,o)        -> 'lo'         freq 7\n  merge 4   (lo,w)       -> 'low'        freq 7\n  merge 5   (e,w)        -> 'ew'         freq 6\n  merge 6   (ew,er</w>)  -> 'ewer</w>'   freq 6\n  merge 7   (n,ewer</w>) -> 'newer</w>'  freq 6\n\nthe reference's order:\n  merge 3   (n,e) -> 'ne'   [6]\n  merge 4   (ne,w) -> 'new' [6]\n  merge 5   (l,o) -> 'lo'   [7]\n  merge 6   (lo,w) -> 'low' [7]" },
+"always merging the most frequent pair\n\n  merge 1   (e,r)        -> 'er'          freq 9\n  merge 2   (er,</w>)    -> 'er</w>'     freq 9\n  merge 3   (l,o)        -> 'lo'         freq 7\n  merge 4   (lo,w)       -> 'low'        freq 7\n  merge 5   (e,w)        -> 'ew'         freq 6\n  merge 6   (ew,er</w>)  -> 'ewer</w>'   freq 6\n  merge 7   (n,ewer</w>) -> 'newer</w>'  freq 6\n\nthe order:\n  merge 3   (n,e) -> 'ne'   [6]\n  merge 4   (ne,w) -> 'new' [6]\n  merge 5   (l,o) -> 'lo'   [7]\n  merge 6   (lo,w) -> 'low' [7]" },
 
     { t: "callout", kind: "warn", title: "The reference applies a frequency-6 merge before two frequency-7 merges",
       body: [{ t: "p", text: "After merge 2 the counts are `(l,o) = 7`, `(o,w) = 7`, `(n,e) = 6`, `(e,w) = 6`. BPE's rule is to take the **most frequent** pair, so merges 3 and 4 should be the frequency-7 ones. The reference takes `(n,e)` at 6 first. Its own annotations record the frequencies correctly — `[6]`, `[6]`, `[7]`, `[7]` — so the numbers are right and only the ordering is out of sequence. It matters because the rule order *is* the trained tokenizer: change it and you get different tokens for the same input, as the next section shows." }] },
@@ -82,8 +78,8 @@ EC.receiveLesson({
     { t: "out", text:
 "\"I love transformer models!\"\n\nbert-base-uncased   8 ids   ['[CLS]','i','love','transform','##er','models','!','[SEP]']\ngpt2                5 ids   ['I','Ġlove','Ġtransformer','Ġmodels','!']\nroberta-base        7 ids   ['<s>','I','Ġlove','Ġtransformer','Ġmodels','!','</s>']\n\nbert input_ids: [101, 1045, 2293, 10938, 2121, 4275, 999, 102]\nreference says: [101, 1045, 2293, 19081, 4275, 999, 102]" },
 
-    { t: "callout", kind: "warn", title: "The reference's id list contradicts its own token list",
-      body: [{ t: "p", text: "The reference prints **7** ids but then shows **8** tokens including both `transform` and `##er` — those cannot both be right. Measured, BERT splits *transformer* into `transform` (10938) and `##er` (2121), giving 8 ids total. The reference's id list has a single 19081 where those two belong, which would correspond to *transformer* as one token. Its `convert_ids_to_tokens` line is the correct one. Worth noticing that GPT-2 keeps *transformer* whole in one token while BERT splits it — a direct consequence of vocabulary size, 50,257 against 30,522." }] },
+    { t: "callout", kind: "warn", title: "The id list contradicts its own token list",
+      body: [{ t: "p", text: "The reference prints **7** ids but then shows **8** tokens including both `transform` and `##er` — those cannot both be right. Measured, BERT splits *transformer* into `transform` (10938) and `##er` (2121), giving 8 ids total. The id list has a single 19081 where those two belong, which would correspond to *transformer* as one token. Its `convert_ids_to_tokens` line is the correct one. Worth noticing that GPT-2 keeps *transformer* whole in one token while BERT splits it — a direct consequence of vocabulary size, 50,257 against 30,522." }] },
 
     { t: "h2", n: "07", text: "What tokenisation costs", id: "cost" },
 
@@ -116,11 +112,11 @@ EC.receiveLesson({
   takeaways: [
     "Subword tokenisation keeps common words whole and splits rare ones, so nothing is ever unrepresentable — the worst case is a long sequence, never UNK.",
     "BPE training is: count adjacent pairs weighted by frequency, merge the most frequent, record the rule. The ordered rule list is the trained artefact.",
-    "The reference's worked example applies a frequency-6 merge before two frequency-7 merges; strict greedy gives a different order and different tokens.",
+    "The worked example applies a frequency-6 merge before two frequency-7 merges; strict greedy gives a different order and different tokens.",
     "Under strict greedy, 'newer' collapsed to a single token while 'widest' fell back to all 7 characters — token count tracks corpus support.",
     "BPE merges by frequency, WordPiece by likelihood gain, Unigram prunes a large vocabulary downward, SentencePiece is the byte-stream framework around them.",
     "Byte-level BPE starts from the 256 bytes, so GPT-2 and RoBERTa gave 0 unknown tokens and round-tripped exactly where BERT emitted 2 UNK and failed.",
-    "The reference's BERT id list has 7 entries but its token list has 8; measured, 'transformer' splits into transform (10938) and ##er (2121).",
+    "The BERT id list has 7 entries but its token list has 8; measured, 'transformer' splits into transform (10938) and ##er (2121).",
     "The same Hindi text costs BERT 11 tokens and GPT-2 26 — more than one token per character, doubling context use and cost for non-English users.",
     "Plain English costs all three tokenizers 10 tokens; differences only appear outside the vocabulary's home distribution.",
     "Bigger vocabularies mean shorter sequences but a larger embedding matrix and less evidence per token; LLaMA 3's 128k × 4096 is 524M parameters."
@@ -134,7 +130,7 @@ EC.receiveLesson({
     { stem: "What is the trained artefact of BPE, and why does its order matter?",
       options: ["A vocabulary set", "The ordered list of merge rules — applying them in a different order produces different tokens for the same input", "A frequency table", "A neural network"],
       answer: 1,
-      why: "Encoding replays the merges in exactly the order they were learned. The reference's example applies (n,e) at frequency 6 before two frequency-7 merges, and that ordering difference is why it reports 'newer' as two tokens where strict greedy merging produces one." },
+      why: "Encoding replays the merges in exactly the order they were learned. The worked example applies (n,e) at frequency 6 before two frequency-7 merges, and that ordering difference is why it reports 'newer' as two tokens where strict greedy merging produces one." },
     { stem: "Why did the Hindi text cost GPT-2 26 tokens for 16 characters?",
       options: ["A tokenizer bug", "Devanagari is multi-byte in UTF-8 and the merge rules, trained on mostly English, never learned to combine those byte sequences", "Hindi has no word boundaries", "The text contained unknown characters"],
       answer: 1,

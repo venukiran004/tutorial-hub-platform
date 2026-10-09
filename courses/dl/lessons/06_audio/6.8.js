@@ -1,13 +1,10 @@
 /* ============================================================================
    LESSON 6.8 — The Small Models, and How to Measure Any of It
-   Mirrors 08_Audio_Speech_Processing.md · §14, §15. All five of the
-   reference's WER cases recomputed with its own function and matched exactly
-   (scratchpad/dl/d68.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "6.8",
 
-  lede: "**The models around the big one decide how a product feels, and the metric you choose decides whether you can tell.** Voice activity detection gates everything; a wake word's operating point is set by false accepts per hour, not by accuracy. And word error rate — the number every speech system is judged on — is **not a percentage**, cannot be inverted, and moves by several points purely from how you render numbers before scoring. All five of the reference's worked WER cases are verified here.",
+  lede: "**The models around the big one decide how a product feels, and the metric you choose decides whether you can tell.** Voice activity detection gates everything; a wake word's operating point is set by false accepts per hour, not by accuracy. And word error rate — the number every speech system is judged on — is **not a percentage**, cannot be inverted, and moves by several points purely from how you render numbers before scoring. All five of the worked WER cases are verified here.",
 
   objectives: [
     "Distinguish VAD, wake word, endpointing, diarisation and verification",
@@ -118,7 +115,7 @@ EC.receiveLesson({
   takeaways: [
     "VAD gates everything; wake words are tuned for false accepts per hour, commonly under 1.",
     "Endpointing — has the user finished? — is distinct from VAD and is the hardest of the small models.",
-    "All five of the reference's WER cases reproduce exactly, including the S/D/I breakdown.",
+    "All five of the WER cases reproduce exactly, including the S/D/I breakdown.",
     "WER is unbounded: `yes` → `yes yes yes yes` scores 3.0000. It is not a percentage and cannot be inverted.",
     "Identical meaning scored 0.0000 to 0.1667 purely from normalisation — publish the normaliser.",
     "CER separated two cases WER scored identically (0.0976 against 0.0244).",

@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 2.8 — Question Answering
-   Mirrors 01_NLP_Notes.md · §16. deepset/roberta-base-squad2 is run on
-   answerable and unanswerable questions, with the span search and the
-   no-answer slot both computed explicitly (scratchpad/nlp/n28.py).
+   deepset/roberta-base-squad2 is run on answerable and unanswerable
+   questions, with the span search and the no-answer slot both computed
+   explicitly (scratchpad/nlp/n28.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.8",

@@ -1,8 +1,6 @@
 /* ============================================================================
    INTERVIEW I1.8 — NLP & Sequence Models
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/05_Deep_Learning/00_Interview_Bank/01_DL_Interview.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.8",

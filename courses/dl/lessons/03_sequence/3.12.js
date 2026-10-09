@@ -1,8 +1,7 @@
 /* ============================================================================
    LESSON 3.12 — RNN and LSTM from Scratch in NumPy
-   Mirrors 03_Sequence_Models.md · §13 and §14. Both cells implemented with
-   forward AND backward, verified against PyTorch autograd to float64
-   round-off (scratchpad/dl/d312.py).
+   Both cells implemented with forward AND backward, verified against
+   PyTorch autograd to float64 round-off (scratchpad/dl/d312.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.12",

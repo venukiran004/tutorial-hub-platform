@@ -1,7 +1,6 @@
 /* ============================================================================
    LESSON 7.2 — Loss Spikes, Divergence and Dead Neurons
-   Mirrors 30_DL_Training_Instability.md · §3, §4. Dead-ReLU behaviour
-   measured (scratchpad/dl/d71.py).
+   Dead-ReLU behaviour measured (scratchpad/dl/d71.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "7.2",

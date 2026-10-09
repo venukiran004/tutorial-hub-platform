@@ -1,57 +1,30 @@
 /* ============================================================================
    LANGCHAIN & LANGGRAPH — CURRICULUM
    ----------------------------------------------------------------------------
-   Mirrors 08_LangChain_and_LangGraph/ file for file and section for section.
-
-     M1   01_LangChain_Notes.md            §1-4, §16   -> 1.1-1.8
-     M2   01_LangChain_Notes.md            §5-6, §11   -> 2.1-2.9
-     M3   01_LangChain_Notes.md            §7-9        -> 3.1-3.8
-     M4   01_LangChain_Notes.md §12-15,17,19
-            + 15_LangChain_Failure_Handling.md         -> 4.1-4.8
-     M5   01_LangChain_Notes.md §10,18
-            + 17_RAG_Implementation_LangChain.md §1-3  -> 5.1-5.8
-     M6   17_RAG_Implementation_LangChain.md §2,4-12   -> 6.1-6.9
-     M7   16_RAG_Failure_Handling.md, 41_RAG_in_Production.md,
-            27_Context_Engineering…, 20_Multimodal_RAG…,
-            47_Scaling_Optimization_RAG.md             -> 7.1-7.9
-     M8   02_LangGraph_Notes.md            §1-4        -> 8.1-8.9
-     M9   02_LangGraph_Notes.md            §5,5.5,6,7,15 -> 9.1-9.9
-     M10  02_LangGraph_Notes.md            §8-10,12,13,16,17 -> 10.1-10.9
-     M11  18_Agent_Implementation_Cookbook.md §0-6,10
-            + 11_Agentic_Systems_and_Patterns.md Part I -> 11.1-11.8
-     M12  11_… §6, 18_… §7-9, 19_Orchestrator_vs_Supervisor.md -> 12.1-12.8
-     M13  12_Context_Management_and_Summarization.md    -> 13.1-13.6
-     M14  14_Failure_Handling_and_Resilience.md, 45_…Stepwise…,
-            43_Agent_Evaluation.md, 40_…Failure_Modes.md,
-            26/48/49 scaling, 21_…Production_Lenses.md  -> 14.1-14.10
-
-     PRACTICE track (Practice/01_LangChain_LangGraph_Programs.md — 50 programs;
-       Practice/Agentic_AI_Scenarios_Part01-10.md — 500 scenarios)
-
-     INTERVIEW track (00_Interview_Bank/01, /02, /10, questions.md,
-       23/24/25/27 technical QA, 31_Client_Round, 28_Terminology)
-
-   HOW THE CODE IN THIS COURSE IS VERIFIED
-   ---------------------------------------
-   This environment has langchain-core 1.4.7 and langgraph 1.2.5 installed and
-   no provider package or API key. That is enough to run almost everything:
-   chains, runnables, parsers, tools, graphs, reducers, checkpointers, stores,
-   interrupts, streaming and the retrieval stack (faiss, chromadb, rank-bm25,
-   sentence-transformers) all execute locally.
-
-   The model itself is replaced by a scripted `FakeChatModel(BaseChatModel)`
-   that returns a fixed list of responses and records every prompt it was
-   given — the same technique the ADK course uses. Nothing about the graph,
-   the state, the routing or the tool protocol is faked; only the token
-   generation is, which means a printed trace is a real trace.
-
-   Two limits are stated wherever they apply. The `langchain` umbrella package
-   installed here is 0.2.10 and does not import against core 1.4.7, so the
-   LangChain 1.0 `create_agent` / middleware API is presented from the
-   reference rather than executed. And anything whose output depends on a real
-   model's judgement — the content of a reflection, whether a router picks the
-   right branch — is scripted by construction, so those lessons show the
-   mechanism and say plainly that the decision is the model's.
+   M1  §1-4, §16  -> 1.1-1.8 M2  §5-6, §11  -> 2.1-2.9 M3  §7-9  -> 3.1-3.8
+   M4  §12-15,17,19 -> 4.1-4.8 M5  §10,18 +  §1-3  -> 5.1-5.8 M6  §2,4-12
+   -> 6.1-6.9 M7  , , 27_Context_Engineering…, 20_Multimodal_RAG…, ->
+   7.1-7.9 M8  §1-4  -> 8.1-8.9 M9  §5,5.5,6,7,15 -> 9.1-9.9 M10
+   §8-10,12,13,16,17 -> 10.1-10.9 M11  §0-6,10 +  Part I -> 11.1-11.8 M12
+   11_… §6, 18_… §7-9,  -> 12.1-12.8 M13  -> 13.1-13.6 M14  , 45_…Stepwise…,
+   , 40_…, 26/48/49 scaling, 21_…  -> 14.1-14.10 PRACTICE track ( — 50
+   programs; — 500 scenarios) INTERVIEW track (00_Interview_Bank/01, /02,
+   /10, , 23/24/25/27 technical QA, 31_Client_Round, 28_Terminology) HOW THE
+   CODE IN THIS COURSE IS VERIFIED This environment has langchain-core 1.4.7
+   and langgraph 1.2.5 installed and no provider package or API key. That is
+   enough to run almost everything: chains, runnables, parsers, tools,
+   graphs, reducers, checkpointers, stores, interrupts, streaming and the
+   retrieval stack (faiss, chromadb, rank-bm25, sentence-transformers) all
+   execute locally. The model itself is replaced by a scripted
+   `FakeChatModel(BaseChatModel)` that returns a fixed list of responses and
+   records every prompt it was given — the same technique the ADK course
+   uses. Nothing about the graph, the state, the routing or the tool
+   protocol is faked; only the token generation is, which means a printed
+   trace is a real trace. Two limits are stated wherever they apply. And
+   anything whose output depends on a real model's judgement — the content
+   of a reflection, whether a router picks the right branch — is scripted by
+   construction, so those lessons show the mechanism and say plainly that
+   the decision is the model's.
    ========================================================================= */
 (function () {
   EC.defineCourse({
@@ -62,8 +35,8 @@
 
     trackLabels: { learn: "LangChain and LangGraph", practice: "Scenarios", interview: "Interview" },
     trackBlurbs: {
-      learn: "The reference notes, section by section — every graph, chain and retriever executed here against a scripted model, with the output shown.",
-      practice: "The reference's 50 runnable programs and 500 agentic scenarios, answers folded away.",
+      learn: "Composition, retrieval and graphs section by section — every graph, chain and retriever executed here against a scripted model, with the output shown.",
+      practice: "Fifty runnable programs and 500 agentic scenarios, answers folded away.",
       interview: "The LangChain, LangGraph and agentic banks plus the technical Q&A files, answers hidden until you ask."
     },
 
@@ -72,7 +45,7 @@
     modules: [
 
       /* ================================================================
-         M1 · 01_LangChain_Notes.md §1–4, §16
+  M1 ·  §1–4, §16
          ================================================================ */
       {
         id: "core",
@@ -82,7 +55,6 @@
         title: "What LangChain Actually Is",
         blurb: "A framework whose whole idea is one interface. Chat models behind a common protocol, prompts as templates rather than f-strings, output parsed into types you can act on, structured output when the parse has to succeed, the handful of core objects every other part of the library passes around — and an honest account of when a plain SDK call is the better answer.",
         outcome: "You can name the Runnable protocol's methods, build a prompt-to-model-to-parser chain, get a typed object back from a model, and say when the framework is earning its dependency.",
-        source: "01_LangChain_Notes.md",
         lessons: [
           { id: "1.1", title: "The Problem LangChain Solves", difficulty: "foundation", minutes: 30, tier: "must",
             summary: "One interface over many providers, and the composition that interface buys — built by writing the interface by hand first, so the abstraction has something to be an abstraction over.",
@@ -112,7 +84,7 @@
       },
 
       /* ================================================================
-         M2 · 01_LangChain_Notes.md §5–6, §11
+  M2 ·  §5–6, §11
          ================================================================ */
       {
         id: "lcel",
@@ -122,7 +94,6 @@
         title: "LCEL and the Runnable Protocol",
         blurb: "The expression language that makes LangChain worth importing. The pipe operator and what it actually constructs, running steps in parallel, moving data between steps without a lambda soup, branching, fallbacks and retries attached to any step, streaming that works through a whole chain, and configuration changed at call time.",
         outcome: "You can compose a non-trivial chain with parallel branches, routing and fallbacks, stream it token by token, and explain what each operator built.",
-        source: "01_LangChain_Notes.md",
         lessons: [
           { id: "2.1", title: "The Runnable Interface", difficulty: "core", minutes: 30, tier: "must",
             summary: "Six methods and one type parameter — the contract every chain, model, parser and retriever satisfies, and why uniformity is what makes the pipe possible.",
@@ -155,7 +126,7 @@
       },
 
       /* ================================================================
-         M3 · 01_LangChain_Notes.md §7–9
+  M3 ·  §7–9
          ================================================================ */
       {
         id: "agents",
@@ -165,7 +136,6 @@
         title: "Tools, Agents and Memory",
         blurb: "The point where a chain stops being a pipeline and starts making decisions. Defining a tool so a model can call it, the tool-calling protocol underneath, the agent loop written by hand before any prebuilt is used, the memory abstractions and their limits, and the question of whether the decision needs a model at all.",
         outcome: "You can write a tool, run the full call-execute-return loop yourself, and justify the choice between a chain and an agent on something other than taste.",
-        source: "01_LangChain_Notes.md",
         lessons: [
           { id: "3.1", title: "Defining a Tool", difficulty: "core", minutes: 30, tier: "must",
             summary: "The @tool decorator, what the docstring is actually for, argument schemas, and why a tool description is a prompt you forgot you were writing.",
@@ -195,7 +165,7 @@
       },
 
       /* ================================================================
-         M4 · 01_LangChain_Notes.md §12–15, §17, §19 + 15_LangChain_Failure_Handling.md
+  M4 ·  §12–15, §17, §19
          ================================================================ */
       {
         id: "production",
@@ -205,7 +175,6 @@
         title: "Running LangChain in Production",
         blurb: "Everything between a chain that works on your machine and one that works on traffic: the callback system and what it can see, tracing, caching, token accounting, rate limiting, the order retries and fallbacks compose in, the guardrails, and how to test something whose output is not deterministic.",
         outcome: "You can instrument a chain, bound its cost, make it survive a flaky provider, and write a test suite for it that is not just a snapshot.",
-        source: "01_LangChain_Notes.md + 15_LangChain_Failure_Handling.md",
         lessons: [
           { id: "4.1", title: "Callbacks and the Event Stream", difficulty: "core", minutes: 30, tier: "should",
             summary: "The handler interface, the events a run emits, and a working token-and-latency recorder built from it in one class.",
@@ -235,7 +204,7 @@
       },
 
       /* ================================================================
-         M5 · 01_LangChain_Notes.md §10, §18 + 17_RAG_Implementation §1–3
+  M5 ·  §10, §18 + 17_RAG_Implementation §1–3
          ================================================================ */
       {
         id: "rag",
@@ -245,7 +214,6 @@
         title: "The RAG Pipeline",
         blurb: "Retrieval built once, end to end, with every decision made explicitly: what a loader produces, where to cut a document and what that costs, what an embedding is actually measuring, how a vector store searches, what a retriever adds over a store — and a clear account of what the resulting baseline gets wrong.",
         outcome: "You can build a working RAG chain from documents to grounded answer, and name the specific failure each later strategy exists to fix.",
-        source: "01_LangChain_Notes.md §10 + 17_RAG_Implementation_LangChain.md",
         lessons: [
           { id: "5.1", title: "Recall Then Precision", difficulty: "foundation", minutes: 28, tier: "must",
             summary: "The two-stage mental model that organises every retrieval decision — cast wide cheaply, then narrow expensively — and why the order is not negotiable.",
@@ -275,7 +243,7 @@
       },
 
       /* ================================================================
-         M6 · 17_RAG_Implementation_LangChain.md §2, §4–12
+  M6 ·  §2, §4–12
          ================================================================ */
       {
         id: "retrieval",
@@ -283,9 +251,8 @@
         dir: "06_retrieval",
         phase: "Phase 2 · Retrieval",
         title: "Retrieval Strategies, Implemented",
-        blurb: "Every strategy the reference teaches, in its own shape: intuition, then the formula, then a from-scratch implementation that runs, then the one-line library call it corresponds to. BM25 with the full scoring formula, hybrid search, rank fusion, diversity, cross-encoder reranking, and the metrics that tell you which of them you actually needed.",
+        blurb: "Every retrieval strategy in its own shape: intuition, then the formula, then a from-scratch implementation that runs, then the one-line library call it corresponds to. BM25 with the full scoring formula, hybrid search, rank fusion, diversity, cross-encoder reranking, and the metrics that tell you which of them you actually needed.",
         outcome: "You can implement BM25, RRF and MMR from the formula, assemble the full pipeline, and measure Recall@k, MRR and NDCG to decide what to fix.",
-        source: "17_RAG_Implementation_LangChain.md",
         lessons: [
           { id: "6.1", title: "Bi-Encoder vs Cross-Encoder", difficulty: "core", minutes: 30, tier: "must",
             summary: "The architectural difference that makes one searchable and the other accurate, the cost ratio measured, and why a pipeline wants both.",
@@ -328,7 +295,6 @@
         title: "RAG in Production",
         blurb: "What breaks once the corpus is real and changing: the guard that makes the system abstain instead of inventing, rewriting queries that retrieve nothing, budgeting a context window, checking the answer against its own sources, keeping an index fresh, surviving a document that contains instructions, and the architectures for PDFs full of tables and charts.",
         outcome: "You can make a RAG system abstain correctly, keep its index current, defend it against its own documents, and scale it without the quality collapsing.",
-        source: "16_RAG_Failure_Handling.md + 41_RAG_in_Production.md + 27 + 20 + 47",
         lessons: [
           { id: "7.1", title: "The No-Context Guard", difficulty: "core", minutes: 30, tier: "must",
             summary: "Score thresholds, the abstain path, and the measured trade-off between answering a question you should not and refusing one you could have.",
@@ -361,7 +327,7 @@
       },
 
       /* ================================================================
-         M8 · 02_LangGraph_Notes.md §1–4
+  M8 ·  §1–4
          ================================================================ */
       {
         id: "graph",
@@ -371,7 +337,6 @@
         title: "LangGraph Foundations",
         blurb: "The state machine underneath every agent framework. Why a chain stops being enough, state as a typed schema with reducers that decide how updates merge, nodes as plain functions, edges as the control flow, conditional routing, and the Command object that moves and writes in one step.",
         outcome: "You can design a state schema with the right reducers, build a graph with conditional routing, and explain what the runtime does on each superstep.",
-        source: "02_LangGraph_Notes.md",
         lessons: [
           { id: "8.1", title: "Why a Graph", difficulty: "foundation", minutes: 30, tier: "must",
             summary: "The three things a chain cannot do — cycle, branch on state, pause — demonstrated as failures first, so the graph is an answer to something.",
@@ -404,7 +369,7 @@
       },
 
       /* ================================================================
-         M9 · 02_LangGraph_Notes.md §5, §5.5, §6, §7, §15
+  M9 ·  §5, §5.5, §6, §7, §15
          ================================================================ */
       {
         id: "stateful",
@@ -414,7 +379,6 @@
         title: "Agents, Memory and the Human",
         blurb: "What the graph buys you once state persists: a tool-calling agent built on the primitives, the distinction between a workflow and an agent, checkpoints that survive a process restart, threads as conversations, long-term memory across them, a human in the middle of a run, and the ability to rewind.",
         outcome: "You can build a checkpointed agent, pause it for approval, resume it, and rewind it to an earlier state to take a different branch.",
-        source: "02_LangGraph_Notes.md",
         lessons: [
           { id: "9.1", title: "The Tool-Calling Agent", difficulty: "core", minutes: 32, tier: "must",
             summary: "The agent loop as a two-node graph with a conditional edge — the same loop from 3.3, now with state, persistence and a pause point.",
@@ -447,7 +411,7 @@
       },
 
       /* ================================================================
-         M10 · 02_LangGraph_Notes.md §8–10, §12, §13, §16, §17
+  M10 ·  §8–10, §12, §13, §16, §17
          ================================================================ */
       {
         id: "compose",
@@ -457,7 +421,6 @@
         title: "Composition and Scale",
         blurb: "Graphs built from graphs, work fanned out dynamically and gathered back, the five streaming modes and what each is for, retries and timeouts at the node level, the deadlocks a badly drawn graph produces, testing something stateful, runtime configuration, the function-decorator API, and tools that live in another process.",
         outcome: "You can nest graphs, fan out with Send, choose the right streaming mode, set retry policy per node, and test a stateful graph deterministically.",
-        source: "02_LangGraph_Notes.md",
         lessons: [
           { id: "10.1", title: "Subgraphs", difficulty: "advanced", minutes: 32, tier: "should",
             summary: "A compiled graph used as a node, shared versus separate state, and the key-mapping that decides whether the parent sees anything.",
@@ -490,7 +453,7 @@
       },
 
       /* ================================================================
-         M11 · 18_Agent_Implementation_Cookbook.md + 11_Agentic_Systems Part I
+  M11 ·  + 11_Agentic_Systems Part I
          ================================================================ */
       {
         id: "patterns",
@@ -500,7 +463,6 @@
         title: "Agent Patterns",
         blurb: "Every agent pattern as the smallest graph that demonstrates it: core idea, diagram, running code, and an honest statement of when it is the wrong choice. Router, ReAct, reflection, reflexion with episodic memory, plan-and-execute, and retrieval turned into a decision rather than a step.",
         outcome: "You can implement each pattern from its execution cycle, and pick between them on the properties of the task rather than on familiarity.",
-        source: "18_Agent_Implementation_Cookbook.md + 11_Agentic_Systems_and_Patterns.md",
         lessons: [
           { id: "11.1", title: "Do You Even Need an Agent?", difficulty: "core", minutes: 28, tier: "must",
             summary: "The ladder from a single call to a full agent, the cost and reliability measured at each rung, and the rule for stopping at the lowest one that works.",
@@ -540,7 +502,6 @@
         title: "Multi-Agent Systems",
         blurb: "What changes when there is more than one agent: the supervisor that routes turn by turn, the swarm that hands off peer to peer, teams of teams, the distinction between a supervisor and an orchestrator that most discussions blur, adding an agent to a running system, and the failure modes that only appear with two.",
         outcome: "You can build supervisor, swarm and hierarchical topologies, say which one a problem wants, and add an agent to a deployed system without recompiling it.",
-        source: "11_Agentic_Systems_and_Patterns.md §6 + 19_Orchestrator_vs_Supervisor.md",
         lessons: [
           { id: "12.1", title: "Why More Than One Agent", difficulty: "core", minutes: 30, tier: "must",
             summary: "The three reasons that justify it and the several that do not, with the coordination overhead measured against a single agent on the same task.",
@@ -570,7 +531,7 @@
       },
 
       /* ================================================================
-         M13 · 12_Context_Management_and_Summarization.md + 27
+  M13 ·  + 27
          ================================================================ */
       {
         id: "context",
@@ -580,7 +541,6 @@
         title: "Context Engineering",
         blurb: "The window is a budget and every strategy for managing it trades the same two things: what the agent can still remember against what it costs to remember it. Five strategies implemented and measured, and the rule for which one each agent pattern wants.",
         outcome: "You can measure what a conversation costs as it grows, choose a context strategy on evidence, and say what each one loses.",
-        source: "12_Context_Management_and_Summarization.md",
         lessons: [
           { id: "13.1", title: "The Context Window as a Budget", difficulty: "core", minutes: 30, tier: "must",
             summary: "Where the tokens go in an agent turn, the quadratic growth a loop produces, and the cost curve that forces the decision.",
@@ -614,7 +574,6 @@
         title: "Failure, Evaluation and Scale",
         blurb: "The last module, organised by failure surface rather than by feature: what breaks at the model call, the tool, the sub-agent, the graph and the process; how to retry something that has already had an effect; how to undo a half-finished plan; how to evaluate an agent whose output is a trajectory; and where the cost goes at volume.",
         outcome: "You can make an agent safe to retry, degrade it instead of failing it, evaluate both its answer and its path, and say where it will break first under load.",
-        source: "14_Failure_Handling_and_Resilience.md + 43_Agent_Evaluation.md + 45 + 40 + 48 + 49",
         lessons: [
           { id: "14.1", title: "The Failure Surfaces", difficulty: "core", minutes: 32, tier: "must",
             summary: "Nine places an agentic system fails, each with its detection signal, containment and recovery — the map the rest of the module fills in.",

@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 2.3 — Topic Modelling
-   Mirrors 01_NLP_Notes.md · §11. LDA is fitted on real 20-newsgroups data and
-   its topics checked against the categories it was never shown; perplexity is
-   swept over k and found not to select it (scratchpad/nlp/n22.py).
+   LDA is fitted on real 20-newsgroups data and its topics checked against
+   the categories it was never shown; perplexity is swept over k and found
+   not to select it (scratchpad/nlp/n22.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.3",
@@ -32,7 +32,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Fitting it", id: "fitting" },
 
-    { t: "code", lang: "python", title: "The reference's setup",
+    { t: "code", lang: "python", title: "The setup",
       code: `vectorizer = CountVectorizer(max_df=0.95, min_df=2, stop_words="english")
 dtm = vectorizer.fit_transform(documents)
 

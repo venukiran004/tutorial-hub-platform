@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 2.7 — Machine Translation
-   Mirrors 01_NLP_Notes.md · §15. Marian en-fr and fr-en are run in both
-   directions; BLEU is computed by hand and then shown scoring a failed
-   translation perfectly (scratchpad/nlp/n26.py, n27.py, n27b.py).
+   Marian en-fr and fr-en are run in both directions; BLEU is computed by
+   hand and then shown scoring a failed translation perfectly
+   (scratchpad/nlp/n26.py, n27.py, n27b.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.7",
@@ -40,7 +40,7 @@ EC.receiveLesson({
 "75.1M params - a single-pair translation model is SMALL\n\nEN  Machine learning is transforming the world.\nFR  L'apprentissage automatique transforme le monde.\n\nEN  The bank raised interest rates.\nFR  La banque a relevé les taux d'intérêt.\n\nEN  The river bank was muddy.\nFR  La rive était boueuse." },
 
     { t: "callout", kind: "insight", title: "Word sense disambiguation, for free",
-      body: [{ t: "p", text: "*Bank* became **banque** in the financial sentence and **rive** in the river sentence. Nobody gave the model a sense inventory or a disambiguation step — the encoder's contextual representation of *bank* simply differs between the two sentences, and the decoder reads that difference. This is the same fact you measured back in lesson 1.6 about static embeddings: one vector per word type cannot do this, and one vector per token can. The first output also matches the reference's quoted translation exactly." }] },
+      body: [{ t: "p", text: "*Bank* became **banque** in the financial sentence and **rive** in the river sentence. Nobody gave the model a sense inventory or a disambiguation step — the encoder's contextual representation of *bank* simply differs between the two sentences, and the decoder reads that difference. This is the same fact you measured back in lesson 1.6 about static embeddings: one vector per word type cannot do this, and one vector per token can. The first output also matches the quoted translation exactly." }] },
 
     { t: "h2", n: "02", text: "M2M100: one model, any direction", id: "m2m" },
 
@@ -76,7 +76,7 @@ EC.receiveLesson({
 
     { t: "math", tex: "\\text{BLEU} = \\text{BP} \\cdot \\exp\\!\\left(\\sum_{n=1}^{4} w_n \\log p_n\\right), \\qquad \\text{BP} = \\begin{cases} 1 & c > r \\\\ e^{1 - r/c} & c \\leq r \\end{cases}" },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n26.py — the reference's BLEU example", code:
+    { t: "code", lang: "python", title: "scratchpad/nlp/n26.py — the BLEU example", code:
 "from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction\n\nreference = [[\"the\", \"cat\", \"sat\", \"on\", \"the\", \"mat\"]]\ncandidate =  [\"the\", \"cat\", \"is\", \"on\", \"the\", \"mat\"]\n\nprint(\"%.4f\" % sentence_bleu(reference, candidate))\n\n# and with smoothing, so a single zero order does not annihilate it\nsm = SmoothingFunction().method1\nprint(\"%.4f\" % sentence_bleu(reference, candidate, smoothing_function=sm))",
       caption: "One word differs out of six. Predict the score before reading the output." },
 
@@ -103,7 +103,7 @@ EC.receiveLesson({
     { t: "callout", kind: "crit", title: "The perfect score marks the total failure",
       body: [{ t: "p", text: "*Il a donné un coup de pied au seau* means a man physically kicked a pail. The English idiom means he died. Marian translated it literally, destroying the meaning completely — and because the literal translation round-trips literally, BLEU returned **1.0000**. Meanwhile *La rive était boueuse* is a correct translation, and it scored **0.3328** only because French *rive* already means a river bank, so the word *river* had nowhere to come from on the way back. The metric ranked a catastrophic failure first and a correct translation last." }] },
 
-    { t: "p", text: "The same disagreement shows up without the round trip. Scoring candidates directly against a reference gives a paraphrase 0.0955 and a sentence with the meaning reversed 0.2857 — BLEU preferred the sentence that says the opposite of the truth, because it reuses more of the reference's words." },
+    { t: "p", text: "The same disagreement shows up without the round trip. Scoring candidates directly against a reference gives a paraphrase 0.0955 and a sentence with the meaning reversed 0.2857 — BLEU preferred the sentence that says the opposite of the truth, because it reuses more of the usual phrasing." },
 
     { t: "out", text:
 "reference: the cat sat on the mat\n\nbleu 0.0955   perfect paraphrase   'the feline rested on the rug'\nbleu 0.2857   reversed meaning     'the mat sat on the cat'\nbleu 1.0000   exact match          'the cat sat on the mat'" },

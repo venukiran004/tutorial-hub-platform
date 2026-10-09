@@ -1,8 +1,5 @@
 /* ============================================================================
    LESSON 2.4 — Text Similarity and Semantic Search
-   Mirrors 01_NLP_Notes.md · §12. Lexical and semantic similarity are measured
-   on the same four pairs with a real sentence encoder; the reference's quoted
-   similarity does not reproduce (scratchpad/nlp/n24.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.4",
@@ -70,7 +67,7 @@ EC.receiveLesson({
     0.335   'the bank raised rates' / 'the river bank was muddy'` },
 
     { t: "callout", kind: "insight", title: "The ordering is now right, even though one number is not what was quoted",
-      body: [{ t: "p", text: "Every paraphrase pair now scores above the ambiguous pair, which is the behaviour a search system needs — `car`/`automobile` reaches **0.910** on a pair TF-IDF scored 0.247. The `bank` pair stays at 0.335 despite sharing a word. What does not reproduce is the reference's quoted 0.85 for the two ML questions; with `all-MiniLM-L6-v2` the value is **0.5336**. Sentence-encoder scores are model-specific and not comparable across models, so a threshold tuned for one encoder is meaningless for another — which is the practical lesson rather than the discrepancy itself." }] },
+      body: [{ t: "p", text: "Every paraphrase pair now scores above the ambiguous pair, which is the behaviour a search system needs — `car`/`automobile` reaches **0.910** on a pair TF-IDF scored 0.247. The `bank` pair stays at 0.335 despite sharing a word. What does not reproduce is the quoted 0.85 for the two ML questions; with `all-MiniLM-L6-v2` the value is **0.5336**. Sentence-encoder scores are model-specific and not comparable across models, so a threshold tuned for one encoder is meaningless for another — which is the practical lesson rather than the discrepancy itself." }] },
 
     { t: "p", text: "The encoder maps a whole sentence to one 384-dimensional vector, and the cosine between two such vectors is the similarity. This is a **bi-encoder**: each text is encoded independently, so the corpus can be encoded once and cached, which is what makes search possible at all." },
 
@@ -126,11 +123,11 @@ EC.receiveLesson({
   ],
 
   takeaways: [
-    "The reference's TF-IDF cosine of ~0.4 comes out at 0.151 — `TfidfVectorizer` drops single-character tokens by default.",
+    "The TF-IDF cosine of ~0.4 comes out at 0.151 — `TfidfVectorizer` drops single-character tokens by default.",
     "Levenshtein('kitten','sitting') = 3, but normalised *ratios* differ by convention (0.571 against 0.615).",
     "Measured: three paraphrase pairs scored 0.000–0.247 lexically while an ambiguous pair scored 0.311 — the ranking is backwards.",
     "A sentence encoder fixed the ordering: `car`/`automobile` reached 0.910, and the `bank` pair stayed at 0.335.",
-    "The reference's quoted 0.85 did not reproduce — `all-MiniLM-L6-v2` gives 0.5336. Encoder scores are not comparable across models.",
+    "The quoted 0.85 did not reproduce — `all-MiniLM-L6-v2` gives 0.5336. Encoder scores are not comparable across models.",
     "Exhaustive search is linear: 3.8e9 multiply-adds per query at 10M documents and 384 dimensions.",
     "ANN indexes trade a little recall for sublinear search — measure that recall rather than assuming it.",
     "Retrieve with a bi-encoder, rerank the top candidates with a cross-encoder."

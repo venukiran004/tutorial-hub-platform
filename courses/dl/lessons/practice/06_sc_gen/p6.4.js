@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P6.4 — Generative Models · 4
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/05_Deep_Learning/Practice/05_Generative_Models.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p6.4",

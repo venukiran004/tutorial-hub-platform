@@ -1,11 +1,8 @@
 /* ============================================================================
    LESSON 1.8 — Batch Norm, Layer Norm, and the Gradients that Vanish or
-   Explode
-   Mirrors 01_Neural_Network_Fundamentals.md · §9 (Batch Normalization,
-   Layer Normalization) and §10 (Vanishing & Exploding Gradients), with
-   §21 Q4 and Q6. Both normalisations are worked by hand on a 4 × 3 batch
-   and matched against nn.BatchNorm1d and nn.LayerNorm; gradient norms are
-   measured against depth for each remedy.
+   Both normalisations are worked by hand on a 4 × 3 batch and matched
+   against nn.BatchNorm1d and nn.LayerNorm; gradient norms are measured
+   against depth for each remedy.
    ========================================================================= */
 EC.receiveLesson({
   id: "1.8",
@@ -220,7 +217,7 @@ print(bn(x).detach())
       why: "The derivative of the skip path is exactly 1, so the gradient passes through the block undiminished even when the residual branch F contributes little. Stacked, these identity paths carry the gradient to the bottom of very deep networks, which is why ResNets train at depths plain stacks cannot." }
   ] },
 
-  interview: { title: "Interview", sub: "The reference's Q4 and Q6", questions: [
+  interview: { title: "Interview", sub: "The Q4 and Q6", questions: [
     { level: "Core", q: "Explain batch norm. Why does it help?",
       strong: "Standardise each feature over the batch, then a learned γ and β; higher learning rates, less sensitivity to initialisation, a regularising noise; running averages at inference; breaks at batch size 1.",
       answer: [{ t: "p", text: "Batch norm normalises each feature's activations to zero mean and unit variance within the mini-batch, then applies a learned affine transform γx̂ + β so the network can recover any scale it needs. It helps because it keeps pre-activations at a stable scale at every layer, which smooths the loss landscape and allows higher learning rates; it reduces sensitivity to initialisation, since the weight scale is corrected every forward pass; and the mini-batch noise acts as a mild regulariser. At inference it uses running averages of the mean and variance rather than batch statistics. The gotcha is the batch dependence — it breaks with batch size 1 and degrades at small sizes — and the train/eval behaviour difference, which is why layer norm, being batch-independent, is used in transformers." }] },

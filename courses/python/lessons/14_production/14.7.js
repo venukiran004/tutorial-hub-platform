@@ -240,7 +240,7 @@ pip install --extra-index-url https://pypi.company.com/simple/ acme-lib
 
 # RIGHT -- one index, which proxies public packages.
 pip install --index-url https://pypi.company.com/simple/ acme-lib
-# The private index is authoritative and mirrors what it chooses to.
+# The private index is authoritative and Covers what it chooses to.
 
 # Or, if you must use both, scope explicitly (uv, pip 24.1+):
 [tool.uv.sources]

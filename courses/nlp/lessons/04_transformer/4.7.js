@@ -1,8 +1,5 @@
 /* ============================================================================
    LESSON 4.7 — Encoder and Decoder Blocks
-   Mirrors 02_Transformers_InDepth.md · §8. The reference's EncoderBlock and
-   DecoderBlock are run, the parameter split measured, and the residual
-   stream traced through a 12-block stack (scratchpad/nlp/n47.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.7",
@@ -23,7 +20,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The encoder block", id: "encoder" },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n47.py — the reference's EncoderBlock", code:
+    { t: "code", lang: "python", title: "scratchpad/nlp/n47.py — the EncoderBlock", code:
 "class EncoderBlock(nn.Module):\n    def __init__(self, d_model, n_heads, d_ff, dropout=0.1):\n        super().__init__()\n        self.attention = MultiHeadAttention(d_model, n_heads, dropout)\n        self.ffn = nn.Sequential(\n            nn.Linear(d_model, d_ff), nn.GELU(), nn.Dropout(dropout),\n            nn.Linear(d_ff, d_model), nn.Dropout(dropout))\n        self.norm1 = nn.LayerNorm(d_model)\n        self.norm2 = nn.LayerNorm(d_model)\n\n    def forward(self, x, src_mask=None):\n        # Pre-LN: normalise inside the branch, leave the residual clean\n        normed = self.norm1(x)\n        attn_out, _ = self.attention(normed, normed, normed, src_mask)\n        x = x + attn_out                    # residual\n        x = x + self.ffn(self.norm2(x))     # residual\n        return x",
       caption: "Two sublayers, each `x = x + SubLayer(LN(x))`. This is the Pre-LN form from lesson 4.6 — note the residual `x` is never itself normalised." },
 

@@ -1,16 +1,14 @@
 /* ============================================================================
    LESSON 1.1 — Neural Network Architecture
-   Mirrors 01_Neural_Network_Fundamentals.md · Key Definitions and §1
-   (The Perceptron, Multi-Layer Perceptron, Universal Approximation Theorem,
-   Parameter Count). The parameter-count example is checked in PyTorch.
+   The parameter-count example is checked in PyTorch.
    ========================================================================= */
 EC.receiveLesson({
   id: "1.1",
 
-  lede: "**A neural network is layers of neurons, each computing a weighted sum plus a bias and passing it through a non-linearity, with the weights adjusted during training until the network maps inputs to the outputs you want.** One neuron — the perceptron — draws a single straight boundary and cannot learn XOR; stack a hidden layer between input and output and any continuous function is within reach in principle. This lesson is the vocabulary the whole course uses, the perceptron and its limit, the multi-layer perceptron and the theorem behind it, and the arithmetic of counting a network's parameters — checked against PyTorch, where the reference's own example turns out to be 64 parameters off.",
+  lede: "**A neural network is layers of neurons, each computing a weighted sum plus a bias and passing it through a non-linearity, with the weights adjusted during training until the network maps inputs to the outputs you want.** One neuron — the perceptron — draws a single straight boundary and cannot learn XOR; stack a hidden layer between input and output and any continuous function is within reach in principle. This lesson is the vocabulary the whole course uses, the perceptron and its limit, the multi-layer perceptron and the theorem behind it, and the arithmetic of counting a network's parameters — checked against PyTorch, where the worked example turns out to be 64 parameters off.",
 
   objectives: [
-    "Define neuron, layer, activation, forward pass, loss, backpropagation and the other terms in the reference's key-definitions table, in your own words",
+    "Define neuron, layer, activation, forward pass, loss, backpropagation and the other terms in the key-definitions table, in your own words",
     "Write the perceptron as y = σ(wᵀx + b) and explain, with the four XOR points, why one unit cannot learn it and two hidden units can",
     "Write the layer equations z⁽ˡ⁾ = W⁽ˡ⁾a⁽ˡ⁻¹⁾ + b⁽ˡ⁾, a⁽ˡ⁾ = σ(z⁽ˡ⁾) and state what fully connected means",
     "State the universal approximation theorem and the three things it does not promise",
@@ -79,7 +77,7 @@ EC.receiveLesson({
 
     { t: "p", text: "The limitation is in the geometry. With a step or sigmoid activation, the unit's decision is whether **w**ᵀ**x** + b is above or below zero, and that is one straight line (in higher dimensions, one flat hyperplane). **A perceptron can only learn linearly separable functions.** AND and OR are separable — one line puts the true cases on one side. XOR is not: its positives, (0, 1) and (1, 0), sit on one diagonal and its negatives, (0, 0) and (1, 1), on the other, and any line leaves a positive on each side." },
 
-    { t: "code", lang: "python", title: "One unit against AND, OR and XOR — the reference's claim, checked",
+    { t: "code", lang: "python", title: "One unit against AND, OR and XOR — the claim, checked",
       code: `from sklearn.linear_model import Perceptron
 import numpy as np
 
@@ -198,7 +196,7 @@ output:         y  = h₁ − 2·h₂
 
     { t: "math", tex: "\\text{Params}(l) = n_{l-1}\\, n_l + n_l = n_l\\,(n_{l-1} + 1)" },
 
-    { t: "p", text: "The reference's example is the network [784, 256, 128, 10] — an MNIST classifier with two hidden layers. Worked layer by layer:" },
+    { t: "p", text: "The worked example is the network [784, 256, 128, 10] — an MNIST classifier with two hidden layers. Worked layer by layer:" },
 
     { t: "table", head: ["Layer", "Weights", "Biases", "Parameters"],
       rows: [
@@ -219,7 +217,7 @@ for name, p in net.named_parameters():
 total = sum(p.numel() for p in net.parameters())
 first = net[0].weight.numel() + net[0].bias.numel()
 print(f"total {total:,}   first layer share {first:,} / {total:,} = {first / total:.1%}")`,
-      caption: "PyTorch stores each Linear layer's weight as (out, in), so the shapes read (256, 784) and so on. The total is 235,146; the reference's text gives 201,024 for the first layer and 235,210 in total, which is a slip of arithmetic — 784 × 256 is 200,704, not 200,768. This is what checking is for." },
+      caption: "PyTorch stores each Linear layer's weight as (out, in), so the shapes read (256, 784) and so on. The total is 235,146; the text gives 201,024 for the first layer and 235,210 in total, which is a slip of arithmetic — 784 × 256 is 200,704, not 200,768. This is what checking is for." },
 
     { t: "out", text: `0.weight     (256, 784)    200,704
 0.bias       (256,)            256
@@ -284,7 +282,7 @@ print(f"{counts[0] / sum(counts):.1%}")           # 92.2%`,
       why: "The first layer has (input size) × (hidden width) weights; for 784 inputs and 256 units that is 200,704 of the network's 235,146 parameters. Later layers multiply two hidden widths, which are far smaller than the input." }
   ] },
 
-  interview: { title: "Interview", sub: "From the reference's deep-dive questions for this file, and what an interviewer asks next", questions: [
+  interview: { title: "Interview", sub: "From the deep-dive questions for this file, and what an interviewer asks next", questions: [
     { level: "Core", q: "Formalise a neural network mathematically. What are its parameters?",
       strong: "Layers of affine maps and element-wise non-linearities, with the weights and biases as the parameters.",
       answer: [{ t: "p", text: "A network is a function f_θ from ℝ^d_in to ℝ^d_out built from L layers: h⁽⁰⁾ = x, z⁽ˡ⁾ = W⁽ˡ⁾h⁽ˡ⁻¹⁾ + b⁽ˡ⁾, h⁽ˡ⁾ = σ(z⁽ˡ⁾), with W⁽ˡ⁾ of shape n_l × n_{l−1} and b⁽ˡ⁾ of length n_l. The output is h⁽ᴸ⁾. The parameters θ are all the W and b, and there are Σ_l (n_l n_{l−1} + n_l) of them. The activation σ is what stops the composition collapsing into one affine map." }] },

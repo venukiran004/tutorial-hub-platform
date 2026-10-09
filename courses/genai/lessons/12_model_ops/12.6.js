@@ -308,7 +308,7 @@ for th in np.arange(0.0, 1.001, 0.005):
         gap, best = d, float(th)
 print("matching the 0.78 abstain rate of %.3f gives %.3f on the new model,"
       % (target, best))
-print("a shift of %+.3f -- against the reference's illustrative -0.07." % (best - 0.78))
+print("a shift of %+.3f -- against the illustrative -0.07." % (best - 0.78))
 print("but it preserves a threshold that was already wrong, so the right target")
 print("is the (wrong-answer, wrong-abstain) PAIR, not the rate.")
 print()
@@ -341,7 +341,7 @@ now find the threshold on the NEW model giving the SAME abstain rate:
   (abstain rate 0.773 against a target of 0.773)
 
 so the recalibration measured here is 0.78 -> 0.795, a shift of +0.015.
-the reference's illustrative shift was 0.78 -> 0.71, i.e. -0.07.
+the illustrative shift was 0.78 -> 0.71, i.e. -0.07.
 
 
 -- and what happens if you DO NOT recalibrate --
@@ -405,7 +405,7 @@ centre of all-MiniLM-L6-v2's safe band: 0.514
 and in the other direction, centre of bge-small-en-v1.5's band: 0.657
   on all-MiniLM-L6-v2 that is wrong-abstain 0.083 -- it refuses answerable queries.
 
-so the reference's 'DON'T SKIP' is right and its framing is not:
+so the 'DON'T SKIP' is right and its framing is not:
   matching the ABSTAIN RATE preserves the volume of refusals, not their quality
   what you need to preserve is the (wrong-answer, wrong-abstain) PAIR
   and the shift can go in EITHER direction, by much more than 7 points

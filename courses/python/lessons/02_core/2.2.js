@@ -84,7 +84,7 @@ print(head, last)
 _, name, _ = ("id-1", "Ada", "2024-01-01")
 print(name)
 
-# Nested unpacking mirrors the structure
+# Nested unpacking Covers the structure
 (a, b), c = (1, 2), 3
 print(a, b, c)
 `,

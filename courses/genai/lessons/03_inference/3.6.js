@@ -184,7 +184,7 @@ def speculative(K):
 
     { t: "callout", kind: "warn", title: "The reference says \"up to 2–3×\" and does not say what that assumes",
       body: [
-        { t: "p", text: "The reference's section on this carries the line *\"Speedup: Up to 2-3x (depends on acceptance rate)\"*. That is achievable, and it is not reachable with the pair I used — I got 1.13×. The missing premise is the draft's *size*, not the acceptance rate." },
+        { t: "p", text: "The section on this carries the line *\"Speedup: Up to 2-3x (depends on acceptance rate)\"*. That is achievable, and it is not reachable with the pair I used — I got 1.13×. The missing premise is the draft's *size*, not the acceptance rate." },
         { t: "p", text: "Production pairs are 10–20× apart: Llama-2 7B drafting for 70B, or a 1B drafting for a 13B. At a 20× ratio `c = 0.05`, and my measured acceptance of 0.417 would give `(1 + 0.417×4) / (4×0.05 + 1) = 2.23×` — in the advertised range, from the same acceptance rate that produced 1.13× with my draft." },
         { t: "p", text: "So the quoted speedup is real and the framing is misleading: acceptance is the number everyone measures, and **the size ratio is the number that decides**. I would not have discovered this from the reference; I discovered it from a 0.71× result that had to be explained." }
       ] },
@@ -212,7 +212,7 @@ def speculative(K):
 
     { t: "p", text: "Speculative decoding is not an approximation. With greedy decoding the argument is immediate: accept the drafted token only when it equals the target's own argmax at that position, so every token in the output is the token the target would have produced alone. The draft model influences *speed* and nothing else." },
 
-    { t: "p", text: "With sampling it takes more care, and the reference's pseudocode shows the right test: accept with probability `min(1, p_target(t) / p_draft(t))`, and on rejection sample from the normalised positive part of `p_target − p_draft`. That procedure provably draws from the target's distribution. It is the same rejection-sampling identity used in Monte Carlo methods, and it is the reason the technique is considered safe rather than a quality trade." },
+    { t: "p", text: "With sampling it takes more care, and the pseudocode shows the right test: accept with probability `min(1, p_target(t) / p_draft(t))`, and on rejection sample from the normalised positive part of `p_target − p_draft`. That procedure provably draws from the target's distribution. It is the same rejection-sampling identity used in Monte Carlo methods, and it is the reason the technique is considered safe rather than a quality trade." },
 
     { t: "callout", kind: "note", title: "What my measurement actually implemented",
       body: [

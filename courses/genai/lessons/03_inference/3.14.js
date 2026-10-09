@@ -205,8 +205,8 @@ print(to_elo(fit_bt(cyc)))`,
     { t: "callout", kind: "tradeoff", title: "Human preference is not human judgement of correctness",
       body: [
         { t: "p", text: "An Arena voter sees two responses, often to a question they do not know the answer to, and picks the one that reads better. That selects for fluency, confident tone, structure and length as much as for accuracy \u2014 and a confidently wrong answer frequently reads better than a hedged correct one." },
-        { t: "p", text: "So Arena position is a good measure of whether people *like* a model's output and a weak measure of whether that output is right. It pairs naturally with a benchmark that checks correctness mechanically, which is why the reference's advice to combine MMLU, HumanEval and Arena is sound \u2014 each covers a different blind spot." },
-        { t: "p", text: "The reference's own framing of this is the part worth keeping: a model topping MMLU and ranking poorly on Arena is good at test-taking and poor at instruction-following; the reverse is fluent and factually unreliable. Neither diagnosis is available from one number." }
+        { t: "p", text: "So Arena position is a good measure of whether people *like* a model's output and a weak measure of whether that output is right. It pairs naturally with a benchmark that checks correctness mechanically, which is why the advice to combine MMLU, HumanEval and Arena is sound \u2014 each covers a different blind spot." },
+        { t: "p", text: "The framing of this is the part worth keeping: a model topping MMLU and ranking poorly on Arena is good at test-taking and poor at instruction-following; the reverse is fluent and factually unreliable. Neither diagnosis is available from one number." }
       ] },
 
     { t: "exercise", kind: "analysis", title: "Decide whether you can order two models", difficulty: "core", minutes: 25,

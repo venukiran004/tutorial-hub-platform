@@ -34,7 +34,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "Schema validity is deterministic and free \u2014 the call either matches the tool\u2019s signature or it does not, and 8.4 noted that a constrained schema turns a silent failure into a detectable one." },
         { t: "p", text: "Semantic sensibility is not. A search call with a syntactically perfect query that asks the wrong question passes every schema check and fails the task. That needs either a gold trace to compare against or a judge, which puts it back on 8.6\u2019s ladder with 8.6\u2019s biases." },
-        { t: "p", text: "So the cheap half should be a hard assertion in CI and the expensive half a sampled judgement. That split is the practical shape of agent evaluation, and it mirrors 8.8\u2019s reference-free versus reference-based division." }
+        { t: "p", text: "So the cheap half should be a hard assertion in CI and the expensive half a sampled judgement. That split is the practical shape of agent evaluation, and it Covers 8.8\u2019s reference-free versus reference-based division." }
       ] },
 
     { t: "code", lang: "python", title: "the deterministic half, as assertions", code: `assert "calculator" in tools_used                 # tool selection

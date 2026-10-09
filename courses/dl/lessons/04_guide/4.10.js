@@ -1,14 +1,12 @@
 /* ============================================================================
    LESSON 4.10 — Project: Time-Series Forecasting
-   Mirrors rnn-lstm-gru-transformer-guide.md · §10. The reference's setup is
-   run, plus the baselines it omits. The random-split leakage test gave a
-   smaller effect than expected and is reported as measured
-   (scratchpad/dl/d410.py).
+   The random-split leakage test gave a smaller effect than expected and is
+   reported as measured (scratchpad/dl/d410.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.10",
 
-  lede: "**The last project, and the one where the baselines matter most.** Forecasting invites self-deception: a model that predicts tomorrow's price as roughly today's looks impressive on a plot and is worth nothing. This lesson runs the reference's RNN, LSTM and GRU comparison, then adds the two baselines it omits — and finds the LSTM reaching RMSE 3.105 against an **irreducible noise floor of 3.000**, which is about as close to optimal as a model can get.",
+  lede: "**The last project, and the one where the baselines matter most.** Forecasting invites self-deception: a model that predicts tomorrow's price as roughly today's looks impressive on a plot and is worth nothing. This lesson runs the RNN, LSTM and GRU comparison, then adds the two baselines it omits — and finds the LSTM reaching RMSE 3.105 against an **irreducible noise floor of 3.000**, which is about as close to optimal as a model can get.",
 
   objectives: [
     "Build sliding-window sequences for forecasting and split them temporally",

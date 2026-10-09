@@ -47,7 +47,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "numbers", text: "The loss on numbers",
       sub: "Checking the reference" },
 
-    { t: "code", lang: "python", title: "g76.py \u00a7A \u2014 the reference's worked pair, \u03b2 = 0.1", code: `rw = beta * (log_pi_w - log_ref_w)      # implicit reward, chosen
+    { t: "code", lang: "python", title: "g76.py \u00a7A \u2014 the worked pair, \u03b2 = 0.1", code: `rw = beta * (log_pi_w - log_ref_w)      # implicit reward, chosen
 rl = beta * (log_pi_l - log_ref_l)      # implicit reward, rejected
 margin = rw - rl`,
       out: `  chosen   : log pi -12.0, log ref -13.0 -> ratio +1.0, implicit reward 0.10
@@ -289,7 +289,7 @@ print("reward accuracy (margin > 0): %.3f" % np.mean(np.array(margins) > 0))`,
     "**The KL-constrained optimum is an exponentially tilted reference policy**, and inverting it gives the reward as \u03b2 times a log-ratio plus \u03b2 log Z.",
     "**Z cancels because Bradley-Terry sees only differences** \u2014 and that is the same fact as 7.4's unidentifiable additive constant, seen from the other side.",
     "**What remains is supervised learning on four log-probabilities**, with no reward model, no critic and no sampling in the loop.",
-    "**The reference's worked numbers check out exactly**: margin 0.05 \u2192 0.6685, margin 1.2 \u2192 0.2633, margin \u22120.8 \u2192 1.1711.",
+    "**The worked numbers check out exactly**: margin 0.05 \u2192 0.6685, margin 1.2 \u2192 0.2633, margin \u22120.8 \u2192 1.1711.",
     "**DPO does not require the rejected probability to fall** \u2014 only to rise less than the chosen one's, and in practice both often fall.",
     "**So log chosen and rejected rewards separately**: a growing margin with both rewards collapsing is a model losing confidence in everything.",
     "**\u03b2 scales the margin before the sigmoid**, so small \u03b2 sits at near-maximal gradient (0.4988 at \u03b2 = 0.01) and drifts far; large \u03b2 saturates and holds tight.",
@@ -314,7 +314,7 @@ print("reward accuracy (margin > 0): %.3f" % np.mean(np.array(margins) > 0))`,
         answer: 1,
         why: "Z(x) is a sum over every possible completion and is completely intractable \u2014 it is not near 1, not constant across prompts, and not estimated. The cancellation is exact and structural: both the chosen and rejected rewards carry the same +\u03b2 log Z(x) term, so the difference is free of it. This is the same property that makes a reward model's absolute scale unidentifiable, which means the uncomputable term is precisely the one that was never needed." },
 
-      { stem: "In the reference's worked example, the policy assigns the rejected response a higher log-probability than the reference does (ratio +0.5). Is this a problem?",
+      { stem: "In the worked example, the policy assigns the rejected response a higher log-probability than the reference does (ratio +0.5). Is this a problem?",
         options: [
           "Yes \u2014 the rejected response's probability must decrease for DPO to be working",
           "No \u2014 DPO requires only that the chosen response's log-ratio rise more than the rejected one's; both can rise, and in practice both often fall",

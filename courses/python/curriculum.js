@@ -500,7 +500,7 @@
             summary: "Password hashing, sessions vs JWT, OAuth2 flows, scopes, and the security mistakes that show up in code review.",
             keywords: ["auth", "jwt", "oauth2", "hashing", "bcrypt", "scope", "csrf", "secrets"] },
           { id: "12.9", title: "Backend System Design in Python", difficulty: "advanced", minutes: 44, tier: "should",
-            summary: "The reference's design guide: the approach, capacity estimation run on a Twitter-sized service, the patterns from monolith to sharding, queues and caches with their failure modes, CAP and sagas, resilience, and the four worked examples.",
+            summary: "The design guide: the approach, capacity estimation run on a Twitter-sized service, the patterns from monolith to sharding, queues and caches with their failure modes, CAP and sagas, resilience, and the four worked examples.",
             keywords: ["system design", "capacity estimation", "api gateway", "event-driven", "cqrs", "cache stampede", "cap", "saga", "outbox", "circuit breaker", "url shortener", "rate limiter"] },
           { id: "12.10", title: "Auth in Depth: OAuth2, Authorisation Models and the OWASP Top 10", difficulty: "advanced", minutes: 36, tier: "should",
             summary: "secrets and timing-safe comparison, OAuth2 grant types and OIDC, RBAC, ABAC, scopes and the object-level check, service-to-service auth, transport defences, and the OWASP Top 10 mapped to Python.",
@@ -538,7 +538,7 @@
             summary: "Alembic, zero-downtime schema changes, pool sizing, and the connection exhaustion incident.",
             keywords: ["alembic", "migration", "zero downtime", "pool", "pgbouncer", "connection"] },
           { id: "13.8", title: "Sixteen Production Scenarios: FastAPI, Threads and the ORM", difficulty: "advanced", minutes: 40, tier: "should",
-            summary: "The reference's incident collection — blocked event loop, shared session, exhausted pool, MissingGreenlet, oversold inventory, lost background tasks, duplicate charges, deadlocks, lost updates, leaking caches, OOM exports, dropped shutdowns — as symptom, diagnosis and fix under five rules.",
+            summary: "The incident collection — blocked event loop, shared session, exhausted pool, MissingGreenlet, oversold inventory, lost background tasks, duplicate charges, deadlocks, lost updates, leaking caches, OOM exports, dropped shutdowns — as symptom, diagnosis and fix under five rules.",
             keywords: ["event loop", "run_in_threadpool", "session", "pool exhaustion", "missinggreenlet", "selectinload", "race condition", "idempotency", "deadlock", "optimistic locking", "backgroundtasks", "graceful shutdown"] }
         ]
       },
@@ -655,7 +655,7 @@
             summary: "From brute force to memoised to tabulated, with a repeatable method rather than pattern recognition.",
             keywords: ["backtracking", "dp", "memoization", "tabulation", "state", "subproblem"] },
           { id: "16.7", title: "Algorithm Paradigms: Choosing the Approach", difficulty: "advanced", minutes: 38, tier: "should",
-            summary: "Brute force, divide and conquer, greedy, dynamic programming, backtracking and randomised algorithms — each with its signature problem and the case where it fails — plus the reference's decision guide.",
+            summary: "Brute force, divide and conquer, greedy, dynamic programming, backtracking and randomised algorithms — each with its signature problem and the case where it fails — plus the decision guide.",
             keywords: ["brute force", "divide and conquer", "greedy", "dynamic programming", "backtracking", "randomized", "monte carlo", "n-queens", "coin change", "merge sort", "paradigm"] }
         ]
       },

@@ -1,9 +1,8 @@
 /* ============================================================================
    LESSON 5.3 — Inference Optimisations
-   Mirrors 02_Transformers_InDepth.md · §14. Speculative decoding is
-   implemented and its acceptance rate measured (it came out SLOWER than
-   greedy on CPU — §03), and the quantisation arithmetic is verified
-   (scratchpad/nlp/n53.py).
+   Speculative decoding is implemented and its acceptance rate measured (it
+   came out SLOWER than greedy on CPU — §03), and the quantisation
+   arithmetic is verified (scratchpad/nlp/n53.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "5.3",

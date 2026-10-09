@@ -1,7 +1,6 @@
 /* ============================================================================
    LESSON 6.9 — Robustness, Deployment and Pitfalls
-   Mirrors 08_Audio_Speech_Processing.md · §16, §17, §18. Closes the audio
-   module with the things that break in production.
+   Closes the audio module with the things that break in production.
    ========================================================================= */
 EC.receiveLesson({
   id: "6.9",

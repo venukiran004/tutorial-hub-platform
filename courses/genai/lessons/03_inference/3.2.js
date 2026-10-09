@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "3.2",
 
-  lede: "The KV cache is the optimisation that makes generation tractable at all — without it, every token requires recomputing attention over the whole sequence. Measured here, it is worth **4.94×** on a short generation and much more on a long one. It is also the thing that limits how many requests a server can hold at once, and the reference's own worked example of its size is wrong by a factor of two, which is worth catching because capacity planning is built on exactly that arithmetic.",
+  lede: "The KV cache is the optimisation that makes generation tractable at all — without it, every token requires recomputing attention over the whole sequence. Measured here, it is worth **4.94×** on a short generation and much more on a long one. It is also the thing that limits how many requests a server can hold at once, and the worked example of its size is wrong by a factor of two, which is worth catching because capacity planning is built on exactly that arithmetic.",
 
   objectives: [
     "Explain what is cached and why it converts O(n²) work into O(n)",
@@ -20,7 +20,7 @@ EC.receiveLesson({
 
     { t: "p", text: "At each decode step the model attends over every previous token. The query comes from the current token, but the keys and values come from *all* of them — and crucially, the key and value for token 7 are the same at step 8 as they were at step 50. Recomputing them is pure waste." },
 
-    { t: "code", lang: "text", title: "The reference's illustration", code: `Without KV Cache: recompute attention for ALL previous tokens at each step
+    { t: "code", lang: "text", title: "The illustration", code: `Without KV Cache: recompute attention for ALL previous tokens at each step
 With KV Cache: store and reuse K, V from previous steps
 
 Step 1: Q1, K1, V1                   -> store K1, V1 in cache
@@ -28,7 +28,7 @@ Step 2: Q2, K=[K1,K2], V=[V1,V2]     -> append K2, V2 to cache
 Step 3: Q3, K=[K1,K2,K3], V=[...]    -> append K3, V3
 
 Saves: O(n^2) -> O(n) compute per step (but O(n) memory)`,
-      caption: "From 02_LLM_Inference_Optimization.md section 2. The trade in the last line is the whole lesson: compute saved, memory spent — and memory is what runs out." },
+      caption: "From the reference notes section 2. The trade in the last line is the whole lesson: compute saved, memory spent — and memory is what runs out." },
 
     { t: "code", lang: "python", title: "g31.py — what it is worth, measured", code: `# without the cache: recompute the whole sequence every step
 seq = sub.clone()
@@ -56,7 +56,7 @@ for _ in range(N_NEW):
         { t: "p", text: "This is why no production system has an option to disable it. The KV cache is not an optimisation you choose; it is how decode works, and everything in this lesson is about managing its cost." }
       ] },
 
-    { t: "h2", n: "02", id: "size", text: "How big it is, and the reference's error",
+    { t: "h2", n: "02", id: "size", text: "How big it is, and the error",
       sub: "Per request, growing with every token" },
 
     { t: "math", tex: "\\text{KV bytes} = 2 \\times n_{\\text{layers}} \\times n_{\\text{heads}} \\times d_{\\text{head}} \\times \\text{seq\\_len} \\times \\text{bytes per value}" },
@@ -77,9 +77,9 @@ for _ in range(N_NEW):
       hl: [4, 5],
       caption: "The GQA claim checks out exactly: 8 groups against 64 heads is 8.0×. The row above it is where the trouble is." },
 
-    { t: "callout", kind: "trap", title: "The reference's worked example is wrong by a factor of two",
+    { t: "callout", kind: "trap", title: "The worked example is wrong by a factor of two",
       body: [
-        { t: "p", text: "02_LLM_Inference_Optimization.md section 1 gives: *\"LLaMA-2 7B, seq_len=4096 … KV Cache (per request): 2 × 32 × 32 × 128 × 4096 × 2 = ~1 GB\"* and then *\"Batch of 16: ~16 GB just for KV cache!\"*" },
+        { t: "p", text: "The reference notes section 1 gives: *\"LLaMA-2 7B, seq_len=4096 … KV Cache (per request): 2 × 32 × 32 × 128 × 4096 × 2 = ~1 GB\"* and then *\"Batch of 16: ~16 GB just for KV cache!\"*" },
         { t: "p", text: "Running that multiplication gives **2.15 GB**, not ~1 GB — and a batch of 16 is **34.36 GB**, not ~16 GB. The formula is right and the arithmetic in the comment is not." },
         { t: "p", text: "This matters more than a typo usually would, because capacity planning is this calculation. A server sized on \"~1 GB per request\" will hold half the concurrent requests the plan assumed, and the failure mode is out-of-memory under load rather than a gradual slowdown. Run the multiplication yourself for your own model." }
       ] },
@@ -87,7 +87,7 @@ for _ in range(N_NEW):
     { t: "code", lang: "python", title: "g31.py — the check", code: `ex = kv_bytes(32, 32, 128, 4096)
 print("'2 x 32 x 32 x 128 x 4096 x 2' = %.2f GB (it says ~1 GB)" % (ex / 1e9))
 print("batch of 16: %.2f GB (it says ~16 GB)" % (ex * 16 / 1e9))`,
-      out: `  and the reference's own worked example, checked:
+      out: `  and the worked example, checked:
     'LLaMA-2 7B, seq 4096: 2 x 32 x 32 x 128 x 4096 x 2' = 2.15 GB (it says ~1 GB)
     batch of 16: 34.36 GB (it says ~16 GB)`,
       caption: "Both figures in the reference are about half the correct value." },
@@ -226,7 +226,7 @@ configuration                   seq   GB/request   concurrent
     "Measured: **4.94× faster** for 24 tokens after a 128-token prompt. The ratio grows with both prompt and output length, into the hundreds at realistic sizes.",
     "No production system lets you disable it. **The KV cache is how decode works**, and this lesson is about managing its cost.",
     "Size is `2 × layers × heads × head_dim × seq_len × bytes` — the leading 2 for K and V, the last for the dtype.",
-    "**The reference's worked example is wrong by a factor of two**: it gives ~1 GB for Llama-2 7B at 4,096 tokens where the arithmetic gives **2.15 GB**, and ~16 GB for a batch of 16 where it is **34.36 GB**.",
+    "**The worked example is wrong by a factor of two**: it gives ~1 GB for Llama-2 7B at 4,096 tokens where the arithmetic gives **2.15 GB**, and ~16 GB for a batch of 16 where it is **34.36 GB**.",
     "That matters because **capacity planning is this calculation**, and sizing on half the real figure produces out-of-memory under load rather than gradual slowdown.",
     "**The cache, not the weights, limits concurrency.** Weights are paid once; the cache is per request and grows with sequence length — 115 concurrent at 1K context against 3 at 32K.",
     "A 32K request occupies the cache of ten 1K requests, so **long context costs concurrency as well as tokens** — which is why long-context pricing is often disproportionate.",

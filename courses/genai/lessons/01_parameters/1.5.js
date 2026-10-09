@@ -77,7 +77,7 @@ print("asking for max_tokens=4096 alongside it needs %d of 128000" % (n + 4096))
 
   a 90000-character document is 20001 tokens -- 15.6% of a 128K window
   asking for max_tokens=4096 alongside it needs 24097 of 128000`,
-      caption: "Context figures as quoted in 01_LLM_Parameters.md §5, which dates them to 2024–2025 — check them against the provider before relying on them. The document arithmetic is measured here with tiktoken." },
+      caption: "Context figures as quoted in the reference notes §5, which dates them to 2024–2025 — check them against the provider before relying on them. The document arithmetic is measured here with tiktoken." },
 
     { t: "callout", kind: "trap", title: "A large window is not an invitation to fill it",
       body: [
@@ -106,7 +106,7 @@ for name, s in samples:
   uuids             148       76       76      1.95      0.05
   french            236       73       57      3.23      0.49
 
-the reference's claim: 1 token ~ 4 characters (English) ~ 0.75 words
+the claim: 1 token ~ 4 characters (English) ~ 0.75 words
   measured on english prose: 4.43 chars/token, 0.89 words/token
   'Hello, world!' encodes to 4 cl100k tokens: ['Hello', ',', ' world', '!']`,
       hl: [5, 6, 7],
@@ -141,7 +141,7 @@ the reference's claim: 1 token ~ 4 characters (English) ~ 0.75 words
         ["`tool_calls`", "The model wants to call a tool and is waiting", "Execute and send the result back (1.9)"],
         ["`content_filter`", "A safety system blocked the response", "Surface it; do not retry blindly (11.13)"]
       ],
-      caption: "From 01_LLM_Parameters.md §16.2. The first two are the ones every client must handle; the second is the one that gets skipped." },
+      caption: "From the reference notes §16.2. The first two are the ones every client must handle; the second is the one that gets skipped." },
 
     { t: "code", lang: "python", title: "g13.py — the cap, from inside the loop", code: `ids = tok("Write a short poem about the sea.", return_tensors="pt").input_ids
 

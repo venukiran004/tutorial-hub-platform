@@ -1,8 +1,6 @@
 /* ============================================================================
    INTERVIEW I2.1 — Algorithms & Coding · Machine Learning Fundamentals · Deep Learning & Neural Networks
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/05_Deep_Learning/00_Interview_Bank/02_Glassdoor_AI_Engineer.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "i2.1",

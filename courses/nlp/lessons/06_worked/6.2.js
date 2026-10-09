@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 6.2 — Self-Attention on Real Numbers
-   Mirrors 02a_Transformer_Worked_Example.md · §④ and §④½. Both versions are
-   recomputed: with identity projections "sat" attends to itself at 0.510;
-   with genuine W_Q, W_K it attends to "cat" at 0.5149 (scratchpad/nlp/n61.py).
+   Both versions are recomputed: with identity projections "sat" attends to
+   itself at 0.510; with genuine W_Q, W_K it attends to "cat" at 0.5149
+   (scratchpad/nlp/n61.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "6.2",
@@ -112,7 +112,7 @@ EC.receiveLesson({
     "With identity projections the score matrix is symmetric, because Q = K makes score[i][j] = z_i · z_j.",
     "That makes a token attend mostly to itself: 'sat' gave 0.5101 to itself, since a vector's dot product with itself is its squared norm.",
     "The causal mask makes future weights exactly 0, and the first token's weight of 1.0000 is forced rather than chosen.",
-    "Every number in the reference's identity walkthrough reproduces: weights [0.244, 0.246, 0.510] and attn_sat [1.42, 0.92, 0.50, 1.00].",
+    "Every number in the identity walkthrough reproduces: weights [0.244, 0.246, 0.510] and attn_sat [1.42, 0.92, 0.50, 1.00].",
     "With genuine W_Q and W_K — differing only by swapping two dimensions — 'sat' puts 51.49% on 'cat', its subject, and only 22.0% on itself.",
     "That asymmetry is the whole mechanism: it lets a token look for something other than a copy of itself.",
     "The blend uses V, not K or X, so a token can advertise one thing and deliver another — here W_K reads dims 0,1 and W_V reads dims 2,3.",

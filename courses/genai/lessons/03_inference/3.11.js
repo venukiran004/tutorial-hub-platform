@@ -214,7 +214,7 @@ owners = {rid for _, rid, _ in worst[:int(0.01 * len(all_gaps)) + 1]}`,
       ] },
 
     { t: "h2", n: "06", id: "monitoring", text: "What to put on the dashboard",
-      sub: "And what the reference's thresholds get wrong" },
+      sub: "And what the thresholds get wrong" },
 
     { t: "table",
       head: ["Signal", "Alert on", "Why this one"],

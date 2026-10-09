@@ -1,8 +1,5 @@
 /* ============================================================================
    LESSON 2.10 — A CNN from Scratch in NumPy
-   Mirrors 02_CNNs.md · §11. The reference's Conv2D is run and checked against
-   nn.Conv2d (exact), and the backward pass it declares but never writes is
-   implemented and verified against autograd (scratchpad/dl/d210.py, d210b.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.10",
@@ -121,7 +118,7 @@ EC.receiveLesson({
     nn.Conv2d  (float32)   :    587.6 ms
     PyTorch is   1.3x faster` },
 
-    { t: "callout", kind: "insight", title: "The reference's implementation is better than 'from scratch' suggests",
+    { t: "callout", kind: "insight", title: "The implementation is better than 'from scratch' suggests",
       body: [{ t: "p", text: "A 13.7× gap at small sizes narrowing to 1.3× at large ones is not what people expect, and the reason is that this NumPy version is already well vectorised. The Python loop runs `H_out × W_out` times — 1,024 iterations for a 32×32 output — and each iteration is a single large `tensordot` that BLAS executes efficiently across the whole batch and all channels. A genuinely naive implementation with six nested Python loops over batch, channels and kernel positions would be thousands of times slower. So the honest lesson is that the framework's advantage on CPU is real but moderate; the transformative gains come from the GPU, from fused kernels, and from autograd writing the backward pass you just spent twenty lines on." }] },
 
     { t: "exercise", kind: "practice", title: "Complete the library", difficulty: "advanced", minutes: 50,
@@ -148,7 +145,7 @@ EC.receiveLesson({
     "Verified against autograd: dW 1.1e-14, db 7.1e-15, dX 8.9e-16 — float64 round-off.",
     "Using `=` instead of `+=` inside the backward loop silently gives the gradient from one position only.",
     "He init uses `fan_in = C_in · k²`; biases start at zero.",
-    "PyTorch is 13.7× faster at small sizes but only 1.3× at large ones — the reference's tensordot is already well vectorised."
+    "PyTorch is 13.7× faster at small sizes but only 1.3× at large ones — the tensordot is already well vectorised."
   ],
 
   quiz: { title: "Check your understanding", questions: [

@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 8.3 — Jaccard and Cosine Similarity
-   Mirrors 04_Fuzzy_Matching.md · §4-5. Word Jaccard scores the typo pair at
-   exactly 0.0000 where edit distance scored 0.8000 — each family fails
-   precisely where the other succeeds (§04) (scratchpad/nlp/n83.py).
+   Word Jaccard scores the typo pair at exactly 0.0000 where edit distance
+   scored 0.8000 — each family fails precisely where the other succeeds
+   (§04) (scratchpad/nlp/n83.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "8.3",

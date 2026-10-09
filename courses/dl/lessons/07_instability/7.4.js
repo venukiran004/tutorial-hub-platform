@@ -1,6 +1,5 @@
 /* ============================================================================
    LESSON 7.4 — Monitoring, Decision Flow and the Production Checklist
-   Mirrors 30_DL_Training_Instability.md · Monitoring through Checklist.
    Closes the deep learning learn track.
    ========================================================================= */
 EC.receiveLesson({

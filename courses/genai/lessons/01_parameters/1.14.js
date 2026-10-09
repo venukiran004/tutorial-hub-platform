@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "1.14",
 
-  lede: "Token counting is the arithmetic underneath every other lesson in this module — the budget in 1.5, the cache saving in 1.13, the bill in 11.7. It is also where a small, systematic error compounds: the chat envelope nobody counts, the tokenizer that is right for the wrong model, and a reference figure that contradicts the reference's own price table by a factor of two. This lesson counts everything properly and builds the estimator you would actually put in a codebase.",
+  lede: "Token counting is the arithmetic underneath every other lesson in this module — the budget in 1.5, the cache saving in 1.13, the bill in 11.7. It is also where a small, systematic error compounds: the chat envelope nobody counts, the tokenizer that is right for the wrong model, and a reference figure that contradicts the price table by a factor of two. This lesson counts everything properly and builds the estimator you would actually put in a codebase.",
 
   objectives: [
     "Count tokens exactly with the right encoding for a given model",
@@ -115,9 +115,9 @@ for m, (i, o) in PRICES.items():
   gpt-4o-mini           0.15       0.60     0.000450
   claude-sonnet         3.00      15.00     0.010500
   o3                   10.00      40.00     0.030000`,
-      caption: "Rates as quoted in 01_LLM_Parameters.md §14 and §16.1, which date them to 2024–2025. A 1,000-in / 500-out call ranges from $0.00045 to $0.03 — a factor of 67 across four models for identical work." },
+      caption: "Rates as quoted in the reference notes §14 and §16.1, which date them to 2024–2025. A 1,000-in / 500-out call ranges from $0.00045 to $0.03 — a factor of 67 across four models for identical work." },
 
-    { t: "p", text: "The reference's own worked example checks out: `(1000 × 2.50 + 500 × 10.00) / 1,000,000` = $0.0075, which is what it prints. One of its *claims*, however, does not:" },
+    { t: "p", text: "The worked example checks out: `(1000 × 2.50 + 500 × 10.00) / 1,000,000` = $0.0075, which is what it prints. One of its *claims*, however, does not:" },
 
     { t: "code", lang: "python", title: "g18.py — checking a claim against its own table", code: `print("the reference claims GPT-4o-mini is '30x cheaper' than GPT-4o.")
 print("  from its own price table: input %.2f/%.2f = %.1fx, output %.2f/%.2f = %.1fx"
@@ -126,7 +126,7 @@ print("  from its own price table: input %.2f/%.2f = %.1fx, output %.2f/%.2f = %
   from its own price table: input 2.50/0.15 = 16.7x, output 10.00/0.60 = 16.7x
   so the factor is 16.7x on both, not 30x.`,
       hl: [1, 2, 3],
-      caption: "01_LLM_Parameters.md says \"GPT-4o-mini is 30x cheaper than GPT-4o\" in both §13 and §17, and lists the prices that make it 16.7× in §16.1. The ratio is the same on input and output, so there is no mix of the two that produces 30." },
+      caption: "the reference says \"GPT-4o-mini is 30x cheaper than GPT-4o\" in both §13 and §17, and lists the prices that make it 16.7× in §16.1. The ratio is the same on input and output, so there is no mix of the two that produces 30." },
 
     { t: "callout", kind: "trap", title: "Model prices go stale faster than the documents that quote them",
       body: [
@@ -259,7 +259,7 @@ residuals: [0.14, -0.21, 0.07]`,
     "The envelope scales with the **number** of messages, not their length, so it hurts most on conversations made of many short turns.",
     "Reconcile your counter against `usage.prompt_tokens` once per model family. It is one request and it closes a class of silent arithmetic error.",
     "The envelope constant is a property of the **template and the tokenizer together** — pairing a chat template with a tokenizer that lacks its special tokens fitted at 16.36 per message plus 9.50 fixed, not 3 and 3.",
-    "**The reference's \"30× cheaper\" claim contradicts its own price table**, which gives 2.50/0.15 = 16.7× on input and 10.00/0.60 = 16.7× on output. Verify a ratio before repeating it.",
+    "**The \"30× cheaper\" claim contradicts its own price table**, which gives 2.50/0.15 = 16.7× on input and 10.00/0.60 = 16.7× on output. Verify a ratio before repeating it.",
     "Estimation errors in metering are **systematically optimistic** — the envelope, the tools and the schema are all things a naive counter forgets, and all of them add tokens."
   ],
 

@@ -61,7 +61,7 @@ for label, prefix in PERSONAS.items():
 
     { t: "p", text: "\"You are a world-class expert\" does almost nothing, because it says nothing the model can act on — there is no such thing as the world-class-expert register. A persona earns its tokens when it implies *specific* behaviour." },
 
-    { t: "code", lang: "python", title: "roles.py — the reference's examples", code: `# Expert role: the useful parts are the four bullets, not the first sentence
+    { t: "code", lang: "python", title: "roles.py — the worked examples", code: `# Expert role: the useful parts are the four bullets, not the first sentence
 system = """You are a senior machine learning engineer at Google
 with 10 years of experience. You specialize in recommendation systems
 and have published papers at NeurIPS and ICML.
@@ -77,7 +77,7 @@ system = """You are a patient CS professor explaining concepts
 to undergraduate students. Use analogies, simple language,
 and build up from basics. Avoid jargon unless you define it first."""`,
       hl: [6, 7, 8, 9, 10],
-      caption: "From 04_Prompt_Engineering.md §6. In the first example the persona sentence is scene-setting and the four bullets are the instruction — and the bullets would work without the persona, while the persona would not work without the bullets." },
+      caption: "From the reference notes §6. In the first example the persona sentence is scene-setting and the four bullets are the instruction — and the bullets would work without the persona, while the persona would not work without the bullets." },
 
     { t: "ladder", title: "From flattery to specification", rungs: [
       { level: "bad", label: "Pure flattery",
@@ -122,11 +122,11 @@ these systems in production.
     { t: "h2", n: "04", id: "multi", text: "Multi-perspective prompting",
       sub: "When one role is too narrow for the question" },
 
-    { t: "code", lang: "python", title: "multi.py — the reference's pattern", code: `prompt = """Evaluate this ML architecture from three perspectives:
+    { t: "code", lang: "python", title: "multi.py — the pattern", code: `prompt = """Evaluate this ML architecture from three perspectives:
 1. As a ML researcher: theoretical soundness and novelty
 2. As a ML engineer: implementation complexity and scalability
 3. As a product manager: business impact and timeline"""`,
-      caption: "From 04_Prompt_Engineering.md §6. Three conditioning signals in one call, each labelled — which also makes the output naturally structured." },
+      caption: "From the reference notes §6. Three conditioning signals in one call, each labelled — which also makes the output naturally structured." },
 
     { t: "p", text: "This works for a reason worth naming: it forces the model to produce considerations it would otherwise have to choose between. A single call asked for \"an evaluation\" will pick a register and stay in it, and the concerns of the other two roles simply will not appear. Asking for all three makes the omission impossible." },
 

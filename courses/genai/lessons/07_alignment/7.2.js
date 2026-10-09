@@ -32,7 +32,7 @@ EC.receiveLesson({
       { k: "D \u2248 20N", v: "The compute-optimal ratio \u2014 about 20 tokens per parameter. This is the Chinchilla result and it replaced an earlier consensus that models should be much larger relative to their data." }
     ] },
 
-    { t: "code", lang: "python", title: "g72.py \u00a7A \u2014 the reference's worked example, checked", code: `N = 7e9
+    { t: "code", lang: "python", title: "g72.py \u00a7A \u2014 the worked example, checked", code: `N = 7e9
 D = 20 * N
 flops = 6 * N * D`,
       out: `  a 7B model, compute-optimal at 20 tokens/param
@@ -40,7 +40,7 @@ flops = 6 * N * D`,
   FLOPs  = 6 x N x D     = 5.88e+21
   reference says ~5.9e21 -> MATCHES`,
       hl: [4],
-      caption: "140 billion tokens and 5.88 \u00d7 10\u00b2\u00b9 FLOPs. The reference's arithmetic is correct." },
+      caption: "140 billion tokens and 5.88 \u00d7 10\u00b2\u00b9 FLOPs. The arithmetic is correct." },
 
     { t: "callout", kind: "good", title: "Worth checking rather than trusting",
       body: [
@@ -232,7 +232,7 @@ for per_day in (1e6, 1e9, 1e12):
 
   takeaways: [
     "**Two relations carry every scaling question**: training FLOPs \u2248 6ND, and compute-optimal D \u2248 20N \u2014 about twenty tokens per parameter.",
-    "**The reference's worked examples check out**: a 7B optimally trained is 140B tokens and 5.88 \u00d7 10\u00b2\u00b9 FLOPs; Llama-3 8B at 15T is 1,875 tokens/param and 93.8\u00d7 Chinchilla.",
+    "**The worked examples check out**: a 7B optimally trained is 140B tokens and 5.88 \u00d7 10\u00b2\u00b9 FLOPs; Llama-3 8B at 15T is 1,875 tokens/param and 93.8\u00d7 Chinchilla.",
     "**Inference is \u22482N FLOPs per generated token** \u2014 it scales with model size and is entirely independent of how many tokens the model was trained on.",
     "**That asymmetry is the whole over-training argument**: training is a one-off, inference is a tax paid for the life of the product.",
     "**The premium is larger than usually implied** \u2014 over-training an 8B to 15T tokens is 7.2 \u00d7 10\u00b2\u00b3 FLOPs against 5.88 \u00d7 10\u00b2\u00b3 for a Chinchilla-optimal 70B, so it costs 1.22\u00d7 *more* to train.",

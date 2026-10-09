@@ -1,8 +1,7 @@
 /* ============================================================================
    LESSON 3.6 — Contextual Embeddings and ELMo
-   Mirrors 01_NLP_Notes.md · §22. The static-versus-contextual claim is
-   measured layer by layer inside BERT, where layer 0 IS the static table
-   (scratchpad/nlp/n36.py).
+   The static-versus-contextual claim is measured layer by layer inside
+   BERT, where layer 0 IS the static table (scratchpad/nlp/n36.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.6",

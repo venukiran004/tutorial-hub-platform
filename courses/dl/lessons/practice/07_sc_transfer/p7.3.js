@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P7.3 — Transfer, Self-Supervised and Meta-Learning · 3
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/05_Deep_Learning/Practice/06_Transfer_SelfSupervised_MetaLearning.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p7.3",

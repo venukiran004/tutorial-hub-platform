@@ -69,7 +69,7 @@ candidate : the cat sat on mat          (5 unigrams, 4 bigrams)`,
     return m[-1][-1]`,
       out: `  ROUGE-L LCS 5  recall 0.8333  precision 1.0000  F1 0.9091  OK`,
       hl: [5, 6],
-      caption: "LCS of 5, matching ROUGE-1 here \u2014 because the candidate's words appear in the reference's order." },
+      caption: "LCS of 5, matching ROUGE-1 here \u2014 because the candidate's words appear in the order." },
 
     { t: "callout", kind: "good", title: "Subsequence, not substring \u2014 gaps are allowed",
       body: [
@@ -211,7 +211,7 @@ print("ROUGE-1 precision %.4f  recall %.4f  F1 %.4f" % (p, r, f))`,
   takeaways: [
     "**One formula, four units**: ROUGE-1 for content, ROUGE-2 for local ordering, ROUGE-L for structure allowing gaps, ROUGE-Lsum for multi-sentence.",
     "**ROUGE is recall-oriented where BLEU is precision-oriented**, which suits summarisation, where omitting material is the fault.",
-    "**Matches are clipped to the reference's count**, exactly as in BLEU \u2014 the same term closing the same degenerate optimum.",
+    "**Matches are clipped to the count**, exactly as in BLEU \u2014 the same term closing the same degenerate optimum.",
     "**The worked pair verifies**: ROUGE-1 F1 0.9091, ROUGE-2 F1 0.6667, ROUGE-L F1 0.9091.",
     "**A single dropped token costs one unigram and two bigrams**, because every token sits in up to two bigrams \u2014 hence ROUGE-2's harshness.",
     "**ROUGE-L is a subsequence, not a substring** \u2014 gaps are allowed, which is why an omission preserving order scores well.",

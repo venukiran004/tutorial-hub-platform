@@ -1,19 +1,14 @@
 /* ============================================================================
    LESSON 12.9 — Backend System Design in Python
-   Mirrors 29_Backend_Web_Concepts/Python_Backend_System_Design.md: the
-   approach, capacity estimation (helper run), architecture patterns, API
-   design, gateways, event-driven architecture and queues, caching and its
-   failure modes, database design, CAP and sagas, concurrency control,
-   resilience, observability, and the worked examples.
    ========================================================================= */
 EC.receiveLesson({
   id: "12.9",
 
-  lede: "**A system-design question is answered in a fixed order: requirements, numbers, a simple architecture, then the parts that scale it — and every part has a Python shape.** This lesson is the reference's design guide compressed to what an interviewer listens for: the two questions to ask first, the back-of-the-envelope arithmetic run on a Twitter-sized service, the patterns (layers, hexagonal, gateway, events, queues, caches, shards) with the trade each one makes, the consistency vocabulary (CAP, sagas, the outbox), the resilience patterns you would write in Python, and the four worked examples — a URL shortener, a rate limiter, notifications, a news feed — each reduced to its one deciding choice.",
+  lede: "**A system-design question is answered in a fixed order: requirements, numbers, a simple architecture, then the parts that scale it — and every part has a Python shape.** This lesson is the design guide compressed to what an interviewer listens for: the two questions to ask first, the back-of-the-envelope arithmetic run on a Twitter-sized service, the patterns (layers, hexagonal, gateway, events, queues, caches, shards) with the trade each one makes, the consistency vocabulary (CAP, sagas, the outbox), the resilience patterns you would write in Python, and the four worked examples — a URL shortener, a rate limiter, notifications, a news feed — each reduced to its one deciding choice.",
 
   objectives: [
-    "Run a design question through the reference's order: clarify, non-functional requirements, estimate, simple design, scale the bottleneck",
-    "Estimate QPS, storage and bandwidth from daily active users with the reference's helper, and say what the numbers force",
+    "Run a design question through the order: clarify, non-functional requirements, estimate, simple design, scale the bottleneck",
+    "Estimate QPS, storage and bandwidth from daily active users with the helper, and say what the numbers force",
     "Choose between monolith and services, REST and gRPC, offset and cursor pagination, cache-aside and write-through, SQL and NoSQL — with the trade named",
     "Explain at-least-once delivery and why consumers must be idempotent, the four cache failure modes and their fixes, CAP, sagas and the outbox pattern",
     "Sketch the URL shortener, distributed rate limiter, notification system and news feed, each around its deciding design choice"
@@ -47,7 +42,7 @@ latency, orders of magnitude:
   SSD random read 100 µs            network US → EU              150 ms`,
       caption: "The ratios matter more than the values: memory is a thousand times faster than an SSD, which is a hundred times faster than a cross-continent round trip." },
 
-    { t: "code", lang: "python", title: "The reference's estimation helper, run on a Twitter-like service",
+    { t: "code", lang: "python", title: "The estimation helper, run on a Twitter-like service",
       code: `def estimate(dau, actions_per_user_per_day, bytes_per_action, read_write_ratio=100):
     writes_per_day = dau * actions_per_user_per_day
     write_qps = writes_per_day / 86_400
@@ -101,7 +96,7 @@ print(estimate(dau=300_000_000, actions_per_user_per_day=2, bytes_per_action=300
       { id: "s2", label: "users service", tone: "good" }
     ], edges: [["c", "g"], ["g", "s1"], ["g", "s2"]] },
 
-    { t: "p", text: "Between services, synchronous HTTP or gRPC is simple and couples availability: if users-service is down, orders-service fails. Asynchronous messaging decouples them at the price of eventual consistency. The reference's rule: synchronous for a request that needs the answer now, asynchronous for anything that can be told later." },
+    { t: "p", text: "Between services, synchronous HTTP or gRPC is simple and couples availability: if users-service is down, orders-service fails. Asynchronous messaging decouples them at the price of eventual consistency. The rule: synchronous for a request that needs the answer now, asynchronous for anything that can be told later." },
 
     { t: "h2", n: "06", text: "Event-driven architecture and message queues", id: "events" },
 
@@ -137,7 +132,7 @@ print(estimate(dau=300_000_000, actions_per_user_per_day=2, bytes_per_action=300
         ["Stale data", "The database changed and the cache did not", "Invalidate on write; short TTL; versioned keys"]
       ] },
 
-    { t: "code", lang: "python", title: "The reference's single-flight rebuild",
+    { t: "code", lang: "python", title: "The single-flight rebuild",
       code: `def get_with_lock(key, loader, ttl=300):
     if (v := r.get(key)) is not None:
         return json.loads(v)
@@ -206,7 +201,7 @@ print(estimate(dau=300_000_000, actions_per_user_per_day=2, bytes_per_action=300
 
     { t: "p", text: "**URL shortener.** 100M new URLs a month is about 40 writes/s and, at 100:1, 4,000 reads/s — cache the redirects. Five years is 6 billion URLs, so the code needs 7 base-62 characters (62⁷ ≈ 3.5 trillion). The deciding choice is how to make the code: a hash truncated (stateless, collisions to handle), a random string (collision check on insert), or **a counter encoded in base 62** — no collisions, shortest codes, at the cost of a global counter (a database sequence, Redis INCR, or ranges pre-allocated per host)." },
 
-    { t: "code", lang: "python", title: "The reference's base-62 encoder, run",
+    { t: "code", lang: "python", title: "The base-62 encoder, run",
       code: `import string
 ALPHABET = string.digits + string.ascii_letters      # 0-9 a-z A-Z: 62 symbols
 
@@ -273,7 +268,7 @@ photos_per_year_pb = 20_000_000 * 2e6 * 365 / 1e15      # ≈ 14.6 PB`,
       why: "Fan-out on write precomputes every follower's timeline at post time, which is one lookup per read but a write per follower. For a celebrity that is tens of millions of writes per post. The hybrid keeps push for ordinary accounts and merges the few enormous accounts' posts in at read time." }
   ] },
 
-  interview: { title: "Interview", sub: "The reference's checklist, as questions", questions: [
+  interview: { title: "Interview", sub: "The checklist, as questions", questions: [
     { level: "Core", q: "Design a URL shortener. Walk me through it.",
       strong: "Clarify, estimate (40 writes/s, 4,000 reads/s, 6B URLs → 7-char base62), counter-based codes, cached redirects, a 301 versus 302 decision.",
       answer: [{ t: "p", text: "Core operations: create a short code for a URL, redirect on GET. At 100M new URLs a month that is about 40 writes/s and, read-heavy, 4,000 redirects/s; five years is 6 billion codes, so 7 base-62 characters. Generate codes from a counter encoded in base 62 — no collisions, shortest codes — with the counter as a database sequence or Redis INCR, or ranges allocated per host to avoid a single point of contention. Store code → URL in PostgreSQL with the code as primary key; cache hot codes in Redis, since redirects dominate. Use 302 if you want analytics on every hit, 301 if you want browsers to cache. Add expiry and a custom-alias option only if asked." }] },

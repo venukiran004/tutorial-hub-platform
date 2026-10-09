@@ -1,8 +1,5 @@
 /* ============================================================================
    LESSON 6.6 — The Decoder, Cross-Attention and the Loss
-   Mirrors 02c_Transformer_Translation_Step_by_Step.md · §3-4. Reproduces the
-   reference's loss of 2.532 exactly — and that loss turns out to be 0.92
-   nats WORSE than guessing uniformly (§05) (scratchpad/nlp/n65.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "6.6",
@@ -79,7 +76,7 @@ EC.receiveLesson({
 
     { t: "exercise", title: "Compute and compare",
       tasks: [
-        "Run the reference's script and confirm the loss of 2.532 to three decimals.",
+        "Run the script and confirm the loss of 2.532 to three decimals.",
         "Compute ln(vocab_size) and verify the model is worse than uniform.",
         "Compute the per-position loss and identify which position contributes most.",
         "Plot the cross-attention matrix as a heatmap and confirm there is no diagonal.",

@@ -1,8 +1,5 @@
 /* ============================================================================
    LESSON 2.1 — The Convolution Operation
-   Mirrors 02_CNNs.md · §1. Every number is recomputed rather than copied, which
-   is how the reference's worked 5x5 example turned out to be wrong — see the
-   callout in section 02 (scratchpad/dl/d21.py, torch 2.10).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.1",
@@ -34,7 +31,7 @@ for i in range(3):
         out[i, j] = (inp[i:i + 3, j:j + 3] * ker).sum()`,
       caption: "Two loops over output positions, an element-wise product and a sum. Everything else in a convolution layer is bookkeeping around this." },
 
-    { t: "h2", n: "02", text: "The reference's example, recomputed", id: "worked" },
+    { t: "h2", n: "02", text: "The worked example, recomputed", id: "worked" },
 
     { t: "p", text: "The reference works a 5×5 input against a 3×3 kernel, both alternating ones and zeros. Running it gives a different answer from the one printed." },
 
@@ -45,7 +42,7 @@ for i in range(3):
   reference says [[4,3,4],[2,4,3],[4,3,4]] -> False
   position (0,0): 1*1 + 0*0 + 1*1 + 0*0 + 1*1 + 0*0 + 1*1 + 0*0 + 1*1 = 5` },
 
-    { t: "callout", kind: "warn", title: "The reference's arithmetic is wrong here",
+    { t: "callout", kind: "warn", title: "The arithmetic is wrong here",
       body: [{ t: "p", text: "The reference spells the first position out as `1·1 + 0·0 + 1·1 + 0·0 + 1·1 + 0·0 + 1·1 + 0·0 + 1·1` and then writes `= 4`. Those terms are five ones and four zeros, so the sum is **5**. The whole output matrix is wrong for the same reason — with this input and this kernel every position is either 5 or 0, never 4, 3 or 2. The operation the reference describes is correct; only the numbers printed beside it are not, which is exactly the sort of thing that survives in written material until somebody runs it." }] },
 
     { t: "diagram", kind: "matrix", title: "What the correct output actually is",
@@ -73,7 +70,7 @@ true convolution (kernel flipped):
 differ: True` },
 
     { t: "callout", kind: "note", title: "Why it takes an asymmetric example to see it",
-      body: [{ t: "p", text: "The reference's own 5×5 input is unchanged by a 180° rotation, and so is its kernel — so flipping changes nothing and the difference is invisible. Demonstrating it needs an input that is not symmetric, which is why the numbers above run 0 to 24 rather than reusing the reference's grid. Worth knowing when you try to reproduce this: a symmetric test case will convince you the two operations are the same." }] },
+      body: [{ t: "p", text: "The 5×5 input is unchanged by a 180° rotation, and so is its kernel — so flipping changes nothing and the difference is invisible. Demonstrating it needs an input that is not symmetric, which is why the numbers above run 0 to 24 rather than reusing the grid. Worth knowing when you try to reproduce this: a symmetric test case will convince you the two operations are the same." }] },
 
     { t: "h2", n: "04", text: "Output size", id: "output-size" },
 
@@ -144,7 +141,7 @@ differ: True` },
 
   takeaways: [
     "A convolution multiplies a kernel with a patch and sums — two loops and an element-wise product.",
-    "The reference's worked example prints 4 where the arithmetic gives 5; the correct output is all 5s and 0s.",
+    "The worked example prints 4 where the arithmetic gives 5; the correct output is all 5s and 0s.",
     "`n_out = floor((n_in + 2p - k) / s) + 1`, verified against Conv2d on four shapes including ResNet's 224 → 112 stem.",
     "`(k·k·C_in + 1)·C_out` — 73,856 parameters against 33.5 million fully connected, a 454× saving.",
     "The parameter count does not depend on the image size, because the kernel is reused rather than duplicated.",

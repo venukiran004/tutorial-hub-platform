@@ -146,7 +146,7 @@ tid = int(mask.argmax())`,
 
     { t: "callout", kind: "note", title: "What the reference claims, and what it means",
       body: [
-        { t: "p", text: "The reference's Outlines example carries the comment: *\"result is GUARANTEED to be valid Person\"* and *\"structurally correct by construction\"*. Both are precisely true, and the second one contains the qualifier that matters — **structurally**." },
+        { t: "p", text: "The Outlines example carries the comment: *\"result is GUARANTEED to be valid Person\"* and *\"structurally correct by construction\"*. Both are precisely true, and the second one contains the qualifier that matters — **structurally**." },
         { t: "p", text: "Its own worked example — \"John is a 30-year-old engineer\" producing `Person(name='John', age=30, occupation='engineer')` — shows the happy case, where a capable model had the answer and only needed the shape enforced. My GPT-2 measurement shows what the same guarantee looks like when the model does not know: the shape is still perfect." },
         { t: "p", text: "The difference between those two outcomes is model capability on the extraction task, which constrained decoding does not touch. It is worth stating plainly because the phrase \"no retries, no parsing errors\" can read as \"no errors\"." }
       ] },
@@ -175,7 +175,7 @@ def mask_only_precomputed():
     { t: "callout", kind: "insight", title: "The overhead is an index-building problem, not a masking problem",
       body: [
         { t: "p", text: "Applying a precomputed mask is a tensor scatter and an argmax — **0.98× of the unconstrained forward pass**, which is to say free within measurement noise. Deciding *which* tokens are allowed by decoding all 50,257 of them is what costs 7.30×." },
-        { t: "p", text: "This is exactly what the mature libraries do differently. Outlines compiles the regex or schema into a finite-state machine and precomputes, for every state, the set of token ids that advance it — an index built once per grammar and reused across every request. llama.cpp's GBNF does the equivalent incrementally. The reference's note about \"slight latency overhead for grammar checking\" is describing the precomputed case." },
+        { t: "p", text: "This is exactly what the mature libraries do differently. Outlines compiles the regex or schema into a finite-state machine and precomputes, for every state, the set of token ids that advance it — an index built once per grammar and reused across every request. llama.cpp's GBNF does the equivalent incrementally. The note about \"slight latency overhead for grammar checking\" is describing the precomputed case." },
         { t: "p", text: "The practical consequence: if constrained decoding is slow in your system, you are almost certainly rebuilding the index per step or per request rather than caching it per schema. That is a configuration or caching bug with a 7× payoff, not a cost of the technique." }
       ] },
 

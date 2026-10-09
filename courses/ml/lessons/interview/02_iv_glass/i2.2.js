@@ -1,8 +1,6 @@
 /* ============================================================================
    INTERVIEW I2.2 — Machine Learning Concepts · Product & Business Sense · A/B Testing & Experimentation · System Design for DS · Behavioral · Additional SQL & Data Analysis
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/04_Machine_Learning/00_Interview_Bank/02_Glassdoor_DS_and_MLE.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "i2.2",

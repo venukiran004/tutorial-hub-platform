@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "3.12",
 
-  lede: "Every cost conversation about LLM serving reduces to one number you do not control and one you do: the price of a GPU-hour, and how busy you keep it. I worked the reference's own self-hosting figures and found them **1.30× the naive arithmetic** — consistent with an unstated ~77% utilisation assumption, which is the single most important variable in the calculation and the one it does not mention. Taking it seriously changes the conclusion: with a realistic 3:1 peak-to-mean traffic ratio, self-hosting a 70B asymptotes at **$1.13 per million tokens** and never beats a hosted small model's $0.26 at any volume. The reference's \"self-host above 10M tokens a day\" threshold is **7.7% utilisation of one GPU**, where self-hosting costs $4.80 per million and beats nothing.",
+  lede: "Every cost conversation about LLM serving reduces to one number you do not control and one you do: the price of a GPU-hour, and how busy you keep it. I worked the self-hosting figures and found them **1.30× the naive arithmetic** — consistent with an unstated ~77% utilisation assumption, which is the single most important variable in the calculation and the one it does not mention. Taking it seriously changes the conclusion: with a realistic 3:1 peak-to-mean traffic ratio, self-hosting a 70B asymptotes at **$1.13 per million tokens** and never beats a hosted small model's $0.26 at any volume. The \"self-host above 10M tokens a day\" threshold is **7.7% utilisation of one GPU**, where self-hosting costs $4.80 per million and beats nothing.",
 
   objectives: [
     "Compute the cost per million tokens of your own hardware from first principles",
@@ -20,7 +20,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Self-hosted cost per token is a division: what the hardware costs per hour, divided by how many tokens it produced in that hour. Everything else — quantization, batching, a better scheduler — enters only through the denominator. So the formula is trivial and the inputs are where the argument lives." },
 
-    { t: "code", lang: "python", title: "g312.py — the reference's self-hosted figures, recomputed", code: `for label, tps, ref in (("70B INT4", 1500, 0.48), ("7B FP16", 3000, 0.24)):
+    { t: "code", lang: "python", title: "g312.py — the self-hosted figures, recomputed", code: `for label, tps, ref in (("70B INT4", 1500, 0.48), ("7B FP16", 3000, 0.24)):
     per_hour = tps * 3600
     cost = 2.0 / (per_hour / 1e6)        # $2/hr over millions of tokens per hour
     print(label, tps, per_hour / 1e6, cost, ref)`,
@@ -32,11 +32,11 @@ EC.receiveLesson({
   70B INT4                       1500           5.40M        0.3704         0.48
   7B FP16                        3000          10.80M        0.1852         0.24
 
-  the naive figures are 0.370 and 0.185. The reference's are 1.30x higher,
+  the naive figures are 0.370 and 0.185. The are 1.30x higher,
   both of them by the same factor -- which is what an unstated utilisation
   assumption looks like: 0.370 / 0.77 = 0.48, 0.185 / 0.77 = 0.24.`,
       hl: [3],
-      caption: "Both of the reference's figures are exactly 1.30× the naive arithmetic, which means the discrepancy is a deliberate assumption rather than a slip." },
+      caption: "Both of the figures are exactly 1.30× the naive arithmetic, which means the discrepancy is a deliberate assumption rather than a slip." },
 
     { t: "callout", kind: "insight", title: "The reference is not wrong — it is quiet about the thing that matters",
       body: [
@@ -119,7 +119,7 @@ EC.receiveLesson({
     { t: "p", text: "The reference offers a rule: self-host above 10 million tokens a day. It is worth checking against the capacity figure rather than accepting, because one A100 at 1,500 tokens per second, flat out for 24 hours, is 129.6 million tokens." },
 
     { t: "code", lang: "python", title: "g312.py — what 10M tokens a day actually implies", code: `cap = 1500 * 86400                        # one A100's daily capacity, flat out
-util = 10e6 / cap                         # the reference's threshold as utilisation
+util = 10e6 / cap                         # the threshold as utilisation
 cost = 2.0 / (1500 * util * 3600 / 1e6)   # $ per 1M tokens at that utilisation
 
 for name, blended in blended_prices.items():
@@ -143,7 +143,7 @@ for name, blended in blended_prices.items():
 
     { t: "callout", kind: "warn", title: "The rule of thumb is right about the wrong comparison",
       body: [
-        { t: "p", text: "Against GPT-4o the threshold really is around 11 million tokens a day, so the reference's 10M is a good number — for that comparison. Against GPT-4o-mini the break-even is **182.9 million tokens a day, which is 141% of one GPU's capacity**: you cannot get there on one device at all, and adding devices adds cost in lockstep." },
+        { t: "p", text: "Against GPT-4o the threshold really is around 11 million tokens a day, so the 10M is a good number — for that comparison. Against GPT-4o-mini the break-even is **182.9 million tokens a day, which is 141% of one GPU's capacity**: you cannot get there on one device at all, and adding devices adds cost in lockstep." },
         { t: "p", text: "So the rule has a hidden premise just like the $0.48 did: it assumes you are replacing a frontier model. If the realistic alternative is a small hosted model that is good enough for your task, self-hosting is unlikely to be the cheaper option at any volume you can reach." },
         { t: "p", text: "This is the single most useful thing in this lesson, because the decision is usually made the other way round — a team decides to self-host and then looks for the volume that justifies it." }
       ] },
@@ -307,7 +307,7 @@ for label, hr in (("on demand $2.00", 2.00), ("1-yr reserved $1.20", 1.20),
 
   takeaways: [
     "**Cost per token is dollars per GPU-hour over tokens produced per hour.** Every optimisation enters through the denominator, and utilisation is part of the denominator too.",
-    "**The reference's self-hosted figures are 1.30× the naive arithmetic**, consistent with an unstated ~77% utilisation assumption — defensible, invisible, and the variable with the most leverage.",
+    "**The self-hosted figures are 1.30× the naive arithmetic**, consistent with an unstated ~77% utilisation assumption — defensible, invisible, and the variable with the most leverage.",
     "**Utilisation spans a 20× cost range** from 5% to 100%, against 4× for quantization, 5.2× for batching and 1.13× for speculative decoding.",
     "**Blend the API price list by your own input-to-output ratio.** The same provider ranges 2.8× across plausible ratios, and the list itself spans 23×.",
     "**\"Self-host above 10M tokens a day\" assumes you are replacing a frontier model.** That is 7.7% utilisation of one GPU, costing $4.80 per million — break-even is 11.0M against GPT-4o and 182.9M against GPT-4o-mini.",

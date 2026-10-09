@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "the-record", text: "Record the version on every response",
       sub: "The one thing that makes everything else possible" },
 
-    { t: "p", text: "Of the reference's seven-item production checklist, one item is a precondition for the other six: knowing which prompt produced which output. Without it, a quality change cannot be attributed, a rollback cannot be verified, and an A/B test has no data (2.12)." },
+    { t: "p", text: "Of the seven-item production checklist, one item is a precondition for the other six: knowing which prompt produced which output. Without it, a quality change cannot be attributed, a rollback cannot be verified, and an A/B test has no data (2.12)." },
 
     { t: "code", lang: "python", title: "record.py", code: `@dataclass(frozen=True)
 class Prompt:
@@ -102,7 +102,7 @@ def check_rollout(name):
 
     { t: "p", text: "Note what the halt condition uses: error rate and latency, not quality. Quality takes longer to measure than an hour (2.12 measured how much longer), so the automatic halt catches the catastrophic cases and the quality decision is made deliberately, later, with enough data." },
 
-    { t: "h2", n: "04", id: "the-checklist", text: "The reference's checklist, rated",
+    { t: "h2", n: "04", id: "the-checklist", text: "The checklist, rated",
       sub: "Which items are load-bearing" },
 
     { t: "table",
@@ -117,7 +117,7 @@ def check_rollout(name):
         ["Prompt injection defence", "Essential, and it is not in this lesson — it is 2.16, at the action boundary"],
         ["Rate limiting on prompt-heavy endpoints", "Ordinary API hygiene (1.16), not prompt management"]
       ],
-      caption: "From 04_Prompt_Engineering.md section 17. Five are load-bearing, one is useful, and two are good practice that belongs in other lessons." },
+      caption: "From the reference notes section 17. Five are load-bearing, one is useful, and two are good practice that belongs in other lessons." },
 
     { t: "callout", kind: "good", title: "The minimum that is worth having",
       body: [
@@ -212,7 +212,7 @@ without prompt_version logged, the same data gives only:
     "**A registry decouples the prompt from the code that parses its output**, which is the feature and the risk. It therefore needs a validation gate that a file does not.",
     "A rollout needs **stable per-user assignment** and an **automatic halt on a metric**. A percentage without a halt is a slower deploy.",
     "Halt on error rate and latency, not quality — quality takes longer than an hour to measure (2.12), so the halt catches catastrophes and the quality decision is made later.",
-    "Of the reference's eight checklist items, **five are load-bearing**, one is useful, and two belong in other lessons.",
+    "Of the eight checklist items, **five are load-bearing**, one is useful, and two belong in other lessons.",
     "Measured: with prompt version logged, a 4-point regression attributes cleanly to a **day-20 prompt change** (0.8607 against 0.8199). **Without it, the same data points at a day-40 model change — the wrong cause.**",
     "The minimum is three fields — **prompt version, model, fingerprint** — and a registry's audit trail is not a substitute, because it records what changed and not what each response did."
   ],

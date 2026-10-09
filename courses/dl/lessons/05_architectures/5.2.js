@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 5.2 — Reference Card: the Convolutional Network
-   Mirrors Architectures/cnn.md. Parameter formula verified exactly against
-   PyTorch (scratchpad/dl, d41-series).
+   Parameter formula verified exactly against PyTorch (scratchpad/dl,
+   d41-series).
    ========================================================================= */
 EC.receiveLesson({
   id: "5.2",
@@ -35,7 +35,7 @@ EC.receiveLesson({
 
     { t: "math", tex: "\\text{params} = (K \\cdot K \\cdot C_{in} + 1) \\cdot C_{out}, \\qquad \\text{compute} = O(O_H \\cdot O_W \\cdot K^2 \\cdot C_{in} \\cdot C_{out})" },
 
-    { t: "out", text: `  cnn.md   Conv2d(3,64,3): formula 1,792  pytorch 1,792
+    { t: "out", text: `  cnn   Conv2d(3,64,3): formula 1,792  pytorch 1,792
 
   input   32x32: Conv2d(3,64,3) has 1,792 params, output (64, 30, 30)
   input  224x224: Conv2d(3,64,3) has 1,792 params, output (64, 222, 222)

@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 2.5 — Transfer Learning
-   Mirrors 02_CNNs.md · §6. The headline experiment is real: ResNet-18 with
-   genuine ImageNet weights against the same architecture from scratch, on
-   2,000 CIFAR-10 images (scratchpad/dl/d25.py and d25b.py).
+   The headline experiment is real: ResNet-18 with genuine ImageNet weights
+   against the same architecture from scratch, on 2,000 CIFAR-10 images
+   (scratchpad/dl/d25.py and d25b.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.5",

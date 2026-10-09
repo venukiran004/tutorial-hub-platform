@@ -30,12 +30,12 @@ EC.receiveLesson({
   int8 would be  : 124.44 MB
   int4 would be  : 62.22 MB
 
-  the reference's 7B table, checked against the same arithmetic:
+  the 7B table, checked against the same arithmetic:
     FP32  7B x 4.0 =  28.0 GB
     FP16  7B x 2.0 =  14.0 GB
     INT8  7B x 1.0 =   7.0 GB
     INT4  7B x 0.5 =   3.5 GB`,
-      caption: "The reference's 7B table checks out exactly — unlike its KV cache example (3.2). The arithmetic is simply parameters × bytes per parameter." },
+      caption: "The 7B table checks out exactly — unlike its KV cache example (3.2). The arithmetic is simply parameters × bytes per parameter." },
 
     { t: "callout", kind: "insight", title: "INT4 is what puts a 7B model on consumer hardware",
       body: [
@@ -56,7 +56,7 @@ EC.receiveLesson({
         ["GGUF", "2–8", "CPU-optimised, mixed precision per tensor", "Varies"],
         ["FP8", "8", "Mixed E4M3/E5M2", "Minimal"]
       ],
-      caption: "From 02_LLM_Inference_Optimization.md section 3. The two bolded rows are calibration-based, which is the property that matters and is easy to miss in a table organised by bit width." },
+      caption: "From the reference notes section 3. The two bolded rows are calibration-based, which is the property that matters and is easy to miss in a table organised by bit width." },
 
     { t: "p", text: "**AWQ's insight is the one worth carrying.** Not all weights matter equally: a small fraction correspond to large activations and dominate the output. Protecting those channels — scaling them before quantizing — costs almost nothing in size and recovers most of the quality that uniform quantization loses. It is why AWQ generally beats GPTQ at the same bit width." },
 
@@ -99,11 +99,11 @@ print("int8 perplexity : %.4f" % perplexity(qmodel))`,
       rows: [
         ["Data-centre GPU serving", "**FP8** or AWQ 4-bit", "Hardware FP8 support on recent accelerators; AWQ where it is absent"],
         ["Consumer GPU", "**AWQ or GPTQ 4-bit**", "Fits in 6–8 GB; both have mature kernels"],
-        ["CPU / laptop", "**GGUF Q4_K_M**", "The reference's recommended quality-size balance; llama.cpp ecosystem"],
+        ["CPU / laptop", "**GGUF Q4_K_M**", "The recommended quality-size balance; llama.cpp ecosystem"],
         ["Maximum quality, memory available", "**BF16**", "No quantization at all — the honest option when it fits"],
         ["Extreme constraint", "GGUF Q2_K", "The reference notes ~40% of original quality. Rarely the right trade"]
       ],
-      caption: "The reference's GGUF levels run Q2_K through Q8_0, with Q4_K_M recommended. Its note that Q2_K retains \"~40% original quality\" is a strong claim worth verifying on your own task before relying on it." },
+      caption: "The GGUF levels run Q2_K through Q8_0, with Q4_K_M recommended. Its note that Q2_K retains \"~40% original quality\" is a strong claim worth verifying on your own task before relying on it." },
 
     { t: "callout", kind: "good", title: "Quantize the KV cache too",
       body: [
@@ -180,7 +180,7 @@ logs           1.9595      1236.6637        631.1      1.23x`,
   takeaways: [
     "**Quantization is a decode optimisation.** Decode is bound by bytes loaded, so fewer bits per weight directly raises the throughput ceiling; prefill is compute-bound and benefits far less.",
     "It therefore helps **throughput and TPOT, and almost nothing for TTFT** — which is the opposite of what a prefill-bound service needs (3.1).",
-    "Memory is parameters × bytes per parameter. The reference's 7B table checks out exactly: 28 GB at FP32 down to **3.5 GB at INT4**, which is what puts a 7B model on a consumer card.",
+    "Memory is parameters × bytes per parameter. The 7B table checks out exactly: 28 GB at FP32 down to **3.5 GB at INT4**, which is what puts a 7B model on a consumer card.",
     "**The dividing line between methods is calibration, not bit width.** GPTQ and AWQ use representative data to choose scales; dynamic quantization uses none.",
     "**AWQ's insight**: a small fraction of weights correspond to large activations and dominate the output. Protecting those channels costs almost nothing and recovers most of the quality.",
     "Measured on GPT-2: int8 dynamic quantization gave **1.69× faster inference and perplexity from 2.07 to 1136.97** — a factor of 549.",

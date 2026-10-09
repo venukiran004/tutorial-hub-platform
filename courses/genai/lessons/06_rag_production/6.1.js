@@ -122,7 +122,7 @@ def ndcg_at_k(ranked, rel, k):
   <text x="16" y="292" class="s-sub">to a model cares about Hit@5 \u2014 so the headline metric follows the product, not the fashion</text>
 </svg>` },
 
-    { t: "h2", n: "03", id: "rerank", text: "Testing the reference's claim about re-ranking",
+    { t: "h2", n: "03", id: "rerank", text: "Testing the claim about re-ranking",
       sub: "\u201cThis is exactly what reranking moves\u201d" },
 
     { t: "p", text: "The reference is specific: optimise recall first, then *\u201cMRR / nDCG next \u2014 once it\u2019s in the set, are you ranking it to the top? This is exactly what **reranking** moves.\u201d* That is a falsifiable claim about which metrics a cross-encoder improves." },
@@ -249,7 +249,7 @@ for label, BASE in (("dense", DENSE), ("RRF fusion", FUSED)):
   20             1.00       0.26       0.63       0.62`,
         notes: [
           { t: "p", text: "**Dense and BM25 rank in opposite orders depending on the metric**: dense wins Hit@5 (0.95 vs 0.90), BM25 wins MRR (0.85 vs 0.84). Hit@5 asks whether anything relevant made the cut; MRR asks how high the first one was. BM25 finds the answer less often and places it higher when it does, because an exact term match is an unambiguous signal." },
-          { t: "p", text: "**The re-ranker moved nDCG (+0.11) far more than MRR (+0.03)** on dense, which qualifies the reference's pairing of those two. MRR only sees the first relevant result, and dense was already landing one near rank 1 \u2014 there was no room. What re-ranking actually did was lift the *other* relevant chunks, which nDCG, precision and recall all reward." },
+          { t: "p", text: "**The re-ranker moved nDCG (+0.11) far more than MRR (+0.03)** on dense, which qualifies the pairing of those two. MRR only sees the first relevant result, and dense was already landing one near rank 1 \u2014 there was no room. What re-ranking actually did was lift the *other* relevant chunks, which nDCG, precision and recall all reward." },
           { t: "p", text: "**On the fused first stage, Hit@5 fell 0.10 while MAP rose 0.06** \u2014 from the same reordering. The re-ranker promoted several relevant chunks where it understood the query and pushed the only relevant chunk out of the top five on two others. Which of those matters is a product question, and a single headline metric would have called this change a clear win or a clear loss depending on which one was chosen." },
           { t: "p", text: "**Precision falls from 0.75 to 0.26 as k goes 1 to 20 while recall rises 0.14 to 0.63.** With a median of six relevant chunks, P@20 cannot exceed 0.30 regardless of ranking quality \u2014 so precision@k measures the cut-off as much as the retriever and is only comparable at a fixed k." },
           { t: "p", text: "At twenty queries a 0.05 gap is one question, so I would not defend the specific ordering of dense against BM25. What survives the sample size is the structural point: these metrics can and do disagree, and which one you promote to the dashboard decides which system you ship." }

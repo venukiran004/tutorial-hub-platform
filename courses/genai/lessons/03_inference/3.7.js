@@ -130,7 +130,7 @@ print(n_shared, tot, n_shared + uniq, 100 * (tot - n_shared - uniq) / tot)`,
         ["Already standardised on the HF stack", "TGI", "The integration is the feature; the performance difference is not the deciding one"]
       ] },
 
-    { t: "callout", kind: "warn", title: "The reference's feature matrix is a snapshot, and I cannot verify it here",
+    { t: "callout", kind: "warn", title: "The feature matrix is a snapshot, and I cannot verify it here",
       body: [
         { t: "p", text: "The reference carries a tick-box table across vLLM, TGI, TensorRT-LLM, Ollama and llama.cpp — PagedAttention, continuous batching, tensor parallelism, speculative decoding, CPU inference. The structure is the right way to think, and the specific ticks are the part that rots." },
         { t: "p", text: "Two of its rows I would already question: it marks CPU inference unavailable for vLLM, and continuous batching unavailable for llama.cpp. Both have moved — vLLM has a CPU backend and llama.cpp's server does batch concurrent requests. I am stating that as something to check rather than as a measurement, because this environment has no GPU and I could not install and run these servers to verify either claim." },
@@ -242,7 +242,7 @@ for n in (5, 20, 100, 500):
     "**Put the constant part of the prompt first.** The cache matches an exact token prefix, so one timestamp or interpolated name at the top reduces the hit to zero tokens.",
     "**RadixAttention generalises a prefix to a tree**, which is why SGLang's advantage appears on branching agent programs and not on plain chat.",
     "**vLLM is the default for GPU serving**; TensorRT-LLM buys the last 20–40% at the cost of a per-GPU, per-shape build artefact; llama.cpp is the one designed for CPU; Ollama optimises the development loop rather than throughput.",
-    "**Treat any feature matrix as dated.** The reference's table already has entries worth re-checking, and the durable part of it is the list of properties to ask about.",
+    "**Treat any feature matrix as dated.** The table already has entries worth re-checking, and the durable part of it is the list of properties to ask about.",
     "**Four settings cover four different bottlenecks**: quantization for bytes per weight, memory fraction for cache size, prefix caching for repeated prefill, token budget for step latency.",
     "**Raise the memory fraction together with the context cap**, since activation headroom scales with the largest batch and longest sequence you admit.",
     "**Choose your optimisation from the prompt-to-output ratio.** Prefix caching beat quantization on everything up to about 100 output tokens in my arithmetic, and lost beyond roughly 500."

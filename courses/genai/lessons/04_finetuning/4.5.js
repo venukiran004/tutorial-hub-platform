@@ -190,7 +190,7 @@ print(w.std(), ((w - w.mean()) ** 4).mean() / w.var() ** 2)     # std, kurtosis`
     { t: "h2", n: "05", id: "practice", text: "Using it",
       sub: "What changes in the training script, and what does not" },
 
-    { t: "code", lang: "python", title: "the reference's configuration, annotated", code: `bnb = BitsAndBytesConfig(
+    { t: "code", lang: "python", title: "the configuration, annotated", code: `bnb = BitsAndBytesConfig(
     load_in_4bit=True,                      # store the frozen base in 4 bits
     bnb_4bit_quant_type="nf4",              # the codebook, not a uniform grid
     bnb_4bit_compute_dtype=torch.bfloat16,  # but COMPUTE in bf16
@@ -384,7 +384,7 @@ for label, cb, blk in (("NF4", NF4, 64), ("uniform int4", UNIFORM4, 64),
         answer: [
           { t: "p", text: "Not with full fine-tuning \u2014 a 7B needs about 84 GB and an 8B proportionally more, with the optimizer being 56 GB of it. That is out before we discuss anything else." },
           { t: "p", text: "LoRA brings it to roughly the size of the frozen base, about 16 GB for an 8B in bf16. That fits in 24 GB on paper and would be tight once activations are counted \u2014 and activations are the term I have not quantified, because they depend on batch size and sequence length and can be traded away with gradient checkpointing." },
-          { t: "p", text: "QLoRA is the comfortable answer: the base in NF4 is around 4 GB, total under 5, leaving real headroom for activations and a usable batch size. That is where I would start, and the reference's own default for the same reason." },
+          { t: "p", text: "QLoRA is the comfortable answer: the base in NF4 is around 4 GB, total under 5, leaving real headroom for activations and a usable batch size. That is where I would start, and the default for the same reason." },
           { t: "p", text: "Two things I would verify rather than assume. That the stack is actually using NF4 and block size 64 \u2014 I measured a uniform four-bit grid at 9.006\u00d7 perplexity and block 1024 at 3.012\u00d7, so \u2018four-bit\u2019 on its own is not a specification. And whether we need four-bit at all: int8 cost 1.015\u00d7 in the same measurement at 7 GB for a 7B, so if it fits in eight bits there is little reason to go lower." }
         ] }
     ]

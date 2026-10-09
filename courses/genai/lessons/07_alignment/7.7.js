@@ -310,7 +310,7 @@ for case in [
           "It prevents the policy's log-probabilities from collapsing to zero"
         ],
         answer: 1,
-        why: "The three-line derivation inverts the KL-constrained optimum, and the reference policy appears in that optimum \u2014 so the log-ratio against it is what equals the reward. Delete it and the loss is no longer a consequence of that objective. DPO has no separate KL term and no critic; the reference's 13 GB at 7B contributes nothing at inference, and with two checkpoints it can silently be the wrong model, which is why removing it is attractive despite the loss of grounding." }
+        why: "The three-line derivation inverts the KL-constrained optimum, and the reference policy appears in that optimum \u2014 so the log-ratio against it is what equals the reward. Delete it and the loss is no longer a consequence of that objective. DPO has no separate KL term and no critic; the 13 GB at 7B contributes nothing at inference, and with two checkpoints it can silently be the wrong model, which is why removing it is attractive despite the loss of grounding." }
     ]
   },
 

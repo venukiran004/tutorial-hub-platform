@@ -1,8 +1,7 @@
 /* ============================================================================
    LESSON 3.4 — LSTM: Long Short-Term Memory
-   Mirrors 03_Sequence_Models.md · §4. The six equations are implemented from
-   scratch and matched against nn.LSTM; dC_t/dC_{t-1} = f_t is verified
-   exactly (scratchpad/dl/d34.py).
+   The six equations are implemented from scratch and matched against
+   nn.LSTM; dC_t/dC_{t-1} = f_t is verified exactly (scratchpad/dl/d34.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.4",
@@ -110,7 +109,7 @@ with torch.no_grad():
     reference formula 4h(h+d) = 364,544; with both bias vectors PyTorch has 366,592
   d= 32, h= 64: RNN     6,272   LSTM    25,088   ratio 4.00x` },
 
-    { t: "p", text: "Four gates, four sets of weights — **exactly 4× a vanilla RNN**. The reference's `4h(h+d)` formula gives 364,544 for the first case against PyTorch's 366,592; the 2,048 difference is the two separate bias vectors PyTorch keeps for CuDNN compatibility, which are mathematically redundant with each other." },
+    { t: "p", text: "Four gates, four sets of weights — **exactly 4× a vanilla RNN**. The `4h(h+d)` formula gives 364,544 for the first case against PyTorch's 366,592; the 2,048 difference is the two separate bias vectors PyTorch keeps for CuDNN compatibility, which are mathematically redundant with each other." },
 
     { t: "exercise", kind: "practice", title: "Build an LSTM and watch its gates", difficulty: "advanced", minutes: 45,
       prompt: "Implement the six equations and verify against `nn.LSTM` to 1e-6, being careful with the i,f,g,o packing order. Then train it on a task with a known long-range dependency and log the mean forget-gate value per timestep across training — does the network learn to keep the gate open where it matters? Finally, train two identical models differing only in forget-gate bias initialisation (0 against 1) on a 50-step task and compare convergence.",

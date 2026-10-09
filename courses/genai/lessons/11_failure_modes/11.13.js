@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "scan", text: "Check 1 \u2014 Injection and jailbreak detection",
       sub: "And what it actually catches" },
 
-    { t: "code", lang: "python", title: "The reference's pattern list", code: `import re
+    { t: "code", lang: "python", title: "The pattern list", code: `import re
 
 JAILBREAK_PATTERNS = [
     r"ignore\\s+(all\\s+)?(previous|above|prior)\\s+(instructions|prompts)",
@@ -141,7 +141,7 @@ def redact(text: str) -> str:
 </svg>` },
 
     { t: "exercise", kind: "build", title: "Attack your own input scan", difficulty: "advanced", minutes: 35,
-      body: "Run the reference's jailbreak patterns against three sets: literal attacks they were written for, paraphrases of the same intents, and benign-but-tricky inputs. Report recall, precision and the false-positive rate. Then do the same for the PII redactor and find its false positive.",
+      body: "Run the jailbreak patterns against three sets: literal attacks they were written for, paraphrases of the same intents, and benign-but-tricky inputs. Report recall, precision and the false-positive rate. Then do the same for the PII redactor and find its false positive.",
       requirements: [
         "Literal attacks, paraphrases and benign-tricky inputs as separate sets",
         "Detection rate per set, and recall, precision and F1 overall",
@@ -399,7 +399,7 @@ I expected the PHONE pattern to shadow the SSN pattern. it does not:
   quiz: {
     title: "Check yourself",
     questions: [
-      { stem: "The reference's jailbreak patterns caught 8 of 8 literal attacks. How did they do on paraphrases?",
+      { stem: "The jailbreak patterns caught 8 of 8 literal attacks. How did they do on paraphrases?",
         options: [
           "Around half, since most paraphrases retain a trigger word",
           "0 of 13 \u2014 and none of the paraphrases required any skill to construct",

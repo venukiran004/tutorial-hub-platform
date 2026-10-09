@@ -1,9 +1,9 @@
 /* ============================================================================
    LESSON 8.5 — RapidFuzz and Entity Resolution
-   Mirrors 04_Fuzzy_Matching.md · §7-8. Every scorer is run and broken:
-   token_set_ratio gives 100 for "Smith" vs "Smith Smith Smith", partial_ratio
-   gives 100 for "cat" vs "category". Blocking arithmetic computed at 5e11
-   pairs for 1M records (scratchpad/nlp/n83.py).
+   Every scorer is run and broken: token_set_ratio gives 100 for "Smith" vs
+   "Smith Smith Smith", partial_ratio gives 100 for "cat" vs "category".
+   Blocking arithmetic computed at 5e11 pairs for 1M records
+   (scratchpad/nlp/n83.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "8.5",
@@ -45,7 +45,7 @@ EC.receiveLesson({
 "\"New York Mets\" / \"Mets New York\"\n\n  ratio              61.5      reference says ~54\n  token_sort_ratio  100.0      reference says 100\n\n  because sorting normalises both to \"mets new york\"" },
 
     { t: "callout", kind: "warn", title: "`ratio` gives 61.5 where the reference says ~54",
-      body: [{ t: "p", text: "A genuine implementation difference rather than an error. FuzzyWuzzy's `ratio` was built on Python's `difflib.SequenceMatcher`, which uses a longest-matching-block algorithm; RapidFuzz's uses **indel distance** — Levenshtein without substitutions. They give different numbers on the same input. The reference's `~` acknowledges approximation, but the gap matters if you are migrating: **a threshold tuned on FuzzyWuzzy will not transfer to RapidFuzz unchanged**. Re-calibrate after switching libraries, exactly as you would after switching models." }] },
+      body: [{ t: "p", text: "A genuine implementation difference rather than an error. FuzzyWuzzy's `ratio` was built on Python's `difflib.SequenceMatcher`, which uses a longest-matching-block algorithm; RapidFuzz's uses **indel distance** — Levenshtein without substitutions. They give different numbers on the same input. The `~` acknowledges approximation, but the gap matters if you are migrating: **a threshold tuned on FuzzyWuzzy will not transfer to RapidFuzz unchanged**. Re-calibrate after switching libraries, exactly as you would after switching models." }] },
 
     { t: "out", text:
 "the reordered name pair from lesson 8.1\n\n  'John Smith' / 'Smith, John'\n\n  ratio              48\n  partial_ratio      67\n  token_sort_ratio   95\n  token_set_ratio    95" },

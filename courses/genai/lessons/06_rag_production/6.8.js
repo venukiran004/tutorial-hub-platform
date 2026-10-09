@@ -40,7 +40,7 @@ changed = [name for name, text in corpus if doc_hash(text) != stored[name]]`,
       out: `  hashing 12 documents (359549 chars): 1.3 ms
   documents reported changed: 0
 
-  after editing one document: 1 changed -> 04_Prompt_Engineering.md
+  after editing one document: 1 changed -> prompt-engineering.md
 
   re-embedding cost if you rebuild everything : 13.2 s
   re-embedding cost for the one changed doc   : 1.3 s (116 chunks)

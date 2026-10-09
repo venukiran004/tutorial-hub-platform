@@ -79,7 +79,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "backoff", text: "Exponential backoff, and why jitter is mandatory",
       sub: "Doubling the delay is half the answer" },
 
-    { t: "p", text: "The standard retry is to wait `base × 2^attempt`, capped. The reference's example uses `tenacity` with `wait_exponential(min=1, max=60)`, which produces this schedule:" },
+    { t: "p", text: "The standard retry is to wait `base × 2^attempt`, capped. The worked example uses `tenacity` with `wait_exponential(min=1, max=60)`, which produces this schedule:" },
 
     { t: "code", lang: "python", title: "g112.py — with and without jitter", code: `def backoff(attempt, base=1.0, cap=60.0, jitter=False):
     raw = min(cap, base * (2 ** attempt))

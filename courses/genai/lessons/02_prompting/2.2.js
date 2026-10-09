@@ -32,7 +32,7 @@ few_shot = """Classify the sentiment:
 'Worst purchase ever.' -> Negative
 'It works fine.' -> Neutral
 'This product is amazing!' -> """`,
-      caption: "From 04_Prompt_Engineering.md §2. Note that the few-shot version never states what the categories are — the examples establish them, including that `Neutral` exists." },
+      caption: "From the reference notes §2. Note that the few-shot version never states what the categories are — the examples establish them, including that `Neutral` exists." },
 
     { t: "p", text: "That last point is the whole mechanism in miniature. The instruction says \"classify the sentiment\" and does not name a label set; the examples supply one, and the model matches the pattern. Anything you can demonstrate, you do not have to describe — which matters because format is much easier to demonstrate than to specify." },
 
@@ -193,7 +193,7 @@ selector = SemanticSimilarityExampleSelector.from_examples(
     vectorstore_cls,   # FAISS, Chroma, whatever (5.5)
     k=3,               # the three most similar to THIS query
 )`,
-      caption: "From 04_Prompt_Engineering.md §2. The trade is a retrieval call per request, plus an index to maintain, in exchange for examples that are relevant rather than representative." },
+      caption: "From the reference notes §2. The trade is a retrieval call per request, plus an index to maintain, in exchange for examples that are relevant rather than representative." },
 
     { t: "callout", kind: "tradeoff", title: "When dynamic selection earns its complexity",
       body: [

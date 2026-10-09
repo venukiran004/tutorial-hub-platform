@@ -1,9 +1,5 @@
 /* ============================================================================
    LESSON 5.2 — Attention Optimisations
-   Mirrors 02_Transformers_InDepth.md · §13. The KV-cache arithmetic
-   reproduces the reference exactly, online softmax is implemented and shown
-   exact to 1.5e-07 at every block size, and the cache speedup is measured
-   (scratchpad/nlp/n52.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "5.2",
@@ -118,7 +114,7 @@ EC.receiveLesson({
 
   takeaways: [
     "The KV cache turns generation from quadratic to linear total work: measured 1.87x faster at 20 new tokens and 3.46x at 60, widening with length.",
-    "Cache bytes = 2 · layers · seq · n_kv_heads · d_head · bytes; the reference's LLaMA-2-70B figures reproduce exactly at 10.74 / 1.34 / 0.17 GB.",
+    "Cache bytes = 2 · layers · seq · n_kv_heads · d_head · bytes; the LLaMA-2-70B figures reproduce exactly at 10.74 / 1.34 / 0.17 GB.",
     "Cache scales with batch and context, so at 32K context and batch 32 it is 343.6 GB — on top of ~140 GB of weights.",
     "Serving batch size on long context is usually set by cache memory, not by compute.",
     "GQA groups heads to share K and V — LLaMA-2 70B uses 64 query heads and 8 KV groups for an 8x reduction at essentially MHA quality.",

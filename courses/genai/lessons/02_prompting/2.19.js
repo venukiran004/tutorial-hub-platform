@@ -4,7 +4,7 @@ EC.receiveLesson({
   lede: "The reference closes its prompting material with a failure-mode table and a debugging procedure, and the procedure's fourth step is \"try different phrasing — models are sensitive to wording\". That is true and it understates the case. Measured here: the same four examples with six different separators give between **1 and 6 correct of 6** — and moving the instruction to the end, which the reference recommends as a fix, took a working prompt from 6 of 6 to **0 of 6**.",
 
   objectives: [
-    "Diagnose a failing prompt against the reference's failure-mode table",
+    "Diagnose a failing prompt against the failure-mode table",
     "Quantify how much a formatting choice can change an outcome",
     "Follow a debugging procedure that checks cheap causes first",
     "Explain why moving an instruction can destroy a few-shot prompt",
@@ -19,7 +19,7 @@ EC.receiveLesson({
       sub: "Seven symptoms, and what each one actually indicates" },
 
     { t: "table",
-      head: ["Symptom", "The reference's fix", "What it really indicates"],
+      head: ["Symptom", "The fix", "What it really indicates"],
       rows: [
         ["Instruction not followed", "Move it to the end; use XML tags; add \"IMPORTANT:\"", "Often a **position** problem — but see section 03, where moving it was catastrophic"],
         ["Format drifts in long output", "Format reminder mid-prompt; JSON mode", "Use a schema (1.8). A reminder is a weaker version of the same idea"],
@@ -29,7 +29,7 @@ EC.receiveLesson({
         ["Inconsistency", "temperature=0; seed; more specific instructions", "Correct — and 1.7 is why it still will not be identical"],
         ["Context overflow", "Summarise first; map-reduce; prioritise chunks", "Correct. Check the token count before assuming (1.5)"]
       ],
-      caption: "From 04_Prompt_Engineering.md section 19. Five of the seven fixes are sound. The first is situational in a way the table does not say, and the fourth's second suggestion should not be followed." },
+      caption: "From the reference notes section 19. Five of the seven fixes are sound. The first is situational in a way the table does not say, and the fourth's second suggestion should not be followed." },
 
     { t: "callout", kind: "warn", title: "\"Add 'for educational purposes'\" is not an over-refusal fix",
       body: [
@@ -74,7 +74,7 @@ SEPARATORS = {
         { t: "p", text: "The practical rule: in a few-shot block, prefer notation over prose. It reads worse to a human and it is what the model was shown most often as a mapping, which is the thing that determines whether the pattern holds." }
       ] },
 
-    { t: "h2", n: "03", id: "position", text: "Where the reference's first row goes wrong",
+    { t: "h2", n: "03", id: "position", text: "Where the first row goes wrong",
       sub: "\"Move instruction to end\" — measured" },
 
     { t: "p", text: "The failure-mode table's first row recommends moving an instruction to the end when it is not being followed. That advice has real grounding — recency helps in long contexts, and it is standard guidance. Here is what it did to a working few-shot prompt." },
@@ -92,7 +92,7 @@ for label, build in (("instruction first", lambda b: "%s\\n%s" % (INSTR, b)),
       hl: [2, 3],
       caption: "Moving the instruction to the end took the prompt from **6 of 6 to 0 of 6** — worse than removing it entirely, which scored 6 of 6." },
 
-    { t: "p", text: "The mechanism is specific and worth understanding, because it tells you when the reference's advice applies and when it inverts. In a few-shot prompt the model is continuing a **pattern**, and the pattern's final line is the query awaiting its answer. Putting the instruction after that line breaks the pattern at exactly the point where the model needs it intact: the last thing in the context is now a sentence, so the model continues a sentence." },
+    { t: "p", text: "The mechanism is specific and worth understanding, because it tells you when the advice applies and when it inverts. In a few-shot prompt the model is continuing a **pattern**, and the pattern's final line is the query awaiting its answer. Putting the instruction after that line breaks the pattern at exactly the point where the model needs it intact: the last thing in the context is now a sentence, so the model continues a sentence." },
 
     { t: "callout", kind: "trap", title: "The advice inverts depending on what the prompt is doing",
       body: [
@@ -116,7 +116,7 @@ for label, build in (("instruction first", lambda b: "%s\\n%s" % (INSTR, b)),
       "**Then change the prompt** — one thing at a time, measured against a test set (2.12), because the alternative is 31 noise-driven changes over 18 months."
     ] },
 
-    { t: "callout", kind: "good", title: "Log the prompt and response pair — the reference's step 7",
+    { t: "callout", kind: "good", title: "Log the prompt and response pair — the step 7",
       body: [
         { t: "p", text: "The reference lists this last and it is a precondition rather than a step. Debugging from reproduction is slow; debugging from a log of what actually happened is fast, and the difference is whether the pair was recorded at the time." },
         { t: "p", text: "2.17's field list is the minimum: prompt version, model, fingerprint. Add the rendered prompt for a sampled fraction of traffic and most of the procedure above collapses into a query (10.10 is about what you can afford to store, and the PII constraint on storing prompts)." }
@@ -200,7 +200,7 @@ spread: 0 to 6 of 6`,
   ],
 
   takeaways: [
-    "Of the reference's seven failure-mode fixes, **five are sound**; the first is situational in a way the table does not say, and one should not be followed.",
+    "Of the seven failure-mode fixes, **five are sound**; the first is situational in a way the table does not say, and one should not be followed.",
     "**\"Add 'for educational purposes'\" is a jailbreak framing, not an over-refusal fix.** The legitimate version is adjusting the guardrail with an owner and a reason (11.17).",
     "**Brittleness is measurable.** The same four examples with six different separators scored between **1 and 6 correct of 6** — `->`, `=>` and `|` all scored 6; `means` scored 1.",
     "Notation beats prose in a few-shot block: `->` appears in training data overwhelmingly as a mapping, where `means` is ordinary English with many continuations.",

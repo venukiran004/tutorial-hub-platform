@@ -1,17 +1,12 @@
 /* ============================================================================
    LESSON 12.10 — Auth in Depth: OAuth2, Authorisation Models and the
-   OWASP Top 10
-   Mirrors 34_Auth_and_Security/Auth_and_Security.md §4 (secure randomness,
-   timing-safe comparison), §8 (OAuth2 and OIDC), §9 (RBAC, ABAC, scopes,
-   object-level checks), §11 (API keys and service-to-service), §12–13
-   (transport and injection defences), §16 (OWASP Top 10) and §17 (tooling).
    Lesson 12.8 covered passwords, sessions, JWTs and secrets; this picks up
    the sections it did not.
    ========================================================================= */
 EC.receiveLesson({
   id: "12.10",
 
-  lede: "**Lesson 12.8 taught how to check who a user is. This one is about everything around that check: where the random tokens come from, why a secret is never compared with ==, how 'Sign in with Google' actually works and which OAuth2 flow a given client needs, the four authorisation models and the one check everybody forgets, how services authenticate to each other, the web-layer defences, and the OWASP Top 10 mapped to the Python line that fixes each item.** The reference's security file is long because the attack surface is; this lesson is its map.",
+  lede: "**Lesson 12.8 taught how to check who a user is. This one is about everything around that check: where the random tokens come from, why a secret is never compared with ==, how 'Sign in with Google' actually works and which OAuth2 flow a given client needs, the four authorisation models and the one check everybody forgets, how services authenticate to each other, the web-layer defences, and the OWASP Top 10 mapped to the Python line that fixes each item.** The security file is long because the attack surface is; this lesson is its map.",
 
   objectives: [
     "Generate tokens with secrets rather than random, and compare secrets with hmac.compare_digest",
@@ -73,7 +68,7 @@ hmac.compare_digest(provided_token, expected_token)   # constant time
       { title: "Object-level", tone: "crit", items: ["does this user own THIS row?", "checked per request, per object", "the most forgotten check", "OWASP A01"] }
     ] },
 
-    { t: "code", lang: "python", title: "The reference's RBAC dependency factory, plus the ownership check",
+    { t: "code", lang: "python", title: "The RBAC dependency factory, plus the ownership check",
       code: `from enum import Enum
 from fastapi import Depends, HTTPException, status
 
@@ -127,7 +122,7 @@ def delete_doc(doc_id: int, user: User = Depends(require("delete_doc")), db=Depe
       [{ text: "allow-list outbound hosts", tone: "crit" }, { text: "egress policy" }]
     ] },
 
-    { t: "code", lang: "bash", title: "The reference's tooling, layered",
+    { t: "code", lang: "bash", title: "The tooling, layered",
       code: `bandit -r src/                       # SAST: eval, shell=True, weak hashes, hard-coded passwords
 ruff check --select S .              # the same rules as a ruff plugin (flake8-bandit)
 pip-audit                            # SCA: installed dependencies against the advisory database

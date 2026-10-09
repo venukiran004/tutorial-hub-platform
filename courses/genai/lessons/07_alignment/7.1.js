@@ -56,9 +56,9 @@ out = model.generate(**ids, max_new_tokens=40, do_sample=False,
   CONTINUATION: "I'm not going to be able to do that," he said. "I'm not
                 going to be able to do that. I'm not going to be able to...`,
       hl: [5, 6],
-      caption: "Three of four fail to follow the instruction. The fourth answers correctly \u2014 and it is the reference's own example." },
+      caption: "Three of four fail to follow the instruction. The fourth answers correctly \u2014 and it is the worked example." },
 
-    { t: "callout", kind: "trap", title: "The reference's illustration is the one case that works",
+    { t: "callout", kind: "trap", title: "The illustration is the one case that works",
       body: [
         { t: "p", text: "The reference predicts that \u201cWhat is the capital of France?\u201d continues as *\u201cWhat is the capital of Germany? What is the capital of Spain?\u201d* because questions come in lists. gpt2 did not do that. It produced **\u201cThe capital of France is Paris.\u201d** \u2014 correct, well-formed, and exactly what an aligned model would say." },
         { t: "p", text: "The reason is that this particular question is close to a cliché. \u201cThe capital of France is Paris\u201d is an extremely common sentence on the internet, so the helpful continuation and the likely continuation coincide. The example was chosen for clarity and happens to be the case where the distinction collapses." },
@@ -127,7 +127,7 @@ probs = torch.softmax(logits, dim=-1)`,
     { t: "h2", n: "03", id: "two-moves", text: "The two moves of post-training",
       sub: "Imitation, then preference" },
 
-    { t: "code", lang: "text", title: "the reference's framing", code: `SFT       "Here is what a good answer looks like."    <- imitation   (cheap, gets you 80%)
+    { t: "code", lang: "text", title: "the framing", code: `SFT       "Here is what a good answer looks like."    <- imitation   (cheap, gets you 80%)
 ALIGNMENT "Here is which of two answers is better."    <- preference  (expensive, last 20%)`,
       caption: "Two different kinds of supervision, and the second exists because of an asymmetry in what humans can produce." },
 
@@ -264,7 +264,7 @@ for s in ("The capital of France is Paris.",
     "**Pretraining optimises one thing** \u2014 cross-entropy on the next token \u2014 and nothing in that objective mentions a question, an instruction or a user.",
     "**So ignoring instructions is the objective working**, and whether a base model answers a question is an empirical fact about the corpus rather than about capability.",
     "**Measured, three of four instructions failed on gpt2**: \u201cexplain in one sentence\u201d became a comment about sentences, \u201clist three primes\u201d became \u201cThe third prime number\u201d.",
-    "**The reference's own example is the exception** \u2014 gpt2 answered the France question correctly, because that sentence is common enough that the likely and helpful continuations coincide.",
+    "**The worked example is the exception** \u2014 gpt2 answered the France question correctly, because that sentence is common enough that the likely and helpful continuations coincide.",
     "**The quantitative version is unambiguous**: P(\u2018 Paris\u2019) as the immediate next token is 0.54% against 33.84% for a newline, a 63\u00d7 gap.",
     "**A newline on top means formatting, not refusal** \u2014 the model has no notion that a turn ended, which is exactly what a chat template supplies.",
     "**Knowledge and behaviour are separate**: the same weights rank \u201cParis\u201d first as a statement while not producing it as a continuation \u2014 though by only 0.046 nats, so say \u201cranks first\u201d rather than \u201cknows\u201d.",

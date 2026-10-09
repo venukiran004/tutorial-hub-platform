@@ -1,12 +1,10 @@
 /* ============================================================================
    LESSON 2.2 — Sentiment Analysis
-   Mirrors 01_NLP_Notes.md · §10. VADER is run on the reference's examples and
-   on the cases that break every lexicon method (scratchpad/nlp/n22.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.2",
 
-  lede: "**\"Oh great, another meeting\" scores +0.625.** A lexicon-based sentiment model reads the words and gets the sentence exactly backwards, because sarcasm lives in the gap between what is said and what is meant — and there is no word in that sentence carrying the negative. This lesson runs VADER on the reference's examples, shows the three things it handles that a bag of words cannot, and then measures the four constructions that defeat it.",
+  lede: "**\"Oh great, another meeting\" scores +0.625.** A lexicon-based sentiment model reads the words and gets the sentence exactly backwards, because sarcasm lives in the gap between what is said and what is meant — and there is no word in that sentence carrying the negative. This lesson runs VADER on the worked examples, shows the three things it handles that a bag of words cannot, and then measures the four constructions that defeat it.",
 
   objectives: [
     "Compare lexicon, classical and transformer approaches to sentiment",

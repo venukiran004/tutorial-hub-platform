@@ -41,7 +41,7 @@ ppl = math.exp(H)`,
         { t: "p", text: "The reference\u2019s valid use \u2014 comparing checkpoints on the *same* tokenizer and dataset \u2014 holds both of those fixed, which is exactly why it is the valid use." }
       ] },
 
-    { t: "code", lang: "python", title: "the reference's one-liner, which is the whole metric", code: `import math
+    { t: "code", lang: "python", title: "the one-liner, which is the whole metric", code: `import math
 def perplexity(token_logprobs):     # logprobs of the actual next tokens, natural log
     return math.exp(-sum(token_logprobs) / len(token_logprobs))`,
       caption: "Note it takes log-probabilities of the *realised* tokens. Everything hard is in producing that list." },

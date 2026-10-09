@@ -1,8 +1,6 @@
 /* ============================================================================
    INTERVIEW I2.1 — Deep Dive
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/02_Mathematics_and_Statistics/02_Descriptive_Stats_and_Probability.md + 03_Inference_and_Testing.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "i2.1",

@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 2.9 — Grad-CAM and Visual Explainability
-   Mirrors 02_CNNs.md · §10. Run for real against pretrained ResNet-18 on a
-   real photograph (scratchpad/dl/d29.py, d29b.py). The class-discrimination
-   limitation is measured and reported rather than glossed over.
+   Run for real against pretrained ResNet-18 on a real photograph
+   (scratchpad/dl/d29.py, d29b.py). The class-discrimination limitation is
+   measured and reported rather than glossed over.
    ========================================================================= */
 EC.receiveLesson({
   id: "2.9",

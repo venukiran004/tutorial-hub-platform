@@ -196,7 +196,7 @@ lo, hi = rows[0][1], rows[-1][1]
 print()
 print("spread: %d to %d tokens for the SAME text = %.1f%% difference"
       % (lo, hi, 100.0 * (hi - lo) / lo))
-print("the reference's illustrative gap was 4010 to 4380 = %.1f%%"
+print("the illustrative gap was 4010 to 4380 = %.1f%%"
       % (100.0 * (4380 - 4010) / 4010))
 
 print()
@@ -234,7 +234,7 @@ roberta-base                 4861      1.601  byte-level BPE, 50k vocab
 bert-base-cased              4861      1.601  WordPiece, 29k vocab, cased
 
 spread: 4636 to 4861 tokens for the SAME text = 4.9% difference
-the reference's illustrative gap was 4010 to 4380 = 9.2%
+the illustrative gap was 4010 to 4380 = 9.2%
   -> the real spread is narrower than the illustration.
 
 -- so what happens to a fixed truncation guard? --
@@ -312,7 +312,7 @@ expressed in the TARGET model's tokens, re-measured on migration.`,
 
       { stem: "Measured on a 3,036-word mixed document, what did five tokenizers show?",
         options: [
-          "A 9.2% spread, matching the reference's illustration",
+          "A 9.2% spread, matching the illustration",
           "A 4.9% spread \u2014 narrower than illustrated \u2014 but all five exceeded a 4,096 guard, losing 11.6% to 15.7%",
           "Identical token counts, since modern tokenizers converge",
           "A spread of over 20%, driven by the code and table content"

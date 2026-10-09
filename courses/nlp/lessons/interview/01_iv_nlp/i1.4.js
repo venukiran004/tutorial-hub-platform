@@ -1,8 +1,6 @@
 /* ============================================================================
    INTERVIEW I1.4 — Section 4: NLP Applications & Production
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/06_NLP_and_Transformers/Interview_Questions/06_NLP_Interview.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.4",

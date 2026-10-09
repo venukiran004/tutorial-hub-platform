@@ -275,7 +275,7 @@ print("overlap    : %s" % ("yes" if TV.max() > np.nanmin(TT) else "NONE"))`,
   takeaways: [
     "**Tables and charts are not one problem** \u2014 a table has recoverable structure and a text solution; a chart's claim exists only as pixels and needs a vision model.",
     "**The modality gap is total, measured**: text-text cosine 0.709\u20130.869 against text-image 0.169\u20130.368, with no overlap and a 0.34 margin.",
-    "**So the reference's Option A cannot work as drawn** \u2014 one list ranked by cosine sorts by modality first, and no image outranks any text chunk at any k.",
+    "**So the Option A cannot work as drawn** \u2014 one list ranked by cosine sorts by modality first, and no image outranks any text chunk at any k.",
     "**Fuse by rank, never by score.** RRF uses only positions, so it is immune to a scale difference between retrievers by construction; rescaling the ranges produces a meaningless number.",
     "**Option B is structurally correct, not merely pragmatic** \u2014 one text model for every stored vector makes every comparison text-to-text, so one ranked list means something.",
     "**Embed the summary, retrieve the original.** A chart summary cannot answer \u201cwhat was Q3\u201d and a table summary loses every number \u2014 5.10's parent-document pattern again.",

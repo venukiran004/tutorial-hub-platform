@@ -92,7 +92,7 @@ was made and who made it. Do not include background.
         ["Break complex tasks into steps", "One call doing four jobs and failing at all of them", "2.8"],
         ["Iterate and evaluate systematically", "\"It seems better\" replacing a measurement", "2.12"]
       ],
-      caption: "From 04_Prompt_Engineering.md §1. The third column is the module — each principle is one lesson, because each has enough substance to be one." },
+      caption: "From the reference notes §1. The third column is the module — each principle is one lesson, because each has enough substance to be one." },
 
     { t: "p", text: "The eighth is the one that separates engineering from writing, and it is the one most often skipped. A prompt that has not been run against a test set is an opinion. 2.12 builds the test set; everything between here and there is technique that a test set is required to validate." },
 

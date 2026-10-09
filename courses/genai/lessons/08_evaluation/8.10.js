@@ -246,7 +246,7 @@ raise SystemExit(1 if fails else 0)`,
           "Because outputs are already covered by the refusal-correctness check"
         ],
         answer: 1,
-        why: "Data leaves the system wherever it is sent, not only where the user sees it, so checking the final answer catches only one path. This mirrors the retrieval case where post-filtering by tenant achieved the same recall as pre-filtering while putting 19 other-tenant chunks through the top 5 \u2014 read, scored and logged, with a clean final answer. Detecting this class requires logged tool arguments, which is why the trace matters." },
+        why: "Data leaves the system wherever it is sent, not only where the user sees it, so checking the final answer catches only one path. This Covers the retrieval case where post-filtering by tenant achieved the same recall as pre-filtering while putting 19 other-tenant chunks through the top 5 \u2014 read, scored and logged, with a clean final answer. Detecting this class requires logged tool arguments, which is why the trace matters." },
 
       { stem: "Why prefer reference-free metrics for the bulk of a regression suite?",
         options: [

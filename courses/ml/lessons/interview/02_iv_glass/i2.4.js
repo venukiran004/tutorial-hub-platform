@@ -1,8 +1,6 @@
 /* ============================================================================
    INTERVIEW I2.4 — Additional Product & Business Sense · Additional A/B Testing · Additional System Design for Data Science · Additional Behavioral & Scenarios · Additional Statistics & Probability
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/04_Machine_Learning/00_Interview_Bank/02_Glassdoor_DS_and_MLE.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "i2.4",

@@ -381,7 +381,7 @@ for lo, hi in BUCKETS:
         answer: 1,
         why: "The pattern captures the name being called with no information about what it refers to, so builtins, imported symbols and local helpers are indistinguishable and 69% of edges point at names with no node. Separately, attribute-style calls are a different AST node type and are silently missed, which in class-heavy code is the majority of real calls. The fix is scope resolution \u2014 tracking imports, resolving receivers whose type is known, discarding builtins \u2014 which is what tree-sitter plus an index or a language server provides." },
 
-      { stem: "Why does the reference's code retrieval pipeline re-rank after dependency expansion rather than before?",
+      { stem: "Why does the code retrieval pipeline re-rank after dependency expansion rather than before?",
         options: [
           "Because re-ranking is cheaper on a larger candidate set due to batching",
           "Expansion is a recall move that deliberately destroys precision \u2014 median 2 callees, max 12 \u2014 so the re-ranker is what restores it",

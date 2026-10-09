@@ -1,7 +1,5 @@
 /* ============================================================================
    LESSON 4.7 — Comparing the Four Architectures
-   Mirrors rnn-lstm-gru-transformer-guide.md · §7. Parameter counts measured
-   against the reference's formulas (scratchpad/dl/d41.py, d313.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.7",
@@ -10,7 +8,7 @@ EC.receiveLesson({
 
   objectives: [
     "Match each architecture to the structural assumption it encodes",
-    "Compare parameter counts and verify against the reference's formulas",
+    "Compare parameter counts and verify against the formulas",
     "Relate inductive bias to how much data an architecture needs",
     "Choose an architecture from the shape of the problem"
   ],
@@ -39,7 +37,7 @@ EC.receiveLesson({
   Transformer encoder layer (d=256, ff=1024):   789,760
   reference formula LSTM 4h(h+d) = 393,216` },
 
-    { t: "p", text: "At `input=128, hidden=256` the ratios are the ones module 3 established: GRU is exactly 3× an RNN, LSTM exactly 4×. The reference's `4h(h+d) = 393,216` differs from PyTorch's 395,264 by 2,048, which is the two redundant bias vectors PyTorch keeps for CuDNN compatibility. **A single transformer layer costs about twice an LSTM** — and models use six or more of them, so the comparison is not really per-layer." },
+    { t: "p", text: "At `input=128, hidden=256` the ratios are the ones module 3 established: GRU is exactly 3× an RNN, LSTM exactly 4×. The `4h(h+d) = 393,216` differs from PyTorch's 395,264 by 2,048, which is the two redundant bias vectors PyTorch keeps for CuDNN compatibility. **A single transformer layer costs about twice an LSTM** — and models use six or more of them, so the comparison is not really per-layer." },
 
     { t: "table", head: ["Aspect", "RNN / LSTM / GRU", "Transformer"],
       rows: [
@@ -110,7 +108,7 @@ EC.receiveLesson({
     "Each architecture encodes an assumption: unordered features, local structure, sequential state, or nothing at all.",
     "Inductive bias is a data budget — weaker assumptions need more data and reward it with a higher ceiling.",
     "Measured at input=128, hidden=256: RNN 98,816, GRU 296,448, LSTM 395,264, one transformer layer 789,760.",
-    "The reference's `4h(h+d)` formula is 2,048 short of PyTorch's count — the two redundant bias vectors.",
+    "The `4h(h+d)` formula is 2,048 short of PyTorch's count — the two redundant bias vectors.",
     "Recurrence for streaming, bounded memory and very long sequences; transformers for essentially everything else.",
     "Try gradient-boosted trees before a neural network on tabular data.",
     "The choice that matters most is usually which pretrained model, not which architecture."

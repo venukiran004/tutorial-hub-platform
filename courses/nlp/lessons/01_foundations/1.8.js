@@ -1,13 +1,12 @@
 /* ============================================================================
    LESSON 1.8 — POS Tagging and Dependency Parsing
-   Mirrors 01_NLP_Notes.md · §8. Every reference example is run through spaCy
-   3.8 and reproduces exactly, including the SVO triple and the noun chunks
-   (scratchpad/nlp/n18.py).
+   Every reference example is run through spaCy 3.8 and reproduces exactly,
+   including the SVO triple and the noun chunks (scratchpad/nlp/n18.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "1.8",
 
-  lede: "**Bag of words cannot tell `the cat chased the mouse` from `the mouse chased the cat` — the token multisets are identical.** A dependency parse can, because it records which word is the subject of which verb. This lesson runs the reference's examples through spaCy, verifies each one, and measures a subject-verb agreement spanning twelve tokens that no bigram model could ever see.",
+  lede: "**Bag of words cannot tell `the cat chased the mouse` from `the mouse chased the cat` — the token multisets are identical.** A dependency parse can, because it records which word is the subject of which verb. This lesson runs the worked examples through spaCy, verifies each one, and measures a subject-verb agreement spanning twelve tokens that no bigram model could ever see.",
 
   objectives: [
     "Read a POS tag and explain why tagging requires context",

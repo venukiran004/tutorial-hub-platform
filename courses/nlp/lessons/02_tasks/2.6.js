@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 2.6 — Text Summarisation
-   Mirrors 01_NLP_Notes.md · §14. The TF-IDF sentence scorer, TextRank, and T5
-   and BART run for real; the "abstractive" models are measured for how much
-   they actually abstract (scratchpad/nlp/n26.py, n26b.py).
+   The TF-IDF sentence scorer, TextRank, and T5 and BART run for real; the
+   "abstractive" models are measured for how much they actually abstract
+   (scratchpad/nlp/n26.py, n26b.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.6",
@@ -58,7 +58,7 @@ EC.receiveLesson({
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n26.py — extractive summarisation", code:
 "from sklearn.feature_extraction.text import TfidfVectorizer\nimport numpy as np\n\ndef extractive_summarize(text, num_sentences=3):\n    \"\"\"Select the top-N sentences by summed TF-IDF weight.\"\"\"\n    sentences = text.split(\". \")\n    tfidf = TfidfVectorizer(stop_words=\"english\")\n    matrix = tfidf.fit_transform(sentences)\n\n    scores = matrix.sum(axis=1).A1          # one score per sentence\n    top = sorted(np.argsort(scores)[-num_sentences:])   # keep reading order\n    return \". \".join(sentences[i] for i in top)\n\ntext = (\"The transformer architecture was introduced in 2017. \"\n        \"It replaced recurrence with self-attention. \"\n        \"The weather that week was unremarkable. \"\n        \"Attention allows every position to see every other position. \"\n        \"This made training parallel across the sequence.\")",
-      caption: "Mirrors the reference's `extractive_summarize`, with the per-sentence scores printed so the ranking is visible." },
+      caption: "Covers the `extractive_summarize`, with the per-sentence scores printed so the ranking is visible." },
 
     { t: "out", text:
 "sentence                                                   score\nThe transformer architecture was introduced in 2017        2.0000\nIt replaced recurrence with self-attention                 1.9923\nThe weather that week was unremarkable                     1.7321\nAttention allows every position to see every other posit   1.6014\nThis made training parallel across the sequence.           1.7321\n\ntop-2 summary: The transformer architecture was introduced in 2017.\n               It replaced recurrence with self-attention" },
@@ -91,8 +91,8 @@ EC.receiveLesson({
 
     { t: "p", text: "Abstractive models are encoder-decoders: the encoder reads the document, the decoder generates the summary one token at a time. T5 frames every task as text-to-text and needs the prefix `summarize: `; BART was fine-tuned on CNN/DailyMail news and needs no prefix." },
 
-    { t: "callout", kind: "warn", title: "The reference's pipeline call no longer runs",
-      body: [{ t: "p", text: "`pipeline(\"summarization\", model=\"t5-small\")` raises `KeyError: Unknown task summarization` on **transformers 5.17**. The `summarization`, `translation` and `question-answering` tasks were removed from the pipeline registry in the 5.x line. The models are unchanged — call `AutoModelForSeq2SeqLM` and `.generate()` directly, which is what the pipeline wrapped. On transformers 4.x the reference's code runs as written." }] },
+    { t: "callout", kind: "warn", title: "The pipeline call no longer runs",
+      body: [{ t: "p", text: "`pipeline(\"summarization\", model=\"t5-small\")` raises `KeyError: Unknown task summarization` on **transformers 5.17**. The `summarization`, `translation` and `question-answering` tasks were removed from the pipeline registry in the 5.x line. The models are unchanged — call `AutoModelForSeq2SeqLM` and `.generate()` directly, which is what the pipeline wrapped. On transformers 4.x the code runs as written." }] },
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n28.py — driving the model directly", code:
 "import torch\nfrom transformers import AutoTokenizer, AutoModelForSeq2SeqLM\n\nname, prefix = \"t5-small\", \"summarize: \"        # BART needs no prefix\ntok = AutoTokenizer.from_pretrained(name)\nmod = AutoModelForSeq2SeqLM.from_pretrained(name).eval()\n\nids = tok(prefix + ARTICLE, return_tensors=\"pt\", truncation=True, max_length=512)\nwith torch.no_grad():\n    g = mod.generate(**ids, max_length=80, min_length=30,\n                     num_beams=4, do_sample=False)\nprint(tok.decode(g[0], skip_special_tokens=True))",
@@ -187,7 +187,7 @@ EC.receiveLesson({
     { stem: "Why is ROUGE recall-oriented rather than precision-oriented?",
       options: ["Recall is easier to compute", "Because the failure mode worth penalising in a summary is omitting important content", "To match BLEU", "Because precision is undefined for summaries"],
       answer: 1,
-      why: "A summary that drops the main finding has failed, so the metric asks what fraction of the reference's n-grams were produced. Precision alone would reward a one-word summary. Most reported ROUGE numbers are F1, combining both, but the recall orientation is what the name records." },
+      why: "A summary that drops the main finding has failed, so the metric asks what fraction of the n-grams were produced. Precision alone would reward a one-word summary. Most reported ROUGE numbers are F1, combining both, but the recall orientation is what the name records." },
     { stem: "Which property makes extraction attractive in a regulated domain?",
       options: ["Higher ROUGE scores", "Every output sentence traces to a source offset, so no factuality review is needed", "Faster inference", "Better fluency"],
       answer: 1,

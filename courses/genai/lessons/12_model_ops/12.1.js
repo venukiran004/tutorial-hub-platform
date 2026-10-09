@@ -46,7 +46,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "det", text: "Deterministic checks \u2014 start here",
       sub: "Free and reliable" },
 
-    { t: "code", lang: "python", title: "The reference's checks", code: `def deterministic_evals(output: str, case: dict) -> dict:
+    { t: "code", lang: "python", title: "The checks", code: `def deterministic_evals(output: str, case: dict) -> dict:
     import json, re
     checks = {}
     if case.get("must_be_json"):

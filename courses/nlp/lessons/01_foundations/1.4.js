@@ -1,14 +1,10 @@
 /* ============================================================================
    LESSON 1.4 — Bag of Words and TF-IDF
-   Mirrors 01_NLP_Notes.md · §4. The reference's corpus and BoW matrix are
-   reproduced exactly; TF-IDF is computed by hand and checked against
-   scikit-learn, and the common belief that idf eliminates stopwords is
-   tested and found false (scratchpad/nlp/n14.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "1.4",
 
-  lede: "**TF-IDF is usually introduced as the thing that removes stopwords, and it does not.** Computed on the reference's own three-document corpus, `the` appears twice in document 0 while `mat` appears once — and after TF-IDF, `the` still scores **higher**. What the idf term actually did was shrink the gap between them by 41 %. This lesson works every number by hand, checks it against scikit-learn, and gets that distinction right.",
+  lede: "**TF-IDF is usually introduced as the thing that removes stopwords, and it does not.** Computed on the three-document corpus, `the` appears twice in document 0 while `mat` appears once — and after TF-IDF, `the` still scores **higher**. What the idf term actually did was shrink the gap between them by 41 %. This lesson works every number by hand, checks it against scikit-learn, and gets that distinction right.",
 
   objectives: [
     "Build a document-term matrix and read it",
@@ -43,7 +39,7 @@ EC.receiveLesson({
     doc 2 [1, 1, 1, 0, 0, 0, 0, 2]
   reference matrix matches: True` },
 
-    { t: "p", text: "Three documents, eight distinct words, one row per document. The reference's matrix reproduces exactly. Note the last column: **`the` is 2 in every single document**, so it contributes nothing that distinguishes one document from another — it is pure dimensionality with zero discriminative value, and that is the problem TF-IDF exists to address." },
+    { t: "p", text: "Three documents, eight distinct words, one row per document. The matrix reproduces exactly. Note the last column: **`the` is 2 in every single document**, so it contributes nothing that distinguishes one document from another — it is pure dimensionality with zero discriminative value, and that is the problem TF-IDF exists to address." },
 
     { t: "out", text: `  first 5 features: ['cat', 'cat chased', 'cat sat', 'chased', 'chased the']
   unigram vocab 8 -> unigram+bigram vocab 21 (2.6x)` },
@@ -66,7 +62,7 @@ EC.receiveLesson({
   the      3    1.0000                   in every doc -> idf is 1.0` },
 
     { t: "callout", kind: "crit", title: "The `+1` means a word in every document still gets weight 1.0",
-      body: [{ t: "p", text: "This is the detail that makes the common intuition wrong. With `df = N`, the logarithm is `ln(1) = 0`, so the formula gives **1.0, not 0**. Only the bare `log(N/df)` with no `+1` would zero a ubiquitous term out. Both the reference's formula and scikit-learn's smoothed variant include that `+1`, and they do so deliberately: a term appearing everywhere is uninformative for *ranking documents against each other*, but zeroing it would also discard the fact that the document contains it at all. So TF-IDF **downweights** ubiquitous words; it does not delete them, and it is not a substitute for a stopword list." }] },
+      body: [{ t: "p", text: "This is the detail that makes the common intuition wrong. With `df = N`, the logarithm is `ln(1) = 0`, so the formula gives **1.0, not 0**. Only the bare `log(N/df)` with no `+1` would zero a ubiquitous term out. Both the formula and scikit-learn's smoothed variant include that `+1`, and they do so deliberately: a term appearing everywhere is uninformative for *ranking documents against each other*, but zeroing it would also discard the fact that the document contains it at all. So TF-IDF **downweights** ubiquitous words; it does not delete them, and it is not a substitute for a stopword list." }] },
 
     { t: "out", text: `  hand-computed TF-IDF for doc 0 (before normalisation):
     cat      tf=1/6=0.1667  idf=1.4055  tf-idf=0.2342
@@ -148,7 +144,7 @@ EC.receiveLesson({
 
   takeaways: [
     "One-hot vectors are all equidistant, so they encode identity and nothing else.",
-    "The reference's BoW matrix reproduces exactly; `the` is 2 in every document and carries no discriminative value.",
+    "The BoW matrix reproduces exactly; `the` is 2 in every document and carries no discriminative value.",
     "Adding bigrams grew the vocabulary 2.6× on three short sentences.",
     "`IDF = ln(N/df) + 1`, so a word in every document gets idf **1.0, not 0** — only the bare log would zero it.",
     "Measured: TF-IDF cut the `the`-to-`mat` advantage from 2.000 to 1.181, a 41 % reduction — but `the` still scores higher.",
@@ -161,7 +157,7 @@ EC.receiveLesson({
     { stem: "A term appears in all N documents. What is its idf under `ln(N/df) + 1`?",
       options: ["0", "1.0", "ln(N)", "Undefined"],
       answer: 1,
-      why: "`ln(N/N) = ln(1) = 0`, and the `+1` makes it 1.0. Only the bare `log(N/df)` with no `+1` would zero it out. Both the reference's formula and scikit-learn's smoothed version include the `+1`, which is why TF-IDF downweights ubiquitous terms rather than eliminating them." },
+      why: "`ln(N/N) = ln(1) = 0`, and the `+1` makes it 1.0. Only the bare `log(N/df)` with no `+1` would zero it out. Both the formula and scikit-learn's smoothed version include the `+1`, which is why TF-IDF downweights ubiquitous terms rather than eliminating them." },
     { stem: "In the worked corpus, `the` appears twice in doc 0 and `mat` once. After TF-IDF, which scores higher?",
       options: ["`mat`, because idf removes common words", "`the` — idf shrinks the gap by 41 % but does not invert it", "They are equal", "Both are zero"],
       answer: 1,

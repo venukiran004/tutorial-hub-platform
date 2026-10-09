@@ -1,8 +1,5 @@
 /* ============================================================================
    LESSON 6.5 — CTC, Worked
-   Mirrors 08_Audio_Speech_Processing.md · §8, §9. The reference's entire
-   worked example is reproduced three ways — brute force, forward lattice,
-   and torch.nn.CTCLoss — and all three agree (scratchpad/dl/d65.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "6.5",

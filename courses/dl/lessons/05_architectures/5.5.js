@@ -1,7 +1,5 @@
 /* ============================================================================
    LESSON 5.5 — Reference Card: the GRU
-   Mirrors Architectures/gru.md. Parameter formula checked; the reference's
-   "faster training" claim benchmarked and found not to hold on torch 2.10 CPU.
    ========================================================================= */
 EC.receiveLesson({
   id: "5.5",
@@ -33,7 +31,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Parameter count", id: "complexity" },
 
-    { t: "out", text: `  gru.md   H=128 D=64 : formula 74,112  pytorch 74,496  (+384)
+    { t: "out", text: `  gru   H=128 D=64 : formula 74,112  pytorch 74,496  (+384)
 
       d     h        RNN        GRU       LSTM   GRU/LSTM
     100   256     91,648    274,944    366,592   0.750  (25% fewer)
@@ -128,7 +126,7 @@ EC.receiveLesson({
     "`3H(H + D + 1)` — exactly 75 % of an LSTM, verified at three sizes; PyTorch adds `3H`.",
     "`∂h_t/∂h_{t−1} = z_t` exactly — the same additive gradient path as the LSTM's cell.",
     "The coupled update gate makes the memory budget zero-sum: keeping more means writing less.",
-    "PyTorch's `z` means *keep the old state* — the reverse of the reference's convention.",
+    "PyTorch's `z` means *keep the old state* — the reverse of the convention.",
     "Benchmarked: the GRU was 1.6–3.1× *slower* than the LSTM on torch 2.10 CPU despite fewer parameters.",
     "The reset gate multiplies the recurrent term inside the tanh, not `h` beforehand.",
     "Neither consistently beats the other; both vastly beat a vanilla RNN."

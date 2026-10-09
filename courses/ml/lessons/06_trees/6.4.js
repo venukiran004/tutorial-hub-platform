@@ -199,7 +199,7 @@ at prediction time every training row is 'earlier', so the encoding is the full 
 # small categoricals native; merchant as its smoothed statistic (+ its frequency as a second column)
 # early stopping on the LAST week; refit at the found count on all weeks; isotonic calibration on the last week's out-of-fold scores (2.5)
 # log: iteration count, feature importances by gain and by permutation, and the merchant-level AUC on rare merchants`,
-          note: "**The high-cardinality column handled the CatBoost way inside any library, validation that mirrors deployment, and the rare-level behaviour measured rather than assumed.**" }
+          note: "**The high-cardinality column handled the CatBoost way inside any library, validation that Covers deployment, and the rare-level behaviour measured rather than assumed.**" }
       ]
     },
 

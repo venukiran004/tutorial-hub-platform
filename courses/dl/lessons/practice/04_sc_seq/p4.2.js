@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P4.2 — Sequence Models and NLP · 2
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/05_Deep_Learning/Practice/03_Sequence_Models_and_NLP.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p4.2",

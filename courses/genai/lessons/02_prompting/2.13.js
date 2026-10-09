@@ -103,7 +103,7 @@ def test_prefix_is_stable():
         ["Reduce `max_tokens` to expected length", "Bounds the worst case only", "1.5"],
         ["Streaming", "**Zero** — same cost, better perceived latency", "1.12"]
       ],
-      caption: "From 04_Prompt_Engineering.md section 13. The last row is listed there as a cost strategy and is not one — 1.12 measured that streaming costs exactly the same, and only aborting saves anything." },
+      caption: "From the reference notes section 13. The last row is listed there as a cost strategy and is not one — 1.12 measured that streaming costs exactly the same, and only aborting saves anything." },
 
     { t: "p", text: "The ordering matters because effort spent on row six — trimming words from a prompt — is effort not spent on rows one and two, which are an order of magnitude larger. A 20% shorter system prompt on a workload that should have been batched is a rounding error on a bill that could have been halved." },
 
@@ -178,7 +178,7 @@ for static in (3000, 2400, 1650, 900, 300):
     "Measured across four layouts, **all-static wins at every ratio** — it is the only one whose variable portion is a short query rather than a large example block.",
     "When examples dominate 10:1, layout alone is a **6.6× difference** on the input portion with byte-identical content.",
     "That arithmetic says nothing about **accuracy**, which is what decides it. Establish the accuracy difference first, then consult the cost table.",
-    "The reference's eight cost levers are not equal: **a smaller model is up to 16.7×, batching is 50%, shortening prompts is proportional and usually small** — and streaming is listed as a cost lever and is not one (1.12).",
+    "The eight cost levers are not equal: **a smaller model is up to 16.7×, batching is 50%, shortening prompts is proportional and usually small** — and streaming is listed as a cost lever and is not one (1.12).",
     "Shortening a prompt is genuinely worth it when it is re-sent constantly, when the prefix cannot cache, or when the material carried no information in the first place."
   ],
 
@@ -195,10 +195,10 @@ for static in (3000, 2400, 1650, 900, 300):
         answer: 1,
         why: "Measured at that ratio: examples-first costs 0.008750 and all-static costs 0.001325, a 6.6× difference from layout alone with identical content. The first option is true of the static-first layout specifically — at 0.008075 it is barely better than caching nothing, because protecting a 300-token block is not worth much — but all-static protects the examples too. Whether the examples *can* be static is an accuracy question (2.2), not a layout one." },
 
-      { stem: "Which of the reference's cost levers is not a cost lever?",
+      { stem: "Which of the cost levers is not a cost lever?",
         options: ["Prompt caching", "Batching", "Streaming", "Using a smaller model"],
         answer: 2,
-        why: "Streaming costs exactly the same tokens at the same rates — 1.12 measured that it changes when the first token arrives, not what the response costs — and the only case where it saves money is aborting, which is a separate decision. The other three are real and large: a smaller model is up to 16.7× on the reference's own price table, batching is 50% on both input and output, and caching is 50–90% of the cached input portion." },
+        why: "Streaming costs exactly the same tokens at the same rates — 1.12 measured that it changes when the first token arrives, not what the response costs — and the only case where it saves money is aborting, which is a separate decision. The other three are real and large: a smaller model is up to 16.7× on the price table, batching is 50% on both input and output, and caching is 50–90% of the cached input portion." },
 
       { stem: "Your cache hit rate has been zero for three months. What is the cheapest way to have caught it?",
         options: ["Reviewing the prompt more carefully", "A unit test asserting that two requests from different users share their first N bytes", "Monitoring total spend", "Asking the provider"],
@@ -209,13 +209,13 @@ for static in (3000, 2400, 1650, 900, 300):
 
   interview: {
     title: "In an interview",
-    sub: "The reference's Q6 on cost optimisation. A strong answer orders the levers by size rather than listing them.",
+    sub: "The Q6 on cost optimisation. A strong answer orders the levers by size rather than listing them.",
     questions: [
       { level: "core",
         q: "How do you optimise LLM costs?",
         strong: "A strong answer orders the levers by effect and does not spend time on the small ones.",
         answer: [
-          { t: "p", text: "In order of size. Route to a smaller model where the task allows it — on the reference's own price table that is up to 16.7× and it dwarfs everything else. Batch anything that can wait a day, which is 50% on both input and output. Then prompt caching, which is 50 to 90% of whatever portion of the input is cacheable." },
+          { t: "p", text: "In order of size. Route to a smaller model where the task allows it — on the price table that is up to 16.7× and it dwarfs everything else. Batch anything that can wait a day, which is 50% on both input and output. Then prompt caching, which is 50 to 90% of whatever portion of the input is cacheable." },
           { t: "p", text: "After that the returns fall off quickly: compressing retrieved context, semantic caching of whole responses, and finally shortening prompts, which is proportional and usually small." },
           { t: "p", text: "One thing I would correct if it came up: streaming is often listed as a cost optimisation and it is not. Same tokens, same rates — it changes when the first token arrives, and the only saving is if you abort, which is a separate decision." }
         ] },

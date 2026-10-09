@@ -1,13 +1,12 @@
 /* ============================================================================
    LESSON 7.1 — NaN, Inf, and the Gradient Norm
-   Mirrors 30_DL_Training_Instability.md · Overview through §2. The depth
-   arithmetic is verified and the three-way init comparison measured across
-   30 layers (scratchpad/dl/d71.py).
+   The depth arithmetic is verified and the three-way init comparison
+   measured across 30 layers (scratchpad/dl/d71.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "7.1",
 
-  lede: "**Deep means many multiplications, and numbers drift exponentially unless you actively hold them near one.** That is the entire problem in a sentence, and the reference's arithmetic makes it concrete: a per-layer factor of 1.5 gives 6.4 × 10⁸ over fifty layers, and 0.7 gives 1.8 × 10⁻⁸. Everything in this module — initialisation, normalisation, residuals, clipping — exists to keep that factor near 1. This lesson covers detection: the gradient norm, and the NaN that ends a run.",
+  lede: "**Deep means many multiplications, and numbers drift exponentially unless you actively hold them near one.** That is the entire problem in a sentence, and the arithmetic makes it concrete: a per-layer factor of 1.5 gives 6.4 × 10⁸ over fifty layers, and 0.7 gives 1.8 × 10⁻⁸. Everything in this module — initialisation, normalisation, residuals, clipping — exists to keep that factor near 1. This lesson covers detection: the gradient norm, and the NaN that ends a run.",
 
   objectives: [
     "Explain why depth causes exponential drift in both directions",
@@ -27,7 +26,7 @@ EC.receiveLesson({
   each layer x1.0: 1.0^50 = 1.000e+00   stable
   each layer x0.7: 0.7^50 = 1.798e-08   VANISHES` },
 
-    { t: "p", text: "The reference's figures check out. A forward pass is a chain of multiplications and backprop runs the same chain in reverse, so any systematic deviation from unity compounds. **Only signals near ×1.0 per layer stay stable across depth** — and 1.5 and 0.7 are not extreme values, they are what you get from a slightly wrong initialisation." },
+    { t: "p", text: "The figures check out. A forward pass is a chain of multiplications and backprop runs the same chain in reverse, so any systematic deviation from unity compounds. **Only signals near ×1.0 per layer stay stable across depth** — and 1.5 and 0.7 are not extreme values, they are what you get from a slightly wrong initialisation." },
 
     { t: "h2", n: "02", text: "Measured across 30 layers", id: "init" },
 

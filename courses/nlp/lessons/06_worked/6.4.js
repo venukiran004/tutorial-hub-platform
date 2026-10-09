@@ -1,14 +1,13 @@
 /* ============================================================================
    LESSON 6.4 — The Whole Stack: What, When-Why, How
-   Mirrors 02b_Transformer_Cheatsheet_Explained.md. Its §15 worked example is
-   a SECOND independent trace with different weights — it reproduces to every
-   digit (§06), and the antisymmetry found in 6.3 reappears, confirming it is
-   structural (scratchpad/nlp/n61.py).
+   Its §15 worked example is a SECOND independent trace with different
+   weights — it reproduces to every digit (§06), and the antisymmetry found
+   in 6.3 reappears, confirming it is structural (scratchpad/nlp/n61.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "6.4",
 
-  lede: "**A second worked example, different weight matrices, and the logits are antisymmetric again: +0.5136/−0.5136, +0.4141/−0.4141, −1.8880/+1.8880.** Lesson 6.3 derived why — LayerNorm forces the hidden state to sum to zero and this vocabulary's embeddings pair to `[1,1,1,1]` — and here that prediction is confirmed on weights chosen independently. This lesson uses the reference's *what / when-why / how* frame to walk the whole stack, then verifies its second trace end to end.",
+  lede: "**A second worked example, different weight matrices, and the logits are antisymmetric again: +0.5136/−0.5136, +0.4141/−0.4141, −1.8880/+1.8880.** Lesson 6.3 derived why — LayerNorm forces the hidden state to sum to zero and this vocabulary's embeddings pair to `[1,1,1,1]` — and here that prediction is confirmed on weights chosen independently. This lesson uses the *what / when-why / how* frame to walk the whole stack, then verifies its second trace end to end.",
 
   objectives: [
     "Give the what, when-why and how for each component of the stack",
@@ -67,7 +66,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "The second trace: Q, K, V", id: "qkv" },
 
-    { t: "code", lang: "python", title: "The reference's own reproduction script, run unmodified", code:
+    { t: "code", lang: "python", title: "The reproduction script, run unmodified", code:
 "E = np.array([[1,0,1,0],[0,1,1,0],[1,1,0,0],[0,0,1,1],[1,0,0,1],[0,1,0,1]],float)\nids = [0,1,2]                                   # \"the cat sat\"\nPE = np.array([[np.sin(p),np.cos(p),np.sin(p/100),np.cos(p/100)] for p in range(3)])\nX  = E[ids] + PE\n\nWQ = np.array([[1,0,1,0],[0,1,0,1],[1,0,0,1],[0,1,1,0]],float)\nWK = np.array([[1,0,0,1],[0,1,1,0],[0,1,0,1],[1,0,1,0]],float)\nQ, K, V = X@WQ, X@WK, X                         # W_V = I, so V = X\n\nS = (Q@K.T) / np.sqrt(4)\nS += np.triu(np.ones((3,3)),1) * -1e9           # causal mask\nA = np.exp(S - S.max(1,keepdims=True)); A /= A.sum(1,keepdims=True)",
       caption: "Note the mask uses `-1e9` rather than `-inf`. Lesson 4.5 measured that anything below about `-1e4` underflows to exactly zero in float32, so the two are equivalent here." },
 
@@ -117,7 +116,7 @@ EC.receiveLesson({
 
     { t: "exercise", title: "Run both traces",
       tasks: [
-        "Run the reference's NumPy script unmodified and confirm it prints mat at 0.59.",
+        "Run the NumPy script unmodified and confirm it prints mat at 0.59.",
         "Change W_K to equal W_Q and see how the attention pattern collapses toward self-attention.",
         "Replace the mask value -1e9 with -10 and measure how much weight leaks to the future.",
         "Break the vocabulary's complementary pairing and confirm the logit antisymmetry disappears.",
@@ -126,7 +125,7 @@ EC.receiveLesson({
   ],
 
   takeaways: [
-    "The reference's frame — what it is, when and why you need it, how it works — puts the motivation before the mechanics, which is what most explanations skip.",
+    "The frame — what it is, when and why you need it, how it works — puts the motivation before the mechanics, which is what most explanations skip.",
     "Every weight matrix is learned: shape fixed by architecture, values random at init, updated by gradient descent. None is designed.",
     "The toy 0/1 matrices are pedagogy; real ones are dense floats with no visible structure, and the same attention patterns emerge because they lowered the loss.",
     "Three weight choices put 'sat's attention at 0.510 on itself, 0.515 on 'cat', and 0.661 on 'cat' — same sentence, same formula. The weights are the model.",

@@ -37,7 +37,7 @@ print([e.value for e in AuthCredentialTypes])
 
 print(list(AuthConfig.model_fields))
 # ['auth_scheme', 'raw_auth_credential', 'exchanged_auth_credential', 'credential_key']`,
-      caption: "`AuthScheme` is the API's requirement — it mirrors OpenAPI's security schemes. `AuthCredential` is what you hold. `AuthConfig` pairs them, and its `exchanged_auth_credential` is where the *result* of an interactive flow lands." },
+      caption: "`AuthScheme` is the API's requirement — it Covers OpenAPI's security schemes. `AuthCredential` is what you hold. `AuthConfig` pairs them, and its `exchanged_auth_credential` is where the *result* of an interactive flow lands." },
 
     { t: "h2", n: "02", text: "Application credentials", id: "app" },
 

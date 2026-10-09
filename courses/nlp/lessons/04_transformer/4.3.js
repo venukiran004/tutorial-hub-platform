@@ -1,7 +1,5 @@
 /* ============================================================================
    LESSON 4.3 — Self-Attention, Derived
-   Mirrors 02_Transformers_InDepth.md · §4. Every number in the reference's
-   worked example is recomputed; two of the three output rows are wrong (§04).
    The variance and saturation claims are measured (scratchpad/nlp/n42.py).
    ========================================================================= */
 EC.receiveLesson({
@@ -53,7 +51,7 @@ EC.receiveLesson({
 "step 5 — output = weights x V\n\n           recomputed                              reference prints\n  The   [0.5840, 0.3560, 0.4268, 0.4928]      [0.585, 0.356, 0.427, 0.493]   ok\n  cat   [0.5151, 0.4283, 0.3850, 0.5570]      [0.487, 0.428, 0.353, 0.560]   two wrong\n  sat   [0.5473, 0.3805, 0.4362, 0.5103]      [0.548, 0.380, 0.439, 0.490]   one wrong" },
 
     { t: "callout", kind: "warn", title: "Two of the three output rows are wrong in the reference",
-      body: [{ t: "p", text: "Term by term for *cat*, using the reference's own weights `[0.2876, 0.4291, 0.2833]`:" },
+      body: [{ t: "p", text: "Term by term for *cat*, using the weights `[0.2876, 0.4291, 0.2833]`:" },
              { t: "p", text: "`dim0 = 0.2876×1.0 + 0.4291×0.2 + 0.2833×0.5 = 0.5151`, where the reference prints 0.487. `dim2 = 0.2876×0.5 + 0.4291×0.1 + 0.2833×0.7 = 0.3850`, where it prints 0.353. For *sat*, `dim3 = 0.2987×0.2 + 0.3401×0.9 + 0.3612×0.4 = 0.5103`, where it prints 0.490." },
              { t: "p", text: "The recomputed matrix agrees with `torch.nn.functional.scaled_dot_product_attention` to **1.67e-16**, so the arithmetic above is the correct one. The weights the reference derived are right; only the final weighted sums slipped." }] },
 
@@ -116,7 +114,7 @@ EC.receiveLesson({
     { t: "exercise", title: "Rebuild it and break it",
       tasks: [
         "Implement scaled dot-product attention in twelve lines of NumPy and check it against `torch.nn.functional.scaled_dot_product_attention`.",
-        "Recompute the reference's output rows yourself and confirm which entries are wrong.",
+        "Recompute the output rows yourself and confirm which entries are wrong.",
         "Sweep d_k from 4 to 1024, measuring score variance, and confirm it tracks d_k.",
         "Remove the scaling and measure the entropy of an untrained attention layer's weights at several d_k values.",
         "Shuffle the rows of X, run attention, and verify the output rows are the same set in shuffled order."
@@ -126,7 +124,7 @@ EC.receiveLesson({
   takeaways: [
     "Attention is a soft dictionary lookup: compare a query against all keys, normalise to weights, blend all values.",
     "Keys and values are separate so a token can advertise one thing and deliver another.",
-    "The reference's worked output is wrong in two of three rows — `cat` is [0.5151, 0.4283, 0.3850, 0.5570], not [0.487, 0.428, 0.353, 0.560]; `sat`'s last entry is 0.5103, not 0.490.",
+    "The worked output is wrong in two of three rows — `cat` is [0.5151, 0.4283, 0.3850, 0.5570], not [0.487, 0.428, 0.353, 0.560]; `sat`'s last entry is 0.5103, not 0.490.",
     "`Var(q·k) = d_k` holds tightly: 64.06 measured at d_k = 64, so raw scores swing by about ±8.",
     "Unscaled attention at d_k = 64 starts at 0.8737 mean max probability and 0.3638 entropy — 87% one-hot before training.",
     "Scaling takes the same layer to 0.1680 and 2.9981, close to uniform and responsive.",

@@ -147,7 +147,7 @@ print(r.choices[0].message.content)`,
         ["`\"required\"`", "The model must call at least one tool, its choice which", "The turn is meaningless without data — a router, a lookup step"],
         ["`{\"type\": \"function\", \"function\": {\"name\": \"x\"}}`", "That specific tool, always", "Structured output (1.8), or a pipeline step with exactly one action"]
       ],
-      caption: "From 01_LLM_Parameters.md §9. Note that `none` still sends and bills for every schema — the tools are in the context whether or not they can be called." },
+      caption: "From the reference notes §9. Note that `none` still sends and bills for every schema — the tools are in the context whether or not they can be called." },
 
     { t: "p", text: "The forced-specific setting is the one that does double duty. It is how you get structured output from a provider without `response_format`, and it is also how you build a pipeline step that cannot go off the rails: if the only legal action is `extract_invoice_fields`, the model cannot decide to answer in prose instead." },
 
@@ -334,7 +334,7 @@ turns=10  crossover at N=6      at N=50: direct $0.106250 vs routed $0.011263  (
 
   interview: {
     title: "In an interview",
-    sub: "The reference's Q6 asks about function calling versus tool use. The more revealing question is what happens in step 3.",
+    sub: "The Q6 asks about function calling versus tool use. The more revealing question is what happens in step 3.",
     questions: [
       { level: "core",
         q: "What is the difference between function calling and tool use?",

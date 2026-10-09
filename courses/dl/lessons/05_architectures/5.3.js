@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 5.3 — Reference Card: the Recurrent Network
-   Mirrors Architectures/rnn.md. Parameter formula checked against PyTorch,
-   including the discrepancy from PyTorch's second bias vector.
+   Parameter formula checked against PyTorch, including the discrepancy from
+   PyTorch's second bias vector.
    ========================================================================= */
 EC.receiveLesson({
   id: "5.3",
@@ -35,10 +35,10 @@ EC.receiveLesson({
 
     { t: "math", tex: "\\text{params} \\approx H(H + D + 1), \\qquad \\text{compute} = O(T \\cdot H^2) \\; \\text{— not parallel over } T" },
 
-    { t: "out", text: `  rnn.md   H=128 D=64 : formula 24,704  pytorch 24,832  (pytorch has 2 bias vectors: +128)` },
+    { t: "out", text: `  rnn   H=128 D=64 : formula 24,704  pytorch 24,832  (pytorch has 2 bias vectors: +128)` },
 
     { t: "callout", kind: "note", title: "PyTorch keeps a second, redundant bias",
-      body: [{ t: "p", text: "The reference's formula gives 24,704 and PyTorch reports 24,832. The 128 difference is `bias_hh`, a second bias vector that PyTorch stores alongside `bias_ih` for CuDNN kernel compatibility. Mathematically they are redundant — only their sum affects the computation — which is why any hand implementation must add both to match. The same offset appears in the LSTM and GRU cards, scaled by the number of gates." }] },
+      body: [{ t: "p", text: "The formula gives 24,704 and PyTorch reports 24,832. The 128 difference is `bias_hh`, a second bias vector that PyTorch stores alongside `bias_ih` for CuDNN kernel compatibility. Mathematically they are redundant — only their sum affects the computation — which is why any hand implementation must add both to match. The same offset appears in the LSTM and GRU cards, scaled by the number of gates." }] },
 
     { t: "p", text: "Compute is `O(T·H²)` and **cannot be parallelised across T**, because each step needs the previous state. That is the architectural limitation lesson 4.1 identified as decisive: no amount of hardware removes it, which is why transformers scaled and RNNs did not." },
 

@@ -1,8 +1,6 @@
 /* ============================================================================
    INTERVIEW I1.4 — Section 4: Statistics
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/02_Mathematics_and_Statistics/00_Interview_Bank/01_Math_and_Stats_Interview.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.4",

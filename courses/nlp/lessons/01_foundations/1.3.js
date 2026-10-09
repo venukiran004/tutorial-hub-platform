@@ -1,14 +1,10 @@
 /* ============================================================================
    LESSON 1.3 — Tokenization In Depth
-   Mirrors 01_NLP_Notes.md · §3. The reference's BPE training trace is
-   recomputed round by round and reproduces exactly; the WordPiece scoring
-   difference is demonstrated on the same corpus; and the real BERT and GPT-2
-   tokenizers are run (scratchpad/nlp/n13.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "1.3",
 
-  lede: "**Tokenization is the one decision every later stage inherits, and BPE is simple enough to run by hand.** Count every adjacent pair of symbols in the corpus, glue the most frequent one together, repeat. The number of times you repeat *is* your vocabulary size, and the ordered list of merges is the entire model. This lesson recomputes the reference's training trace merge by merge — it reproduces exactly — then shows the one-line change that turns BPE into WordPiece, and runs the real tokenizers.",
+  lede: "**Tokenization is the one decision every later stage inherits, and BPE is simple enough to run by hand.** Count every adjacent pair of symbols in the corpus, glue the most frequent one together, repeat. The number of times you repeat *is* your vocabulary size, and the ordered list of merges is the entire model. This lesson recomputes the training trace merge by merge — it reproduces exactly — then shows the one-line change that turns BPE into WordPiece, and runs the real tokenizers.",
 
   objectives: [
     "Compare word, character and subword tokenization on vocabulary and OOV behaviour",
@@ -37,7 +33,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Training BPE by hand", id: "training" },
 
-    { t: "p", text: "Start with every word as a sequence of characters, count adjacent pairs weighted by word frequency, merge the winner, repeat. The reference's corpus is five words:" },
+    { t: "p", text: "Start with every word as a sequence of characters, count adjacent pairs weighted by word frequency, merge the winner, repeat. The corpus is five words:" },
 
     { t: "out", text: `  corpus: {'hug': 10, 'pug': 5, 'pun': 12, 'bun': 4, 'hugs': 5}
   base vocab = ['b', 'g', 'h', 'n', 'p', 's', 'u']
@@ -162,7 +158,7 @@ def bpe_encode(word, merges):
       ] },
 
     { t: "exercise", kind: "practice", title: "Train a tokenizer and probe it", difficulty: "core", minutes: 40,
-      prompt: "Implement BPE training and encoding, and reproduce the reference's three-merge trace exactly. Then train it on a real corpus at vocabulary sizes of 500, 2,000 and 10,000, and for each record the mean number of tokens per word and the fraction of words that stay whole. Plot both against vocabulary size. Finally, tokenize the same paragraph with a real BERT and GPT-2 tokenizer, and tokenize the same content in two different languages to compare token counts.",
+      prompt: "Implement BPE training and encoding, and reproduce the three-merge trace exactly. Then train it on a real corpus at vocabulary sizes of 500, 2,000 and 10,000, and for each record the mean number of tokens per word and the fraction of words that stay whole. Plot both against vocabulary size. Finally, tokenize the same paragraph with a real BERT and GPT-2 tokenizer, and tokenize the same content in two different languages to compare token counts.",
       hints: [
         "Weight the pair counts by word frequency, not by document count.",
         "Apply merges in learned order when encoding, and re-check the same position after a glue.",
@@ -181,7 +177,7 @@ def bpe_encode(word, merges):
   takeaways: [
     "Word-level gives short sequences and an `[UNK]` problem; character-level has no OOV but long sequences; subword sits between by design.",
     "BPE: count adjacent pairs weighted by word frequency, merge the winner, repeat. The merge count is the vocabulary size.",
-    "The reference's trace reproduces exactly: merges `[(u,g), (u,n), (h,ug)]`, and `hugs → ['hug','s']`, `bug → ['b','ug']`.",
+    "The trace reproduces exactly: merges `[(u,g), (u,n), (h,ug)]`, and `hugs → ['hug','s']`, `bug → ['b','ug']`.",
     "An unseen word encodes from known pieces; a character never seen has no symbol at all.",
     "Byte-level BPE starts from the 256 bytes, so `[UNK]` cannot occur.",
     "WordPiece divides pair frequency by the product of the parts, which picked a different first merge on the same corpus.",
@@ -201,7 +197,7 @@ def bpe_encode(word, merges):
     { stem: "How does WordPiece's merge criterion differ from BPE's?",
       options: ["It merges the least frequent pair", "It divides pair frequency by the product of the parts' frequencies", "It merges alphabetically", "It uses a neural scorer"],
       answer: 1,
-      why: "BPE takes `argmax freq(a,b)`; WordPiece takes `argmax freq(a,b)/(freq(a)·freq(b))`, favouring pairs that are common *relative to how common their parts are*. On the reference's corpus BPE merged `(u,g)` at count 20 while WordPiece merged `(g,s)` at count 5, because `g` and `s` are individually rare." },
+      why: "BPE takes `argmax freq(a,b)`; WordPiece takes `argmax freq(a,b)/(freq(a)·freq(b))`, favouring pairs that are common *relative to how common their parts are*. On the corpus BPE merged `(u,g)` at count 20 while WordPiece merged `(g,s)` at count 5, because `g` and `s` are individually rare." },
     { stem: "In GPT-2, are `Hello` and ` Hello` the same token?",
       options: ["Yes — whitespace is stripped", "No — the leading space is part of the token, rendered as `Ġ`", "Only when lowercased", "Yes, but with different IDs"],
       answer: 1,

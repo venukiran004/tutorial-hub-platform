@@ -1,8 +1,5 @@
 /* ============================================================================
    LESSON 3.4 — NLP Evaluation Metrics
-   Mirrors 01_NLP_Notes.md · §20. Every metric the reference names is
-   computed. The reference's ROUGE-1 figure did not reproduce (§03), and all
-   three generation metrics fail the same test (§07) — scratchpad/nlp/n34.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "3.4",
@@ -54,7 +51,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "ROUGE, and a figure that did not reproduce", id: "rouge" },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n34.py — the reference's ROUGE example", code:
+    { t: "code", lang: "python", title: "scratchpad/nlp/n34.py — the ROUGE example", code:
 "from rouge_score import rouge_scorer\n\nscorer = rouge_scorer.RougeScorer([\"rouge1\", \"rouge2\", \"rougeL\"],\n                                  use_stemmer=True)\nscores = scorer.score(\"The cat sat on the mat.\",\n                      \"The cat is on the mat.\")\nfor metric, v in scores.items():\n    print(f\"{metric}: P={v.precision:.3f} R={v.recall:.3f} F1={v.fmeasure:.3f}\")" },
 
     { t: "out", text:
@@ -93,7 +90,7 @@ EC.receiveLesson({
 
     { t: "code", lang: "python", title: "BERTScore", code:
 "from bert_score import score\n\nP, R, F1 = score([\"It's a lovely day outside\"],\n                 [\"The weather is beautiful today\"],\n                 lang=\"en\", model_type=\"roberta-large\")\nprint(F1.item())      # 0.9342 - the reference says ~0.90\n\n# the authors recommend rescaling against a random baseline,\n# because raw scores are compressed into a narrow high band\nP, R, F1 = score(cands, refs, lang=\"en\", model_type=\"roberta-large\",\n                 rescale_with_baseline=True)",
-      caption: "The paraphrase scores 0.9342 with no shared content words at all — the reference's ~0.90 reproduces." },
+      caption: "The paraphrase scores 0.9342 with no shared content words at all — the ~0.90 reproduces." },
 
     { t: "h2", n: "07", text: "The test every metric fails", id: "failure" },
 
@@ -135,7 +132,7 @@ EC.receiveLesson({
   takeaways: [
     "Accuracy and micro F1 are the same number in single-label multiclass; reporting both is reporting one thing twice.",
     "A model at 0.9700 accuracy scored 0.5504 macro F1 while predicting one class zero times — macro was the only average that showed it.",
-    "The reference's ROUGE-1 of 0.857 did not reproduce; five overlapping tokens out of six is 0.833.",
+    "The ROUGE-1 of 0.857 did not reproduce; five overlapping tokens out of six is 0.833.",
     "QA reports exact match and token F1 together because EM scores a correct-but-verbose answer 0, and F1 alone rates a bare surname as highly as it.",
     "Perplexity gave 'the the the the...' its best score of 16.59 — repetition is a perplexity optimum, which is why generators cannot be tuned on it.",
     "Perplexity is incomparable across models with different tokenizers.",

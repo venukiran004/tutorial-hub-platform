@@ -374,7 +374,7 @@ Config change: 02:05 — "increase tenant cache TTL from 5m to 24h"`},
       hint: "The memory graph and the config change share a timestamp. And look carefully at what `py-spy` says the process is doing — it is not waiting.",
       solution: {
         lang: "python",
-        title: "incident-2026-09-05.md",
+        title: "incident-2026-09-the reference notes",
         code: `# =========================================================================
 # THE SHAPE
 # =========================================================================

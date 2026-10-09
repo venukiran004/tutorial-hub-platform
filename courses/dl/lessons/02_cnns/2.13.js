@@ -1,8 +1,7 @@
 /* ============================================================================
    LESSON 2.13 — GANs: Generative Adversarial Networks
-   Mirrors 02_CNNs.md · §17. The reference's DCGAN Generator is built and
-   trained for real on MNIST (scratchpad/dl/d213.py). The run does NOT reach
-   the theoretical equilibrium — reported as measured.
+   The run does NOT reach the theoretical equilibrium — reported as
+   measured.
    ========================================================================= */
 EC.receiveLesson({
   id: "2.13",
@@ -143,7 +142,7 @@ lossG.backward(); optG.step()`,
 
   takeaways: [
     "G maps noise to images, D classifies real against fake; they train alternately against each other.",
-    "The DCGAN generator mirrors a classifier: transposed convolutions grow space while shrinking channels.",
+    "The DCGAN generator Covers a classifier: transposed convolutions grow space while shrinking channels.",
     "Tanh output requires real data normalised to [−1, 1], or D wins on value range alone.",
     "Use the non-saturating generator loss — BCE against a target of 1 — for a usable gradient early on.",
     "Measured after 6 epochs: D(real) = 0.861, D(fake) = 0.037 — nowhere near the theoretical 0.5.",

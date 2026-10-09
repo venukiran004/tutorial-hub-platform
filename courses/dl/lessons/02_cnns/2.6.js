@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 2.6 — Data Augmentation
-   Mirrors 02_CNNs.md · §7. Transform behaviour, MixUp/CutMix arithmetic and
-   TTA are all executed in scratchpad/dl/d26.py.
+   Transform behaviour, MixUp/CutMix arithmetic and TTA are all executed in
+   scratchpad/dl/d26.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "2.6",

@@ -1,8 +1,7 @@
 /* ============================================================================
    LESSON 6.7 — Inference, and the Complete Trace
-   Mirrors 02c_Transformer_Translation_Step_by_Step.md · §5, 7-8. The
-   inference loop is run for real and never terminates — it emits "liebe"
-   forever and never reaches <eos> (§02) (scratchpad/nlp/n65.py).
+   The inference loop is run for real and never terminates — it emits
+   "liebe" forever and never reaches <eos> (§02) (scratchpad/nlp/n65.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "6.7",
@@ -87,7 +86,7 @@ EC.receiveLesson({
       ] },
 
     { t: "callout", kind: "insight", title: "Everything in the right column came from the numbers",
-      body: [{ t: "p", text: "None of the five findings on the right is stated in the reference. The antisymmetry is a provable consequence of LayerNorm and the toy vocabulary. The loss being worse than chance requires computing `ln(5)` and comparing. The absent alignment requires noticing that 0.347, 0.300, 0.353 is approximately uniform. The infinite loop requires actually running inference rather than reading about it. That is the argument for this module: the reference's traces are **correct**, and recomputing them still taught things that reading could not." }] },
+      body: [{ t: "p", text: "None of the five findings on the right is stated in the reference. The antisymmetry is a provable consequence of LayerNorm and the toy vocabulary. The loss being worse than chance requires computing `ln(5)` and comparing. The absent alignment requires noticing that 0.347, 0.300, 0.353 is approximately uniform. The infinite loop requires actually running inference rather than reading about it. That is the argument for this module: the traces are **correct**, and recomputing them still taught things that reading could not." }] },
 
     { t: "callout", kind: "tradeoff", title: "Encoder-decoder against decoder-only, once more",
       body: [{ t: "p", text: "A decoder-only model drops the encoder and cross-attention entirely, concatenates source and target into one stream, and lets masked self-attention do both jobs. It is simpler, it scales, and lesson 5.1 covered why it won the general case. Encoder-decoder still wins where the input and output are genuinely *different* sequences or modalities — translation, speech-to-text, any clean source-to-target transformation — because the source gets a full bidirectional read before output begins, the encoder runs once, and cross-attention gives you an inspectable alignment matrix that a decoder-only model simply does not have." }] },
@@ -130,7 +129,7 @@ EC.receiveLesson({
     { stem: "Which findings in this module are absent from the reference?",
       options: ["None — it states them all", "The logit antisymmetry, the loss being worse than uniform, the absent cross-attention alignment, and the infinite generation loop", "Only the arithmetic errors", "The pipeline table"],
       answer: 1,
-      why: "The reference's three traces are all correct, and recomputing them still surfaced five things reading would not: a provable antisymmetry from LayerNorm plus the toy vocabulary, confirmed on independent weights; a loss 0.92 nats worse than ln(5); cross-attention within 0.0577 of uniform; and a generation loop that never terminates." }
+      why: "The three traces are all correct, and recomputing them still surfaced five things reading would not: a provable antisymmetry from LayerNorm plus the toy vocabulary, confirmed on independent weights; a loss 0.92 nats worse than ln(5); cross-attention within 0.0577 of uniform; and a generation loop that never terminates." }
   ] },
 
   interview: { title: "Interview", sub: "Inference and evaluation", questions: [

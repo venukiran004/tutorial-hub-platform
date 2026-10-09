@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "1.11",
 
-  lede: "An image does not arrive at a language model as an image. It arrives as tokens, and the number of them is computable before you send anything — which matters, because a single high-detail photograph costs about the same as three pages of text. This lesson implements the tiling formula, checks the reference's worked figure against it, and finds the resizing step that makes the naive calculation right for the wrong reason.",
+  lede: "An image does not arrive at a language model as an image. It arrives as tokens, and the number of them is computable before you send anything — which matters, because a single high-detail photograph costs about the same as three pages of text. This lesson implements the tiling formula, checks the worked figure against it, and finds the resizing step that makes the naive calculation right for the wrong reason.",
 
   objectives: [
     "Compute the token cost of an image from its dimensions and the detail setting",
@@ -56,7 +56,7 @@ it claims 1024x1024 at high detail ~ 765 tokens
 naive 1024x1024 -> 2x2 = 4 tiles -> 85 + 680 = 765, which matches the reference.
 but the real pipeline shrinks the shortest side to 768 first, giving 765.`,
       hl: [6, 9, 10],
-      caption: "The reference's 765 for a 1024×1024 image is correct. It is correct by coincidence: the naive 2×2 tiling gives 765, and so does the real pipeline after shrinking the shortest side to 768 — but for different reasons, and they stop agreeing immediately." },
+      caption: "The 765 for a 1024×1024 image is correct. It is correct by coincidence: the naive 2×2 tiling gives 765, and so does the real pipeline after shrinking the shortest side to 768 — but for different reasons, and they stop agreeing immediately." },
 
     { t: "callout", kind: "insight", title: "There is a ceiling, and it arrives sooner than you think",
       body: [
@@ -104,7 +104,7 @@ print("  ratio: %.1fx" % (765 / 85))`,
       out: `cost of one high-detail 1024x1024 image at $2.50/1M input: $0.001912
   the same image at detail=low                           : $0.000212
   ratio: 9.0x`,
-      caption: "Using the $2.50 per million input tokens quoted in 01_LLM_Parameters.md §14. Two tenths of a penny per image sounds like nothing until you multiply by a document pipeline's volume." },
+      caption: "Using the $2.50 per million input tokens quoted in the reference notes §14. Two tenths of a penny per image sounds like nothing until you multiply by a document pipeline's volume." },
 
     { t: "table",
       head: ["Task", "Detail", "Why"],
@@ -158,7 +158,7 @@ print("  ratio: %.1fx" % (765 / 85))`,
       body: [
         { t: "p", text: "When a text prompt is too long you can summarise, chunk, or drop the least relevant passage. An image is 765 tokens or it is absent — there is no 400-token version of it that keeps the important half." },
         { t: "p", text: "The one lever is `detail`, which is a 9× step rather than a slider. So a multimodal budget is much lumpier than a text one, and the planning has to happen before the request rather than as a graceful degradation inside it." },
-        { t: "p", text: "For video the same logic applies with a much worse constant: the reference's advice is to extract key frames rather than sending everything, because a 30-second clip at 1 frame per second is 30 images and 22,950 tokens at high detail." }
+        { t: "p", text: "For video the same logic applies with a much worse constant: the advice is to extract key frames rather than sending everything, because a 30-second clip at 1 frame per second is 30 images and 22,950 tokens at high detail." }
       ] },
 
     /* ============================================================ 04 */
@@ -241,9 +241,9 @@ transitions(16, 9, "16:9")`,
 
   takeaways: [
     "Images become **input tokens**: `detail=\"low\"` is a flat **85**, `detail=\"high\"` is **85 + 170 × tiles** where a tile is 512 pixels square.",
-    "Before tiling there are two resizes: fit inside 2048×2048, then shrink the **shortest side to 768**. The reference's formula omits both.",
+    "Before tiling there are two resizes: fit inside 2048×2048, then shrink the **shortest side to 768**. The formula omits both.",
     "That gives a ceiling. Measured: **1024×1024, 2048×2048 and 4096×4096 all cost 765 tokens** — a 4K upload is discarded server-side after you have paid to transmit it.",
-    "The reference's figure of 765 for a 1024×1024 image is correct, and correct by coincidence — the naive 2×2 tiling and the real pipeline agree there and diverge immediately after.",
+    "The figure of 765 for a 1024×1024 image is correct, and correct by coincidence — the naive 2×2 tiling and the real pipeline agree there and diverge immediately after.",
     "High detail costs **9.0×** low detail on a square image: $0.001912 against $0.000212 at $2.50 per million input tokens.",
     "A square image has exactly **two prices**: 255 tokens up to 512×512, and 765 from 513×513 upward, forever. A 16:9 image has four and tops out at **1105**, because a wide image needs three tile columns where a square needs two.",
     "**Two different resize rules.** For tokens, only dropping below 513 on the long side helps (765 → 255). For bandwidth and latency, resize to 768 on the shortest side, since everything above it is discarded server-side.",
@@ -279,7 +279,7 @@ transitions(16, 9, "16:9")`,
 
   interview: {
     title: "In an interview",
-    sub: "The reference's Q7. Most candidates know images cost tokens; few can compute how many, and fewer know about the resize.",
+    sub: "The Q7. Most candidates know images cost tokens; few can compute how many, and fewer know about the resize.",
     questions: [
       { level: "core",
         q: "How do multimodal inputs affect token usage?",

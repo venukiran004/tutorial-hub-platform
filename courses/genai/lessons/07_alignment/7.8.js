@@ -298,7 +298,7 @@ for k, v in audit(rewards).items():
     "**Signal peaks at half correct**: mean |A| was 0.9127 at 3/6 against 0.6802 at 1/6 and 0.000 at the ends \u2014 I had wrongly predicted it would be flat.",
     "**Lopsided groups amplify the outlier** \u2014 a lone success among six gets +2.041, giving automatic hard-example emphasis with no explicit weighting.",
     "**So difficulty curation is part of the algorithm**, and the curriculum must track the policy as prompts migrate toward all-correct.",
-    "**Measured memory saving is 44%**, slightly more than the reference's ~40%, because deleting a trained critic saves 8\u00d7 what deleting a frozen reward model would.",
+    "**Measured memory saving is 44%**, slightly more than the ~40%, because deleting a trained critic saves 8\u00d7 what deleting a frozen reward model would.",
     "**Under RLVR, GRPO reaches DPO's 117.3 GB while staying online** \u2014 which is why it displaced both for reasoning work.",
     "**Binary rewards are the hardest case for a critic and the easiest for a group mean**, which is the real reason GRPO fits verifiable domains."
   ],

@@ -1,20 +1,15 @@
 /* ============================================================================
    LESSON 1.4 — Backpropagation, Derived in Full
-   Mirrors 01_Neural_Network_Fundamentals.md · §5 (The Chain Rule, the
-   complete two-layer derivation, the Computational Graph perspective) and
-   §21 Q1. The derivation is carried through on the reference's own
-   network and input from §3, then checked against autograd and a finite
-   difference.
    ========================================================================= */
 EC.receiveLesson({
   id: "1.4",
 
-  lede: "**Backpropagation is the chain rule, applied from the loss backwards through every layer, and it is what makes training a network with millions of weights feasible.** Each layer's error signal δ is the layer above's error signal, multiplied by the transposed weights that connect them and by the local derivative of the activation; each weight's gradient is that error signal times the activation it multiplied on the way forward. The reference derives this for a two-layer network in four steps. This lesson does the same derivation on the reference's own numbers — the network and input from lesson 1.3, label 1 — and then asks PyTorch's autograd and a finite difference whether the hand-worked gradients are right. They are, to four decimals.",
+  lede: "**Backpropagation is the chain rule, applied from the loss backwards through every layer, and it is what makes training a network with millions of weights feasible.** Each layer's error signal δ is the layer above's error signal, multiplied by the transposed weights that connect them and by the local derivative of the activation; each weight's gradient is that error signal times the activation it multiplied on the way forward. The reference derives this for a two-layer network in four steps. This lesson does the same derivation on the numbers — the network and input from lesson 1.3, label 1 — and then asks PyTorch's autograd and a finite difference whether the hand-worked gradients are right. They are, to four decimals.",
 
   objectives: [
     "Write the chain rule for one weight and explain why the same partial derivatives are reused across all weights",
     "Derive δ² = ŷ − y for a sigmoid output with binary cross-entropy, and say why that result is clean",
-    "Carry the four steps — output error, output weight gradients, backpropagation to the hidden layer, hidden weight gradients — through by hand on the reference's example",
+    "Carry the four steps — output error, output weight gradients, backpropagation to the hidden layer, hidden weight gradients — through by hand on the worked example",
     "State the general rule δˡ = (Wˡ⁺¹ᵀ δˡ⁺¹) ⊙ g′(zˡ), dWˡ = δˡ(aˡ⁻¹)ᵀ / m, and map it onto autograd's forward-then-backward traversal of the computational graph",
     "Check a hand-worked gradient against autograd and against a finite difference"
   ],
@@ -98,7 +93,7 @@ weight matrix at each layer and gated by the activation's derivative.`,
   <text x="265" y="232" text-anchor="middle" class="s-sub">dW¹ = δ¹ xᵀ = [[0, 0], [0.506, 1.012]]</text>
 </g></svg>` },
 
-    { t: "h2", n: "03", text: "The derivation on the reference's numbers", id: "worked" },
+    { t: "h2", n: "03", text: "The derivation on the numbers", id: "worked" },
 
     { t: "p", text: "Take the weights and input from lesson 1.3 with label y = 1. The forward pass gave z¹ = [0, 1.8], a¹ = [0, 1.8], z² = −0.96, ŷ = 0.2769, and the loss is −log 0.2769 = 1.2842. Now the four steps with numbers, in float32 as PyTorch would do it:" },
 
@@ -157,7 +152,7 @@ finite difference dL/dW2[0,1] = -1.3016  analytic -1.3016192` },
     { t: "p", text: "Read the numbers against the derivation. **Step 1:** dL/dŷ = −3.6117 and dŷ/dz² = 0.2002 multiply to −0.7231, which is exactly ŷ − y = 0.2769 − 1 — the cancellation, in numbers. **Step 2:** dW² = δ²·a¹ᵀ = −0.7231 × [0, 1.8] = [0, −1.3016]; the weight from the inactive first hidden unit gets no gradient because that unit contributed nothing. **Step 3:** (W²)ᵀδ² = [0.4, −0.7] × −0.7231 = [−0.2892, 0.5062], and the ReLU gate [0, 1] zeroes the first entry. **Step 4:** dW¹ = δ¹xᵀ puts 0.5062 × [1, 2] in the second row and nothing in the first. Autograd agrees on every entry, and the finite difference agrees to four decimals." },
 
     { t: "callout", kind: "trap", title: "The first hidden unit sits exactly on the hinge",
-      body: [{ t: "p", text: "In exact arithmetic z¹₁ = 0.5 − 0.6 + 0.1 = 0, where ReLU′ is undefined and PyTorch's convention is 0. In float32 the sum comes out at −2.2 × 10⁻⁸, so the unit is off and receives no gradient; in float64 it comes out at +2.8 × 10⁻¹⁷ and the unit would be *on*, with a first row of dW¹ equal to [−0.2892, −0.5785]. Both are correct answers to slightly different questions. The lesson: a unit at exactly zero is a rounding decision, and the reference's −0.1 for this entry would have made the answer unambiguous." }] },
+      body: [{ t: "p", text: "In exact arithmetic z¹₁ = 0.5 − 0.6 + 0.1 = 0, where ReLU′ is undefined and PyTorch's convention is 0. In float32 the sum comes out at −2.2 × 10⁻⁸, so the unit is off and receives no gradient; in float64 it comes out at +2.8 × 10⁻¹⁷ and the unit would be *on*, with a first row of dW¹ equal to [−0.2892, −0.5785]. Both are correct answers to slightly different questions. The lesson: a unit at exactly zero is a rounding decision, and the −0.1 for this entry would have made the answer unambiguous." }] },
 
     { t: "p", text: "One step of gradient descent with learning rate 0.1 subtracts a tenth of each gradient: W² becomes [0.4, −0.5698], b² becomes 0.3723, the second row of W¹ moves to [0.749, 0.499] and its bias to −0.251. Re-run the forward pass and ŷ rises from 0.2769 to 0.3822, the loss falls from 1.284 to 0.962. The optimisers of lesson 1.5 are all elaborations of that one subtraction." },
 
@@ -181,7 +176,7 @@ AUTOGRAD (PyTorch, TensorFlow):
       body: [{ t: "p", text: "Every backward step multiplies by something the forward pass computed: a¹ for dW², ReLU′(z¹) for δ¹, x for dW¹. That is why training uses far more memory than inference — the activations of every layer for every example in the batch must be kept until the backward pass has used them — and why tricks like gradient checkpointing (recompute instead of store) exist." }] },
 
     { t: "exercise", kind: "practice", title: "Backpropagate a different label", difficulty: "core", minutes: 15,
-      body: [{ t: "p", text: "Keep the reference's weights and input but set the label to y = 0. Work δ², dW², db², δ¹, dW¹ and db¹ by hand, then confirm with autograd. Say in one sentence why every gradient has flipped sign and changed magnitude relative to the y = 1 case." }],
+      body: [{ t: "p", text: "Keep the weights and input but set the label to y = 0. Work δ², dW², db², δ¹, dW¹ and db¹ by hand, then confirm with autograd. Say in one sentence why every gradient has flipped sign and changed magnitude relative to the y = 1 case." }],
       requirements: [
         "Compute δ² = ŷ − y with y = 0",
         "Carry it through the four steps",
@@ -204,7 +199,7 @@ print(W1.grad, b1.grad)     # [[0, 0], [-0.1938, -0.3877]]  [[0], [-0.1938]]`,
     "Backpropagation is the chain rule with the shared factors computed once at the output and passed backwards as the error signal δ.",
     "Sigmoid with binary cross-entropy gives δ² = ŷ − y exactly: the sigmoid's derivative cancels against the loss's, so a confident mistake gets a large gradient.",
     "The general rule is δˡ = ((Wˡ⁺¹)ᵀ δˡ⁺¹) ⊙ g′(zˡ), dWˡ = δˡ(aˡ⁻¹)ᵀ / m, dbˡ = mean of δˡ — three lines, applied from the top layer down.",
-    "On the reference's example, δ² = −0.7231, dW² = [0, −1.3016], δ¹ = [0, 0.5062], dW¹ = [[0, 0], [0.5062, 1.0124]]; autograd and a finite difference agree.",
+    "On the worked example, δ² = −0.7231, dW² = [0, −1.3016], δ¹ = [0, 0.5062], dW¹ = [[0, 0], [0.5062, 1.0124]]; autograd and a finite difference agree.",
     "An inactive ReLU unit blocks the gradient through it and its outgoing weight gets none; a unit exactly at zero is decided by floating-point rounding.",
     "Autograd is reverse-mode differentiation over the recorded computational graph, which is why the forward pass must store activations and why training needs more memory than inference."
   ],
@@ -228,7 +223,7 @@ print(W1.grad, b1.grad)     # [[0, 0], [-0.1938, -0.3877]]  [[0], [-0.1938]]`,
       why: "Each backward step multiplies by a saved forward value — a¹ for dW², the sign of z¹ for the ReLU gate, x for dW¹. Every layer's activations for every example in the batch must be held until the backward pass has consumed them; inference can discard each layer's output as soon as the next layer has used it." }
   ] },
 
-  interview: { title: "Interview", sub: "The reference's Q1, and the follow-ups", questions: [
+  interview: { title: "Interview", sub: "The Q1, and the follow-ups", questions: [
     { level: "Core", q: "Explain backpropagation intuitively and mathematically.",
       strong: "Each layer's error signal is the layer above's, times the connecting weights, times the activation's local slope; weight gradients are error times input.",
       answer: [{ t: "p", text: "Intuitively: the output error is shared out backwards. Each unit is blamed in proportion to how strongly it fed the units above (the weights) and how sensitive its own output was (the activation's derivative). Mathematically: δˡ = ((Wˡ⁺¹)ᵀ δˡ⁺¹) ⊙ g′(zˡ), with δᴸ = ŷ − y for a sigmoid-or-softmax output with cross-entropy, and ∇_{Wˡ} L = δˡ (aˡ⁻¹)ᵀ / m. It is the chain rule with the shared factors computed once, and autograd frameworks implement it as reverse traversal of the computational graph, each operation contributing its own local backward()." }] },

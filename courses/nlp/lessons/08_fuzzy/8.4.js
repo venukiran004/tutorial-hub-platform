@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 8.4 — TF-IDF for Matching
-   Mirrors 04_Fuzzy_Matching.md · §6. TF-IDF over character n-grams ranks
-   "Beta Corporation Limited" ABOVE "Acme Corp Ltd" when matching "Acme
-   Corporation Limited" — exactly backwards (§04) (scratchpad/nlp/n83.py).
+   TF-IDF over character n-grams ranks "Beta Corporation Limited" ABOVE
+   "Acme Corp Ltd" when matching "Acme Corporation Limited" — exactly
+   backwards (§04) (scratchpad/nlp/n83.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "8.4",

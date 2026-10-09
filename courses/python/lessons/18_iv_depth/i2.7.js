@@ -726,7 +726,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** `new_child()` enters a nested scope (prepends a fresh map); `parents` exits it. This mirrors LEGB-style name resolution and config layering (CLI > env > defaults)."
+     "text": "**Key takeaway:** `new_child()` enters a nested scope (prepends a fresh map); `parents` exits it. This Covers LEGB-style name resolution and config layering (CLI > env > defaults)."
     }
    ]
   },

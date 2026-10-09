@@ -1,9 +1,8 @@
 /* ============================================================================
    LESSON 4.6 — Feed-Forward Network and Normalisation
-   Mirrors 02_Transformers_InDepth.md · §7. Both worked norm examples
-   reproduce; the SwiGLU 2/3 budget rule is verified to 0.9999; RMSNorm's
-   speed claim did NOT reproduce on CPU; Pre-LN vs Post-LN gradient flow
-   differs by ~780,000x (scratchpad/nlp/n45.py).
+   Both worked norm examples reproduce; the SwiGLU 2/3 budget rule is
+   verified to 0.9999; RMSNorm's speed claim did NOT reproduce on CPU; Pre-
+   LN vs Post-LN gradient flow differs by ~780,000x (scratchpad/nlp/n45.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.6",
@@ -78,7 +77,7 @@ EC.receiveLesson({
 "d = 4096, batch 64 x 512, torch 2.10 CPU, 4 threads\n\n  LayerNorm (ATen fused)          43.80 ms\n  RMSNorm, naive composed ops    114.32 ms    +161.0%\n  RMSNorm, nn.RMSNorm             114.73 ms    +161.9%\n\n  parameters: LayerNorm 8,192 (gamma + beta)\n              RMSNorm   4,096 (gamma only)" },
 
     { t: "callout", kind: "warn", title: "The 10-15% speed claim did not reproduce here",
-      body: [{ t: "p", text: "RMSNorm was **2.6x slower** than LayerNorm on this setup, and using PyTorch's own `nn.RMSNorm` rather than a hand-composed version changed nothing. The reason is not the mathematics — RMSNorm genuinely does less arithmetic — but that ATen's `LayerNorm` CPU kernel is heavily optimised while its `RMSNorm` path is not. The reference's figure comes from GPU training of large models with custom fused kernels, where the saved reduction is real. The lesson generalises: **an operator's theoretical cost and its measured cost are different things**, and which one you get depends on whether somebody wrote a good kernel for your backend. The parameter saving, by contrast, is exactly half and holds everywhere." }] },
+      body: [{ t: "p", text: "RMSNorm was **2.6x slower** than LayerNorm on this setup, and using PyTorch's own `nn.RMSNorm` rather than a hand-composed version changed nothing. The reason is not the mathematics — RMSNorm genuinely does less arithmetic — but that ATen's `LayerNorm` CPU kernel is heavily optimised while its `RMSNorm` path is not. The figure comes from GPU training of large models with custom fused kernels, where the saved reduction is real. The lesson generalises: **an operator's theoretical cost and its measured cost are different things**, and which one you get depends on whether somebody wrote a good kernel for your backend. The parameter saving, by contrast, is exactly half and holds everywhere." }] },
 
     { t: "h2", n: "06", text: "Pre-LN against Post-LN", id: "preln" },
 

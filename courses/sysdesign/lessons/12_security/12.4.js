@@ -253,11 +253,11 @@ def nacl(rules, peer, port):      # stateless: numbered rules, lowest first, fir
     return "default deny"
 
 DATA_IN = [(100, "allow", "10.20.0.0/18", (5432, 5432))]
-DATA_OUT_WRONG = [(100, "allow", "10.20.0.0/18", (5432, 5432))]      # mirrors the inbound rule...
+DATA_OUT_WRONG = [(100, "allow", "10.20.0.0/18", (5432, 5432))]      # Covers the inbound rule...
 DATA_OUT_RIGHT = [(100, "allow", "10.20.0.0/18", (1024, 65535))]     # ...but replies go to the client's port
 
 print("\\nnetwork ACL on the data subnet (stateless: each direction checked on its own)")
-for label, out_rules in [("outbound rule mirrors inbound", DATA_OUT_WRONG), ("outbound allows ephemeral ports", DATA_OUT_RIGHT)]:
+for label, out_rules in [("outbound rule Covers inbound", DATA_OUT_WRONG), ("outbound allows ephemeral ports", DATA_OUT_RIGHT)]:
     syn = nacl(DATA_IN, "10.20.0.21", 5432)           # app-1:49731 -> db:5432 comes in
     reply = nacl(out_rules, "10.20.0.21", 49731)      # db:5432 -> app-1:49731 goes out
     print(f"  {label}")
@@ -275,7 +275,7 @@ for label, out_rules in [("outbound rule mirrors inbound", DATA_OUT_WRONG), ("ou
      app-1 -> db:22       deny
 
 network ACL on the data subnet (stateless: each direction checked on its own)
-  outbound rule mirrors inbound
+  outbound rule Covers inbound
     request  app-1:49731 -> db:5432   rule 100 allow
     reply    db:5432 -> app-1:49731   default deny    => the client hangs until it times out
   outbound allows ephemeral ports
@@ -286,7 +286,7 @@ network ACL on the data subnet (stateless: each direction checked on its own)
 
     { t: "callout", kind: "trap", title: "A stateless ACL fails as a hang, not a refusal",
       body: [
-        { t: "p", text: "The client picks a random high **ephemeral port** for each connection (32768–60999 on Linux), and the reply is addressed to it. An ACL whose outbound rule mirrors the inbound one lets the request in and drops the reply, so the client sees neither data nor a refusal — it waits for its connect timeout. When a connection between tiers hangs instead of failing fast, check the ACLs for the return path: outbound to the clients' range on ports 1024–65535." }
+        { t: "p", text: "The client picks a random high **ephemeral port** for each connection (32768–60999 on Linux), and the reply is addressed to it. An ACL whose outbound rule Covers the inbound one lets the request in and drops the reply, so the client sees neither data nor a refusal — it waits for its connect timeout. When a connection between tiers hangs instead of failing fast, check the ACLs for the return path: outbound to the clients' range on ports 1024–65535." }
       ] },
 
     { t: "h2", n: "04", id: "disposable", text: "Assume the box will die",

@@ -1,13 +1,10 @@
 /* ============================================================================
    LESSON 4.10 — Parameter Count
-   Mirrors 02_Transformers_InDepth.md · §11. The reference's GPT-2 arithmetic
-   is exact for weights; the 82,944 gap against the real checkpoint is
-   accounted for precisely by the biases (scratchpad/nlp/n410.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.10",
 
-  lede: "**The reference's GPT-2 total comes to 124,356,864 and the actual checkpoint holds 124,439,808 — a gap of exactly 82,944, which is precisely the bias vectors.** Predicting that number to the digit is the point of this lesson. If you can derive a model's parameter count from its configuration you can size a GPU before renting one, spot a misconfigured architecture from its total alone, and understand why doubling width costs four times as much as you might expect.",
+  lede: "**The GPT-2 total comes to 124,356,864 and the actual checkpoint holds 124,439,808 — a gap of exactly 82,944, which is precisely the bias vectors.** Predicting that number to the digit is the point of this lesson. If you can derive a model's parameter count from its configuration you can size a GPU before renting one, spot a misconfigured architecture from its total alone, and understand why doubling width costs four times as much as you might expect.",
 
   objectives: [
     "Derive a transformer's parameter count from its configuration",
@@ -108,7 +105,7 @@ EC.receiveLesson({
   ],
 
   takeaways: [
-    "The reference's GPT-2 arithmetic is exact for weights: 124,356,864 against the checkpoint's 124,439,808.",
+    "The GPT-2 arithmetic is exact for weights: 124,356,864 against the checkpoint's 124,439,808.",
     "The 82,944 gap is precisely the bias vectors — 3,072 attention plus 3,840 FFN per block, times 12 blocks.",
     "Attention is 4d² per layer, the FFN with d_ff = 4d is 8d², so 12d² per layer in total.",
     "The 12·L·d² rule matched actual non-embedding parameters to a ratio of 1.0014 — it is the exact leading term, not a fit.",
@@ -121,7 +118,7 @@ EC.receiveLesson({
   ],
 
   quiz: { title: "Check yourself", questions: [
-    { stem: "Why did the reference's total differ from the checkpoint by 82,944?",
+    { stem: "Why did the total differ from the checkpoint by 82,944?",
       options: ["A rounding error", "It counts weights only — the biases are 3,072 attention plus 3,840 FFN per block, across 12 blocks", "The checkpoint includes optimiser state", "The vocabulary size differs"],
       answer: 1,
       why: "6,912 bias parameters per block times 12 blocks is exactly 82,944. Most parameter formulas quote weights only, which here is a 0.07% omission. Some architectures drop biases altogether — LLaMA has none in its linear layers — which makes the arithmetic exact." },

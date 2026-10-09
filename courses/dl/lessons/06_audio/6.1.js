@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 6.1 — The Signal: Sampling, Nyquist, Bit Depth
-   Mirrors 08_Audio_Speech_Processing.md · §1. Storage arithmetic and the
-   aliasing demonstration executed in scratchpad/dl/d61.py.
+   Storage arithmetic and the aliasing demonstration executed in
+   scratchpad/dl/d61.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "6.1",
@@ -63,7 +63,7 @@ EC.receiveLesson({
   same minute as 80-band log-mel at 100 fps: 6000 x 80 x 4 bytes = 1.92 MB` },
 
     { t: "callout", kind: "note", title: "The features are exactly the same size, and that is the point",
-      body: [{ t: "p", text: "Both come to 1.92 MB per minute — the reference's arithmetic checks out exactly. Log-mel is not a compression scheme, and anyone who introduces it as one has the wrong idea. It is a **perceptually weighted re-representation**: the same quantity of numbers, arranged so that the axes correspond to what matters for recognition rather than to raw physics. The learnability improves enormously; the storage does not change at all. Lesson 6.2 covers why that rearrangement helps." }] },
+      body: [{ t: "p", text: "Both come to 1.92 MB per minute — the arithmetic checks out exactly. Log-mel is not a compression scheme, and anyone who introduces it as one has the wrong idea. It is a **perceptually weighted re-representation**: the same quantity of numbers, arranged so that the axes correspond to what matters for recognition rather than to raw physics. The learnability improves enormously; the storage does not change at all. Lesson 6.2 covers why that rearrangement helps." }] },
 
     { t: "h2", n: "04b", text: "What lives where in the spectrum", id: "spectrum" },
 

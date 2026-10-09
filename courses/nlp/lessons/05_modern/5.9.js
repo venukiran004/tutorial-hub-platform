@@ -1,9 +1,9 @@
 /* ============================================================================
    LESSON 5.9 — Multimodal Transformers
-   Mirrors 02_Transformers_InDepth.md · §20. CLIP's shared space is measured,
-   the visual-token arithmetic computed (a 1024px image is 130% of a 4k
-   context), and the three architectural patterns compared. Full multimodal
-   treatment is Module 7 (scratchpad/nlp/n59.py).
+   CLIP's shared space is measured, the visual-token arithmetic computed (a
+   1024px image is 130% of a 4k context), and the three architectural
+   patterns compared. Full multimodal treatment is Module 7
+   (scratchpad/nlp/n59.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "5.9",

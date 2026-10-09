@@ -94,7 +94,7 @@ token counts: {' the': 3, ' cat': 2, ' sat': 2, ' on': 2}
   <text x="20" y="222" class="s-sub">Both are zero for code and factual work, where repeating an identifier is correct.</text>
 </svg>` },
 
-    { t: "p", text: "The reference's guideline table follows from that split:" },
+    { t: "p", text: "The guideline table follows from that split:" },
 
     { t: "table",
       head: ["Task", "frequency_penalty", "presence_penalty", "Why"],
@@ -103,7 +103,7 @@ token counts: {' the': 3, ' cat': 2, ' sat': 2, ' on': 2}
         ["Long essays", "0.5", "0.3", "Enough to break loops without forcing synonyms"],
         ["Creative", "0.8", "0.6", "You want the model to leave its first vocabulary"]
       ],
-      caption: "From 01_LLM_Parameters.md §4. Note that both are zero for anything a machine will parse — a penalty that discourages repeating `user_id` is a penalty that corrupts your JSON." },
+      caption: "From the reference notes §4. Note that both are zero for anything a machine will parse — a penalty that discourages repeating `user_id` is a penalty that corrupts your JSON." },
 
     { t: "callout", kind: "warn", title: "Never penalise structured output",
       body: [

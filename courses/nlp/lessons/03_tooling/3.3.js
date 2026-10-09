@@ -1,8 +1,5 @@
 /* ============================================================================
    LESSON 3.3 — HuggingFace Transformers for NLP
-   Mirrors 01_NLP_Notes.md · §19. The tokenizer's return value, the
-   attention mask's effect, AutoModel against the task heads, and which of
-   the reference's pipelines survive transformers 5.x (scratchpad/nlp/n33.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.3",
@@ -30,7 +27,7 @@ EC.receiveLesson({
       ["`datasets`", "Memory-mapped datasets with a `.map` that caches. Handles corpora far larger than RAM."]
     ] },
 
-    { t: "callout", kind: "warn", title: "Several of the reference's pipelines no longer exist",
+    { t: "callout", kind: "warn", title: "Several of the pipelines no longer exist",
       body: [{ t: "p", text: "On **transformers 5.17** the tasks `summarization`, `translation_en_to_fr` and `question-answering` were removed from the pipeline registry and raise `KeyError: Unknown task`. Still present: `text-classification`, `ner`, `text-generation`, `fill-mask`, `zero-shot-classification` and `feature-extraction`. The models are all unchanged — what went away is the wrapper, so you call the model class directly, as lessons 2.6 to 2.8 did. On transformers 4.x every example in the reference runs as written." }] },
 
     { t: "h2", n: "02", text: "What the tokenizer returns", id: "tokenizer" },

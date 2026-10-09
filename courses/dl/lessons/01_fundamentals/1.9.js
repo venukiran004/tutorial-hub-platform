@@ -1,9 +1,5 @@
 /* ============================================================================
    LESSON 1.9 — Learning-Rate Schedules
-   Mirrors 01_Neural_Network_Fundamentals.md · §11 (the five PyTorch
-   schedulers and the recommendation table). Each scheduler in the
-   reference's snippet was run for 100 epochs and its learning rate
-   recorded; the plotted curves are those recordings.
    ========================================================================= */
 EC.receiveLesson({
   id: "1.9",
@@ -27,7 +23,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The five schedulers, run", id: "five" },
 
-    { t: "code", lang: "python", title: "The reference's schedulers",
+    { t: "code", lang: "python", title: "The schedulers",
       code: `import torch.optim as optim
 from torch.optim.lr_scheduler import (StepLR, CosineAnnealingLR, OneCycleLR,
                                       CosineAnnealingWarmRestarts, ReduceLROnPlateau)
@@ -100,7 +96,7 @@ ReduceLROnPlateau(factor=0.5, patience=5), loss stalls at epoch 40
 
     { t: "dl", items: [
       ["StepLR", "Multiply by γ every step_size epochs. Simple, and the classic ImageNet recipe (÷10 at epochs 30, 60, 90). The cliffs are abrupt: the loss usually drops sharply right after each one, which tells you the rate had been too high for a while."],
-      ["CosineAnnealingLR", "Follow half a cosine from the initial rate to eta_min over T_max epochs. Smooth, no hyperparameters to speak of beyond the length, and the reference's recommendation whenever the number of epochs is fixed in advance."],
+      ["CosineAnnealingLR", "Follow half a cosine from the initial rate to eta_min over T_max epochs. Smooth, no hyperparameters to speak of beyond the length, and the recommendation whenever the number of epochs is fixed in advance."],
       ["OneCycleLR", "Start low, rise linearly to max_lr over the first part of the run, then anneal below the starting rate. The warm-up phase lets a higher peak rate be used than would otherwise be stable — the 'super-convergence' effect — and the annealing settles the weights. Note it steps per *batch*, hence total_steps = batches × epochs."],
       ["CosineAnnealingWarmRestarts", "Cosine decay over T_0 epochs, then a jump back to the full rate, with each period T_mult times longer than the last. The restarts kick the optimiser out of the current basin; the models at the end of each period can be averaged as a snapshot ensemble."],
       ["ReduceLROnPlateau", "Watch a metric; when it has not improved for `patience` epochs, multiply the rate by `factor`. The only scheduler that reacts to training rather than following a plan, and the one for a run whose length you do not know."]
@@ -108,7 +104,7 @@ ReduceLROnPlateau(factor=0.5, patience=5), loss stalls at epoch 40
 
     { t: "h2", n: "03", text: "Warm-up", id: "warmup" },
 
-    { t: "p", text: "The reference's recommendation: **start from 0 and rise to the peak rate over the first 5–10 % of steps.** Fresh random weights produce large, uninformative gradients, and Adam's second-moment estimate is unreliable for the first few dozen steps; a full-size learning rate applied to both can throw the weights somewhere bad in the first hundred updates, and the run never recovers. Warm-up keeps the early steps small until the statistics settle. Transformers are especially sensitive, which is why 'linear warm-up then cosine (or linear) decay' is the default schedule for training and fine-tuning them." },
+    { t: "p", text: "The recommendation: **start from 0 and rise to the peak rate over the first 5–10 % of steps.** Fresh random weights produce large, uninformative gradients, and Adam's second-moment estimate is unreliable for the first few dozen steps; a full-size learning rate applied to both can throw the weights somewhere bad in the first hundred updates, and the run never recovers. Warm-up keeps the early steps small until the statistics settle. Transformers are especially sensitive, which is why 'linear warm-up then cosine (or linear) decay' is the default schedule for training and fine-tuning them." },
 
     { t: "code", lang: "python", title: "Linear warm-up then cosine decay, as a LambdaLR",
       code: `import math
@@ -124,7 +120,7 @@ scheduler = LambdaLR(optimizer, lr_factor)   # multiplies the optimiser's base l
 
     { t: "h2", n: "04", text: "Which schedule when", id: "choose" },
 
-    { t: "table", head: ["Situation", "The reference's recommendation"],
+    { t: "table", head: ["Situation", "The recommendation"],
       rows: [
         ["Fixed number of epochs, known runtime", "**CosineAnnealingLR**"],
         ["Unknown training length", "**ReduceLROnPlateau**"],
@@ -180,7 +176,7 @@ print([f"{lrs[t]:.1e}" for t in [0, 2, 5, 10, 20, 35, 49]])
     { stem: "Which scheduler steps once per batch rather than once per epoch?",
       options: ["StepLR", "CosineAnnealingLR", "OneCycleLR", "ReduceLROnPlateau"],
       answer: 2,
-      why: "OneCycleLR is defined over total_steps = batches per epoch × epochs and is stepped after every optimiser step; the others in the reference's snippet are stepped once per epoch, and ReduceLROnPlateau is stepped once per epoch with the validation metric." },
+      why: "OneCycleLR is defined over total_steps = batches per epoch × epochs and is stepped after every optimiser step; the others in the snippet are stepped once per epoch, and ReduceLROnPlateau is stepped once per epoch with the validation metric." },
     { stem: "What does warm-up protect against?",
       options: ["Overfitting late in training", "Large, uninformative early gradients and unreliable Adam statistics throwing fresh weights somewhere bad", "The plateau scheduler triggering too soon", "Vanishing gradients"],
       answer: 1,
@@ -194,12 +190,12 @@ print([f"{lrs[t]:.1e}" for t in [0, 2, 5, 10, 20, 35, 49]])
   interview: { title: "Interview", sub: "What the schedule section prepares you for", questions: [
     { level: "Core", q: "Why decay the learning rate at all, if Adam is already adaptive?",
       strong: "Adam normalises the gradient's scale, not the noise; a fixed rate keeps the weights bouncing at the minimum, and decay lets them settle.",
-      answer: [{ t: "p", text: "Adam's per-parameter normalisation makes the step about α regardless of gradient magnitude, but α itself sets how far each mini-batch's noisy gradient moves the weights. Near a minimum the gradient is mostly noise, so at a fixed α the weights wander in a region whose size is proportional to α. Decaying α shrinks that region and lets the optimiser converge; the reference's cosine schedule takes it to 10⁻⁶. Empirically, the final drop in learning rate is where a good part of the final accuracy comes from, for Adam as much as for SGD." }] },
+      answer: [{ t: "p", text: "Adam's per-parameter normalisation makes the step about α regardless of gradient magnitude, but α itself sets how far each mini-batch's noisy gradient moves the weights. Near a minimum the gradient is mostly noise, so at a fixed α the weights wander in a region whose size is proportional to α. Decaying α shrinks that region and lets the optimiser converge; the cosine schedule takes it to 10⁻⁶. Empirically, the final drop in learning rate is where a good part of the final accuracy comes from, for Adam as much as for SGD." }] },
     { level: "Core", q: "Describe the one-cycle policy and why it can train faster.",
       strong: "Warm up to a high peak, anneal to near zero; the warm-up makes the high peak stable, and the high peak covers ground quickly.",
       answer: [{ t: "p", text: "One-cycle starts at a small fraction of the maximum rate, rises linearly to the maximum over roughly the first 30 % of steps, then follows a cosine down to a tiny final rate. The rising phase acts as warm-up, letting the run use a peak learning rate that would diverge if applied from step one; the large-rate phase then makes rapid progress and acts as a regulariser; the annealing phase converges. Combined with a matching momentum schedule (high when the rate is low, and vice versa), this is 'super-convergence': training to a given accuracy in a fraction of the usual epochs. The cost is that total_steps must be known in advance." }] },
     { level: "Senior", q: "A fine-tuning run's loss spikes in the first 200 steps and never recovers. What do you change?",
       strong: "Add or lengthen warm-up, lower the peak rate towards 10⁻⁵, check that the schedule is per-step not per-epoch, and clip gradients.",
-      answer: [{ t: "p", text: "The pattern — an early spike from which the run does not recover — is the classic warm-up failure. First step: linear warm-up from zero over 5–10 % of total steps, stepped per batch, so the first updates to pretrained weights are tiny while Adam's moment estimates settle. Second: the peak rate; for fine-tuning a transformer the reference's range is 10⁻⁵ to 5 × 10⁻⁵, and a from-scratch rate of 10⁻³ will wreck a pretrained model in a few steps. Third: gradient clipping at norm 1.0 as insurance against a single bad batch. Fourth: check the scheduler is actually being stepped — a OneCycleLR with total_steps mismatched, or a scheduler stepped before the optimiser, silently gives the wrong rate. If the spike persists with all four in place, the problem is data — a corrupted batch or a label mismatch — not the schedule." }] }
+      answer: [{ t: "p", text: "The pattern — an early spike from which the run does not recover — is the classic warm-up failure. First step: linear warm-up from zero over 5–10 % of total steps, stepped per batch, so the first updates to pretrained weights are tiny while Adam's moment estimates settle. Second: the peak rate; for fine-tuning a transformer the range is 10⁻⁵ to 5 × 10⁻⁵, and a from-scratch rate of 10⁻³ will wreck a pretrained model in a few steps. Third: gradient clipping at norm 1.0 as insurance against a single bad batch. Fourth: check the scheduler is actually being stepped — a OneCycleLR with total_steps mismatched, or a scheduler stepped before the optimiser, silently gives the wrong rate. If the spike persists with all four in place, the problem is data — a corrupted batch or a label mismatch — not the schedule." }] }
   ] }
 });

@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "meter", text: "The meter",
       sub: "Per request, per user, per feature" },
 
-    { t: "code", lang: "python", title: "The reference's cost meter", code: `def estimate_cost(usage, price):
+    { t: "code", lang: "python", title: "The cost meter", code: `def estimate_cost(usage, price):
     """usage: {'input': n, 'output': m}; price per-1M tokens."""
     return round(usage["input"] / 1e6 * price["input"]
                + usage["output"] / 1e6 * price["output"], 6)

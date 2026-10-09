@@ -21,7 +21,7 @@ EC.receiveLesson({
 
     { t: "p", text: "The central idea is a change of what you write down. Instead of a string containing instructions and format directions, you declare a **signature**: input fields, output fields, and a docstring saying what the module does. DSPy turns that into a prompt." },
 
-    { t: "code", lang: "python", title: "dspy_basics.py — the reference's example", code: `import dspy
+    { t: "code", lang: "python", title: "dspy_basics.py — the worked example", code: `import dspy
 
 class SentimentClassifier(dspy.Signature):
     """Classify the sentiment of a review."""
@@ -30,7 +30,7 @@ class SentimentClassifier(dspy.Signature):
 
 classifier = dspy.Predict(SentimentClassifier)
 result = classifier(review="This product is amazing!")`,
-      caption: "From 04_Prompt_Engineering.md §11. Four lines of declaration. Nowhere does it say \"return only the label\" or \"do not explain your answer\" — those are the generated part." },
+      caption: "From the reference notes §11. Four lines of declaration. Nowhere does it say \"return only the label\" or \"do not explain your answer\" — those are the generated part." },
 
     { t: "p", text: "Whether that is an improvement depends entirely on what gets generated, and unusually for this area you can look without spending anything. The adapter that builds the prompt is an ordinary object." },
 
@@ -80,15 +80,15 @@ for m in msgs:
     { t: "h2", n: "02", id: "optimising", text: "What a teleprompter actually does",
       sub: "It searches over examples, mostly" },
 
-    { t: "code", lang: "python", title: "optimise.py — the reference's example", code: `from dspy.teleprompt import BootstrapFewShot
+    { t: "code", lang: "python", title: "optimise.py — the worked example", code: `from dspy.teleprompt import BootstrapFewShot
 
 optimizer = BootstrapFewShot(metric=accuracy_metric, max_bootstrapped_demos=4)
 optimized = optimizer.compile(classifier, trainset=train_examples)
 
 result = optimized(review="This product is amazing!")`,
-      caption: "From 04_Prompt_Engineering.md §11. Three inputs: a module, a metric, and training examples. The output is the same module with a prompt that has been searched for." },
+      caption: "From the reference notes §11. Three inputs: a module, a metric, and training examples. The output is the same module with a prompt that has been searched for." },
 
-    { t: "p", text: "`BootstrapFewShot` — the optimiser in the reference's example — does something narrower than \"optimise the prompt\", and knowing what makes the whole thing less mysterious. It runs the module on training inputs, keeps the traces where the metric says the output was correct, and uses those as few-shot demonstrations. It is automated example selection, which is 2.2's dynamic few-shot with the selection done once at compile time rather than per query." },
+    { t: "p", text: "`BootstrapFewShot` — the optimiser in the worked example — does something narrower than \"optimise the prompt\", and knowing what makes the whole thing less mysterious. It runs the module on training inputs, keeps the traces where the metric says the output was correct, and uses those as few-shot demonstrations. It is automated example selection, which is 2.2's dynamic few-shot with the selection done once at compile time rather than per query." },
 
     { t: "table",
       head: ["Optimiser", "What it searches", "What it needs"],
@@ -98,7 +98,7 @@ result = optimized(review="This product is amazing!")`,
         ["`MIPROv2`", "Instructions **and** demonstrations jointly", "A larger training set and considerably more compute"],
         ["`BootstrapFinetune`", "Model weights, using traces as data", "A fine-tunable model (M4)"]
       ],
-      caption: "The family runs from cheap example selection to actual fine-tuning. The reference's example is the first row, which is the one most teams should start with." },
+      caption: "The family runs from cheap example selection to actual fine-tuning. The worked example is the first row, which is the one most teams should start with." },
 
     { t: "callout", kind: "trap", title: "The metric is the whole thing, and it is your problem",
       body: [
@@ -251,7 +251,7 @@ Simple+CoT        162          -          -         -`,
 
   interview: {
     title: "In an interview",
-    sub: "The reference's Q5. A good answer knows what the optimiser actually does, which is narrower than the marketing.",
+    sub: "The Q5. A good answer knows what the optimiser actually does, which is narrower than the marketing.",
     questions: [
       { level: "core",
         q: "What is DSPy and how is it different from writing prompts?",

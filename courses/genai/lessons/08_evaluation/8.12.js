@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "case", text: "The case",
       sub: "A question, a gold answer, two retrieved chunks, one answer" },
 
-    { t: "code", lang: "text", title: "the reference's example", code: `Question:    "How many vacation days do employees get per year?"
+    { t: "code", lang: "text", title: "the worked example", code: `Question:    "How many vacation days do employees get per year?"
 Gold answer: "18 days per year (1.5/month)."
 Retrieved:   [KB-1] "Employees accrue 1.5 vacation days per month..."   (relevant)
              [KB-2] "Expense reimbursement up to $60/day..."           (irrelevant)

@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 4.5 — Masked and Cross-Attention
-   Mirrors 02_Transformers_InDepth.md · §6. The masked-softmax example is
-   verified, the training/inference asymmetry is measured at 74.2x, and
-   exposure bias is shown on GPT-2 (scratchpad/nlp/n44.py).
+   The masked-softmax example is verified, the training/inference asymmetry
+   is measured at 74.2x, and exposure bias is shown on GPT-2
+   (scratchpad/nlp/n44.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.5",
@@ -147,7 +147,7 @@ EC.receiveLesson({
 
   takeaways: [
     "The causal mask is lower-triangular: position i attends only to positions up to i.",
-    "The reference's masked-softmax example reproduces exactly — [0.2987, 0.3401, 0.3612, 0.0000].",
+    "The masked-softmax example reproduces exactly — [0.2987, 0.3401, 0.3612, 0.0000].",
     "Unmasked, the future position would have taken 34.11% of the weight, the largest share in the row.",
     "In float32, -1e4 and below underflow to exactly zero; -10 leaks 4.49e-06 of the weight.",
     "In float16, masking with the finite minimum -65504 returned [nan, nan, nan] — use `torch.finfo(dtype).min`.",

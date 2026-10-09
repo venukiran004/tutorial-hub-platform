@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P3.3 — Regression and Classification · 3
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/04_Machine_Learning/Practice/03_Regression.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p3.3",

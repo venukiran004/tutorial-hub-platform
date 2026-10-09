@@ -149,8 +149,8 @@ RANK = np.argsort(-S, axis=1)`,
   What is catastrophic forgetting?                    120 07_LLM_Tra
 
   2 of 20 questions have their answer outside the top 5
-    Why divide alpha by r?         wanted 03_Fine_Tuning_LLM.md  got 03_Fine_Tuning_LLM.md
-    What is catastrophic forgetting?  wanted 03_Fine_Tuning_LLM.md  got 07_LLM_Training_and_Alignment.md`,
+    Why divide alpha by r?         wanted fine-tuning.md  got fine-tuning.md
+    What is catastrophic forgetting?  wanted fine-tuning.md  got training-and-alignment.md`,
       caption: "Both of these are the evaluation set being wrong, in two different ways." },
 
     { t: "callout", kind: "trap", title: "\u201ctop_p\u201d does not appear in prose that says \u201cTop-p\u201d",

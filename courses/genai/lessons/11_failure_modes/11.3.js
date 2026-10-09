@@ -116,7 +116,7 @@ Last paragraph: invents a "termination penalty of $50,000" not in the contract.`
 </svg>` },
 
     { t: "exercise", kind: "analyse", title: "Validate citations against the retrieved set", difficulty: "core", minutes: 25,
-      body: "Implement the reference's citation validator and run it against answers containing valid citations, fabricated ids, and the awkward middle cases \u2014 an answer with no citations at all, and one citing a real chunk that does not support the claim. Report what the validator can and cannot catch.",
+      body: "Implement the citation validator and run it against answers containing valid citations, fabricated ids, and the awkward middle cases \u2014 an answer with no citations at all, and one citing a real chunk that does not support the claim. Report what the validator can and cannot catch.",
       requirements: [
         "Citations extracted and checked as a subset of the retrieved ids",
         "An answer with a fabricated id rejected",
@@ -176,7 +176,7 @@ print("  the claim says : %s" % claim)
 print("  -> a citation is a POINTER, not a proof. checking that the pointer")
 print("     resolves is necessary and nowhere near sufficient.")
 print()
-print("so citation accuracy needs TWO checks, and the reference's metric table")
+print("so citation accuracy needs TWO checks, and the metric table")
 print("says exactly this: 'validate cited ids AND entailment'.")
 print("  check 1: cited id in retrieved set        <- this function")
 print("  check 2: cited chunk entails the claim    <- 11.4, per sentence")
@@ -206,7 +206,7 @@ malformed              NO       no citations at all -- rejected by the len() > 0
   -> a citation is a POINTER, not a proof. checking that the pointer
      resolves is necessary and nowhere near sufficient.
 
-so citation accuracy needs TWO checks, and the reference's metric table
+so citation accuracy needs TWO checks, and the metric table
 says exactly this: 'validate cited ids AND entailment'.
   check 1: cited id in retrieved set        <- this function
   check 2: cited chunk entails the claim    <- 11.4, per sentence

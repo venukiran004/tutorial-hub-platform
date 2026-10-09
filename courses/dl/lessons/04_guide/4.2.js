@@ -1,8 +1,5 @@
 /* ============================================================================
    LESSON 4.2 — Self-Attention: Query, Key, Value
-   Mirrors rnn-lstm-gru-transformer-guide.md · §5.3. The reference's worked
-   softmax is checked (it is rounded) and the convex-hull property of
-   attention output is measured (scratchpad/dl/d41.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.2",
@@ -51,7 +48,7 @@ out = A @ V                              # (T, d) — contextualised`,
 
     { t: "p", text: "With random projections the weights are near-uniform, which is the correct starting point — an untrained model has no reason to prefer any position. Training is what makes them selective. Note the output has the **same shape as the input**, which is what lets blocks stack." },
 
-    { t: "callout", kind: "note", title: "The reference's worked softmax is rounded",
+    { t: "callout", kind: "note", title: "The worked softmax is rounded",
       body: [{ t: "p", text: "The guide takes scores `[1.2, 3.5, 2.8]` to weights `[0.05, 0.62, 0.33]`. The exact softmax is **`[0.0628, 0.6262, 0.3110]`** — the first and third are rounded somewhat loosely so the three display values sum to 1.00. The illustration's point stands entirely (a token attending mostly to itself, secondarily to a related token), but if you are checking your own implementation against those numbers you will see a discrepancy that is in the reference rather than your code." }] },
 
     { t: "h2", n: "03", text: "A property of the output", id: "convex" },
@@ -98,7 +95,7 @@ out = A @ V                              # (T, d) — contextualised`,
     "Query is what a token seeks, key is what it advertises, value is what it contributes — key and value separate on purpose.",
     "`softmax(QKᵀ/√d_k)V`: scores every pair, normalises per row, returns a weighted blend of values.",
     "Output has the same shape as input, which is what lets blocks stack.",
-    "The reference's worked softmax `[0.05, 0.62, 0.33]` is rounded; exact is `[0.0628, 0.6262, 0.3110]`.",
+    "The worked softmax `[0.05, 0.62, 0.33]` is rounded; exact is `[0.0628, 0.6262, 0.3110]`.",
     "Attention output is a convex combination of V — verified inside the hull on every dimension.",
     "So attention can only interpolate; the feed-forward network is what moves representations outside that hull.",
     "The T×T score matrix gives O(1) path length and costs O(n²) memory — the same fact twice."

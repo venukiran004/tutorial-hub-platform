@@ -99,7 +99,7 @@ EC.receiveLesson({
       head: ["The claim", "What measurement showed"],
       rows: [
         ["Regex is \u201ca first layer, not a solution\u201d", "**100% of literal attacks, 0% of 13 paraphrases, 60% of benign blocked** \u2014 a tripwire whose main effect is over-refusal"],
-        ["Set the semantic cache threshold \u22650.95", "**The reference's own example pair scores 0.8526** \u2014 the safe band is 0.72\u20130.85, and it is model-dependent"],
+        ["Set the semantic cache threshold \u22650.95", "**The worked example pair scores 0.8526** \u2014 the safe band is 0.72\u20130.85, and it is model-dependent"],
         ["Route easy traffic to a cheap model", "**Router 25.3%, cascade 26.7%** \u2014 they are different patterns and the cascade always costs more"],
         ["A 12-step agent is ~12 calls", "**24.4x a single call**, because the context grows; the last step costs 4.1x the first"],
         ["Faithfulness is the RAG metric", "**An abstention scores 1.0**, so a retrieval collapse improves it \u2014 non-monotonically"],

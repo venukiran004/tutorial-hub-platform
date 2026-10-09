@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P5.1 — SVM, KNN and Naive Bayes · 1
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/04_Machine_Learning/Practice/05_SVM_KNN_NaiveBayes.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p5.1",

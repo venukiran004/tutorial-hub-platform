@@ -1,18 +1,14 @@
 /* ============================================================================
    LESSON 1.11 — The Same Network in Keras and PyTorch
-   Mirrors 01_Neural_Network_Fundamentals.md · §13 (Keras Implementation)
-   and §14 (PyTorch Implementation). Both reference programs are run on the
-   scikit-learn breast-cancer table (30 features, binary), which is the
-   n_features / binary-classification setting the programs are written for.
    ========================================================================= */
 EC.receiveLesson({
   id: "1.11",
 
-  lede: "**Two frameworks, one network: three ReLU layers with batch norm and dropout, a sigmoid output, Adam or AdamW, early stopping and a learning-rate schedule.** Keras declares the model, compiles it with a loss and metrics, and calls fit() with callbacks — the fastest path from idea to a trained prototype. PyTorch subclasses nn.Module and writes the training loop out — every zero_grad, backward and step visible, which is why research prefers it. This lesson runs the reference's two programs on the same tabular dataset, reads the Keras summary against the parameter arithmetic of lesson 1.1, walks the PyTorch loop line by line against lessons 1.4 to 1.9, and ends with both models at 96 % test accuracy.",
+  lede: "**Two frameworks, one network: three ReLU layers with batch norm and dropout, a sigmoid output, Adam or AdamW, early stopping and a learning-rate schedule.** Keras declares the model, compiles it with a loss and metrics, and calls fit() with callbacks — the fastest path from idea to a trained prototype. PyTorch subclasses nn.Module and writes the training loop out — every zero_grad, backward and step visible, which is why research prefers it. This lesson runs the two programs on the same tabular dataset, reads the Keras summary against the parameter arithmetic of lesson 1.1, walks the PyTorch loop line by line against lessons 1.4 to 1.9, and ends with both models at 96 % test accuracy.",
 
   objectives: [
-    "Build, compile and fit the reference's Keras model with early stopping, plateau scheduling and checkpointing, and read its summary",
-    "Write the reference's MLPClassifier as an nn.Module built from a list of hidden sizes",
+    "Build, compile and fit the Keras model with early stopping, plateau scheduling and checkpointing, and read its summary",
+    "Write the MLPClassifier as an nn.Module built from a list of hidden sizes",
     "Write a PyTorch training loop with an optimiser, a scheduler, gradient clipping and a validation pass, and say what each line does",
     "Explain why BCEWithLogitsLoss takes logits and where the sigmoid went",
     "Count a model's parameters in both frameworks and account for batch norm's trainable and non-trainable ones"
@@ -42,7 +38,7 @@ n_features = X_train.shape[1]` },
 
     { t: "h2", n: "02", text: "Keras", id: "keras" },
 
-    { t: "code", lang: "python", title: "The reference's Keras program",
+    { t: "code", lang: "python", title: "The Keras program",
       code: `import tensorflow as tf
 from tensorflow.keras import layers, models, callbacks
 
@@ -80,7 +76,7 @@ history = model.fit(
     epochs=100, batch_size=32,
     callbacks=cb, verbose=1
 )`,
-      caption: "Keras 3 takes the input shape as an Input layer rather than the input_shape argument of the reference's Dense; nothing else changed. Run on TensorFlow 2.21, CPU." },
+      caption: "Keras 3 takes the input shape as an Input layer rather than the input_shape argument of the Dense; nothing else changed. Run on TensorFlow 2.21, CPU." },
 
     { t: "out", text: `Keras: stopped after 19 epochs (6 s); params 50,689
   epoch   1: loss 0.4330 acc 0.7800 auc 0.9088 | val_loss 0.3951 val_acc 0.8841 val_auc 0.9553 | lr 1.00e-03
@@ -106,7 +102,7 @@ dense_3 (Dense)                 (None, 1)                65      64·1 + 1
 
     { t: "h2", n: "03", text: "PyTorch", id: "pytorch" },
 
-    { t: "code", lang: "python", title: "The reference's MLPClassifier",
+    { t: "code", lang: "python", title: "The MLPClassifier",
       code: `import torch, torch.nn as nn, torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 
@@ -130,7 +126,7 @@ class MLPClassifier(nn.Module):
         return self.network(x).squeeze(-1)             # (batch, 1) → (batch,)`,
       caption: "The same three hidden sizes, built from a list so the depth is a parameter. Two differences from the Keras model: batch norm goes before the ReLU, and the output is a raw logit because the sigmoid lives inside the loss." },
 
-    { t: "code", lang: "python", title: "The reference's training loop, annotated",
+    { t: "code", lang: "python", title: "The training loop, annotated",
       code: `device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = MLPClassifier(input_dim=n_features).to(device)
 optimizer = optim.AdamW(model.parameters(), lr=1e-3, weight_decay=0.01)     # lesson 1.5
@@ -168,7 +164,7 @@ for epoch in range(100):
   Epoch 99: train_loss=0.0516, val_loss=0.1846, lr=0.000000
   test: acc 0.9600 auc 0.9961  (6 s)` },
 
-    { t: "p", text: "The PyTorch loop has no early stopping — the reference's loop runs the full hundred epochs on the cosine schedule — and the validation loss shows what that costs: it bottoms out near epoch 9 at 0.151 and then drifts up to 0.18–0.22 as the model overfits 400 examples, with dropout and weight decay holding it from going further. The cosine schedule takes the rate to zero by epoch 99, which freezes the model wherever it is. Test accuracy is the same 96 % as Keras, AUC 0.996; the two frameworks, given the same architecture and data, land in the same place." },
+    { t: "p", text: "The PyTorch loop has no early stopping — the loop runs the full hundred epochs on the cosine schedule — and the validation loss shows what that costs: it bottoms out near epoch 9 at 0.151 and then drifts up to 0.18–0.22 as the model overfits 400 examples, with dropout and weight decay holding it from going further. The cosine schedule takes the rate to zero by epoch 99, which freezes the model wherever it is. Test accuracy is the same 96 % as Keras, AUC 0.996; the two frameworks, given the same architecture and data, land in the same place." },
 
     { t: "callout", kind: "trap", title: "Where the sigmoid went",
       body: [{ t: "p", text: "The Keras model ends in Dense(1, activation='sigmoid') and uses loss='binary_crossentropy'. The PyTorch model ends in nn.Linear(prev_dim, 1) with no activation and uses BCEWithLogitsLoss, which applies the sigmoid inside the loss using the log-sum-exp trick so that a logit of −100 does not produce log(0). To get probabilities from the PyTorch model at inference you apply torch.sigmoid yourself; to get them from Keras you do not. Mixing the conventions — a sigmoid in the model *and* a with-logits loss — trains, badly, and is silent." }] },
@@ -211,7 +207,7 @@ for epoch in range(100):
 </g></svg>` },
 
     { t: "exercise", kind: "practice", title: "Give the PyTorch loop what the Keras callbacks have", difficulty: "core", minutes: 20,
-      body: [{ t: "p", text: "Add early stopping with patience 10 and best-weight restoration to the reference's PyTorch loop (lesson 1.7's pattern), keeping the cosine schedule. Report the epoch it stops at, the restored epoch's validation loss, and the test accuracy and AUC. Compare with the 100-epoch run's 0.1846 final validation loss." }],
+      body: [{ t: "p", text: "Add early stopping with patience 10 and best-weight restoration to the PyTorch loop (lesson 1.7's pattern), keeping the cosine schedule. Report the epoch it stops at, the restored epoch's validation loss, and the test accuracy and AUC. Compare with the 100-epoch run's 0.1846 final validation loss." }],
       requirements: [
         "A best_val_loss / counter / torch.save pattern inside the epoch loop",
         "load_state_dict of the best checkpoint before evaluating on the test set",
@@ -257,7 +253,7 @@ model.load_state_dict(torch.load("best.pt")); model.eval()
     { stem: "The PyTorch run's validation loss fell to 0.15 at epoch 9 and ended at 0.18 at epoch 99. What does that indicate, and what would fix it?",
       options: ["Underfitting; train longer", "Mild overfitting after epoch 9; early stopping with best-weight restoration, as the Keras callbacks did", "A learning rate that is too low", "A bug in the DataLoader"],
       answer: 1,
-      why: "Training loss kept falling while validation loss rose from its epoch-9 minimum — the reference's definition of overfitting. The reference's PyTorch loop has no early stopping; adding lesson 1.7's pattern, or a Keras-style callback, restores the epoch-9 weights. Test accuracy was the same either way on this easy dataset." }
+      why: "Training loss kept falling while validation loss rose from its epoch-9 minimum — the definition of overfitting. The PyTorch loop has no early stopping; adding lesson 1.7's pattern, or a Keras-style callback, restores the epoch-9 weights. Test accuracy was the same either way on this easy dataset." }
   ] },
 
   interview: { title: "Interview", sub: "Framework questions that come up", questions: [

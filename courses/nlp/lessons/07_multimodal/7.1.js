@@ -1,8 +1,7 @@
 /* ============================================================================
    LESSON 7.1 — Multimodal Fundamentals
-   Mirrors 03_Multimodal_AI.md · §1. The four fusion strategies, placed
-   against the models built in Module 5, with CLIP run as the late-fusion
-   case (scratchpad/nlp/n71.py).
+   The four fusion strategies, placed against the models built in Module 5,
+   with CLIP run as the late-fusion case (scratchpad/nlp/n71.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "7.1",

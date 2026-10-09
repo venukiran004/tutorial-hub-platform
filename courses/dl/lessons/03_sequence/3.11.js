@@ -1,8 +1,7 @@
 /* ============================================================================
    LESSON 3.11 — Padding, Packing and Masking
-   Mirrors 03_Sequence_Models.md · §12. Packed-vs-padded h_n divergence,
-   attention leakage onto padding, and loss masking all measured
-   (scratchpad/dl/d39.py).
+   Packed-vs-padded h_n divergence, attention leakage onto padding, and loss
+   masking all measured (scratchpad/dl/d39.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.11",

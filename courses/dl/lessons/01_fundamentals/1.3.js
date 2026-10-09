@@ -1,20 +1,16 @@
 /* ============================================================================
    LESSON 1.3 — Forward Propagation and Loss Functions
-   Mirrors 01_Neural_Network_Fundamentals.md · §3 (Matrix Form, Numerical
-   Example) and §4 (Classification, Regression, Focal Loss, Hinge Loss, the
-   selection rule and the MLE connection). The reference's numerical example
-   is re-worked and checked in NumPy and PyTorch; every loss is computed.
    ========================================================================= */
 EC.receiveLesson({
   id: "1.3",
 
-  lede: "**The forward pass pushes an input through the layers to a prediction; the loss turns that prediction and the truth into one number the optimiser can minimise.** Both are deterministic and both are short — a forward pass is a matrix multiply, a bias and an activation per layer, and a loss is a formula — yet the pairing of the last activation with the loss decides whether training works at all. This lesson works the reference's two-layer example by hand and in matrix form, checks it in NumPy and PyTorch, and computes each loss on small examples so you can see cross-entropy's asymmetry, Huber's compromise, focal loss's down-weighting and the hinge's margin.",
+  lede: "**The forward pass pushes an input through the layers to a prediction; the loss turns that prediction and the truth into one number the optimiser can minimise.** Both are deterministic and both are short — a forward pass is a matrix multiply, a bias and an activation per layer, and a loss is a formula — yet the pairing of the last activation with the loss decides whether training works at all. This lesson works the two-layer example by hand and in matrix form, checks it in NumPy and PyTorch, and computes each loss on small examples so you can see cross-entropy's asymmetry, Huber's compromise, focal loss's down-weighting and the hinge's margin.",
 
   objectives: [
     "Write the forward pass in matrix form, Z⁽ˡ⁾ = W⁽ˡ⁾A⁽ˡ⁻¹⁾ + b⁽ˡ⁾, A⁽ˡ⁾ = g⁽ˡ⁾(Z⁽ˡ⁾), with the shape of every term",
     "Carry a 2 → 2 → 1 network's forward pass through by hand for one input and for a batch, and reproduce it in PyTorch",
     "Compute binary and categorical cross-entropy, MSE, MAE, Huber, focal and hinge loss on given numbers",
-    "Choose the loss and the output activation for a task from the reference's selection rule, and explain the maximum-likelihood connection"
+    "Choose the loss and the output activation for a task from the selection rule, and explain the maximum-likelihood connection"
   ],
 
   prerequisites: ["1.1", "1.2"],
@@ -60,7 +56,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The numerical example, worked and checked", id: "example" },
 
-    { t: "p", text: "The reference's network has 2 inputs, 2 hidden ReLU units and 1 sigmoid output, with these weights and this input:" },
+    { t: "p", text: "The network has 2 inputs, 2 hidden ReLU units and 1 sigmoid output, with these weights and this input:" },
 
     { t: "code", lang: "text", title: "The forward pass by hand",
       code: `W¹ = [[0.5, −0.3],     b¹ = [0.1, −0.2]       x = [1.0, 2.0]
@@ -77,7 +73,7 @@ z² = W²a¹ + b² = 0.4·0.0 + (−0.7)·1.8 + 0.3 = −0.96
 ŷ  = σ(−0.96) = 1 / (1 + e^0.96) = 0.277
 
 P(y = 1) = 0.277 → predict class 0`,
-      caption: "The reference's text has the first pre-activation as −0.1; the arithmetic gives 0.5 − 0.6 + 0.1 = 0.0. Either way ReLU sends it to 0 and the final prediction, 0.277, is the same — but check the line, because in a backward pass (lesson 1.4) the sign of that pre-activation decides whether the unit receives any gradient." },
+      caption: "The text has the first pre-activation as −0.1; the arithmetic gives 0.5 − 0.6 + 0.1 = 0.0. Either way ReLU sends it to 0 and the final prediction, 0.277, is the same — but check the line, because in a backward pass (lesson 1.4) the sign of that pre-activation decides whether the unit receives any gradient." },
 
     { t: "p", text: "Now three examples at once, in the matrix form, and the same computation in PyTorch — which stores each layer's weight as (out, in) and takes the batch as rows, so the numbers are identical and only the orientation differs:" },
 
@@ -199,7 +195,7 @@ y=-1 score=+0.5: hinge 1.50` },
       body: [{ t: "p", text: "`nn.CrossEntropyLoss` expects raw logits and applies log-softmax itself, numerically stably; `nn.BCEWithLogitsLoss` does the same with the sigmoid. Put a softmax layer at the end of a model trained with CrossEntropyLoss and you apply it twice — the model still trains, slowly, with squashed gradients, and the bug is silent. The model's last layer should be `nn.Linear` and nothing else." }] },
 
     { t: "exercise", kind: "practice", title: "Carry a different input through", difficulty: "foundation", minutes: 12,
-      body: [{ t: "p", text: "With the reference's weights, work the forward pass by hand for x = [2.0, 1.0]: z¹, a¹, z², ŷ, and the binary cross-entropy if the true label is 1. Check every number in NumPy." }],
+      body: [{ t: "p", text: "With the weights, work the forward pass by hand for x = [2.0, 1.0]: z¹, a¹, z², ŷ, and the binary cross-entropy if the true label is 1. Check every number in NumPy." }],
       requirements: [
         "Show each pre-activation and activation",
         "State the predicted class and the BCE loss for y = 1",
@@ -216,12 +212,12 @@ z2 = W2 @ a1 + b2             # 0.32 - 1.4 + 0.3 = -0.78
 yhat = 1 / (1 + np.exp(-z2))  # 0.3143
 bce = -np.log(yhat)           # 1.1574 for y = 1
 print(z1, a1, z2, yhat, bce)`,
-        notes: [{ t: "p", text: "z¹ = [0.8, 2.0], both units active, z² = −0.78, ŷ = 0.314, predicted class 0, loss −log 0.314 = 1.157. Because both hidden units are active, both receive gradient in the backward pass; for the reference's input only the second did." }] } }
+        notes: [{ t: "p", text: "z¹ = [0.8, 2.0], both units active, z² = −0.78, ŷ = 0.314, predicted class 0, loss −log 0.314 = 1.157. Because both hidden units are active, both receive gradient in the backward pass; for the input only the second did." }] } }
   ],
 
   takeaways: [
     "Forward propagation is Z⁽ˡ⁾ = W⁽ˡ⁾A⁽ˡ⁻¹⁾ + b⁽ˡ⁾, A⁽ˡ⁾ = g(Z⁽ˡ⁾), layer after layer; the batch dimension passes through untouched.",
-    "The reference's 2 → 2 → 1 example gives z¹ = [0, 1.8], a¹ = [0, 1.8], z² = −0.96, ŷ = 0.277 — checked in NumPy and PyTorch, with the batch version showing which units are active per example.",
+    "The 2 → 2 → 1 example gives z¹ = [0, 1.8], a¹ = [0, 1.8], z² = −0.96, ŷ = 0.277 — checked in NumPy and PyTorch, with the batch version showing which units are active per example.",
     "Cross-entropy is −log of the probability given to the truth; it punishes confident errors without bound and pairs with sigmoid (binary) or softmax (multi-class).",
     "MSE lets one large residual dominate, MAE counts every residual in proportion, Huber is quadratic inside δ and linear outside.",
     "Focal loss multiplies cross-entropy by (1 − p_t)^γ so well-classified examples fade out; hinge loss is zero beyond the margin and linear inside it.",
@@ -247,7 +243,7 @@ print(z1, a1, z2, yhat, bce)`,
       why: "With thousands of easy background examples, ordinary cross-entropy is dominated by their small but numerous contributions. Focal loss scales each example by (1 − p_t)^γ: at p_t = 0.9 and γ = 2 the example keeps only 1 % of its weight (0.25 % with α = 0.25), so training concentrates on the hard examples." }
   ] },
 
-  interview: { title: "Interview", sub: "What the reference's loss section prepares you for", questions: [
+  interview: { title: "Interview", sub: "What the loss section prepares you for", questions: [
     { level: "Core", q: "Why is cross-entropy preferred over MSE for classification?",
       strong: "Its gradient does not vanish for confident wrong predictions, and it is the likelihood of the model the sigmoid or softmax implies.",
       answer: [{ t: "p", text: "With a sigmoid output and MSE, the gradient of the loss with respect to the logit carries a factor σ′(z) = ŷ(1 − ŷ), which is tiny when the prediction is confidently wrong — exactly when a big correction is needed. With cross-entropy the σ′ factor cancels and the gradient is simply ŷ − y: large when the prediction is far from the label. Cross-entropy is also the negative log-likelihood of a Bernoulli or categorical model, so minimising it is maximum-likelihood estimation of the class probabilities, which is what a classifier should be doing." }] },

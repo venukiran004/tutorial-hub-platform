@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 3.5 — Production NLP Pipelines
-   Mirrors 01_NLP_Notes.md · §21. Latency percentiles, batching, ragged
-   padding, dynamic quantisation, caching and train-serve skew are all
-   measured on distilbert (scratchpad/nlp/n35.py).
+   Latency percentiles, batching, ragged padding, dynamic quantisation,
+   caching and train-serve skew are all measured on distilbert
+   (scratchpad/nlp/n35.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.5",
@@ -72,7 +72,7 @@ EC.receiveLesson({
     { t: "out", text:
 "        latency (mean)   P95        size\nfp32    23.81 ms         26.41 ms   267.9 MB\nint8    13.29 ms         16.09 ms   138.7 MB\n\n1.79x faster, 48% smaller\n\nlogits fp32  [0.1527, 0.0397]\nlogits int8  [0.1527, 0.0635]\nmax abs difference 0.0238" },
 
-    { t: "callout", kind: "warn", title: "The reference's 2-4x did not fully reproduce",
+    { t: "callout", kind: "warn", title: "The 2-4x did not fully reproduce",
       body: [{ t: "p", text: "The reference quotes \"2-4x speedup, ~50% size reduction\" for dynamic quantisation. Size reproduced closely — **48%**, 267.9 MB to 138.7 MB. Speed came in at **1.79x**, below the quoted range, on four CPU threads with a 67M-parameter model. Quantisation speedups depend heavily on the CPU's int8 support, the thread count and the model's shape, so a range quoted without hardware is not a prediction. Measure it on your serving hardware." }] },
 
     { t: "callout", kind: "trap", title: "Quantisation is lossy — re-measure accuracy, never assume",
@@ -132,7 +132,7 @@ EC.receiveLesson({
     "Per-item cost fell from 21.958 ms to 7.586 ms by batch 16 and then flattened — batch past the knee only adds latency.",
     "A batch of 64 takes 480.88 ms, and every request in it waits for the slowest; use dynamic batching with a timeout.",
     "One 158-token document in a batch of 32 short ones took inference from 58.91 ms to 2319.61 ms — a 39x blowup. Sort by length.",
-    "Dynamic quantisation gave 1.79x speed and 48% size reduction, below the reference's quoted 2-4x; it is hardware-dependent, so measure it.",
+    "Dynamic quantisation gave 1.79x speed and 48% size reduction, below the quoted 2-4x; it is hardware-dependent, so measure it.",
     "Quantisation moved a logit by 0.0238 — it is lossy, so re-run the full evaluation on the quantised artefact.",
     "An LRU cache absorbed 81.6% of zipfian traffic for a 5.4x wall-clock win, in four lines.",
     "A missing `.lower()` was invisible on an uncased checkpoint and split one input into 7 tokens instead of 2 on a cased one — share preprocessing code and assert on token ids."

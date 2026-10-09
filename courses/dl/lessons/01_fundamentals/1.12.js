@@ -1,15 +1,10 @@
 /* ============================================================================
    LESSON 1.12 — Debugging Neural Networks and Gradient Clipping
-   Mirrors 01_Neural_Network_Fundamentals.md · §15 (Debugging Neural Networks)
-   and §16 (Gradient Clipping). Every item in the reference's checklist is run
-   rather than asserted: the expected initial losses, the overfit-one-batch
-   test, the double-softmax bug, the train/eval difference, and both clipping
-   modes (scratchpad/dl/d112.py, torch 2.10).
    ========================================================================= */
 EC.receiveLesson({
   id: "1.12",
 
-  lede: "**A network that does not learn is not a mystery; it is a checklist you have not worked through.** Almost every failure is one of six things — the data, the loss, the gradients, the learning rate, the architecture, or one of a handful of bugs that produce a model which trains and is quietly wrong. This lesson runs the reference's checklist item by item, so each check comes with the number it should produce and what you see when it fails, then covers gradient clipping: what `clip_grad_norm_` actually returns, and why clipping by norm and clipping by value are not two flavours of the same thing.",
+  lede: "**A network that does not learn is not a mystery; it is a checklist you have not worked through.** Almost every failure is one of six things — the data, the loss, the gradients, the learning rate, the architecture, or one of a handful of bugs that produce a model which trains and is quietly wrong. This lesson runs the checklist item by item, so each check comes with the number it should produce and what you see when it fails, then covers gradient clipping: what `clip_grad_norm_` actually returns, and why clipping by norm and clipping by value are not two flavours of the same thing.",
 
   objectives: [
     "Predict a model's initial loss and use it to catch a wrong head, wrong loss or wrong labels before training",
@@ -25,7 +20,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The order the checks go in", id: "order" },
 
-    { t: "p", text: "The reference's checklist is ordered, and the order is the useful part: each step rules out a class of cause, so a failure tells you where to look next. Working it top to bottom is faster than the instinct, which is to start changing the learning rate." },
+    { t: "p", text: "The checklist is ordered, and the order is the useful part: each step rules out a class of cause, so a failure tells you where to look next. Working it top to bottom is faster than the instinct, which is to start changing the learning rate." },
 
     { t: "diagram", kind: "steps", title: "Seven checks, in order",
       caption: "Steps 1 to 3 cost seconds and catch most real bugs. The instinct is to start at step 5, which is why so much time gets spent tuning a model that had a label bug.",
@@ -153,7 +148,7 @@ m.eval();  c = m(inp); d = m(inp)` },
       body: [{ t: "p", text: "It stops one bad batch destroying a run, which is worth having. It does not address why the gradients were large — that is usually initialisation (lesson 1.6), a missing normalisation layer (1.8), or a learning rate that is too high (1.9). If clipping fires on most steps, it is not protecting the run, it is running it." }] },
 
     { t: "exercise", kind: "practice", title: "Break it on purpose, then find it", difficulty: "core", minutes: 26,
-      prompt: "Take the PyTorch classifier from lesson 1.11 and introduce one bug at a time, without looking at which: (a) softmax before the loss, (b) validation without model.eval(), (c) shuffle=False, (d) labels shifted by one, (e) the last layer initialised with std=5. For each, record the initial loss, whether one batch overfits, and the gradient norm on step one. Build a table of symptom against cause, then check it against the reference's checklist.",
+      prompt: "Take the PyTorch classifier from lesson 1.11 and introduce one bug at a time, without looking at which: (a) softmax before the loss, (b) validation without model.eval(), (c) shuffle=False, (d) labels shifted by one, (e) the last layer initialised with std=5. For each, record the initial loss, whether one batch overfits, and the gradient norm on step one. Build a table of symptom against cause, then check it against the checklist.",
       hints: [
         "The initial loss separates (d) and (e) immediately.",
         "The overfit test passes for (b) and (c) and fails for (d).",
@@ -161,7 +156,7 @@ m.eval();  c = m(inp); d = m(inp)` },
       ],
       solution: {
         notes: [
-          { t: "p", text: "The table is the deliverable, and the useful discovery is how few symptoms there are: initial loss, does-one-batch-overfit, and gradient norm distinguish nearly every bug on the list between them. That is why the reference's checklist is ordered the way it is — those three checks come first because they partition the space." },
+          { t: "p", text: "The table is the deliverable, and the useful discovery is how few symptoms there are: initial loss, does-one-batch-overfit, and gradient norm distinguish nearly every bug on the list between them. That is why the checklist is ordered the way it is — those three checks come first because they partition the space." },
           { t: "p", text: "Two of these do not fail the overfit test at all. Missing `eval()` and `shuffle=False` both memorise a single batch perfectly, because neither bug affects a single repeated batch — the first only matters when you evaluate, the second only when there is more than one batch. That is worth feeling: the sanity check is powerful and it is not complete, which is why the checklist keeps going after step 1." }
         ]
       } }

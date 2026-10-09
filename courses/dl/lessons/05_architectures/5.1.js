@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 5.1 — Reference Card: the Dense Network
-   Mirrors Architectures/ann.md. A diagnosis-oriented consolidation: symptom
-   to cause to fix, complexity, and the knobs that matter. Numbers are drawn
-   from measurements made in modules 1 and 4.
+   A diagnosis-oriented consolidation: symptom to cause to fix, complexity,
+   and the knobs that matter. Numbers are drawn from measurements made in
+   modules 1 and 4.
    ========================================================================= */
 EC.receiveLesson({
   id: "5.1",
@@ -40,7 +40,7 @@ EC.receiveLesson({
 
     { t: "math", tex: "\\text{params} = (n_{in} + 1) \\times n_{out} \\qquad \\text{per layer}" },
 
-    { t: "p", text: "The reference's worked example: `784 → 256 → 10` gives `(784+1)·256 + (256+1)·10 = 200,960 + 2,570 = 203,530`. Lesson 4.8's network checked out the same way — 11,521 from this formula plus 384 of BatchNorm scale and shift, totalling the 11,905 PyTorch reported. Forward and backward cost is roughly `O(params)` per sample." },
+    { t: "p", text: "The worked example: `784 → 256 → 10` gives `(784+1)·256 + (256+1)·10 = 200,960 + 2,570 = 203,530`. Lesson 4.8's network checked out the same way — 11,521 from this formula plus 384 of BatchNorm scale and shift, totalling the 11,905 PyTorch reported. Forward and backward cost is roughly `O(params)` per sample." },
 
     { t: "callout", kind: "insight", title: "Parameters concentrate where the layers are widest",
       body: [{ t: "p", text: "In `784 → 256 → 10`, the first layer holds 98.7 % of the parameters. This is the same phenomenon lesson 2.3 measured in VGG16, where 89.4 % of 138 million parameters sat in the classifier head. Whenever you want to know where a model's capacity — and its overfitting risk — actually lives, compute the per-layer split rather than counting layers. It is usually more lopsided than it looks." }] },

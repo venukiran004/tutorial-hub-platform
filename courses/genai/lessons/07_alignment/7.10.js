@@ -40,7 +40,7 @@ EC.receiveLesson({
       ] },
 
     { t: "h2", n: "02", id: "consistency", text: "Self-consistency, measured",
-      sub: "The reference's number is right for one narrow case" },
+      sub: "The number is right for one narrow case" },
 
     { t: "p", text: "The claim is that a 60%-accurate model voting over 8 samples reaches about 78%. That is simulatable, and the thing it turns on is not stated: when the model is wrong, does it give the *same* wrong answer each time, or different ones?" },
 
@@ -280,7 +280,7 @@ for name, idx in SLICES.items():
   takeaways: [
     "**Quality scales on two axes** \u2014 training compute and inference compute \u2014 and the second needs no retraining, making it the cheapest lever for anyone who did not train the model.",
     "**Self-consistency exploits error diversity, not error rate**: at a fixed 60% accuracy, vote@8 ranges from 71.9% (errors agree) to 98.6% (errors unique).",
-    "**The reference's \u224878% is right only between one and two error modes**, and understates the technique for any realistic scattering.",
+    "**The \u224878% is right only between one and two error modes**, and understates the technique for any realistic scattering.",
     "**The correct answer needs a plurality, not a majority** \u2014 which is why the binomial calculation is wrong by 33 points at n = 4 and is non-monotone, predicting 47.5% below the single-sample 60%.",
     "**At five error modes, voting@8 reaches 93.8% at 8\u00d7 cost** against a big model's 85% at 20\u00d7 \u2014 winning on both axes, not trading.",
     "**\u201cAccuracy per unit cost\u201d always favours doing less**, because accuracy is bounded and cost is not; the real question is marginal cost at your required accuracy.",

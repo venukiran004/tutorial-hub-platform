@@ -1,8 +1,7 @@
 /* ============================================================================
    LESSON 3.1 — NLP with spaCy
-   Mirrors 01_NLP_Notes.md · §17. The pipeline, the Doc/Token/Span object
-   model, a custom component and both matchers are run and timed
-   (scratchpad/nlp/n31.py).
+   The pipeline, the Doc/Token/Span object model, a custom component and
+   both matchers are run and timed (scratchpad/nlp/n31.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.1",
@@ -42,7 +41,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "One sentence, fully annotated", id: "annotated" },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n31.py — the reference's sentence", code:
+    { t: "code", lang: "python", title: "scratchpad/nlp/n31.py — the sentence", code:
 "import spacy\n\nnlp = spacy.load(\"en_core_web_sm\")     # sm: fast. md/lg: vectors. trf: most accurate\ndoc = nlp(\"Apple is looking at buying U.K. startup for $1 billion\")\n\nfor token in doc:\n    print(f\"{token.text:10} {token.pos_:6} {token.dep_:10} \"\n          f\"{token.is_stop} {token.lemma_}\")\n\nfor ent in doc.ents:\n    print(f\"{ent.text:20} {ent.label_:10} ({ent.start_char}:{ent.end_char})\")",
       caption: "Four model sizes ship: `sm` has no word vectors, `md` and `lg` do, and `trf` wraps a transformer. `doc.similarity()` silently degrades on `sm` because there are no vectors to compare." },
 

@@ -72,7 +72,7 @@ EC.receiveLesson({
         { t: "p", text: "8.13 stated the general rule \u2014 a metric whose denominator is a judgement needs that judgement reported. Computing the metric by hand is how you find out what the judgement was." }
       ] },
 
-    { t: "callout", kind: "good", title: "And the reference's arithmetic held up, which is worth saying",
+    { t: "callout", kind: "good", title: "And the arithmetic held up, which is worth saying",
       body: [
         { t: "p", text: "I verified all twelve worked examples: perplexity, BLEU with its four clipped precisions and brevity penalty, three ROUGE variants, pass@k at four values of k, the full five-query retrieval scoreboard with seven metrics each, NDCG, position bias, Cohen\u2019s \u03ba, a latency budget and a confidence interval. Every figure matched." },
         { t: "p", text: "One near-miss is instructive. BLEU-4 is stated as **0.5789**, and multiplying the *rounded* intermediates \u2014 0.8187 \u00d7 0.7071 \u2014 gives 0.5787. At full precision it is 0.818731 \u00d7 0.707107 = **0.578930**, so the reference is right and the rounded check was wrong." },
@@ -198,7 +198,7 @@ print("family counts:", {f: sum(1 for v in FAMILY.values() if v[0] == f)
     "**Each family's blind spot is more useful than its formula**, because it tells you what a reported number cannot have seen.",
     "**Compute each metric by hand once**, since the convention that changes the number lives in a default argument rather than the signature.",
     "**NDCG has two standard gain formulations** giving 0.9724 and 0.9575 on identical data \u2014 and this course's two reference files use different ones.",
-    "**All twelve of the reference's worked examples verified correct**, which is unusual and means the figures in this module can be trusted as stated.",
+    "**All twelve of the worked examples verified correct**, which is unusual and means the figures in this module can be trusted as stated.",
     "**Verify at full precision or not at all**: multiplying rounded intermediates made BLEU look like 0.5787 when the correct value is 0.578930."
   ],
 

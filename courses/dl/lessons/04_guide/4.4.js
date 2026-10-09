@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 4.4 — The Encoder Block
-   Mirrors rnn-lstm-gru-transformer-guide.md · §5.6. Parameter split and
-   activation stability through depth measured (scratchpad/dl/d41.py).
+   Parameter split and activation stability through depth measured
+   (scratchpad/dl/d41.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.4",

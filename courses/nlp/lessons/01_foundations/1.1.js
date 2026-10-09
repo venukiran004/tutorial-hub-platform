@@ -1,7 +1,6 @@
 /* ============================================================================
    LESSON 1.1 — The NLP Pipeline
-   Mirrors 01_NLP_Notes.md · §1 (and the Key Definitions table that precedes
-   it). Every pipeline stage is run on one sentence and its cost measured
+   Every pipeline stage is run on one sentence and its cost measured
    (scratchpad/nlp/n11.py).
    ========================================================================= */
 EC.receiveLesson({

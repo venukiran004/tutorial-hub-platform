@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P6.4 — Clustering and Dimensionality Reduction · 4
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/04_Machine_Learning/Practice/06_Clustering_and_DimReduction.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p6.4",

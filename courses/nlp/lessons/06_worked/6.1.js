@@ -1,13 +1,10 @@
 /* ============================================================================
    LESSON 6.1 — The Toy Model: Tokenize, Embed, Position
-   Mirrors 02a_Transformer_Worked_Example.md · §0-③. Every number in the
-   reference's setup recomputed — and unlike the worked attention example in
-   4.3, this one is correct throughout (scratchpad/nlp/n61.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "6.1",
 
-  lede: "**This module checks every number in the reference's hand-computed transformer, and all of them are right.** That is worth saying plainly, because lesson 4.3 found two wrong rows in a different worked example from the same source. Here — six words, four dimensions, one head, one layer — the arithmetic holds from tokenisation through to a 47.51% prediction of *mat*. This lesson covers the setup and the first three steps, with the values you can check on paper.",
+  lede: "**This module checks every number in the hand-computed transformer, and all of them are right.** That is worth saying plainly, because lesson 4.3 found two wrong rows in a different worked example from the same source. Here — six words, four dimensions, one head, one layer — the arithmetic holds from tokenisation through to a 47.51% prediction of *mat*. This lesson covers the setup and the first three steps, with the values you can check on paper.",
 
   objectives: [
     "State the toy model's configuration and how it maps to a real one",
@@ -103,7 +100,7 @@ EC.receiveLesson({
     "An embedding lookup is exactly a one-hot matrix multiply, which is why it trains by backpropagation and why output weight tying works.",
     "At d = 4 the positional encoding has one fast pair and one slow pair: [sin(pos), cos(pos), sin(pos/100), cos(pos/100)].",
     "From position 0 to 2 the fast pair's cosine flips sign while the slow pair moves from 1.0000 to 0.9998 — the slow pair exists for distant positions, not adjacent ones.",
-    "Every value in the reference's setup reproduces exactly, unlike the worked attention example checked in lesson 4.3.",
+    "Every value in the setup reproduces exactly, unlike the worked attention example checked in lesson 4.3.",
     "X is (3 tokens × 4 dims), with z0 = [1, 1, 1, 1] and z2 = [1.9093, 0.5839, 0.0200, 0.9998].",
     "Adding position into the content dimensions looks lossy but is not, because the network needs projections that respond to each, not a way to separate them."
   ],

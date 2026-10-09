@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "2.5",
 
-  lede: "ReAct interleaves reasoning with action: the model thinks, calls a tool, reads the result, and thinks again. It is the pattern underneath essentially every agent, and it has one property that decides whether an agent is affordable — **the whole trace is re-sent on every step**, so input cost grows with the square of the number of steps. Measured on the reference's own example: eight steps of a 105-token trace cost 424 input tokens, not 105. At sixty-four steps the multiple is 32.5×.",
+  lede: "ReAct interleaves reasoning with action: the model thinks, calls a tool, reads the result, and thinks again. It is the pattern underneath essentially every agent, and it has one property that decides whether an agent is affordable — **the whole trace is re-sent on every step**, so input cost grows with the square of the number of steps. Measured on the worked example: eight steps of a 105-token trace cost 424 input tokens, not 105. At sixty-four steps the multiple is 32.5×.",
 
   objectives: [
     "Write the Thought / Action / Observation loop and say what terminates it",
@@ -21,7 +21,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Chain-of-thought (2.3) lets a model compute intermediate values. ReAct lets it *obtain* them — the intermediate step is a tool call whose result comes back from outside the model. The pattern is three token types repeated until an answer is produced." },
 
-    { t: "code", lang: "text", title: "The reference's ReAct trace", code: `Thought: I need to find the population of Tokyo.
+    { t: "code", lang: "text", title: "The ReAct trace", code: `Thought: I need to find the population of Tokyo.
 Action: search("Tokyo population 2024")
 Observation: The population of Tokyo is approximately 14 million.
 Thought: Now I need to compare it with New York.
@@ -29,7 +29,7 @@ Action: search("New York population 2024")
 Observation: The population of New York City is approximately 8.3 million.
 Thought: I can now answer the question.
 Answer: Tokyo (14M) has about 5.7 million more people than NYC (8.3M).`,
-      caption: "From 04_Prompt_Engineering.md §5. The model writes the Thought and the Action; your code produces the Observation and appends it. The loop ends when the model writes `Answer` instead of `Action`." },
+      caption: "From the reference notes §5. The model writes the Thought and the Action; your code produces the Observation and appends it. The loop ends when the model writes `Answer` instead of `Action`." },
 
     { t: "p", text: "Mechanically this is the function-calling loop from 1.9 with the reasoning made explicit. The `Thought` lines are chain-of-thought and buy the same thing — computation before a decision — and the `Action` lines are what 1.9 called step 2, the model emitting arguments for your code to execute." },
 
@@ -266,7 +266,7 @@ N=40  with a 50% prefix cache: 90000 -> 68400 input tokens (24% saved)`,
   takeaways: [
     "**ReAct is chain-of-thought with the world in the loop**: Thought and Action are generated, Observation comes from a tool. The loop ends when the model answers instead of acting.",
     "The Observation is **the only part the model cannot invent**, which is why ReAct helps on factual tasks where CoT alone reasons impeccably from an invented premise.",
-    "**Input cost is quadratic in steps**, because the whole trace is re-sent every time. Measured on the reference's trace: 8 steps of a 105-token trace cost **424 input tokens** — 4.04×.",
+    "**Input cost is quadratic in steps**, because the whole trace is re-sent every time. Measured on the trace: 8 steps of a 105-token trace cost **424 input tokens** — 4.04×.",
     "Doubling the steps roughly quadruples the input cost: **2.5× the trace at 4 steps, 32.5× at 64**.",
     "The system prompt and tool definitions ride along on every step too — often the larger term on short runs.",
     "Measured over a realistic agent: the naive `steps × cost_per_call` estimate understates by 5% at five steps and **97% at forty**.",
@@ -320,7 +320,7 @@ N=40  with a 50% prefix cache: 90000 -> 68400 input tokens (24% saved)`,
         strong: "A strong answer knows the cost is quadratic and can say by how much a linear estimate is wrong.",
         answer: [
           { t: "p", text: "Not as steps times cost per call, which is the estimate everyone builds and it is wrong in the direction that hurts. The model has no memory, so every step re-sends the whole trace so far — input cost is quadratic in the step count." },
-          { t: "p", text: "Measured on the reference's own eight-step example: the trace is 105 tokens and the input billed is 424, a factor of four. At 64 steps it is 32.5×. And on a realistic agent the naive linear estimate understated by 97% at forty steps." },
+          { t: "p", text: "Measured on the eight-step example: the trace is 105 tokens and the input billed is 424, a factor of four. At 64 steps it is 32.5×. And on a realistic agent the naive linear estimate understated by 97% at forty steps." },
           { t: "p", text: "The other term people forget is the static prefix — system prompt plus tool definitions, re-sent on every step. At five steps that was 90% of all input tokens, and at forty it was 48%. Which tells you where to optimise: cache the prefix for short agents, compress the trace for long ones. They are different levers and doing the wrong one gets you a few percent." }
         ] },
 

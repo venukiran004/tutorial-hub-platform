@@ -1,14 +1,10 @@
 /* ============================================================================
    LESSON 6.2 — Framing and the Mel Scale
-   Mirrors 08_Audio_Speech_Processing.md · §2, §3. Every mel value in the
-   reference reproduced exactly; the leakage effect and the log-gain identity
-   measured (scratchpad/dl/d61.py). The reference's octave framing is
-   corrected against its own table.
    ========================================================================= */
 EC.receiveLesson({
   id: "6.2",
 
-  lede: "**Speech is non-stationary — the spectrum during `/s/` is nothing like the spectrum during `/a/` — but over 25 ms it is approximately stationary, and that single approximation is the entire justification for framing.** Slice, window, transform, then warp the frequency axis to match perception. This lesson computes every step, reproduces all six of the reference's mel values exactly, and finds one claim in its prose that its own table contradicts.",
+  lede: "**Speech is non-stationary — the spectrum during `/s/` is nothing like the spectrum during `/a/` — but over 25 ms it is approximately stationary, and that single approximation is the entire justification for framing.** Slice, window, transform, then warp the frequency axis to match perception. This lesson computes every step, reproduces all six of the mel values exactly, and finds one claim in its prose that its own table contradicts.",
 
   objectives: [
     "Derive frame and hop sizes in samples from milliseconds",
@@ -71,7 +67,7 @@ EC.receiveLesson({
   mel( 4000) =  2146.06   reference  2146.06   match=True
   mel( 8000) =  2840.02   reference  2840.02   match=True` },
 
-    { t: "callout", kind: "trap", title: "The reference's octave framing contradicts its own table",
+    { t: "callout", kind: "trap", title: "The octave framing contradicts its own table",
       body: [{ t: "p", text: "The prose says the gap from 100 to 200 Hz 'sounds far bigger' than the gap from 4,000 to 8,000 Hz, since both are one octave. But its own table gives those spans as **132.74 mel and 693.96 mel** — the high octave is more than five times larger in mel units, not smaller. The mel scale is not a pure logarithm; it is close to *linear* below about 1 kHz and logarithmic above, so octaves are not equal steps on it. What is actually true, and what the filterbank depends on, is resolution **per hertz**: low frequencies get 1.3274 mel per Hz against 0.1735 at the top, a factor of **7.7**. Forty times the bandwidth yields only 5.2 times the mel. That is the correct statement of the same underlying idea." }] },
 
     { t: "out", text: `    mel(  100) =   150.49   mel/f = 1.505
@@ -123,7 +119,7 @@ EC.receiveLesson({
     "`n_fft=512` gives 257 bins spaced 31.25 Hz apart.",
     "Windowing cut off-peak leakage from 1.231 % to effectively zero for an off-bin-centre tone.",
     "Longer window means better frequency and worse time resolution, exactly in proportion.",
-    "All six of the reference's mel values reproduce exactly.",
+    "All six of the mel values reproduce exactly.",
     "Its octave claim is contradicted by its own table — the real property is 7.7× more mel per Hz at low frequencies.",
     "Log turns a gain into an exact constant offset (std 1.5e-07), which is why cepstral mean normalisation works."
   ],

@@ -1,9 +1,5 @@
 /* ============================================================================
    LESSON 3.8 — Attention
-   Mirrors 03_Sequence_Models.md · §9. The reference's NumPy attention is run,
-   the sqrt(d_k) scaling is measured, permutation-invariance is demonstrated,
-   and the implementation is checked against F.scaled_dot_product_attention
-   (scratchpad/dl/d37.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.8",

@@ -8,7 +8,7 @@ EC.receiveLesson({
     "Read a training loss, a validation loss and a general-ability metric together",
     "Choose rank, learning rate, epochs and target modules from measurements",
     "Recognise a configuration that wins on the task and loses everywhere else",
-    "Apply the reference's defaults and know what each one is protecting against"
+    "Apply the defaults and know what each one is protecting against"
   ],
 
   prerequisites: ["4.7"],
@@ -69,7 +69,7 @@ for ep in range(epochs):
         { t: "p", text: "The last row is a reminder from 3.9: perplexity 20.731 at epoch 16 after 30.272 at epoch 15 is not an improvement. Once a metric has moved by this much, stop reading its fine structure." }
       ] },
 
-    { t: "callout", kind: "note", title: "Nine epochs, against the reference's \u201c1\u20133\u201d",
+    { t: "callout", kind: "note", title: "Nine epochs, against the \u201c1\u20133\u201d",
       body: [
         { t: "p", text: "The reference recommends 1\u20133 epochs and this run peaked at 9. Both are right, because an epoch is a pass over *your* data: 32 examples in batches of 4 is 8 optimiser steps per epoch, so nine epochs here is 72 steps. A 1,000-example dataset gives 250 steps in a single epoch." },
         { t: "p", text: "So the transferable quantity is **steps**, not epochs, and the rule of thumb is calibrated for the dataset size the reference assumes. On a small set, quote both \u2014 and stop on the validation curve rather than on either number." }
@@ -180,7 +180,7 @@ for ep in range(epochs):
         { t: "p", text: "This is worth holding loosely. It is one task, one model and one rank, and 4.3 measured a *different* property \u2014 which matrices have the most concentrated updates \u2014 that pointed at attention output projections. Those two findings answer different questions and I would not generalise either without re-measuring on the real task." }
       ] },
 
-    { t: "h2", n: "06", id: "defaults", text: "The reference's table, annotated",
+    { t: "h2", n: "06", id: "defaults", text: "The table, annotated",
       sub: "Each default, and what the measurement says it is protecting" },
 
     { t: "table",
@@ -210,13 +210,13 @@ for ep in range(epochs):
         note: "Measured: lr=5e-4 has the best validation loss in the sweep and 4.53\u00d7 the baseline perplexity." }
     ] },
 
-    { t: "h2", n: "07", id: "faq", text: "The reference's FAQ, with evidence",
+    { t: "h2", n: "07", id: "faq", text: "The FAQ, with evidence",
       sub: "Four questions, four measurements" },
 
     { t: "dl", items: [
       { k: "Fine-tuning or RAG?", v: "Behaviour to fine-tuning, facts to retrieval. 4.1 measured a fact trained to a low loss and then read out backwards on rephrasing; 4.2 measured retrieval correct the instant a document changed while the fine-tune kept reciting the old value." },
       { k: "LoRA or QLoRA?", v: "QLoRA when it would not otherwise fit. 4.5 measured the memory at 14.5 GB against 4.0 GB for a 7B, and the quality cost at 1.069\u00d7 perplexity \u2014 with the caveat that four-bit storage dequantizes on every forward pass, so LoRA is faster when you have the room." },
-      { k: "How much data?", v: "Quality over quantity, and 10\u201320% held back. The reference's 1K\u201310K clean examples is right; what my 32-example runs show is the failure at the bottom of that range \u2014 enough to transfer a behaviour and not enough to separate it from the specific examples." },
+      { k: "How much data?", v: "Quality over quantity, and 10\u201320% held back. The 1K\u201310K clean examples is right; what my 32-example runs show is the failure at the bottom of that range \u2014 enough to transfer a behaviour and not enough to separate it from the specific examples." },
       { k: "Does it add facts?", v: "Not reliably, which 4.1 makes precise: the tokens are learned, the relation is not. The model produced the right entity inside sentences like \u201cMorrowbridge is Morrowbridge\u2019s capital\u201d." }
     ] },
 
@@ -331,7 +331,7 @@ for mods in (["c_attn"], ["c_attn", "c_proj"], ["c_fc"],
     "**General ability starts degrading at epoch 1**, seven epochs before validation turns, and is already 2.04\u00d7 baseline at the best-validation epoch. Early stopping caps the cost; it does not avoid it.",
     "**Rank plateaus**: r=32 to r=64 improved validation by 0.0019 and worsened generic perplexity by 44%, which is the concrete reason the usual guidance stops at 64.",
     "**MLP input alone was the efficient placement** here \u2014 validation 2.6041 at 5.400 generic, against attention-qkv alone at 2.8277 and 5.703 \u2014 though that is one task on one model.",
-    "**Count steps, not epochs.** The reference's \u201c1\u20133 epochs\u201d assumes 500\u20131,000 examples; 32 examples peaked at epoch 9, which is 72 optimiser steps.",
+    "**Count steps, not epochs.** The \u201c1\u20133 epochs\u201d assumes 500\u20131,000 examples; 32 examples peaked at epoch 9, which is 72 optimiser steps.",
     "**Set a general-ability budget before the sweep** and let it reject configurations, rather than treating the metric as a tiebreak after the fact.",
     "**Under LoRA the damage is reversible** \u2014 the base is untouched, so a bad adapter is detached rather than rebuilt, which makes a failed sweep cheap to recover from."
   ],

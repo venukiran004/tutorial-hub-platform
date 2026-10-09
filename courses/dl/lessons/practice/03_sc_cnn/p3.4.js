@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P3.4 — CNNs and Computer Vision · 4
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/05_Deep_Learning/Practice/02_CNNs_and_Computer_Vision.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p3.4",

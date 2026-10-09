@@ -1,8 +1,7 @@
 /* ============================================================================
    LESSON 5.11 — State Space Models: Mamba and S4
-   Mirrors 02_Transformers_InDepth.md · §23. The recurrence/convolution
-   duality is proved numerically to 4.77e-07 (§02), and a selective scan is
-   implemented (scratchpad/nlp/n511.py).
+   The recurrence/convolution duality is proved numerically to 4.77e-07
+   (§02), and a selective scan is implemented (scratchpad/nlp/n511.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "5.11",

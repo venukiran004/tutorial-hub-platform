@@ -22,7 +22,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Perplexity is the **exponential of the cross-entropy**. That is the whole definition. Use natural log with `exp`, or log base 2 with a power of 2 \u2014 they give the same number, and mixing them is the commonest implementation bug." },
 
-    { t: "code", lang: "python", title: "g91.py \u00a7A \u2014 the reference's worked example", code: `lp2 = [-1, -2, -1, -3]            # log2 p for tokens with p = .5, .25, .5, .125
+    { t: "code", lang: "python", title: "g91.py \u00a7A \u2014 the worked example", code: `lp2 = [-1, -2, -1, -3]            # log2 p for tokens with p = .5, .25, .5, .125
 mean = sum(lp2) / len(lp2)
 ppl = 2 ** -mean`,
       out: `  token 1: p = 0.5      log2(0.5)   = -1
@@ -107,7 +107,7 @@ for V in (2, 10, 1000):
     print("uniform over %-5d -> PPL %.6f  (must be %d)  %s"
           % (V, got, V, "OK" if abs(got - V) < 1e-9 else "BASE BUG"))
 
-# 3. the reference's worked example
+# 3. the worked example
 print("worked example: %.4f  (claim 3.3636)"
       % ppl_bits([-1, -2, -1, -3]))
 

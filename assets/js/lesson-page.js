@@ -79,7 +79,6 @@
       }).join("");
       var drills = countDrills(L);
       var code = countCode(L);
-      var src = m.module.source || L.source;
 
       return '<div class="lh-eyebrow">' +
           '<span class="lv">' + EC.esc(m.module.short) + " · " + EC.esc(m.module.title) + "</span>" +
@@ -92,7 +91,6 @@
           '<span class="mi">' + I.layers + "Lesson <b>" + (m.seq + 1) + "</b> of " + m.trackTotal + "</span>" +
           (code ? '<span class="mi">' + I.code + "<b>" + code + "</b> code examples</span>" : "") +
           (drills ? '<span class="mi">' + I.key + "<b>" + drills + "</b> with hidden answers</span>" : "") +
-          (src ? '<span class="mi">' + I.link + "<span>from <b>" + EC.esc(src) + "</b></span></span>" : "") +
           "</span></div>" +
         progress(m) +
         (L.objectives && L.objectives.length

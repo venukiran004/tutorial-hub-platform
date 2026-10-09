@@ -1,14 +1,10 @@
 /* ============================================================================
    LESSON 5.10 — Mixture of Experts
-   Mirrors 02_Transformers_InDepth.md · §22. The reference's Router and
-   MoELayer are built and run, and router collapse is induced and then fixed
-   by the auxiliary loss at no cost in task loss (§05)
-   (scratchpad/nlp/n510.py, n510b.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "5.10",
 
-  lede: "**Without a load-balancing loss one expert held 46.3% of the tokens; with it, 15.0% — and the task loss was identical, 0.0316 against 0.0321.** Eight experts should each see about 12.5%. The auxiliary loss is not a quality-versus-utilisation trade; it corrects a pathology that wastes capacity for nothing. This lesson builds a Mixture of Experts layer from the reference's code, computes what the sparsity actually buys, and induces the failure that makes the extra loss term necessary.",
+  lede: "**Without a load-balancing loss one expert held 46.3% of the tokens; with it, 15.0% — and the task loss was identical, 0.0316 against 0.0321.** Eight experts should each see about 12.5%. The auxiliary loss is not a quality-versus-utilisation trade; it corrects a pathology that wastes capacity for nothing. This lesson builds a Mixture of Experts layer from the code, computes what the sparsity actually buys, and induces the failure that makes the extra loss term necessary.",
 
   objectives: [
     "Explain how MoE decouples total parameters from compute per token",

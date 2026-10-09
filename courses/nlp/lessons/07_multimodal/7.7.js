@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 7.7 — Document Understanding
-   Mirrors 03_Multimodal_AI.md · §9. The classical pipeline, why each stage
-   loses information, and the OCR-free alternative.
+   The classical pipeline, why each stage loses information, and the OCR-
+   free alternative.
    ========================================================================= */
 EC.receiveLesson({
   id: "7.7",

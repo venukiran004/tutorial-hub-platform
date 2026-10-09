@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 8.1 — Levenshtein and Damerau-Levenshtein
-   Mirrors 04_Fuzzy_Matching.md · §1-2. Both implemented from scratch, the
-   full kitten→sitting matrix reproduced, and the reordering failure measured
-   at 0.0909 for the same person (§06) (scratchpad/nlp/n81.py).
+   Both implemented from scratch, the full kitten→sitting matrix reproduced,
+   and the reordering failure measured at 0.0909 for the same person (§06)
+   (scratchpad/nlp/n81.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "8.1",

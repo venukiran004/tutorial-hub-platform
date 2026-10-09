@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 2.12 — Production Deployment
-   Mirrors 02_CNNs.md · §14. Every export was actually performed and every
-   number measured on torch 2.10 + onnxruntime (scratchpad/dl/d212.py).
-   Two current-version gotchas found and reported.
+   Every export was actually performed and every number measured on torch
+   2.10 + onnxruntime (scratchpad/dl/d212.py). Two current-version gotchas
+   found and reported.
    ========================================================================= */
 EC.receiveLesson({
   id: "2.12",

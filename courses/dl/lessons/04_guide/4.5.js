@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 4.5 — The Decoder and Causal Masking
-   Mirrors rnn-lstm-gru-transformer-guide.md · §5.7, §5.8. Causal mask
-   verified exactly zero above the diagonal (scratchpad/dl/d41.py).
+   Causal mask verified exactly zero above the diagonal
+   (scratchpad/dl/d41.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.5",

@@ -1,9 +1,5 @@
 /* ============================================================================
    LESSON 1.10 — A Neural Network from Scratch in NumPy
-   Mirrors 01_Neural_Network_Fundamentals.md · §12. The reference's
-   NeuralNetwork class is run as written on XOR (the reference's usage
-   shows a two-feature binary problem) and on two moons, and its backward()
-   is gradient-checked against autograd.
    ========================================================================= */
 EC.receiveLesson({
   id: "1.10",
@@ -23,7 +19,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The class, method by method", id: "class" },
 
-    { t: "p", text: "The reference's network is two layers — ReLU hidden, sigmoid output — with the data laid out as the maths of lesson 1.3 has it: **X is (n_features × m_samples)**, one example per column, and every weight matrix is (units × inputs). Here is the class as the reference gives it, with each method annotated against the lesson that derived it." },
+    { t: "p", text: "The network is two layers — ReLU hidden, sigmoid output — with the data laid out as the maths of lesson 1.3 has it: **X is (n_features × m_samples)**, one example per column, and every weight matrix is (units × inputs). Here is the class as the reference gives it, with each method annotated against the lesson that derived it." },
 
     { t: "code", lang: "python", title: "Initialisation — lesson 1.6",
       code: `import numpy as np
@@ -129,9 +125,9 @@ class NeuralNetwork:
 
     { t: "h2", n: "02", text: "Run on XOR", id: "xor" },
 
-    { t: "p", text: "The reference's usage line — `nn.train(X_train.T, y_train.reshape(1, -1), epochs=5000)` with `input_dim=2, hidden_dim=8, lr=0.1` — asks for a two-feature binary problem. XOR is the two-feature binary problem this module opened with, and the one a single unit cannot learn:" },
+    { t: "p", text: "The usual usage line — `nn.train(X_train.T, y_train.reshape(1, -1), epochs=5000)` with `input_dim=2, hidden_dim=8, lr=0.1` — asks for a two-feature binary problem. XOR is the two-feature binary problem this module opened with, and the one a single unit cannot learn:" },
 
-    { t: "code", lang: "python", title: "The reference's usage, on XOR",
+    { t: "code", lang: "python", title: "The usual usage, on XOR",
       code: `np.random.seed(0)
 X_train = np.array([[0, 0], [0, 1], [1, 0], [1, 1]], float); y_train = np.array([0, 1, 1, 0])
 
@@ -201,7 +197,7 @@ print(f"max |dW2 − autograd| = {np.abs(dW2_np - tW2.grad.numpy()).max():.2e}")
     { t: "out", text: `max |dW1 − autograd| = 2.98e-09
 max |dW2 − autograd| = 9.06e-09` },
 
-    { t: "p", text: "Agreement to 10⁻⁹ in float64. The residual is the 10⁻⁸ inside the logs, which the NumPy loss has and the derivation dZ2 = A2 − Y ignores — that shortcut is exact only for the un-clamped loss, and the difference is invisible at this scale. The reference's sixty lines are a correct implementation of everything this module derived." },
+    { t: "p", text: "Agreement to 10⁻⁹ in float64. The residual is the 10⁻⁸ inside the logs, which the NumPy loss has and the derivation dZ2 = A2 − Y ignores — that shortcut is exact only for the un-clamped loss, and the difference is invisible at this scale. The sixty lines are a correct implementation of everything this module derived." },
 
     { t: "callout", kind: "insight", title: "What the framework adds",
       body: [{ t: "p", text: "Compare this class with lesson 1.11's PyTorch version. The framework replaces backward() with autograd, the weight updates with an optimiser object that can also do momentum and Adam, the full-batch loop with a DataLoader of mini-batches, and adds the GPU. What it does not change is any of the maths: the tensors it stores during forward, the gradients it produces, and the update it applies are the ones you have just read." }] },
@@ -210,7 +206,7 @@ max |dW2 − autograd| = 9.06e-09` },
       body: [{ t: "p", text: "Give NeuralNetwork a `momentum` argument (default 0.9) and velocity buffers for all four parameters, and replace the four update lines with lesson 1.5's rule v = βv + (1 − β)·grad, θ −= lr·v. Re-run the two-moons training with the same seed and compare the epoch at which accuracy first exceeds 90 %." }],
       requirements: [
         "Four velocity arrays initialised to zeros of the right shapes",
-        "The reference's plain-SGD behaviour recovered when momentum = 0",
+        "The plain-SGD behaviour recovered when momentum = 0",
         "The two epoch counts, with and without momentum"
       ],
       hint: "Initialise the buffers in __init__ with np.zeros_like(self.W1) and so on; update them in backward() before the parameters.",
@@ -224,11 +220,11 @@ self.vW2 = b * self.vW2 + (1 - b) * dW2; self.W2 -= self.lr * self.vW2
 self.vb2 = b * self.vb2 + (1 - b) * db2; self.b2 -= self.lr * self.vb2
 self.vW1 = b * self.vW1 + (1 - b) * dW1; self.W1 -= self.lr * self.vW1
 self.vb1 = b * self.vb1 + (1 - b) * db1; self.b1 -= self.lr * self.vb1`,
-        notes: [{ t: "p", text: "With the reference's (1 − β) convention and lr = 0.1, momentum's effective step is the same as plain SGD's once the velocity has warmed up, so the gain comes from the smoothing rather than a larger step; raise lr to 0.5 to see the acceleration the lesson-1.5 formulas promise. Whether 90 % arrives earlier depends on the seed — record both numbers and say what you observed." }] } }
+        notes: [{ t: "p", text: "With the (1 − β) convention and lr = 0.1, momentum's effective step is the same as plain SGD's once the velocity has warmed up, so the gain comes from the smoothing rather than a larger step; raise lr to 0.5 to see the acceleration the lesson-1.5 formulas promise. Whether 90 % arrives earlier depends on the seed — record both numbers and say what you observed." }] } }
   ],
 
   takeaways: [
-    "The reference's NeuralNetwork is the module's maths in sixty lines: He initialisation, ReLU and sigmoid, a forward pass that stores Z1, A1, Z2, A2, binary cross-entropy, four lines of backpropagation, plain gradient descent.",
+    "The NeuralNetwork is the module's maths in sixty lines: He initialisation, ReLU and sigmoid, a forward pass that stores Z1, A1, Z2, A2, binary cross-entropy, four lines of backpropagation, plain gradient descent.",
     "Data is (features × samples), one example per column; every weight is (units × inputs); biases are columns that broadcast across the batch.",
     "On XOR the network reaches 100 % by epoch 500 and a loss of 0.0015 by epoch 4,500, predicting [0.002, 0.999, 0.999, 0.001]; cross-entropy keeps pushing towards certainty long after the classification is settled.",
     "On two moons it plateaus at 86 % for two thousand epochs while bending its boundary, then reaches 93 % training and 97 % test accuracy — plain full-batch gradient descent is correct and slow.",

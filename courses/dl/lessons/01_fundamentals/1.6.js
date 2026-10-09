@@ -1,8 +1,7 @@
 /* ============================================================================
    LESSON 1.6 — Weight Initialisation
-   Mirrors 01_Neural_Network_Fundamentals.md · §7 (Why It Matters, Methods,
-   the PyTorch and Keras calls) and §21 Q2. The variance argument is
-   measured through twenty layers for each initialisation.
+   The variance argument is measured through twenty layers for each
+   initialisation.
    ========================================================================= */
 EC.receiveLesson({
   id: "1.6",
@@ -123,7 +122,7 @@ ReLU, He 2/n_in                std at layers 1, 5, 10, 20: 0.8241 0.8410 0.8945 
 
     { t: "h2", n: "04", text: "In PyTorch and Keras", id: "code" },
 
-    { t: "code", lang: "python", title: "The reference's calls, and what they produce",
+    { t: "code", lang: "python", title: "The calls, and what they produce",
       code: `import torch.nn as nn
 lin = nn.Linear(512, 256)
 
@@ -201,7 +200,7 @@ print(f"He weights, zero biases:           {net(x).std():.3f}")     # 0.695`,
       why: "The measured standard deviation of a default nn.Linear(512, 256) weight was 0.0255 = √(1/(3·512)), a sixth of the He variance. For shallow networks the optimiser corrects it; for deep plain ReLU stacks without normalisation you should set He initialisation explicitly." }
   ] },
 
-  interview: { title: "Interview", sub: "The reference's Q2, and the derivation behind it", questions: [
+  interview: { title: "Interview", sub: "The Q2, and the derivation behind it", questions: [
     { level: "Core", q: "Why can't we initialise all weights to zero?",
       strong: "Symmetry: identical units get identical gradients and never differentiate; random initialisation breaks the tie, scaled by He or Xavier to preserve variance.",
       answer: [{ t: "p", text: "If every weight in a layer is the same, every unit computes the same function of the input, so the backward pass gives each unit the same gradient and the update keeps them equal. The layer behaves as one unit forever, whatever its width. Random initialisation makes the units different from the start. The scale is then chosen to keep the activation variance roughly constant across layers: He, variance 2/fan_in, for ReLU; Xavier, 2/(fan_in + fan_out), for sigmoid and tanh." }] },

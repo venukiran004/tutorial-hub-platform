@@ -412,7 +412,6 @@
         title: "Fundamentals: Programs and Scenarios",
         blurb: "One hundred scikit-learn sample programs, then the fundamentals and cross-topic scenarios.",
         outcome: "You can write the scikit-learn for any standard step from memory and answer the basics with the mechanism.",
-        source: "Practice/01_Fundamentals.md",
         lessons: [
           { id: "p1.1", title: "Programs · 1", difficulty: "foundation", minutes: 50, tier: "should",
             summary: "25 programs with hidden answers, from fundamentals: programs and scenarios.",
@@ -446,7 +445,6 @@
         title: "Preprocessing and Feature Engineering",
         blurb: "Scaling, encoding, missing data, feature construction and selection.",
         outcome: "You can prepare a table for a model without leaking the answer into it.",
-        source: "Practice/02_Preprocessing_and_Feature_Engineering.md",
         lessons: [
           { id: "p2.1", title: "Preprocessing and Feature Engineering · 1", difficulty: "core", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -468,7 +466,6 @@
         title: "Regression and Classification",
         blurb: "Linear and logistic regression, gradient descent and the classification questions.",
         outcome: "You can explain a coefficient, a loss and an optimiser step on a number.",
-        source: "Practice/03_Regression.md",
         lessons: [
           { id: "p3.1", title: "Regression and Classification · 1", difficulty: "core", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -490,7 +487,6 @@
         title: "Trees and Ensembles",
         blurb: "Decision trees, random forests and boosting.",
         outcome: "You can say why a forest and a boosted model fail differently.",
-        source: "Practice/04_Trees_and_Ensembles.md",
         lessons: [
           { id: "p4.1", title: "Trees and Ensembles · 1", difficulty: "core", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -512,7 +508,6 @@
         title: "SVM, KNN and Naive Bayes",
         blurb: "Margins and kernels, distance and neighbours, and the Bayes classifiers.",
         outcome: "You can pick between the three on a description of the data.",
-        source: "Practice/05_SVM_KNN_NaiveBayes.md",
         lessons: [
           { id: "p5.1", title: "SVM, KNN and Naive Bayes · 1", difficulty: "core", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -534,7 +529,6 @@
         title: "Clustering and Dimensionality Reduction",
         blurb: "K-means, hierarchical and density clustering, PCA and the manifold methods.",
         outcome: "You can choose k, judge a clustering and explain what PCA keeps.",
-        source: "Practice/06_Clustering_and_DimReduction.md",
         lessons: [
           { id: "p6.1", title: "Clustering and Dimensionality Reduction · 1", difficulty: "core", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -556,7 +550,6 @@
         title: "Model Evaluation and Tuning",
         blurb: "Metrics, cross-validation and hyperparameter search.",
         outcome: "You can defend a metric choice and a validation scheme.",
-        source: "Practice/07_Model_Evaluation_and_Tuning.md",
         lessons: [
           { id: "p7.1", title: "Model Evaluation and Tuning · 1", difficulty: "core", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -578,7 +571,6 @@
         title: "Imbalanced Data, Time Series and Recommenders",
         blurb: "Resampling and cost-sensitive learning, forecasting, and recommendation.",
         outcome: "You can handle a 3 % class, a seasonal series and a cold-start user.",
-        source: "Practice/08_Imbalanced_TimeSeries_Recommenders.md",
         lessons: [
           { id: "p8.1", title: "Imbalanced Data, Time Series and Recommenders · 1", difficulty: "advanced", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -606,7 +598,6 @@
         title: "NLP and Neural Networks",
         blurb: "Text features and the neural-network fundamentals seen from the ML side.",
         outcome: "You can vectorise text and explain a small network's training.",
-        source: "Practice/09_NLP_and_Neural_Networks.md",
         lessons: [
           { id: "p9.1", title: "NLP and Neural Networks · 1", difficulty: "core", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -628,7 +619,6 @@
         title: "Pipelines, Deployment and Advanced",
         blurb: "Pipelines, persistence, serving, monitoring and the advanced edge cases.",
         outcome: "You can ship a model and know what will go wrong first.",
-        source: "Practice/10_Pipelines_Deployment_and_Advanced.md",
         lessons: [
           { id: "p10.1", title: "Pipelines, Deployment and Advanced · 1", difficulty: "advanced", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -650,7 +640,6 @@
         title: "Core ML Interview Bank",
         blurb: "Core machine-learning concept questions plus the scikit-learn API questions.",
         outcome: "You can answer a core ML question with the definition, the formula and the trade-off.",
-        source: "00_Interview_Bank/01_ML_Core_Interview.md",
         lessons: [
           { id: "i1.1", title: "Basics & Fundamentals", difficulty: "advanced", minutes: 40, tier: "should",
             summary: "20 questions with hidden answers, from core ml interview bank.",
@@ -696,7 +685,6 @@
         title: "Glassdoor Data Scientist and ML Engineer",
         blurb: "Real Glassdoor questions for Data Scientist and ML Engineer roles: SQL, statistics, coding, ML theory, product sense, A/B testing, system design, MLOps and behavioural.",
         outcome: "You have seen the question before it is asked.",
-        source: "00_Interview_Bank/02_Glassdoor_DS_and_MLE.md",
         lessons: [
           { id: "i2.1", title: "SQL & Database · Probability & Statistics · Coding & Algorithms", difficulty: "advanced", minutes: 20, tier: "should",
             summary: "9 questions with hidden answers, from glassdoor data scientist and ml engineer.",

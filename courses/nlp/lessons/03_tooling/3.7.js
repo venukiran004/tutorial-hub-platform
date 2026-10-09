@@ -1,13 +1,10 @@
 /* ============================================================================
    LESSON 3.7 — Coreference Resolution and Relation Extraction
-   Mirrors 01_NLP_Notes.md · §23-24. The reference's rule-based extractor is
-   run on eight sentences and fails five of them, each differently
-   (scratchpad/nlp/n37.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.7",
 
-  lede: "**Given `Google did not acquire Yahoo`, the reference's relation extractor emits `('Google', 'acquire', 'Yahoo')`.** It never looks at the negation, so it confidently asserts the one thing the sentence exists to deny. Run over eight sentences it got three right — and the five failures are each a different structural blind spot, which makes them the best available map of what rule-based extraction can and cannot do. This lesson runs that experiment, then covers coreference, the problem you must solve before extraction is even meaningful.",
+  lede: "**Given `Google did not acquire Yahoo`, the relation extractor emits `('Google', 'acquire', 'Yahoo')`.** It never looks at the negation, so it confidently asserts the one thing the sentence exists to deny. Run over eight sentences it got three right — and the five failures are each a different structural blind spot, which makes them the best available map of what rule-based extraction can and cannot do. This lesson runs that experiment, then covers coreference, the problem you must solve before extraction is even meaningful.",
 
   objectives: [
     "Define coreference chains and the three kinds of referring expression",
@@ -56,11 +53,11 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "One adjective flips the referent",
       body: [{ t: "p", text: "The two sentences are syntactically identical — same parse, same entities, same pronoun position. Swapping *big* for *small* changes what *it* refers to, and nothing in the grammar records that. Resolving them requires knowing that a container must be larger than the thing it contains: world knowledge, not linguistic knowledge. This is the **Winograd schema**, designed specifically to be unsolvable by statistical cues over surface form. Large language models now score well above chance on these, which is genuinely notable, because it means the pretraining corpus encoded enough about physical containment for the pattern to be learned — not that the model reasoned about boxes." }] },
 
-    { t: "h2", n: "04", text: "Running the reference's extractor", id: "extractor" },
+    { t: "h2", n: "04", text: "Running the extractor", id: "extractor" },
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n37.py — dependency-based relation extraction", code:
 "def extract_relations(text):\n    \"\"\"Extract (subject, relation, object) triples from the dependency parse.\"\"\"\n    doc = nlp(text)\n    relations = []\n    for token in doc:\n        if token.dep_ == \"ROOT\" and token.pos_ == \"VERB\":\n            subjects = [c for c in token.children\n                        if c.dep_ in (\"nsubj\", \"nsubjpass\")]\n            objects  = [c for c in token.children\n                        if c.dep_ in (\"dobj\", \"attr\", \"pobj\")]\n            for subj in subjects:\n                subj_span = doc[subj.left_edge.i:subj.right_edge.i + 1]\n                for obj in objects:\n                    obj_span = doc[obj.left_edge.i:obj.right_edge.i + 1]\n                    relations.append((subj_span.text, token.lemma_,\n                                      obj_span.text))\n    return relations",
-      caption: "The reference's function, unmodified. It finds the root verb, takes its subject and object children, and expands each to its full subtree." },
+      caption: "The function, unmodified. It finds the root verb, takes its subject and object children, and expands each to its full subtree." },
 
     { t: "out", text:
 "Google acquired YouTube in 2006.               [('Google', 'acquire', 'YouTube')]                  ok\nElon Musk founded SpaceX in 2002.              [('Elon Musk', 'found', 'SpaceX')]                  ok\nApple is headquartered in Cupertino.           []                                                  MISS\nYouTube was acquired by Google.                []                                                  MISS\nGoogle acquired YouTube and DoubleClick.       [('Google','acquire','YouTube and DoubleClick')]    MERGED\nGoogle, the search giant, acquired YouTube.    [('Google, the search giant,','acquire','YouTube')] NOISY\nGoogle did not acquire Yahoo.                  [('Google', 'acquire', 'Yahoo')]                    WRONG\nGoogle acquired YouTube, and Microsoft         [('Google', 'acquire', 'YouTube')]                  PARTIAL\n  acquired GitHub." },
@@ -155,7 +152,7 @@ EC.receiveLesson({
   ],
 
   takeaways: [
-    "The reference's extractor got 3 of 8 sentences right, and four of the five failures were silent.",
+    "The extractor got 3 of 8 sentences right, and four of the five failures were silent.",
     "'Google did not acquire Yahoo' produced ('Google','acquire','Yahoo') — a false assertion, because `dep_=\"neg\"` is never inspected.",
     "Passive voice returned nothing: the agent hangs off the `by` preposition, not off the root verb.",
     "'Apple is headquartered in Cupertino' returned nothing because the root is `AUX`, not `VERB`.",

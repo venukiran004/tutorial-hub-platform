@@ -147,9 +147,9 @@ EC.receiveLesson({
 </svg>` },
 
     { t: "exercise", kind: "build", title: "Build the dashboard and find the denominator bug", difficulty: "advanced", minutes: 35,
-      body: "Run the reference's `eval_suite` over a golden set, build the full six-metric dashboard from the same rows, then compute faithfulness over all requests and over answered requests only and compare. Simulate a degrading system and check which version detects it.",
+      body: "Run the `eval_suite` over a golden set, build the full six-metric dashboard from the same rows, then compute faithfulness over all requests and over answered requests only and compare. Simulate a degrading system and check which version detects it.",
       requirements: [
-        "The reference's hallucination rate, with the abstention clause",
+        "The hallucination rate, with the abstention clause",
         "All six metrics computed from the same rows",
         "Faithfulness over all requests against answered only, with the gap",
         "A degradation simulation showing which version tracks recall",
@@ -174,7 +174,7 @@ GOLDEN = [
 THRESHOLD = 0.9
 
 def eval_suite(rows, threshold=THRESHOLD):
-    """The reference's version: a hallucination is low faithfulness WITHOUT abstention."""
+    """The version: a hallucination is low faithfulness WITHOUT abstention."""
     halluc = sum(1 for q, f, ab, c, r in rows if f < threshold and not ab)
     return halluc / float(len(rows))
 

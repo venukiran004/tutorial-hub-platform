@@ -181,7 +181,7 @@ ATTENTION WEIGHTS                what a transformer 'looks at' when forming a re
 #   statistics per feature, per scoring batch (hourly, or per 1,000 rows):  mean SHAP, sd of SHAP, share of rows where the feature is the top |SHAP|;
 #   plus the base value and the mean prediction.
 #   reference: the same statistics on the training slice (or the last validated week), refreshed at each retrain.
-#   alert rule: |mean SHAP − reference| > 3 × the reference's batch-to-batch sd for that feature, OR top-contributor share moves by > 0.10,
+#   alert rule: |mean SHAP − reference| > 3 × the batch-to-batch sd for that feature, OR top-contributor share moves by > 0.10,
 #   OR mean prediction moves by > 0.05 absolute -- any one fires; two together page.
 #   the worked alert when logins halved:  'logins_30d: mean SHAP +0.714 vs reference −0.041 (batch sd ≈ 0.03: 25 sd); top-contributor share
 #   0.62 vs 0.46; mean P(churn) 0.250 vs 0.153. Cause localised to logins_30d; check the upstream feature pipeline before trusting the batch.'`,

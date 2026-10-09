@@ -1,34 +1,23 @@
 /* ============================================================================
    SYSTEM DESIGN — CURRICULUM
    ----------------------------------------------------------------------------
-   The reference folder tutorial-hub/11_System_Design holds fourteen documents
-   across eight pages, and they overlap heavily: caching is taught in five of
-   them, CAP in four, rate limiting in five. Mirroring them file for file, as
-   the GenAI course does, would teach the same idea four times in four voices.
-   This course is ordered by CONCEPT instead — each idea taught once, at the
-   depth of the deepest document that covers it — and the map below records
-   where every lesson's material came from, so nothing in the reference is
-   left out:
-
-     foundations.html  A  Software Design Principles ............ M9
-                       B  System Design — Engineering Reference .. M1-M7, M15
-     scaling.html      C  The Living Blueprint (30 concepts) ..... M1-M4
-                       D  Scalability & Performance .............. M11
-     patterns.html     E  The 30 System Design Patterns ......... M3-M7, M10, M12
-                       F  Architecture Patterns .................. M10
-     distributed.html  G  Distributed Systems Deep Dive ......... M5, M8
-                       H  Data Systems Internals ................. M4-M6
-     security.html     I  Security & Cloud Architecture ......... M12
-     ml.html           J  ML System Design ....................... M13
-                       K  Real-World Architectures ............... M14
-     interview.html    L  Architect Interview Guide .............. M15
-                       M  200 interview questions ................ Interview track
-                       N  Programs 901-1000 ...................... Practice track
-     scenarios.html    O  Production scenarios ................... Practice track
-
-   Every lesson is drawn first and written second: a lesson carries several
-   diagrams, because system design is a subject people reason about in boxes
-   and arrows, and a paragraph describing a picture is a worse picture.
+   Mirroring them file for file, as the GenAI course does, would teach the
+   same idea four times in four voices. M9 B  System Design — Engineering
+   Reference .. M1-M7, M15 scaling.html      C  The Living Blueprint (30
+   concepts) ..... M1-M4 D  Scalability & Performance .............. M11
+   patterns.html     E  The 30 System Design Patterns ......... M3-M7, M10,
+   M12 F  Architecture Patterns .................. M10 distributed.html  G
+   Distributed Systems Deep Dive ......... M5, M8 H  Data Systems Internals
+   ................. M4-M6 security.html     I  Security & Cloud
+   Architecture ......... M12 ml.html           J  ML System Design
+   ....................... M13 K  Real-World Architectures ...............
+   M14 interview.html    L  Architect Interview Guide .............. M15 M
+   200 interview questions ................ Interview track N  Programs
+   901-1000 ...................... Practice track scenarios.html    O
+   Production scenarios ................... Practice track Every lesson is
+   drawn first and written second: a lesson carries several diagrams,
+   because system design is a subject people reason about in boxes and
+   arrows, and a paragraph describing a picture is a worse picture.
    ========================================================================= */
 (function () {
   EC.defineCourse({
@@ -59,7 +48,6 @@
         title: "How a Request Travels",
         blurb: "Every hop between a user pressing enter and a byte coming back: the client and the server, addresses and DNS, the latency that distance costs, the proxies and balancers in the path, HTTP and TLS, the API styles, and the real-time channels that keep a connection open.",
         outcome: "You can draw the read path of any web system, put a number on every hop, and say which box each later decision is about.",
-        source: "scaling.html §1-8, §24 · foundations.html B §10",
         lessons: [
           { id: "1.1", title: "Client, Server, IP and DNS", difficulty: "foundation", minutes: 26, tier: "must",
             summary: "The two roles every system is built from, how a name becomes an address, and the caching at every level of DNS that makes a change take hours to land.",
@@ -93,7 +81,6 @@
         title: "Scaling the Core",
         blurb: "The first decisions a growing system makes: a bigger box or more boxes, why more boxes need statelessness, how a load balancer chooses, which database shape fits the access pattern, the index that makes it fast, and the resilient core that results.",
         outcome: "You can take a single-server design to a horizontally scaled one and say what had to change for each step to work.",
-        source: "scaling.html §9-14 · foundations.html B §2-3 · patterns.html E §1-2",
         lessons: [
           { id: "2.1", title: "Vertical and Horizontal Scaling", difficulty: "foundation", minutes: 26, tier: "must",
             summary: "Scale up until it stops, scale out when it does — and the session state that has to leave the server first.",
@@ -124,7 +111,6 @@
         title: "Caching",
         blurb: "Memory over disk: where caches sit, what a hit ratio buys, the four read and write strategies, invalidation and eviction, the stampede that follows a flush, and the CDN that moves the cache next to the user.",
         outcome: "You can choose a caching strategy for a read path, say what it costs in staleness, and protect it against the stampede.",
-        source: "foundations.html B §4 · scaling.html §18, §22, D §6, §9 · patterns.html E §6-9",
         lessons: [
           { id: "3.1", title: "Why Cache: Hit Ratios and Where Caches Sit", difficulty: "foundation", minutes: 26, tier: "must",
             summary: "The arithmetic of a hit ratio on mean and tail latency, and the five layers — browser to database — where a cache can live.",
@@ -155,7 +141,6 @@
         title: "Scaling the Data",
         blurb: "When one database stops being enough: replication and its lag, sharding and the key that makes or breaks it, consistent hashing, denormalisation and materialised views, blob storage, and the storage engines underneath.",
         outcome: "You can choose a replication topology and a shard key, predict the hot partition, and say why a store is fast at what it is fast at.",
-        source: "foundations.html B §5-6, §8 · scaling.html §15-17, §19, §21 · patterns.html E §3-5, §10, §13 · distributed.html H §1-4, §7-8",
         lessons: [
           { id: "4.1", title: "Replication", difficulty: "core", minutes: 30, tier: "must",
             summary: "Leader-follower, multi-leader and leaderless; synchronous against asynchronous; and the replication lag that makes a user's own post vanish.",
@@ -186,7 +171,6 @@
         title: "Consistency and Transactions",
         blurb: "What a distributed store promises and what it cannot: CAP read precisely and PACELC beside it, ACID and BASE, isolation levels and the anomalies each one allows, MVCC, the consistency spectrum and quorums, and transactions that span services.",
         outcome: "You can name the consistency a feature needs, choose the isolation level that gives it, and design a cross-service transaction that recovers.",
-        source: "foundations.html B §7 · scaling.html §20 · distributed.html G §9-10, H §5-6 · patterns.html E §14-15",
         lessons: [
           { id: "5.1", title: "CAP and PACELC", difficulty: "core", minutes: 28, tier: "must",
             summary: "The theorem stated precisely — a choice made only during a partition — and the latency-consistency trade-off PACELC adds for the rest of the time.",
@@ -214,7 +198,6 @@
         title: "Queues, Streams and Events",
         blurb: "Taking work out of the request: message queues and what they buffer, pub-sub and the log-based stream, delivery semantics and the idempotency that makes at-least-once safe, the outbox and change data capture, and stream processing.",
         outcome: "You can put a queue in a design for a stated reason, choose its delivery guarantee, and make the consumer safe to run twice.",
-        source: "foundations.html B §9 · scaling.html §26, §28 · patterns.html E §16-20 · distributed.html H §9-10",
         lessons: [
           { id: "6.1", title: "Message Queues: Decoupling and Buffering", difficulty: "foundation", minutes: 28, tier: "must",
             summary: "What a queue buys — absorbed spikes, independent failure, async work — the dead-letter queue, and the lag metric that says it is losing.",
@@ -245,7 +228,6 @@
         title: "Resilience Patterns",
         blurb: "Designing for the dependency that is slow rather than down: timeouts and retries with jittered backoff, circuit breakers and bulkheads, the rate-limiting algorithms, backpressure and load shedding, and failover.",
         outcome: "You can stop one slow dependency from taking down a whole system, and say which pattern stops which failure.",
-        source: "foundations.html B §12-13 · scaling.html §27 · patterns.html E §21-25 · distributed.html G §16",
         lessons: [
           { id: "7.1", title: "Timeouts, Retries and Backoff with Jitter", difficulty: "core", minutes: 28, tier: "must",
             summary: "The timeout every call needs, retry budgets, and the jitter that stops a thousand clients retrying in step.",
@@ -276,7 +258,6 @@
         title: "Distributed Systems Theory",
         blurb: "Why a system of many computers is a different kind of thing: the fallacies and failure models, time and ordering without a shared clock, consensus with Raft, leader election and the fencing token, gossip and failure detection, split brain, CRDTs and Byzantine faults.",
         outcome: "You can explain why a distributed lock without fencing is unsafe, how Raft survives a partition, and when a CRDT replaces consensus.",
-        source: "distributed.html G §1-8, §11-15, §17-19",
         lessons: [
           { id: "8.1", title: "Why Distributed Is Hard: Fallacies and Failure Models", difficulty: "core", minutes: 28, tier: "must",
             summary: "The eight fallacies, partial failure, and crash-stop against crash-recovery against Byzantine — the assumption every protocol makes first.",
@@ -310,7 +291,6 @@
         title: "Code-Level Design",
         blurb: "Design at the scale of a module: the SOLID principles with a violation and a repair for each, DRY, KISS and YAGNI, coupling and cohesion, dependency injection, and the creational, structural and behavioural patterns that recur in system design.",
         outcome: "You can name the principle a piece of code violates, repair it, and say which pattern the repair is.",
-        source: "foundations.html A (Software Design Principles)",
         lessons: [
           { id: "9.1", title: "SOLID", difficulty: "core", minutes: 32, tier: "must",
             summary: "Five principles, each shown as a violation, the bug it causes, and the repair.",
@@ -341,7 +321,6 @@
         title: "Architecture Patterns",
         blurb: "Design at the scale of a system: monolith, modular monolith and microservices; domain-driven design; layered, hexagonal and clean architecture; event sourcing with CQRS; the gateway, discovery, sidecar and mesh; and how to get from one architecture to another without stopping.",
         outcome: "You can choose an architecture for a team and a domain, draw its boundaries, and plan the migration to it.",
-        source: "patterns.html F §1-17, E §11-12, §26-30 · foundations.html A §19, B §11",
         lessons: [
           { id: "10.1", title: "Monolith, Modular Monolith, Microservices", difficulty: "core", minutes: 30, tier: "must",
             summary: "The evolution and the cost of each step, why the modular monolith is usually the right answer, and the distributed monolith that is the wrong one.",
@@ -375,7 +354,6 @@
         title: "Performance and Reliability Engineering",
         blurb: "The numbers behind a running system: percentiles and tail latency, Little's Law and queuing, Amdahl's Law, connection pools and database tuning, auto-scaling and load testing, SLOs and error budgets with the observability that feeds them, chaos engineering and cost.",
         outcome: "You can size a pool from a latency and a rate, set an SLO with a budget, and find where a slow request spends its time.",
-        source: "scaling.html D §1-15 · foundations.html B §14",
         lessons: [
           { id: "11.1", title: "Percentiles and Tail Latency", difficulty: "core", minutes: 28, tier: "must",
             summary: "Why the mean lies, p50 to p99.9, fan-out amplification of the tail, and hedged requests.",
@@ -409,7 +387,6 @@
         title: "Security and Cloud Architecture",
         blurb: "Who you are and what you may do: authentication and authorisation, OAuth 2.0 and OpenID Connect, JWTs and their revocation problem, zero trust and API security, encryption and secrets, then the cloud: networks and subnets, serverless against containers, infrastructure as code and compliance.",
         outcome: "You can secure a service-to-service call, choose a token format, and lay out a VPC that keeps the database off the internet.",
-        source: "security.html I §1-12 · patterns.html E A1-A2",
         lessons: [
           { id: "12.1", title: "Authentication, Authorisation, OAuth and OIDC", difficulty: "core", minutes: 30, tier: "must",
             summary: "AuthN against AuthZ, RBAC and ABAC, the authorization-code flow with PKCE drawn step by step, and what OIDC adds.",
@@ -440,7 +417,6 @@
         title: "ML and LLM System Design",
         blurb: "Systems whose behaviour comes from data: the ML design framework, data and feature pipelines, training infrastructure, online against batch inference and serving optimisation, monitoring and retraining, experiments, the classic case studies, and LLM systems at scale.",
         outcome: "You can run an ML system design interview from problem framing to monitoring, and design the serving path for a model or an LLM.",
-        source: "ml.html J §1-17 · interview.html Q146-185",
         lessons: [
           { id: "13.1", title: "The ML System Design Framework", difficulty: "core", minutes: 28, tier: "must",
             summary: "Business goal to ML objective to metrics, the baseline, and the seven stages every ML design answer walks through.",
@@ -474,7 +450,6 @@
         title: "Real-World Architectures",
         blurb: "How the large companies actually built theirs, read for the decisions rather than the logos: Netflix, YouTube, Amazon, Meta, Uber, Slack and Discord, Stripe, Twitter and LinkedIn — and the patterns they share.",
         outcome: "You can cite a real system's decision as evidence for your own, and say what in its situation made that decision right.",
-        source: "ml.html K §1-11",
         lessons: [
           { id: "14.1", title: "Netflix, YouTube and Amazon", difficulty: "core", minutes: 30, tier: "should",
             summary: "Streaming at a third of the internet's traffic, video at upload scale, and the two-pizza teams behind service-oriented architecture.",
@@ -499,7 +474,6 @@
         title: "The System Design Interview",
         blurb: "The interview as a method: the four-step process and the non-functional checklist, capacity estimation, four full walkthroughs — URL shortener, rate limiter and distributed cache, notification system, news feed and chat — and what separates a staff-level answer from a senior one.",
         outcome: "You can run a forty-five-minute design interview end to end, with the numbers, the trade-offs and the deep dive the interviewer is waiting for.",
-        source: "interview.html L §1-14 · foundations.html B §15-16",
         lessons: [
           { id: "15.1", title: "The Four-Step Method and the NFR Checklist", difficulty: "core", minutes: 28, tier: "must",
             summary: "Requirements, high-level design, deep dive, wrap-up — the minutes for each, and the non-functional questions to ask first.",

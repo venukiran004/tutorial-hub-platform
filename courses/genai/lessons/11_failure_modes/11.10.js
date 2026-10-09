@@ -299,7 +299,7 @@ the three enforcement points that do work, inside the loop:
         options: [
           "About 12x, confirming the estimate",
           "24.4x \u2014 because every thought and tool result re-enters the prompt, so step n pays for the outputs of steps 1 to n\u22121",
-          "Around 30x, matching the reference's 20\u201330 call figure",
+          "Around 30x, matching the 20\u201330 call figure",
           "Less than 12x, because later steps have shorter outputs"
         ],
         answer: 1,

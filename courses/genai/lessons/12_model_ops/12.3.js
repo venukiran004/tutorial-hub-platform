@@ -36,7 +36,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "forgetting", text: "Catastrophic forgetting",
       sub: "The main production risk" },
 
-    { t: "code", lang: "text", title: "The reference's illustration", code: `Before FT:  task accuracy 70% | general benchmark 85%
+    { t: "code", lang: "text", title: "The illustration", code: `Before FT:  task accuracy 70% | general benchmark 85%
 After FT:   task accuracy 92% | general benchmark 61%   <- forgot a lot`,
       hl: [2],
       caption: "+22 points on the task, \u221224 on everything else. The trade is only visible if you measure both." },
@@ -128,7 +128,7 @@ After FT:   task accuracy 92% | general benchmark 61%   <- forgot a lot`,
 </svg>` },
 
     { t: "exercise", kind: "analyse", title: "Price the forgetting trade, and decide", difficulty: "core", minutes: 30,
-      body: "Take the reference's forgetting figures and work out what they mean for a product where only some traffic is the fine-tuned task. Then compute the token saving a fine-tune buys by removing few-shot examples, and decide whether the trade is worth it at several task-traffic shares.",
+      body: "Take the forgetting figures and work out what they mean for a product where only some traffic is the fine-tuned task. Then compute the token saving a fine-tune buys by removing few-shot examples, and decide whether the trade is worth it at several task-traffic shares.",
       requirements: [
         "The weighted accuracy across task and non-task traffic, before and after",
         "The task-traffic share at which the fine-tune breaks even",

@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 2.3 — Famous Architectures: LeNet to ConvNeXt
-   Mirrors 02_CNNs.md · §4. Parameter counts are read from torchvision rather
-   than copied from the table, and the residual gradient claim is measured on a
-   20-block stack (scratchpad/dl/d23.py, torch 2.10 + torchvision).
+   Parameter counts are read from torchvision rather than copied from the
+   table, and the residual gradient claim is measured on a 20-block stack
+   (scratchpad/dl/d23.py, torch 2.10 + torchvision).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.3",
@@ -35,7 +35,7 @@ EC.receiveLesson({
         ["2019", "EfficientNet", "Scale depth, width and resolution together", "—", "5.3 M"],
         ["2022", "ConvNeXt", "A ResNet with transformer-era design", "—", "28.6 M"]
       ],
-      caption: "Parameter counts read from `torchvision` rather than transcribed. Note GoogLeNet: the reference's table says 6.8 M, and torchvision's implementation reports 13.0 M because it includes the two auxiliary classifiers used during training." },
+      caption: "Parameter counts read from `torchvision` rather than transcribed. Note GoogLeNet: the table says 6.8 M, and torchvision's implementation reports 13.0 M because it includes the two auxiliary classifiers used during training." },
 
     { t: "out", text: `  alexnet              61,100,840
   vgg16               138,357,544

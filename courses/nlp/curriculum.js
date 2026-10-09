@@ -1,34 +1,8 @@
 /* ============================================================================
    NLP AND TRANSFORMERS — CURRICULUM
    ----------------------------------------------------------------------------
-   The course mirrors the reference folder tutorial-hub/06_NLP_and_Transformers
-   file for file and section for section, in the reference's own order,
-   rewritten in this site's voice. Nothing is added to the topic list and
-   nothing in the reference is left out:
-
-     LEARN track (one module per reference file or per run of that file's
-     sections; each file's interview section is folded into the interview
-     block of the lesson it belongs to)
-
-       M1  01_NLP_Notes.md                §1–8   → 1.1–1.8
-       M2  01_NLP_Notes.md                §9–16  → 2.1–2.8
-       M3  01_NLP_Notes.md                §17–26 → 3.1–3.8, §27 → interview blocks
-       M4  02_Transformers_InDepth.md     §1–11  → 4.1–4.10
-       M5  02_Transformers_InDepth.md     §12–25 → 5.1–5.12, §21 → interview blocks
-       M6  02a + 02b + 02c worked examples        → 6.1–6.7
-       M7  03_Multimodal_AI.md            §1–11  → 7.1–7.8, §12 → interview blocks
-       M8  04_Fuzzy_Matching.md           §1–8   → 8.1–8.5
-
-     PRACTICE track (Sample_Programs/Part_08, imported by
-       .build/import-banks.py: the NLP programs run with their output)
-
-     INTERVIEW track (Interview_Questions/06_NLP_Interview.md: 100 questions
-       across five sections, imported)
-
-   Every formula in the learn track is carried through on numbers and every
-   program is the reference's own, run on this machine; the printed output
-   beneath a program is what it printed. Where a program could not run here —
-   a missing model download, a service that is not local — the lesson says so.
+   Where a program could not run here — a missing model download, a service
+   that is not local — the lesson says so.
    ========================================================================= */
 (function () {
   EC.defineCourse({
@@ -40,7 +14,7 @@
     trackLabels: { learn: "NLP and Transformers", practice: "Practice", interview: "Interview" },
     trackBlurbs: {
       learn: "The reference notes, section by section — every matrix worked on a number, every program run.",
-      practice: "The reference's NLP programs with their output, answers folded away.",
+      practice: "The NLP programs with their output, answers folded away.",
       interview: "One hundred questions across NLP, transformers, applications and HuggingFace, answers hidden until you ask."
     },
 
@@ -49,7 +23,7 @@
     modules: [
 
       /* ================================================================
-         M1 · 01_NLP_Notes.md §1–8
+  M1 ·  §1–8
          ================================================================ */
       {
         id: "foundations",
@@ -59,7 +33,6 @@
         title: "Text, Tokens and Vectors",
         blurb: "The NLP pipeline and what each stage costs, preprocessing decisions that change the answer, tokenization from whitespace to BPE with the merges computed by hand, bag of words and TF-IDF worked on a corpus you can check, n-gram language models with their smoothing, word embeddings and the geometry that makes them useful, named entity recognition and the tagging schemes, then part-of-speech tags and dependency parses.",
         outcome: "You can turn raw text into a representation a model can use, and say what every step threw away.",
-        source: "01_NLP_Notes.md",
         lessons: [
           { id: "1.1", title: "The NLP Pipeline", difficulty: "foundation", minutes: 28, tier: "must",
             summary: "What natural language processing is, the stages from raw text to a decision, where each stage can fail, and why modern pipelines skip most of the classical steps.",
@@ -89,7 +62,7 @@
       },
 
       /* ================================================================
-         M2 · 01_NLP_Notes.md §9–16
+  M2 ·  §9–16
          ================================================================ */
       {
         id: "tasks",
@@ -99,7 +72,6 @@
         title: "The Task Catalogue",
         blurb: "The eight tasks the classical field is built around — classification and the sentiment special case, topic models and what they actually find, similarity and semantic search, sequence labelling, the two kinds of summarisation, machine translation before and after neural models, and question answering — each with the metric that judges it and the baseline it must beat.",
         outcome: "You can pick the right formulation for a language problem, and name the metric and baseline before you build anything.",
-        source: "01_NLP_Notes.md",
         lessons: [
           { id: "2.1", title: "Text Classification", difficulty: "core", minutes: 32, tier: "must",
             summary: "The formulation, Naive Bayes worked by hand, linear models on TF-IDF, and the neural approaches — with the class imbalance that decides which metric you can trust.",
@@ -129,7 +101,7 @@
       },
 
       /* ================================================================
-         M3 · 01_NLP_Notes.md §17–26
+  M3 ·  §17–26
          ================================================================ */
       {
         id: "tooling",
@@ -139,7 +111,6 @@
         title: "Tooling, Evaluation and Production",
         blurb: "The libraries the field actually uses — spaCy's pipeline model, NLTK's teaching toolkit, HuggingFace's abstractions — then the metrics that judge every task, the shape of a production pipeline, contextual embeddings as the bridge to transformers, and the four tasks the reference closes on: coreference, relation extraction, inference and augmentation.",
         outcome: "You can build an NLP pipeline that ships, and defend every metric on its dashboard.",
-        source: "01_NLP_Notes.md",
         lessons: [
           { id: "3.1", title: "NLP with spaCy", difficulty: "core", minutes: 30, tier: "must",
             summary: "The Doc, Token and Span objects, the pipeline components and how to add one, the matcher, and why spaCy is the production default.",
@@ -169,7 +140,7 @@
       },
 
       /* ================================================================
-         M4 · 02_Transformers_InDepth.md §1–11
+  M4 ·  §1–11
          ================================================================ */
       {
         id: "transformer",
@@ -179,7 +150,6 @@
         title: "The Transformer, Derived",
         blurb: "The architecture built from the bottom: why recurrence had to go, embeddings and position, scaled dot-product attention derived from the dot product with every shape named, multi-head as a partition rather than an addition, the masks that make a decoder causal and a cross-attention possible, the feed-forward network that does most of the computing, the blocks assembled, tokenization and position in depth, and the parameter count computed exactly.",
         outcome: "You can derive attention from scratch, draw every shape in a transformer block, and compute its parameter count without looking anything up.",
-        source: "02_Transformers_InDepth.md",
         lessons: [
           { id: "4.1", title: "Why Transformers, and the Shape of One", difficulty: "core", minutes: 28, tier: "must",
             summary: "The three costs of recurrence, which of them attention alone solved, and the encoder-decoder diagram with every component named before any of it is derived.",
@@ -215,7 +185,7 @@
       },
 
       /* ================================================================
-         M5 · 02_Transformers_InDepth.md §12–25
+  M5 ·  §12–25
          ================================================================ */
       {
         id: "modern",
@@ -225,7 +195,6 @@
         title: "The Modern Stack",
         blurb: "What the field did to the 2017 design: the three families and their objectives, the attention optimisations from Flash to GQA, the inference tricks that make serving affordable, scaling laws and what emerges, the whole thing built in PyTorch, HuggingFace in practice, vision transformers, a prompt traced from text to response, multimodal transformers, mixture of experts, state space models, and the long-context and distributed-training techniques.",
         outcome: "You can explain any component of a current large model — why it exists, what it costs, and what it replaced.",
-        source: "02_Transformers_InDepth.md",
         lessons: [
           { id: "5.1", title: "BERT, GPT and T5", difficulty: "core", minutes: 34, tier: "must",
             summary: "Encoder-only, decoder-only and encoder-decoder — the masking, the pretraining objective and the tasks each suits, and why decoder-only won at scale.",
@@ -240,7 +209,7 @@
             summary: "The power-law relationship between loss, parameters and data, Chinchilla's correction to the compute allocation, and what is and is not meant by emergence.",
             keywords: ["scaling laws", "chinchilla", "compute optimal", "power law", "emergence", "tokens per parameter"] },
           { id: "5.5", title: "A Transformer from Scratch in PyTorch", difficulty: "advanced", minutes: 38, tier: "must",
-            summary: "The reference's implementation assembled and run — attention, the block, the stack, the masks and the training step — with the output it printed.",
+            summary: "The implementation assembled and run — attention, the block, the stack, the masks and the training step — with the output it printed.",
             keywords: ["pytorch", "from scratch", "nn.module", "implementation", "forward", "mask", "training loop"] },
           { id: "5.6", title: "HuggingFace in Practice", difficulty: "core", minutes: 30, tier: "must",
             summary: "Loading a model and tokenizer, what the tokenizer's output dictionary contains, generation parameters, and fine-tuning with the Trainer API.",
@@ -275,9 +244,8 @@
         dir: "06_worked",
         phase: "Phase 3 · Worked end to end",
         title: "Every Number, Twice",
-        blurb: "The reference's three worked examples, reproduced. A decoder-only forward pass where a four-dimensional toy model is carried from tokens to a next-word probability with every matrix printed; the cheatsheet that explains each component as what, when-and-why, and how; then the full encoder-decoder traced on one translation — sinusoidal position by hand, encoder self-attention, causal masking, cross-attention, teacher forcing and the loss.",
+        blurb: "The three worked examples, reproduced. A decoder-only forward pass where a four-dimensional toy model is carried from tokens to a next-word probability with every matrix printed; the cheatsheet that explains each component as what, when-and-why, and how; then the full encoder-decoder traced on one translation — sinusoidal position by hand, encoder self-attention, causal masking, cross-attention, teacher forcing and the loss.",
         outcome: "You have seen every matrix in a transformer with real numbers in it, and can reproduce them in NumPy.",
-        source: "02a_Transformer_Worked_Example.md + 02b + 02c",
         lessons: [
           { id: "6.1", title: "The Toy Model: Tokenize, Embed, Position", difficulty: "core", minutes: 30, tier: "must",
             summary: "A four-dimensional model small enough to print: the vocabulary, the embedding lookup, and sinusoidal position added — with every number the reference gives, checked.",
@@ -289,7 +257,7 @@
             summary: "The rest of the block on the same numbers — both residual-and-norm steps, the feed-forward network, the language-model head, the softmax over the vocabulary, and the autoregressive loop.",
             keywords: ["residual", "layernorm", "ffn", "lm head", "logits", "softmax", "autoregression", "greedy"] },
           { id: "6.4", title: "The Whole Stack: What, When-Why, How", difficulty: "core", minutes: 36, tier: "should",
-            summary: "The reference's cheatsheet in one lesson — every component from tokenization to interpretability given a plain-words purpose, the situation that calls for it, and its mechanism.",
+            summary: "The cheatsheet in one lesson — every component from tokenization to interpretability given a plain-words purpose, the situation that calls for it, and its mechanism.",
             keywords: ["cheatsheet", "overview", "swiglu", "rmsnorm", "rope", "moe", "interpretability", "recap"] },
           { id: "6.5", title: "The Encoder, Traced", difficulty: "advanced", minutes: 34, tier: "must",
             summary: "Reading 'I love AI' — the embeddings, sinusoidal position computed by hand, encoder self-attention with every matrix printed, and the encoder output the decoder will attend to.",
@@ -304,7 +272,7 @@
       },
 
       /* ================================================================
-         M7 · 03_Multimodal_AI.md
+  M7 ·
          ================================================================ */
       {
         id: "multimodal",
@@ -314,7 +282,6 @@
         title: "Multimodal AI",
         blurb: "What happens when the token sequence is not only text: the fusion strategies, CLIP's contrastive objective and the shared embedding space it produces, vision-language models and how a vision encoder is joined to a language model, image generation, audio and video, multimodal retrieval, document understanding, and the metrics that judge any of it.",
         outcome: "You can explain how an image becomes something a language model can attend to, and evaluate a multimodal system honestly.",
-        source: "03_Multimodal_AI.md",
         lessons: [
           { id: "7.1", title: "Multimodal Fundamentals", difficulty: "core", minutes: 26, tier: "must",
             summary: "What a modality is, early, late and intermediate fusion, the alignment problem, and why a shared representation space is the thing everything else is built on.",
@@ -344,7 +311,7 @@
       },
 
       /* ================================================================
-         M8 · 04_Fuzzy_Matching.md
+  M8 ·
          ================================================================ */
       {
         id: "fuzzy",
@@ -354,7 +321,6 @@
         title: "Fuzzy Matching and Entity Resolution",
         blurb: "The methods that answer one question — are these two strings the same thing? — computed by hand and then at scale. Edit distance and its transposition-aware variant, Jaro-Winkler's prefix weighting, set and vector similarity, TF-IDF for matching, the libraries that make it fast, and the blocking that makes entity resolution possible on millions of records.",
         outcome: "You can choose a string-similarity measure from the shape of your data and defend it, and build a resolution pipeline that scales.",
-        source: "04_Fuzzy_Matching.md",
         lessons: [
           { id: "8.1", title: "Levenshtein and Damerau-Levenshtein", difficulty: "core", minutes: 32, tier: "must",
             summary: "The edit-distance dynamic program filled in by hand, the three operations, the normalised ratio, and the transposition that Damerau adds for typed text.",
@@ -378,9 +344,8 @@
         id: "nlp_programs", short: "P1", dir: "01_nlp_programs", track: "practice", numPrefix: "P",
         phase: "Practice \u00b7 Programs and scenarios",
         title: "NLP and Text Processing Programs",
-        blurb: "The reference's NLP programs — preprocessing, TF-IDF and BPE from scratch, BLEU and ROUGE, RoPE, a KV cache, beam search and the retrieval patterns — each run, with what it printed.",
+        blurb: "The NLP programs — preprocessing, TF-IDF and BPE from scratch, BLEU and ROUGE, RoPE, a KV cache, beam search and the retrieval patterns — each run, with what it printed.",
         outcome: "You can write the code for any standard NLP operation from memory, and you have seen what it prints.",
-        source: "Sample_Programs/Part_08_NLP_and_Text_Processing.md",
         lessons: [
           { id: "p1.1", title: "NLP and Text Processing Programs · 1", difficulty: "core", minutes: 50, tier: "should",
             summary: "25 programs with hidden answers.",
@@ -396,7 +361,6 @@
         title: "NLP and Transformers Interview Bank",
         blurb: "One hundred questions across NLP fundamentals, advanced NLP and transformers, the transformer internals, applications and production, and HuggingFace in practice.",
         outcome: "You can answer an NLP or transformer interview question with the formula, the shape and the reason.",
-        source: "Interview_Questions/06_NLP_Interview.md",
         lessons: [
           { id: "i1.1", title: "Section 1: NLP Fundamentals", difficulty: "advanced", minutes: 40, tier: "should",
             summary: "20 questions with hidden answers, from nlp and transformers interview bank.",

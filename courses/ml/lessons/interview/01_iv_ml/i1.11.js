@@ -1,8 +1,6 @@
 /* ============================================================================
    INTERVIEW I1.11 — Scikit-Learn Q&A · 1
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/04_Machine_Learning/00_Interview_Bank/01_ML_Core_Interview.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.11",

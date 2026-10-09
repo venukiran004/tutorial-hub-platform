@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P10.1 — Pipelines, Deployment and Advanced · 1
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/04_Machine_Learning/Practice/10_Pipelines_Deployment_and_Advanced.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p10.1",

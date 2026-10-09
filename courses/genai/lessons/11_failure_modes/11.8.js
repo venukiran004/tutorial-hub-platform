@@ -378,7 +378,7 @@ prompt caching applies to the FIXED PREFIX: system prompt + stable few-shot
           "That the chunks are deduplicated"
         ],
         answer: 1,
-        why: "Slicing keeps the first k items, so the operation is only \"keep the most relevant\" if relevance determined the order. Applied to a raw similarity-ordered list it is far weaker, and applied to an unordered one it is arbitrary \u2014 which is why the reference's own comment flags the assumption. The whole point of retrieving 50 and reranking is that the reranker, not the retriever, decides which three survive." }
+        why: "Slicing keeps the first k items, so the operation is only \"keep the most relevant\" if relevance determined the order. Applied to a raw similarity-ordered list it is far weaker, and applied to an unordered one it is arbitrary \u2014 which is why the comment flags the assumption. The whole point of retrieving 50 and reranking is that the reranker, not the retriever, decides which three survive." }
     ]
   },
 

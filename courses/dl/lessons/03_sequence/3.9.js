@@ -1,8 +1,7 @@
 /* ============================================================================
    LESSON 3.9 — Beam Search
-   Mirrors 03_Sequence_Models.md · §10. Beam search implemented and run at
-   three widths; length-normalisation arithmetic verified
-   (scratchpad/dl/d39.py).
+   Beam search implemented and run at three widths; length-normalisation
+   arithmetic verified (scratchpad/dl/d39.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.9",
@@ -134,7 +133,7 @@ EC.receiveLesson({
     { stem: "Why does greedy decoding produce suboptimal sequences?",
       options: ["It is too fast", "Locally optimal token choices do not compose into a globally optimal sequence", "It ignores the EOS token", "It cannot handle long sequences"],
       answer: 1,
-      why: "The reference's example is exact: picking `cat` at 0.9 leads to a sequence scoring 0.09, while `dog` at 0.7 leads to 0.56. Greedy commits at each step with no mechanism to revisit, so a high-probability first token can lock it into a poor branch." },
+      why: "The worked example is exact: picking `cat` at 0.9 leads to a sequence scoring 0.09, while `dog` at 0.7 leads to 0.56. Greedy commits at each step with no mechanism to revisit, so a high-probability first token can lock it into a poor branch." },
     { stem: "Why does unnormalised beam search prefer short sequences?",
       options: ["Short sequences are more likely to be correct", "Each additional token adds a negative log-probability, so any extension scores worse than its prefix", "The beam fills up with short candidates", "EOS has unusually high probability"],
       answer: 1,

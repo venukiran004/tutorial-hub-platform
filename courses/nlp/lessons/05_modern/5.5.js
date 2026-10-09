@@ -1,19 +1,16 @@
 /* ============================================================================
    LESSON 5.5 — A Transformer from Scratch in PyTorch
-   Mirrors 02_Transformers_InDepth.md · §16. The reference's code instantiates
-   to exactly 124,439,808 params — GPT-2 to the digit — but contains two bugs
-   that stop it running (§03). Trained to 100% on sequence reversal
-   (scratchpad/nlp/n55.py).
+   Trained to 100% on sequence reversal (scratchpad/nlp/n55.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "5.5",
 
-  lede: "**The reference's `GPTModel(50257)` instantiates to 124,439,808 parameters — GPT-2's count to the digit.** It also crashes twice before it trains: `targets.view(-1)` fails on the non-contiguous slice every training loop produces, and the default `top_k=50` raises `selected index k out of range` on any vocabulary smaller than 50. Both are two-character fixes. This lesson runs the code, fixes it, trains it to 100% on sequence reversal, and opens up what the attention learned.",
+  lede: "**The `GPTModel(50257)` instantiates to 124,439,808 parameters — GPT-2's count to the digit.** It also crashes twice before it trains: `targets.view(-1)` fails on the non-contiguous slice every training loop produces, and the default `top_k=50` raises `selected index k out of range` on any vocabulary smaller than 50. Both are two-character fixes. This lesson runs the code, fixes it, trains it to 100% on sequence reversal, and opens up what the attention learned.",
 
   objectives: [
     "Assemble a complete decoder-only transformer and verify its parameter count",
     "Explain weight tying and what it saves",
-    "Find and fix the two defects that stop the reference's code running",
+    "Find and fix the two defects that stop the code running",
     "Train the model to convergence and verify it learned the task",
     "Inspect a trained attention head and identify what it is doing"
   ],
@@ -38,7 +35,7 @@ EC.receiveLesson({
 "GPTModel(50257) -> 124,439,808 params = 124.44M\n\nthe real gpt2 checkpoint      124,439,808\n\nwithout weight tying          163,037,184   (+38,597,376)" },
 
     { t: "callout", kind: "insight", title: "Exact to the parameter",
-      body: [{ t: "p", text: "The reference's architecture reproduces GPT-2's parameter count **exactly** — every projection, bias and norm accounted for, matching the breakdown from lesson 4.10. That is a strong signal the implementation is structurally right, and it is the first thing to check when building a model from a paper. The tying line saves **38,597,376** parameters, a 24% reduction, by pointing the output projection at the embedding matrix rather than storing a second one. The justification is that both matrices map between the same two spaces — one token-to-vector, one vector-to-token — so sharing them is a reasonable prior as well as a saving. Nearly every modern LLM ties them." }] },
+      body: [{ t: "p", text: "The architecture reproduces GPT-2's parameter count **exactly** — every projection, bias and norm accounted for, matching the breakdown from lesson 4.10. That is a strong signal the implementation is structurally right, and it is the first thing to check when building a model from a paper. The tying line saves **38,597,376** parameters, a 24% reduction, by pointing the output projection at the embedding matrix rather than storing a second one. The justification is that both matrices map between the same two spaces — one token-to-vector, one vector-to-token — so sharing them is a reasonable prior as well as a saving. Nearly every modern LLM ties them." }] },
 
     { t: "h2", n: "03", text: "Two bugs", id: "bugs" },
 
@@ -102,7 +99,7 @@ EC.receiveLesson({
   ],
 
   takeaways: [
-    "The reference's GPTModel(50257) instantiates to exactly 124,439,808 parameters — GPT-2's count to the digit.",
+    "The GPTModel(50257) instantiates to exactly 124,439,808 parameters — GPT-2's count to the digit.",
     "Weight tying (`head.weight = token_emb.weight`) saves 38,597,376 parameters, 24% of the model.",
     "Bug 1: `targets.view(-1)` fails because `seq[:, 1:]` is non-contiguous — every LM training loop produces that tensor, so the code cannot train as written. Use `.reshape(-1)`.",
     "Bug 2: the default `top_k=50` crashes on any vocabulary smaller than 50. Clamp with `min(top_k, logits.size(-1))`.",
@@ -115,7 +112,7 @@ EC.receiveLesson({
   ],
 
   quiz: { title: "Check yourself", questions: [
-    { stem: "Why does `targets.view(-1)` fail in the reference's loss computation?",
+    { stem: "Why does `targets.view(-1)` fail in the loss computation?",
       options: ["The tensor is on the wrong device", "Targets built as `seq[:, 1:]` are non-contiguous, and view cannot flatten a tensor whose stride skips a column", "The dtype is wrong", "The batch size varies"],
       answer: 1,
       why: "The slice shares storage with the original tensor but skips the first column, so a flat view is not expressible under its stride. `reshape` copies when required and works. This is not an edge case — every next-token training loop builds targets exactly this way, so the code cannot train at all until it is fixed." },
@@ -126,7 +123,7 @@ EC.receiveLesson({
     { stem: "What does weight tying do?",
       options: ["Freezes the embeddings", "Points the output projection at the embedding matrix, saving vocab × d_model parameters — 38,597,376 here", "Shares weights across layers", "Reduces the vocabulary"],
       answer: 1,
-      why: "Both matrices map between the same two spaces — token to vector and vector back to token — so sharing them is a reasonable prior as well as a 24% parameter saving. Nearly every modern LLM does it, and it is why the reference's model matches GPT-2's count exactly." },
+      why: "Both matrices map between the same two spaces — token to vector and vector back to token — so sharing them is a reasonable prior as well as a 24% parameter saving. Nearly every modern LLM does it, and it is why the model matches GPT-2's count exactly." },
     { stem: "All four temperature and top-k settings produced the exact correct answer. What does that show?",
       options: ["The decoding parameters were ignored", "Decoding settings only matter when the distribution is genuinely uncertain — a confident model on a deterministic task is robust to them", "The model was overfit", "Top-k was clamped to 1"],
       answer: 1,
@@ -142,6 +139,6 @@ EC.receiveLesson({
       answer: [{ t: "p", text: "The first question is what the floor *should* be, because a plateau above zero is often correct rather than a bug. I hit exactly this: a model reached 100% exact-match accuracy on sequence reversal while the loss sat at 1.0106. That looks like failure until you decompose it — half the positions were uniform random source digits with irreducible entropy of ln 10, about 2.303, and only the reversed half was learnable. Averaged, the theoretical floor was near 1.15, so 1.0106 was essentially converged. So step one is always to compute the entropy of the unpredictable part of your target and compare. If the floor genuinely is too high, I'd work down a list. Check the model can overfit a single batch to near-zero loss — if it can't, something is structurally broken, usually the mask, the target alignment being off by one, or a missing final norm. Verify the causal mask makes the upper triangle exactly zero, not merely small. Check target alignment explicitly, since predicting position t from position t is a classic off-by-one that produces a suspiciously low loss rather than a high one. Look at gradient norms per layer — lesson 4.6's Pre-LN versus Post-LN measurement showed nearly six orders of magnitude difference reaching the first block, and a Post-LN stack without warmup will plateau. Then learning rate, which for fine-tuning wants to be around 2e-5 and for training from scratch much higher." }] },
     { level: "Senior", q: "How do you know an implementation you wrote from a paper is correct?",
       strong: "Parameter count first, then overfit a batch, then reproduce a known result.",
-      answer: [{ t: "p", text: "Three checks in increasing cost. First, parameter count: instantiate at the published configuration and compare against the published total. It's free, it runs before any training, and it catches a surprising range of structural errors — a missing bias, a wrong d_ff, an untied head, a forgotten projection. When I ran the reference's model at GPT-2's config it gave 124,439,808 parameters, matching the checkpoint exactly, which is strong evidence the structure is right. Second, overfit a single batch. A correct model with a correct loss should drive one batch to near-zero loss. If it can't, the problem is structural rather than about hyperparameters, and you've narrowed it enormously. Third, reproduce a known result on a task with an unambiguous answer — I used sequence reversal, where accuracy is exact match and there's no scoring ambiguity, and got 100% in 36 seconds on CPU with 152,000 parameters. A small deterministic task is worth far more than a large fuzzy one for verification. Beyond those I'd compare intermediate tensors against a reference implementation layer by layer if one exists, and write assertions on things that must hold — the causal mask's upper triangle is exactly 0.0, attention rows sum to 1, shapes are preserved through a block. And I'd run the code rather than read it: the reference here had two runtime bugs that are invisible on the page." }] }
+      answer: [{ t: "p", text: "Three checks in increasing cost. First, parameter count: instantiate at the published configuration and compare against the published total. It's free, it runs before any training, and it catches a surprising range of structural errors — a missing bias, a wrong d_ff, an untied head, a forgotten projection. When I ran the model at GPT-2's config it gave 124,439,808 parameters, matching the checkpoint exactly, which is strong evidence the structure is right. Second, overfit a single batch. A correct model with a correct loss should drive one batch to near-zero loss. If it can't, the problem is structural rather than about hyperparameters, and you've narrowed it enormously. Third, reproduce a known result on a task with an unambiguous answer — I used sequence reversal, where accuracy is exact match and there's no scoring ambiguity, and got 100% in 36 seconds on CPU with 152,000 parameters. A small deterministic task is worth far more than a large fuzzy one for verification. Beyond those I'd compare intermediate tensors against a reference implementation layer by layer if one exists, and write assertions on things that must hold — the causal mask's upper triangle is exactly 0.0, attention rows sum to 1, shapes are preserved through a block. And I'd run the code rather than read it: the reference here had two runtime bugs that are invisible on the page." }] }
   ] }
 });

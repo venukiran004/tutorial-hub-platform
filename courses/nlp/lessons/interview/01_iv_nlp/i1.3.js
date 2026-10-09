@@ -1,8 +1,6 @@
 /* ============================================================================
    INTERVIEW I1.3 — Section 3: Transformers Deep Dive
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/06_NLP_and_Transformers/Interview_Questions/06_NLP_Interview.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.3",

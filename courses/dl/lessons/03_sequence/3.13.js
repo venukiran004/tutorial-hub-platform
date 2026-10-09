@@ -1,8 +1,7 @@
 /* ============================================================================
    LESSON 3.13 — Embeddings, and RNN against Transformer
-   Mirrors 03_Sequence_Models.md · §15–§18. Attention memory, KV cache size,
-   the embedding-as-matrix identity and the analogy geometry are all computed
-   (scratchpad/dl/d313.py).
+   Attention memory, KV cache size, the embedding-as-matrix identity and the
+   analogy geometry are all computed (scratchpad/dl/d313.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.13",

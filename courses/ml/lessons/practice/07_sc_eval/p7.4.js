@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P7.4 — Model Evaluation and Tuning · 4
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/04_Machine_Learning/Practice/07_Model_Evaluation_and_Tuning.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p7.4",

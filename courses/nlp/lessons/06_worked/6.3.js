@@ -1,9 +1,5 @@
 /* ============================================================================
    LESSON 6.3 — Residual, Norm, FFN and the LM Head
-   Mirrors 02a_Transformer_Worked_Example.md · §⑤-⑩. Every value verified,
-   ending at "mat" with 0.4751 against the reference's 47.6%. Section 06
-   derives an exact antisymmetry the reference does not mention
-   (scratchpad/nlp/n61.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "6.3",
@@ -105,9 +101,9 @@ EC.receiveLesson({
     "ReLU zeroed one of four dimensions — in a real FFN this is how the network selects which learned features are active for a token.",
     "That zeroed dimension now has exactly zero gradient, which is the dead-ReLU problem GELU and SiLU were adopted to avoid.",
     "Second LayerNorm gives h = [1.5665, -0.4918, -1.1401, 0.0654], the final hidden state after one full block.",
-    "The reference's r' second component reads -0.18 against a computed -0.1629 — accumulated display rounding, which moved a value by 10% in three steps.",
+    "The r' second component reads -0.18 against a computed -0.1629 — accumulated display rounding, which moved a value by 10% in three steps.",
     "Weight tying means the LM head IS the embedding matrix, so a logit is h dotted with a word's embedding.",
-    "Final prediction: 'mat' at 0.4751, matching the reference's 47.6%, with all six probabilities correct to three decimals.",
+    "Final prediction: 'mat' at 0.4751, matching the 47.6%, with all six probabilities correct to three decimals.",
     "The logits are exactly antisymmetric, because LayerNorm forces sum(h) = 0 and the toy embeddings pair up to [1,1,1,1] — structure the reference does not mention.",
     "Under a causal mask, appending a token leaves earlier positions' computations unchanged, which is what makes the KV cache provably correct."
   ],

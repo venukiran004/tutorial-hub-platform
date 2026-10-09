@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 5.8 — A Prompt, Traced End to End
-   Mirrors 02_Transformers_InDepth.md · §19. "The capital of France is" is
-   pushed through gpt2 with every shape and distribution captured — and the
-   model does NOT say Paris (§05) — scratchpad/nlp/n58.py.
+   "The capital of France is" is pushed through gpt2 with every shape and
+   distribution captured — and the model does NOT say Paris (§05) —
+   scratchpad/nlp/n58.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "5.8",

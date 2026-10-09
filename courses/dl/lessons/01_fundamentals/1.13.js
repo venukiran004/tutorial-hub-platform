@@ -1,11 +1,5 @@
 /* ============================================================================
    LESSON 1.13 — Label Smoothing, Knowledge Distillation and Mixed Precision
-   Mirrors 01_Neural_Network_Fundamentals.md · §17 (Label Smoothing),
-   §18 (Knowledge Distillation) and §19 (Mixed Precision Training). The
-   reference's distillation_loss is run as written; the fp16 section is run on
-   the numeric properties that cause the problem, because this machine has no
-   GPU and a fabricated speed-up would not be a measurement
-   (scratchpad/dl/d113.py, torch 2.10).
    ========================================================================= */
 EC.receiveLesson({
   id: "1.13",
@@ -15,7 +9,7 @@ EC.receiveLesson({
   objectives: [
     "Say exactly what label smoothing does to the target vector and to the model's confidence",
     "Explain why temperature reveals a teacher's inter-class knowledge, and why the loss is scaled by T²",
-    "Implement the reference's distillation loss and describe what each term contributes",
+    "Implement the distillation loss and describe what each term contributes",
     "State the fp16 range, and why gradients underflow without a loss scaler",
     "Write a mixed-precision training loop and say what `scaler.update()` is for"
   ],
@@ -72,7 +66,7 @@ EC.receiveLesson({
       ],
       edges: [["t", "soft"], ["s", "soft"], ["s", "hard"], ["soft", "sum"], ["hard", "sum"]] },
 
-    { t: "code", lang: "python", title: "The reference's distillation loss, as written",
+    { t: "code", lang: "python", title: "The distillation loss, as written",
       code: `def distillation_loss(student_logits, teacher_logits, labels, T=4.0, alpha=0.7):
     """Combined soft (teacher) + hard (ground truth) loss."""
     soft_loss = F.kl_div(
@@ -158,7 +152,7 @@ for batch in dataloader:
       body: [{ t: "p", text: "The \"2× faster, half the memory\" claim needs a GPU with tensor cores, and this machine has none — so the numbers above are the arithmetic that makes mixed precision necessary, not a benchmark. bf16 is worth knowing as the modern alternative: it has fp32's exponent range with fewer mantissa bits, so it does not underflow and generally needs no loss scaler at all, at the cost of precision. On hardware that supports it, bf16 is usually the easier choice." }] },
 
     { t: "exercise", kind: "practice", title: "Distil a small network, and calibrate it", difficulty: "advanced", minutes: 32,
-      prompt: "Train a wide teacher on a small dataset, then train two students of identical size: one on hard labels alone, one with the reference's distillation loss at T=4, alpha=0.7. Compare test accuracy. Then sweep T over {1, 2, 4, 8, 16} and plot student accuracy against T. Finally, take the best student and retrain it with label_smoothing=0.1, and compare not just accuracy but calibration — bucket predictions by confidence and check how often each bucket is right.",
+      prompt: "Train a wide teacher on a small dataset, then train two students of identical size: one on hard labels alone, one with the distillation loss at T=4, alpha=0.7. Compare test accuracy. Then sweep T over {1, 2, 4, 8, 16} and plot student accuracy against T. Finally, take the best student and retrain it with label_smoothing=0.1, and compare not just accuracy but calibration — bucket predictions by confidence and check how often each bucket is right.",
       hints: [
         "Keep the teacher in eval() inside torch.no_grad(), or the targets move underneath you.",
         "Very high T flattens the teacher toward uniform — expect the curve to turn over.",

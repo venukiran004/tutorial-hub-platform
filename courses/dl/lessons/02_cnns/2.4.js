@@ -1,7 +1,5 @@
 /* ============================================================================
    LESSON 2.4 — Key Architectural Innovations
-   Mirrors 02_CNNs.md · §5. Every count is measured in scratchpad/dl/d24.py,
-   including a check of the reference's own depthwise example (exact).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.4",
@@ -68,7 +66,7 @@ EC.receiveLesson({
     { t: "math", tex: "\\frac{\\text{separable}}{\\text{standard}} = \\frac{k^2 C_{in} + C_{in}C_{out}}{k^2 C_{in} C_{out}} = \\frac{1}{C_{out}} + \\frac{1}{k^2}" },
 
     { t: "callout", kind: "trap", title: "The reference writes this ratio upside down",
-      body: [{ t: "p", text: "`02_CNNs.md` gives the saving as `C_out/(k²) + 1`, which would grow with the channel count rather than shrink. The correct ratio is `1/C_out + 1/k²` — and the reference's own worked example confirms it: 8,768 / 73,728 = 0.1189, and 1/128 + 1/9 = 0.1189 exactly. Since `C_out` is usually large, the `1/k²` term dominates, which is where the familiar 'about 9× cheaper for a 3×3' comes from." }] },
+      body: [{ t: "p", text: "the reference gives the saving as `C_out/(k²) + 1`, which would grow with the channel count rather than shrink. The correct ratio is `1/C_out + 1/k²` — and the worked example confirms it: 8,768 / 73,728 = 0.1189, and 1/128 + 1/9 = 0.1189 exactly. Since `C_out` is usually large, the `1/k²` term dominates, which is where the familiar 'about 9× cheaper for a 3×3' comes from." }] },
 
     { t: "out", text: `  standard  3^2 x 64 x 128          = 73,728   (reference: 73,728)
   separable 3^2 x 64 + 64 x 128     = 8,768    (reference: 8,768)

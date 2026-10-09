@@ -64,7 +64,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "whyscale", text: "What the \u03b1/r term is for",
       sub: "And what it turns out to be, once you substitute \u03b1 = 2r" },
 
-    { t: "p", text: "The reference's explanation is that a bigger `r` makes `BA` produce bigger numbers, so dividing by `r` cancels that out and lets you tune capacity and strength separately. The intent is clearly right \u2014 you do not want changing the rank to silently change how hard the adapter pushes. It is worth following the arithmetic through, though, because the recommended rule has a property the explanation does not mention." },
+    { t: "p", text: "The explanation is that a bigger `r` makes `BA` produce bigger numbers, so dividing by `r` cancels that out and lets you tune capacity and strength separately. The intent is clearly right \u2014 you do not want changing the rank to silently change how hard the adapter pushes. It is worth following the arithmetic through, though, because the recommended rule has a property the explanation does not mention." },
 
     { t: "callout", kind: "trap", title: "With \u03b1 = 2r the multiplier is the constant 2 \u2014 at every rank",
       body: [
@@ -117,7 +117,7 @@ for r in (2, 4, 8, 16, 32):
         { t: "p", text: "Start with what works. Under `\u03b1/r`, raising the rank improves the loss monotonically \u2014 4.427 at r=2 down to 2.241 at r=32 \u2014 which is what you want: more capacity, more learning, no re-tuning of anything else. The rule does its job." },
         { t: "p", text: "Now compare the columns. At every rank `\u03b1/\u221ar` reaches a lower loss, and the gap **widens with rank**: at r=2 it is 4.255 against 4.427, barely anything; at r=32 it is **0.589 against 2.241**, nearly four times lower. Under `\u03b1/r` the adapter at rank 32 is learning less from the same steps than its capacity allows." },
         { t: "p", text: "The `\u2016dW\u2016` column says why. Under `\u03b1/r` the realised update grows 0.653 \u2192 1.779 across the sweep, a factor of 2.7; under `\u03b1/\u221ar` it grows 0.900 \u2192 5.505, a factor of 6.1. Pinning the multiplier to a constant means the effective learning signal through the branch does not keep pace as rank rises, so high-rank adapters move less per step than they could." },
-        { t: "p", text: "This is the observation behind rank-stabilised LoRA, which uses `\u03b1/\u221ar` for exactly this reason. The reference's rule is a good default \u2014 it is safe, it is one less thing to tune, and at the ranks it recommends (8\u201316) the gap is modest. At r=32 and above it is not modest." }
+        { t: "p", text: "This is the observation behind rank-stabilised LoRA, which uses `\u03b1/\u221ar` for exactly this reason. The rule is a good default \u2014 it is safe, it is one less thing to tune, and at the ranks it recommends (8\u201316) the gap is modest. At r=32 and above it is not modest." }
       ] },
 
     { t: "callout", kind: "note", title: "What this measurement does and does not establish",
@@ -177,7 +177,7 @@ for r in (2, 4, 8, 16, 32):
         code: `for r in (4, 8, 16, 32):
     for alpha in (8, 16, 32, 64, 128):
         train(r=r, alpha=alpha)        # 20 runs to learn one thing` },
-      { level: "ok", label: "\u03b1 = 2r, then sweep only r", why: "The reference's rule, and the right default. The multiplier is pinned at 2, so raising the rank adds capacity without changing the strength and the runs stay comparable \u2014 measured, loss falls monotonically 4.427 to 2.241 across r=2 to 32.",
+      { level: "ok", label: "\u03b1 = 2r, then sweep only r", why: "The rule, and the right default. The multiplier is pinned at 2, so raising the rank adds capacity without changing the strength and the runs stay comparable \u2014 measured, loss falls monotonically 4.427 to 2.241 across r=2 to 32.",
         code: `for r in (4, 8, 16, 32):
     train(r=r, alpha=2 * r)            # 4 runs, one variable` },
       { level: "best", label: "\u03b1 = 2r and sweep r, then check \u03b1/\u221ar if high rank disappoints", why: "Keep the simple default, and know the failure mode it has. If the loss keeps falling with rank but by less than the added capacity suggests, the constant multiplier is likely the limit \u2014 and the fix is a scaling rule, not a bigger grid.",
@@ -261,7 +261,7 @@ for r in (2, 4, 8, 16, 32):
 
     { t: "callout", kind: "mental", title: "The model to keep",
       body: [
-        { t: "p", text: "`r` is how many dials the adapter has. `\u03b1/r` is how far each turn of a dial moves the output. The reference's rule sets the second to a constant so you only ever think about the first \u2014 which is good advice, and worth knowing as a choice rather than as physics." },
+        { t: "p", text: "`r` is how many dials the adapter has. `\u03b1/r` is how far each turn of a dial moves the output. The rule sets the second to a constant so you only ever think about the first \u2014 which is good advice, and worth knowing as a choice rather than as physics." },
         { t: "p", text: "The failure it produces is quiet: adding dials while each turn stays the same size. More capacity, same push, less gain than you expected." }
       ] },
 

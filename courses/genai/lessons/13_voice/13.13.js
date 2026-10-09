@@ -93,7 +93,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "boundary", text: "Measure from end of speech",
       sub: "The instrumentation error that invalidates the dashboard" },
 
-    { t: "p", text: "Every figure in this module is measured from the moment the user stopped speaking. The most common voice instrumentation error is to start the clock when the endpointer fires instead, which puts the single largest term outside the metric \u2014 and 13.10 found that mistake in the reference's own filler claim, where a 300 ms figure turned out to be 760 from end of speech." },
+    { t: "p", text: "Every figure in this module is measured from the moment the user stopped speaking. The most common voice instrumentation error is to start the clock when the endpointer fires instead, which puts the single largest term outside the metric \u2014 and 13.10 found that mistake in the filler claim, where a 300 ms figure turned out to be 760 from end of speech." },
 
     { t: "callout", kind: "warn", title: "The error is self-concealing",
       body: [

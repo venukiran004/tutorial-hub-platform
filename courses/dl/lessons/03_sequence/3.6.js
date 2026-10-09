@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.6 — Bidirectional and Stacked Architectures
-   Mirrors 03_Sequence_Models.md · §7. Causality, h_n layout and dropout
-   behaviour all verified in scratchpad/dl/d36.py.
+   Causality, h_n layout and dropout behaviour all verified in
+   scratchpad/dl/d36.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "3.6",

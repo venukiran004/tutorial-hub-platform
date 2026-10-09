@@ -21,7 +21,7 @@ EC.receiveLesson({
 
     { t: "p", text: "\"What's in this image?\" invites a description, and a description is almost never what a system wants. The four-component check from 2.1 applies exactly as it does to text: the image is the **input**, and the instruction, context and output format still have to be supplied." },
 
-    { t: "code", lang: "python", title: "vision.py — the reference's call shape", code: `response = client.chat.completions.create(
+    { t: "code", lang: "python", title: "vision.py — the call shape", code: `response = client.chat.completions.create(
     model="gpt-4o",
     messages=[{
         "role": "user",
@@ -35,7 +35,7 @@ EC.receiveLesson({
     }],
     max_tokens=300,
 )`,
-      caption: "From 04_Prompt_Engineering.md §9. The `content` is a list, which is what makes the ordering in §02 a decision rather than an accident." },
+      caption: "From the reference notes §9. The `content` is a list, which is what makes the ordering in §02 a decision rather than an accident." },
 
     { t: "ladder", title: "From description to answer", rungs: [
       { level: "bad", label: "An open invitation",

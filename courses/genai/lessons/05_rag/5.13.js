@@ -109,7 +109,7 @@ KV = enc.encode(keys, normalize_embeddings=True)
 
     { t: "callout", kind: "insight", title: "Render the chunk, not the filename",
       body: [
-        { t: "p", text: "A citation that reads *\u201cSource: 02_LLM_Inference_Optimization.md\u201d* asks the reader to open a 30,000-character document and find the relevant passage themselves. They will not. The citation is decorative." },
+        { t: "p", text: "A citation that reads *\u201cSource: inference-optimisation.md\u201d* asks the reader to open a 30,000-character document and find the relevant passage themselves. They will not. The citation is decorative." },
         { t: "p", text: "A citation that expands to show the retrieved chunk \u2014 the exact 400 characters the model was given \u2014 can be checked at a glance. That single choice does more for trustworthiness than any prompt instruction about citing carefully, because it converts an appeal to authority into something falsifiable." },
         { t: "p", text: "It also changes the economics of the unsupported-citation problem. You cannot reliably stop a model citing a chunk that does not support its claim, and you can make that mismatch visible to the one person motivated to notice it." }
       ] },

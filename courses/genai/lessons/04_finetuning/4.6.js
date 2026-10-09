@@ -78,7 +78,7 @@ tr = sum(p.numel() for p in m.parameters() if p.requires_grad)`,
   LoRA r=16 on c_attn                  589824          0.47%        123849984
   LoRA r=32 on c_attn                 1179648          0.95%        123260160`,
       hl: [3],
-      caption: "Rank 32 across all twelve blocks is still under 1% of the model. The reference's \u201cunder 1%\u201d holds comfortably." },
+      caption: "Rank 32 across all twelve blocks is still under 1% of the model. The \u201cunder 1%\u201d holds comfortably." },
 
     { t: "callout", kind: "note", title: "The percentage depends on where you put the adapters, not just on r",
       body: [

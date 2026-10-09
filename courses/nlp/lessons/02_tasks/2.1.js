@@ -1,13 +1,10 @@
 /* ============================================================================
    LESSON 2.1 — Text Classification
-   Mirrors 01_NLP_Notes.md · §9. The reference's three pipelines are run on
-   real 20-newsgroups data, Naive Bayes is worked by hand and checked against
-   sklearn, and the imbalance failure is measured (scratchpad/nlp/n21.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.1",
 
-  lede: "**Naive Bayes beat both logistic regression and the SVM on this task, and a model that predicts nothing at all scored 98 % accuracy on another.** Text classification is the most common NLP task and the one where the metric matters most: the same predictions can look excellent or useless depending on which number you report. This lesson runs the reference's three pipelines on real data, works Naive Bayes by hand, and measures what imbalance does to accuracy.",
+  lede: "**Naive Bayes beat both logistic regression and the SVM on this task, and a model that predicts nothing at all scored 98 % accuracy on another.** Text classification is the most common NLP task and the one where the metric matters most: the same predictions can look excellent or useless depending on which number you report. This lesson runs the three pipelines on real data, works Naive Bayes by hand, and measures what imbalance does to accuracy.",
 
   objectives: [
     "Build the classical TF-IDF plus classifier pipeline",

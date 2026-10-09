@@ -36,9 +36,9 @@ EC.receiveLesson({
       ] },
 
     { t: "h2", n: "02", id: "numbers", text: "The loss on numbers",
-      sub: "Checking the reference's three cases" },
+      sub: "Checking the three cases" },
 
-    { t: "code", lang: "python", title: "g74.py \u00a7A \u2014 the reference's worked examples", code: `sig  = lambda z: 1.0 / (1.0 + np.exp(-z))
+    { t: "code", lang: "python", title: "g74.py \u00a7A \u2014 the worked examples", code: `sig  = lambda z: 1.0 / (1.0 + np.exp(-z))
 loss = lambda gap: -np.log(sig(gap))`,
       out: `  case                              gap      sigma       loss
   model is right                    0.6     0.6457     0.4375   reference 0.4372  OK
@@ -308,7 +308,7 @@ print("Bayes-optimal accuracy  : %.1f%%" % (100 * acc(true_r)))`,
 
   takeaways: [
     "**Bradley-Terry models preference as \u03c3(r_w \u2212 r_l)**, so the RM loss is logistic regression on the reward gap \u2014 a classifier predicting which answer a human picked.",
-    "**The reference's worked numbers all check out**: gap 0.6 \u2192 loss 0.4375, gap \u22121.3 \u2192 1.5410 (3.522\u00d7 the penalty), gap 4.0 \u2192 0.0181.",
+    "**The worked numbers all check out**: gap 0.6 \u2192 loss 0.4375, gap \u22121.3 \u2192 1.5410 (3.522\u00d7 the penalty), gap 4.0 \u2192 0.0181.",
     "**The gradient is 1 \u2212 \u03c3(gap)**, so a badly ranked pair carries 98.2% of maximum gradient and a confidently correct one 1.8% \u2014 capacity goes where the model is wrong, automatically.",
     "**Use `logsigmoid`, not log of sigmoid**, because large negative gaps are the first few hundred steps of every run and will otherwise produce `-inf`.",
     "**The absolute reward scale is unidentifiable** \u2014 fits from 0 and from 100 gave scores ~100 apart with every pairwise difference identical to 0.000000.",

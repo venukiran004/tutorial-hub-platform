@@ -30,7 +30,7 @@ EC.receiveLesson({
         { t: "p", text: "So prefer pairwise where you can. The cost is that pairwise gives you a relative ordering rather than a level, which means you need a fixed baseline to compare against \u2014 which is exactly why 7.15\u2019s headline metric is a win rate against the *pre-alignment* model." }
       ] },
 
-    { t: "code", lang: "text", title: "the reference's judge prompt", code: `JUDGE PROMPT (pairwise, reference-free)
+    { t: "code", lang: "text", title: "the judge prompt", code: `JUDGE PROMPT (pairwise, reference-free)
 You are an impartial judge. Compare two answers to the user question on
 correctness, completeness, and clarity. Think step by step, then output JSON.
 Question: {q}

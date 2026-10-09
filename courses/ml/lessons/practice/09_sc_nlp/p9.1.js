@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P9.1 — NLP and Neural Networks · 1
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/04_Machine_Learning/Practice/09_NLP_and_Neural_Networks.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p9.1",

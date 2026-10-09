@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "common-shape", text: "Every template is the same four components",
       sub: "What differs is which one carries the weight" },
 
-    { t: "p", text: "The reference's templates cover summarisation, entity extraction, classification, code review, data analysis and a few others. Laid side by side, the structure is identical and the emphasis moves." },
+    { t: "p", text: "The templates cover summarisation, entity extraction, classification, code review, data analysis and a few others. Laid side by side, the structure is identical and the emphasis moves." },
 
     { t: "table",
       head: ["Task", "The component that carries the weight", "What goes wrong without it"],
@@ -32,11 +32,11 @@ EC.receiveLesson({
       ],
       caption: "Three of the six lean on context, two on output format, one on instruction. That distribution is why \"be more specific\" is unhelpful advice — it does not say which part to be specific about." },
 
-    { t: "code", lang: "text", title: "The reference's summarisation template", code: `System: You are an expert summarizer. Provide concise, accurate summaries.
+    { t: "code", lang: "text", title: "The summarisation template", code: `System: You are an expert summarizer. Provide concise, accurate summaries.
 User:   Summarize the following text in {N} bullet points.
         Focus on key findings, decisions, and action items.
         Text: {document}`,
-      caption: "From 04_Prompt_Engineering.md section 18. The load-bearing line is the third — \"key findings, decisions, and action items\" is what stops the model choosing its own three priorities." },
+      caption: "From the reference notes section 18. The load-bearing line is the third — \"key findings, decisions, and action items\" is what stops the model choosing its own three priorities." },
 
     { t: "callout", kind: "insight", title: "The priority clause is what makes a summary useful",
       body: [
@@ -83,7 +83,7 @@ not involved.
     { t: "h2", n: "03", id: "replace", text: "Which templates should not be prompts at all",
       sub: "Two of the six are structured-output problems" },
 
-    { t: "p", text: "The entity-extraction and classification templates ask in prose for something a schema can guarantee. The reference's own ranking (1.8) puts a prompt-described format bottom of four approaches, so a template that describes a JSON shape in words is a starting point to be migrated rather than a destination." },
+    { t: "p", text: "The entity-extraction and classification templates ask in prose for something a schema can guarantee. The ranking (1.8) puts a prompt-described format bottom of four approaches, so a template that describes a JSON shape in words is a starting point to be migrated rather than a destination." },
 
     { t: "code", lang: "python", title: "replace.py — the extraction template, properly", code: `# The template version (reference section 18): asks, in prose, for JSON.
 #   "Extract structured information from the text.
@@ -127,16 +127,16 @@ Base the sentiment only on the document, not on the subject matter.
       "**Is the input reliable?** If the document may not contain the answer, the absence clause from section 03 is mandatory rather than optional."
     ] },
 
-    { t: "p", text: "Those four questions produce the template rather than requiring you to find one. The reference's six are useful as worked examples of the answers — and as a reminder that a template is a starting point whose generic parts are exactly the parts you need to replace." },
+    { t: "p", text: "Those four questions produce the template rather than requiring you to find one. The six are useful as worked examples of the answers — and as a reminder that a template is a starting point whose generic parts are exactly the parts you need to replace." },
 
     { t: "exercise", kind: "Challenge", title: "Audit the templates against the four components",
       difficulty: "foundation", minutes: 20,
       body: [
         { t: "p", text: "A template's weakness is usually a missing component rather than bad wording, and the audit from 2.1 applies to published templates as readily as to your own." },
-        { t: "p", text: "Score the reference's templates and find the pattern." }
+        { t: "p", text: "Score the templates and find the pattern." }
       ],
       requirements: [
-        "Write out at least five templates in the reference's style: summarisation, extraction, classification, code review, rewriting",
+        "Write out at least five templates in the style: summarisation, extraction, classification, code review, rewriting",
         "For each, mark whether instruction, context, input and output format are present",
         "Mark separately whether an absence clause is present",
         "Report which component is most often missing and which template is strongest",
@@ -194,7 +194,7 @@ strongest template: 'classify' (4 of 5 present)`,
     { t: "callout", kind: "scenario", title: "Incident: the template that summarised the wrong three things",
       body: [
         { t: "p", text: "**Symptom.** An incident-review summariser was praised in testing and criticised in use. Engineering managers reading the summaries said they were \"accurate but useless\" — they covered the technical narrative in detail and frequently omitted customer impact and remediation entirely." },
-        { t: "p", text: "**The prompt.** The reference's summarisation template, used close to verbatim: three bullets, focus on key findings, decisions and action items." },
+        { t: "p", text: "**The prompt.** The summarisation template, used close to verbatim: three bullets, focus on key findings, decisions and action items." },
         { t: "p", text: "**Mechanism.** \"Key findings\" is a selection rule, and it selected correctly — the key findings of an incident review are usually technical, because that is what most of the document is about. The readers wanted a different selection: what broke, who it affected, what changes. The prompt was not wrong; it was selecting for a different reader than the one it had, and the testing had been done by the engineers who wrote the reviews rather than the managers who read the summaries." },
         { t: "p", text: "**Fix.** The three priorities were named explicitly — what broke, customer impact, what is being changed — and the absence clause added, because about a fifth of reviews did not record customer impact and the model had been inferring it from severity. Satisfaction moved immediately. The durable lesson is section 01's: **a template's selection rule is the part that must be domain-specific**, and a generic one will select something defensible that nobody asked for." }
       ] }
@@ -202,7 +202,7 @@ strongest template: 'classify' (4 of 5 present)`,
 
   takeaways: [
     "**Every template is the same four components from 2.1**, arranged for a different task shape. What differs is which component carries the weight.",
-    "Three of the reference's six lean on **context**, two on **output format**, one on **instruction** — which is why \"be more specific\" is unhelpful advice: it does not say which part.",
+    "Three of the six lean on **context**, two on **output format**, one on **instruction** — which is why \"be more specific\" is unhelpful advice: it does not say which part.",
     "**The selection rule is what makes a summary useful.** \"Three bullets\" is a shape; naming what to select converts it into an extractable, evaluable task.",
     "Ask of any template: **what is it selecting, and did I say so.** Most weak prompts are weak because the selection rule is implied.",
     "Adapt rather than copy: add the **domain and audience**, then the **edge cases**. A named audience sets register without needing a persona sentence (2.6).",
@@ -216,7 +216,7 @@ strongest template: 'classify' (4 of 5 present)`,
   quiz: {
     title: "Check yourself",
     questions: [
-      { stem: "Which component is missing from all six of the reference's templates?",
+      { stem: "Which component is missing from all six of the templates?",
         options: ["The instruction", "The absence clause — what to do when the information is not there", "The input", "The output format"],
         answer: 1,
         why: "Measured across six templates, every one specifies the task and the input and none says what to do when the document does not contain the requested information — because templates are written against documents that do. That is precisely the omission that produces plausible invented values which satisfy a schema and go unnoticed, as in 2.7's invoice incident. Instruction and input are present in all six; output format is missing from two." },

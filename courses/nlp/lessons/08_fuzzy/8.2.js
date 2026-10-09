@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 8.2 — Jaro-Winkler Similarity
-   Mirrors 04_Fuzzy_Matching.md · §3. Jaro and Jaro-Winkler implemented from
-   scratch; the canonical values reproduce (MARTHA/MARHTA 0.9444 → 0.9611),
-   and a full reversal still scores 0.5000 (§05) (scratchpad/nlp/n81.py).
+   Jaro and Jaro-Winkler implemented from scratch; the canonical values
+   reproduce (MARTHA/MARHTA 0.9444 → 0.9611), and a full reversal still
+   scores 0.5000 (§05) (scratchpad/nlp/n81.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "8.2",

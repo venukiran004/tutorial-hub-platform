@@ -1,6 +1,5 @@
 /* ============================================================================
    LESSON 4.1 — Why Transformers Replaced Recurrence
-   Mirrors rnn-lstm-gru-transformer-guide.md · §1, §5.1, §5.2.
    ========================================================================= */
 EC.receiveLesson({
   id: "4.1",

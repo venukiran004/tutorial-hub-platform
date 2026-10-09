@@ -250,7 +250,7 @@ X_tr, X_te, y_tr, y_te = train_test_split(X_all, y)`,
         { level: "ok", label: "Fit on train, apply to test by hand", code: `med = X_tr.median(); sc = StandardScaler().fit(X_tr.fillna(med))
 X_te_p = sc.transform(X_te.fillna(med))
 # ... and the dummies? and the unseen category in X_te? and the next step someone adds?`,
-          note: "**Correct today.** It relies on every future edit remembering the order — and on serving code that mirrors it. The third change breaks it silently." },
+          note: "**Correct today.** It relies on every future edit remembering the order — and on serving code that Covers it. The third change breaks it silently." },
         { level: "best", label: "One object, fitted per fold, shipped whole", code: `pipe = Pipeline([("pre", ColumnTransformer([("num", num, num_cols), ("cat", cat, cat_cols)])),
                  ("clf", LogisticRegression())]).set_output(transform="pandas")
 cross_val_score(pipe, df, y, cv=cv)      # fit-on-train enforced, per fold

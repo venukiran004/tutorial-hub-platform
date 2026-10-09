@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "1.3",
 
-  lede: "Top-k and top-p both delete the tail of the distribution before a token is drawn, and they are the only two parameters in this module that make a token *impossible* rather than merely unlikely. They differ in one respect, and that one respect determines which of them you should be using: top-k cuts at a fixed position and cannot see the shape of the distribution, while top-p cuts wherever the mass runs out and therefore adapts to every step. This lesson works the reference's small example by hand, then measures the cut on three real prompts.",
+  lede: "Top-k and top-p both delete the tail of the distribution before a token is drawn, and they are the only two parameters in this module that make a token *impossible* rather than merely unlikely. They differ in one respect, and that one respect determines which of them you should be using: top-k cuts at a fixed position and cannot see the shape of the distribution, while top-p cuts wherever the mass runs out and therefore adapts to every step. This lesson works the small example by hand, then measures the cut on three real prompts.",
 
   objectives: [
     "Compute by hand which tokens a given top-p keeps, and identify the off-by-one that catches everyone",
@@ -34,9 +34,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "top-p", text: "Top-p keeps a fixed mass",
       sub: "The smallest set whose cumulative probability reaches p" },
 
-    { t: "p", text: "Top-p — nucleus sampling — sorts by probability, accumulates from the top, and keeps tokens until the running total reaches p. The reference's worked example is small enough to check in your head, and it contains the detail that everyone gets wrong on the first attempt:" },
+    { t: "p", text: "Top-p — nucleus sampling — sorts by probability, accumulates from the top, and keeps tokens until the running total reaches p. The worked example is small enough to check in your head, and it contains the detail that everyone gets wrong on the first attempt:" },
 
-    { t: "code", lang: "python", title: "g12.py — the reference's example, checked", code: `ex = torch.tensor([0.50, 0.25, 0.15, 0.05, 0.05])
+    { t: "code", lang: "python", title: "g12.py — the worked example, checked", code: `ex = torch.tensor([0.50, 0.25, 0.15, 0.05, 0.05])
 cum = 0.0
 for n, v in zip("ABCDE", ex.tolist()):
     before = cum
@@ -320,7 +320,7 @@ at the mean p=0.6252, candidates actually kept:
 
   interview: {
     title: "In an interview",
-    sub: "This is the reference's own first interview question, and the one most often answered with a definition rather than a difference.",
+    sub: "This is the first interview question, and the one most often answered with a definition rather than a difference.",
     questions: [
       { level: "core",
         q: "Explain temperature versus top-p. When do you use each?",
@@ -354,7 +354,7 @@ at the mean p=0.6252, candidates actually kept:
         strong: "The comparison is on the exclusive prefix sum. A strong answer also says what breaks if you get it wrong, at both ends of the range.",
         answer: [
           { t: "p", text: "The test has to be on the mass held by everything ranked *above* the token — the exclusive prefix sum — not on the cumulative total including it. Written as `cumsum - probs >= p → drop`, the token that crosses the threshold survives, which is what \"the smallest set whose cumulative probability reaches p\" means." },
-          { t: "p", text: "Get it wrong and two things break. On the reference's example of [0.50, 0.25, 0.15, 0.05, 0.05], testing the inclusive sum drops the third token at exactly 0.90, so `top_p=0.9` keeps 0.75 of the mass instead of 0.90. Worse, at the confident end, a step where the top token holds 0.99 would have every token dropped and the sampler would have nothing to draw from." },
+          { t: "p", text: "Get it wrong and two things break. On the worked example of [0.50, 0.25, 0.15, 0.05, 0.05], testing the inclusive sum drops the third token at exactly 0.90, so `top_p=0.9` keeps 0.75 of the mass instead of 0.90. Worse, at the confident end, a step where the top token holds 0.99 would have every token dropped and the sampler would have nothing to draw from." },
           { t: "p", text: "The other detail I would mention is the edge at `top_p=1.0`. It does not keep the whole vocabulary — the prefix sum saturates in float32 and the far tail is dropped. On GPT-2 that was 38,597 of 50,257 tokens kept, with the missing ones holding under 10⁻⁷ of the mass between them. Harmless, but worth knowing before you spend a morning on it." }
         ] }
     ]

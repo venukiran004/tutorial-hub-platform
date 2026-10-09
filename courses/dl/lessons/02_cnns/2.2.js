@@ -1,9 +1,5 @@
 /* ============================================================================
    LESSON 2.2 — Pooling and the Anatomy of a CNN
-   Mirrors 02_CNNs.md · §2 (Pooling Layers) and §3 (CNN Architecture Anatomy,
-   including the receptive field). The reference's max-pool example checks out;
-   its average-pool example does not — see section 01
-   (scratchpad/dl/d22.py, torch 2.10).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.2",
@@ -34,7 +30,7 @@ EC.receiveLesson({
  [[2.75 1.75]
  [1.25 2.5 ]]` },
 
-    { t: "callout", kind: "warn", title: "The reference's average-pool numbers are wrong",
+    { t: "callout", kind: "warn", title: "The average-pool numbers are wrong",
       body: [{ t: "p", text: "Its max-pool output `[[5,4],[3,4]]` is correct. Its average-pool output is printed as `[[2.5, 2.5], [2.0, 2.5]]`, but the four windows are `[1,3,5,2]`, `[2,4,1,0]`, `[1,0,3,1]` and `[3,2,1,4]`, whose means are **2.75, 1.75, 1.25 and 2.50**. Only the last one matches. The same lesson as 2.1's worked example: the operation is described correctly and the numbers beside it were never run." }] },
 
     { t: "diagram", kind: "matrix", title: "The four windows, computed",
@@ -145,7 +141,7 @@ EC.receiveLesson({
   ],
 
   takeaways: [
-    "Max pooling keeps the peak, average keeps the level; the reference's average-pool example prints the wrong four numbers.",
+    "Max pooling keeps the peak, average keeps the level; the average-pool example prints the wrong four numbers.",
     "Pooling's translation invariance is only within a window — three of four one-pixel shifts changed the output.",
     "Global average pooling replaced 25,089,000 parameters with 513,000, a 49× saving, and has none of its own.",
     "The design rule is channels up as space down: 224→112→56→28→14, 3→64→128→256→512.",

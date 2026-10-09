@@ -1,8 +1,6 @@
 /* ============================================================================
    INTERVIEW I1.1 — Section 1: NLP Fundamentals
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/06_NLP_and_Transformers/Interview_Questions/06_NLP_Interview.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.1",
@@ -502,7 +500,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Which to pick:** understand/classify/embed a fixed text → **encoder-only**; generate/chat/reason → **decoder-only** (the default for general-purpose LLMs); strict source→target transduction → **encoder-decoder**. Deeper mechanics, training objectives, and worked examples: [02_Transformers_InDepth.md §12](../02_Transformers_InDepth.md#12-types-bert-gpt-t5)."
+     "text": "**Which to pick:** understand/classify/embed a fixed text → **encoder-only**; generate/chat/reason → **decoder-only** (the default for general-purpose LLMs); strict source→target transduction → **encoder-decoder**. Deeper mechanics, training objectives, and worked examples: [the reference notes §12](../the reference notes#12-types-bert-gpt-t5)."
     }
    ],
    "kind": ""

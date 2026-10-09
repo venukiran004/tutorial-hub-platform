@@ -46,7 +46,7 @@ batch = client.batches.create(input_file_id=batch_file.id,
 # 3. poll -- validating -> in_progress -> completed (or failed / expired)
 batch = client.batches.retrieve(batch.id)`,
       hl: [6],
-      caption: "From 01_LLM_Parameters.md §13. The `custom_id` is the important field: results come back unordered and you match on it, so it has to carry enough information to find the row it belongs to." },
+      caption: "From the reference notes §13. The `custom_id` is the important field: results come back unordered and you match on it, so it has to carry enough information to find the row it belongs to." },
 
     { t: "callout", kind: "trap", title: "Results come back unordered, and some may be missing",
       body: [
@@ -101,7 +101,7 @@ batch = client.batches.retrieve(batch.id)`,
 </svg>` },
 
     { t: "code", lang: "python", title: "g18.py — what each discount is worth", code: `REQS, IN_TOK, OUT_TOK = 100_000, 1_200, 300
-IN_RATE, OUT_RATE = 2.50, 10.00      # $ per 1M, from 01_LLM_Parameters.md §14
+IN_RATE, OUT_RATE = 2.50, 10.00      # $ per 1M, from the reference notes §14
 STATIC = 1000                        # tokens of the prompt that never change
 
 base_in  = REQS * IN_TOK  * IN_RATE  / 1e6
@@ -287,7 +287,7 @@ output/input 0.15, sweeping the static share:
 
   interview: {
     title: "In an interview",
-    sub: "The reference's Q8 asks about prompt caching. The stronger version of the answer covers why ordering is the whole decision.",
+    sub: "The Q8 asks about prompt caching. The stronger version of the answer covers why ordering is the whole decision.",
     questions: [
       { level: "core",
         q: "What is prompt caching and how does it work?",

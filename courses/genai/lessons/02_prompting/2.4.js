@@ -32,7 +32,7 @@ def self_consistent(prompt, n=5, temperature=0.7):
       hl: [8],
       caption: "The second return value is what most implementations throw away and should not: an answer that won 5 of 5 is a different object from one that won 2 of 5, and the difference is actionable." },
 
-    { t: "p", text: "The reference's example has five runs producing 42, 42, 38, 42, 42 — a 4/5 majority — and notes that this is \"more expensive but significantly more accurate\". Both halves of that are quantifiable exactly, because a majority vote over independent samples is a binomial." },
+    { t: "p", text: "The worked example has five runs producing 42, 42, 38, 42, 42 — a 4/5 majority — and notes that this is \"more expensive but significantly more accurate\". Both halves of that are quantifiable exactly, because a majority vote over independent samples is a binomial." },
 
     { t: "math", tex: "P(\\text{majority correct}) = \\sum_{k=\\lceil n/2 \\rceil}^{n} \\binom{n}{k} p^k (1-p)^{n-k}" },
 
@@ -138,7 +138,7 @@ for p in (0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9):
 
     { t: "p", text: "Self-consistency samples the same approach repeatedly and votes. Tree-of-thought generates *different* approaches, evaluates each, and continues from the best — a search rather than a poll." },
 
-    { t: "code", lang: "text", title: "The reference's ToT pattern", code: `Problem → Branch 1 → Evaluate → Score: 7/10
+    { t: "code", lang: "text", title: "The ToT pattern", code: `Problem → Branch 1 → Evaluate → Score: 7/10
         → Branch 2 → Evaluate → Score: 9/10 ← Pick this
         → Branch 3 → Evaluate → Score: 5/10
 
@@ -146,7 +146,7 @@ Prompt pattern:
 "Consider 3 different approaches to solve this problem.
  For each approach, explain the reasoning and evaluate its merit.
  Then select the best approach and provide the final answer."`,
-      caption: "From 04_Prompt_Engineering.md §4. The single-prompt version above is the cheap form; the full technique runs each branch as its own call and evaluates them with a separate scoring step." },
+      caption: "From the reference notes §4. The single-prompt version above is the cheap form; the full technique runs each branch as its own call and evaluates them with a separate scoring step." },
 
     { t: "table",
       head: ["", "Self-consistency", "Tree-of-thought"],

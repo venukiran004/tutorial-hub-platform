@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "entailment", text: "Signal 1 \u2014 Entailment",
       sub: "Faithfulness = the fraction of claims the context supports" },
 
-    { t: "code", lang: "python", title: "The reference's scorer, verbatim", code: `# Faithfulness = fraction of answer claims supported by the context.
+    { t: "code", lang: "python", title: "The scorer, verbatim", code: `# Faithfulness = fraction of answer claims supported by the context.
 # \`entails(premise, hypothesis)\` can be an NLI model OR an LLM judge call.
 
 def split_claims(answer: str) -> list[str]:
@@ -163,11 +163,11 @@ def llm_groundedness(answer, context, call_llm):
 </svg>` },
 
     { t: "exercise", kind: "build", title: "Score faithfulness with real entailment, then try to cheat", difficulty: "advanced", minutes: 40,
-      body: "Run the reference's faithfulness scorer with a real NLI model over a context and a set of claims including its own three production scenarios. Then substitute cosine similarity for entailment and check whether any threshold separates supported from unsupported. Finally reproduce the reference's 0.75 worked example.",
+      body: "Run the faithfulness scorer with a real NLI model over a context and a set of claims including its own three production scenarios. Then substitute cosine similarity for entailment and check whether any threshold separates supported from unsupported. Finally reproduce the 0.75 worked example.",
       requirements: [
         "A real NLI model driving `entails`, with the three-way output recorded",
         "Three decision rules compared on the same claims",
-        "The reference's four-sentence worked example scored",
+        "The four-sentence worked example scored",
         "Cosine substituted and the two ranges compared for separability",
         "A statement of which signal catches which kind of hallucination"
       ],
@@ -190,7 +190,7 @@ def nli(premise, hypothesis):
             "neutral":       float(p[lab["neutral"]]),
             "entailment":    float(p[lab["entailment"]])}
 
-# ---- the reference's own two functions, unchanged
+# ---- the two functions, unchanged
 def split_claims(answer):
     return [s.strip() for s in re.split(r"(?<=[.!?])\\s+", answer) if s.strip()]
 
@@ -251,7 +251,7 @@ print()
 print("=" * 78)
 print("B -- THE REFERENCE'S WORKED EXAMPLE, REPRODUCED WITH A REAL MODEL")
 print("=" * 78)
-print("the reference's example: 4 sentences, 3 supported, 1 invented -> 0.75")
+print("the worked example: 4 sentences, 3 supported, 1 invented -> 0.75")
 print()
 ANSWER = (
     "Either party may terminate this agreement with 30 days written notice. "
@@ -330,7 +330,7 @@ Support is available 24/7 worldwide.                    0.0221  0.5800  0.3980  
 B -- THE REFERENCE'S WORKED EXAMPLE, REPRODUCED WITH A REAL MODEL
 ==============================================================================
 
-the reference's example: 4 sentences, 3 supported, 1 invented -> 0.75
+the worked example: 4 sentences, 3 supported, 1 invented -> 0.75
 
 rule entailment > 0.5             score 0.750  (4 claims, 1 unsupported)
       flagged: There is also a termination penalty of $50,000.
@@ -399,7 +399,7 @@ misses the on-topic ones you would not. that is the wrong way round.`,
 
   takeaways: [
     "**Faithfulness = 1 \u2212 unsupported claims / total claims**, scored per claim so the offending sentence is named.",
-    "**The reference's 0.75 reproduces exactly** on `roberta-large-mnli`, under all three decision rules tried.",
+    "**The 0.75 reproduces exactly** on `roberta-large-mnli`, under all three decision rules tried.",
     "**NLI separates by two orders of magnitude**: supported 0.9888\u20130.9931, unsupported 0.0009\u20130.0221.",
     "**Test for the absence of entailment, not the presence of contradiction** \u2014 extrinsic hallucinations read as neutral.",
     "**Measured: a \u201c24/7 support\u201d claim read neutral 0.5800, contradiction 0.3980**, so a contradiction rule would have passed it.",

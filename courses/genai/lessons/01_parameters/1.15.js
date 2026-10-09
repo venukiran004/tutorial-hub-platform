@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "1.15",
 
-  lede: "Every parameter in this module exists on some providers and not others, which turns \"switch to a cheaper model\" from a configuration change into a code change. This lesson lays out the reference's support matrix, works out which gaps actually matter, and builds the abstraction that survives a migration — which is not the one most teams reach for first, because the hard part is not translating parameters but knowing when a translation has silently changed the behaviour.",
+  lede: "Every parameter in this module exists on some providers and not others, which turns \"switch to a cheaper model\" from a configuration change into a code change. This lesson lays out the support matrix, works out which gaps actually matter, and builds the abstraction that survives a migration — which is not the one most teams reach for first, because the hard part is not translating parameters but knowing when a translation has silently changed the behaviour.",
 
   objectives: [
     "State which common parameters are unsupported on which providers",
@@ -37,7 +37,7 @@ EC.receiveLesson({
         ["batch API", "yes", "yes", "**no**", "TGI"],
         ["prompt caching", "automatic", "manual `cache_control`", "yes", "**no**"]
       ],
-      caption: "From 01_LLM_Parameters.md §15. Five rows have a gap that a naive migration will hit, and three of them change behaviour rather than merely failing." },
+      caption: "From the reference notes §15. Five rows have a gap that a naive migration will hit, and three of them change behaviour rather than merely failing." },
 
     { t: "p", text: "The rows worth internalising are the ones where a parameter is missing on a provider people migrate *to*:" },
 
@@ -125,7 +125,7 @@ def call(provider, *, strict=True, **params):
         ["On-prem / privacy", "Llama 3 / Mistral, self-hosted", "A requirement no hosted model satisfies at any price"],
         ["Cost-sensitive batches", "Batch API on OpenAI or Anthropic", "Scheduling flexibility, not model choice (1.13)"]
       ],
-      caption: "From 01_LLM_Parameters.md §16.1. The third column is the useful reading: in five of the seven rows the binding constraint is not answer quality at all." },
+      caption: "From the reference notes §16.1. The third column is the useful reading: in five of the seven rows the binding constraint is not answer quality at all." },
 
     { t: "p", text: "Prices as the reference quotes them, per million input tokens: GPT-4o-mini $0.15, Claude Haiku $0.25, Gemini Flash $0.075, GPT-4o $2.50, Claude Sonnet $3.00, Gemini Pro $1.25, o3 $10.00, Claude Opus $15.00. That is a 200× spread between the cheapest and the most expensive — which is why routing (11.9) is usually worth more than any other cost work." },
 
@@ -239,9 +239,9 @@ least portable call site: 'extract' (3 parameters lost in total)`,
     "Anthropic has **no JSON mode** — forced tool use is the equivalent (1.8), and it is arguably cleaner, but it is a code change rather than a config change.",
     "A provider can **reject**, **silently ignore**, or **reinterpret** an unsupported parameter. The middle case is the dangerous one: a successful response with behaviour you did not configure.",
     "**An abstraction that drops unknown parameters is worse than no abstraction.** It must raise, or return an explicit list of what it dropped — \"best effort\" is not an acceptable contract for something that changes model behaviour.",
-    "The reference's price spread is **200×** from Gemini Flash at $0.075 per million input tokens to Claude Opus at $15.00 — which is why routing beats almost every other cost optimisation.",
+    "The price spread is **200×** from Gemini Flash at $0.075 per million input tokens to Claude Opus at $15.00 — which is why routing beats almost every other cost optimisation.",
     "**Price per token is not price per task.** Tokenisation differences (22% measured on French), verbosity, retry rates and hidden reasoning tokens all break the comparison.",
-    "In five of the reference's seven task rows, the binding constraint is **not answer quality** — it is latency, context length, privacy or cost.",
+    "In five of the seven task rows, the binding constraint is **not answer quality** — it is latency, context length, privacy or cost.",
     "Normalise the request *shape*; do not normalise the sampling parameters. A `temperature` of 0.7 means something different on two models, because temperature scales whatever logit gaps that model produces.",
     "A portability audit is a set difference and takes an afternoon: on the modelled codebase, **Anthropic lost 6 parameters across 4 of 5 call sites; Google lost 2 across 2** — and the raw count ranks the wrong site as least portable, because only the penalties have no substitute.",
     "**Switching providers is a project, not a configuration change** — and an abstraction that makes it look like one increases the risk, because the evaluation step gets skipped on the strength of its promise."
@@ -300,7 +300,7 @@ least portable call site: 'extract' (3 parameters lost in total)`,
         strong: "A strong answer starts from constraints rather than benchmarks and ends at a measurement on real inputs.",
         answer: [
           { t: "p", text: "Constraints first, because in most cases quality is not the binding one. Is there a latency budget? A context length that rules models out architecturally? A privacy requirement that rules out hosted models at any price? Those eliminate more candidates than any benchmark." },
-          { t: "p", text: "Then the cheapest model that clears the quality bar, tested on my own inputs. Public benchmarks tell you about public benchmarks, and the spread is wide enough to matter — the reference's own table runs from $0.075 to $15.00 per million input tokens, a factor of 200." },
+          { t: "p", text: "Then the cheapest model that clears the quality bar, tested on my own inputs. Public benchmarks tell you about public benchmarks, and the spread is wide enough to matter — the table runs from $0.075 to $15.00 per million input tokens, a factor of 200." },
           { t: "p", text: "And I would compare cost per completed task, not per token. A cheaper model that is more verbose, or that fails a schema 10% of the time and needs a retry, is not cheaper. Nor is a reasoning model whose headline rate excludes 10–100× in hidden tokens." },
           { t: "p", text: "The structural answer, if traffic is mixed, is routing rather than choosing: a cheap model for the easy majority and an expensive one for the rest, with a measured escalation rule. With a 200× price spread that is usually worth more than every other cost optimisation combined, which is 11.9." }
         ] }

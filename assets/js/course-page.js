@@ -115,7 +115,6 @@
               '<span class="mcard-main">' +
                 '<span class="mcard-t"><span class="mcard-num">' + modN + ".</span>" + EC.esc(m.title) + "</span>" +
                 '<span class="mcard-b">' + EC.esc(m.blurb) + "</span>" +
-                (m.source ? '<span class="mcard-src">' + I.link + "<span>" + EC.esc(m.source) + "</span></span>" : "") +
                 '<span class="mcard-tags">' + tags + "</span>" +
               "</span>" +
               '<span class="mcard-right">' +

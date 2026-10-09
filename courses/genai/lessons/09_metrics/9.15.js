@@ -226,7 +226,7 @@ print("cost/request $%.5f   cost/RESOLVED $%.5f   monthly $%,.0f"
           "Because it only applies to non-streaming requests"
         ],
         answer: 1,
-        why: "Below roughly 25 tokens per second the text lags the reader and TPOT is felt; above it the generation is already ahead and shaving milliseconds changes nothing experienced. That reorders the usual instinct to maximise throughput, and it mirrors the finding that tuning a vector index optimises about 1% of a RAG request while the re-ranker decision optimises the rest \u2014 the number people reach for is often not the one users feel." },
+        why: "Below roughly 25 tokens per second the text lags the reader and TPOT is felt; above it the generation is already ahead and shaving milliseconds changes nothing experienced. That reorders the usual instinct to maximise throughput, and it Covers the finding that tuning a vector index optimises about 1% of a RAG request while the re-ranker decision optimises the rest \u2014 the number people reach for is often not the one users feel." },
 
       { stem: "Three pipeline stages each have a p95 latency of 1 second. What is the pipeline's p95?",
         options: [

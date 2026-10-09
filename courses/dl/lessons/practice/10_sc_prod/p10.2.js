@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P10.2 — Compression, Deployment and Production · 2
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/05_Deep_Learning/Practice/09_Compression_Deployment_and_Production.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p10.2",

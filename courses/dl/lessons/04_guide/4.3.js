@@ -1,8 +1,7 @@
 /* ============================================================================
    LESSON 4.3 — Multi-Head Attention and Positional Encoding
-   Mirrors rnn-lstm-gru-transformer-guide.md · §5.4, §5.5. Head-count
-   parameter invariance measured (scratchpad/dl/d41.py); PE properties from
-   d37.py.
+   Head-count parameter invariance measured (scratchpad/dl/d41.py); PE
+   properties from d37.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "4.3",

@@ -21,7 +21,7 @@ EC.receiveLesson({
     { t: "p", text: "The reference\u2019s framing is right: a RAG query is a pipeline and each stage scales differently, so you scale the bottleneck. 6.2 already measured where the bottleneck is, which turns the reference\u2019s list from advice into a priority order." },
 
     { t: "table",
-      head: ["Stage", "Measured", "The reference's fix", "Worth doing?"],
+      head: ["Stage", "Measured", "The fix", "Worth doing?"],
       rows: [
         ["Cache", "Hit costs nothing (5.13)", "Exact match, then semantic", "**First** \u2014 the cheapest request is one that never runs"],
         ["Embed query", "Inside the 11 ms (5.1)", "Smaller model, batch, cache", "Rarely \u2014 it is ~1% of the request"],
@@ -155,7 +155,7 @@ EC.receiveLesson({
       ] },
 
     { t: "h2", n: "05", id: "gate", text: "Calibrating the relevance gate",
-      sub: "Where the reference's one magic number does not survive contact" },
+      sub: "Where the one magic number does not survive contact" },
 
     { t: "p", text: "The chain contains a single tunable constant, `rel_threshold=0.35`, carrying a lot of weight: below it the system refuses to answer. 5.7 identified the no-context case as where hallucination lives, so this is the guardrail that governs it. It is testable, so I tested it." },
 
@@ -176,7 +176,7 @@ SU = (QU @ E.T).max(axis=1)   # top-1 similarity, unanswerable`,
   answerable           20   0.3589   0.5698   0.7814   0.4529
   UNanswerable         10   0.2575   0.3388   0.5174   0.2623
 
-  the reference's threshold: 0.35
+  the threshold: 0.35
   answerable queries BELOW 0.35 (would be wrongly refused): 0 of 20
   unanswerable queries ABOVE 0.35 (would be wrongly answered): 4 of 10`,
       hl: [5, 6],
@@ -200,7 +200,7 @@ SU = (QU @ E.T).max(axis=1)   # top-1 similarity, unanswerable`,
   answerable queries inside it   : 7
   unanswerable queries inside it : 4`,
       hl: [5, 6, 12, 13, 14],
-      caption: "At the reference's 0.35, four of ten unanswerable queries pass. And the populations overlap across a wide band." },
+      caption: "At the 0.35, four of ten unanswerable queries pass. And the populations overlap across a wide band." },
 
     { t: "callout", kind: "trap", title: "No threshold separates the two populations",
       body: [
@@ -216,7 +216,7 @@ for i in order[:5]:
           -> 20_LLM_Hallucination_and_Fai :: Real Production Scenarios
              Scenario 1: The Invented Policy \`\`\` Customer
   0.3768  Which vendor did we sign the data processing
-          -> 01_LLM_Parameters.md ::  Gemini Flash / GPT-4o-mini  Lowest latency
+          -> llm-parameters.md ::  Gemini Flash / GPT-4o-mini  Lowest latency
   0.3693  What is my current account balance?
           -> 02_LLM_Inference_Optimizatio :: 3.1 70B | $0.50 | $0.70`,
       hl: [2, 3],
@@ -339,7 +339,7 @@ for i in np.argsort(-SU)[:5]:      # WHY did these score high?
     "**RRF solves incomparable scores and nothing else** \u2014 source conflicts, redundancy, context contention and routing all remain.",
     "**Source conflict has no technical fix** \u2014 a cross-encoder scores relevance, not truth, so it needs authority rank, effective dates and deprecation flags set at ingestion.",
     "**Injection via retrieved documents is the RAG-specific attack**: the corpus is the one input the pipeline trusts, so delimit retrieved text and remove capability with a read-only role.",
-    "**At the reference's 0.35 relevance threshold, 4 of 10 unanswerable queries passed** \u2014 and no threshold separates the populations, which overlap 0.3589 to 0.5174.",
+    "**At the 0.35 relevance threshold, 4 of 10 unanswerable queries passed** \u2014 and no threshold separates the populations, which overlap 0.3589 to 0.5174.",
     "**Relevance is not answerability.** The top false positive scored 0.5174 by matching a chunk headed \u201cScenario 1: The Invented Policy\u201d \u2014 correctly relevant, and not an answer.",
     "**So set the gate low and make the faithfulness check the real boundary**, since \u201cis every claim supported by retrieved text\u201d is tractable where answerability is not."
   ],

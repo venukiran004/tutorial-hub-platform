@@ -63,7 +63,7 @@ EC.receiveLesson({
 
     { t: "callout", kind: "trap", title: "GPU utilisation is the wrong autoscaling signal",
       body: [
-        { t: "p", text: "The reference's monitoring table suggests alerting when GPU utilisation drops below 50% and scaling on an 80% target. The problem is that a correctly configured LLM server with continuous batching holds the device near 100% whenever there is *any* work queued — so the signal saturates long before the service is in trouble and barely moves as the queue grows." },
+        { t: "p", text: "The monitoring table suggests alerting when GPU utilisation drops below 50% and scaling on an 80% target. The problem is that a correctly configured LLM server with continuous batching holds the device near 100% whenever there is *any* work queued — so the signal saturates long before the service is in trouble and barely moves as the queue grows." },
         { t: "p", text: "The signals that track the user's experience are **queue depth** and the **TPOT percentile**. Queue depth rises the instant admission exceeds capacity; TPOT rises as the batch fills (3.5 measured a 6.4× step-time increase from batch 1 to 32). Either of them tells you that users are waiting; utilisation does not." },
         { t: "p", text: "Utilisation is still worth watching, for the opposite purpose — 3.12's arithmetic makes it the dominant cost term. It is a *cost* metric, not a *scaling* metric, and confusing the two is how a service ends up scaling out while every replica is idle." }
       ] },

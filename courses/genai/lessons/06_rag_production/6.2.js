@@ -7,7 +7,7 @@ EC.receiveLesson({
     "Identify what actually forces each step up the scalability ladder",
     "Budget the latency of a retrieval call against the generation it precedes",
     "Choose an update strategy from how often documents change",
-    "Apply the reference's production checklist and say which items are load-bearing",
+    "Apply the production checklist and say which items are load-bearing",
     "Plan a re-index that does not take the system down"
   ],
 
@@ -98,7 +98,7 @@ EC.receiveLesson({
   <line x1="16" y1="200" x2="744" y2="200" stroke="var(--line)" stroke-width="1"/>
   <text x="16" y="226" class="s-mono" style="fill:var(--accent)">tuning the index optimises ~1% of the request</text>
   <text x="16" y="248" class="s-mono" style="fill:var(--crit)">deciding whether the re-ranker runs, and at what depth, optimises the rest</text>
-  <text x="16" y="270" class="s-sub">so the reference's latency list is nearly in reverse order for this shape of system</text>
+  <text x="16" y="270" class="s-sub">so the latency list is nearly in reverse order for this shape of system</text>
 </svg>` },
 
     { t: "h2", n: "03", id: "updates", text: "Keeping the index current",
@@ -108,7 +108,7 @@ EC.receiveLesson({
 
     { t: "dl", items: [
       { k: "Full rebuild", v: "Re-embed everything on a schedule. Simple, idempotent, and the only option when the embedding model changes \u2014 which 6.8 shows is a special case that *requires* it. Cost scales with the whole corpus: 13.2 s for 360,000 characters here, so an hour for a corpus a few hundred times larger." },
-      { k: "Incremental by change detection", v: "Hash each document, re-embed only what changed. The reference's recommendation, and the right default: a content hash over a few hundred documents is milliseconds, and it turns a full rebuild into a handful of chunks." },
+      { k: "Incremental by change detection", v: "Hash each document, re-embed only what changed. The recommendation, and the right default: a content hash over a few hundred documents is milliseconds, and it turns a full rebuild into a handful of chunks." },
       { k: "Event-driven", v: "Re-embed on a document-change event rather than on a schedule. Lowest staleness, and it needs the source system to emit events reliably \u2014 which is usually the hard part rather than the embedding." }
     ] },
 
@@ -138,7 +138,7 @@ EC.receiveLesson({
         { t: "p", text: "Pin the embedding model as a versioned dependency and treat a version bump as a corpus migration with a blue-green cutover. That is the whole of the reference\u2019s advice on this and it is correct." }
       ] },
 
-    { t: "h2", n: "05", id: "checklist", text: "The reference's checklist, weighted",
+    { t: "h2", n: "05", id: "checklist", text: "The checklist, weighted",
       sub: "Ten items, and they are not equal" },
 
     { t: "table",
@@ -192,7 +192,7 @@ for n in (1_187, 100_000, 1_000_000, 10_000_000):
   10,000,000 vectors   15360.0 MB  (+17% if HNSW M=32)`,
         notes: [
           { t: "p", text: "**Retrieval is 0.3% of this request and the re-ranker is 75%.** Any latency work that starts with the index is optimising the wrong stage by two orders of magnitude \u2014 and the cross-encoder figure is CPU-bound, so the first question is whether it is being served on the right hardware at all." },
-          { t: "p", text: "**The ordering reverses the reference's latency list.** It puts ANN tuning second and query caching fourth; on these measurements caching and the re-ranker decision come first, and index tuning matters only once it is actually the bottleneck \u2014 which on a sub-million corpus it is not." },
+          { t: "p", text: "**The ordering reverses the latency list.** It puts ANN tuning second and query caching fourth; on these measurements caching and the re-ranker decision come first, and index tuning matters only once it is actually the bottleneck \u2014 which on a sub-million corpus it is not." },
           { t: "p", text: "**Memory is the scaling constraint, not search time.** A million vectors is 1.5 GB and searches in an extrapolated 75 ms; ten million is 15 GB and 855 ms. The memory becomes awkward a full order of magnitude before the latency does." },
           { t: "p", text: "**So the levers are in a different order than the ladder suggests**: reduce dimensions (5.3 measured 384 \u2192 128 saving two thirds for five recall points), then quantize, then shard. Index structure is the last of these, not the first." },
           { t: "p", text: "One caveat on the arithmetic: the generation figure is an order-of-magnitude placeholder rather than a measurement of any particular model, and the cross-encoder number is CPU. On a GPU-served stack the re-ranker falls to tens of milliseconds and generation dominates instead \u2014 which changes the percentages but not the conclusion that the index is not the problem." }
@@ -221,7 +221,7 @@ for n in (1_187, 100_000, 1_000_000, 10_000_000):
     "**Latency binds only around ten million vectors**, where brute force reaches 855 ms and an approximate index stops being optional.",
     "**Operations bind before either** \u2014 persistence, backups, incremental updates and sharing an index between processes move most teams to a store well below any threshold.",
     "**Retrieval is ~1% of a request.** Search is 11 ms, BM25 and fusion are sub-millisecond; the cross-encoder was 2,405 ms on CPU and generation hundreds more.",
-    "**So the expensive stages are the optional model calls**, which nearly reverses the reference's latency-optimisation order \u2014 cache and re-ranker decisions first, index tuning last.",
+    "**So the expensive stages are the optional model calls**, which nearly reverses the latency-optimisation order \u2014 cache and re-ranker decisions first, index tuning last.",
     "**Hash documents to decide what to re-embed.** The check is microseconds against seconds of embedding, and it is exact rather than heuristic.",
     "**Use the hash as the record id** so re-ingesting identical content overwrites instead of duplicating, and store `updated_at` for auditable freshness.",
     "**Rebuild blue-green and validate on the evaluation set before cutover**, because a half-built index returns arbitrary results rather than stale ones.",

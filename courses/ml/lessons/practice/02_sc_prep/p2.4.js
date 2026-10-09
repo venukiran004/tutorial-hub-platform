@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P2.4 — Preprocessing and Feature Engineering · 4
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/04_Machine_Learning/Practice/02_Preprocessing_and_Feature_Engineering.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p2.4",

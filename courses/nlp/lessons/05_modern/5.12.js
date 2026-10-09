@@ -1,9 +1,5 @@
 /* ============================================================================
    LESSON 5.12 — Long Context and Training at Scale
-   Mirrors 02_Transformers_InDepth.md · §24-25. Ring attention is implemented
-   and proved exact to 7.45e-08 (§03), and the reference's "~120 GB at 1M
-   tokens" is shown to be a GQA figure, not MHA (§01)
-   (scratchpad/nlp/n512.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "5.12",
@@ -27,7 +23,7 @@ EC.receiveLesson({
     { t: "out", text:
 "KV cache for a 32-layer, 4096-wide 7B model at 1,000,000 tokens, fp16\n\n  full MHA   (n_kv = 32)    524.3 GB\n  GQA8       (n_kv = 8)     131.1 GB" },
 
-    { t: "callout", kind: "warn", title: "The reference's \"~120 GB\" is a GQA figure",
+    { t: "callout", kind: "warn", title: "The \"~120 GB\" is a GQA figure",
       body: [{ t: "p", text: "The reference states that a 7B model at 1M tokens needs roughly **120 GB** of KV cache. That matches **GQA with 8 groups** at 131.1 GB, not full multi-head attention, which comes to **524.3 GB** — more than four times the quoted number. The distinction matters because it changes the conclusion: at 524 GB you need seven 80GB cards for the cache alone, at 131 GB you need two. Worth stating explicitly, because \"a 7B model needs 120 GB at 1M tokens\" silently assumes an architectural choice that older models do not make." }] },
 
     { t: "h2", n: "02", text: "Ring attention", id: "ring" },
@@ -125,7 +121,7 @@ EC.receiveLesson({
   ],
 
   takeaways: [
-    "A 7B model at 1M tokens needs 524.3 GB of KV cache under full MHA and 131.1 GB under GQA8 — the reference's ~120 GB is the GQA figure.",
+    "A 7B model at 1M tokens needs 524.3 GB of KV cache under full MHA and 131.1 GB under GQA8 — the ~120 GB is the GQA figure.",
     "Ring attention splits the sequence across P devices, rotating KV blocks; memory per device is O(N/P), and 8 devices bring 524.3 GB down to 65.5 GB each.",
     "It is exact, not approximate: agreement with full attention to 7.45e-08, because the online softmax recombines partial results correctly.",
     "Intermediate ring values are meaningless partial sums — +0.334320 after the first block against a true +0.187467 — and only the final combination is correct.",

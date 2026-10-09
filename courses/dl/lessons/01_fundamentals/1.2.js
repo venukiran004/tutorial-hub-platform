@@ -1,18 +1,17 @@
 /* ============================================================================
    LESSON 1.2 — Activation Functions
-   Mirrors 01_Neural_Network_Fundamentals.md · §2 (Comparison Table, When to
-   Use Which, Dead Neuron Problem). Every value in the tables was computed
-   with PyTorch; the derivatives came from autograd.
+   Every value in the tables was computed with PyTorch; the derivatives came
+   from autograd.
    ========================================================================= */
 EC.receiveLesson({
   id: "1.2",
 
-  lede: "**An activation function is the non-linearity applied to each neuron's weighted sum, and without one a network of any depth is a single linear map.** The choice is small — sigmoid, tanh, ReLU and its relatives, GELU and SiLU for the modern architectures, softmax at a multi-class output — but each has a formula, a range, a derivative and a characteristic way of failing, and the derivative is what matters for training: a sigmoid's gradient never exceeds 0.25, a ReLU's is exactly 1 or exactly 0. This lesson is the reference's comparison table with every entry computed, the rule for which activation goes where, and the dead-neuron problem measured.",
+  lede: "**An activation function is the non-linearity applied to each neuron's weighted sum, and without one a network of any depth is a single linear map.** The choice is small — sigmoid, tanh, ReLU and its relatives, GELU and SiLU for the modern architectures, softmax at a multi-class output — but each has a formula, a range, a derivative and a characteristic way of failing, and the derivative is what matters for training: a sigmoid's gradient never exceeds 0.25, a ReLU's is exactly 1 or exactly 0. This lesson is the comparison table with every entry computed, the rule for which activation goes where, and the dead-neuron problem measured.",
 
   objectives: [
     "Explain why a network without activations collapses to one linear transformation, in two lines of algebra",
     "Write the formula, range and derivative of sigmoid, tanh, ReLU, Leaky ReLU, ELU, GELU, SiLU, softmax, SELU and Mish, and say what each one's issue is",
-    "Choose the hidden-layer activation and the output activation for a given task from the reference's rule",
+    "Choose the hidden-layer activation and the output activation for a given task from the rule",
     "Describe the dead-ReLU problem — its cause, how to detect it, and the four fixes"
   ],
 
@@ -130,7 +129,7 @@ mish             -0.1456  -0.3034  -0.2207   0.0000   0.3752   0.8651   2.9865
 
     { t: "h2", n: "03", text: "Which one where", id: "which" },
 
-    { t: "p", text: "The reference's rule fits in a short table, and it is the rule almost every working architecture follows:" },
+    { t: "p", text: "The rule fits in a short table, and it is the rule almost every working architecture follows:" },
 
     { t: "table", head: ["Place", "Situation", "Use"],
       rows: [
@@ -219,7 +218,7 @@ print(0.25 ** 5, 1.0 ** 5)      # 0.0009765625 1.0
     { stem: "Which activation would you expect inside a transformer's feed-forward block?",
       options: ["Sigmoid", "Softmax", "GELU", "Tanh"],
       answer: 2,
-      why: "GELU — z·Φ(z), a smooth relative of ReLU — is the reference's stated default for transformers (BERT, GPT). Softmax appears in the attention weights, not in the feed-forward non-linearity; sigmoid and tanh saturate and are avoided in deep hidden layers." }
+      why: "GELU — z·Φ(z), a smooth relative of ReLU — is the stated default for transformers (BERT, GPT). Softmax appears in the attention weights, not in the feed-forward non-linearity; sigmoid and tanh saturate and are avoided in deep hidden layers." }
   ] },
 
   interview: { title: "Interview", sub: "What a senior interviewer asks about activations", questions: [

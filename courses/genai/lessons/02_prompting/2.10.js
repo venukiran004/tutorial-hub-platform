@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "2.10",
 
-  lede: "1.9 covered function calling as a mechanism — the loop, the schemas, the execution step. This lesson is about the half of it that is prompting: what you write so the model chooses the right tool. The measurement that frames it is stark. In the reference's own weather tool, the description is **6 tokens of 84** — 7% of the definition — and it is the part that decides whether the tool gets called at all.",
+  lede: "1.9 covered function calling as a mechanism — the loop, the schemas, the execution step. This lesson is about the half of it that is prompting: what you write so the model chooses the right tool. The measurement that frames it is stark. In the weather tool, the description is **6 tokens of 84** — 7% of the definition — and it is the part that decides whether the tool gets called at all.",
 
   objectives: [
     "Write a tool description that separates a tool from its neighbours",
@@ -223,7 +223,7 @@ closest five overall:
 
   takeaways: [
     "**A tool definition does two jobs.** The description drives selection; the schema constrains arguments after selection. The schema has no influence on whether the tool is chosen.",
-    "Measured on the reference's weather tool: the description is **6 tokens of 84** — 7% of the definition, and the part that decides everything about selection.",
+    "Measured on the weather tool: the description is **6 tokens of 84** — 7% of the definition, and the part that decides everything about selection.",
     "When a tool is not being called, **edit the description, not the schema** — the schema is read after the decision has already been made.",
     "A good description gives the action and object, what it returns, **the boundary (when not to use it, and which tool instead)**, and any precondition.",
     "The boundary clause is the highest-value sentence, because mis-selection is almost always a neighbour winning. Measured at +31 tokens (1.9).",
@@ -270,7 +270,7 @@ closest five overall:
         strong: "A strong answer separates selection from arguments and identifies the boundary clause as the lever.",
         answer: [
           { t: "p", text: "Selection is driven by the name and the description; the parameters schema is read after the decision and has no influence on it. That split matters because when a tool is not being called, the instinct is to edit the schema, and the schema is where none of the selection information lives." },
-          { t: "p", text: "In the reference's weather tool the description is six tokens of an eighty-four-token definition — 7% — and it carries the whole decision." },
+          { t: "p", text: "In the weather tool the description is six tokens of an eighty-four-token definition — 7% — and it carries the whole decision." },
           { t: "p", text: "The highest-value sentence is the negative one: when not to use this tool, and which tool to use instead. Mis-selection is almost always a neighbour winning, so separating the pair is what fixes it. Measured, adding that clause cost about 31 tokens." }
         ] },
 

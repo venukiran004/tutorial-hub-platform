@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P8.2 — Imbalanced Data, Time Series and Recommenders · 2
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/04_Machine_Learning/Practice/08_Imbalanced_TimeSeries_Recommenders.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p8.2",

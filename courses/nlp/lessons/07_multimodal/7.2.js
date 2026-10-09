@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 7.2 — CLIP and Contrastive Learning
-   Mirrors 03_Multimodal_AI.md · §2. The InfoNCE loss is implemented, and
-   real zero-shot classification is run on synthesised images — it scores 3/4,
-   and the failure is instructive (§05) (scratchpad/nlp/n71.py).
+   The InfoNCE loss is implemented, and real zero-shot classification is run
+   on synthesised images — it scores 3/4, and the failure is instructive
+   (§05) (scratchpad/nlp/n71.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "7.2",

@@ -1,8 +1,6 @@
 /* ============================================================================
    LESSON 2.8 — Image Segmentation, Transposed and Dilated Convolutions
-   Mirrors 02_CNNs.md · §9, §15 and §16 — the reference separates them, but
-   upsampling and dilation exist to serve dense prediction, so they belong
-   here. All shapes executed in scratchpad/dl/d28.py.
+   All shapes executed in scratchpad/dl/d28.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "2.8",

@@ -1,14 +1,13 @@
 /* ============================================================================
    LESSON 4.2 — Input Embeddings and Positional Encoding
-   Mirrors 02_Transformers_InDepth.md · §3. The sinusoidal construction is
-   built and probed — constant norm, unique per position, and the rotation
-   property verified. The reference's sqrt(d_model) rationale does not hold
-   as stated (§06). Deep dive in 4.9 (scratchpad/nlp/n42b.py).
+   The sinusoidal construction is built and probed — constant norm, unique
+   per position, and the rotation property verified. Deep dive in 4.9
+   (scratchpad/nlp/n42b.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.2",
 
-  lede: "**`PE[pos + 7]` is the same rotation of `PE[pos]` at position 0, 10 and 50 — to four decimal places.** That is not a coincidence of the numbers; it is the entire reason the sinusoidal construction was chosen. Because shifting by a fixed offset is a fixed rotation regardless of where you start, a model can learn \"attend seven tokens back\" as one operation rather than memorising it separately at every position. This lesson builds the encoding, verifies that property, and checks the reference's justification for the `sqrt(d_model)` scaling — which turns out not to say what it means to say.",
+  lede: "**`PE[pos + 7]` is the same rotation of `PE[pos]` at position 0, 10 and 50 — to four decimal places.** That is not a coincidence of the numbers; it is the entire reason the sinusoidal construction was chosen. Because shifting by a fixed offset is a fixed rotation regardless of where you start, a model can learn \"attend seven tokens back\" as one operation rather than memorising it separately at every position. This lesson builds the encoding, verifies that property, and checks the justification for the `sqrt(d_model)` scaling — which turns out not to say what it means to say.",
 
   objectives: [
     "Construct sinusoidal positional encoding and read its frequency structure",
@@ -127,7 +126,7 @@ EC.receiveLesson({
     "Every position is unique (max off-diagonal cosine 0.973055) and every position vector has the same norm, 16.0000 at d_model 512.",
     "Cosine similarity decays smoothly with distance, 0.9731 at k=1 down to 0.3374 at k=199, so attention can read distance from position alone.",
     "PE[pos+k] is the same rotation of PE[pos] at every pos — verified at positions 0, 10 and 50 — which is the inductive bias toward relative position and the seed of RoPE.",
-    "The reference's sqrt(d_model) rationale is backwards: unscaled, embeddings are 1.41x the PE, and scaling pushes that to 31.88x, making position quiet.",
+    "The sqrt(d_model) rationale is backwards: unscaled, embeddings are 1.41x the PE, and scaling pushes that to 31.88x, making position quiet.",
     "BERT and GPT-2 both use learned positional tables with no scaling, at token-to-position ratios of 2.66 and 1.17.",
     "Sinusoidal encoding is defined at any position, but a model trained short still degrades when run long — well-defined input is not useful behaviour."
   ],
@@ -141,7 +140,7 @@ EC.receiveLesson({
       options: ["Its values are bounded in [-1, 1]", "PE[pos+k] is the same fixed rotation of PE[pos] regardless of pos, so 'k tokens back' is one learnable transformation", "Every position has a unique vector", "It requires no parameters"],
       answer: 1,
       why: "Verified at positions 0, 10 and 50 with k=7: the rotation by omega times k predicted the actual values to four decimal places in every case. A head implementing 'attend seven back' learns one transformation rather than a separate rule per absolute position. RoPE takes this further by applying the rotation inside attention." },
-    { stem: "Does the reference's justification for the sqrt(d_model) multiplier hold?",
+    { stem: "Does the justification for the sqrt(d_model) multiplier hold?",
       options: ["Yes, PE would dominate without it", "No — unscaled, embeddings are already 1.41x the PE in RMS; scaling pushes it to 31.88x, making position a small perturbation", "No, the multiplier has no effect", "Only for learned embeddings"],
       answer: 1,
       why: "Measured token RMS 0.9963 against PE RMS 0.7071 at standard initialisation. The scaling is a real design choice — the embedding matrix is tied to the output projection in the original paper — but its effect is to make position quiet relative to content, which is the reverse of the stated rationale." },

@@ -215,7 +215,7 @@ for inp in (226, 500, 1000, 1842, 3200, 8000):
     print("%-14d %12.6f %12.6f %9.1f%%" % (inp, old, new, 100.0 * (new / old - 1)))
 print()
 print("at the 1,842-token prompt measured in module 10, a +44% verbosity rise is")
-print("a +%.1f%% cost rise -- half the reference's figure."
+print("a +%.1f%% cost rise -- half the figure."
       % (100.0 * ((1842 / 1e6 * 3 + 445 / 1e6 * 15) /
                   (1842 / 1e6 * 3 + 310 / 1e6 * 15) - 1)))
 print()
@@ -250,7 +250,7 @@ input tokens       cost old     cost new   increase
 8000               0.028650     0.030675       7.1%
 
 at the 1,842-token prompt measured in module 10, a +44% verbosity rise is
-a +19.9% cost rise -- half the reference's figure.
+a +19.9% cost rise -- half the figure.
 
 the LESSON survives and the number is input-dependent: verbosity creep
 matters most when the output is a large share of the bill, which 11.7

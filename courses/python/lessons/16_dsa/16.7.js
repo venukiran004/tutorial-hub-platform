@@ -1,13 +1,11 @@
 /* ============================================================================
    LESSON 16.7 — Algorithm Paradigms: Choosing the Approach
-   Mirrors 27_DSA/Types_of_Algorithms.md: brute force, divide and conquer,
-   greedy, dynamic programming, backtracking, randomised, the family
-   overview, and the decision guide. Every timing was measured here.
+   Every timing was measured here.
    ========================================================================= */
 EC.receiveLesson({
   id: "16.7",
 
-  lede: "**Before a data structure, before a trick, an algorithm question is a question about which paradigm fits: try everything, split and merge, take the locally best step, reuse subproblem answers, build and prune, or accept randomness.** Lessons 16.1–16.6 taught the structures and the classic problems; this one is the reference's map of the six paradigms, each with its signature problem, its cost, and the moment it fails — greedy giving 3 coins where 2 suffice, brute force on N-Queens needing sixteen million boards where pruning needs a few thousand — and the decision guide that picks between them from the shape of the problem.",
+  lede: "**Before a data structure, before a trick, an algorithm question is a question about which paradigm fits: try everything, split and merge, take the locally best step, reuse subproblem answers, build and prune, or accept randomness.** Lessons 16.1–16.6 taught the structures and the classic problems; this one is the map of the six paradigms, each with its signature problem, its cost, and the moment it fails — greedy giving 3 coins where 2 suffice, brute force on N-Queens needing sixteen million boards where pruning needs a few thousand — and the decision guide that picks between them from the shape of the problem.",
 
   objectives: [
     "Define brute force, divide and conquer, greedy, dynamic programming, backtracking and randomised algorithms, each with a canonical example and its complexity",
@@ -146,7 +144,7 @@ print(4 * inside / N)      # 3.1372 — within 0.15 % of π; the error shrinks l
 
     { t: "h2", n: "08", text: "The families", id: "families" },
 
-    { t: "diagram", kind: "compare", title: "The algorithm families the paradigms produced", caption: "Lessons 16.1–16.6 covered the structures and the problems; this is the reference's map of the named algorithms by family, with the complexity you should be able to state for each.", columns: [
+    { t: "diagram", kind: "compare", title: "The algorithm families the paradigms produced", caption: "Lessons 16.1–16.6 covered the structures and the problems; this is the map of the named algorithms by family, with the complexity you should be able to state for each.", columns: [
       { title: "Searching", tone: "accent", items: ["linear O(n)", "binary O(log n) on sorted data", "BFS / DFS on graphs"] },
       { title: "Sorting", tone: "good", items: ["bubble, insertion O(n²)", "merge, quick O(n log n)", "Timsort — sorted()"] },
       { title: "Graphs", tone: "warn", items: ["BFS shortest unweighted path", "DFS, topological sort", "Dijkstra O((V+E) log V)"] },
@@ -155,7 +153,7 @@ print(4 * inside / N)      # 3.1372 — within 0.15 % of π; the error shrinks l
 
     { t: "h2", n: "09", text: "The decision guide", id: "decide" },
 
-    { t: "diagram", kind: "steps", title: "Which paradigm, from the shape of the problem", caption: "The reference's decision tree, read top to bottom; the first match usually holds. On a genuinely hard problem the progression is brute force → notice repeated work → memoise or prove a greedy rule → tune constants.", items: [
+    { t: "diagram", kind: "steps", title: "Which paradigm, from the shape of the problem", caption: "The decision tree, read top to bottom; the first match usually holds. On a genuinely hard problem the progression is brute force → notice repeated work → memoise or prove a greedy rule → tune constants.", items: [
       { label: "Input tiny, or you need a correctness baseline?", desc: "brute force — try everything, keep it as the oracle", tone: "accent" },
       { label: "Splits into similar independent pieces you can merge?", desc: "divide and conquer — merge sort, binary search", tone: "good" },
       { label: "Asks for an optimum and a local best is provably global?", desc: "greedy — fast, but prove it", tone: "warn" },
@@ -210,7 +208,7 @@ print(max_subarray([-2, 1, -3, 4, -1, 2, 1, -5, 4]))   # 6`,
     { stem: "A problem asks for the maximum value achievable under constraints, and a small example shows the greedy answer is not optimal. What is the next paradigm to try?",
       options: ["Randomised", "Divide and conquer", "Dynamic programming", "Linear search"],
       answer: 2,
-      why: "An optimisation problem where greedy fails is the signature of overlapping subproblems: the best answer depends on comparing the best answers to smaller versions. Define the state, write the recurrence, memoise or tabulate — the reference's decision guide sends you there directly." }
+      why: "An optimisation problem where greedy fails is the signature of overlapping subproblems: the best answer depends on comparing the best answers to smaller versions. Define the state, write the recurrence, memoise or tabulate — the decision guide sends you there directly." }
   ] },
 
   interview: { title: "Interview", sub: "The paradigm questions", questions: [

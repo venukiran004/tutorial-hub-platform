@@ -1,9 +1,5 @@
 /* ============================================================================
    LESSON 1.14 — Neural ODEs
-   Mirrors 01_Neural_Network_Fundamentals.md · §20. The reference's ODEFunc is
-   run as written under torchdiffeq: the ResNet/Euler identity, the NFE counts
-   per solver, the adjoint's gradients against direct backpropagation, and
-   reverse integration (scratchpad/dl/d114.py, torch 2.10 + torchdiffeq).
    ========================================================================= */
 EC.receiveLesson({
   id: "1.14",
@@ -123,7 +119,7 @@ euler_out = odeint(f, h0, torch.linspace(0, 8, 9), method="euler")[-1]` },
       body: [{ t: "p", text: "`torchdiffeq` is the original implementation and what this lesson runs — `odeint` for direct backpropagation, `odeint_adjoint` for the constant-memory version, with the same signature so switching is one import. `diffrax` is the JAX equivalent and adds SDEs; `torchdyn` wraps torchdiffeq in a higher-level API with flows and neural SDEs built in. Note the calling convention that catches everyone: `forward(self, t, h)` takes **time first**." }] },
 
     { t: "exercise", kind: "practice", title: "Make depth adaptive, then watch it grow", difficulty: "advanced", minutes: 34,
-      prompt: "Build the reference's NeuralODEClassifier on a small dataset. Log NFE per batch throughout training and plot it. Then: (a) compare final accuracy against a ResNet with the same parameter count in f, (b) train once with odeint and once with odeint_adjoint, recording peak memory and wall-clock time, (c) tighten rtol from 1e-3 to 1e-7 and see what happens to both NFE and accuracy.",
+      prompt: "Build the NeuralODEClassifier on a small dataset. Log NFE per batch throughout training and plot it. Then: (a) compare final accuracy against a ResNet with the same parameter count in f, (b) train once with odeint and once with odeint_adjoint, recording peak memory and wall-clock time, (c) tighten rtol from 1e-3 to 1e-7 and see what happens to both NFE and accuracy.",
       hints: [
         "Reset the NFE counter at the start of each forward pass, not each epoch.",
         "Expect NFE to climb as training progresses — that is the phenomenon, not a bug.",

@@ -1,13 +1,12 @@
 /* ============================================================================
    LESSON 2.11 — CNNs in PyTorch and Keras
-   Mirrors 02_CNNs.md · §12 and §13. The reference's CustomCNN is built, its
-   shapes traced and its training loop run (scratchpad/dl/d211.py). The AMP
-   API it uses is deprecated in torch 2.10 — noted, with the replacement.
+   The AMP API it uses is deprecated in torch 2.10 — noted, with the
+   replacement.
    ========================================================================= */
 EC.receiveLesson({
   id: "2.11",
 
-  lede: "**Everything in this module so far now assembles into one model class.** The reference's `CustomCNN` is the standard anatomy from lesson 2.2 — conv, batch norm, ReLU, pool, channels doubling as space halves — capped by the global average pooling head from lesson 2.3. This lesson builds it, traces every shape through it, runs the training loop end to end, and flags the one API in the reference that has since been deprecated.",
+  lede: "**Everything in this module so far now assembles into one model class.** The `CustomCNN` is the standard anatomy from lesson 2.2 — conv, batch norm, ReLU, pool, channels doubling as space halves — capped by the global average pooling head from lesson 2.3. This lesson builds it, traces every shape through it, runs the training loop end to end, and flags the one API in the reference that has since been deprecated.",
 
   objectives: [
     "Build a production-shaped CNN as an `nn.Module` and trace its shapes",
@@ -108,7 +107,7 @@ for epoch in range(epochs):
         scheduler.step()`,
       caption: "`scaler.unscale_` before clipping is mandatory: clip a scaled gradient and you are clipping at the wrong threshold by whatever the scale factor happens to be." },
 
-    { t: "callout", kind: "trap", title: "The reference's AMP import is deprecated",
+    { t: "callout", kind: "trap", title: "The AMP import is deprecated",
       body: [{ t: "p", text: "`from torch.cuda.amp import autocast, GradScaler` emits a `FutureWarning` in torch 2.10 and is scheduled for removal. The replacement is `torch.amp.autocast('cuda')` and `torch.amp.GradScaler('cuda')`, which take the device type as an argument and so work uniformly across CUDA, CPU and other backends. The old call still runs today, so this fails as a warning rather than an error — worth fixing before it becomes one." }] },
 
     { t: "out", text: `  step 0: loss 2.6164  grad-norm before clip 6.948  lr 9.94e-04

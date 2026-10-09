@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 1.7 — Named Entity Recognition
-   Mirrors 01_NLP_Notes.md · §7. The tagging schemes are decoded, the
-   span-against-token evaluation gap is measured, and the CRF's forbidden
-   transitions are enumerated (scratchpad/nlp/n17.py).
+   The tagging schemes are decoded, the span-against-token evaluation gap is
+   measured, and the CRF's forbidden transitions are enumerated
+   (scratchpad/nlp/n17.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "1.7",

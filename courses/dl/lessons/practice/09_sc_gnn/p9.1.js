@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P9.1 — Graph Neural Networks · 1
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/05_Deep_Learning/Practice/08_Graph_Neural_Networks.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p9.1",

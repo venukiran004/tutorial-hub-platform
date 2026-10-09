@@ -1,6 +1,5 @@
 /* ============================================================================
    LESSON 6.4 — Self-Supervised Speech and the Three ASR Architectures
-   Mirrors 08_Audio_Speech_Processing.md · §6, §7.
    ========================================================================= */
 EC.receiveLesson({
   id: "6.4",

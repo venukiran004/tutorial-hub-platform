@@ -222,7 +222,7 @@ EC.receiveLesson({
 </svg>` },
 
     { t: "exercise", kind: "analyse", title: "Decompose the drop, then test whether your conclusion survives", difficulty: "advanced", minutes: 40,
-      body: "Reproduce the reference's decomposition, then compute it under all six orderings and the Shapley attribution. Decide which of the reference's conclusions survive the order-dependence and which do not, and write the version you would actually put in an incident report.",
+      body: "Reproduce the decomposition, then compute it under all six orderings and the Shapley attribution. Decide which of the conclusions survive the order-dependence and which do not, and write the version you would actually put in an incident report.",
       requirements: [
         "The sequential decomposition, reproducing the reference",
         "All six orderings, with each factor's contribution",
@@ -459,7 +459,7 @@ cohort B at 21% +/- 8.9 pts = [12.1%, 29.9%] --
     "**Faithfulness was unchanged at 0.95 while context recall halved to 0.48**, so the generator was working perfectly.",
     "**Which means the prompt was never the problem**, and the prompt is the knob everyone reaches for first.",
     "**A sequential decomposition is order-dependent**: the mix contribution ranges from +0.0 to \u221222.5 points.",
-    "**The Shapley attribution is \u221211.3 / \u22127.5 / \u221216.3**, not the reference's \u22123.0 / \u22126.0 / \u221226.0.",
+    "**The Shapley attribution is \u221211.3 / \u22127.5 / \u221216.3**, not the \u22123.0 / \u22126.0 / \u221226.0.",
     "**In one ordering the mix contributes exactly zero** \u2014 proof that the mix effect is entirely an interaction with the accuracy gap.",
     "**Even \u201ccohort B is the incident\u201d is order-dependent**: largest in 3 of 6 orderings, though Shapley supports it.",
     "**So lead with the measured facts**: 0.86 \u2192 0.21, 10% \u2192 40%, 1,284 PDFs skipped \u2014 none of those need attribution.",

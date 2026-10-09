@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P1.1 — NLP and Text Processing Programs · 1
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/06_NLP_and_Transformers/Sample_Programs/Part_08_NLP_and_Text_Processing.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p1.1",

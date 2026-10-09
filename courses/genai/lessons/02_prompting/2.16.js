@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "2.16",
 
-  lede: "Prompt injection is the defining security problem of this field, and the defining property of it is that **it cannot be solved in the prompt**. A model has no boundary between instruction and data: everything in the context is text it may act on. This lesson implements the reference's own keyword filter and measures it — **3 of 10 attacks caught, 6 of 8 benign messages blocked, precision 0.33** — because the most useful thing to understand about this area is how badly the obvious defence performs.",
+  lede: "Prompt injection is the defining security problem of this field, and the defining property of it is that **it cannot be solved in the prompt**. A model has no boundary between instruction and data: everything in the context is text it may act on. This lesson implements the keyword filter and measures it — **3 of 10 attacks caught, 6 of 8 benign messages blocked, precision 0.33** — because the most useful thing to understand about this area is how badly the obvious defence performs.",
 
   objectives: [
     "Explain why prompt injection is structural rather than a bug to be fixed",
@@ -51,7 +51,7 @@ EC.receiveLesson({
 
     { t: "p", text: "The reference gives an input sanitiser, and it is the first thing almost everyone writes. It is worth implementing exactly as written and measuring on both populations — because a filter that is only tested against attacks looks fine." },
 
-    { t: "code", lang: "python", title: "g29.py — the reference's sanitiser, implemented", code: `DANGEROUS = ["ignore previous", "system:", "you are now", "forget your"]
+    { t: "code", lang: "python", title: "g29.py — the sanitiser, implemented", code: `DANGEROUS = ["ignore previous", "system:", "you are now", "forget your"]
 
 def sanitize(user_input):
     lower = user_input.lower()
@@ -92,7 +92,7 @@ def sanitize(user_input):
       ] },
 
     { t: "h2", n: "03", id: "layers", text: "The layered defence, and what each layer is worth",
-      sub: "The reference's six, honestly rated" },
+      sub: "The six, honestly rated" },
 
     { t: "table",
       head: ["Layer", "What it is worth", "Where"],
@@ -104,7 +104,7 @@ def sanitize(user_input):
         ["Output filtering for leaked instructions", "Catches the extraction case specifically", "11.14"],
         ["**Least privilege on tools**", "**The only structural one** — makes damage impossible rather than unlikely", "1.9, below"]
       ],
-      caption: "From 04_Prompt_Engineering.md's Q2, with the honest column added. Five of the six are probabilistic; one is not." },
+      caption: "From the Q2, with the honest column added. Five of the six are probabilistic; one is not." },
 
     { t: "p", text: "The ordering matters because effort distributes badly here. Teams spend weeks on the first row, which measured at 0.33 precision, and minutes on the last, which is the only one that converts a successful injection into a failed action." },
 
@@ -151,7 +151,7 @@ def sanitize(user_input):
       ],
       requirements: [
         "Assemble at least 10 attacks including paraphrases, encoding tricks and another language, plus at least 8 realistic benign messages",
-        "Evaluate the reference's keyword filter and report precision, recall and F1",
+        "Evaluate the keyword filter and report precision, recall and F1",
         "Try to improve it by adding phrases, and report what happens to precision",
         "Report the best F1 achievable by any keyword list over your attack set",
         "State what this implies about where the defence belongs"
@@ -217,12 +217,12 @@ best F1 0.67 at 10 phrases -- and the attack set is ten items I wrote`,
   takeaways: [
     "**Prompt injection is structural, not a bug.** A model has no parser separating instruction from data — the system prompt, retrieved documents and user input arrive as one token sequence.",
     "The analogy to SQL injection fails in the way that matters: parameterised queries close SQL injection completely, and **there is no parameterised equivalent here**.",
-    "Measured on the reference's own keyword sanitiser: **3 of 10 attacks caught, 6 of 8 benign messages blocked — precision 0.33, recall 0.30**. Leaky and annoying at the same time.",
+    "Measured on the keyword sanitiser: **3 of 10 attacks caught, 6 of 8 benign messages blocked — precision 0.33, recall 0.30**. Leaky and annoying at the same time.",
     "The misses were paraphrases, a **zero-width space inside a word**, and German. The false positives were ordinary support messages mentioning `system:` or `ignore previous`.",
-    "**Adding phrases can make it worse.** The first phrase alone scores precision 0.60; the reference's full four-phrase list scores **0.33**, because the three additions caught no new attack and blocked more benign messages.",
+    "**Adding phrases can make it worse.** The first phrase alone scores precision 0.60; the full four-phrase list scores **0.33**, because the three additions caught no new attack and blocked more benign messages.",
     "Tuning past that does help — F1 reaches 0.67 at ten phrases — but precision never exceeds 0.60, and that recall is **fitted to ten attacks I wrote**. A spam filter sees millions of real examples; an injection filter sees the ones you imagined (2.12’s overfitting, in a security setting).",
     "A filter at 0.57 precision is a reasonable **signal** and a terrible **gate** — log it, flag for review, feed a risk score.",
-    "Of the reference's six defence layers, **five are probabilistic and one is not**: least privilege on tools is the only one that makes damage impossible rather than unlikely.",
+    "Of the six defence layers, **five are probabilistic and one is not**: least privilege on tools is the only one that makes damage impossible rather than unlikely.",
     "**Indirect injection is the harder half** — instructions arriving in retrieved content, where the user is a victim rather than the attacker, and you cannot reject every document containing imperative sentences.",
     "The serious configuration is **untrusted content + a tool with side effects + a privileged service account**. Remove any one and severity collapses; the cheapest to remove is the third.",
     "**Evaluate a security filter on legitimate traffic.** A test set consisting only of attacks will always say it is fine — and one real deployment blocked 23% of its support queue."
@@ -236,7 +236,7 @@ best F1 0.67 at 10 phrases -- and the attack set is ten items I wrote`,
         answer: 1,
         why: "Parameterised queries work because a database parses structure separately from values, so a value cannot become structure. A model infers which parts of its context are instructions from how the text reads, and the attacker writes some of that text — there is no channel to separate. Non-determinism is a different property and would not help if it were absent. Attack variety makes filtering hard but is a consequence rather than the cause, and this is not a feature providers are withholding." },
 
-      { stem: "The reference's keyword filter measures precision 0.33 and recall 0.30. What does that mean in practice?",
+      { stem: "The keyword filter measures precision 0.33 and recall 0.30. What does that mean in practice?",
         options: ["It catches most attacks but annoys some users", "It misses most attacks and blocks most legitimate messages — bad in both directions at once", "It is well calibrated for a first attempt", "Precision is low because the attack set is small"],
         answer: 1,
         why: "Recall 0.30 means seven of ten attacks pass through; precision 0.33 means two of every three blocks are a legitimate message — measured at six of eight benign inputs blocked. The expectation is a filter that trades annoyance for safety, and this one gets neither. The phrases are ordinary English, so attackers have unlimited paraphrases and users have unlimited innocent uses, and adding phrases worsens precision faster than it improves recall." },
@@ -249,13 +249,13 @@ best F1 0.67 at 10 phrases -- and the attack set is ten items I wrote`,
       { stem: "Which defence layer makes a successful injection harmless rather than less likely?",
         options: ["Delimiter isolation", "An input classifier", "Least privilege and authorising as the requesting user", "Output filtering for leaked instructions"],
         answer: 2,
-        why: "If tools authorise as the user making the request rather than as the agent, a model talked into asking for something simply gets a refusal from your code — the attack succeeds at the text level and achieves nothing, which requires no recognition of the attack at all. The other three are probabilistic: delimiters and classifiers raise the bar without a guarantee, and output filtering catches the extraction case specifically. Five of the reference's six layers are of that kind; this is the one that is not." }
+        why: "If tools authorise as the user making the request rather than as the agent, a model talked into asking for something simply gets a refusal from your code — the attack succeeds at the text level and achieves nothing, which requires no recognition of the attack at all. The other three are probabilistic: delimiters and classifiers raise the bar without a guarantee, and output filtering catches the extraction case specifically. Five of the six layers are of that kind; this is the one that is not." }
     ]
   },
 
   interview: {
     title: "In an interview",
-    sub: "The reference's Q2. The answer that lands says the defence is not in the prompt, and has a number for why the obvious one fails.",
+    sub: "The Q2. The answer that lands says the defence is not in the prompt, and has a number for why the obvious one fails.",
     questions: [
       { level: "core",
         q: "How do you defend against prompt injection?",

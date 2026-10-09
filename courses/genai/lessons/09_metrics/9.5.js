@@ -112,7 +112,7 @@ EC.receiveLesson({
 </svg>` },
 
     { t: "exercise", kind: "build", title: "Score a paraphrase and an inversion with all three", difficulty: "core", minutes: 30,
-      body: "Score the same candidates with BLEU, chrF and BERTScore: an exact copy, a correct paraphrase, and a factually inverted sentence that reuses the reference's words. Report all three metrics for each and say which ones rank correctness above overlap.",
+      body: "Score the same candidates with BLEU, chrF and BERTScore: an exact copy, a correct paraphrase, and a factually inverted sentence that reuses the usual phrasing. Report all three metrics for each and say which ones rank correctness above overlap.",
       requirements: [
         "At least three candidates including a correct paraphrase and an inversion",
         "Report BLEU, chrF and BERTScore for each",
@@ -245,7 +245,7 @@ print("backbone roberta-large, rescaled with baseline = True")`,
           "The greedy matching assigned the swapped tokens incorrectly"
         ],
         answer: 1,
-        why: "BERTScore does genuinely improve on BLEU for the paraphrase, lifting it off the floor from 0.0000 \u2014 that part works. But no similarity function can rank an inverted sentence below a paraphrase, because the distinction is not one of similarity: the inversion reuses the reference's content words and differs only in attachment. Catching it requires a faithfulness check or a verifier rather than a better embedding." }
+        why: "BERTScore does genuinely improve on BLEU for the paraphrase, lifting it off the floor from 0.0000 \u2014 that part works. But no similarity function can rank an inverted sentence below a paraphrase, because the distinction is not one of similarity: the inversion reuses the content words and differs only in attachment. Catching it requires a faithfulness check or a verifier rather than a better embedding." }
     ]
   },
 

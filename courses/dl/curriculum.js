@@ -1,32 +1,8 @@
 /* ============================================================================
    DEEP LEARNING — CURRICULUM
    ----------------------------------------------------------------------------
-   The course mirrors the reference folder tutorial-hub/05_Deep_Learning file
-   for file and section for section, in the reference's own order, rewritten
-   in this site's voice. Nothing is added to the topic list and nothing in
-   the reference is left out:
-
-     LEARN track (one module per reference file, one lesson per section or
-     per run of short adjacent sections; each file's interview section is
-     folded into the interview block of the lesson it belongs to)
-
-       M1  01_Neural_Network_Fundamentals.md   §1–20 → 1.1–1.14, §21 → interview blocks
-       M2  02_CNNs.md                          §1–18 → 2.1–2.13, §19 → interview blocks
-       M3  03_Sequence_Models.md               §1–18 → 3.1–3.13, §19 → interview blocks
-       M4  rnn-lstm-gru-transformer-guide.md   §1–11 → 4.1–4.10, §12 → interview blocks
-       M5  Architectures/{ann,cnn,rnn,lstm,gru}.md → 5.1–5.5
-       M6  08_Audio_Speech_Processing.md       §1–18 → 6.1–6.9, §19 → interview blocks
-       M7  30_DL_Training_Instability.md       → 7.1–7.4
-
-     PRACTICE track (Practice/00–10, imported by .build/import-banks.py:
-       67 PyTorch programs run with their output, 1,000 scenarios)
-
-     INTERVIEW track (00_Interview_Bank: 200 questions + Glassdoor, imported)
-
-   Every program in the learn track is the reference's own, run on this
-   machine (CPU, PyTorch 2.10, TensorFlow 2.21); the printed output beneath
-   a program is what it printed. Where a program could not run here — a
-   missing library, a dataset that is not local — the lesson says so.
+   Where a program could not run here — a missing library, a dataset that is
+   not local — the lesson says so.
    ========================================================================= */
 (function () {
   EC.defineCourse({
@@ -47,7 +23,7 @@
     modules: [
 
       /* ================================================================
-         M1 · 01_Neural_Network_Fundamentals.md
+  M1 ·
          ================================================================ */
       {
         id: "fundamentals",
@@ -57,7 +33,6 @@
         title: "Neural Network Fundamentals",
         blurb: "The perceptron and the MLP, activations, forward propagation and the losses, backpropagation derived in full, the optimisers from SGD to AdamW, initialisation, regularisation, the normalisations, gradients that vanish or explode, schedules — then the network built in NumPy, Keras and PyTorch, debugged, and taken as far as Neural ODEs.",
         outcome: "You can derive and run a neural network from the neuron up, name what each training technique changes, and explain it in an interview.",
-        source: "01_Neural_Network_Fundamentals.md",
         lessons: [
           { id: "1.1", title: "Neural Network Architecture", difficulty: "foundation", minutes: 30, tier: "must",
             summary: "The perceptron and why it cannot learn XOR, the multi-layer perceptron, the universal approximation theorem and what it does not promise, and counting parameters.",
@@ -87,10 +62,10 @@
             summary: "Step decay, exponential, cosine annealing, warm-up, one-cycle and reduce-on-plateau — the schedule shapes, the PyTorch schedulers, and the rule for picking one.",
             keywords: ["learning rate", "schedule", "cosine", "warmup", "one cycle", "step decay", "plateau"] },
           { id: "1.10", title: "A Neural Network from Scratch in NumPy", difficulty: "core", minutes: 36, tier: "must",
-            summary: "The reference's NumPy network — forward pass, cross-entropy, backward pass and the update — run on XOR, with what it printed.",
+            summary: "The NumPy network — forward pass, cross-entropy, backward pass and the update — run on XOR, with what it printed.",
             keywords: ["numpy", "from scratch", "forward", "backward", "xor", "training loop"] },
           { id: "1.11", title: "The Same Network in Keras and PyTorch", difficulty: "core", minutes: 34, tier: "must",
-            summary: "The reference's Keras model and PyTorch module side by side: the layers, the compile and fit calls, the explicit PyTorch training loop, and what each printed when run.",
+            summary: "The Keras model and PyTorch module side by side: the layers, the compile and fit calls, the explicit PyTorch training loop, and what each printed when run.",
             keywords: ["keras", "pytorch", "nn.module", "training loop", "compile", "fit", "dataloader"] },
           { id: "1.12", title: "Debugging Neural Networks and Gradient Clipping", difficulty: "core", minutes: 30, tier: "must",
             summary: "The symptom-to-cause table for a run that will not train, the overfit-one-batch test, gradient monitoring, and gradient clipping by norm and by value.",
@@ -105,7 +80,7 @@
       },
 
       /* ================================================================
-         M2 · 02_CNNs.md
+  M2 ·
          ================================================================ */
       {
         id: "cnns",
@@ -115,7 +90,6 @@
         title: "Convolutional Neural Networks",
         blurb: "The convolution operation and its arithmetic, pooling and receptive fields, the architectures from LeNet to ConvNeXt, the innovations that made them work, transfer learning and augmentation, detection, segmentation and Grad-CAM — then a CNN in NumPy, PyTorch and Keras, deployed, plus transposed and dilated convolutions and GANs in overview.",
         outcome: "You can compute any convolution's output size and parameter count, explain each landmark architecture's contribution, and build, train and explain a CNN.",
-        source: "02_CNNs.md",
         lessons: [
           { id: "2.1", title: "The Convolution Operation", difficulty: "foundation", minutes: 32, tier: "must",
             summary: "What a convolution computes, the output-size formula worked on numbers, the parameter count, and why local connectivity and weight sharing suit images.",
@@ -145,10 +119,10 @@
             summary: "Visual explanation from the gradients of a class score with respect to the last convolutional feature maps — the formula, the hooks, the heat map.",
             keywords: ["grad-cam", "explainability", "saliency", "hooks", "feature map", "heatmap"] },
           { id: "2.10", title: "A CNN from Scratch in NumPy", difficulty: "core", minutes: 34, tier: "must",
-            summary: "The reference's NumPy convolution, max pool and their backward passes, run on a small input with the shapes and values checked.",
+            summary: "The NumPy convolution, max pool and their backward passes, run on a small input with the shapes and values checked.",
             keywords: ["numpy", "convolution forward", "convolution backward", "max pool", "from scratch"] },
           { id: "2.11", title: "CNNs in PyTorch and Keras", difficulty: "core", minutes: 34, tier: "must",
-            summary: "The reference's PyTorch CNN with its training loop and the Keras equivalent, run on the data at hand, with the printed results.",
+            summary: "The PyTorch CNN with its training loop and the Keras equivalent, run on the data at hand, with the printed results.",
             keywords: ["pytorch", "keras", "conv2d", "training loop", "cifar", "mnist", "model"] },
           { id: "2.12", title: "Production Deployment", difficulty: "advanced", minutes: 24, tier: "should",
             summary: "TorchScript and ONNX export, quantisation for inference, and the serving considerations the reference lists.",
@@ -160,7 +134,7 @@
       },
 
       /* ================================================================
-         M3 · 03_Sequence_Models.md
+  M3 ·
          ================================================================ */
       {
         id: "sequence",
@@ -170,7 +144,6 @@
         title: "Sequence Models: RNN, LSTM, GRU",
         blurb: "The vanilla RNN and its task shapes, BPTT and the vanishing gradient, the LSTM gate by gate, the GRU and the comparison, bidirectional and stacked models, seq2seq, attention from Bahdanau to self-attention, beam search, CTC, padding and packing — then RNN and LSTM in NumPy, four PyTorch tasks, Keras, RNN versus transformer, and word embeddings.",
         outcome: "You can write the recurrence, the gates and the attention scores, run each in NumPy and PyTorch, and choose the sequence model for a task.",
-        source: "03_Sequence_Models.md",
         lessons: [
           { id: "3.1", title: "The Vanilla RNN", difficulty: "foundation", minutes: 28, tier: "must",
             summary: "The recurrence h_t = tanh(W_hh h_{t-1} + W_xh x_t + b), the unrolled view, the parameter count, and the one-to-many, many-to-one and many-to-many shapes.",
@@ -200,13 +173,13 @@
             summary: "Variable-length batches in PyTorch: pad_sequence, pack_padded_sequence, the mask in the loss, and the mistakes that silently train on padding.",
             keywords: ["padding", "packing", "pack_padded_sequence", "mask", "variable length", "batch"] },
           { id: "3.10", title: "An RNN from Scratch in NumPy", difficulty: "core", minutes: 34, tier: "must",
-            summary: "The reference's NumPy RNN with forward pass, BPTT and gradient clipping, run and checked.",
+            summary: "The NumPy RNN with forward pass, BPTT and gradient clipping, run and checked.",
             keywords: ["numpy", "rnn", "bptt", "from scratch", "character model"] },
           { id: "3.11", title: "An LSTM from Scratch in NumPy", difficulty: "advanced", minutes: 34, tier: "must",
-            summary: "The reference's NumPy LSTM cell — gates, cell state and the backward pass through them — run with shapes and values checked.",
+            summary: "The NumPy LSTM cell — gates, cell state and the backward pass through them — run with shapes and values checked.",
             keywords: ["numpy", "lstm", "gates", "backward", "from scratch"] },
           { id: "3.12", title: "PyTorch Implementations: Four Tasks", difficulty: "core", minutes: 40, tier: "must",
-            summary: "The reference's sentiment classifier (many-to-one), sequence labeller (many-to-many), time-series forecaster and seq2seq with attention, each run.",
+            summary: "The sentiment classifier (many-to-one), sequence labeller (many-to-many), time-series forecaster and seq2seq with attention, each run.",
             keywords: ["pytorch", "sentiment", "ner", "time series", "seq2seq", "attention", "nn.lstm"] },
           { id: "3.13", title: "Keras, RNN versus Transformer, and Word Embeddings", difficulty: "core", minutes: 30, tier: "should",
             summary: "The Keras recurrent models, the head-to-head that explains why transformers replaced RNNs for most tasks, and word embeddings from one-hot to Word2Vec.",
@@ -215,7 +188,7 @@
       },
 
       /* ================================================================
-         M4 · rnn-lstm-gru-transformer-guide.md
+  M4 ·
          ================================================================ */
       {
         id: "guide",
@@ -223,9 +196,8 @@
         dir: "04_guide",
         phase: "Phase 3 · The guide and its projects",
         title: "ANN to Transformer: The Guide and Its Projects",
-        blurb: "The reference's end-to-end guide: the sequential-data problem, the ANN, RNN, LSTM and GRU each with a real-time example, the transformer from motivation to multi-head attention, the comparison — and four projects run end to end: house prices, sentiment with all four models, stock prices, machine translation.",
+        blurb: "The end-to-end guide: the sequential-data problem, the ANN, RNN, LSTM and GRU each with a real-time example, the transformer from motivation to multi-head attention, the comparison — and four projects run end to end: house prices, sentiment with all four models, stock prices, machine translation.",
         outcome: "You can build each of the five model families in PyTorch on a real task and say, from the comparison, which one a new task needs.",
-        source: "rnn-lstm-gru-transformer-guide.md",
         lessons: [
           { id: "4.1", title: "The Sequential-Data Problem and the ANN", difficulty: "foundation", minutes: 34, tier: "must",
             summary: "Why sequences need their own architectures, then the ANN as the guide presents it — neuron, activations, forward pass, loss, backprop, optimiser — in PyTorch.",
@@ -269,9 +241,8 @@
         dir: "05_architectures",
         phase: "Phase 3 · The guide and its projects",
         title: "The Five Architectures, Worked by Hand",
-        blurb: "The reference's one-file-per-architecture deep dives — ANN, CNN, RNN, LSTM, GRU — each in the same shape: TL;DR, definition, intuition, the maths with a worked numeric calculation, variants, failure modes and fixes, complexity, hyperparameters, PyTorch, comparison, interview drill and mistakes.",
+        blurb: "The one-file-per-architecture deep dives — ANN, CNN, RNN, LSTM, GRU — each in the same shape: TL;DR, definition, intuition, the maths with a worked numeric calculation, variants, failure modes and fixes, complexity, hyperparameters, PyTorch, comparison, interview drill and mistakes.",
         outcome: "You can carry a forward pass, a backward step and a gate update through by hand for each architecture and say what breaks it.",
-        source: "Architectures/",
         lessons: [
           { id: "5.1", title: "ANN: Perceptron to MLP, by Hand", difficulty: "core", minutes: 36, tier: "must",
             summary: "One backprop step worked with numbers on a two-layer network, the universal approximation theorem, the failure modes, and the interview drill.",
@@ -292,7 +263,7 @@
       },
 
       /* ================================================================
-         M6 · 08_Audio_Speech_Processing.md
+  M6 ·
          ================================================================ */
       {
         id: "audio",
@@ -302,22 +273,21 @@
         title: "Audio and Speech Processing",
         blurb: "From the sampled signal to frames, the mel scale and MFCCs, the whole front end in forty lines, self-supervised speech, the three ASR architectures, CTC worked and programmed, RNN-T and streaming, Whisper, decoding and language models, text to speech, VAD and diarisation, evaluation, robustness, deployment and pitfalls.",
         outcome: "You can turn a waveform into features, explain and run CTC, choose an ASR architecture, and evaluate a speech system with WER, CER, MOS and RTF.",
-        source: "08_Audio_Speech_Processing.md",
         lessons: [
           { id: "6.1", title: "The Signal, and From Waveform to Frames", difficulty: "foundation", minutes: 30, tier: "must",
-            summary: "Sampling, Nyquist and bit depth, then framing, windowing and the short-time Fourier transform — with the reference's code run on a synthetic tone.",
+            summary: "Sampling, Nyquist and bit depth, then framing, windowing and the short-time Fourier transform — with the code run on a synthetic tone.",
             keywords: ["sampling", "nyquist", "bit depth", "frame", "window", "stft", "spectrogram"] },
           { id: "6.2", title: "The Mel Scale and MFCCs", difficulty: "core", minutes: 28, tier: "must",
             summary: "Why the mel scale is not linear, the filterbank, log-mel features, and MFCCs with the DCT — and whether a modern model still needs them.",
             keywords: ["mel", "filterbank", "log-mel", "mfcc", "dct", "features"] },
           { id: "6.3", title: "The Whole Front End in Forty Lines", difficulty: "core", minutes: 30, tier: "must",
-            summary: "The reference's complete feature pipeline — load, resample, STFT, mel, log, normalise — run, with the shapes at every stage.",
+            summary: "The complete feature pipeline — load, resample, STFT, mel, log, normalise — run, with the shapes at every stage.",
             keywords: ["front end", "torchaudio", "librosa", "pipeline", "resample", "normalise"] },
           { id: "6.4", title: "Self-Supervised Speech and the Three ASR Architectures", difficulty: "advanced", minutes: 28, tier: "should",
             summary: "wav2vec 2.0 and HuBERT — what they pretrain on and how — then CTC, attention encoder–decoder and RNN-T compared as the three ways to build a recogniser.",
             keywords: ["wav2vec", "hubert", "self-supervised", "asr", "ctc", "encoder-decoder", "rnn-t"] },
           { id: "6.5", title: "CTC, Worked and Programmed", difficulty: "advanced", minutes: 40, tier: "must",
-            summary: "The alignment lattice, the collapse rule and the forward algorithm worked on a tiny example by hand, then the reference's CTC program run in PyTorch.",
+            summary: "The alignment lattice, the collapse rule and the forward algorithm worked on a tiny example by hand, then the CTC program run in PyTorch.",
             keywords: ["ctc", "blank", "alignment", "forward algorithm", "ctc loss", "greedy decoding"] },
           { id: "6.6", title: "RNN-T, Streaming, and Whisper", difficulty: "advanced", minutes: 30, tier: "should",
             summary: "The transducer's joint network and why it streams, latency versus accuracy, and Whisper's architecture, training data and use.",
@@ -326,7 +296,7 @@
             summary: "Beam search with a language model and biasing, the TTS pipeline from text to mel to vocoder, and the small models around a speech system.",
             keywords: ["decoding", "language model", "biasing", "tts", "vocoder", "vad", "wake word", "diarization"] },
           { id: "6.8", title: "Evaluation: WER, CER, MOS and RTF", difficulty: "core", minutes: 28, tier: "must",
-            summary: "Word and character error rate computed by edit distance on an example, mean opinion score, real-time factor, and the reference's evaluation code run.",
+            summary: "Word and character error rate computed by edit distance on an example, mean opinion score, real-time factor, and the evaluation code run.",
             keywords: ["wer", "cer", "edit distance", "mos", "rtf", "evaluation"] },
           { id: "6.9", title: "Robustness, Deployment and Pitfalls", difficulty: "advanced", minutes: 26, tier: "should",
             summary: "Noise and augmentation, on-device constraints and quantisation, and the pitfalls the reference collects from real speech systems.",
@@ -335,7 +305,7 @@
       },
 
       /* ================================================================
-         M7 · 30_DL_Training_Instability.md
+  M7 ·
          ================================================================ */
       {
         id: "instability",
@@ -345,13 +315,12 @@
         title: "Training Instability in Production",
         blurb: "The production issue the reference documents: why runs go unstable, the failure-mode map, NaN and Inf losses, exploding and vanishing gradients, loss spikes and divergence, dead ReLUs, mixed-precision pitfalls, distributed failures — with the monitoring, the decision flow and the checklist.",
         outcome: "You can name the cause of an unstable run from its symptoms and apply the fix the reference prescribes, in the order it prescribes it.",
-        source: "30_DL_Training_Instability.md",
         lessons: [
           { id: "7.1", title: "Why Training Goes Unstable, and the Failure-Mode Map", difficulty: "core", minutes: 26, tier: "must",
             summary: "The definitions, the intuition for why deep training is a dynamical system that can leave its stable region, and the map from symptom to failure mode.",
             keywords: ["instability", "failure mode", "symptom", "dynamics", "learning rate"] },
           { id: "7.2", title: "NaN and Inf Losses, and Exploding or Vanishing Gradients", difficulty: "core", minutes: 30, tier: "must",
-            summary: "Where a NaN comes from and how to trap it, then the gradient norms that explode or vanish, with the reference's diagnostics and fixes run.",
+            summary: "Where a NaN comes from and how to trap it, then the gradient norms that explode or vanish, with the diagnostics and fixes run.",
             keywords: ["nan", "inf", "anomaly detection", "gradient norm", "clipping", "log of zero"] },
           { id: "7.3", title: "Loss Spikes, Divergence, Dead ReLUs and Mixed-Precision Pitfalls", difficulty: "advanced", minutes: 30, tier: "must",
             summary: "Spikes and divergence and their causes, dead neurons measured and revived, and the float16 overflow and underflow traps with loss scaling.",
@@ -372,7 +341,6 @@
         title: "PyTorch Programs",
         blurb: "Sixty-seven short PyTorch programs — models, training loops, layers and techniques — each run, with what it printed.",
         outcome: "You can write the PyTorch for any standard layer, loss or training trick from memory.",
-        source: "Practice/00_PyTorch_Programs.md",
         lessons: [
           { id: "p1.1", title: "PyTorch Programs · 1", difficulty: "core", minutes: 50, tier: "should",
             summary: "25 programs with hidden answers.",
@@ -391,7 +359,6 @@
         title: "Fundamentals and Optimisation",
         blurb: "Scenario questions on the neuron, the gradient, the optimiser and regularisation.",
         outcome: "You can answer a fundamentals question with the mechanism, not the slogan.",
-        source: "Practice/01_Fundamentals_and_Optimization.md",
         lessons: [
           { id: "p2.1", title: "Fundamentals and Optimisation · 1", difficulty: "foundation", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -413,7 +380,6 @@
         title: "CNNs and Computer Vision",
         blurb: "Convolution arithmetic, the architectures, detection, segmentation and the vision applications.",
         outcome: "You can reason about receptive fields, parameter counts and architecture choices under questioning.",
-        source: "Practice/02_CNNs_and_Computer_Vision.md",
         lessons: [
           { id: "p3.1", title: "CNNs and Computer Vision · 1", difficulty: "core", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -441,7 +407,6 @@
         title: "Sequence Models and NLP",
         blurb: "RNNs, LSTMs, GRUs, embeddings, language models and the NLP tasks built on them.",
         outcome: "You can explain gating, BPTT and sequence decoding from the equations.",
-        source: "Practice/03_Sequence_Models_and_NLP.md",
         lessons: [
           { id: "p4.1", title: "Sequence Models and NLP · 1", difficulty: "core", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -463,7 +428,6 @@
         title: "Transformers and Attention",
         blurb: "Self-attention, the transformer blocks, BERT and GPT, and the modern efficiency tricks.",
         outcome: "You can derive scaled dot-product attention and say why each transformer component exists.",
-        source: "Practice/04_Transformers_and_Attention.md",
         lessons: [
           { id: "p5.1", title: "Transformers and Attention · 1", difficulty: "advanced", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -479,7 +443,6 @@
         title: "Generative Models",
         blurb: "GANs and their failure modes, autoencoders and VAEs, diffusion, and how generation is evaluated.",
         outcome: "You can compare the generative families and diagnose a collapsing GAN.",
-        source: "Practice/05_Generative_Models.md",
         lessons: [
           { id: "p6.1", title: "Generative Models · 1", difficulty: "advanced", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -507,7 +470,6 @@
         title: "Transfer, Self-Supervised and Meta-Learning",
         blurb: "Fine-tuning strategy, parameter-efficient adaptation, contrastive pretraining, few-shot and meta-learning.",
         outcome: "You can plan a transfer-learning approach for a small dataset and defend it.",
-        source: "Practice/06_Transfer_SelfSupervised_MetaLearning.md",
         lessons: [
           { id: "p7.1", title: "Transfer, Self-Supervised and Meta-Learning · 1", difficulty: "advanced", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -535,7 +497,6 @@
         title: "Reinforcement Learning",
         blurb: "Value and policy methods, DQN to PPO, exploration, reward design and RLHF.",
         outcome: "You can explain the RL loop and the difference between on- and off-policy learning.",
-        source: "Practice/07_Reinforcement_Learning.md",
         lessons: [
           { id: "p8.1", title: "Reinforcement Learning · 1", difficulty: "advanced", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -551,7 +512,6 @@
         title: "Graph Neural Networks",
         blurb: "Message passing, GCN, GraphSAGE and GAT, over-smoothing and the graph tasks.",
         outcome: "You can describe a GNN layer as an aggregate-then-update step and name its limits.",
-        source: "Practice/08_Graph_Neural_Networks.md",
         lessons: [
           { id: "p9.1", title: "Graph Neural Networks · 1", difficulty: "advanced", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -567,7 +527,6 @@
         title: "Compression, Deployment and Production",
         blurb: "Pruning, quantisation, distillation, serving, NAS and the production questions.",
         outcome: "You can shrink a model for a latency budget and explain what was traded away.",
-        source: "Practice/09_Compression_Deployment_and_Production.md",
         lessons: [
           { id: "p10.1", title: "Compression, Deployment and Production · 1", difficulty: "advanced", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -595,7 +554,6 @@
         title: "Advanced and Edge Cases",
         blurb: "The behaviours that surprise: dying ReLUs, double descent, grokking, checkerboards and forgotten eval().",
         outcome: "You recognise the odd training curve and know the experiment that explains it.",
-        source: "Practice/10_Advanced_Edge_Cases.md",
         lessons: [
           { id: "p11.1", title: "Advanced and Edge Cases · 1", difficulty: "expert", minutes: 50, tier: "should",
             summary: "25 scenarios with hidden answers.",
@@ -611,7 +569,6 @@
         title: "Deep Learning Interview Bank",
         blurb: "Two hundred senior-level questions across fundamentals, CNNs, sequence models, transformers, training, architectures, regularisation, NLP and production.",
         outcome: "You can answer a senior deep-learning interview question with the derivation.",
-        source: "00_Interview_Bank/01_DL_Interview.md",
         lessons: [
           { id: "i1.1", title: "Fundamentals", difficulty: "advanced", minutes: 40, tier: "should",
             summary: "20 questions with hidden answers, from deep learning interview bank.",
@@ -651,7 +608,6 @@
         title: "Glassdoor AI Engineer",
         blurb: "Real AI Engineer interview questions reported on Glassdoor — algorithms, ML, deep learning, NLP and GenAI, vision, system design, ethics, data and behavioural.",
         outcome: "You have seen the question before it is asked.",
-        source: "00_Interview_Bank/02_Glassdoor_AI_Engineer.md",
         lessons: [
           { id: "i2.1", title: "Algorithms & Coding · Machine Learning Fundamentals · Deep Learning & Neural Networks", difficulty: "advanced", minutes: 20, tier: "should",
             summary: "9 questions with hidden answers, from glassdoor ai engineer.",

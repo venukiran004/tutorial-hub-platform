@@ -1,8 +1,5 @@
 /* ============================================================================
    LESSON 3.5 — GRU, and Choosing Between the Gated Cells
-   Mirrors 03_Sequence_Models.md · §5 and §6. Equations verified against
-   nn.GRU; the reference's "GRU trains faster" claim is benchmarked and does
-   NOT hold on this setup (scratchpad/dl/d35.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.5",
@@ -85,7 +82,7 @@ EC.receiveLesson({
     RNN : median    13.2 ms   GRU : median    43.3 ms   LSTM: median    26.4 ms` },
 
     { t: "callout", kind: "warn", title: "The reference says GRU trains faster. On this setup it is 1.6–3.1× slower.",
-      body: [{ t: "p", text: "Across all three shapes, on CPU with torch 2.10, the GRU is **slower than the LSTM** despite having 25 % fewer parameters — by 2.0×, 3.1× and 1.6× respectively. This is not a FLOP fact but an implementation one: PyTorch's LSTM has a well-optimised fused CPU kernel and the GRU does not get the same treatment. The reference's claim is correct about arithmetic and wrong about wall-clock here, and the picture may differ on CUDA with cuDNN where both are fused. The general lesson is the one from lesson 2.4's depthwise convolutions: parameter and FLOP counts are a poor predictor of latency, and if speed is your reason for choosing an architecture you must benchmark it on your actual hardware." }] },
+      body: [{ t: "p", text: "Across all three shapes, on CPU with torch 2.10, the GRU is **slower than the LSTM** despite having 25 % fewer parameters — by 2.0×, 3.1× and 1.6× respectively. This is not a FLOP fact but an implementation one: PyTorch's LSTM has a well-optimised fused CPU kernel and the GRU does not get the same treatment. The claim is correct about arithmetic and wrong about wall-clock here, and the picture may differ on CUDA with cuDNN where both are fused. The general lesson is the one from lesson 2.4's depthwise convolutions: parameter and FLOP counts are a poor predictor of latency, and if speed is your reason for choosing an architecture you must benchmark it on your actual hardware." }] },
 
     { t: "h2", n: "05", text: "Choosing", id: "choosing" },
 
@@ -130,7 +127,7 @@ EC.receiveLesson({
   takeaways: [
     "Four equations: update gate, reset gate, candidate, and a convex combination for the new state.",
     "A hand implementation matches `nn.GRU` to 2.98e-08; PyTorch packs gates as r, z, n.",
-    "PyTorch's `z` means *keep the old state* — the reverse of the reference's convention.",
+    "PyTorch's `z` means *keep the old state* — the reverse of the convention.",
     "Coupling forget and input makes the memory budget zero-sum; an LSTM can keep and add simultaneously.",
     "`∂h_t/∂h_{t−1} = z_t` exactly — the same additive gradient path as the LSTM's forget gate.",
     "GRU has exactly 75 % of the LSTM's parameters, confirmed at three sizes.",

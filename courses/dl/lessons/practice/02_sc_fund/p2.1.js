@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P2.1 — Fundamentals and Optimisation · 1
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/05_Deep_Learning/Practice/01_Fundamentals_and_Optimization.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p2.1",

@@ -247,7 +247,6 @@
         title: "Mathematics and Statistics Scenarios",
         blurb: "Fifty situations where the mathematics decides the answer — A/B tests that mislead, models that will not converge, distributions that break an assumption.",
         outcome: "You can say what a number means, and what it does not, before anyone ships a decision on it.",
-        source: "Practice/01_Math_and_Stats_Scenarios.md",
         lessons: [
           { id: "p1.1", title: "A/B Testing & Experimentation", difficulty: "advanced", minutes: 20, tier: "should",
             summary: "10 questions with hidden answers, from mathematics and statistics scenarios.",
@@ -272,7 +271,6 @@
         title: "Mathematics and Statistics Interview Bank",
         blurb: "One hundred questions across linear algebra, calculus and optimisation, probability, statistics, A/B testing and the applied mathematics of ML.",
         outcome: "You can answer a maths or statistics question with the definition, the formula and the reason it matters.",
-        source: "00_Interview_Bank/01_Math_and_Stats_Interview.md",
         lessons: [
           { id: "i1.1", title: "Section 1: Linear Algebra", difficulty: "advanced", minutes: 30, tier: "should",
             summary: "15 questions with hidden answers, from mathematics and statistics interview bank.",
@@ -300,7 +298,6 @@
         title: "Deep Dive: The Questions Asked Most",
         blurb: "The eleven questions the reference singles out at the end of the statistics chapters — population versus sample, Bayes, MLE, the CLT, designing an A/B test, and reading a confidence interval against a p-value.",
         outcome: "You can give the long answer to the questions that come up in almost every interview.",
-        source: "02_Descriptive_Stats_and_Probability.md + 03_Inference_and_Testing.md",
         lessons: [
           { id: "i2.1", title: "Deep Dive", difficulty: "advanced", minutes: 22, tier: "should",
             summary: "11 questions with hidden answers, from deep dive: the questions asked most.",

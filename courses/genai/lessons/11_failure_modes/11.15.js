@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "pipeline", text: "The pipeline",
       sub: "Input, model, output" },
 
-    { t: "code", lang: "python", title: "The reference's guarded chat", code: `def guarded_chat(user_input, context, llm, classify, canary):
+    { t: "code", lang: "python", title: "The guarded chat", code: `def guarded_chat(user_input, context, llm, classify, canary):
     # ---- INPUT ----
     scan = scan_input(user_input)
     if scan["flagged"]:
@@ -149,7 +149,7 @@ OUTPUT guardrails, fast gate (35 ms, GPU or a small model):
 </svg>` },
 
     { t: "exercise", kind: "build", title: "Budget the pipeline, then find what dominates", difficulty: "advanced", minutes: 35,
-      body: "Build the latency budget for both stages, sequential and parallel, with the measured faithfulness gate and with a hypothetical fast one. Then reorder the output stage to fail fast and measure what that saves on blocked responses. Finally, close the two gaps in the reference's pipeline.",
+      body: "Build the latency budget for both stages, sequential and parallel, with the measured faithfulness gate and with a hypothetical fast one. Then reorder the output stage to fail fast and measure what that saves on blocked responses. Finally, close the two gaps in the pipeline.",
       requirements: [
         "Per-check latencies with free and model-based checks separated",
         "Sequential and fully-parallel totals per stage",
@@ -165,7 +165,7 @@ BASE_REQ = 3134.0             # the RAG request from 10.5
 CHECKS_IN = [
     ("jailbreak regex scan",  0.2,  False),
     ("PII redaction regex",   0.3,  False),
-    ("context scan (ADDED)",  0.2,  False),   # the gap in the reference's pipeline
+    ("context scan (ADDED)",  0.2,  False),   # the gap in the pipeline
     ("scope classifier",     28.0,  True),
     ("injection classifier", 31.0,  True),
 ]
@@ -248,7 +248,7 @@ print("AND THE TWO GAPS CLOSED")
 print("=" * 74)
 print("1. scan and wrap the CONTEXT, not just the user input:")
 print("     scan_input(user_input)  ->  scan_input(user_input + context)")
-print("     cost: %.1f ms. the reference's pipeline omits this entirely," % 0.2)
+print("     cost: %.1f ms. the pipeline omits this entirely," % 0.2)
 print("     which leaves the indirect-injection hole it warns about elsewhere.")
 print()
 print("2. wrap BOTH as data, not instructions:")
@@ -321,7 +321,7 @@ AND THE TWO GAPS CLOSED
 ==========================================================================
 1. scan and wrap the CONTEXT, not just the user input:
      scan_input(user_input)  ->  scan_input(user_input + context)
-     cost: 0.2 ms. the reference's pipeline omits this entirely,
+     cost: 0.2 ms. the pipeline omits this entirely,
      which leaves the indirect-injection hole it warns about elsewhere.
 
 2. wrap BOTH as data, not instructions:

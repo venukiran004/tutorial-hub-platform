@@ -1,8 +1,6 @@
 /* ============================================================================
    PRACTICE P1.2 — PyTorch Programs · 2
    ----------------------------------------------------------------------------
-   Imported from tutorial-hub/05_Deep_Learning/Practice/00_PyTorch_Programs.md by .build/import-banks.py —
-   edit the importer, not this file.
    ========================================================================= */
 EC.receiveLesson({
  "id": "p1.2",
