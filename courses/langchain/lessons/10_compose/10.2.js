@@ -50,6 +50,15 @@ EC.receiveLesson({
       code: 'return [Send("write", {...}) for s in state["sections"][:MAX_WORKERS]]',
       caption: "One line, and the difference between a bounded cost and an unbounded one." },
     { t: "p", text: "9.3 made the same point from the pattern side: the cap belongs in the orchestrator rather than in the worker, because the worker has no idea how many siblings it has. Truncating is the crude version; the considered version rejects the plan and asks for a shorter one, which costs a model call and keeps the failure visible." },
+    { t: "diagram", kind: "flow", title: "Send decides the worker count at run time", cols: 4,
+      caption: "8.6's statically wired parallel edges have a count fixed when you write the graph. `Send` reads it from **state**, which is what makes map-reduce possible — and each worker receives its own payload rather than the whole state.",
+      nodes: [
+        { id: "p", label: "plan", sub: "state decides N", tone: "accent" },
+        { id: "w1", label: "worker", sub: "its own payload", tone: "good" },
+        { id: "w2", label: "worker", sub: "… N of them", tone: "good" },
+        { id: "g", label: "gather", sub: "a reducer collects them", tone: "violet" }
+      ],
+      edges: [["p", "w1", "Send"], ["w1", "w2"], ["w2", "g"], ["p", "g", "", "dashed"]] },
     { t: "exercise", kind: "build", title: "Map-reduce with Send",
       difficulty: "advanced", minutes: 34,
       body: "Build a graph where a planning node produces a list and a router fans out one worker per entry with Send, and show the worker count changing with the input. Then fan out from a state containing a key the workers should not see, and report which keys a worker actually received. Remove the reducer from the gathered key and report what happens. Check whether the result order is guaranteed. Finally show that nothing bounds the fan-out and say where the cap belongs.",

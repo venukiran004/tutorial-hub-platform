@@ -46,6 +46,15 @@ EC.receiveLesson({
       { t: "p", text: "Real meaning 12.1's structural reasons: different **permissions**, different **owners**, or a context budget that genuinely does not fit. A team that exists because the agent list was getting long is 10.1's \u201cthis graph is getting long\u201d one level up \u2014 and that was the weakest reason to nest anything." },
       { t: "p", text: "Beyond one level the structure is mirroring an org chart, and 12.1 already noted that an org chart solves human bandwidth and accountability problems that do not apply here. Importing the shape imports the cost without the reason." }
     ] },
+    { t: "diagram", kind: "tree", title: "A team is a subgraph with agents inside",
+      caption: "10.1's subgraph, which the top-level supervisor treats as one node — so the arithmetic **compounds**: a two-level hierarchy pays two coordination turns per unit of work. And the team's internal decisions are one superstep of the parent, so the default trace hides them.",
+      root: { label: "top supervisor", sub: "coordination turn #1", tone: "crit", children: [
+        { label: "research team", sub: "its own supervisor — turn #2", tone: "warn", children: [
+          { label: "searcher", sub: "the actual work", tone: "good" },
+          { label: "reader", sub: "the actual work", tone: "good" } ] },
+        { label: "writing team", sub: "its own supervisor — turn #2", tone: "warn", children: [
+          { label: "drafter", sub: "the actual work", tone: "good" } ] }
+      ] } },
     { t: "exercise", kind: "build", title: "Build a hierarchy and find what it hides",
       difficulty: "advanced", minutes: 32,
       body: "Build a team as a compiled graph with its own supervisor and worker, then use it as a node in a top-level graph with its own supervisor. Count the coordination calls at each level. Show where the state crossed the boundary and explain what would happen to a team-internal key. Then run it with a checkpointer and show what the parent's history does and does not contain. Finally compute what each level of hierarchy costs and state the depth at which it stops paying.",

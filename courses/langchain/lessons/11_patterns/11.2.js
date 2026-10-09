@@ -46,6 +46,13 @@ EC.receiveLesson({
       { t: "p", text: "Every limitation in the left column is the reason for a guarantee in the right. A router cannot loop, so it cannot run away \u2014 that is not a mitigation, it is the absence of the mechanism." },
       { t: "p", text: "Which is 9.3's rule in its most useful instance: use the least agentic pattern that works. A router gives the model a decision and keeps every property an agent gives up." }
     ] },
+    { t: "diagram", kind: "tree", title: "The cheapest pattern that still lets the model decide",
+      caption: "One classification and one branch — and it keeps every property an agent gives up: a fixed call count, a readable path, a testable decision. The ceiling is **one** failure, and it is the one you must design for.",
+      root: { label: "classify once", sub: "a Literal over known labels", tone: "accent", children: [
+        { label: "billing", sub: "a specialist prompt", tone: "good", edge: "matched" },
+        { label: "technical", sub: "a specialist prompt", tone: "good", edge: "matched" },
+        { label: "default", sub: "the model returned something unmapped", tone: "crit", edge: "MUST exist" }
+      ] } },
     { t: "exercise", kind: "build", title: "Build a router and break its classification",
       difficulty: "core", minutes: 28,
       body: "Build a router that classifies a request with a model and branches to one handler per category, and confirm the cost is one model call. Then have the model return a category that is not in the path map and report what happens. Add a default branch and explain where the validation belongs. Describe the structured-output version and what it changes about the failure. Finally list what a router cannot do and the guarantee each limitation buys.",

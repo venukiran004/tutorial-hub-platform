@@ -48,6 +48,16 @@ EC.receiveLesson({
       { t: "p", text: "And a router would have decided that once, for free. So the test for a supervisor is whether there is something you want to **check or record between steps** \u2014 because that is what the extra model call per turn is buying." },
       { t: "p", text: "12.3's swarm is the comparison that makes this concrete: it removes the coordination turn entirely, and with it the place where any of those four things could live." }
     ] },
+    { t: "diagram", kind: "matrix", title: "A supervisor is a router with memory",
+      caption: "11.2's router classifies once and branches once; a supervisor decides **who acts next on every turn**, seeing everything so far. Which means 11.2's classification failure now compounds with the turn count rather than happening once.",
+      cols: ["a router (11.2)", "a supervisor"],
+      rows: ["how often it decides", "what it sees", "an unmapped output", "the default branch"],
+      cells: [
+        [{ text: "once", tone: "good" }, { text: "every turn", tone: "warn" }],
+        [{ text: "the question", tone: "good" }, { text: "the whole history", tone: "warn" }],
+        [{ text: "one wrong answer", tone: "warn" }, { text: "compounds with turns", tone: "crit" }],
+        [{ text: "required", tone: "good" }, { text: "required, and more so", tone: "crit" }]
+      ] },
     { t: "exercise", kind: "build", title: "Build a supervisor and break it twice",
       difficulty: "core", minutes: 32,
       body: "Build a supervisor loop that routes between two workers until it decides to finish, counting its turns. Show what the workers shared and explain why the name field matters. Then make the supervisor name a worker that does not exist, with and without a default branch, and compare. Then make it never finish and bound it with a turn budget and a give-up node. Finally say what actually makes a supervisor worth its coordination cost.",

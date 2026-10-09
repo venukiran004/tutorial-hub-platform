@@ -50,6 +50,15 @@ EC.receiveLesson({
       "When a stage helps one class and harms another, treat it as a routing decision rather than a pipeline stage."
     ] },
     { t: "p", text: "Step four is the one this lesson adds. `hybrid` genuinely helped before reranking existed and contributed nothing after, so a stage's value is not a property of the stage \u2014 it is a property of the pipeline it sits in. A pipeline assembled from a blog post is a pipeline nobody has ablated." },
+    { t: "diagram", kind: "timeline", title: "Three results I did not expect",
+      caption: "Assembled in order and measured at every step. Reranking on top of dense made natural queries **worse** — 0.964 down to 0.845 — which is the opposite of the advertised effect, and why every stage has to be measured on **your** queries rather than adopted.",
+      span: 1.0, tick: 0.2, unit: "MRR on the 14 natural queries",
+      lanes: [
+        { label: "dense alone", bars: [[0, 0.964, "0.964 — the baseline", "good"]] },
+        { label: "+ rerank", bars: [[0, 0.845, "0.845 — WORSE", "crit"]] },
+        { label: "+ hybrid fusion", bars: [[0, 0.88, "helps keyword only", "warn"]] },
+        { label: "+ MMR", bars: [[0, 0.88, "coverage, not relevance", "warn"]] }
+      ] },
     { t: "exercise", kind: "build", title: "Assemble and ablate the full pipeline",
       difficulty: "advanced", minutes: 34,
       body: "Assemble a retrieval pipeline of hybrid retrieval, rank fusion, MMR diversity and cross-encoder reranking, in cost order. Then ablate it: measure dense alone, hybrid alone, dense plus rerank, hybrid plus rerank, and the full pipeline, reporting both query classes and latency per query. Identify a stage that adds nothing, a stage that helps one class and harms another, and explain why the full pipeline is faster than a shorter one.",

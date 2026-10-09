@@ -44,6 +44,16 @@ EC.receiveLesson({
       { t: "p", text: "And 7.4 measured exactly where self-judging fails \u2014 a model scoring a claim its own document contradicts gave it **+5.293**, strongly positive. So a self-judged reflexion loop can write lessons from failures it misdiagnosed, which is worse than not reflecting at all." }
     ] },
     { t: "p", text: "Where reflexion is genuinely applicable is where the judge is **external and cheap**: tests pass or fail, a schema validates or does not, an API returns 200 or 400. Those are the settings where the pattern's benchmark results come from, and the resemblance to a production task with a fuzzy quality bar is superficial." },
+    { t: "diagram", kind: "matrix", title: "Reflexion is reflection plus memory ACROSS attempts",
+      caption: "So the mechanism is the **Store** (9.6) rather than thread state (9.5) — because the memory has to outlive the conversation or there is nothing new here. That one choice is the whole difference between the two patterns.",
+      cols: ["reflection (11.4)", "reflexion"],
+      rows: ["the critique lives in", "survives the thread?", "helps the NEXT task?", "the extra cost"],
+      cells: [
+        [{ text: "the message history", tone: "warn" }, { text: "the Store (9.6)", tone: "good" }],
+        [false, true],
+        [{ text: "no", tone: "crit" }, { text: "yes — that is the point", tone: "good" }],
+        [{ text: "2 calls per round", tone: "warn" }, { text: "+ a write and a read", tone: "warn" }]
+      ] },
     { t: "exercise", kind: "build", title: "Build reflexion with a real store",
       difficulty: "advanced", minutes: 34,
       body: "Build an attempt loop that recalls lessons from a store, solves with them in the prompt, judges the result, and on failure asks the model to write a lesson which it stores. Run it on a task that fails first time and show the lesson being written and used. Then run a different task with that lesson present and show it passing first time. Explain why a lesson is overfitted by construction, and say what reflexion requires to work at all.",

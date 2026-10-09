@@ -49,6 +49,16 @@ EC.receiveLesson({
       { t: "p", text: "Every key in the schema is a field shared by every node, so a key added for one node's convenience is visible to all of them \u2014 and so is a key added for debugging." },
       { t: "p", text: "That is a real coupling problem rather than a tidiness one: there is nothing in a node's signature saying which keys it reads, so the dependency graph between nodes is invisible. 8.4 is about getting the public surface back under control, and 8.5 has the discipline that makes the dependencies greppable." }
     ] },
+    { t: "diagram", kind: "matrix", title: "What the runtime actually validates: almost nothing",
+      caption: "The schema is a **contract between nodes**, not a validator. An unknown input key is accepted and filtered out; a wrong type raises from the node body rather than at the boundary, so the traceback points at your code instead of at the caller who sent it.",
+      cols: ["what happens", "where you find out"],
+      rows: ["a key not in the schema", "a wrong type", "a missing key", "an extra key from a node"],
+      cells: [
+        [{ text: "accepted, then filtered out", tone: "crit" }, { text: "nowhere — silent", tone: "crit" }],
+        [{ text: "TypeError", tone: "warn" }, { text: "the node body, not the edge", tone: "warn" }],
+        [{ text: "KeyError in the node", tone: "warn" }, { text: "at run time", tone: "warn" }],
+        [{ text: "silently discarded", tone: "crit" }, { text: "nowhere — silent", tone: "crit" }]
+      ] },
     { t: "exercise", kind: "build", title: "Find out what the schema enforces",
       difficulty: "core", minutes: 32,
       body: "Build the minimum viable graph with a TypedDict schema and confirm that a node returns a partial update. Then probe what the runtime validates: an input key not in the schema, a wrong type, a missing key, and a node returning an undeclared key. Repeat the probes with a Pydantic schema and note what changes in the node body. Finally explain why every schema key is effectively public.",

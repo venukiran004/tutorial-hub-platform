@@ -62,6 +62,13 @@ EC.receiveLesson({
       { t: "p", text: "This is the underused one. It catches trimming bugs, missing system prompts and lost tool results \u2014 none of which change the final answer in a scripted test, **because the script does not read its input**." },
       { t: "p", text: "Which is the one weakness of the scripted-model approach, and the assertion that closes it. 9.1 used exactly this to show the message list growing from 1 to 3 messages; the same inspection in a test asserts that the history reaching the model is what you intended." }
     ] },
+    { t: "diagram", kind: "layers", title: "Three layers, divided by what only the runtime does",
+      caption: "Nodes and routers are plain functions, so they test as a dict in and a dict out — cheap, and covering most of the logic. Reserve the expensive layers for what **only** the runtime can show you: reducers merging, and interrupts resuming.",
+      items: [
+        { label: "nodes and routers", sub: "a dict in, a dict out — no runtime, nothing to mock", tone: "good", side: "most tests" },
+        { label: "a compiled graph", sub: "reducers, supersteps, routing — what only the runtime does", tone: "warn", side: "some" },
+        { label: "with a checkpointer", sub: "interrupts, resume, time travel", tone: "crit", side: "a few" }
+      ] },
     { t: "exercise", kind: "build", title: "Build the three test layers",
       difficulty: "core", minutes: 32,
       body: "Test a node and a router as plain functions. Then demonstrate three failures that only a graph test catches: a node whose returned key has a typo, a key with no reducer written twice, and routing through both branches. Run two stateful tests against a shared saver and show the leak when a thread is re-invoked. Say what makes agent tests possible, and list what to assert \u2014 including the assertion most suites omit.",

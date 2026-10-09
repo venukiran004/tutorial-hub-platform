@@ -67,6 +67,14 @@ EC.receiveLesson({
       { t: "p", text: "The instinct when prompting for a summary is to ask what the thing *is*. What retrieval needs is what the thing *says* \u2014 the entities, the numbers, and the associations between them, written as prose that a query can match." },
       { t: "p", text: "And read a sample of the generated summaries before indexing them. That is 5.2's rule applied one layer up: a summariser that \u201cworks\u201d can produce fluent descriptions that are useless for retrieval, and nothing downstream will tell you, because the asset will simply never be returned." }
     ] },
+    { t: "diagram", kind: "steps", title: "A table is the worst case for text extraction",
+      caption: "The extracted text is **syntactically fine and semantically destroyed**. *“What is the rate limit on Growth”* needs the association between `Growth` and `2400/min`, and row-major extraction separates them — so the document retrieves and cannot answer.",
+      items: [
+        { label: "the table in the source", desc: "Growth and 2400/min are in the same ROW — the association is spatial", tone: "good", code: "intact" },
+        { label: "row-major text extraction", desc: "produces valid text with the cells in reading order", tone: "warn", code: "lossy" },
+        { label: "the association is gone", desc: "Growth and 2400/min are now far apart in one long line", tone: "crit", code: "destroyed" },
+        { label: "so it retrieves and cannot answer", desc: "and the summary written at ingest sets the ceiling on everything after (7.8)", tone: "crit", code: "the ceiling" }
+      ] },
     { t: "exercise", kind: "analysis", title: "Compare the multimodal architectures",
       difficulty: "advanced", minutes: 32,
       body: "Take a table and show what naive row-major extraction does to it, identifying the specific association a question needs and explaining why the extracted text cannot carry it. Then compare the three multimodal RAG architectures on their trade-offs, and justify a production default on grounds other than accuracy. Finally show how the summarisation instruction changes retrievability, from a description of the asset to a statement of its values.",

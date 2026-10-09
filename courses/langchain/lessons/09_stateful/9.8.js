@@ -52,6 +52,14 @@ EC.receiveLesson({
       ["fragility", "breaks on a node rename", "breaks only if you change the node"]
     ] },
     { t: "p", text: "Use static for **debugging** and for a blanket *never act unattended* policy. Use dynamic for anything where the decision to ask is itself logic \u2014 which is most production approval, because approving everything is a workflow nobody sustains and approving nothing is not a gate." },
+    { t: "diagram", kind: "matrix", title: "A static breakpoint is configuration, not code",
+      caption: "`interrupt_before=[“execute”]` pauses with **no `interrupt()` call anywhere**, and you resume with `invoke(None)` rather than `Command(resume=…)`. Two mechanisms that look alike and take different resume calls.",
+      cols: ["where it is declared", "how you resume"],
+      rows: ["interrupt() in a node", "interrupt_before at compile"],
+      cells: [
+        [{ text: "in the node body", tone: "accent" }, { text: "Command(resume=value)", tone: "good" }],
+        [{ text: "in compile() — config", tone: "violet" }, { text: "invoke(None)", tone: "warn" }]
+      ] },
     { t: "exercise", kind: "build", title: "Build an approval gate",
       difficulty: "core", minutes: 30,
       body: "Add a static breakpoint before an acting node and resume from it, noting which resume form it takes. While paused, correct a value with update_state and confirm the action uses the corrected value \u2014 and note what the reducers did to the edit. Compare interrupt_before against interrupt_after and say which is right for approval and why. Then build a dynamic gate that only asks above a threshold, handling skip, approve and refuse in one node.",

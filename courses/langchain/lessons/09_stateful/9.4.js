@@ -54,6 +54,11 @@ EC.receiveLesson({
       { t: "p", text: "`compile()` without a checkpointer gives a graph with no persistence, and passing a `thread_id` to it is accepted and ignored. So you get a graph that looks conversational, is handed a thread id by its caller, and remembers nothing." },
       { t: "p", text: "The configuration is accepted, the behaviour is absent, and nothing reports the gap \u2014 which is 8.2's pattern exactly. And it hides the multi-user bugs in 9.5 during testing, because a system that remembers nothing cannot leak anything." }
     ] },
+    { t: "diagram", kind: "cells", title: "A two-node run wrote four checkpoints",
+      caption: "One per superstep, plus the input. Each carries a `next` field, which is what makes a checkpoint a **program counter** rather than just data — and the cost is 8.4's warning with a storage bill attached, because each one holds the whole state.",
+      items: ["input", "after a", "after b", "done"],
+      highlight: [0, 3], tone: "accent", negative: false,
+      label: "next = ('a',) · ('b',) · () — the program counter" },
     { t: "exercise", kind: "build", title: "Find out what a checkpointer writes",
       difficulty: "core", minutes: 32,
       body: "Run a two-node graph with a checkpointer and list the full checkpoint history, reporting the step, the next field and the values of each. Say what makes resumption possible. Then put a large blob in the state, measure the bytes written per checkpoint, and compare the total against the same graph without it. Resume a thread and explain what happens to an accumulating key. Finally ask a fresh saver for an existing thread, and try passing a thread_id to a graph with no checkpointer.",

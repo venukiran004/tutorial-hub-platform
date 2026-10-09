@@ -58,6 +58,15 @@ EC.receiveLesson({
       { t: "p", text: "This is available without spending anything and without giving up any quality, which makes it the first thing to try rather than the last. The general rule is to order stages by cost per document ascending and let each narrow as much as it safely can." },
       { t: "p", text: "And it inverts the instinct that every stage adds latency. That holds only for stages that do not **narrow** \u2014 a selection stage can pay for itself many times over." }
     ] },
+    { t: "diagram", kind: "timeline", title: "Where the per-query budget actually goes",
+      caption: "Assembled from module 6's measurements, and it says something unexpected about where to start: the **cross-encoder dominates everything except generation**, and the query embedding is a *fixed* cost that caching cannot reduce per-document.",
+      span: 1450, tick: 250, unit: "milliseconds per query",
+      lanes: [
+        { label: "rerank 20 cands", bars: [[0, 1362, "~1362 ms — dominates", "crit"]] },
+        { label: "query embedding", bars: [[0, 104, "fixed", "warn"]] },
+        { label: "vector search", bars: [[0, 45, "", "good"]] },
+        { label: "BM25", bars: [[0, 20, "", "good"]] }
+      ] },
     { t: "exercise", kind: "analysis", title: "Build a latency budget and decide where to spend",
       difficulty: "advanced", minutes: 32,
       body: "Assemble a per-query latency budget from measured stage costs, noting what each scales with. Identify the dominant stage and the largest fixed cost. Order the available caches by what they save against what they risk. Separate precomputable work from work that must happen per query. Then list what degrades under load, in the order teams actually cut things, and say why none of it is visible on a latency dashboard.",

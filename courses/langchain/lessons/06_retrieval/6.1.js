@@ -47,6 +47,16 @@ EC.receiveLesson({
       { t: "p", text: "Nothing here is bounded to [0, 1], most values are strongly negative, and the top score for one well-answered question sits 7.7 points below the top score for another. A cross-encoder score is a **within-query ranking signal**, not a cross-query confidence." },
       { t: "p", text: "Any threshold picked from these numbers \u2014 \u201creject anything below zero\u201d \u2014 would discard a correct answer for the second question while accepting the first. 7.1 needs either per-query calibration or a relative signal such as the gap between rank 1 and rank 2, which this lesson shows is the more informative quantity anyway." }
     ] },
+    { t: "diagram", kind: "matrix", title: "Separate the one-off, the per-query and the per-document cost",
+      caption: "End-to-end timing gave only 29×, because the dense query is dominated by **104 ms of query encoding** — a fixed cost paid once per query. Separating the three kinds of cost gives the honest number: **37,088× per document**.",
+      cols: ["bi-encoder", "cross-encoder"],
+      rows: ["cost per document, once", "cost per query", "cost per candidate document", "so it can run over"],
+      cells: [
+        [{ text: "embed once, reuse forever", tone: "good" }, { text: "nothing to precompute", tone: "crit" }],
+        [{ text: "~104 ms encoding — fixed", tone: "warn" }, { text: "none", tone: "good" }],
+        [{ text: "a dot product", tone: "good" }, { text: "37,088x more", tone: "crit" }],
+        [{ text: "the whole corpus", tone: "good" }, { text: "a shortlist only", tone: "warn" }]
+      ] },
     { t: "exercise", kind: "analysis", title: "Measure the cost ratio honestly",
       difficulty: "core", minutes: 30,
       body: "Time the bi-encoder index build, the per-query query encoding, the vector search and cross-encoder scoring at two candidate counts. Separate the one-off, fixed-per-query and per-document costs, and compute the ratio that matters. Then score one query against the whole corpus with the cross-encoder, report the score distribution, and compare the top score against a second well-answered query.",

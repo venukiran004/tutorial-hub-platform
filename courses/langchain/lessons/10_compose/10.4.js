@@ -56,6 +56,17 @@ EC.receiveLesson({
       { t: "p", text: "It abandons the result without stopping the work, so an abandoned run keeps consuming the provider quota it was spending. The timeout belongs as close to the call as possible \u2014 configured on the HTTP client or SDK you pass to the model or the tool." },
       { t: "p", text: "And note the interaction with retries: a 30-second client timeout with `max_attempts=3` is a **90-second** worst case before the node fails, plus backoff. The per-node bound is the product, not the timeout \u2014 which is easy to miss when the two are configured in different places by different people." }
     ] },
+    { t: "diagram", kind: "matrix", title: "Why max_attempts=3 ran the body once",
+      caption: "A node with `RetryPolicy(max_attempts=3)` raised a `RuntimeError` and **did not retry**. `default_retry_on` is a **deny list** of deterministic programming errors — so the names mislead in both directions, and the predicate is worth writing rather than taking.",
+      cols: ["retried by default?", "should it be?"],
+      rows: ["ConnectionError", "TimeoutError", "RuntimeError", "AttributeError", "ValueError"],
+      cells: [
+        [{ text: "yes", tone: "good" }, { text: "yes", tone: "good" }],
+        [{ text: "NO — it is an OSError", tone: "crit" }, { text: "yes — very", tone: "crit" }],
+        [{ text: "no", tone: "warn" }, { text: "depends", tone: "warn" }],
+        [{ text: "YES", tone: "crit" }, { text: "no — it is a typo", tone: "crit" }],
+        [{ text: "no", tone: "good" }, { text: "no", tone: "good" }]
+      ] },
     { t: "exercise", kind: "build", title: "Find out what a retry policy retries",
       difficulty: "core", minutes: 30,
       body: "Attach a RetryPolicy to a node that fails twice then succeeds, and report whether it retried. Then determine what the default retry_on permits by probing a range of exception types, and explain the two surprising cases. Replace the predicate with an explicit tuple and confirm the retry fires. Show that an exhausted policy still raises. Demonstrate that a retried node re-runs from the top. Finally say where a timeout belongs and compute the per-node worst case.",

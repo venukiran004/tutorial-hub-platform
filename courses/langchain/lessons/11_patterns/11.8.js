@@ -69,6 +69,18 @@ EC.receiveLesson({
       { t: "p", text: "There is an effort asymmetry too: moving up the ladder is additive \u2014 a router plus a loop is an agent \u2014 while moving down means discovering which of the agent's freedoms were load-bearing, which requires measurements you did not take." }
     ] },
     { t: "p", text: "The practical corollary: when a stakeholder asks for an agent, ask for **twenty real examples** of what it must handle. Most of the time they resolve to a handful of intents with one operation each \u2014 which is a router \u2014 and saying so early is worth more than any individual pattern in this module." },
+    { t: "diagram", kind: "matrix", title: "The comparison, with the costs measured rather than asserted",
+      caption: "On the same question against a corpus containing the answer. Each row buys a freedom and pays a bound — and the right choice is the **lowest** row that can answer the question, which is almost never the bottom one.",
+      cols: ["model calls", "bounded?", "when it is right"],
+      rows: ["a single call", "a router", "one tool call", "ReAct", "plan-and-execute", "a full agent"],
+      cells: [
+        [{ text: "1", tone: "good" }, true, "the answer is in the prompt"],
+        [{ text: "2", tone: "good" }, true, "a known set of kinds"],
+        [{ text: "2", tone: "good" }, true, "one lookup answers it"],
+        [{ text: "3+", tone: "warn" }, false, "the next step depends"],
+        [{ text: "4", tone: "warn" }, { text: "mostly", tone: "warn" }, "independent steps"],
+        [{ text: "unbounded", tone: "crit" }, false, { text: "rarely", tone: "crit" }]
+      ] },
     { t: "exercise", kind: "analysis", title: "Compare the patterns on one task",
       difficulty: "core", minutes: 30,
       body: "Tabulate the patterns on model calls, number of paths, whether they can loop, and whether their cost is predictable. Give a decision tree based on where the control sits. Identify which patterns are modifiers rather than alternatives. Then list the guards every pattern needs, noting where each lives and how many the framework provides. Finally run the same task through several patterns, report the model calls, and state the rule with the reasoning behind it.",

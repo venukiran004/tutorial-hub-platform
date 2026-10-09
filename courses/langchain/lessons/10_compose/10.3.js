@@ -52,6 +52,15 @@ EC.receiveLesson({
       ["understanding the runtime", "`debug` \u2014 rarely what an application wants"]
     ] },
     { t: "p", text: "The one to internalise is `updates`. When a key has the wrong value it names the node that wrote it in one step, and when a key is missing it shows the absence directly \u2014 which between them cover the two commonest graph bugs in this course." },
+    { t: "diagram", kind: "layers", title: "Five streaming modes, by what each is FOR",
+      caption: "More useful than what each emits. `values` is the progress view and emits the input state **first**, so a two-node graph yields **three** chunks — a detail that becomes an off-by-one in a progress bar if you assume one chunk per node.",
+      items: [
+        { label: "values", sub: "the progress view — the whole state each superstep", tone: "accent", side: "3 chunks" },
+        { label: "updates", sub: "only what each node changed", tone: "good", side: "2 chunks" },
+        { label: "messages", sub: "token by token, for a UI", tone: "violet", side: "per token" },
+        { label: "custom", sub: "your own progress events from inside a node", tone: "teal", side: "yours" },
+        { label: "debug", sub: "tasks and checkpoints — verbose", tone: "warn", side: "verbose" }
+      ] },
     { t: "exercise", kind: "build", title: "Stream a graph five ways",
       difficulty: "core", minutes: 30,
       body: "Stream the same two-node graph in values, updates and debug modes and compare the chunks, noting how many each produces. Explain the off-by-one in values mode. Say what each of the five modes is for. Then stream with several modes at once and show how the chunks are tagged. Finally write a node that emits progress from inside itself and stream it in custom mode.",

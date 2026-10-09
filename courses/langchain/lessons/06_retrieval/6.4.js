@@ -50,6 +50,14 @@ EC.receiveLesson({
       { t: "p", text: "A rank over 41 tied zeros is still a rank. `I forgot my password` hands the fusion a rank-1 document chosen by a sort tie-break, and RRF awards it **exactly the same** `1/(k+1)` as the document dense ranked first correctly." },
       { t: "p", text: "The other cost is that rank fusion discards magnitude: *\u201cscored far above everything else\u201d* and *\u201cbarely won\u201d* both become rank 1, which is precisely what a confidence threshold needs (7.1). So fusing by rank trades a calibration problem for a credibility problem." }
     ] },
+    { t: "diagram", kind: "matrix", title: "BM25’s magnitude is anti-correlated with its usefulness",
+      caption: "The obvious way to combine dense and sparse is wrong three times over, and the third reason is the one nobody mentions: cosine is bounded and BM25 is not, so a weighted sum is **uncalibrated**. Worse, a high BM25 score can mean the query was all stopwords.",
+      cols: ["BM25 score", "tokens kept", "what it means"],
+      rows: ["“I forgot my password”", "“how long do you keep…”"],
+      cells: [
+        [{ text: "a 41-way tie at 0.0000", tone: "crit" }, { text: "ZERO", tone: "crit" }, { text: "still returns a top-3", tone: "crit" }],
+        [{ text: "3.8583 — confident", tone: "crit" }, { text: "stopwords only", tone: "crit" }, { text: "high score, no signal", tone: "crit" }]
+      ] },
     { t: "exercise", kind: "analysis", title: "Find out why the scores cannot be added",
       difficulty: "core", minutes: 30,
       body: "Run dense and sparse retrieval on queries from both classes. Then, for several queries, report the BM25 maximum, how many documents score above zero, and which query terms survived tokenisation. Identify the query that keeps no terms and say what its returned ranking actually is. Identify the query whose score comes entirely from stopwords. Then give the three reasons a weighted sum fails, show what per-query normalisation does to the degenerate query, and state what EnsembleRetriever fixes and what it does not.",

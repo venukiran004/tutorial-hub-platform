@@ -50,6 +50,13 @@ EC.receiveLesson({
       { t: "p", text: "The design response is to keep effects in as few nodes as possible, so a graph that might be replayed has a small, identifiable set of nodes you must not replay carelessly. That is also the shape 9.7 recommended for approval gates \u2014 the two constraints point at the same architecture." }
     ] },
     { t: "p", text: "The idempotency-key case is worth sitting with, because it is the one where the right answer is genuinely ambiguous. Replaying with the old key makes the downstream call a no-op, which is correct for recovery and wrong for a counterfactual where you *want* the action to happen differently." },
+    { t: "diagram", kind: "tree", title: "A checkpoint_id is an address you can go back to",
+      caption: "Pass an earlier checkpoint's config to `invoke` and the graph continues from there. The measured fork **preserved the history before the fork** — so time travel is a branch, not an edit, and the original path is still there.",
+      root: { label: "checkpoint 1", sub: "the input", tone: "accent", children: [
+        { label: "checkpoint 2", sub: "after node a", tone: "good", children: [
+          { label: "checkpoint 3", sub: "the original path", tone: "teal", edge: "ran once" },
+          { label: "checkpoint 3′", sub: "the fork — a new branch", tone: "violet", edge: "re-invoked here" } ] }
+      ] } },
     { t: "exercise", kind: "build", title: "Fork a run and change the past",
       difficulty: "advanced", minutes: 30,
       body: "Run a multi-node graph with a checkpointer and list the full history with checkpoint ids. Read an earlier state and say what that answers on its own. Then fork from that checkpoint by passing its config to invoke, and explain what happened to the history before the fork point. Create a counterfactual by calling update_state at an old checkpoint and replaying. Finally name the three uses, say which pays for persistence, and state the constraint on replay.",

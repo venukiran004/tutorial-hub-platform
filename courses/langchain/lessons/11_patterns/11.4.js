@@ -52,6 +52,15 @@ EC.receiveLesson({
       { t: "p", text: "*\u201cGood enough\u201d* and *\u201cran out of rounds\u201d* producing the same output is how a reflection loop quietly becomes an expensive no-op (10.5). The output alone cannot distinguish them." },
       { t: "p", text: "So the flag is not optional monitoring \u2014 it is the only signal that tells you whether the loop is doing work. A loop whose budget is always the exit has no real exit condition." }
     ] },
+    { t: "diagram", kind: "timeline", title: "Reflection costs 6 calls where 1 would do",
+      caption: "Generate, critique, revise — and the cost is the part worth measuring first. Three rounds took **3 generator calls plus 3 critic calls**, so six model calls against one, and the token count grows faster still because each round carries the critique.",
+      span: 7, tick: 1, unit: "model calls",
+      lanes: [
+        { label: "a single call", bars: [[0, 1, "1", "good"]] },
+        { label: "1 round", bars: [[0, 2, "2", "teal"]] },
+        { label: "2 rounds", bars: [[0, 4, "4", "warn"]] },
+        { label: "3 rounds", bars: [[0, 6, "6 — for one answer", "crit"]] }
+      ] },
     { t: "exercise", kind: "build", title: "Build reflection and price it",
       difficulty: "core", minutes: 32,
       body: "Build a generate-critique-revise loop with scripted generator and critic models, running until the critique approves or a round budget is spent. Count the model calls and explain why the token cost grows faster than the call count. Show the three drafts and say where the gain came from. Explain what reflection cannot catch and why that is structural. Finally give the router three exits and say why recording which one fired matters.",

@@ -41,6 +41,14 @@ EC.receiveLesson({
       ["the cycle", "where `interrupt()` goes for approval (9.7)"]
     ] },
     { t: "p", text: "Every one of those is a modification you can only make if you know which node or edge it belongs to. The prebuilts are the right default and they are also an abstraction you will need to open \u2014 so the order is: see the long version, use the short one, unroll when a requirement demands it." },
+    { t: "diagram", kind: "flow", title: "The agent loop, as a graph you can see inside", cols: 3,
+      caption: "3.3's loop was something you could not inspect. Here it is two nodes plus a conditional edge — and the `tools → agent` edge is the **cycle a chain could not express** (8.1), which is the whole reason this module exists.",
+      nodes: [
+        { id: "a", label: "agent", sub: "calls the model", tone: "violet" },
+        { id: "t", label: "tools", sub: "executes every call", tone: "warn" },
+        { id: "e", label: "END", sub: "no tools requested", tone: "good" }
+      ],
+      edges: [["a", "t", "asked for tools"], ["t", "a", "the cycle", "dashed"], ["a", "e", "answered"]] },
     { t: "exercise", kind: "build", title: "Build the agent loop from two nodes",
       difficulty: "core", minutes: 32,
       body: "Build a tool-calling agent as a graph with an agent node, a tool node and a conditional edge, using a scripted model so the tool call is deterministic. Run it and show every message. Then report what the model received on each call and explain how the tool result reached it. Identify where the termination condition lives, and demonstrate what happens when the model never stops asking for tools. Finally say which production changes belong to which node or edge.",

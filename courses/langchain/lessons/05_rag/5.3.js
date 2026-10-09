@@ -33,6 +33,16 @@ EC.receiveLesson({
       { t: "p", text: "No retrieval metric sees this. Recall counts whether the chunk was returned, and it was. The damage happens after retrieval, in a model reading a fragment that has lost its subject, which is why chunk size is a **generation** decision as much as a retrieval one." }
     ] },
     { t: "p", text: "The practical mitigations are to split on structural boundaries rather than character counts, and to prepend context to each chunk \u2014 a document title, a section heading \u2014 so a fragment carries its own subject. Both cost tokens and both are cheaper than an answer about the wrong thing." },
+    { t: "diagram", kind: "matrix", title: "On this corpus, splitting made retrieval worse",
+      caption: "Chunking is usually taught as tuning. The measurement is more pointed: at 300 characters and above **nothing is split** — 41 chunks for 41 documents — so the honest finding is that a corpus of short documents has no chunking decision to make.",
+      cols: ["chunks", "what happened"],
+      rows: ["no splitting", "chunk_size 300+", "chunk_size 150", "chunk_size 80"],
+      cells: [
+        [{ text: "41 for 41 docs", tone: "good" }, { text: "the baseline", tone: "good" }],
+        [{ text: "41 — unchanged", tone: "good" }, { text: "nothing is split at all", tone: "warn" }],
+        [{ text: "more", tone: "warn" }, { text: "retrieval got WORSE", tone: "crit" }],
+        [{ text: "many", tone: "crit" }, { text: "worse again — context is lost", tone: "crit" }]
+      ] },
     { t: "exercise", kind: "analysis", title: "Measure chunking rather than assuming it",
       difficulty: "core", minutes: 26,
       body: "Split the corpus at five chunk sizes and measure recall and MRR at each. Identify the size at which nothing is split and explain what happens below it. Then vary overlap at a fixed chunk size and report what it buys. Finally, split one document small enough to break it and show a chunk that is not interpretable on its own.",

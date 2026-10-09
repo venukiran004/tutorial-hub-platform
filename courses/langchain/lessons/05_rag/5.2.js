@@ -44,6 +44,17 @@ EC.receiveLesson({
       code: "44 documents, 41 public, 3 restricted\nlength: mean 158, min 109, max 241 chars\nby team: {'billing': 9, 'platform': 23, 'identity': 10, 'people': 1, 'product': 1}",
       caption: "The restricted three are marked in metadata, which is the only place a filter can read." },
     { t: "p", text: "The corpus was built with deliberate difficulty, because an easy one teaches nothing: near-duplicate documents that differ only in the detail that decides the answer, queries phrased the way a user would phrase them rather than the way the document does, and rare exact terms that appear in exactly one place. 5.8 shows what that difficulty does to a baseline." },
+    { t: "diagram", kind: "matrix", title: "The metadata is the half that decides what you can build",
+      caption: "Each field is nearly free at load time and effectively impossible to reconstruct afterwards. The `visibility` row is the one that matters most — 7.5 measures what happens when it is missing, and it is a data-exposure bug rather than a quality one.",
+      cols: ["cost at load", "what it enables later"],
+      rows: ["source", "page", "owner", "visibility", "last_updated"],
+      cells: [
+        [{ text: "free", tone: "good" }, "a citation the user can follow"],
+        [{ text: "free", tone: "good" }, "a citation that lands in the right place"],
+        [{ text: "free", tone: "good" }, "per-tenant filtering"],
+        [{ text: "free", tone: "good" }, { text: "ACCESS CONTROL — see 7.5", tone: "crit" }],
+        [{ text: "free", tone: "good" }, { text: "staleness detection", tone: "warn" }]
+      ] },
     { t: "exercise", kind: "analysis", title: "Inspect what loading produced",
       difficulty: "foundation", minutes: 20,
       body: "Print a loaded Document and identify which half is embedded and which half is filtered on. Tabulate the metadata fields worth capturing at load time with what each buys later. List the formats that lose structure when loaded naively and say why the failure is invisible downstream. Then characterise the corpus this phase uses.",

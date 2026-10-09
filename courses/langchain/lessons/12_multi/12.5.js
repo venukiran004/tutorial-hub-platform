@@ -55,6 +55,20 @@ EC.receiveLesson({
       { t: "p", text: "An orchestrator that always replans has chosen the wrong pattern \u2014 it is a supervisor with an expensive planning call bolted to the front of each iteration." },
       { t: "p", text: "Which is why instrumenting the replan count matters: it is the measurement that distinguishes a working orchestrator from a supervisor paying for plans it discards." }
     ] },
+    { t: "diagram", kind: "compare", title: "Who decides, and when",
+      caption: "The distinction is crisp, and it decides the call count. A supervisor's total is unknown until the run ends; an orchestrator's is known as soon as the plan exists — which is what makes one budgetable and the other not.",
+      columns: [
+        { title: "supervisor — a router in a loop", tone: "warn", items: [
+          "decides who acts NEXT, one turn at a time",
+          "sees everything that has happened so far",
+          "can adapt to what a worker just found",
+          "call count unknown until it finishes" ] },
+        { title: "orchestrator — decides up front", tone: "accent", items: [
+          "decides the whole DECOMPOSITION once",
+          "fans the pieces out, often in parallel",
+          "cannot react to what a piece discovers",
+          "call count known as soon as the plan exists" ] }
+      ] },
     { t: "exercise", kind: "build", title: "Build both and fail a worker",
       difficulty: "advanced", minutes: 32,
       body: "State the distinction between a supervisor and an orchestrator precisely. Build an orchestrator that plans a decomposition and fans the pieces out with Send, confirming they run in one superstep. Then fail one worker in a batch and show what happens to the others' results, explaining what the worker had to do for that to work. Say where the partial-success decision belongs and why. Finally compare the two patterns on at least five dimensions.",

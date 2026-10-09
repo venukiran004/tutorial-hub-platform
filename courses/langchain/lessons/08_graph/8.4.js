@@ -41,6 +41,16 @@ EC.receiveLesson({
       { t: "p", text: "One schema while the graph is internal and small. Split input and output the moment the graph is called by code you do not own, persisted, or exposed over a network." },
       { t: "p", text: "That ordering matters because the cost of splitting late is low \u2014 adding an output schema does not change any node \u2014 whereas the cost of *not* splitting is that callers have already coded against your internal keys, and now you cannot rename them. The asymmetry argues for splitting at the first external caller rather than waiting for the state to get messy." }
     ] },
+    { t: "diagram", kind: "matrix", title: "Every key is effectively public",
+      caption: "8.2 established that the schema is the only contract, so a single-schema graph returns its internals to the caller — measured: the retry count, the debug timings and **8 KB of raw API response**. Three schemas fix it, and the split is a design statement.",
+      cols: ["single schema", "input/output/private"],
+      rows: ["the answer", "retry_count", "debug_timings", "8 KB raw API response"],
+      cells: [
+        [{ text: "returned", tone: "good" }, { text: "returned", tone: "good" }],
+        [{ text: "returned", tone: "crit" }, { text: "private", tone: "good" }],
+        [{ text: "returned", tone: "crit" }, { text: "private", tone: "good" }],
+        [{ text: "RETURNED", tone: "crit" }, { text: "private", tone: "good" }]
+      ] },
     { t: "exercise", kind: "build", title: "Give a graph a public surface",
       difficulty: "advanced", minutes: 28,
       body: "Build a graph with one schema containing both public and internal keys, and show exactly what the caller receives. Then split it into input, internal and output schemas and show the difference. Determine whether the input schema rejects or merely ignores an internal key, and say what that means for the contract. Name what the split buys, and say which of those the output schema does not help with.",

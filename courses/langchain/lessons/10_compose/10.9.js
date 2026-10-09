@@ -53,6 +53,22 @@ EC.receiveLesson({
       { t: "p", text: "So the controls are the ones 7.6 identified rather than protocol features: treat third-party tool descriptions as untrusted, and bound what the process can do \u2014 because the server runs **as you**." }
     ] },
     { t: "p", text: "The one most specific to MCP is **version pinning**. A server that updates its tool descriptions changes your prompt without a deploy on your side, which is a real supply-chain concern rather than a theoretical one: the prompt your model sees is partly authored by a dependency." },
+    { t: "diagram", kind: "compare", title: "Three things an in-process tool never had",
+      caption: "A tool in another process is a tool you cannot call directly, and the new failures are not variations of the old ones — they are a different category. Which is why a remote tool needs a timeout and a breaker where a local one needed neither.",
+      columns: [
+        { title: "in-process", tone: "good", items: [
+          "arguments are Python objects",
+          "the cost is a function call",
+          "the only failure is the tool raising",
+          "and you get a traceback that points at it",
+          "no timeout needed" ] },
+        { title: "across a process", tone: "crit", items: [
+          "arguments are serialised — JSON only, so a type must survive the trip",
+          "the cost is a round trip",
+          "plus transport errors, timeouts and a dead peer",
+          "and the error arrives as a string, if at all",
+          "needs a timeout and a breaker (14.2)" ] }
+      ] },
     { t: "exercise", kind: "build", title: "Measure a process boundary",
       difficulty: "advanced", minutes: 30,
       body: "Write a tool server in a separate process speaking JSON over stdio, and call it from a client. Time a batch of round trips and compare against the same operation in-process. Then exercise the failure modes: an unknown tool, a response that is not JSON, and the server crashing mid-call. Say what MCP adds over this. Finally identify the risk that is not a protocol problem.",

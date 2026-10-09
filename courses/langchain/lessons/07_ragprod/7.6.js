@@ -68,6 +68,15 @@ EC.receiveLesson({
       "the answer contains text that looks like a system instruction"
     ] },
     { t: "p", text: "5.7's citation requirement is what makes the first one computable \u2014 and that is the same auditability argument for the third time in this module: you cannot prevent the behaviour, so require an output that makes it visible. 7.4 used it for grounding, 7.7 uses it for cache invalidation, and here it is an injection signal." },
+    { t: "diagram", kind: "matrix", title: "Why input sanitisation misses it entirely",
+      caption: "The payload arrives in the **system message**, next to the instruction it contradicts — and it never passes through the input filter, because it is not input. Measured, the injected text cost only **0.0126** in similarity: inside ordinary variation, and attacker-controlled by padding.",
+      cols: ["checked by an input filter?", "where it ends up"],
+      rows: ["the user’s question", "a retrieved document", "the injected sentence"],
+      cells: [
+        [{ text: "yes", tone: "good" }, "the human message"],
+        [{ text: "NO — it is not input", tone: "crit" }, { text: "the SYSTEM message (5.7)", tone: "crit" }],
+        [{ text: "NO", tone: "crit" }, { text: "beside the instruction it breaks", tone: "crit" }]
+      ] },
     { t: "exercise", kind: "analysis", title: "Trace an indirect injection",
       difficulty: "advanced", minutes: 30,
       body: "Construct a document containing both legitimate content and an injected instruction. Trace where the payload entered the system and say which component behaved incorrectly. Measure the injected document's similarity to a relevant query against the clean original. Then classify the available defences by whether they enforce anything or request compliance, and name the detections worth building.",

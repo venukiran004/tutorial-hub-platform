@@ -64,6 +64,15 @@ EC.receiveLesson({
       { t: "p", text: "Every row down that table trades predictability for flexibility. Reading upward is the cheaper direction: a bounded pattern that nearly works is usually closer to a solution than an agent that works unpredictably." },
       { t: "p", text: "And most tasks described as needing an agent are a router plus three tools. The tell is whether the *sequence* of operations genuinely varies by request, or whether only the *choice* does \u2014 the second is routing, and it keeps every property you want." }
     ] },
+    { t: "diagram", kind: "layers", title: "A spectrum, and the useful question is where the decision lives",
+      caption: "A workflow is control flow **you** wrote with the model filling in steps; an agent is control flow the **model** decides with tools you wrote. Most real systems are somewhere in the middle, and naming the point is more useful than picking a label.",
+      items: [
+        { label: "a chain", sub: "every step fixed before the request arrives", tone: "good", side: "you decide" },
+        { label: "a workflow with a router", sub: "you wrote the branches; the model picks one", tone: "teal", side: "you decide" },
+        { label: "a workflow with an agent step", sub: "one node inside it is free to loop", tone: "warn", side: "mixed" },
+        { label: "an agent with constrained tools", sub: "the model drives; the tool list is the limit", tone: "violet", side: "model decides" },
+        { label: "an open agent", sub: "the model decides the whole path", tone: "crit", side: "model decides" }
+      ] },
     { t: "exercise", kind: "build", title: "Implement the pattern catalogue",
       difficulty: "core", minutes: 30,
       body: "Implement prompt chaining, routing, parallelisation, orchestrator-worker and evaluator-optimiser as graphs, and for each one say where the control sits and whether the execution paths are enumerable by reading the code. For the parallel pattern note what the reducer is doing. For the evaluator-optimiser, give the router two exit conditions and explain why the second is necessary. Finally produce the comparison and state the rule it implies.",

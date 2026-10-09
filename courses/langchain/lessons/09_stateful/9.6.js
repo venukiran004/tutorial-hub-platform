@@ -56,6 +56,15 @@ EC.receiveLesson({
       { t: "p", text: "A bad retrieval affects one answer. A bad **memory** affects every answer until someone finds it \u2014 and nobody is looking, because the memory is doing exactly what it was asked to do." },
       { t: "p", text: "So writes want to be explicit, attributable and easy to delete: written in response to something specific rather than as a background summarisation pass, recorded with where they came from, and removable per user. All three are easier in layout B, which is another argument for the hierarchical namespace." }
     ] },
+    { t: "diagram", kind: "tree", title: "The Store is keyed by a path, which is why it searches",
+      caption: "A namespace **tuple is a path**, so it supports prefix search — `search((“users”, “alice”, “prefs”))` returns alice's preferences and nothing else. That one design decision is what everything else about the Store follows from.",
+      root: { label: "(“users”,)", sub: "the namespace root", tone: "accent", children: [
+        { label: "(… “alice”)", sub: "one user’s subtree", tone: "good", children: [
+          { label: "“prefs”", sub: "searchable by prefix", tone: "teal" },
+          { label: "“facts”", sub: "and outlives the thread", tone: "teal" } ] },
+        { label: "(… “bob”)", sub: "a sibling subtree", tone: "good", children: [
+          { label: "“prefs”", sub: "never returned to alice", tone: "violet" } ] }
+      ] } },
     { t: "exercise", kind: "build", title: "Design a memory namespace",
       difficulty: "advanced", minutes: 32,
       body: "Use the Store's put, get and search to hold per-user data and show that search scopes to a namespace. Compare the Store against graph state on scope, lifetime, write frequency and cost, and say which property makes it necessary rather than merely cheaper. Distinguish the three kinds of memory by their retrieval patterns. Then compare a flat namespace against a hierarchical one for both search and per-user deletion. Finally name the three failure modes of memory writing and say which argues for conservatism.",

@@ -42,6 +42,20 @@ EC.receiveLesson({
       code: 'from typing import Literal\n\ndef step(state) -> Command[Literal["big", "small"]]:\n    ...',
       caption: "The annotation is read by the graph renderer." },
     { t: "p", text: "It is optional, and skipping it costs you the only diagram anyone looks at. Which makes it one of those annotations worth treating as mandatory by convention \u2014 it is not enforced, it is cheap, and the thing it protects is legibility for someone who is not you." },
+    { t: "diagram", kind: "compare", title: "Command, or a conditional edge",
+      caption: "A node returning a `Command` carries an update and a destination together — and then there is no `add_conditional_edges` call at all, because the routing came from the return value. The useful question is what each one makes visible.",
+      columns: [
+        { title: "add_conditional_edges", tone: "good", items: [
+          "the routing is declared in the graph",
+          "so the drawn graph shows every possible path",
+          "the update and the decision are separate steps",
+          "a path map gives you a place for a default" ] },
+        { title: "a node returning Command", tone: "warn", items: [
+          "update and destination in one return",
+          "the routing is INSIDE the node, so the drawn graph shows nothing",
+          "fewer moving parts for a genuine state-machine transition",
+          "annotate the destinations or you lose the diagram" ] }
+      ] },
     { t: "exercise", kind: "build", title: "Route from inside a node",
       difficulty: "advanced", minutes: 30,
       body: "Write a node that returns a Command with both an update and a destination, and confirm the graph routes without any conditional edge. Compare Command against a conditional edge on who decides, what is visible and how many functions must stay in sync, and give a criterion for choosing. Implement a handoff where one node transfers control to a specialist and carries the reason. Then draw the graph and say what is missing, and show the annotation that fixes it.",

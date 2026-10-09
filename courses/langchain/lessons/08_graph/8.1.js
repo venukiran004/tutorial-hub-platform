@@ -47,6 +47,15 @@ EC.receiveLesson({
       { t: "p", text: "If you need none of them, LCEL is shorter and module 2's protocol gives you streaming and batching for free. The decision is not about sophistication; it is about whether the control flow has to look at what happened." },
       { t: "p", text: "And the three requirements tend to arrive together. An agent loops (cycle), decides whether to call a tool (branch on state), and may need approval before acting (pause) \u2014 which is why agents are the canonical graph, and why module 3's agent was a loop you could not see inside." }
     ] },
+    { t: "diagram", kind: "matrix", title: "Three things a chain cannot do",
+      caption: "Worth seeing as failures first, because each has a workaround that **works** — the cost is what matters. Wrapping a chain in a `while` loop gives you the cycle and loses the state, the pause point and any view inside it.",
+      cols: ["the chain workaround", "what it costs"],
+      rows: ["cycle", "branch on state", "pause"],
+      cells: [
+        [{ text: "a while loop around it", tone: "warn" }, { text: "no state, no trace, no pause", tone: "crit" }],
+        [{ text: "a function returning a chain", tone: "warn" }, { text: "the branch is invisible to tooling", tone: "crit" }],
+        [{ text: "there isn’t one", tone: "crit" }, { text: "you cannot resume mid-run at all", tone: "crit" }]
+      ] },
     { t: "exercise", kind: "analysis", title: "Demonstrate the three failures",
       difficulty: "foundation", minutes: 30,
       body: "Write a chain that needs to repeat until a condition holds, implement it with a Python loop, and enumerate exactly what that costs. Then explain why a pipeline cannot branch to a later step or go back to an earlier one. Describe the five steps required to pause a chain for human approval and identify which of them are the real work. Finally state the structural difference between a chain and a graph in one sentence, and say when a chain is still correct.",

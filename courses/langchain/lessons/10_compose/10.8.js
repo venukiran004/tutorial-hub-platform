@@ -56,6 +56,14 @@ EC.receiveLesson({
       { t: "p", text: "These are two front ends to the same Pregel runtime, so this is a legibility and tooling decision rather than a capability one. The question is whether the structure is worth declaring." },
       { t: "p", text: "For an agent loop it clearly is \u2014 the two-nodes-and-a-cycle shape is the design, and 9.1 showed every production requirement attaching to a specific node or edge. For a five-step sequential pipeline with one retryable external call, declaring a schema and four edges to express what `a(); b(); c()` already says is ceremony." }
     ] },
+    { t: "diagram", kind: "matrix", title: "The call form decides whether you replay",
+      caption: "My own expectation was wrong here. `invoke(input, cfg)` starts a **new run** on the same thread — the step counter reached 2. Only `invoke(None, cfg)` replays from the checkpoint, where completed tasks are returned from cache rather than re-executed.",
+      cols: ["what it does", "step_a ran"],
+      rows: ["invoke(input, cfg)", "invoke(None, cfg)"],
+      cells: [
+        [{ text: "starts a NEW run", tone: "crit" }, { text: "twice", tone: "crit" }],
+        [{ text: "replays from the checkpoint", tone: "good" }, { text: "once — cached", tone: "good" }]
+      ] },
     { t: "exercise", kind: "build", title: "Write a pipeline both ways",
       difficulty: "advanced", minutes: 30,
       body: "Write a two-step pipeline with @task and @entrypoint and run it. Then make the second task fail once, resume the thread with invoke(None), and count how many times each task executed. Repeat with the second call passing input instead, and compare. State how the side-effect rule differs from the graph API and what conditions the guarantee has. Finally list what the functional API gives up and say when each API is the right choice.",

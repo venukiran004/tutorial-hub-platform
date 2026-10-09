@@ -49,6 +49,14 @@ EC.receiveLesson({
       { t: "p", text: "5.2 insisted on capturing an `updated` date at load time on the grounds that it could not be reconstructed later. This is what it buys: the answer can state the age of its sources, so a user can see that a confident answer rests on a two-year-old document." },
       { t: "p", text: "The same field enables the mechanical version \u2014 flagging or suppressing documents older than a threshold for topics that change \u2014 and it enables 7.7's cache invalidation. One metadata field, three uses, and all of them unavailable if the loader did not capture it." }
     ] },
+    { t: "diagram", kind: "steps", title: "Delete a document and the index does not notice",
+      caption: "`ntotal` is unchanged, the deleted document is still the top result, and it will be retrieved, placed in the context and **cited** — pointing at something that no longer exists. Which is the same mechanism as the permission bug: the index is a stale copy.",
+      items: [
+        { label: "delete it from the source system", desc: "the row is gone; the vector is not", tone: "accent", code: "source" },
+        { label: "ntotal is unchanged", desc: "nothing in the store reports a discrepancy", tone: "warn", code: "silent" },
+        { label: "it is still the top result", desc: "and still the most similar vector, because similarity knows nothing about existence", tone: "crit", code: "retrieved" },
+        { label: "and the answer CITES it", desc: "a verifiable-looking citation pointing at a deleted document", tone: "crit", code: "the damage" }
+      ] },
     { t: "exercise", kind: "build", title: "Delete a document and watch what breaks",
       difficulty: "core", minutes: 30,
       body: "Build an index, query it, then delete a document from the source without touching the index and query again. Then delete it properly and examine what happened to the position-to-id mapping. Tabulate what a delete costs on three index types. Compute the staleness window of a periodic rebuild, reporting the worst case. Finally name what incremental updates drift on for both a sparse and a dense index.",

@@ -57,6 +57,14 @@ EC.receiveLesson({
       { t: "p", text: "Store the cited document ids with the cache entry, and a document update invalidates exactly the entries that depended on it. That is the whole implementation, and it is only possible because the answer was required to cite its sources." },
       { t: "p", text: "Without it, a nightly rebuild corrects the corpus and the cache keeps serving the old answer \u2014 so the correction is invisible to every user who asks a cached question, which is the population most likely to ask it. 7.4 used citations for grounding and 7.6 as an injection signal; this is the third use of the same field." }
     ] },
+    { t: "diagram", kind: "matrix", title: "Both failure modes are reachable with ordinary queries",
+      caption: "A semantic cache is a threshold on paraphrase similarity. *“is retention 30 days”* against *“is retention 90 days”* scores **0.8762** — two questions with different answers, above most thresholds. There is no setting that separates these.",
+      cols: ["similarity", "same answer?", "what a threshold does"],
+      rows: ["30 days vs 90 days", "a true paraphrase"],
+      cells: [
+        [{ text: "0.8762", tone: "crit" }, { text: "NO", tone: "crit" }, { text: "serves the wrong one", tone: "crit" }],
+        [{ text: "similar range", tone: "warn" }, { text: "yes", tone: "good" }, { text: "a correct hit", tone: "good" }]
+      ] },
     { t: "exercise", kind: "analysis", title: "Measure a semantic cache's two errors",
       difficulty: "core", minutes: 28,
       body: "Build two populations: paraphrase pairs that should hit the cache, and near-miss pairs that must not. Make both adversarial \u2014 paraphrases sharing no vocabulary, and different questions differing in one decisive token. Measure the similarity of each pair and report whether the ranges overlap. Sweep a threshold and report both error rates together. Then explain why the two errors are not comparable, and tabulate the caches that carry no semantic risk.",

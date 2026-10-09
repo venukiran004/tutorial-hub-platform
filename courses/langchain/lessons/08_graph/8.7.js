@@ -64,6 +64,13 @@ EC.receiveLesson({
       { t: "p", text: "The join read a key that only `b` writes and saw the initial state's value. Nothing raised, because the runtime has no way to tell the difference between a contribution that is late and one that will never arrive." },
       { t: "p", text: "So a fan-in node after a conditional branch has to be written to **tolerate partial input** \u2014 checking which keys are set rather than assuming every incoming path ran. That is a node-level concern the topology does not express, which makes it exactly the kind of thing a diagram review will miss." }
     ] },
+    { t: "diagram", kind: "tree", title: "The router failure compile() cannot catch",
+      caption: "A function's return values are not knowable statically, so **`compile()` succeeds** on a router that can return a key the path map lacks. The failure arrives at run time, on whichever input takes that branch — which may be the rare one.",
+      root: { label: "route(state)", sub: "returns a key", tone: "accent", children: [
+        { label: "“billing”", sub: "in the map → billing_node", tone: "good", edge: "mapped" },
+        { label: "“tech”", sub: "in the map → tech_node", tone: "good", edge: "mapped" },
+        { label: "“other”", sub: "NOT in the map → raises at run time", tone: "crit", edge: "compiles fine" }
+      ] } },
     { t: "exercise", kind: "build", title: "Route, then break the routing",
       difficulty: "core", minutes: 32,
       body: "Write a routing function with a path map and confirm both branches. Then give the router an outcome the map lacks, and determine whether that fails at compile time or at run time. Try omitting the path map and say what it couples. Route to END, and route to a list of nodes. Finally build a fan-in whose incoming branch is skipped by a router, and find out whether it deadlocks and what the join node reads.",

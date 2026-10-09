@@ -52,6 +52,14 @@ EC.receiveLesson({
       { t: "p", text: "Every row trades one class against the other, monotonically, with no interior optimum. Even at 10:1 \u2014 sparse contributing a tenth as much \u2014 natural MRR is 0.642 against dense's 0.964, while the exact class has already fallen to 0.844. There is no setting that recovers both." },
       { t: "p", text: "That is structural rather than a tuning failure. A single weight pair asserts that the two retrievers' relative usefulness is constant across queries, and it depends entirely on whether the query contains rare literal terms. So the fix is **routing** by query type, or 6.4's gate \u2014 fuse only when both retrievers actually have signal. Both require deciding something about the query first." }
     ] },
+    { t: "diagram", kind: "steps", title: "RRF dissolves the calibration problem by never reading a score",
+      caption: "`RRF(d) = Σ wᵣ / (k + rankᵣ(d))`. Five lines, no normalisation, no tuning — because a rank is already on a common scale and a score is not. This is also where the module's largest finding lives.",
+      items: [
+        { label: "run each retriever independently", desc: "dense and BM25, each producing its own ranked list", tone: "accent", code: "two lists" },
+        { label: "throw the scores away", desc: "keep only the RANK — which is why no normalisation is needed", tone: "good", code: "the trick" },
+        { label: "sum 1 / (k + rank) across lists", desc: "k dampens the top; a document ranked well by both wins", tone: "good", code: "5 lines" },
+        { label: "and fusion is not free", desc: "it cannot promote what neither member retrieved — recall is still the ceiling (5.1)", tone: "warn", code: "the limit" }
+      ] },
     { t: "exercise", kind: "build", title: "Implement RRF, then find where it fails",
       difficulty: "advanced", minutes: 30,
       body: "Implement reciprocal rank fusion and trace each retriever's contribution for one query, including a document found by only one of them. Tabulate the effect of the k constant on the ratio between adjacent ranks and measure it on both query classes. Then compare fused retrieval against each retriever alone on natural queries. Finally sweep the weights and report both classes at each setting.",

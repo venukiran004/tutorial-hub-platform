@@ -35,6 +35,20 @@ EC.receiveLesson({
       { t: "p", text: "A metadata filter answers the permission question **before retrieval runs**, so the document never enters the candidate set. A prompt instruction answers it after the text is already in the context window \u2014 which is 1.6's distinction between a structural guarantee and a polite request, and 7.6 shows what an injection does to the request." }
     ] },
     { t: "p", text: "The filter is also the only place this can live. The embedding knows nothing about permissions; the index knows nothing about who is asking. The metadata captured in 5.2 is the entire mechanism, which is why that lesson insisted on capturing visibility even before anyone had a filter in mind." },
+    { t: "diagram", kind: "compare", title: "A vector store does two jobs, and the attention goes to the wrong one",
+      caption: "The index is a performance decision that does not matter below a few hundred thousand vectors. The metadata filter is a **correctness** decision that matters from the first document — and 7.5 measures what it costs to get the order wrong.",
+      columns: [
+        { title: "the index — over-discussed", tone: "warn", items: [
+          "exact or approximate; flat, IVF or HNSW",
+          "a latency and memory trade",
+          "irrelevant below a few hundred thousand vectors",
+          "easy to change later: re-index and measure" ] },
+        { title: "the metadata filter — under-discussed", tone: "crit", items: [
+          "which documents this user may see at all",
+          "a correctness and security decision",
+          "matters from the very first document",
+          "must run BEFORE similarity, not after (7.5)" ] }
+      ] },
     { t: "exercise", kind: "build", title: "Index, then filter",
       difficulty: "core", minutes: 26,
       body: "Build an exact FAISS index over the corpus embeddings and show what it returns for a query. Tabulate exact against approximate index types with what each trades. Then query for something only a restricted document answers, with and without a metadata filter, and report what the unfiltered search returns.",

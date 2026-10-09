@@ -63,6 +63,15 @@ EC.receiveLesson({
       code: "accepted -> ['model=x tone=<default>']",
       caption: "Not rejected." },
     { t: "p", text: "So like 8.4's input schema, the declaration documents and shapes rather than rejects. The value is discoverability and types at the read site, not enforcement at the boundary \u2014 and if you want enforcement, that is a Pydantic context schema or a check in the caller." },
+    { t: "diagram", kind: "matrix", title: "config_schema is deprecated; context_schema is better in three ways",
+      caption: "The dict form — a node reading `config[“configurable”].get(“model”)` — still works. The typed form fails **loudly** instead: a missing field raises an `AttributeError` at the access rather than returning `None` and flowing onward.",
+      cols: ["the dict form", "Runtime[Ctx]"],
+      rows: ["a missing field", "discoverability", "type checking"],
+      cells: [
+        [{ text: "returns None, flows on", tone: "crit" }, { text: "AttributeError at the access", tone: "good" }],
+        [{ text: "read every node to find out", tone: "warn" }, { text: "one dataclass declares it", tone: "good" }],
+        [{ text: "none", tone: "warn" }, { text: "static", tone: "good" }]
+      ] },
     { t: "exercise", kind: "build", title: "Configure a graph at runtime",
       difficulty: "core", minutes: 28,
       body: "Read per-invocation configuration from a node using the dict form, and note the deprecation on config_schema. Then rewrite it with a dataclass context_schema and a typed Runtime, listing what changed. Say what else Runtime exposes. Draw the line between context and state. Then determine what happens when context is omitted entirely, as against passed empty, and show how a node reading an attribute behaves in each case. Finally check whether an undeclared context key is rejected.",
