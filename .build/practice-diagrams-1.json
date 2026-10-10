@@ -1,0 +1,6198 @@
+{
+ "c1.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1–20.** What this set actually drills, counted from its own problems — 15 of the 20 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "numbers",
+     "lists",
+     "strings",
+     "functions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "7",
+       "tone": "accent"
+      },
+      "Calculate Factorial"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "good"
+      },
+      "Sum of List Elements"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Count Vowels in a String"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Power of a Number (Recursive)"
+     ]
+    ]
+   }
+  }
+ ],
+ "c1.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 21–48.** What this set actually drills, counted from its own problems — 12 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "strings",
+     "exceptions",
+     "dicts and sets",
+     "numbers",
+     "production"
+    ],
+    "cells": [
+     [
+      {
+       "text": "6",
+       "tone": "accent"
+      },
+      "Rotate Array"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "String Interning"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Product of Array Except Self"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Subsets (Power Set)"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Floating Point Cannot Represen"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Identity of Empty and Small Co"
+     ]
+    ]
+   }
+  }
+ ],
+ "c1.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 49–77.** What this set asks you to predict, counted from its own problems — 10 of the 29 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "numbers",
+     "lists",
+     "classes",
+     "decorators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "5",
+       "tone": "accent"
+      },
+      "Floating"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "array: a Typed, Compact Sequen"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "Object identity via id()"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "memoryview Slices Without Copy"
+     ]
+    ]
+   }
+  }
+ ],
+ "c2.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 78–105.** What this set actually drills, counted from its own problems — 16 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "strings",
+     "lists",
+     "files and paths",
+     "dicts and sets",
+     "graphs & trees",
+     "decorators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "3",
+       "tone": "accent"
+      },
+      "Count Character Frequency"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "Find Second Largest in List"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Read and Write File"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "teal"
+      },
+      "Dictionary Comprehension"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "Graph"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "crit"
+      },
+      "Decorator"
+     ]
+    ]
+   }
+  }
+ ],
+ "c2.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 106–135.** What this set asks you to predict, counted from its own problems — 8 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "functions",
+     "dicts and sets",
+     "strings",
+     "lists"
+    ],
+    "cells": [
+     [
+      {
+       "text": "3",
+       "tone": "accent"
+      },
+      "A function call"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "A frozenset"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "str.replace"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "list.append"
+     ]
+    ]
+   }
+  }
+ ],
+ "c2.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 136–165.** What this set asks you to predict, counted from its own problems — 13 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "strings",
+     "lists",
+     "exceptions",
+     "generators",
+     "dicts and sets"
+    ],
+    "cells": [
+     [
+      {
+       "text": "8",
+       "tone": "accent"
+      },
+      "str.format"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "enumerate()"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "A caught TypeError"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "A generator expression"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "A Counter"
+     ]
+    ]
+   }
+  }
+ ],
+ "c2.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 166–195.** What this set asks you to predict, counted from its own problems — 5 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "strings",
+     "regex",
+     "lists"
+    ],
+    "cells": [
+     [
+      {
+       "text": "3",
+       "tone": "accent"
+      },
+      "str.split"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "A regular expression"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "A filtered list comprehension"
+     ]
+    ]
+   }
+  }
+ ],
+ "c2.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 196–224.** What this set actually drills, counted from its own problems — 26 of the 29 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "strings",
+     "dicts and sets",
+     "lists"
+    ],
+    "cells": [
+     [
+      {
+       "text": "24",
+       "tone": "accent"
+      },
+      "Check if a string is a circula"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "A set comprehension"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "A list comprehension"
+     ]
+    ]
+   }
+  }
+ ],
+ "c2.6": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 225–244.** What this set actually drills, counted from its own problems — 12 of the 20 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "dicts and sets",
+     "strings",
+     "lists",
+     "testing",
+     "generators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "6",
+       "tone": "accent"
+      },
+      "Dicts Keep Insertion Order"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "Find the longest word in a sen"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "Sorting Records by Several Key"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Membership Testing: list Versu"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Grouping with itertools.groupb"
+     ]
+    ]
+   }
+  }
+ ],
+ "c3.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 245–270.** What this set actually drills, counted from its own problems — 19 of the 26 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "databases",
+     "classes",
+     "generators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "16",
+       "tone": "accent"
+      },
+      "Create a List and Print Elemen"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "Access Elements by Index"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Reverse a List (3 Methods)"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Flatten Using itertools.chain"
+     ]
+    ]
+   }
+  }
+ ],
+ "c3.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 271–288.** What this set actually drills, counted from its own problems — 5 of the 18 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "threads",
+     "files and paths"
+    ],
+    "cells": [
+     [
+      {
+       "text": "3",
+       "tone": "accent"
+      },
+      "Implement Multi"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "Reconstruct Queue by Height"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Count Unique Paths in Grid wit"
+     ]
+    ]
+   }
+  }
+ ],
+ "c3.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 289–318.** What this set actually drills, counted from its own problems — 19 of the 30 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "generators",
+     "databases",
+     "threads",
+     "algorithms",
+     "dicts and sets"
+    ],
+    "cells": [
+     [
+      {
+       "text": "14",
+       "tone": "accent"
+      },
+      "sorted() returns a new list, l"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "Grouping consecutive runs with"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Every index of a value, not ju"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "A list is a fine stack and a p"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Sliding windows and a running "
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Counting and ranking with Coun"
+     ]
+    ]
+   }
+  }
+ ],
+ "c3.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 319–348.** What this set asks you to predict, counted from its own problems — 16 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "generators",
+     "dicts and sets",
+     "exceptions",
+     "numbers",
+     "strings"
+    ],
+    "cells": [
+     [
+      {
+       "text": "9",
+       "tone": "accent"
+      },
+      "A filtered list comprehension"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "A generator expression"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "A dict comprehension"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "try / except / else / finally "
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "What is the output of `isinsta"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Slicing"
+     ]
+    ]
+   }
+  }
+ ],
+ "c3.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 349–378.** What this set asks you to predict, counted from its own problems — 12 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "databases",
+     "dicts and sets",
+     "functions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "9",
+       "tone": "accent"
+      },
+      "Sorting"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "What is the output of `a.index"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "sorting with a key function"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "A lambda"
+     ]
+    ]
+   }
+  }
+ ],
+ "c3.6": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 379–408.** What this set asks you to predict, counted from its own problems — 11 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "dicts and sets",
+     "lists",
+     "functions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "9",
+       "tone": "accent"
+      },
+      "Set operations"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "Sorting"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "A function call"
+     ]
+    ]
+   }
+  }
+ ],
+ "c4.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 409–432.** What this set actually drills, counted from its own problems — 11 of the 24 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "databases",
+     "algorithms"
+    ],
+    "cells": [
+     [
+      {
+       "text": "7",
+       "tone": "accent"
+      },
+      "Chunk a List into Sublists"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "Find Index of All Occurrences"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "Sliding Window Maximum"
+     ]
+    ]
+   }
+  }
+ ],
+ "c4.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 433–460.** What this set actually drills, counted from its own problems — 14 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "dicts and sets",
+     "databases",
+     "graphs & trees"
+    ],
+    "cells": [
+     [
+      {
+       "text": "10",
+       "tone": "accent"
+      },
+      "Subarray Sum Equals K"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "Set Matrix Zeros"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Stock Buy and Sell (One Transa"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Find Kth Smallest (Heap)"
+     ]
+    ]
+   }
+  }
+ ],
+ "c4.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 461–485.** What this set actually drills, counted from its own problems — 15 of the 25 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "threads",
+     "graphs & trees"
+    ],
+    "cells": [
+     [
+      {
+       "text": "12",
+       "tone": "accent"
+      },
+      "Largest Number from List"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "List as Queue (FIFO)"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Implement Min Heap"
+     ]
+    ]
+   }
+  }
+ ],
+ "c4.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 486–511.** What this set actually drills, counted from its own problems — 12 of the 26 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "graphs & trees",
+     "files and paths"
+    ],
+    "cells": [
+     [
+      {
+       "text": "10",
+       "tone": "accent"
+      },
+      "Wave Sort"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "Spiral Order Traversal"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Shortest Path in Grid (BFS)"
+     ]
+    ]
+   }
+  }
+ ],
+ "c4.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 512–541.** What this set actually drills, counted from its own problems — 16 of the 30 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "databases"
+    ],
+    "cells": [
+     [
+      {
+       "text": "14",
+       "tone": "accent"
+      },
+      "Longest Subarray with At Most "
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "Implement LFU Cache Using List"
+     ]
+    ]
+   }
+  }
+ ],
+ "c4.6": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 542–559.** What this set actually drills, counted from its own problems — 9 of the 18 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists"
+    ],
+    "cells": [
+     [
+      {
+       "text": "9",
+       "tone": "accent"
+      },
+      "Find the largest element in a "
+     ]
+    ]
+   }
+  }
+ ],
+ "c4.7": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 560–566.** What this set actually drills, counted from its own problems — 6 of the 7 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "decorators",
+     "generators",
+     "dicts and sets"
+    ],
+    "cells": [
+     [
+      {
+       "text": "3",
+       "tone": "accent"
+      },
+      "A numpy array is not a list, a"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "array.array holds one C type a"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "itertools.product flattens nes"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Membership: a list scans, a se"
+     ]
+    ]
+   }
+  }
+ ],
+ "c5.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 567–596.** What this set asks you to predict, counted from its own problems — 19 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "dicts and sets",
+     "lists",
+     "strings",
+     "files and paths"
+    ],
+    "cells": [
+     [
+      {
+       "text": "15",
+       "tone": "accent"
+      },
+      "Iterating a dict's views"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "A lambda"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "str.split"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "JSON encoding or decoding"
+     ]
+    ]
+   }
+  }
+ ],
+ "c5.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 597–626.** What this set asks you to predict, counted from its own problems — 22 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "dicts and sets",
+     "graphs & trees",
+     "functions",
+     "lists",
+     "classes",
+     "strings"
+    ],
+    "cells": [
+     [
+      {
+       "text": "17",
+       "tone": "accent"
+      },
+      "A Counter"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "A deque"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "A ChainMap"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "A deque"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "super() and the method resolut"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "A deque"
+     ]
+    ]
+   }
+  }
+ ],
+ "c5.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 627–645.** What this set asks you to predict, counted from its own problems — 15 of the 19 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "dicts and sets",
+     "production",
+     "classes",
+     "graphs & trees",
+     "threads"
+    ],
+    "cells": [
+     [
+      {
+       "text": "10",
+       "tone": "accent"
+      },
+      "A defaultdict"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "A collections container"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "super() and the method resolut"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "A deque"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "A deque"
+     ]
+    ]
+   }
+  }
+ ],
+ "c5.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 646–665.** What this set actually drills, counted from its own problems — 19 of the 20 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "dicts and sets",
+     "strings",
+     "databases",
+     "production"
+    ],
+    "cells": [
+     [
+      {
+       "text": "11",
+       "tone": "accent"
+      },
+      "Invert a dictionary"
+     ],
+     [
+      {
+       "text": "6",
+       "tone": "good"
+      },
+      "Count word frequencies in a se"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Implement an LRU cache"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Find symmetric difference betw"
+     ]
+    ]
+   }
+  }
+ ],
+ "c6.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 666–686.** What this set actually drills, counted from its own problems — 12 of the 21 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "numbers",
+     "lists",
+     "strings",
+     "functions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4",
+       "tone": "accent"
+      },
+      "Factorial Using Iteration"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "good"
+      },
+      "Matrix Addition"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Reverse a String"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Power Function Without Built"
+     ]
+    ]
+   }
+  }
+ ],
+ "c6.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 687–706.** What this set actually drills, counted from its own problems — 12 of the 20 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "functions",
+     "classes",
+     "decorators",
+     "generators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "9",
+       "tone": "accent"
+      },
+      "*args and **kwargs, Packing an"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "First"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "functools.partial Freezes Argu"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Generators as a Pipeline"
+     ]
+    ]
+   }
+  }
+ ],
+ "c6.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 707–724.** What this set actually drills, counted from its own problems — 11 of the 18 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "functions",
+     "generators",
+     "dicts and sets",
+     "numbers",
+     "lists"
+    ],
+    "cells": [
+     [
+      {
+       "text": "6",
+       "tone": "accent"
+      },
+      "A lambda"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "An itertools recipe"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "A lambda"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "A lambda"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "A lambda"
+     ]
+    ]
+   }
+  }
+ ],
+ "c6.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 725–754.** What this set asks you to predict, counted from its own problems — 12 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "generators",
+     "functions",
+     "exceptions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "8",
+       "tone": "accent"
+      },
+      "Sorting"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "A generator expression"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "A lambda"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "A caught TypeError"
+     ]
+    ]
+   }
+  }
+ ],
+ "c7.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 755–776.** What this set actually drills, counted from its own problems — 17 of the 22 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "files and paths",
+     "strings",
+     "algorithms",
+     "lists",
+     "functions",
+     "generators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "7",
+       "tone": "accent"
+      },
+      "Read CSV Without Library"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "Number to Words"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "ROT13 Cipher"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "String & List Operations"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "Higher"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Directory Tree Generator"
+     ]
+    ]
+   }
+  }
+ ],
+ "c7.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 777–800.** What this set actually drills, counted from its own problems — 10 of the 24 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "functions",
+     "files and paths",
+     "lists",
+     "classes",
+     "dicts and sets",
+     "strings"
+    ],
+    "cells": [
+     [
+      {
+       "text": "3",
+       "tone": "accent"
+      },
+      "Numeric & Cryptographic Functi"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "CSV to Dict List"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Matrix Inverse (2x2)"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Bisection Method"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Multi"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Text Processing & NLP Utilitie"
+     ]
+    ]
+   }
+  }
+ ],
+ "c7.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 801–829.** What this set actually drills, counted from its own problems — 12 of the 29 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "functions",
+     "files and paths",
+     "graphs & trees",
+     "generators",
+     "regex",
+     "patterns"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4",
+       "tone": "accent"
+      },
+      "ML Utility Functions"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "CSV Data Transformer"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "Trie"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Lazy Evaluation with Generator"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Pattern Matching with Match"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "ETL Pipeline Builder"
+     ]
+    ]
+   }
+  }
+ ],
+ "c7.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 830–859.** What this set asks you to predict, counted from its own problems — 28 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "functions",
+     "strings",
+     "decorators",
+     "lists",
+     "numbers"
+    ],
+    "cells": [
+     [
+      {
+       "text": "18",
+       "tone": "accent"
+      },
+      "A function call"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "good"
+      },
+      "The global keyword"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "An lru_cache"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "A list comprehension"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "A function call"
+     ]
+    ]
+   }
+  }
+ ],
+ "c7.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 860–889.** What this set asks you to predict, counted from its own problems — 27 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "functions",
+     "lists",
+     "decorators",
+     "exceptions",
+     "strings",
+     "generators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "13",
+       "tone": "accent"
+      },
+      "A function call"
+     ],
+     [
+      {
+       "text": "5",
+       "tone": "good"
+      },
+      "A list comprehension"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "violet"
+      },
+      "A decorated function"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "A return inside finally"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "The nonlocal keyword"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "A generator"
+     ]
+    ]
+   }
+  }
+ ],
+ "c7.6": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 890–919.** What this set asks you to predict, counted from its own problems — 30 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "functions",
+     "lists",
+     "generators",
+     "strings",
+     "decorators",
+     "dicts and sets"
+    ],
+    "cells": [
+     [
+      {
+       "text": "14",
+       "tone": "accent"
+      },
+      "A lambda"
+     ],
+     [
+      {
+       "text": "7",
+       "tone": "good"
+      },
+      "A lambda"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "violet"
+      },
+      "An itertools recipe"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "A lambda"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "functools.reduce"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "A lambda"
+     ]
+    ]
+   }
+  }
+ ],
+ "c8.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 920–944.** What this set actually drills, counted from its own problems — 18 of the 25 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "classes",
+     "decorators",
+     "testing",
+     "generators",
+     "async",
+     "threads"
+    ],
+    "cells": [
+     [
+      {
+       "text": "6",
+       "tone": "accent"
+      },
+      "Class Inheritance"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "good"
+      },
+      "Property Decorator"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Unit Testing with pytest"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "Coroutine (send/yield)"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "Async/Await Basics"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Threading with Lock"
+     ]
+    ]
+   }
+  }
+ ],
+ "c8.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 945–967.** What this set actually drills, counted from its own problems — 18 of the 23 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "classes",
+     "patterns",
+     "dicts and sets",
+     "decorators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "12",
+       "tone": "accent"
+      },
+      "Class Attributes Are Shared, I"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "SOLID: Single Responsibility a"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "A Hash Table Built by Hand"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "__slots__ Saves Memory and Blo"
+     ]
+    ]
+   }
+  }
+ ],
+ "c8.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 968–997.** What this set asks you to predict, counted from its own problems — 26 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "classes",
+     "exceptions",
+     "generators",
+     "strings"
+    ],
+    "cells": [
+     [
+      {
+       "text": "22",
+       "tone": "accent"
+      },
+      "__repr__ versus __str__"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "A try / except block"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "The iterator protocol"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "A context manager"
+     ]
+    ]
+   }
+  }
+ ],
+ "c8.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 998–1027.** What this set asks you to predict, counted from its own problems — 26 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "classes",
+     "exceptions",
+     "modules",
+     "strings",
+     "generators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "22",
+       "tone": "accent"
+      },
+      "__eq__ and __hash__"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "A raised exception"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "A dataclass"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "A context manager"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "The iterator protocol"
+     ]
+    ]
+   }
+  }
+ ],
+ "c8.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1028–1057.** What this set asks you to predict, counted from its own problems — 27 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "classes",
+     "exceptions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "26",
+       "tone": "accent"
+      },
+      "Inheritance"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "A class"
+     ]
+    ]
+   }
+  }
+ ],
+ "c9.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1058–1074.** What this set asks you to predict, counted from its own problems — 17 of the 17 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "classes",
+     "exceptions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "16",
+       "tone": "accent"
+      },
+      "Attribute lookup hooks"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "A class"
+     ]
+    ]
+   }
+  }
+ ],
+ "c9.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1075–1100.** What this set actually drills, counted from its own problems — 6 of the 26 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "classes",
+     "patterns",
+     "internals"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4",
+       "tone": "accent"
+      },
+      "Template Method Pattern"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "SOLID Principles"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Slots usage"
+     ]
+    ]
+   }
+  }
+ ],
+ "c9.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1101–1128.** What this set actually drills, counted from its own problems — 20 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "decorators",
+     "internals",
+     "threads",
+     "generators",
+     "dicts and sets",
+     "files and paths"
+    ],
+    "cells": [
+     [
+      {
+       "text": "6",
+       "tone": "accent"
+      },
+      "Write a decorator for logging"
+     ],
+     [
+      {
+       "text": "6",
+       "tone": "good"
+      },
+      "Explain garbage collection"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "How does the GIL work?"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "Implement a custom iterator"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "How are dictionaries implement"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "What is a .pyc file?"
+     ]
+    ]
+   }
+  }
+ ],
+ "c9.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1129–1156.** What this set actually drills, counted from its own problems — 12 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "classes",
+     "dicts and sets",
+     "functions",
+     "generators",
+     "decorators",
+     "internals"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4",
+       "tone": "accent"
+      },
+      "What makes an object hashable?"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "What is hash collision?"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "How are functions represented "
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "How are generators implemented"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Explain memory allocation in P"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "How does import work internall"
+     ]
+    ]
+   }
+  }
+ ],
+ "c9.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1157–1186.** What this set actually drills, counted from its own problems — 30 of the 30 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "generators",
+     "decorators",
+     "functions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "15",
+       "tone": "accent"
+      },
+      "Iterator protocol"
+     ],
+     [
+      {
+       "text": "12",
+       "tone": "good"
+      },
+      "What is a decorator?"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Closures"
+     ]
+    ]
+   }
+  }
+ ],
+ "c10.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1187–1200.** What this set actually drills, counted from its own problems — 8 of the 14 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "files and paths",
+     "classes",
+     "lists",
+     "decorators",
+     "functions",
+     "exceptions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "2",
+       "tone": "accent"
+      },
+      "Pathlib"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "Descriptor"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Operator Overloading"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Class Decorator"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Functional Composition"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Result Type (Error Handling)"
+     ]
+    ]
+   }
+  }
+ ],
+ "c10.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1201–1228.** What this set actually drills, counted from its own problems — 15 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "async",
+     "exceptions",
+     "dicts and sets",
+     "generators",
+     "classes",
+     "regex"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4",
+       "tone": "accent"
+      },
+      "Semaphore for Rate Limiting"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "Custom Exception Hierarchy"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Counter Advanced Usage"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "Async Iterator"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "Generic Class"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Structural Pattern Matching (P"
+     ]
+    ]
+   }
+  }
+ ],
+ "c10.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1229–1244.** What this set actually drills, counted from its own problems — 9 of the 16 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "classes",
+     "graphs & trees",
+     "files and paths",
+     "algorithms",
+     "lists",
+     "dicts and sets"
+    ],
+    "cells": [
+     [
+      {
+       "text": "3",
+       "tone": "accent"
+      },
+      "Factory Method"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "Trie with Autocomplete"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Graph"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "A* Search Algorithm"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Skip List"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Consistent Hashing"
+     ]
+    ]
+   }
+  }
+ ],
+ "c10.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1245–1261.** What this set actually drills, counted from its own problems — 7 of the 17 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "patterns",
+     "databases",
+     "production",
+     "generators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4",
+       "tone": "accent"
+      },
+      "Abstract Factory"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "Saga Pattern (Distributed Tran"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Dependency Injection Container"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Iterator Pattern"
+     ]
+    ]
+   }
+  }
+ ],
+ "c10.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1262–1289.** What this set actually drills, counted from its own problems — 20 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "classes",
+     "patterns",
+     "decorators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "10",
+       "tone": "accent"
+      },
+      "Explain inheritance"
+     ],
+     [
+      {
+       "text": "9",
+       "tone": "good"
+      },
+      "Singleton Pattern"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Decorator Pattern (Design Patt"
+     ]
+    ]
+   }
+  }
+ ],
+ "c10.6": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1290–1298.** What this set actually drills, counted from its own problems — 1 of the 9 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "exceptions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "1",
+       "tone": "accent"
+      },
+      "Registry pattern"
+     ]
+    ]
+   }
+  }
+ ],
+ "c11.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1299–1319.** What this set actually drills, counted from its own problems — 15 of the 21 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "decorators",
+     "generators",
+     "classes",
+     "internals"
+    ],
+    "cells": [
+     [
+      {
+       "text": "7",
+       "tone": "accent"
+      },
+      "What a Decorator Actually Does"
+     ],
+     [
+      {
+       "text": "6",
+       "tone": "good"
+      },
+      "A Generator Is Lazy"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "A Property With a Setter and V"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "dis: What the Bytecode Actuall"
+     ]
+    ]
+   }
+  }
+ ],
+ "c11.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1320–1349.** What this set asks you to predict, counted from its own problems — 29 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "decorators",
+     "classes",
+     "functions",
+     "strings",
+     "lists",
+     "exceptions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "15",
+       "tone": "accent"
+      },
+      "A decorated function"
+     ],
+     [
+      {
+       "text": "5",
+       "tone": "good"
+      },
+      "A class definition"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "A function call"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "teal"
+      },
+      "The nonlocal keyword"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "A list comprehension"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "A raised exception"
+     ]
+    ]
+   }
+  }
+ ],
+ "c11.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1350–1379.** What this set asks you to predict, counted from its own problems — 30 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "generators",
+     "decorators",
+     "classes",
+     "lists",
+     "functions",
+     "strings"
+    ],
+    "cells": [
+     [
+      {
+       "text": "11",
+       "tone": "accent"
+      },
+      "A @contextmanager generator"
+     ],
+     [
+      {
+       "text": "9",
+       "tone": "good"
+      },
+      "A decorator that takes argumen"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "violet"
+      },
+      "A class definition"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "A list comprehension"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "A lambda"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "crit"
+      },
+      "The nonlocal keyword"
+     ]
+    ]
+   }
+  }
+ ],
+ "c12.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1380–1409.** What this set asks you to predict, counted from its own problems — 30 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "generators",
+     "lists"
+    ],
+    "cells": [
+     [
+      {
+       "text": "29",
+       "tone": "accent"
+      },
+      "yield from"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "A lambda"
+     ]
+    ]
+   }
+  }
+ ],
+ "c12.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1410–1439.** What this set asks you to predict, counted from its own problems — 24 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "generators",
+     "classes",
+     "dicts and sets",
+     "lists",
+     "internals",
+     "databases"
+    ],
+    "cells": [
+     [
+      {
+       "text": "12",
+       "tone": "accent"
+      },
+      "An itertools recipe"
+     ],
+     [
+      {
+       "text": "5",
+       "tone": "good"
+      },
+      "__slots__"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Set operations"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "A function call"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "What is the output of `sys.get"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "A caught KeyError"
+     ]
+    ]
+   }
+  }
+ ],
+ "c12.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1440–1469.** What this set asks you to predict, counted from its own problems — 24 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "classes",
+     "generators",
+     "lists",
+     "dicts and sets",
+     "decorators",
+     "functions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "9",
+       "tone": "accent"
+      },
+      "__slots__"
+     ],
+     [
+      {
+       "text": "5",
+       "tone": "good"
+      },
+      "A generator"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "violet"
+      },
+      "A list comprehension"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "teal"
+      },
+      "A dict comprehension"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "An lru_cache"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "A lambda"
+     ]
+    ]
+   }
+  }
+ ],
+ "c12.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1470–1499.** What this set asks you to predict, counted from its own problems — 21 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "dicts and sets",
+     "lists",
+     "generators",
+     "classes"
+    ],
+    "cells": [
+     [
+      {
+       "text": "17",
+       "tone": "accent"
+      },
+      "Set operations"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "Sorting"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "A generator expression"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "What is the output of `t.__con"
+     ]
+    ]
+   }
+  }
+ ],
+ "c13.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1500–1519.** What this set actually drills, counted from its own problems — 15 of the 20 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "dicts and sets",
+     "lists",
+     "strings",
+     "generators",
+     "regex"
+    ],
+    "cells": [
+     [
+      {
+       "text": "6",
+       "tone": "accent"
+      },
+      "Flatten Dictionary"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "good"
+      },
+      "Chunk a List"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Minimum Window Substring"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Sliding Window Generator"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "String Pattern Matching (KMP)"
+     ]
+    ]
+   }
+  }
+ ],
+ "c13.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1520–1549.** What this set asks you to predict, counted from its own problems — 13 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "classes",
+     "functions",
+     "numbers",
+     "dicts and sets",
+     "exceptions",
+     "patterns"
+    ],
+    "cells": [
+     [
+      {
+       "text": "7",
+       "tone": "accent"
+      },
+      "__new__ versus __init__"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "A mutable default argument"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Floating"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Iterating a dict's views"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "A metaclass"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Attribute lookup hooks"
+     ]
+    ]
+   }
+  }
+ ],
+ "c13.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1550–1569.** What this set asks you to predict, counted from its own problems — 17 of the 20 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "classes",
+     "generators",
+     "lists",
+     "strings",
+     "regex",
+     "decorators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "11",
+       "tone": "accent"
+      },
+      "A callable object via __call__"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "The iterator protocol"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Attribute lookup hooks"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "A caught ValueError"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "__repr__ versus __str__"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "A decorator using functools.wr"
+     ]
+    ]
+   }
+  }
+ ],
+ "c13.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1570–1597.** What this set actually drills, counted from its own problems — 20 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "decorators",
+     "classes",
+     "generators",
+     "functions",
+     "modules",
+     "internals"
+    ],
+    "cells": [
+     [
+      {
+       "text": "6",
+       "tone": "accent"
+      },
+      "Decorator execution order"
+     ],
+     [
+      {
+       "text": "6",
+       "tone": "good"
+      },
+      "Cached property"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Lazy loading properties"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "Function objects internals"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "Custom import hooks"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Bytecode inspection with dis"
+     ]
+    ]
+   }
+  }
+ ],
+ "c13.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1598–1606.** What this set actually drills, counted from its own problems — 7 of the 9 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "internals",
+     "threads",
+     "decorators",
+     "classes"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4",
+       "tone": "accent"
+      },
+      "Profiling techniques"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "GIL contention analysis"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Memory optimization"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Object pooling"
+     ]
+    ]
+   }
+  }
+ ],
+ "c14.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1607–1630.** What this set actually drills, counted from its own problems — 12 of the 24 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "strings",
+     "graphs & trees",
+     "algorithms",
+     "exceptions",
+     "databases"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4",
+       "tone": "accent"
+      },
+      "Flatten Deeply Nested List"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "Context Manager"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "Trie (Prefix Tree)"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "Knapsack Problem (Dynamic Prog"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Exception Handling"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "LRU Cache"
+     ]
+    ]
+   }
+  }
+ ],
+ "c14.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1631–1659.** What this set actually drills, counted from its own problems — 24 of the 29 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "files and paths",
+     "exceptions",
+     "decorators",
+     "databases"
+    ],
+    "cells": [
+     [
+      {
+       "text": "17",
+       "tone": "accent"
+      },
+      "Read File Line by Line"
+     ],
+     [
+      {
+       "text": "5",
+       "tone": "good"
+      },
+      "Catch a Specific Exception, No"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Memory"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "SQLite Database Operations"
+     ]
+    ]
+   }
+  }
+ ],
+ "c14.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1660–1688.** What this set actually drills, counted from its own problems — 23 of the 29 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "files and paths",
+     "exceptions",
+     "production",
+     "dicts and sets",
+     "strings",
+     "lists"
+    ],
+    "cells": [
+     [
+      {
+       "text": "11",
+       "tone": "accent"
+      },
+      "Atomic File Write"
+     ],
+     [
+      {
+       "text": "8",
+       "tone": "good"
+      },
+      "finally Runs Even When You ret"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Re"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "KeyError, .get() and defaultdi"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "A Context Manager That Handles"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Merging Sorted Files Without L"
+     ]
+    ]
+   }
+  }
+ ],
+ "c14.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1689–1717.** What this set asks you to predict, counted from its own problems — 23 of the 29 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "exceptions",
+     "files and paths",
+     "classes",
+     "threads",
+     "strings"
+    ],
+    "cells": [
+     [
+      {
+       "text": "11",
+       "tone": "accent"
+      },
+      "Division by zero inside try"
+     ],
+     [
+      {
+       "text": "6",
+       "tone": "good"
+      },
+      "Streaming JSON Lines Without L"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "violet"
+      },
+      "super() and the method resolut"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "A Lock File So Two Processes D"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "A context manager"
+     ]
+    ]
+   }
+  }
+ ],
+ "c15.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1718–1747.** What this set asks you to predict, counted from its own problems — 22 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "exceptions",
+     "classes",
+     "strings",
+     "generators",
+     "functions",
+     "numbers"
+    ],
+    "cells": [
+     [
+      {
+       "text": "8",
+       "tone": "accent"
+      },
+      "A try / except block"
+     ],
+     [
+      {
+       "text": "8",
+       "tone": "good"
+      },
+      "__repr__ versus __str__"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "A context manager"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "A generator"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "A lambda"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "A caught ValueError"
+     ]
+    ]
+   }
+  }
+ ],
+ "c15.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1748–1777.** What this set asks you to predict, counted from its own problems — 22 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "files and paths",
+     "classes",
+     "strings",
+     "generators",
+     "lists",
+     "functions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "11",
+       "tone": "accent"
+      },
+      "Filesystem paths"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "good"
+      },
+      "A class definition"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "A context manager"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "A @contextmanager generator"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "list.append"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "A lambda"
+     ]
+    ]
+   }
+  }
+ ],
+ "c15.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1778–1796.** What this set asks you to predict, counted from its own problems — 18 of the 19 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "classes",
+     "generators",
+     "strings",
+     "exceptions",
+     "files and paths"
+    ],
+    "cells": [
+     [
+      {
+       "text": "5",
+       "tone": "accent"
+      },
+      "A class definition"
+     ],
+     [
+      {
+       "text": "5",
+       "tone": "good"
+      },
+      "yield from"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "violet"
+      },
+      "A context manager"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "A raised exception"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "JSON encoding or decoding"
+     ]
+    ]
+   }
+  }
+ ],
+ "c15.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1797–1820.** What this set actually drills, counted from its own problems — 20 of the 24 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "threads",
+     "async"
+    ],
+    "cells": [
+     [
+      {
+       "text": "12",
+       "tone": "accent"
+      },
+      "Basic Thread Creation"
+     ],
+     [
+      {
+       "text": "8",
+       "tone": "good"
+      },
+      "Async/Await Basic"
+     ]
+    ]
+   }
+  }
+ ],
+ "c16.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1821–1843.** What this set actually drills, counted from its own problems — 18 of the 23 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "async",
+     "threads",
+     "decorators",
+     "generators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "8",
+       "tone": "accent"
+      },
+      "Async HTTP Fetcher (aiohttp)"
+     ],
+     [
+      {
+       "text": "8",
+       "tone": "good"
+      },
+      "Thread"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Multiprocessing Shared Memory"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "asyncio.gather Runs Coroutines"
+     ]
+    ]
+   }
+  }
+ ],
+ "c16.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1844–1868.** What this set actually drills, counted from its own problems — 16 of the 25 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "threads",
+     "async",
+     "generators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "8",
+       "tone": "accent"
+      },
+      "Blocking Work Belongs in a Thr"
+     ],
+     [
+      {
+       "text": "5",
+       "tone": "good"
+      },
+      "An asyncio.Semaphore Caps Conc"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Timing Out a Coroutine"
+     ]
+    ]
+   }
+  }
+ ],
+ "c16.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1869–1898.** What this set asks you to predict, counted from its own problems — 29 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "threads",
+     "classes",
+     "async",
+     "exceptions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "24",
+       "tone": "accent"
+      },
+      "Threads"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "A property"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "A pool executor"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "A try / except block"
+     ]
+    ]
+   }
+  }
+ ],
+ "c16.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 1899–1918.** What this set asks you to predict, counted from its own problems — 20 of the 20 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "threads",
+     "async",
+     "strings",
+     "classes"
+    ],
+    "cells": [
+     [
+      {
+       "text": "16",
+       "tone": "accent"
+      },
+      "Threads"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "A pool executor"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "A context manager"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "A classmethod"
+     ]
+    ]
+   }
+  }
+ ],
+ "c17.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1919–1947.** What this set actually drills, counted from its own problems — 19 of the 29 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "threads",
+     "async",
+     "generators",
+     "decorators",
+     "classes"
+    ],
+    "cells": [
+     [
+      {
+       "text": "8",
+       "tone": "accent"
+      },
+      "Thread vs process"
+     ],
+     [
+      {
+       "text": "6",
+       "tone": "good"
+      },
+      "Async context managers"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Async iterators"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Shared memory"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "IPC methods"
+     ]
+    ]
+   }
+  }
+ ],
+ "c17.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1948–1974.** What this set actually drills, counted from its own problems — 18 of the 27 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "async",
+     "generators",
+     "web and APIs",
+     "threads"
+    ],
+    "cells": [
+     [
+      {
+       "text": "15",
+       "tone": "accent"
+      },
+      "Future object"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "asyncio.shield"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Concurrent API calls"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Message queues"
+     ]
+    ]
+   }
+  }
+ ],
+ "c17.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1975–1997.** What this set actually drills, counted from its own problems — 9 of the 23 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "threads",
+     "async",
+     "graphs & trees",
+     "internals"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4",
+       "tone": "accent"
+      },
+      "Job queues"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "Async debugging"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Celery retries"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Profiling concurrent code"
+     ]
+    ]
+   }
+  }
+ ],
+ "c17.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 1998–2007.** What this set actually drills, counted from its own problems — 6 of the 10 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "async"
+    ],
+    "cells": [
+     [
+      {
+       "text": "6",
+       "tone": "accent"
+      },
+      "Event loop internals"
+     ]
+    ]
+   }
+  }
+ ],
+ "c18.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2008–2034.** What this set actually drills, counted from its own problems — 22 of the 27 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "testing",
+     "decorators",
+     "exceptions",
+     "generators",
+     "strings",
+     "production"
+    ],
+    "cells": [
+     [
+      {
+       "text": "12",
+       "tone": "accent"
+      },
+      "Unit Test with unittest"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "Benchmark Decorator"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Assertion Helpers"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "Fuzzy Test Generator"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Debug Context Manager"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Logging Configuration"
+     ]
+    ]
+   }
+  }
+ ],
+ "c18.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2035–2060.** What this set actually drills, counted from its own problems — 22 of the 26 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "testing",
+     "files and paths",
+     "internals",
+     "decorators",
+     "generators",
+     "production"
+    ],
+    "cells": [
+     [
+      {
+       "text": "10",
+       "tone": "accent"
+      },
+      "Pytest Style Tests"
+     ],
+     [
+      {
+       "text": "5",
+       "tone": "good"
+      },
+      "File Watcher"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "Performance Profiling"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "Memory Profiling"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "Config File Generator"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Debugging with Logging"
+     ]
+    ]
+   }
+  }
+ ],
+ "c18.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 2061–2089.** What this set asks you to predict, counted from its own problems — 11 of the 29 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "numbers",
+     "dicts and sets",
+     "testing",
+     "strings",
+     "exceptions",
+     "patterns"
+    ],
+    "cells": [
+     [
+      {
+       "text": "3",
+       "tone": "accent"
+      },
+      "What is the output of `math.ce"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "A Counter"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "unittest.mock: Patching a Depe"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "logging: Levels, Format and a "
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "logging: exc_info Captures the"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "A Command"
+     ]
+    ]
+   }
+  }
+ ],
+ "c18.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 2090–2113.** What this set asks you to predict, counted from its own problems — 19 of the 24 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "regex",
+     "strings",
+     "dicts and sets"
+    ],
+    "cells": [
+     [
+      {
+       "text": "12",
+       "tone": "accent"
+      },
+      "A regular expression"
+     ],
+     [
+      {
+       "text": "6",
+       "tone": "good"
+      },
+      "A regular expression"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "A regular expression"
+     ]
+    ]
+   }
+  }
+ ],
+ "c18.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2114–2137.** What this set actually drills, counted from its own problems — 10 of the 24 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "modules",
+     "exceptions",
+     "internals",
+     "strings"
+    ],
+    "cells": [
+     [
+      {
+       "text": "6",
+       "tone": "accent"
+      },
+      "Wheel packages"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "Poetry"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Pip internals"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Code formatting"
+     ]
+    ]
+   }
+  }
+ ],
+ "c18.6": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2138–2157.** What this set actually drills, counted from its own problems — 1 of the 20 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "testing"
+    ],
+    "cells": [
+     [
+      {
+       "text": "1",
+       "tone": "accent"
+      },
+      "Test automation"
+     ]
+    ]
+   }
+  }
+ ],
+ "c18.7": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2158–2176.** What this set actually drills, counted from its own problems — 11 of the 19 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "testing"
+    ],
+    "cells": [
+     [
+      {
+       "text": "11",
+       "tone": "accent"
+      },
+      "Contract testing"
+     ]
+    ]
+   }
+  }
+ ],
+ "c19.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2177–2206.** What this set actually drills, counted from its own problems — 16 of the 30 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "regex",
+     "patterns",
+     "threads",
+     "strings",
+     "modules",
+     "files and paths"
+    ],
+    "cells": [
+     [
+      {
+       "text": "7",
+       "tone": "accent"
+      },
+      "Regex: match, search, fullmatc"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "Command Pipeline"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "Task Queue (Simple)"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "Table Formatter"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "Circular Imports and the Half"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "JSON Path Query"
+     ]
+    ]
+   }
+  }
+ ],
+ "c19.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 2207–2236.** What this set asks you to predict, counted from its own problems — 18 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "generators",
+     "classes",
+     "decorators",
+     "strings",
+     "modules",
+     "lists"
+    ],
+    "cells": [
+     [
+      {
+       "text": "5",
+       "tone": "accent"
+      },
+      "An itertools recipe"
+     ],
+     [
+      {
+       "text": "5",
+       "tone": "good"
+      },
+      "An abstract base class"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "An lru_cache"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "teal"
+      },
+      "str.split"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "A for loop"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "A list comprehension"
+     ]
+    ]
+   }
+  }
+ ],
+ "c19.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 2237–2266.** What this set asks you to predict, counted from its own problems — 22 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "regex",
+     "classes",
+     "generators",
+     "files and paths",
+     "strings"
+    ],
+    "cells": [
+     [
+      {
+       "text": "17",
+       "tone": "accent"
+      },
+      "A regular expression"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "super() and the method resolut"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "An itertools recipe"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Filesystem paths"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "A regular expression"
+     ]
+    ]
+   }
+  }
+ ],
+ "c19.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2267–2292.** What this set actually drills, counted from its own problems — 18 of the 26 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "testing",
+     "production",
+     "decorators",
+     "strings",
+     "files and paths",
+     "exceptions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "11",
+       "tone": "accent"
+      },
+      "Unit testing"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "Logging module"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Patch decorators"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Logging formatters"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "JSON logging"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Exception logging"
+     ]
+    ]
+   }
+  }
+ ],
+ "c20.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2293–2316.** What this set actually drills, counted from its own problems — 12 of the 24 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "web and APIs",
+     "patterns",
+     "async",
+     "files and paths",
+     "generators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "7",
+       "tone": "accent"
+      },
+      "HTTP Response Parser"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "HTTP Request Builder"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "WebSocket Echo Server (asyncio"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "JSON"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "SSE (Server"
+     ]
+    ]
+   }
+  }
+ ],
+ "c20.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2317–2341.** What this set actually drills, counted from its own problems — 14 of the 25 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "web and APIs",
+     "async",
+     "patterns",
+     "databases",
+     "files and paths",
+     "decorators"
+    ],
+    "cells": [
+     [
+      {
+       "text": "8",
+       "tone": "accent"
+      },
+      "HTTP Request/Response Parser"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "WebSocket Server (asyncio)"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "API Response Builder"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "GraphQL Query Parser (Simplifi"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "FastAPI File Upload"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Caching Decorator with TTL"
+     ]
+    ]
+   }
+  }
+ ],
+ "c20.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2342–2367.** What this set actually drills, counted from its own problems — 14 of the 26 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "web and APIs",
+     "files and paths",
+     "functions",
+     "databases",
+     "production",
+     "regex"
+    ],
+    "cells": [
+     [
+      {
+       "text": "6",
+       "tone": "accent"
+      },
+      "URL Router"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "good"
+      },
+      "CSV Processing Pipeline"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "CLI Argument Parser"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Database Connection Pool (Simu"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Logging Framework"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Pub/Sub Message Broker"
+     ]
+    ]
+   }
+  }
+ ],
+ "c20.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 2368–2396.** What this set asks you to predict, counted from its own problems — 17 of the 29 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "web and APIs",
+     "strings",
+     "exceptions",
+     "classes",
+     "files and paths",
+     "databases"
+    ],
+    "cells": [
+     [
+      {
+       "text": "9",
+       "tone": "accent"
+      },
+      "Retrying a Request with Backof"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "Idempotency Keys Stop Duplicat"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "urlopen raises on 4xx and 5xx"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "A byte string is not a str"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "A Tiny Router for a Request Pa"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Query strings hold LISTS of va"
+     ]
+    ]
+   }
+  }
+ ],
+ "c20.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 2397–2418.** What this set asks you to predict, counted from its own problems — 12 of the 22 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "web and APIs",
+     "files and paths",
+     "modules",
+     "lists"
+    ],
+    "cells": [
+     [
+      {
+       "text": "7",
+       "tone": "accent"
+      },
+      "Headers you send versus header"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "JSON round"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Percent"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Filtering and sorting APIs"
+     ]
+    ]
+   }
+  }
+ ],
+ "c20.6": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2419–2438.** What this set actually drills, counted from its own problems — 7 of the 20 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "web and APIs",
+     "files and paths",
+     "patterns"
+    ],
+    "cells": [
+     [
+      {
+       "text": "5",
+       "tone": "accent"
+      },
+      "Session"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "File uploads"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "violet"
+      },
+      "Reverse proxy"
+     ]
+    ]
+   }
+  }
+ ],
+ "c21.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2439–2462.** What this set actually drills, counted from its own problems — 12 of the 24 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "numbers",
+     "graphs & trees",
+     "dicts and sets",
+     "production",
+     "strings"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4",
+       "tone": "accent"
+      },
+      "Rotate Image In"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "Maximum Depth of Binary Tree"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "Level Order Traversal"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Power Set Using Bits"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Container With Most Water"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Word Ladder (BFS)"
+     ]
+    ]
+   }
+  }
+ ],
+ "c21.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2463–2488.** What this set actually drills, counted from its own problems — 14 of the 26 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "graphs & trees",
+     "lists",
+     "dicts and sets",
+     "files and paths",
+     "threads",
+     "strings"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4",
+       "tone": "accent"
+      },
+      "Implement Trie with Autocomple"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "good"
+      },
+      "Flatten Binary Tree to Linked "
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "LRU Cache (OrderedDict)"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "Path Sum (All Paths)"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Implement Queue Using Stacks"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Longest Substring Without Repe"
+     ]
+    ]
+   }
+  }
+ ],
+ "c21.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2489–2509.** What this set actually drills, counted from its own problems — 14 of the 21 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "files and paths",
+     "strings",
+     "algorithms",
+     "graphs & trees",
+     "databases"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4",
+       "tone": "accent"
+      },
+      "First and Last Position in Sor"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "Longest Path in DAG"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Longest Common Substring"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "Subset Sum (DP)"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Segment Tree (Range Sum)"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Sparse Table (Range Min Query)"
+     ]
+    ]
+   }
+  }
+ ],
+ "c21.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 2510–2538.** What this set asks you to predict, counted from its own problems — 19 of the 29 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "dicts and sets",
+     "strings",
+     "numbers",
+     "functions",
+     "graphs & trees"
+    ],
+    "cells": [
+     [
+      {
+       "text": "9",
+       "tone": "accent"
+      },
+      "Matrix Rotation In Place"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "good"
+      },
+      "Sorting is stable"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Aho"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Comparing floats for equality"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Default argument shared across"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "heapq gives you a MIN"
+     ]
+    ]
+   }
+  }
+ ],
+ "c21.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Problems 2539–2567.** What this set asks you to predict, counted from its own problems — 17 of the 29 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "dicts and sets",
+     "exceptions",
+     "strings",
+     "functions",
+     "production"
+    ],
+    "cells": [
+     [
+      {
+       "text": "8",
+       "tone": "accent"
+      },
+      "Identity of slices"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "Mutable objects as dictionary "
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "Exception inside a comprehensi"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "Longest Substring Without Repe"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Nested function scope in a loo"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Truthiness of zero and empty c"
+     ]
+    ]
+   }
+  }
+ ],
+ "c22.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2568–2596.** What this set actually drills, counted from its own problems — 19 of the 29 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "graphs & trees",
+     "lists",
+     "strings",
+     "numbers",
+     "files and paths",
+     "algorithms"
+    ],
+    "cells": [
+     [
+      {
+       "text": "5",
+       "tone": "accent"
+      },
+      "AVL Tree (Self"
+     ],
+     [
+      {
+       "text": "5",
+       "tone": "good"
+      },
+      "Counting Sort"
+     ],
+     [
+      {
+       "text": "5",
+       "tone": "violet"
+      },
+      "Longest Palindromic Substring"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "Binary Search Tree (Full Imple"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Floyd"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Traveling Salesman (DP with Bi"
+     ]
+    ]
+   }
+  }
+ ],
+ "c22.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 50–2621.** What this set actually drills, counted from its own problems — 17 of the 27 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "strings",
+     "threads",
+     "algorithms",
+     "files and paths",
+     "lists",
+     "graphs & trees"
+    ],
+    "cells": [
+     [
+      {
+       "text": "5",
+       "tone": "accent"
+      },
+      "String Algorithms"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "Monotonic Queue"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Two Pointers"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "Shortest Path by BFS (Unweight"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "Median of Two Sorted Arrays"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "crit"
+      },
+      "KD"
+     ]
+    ]
+   }
+  }
+ ],
+ "c22.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 72–2667.** What this set actually drills, counted from its own problems — 23 of the 47 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "strings",
+     "dicts and sets",
+     "databases",
+     "files and paths",
+     "algorithms"
+    ],
+    "cells": [
+     [
+      {
+       "text": "7",
+       "tone": "accent"
+      },
+      "Merge K Sorted Lists"
+     ],
+     [
+      {
+       "text": "5",
+       "tone": "good"
+      },
+      "Reverse Words in String"
+     ],
+     [
+      {
+       "text": "5",
+       "tone": "violet"
+      },
+      "Alien Dictionary (Topological "
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "Stock Buy/Sell (Multiple Trans"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "Minimum Path Sum"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "crit"
+      },
+      "Caesar Cipher with Frequency A"
+     ]
+    ]
+   }
+  }
+ ],
+ "c22.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2668–2690.** What this set actually drills, counted from its own problems — 10 of the 23 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "algorithms",
+     "dicts and sets",
+     "generators",
+     "classes"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4",
+       "tone": "accent"
+      },
+      "AES"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "Diffie"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "Secure Random Token Generator"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Newton's Method (Root Finding)"
+     ]
+    ]
+   }
+  }
+ ],
+ "c22.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2691–2719.** What this set actually drills, counted from its own problems — 15 of the 29 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "lists",
+     "strings",
+     "graphs & trees",
+     "numbers",
+     "files and paths",
+     "dicts and sets"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4",
+       "tone": "accent"
+      },
+      "Two Pointers on a Sorted Array"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "good"
+      },
+      "Password Strength Checker"
+     ],
+     [
+      {
+       "text": "3",
+       "tone": "violet"
+      },
+      "Dijkstra with a Heap"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "teal"
+      },
+      "Binary Search, and the Off"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "warn"
+      },
+      "Breadth"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Encryption Key Derivation"
+     ]
+    ]
+   }
+  }
+ ],
+ "c23.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2720–2741.** What this set actually drills, counted from its own problems — 11 of the 22 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "databases",
+     "internals"
+    ],
+    "cells": [
+     [
+      {
+       "text": "10",
+       "tone": "accent"
+      },
+      "ORM vs raw SQL"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "SQLAlchemy internals"
+     ]
+    ]
+   }
+  }
+ ],
+ "c23.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2742–2759.** What this set actually drills, counted from its own problems — 4 of the 18 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "exceptions",
+     "production"
+    ],
+    "cells": [
+     [
+      {
+       "text": "2",
+       "tone": "accent"
+      },
+      "Retry strategies"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "Metrics collection"
+     ]
+    ]
+   }
+  }
+ ],
+ "c23.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2760–2787.** What this set actually drills, counted from its own problems — 16 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "production",
+     "decorators",
+     "databases",
+     "internals",
+     "web and APIs",
+     "async"
+    ],
+    "cells": [
+     [
+      {
+       "text": "9",
+       "tone": "accent"
+      },
+      "Docker basics"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "Memory leak investigation"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "Database bottlenecks"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "CPU profiling"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Slow API debugging"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "Async performance issues"
+     ]
+    ]
+   }
+  }
+ ],
+ "c23.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2788–2815.** What this set actually drills, counted from its own problems — 9 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "threads",
+     "files and paths",
+     "web and APIs",
+     "dicts and sets",
+     "strings",
+     "databases"
+    ],
+    "cells": [
+     [
+      {
+       "text": "2",
+       "tone": "accent"
+      },
+      "Threading bottlenecks"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "Deserialization attacks"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "System design for URL shortene"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "Hashing basics"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "Password storage"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "SQL injection prevention"
+     ]
+    ]
+   }
+  }
+ ],
+ "c23.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2816–2838.** What this set actually drills, counted from its own problems — 2 of the 23 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "patterns",
+     "production"
+    ],
+    "cells": [
+     [
+      {
+       "text": "1",
+       "tone": "accent"
+      },
+      "API deprecation strategy"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "Production incident handling"
+     ]
+    ]
+   }
+  }
+ ],
+ "c23.6": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2839–2862.** What this set actually drills, counted from its own problems — 5 of the 24 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "databases",
+     "web and APIs"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4",
+       "tone": "accent"
+      },
+      "Explain query execution plans"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "API Gateway pattern"
+     ]
+    ]
+   }
+  }
+ ],
+ "c23.7": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What this set drills",
+    "caption": "**Programs 2863–2882.** What this set actually drills, counted from its own problems — 9 of the 20 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.",
+    "cols": [
+     "problems",
+     "for example"
+    ],
+    "rows": [
+     "decorators",
+     "generators",
+     "functions",
+     "dicts and sets",
+     "classes",
+     "exceptions"
+    ],
+    "cells": [
+     [
+      {
+       "text": "2",
+       "tone": "accent"
+      },
+      "1. Data Types, Mutability & Me"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "good"
+      },
+      "4. Comprehensions & Generators"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "violet"
+      },
+      "5. Functions"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "teal"
+      },
+      "3. Lists, Tuples, Sets, Dictio"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "warn"
+      },
+      "7. OOP"
+     ],
+     [
+      {
+       "text": "1",
+       "tone": "crit"
+      },
+      "8. Exception Handling"
+     ]
+    ]
+   }
+  }
+ ]
+}
