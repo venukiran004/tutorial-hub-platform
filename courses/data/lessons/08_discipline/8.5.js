@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The contract", id: "contract" },
 
+    {"kind": "steps", "title": "The contract a pipeline enforces", "caption": "The value is not tidiness — it is that `fit` can only ever see training data. Every statistic a transformer learns is learned inside the fold, which is the mechanical prevention of the leak that hand-written preprocessing invites.", "items": [{"label": "fit learns from the training fold only", "desc": "the mean, the categories, the vocabulary — all from inside", "tone": "accent", "code": "fit"}, {"label": "transform applies what was learned", "desc": "to any data, including the fold it never saw", "tone": "good", "code": "transform"}, {"label": "cross-validation refits per fold", "desc": "so the statistics are recomputed, which is the point", "tone": "good", "code": "cv"}, {"label": "and a stateless-looking step is the trap", "desc": "anything that touches the target, or the whole column, is stateful", "tone": "crit", "code": "watch"}], "t": "diagram", "id": "dg-8_5-01-0"},
+
+
     { t: "p", text: "A transformer has two methods with different rights. **`fit` may look at the rows it is given and remember things**: a median, a mean and standard deviation, a category list, a set of quantiles, a vocabulary. **`transform` may only apply what was remembered.** A `Pipeline` calls `fit_transform` on each step in turn during `fit`, and `transform` on each step during `predict` — so as long as every step honours the contract, the validation fold, the test set and tomorrow's request are all processed with statistics learnt from training rows alone." },
 
     { t: "dl", items: [

@@ -20,6 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The five joins and what each keeps", id: "types" },
 
+    {"kind": "matrix", "title": "The five joins, by what each keeps", "caption": "The `how` argument decides which keys survive; the **cardinality** decides how many rows come back, and those are different questions. A many-to-many join can return more rows than either input — pass `validate=` and let pandas refuse.", "cols": ["keeps", "row count risk"], "rows": ["inner", "left", "right", "outer", "cross"], "cells": [[{"text": "keys in both", "tone": "good"}, "can silently drop rows"], ["all of the left", {"text": "NaN where the right is missing", "tone": "warn"}], ["all of the right", "the mirror of left"], ["every key from either", {"text": "the largest result", "tone": "warn"}], [{"text": "every pair", "tone": "crit"}, {"text": "n × m — deliberate only", "tone": "crit"}]], "t": "diagram", "id": "dg-3_6-01-0"},
+
+
+
+
     { t: "p", text: "Every join answers the same question — which rows from the left match which rows from the right — and differs only in **what happens to the rows that do not match**." },
 
     { t: "dl", items: [

@@ -20,6 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The methods every ufunc already has", id: "methods" },
 
+    {"kind": "matrix", "title": "Every ufunc already has four methods", "caption": "These come free on any ufunc and replace a surprising amount of hand-written code. `at` is the one worth knowing: it does an **unbuffered** in-place update, so repeated indices accumulate instead of overwriting each other.", "cols": ["what it does", "example"], "rows": ["reduce", "accumulate", "outer", "at"], "cells": [["collapses an axis", "np.add.reduce(a) is a sum"], [{"text": "keeps every partial result", "tone": "good"}, "np.add.accumulate = cumsum"], ["every pair of elements", "np.multiply.outer(a, b)"], [{"text": "in place, UNBUFFERED", "tone": "accent"}, {"text": "np.add.at(a, idx, v) accumulates repeats", "tone": "good"}]], "t": "diagram", "id": "dg-2_5-01-0"},
+
+
+
+
     { t: "p", text: "`np.add` is not just a function — it is an object with methods. **`np.add.reduce` is `sum`, `np.add.accumulate` is `cumsum`, and the same pattern works for every binary ufunc**, including ones with no dedicated function of their own." },
 
     { t: "dl", items: [

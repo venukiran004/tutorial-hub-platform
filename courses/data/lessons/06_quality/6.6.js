@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The simple fills, and the variance they remove", id: "simple" },
 
+    {"kind": "matrix", "title": "What each fill removes from the data", "caption": "Every simple fill understates variance, because it puts mass at a single point. The indicator column is the cheap defence: it keeps the fact of the gap available to the model even after the gap is filled.", "cols": ["what it distorts", "when it is acceptable"], "rows": ["mean", "median", "mode", "forward fill", "a constant sentinel"], "cells": [[{"text": "variance down, shape pulled to centre", "tone": "crit"}, "roughly symmetric, few missing"], [{"text": "variance down, robust to skew", "tone": "warn"}, {"text": "skewed numeric — the usual choice", "tone": "good"}], ["invents a majority", "low-cardinality categorical"], [{"text": "fabricates persistence", "tone": "warn"}, {"text": "time series, and ONLY forwards", "tone": "good"}], [{"text": "creates a fake cluster", "tone": "warn"}, "tree models, with an indicator"]], "t": "diagram", "id": "dg-6_6-01-0"},
+
+
     { t: "p", text: "Replacing every missing value in a column with the column's mean is the most common imputation and the most damaging one that looks harmless. **It puts a spike at one point in the distribution, and every statistic that depends on spread — standard deviation, correlation, confidence interval — is now computed on a column that has less spread than the truth.**" },
 
     { t: "dl", items: [

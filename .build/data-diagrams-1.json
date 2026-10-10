@@ -1,0 +1,875 @@
+{
+ "1.1": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Choosing a dtype on purpose",
+    "caption": "The default is `float64` and it is rarely what you need. Halving the width halves the memory **and** doubles how much fits in cache, which is usually the larger win — but `float16` has about three decimal digits, so it is a storage format rather than a compute one.",
+    "cols": [
+     "bytes",
+     "range or precision",
+     "use it for"
+    ],
+    "rows": [
+     "int8",
+     "int32",
+     "float32",
+     "float64",
+     "float16"
+    ],
+    "cells": [
+     [
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "−128 to 127",
+      "categorical codes, flags"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "good"
+      },
+      "±2.1 billion",
+      "ids, counts"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "good"
+      },
+      "~7 digits",
+      {
+       "text": "almost all ML features",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "8",
+       "tone": "warn"
+      },
+      "~16 digits",
+      "money, accumulations"
+     ],
+     [
+      {
+       "text": "2",
+       "tone": "accent"
+      },
+      {
+       "text": "~3 digits",
+       "tone": "crit"
+      },
+      "storage, not maths"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.3": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "View or copy, and how to tell",
+    "caption": "The aliasing bug comes from not knowing which you have. The rule is mechanical: **basic** indexing can be expressed as a strided window, so it returns a view; **fancy** indexing cannot, so it copies. `arr.base` tells you after the fact.",
+    "cols": [
+     "view or copy?",
+     "writing to it"
+    ],
+    "rows": [
+     "a[1:5]",
+     "a[::2]",
+     "a.T  /  a.reshape(...)",
+     "a[[1, 3, 5]]",
+     "a[a > 0]"
+    ],
+    "cells": [
+     [
+      {
+       "text": "VIEW",
+       "tone": "warn"
+      },
+      {
+       "text": "changes the original",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "VIEW",
+       "tone": "warn"
+      },
+      {
+       "text": "changes the original",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "VIEW when it can be",
+       "tone": "warn"
+      },
+      {
+       "text": "changes the original",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "copy",
+       "tone": "good"
+      },
+      "independent"
+     ],
+     [
+      {
+       "text": "copy",
+       "tone": "good"
+      },
+      "independent"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.4": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Reductions and missing data",
+    "caption": "A single NaN propagates through an ordinary reduction and makes the whole result NaN, which is correct and almost never what you want. The `nan*` family skips them — and then the divisor changes, which is the part that silently alters a mean.",
+    "cols": [
+     "with a NaN present",
+     "what the divisor becomes"
+    ],
+    "rows": [
+     "np.sum",
+     "np.nansum",
+     "np.mean",
+     "np.nanmean"
+    ],
+    "cells": [
+     [
+      {
+       "text": "NaN",
+       "tone": "crit"
+      },
+      "—"
+     ],
+     [
+      {
+       "text": "skips it",
+       "tone": "good"
+      },
+      "n/a — a sum has none"
+     ],
+     [
+      {
+       "text": "NaN",
+       "tone": "crit"
+      },
+      "n, if it worked"
+     ],
+     [
+      {
+       "text": "skips it",
+       "tone": "good"
+      },
+      {
+       "text": "the COUNT of non-NaN — not n",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "1.5": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "What a seed can and cannot fix",
+    "caption": "A seed makes one process reproducible. It does not survive threads, a different library version, or a dictionary iteration that was never ordered — so “I set the seed” is not the same claim as “this run reproduces”.",
+    "cols": [
+     "does a seed fix it?",
+     "what does"
+    ],
+    "rows": [
+     "the same code, same machine",
+     "two threads drawing at once",
+     "a different NumPy version",
+     "GPU reductions",
+     "a set or dict order"
+    ],
+    "cells": [
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "—"
+     ],
+     [
+      {
+       "text": "NO",
+       "tone": "crit"
+      },
+      {
+       "text": "one generator per worker, spawned",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "not guaranteed",
+       "tone": "warn"
+      },
+      "pin the version"
+     ],
+     [
+      {
+       "text": "NO",
+       "tone": "crit"
+      },
+      "deterministic kernels, and accept the cost"
+     ],
+     [
+      {
+       "text": "NO",
+       "tone": "crit"
+      },
+      "sort before you iterate"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "When an array stops being an array",
+    "caption": "`object` dtype keeps the NumPy interface and loses everything that made it fast: the data is a block of **pointers**, so there is no contiguity, no vectorised loop and no fixed stride. It is a Python list wearing an array's clothes.",
+    "cols": [
+     "holds",
+     "a vectorised op",
+     "memory per element"
+    ],
+    "rows": [
+     "float64 array",
+     "object array",
+     "a Python list"
+    ],
+    "cells": [
+     [
+      {
+       "text": "8 bytes of value, inline",
+       "tone": "good"
+      },
+      {
+       "text": "a C loop",
+       "tone": "good"
+      },
+      {
+       "text": "8 bytes",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "a POINTER to a Python object",
+       "tone": "crit"
+      },
+      {
+       "text": "a Python loop",
+       "tone": "crit"
+      },
+      {
+       "text": "8 + the object, ~28+",
+       "tone": "crit"
+      }
+     ],
+     [
+      "a pointer, plus list overhead",
+      {
+       "text": "a Python loop",
+       "tone": "crit"
+      },
+      "8 + the object"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "timeline",
+    "title": "Growing an array in a loop",
+    "caption": "`np.append` allocates a new array and copies everything every time, so building n elements costs O(n²) copies. A list appends in amortised O(1) and converts once at the end — the same total work a single allocation would have done.",
+    "span": 100,
+    "tick": 20,
+    "unit": "relative time to build 100,000 elements",
+    "lanes": [
+     {
+      "label": "np.append loop",
+      "bars": [
+       [
+        0,
+        100,
+        "O(n squared) copying",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "list → np.array",
+      "bars": [
+       [
+        0,
+        3,
+        "",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "preallocate",
+      "bars": [
+       [
+        0,
+        2,
+        "",
+        "good"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "2.1": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Splitting, and what each one promises",
+    "caption": "`split` insists the pieces come out equal and raises if they cannot; `array_split` quietly makes them uneven. Which you want depends on whether an uneven split is a bug or a fact of your data.",
+    "cols": [
+     "uneven input",
+     "returns"
+    ],
+    "rows": [
+     "np.split(a, 3)",
+     "np.array_split(a, 3)",
+     "np.split(a, [2, 5])"
+    ],
+    "cells": [
+     [
+      {
+       "text": "RAISES",
+       "tone": "crit"
+      },
+      "equal pieces, or nothing"
+     ],
+     [
+      {
+       "text": "silently uneven",
+       "tone": "warn"
+      },
+      "as equal as it can manage"
+     ],
+     [
+      {
+       "text": "fine",
+       "tone": "good"
+      },
+      {
+       "text": "cuts at the given indices",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "2.2": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Set operations on arrays",
+    "caption": "These all sort internally, so they are O(n log n) rather than the O(n) a hash set would give — but they return arrays and keep the dtype, which is usually what you want inside a vectorised pipeline. `in1d` is the one with a faster alternative.",
+    "cols": [
+     "gives",
+     "note"
+    ],
+    "rows": [
+     "np.unique",
+     "np.intersect1d",
+     "np.setdiff1d",
+     "np.isin"
+    ],
+    "cells": [
+     [
+      {
+       "text": "sorted distinct values",
+       "tone": "good"
+      },
+      "return_counts gives a frequency table free"
+     ],
+     [
+      "values in both",
+      "both inputs are sorted first"
+     ],
+     [
+      "in the first, not the second",
+      "order follows the sort, not the input"
+     ],
+     [
+      {
+       "text": "a boolean mask",
+       "tone": "accent"
+      },
+      {
+       "text": "the one you want for filtering",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "2.3": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Never invert to solve",
+    "caption": "`inv(A) @ b` computes something you did not need and loses accuracy doing it. `solve` factorises once and substitutes, which is both faster and better conditioned — and for a least-squares problem `lstsq` is better again, because it does not form AᵀA at all.",
+    "cols": [
+     "cost",
+     "accuracy",
+     "use when"
+    ],
+    "rows": [
+     "inv(A) @ b",
+     "solve(A, b)",
+     "lstsq(A, b)"
+    ],
+    "cells": [
+     [
+      {
+       "text": "worst",
+       "tone": "crit"
+      },
+      {
+       "text": "worst",
+       "tone": "crit"
+      },
+      {
+       "text": "you genuinely need A⁻¹",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "~⅓ n³",
+       "tone": "good"
+      },
+      {
+       "text": "good",
+       "tone": "good"
+      },
+      "a square, well-posed system"
+     ],
+     [
+      {
+       "text": "more",
+       "tone": "warn"
+      },
+      {
+       "text": "best",
+       "tone": "good"
+      },
+      {
+       "text": "overdetermined",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "2.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "compare",
+    "title": "A structured array, or a DataFrame",
+    "caption": "Structured arrays are row-major, so a whole-column operation touches every row's worth of bytes. That is the opposite of what analysis wants, and it is why pandas exists — a structured array is for a binary format with a fixed record layout.",
+    "columns": [
+     {
+      "title": "structured array",
+      "tone": "warn",
+      "items": [
+       "one block, records laid out row by row",
+       "a column operation strides over every record",
+       "no index, no alignment, no missing-value handling",
+       "right for reading a binary file with a fixed layout",
+       "right when you pass records to C"
+      ]
+     },
+     {
+      "title": "DataFrame",
+      "tone": "good",
+      "items": [
+       "one contiguous array per column",
+       "a column operation is a contiguous scan",
+       "an index, automatic alignment, a missing-value story",
+       "right for analysis, grouping and joining",
+       "the default choice for tabular work"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "2.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Every ufunc already has four methods",
+    "caption": "These come free on any ufunc and replace a surprising amount of hand-written code. `at` is the one worth knowing: it does an **unbuffered** in-place update, so repeated indices accumulate instead of overwriting each other.",
+    "cols": [
+     "what it does",
+     "example"
+    ],
+    "rows": [
+     "reduce",
+     "accumulate",
+     "outer",
+     "at"
+    ],
+    "cells": [
+     [
+      "collapses an axis",
+      "np.add.reduce(a) is a sum"
+     ],
+     [
+      {
+       "text": "keeps every partial result",
+       "tone": "good"
+      },
+      "np.add.accumulate = cumsum"
+     ],
+     [
+      "every pair of elements",
+      "np.multiply.outer(a, b)"
+     ],
+     [
+      {
+       "text": "in place, UNBUFFERED",
+       "tone": "accent"
+      },
+      {
+       "text": "np.add.at(a, idx, v) accumulates repeats",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "2.6": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "steps",
+    "title": "Finding a period with an FFT",
+    "caption": "Four steps, and the third is where people go wrong: the x-axis of an FFT is frequency, so the period is its reciprocal, and the units follow your sample spacing rather than your intuition.",
+    "items": [
+     {
+      "label": "detrend first",
+      "desc": "a linear trend puts all the energy in the lowest bin and hides everything else",
+      "tone": "crit",
+      "code": "1"
+     },
+     {
+      "label": "take rfft, then the magnitudes",
+      "desc": "real input, so the negative frequencies are redundant",
+      "tone": "good",
+      "code": "2"
+     },
+     {
+      "label": "convert the peak bin to a period",
+      "desc": "period = 1 / frequency, in the units of your sample spacing",
+      "tone": "warn",
+      "code": "3"
+     },
+     {
+      "label": "check it against the series",
+      "desc": "an FFT will always report a peak; plot the fold to see whether it is real",
+      "tone": "accent",
+      "code": "4"
+     }
+    ]
+   }
+  }
+ ],
+ "3.1": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "Alignment explains nearly every pandas surprise",
+    "caption": "Arithmetic between two pandas objects matches on the **index**, not on position. Once that is held, the NaN that appeared from nowhere, the row count that grew after an operation, and the assignment that did nothing all have the same explanation.",
+    "items": [
+     {
+      "label": "an operation aligns the indexes first",
+      "desc": "the union of both, so a label in only one side produces NaN",
+      "tone": "accent",
+      "code": "1"
+     },
+     {
+      "label": "then it operates element by element",
+      "desc": "on the aligned result, not on the original ordering",
+      "tone": "good",
+      "code": "2"
+     },
+     {
+      "label": "so a + b can be LONGER than either",
+      "desc": "and full of NaN where the labels did not meet",
+      "tone": "crit",
+      "code": "the surprise"
+     },
+     {
+      "label": "and .values opts out entirely",
+      "desc": "positional, no alignment — which is sometimes exactly right",
+      "tone": "violet",
+      "code": "the escape"
+     }
+    ]
+   }
+  }
+ ],
+ "3.3": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "What a categorical buys beyond memory",
+    "caption": "The memory saving is the advertised benefit and the smaller one. The real wins are that a groupby can use the codes directly, that an order can be declared and then sorted on, and that an unexpected value **raises** instead of being silently accepted.",
+    "cols": [
+     "object dtype",
+     "category"
+    ],
+    "rows": [
+     "memory, 1M rows / 5 values",
+     "groupby",
+     "sorting",
+     "an unseen value"
+    ],
+    "cells": [
+     [
+      {
+       "text": "~60 MB",
+       "tone": "crit"
+      },
+      {
+       "text": "~1 MB",
+       "tone": "good"
+      }
+     ],
+     [
+      "hashes every string",
+      {
+       "text": "groups on integer codes",
+       "tone": "good"
+      }
+     ],
+     [
+      "alphabetical only",
+      {
+       "text": "a declared order, so low < mid < high",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "silently accepted",
+       "tone": "crit"
+      },
+      {
+       "text": "becomes NaN — visible",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "3.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Long and wide, and the verb for each direction",
+    "caption": "Four functions and two directions. `pivot` raises on a duplicate index-column pair; `pivot_table` aggregates it instead — which is why a silent mean appears in results people did not ask for.",
+    "cols": [
+     "direction",
+     "on duplicate keys"
+    ],
+    "rows": [
+     "melt",
+     "pivot",
+     "pivot_table",
+     "stack / unstack"
+    ],
+    "cells": [
+     [
+      {
+       "text": "wide → long",
+       "tone": "good"
+      },
+      "no issue"
+     ],
+     [
+      {
+       "text": "long → wide",
+       "tone": "accent"
+      },
+      {
+       "text": "RAISES",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "long → wide",
+       "tone": "accent"
+      },
+      {
+       "text": "aggregates — mean by default",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "moves an index level",
+       "tone": "violet"
+      },
+      "needs a unique index"
+     ]
+    ]
+   }
+  }
+ ],
+ "3.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The five joins, by what each keeps",
+    "caption": "The `how` argument decides which keys survive; the **cardinality** decides how many rows come back, and those are different questions. A many-to-many join can return more rows than either input — pass `validate=` and let pandas refuse.",
+    "cols": [
+     "keeps",
+     "row count risk"
+    ],
+    "rows": [
+     "inner",
+     "left",
+     "right",
+     "outer",
+     "cross"
+    ],
+    "cells": [
+     [
+      {
+       "text": "keys in both",
+       "tone": "good"
+      },
+      "can silently drop rows"
+     ],
+     [
+      "all of the left",
+      {
+       "text": "NaN where the right is missing",
+       "tone": "warn"
+      }
+     ],
+     [
+      "all of the right",
+      "the mirror of left"
+     ],
+     [
+      "every key from either",
+      {
+       "text": "the largest result",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "every pair",
+       "tone": "crit"
+      },
+      {
+       "text": "n × m — deliberate only",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "3.7": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Duplicates: which copy survives",
+    "caption": "`keep` is the argument that decides, and `keep=False` does not mean “keep none of the extras” — it means **drop every row that has a duplicate**, including the first. That difference quietly removes data.",
+    "cols": [
+     "duplicated() marks",
+     "drop_duplicates() keeps"
+    ],
+    "rows": [
+     "keep='first'",
+     "keep='last'",
+     "keep=False"
+    ],
+    "cells": [
+     [
+      "every copy after the first",
+      {
+       "text": "the first of each group",
+       "tone": "good"
+      }
+     ],
+     [
+      "every copy before the last",
+      "the last of each group"
+     ],
+     [
+      {
+       "text": "EVERY copy, including the first",
+       "tone": "crit"
+      },
+      {
+       "text": "only rows that were never duplicated",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ]
+}

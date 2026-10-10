@@ -245,6 +245,11 @@ rough.std() / clean.std()     # roughly 20x more variance
 
     { t: "h2", n: "03", text: "Finding a period with an FFT", id: "fft" },
 
+    {"kind": "steps", "title": "Finding a period with an FFT", "caption": "Four steps, and the third is where people go wrong: the x-axis of an FFT is frequency, so the period is its reciprocal, and the units follow your sample spacing rather than your intuition.", "items": [{"label": "detrend first", "desc": "a linear trend puts all the energy in the lowest bin and hides everything else", "tone": "crit", "code": "1"}, {"label": "take rfft, then the magnitudes", "desc": "real input, so the negative frequencies are redundant", "tone": "good", "code": "2"}, {"label": "convert the peak bin to a period", "desc": "period = 1 / frequency, in the units of your sample spacing", "tone": "warn", "code": "3"}, {"label": "check it against the series", "desc": "an FFT will always report a peak; plot the fold to see whether it is real", "tone": "accent", "code": "4"}], "t": "diagram", "id": "dg-2_6-03-0"},
+
+
+
+
     { t: "p", text: "**The Fourier transform decomposes a signal into the frequencies it contains**, which makes it the direct way to answer \"is there a weekly cycle in this data, and how strong is it?\" without guessing at candidate periods." },
 
     { t: "code", lang: "python", title: "detecting seasonality without assuming a period", code: `

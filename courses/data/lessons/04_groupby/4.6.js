@@ -154,6 +154,9 @@ raw.assign(a=lambda d: d["amount"] * 2).assign(b=lambda d: d["a"] + 1)
 
     { t: "h2", n: "02", text: "query and eval", id: "query" },
 
+    {"kind": "matrix", "title": "query and eval: what they buy and what they cost", "caption": "Both parse a string, which is why they read well and why a typo becomes a runtime error rather than a syntax one. The speed argument only applies past roughly a hundred thousand rows, and only to `eval`.", "cols": ["buys", "costs"], "rows": ["df.query('a > 1')", "df.eval('c = a + b')", "the boolean-mask form"], "cells": [[{"text": "no repeated df[...] noise", "tone": "good"}, {"text": "a typo fails at run time", "tone": "warn"}], [{"text": "avoids intermediate arrays", "tone": "good"}, "only faster on large frames"], [{"text": "checked by your editor", "tone": "good"}, "verbose on long conditions"]], "t": "diagram", "id": "dg-4_6-02-0"},
+
+
     { t: "p", text: "**`query` makes a filter read like a sentence, and `eval` makes an expression run through numexpr.** Both parse a string, which is why they are slower on small frames, faster on huge ones, and unhelpful the moment the logic needs a function call." },
 
     { t: "code", lang: "python", title: "when a string beats a mask, and when it does not", code: `

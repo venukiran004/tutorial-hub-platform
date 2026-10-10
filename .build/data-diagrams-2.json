@@ -1,0 +1,1100 @@
+{
+ "4.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The shape you need decides the verb",
+    "caption": "Four verbs, and the choice is not about what you compute but about what **shape** comes back. Reaching for `apply` when `transform` was meant is the commonest cause of a result that will not assign back to the frame.",
+    "cols": [
+     "returns",
+     "rows out"
+    ],
+    "rows": [
+     "agg",
+     "transform",
+     "filter",
+     "apply"
+    ],
+    "cells": [
+     [
+      {
+       "text": "one value per group",
+       "tone": "good"
+      },
+      "one per group"
+     ],
+     [
+      {
+       "text": "the group value on every ROW",
+       "tone": "accent"
+      },
+      {
+       "text": "same as input — assignable",
+       "tone": "good"
+      }
+     ],
+     [
+      "whole groups, kept or dropped",
+      "a subset of the input rows"
+     ],
+     [
+      {
+       "text": "whatever you return",
+       "tone": "warn"
+      },
+      {
+       "text": "unpredictable — and slow",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "4.3": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "Every unshifted window is a leak",
+    "caption": "A rolling mean at row *t* includes row *t* itself, so a feature built from it has seen its own target. The fix is one call, and forgetting it is the single most common leak in time-series feature code.",
+    "items": [
+     {
+      "label": "rolling(3).mean() at row t",
+      "desc": "averages rows t-2, t-1 and t — including the present",
+      "tone": "crit",
+      "code": "leaks"
+     },
+     {
+      "label": "so the feature knows its own row",
+      "desc": "and the model scores beautifully in backtest and fails live",
+      "tone": "crit",
+      "code": "the symptom"
+     },
+     {
+      "label": "shift(1) first, then roll",
+      "desc": "now the window ends at t-1 and the feature is causal",
+      "tone": "good",
+      "code": "the fix"
+     },
+     {
+      "label": "check with a one-row sanity test",
+      "desc": "the feature at row t must be computable before row t arrives",
+      "tone": "accent",
+      "code": "the test"
+     }
+    ]
+   }
+  }
+ ],
+ "4.4": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Timezones: the three states a timestamp can be in",
+    "caption": "Naive, UTC-aware and local-aware are different types, and comparing across them raises or silently misleads. Store UTC, convert for display — and remember that a local time can be ambiguous twice a year.",
+    "cols": [
+     "what it means",
+     "the hazard"
+    ],
+    "rows": [
+     "naive",
+     "tz-aware, UTC",
+     "tz-aware, local"
+    ],
+    "cells": [
+     [
+      {
+       "text": "no zone at all",
+       "tone": "warn"
+      },
+      {
+       "text": "comparing with aware RAISES",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "an unambiguous instant",
+       "tone": "good"
+      },
+      {
+       "text": "none — store this",
+       "tone": "good"
+      }
+     ],
+     [
+      "an instant plus a display rule",
+      {
+       "text": "DST makes one hour ambiguous and one absent",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "4.5": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "steps",
+    "title": "Normalisation: making equal things equal",
+    "caption": "Order matters. Case-folding before stripping leaves trailing spaces in the keys; stripping accents after mapping aliases makes the mapping miss. This sequence is the one that does not need a second pass.",
+    "items": [
+     {
+      "label": "strip, then collapse inner whitespace",
+      "desc": "“ New  York ” and “New York” are now the same string",
+      "tone": "accent",
+      "code": "1"
+     },
+     {
+      "label": "case-fold",
+      "desc": "casefold(), not lower() — it handles more than ASCII",
+      "tone": "good",
+      "code": "2"
+     },
+     {
+      "label": "normalise unicode and strip accents",
+      "desc": "NFKD, then drop the combining marks",
+      "tone": "good",
+      "code": "3"
+     },
+     {
+      "label": "map known aliases last",
+      "desc": "the mapping keys are now in the same normal form as the data",
+      "tone": "violet",
+      "code": "4"
+     },
+     {
+      "label": "count distinct before and after",
+      "desc": "it must fall; if it did not, the normalisation did nothing",
+      "tone": "warn",
+      "code": "verify"
+     }
+    ]
+   }
+  }
+ ],
+ "4.6": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "query and eval: what they buy and what they cost",
+    "caption": "Both parse a string, which is why they read well and why a typo becomes a runtime error rather than a syntax one. The speed argument only applies past roughly a hundred thousand rows, and only to `eval`.",
+    "cols": [
+     "buys",
+     "costs"
+    ],
+    "rows": [
+     "df.query('a > 1')",
+     "df.eval('c = a + b')",
+     "the boolean-mask form"
+    ],
+    "cells": [
+     [
+      {
+       "text": "no repeated df[...] noise",
+       "tone": "good"
+      },
+      {
+       "text": "a typo fails at run time",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "avoids intermediate arrays",
+       "tone": "good"
+      },
+      "only faster on large frames"
+     ],
+     [
+      {
+       "text": "checked by your editor",
+       "tone": "good"
+      },
+      "verbose on long conditions"
+     ]
+    ]
+   }
+  }
+ ],
+ "5.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "What the parser decides without asking",
+    "caption": "Every one of these defaults will eventually be wrong for your file. Passing `dtype=` and `keep_default_na=False` turns a class of silent corruption into an explicit decision — the string “NA” as a country code is the classic case.",
+    "cols": [
+     "the default",
+     "when it bites"
+    ],
+    "rows": [
+     "dtype",
+     "NA values",
+     "the index",
+     "dates",
+     "thousands separator"
+    ],
+    "cells": [
+     [
+      {
+       "text": "inferred per column",
+       "tone": "warn"
+      },
+      {
+       "text": "an id becomes float",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "a long built-in list",
+       "tone": "warn"
+      },
+      {
+       "text": "“NA” as a real value becomes NaN",
+       "tone": "crit"
+      }
+     ],
+     [
+      "a fresh RangeIndex",
+      "a saved index reappears as Unnamed: 0"
+     ],
+     [
+      {
+       "text": "left as strings",
+       "tone": "good"
+      },
+      "you must ask for parse_dates"
+     ],
+     [
+      {
+       "text": "none",
+       "tone": "warn"
+      },
+      "“1,234” stays a string"
+     ]
+    ]
+   }
+  }
+ ],
+ "5.2": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "The byte-order mark, and the bug it causes",
+    "caption": "A UTF-8 BOM is three bytes at the start of a file that mean nothing to the content. Read with plain `utf-8` they become part of the **first column name**, so a lookup on that name fails with a message that looks nothing like the cause.",
+    "cols": [
+     "reading a BOM'd file",
+     "the first column name"
+    ],
+    "rows": [
+     "encoding='utf-8'",
+     "encoding='utf-8-sig'",
+     "no encoding given"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the BOM is kept",
+       "tone": "crit"
+      },
+      {
+       "text": "'\\ufeffid' — not 'id'",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "the BOM is consumed",
+       "tone": "good"
+      },
+      {
+       "text": "'id'",
+       "tone": "good"
+      }
+     ],
+     [
+      "platform-dependent",
+      {
+       "text": "a portability bug waiting",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "5.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "compare",
+    "title": "Rows against columns, and when each wins",
+    "caption": "The layout decides which queries are cheap. Analysis reads a few columns of many rows, which is exactly what columnar storage is for — and exactly what a row format makes expensive.",
+    "columns": [
+     {
+      "title": "row-oriented — CSV, most OLTP",
+      "tone": "warn",
+      "items": [
+       "a whole record is contiguous",
+       "reading three columns still touches every byte",
+       "compresses poorly: neighbouring values have different types",
+       "right for writing and reading whole records",
+       "no schema, no statistics"
+      ]
+     },
+     {
+      "title": "columnar — Parquet, Arrow",
+      "tone": "good",
+      "items": [
+       "a whole column is contiguous",
+       "reading three columns touches only those three",
+       "compresses well: a column is one type, often repetitive",
+       "right for analysis and aggregation",
+       "carries a schema and per-chunk statistics for pushdown"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "5.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "The order the engine actually runs",
+    "caption": "Not the order you write it in, and that explains two things at once: why an alias defined in SELECT cannot be used in WHERE, and why WHERE filters rows while HAVING filters groups.",
+    "items": [
+     {
+      "label": "FROM and JOIN",
+      "desc": "build the working set first",
+      "tone": "accent",
+      "code": "1"
+     },
+     {
+      "label": "WHERE",
+      "desc": "filter ROWS — before any grouping exists",
+      "tone": "good",
+      "code": "2"
+     },
+     {
+      "label": "GROUP BY",
+      "desc": "collapse into groups",
+      "tone": "good",
+      "code": "3"
+     },
+     {
+      "label": "HAVING",
+      "desc": "filter GROUPS — which is why it can use an aggregate",
+      "tone": "warn",
+      "code": "4"
+     },
+     {
+      "label": "SELECT",
+      "desc": "compute the output columns and their aliases, only now",
+      "tone": "violet",
+      "code": "5"
+     },
+     {
+      "label": "ORDER BY, then LIMIT",
+      "desc": "ORDER BY can use a SELECT alias; WHERE never could",
+      "tone": "teal",
+      "code": "6"
+     }
+    ]
+   }
+  }
+ ],
+ "5.6": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Three ranking functions that are not interchangeable",
+    "caption": "They differ only on ties, and that difference decides whether “the latest row per key” returns one row or several. `ROW_NUMBER` is the one that guarantees exactly one.",
+    "cols": [
+     "on a tie",
+     "values for 10, 20, 20, 30"
+    ],
+    "rows": [
+     "ROW_NUMBER()",
+     "RANK()",
+     "DENSE_RANK()"
+    ],
+    "cells": [
+     [
+      {
+       "text": "picks arbitrarily — exactly one",
+       "tone": "good"
+      },
+      "1, 2, 3, 4"
+     ],
+     [
+      "same rank, then a gap",
+      {
+       "text": "1, 2, 2, 4",
+       "tone": "warn"
+      }
+     ],
+     [
+      "same rank, no gap",
+      {
+       "text": "1, 2, 2, 3",
+       "tone": "accent"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "5.7": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Push the work down, or pull the rows up",
+    "caption": "The database is usually better at filtering and aggregating than your process is, and the wire is the bottleneck. The rule: send as little as possible over it, and read the plan to confirm the predicate actually reached the index.",
+    "cols": [
+     "rows over the wire",
+     "verdict"
+    ],
+    "rows": [
+     "SELECT *, filter in pandas",
+     "filter in SQL",
+     "aggregate in SQL",
+     "join in pandas",
+     "join in SQL"
+    ],
+    "cells": [
+     [
+      {
+       "text": "all of them",
+       "tone": "crit"
+      },
+      {
+       "text": "the default mistake",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "only the matches",
+       "tone": "good"
+      },
+      "check the plan uses an index"
+     ],
+     [
+      {
+       "text": "one row per group",
+       "tone": "good"
+      },
+      {
+       "text": "almost always right",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "both tables in full",
+       "tone": "crit"
+      },
+      "only if the join is not expressible"
+     ],
+     [
+      {
+       "text": "the result only",
+       "tone": "good"
+      },
+      {
+       "text": "right, and let it use the index",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "6.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "The sequence for meeting a dataset",
+    "caption": "In this order, because each step changes what the next one means. Looking at distributions before checking the row count means interpreting a histogram of a truncated export — which has happened to everyone once.",
+    "items": [
+     {
+      "label": "shape, dtypes and memory",
+      "desc": "is this the whole export, and did anything come in as object?",
+      "tone": "accent",
+      "code": "1"
+     },
+     {
+      "label": "missingness, per column and jointly",
+      "desc": "and whether two columns are missing together, which is a clue",
+      "tone": "good",
+      "code": "2"
+     },
+     {
+      "label": "cardinality",
+      "desc": "a key that is not unique, or a category with one value, both matter",
+      "tone": "good",
+      "code": "3"
+     },
+     {
+      "label": "distributions and ranges",
+      "desc": "now the histogram means something; look for impossible values",
+      "tone": "warn",
+      "code": "4"
+     },
+     {
+      "label": "relationships and duplicates",
+      "desc": "correlations, and whether the grain is what you were told",
+      "tone": "violet",
+      "code": "5"
+     }
+    ]
+   }
+  }
+ ],
+ "6.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Three correlations, three questions",
+    "caption": "Pearson measures a straight line, Spearman any monotone relationship, Kendall the consistency of orderings. A nonlinear but monotone pair can give Pearson near zero and Spearman near one — which is the case that matters.",
+    "cols": [
+     "detects",
+     "robust to outliers",
+     "needs"
+    ],
+    "rows": [
+     "Pearson",
+     "Spearman",
+     "Kendall tau"
+    ],
+    "cells": [
+     [
+      {
+       "text": "LINEAR association only",
+       "tone": "warn"
+      },
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "interval data"
+     ],
+     [
+      {
+       "text": "any monotone relationship",
+       "tone": "good"
+      },
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "ordinal is enough"
+     ],
+     [
+      "concordance of pairs",
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      {
+       "text": "ordinal; better for small n",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "6.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Three mechanisms, and only one is testable",
+    "caption": "The mechanism decides whether dropping rows is safe, and MNAR cannot be distinguished from MAR by the data alone — it needs knowledge of how the data was produced. That is why “why is it missing” is a question for a person, not a test.",
+    "cols": [
+     "missing depends on",
+     "can you test it?",
+     "is dropping safe?"
+    ],
+    "rows": [
+     "MCAR",
+     "MAR",
+     "MNAR"
+    ],
+    "cells": [
+     [
+      {
+       "text": "nothing",
+       "tone": "good"
+      },
+      {
+       "text": "partly — Little's test",
+       "tone": "warn"
+      },
+      {
+       "text": "yes, loses power only",
+       "tone": "good"
+      }
+     ],
+     [
+      "other OBSERVED columns",
+      {
+       "text": "yes — model the indicator",
+       "tone": "good"
+      },
+      {
+       "text": "no — biases the result",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "the missing value ITSELF",
+       "tone": "crit"
+      },
+      {
+       "text": "NO — not from the data",
+       "tone": "crit"
+      },
+      {
+       "text": "no",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "6.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "What each fill removes from the data",
+    "caption": "Every simple fill understates variance, because it puts mass at a single point. The indicator column is the cheap defence: it keeps the fact of the gap available to the model even after the gap is filled.",
+    "cols": [
+     "what it distorts",
+     "when it is acceptable"
+    ],
+    "rows": [
+     "mean",
+     "median",
+     "mode",
+     "forward fill",
+     "a constant sentinel"
+    ],
+    "cells": [
+     [
+      {
+       "text": "variance down, shape pulled to centre",
+       "tone": "crit"
+      },
+      "roughly symmetric, few missing"
+     ],
+     [
+      {
+       "text": "variance down, robust to skew",
+       "tone": "warn"
+      },
+      {
+       "text": "skewed numeric — the usual choice",
+       "tone": "good"
+      }
+     ],
+     [
+      "invents a majority",
+      "low-cardinality categorical"
+     ],
+     [
+      {
+       "text": "fabricates persistence",
+       "tone": "warn"
+      },
+      {
+       "text": "time series, and ONLY forwards",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "creates a fake cluster",
+       "tone": "warn"
+      },
+      "tree models, with an indicator"
+     ]
+    ]
+   }
+  }
+ ],
+ "6.8": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "The four treatments for an outlier",
+    "caption": "Deleting is the default and the worst, because an outlier is often the most informative row you have. The question to answer first is whether it is an error or a fact — and only an error earns removal.",
+    "cols": [
+     "what it does",
+     "use when"
+    ],
+    "rows": [
+     "drop it",
+     "cap it (winsorise)",
+     "transform (log)",
+     "keep it, model robustly"
+    ],
+    "cells": [
+     [
+      {
+       "text": "loses the row entirely",
+       "tone": "crit"
+      },
+      {
+       "text": "it is a provable ERROR",
+       "tone": "warn"
+      }
+     ],
+     [
+      "keeps the row, bounds the value",
+      "a long tail you do not want to fit"
+     ],
+     [
+      {
+       "text": "compresses the scale",
+       "tone": "good"
+      },
+      "right-skewed positive data"
+     ],
+     [
+      {
+       "text": "nothing — changes the model instead",
+       "tone": "good"
+      },
+      {
+       "text": "it is real and matters",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "7.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "tree",
+    "title": "Two questions decide the encoding",
+    "caption": "Cardinality and whether the model is tree-based. Those two answers pick the encoder, and the third branch is where most of the leakage in a feature pipeline comes from.",
+    "root": {
+     "label": "a categorical column",
+     "sub": "how many levels, and which model?",
+     "tone": "accent",
+     "children": [
+      {
+       "label": "one-hot",
+       "sub": "low cardinality, any model",
+       "tone": "good",
+       "edge": "under ~15"
+      },
+      {
+       "label": "ordinal codes",
+       "sub": "trees only — implies an order otherwise",
+       "tone": "warn",
+       "edge": "trees"
+      },
+      {
+       "label": "target encoding",
+       "sub": "high cardinality — out-of-fold, or it LEAKS",
+       "tone": "crit",
+       "edge": "hundreds"
+      },
+      {
+       "label": "hashing",
+       "sub": "unbounded or streaming, collisions accepted",
+       "tone": "violet",
+       "edge": "unbounded"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "7.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "The scalers, and what each does to an outlier",
+    "caption": "A single extreme value compresses everything else into a sliver under min-max, which is why it is the wrong default. Robust scaling uses the median and IQR, so the outlier moves far without dragging the rest with it.",
+    "cols": [
+     "centres on",
+     "scales by",
+     "one extreme value"
+    ],
+    "rows": [
+     "StandardScaler",
+     "MinMaxScaler",
+     "RobustScaler",
+     "QuantileTransformer"
+    ],
+    "cells": [
+     [
+      "the mean",
+      "the sd",
+      {
+       "text": "shifts both, pulls all in",
+       "tone": "warn"
+      }
+     ],
+     [
+      "the min",
+      "the range",
+      {
+       "text": "crushes the rest to ~0",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "the median",
+       "tone": "good"
+      },
+      {
+       "text": "the IQR",
+       "tone": "good"
+      },
+      {
+       "text": "barely affects the rest",
+       "tone": "good"
+      }
+     ],
+     [
+      "ranks",
+      "the empirical CDF",
+      {
+       "text": "removed by construction",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "7.8": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "steps",
+    "title": "Cyclical encoding, and why a raw hour misleads",
+    "caption": "Hour 23 and hour 0 are one unit apart in time and twenty-three apart as integers, so any model using distance sees midnight as the furthest point from 11pm. Two columns fix it.",
+    "items": [
+     {
+      "label": "the problem: 23 and 0 are adjacent",
+      "desc": "but a model reads them as maximally far apart",
+      "tone": "crit",
+      "code": "the bug"
+     },
+     {
+      "label": "map the hour onto a circle",
+      "desc": "theta = 2*pi*hour/24",
+      "tone": "accent",
+      "code": "1"
+     },
+     {
+      "label": "emit sin(theta) and cos(theta)",
+      "desc": "two columns, and now the distance between 23 and 0 is small",
+      "tone": "good",
+      "code": "2"
+     },
+     {
+      "label": "the same shape for day, month, weekday",
+      "desc": "use the right period: 7, 12, 365 — not always 24",
+      "tone": "violet",
+      "code": "3"
+     }
+    ]
+   }
+  }
+ ],
+ "8.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Three families of feature selection",
+    "caption": "They differ in whether a model is involved and how often. Filters are cheap and ignore interactions; wrappers see interactions and cost a model fit per candidate set — and both leak if the selection happens outside the fold.",
+    "cols": [
+     "uses a model?",
+     "sees interactions",
+     "cost"
+    ],
+    "rows": [
+     "filter",
+     "wrapper",
+     "embedded"
+    ],
+    "cells": [
+     [
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      {
+       "text": "cheap",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "once per candidate set",
+       "tone": "crit"
+      },
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      {
+       "text": "expensive",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "once, as part of fitting",
+       "tone": "good"
+      },
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      {
+       "text": "nearly free",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "8.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "The contract a pipeline enforces",
+    "caption": "The value is not tidiness — it is that `fit` can only ever see training data. Every statistic a transformer learns is learned inside the fold, which is the mechanical prevention of the leak that hand-written preprocessing invites.",
+    "items": [
+     {
+      "label": "fit learns from the training fold only",
+      "desc": "the mean, the categories, the vocabulary — all from inside",
+      "tone": "accent",
+      "code": "fit"
+     },
+     {
+      "label": "transform applies what was learned",
+      "desc": "to any data, including the fold it never saw",
+      "tone": "good",
+      "code": "transform"
+     },
+     {
+      "label": "cross-validation refits per fold",
+      "desc": "so the statistics are recomputed, which is the point",
+      "tone": "good",
+      "code": "cv"
+     },
+     {
+      "label": "and a stateless-looking step is the trap",
+      "desc": "anything that touches the target, or the whole column, is stateful",
+      "tone": "crit",
+      "code": "watch"
+     }
+    ]
+   }
+  }
+ ],
+ "8.6": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Metrics that survive a shifting base rate",
+    "caption": "Accuracy is uninformative under imbalance — at 1% positives, predicting the majority scores 99%. PR-AUC moves with the base rate and ROC-AUC does not, which makes them answer different questions rather than one being better.",
+    "cols": [
+     "at 1% positives",
+     "depends on the base rate?"
+    ],
+    "rows": [
+     "accuracy",
+     "ROC-AUC",
+     "PR-AUC",
+     "F1",
+     "recall at fixed precision"
+    ],
+    "cells": [
+     [
+      {
+       "text": "99% for a constant prediction",
+       "tone": "crit"
+      },
+      {
+       "text": "yes — uselessly so",
+       "tone": "crit"
+      }
+     ],
+     [
+      "unaffected by imbalance",
+      {
+       "text": "no — can look good anyway",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "falls when positives are rare",
+       "tone": "good"
+      },
+      {
+       "text": "YES — which is the point",
+       "tone": "good"
+      }
+     ],
+     [
+      "depends on the threshold",
+      "yes"
+     ],
+     [
+      {
+       "text": "what the business asked for",
+       "tone": "good"
+      },
+      {
+       "text": "yes, and stated explicitly",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ]
+}

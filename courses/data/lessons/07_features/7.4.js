@@ -147,6 +147,9 @@ score(RandomForestClassifier(200, random_state=0), Xtr_s, Xte_s)     # 0.83
 
     { t: "h2", n: "02", text: "The scalers, and what each does to an outlier", id: "scalers" },
 
+    {"kind": "matrix", "title": "The scalers, and what each does to an outlier", "caption": "A single extreme value compresses everything else into a sliver under min-max, which is why it is the wrong default. Robust scaling uses the median and IQR, so the outlier moves far without dragging the rest with it.", "cols": ["centres on", "scales by", "one extreme value"], "rows": ["StandardScaler", "MinMaxScaler", "RobustScaler", "QuantileTransformer"], "cells": [["the mean", "the sd", {"text": "shifts both, pulls all in", "tone": "warn"}], ["the min", "the range", {"text": "crushes the rest to ~0", "tone": "crit"}], [{"text": "the median", "tone": "good"}, {"text": "the IQR", "tone": "good"}, {"text": "barely affects the rest", "tone": "good"}], ["ranks", "the empirical CDF", {"text": "removed by construction", "tone": "good"}]], "t": "diagram", "id": "dg-7_4-02-0"},
+
+
     { t: "p", text: "**Every scaler is a choice of centre and spread.** Standardisation uses mean and σ, which outliers move. Min-max uses the extremes, which outliers *are*. Robust scaling uses median and IQR, which outliers cannot touch. The right one depends on whether the extreme values are part of the signal or a problem to contain." },
 
     { t: "code", lang: "python", title: "five scalers on a skewed column with an outlier", code: `

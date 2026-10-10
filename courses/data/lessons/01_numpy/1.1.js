@@ -209,6 +209,11 @@ np.ascontiguousarray(d).flags['C_CONTIGUOUS']    # True, at the cost of a copy
 
     { t: "h2", n: "03", text: "Choosing a dtype on purpose", id: "dtype" },
 
+    {"kind": "matrix", "title": "Choosing a dtype on purpose", "caption": "The default is `float64` and it is rarely what you need. Halving the width halves the memory **and** doubles how much fits in cache, which is usually the larger win — but `float16` has about three decimal digits, so it is a storage format rather than a compute one.", "cols": ["bytes", "range or precision", "use it for"], "rows": ["int8", "int32", "float32", "float64", "float16"], "cells": [[{"text": "1", "tone": "good"}, "−128 to 127", "categorical codes, flags"], [{"text": "4", "tone": "good"}, "±2.1 billion", "ids, counts"], [{"text": "4", "tone": "good"}, "~7 digits", {"text": "almost all ML features", "tone": "good"}], [{"text": "8", "tone": "warn"}, "~16 digits", "money, accumulations"], [{"text": "2", "tone": "accent"}, {"text": "~3 digits", "tone": "crit"}, "storage, not maths"]], "t": "diagram", "id": "dg-1_1-03-0"},
+
+
+
+
     { t: "p", text: "The default dtype is chosen for safety, not for size. **On a large dataset, picking dtypes deliberately routinely cuts memory by 50–75%** — and on a frame that no longer fits in RAM, that is the difference between working and not." },
 
     { t: "table",

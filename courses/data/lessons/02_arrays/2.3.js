@@ -102,6 +102,11 @@ X / np.linalg.norm(X, axis=1, keepdims=True)      # unit rows
 
     { t: "h2", n: "02", text: "Solving systems: use solve, not inv", id: "solve" },
 
+    {"kind": "matrix", "title": "Never invert to solve", "caption": "`inv(A) @ b` computes something you did not need and loses accuracy doing it. `solve` factorises once and substitutes, which is both faster and better conditioned — and for a least-squares problem `lstsq` is better again, because it does not form AᵀA at all.", "cols": ["cost", "accuracy", "use when"], "rows": ["inv(A) @ b", "solve(A, b)", "lstsq(A, b)"], "cells": [[{"text": "worst", "tone": "crit"}, {"text": "worst", "tone": "crit"}, {"text": "you genuinely need A⁻¹", "tone": "warn"}], [{"text": "~⅓ n³", "tone": "good"}, {"text": "good", "tone": "good"}, "a square, well-posed system"], [{"text": "more", "tone": "warn"}, {"text": "best", "tone": "good"}, {"text": "overdetermined", "tone": "good"}]], "t": "diagram", "id": "dg-2_3-02-0"},
+
+
+
+
     { t: "p", text: "**`np.linalg.inv(A) @ b` is slower and less accurate than `np.linalg.solve(A, b)`, and it hides failure.** Explicitly computing an inverse is almost never the right operation — it is a step people take because the maths notation writes it that way." },
 
     { t: "viz",

@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three mechanisms", id: "mechanisms" },
 
+    {"kind": "matrix", "title": "Three mechanisms, and only one is testable", "caption": "The mechanism decides whether dropping rows is safe, and MNAR cannot be distinguished from MAR by the data alone — it needs knowledge of how the data was produced. That is why “why is it missing” is a question for a person, not a test.", "cols": ["missing depends on", "can you test it?", "is dropping safe?"], "rows": ["MCAR", "MAR", "MNAR"], "cells": [[{"text": "nothing", "tone": "good"}, {"text": "partly — Little's test", "tone": "warn"}, {"text": "yes, loses power only", "tone": "good"}], ["other OBSERVED columns", {"text": "yes — model the indicator", "tone": "good"}, {"text": "no — biases the result", "tone": "crit"}], [{"text": "the missing value ITSELF", "tone": "crit"}, {"text": "NO — not from the data", "tone": "crit"}, {"text": "no", "tone": "crit"}]], "t": "diagram", "id": "dg-6_5-01-0"},
+
+
     { t: "p", text: "A value is missing for a reason. **The classification asks one question: does the probability of a value being missing depend on anything — and if so, on what?** The answer determines whether the rows you have are representative of the rows you do not." },
 
     { t: "dl", items: [

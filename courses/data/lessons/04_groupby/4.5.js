@@ -249,6 +249,9 @@ kv.str.split(": ", n=1, expand=True)         # n=1: split ONCE, at the first
 
     { t: "h2", n: "03", text: "Normalisation: making equal things equal", id: "normalise" },
 
+    {"kind": "steps", "title": "Normalisation: making equal things equal", "caption": "Order matters. Case-folding before stripping leaves trailing spaces in the keys; stripping accents after mapping aliases makes the mapping miss. This sequence is the one that does not need a second pass.", "items": [{"label": "strip, then collapse inner whitespace", "desc": "“ New  York ” and “New York” are now the same string", "tone": "accent", "code": "1"}, {"label": "case-fold", "desc": "casefold(), not lower() — it handles more than ASCII", "tone": "good", "code": "2"}, {"label": "normalise unicode and strip accents", "desc": "NFKD, then drop the combining marks", "tone": "good", "code": "3"}, {"label": "map known aliases last", "desc": "the mapping keys are now in the same normal form as the data", "tone": "violet", "code": "4"}, {"label": "count distinct before and after", "desc": "it must fall; if it did not, the normalisation did nothing", "tone": "warn", "code": "verify"}], "t": "diagram", "id": "dg-4_5-03-0"},
+
+
     { t: "p", text: "**A join or groupby matches on exact bytes.** `\"Acme Ltd\"`, `\"ACME LTD\"`, `\"Acme Ltd.\"` and `\"Acme  Ltd\"` are four groups, and the one with a non-breaking space is a fifth that looks identical on screen. Normalisation is the step that makes the data agree with the reader." },
 
     { t: "code", lang: "python", title: "a normalisation function, layer by layer", code: `

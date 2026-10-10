@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three families", id: "families" },
 
+    {"kind": "matrix", "title": "Three families of feature selection", "caption": "They differ in whether a model is involved and how often. Filters are cheap and ignore interactions; wrappers see interactions and cost a model fit per candidate set — and both leak if the selection happens outside the fold.", "cols": ["uses a model?", "sees interactions", "cost"], "rows": ["filter", "wrapper", "embedded"], "cells": [[{"text": "no", "tone": "good"}, {"text": "no", "tone": "crit"}, {"text": "cheap", "tone": "good"}], [{"text": "once per candidate set", "tone": "crit"}, {"text": "yes", "tone": "good"}, {"text": "expensive", "tone": "crit"}], [{"text": "once, as part of fitting", "tone": "good"}, {"text": "yes", "tone": "good"}, {"text": "nearly free", "tone": "good"}]], "t": "diagram", "id": "dg-8_1-01-0"},
+
+
     { t: "p", text: "Feature selection asks which columns to keep. **The three families differ in whether they consult a model at all, and if so, how.** Filters score each feature alone. Wrappers train models on subsets and compare. Embedded methods let the model's own fitting decide." },
 
     { t: "dl", items: [

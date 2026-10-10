@@ -303,6 +303,9 @@ daily.reindex(target, method="nearest", tolerance=pd.Timedelta("12h"))
 
     { t: "h2", n: "03", text: "Timezones", id: "tz" },
 
+    {"kind": "matrix", "title": "Timezones: the three states a timestamp can be in", "caption": "Naive, UTC-aware and local-aware are different types, and comparing across them raises or silently misleads. Store UTC, convert for display — and remember that a local time can be ambiguous twice a year.", "cols": ["what it means", "the hazard"], "rows": ["naive", "tz-aware, UTC", "tz-aware, local"], "cells": [[{"text": "no zone at all", "tone": "warn"}, {"text": "comparing with aware RAISES", "tone": "crit"}], [{"text": "an unambiguous instant", "tone": "good"}, {"text": "none — store this", "tone": "good"}], ["an instant plus a display rule", {"text": "DST makes one hour ambiguous and one absent", "tone": "crit"}]], "t": "diagram", "id": "dg-4_4-03-0"},
+
+
     { t: "p", text: "**A naive timestamp — one without a timezone — is not \"in UTC\". It is in whatever zone the writer assumed, and that assumption is gone.** Every daily total from timestamps in the wrong zone is a total for the wrong day, and the error is largest exactly at the day boundary where it moves the most revenue." },
 
     { t: "code", lang: "python", title: "localise, convert, and the daily total that was wrong", code: `

@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The sequence", id: "sequence" },
 
+    {"kind": "steps", "title": "The sequence for meeting a dataset", "caption": "In this order, because each step changes what the next one means. Looking at distributions before checking the row count means interpreting a histogram of a truncated export — which has happened to everyone once.", "items": [{"label": "shape, dtypes and memory", "desc": "is this the whole export, and did anything come in as object?", "tone": "accent", "code": "1"}, {"label": "missingness, per column and jointly", "desc": "and whether two columns are missing together, which is a clue", "tone": "good", "code": "2"}, {"label": "cardinality", "desc": "a key that is not unique, or a category with one value, both matter", "tone": "good", "code": "3"}, {"label": "distributions and ranges", "desc": "now the histogram means something; look for impossible values", "tone": "warn", "code": "4"}, {"label": "relationships and duplicates", "desc": "correlations, and whether the grain is what you were told", "tone": "violet", "code": "5"}], "t": "diagram", "id": "dg-6_1-01-0"},
+
+
     { t: "p", text: "Profiling is not exploration. **It is a checklist, run in the same order every time, that turns \"I have a file\" into \"I know what each column is, how much of it is missing, and what is wrong with it.\"** Exploration comes after, and it is much faster once the checklist is done." },
 
     { t: "dl", items: [

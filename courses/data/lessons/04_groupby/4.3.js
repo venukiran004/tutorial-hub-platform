@@ -163,6 +163,9 @@ df["a"].rolling(5).corr(df["b"])
 
     { t: "h2", n: "02", text: "shift, and the leak that every unshifted window contains", id: "shift" },
 
+    {"kind": "steps", "title": "Every unshifted window is a leak", "caption": "A rolling mean at row *t* includes row *t* itself, so a feature built from it has seen its own target. The fix is one call, and forgetting it is the single most common leak in time-series feature code.", "items": [{"label": "rolling(3).mean() at row t", "desc": "averages rows t-2, t-1 and t — including the present", "tone": "crit", "code": "leaks"}, {"label": "so the feature knows its own row", "desc": "and the model scores beautifully in backtest and fails live", "tone": "crit", "code": "the symptom"}, {"label": "shift(1) first, then roll", "desc": "now the window ends at t-1 and the feature is causal", "tone": "good", "code": "the fix"}, {"label": "check with a one-row sanity test", "desc": "the feature at row t must be computable before row t arrives", "tone": "accent", "code": "the test"}], "t": "diagram", "id": "dg-4_3-02-0"},
+
+
     { t: "p", text: "**A rolling mean at row `t` includes the value at `t`.** If the target you are predicting is derived from that same value — tomorrow's price from today's, this week's demand from this week's — the feature already contains the answer. `shift(1)` moves the window back one row so it ends *before* the current one." },
 
     { t: "code", lang: "python", title: "the leak, and the one-token fix", code: `

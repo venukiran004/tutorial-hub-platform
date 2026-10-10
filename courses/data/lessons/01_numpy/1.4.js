@@ -231,6 +231,11 @@ softmax(np.array([[1.0, 2.0, 3.0]]))             # sums to 1 per row
 
     { t: "h2", n: "03", text: "Reductions and missing data", id: "nan" },
 
+    {"kind": "matrix", "title": "Reductions and missing data", "caption": "A single NaN propagates through an ordinary reduction and makes the whole result NaN, which is correct and almost never what you want. The `nan*` family skips them — and then the divisor changes, which is the part that silently alters a mean.", "cols": ["with a NaN present", "what the divisor becomes"], "rows": ["np.sum", "np.nansum", "np.mean", "np.nanmean"], "cells": [[{"text": "NaN", "tone": "crit"}, "—"], [{"text": "skips it", "tone": "good"}, "n/a — a sum has none"], [{"text": "NaN", "tone": "crit"}, "n, if it worked"], [{"text": "skips it", "tone": "good"}, {"text": "the COUNT of non-NaN — not n", "tone": "warn"}]], "t": "diagram", "id": "dg-1_4-03-0"},
+
+
+
+
     { t: "p", text: "**One `nan` anywhere in an array makes the whole reduction `nan`** — that is correct behaviour, not a bug. The `nan`-aware variants skip missing values instead, and choosing between them is a decision about what a missing value means, not a convenience." },
 
     { t: "table",

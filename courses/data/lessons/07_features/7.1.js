@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The two questions that decide the encoding", id: "questions" },
 
+    {"kind": "tree", "title": "Two questions decide the encoding", "caption": "Cardinality and whether the model is tree-based. Those two answers pick the encoder, and the third branch is where most of the leakage in a feature pipeline comes from.", "root": {"label": "a categorical column", "sub": "how many levels, and which model?", "tone": "accent", "children": [{"label": "one-hot", "sub": "low cardinality, any model", "tone": "good", "edge": "under ~15"}, {"label": "ordinal codes", "sub": "trees only — implies an order otherwise", "tone": "warn", "edge": "trees"}, {"label": "target encoding", "sub": "high cardinality — out-of-fold, or it LEAKS", "tone": "crit", "edge": "hundreds"}, {"label": "hashing", "sub": "unbounded or streaming, collisions accepted", "tone": "violet", "edge": "unbounded"}]}, "t": "diagram", "id": "dg-7_1-01-0"},
+
+
     { t: "p", text: "Before any encoding, two facts about the column: **how many distinct values does it have, and do they have an order?** A third fact about the consumer: **is the model linear, or is it a tree?** Every method below is a point in that space, and most encoding mistakes are a method applied outside its region." },
 
     { t: "dl", items: [

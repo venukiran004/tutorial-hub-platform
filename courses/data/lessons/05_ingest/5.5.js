@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The order the engine actually runs", id: "order" },
 
+    {"kind": "steps", "title": "The order the engine actually runs", "caption": "Not the order you write it in, and that explains two things at once: why an alias defined in SELECT cannot be used in WHERE, and why WHERE filters rows while HAVING filters groups.", "items": [{"label": "FROM and JOIN", "desc": "build the working set first", "tone": "accent", "code": "1"}, {"label": "WHERE", "desc": "filter ROWS — before any grouping exists", "tone": "good", "code": "2"}, {"label": "GROUP BY", "desc": "collapse into groups", "tone": "good", "code": "3"}, {"label": "HAVING", "desc": "filter GROUPS — which is why it can use an aggregate", "tone": "warn", "code": "4"}, {"label": "SELECT", "desc": "compute the output columns and their aliases, only now", "tone": "violet", "code": "5"}, {"label": "ORDER BY, then LIMIT", "desc": "ORDER BY can use a SELECT alias; WHERE never could", "tone": "teal", "code": "6"}], "t": "diagram", "id": "dg-5_5-01-0"},
+
+
     { t: "p", text: "You write `SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY`. **The engine evaluates `FROM` first and `SELECT` almost last.** That is why a column alias defined in `SELECT` cannot be used in `WHERE`, and why `WHERE` cannot filter on an aggregate." },
 
     { t: "dl", items: [

@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three correlations for numeric pairs", id: "correlation" },
 
+    {"kind": "matrix", "title": "Three correlations, three questions", "caption": "Pearson measures a straight line, Spearman any monotone relationship, Kendall the consistency of orderings. A nonlinear but monotone pair can give Pearson near zero and Spearman near one — which is the case that matters.", "cols": ["detects", "robust to outliers", "needs"], "rows": ["Pearson", "Spearman", "Kendall tau"], "cells": [[{"text": "LINEAR association only", "tone": "warn"}, {"text": "no", "tone": "crit"}, "interval data"], [{"text": "any monotone relationship", "tone": "good"}, {"text": "yes", "tone": "good"}, "ordinal is enough"], ["concordance of pairs", {"text": "yes", "tone": "good"}, {"text": "ordinal; better for small n", "tone": "good"}]], "t": "diagram", "id": "dg-6_2-01-0"},
+
+
     { t: "p", text: "`df.corr()` returns Pearson by default. **Pearson measures how well a straight line fits; it is zero for a perfect U-shape, and it is dragged wherever the extreme values point.** Spearman and Kendall measure monotonic association on ranks, which is usually closer to the question being asked." },
 
     { t: "dl", items: [

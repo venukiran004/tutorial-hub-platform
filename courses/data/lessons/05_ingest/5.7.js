@@ -190,6 +190,9 @@ while True:
 
     { t: "h2", n: "03", text: "Pushing work down, and reading the plan", id: "pushdown" },
 
+    {"kind": "matrix", "title": "Push the work down, or pull the rows up", "caption": "The database is usually better at filtering and aggregating than your process is, and the wire is the bottleneck. The rule: send as little as possible over it, and read the plan to confirm the predicate actually reached the index.", "cols": ["rows over the wire", "verdict"], "rows": ["SELECT *, filter in pandas", "filter in SQL", "aggregate in SQL", "join in pandas", "join in SQL"], "cells": [[{"text": "all of them", "tone": "crit"}, {"text": "the default mistake", "tone": "crit"}], [{"text": "only the matches", "tone": "good"}, "check the plan uses an index"], [{"text": "one row per group", "tone": "good"}, {"text": "almost always right", "tone": "good"}], [{"text": "both tables in full", "tone": "crit"}, "only if the join is not expressible"], [{"text": "the result only", "tone": "good"}, {"text": "right, and let it use the index", "tone": "good"}]], "t": "diagram", "id": "dg-5_7-03-0"},
+
+
     { t: "p", text: "**The database has the data, the indexes, the statistics and often more cores than your laptop.** Every filter, join and aggregation it does is one that pandas does not have to — and one fewer row crossing the network. The way to see whether it is doing them well is the query plan." },
 
     { t: "viz",

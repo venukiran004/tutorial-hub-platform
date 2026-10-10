@@ -171,6 +171,9 @@ investigate(orders, 19, "amount", group="customer")
 
     { t: "h2", n: "02", text: "The four treatments", id: "treatments" },
 
+    {"kind": "matrix", "title": "The four treatments for an outlier", "caption": "Deleting is the default and the worst, because an outlier is often the most informative row you have. The question to answer first is whether it is an error or a fact — and only an error earns removal.", "cols": ["what it does", "use when"], "rows": ["drop it", "cap it (winsorise)", "transform (log)", "keep it, model robustly"], "cells": [[{"text": "loses the row entirely", "tone": "crit"}, {"text": "it is a provable ERROR", "tone": "warn"}], ["keeps the row, bounds the value", "a long tail you do not want to fit"], [{"text": "compresses the scale", "tone": "good"}, "right-skewed positive data"], [{"text": "nothing — changes the model instead", "tone": "good"}, {"text": "it is real and matters", "tone": "good"}]], "t": "diagram", "id": "dg-6_8-02-0"},
+
+
     { t: "table",
       head: ["Treatment", "What it does", "Preserves", "Loses", "Right when"],
       rows: [

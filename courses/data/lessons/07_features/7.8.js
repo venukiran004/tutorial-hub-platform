@@ -237,6 +237,9 @@ orders["tenure_at_order"] = (orders["order_ts"] - orders["signup"]).dt.days
 
     { t: "h2", n: "03", text: "Cyclical encoding", id: "cyclical" },
 
+    {"kind": "steps", "title": "Cyclical encoding, and why a raw hour misleads", "caption": "Hour 23 and hour 0 are one unit apart in time and twenty-three apart as integers, so any model using distance sees midnight as the furthest point from 11pm. Two columns fix it.", "items": [{"label": "the problem: 23 and 0 are adjacent", "desc": "but a model reads them as maximally far apart", "tone": "crit", "code": "the bug"}, {"label": "map the hour onto a circle", "desc": "theta = 2*pi*hour/24", "tone": "accent", "code": "1"}, {"label": "emit sin(theta) and cos(theta)", "desc": "two columns, and now the distance between 23 and 0 is small", "tone": "good", "code": "2"}, {"label": "the same shape for day, month, weekday", "desc": "use the right period: 7, 12, 365 — not always 24", "tone": "violet", "code": "3"}], "t": "diagram", "id": "dg-7_8-03-0"},
+
+
     { t: "p", text: "**Hour 23 and hour 0 are one hour apart. Their integer encodings are 23 apart.** Any model that uses distance or fits a slope reads the integer, and it reads it wrongly at the wrap. Mapping the value onto a circle — one coordinate for sine, one for cosine — puts every adjacent pair the same distance apart, including the pair that crosses midnight." },
 
     { t: "code", lang: "python", title: "sine and cosine, and what it does and does not fix", code: `

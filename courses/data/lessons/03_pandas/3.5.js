@@ -20,6 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Long and wide", id: "shapes" },
 
+    {"kind": "matrix", "title": "Long and wide, and the verb for each direction", "caption": "Four functions and two directions. `pivot` raises on a duplicate index-column pair; `pivot_table` aggregates it instead — which is why a silent mean appears in results people did not ask for.", "cols": ["direction", "on duplicate keys"], "rows": ["melt", "pivot", "pivot_table", "stack / unstack"], "cells": [[{"text": "wide → long", "tone": "good"}, "no issue"], [{"text": "long → wide", "tone": "accent"}, {"text": "RAISES", "tone": "crit"}], [{"text": "long → wide", "tone": "accent"}, {"text": "aggregates — mean by default", "tone": "warn"}], [{"text": "moves an index level", "tone": "violet"}, "needs a unique index"]], "t": "diagram", "id": "dg-3_5-01-0"},
+
+
+
+
     { t: "p", text: "The same data has two natural layouts. **Long is the storage and computation form — every value on its own row with the keys that identify it. Wide is the presentation form — one row per entity, one column per measurement.** Neither is correct; each is right for different operations." },
 
     { t: "dl", items: [

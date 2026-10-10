@@ -20,6 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Object dtype: an array in name only", id: "object" },
 
+    {"kind": "matrix", "title": "When an array stops being an array", "caption": "`object` dtype keeps the NumPy interface and loses everything that made it fast: the data is a block of **pointers**, so there is no contiguity, no vectorised loop and no fixed stride. It is a Python list wearing an array's clothes.", "cols": ["holds", "a vectorised op", "memory per element"], "rows": ["float64 array", "object array", "a Python list"], "cells": [[{"text": "8 bytes of value, inline", "tone": "good"}, {"text": "a C loop", "tone": "good"}, {"text": "8 bytes", "tone": "good"}], [{"text": "a POINTER to a Python object", "tone": "crit"}, {"text": "a Python loop", "tone": "crit"}, {"text": "8 + the object, ~28+", "tone": "crit"}], ["a pointer, plus list overhead", {"text": "a Python loop", "tone": "crit"}, "8 + the object"]], "t": "diagram", "id": "dg-1_6-01-0"},
+
+
+
+
     { t: "p", text: "**When NumPy cannot fit your data into one uniform type, it falls back to `object` dtype** — an array of pointers to Python objects. Every operation on it loops in Python, so you have a list with a worse interface and higher memory use." },
 
     { t: "dl", items: [
@@ -208,6 +213,11 @@ rows = [np.asarray(s) for s in sessions]
     },
 
     { t: "h2", n: "03", text: "Growing an array in a loop", id: "growth" },
+
+    {"kind": "timeline", "title": "Growing an array in a loop", "caption": "`np.append` allocates a new array and copies everything every time, so building n elements costs O(n²) copies. A list appends in amortised O(1) and converts once at the end — the same total work a single allocation would have done.", "span": 100, "tick": 20, "unit": "relative time to build 100,000 elements", "lanes": [{"label": "np.append loop", "bars": [[0, 100, "O(n squared) copying", "crit"]]}, {"label": "list → np.array", "bars": [[0, 3, "", "good"]]}, {"label": "preallocate", "bars": [[0, 2, "", "good"]]}], "t": "diagram", "id": "dg-1_6-03-1"},
+
+
+
 
     { t: "p", text: "**A NumPy array has a fixed size.** `np.append` does not append — it allocates a new array and copies everything. Doing that in a loop is quadratic, and it is one of the most common performance mistakes in data code." },
 

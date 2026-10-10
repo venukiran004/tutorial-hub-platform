@@ -234,6 +234,11 @@ rng.random(5)                          # the same five values again
 
     { t: "h2", n: "03", text: "What a seed cannot fix", id: "limits" },
 
+    {"kind": "matrix", "title": "What a seed can and cannot fix", "caption": "A seed makes one process reproducible. It does not survive threads, a different library version, or a dictionary iteration that was never ordered — so “I set the seed” is not the same claim as “this run reproduces”.", "cols": ["does a seed fix it?", "what does"], "rows": ["the same code, same machine", "two threads drawing at once", "a different NumPy version", "GPU reductions", "a set or dict order"], "cells": [[{"text": "yes", "tone": "good"}, "—"], [{"text": "NO", "tone": "crit"}, {"text": "one generator per worker, spawned", "tone": "good"}], [{"text": "not guaranteed", "tone": "warn"}, "pin the version"], [{"text": "NO", "tone": "crit"}, "deterministic kernels, and accept the cost"], [{"text": "NO", "tone": "crit"}, "sort before you iterate"]], "t": "diagram", "id": "dg-1_5-03-0"},
+
+
+
+
     { t: "p", text: "Seeding is necessary and not sufficient. **Several sources of run-to-run variation have nothing to do with the random number generator**, and a team that has seeded everything and still cannot reproduce a model is usually looking at one of these." },
 
     { t: "table",

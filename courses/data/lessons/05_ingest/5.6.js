@@ -162,6 +162,9 @@ GROUP BY region;
 
     { t: "h2", n: "02", text: "Ranking, and the latest row per key", id: "ranking" },
 
+    {"kind": "matrix", "title": "Three ranking functions that are not interchangeable", "caption": "They differ only on ties, and that difference decides whether “the latest row per key” returns one row or several. `ROW_NUMBER` is the one that guarantees exactly one.", "cols": ["on a tie", "values for 10, 20, 20, 30"], "rows": ["ROW_NUMBER()", "RANK()", "DENSE_RANK()"], "cells": [[{"text": "picks arbitrarily — exactly one", "tone": "good"}, "1, 2, 3, 4"], ["same rank, then a gap", {"text": "1, 2, 2, 4", "tone": "warn"}], ["same rank, no gap", {"text": "1, 2, 2, 3", "tone": "accent"}]], "t": "diagram", "id": "dg-5_6-02-0"},
+
+
     { t: "code", lang: "sql", title: "ROW_NUMBER, RANK, DENSE_RANK, and the deduplication they enable", code: `
 -- THREE RANKING FUNCTIONS, differing only on ties.
 -- scores: 90, 85, 85, 70

@@ -163,6 +163,11 @@ np.concatenate(parts)                         # one allocation, one pass
 
     { t: "h2", n: "02", text: "Splitting", id: "split" },
 
+    {"kind": "matrix", "title": "Splitting, and what each one promises", "caption": "`split` insists the pieces come out equal and raises if they cannot; `array_split` quietly makes them uneven. Which you want depends on whether an uneven split is a bug or a fact of your data.", "cols": ["uneven input", "returns"], "rows": ["np.split(a, 3)", "np.array_split(a, 3)", "np.split(a, [2, 5])"], "cells": [[{"text": "RAISES", "tone": "crit"}, "equal pieces, or nothing"], [{"text": "silently uneven", "tone": "warn"}, "as equal as it can manage"], [{"text": "fine", "tone": "good"}, {"text": "cuts at the given indices", "tone": "good"}]], "t": "diagram", "id": "dg-2_1-02-0"},
+
+
+
+
     { t: "p", text: "**Splitting is concatenation reversed**, with one distinction worth remembering: `split` demands an even division and `array_split` does not." },
 
     { t: "code", lang: "python", title: "the three ways to split, and batching done correctly", code: `

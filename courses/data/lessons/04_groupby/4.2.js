@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The shape decides the verb", id: "shape" },
 
+    {"kind": "matrix", "title": "The shape you need decides the verb", "caption": "Four verbs, and the choice is not about what you compute but about what **shape** comes back. Reaching for `apply` when `transform` was meant is the commonest cause of a result that will not assign back to the frame.", "cols": ["returns", "rows out"], "rows": ["agg", "transform", "filter", "apply"], "cells": [[{"text": "one value per group", "tone": "good"}, "one per group"], [{"text": "the group value on every ROW", "tone": "accent"}, {"text": "same as input — assignable", "tone": "good"}], ["whole groups, kept or dropped", "a subset of the input rows"], [{"text": "whatever you return", "tone": "warn"}, {"text": "unpredictable — and slow", "tone": "crit"}]], "t": "diagram", "id": "dg-4_2-01-0"},
+
+
     { t: "p", text: "Before choosing between `agg`, `transform`, `filter` and `apply`, answer one question: **what shape should the result be?** Each verb has a fixed answer, and picking the wrong one produces either an alignment error or a correct result computed very slowly." },
 
     { t: "dl", items: [

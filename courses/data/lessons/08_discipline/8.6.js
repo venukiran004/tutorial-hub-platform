@@ -243,6 +243,9 @@ print(ap(rf, Xs, ys))                                                      # 0.9
 
     { t: "h2", n: "04", text: "Metrics that survive the base rate", id: "metrics" },
 
+    {"kind": "matrix", "title": "Metrics that survive a shifting base rate", "caption": "Accuracy is uninformative under imbalance — at 1% positives, predicting the majority scores 99%. PR-AUC moves with the base rate and ROC-AUC does not, which makes them answer different questions rather than one being better.", "cols": ["at 1% positives", "depends on the base rate?"], "rows": ["accuracy", "ROC-AUC", "PR-AUC", "F1", "recall at fixed precision"], "cells": [[{"text": "99% for a constant prediction", "tone": "crit"}, {"text": "yes — uselessly so", "tone": "crit"}], ["unaffected by imbalance", {"text": "no — can look good anyway", "tone": "warn"}], [{"text": "falls when positives are rare", "tone": "good"}, {"text": "YES — which is the point", "tone": "good"}], ["depends on the threshold", "yes"], [{"text": "what the business asked for", "tone": "good"}, {"text": "yes, and stated explicitly", "tone": "good"}]], "t": "diagram", "id": "dg-8_6-04-0"},
+
+
     { t: "table",
       head: ["Metric", "Measures", "Sensitive to base rate", "Use it for"],
       rows: [

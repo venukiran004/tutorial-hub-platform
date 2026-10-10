@@ -144,6 +144,11 @@ df.reset_index().columns      # ['store_id', 'sales', ...] -- not 'index'
 
     { t: "h2", n: "02", text: "Alignment: the behaviour that explains the surprises", id: "alignment" },
 
+    {"kind": "steps", "title": "Alignment explains nearly every pandas surprise", "caption": "Arithmetic between two pandas objects matches on the **index**, not on position. Once that is held, the NaN that appeared from nowhere, the row count that grew after an operation, and the assignment that did nothing all have the same explanation.", "items": [{"label": "an operation aligns the indexes first", "desc": "the union of both, so a label in only one side produces NaN", "tone": "accent", "code": "1"}, {"label": "then it operates element by element", "desc": "on the aligned result, not on the original ordering", "tone": "good", "code": "2"}, {"label": "so a + b can be LONGER than either", "desc": "and full of NaN where the labels did not meet", "tone": "crit", "code": "the surprise"}, {"label": "and .values opts out entirely", "desc": "positional, no alignment — which is sometimes exactly right", "tone": "violet", "code": "the escape"}], "t": "diagram", "id": "dg-3_1-02-0"},
+
+
+
+
     { t: "p", text: "**Every binary operation between two pandas objects aligns on the index first.** Rows present in one and not the other become `NaN`. This is deliberate and usually right — and it is why adding two columns of the same length can produce a column of nothing but `NaN`." },
 
     { t: "code", lang: "python", title: "alignment, and the failure it causes", code: `

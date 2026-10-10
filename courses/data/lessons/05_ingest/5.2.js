@@ -196,6 +196,9 @@ def fix_mojibake(s, wrong="latin-1", right="utf-8"):
 
     { t: "h2", n: "02", text: "The byte-order mark", id: "bom" },
 
+    {"kind": "matrix", "title": "The byte-order mark, and the bug it causes", "caption": "A UTF-8 BOM is three bytes at the start of a file that mean nothing to the content. Read with plain `utf-8` they become part of the **first column name**, so a lookup on that name fails with a message that looks nothing like the cause.", "cols": ["reading a BOM'd file", "the first column name"], "rows": ["encoding='utf-8'", "encoding='utf-8-sig'", "no encoding given"], "cells": [[{"text": "the BOM is kept", "tone": "crit"}, {"text": "'\\ufeffid' — not 'id'", "tone": "crit"}], [{"text": "the BOM is consumed", "tone": "good"}, {"text": "'id'", "tone": "good"}], ["platform-dependent", {"text": "a portability bug waiting", "tone": "warn"}]], "t": "diagram", "id": "dg-5_2-02-0"},
+
+
     { t: "p", text: "**Windows tools — Excel, Notepad, PowerShell — often write UTF-8 with three invisible bytes at the front.** They are not displayed by editors, they are not whitespace, and `read_csv` makes them part of the first column's name." },
 
     { t: "code", lang: "python", title: "the invisible bytes that rename your first column", code: `

@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Rows against columns", id: "columnar" },
 
+    {"kind": "compare", "title": "Rows against columns, and when each wins", "caption": "The layout decides which queries are cheap. Analysis reads a few columns of many rows, which is exactly what columnar storage is for — and exactly what a row format makes expensive.", "columns": [{"title": "row-oriented — CSV, most OLTP", "tone": "warn", "items": ["a whole record is contiguous", "reading three columns still touches every byte", "compresses poorly: neighbouring values have different types", "right for writing and reading whole records", "no schema, no statistics"]}, {"title": "columnar — Parquet, Arrow", "tone": "good", "items": ["a whole column is contiguous", "reading three columns touches only those three", "compresses well: a column is one type, often repetitive", "right for analysis and aggregation", "carries a schema and per-chunk statistics for pushdown"]}], "t": "diagram", "id": "dg-5_4-01-0"},
+
+
     { t: "p", text: "A row-oriented file stores record 1's fields, then record 2's, and so on. **To read one column you must read every byte of every row and discard most of it.** A columnar file stores all of column A, then all of column B — so a query on two columns of fifty reads two fiftieths of the file." },
 
     { t: "dl", items: [

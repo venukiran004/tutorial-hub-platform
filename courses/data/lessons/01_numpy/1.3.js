@@ -235,6 +235,11 @@ np.array([1.0, np.nan, 3.0]) > 2      # [False, False, True]
 
     { t: "h2", n: "03", text: "The aliasing bug", id: "aliasing" },
 
+    {"kind": "matrix", "title": "View or copy, and how to tell", "caption": "The aliasing bug comes from not knowing which you have. The rule is mechanical: **basic** indexing can be expressed as a strided window, so it returns a view; **fancy** indexing cannot, so it copies. `arr.base` tells you after the fact.", "cols": ["view or copy?", "writing to it"], "rows": ["a[1:5]", "a[::2]", "a.T  /  a.reshape(...)", "a[[1, 3, 5]]", "a[a > 0]"], "cells": [[{"text": "VIEW", "tone": "warn"}, {"text": "changes the original", "tone": "crit"}], [{"text": "VIEW", "tone": "warn"}, {"text": "changes the original", "tone": "crit"}], [{"text": "VIEW when it can be", "tone": "warn"}, {"text": "changes the original", "tone": "crit"}], [{"text": "copy", "tone": "good"}, "independent"], [{"text": "copy", "tone": "good"}, "independent"]], "t": "diagram", "id": "dg-1_3-03-0"},
+
+
+
+
     { t: "p", text: "Views are the point of NumPy's design, and they are also the source of its worst class of bug: **a function that modifies its argument in place changes data its caller still believes is untouched.**" },
 
     { t: "ladder",

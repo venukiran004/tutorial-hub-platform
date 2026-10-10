@@ -241,6 +241,11 @@ np.searchsorted(reference, new_values) / len(reference)
 
     { t: "h2", n: "03", text: "Set operations", id: "sets" },
 
+    {"kind": "matrix", "title": "Set operations on arrays", "caption": "These all sort internally, so they are O(n log n) rather than the O(n) a hash set would give — but they return arrays and keep the dtype, which is usually what you want inside a vectorised pipeline. `in1d` is the one with a faster alternative.", "cols": ["gives", "note"], "rows": ["np.unique", "np.intersect1d", "np.setdiff1d", "np.isin"], "cells": [[{"text": "sorted distinct values", "tone": "good"}, "return_counts gives a frequency table free"], ["values in both", "both inputs are sorted first"], ["in the first, not the second", "order follows the sort, not the input"], [{"text": "a boolean mask", "tone": "accent"}, {"text": "the one you want for filtering", "tone": "good"}]], "t": "diagram", "id": "dg-2_2-03-0"},
+
+
+
+
     { t: "p", text: "NumPy's set operations work on sorted unique values, which makes them fast and gives them **one property that surprises people: they sort the output**, so the input order is not preserved." },
 
     { t: "table",

@@ -259,6 +259,11 @@ df.convert_dtypes(dtype_backend="pyarrow")            # Arrow-backed
 
     { t: "h2", n: "03", text: "Categoricals beyond memory", id: "beyond" },
 
+    {"kind": "matrix", "title": "What a categorical buys beyond memory", "caption": "The memory saving is the advertised benefit and the smaller one. The real wins are that a groupby can use the codes directly, that an order can be declared and then sorted on, and that an unexpected value **raises** instead of being silently accepted.", "cols": ["object dtype", "category"], "rows": ["memory, 1M rows / 5 values", "groupby", "sorting", "an unseen value"], "cells": [[{"text": "~60 MB", "tone": "crit"}, {"text": "~1 MB", "tone": "good"}], ["hashes every string", {"text": "groups on integer codes", "tone": "good"}], ["alphabetical only", {"text": "a declared order, so low < mid < high", "tone": "good"}], [{"text": "silently accepted", "tone": "crit"}, {"text": "becomes NaN — visible", "tone": "good"}]], "t": "diagram", "id": "dg-3_3-03-0"},
+
+
+
+
     { t: "p", text: "**Categorical is not only a memory optimisation — it carries an ordering and a fixed value set**, and both change how the rest of pandas treats the column." },
 
     { t: "code", lang: "python", title: "ordering, unused categories and the groupby surprise", code: `

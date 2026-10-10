@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What the parser decides for you", id: "inference" },
 
+    {"kind": "matrix", "title": "What the parser decides without asking", "caption": "Every one of these defaults will eventually be wrong for your file. Passing `dtype=` and `keep_default_na=False` turns a class of silent corruption into an explicit decision — the string “NA” as a country code is the classic case.", "cols": ["the default", "when it bites"], "rows": ["dtype", "NA values", "the index", "dates", "thousands separator"], "cells": [[{"text": "inferred per column", "tone": "warn"}, {"text": "an id becomes float", "tone": "crit"}], [{"text": "a long built-in list", "tone": "warn"}, {"text": "“NA” as a real value becomes NaN", "tone": "crit"}], ["a fresh RangeIndex", "a saved index reappears as Unnamed: 0"], [{"text": "left as strings", "tone": "good"}, "you must ask for parse_dates"], [{"text": "none", "tone": "warn"}, "“1,234” stays a string"]], "t": "diagram", "id": "dg-5_1-01-0"},
+
+
     { t: "p", text: "`read_csv` reads every field as a string and then, for each column, tries integer, then float, then leaves it as object. **That inference happens per column, per file, on whatever values the file happens to contain** — so the same column can arrive as `int64` on Monday and `float64` on Tuesday because one row was blank." },
 
     { t: "dl", items: [

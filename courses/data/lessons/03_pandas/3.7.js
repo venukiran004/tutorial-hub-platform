@@ -123,6 +123,11 @@ pd.Series([1, 1, 2, 2, 3]).mode()[0]      # 1 -- take the first if one is needed
 
     { t: "h2", n: "02", text: "Duplicates", id: "duplicates" },
 
+    {"kind": "matrix", "title": "Duplicates: which copy survives", "caption": "`keep` is the argument that decides, and `keep=False` does not mean “keep none of the extras” — it means **drop every row that has a duplicate**, including the first. That difference quietly removes data.", "cols": ["duplicated() marks", "drop_duplicates() keeps"], "rows": ["keep='first'", "keep='last'", "keep=False"], "cells": [["every copy after the first", {"text": "the first of each group", "tone": "good"}], ["every copy before the last", "the last of each group"], [{"text": "EVERY copy, including the first", "tone": "crit"}, {"text": "only rows that were never duplicated", "tone": "crit"}]], "t": "diagram", "id": "dg-3_7-02-0"},
+
+
+
+
     { t: "p", text: "**A duplicate is a row that repeats an earlier row on the columns you care about.** Which columns, and which copy to keep, are both decisions — and the defaults (all columns, keep the first) are only sometimes right." },
 
     { t: "viz",
