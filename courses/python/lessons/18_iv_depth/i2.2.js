@@ -15,6 +15,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "steps", "title": "The iterator protocol is two methods", "caption": "A generator is just a convenient way to get an object with these two methods. Once that clicks, the questions about laziness, one-shot consumption and memory all have the same answer.", "items": [{"label": "iter(obj) → an iterator", "desc": "__iter__; a for loop calls this once, at the start", "tone": "accent", "code": "once"}, {"label": "next(it) → the next value", "desc": "__next__; the function body resumes where it yielded", "tone": "good", "code": "per item"}, {"label": "StopIteration", "desc": "raised when exhausted, and the for loop swallows it", "tone": "warn", "code": "at the end"}, {"label": "and it is now spent", "desc": "an iterator is one-shot — a second loop over it yields nothing", "tone": "crit", "code": "the gotcha"}], "t": "diagram", "id": "dg-i2_2-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

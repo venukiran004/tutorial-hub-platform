@@ -30,6 +30,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "The loop you were about to write, and the built-in that replaces it",
       caption: "Each built-in is a loop someone already wrote, in C, correctly. Reaching for one is faster to read and usually faster to run.",

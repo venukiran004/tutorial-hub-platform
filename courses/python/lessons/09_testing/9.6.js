@@ -88,6 +88,9 @@ class ReportService:
 
 
 
+
+
+
     { t: "viz",
       title: "Push decisions inward, push I/O outward",
       caption: "The shell reads, calls the core, and writes. The core takes data and returns data — no network, no clock, no database — so it is tested with plain values and no infrastructure at all. Most of the interesting logic lives there.",

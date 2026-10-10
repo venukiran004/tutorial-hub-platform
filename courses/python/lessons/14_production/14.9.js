@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "The order that keeps you calm",
       caption: "Stopping the bleeding is not the same as understanding the wound. Teams that skip mitigation debug for forty minutes while users are down; teams that skip diagnosis have the same incident again next week.",

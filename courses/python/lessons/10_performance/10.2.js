@@ -69,6 +69,9 @@ def summarise_deploys(path: Path) -> dict[str, int]:
 
 
 
+
+
+
     { t: "table",
       head: ["Instrument", "Answers", "Overhead", "Use it when"],
       rows: [
@@ -169,6 +172,9 @@ list comprehension:   2.914000s
     { t: "h2", n: "04", text: "cProfile: the two columns that matter", id: "cprofile" },
 
     {"kind": "compare", "title": "tottime versus cumtime", "caption": "tottime is time inside the function itself; cumtime includes everything it called. Sort by tottime to find the function doing the work; by cumtime to find the caller responsible for it.", "columns": [{"title": "tottime", "tone": "accent", "items": ["own code only", "sort here to find the hot function", "a hot leaf: optimise it"]}, {"title": "cumtime", "tone": "good", "items": ["own time + callees", "sort here to find the hot path", "a hot root: call it less"]}], "t": "diagram", "id": "dg-10_2-04-1"},
+
+
+
 
 
 

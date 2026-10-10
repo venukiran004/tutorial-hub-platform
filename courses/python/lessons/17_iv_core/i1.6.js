@@ -15,6 +15,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "break, continue and the else nobody expects", "caption": "`for … else` runs the else clause only when the loop finished **without** a break, which makes it a search idiom rather than a curiosity. That is the question in this set people get wrong.", "cols": ["what it does", "runs the else clause?"], "rows": ["the loop ends normally", "break", "continue", "return", "an exception"], "cells": [["falls out of the loop", {"text": "YES", "tone": "good"}], ["leaves the loop early", {"text": "no — the point of it", "tone": "crit"}], ["skips to the next item", {"text": "yes, eventually", "tone": "good"}], ["leaves the function", {"text": "no", "tone": "warn"}], ["propagates", {"text": "no", "tone": "warn"}]], "t": "diagram", "id": "dg-i1_6-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

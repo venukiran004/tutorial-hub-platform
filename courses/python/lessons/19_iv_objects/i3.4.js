@@ -15,6 +15,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "The gotchas these outputs are testing", "caption": "Forty-nine predict-the-output questions, and nearly all of them are one of these five. Recognising which one is being asked is most of the work.", "cols": ["what surprises people"], "rows": ["def f(x, acc=[])", "[lambda: i for i in r]", "a is b vs a == b", "x = y = [] then x.append", "0.1 + 0.2 == 0.3"], "cells": [[{"text": "the default is made ONCE, at definition, and persists between calls", "tone": "crit"}], [{"text": "late binding — every lambda sees the final i, not the i at creation", "tone": "crit"}], [{"text": "identity against equality; small ints and short strings are interned", "tone": "warn"}], [{"text": "one list, two names — assignment never copies", "tone": "crit"}], [{"text": "False — binary floats cannot hold a tenth exactly", "tone": "warn"}]], "t": "diagram", "id": "dg-i3_4-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

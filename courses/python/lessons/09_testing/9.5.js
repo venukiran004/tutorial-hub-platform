@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "The import binds a name in *your* module",
       caption: "`from x import y` copies a reference into the importing module's namespace. Patching `x.y` afterwards replaces the original but not the copy the module under test is already holding — so the real function still runs.",
@@ -137,6 +140,9 @@ fake_db.load_prfile()                        # AttributeError -- caught
     { t: "h2", n: "02", text: "The taxonomy", id: "taxonomy" },
 
     {"kind": "compare", "title": "The test-double taxonomy", "caption": "Names that are used interchangeably and should not be. A mock asserts on how it was called; a stub just answers; a fake works for real, in miniature.", "columns": [{"title": "stub", "tone": "accent", "items": ["returns canned answers", "no assertions about calls", "fixed responses for a client"]}, {"title": "mock", "tone": "warn", "items": ["records calls", "test asserts on them", "assert_called_once_with"]}, {"title": "fake", "tone": "good", "items": ["a working implementation", "in-memory repository, SQLite", "behaves like the real thing"]}, {"title": "spy", "tone": "violet", "items": ["the real object, wrapped", "records while delegating", "wraps= in unittest.mock"]}], "t": "diagram", "id": "dg-9_5-02-1"},
+
+
+
 
 
 

@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "One thread, a queue of ready tasks",
       caption: "The loop picks a ready task and runs it until it awaits something unfinished. That task is parked with the OS watching its socket, and the loop picks the next ready one. Nothing is pre-empted — every switch happens at an `await`.",
@@ -165,6 +168,9 @@ concurrent    1.00s`,
     { t: "h2", n: "03", text: "The blocking call", id: "blocking" },
 
     {"kind": "timeline", "title": "One blocking call stalls every task", "caption": "time.sleep(2) or a synchronous requests.get inside a coroutine holds the only thread; no other task runs until it returns. await asyncio.sleep or an async client yields instead.", "span": 6, "tick": 1, "lanes": [{"label": "task A", "tone": "crit", "bars": [[0, 3, "time.sleep(3) — holds the loop"]]}, {"label": "task B", "tone": "warn", "bars": [[3, 4, "finally runs"]]}, {"label": "task C", "tone": "warn", "bars": [[4, 5, "finally runs"]]}], "t": "diagram", "id": "dg-11_6-03-1"},
+
+
+
 
 
 

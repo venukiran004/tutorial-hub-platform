@@ -117,6 +117,9 @@ cur.execute(
 
 
 
+
+
+
     { t: "ladder",
       title: "Filtering orders by a status the user supplied",
       rungs: [
@@ -229,6 +232,9 @@ with conn.cursor(name="stream") as cur:       # naming it is the switch
     { t: "h2", n: "04", text: "Writing efficiently", id: "writing" },
 
     {"kind": "timeline", "title": "Row by row versus a batch", "caption": "A thousand single-row INSERTs are a thousand round trips; executemany or a multi-row VALUES sends them in one. COPY is faster still for bulk loads.", "span": 10, "tick": 2, "lanes": [{"label": "1,000 × execute()", "tone": "crit", "bars": [[0, 10, "1,000 round trips"]]}, {"label": "executemany(rows)", "tone": "warn", "bars": [[0, 1.6, "batched"]]}, {"label": "COPY FROM", "tone": "good", "bars": [[0, 0.5, "bulk"]]}], "t": "diagram", "id": "dg-13_3-04-1"},
+
+
+
 
 
 

@@ -83,6 +83,9 @@ sorted(already_sorted)          # O(n): one run found, nothing merged
 
 
 
+
+
+
     { t: "ladder",
       title: "Finding an insertion point in a sorted list",
       rungs: [

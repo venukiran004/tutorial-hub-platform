@@ -15,6 +15,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "Four containers, four answers", "caption": "Most of this set is one table. The `hashable` column is the one that decides what can be a dict key or go inside a set — and it is why a `list` cannot, but a `tuple` of immutables can.", "cols": ["ordered", "mutable", "duplicates", "hashable"], "rows": ["list", "tuple", "set", "frozenset"], "cells": [[true, true, true, false], [true, false, true, {"text": "if contents are", "tone": "warn"}], [{"text": "no", "tone": "crit"}, true, false, false], [{"text": "no", "tone": "crit"}, false, false, true]], "t": "diagram", "id": "dg-i1_4-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

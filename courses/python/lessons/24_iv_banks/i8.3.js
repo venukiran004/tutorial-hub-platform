@@ -15,6 +15,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "What the second ninety cover", "caption": "The weight shifts from language to system. These questions have a follow-up about failure almost every time, so the answer worth rehearsing is what breaks rather than what the feature does.", "cols": ["what is really being tested"], "rows": ["concurrency", "memory and the PVM", "the standard library", "testing", "performance"], "cells": [[{"text": "whether the work waits or computes — the GIL decides the answer", "tone": "crit"}], [{"text": "refcounting, and the cycle it cannot free", "tone": "accent"}], [{"text": "reaching for the batteries instead of hand-rolling", "tone": "good"}], [{"text": "what you would mock, and what that stops the test proving", "tone": "warn"}], [{"text": "measuring before optimising, and knowing the cost table", "tone": "good"}]], "t": "diagram", "id": "dg-i8_3-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

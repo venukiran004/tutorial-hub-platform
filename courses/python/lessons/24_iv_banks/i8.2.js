@@ -15,6 +15,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "What the first hundred questions cover", "caption": "A map before the marathon. The left column is where they cluster, and the right is the thing each cluster is really testing — which is usually one mechanism rather than a fact.", "cols": ["what is really being tested"], "rows": ["types and mutability", "functions and scope", "comprehensions", "OOP and dunders", "errors and context managers"], "cells": [[{"text": "that assignment binds a name and never copies", "tone": "accent"}], [{"text": "LEGB, and that defaults are made once at definition", "tone": "accent"}], [{"text": "that they build eagerly and a generator does not", "tone": "good"}], [{"text": "the MRO, and which dunder the operator actually calls", "tone": "good"}], [{"text": "that finally always runs — and can swallow the exception", "tone": "warn"}]], "t": "diagram", "id": "dg-i8_2-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

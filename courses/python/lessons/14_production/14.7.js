@@ -191,6 +191,9 @@ uv export --no-dev | pip-audit -r /dev/stdin
 
 
 
+
+
+
     { t: "viz",
       title: "Four ways a malicious package reaches you",
       caption: "None of these require a vulnerability in your code. The attack is on the path between the package author and your build machine — and in three of the four, nothing about your repository changes.",

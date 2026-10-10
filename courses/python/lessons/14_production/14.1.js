@@ -88,6 +88,9 @@ testpaths = ["tests"]
 
 
 
+
+
+
     { t: "viz",
       title: "Dependencies point one way",
       caption: "Each layer may import the ones below it and never the ones above. That single rule is what makes the domain testable without a database and replaceable without touching business logic.",

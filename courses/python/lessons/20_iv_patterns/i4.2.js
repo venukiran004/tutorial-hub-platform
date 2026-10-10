@@ -18,6 +18,10 @@ EC.receiveLesson({
   "4.12"
  ],
  "blocks": [
+
+    {"kind": "matrix", "title": "Creational patterns, by what they decide", "caption": "Each one moves a different decision out of the caller. Naming that decision is a better interview answer than reciting the structure — and in Python several collapse into a function or a module.", "cols": ["what it decides", "the Python form"], "rows": ["Factory Method", "Abstract Factory", "Builder", "Prototype", "Singleton"], "cells": [["which class to instantiate", {"text": "a function returning instances", "tone": "good"}], ["a whole family of related classes", "a module of factories"], ["how a complex object is assembled", {"text": "keyword args, or a dataclass", "tone": "good"}], ["how to copy an existing instance", {"text": "copy.deepcopy", "tone": "good"}], ["that there is exactly one", {"text": "a module-level object", "tone": "warn"}]], "t": "diagram", "id": "dg-i4_2-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "Data is pulled through, one item at a time",
       caption: "Nothing runs until the consumer asks. Then a single item is drawn through every stage before the next one starts — so peak memory is one item per stage, whatever the size of the source.",
@@ -151,6 +154,9 @@ def wrapper(items):
     { t: "h2", n: "03", text: "The two-way protocol", id: "send" },
 
     {"kind": "flow", "title": "send() makes a generator two-way", "caption": "A value passed to send() becomes the result of the yield expression inside the generator. The first call must be send(None) to advance to the first yield.", "cols": 3, "nodes": [{"id": "c", "label": "caller", "sub": "gen.send(value)", "tone": "accent"}, {"id": "y", "label": "x = yield result", "sub": "inside the generator", "tone": "good"}, {"id": "r", "label": "result → caller", "sub": "the yielded value", "tone": "warn"}], "edges": [["c", "y", "value arrives as x"], ["y", "r", "yields"], ["r", "c"]], "t": "diagram", "id": "dg-8_1-03-0"},
+
+
+
 
 
 

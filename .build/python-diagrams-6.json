@@ -1,0 +1,1556 @@
+{
+ "i1.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "Every string method returns a NEW string",
+    "caption": "A `str` is immutable, so there is no method that edits one in place — `s.upper()` hands back a new object and leaves `s` alone. Half the string questions in an interview are really testing whether you know that.",
+    "cols": [
+     "what it does",
+     "mutates s?"
+    ],
+    "rows": [
+     "s.upper() / s.lower()",
+     "s.strip() / s.rstrip()",
+     "s.replace(a, b)",
+     "s.split() / “,”.join(xs)",
+     "s.find() / s.index()",
+     "f“{x:>8.2f}”"
+    ],
+    "cells": [
+     [
+      "a new string, case folded",
+      false
+     ],
+     [
+      "a new string, ends trimmed",
+      false
+     ],
+     [
+      "a new string, every occurrence",
+      false
+     ],
+     [
+      "a list, then a string back",
+      false
+     ],
+     [
+      {
+       "text": "an index; index raises",
+       "tone": "warn"
+      },
+      false
+     ],
+     [
+      "a new string, formatted",
+      false
+     ]
+    ]
+   }
+  }
+ ],
+ "i1.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "List operations, by cost",
+    "caption": "The cost column is what the follow-up question is usually about. `insert(0, x)` and `pop(0)` shift every element, which is why a queue built on a list degrades and a `deque` does not.",
+    "cols": [
+     "cost",
+     "why"
+    ],
+    "rows": [
+     "append(x) / pop()",
+     "insert(0, x) / pop(0)",
+     "x in list",
+     "list[i]",
+     "sort()",
+     "copy() / list[:]"
+    ],
+    "cells": [
+     [
+      {
+       "text": "O(1) amortised",
+       "tone": "good"
+      },
+      "room is over-allocated at the end"
+     ],
+     [
+      {
+       "text": "O(n)",
+       "tone": "crit"
+      },
+      "every later element shifts"
+     ],
+     [
+      {
+       "text": "O(n)",
+       "tone": "warn"
+      },
+      "a scan — use a set for membership"
+     ],
+     [
+      {
+       "text": "O(1)",
+       "tone": "good"
+      },
+      "contiguous pointers"
+     ],
+     [
+      {
+       "text": "O(n log n)",
+       "tone": "accent"
+      },
+      "Timsort, stable"
+     ],
+     [
+      {
+       "text": "O(n)",
+       "tone": "warn"
+      },
+      "shallow — inner objects are shared"
+     ]
+    ]
+   }
+  }
+ ],
+ "i1.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "Four containers, four answers",
+    "caption": "Most of this set is one table. The `hashable` column is the one that decides what can be a dict key or go inside a set — and it is why a `list` cannot, but a `tuple` of immutables can.",
+    "cols": [
+     "ordered",
+     "mutable",
+     "duplicates",
+     "hashable"
+    ],
+    "rows": [
+     "list",
+     "tuple",
+     "set",
+     "frozenset"
+    ],
+    "cells": [
+     [
+      true,
+      true,
+      true,
+      false
+     ],
+     [
+      true,
+      false,
+      true,
+      {
+       "text": "if contents are",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      true,
+      false,
+      false
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      false,
+      false,
+      true
+     ]
+    ]
+   }
+  }
+ ],
+ "i1.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "steps",
+    "title": "What a dict lookup actually does",
+    "caption": "Knowing these four steps answers most dictionary questions at once: why keys must be hashable, why a mutated key is lost, why lookup is O(1) on average, and why two unequal objects with the same hash still work.",
+    "items": [
+     {
+      "label": "hash(key)",
+      "desc": "an int — which is why an unhashable key raises TypeError",
+      "tone": "accent",
+      "code": "O(1)"
+     },
+     {
+      "label": "pick a slot from the hash",
+      "desc": "the low bits index the table, so it is a direct jump rather than a scan",
+      "tone": "good",
+      "code": "O(1)"
+     },
+     {
+      "label": "compare with ==",
+      "desc": "a hash collision is normal; equality decides, so __hash__ and __eq__ must agree",
+      "tone": "warn",
+      "code": "O(1) avg"
+     },
+     {
+      "label": "probe the next slot on a clash",
+      "desc": "which is why a dict degrades to O(n) only in the pathological case",
+      "tone": "teal",
+      "code": "O(n) worst"
+     }
+    ]
+   }
+  }
+ ],
+ "i1.6": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "break, continue and the else nobody expects",
+    "caption": "`for … else` runs the else clause only when the loop finished **without** a break, which makes it a search idiom rather than a curiosity. That is the question in this set people get wrong.",
+    "cols": [
+     "what it does",
+     "runs the else clause?"
+    ],
+    "rows": [
+     "the loop ends normally",
+     "break",
+     "continue",
+     "return",
+     "an exception"
+    ],
+    "cells": [
+     [
+      "falls out of the loop",
+      {
+       "text": "YES",
+       "tone": "good"
+      }
+     ],
+     [
+      "leaves the loop early",
+      {
+       "text": "no — the point of it",
+       "tone": "crit"
+      }
+     ],
+     [
+      "skips to the next item",
+      {
+       "text": "yes, eventually",
+       "tone": "good"
+      }
+     ],
+     [
+      "leaves the function",
+      {
+       "text": "no",
+       "tone": "warn"
+      }
+     ],
+     [
+      "propagates",
+      {
+       "text": "no",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "i1.7": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "layers",
+    "title": "LEGB: where a name is looked up",
+    "caption": "Read top down. A bare assignment creates a **local** name, which is why reading a global then assigning to it raises `UnboundLocalError` — the commonest scope question there is.",
+    "items": [
+     {
+      "label": "Local",
+      "sub": "names assigned in this function",
+      "tone": "good",
+      "side": "first"
+     },
+     {
+      "label": "Enclosing",
+      "sub": "a surrounding function’s locals — what a closure captures",
+      "tone": "accent",
+      "side": "then"
+     },
+     {
+      "label": "Global",
+      "sub": "module level; global to assign",
+      "tone": "warn",
+      "side": "then"
+     },
+     {
+      "label": "Built-in",
+      "sub": "len, print, range — shadowed by any name above",
+      "tone": "teal",
+      "side": "last"
+     }
+    ]
+   }
+  }
+ ],
+ "i1.8": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "flow",
+    "cols": 4,
+    "title": "map, filter, reduce — and why a comprehension usually wins",
+    "caption": "All three are lazy in Python 3 except `reduce`, which consumes. The interview answer worth having is that a comprehension is clearer for map and filter, and `reduce` is the one with no comprehension equivalent.",
+    "nodes": [
+     {
+      "id": "s",
+      "label": "an iterable",
+      "sub": "the source",
+      "tone": "teal"
+     },
+     {
+      "id": "m",
+      "label": "map(f, …)",
+      "sub": "lazy — one value at a time",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "filter(p, …)",
+      "sub": "lazy — drops what fails p",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "reduce(g, …)",
+      "sub": "EAGER — folds to one value",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "m"
+     ],
+     [
+      "m",
+      "f"
+     ],
+     [
+      "f",
+      "r"
+     ]
+    ]
+   }
+  }
+ ],
+ "i2.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "steps",
+    "title": "The iterator protocol is two methods",
+    "caption": "A generator is just a convenient way to get an object with these two methods. Once that clicks, the questions about laziness, one-shot consumption and memory all have the same answer.",
+    "items": [
+     {
+      "label": "iter(obj) → an iterator",
+      "desc": "__iter__; a for loop calls this once, at the start",
+      "tone": "accent",
+      "code": "once"
+     },
+     {
+      "label": "next(it) → the next value",
+      "desc": "__next__; the function body resumes where it yielded",
+      "tone": "good",
+      "code": "per item"
+     },
+     {
+      "label": "StopIteration",
+      "desc": "raised when exhausted, and the for loop swallows it",
+      "tone": "warn",
+      "code": "at the end"
+     },
+     {
+      "label": "and it is now spent",
+      "desc": "an iterator is one-shot — a second loop over it yields nothing",
+      "tone": "crit",
+      "code": "the gotcha"
+     }
+    ]
+   }
+  }
+ ],
+ "i2.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "steps",
+    "title": "try, except, else, finally — in execution order",
+    "caption": "The `else` clause runs only when the `try` body raised nothing, and `finally` runs whatever happens — including on a `return`. A `return` inside `finally` discards the exception, which is the trap this set is built around.",
+    "items": [
+     {
+      "label": "try",
+      "desc": "the guarded body",
+      "tone": "accent",
+      "code": "1"
+     },
+     {
+      "label": "except",
+      "desc": "only if it raised, and only the first matching clause",
+      "tone": "warn",
+      "code": "2 if raised"
+     },
+     {
+      "label": "else",
+      "desc": "only if it did NOT raise — so put the follow-on work here, not in try",
+      "tone": "good",
+      "code": "2 if clean"
+     },
+     {
+      "label": "finally",
+      "desc": "always — and a return here swallows the exception",
+      "tone": "crit",
+      "code": "3 always"
+     }
+    ]
+   }
+  }
+ ],
+ "i2.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "steps",
+    "title": "What `with` guarantees",
+    "caption": "`__exit__` runs on the way out whatever happens — normal end, `return`, or exception. Returning a truthy value from it **suppresses** the exception, which is the question people miss.",
+    "items": [
+     {
+      "label": "__enter__()",
+      "desc": "its return value is what as binds",
+      "tone": "accent",
+      "code": "on entry"
+     },
+     {
+      "label": "the body",
+      "desc": "may return, break or raise",
+      "tone": "good",
+      "code": "your code"
+     },
+     {
+      "label": "__exit__(exc_type, exc, tb)",
+      "desc": "always called — this is the guarantee you are buying",
+      "tone": "warn",
+      "code": "on exit"
+     },
+     {
+      "label": "return True to suppress",
+      "desc": "falsy (or None) re-raises; truthy swallows the exception",
+      "tone": "crit",
+      "code": "the subtlety"
+     }
+    ]
+   }
+  }
+ ],
+ "i2.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "steps",
+    "title": "How an import is resolved",
+    "caption": "Six questions, and they all come back to this order. The first entry of `sys.path` is the script's own directory, which is why a local `random.py` shadows the standard library — the classic import bug.",
+    "items": [
+     {
+      "label": "sys.modules",
+      "desc": "already imported? return it — so a module body runs ONCE",
+      "tone": "good",
+      "code": "cache"
+     },
+     {
+      "label": "sys.path, in order",
+      "desc": "the script’s directory first, then PYTHONPATH, then site-packages",
+      "tone": "accent",
+      "code": "search"
+     },
+     {
+      "label": "execute the module body",
+      "desc": "top to bottom, once; this is where a circular import bites",
+      "tone": "warn",
+      "code": "run"
+     },
+     {
+      "label": "bind the name locally",
+      "desc": "import x.y binds x; from x import y binds y",
+      "tone": "teal",
+      "code": "bind"
+     }
+    ]
+   }
+  }
+ ],
+ "i2.6": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "The four regex calls that get confused",
+    "caption": "`match` anchors at the start, `search` does not, and `fullmatch` requires the whole string. Most “why does my pattern not match” question is one of these three being the wrong call.",
+    "cols": [
+     "anchored where",
+     "returns"
+    ],
+    "rows": [
+     "re.match(p, s)",
+     "re.search(p, s)",
+     "re.fullmatch(p, s)",
+     "re.findall(p, s)"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the START only",
+       "tone": "warn"
+      },
+      "a Match, or None"
+     ],
+     [
+      {
+       "text": "anywhere",
+       "tone": "good"
+      },
+      "the first Match, or None"
+     ],
+     [
+      {
+       "text": "the WHOLE string",
+       "tone": "accent"
+      },
+      "a Match, or None"
+     ],
+     [
+      {
+       "text": "anywhere, repeatedly",
+       "tone": "good"
+      },
+      "a list of strings or tuples"
+     ]
+    ]
+   }
+  }
+ ],
+ "i2.7": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "collections, by the problem each one solves",
+    "caption": "Thirty-five questions over six types. The right answer to most of them is naming the problem the type removes — usually a `KeyError`, a manual counter, or an O(n) pop from the front.",
+    "cols": [
+     "the problem it removes"
+    ],
+    "rows": [
+     "defaultdict",
+     "Counter",
+     "deque",
+     "namedtuple",
+     "OrderedDict",
+     "ChainMap"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the KeyError on first touch — a factory supplies the default",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "hand-rolled tallying, plus most_common",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "O(n) pop(0) — both ends are O(1)",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "indexing a tuple by position and forgetting what [2] was",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "little now that dict keeps order — but move_to_end and == still differ",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "merging dicts without copying them",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "i3.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "Three kinds of concurrency, one decision",
+    "caption": "The GIL column decides everything. Threads do not run Python bytecode in parallel, so they help only when the work is waiting — and the right answer to “make this faster” depends entirely on whether the work is I/O or CPU.",
+    "cols": [
+     "parallel CPU?",
+     "good for",
+     "the cost"
+    ],
+    "rows": [
+     "threading",
+     "multiprocessing",
+     "asyncio"
+    ],
+    "cells": [
+     [
+      {
+       "text": "no — the GIL",
+       "tone": "crit"
+      },
+      {
+       "text": "I/O that blocks",
+       "tone": "good"
+      },
+      "locks, races"
+     ],
+     [
+      {
+       "text": "YES",
+       "tone": "good"
+      },
+      {
+       "text": "CPU-bound work",
+       "tone": "good"
+      },
+      "pickling, memory"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      {
+       "text": "thousands of I/O waits",
+       "tone": "good"
+      },
+      "one blocking call stalls all"
+     ]
+    ]
+   }
+  }
+ ],
+ "i3.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "steps",
+    "title": "How an object is freed",
+    "caption": "Reference counting does almost all the work and cannot free a cycle, which is the whole reason a garbage collector exists alongside it. That one sentence answers most of this set.",
+    "items": [
+     {
+      "label": "refcount reaches zero",
+      "desc": "freed immediately and deterministically — no collector involved",
+      "tone": "good",
+      "code": "most objects"
+     },
+     {
+      "label": "a cycle keeps it above zero",
+      "desc": "a → b → a: unreachable, but each still holds a reference",
+      "tone": "crit",
+      "code": "the gap"
+     },
+     {
+      "label": "the generational GC sweeps",
+      "desc": "three generations; young objects are checked most often",
+      "tone": "warn",
+      "code": "cycles only"
+     },
+     {
+      "label": "__del__ can resurrect it",
+      "desc": "which is why __del__ is not a destructor you should rely on",
+      "tone": "teal",
+      "code": "the trap"
+     }
+    ]
+   }
+  }
+ ],
+ "i3.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "The gotchas these outputs are testing",
+    "caption": "Forty-nine predict-the-output questions, and nearly all of them are one of these five. Recognising which one is being asked is most of the work.",
+    "cols": [
+     "what surprises people"
+    ],
+    "rows": [
+     "def f(x, acc=[])",
+     "[lambda: i for i in r]",
+     "a is b vs a == b",
+     "x = y = [] then x.append",
+     "0.1 + 0.2 == 0.3"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the default is made ONCE, at definition, and persists between calls",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "late binding — every lambda sees the final i, not the i at creation",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "identity against equality; small ints and short strings are interned",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "one list, two names — assignment never copies",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "False — binary floats cannot hold a tenth exactly",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "i4.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "Creational patterns, by what they decide",
+    "caption": "Each one moves a different decision out of the caller. Naming that decision is a better interview answer than reciting the structure — and in Python several collapse into a function or a module.",
+    "cols": [
+     "what it decides",
+     "the Python form"
+    ],
+    "rows": [
+     "Factory Method",
+     "Abstract Factory",
+     "Builder",
+     "Prototype",
+     "Singleton"
+    ],
+    "cells": [
+     [
+      "which class to instantiate",
+      {
+       "text": "a function returning instances",
+       "tone": "good"
+      }
+     ],
+     [
+      "a whole family of related classes",
+      "a module of factories"
+     ],
+     [
+      "how a complex object is assembled",
+      {
+       "text": "keyword args, or a dataclass",
+       "tone": "good"
+      }
+     ],
+     [
+      "how to copy an existing instance",
+      {
+       "text": "copy.deepcopy",
+       "tone": "good"
+      }
+     ],
+     [
+      "that there is exactly one",
+      {
+       "text": "a module-level object",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "i4.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "Structural patterns, by the mismatch each one hides",
+    "caption": "All five sit between two things that do not quite fit. The interview distinction worth having is Adapter against Facade: one changes an interface, the other simplifies a subsystem.",
+    "cols": [
+     "what sits between",
+     "the giveaway"
+    ],
+    "rows": [
+     "Adapter",
+     "Facade",
+     "Decorator",
+     "Proxy",
+     "Composite"
+    ],
+    "cells": [
+     [
+      "an interface you have and one you need",
+      {
+       "text": "wraps ONE object, changes its shape",
+       "tone": "good"
+      }
+     ],
+     [
+      "a caller and a complicated subsystem",
+      {
+       "text": "one simple entry point",
+       "tone": "good"
+      }
+     ],
+     [
+      "a caller and an object, adding behaviour",
+      {
+       "text": "same interface, more behaviour",
+       "tone": "accent"
+      }
+     ],
+     [
+      "a caller and an expensive or remote object",
+      {
+       "text": "same interface, controls access",
+       "tone": "warn"
+      }
+     ],
+     [
+      "a caller and a tree of objects",
+      {
+       "text": "a leaf and a branch look alike",
+       "tone": "teal"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "i4.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "Behavioural patterns, by what varies",
+    "caption": "Each isolates one thing that changes. Strategy against State is the usual follow-up: Strategy is chosen from outside, State transitions itself from within.",
+    "cols": [
+     "what varies",
+     "who changes it"
+    ],
+    "rows": [
+     "Strategy",
+     "State",
+     "Observer",
+     "Command",
+     "Template Method"
+    ],
+    "cells": [
+     [
+      "the algorithm",
+      {
+       "text": "the caller picks it",
+       "tone": "good"
+      }
+     ],
+     [
+      "the behaviour, as state changes",
+      {
+       "text": "the object itself",
+       "tone": "accent"
+      }
+     ],
+     [
+      "who reacts to an event",
+      {
+       "text": "subscribers register",
+       "tone": "good"
+      }
+     ],
+     [
+      "a request, as an object",
+      {
+       "text": "so it can be queued or undone",
+       "tone": "teal"
+      }
+     ],
+     [
+      "the steps inside a fixed skeleton",
+      {
+       "text": "a subclass fills them in",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "i4.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "layers",
+    "title": "The architectural shape most questions assume",
+    "caption": "Dependencies point **inward**: the domain knows nothing about the database or the web layer. That single rule is what makes the layers testable, and it is what an interviewer is checking you can state.",
+    "items": [
+     {
+      "label": "the web layer",
+      "sub": "HTTP, serialisation, status codes — no business rules",
+      "tone": "teal",
+      "side": "outermost"
+     },
+     {
+      "label": "application services",
+      "sub": "use cases, transactions, orchestration",
+      "tone": "accent",
+      "side": "↓ depends"
+     },
+     {
+      "label": "the domain",
+      "sub": "entities and rules — knows nothing below it",
+      "tone": "good",
+      "side": "the core"
+     },
+     {
+      "label": "infrastructure",
+      "sub": "the database, queues, third parties — behind interfaces",
+      "tone": "warn",
+      "side": "injected"
+     }
+    ]
+   }
+  }
+ ],
+ "i5.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "timeline",
+    "title": "What each version added",
+    "caption": "Interviewers ask this to find out whether you have kept up. The two that change how you *write* code are the **walrus operator** (3.8) and **structural pattern matching** (3.10); the rest mostly change what you can express in a type — built-in generics in 3.9, `X | Y` unions in 3.10, the `type` alias syntax in 3.12. 3.11 added `ExceptionGroup` and `tomllib`, and 3.13 added free-threading as a build option.",
+    "span": 14,
+    "tick": 2,
+    "unit": "Python 3.x",
+    "lanes": [
+     {
+      "label": "f-strings",
+      "bars": [
+       [
+        6,
+        14,
+        "3.6",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "dataclasses",
+      "bars": [
+       [
+        7,
+        14,
+        "3.7",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "walrus :=",
+      "bars": [
+       [
+        8,
+        14,
+        "3.8",
+        "accent"
+       ]
+      ]
+     },
+     {
+      "label": "dict | merge",
+      "bars": [
+       [
+        9,
+        14,
+        "3.9",
+        "accent"
+       ]
+      ]
+     },
+     {
+      "label": "match / case",
+      "bars": [
+       [
+        10,
+        14,
+        "3.10",
+        "violet"
+       ]
+      ]
+     },
+     {
+      "label": "ExceptionGroup",
+      "bars": [
+       [
+        11,
+        14,
+        "3.11",
+        "teal"
+       ]
+      ]
+     },
+     {
+      "label": "type aliases",
+      "bars": [
+       [
+        12,
+        14,
+        "3.12",
+        "warn"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "i5.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "layers",
+    "taper": true,
+    "title": "The test pyramid, and where the questions land",
+    "caption": "The shape is the argument: many fast tests at the bottom, few slow ones at the top. Most interview answers go wrong by putting integration work in a unit test — usually a real database call.",
+    "items": [
+     {
+      "label": "end-to-end",
+      "sub": "a few — slow, flaky, highest confidence",
+      "tone": "crit",
+      "side": "minutes"
+     },
+     {
+      "label": "integration",
+      "sub": "real database, real HTTP, one boundary at a time",
+      "tone": "warn",
+      "side": "seconds"
+     },
+     {
+      "label": "unit",
+      "sub": "no I/O at all — thousands of them, in milliseconds",
+      "tone": "good",
+      "side": "ms"
+     }
+    ]
+   }
+  }
+ ],
+ "i6.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "Reshaping: which call for which shape change",
+    "caption": "Forty-nine questions, and the reshaping ones are where people stall. The distinction to hold is long against wide: `melt` goes long, `pivot` goes wide, and `pivot_table` is `pivot` that can aggregate.",
+    "cols": [
+     "shape change",
+     "duplicates in the index"
+    ],
+    "rows": [
+     "melt",
+     "pivot",
+     "pivot_table",
+     "groupby().agg()",
+     "merge"
+    ],
+    "cells": [
+     [
+      {
+       "text": "wide → long",
+       "tone": "good"
+      },
+      "fine"
+     ],
+     [
+      {
+       "text": "long → wide",
+       "tone": "accent"
+      },
+      {
+       "text": "RAISES",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "long → wide",
+       "tone": "accent"
+      },
+      {
+       "text": "aggregates them",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "many rows → one per group",
+       "tone": "good"
+      },
+      "the point of it"
+     ],
+     [
+      {
+       "text": "two frames → one",
+       "tone": "teal"
+      },
+      {
+       "text": "row multiplication — check it",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "i7.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "flow",
+    "cols": 4,
+    "title": "A task queue, end to end",
+    "caption": "Fifteen questions about this one picture. The two that matter: a task must be **idempotent**, because a broker guarantees at-least-once delivery, and a result nobody reads still costs you storage.",
+    "nodes": [
+     {
+      "id": "p",
+      "label": "producer",
+      "sub": "the web request returns NOW",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "broker",
+      "sub": "Redis or RabbitMQ — at least once",
+      "tone": "warn"
+     },
+     {
+      "id": "w",
+      "label": "worker",
+      "sub": "must be idempotent",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "result backend",
+      "sub": "optional — and it expires",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "p",
+      "b",
+      "enqueue"
+     ],
+     [
+      "b",
+      "w",
+      "deliver"
+     ],
+     [
+      "w",
+      "r",
+      "store"
+     ]
+    ]
+   }
+  }
+ ],
+ "i7.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "steps",
+    "title": "What Pydantic does to your input, in order",
+    "caption": "Validation is **coercion first**, which is the thing people get wrong: `“5”` becomes `5` for an `int` field in v1 and in v2's lax mode, so a validator sees the converted value, not what arrived.",
+    "items": [
+     {
+      "label": "parse the raw input",
+      "desc": "JSON or a dict — unknown keys ignored, or rejected if you say so",
+      "tone": "accent",
+      "code": "1"
+     },
+     {
+      "label": "coerce each field to its type",
+      "desc": "“5” → 5 in lax mode; strict mode refuses instead",
+      "tone": "warn",
+      "code": "2"
+     },
+     {
+      "label": "run field validators",
+      "desc": "they see the COERCED value, so validate the meaning, not the type",
+      "tone": "good",
+      "code": "3"
+     },
+     {
+      "label": "run model validators",
+      "desc": "last — the only place a rule across two fields can live",
+      "tone": "teal",
+      "code": "4"
+     }
+    ]
+   }
+  }
+ ],
+ "i7.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "Isolation levels, by what each one still allows",
+    "caption": "The honest answer names the anomaly each level leaves behind. Postgres's default is Read Committed, so a repeated read inside one transaction can see different rows — which is where the lost-update bug lives.",
+    "cols": [
+     "dirty read",
+     "repeated read differs",
+     "phantom rows"
+    ],
+    "rows": [
+     "Read Uncommitted",
+     "Read Committed",
+     "Repeatable Read",
+     "Serializable"
+    ],
+    "cells": [
+     [
+      {
+       "text": "possible",
+       "tone": "crit"
+      },
+      {
+       "text": "possible",
+       "tone": "crit"
+      },
+      {
+       "text": "possible",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      {
+       "text": "possible",
+       "tone": "warn"
+      },
+      {
+       "text": "possible",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      {
+       "text": "possible",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      {
+       "text": "no",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "i7.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "steps",
+    "title": "A webhook you can trust",
+    "caption": "The sender retries, so you will receive duplicates — that is normal, not a bug. These four steps are what the fifteen questions in this set are checking you would build.",
+    "items": [
+     {
+      "label": "verify the signature first",
+      "desc": "before parsing anything; an unsigned webhook is anonymous input",
+      "tone": "crit",
+      "code": "1"
+     },
+     {
+      "label": "return 2xx immediately",
+      "desc": "acknowledge, then do the work — a slow handler looks like a failure",
+      "tone": "accent",
+      "code": "2"
+     },
+     {
+      "label": "deduplicate on the event id",
+      "desc": "delivery is at-least-once, so store the id and ignore repeats",
+      "tone": "good",
+      "code": "3"
+     },
+     {
+      "label": "process asynchronously",
+      "desc": "a queue (i7.2), so a retry storm cannot take the endpoint down",
+      "tone": "teal",
+      "code": "4"
+     }
+    ]
+   }
+  }
+ ],
+ "i7.6": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "Three ways to carry identity",
+    "caption": "The revocation column is the one interviewers press on. A JWT cannot be un-issued, so a logout that must take effect immediately needs server state — which is most of the argument against stateless tokens.",
+    "cols": [
+     "state on the server",
+     "revoke instantly?",
+     "the cost"
+    ],
+    "rows": [
+     "session cookie",
+     "JWT",
+     "OAuth2 + refresh"
+    ],
+    "cells": [
+     [
+      {
+       "text": "yes — a session store",
+       "tone": "warn"
+      },
+      {
+       "text": "YES",
+       "tone": "good"
+      },
+      "a lookup per request"
+     ],
+     [
+      {
+       "text": "none",
+       "tone": "good"
+      },
+      {
+       "text": "NO — only on expiry",
+       "tone": "crit"
+      },
+      "a deny-list to fix it"
+     ],
+     [
+      {
+       "text": "refresh tokens only",
+       "tone": "accent"
+      },
+      {
+       "text": "on refresh",
+       "tone": "warn"
+      },
+      "short access, long refresh"
+     ]
+    ]
+   }
+  }
+ ],
+ "i8.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What the first hundred questions cover",
+    "caption": "A map before the marathon. The left column is where they cluster, and the right is the thing each cluster is really testing — which is usually one mechanism rather than a fact.",
+    "cols": [
+     "what is really being tested"
+    ],
+    "rows": [
+     "types and mutability",
+     "functions and scope",
+     "comprehensions",
+     "OOP and dunders",
+     "errors and context managers"
+    ],
+    "cells": [
+     [
+      {
+       "text": "that assignment binds a name and never copies",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "LEGB, and that defaults are made once at definition",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "that they build eagerly and a generator does not",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "the MRO, and which dunder the operator actually calls",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "that finally always runs — and can swallow the exception",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "i8.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What the second ninety cover",
+    "caption": "The weight shifts from language to system. These questions have a follow-up about failure almost every time, so the answer worth rehearsing is what breaks rather than what the feature does.",
+    "cols": [
+     "what is really being tested"
+    ],
+    "rows": [
+     "concurrency",
+     "memory and the PVM",
+     "the standard library",
+     "testing",
+     "performance"
+    ],
+    "cells": [
+     [
+      {
+       "text": "whether the work waits or computes — the GIL decides the answer",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "refcounting, and the cycle it cannot free",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "reaching for the batteries instead of hand-rolling",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "what you would mock, and what that stops the test proving",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "measuring before optimising, and knowing the cost table",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "i8.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "layers",
+    "title": "What a senior interview is actually probing",
+    "caption": "Eleven questions, and none of them are about syntax. The move from mid to senior is answering with a **trade-off and its cost** rather than a definition — and saying what you would measure.",
+    "items": [
+     {
+      "label": "trade-offs, not definitions",
+      "sub": "name the cost of the thing you recommend",
+      "tone": "accent",
+      "side": "the shift"
+     },
+     {
+      "label": "failure first",
+      "sub": "what breaks, how you would see it, what you would do",
+      "tone": "crit",
+      "side": "always"
+     },
+     {
+      "label": "measurement",
+      "sub": "the number you would check before and after",
+      "tone": "good",
+      "side": "evidence"
+     },
+     {
+      "label": "scope and blast radius",
+      "sub": "who is affected, and how you would limit it",
+      "tone": "warn",
+      "side": "judgement"
+     },
+     {
+      "label": "the decision record",
+      "sub": "why, written down, so the next person inherits the reasoning",
+      "tone": "teal",
+      "side": "seniority"
+     }
+    ]
+   }
+  }
+ ]
+}

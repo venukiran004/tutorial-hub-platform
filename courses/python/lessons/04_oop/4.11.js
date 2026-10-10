@@ -29,6 +29,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "SOLID, with the Python translation",
       caption: "Three of the five are largely automatic in Python. The two that still take deliberate effort are single responsibility and dependency inversion — and those are the two worth arguing about in review.",

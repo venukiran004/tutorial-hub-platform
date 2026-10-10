@@ -15,6 +15,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "The four regex calls that get confused", "caption": "`match` anchors at the start, `search` does not, and `fullmatch` requires the whole string. Most “why does my pattern not match” question is one of these three being the wrong call.", "cols": ["anchored where", "returns"], "rows": ["re.match(p, s)", "re.search(p, s)", "re.fullmatch(p, s)", "re.findall(p, s)"], "cells": [[{"text": "the START only", "tone": "warn"}, "a Match, or None"], [{"text": "anywhere", "tone": "good"}, "the first Match, or None"], [{"text": "the WHOLE string", "tone": "accent"}, "a Match, or None"], [{"text": "anywhere, repeatedly", "tone": "good"}, "a list of strings or tuples"]], "t": "diagram", "id": "dg-i2_6-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

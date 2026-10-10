@@ -15,6 +15,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "steps", "title": "What a dict lookup actually does", "caption": "Knowing these four steps answers most dictionary questions at once: why keys must be hashable, why a mutated key is lost, why lookup is O(1) on average, and why two unequal objects with the same hash still work.", "items": [{"label": "hash(key)", "desc": "an int — which is why an unhashable key raises TypeError", "tone": "accent", "code": "O(1)"}, {"label": "pick a slot from the hash", "desc": "the low bits index the table, so it is a direct jump rather than a scan", "tone": "good", "code": "O(1)"}, {"label": "compare with ==", "desc": "a hash collision is normal; equality decides, so __hash__ and __eq__ must agree", "tone": "warn", "code": "O(1) avg"}, {"label": "probe the next slot on a clash", "desc": "which is why a dict degrades to O(n) only in the pathological case", "tone": "teal", "code": "O(n) worst"}], "t": "diagram", "id": "dg-i1_5-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

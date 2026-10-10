@@ -28,6 +28,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "JSON is a description of a value. A pickle is a sequence of opcodes for a virtual machine that *builds* a value. The distinction sounds academic until you look at the opcodes." },
 
     { t: "code", lang: "python", title: "what is actually in the file", code: `

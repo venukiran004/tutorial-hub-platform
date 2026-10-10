@@ -112,6 +112,9 @@ def is_palindrome(s: str) -> bool:
 
 
 
+
+
+
     { t: "code", lang: "python", title: "one template, two variants", code: `
 def longest_unique_substring(s: str) -> int:
     """VARIABLE window: grow right always, shrink left while the

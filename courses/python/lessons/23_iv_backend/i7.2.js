@@ -15,6 +15,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "flow", "cols": 4, "title": "A task queue, end to end", "caption": "Fifteen questions about this one picture. The two that matter: a task must be **idempotent**, because a broker guarantees at-least-once delivery, and a result nobody reads still costs you storage.", "nodes": [{"id": "p", "label": "producer", "sub": "the web request returns NOW", "tone": "accent"}, {"id": "b", "label": "broker", "sub": "Redis or RabbitMQ — at least once", "tone": "warn"}, {"id": "w", "label": "worker", "sub": "must be idempotent", "tone": "good"}, {"id": "r", "label": "result backend", "sub": "optional — and it expires", "tone": "teal"}], "edges": [["p", "b", "enqueue"], ["b", "w", "deliver"], ["w", "r", "store"]], "t": "diagram", "id": "dg-i7_2-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

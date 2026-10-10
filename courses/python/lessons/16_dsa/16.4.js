@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "The same graph, two orders",
       caption: "The only difference in code is a queue versus a stack. That single substitution changes the traversal order, what the algorithm can guarantee, and which problems it solves.",
@@ -216,6 +219,9 @@ def dijkstra(graph: dict[T, list[tuple[T, int]]], start: T) -> dict[T, int]:
     { t: "h2", n: "03", text: "Cycles", id: "cycles" },
 
     {"kind": "cycle", "title": "Detecting a cycle in a directed graph", "caption": "DFS colours nodes white (unvisited), grey (on the current path) and black (finished). Reaching a grey node from the current path is a back edge — a cycle. Topological sort is the same walk with the finish order reversed.", "nodes": [{"label": "A", "sub": "grey — on the path", "tone": "warn"}, {"label": "B", "sub": "grey", "tone": "warn"}, {"label": "C", "sub": "grey → edge back to A", "tone": "crit"}], "centre": "back edge = cycle", "t": "diagram", "id": "dg-16_4-03-1"},
+
+
+
 
 
 

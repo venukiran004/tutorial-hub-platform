@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "One query, or a hundred and one",
       caption: "The loop looks like it touches memory. Each iteration is a network round trip to the database, so the cost is not the Python — it is 100 × the latency between your service and a machine in another rack.",

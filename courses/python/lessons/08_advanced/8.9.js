@@ -27,6 +27,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "what the graph looks like", code: `
 # Container RSS, one pod, over 36 hours
 #

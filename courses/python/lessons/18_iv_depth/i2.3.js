@@ -15,6 +15,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "steps", "title": "try, except, else, finally — in execution order", "caption": "The `else` clause runs only when the `try` body raised nothing, and `finally` runs whatever happens — including on a `return`. A `return` inside `finally` discards the exception, which is the trap this set is built around.", "items": [{"label": "try", "desc": "the guarded body", "tone": "accent", "code": "1"}, {"label": "except", "desc": "only if it raised, and only the first matching clause", "tone": "warn", "code": "2 if raised"}, {"label": "else", "desc": "only if it did NOT raise — so put the follow-on work here, not in try", "tone": "good", "code": "2 if clean"}, {"label": "finally", "desc": "always — and a return here swallows the exception", "tone": "crit", "code": "3 always"}], "t": "diagram", "id": "dg-i2_3-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

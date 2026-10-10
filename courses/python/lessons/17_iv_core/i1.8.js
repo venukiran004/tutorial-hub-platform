@@ -15,6 +15,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "flow", "cols": 4, "title": "map, filter, reduce — and why a comprehension usually wins", "caption": "All three are lazy in Python 3 except `reduce`, which consumes. The interview answer worth having is that a comprehension is clearer for map and filter, and `reduce` is the one with no comprehension equivalent.", "nodes": [{"id": "s", "label": "an iterable", "sub": "the source", "tone": "teal"}, {"id": "m", "label": "map(f, …)", "sub": "lazy — one value at a time", "tone": "good"}, {"id": "f", "label": "filter(p, …)", "sub": "lazy — drops what fails p", "tone": "good"}, {"id": "r", "label": "reduce(g, …)", "sub": "EAGER — folds to one value", "tone": "crit"}], "edges": [["s", "m"], ["m", "f"], ["f", "r"]], "t": "diagram", "id": "dg-i1_8-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

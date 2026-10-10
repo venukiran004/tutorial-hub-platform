@@ -102,6 +102,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["Operation", "list", "tuple", "set", "dict", "deque"],
       rows: [

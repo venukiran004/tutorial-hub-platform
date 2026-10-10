@@ -27,6 +27,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "What `obj.x` actually does",
       caption: "The order is the whole lesson. A data descriptor on the class beats the instance dictionary; a non-data descriptor loses to it. That single distinction explains `property`, bound methods, and why `cached_property` can replace itself.",

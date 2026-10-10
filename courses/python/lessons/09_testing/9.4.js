@@ -196,6 +196,9 @@ def test_parse_decimal(value: str, expected: Decimal) -> None:
 
 
 
+
+
+
     { t: "code", lang: "python", title: "the product, and when it is too much", code: `
 # Stacked decorators produce the CARTESIAN PRODUCT: 3 x 2 = 6 tests
 @pytest.mark.parametrize("currency", ["GBP", "USD", "EUR"])

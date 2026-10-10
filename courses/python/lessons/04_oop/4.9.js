@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "If you write one dunder method on a class, write this one. It is what appears in the debugger, in a failed test's assertion output, in a log line and in every `print` of a list of your objects." },
 
     { t: "code", lang: "python", title: "the difference it makes", code: `
@@ -84,6 +87,9 @@ print(f"{m} / {m!r}") # both, explicitly`}
     { t: "h2", n: "02", text: "__eq__ and __hash__ are one decision", id: "eq-hash" },
 
     {"kind": "matrix", "title": "__eq__ and __hash__ are one decision", "caption": "Defining __eq__ without __hash__ makes the class unhashable. Equal objects must hash equal, so hash the same fields you compare — and only if they are immutable.", "rows": ["define __eq__ only", "both on the same fields", "mutable fields hashed"], "cols": ["usable in set/dict", "correct"], "cells": [[false, {"text": "unhashable", "tone": "warn"}], [true, true], [true, {"text": "breaks when mutated", "tone": "crit"}]], "t": "diagram", "id": "dg-4_9-02-0"},
+
+
+
 
 
 

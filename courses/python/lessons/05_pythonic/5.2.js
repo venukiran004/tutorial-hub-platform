@@ -160,6 +160,9 @@ AttributeError: 'Child' object has no attribute '__token'`,
 
 
 
+
+
+
     { t: "viz",
       title: "The shape of a module a Python reader expects",
       caption: "The order is not arbitrary: imports are grouped so that a dependency-related failure names its own group; constants sit above the code that uses them; the main guard is last so that importing the module runs nothing. A reader scanning an unfamiliar file navigates by this shape, and a file that violates it costs them a full read.",

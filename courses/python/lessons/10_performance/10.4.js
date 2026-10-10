@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["", "`@cache`", "`@lru_cache(maxsize=n)`", "`@cached_property`"],
       rows: [
@@ -174,6 +177,9 @@ RATE = Decimal("0.25")                  # every cached value is now wrong`},
     { t: "h2", n: "03", text: "Invalidation", id: "invalidation" },
 
     {"kind": "steps", "title": "Invalidation, or a cache is a bug with a delay", "caption": "Every cached value is a claim that the underlying data has not changed. Something has to make that true: an explicit clear on write, a TTL, or a key that changes with the data.", "items": [{"label": "invalidate on write", "desc": "f.cache_clear() or delete the key when the source changes", "tone": "good"}, {"label": "time to live", "desc": "accept staleness for a bounded time — TTLCache, Redis EX", "tone": "accent"}, {"label": "versioned key", "desc": "put the data's version or hash in the key; old entries age out", "tone": "warn"}, {"label": "never cache what changes under you", "desc": "lru_cache on a method reading self.state is a classic trap", "tone": "crit"}], "t": "diagram", "id": "dg-10_4-03-1"},
+
+
+
 
 
 

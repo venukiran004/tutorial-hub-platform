@@ -15,6 +15,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "Every string method returns a NEW string", "caption": "A `str` is immutable, so there is no method that edits one in place — `s.upper()` hands back a new object and leaves `s` alone. Half the string questions in an interview are really testing whether you know that.", "cols": ["what it does", "mutates s?"], "rows": ["s.upper() / s.lower()", "s.strip() / s.rstrip()", "s.replace(a, b)", "s.split() / “,”.join(xs)", "s.find() / s.index()", "f“{x:>8.2f}”"], "cells": [["a new string, case folded", false], ["a new string, ends trimmed", false], ["a new string, every occurrence", false], ["a list, then a string back", false], [{"text": "an index; index raises", "tone": "warn"}, false], ["a new string, formatted", false]], "t": "diagram", "id": "dg-i1_2-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

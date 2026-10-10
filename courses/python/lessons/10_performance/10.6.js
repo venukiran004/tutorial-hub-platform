@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "The decision, in order of cost",
       caption: "Each step is cheaper than the one below it and rules out the ones after. Teams that start at the bottom usually discover, several months in, that the answer was three steps up.",

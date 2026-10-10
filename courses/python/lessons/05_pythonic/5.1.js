@@ -46,6 +46,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "The review gate",
       caption: "Four questions, asked in this order. The first two are about the reader; the third is about the person debugging at 3am; the fourth is about the person changing the code next year. A review comment that satisfies none of them is taste, and should be marked as such.",

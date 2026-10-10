@@ -15,6 +15,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "timeline", "title": "What each version added", "caption": "Interviewers ask this to find out whether you have kept up. The two that change how you *write* code are the **walrus operator** (3.8) and **structural pattern matching** (3.10); the rest mostly change what you can express in a type — built-in generics in 3.9, `X | Y` unions in 3.10, the `type` alias syntax in 3.12. 3.11 added `ExceptionGroup` and `tomllib`, and 3.13 added free-threading as a build option.", "span": 14, "tick": 2, "unit": "Python 3.x", "lanes": [{"label": "f-strings", "bars": [[6, 14, "3.6", "good"]]}, {"label": "dataclasses", "bars": [[7, 14, "3.7", "good"]]}, {"label": "walrus :=", "bars": [[8, 14, "3.8", "accent"]]}, {"label": "dict | merge", "bars": [[9, 14, "3.9", "accent"]]}, {"label": "match / case", "bars": [[10, 14, "3.10", "violet"]]}, {"label": "ExceptionGroup", "bars": [[11, 14, "3.11", "teal"]]}, {"label": "type aliases", "bars": [[12, 14, "3.12", "warn"]]}], "t": "diagram", "id": "dg-i5_2-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

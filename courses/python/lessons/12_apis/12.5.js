@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "a dependency is just a callable", code: `
 from typing import Annotated
 from fastapi import Depends, HTTPException, status
@@ -152,6 +155,9 @@ def test_admin_only_route_is_forbidden(client):
     { t: "h2", n: "03", text: "Middleware, and when not to use it", id: "middleware" },
 
     {"kind": "layers", "title": "Middleware wraps every request", "caption": "Each middleware sees the request on the way in and the response on the way out, in nested order. Cross-cutting concerns — request IDs, timing, CORS — belong here; business logic does not.", "taper": true, "items": [{"label": "request-id middleware", "sub": "outermost: first in, last out", "tone": "warn"}, {"label": "timing / logging middleware", "tone": "accent"}, {"label": "CORS middleware", "tone": "accent"}, {"label": "router → dependencies → handler", "sub": "the innermost", "tone": "good"}], "t": "diagram", "id": "dg-12_5-03-1"},
+
+
+
 
 
 

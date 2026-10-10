@@ -15,6 +15,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "steps", "title": "How an object is freed", "caption": "Reference counting does almost all the work and cannot free a cycle, which is the whole reason a garbage collector exists alongside it. That one sentence answers most of this set.", "items": [{"label": "refcount reaches zero", "desc": "freed immediately and deterministically — no collector involved", "tone": "good", "code": "most objects"}, {"label": "a cycle keeps it above zero", "desc": "a → b → a: unreachable, but each still holds a reference", "tone": "crit", "code": "the gap"}, {"label": "the generational GC sweeps", "desc": "three generations; young objects are checked most often", "tone": "warn", "code": "cycles only"}, {"label": "__del__ can resurrect it", "desc": "which is why __del__ is not a destructor you should rely on", "tone": "teal", "code": "the trap"}], "t": "diagram", "id": "dg-i3_3-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

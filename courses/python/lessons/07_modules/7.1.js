@@ -131,6 +131,9 @@ safe_join(Path("/srv/app/uploads"), "../../etc/passwd")
 
 
 
+
+
+
     { t: "p", text: "`open(path)` gives you a text file object, and reading from it yields `str`. But there are no `str` objects on a disk — only bytes. Text mode is a codec plus a newline translator wrapped around a byte stream, and both of those layers can fail or corrupt." },
 
     { t: "viz",
@@ -299,6 +302,9 @@ Path("out.txt").read_text()
     { t: "h2", n: "04", text: "Writing without losing the old file", id: "atomic-writes" },
 
     {"kind": "steps", "title": "Atomic write: temp file, then rename", "caption": "Writing straight into the target leaves a half-written file if the process dies. Write to a temporary file in the same directory, fsync, then rename — the rename is atomic on the same filesystem.", "items": [{"label": "write to target.tmp", "desc": "same directory, so the rename cannot cross filesystems", "tone": "accent"}, {"label": "flush and os.fsync()", "desc": "the bytes are on disk, not in a cache", "tone": "warn"}, {"label": "os.replace('target.tmp', 'target')", "desc": "atomic: readers see the old file or the new one, never a partial", "tone": "good"}], "t": "diagram", "id": "dg-7_1-04-1"},
+
+
+
 
 
 

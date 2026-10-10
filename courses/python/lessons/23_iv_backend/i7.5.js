@@ -15,6 +15,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "steps", "title": "A webhook you can trust", "caption": "The sender retries, so you will receive duplicates — that is normal, not a bug. These four steps are what the fifteen questions in this set are checking you would build.", "items": [{"label": "verify the signature first", "desc": "before parsing anything; an unsigned webhook is anonymous input", "tone": "crit", "code": "1"}, {"label": "return 2xx immediately", "desc": "acknowledge, then do the work — a slow handler looks like a failure", "tone": "accent", "code": "2"}, {"label": "deduplicate on the event id", "desc": "delivery is at-least-once, so store the id and ignore repeats", "tone": "good", "code": "3"}, {"label": "process asynchronously", "desc": "a queue (i7.2), so a retry storm cannot take the endpoint down", "tone": "teal", "code": "4"}], "t": "diagram", "id": "dg-i7_5-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

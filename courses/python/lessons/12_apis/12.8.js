@@ -27,6 +27,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "Authentication, authorisation and secrets are three questions",
       caption: "They fail differently and are fixed differently. Conflating them is how an endpoint ends up correctly identifying a user and then letting them read someone else's record.",
@@ -150,6 +153,9 @@ refresh token   30 days       opaque, a row, revoked instantly
     { t: "h2", n: "03", text: "JWTs, without the four mistakes", id: "jwt" },
 
     {"kind": "flow", "cols": 3, "title": "A JWT is three base64 parts", "caption": "`header.payload.signature`. The payload is **readable by anyone** — it is encoded, not encrypted — so it must not carry secrets. The signature is what the server checks, and a token with `alg: none` or an unexpected algorithm must be rejected.", "nodes": [{"id": "h", "label": "header", "sub": "{alg, typ}", "tone": "teal"}, {"id": "p", "label": "payload", "sub": "{sub, exp, …} — READABLE", "tone": "warn"}, {"id": "s", "label": "signature", "sub": "HMAC or RSA — the only guarantee", "tone": "good"}], "edges": [["h", "p", "."], ["p", "s", "."]], "t": "diagram", "id": "dg-12_8-03-1"},
+
+
+
 
 
 

@@ -18,6 +18,10 @@ EC.receiveLesson({
   "4.12"
  ],
  "blocks": [
+
+    {"kind": "matrix", "title": "Behavioural patterns, by what varies", "caption": "Each isolates one thing that changes. Strategy against State is the usual follow-up: Strategy is chosen from outside, State transitions itself from within.", "cols": ["what varies", "who changes it"], "rows": ["Strategy", "State", "Observer", "Command", "Template Method"], "cells": [["the algorithm", {"text": "the caller picks it", "tone": "good"}], ["the behaviour, as state changes", {"text": "the object itself", "tone": "accent"}], ["who reacts to an event", {"text": "subscribers register", "tone": "good"}], ["a request, as an object", {"text": "so it can be queued or undone", "tone": "teal"}], ["the steps inside a fixed skeleton", {"text": "a subclass fills them in", "tone": "warn"}]], "t": "diagram", "id": "dg-i4_4-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

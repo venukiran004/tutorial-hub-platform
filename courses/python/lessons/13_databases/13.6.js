@@ -120,6 +120,9 @@ def test_the_dashboard_query_count_is_bounded(client, db):
 
 
 
+
+
+
     { t: "code", lang: "sql", title: "a plan, annotated", code: `
 EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM orders WHERE account_id = 'a-1';
 
@@ -170,6 +173,9 @@ EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM orders WHERE account_id = 'a-1';
     { t: "h2", n: "03", text: "Indexing for a query", id: "indexing" },
 
     {"kind": "layers", "title": "A composite index is used left to right", "caption": "An index on `(customer_id, created_at, status)` serves a query on `customer_id`, and on `customer_id` **and** `created_at`. It cannot serve a query on `created_at` alone — the leading column must be constrained.", "items": [{"label": "customer_id", "sub": "the leading column — must be constrained", "tone": "good", "side": "1st"}, {"label": "created_at", "sub": "usable once the leading one is fixed", "tone": "good", "side": "2nd"}, {"label": "status", "sub": "usable once both above are fixed", "tone": "warn", "side": "3rd"}], "t": "diagram", "id": "dg-13_6-03-1"},
+
+
+
 
 
 

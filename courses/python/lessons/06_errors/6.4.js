@@ -28,6 +28,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "How a log record travels",
       caption: "A logger decides whether to create a record. Handlers decide where it goes and may filter again. Then the record travels UP the logger hierarchy to every ancestor's handlers — which is why one handler on the root logger is usually all the configuration you need, and why adding a second produces duplicates.",
@@ -109,6 +112,9 @@ def main():
     { t: "h2", n: "02", text: "Levels that mean something", id: "levels" },
 
     {"kind": "layers", "title": "Levels that mean something", "caption": "A level is a promise about who needs to act. Set the threshold per environment and the meaning per message.", "items": [{"label": "CRITICAL", "sub": "the process cannot continue", "tone": "crit"}, {"label": "ERROR", "sub": "a request or job failed; someone should look", "tone": "crit"}, {"label": "WARNING", "sub": "unexpected but handled; watch the rate", "tone": "warn"}, {"label": "INFO", "sub": "the normal narrative of the service", "tone": "accent"}, {"label": "DEBUG", "sub": "for you, in development", "tone": "good"}], "t": "diagram", "id": "dg-6_4-02-1"},
+
+
+
 
 
 

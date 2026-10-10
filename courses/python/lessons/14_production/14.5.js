@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "Why instruction order decides your build time",
       caption: "Each instruction is a layer, cached by the hash of its inputs. Once one layer is invalidated, every layer after it rebuilds — so anything that changes often must come after anything that is expensive.",

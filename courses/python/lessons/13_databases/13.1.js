@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "Written in one order, executed in another",
       caption: "This is not trivia. It explains why you cannot use a SELECT alias in WHERE, why HAVING and WHERE are different, and why LIMIT does not make an expensive query cheap.",
@@ -85,6 +88,9 @@ HAVING   count(*) > 5;                    -- then discard small groups
     { t: "h2", n: "02", text: "Joins", id: "joins" },
 
     {"kind": "compare", "title": "The joins", "caption": "INNER keeps matches only; LEFT keeps every left row and fills the right with NULL; FULL keeps both sides. A LEFT join followed by WHERE right.col IS NULL is the anti-join: 'customers with no orders'.", "columns": [{"title": "INNER", "tone": "accent", "items": ["rows with a match on both sides"]}, {"title": "LEFT", "tone": "good", "items": ["all left rows", "NULLs where no match", "+ IS NULL → anti-join"]}, {"title": "FULL", "tone": "warn", "items": ["all rows from both", "NULLs on either side"]}, {"title": "CROSS", "tone": "crit", "items": ["every pair", "usually a mistake"]}], "t": "diagram", "id": "dg-13_1-02-1"},
+
+
+
 
 
 

@@ -71,6 +71,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "server-sent events, end to end", code: `
 @app.post("/chat")
 async def chat(req: ChatRequest) -> StreamingResponse:
@@ -208,6 +211,9 @@ async def extract(doc: str, attempts: int = 3) -> Invoice:
     { t: "h2", n: "04", text: "Tokens and the context window", id: "tokens" },
 
     {"kind": "layers", "title": "The context window is a budget", "caption": "System prompt, retrieved context, the conversation so far and the answer all share one window. Count tokens **before** the call and leave room for the response, or the model truncates from the wrong end.", "items": [{"label": "the answer", "sub": "reserve it FIRST or generation truncates", "tone": "crit", "side": "≤ 1,800"}, {"label": "the question", "sub": "paid once", "tone": "good", "side": "200"}, {"label": "the conversation so far", "sub": "the only part that grows", "tone": "warn", "side": "2,200"}, {"label": "retrieved context", "sub": "k chunks, and k is set by what is left", "tone": "accent", "side": "3,000"}, {"label": "the system prompt", "sub": "fixed per call", "tone": "teal", "side": "800"}], "t": "diagram", "id": "dg-15_8-04-1"},
+
+
+
 
 
 

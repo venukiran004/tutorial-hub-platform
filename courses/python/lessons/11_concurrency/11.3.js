@@ -106,6 +106,9 @@ threading.excepthook = lambda args: log.exception(
 
 
 
+
+
+
     { t: "viz",
       title: "Where the update goes",
       caption: "Both threads read 5, both compute 6, both write 6. One increment is gone. Nothing raises, nothing logs, and the result is merely wrong — which is why races are found by reconciliation reports rather than by tracebacks.",
@@ -194,6 +197,9 @@ with lock:
     { t: "h2", n: "03", text: "Deadlock", id: "deadlock" },
 
     {"kind": "cycle", "title": "Deadlock: two locks, two orders", "caption": "A holds lock 1 and waits for lock 2; B holds lock 2 and waits for lock 1. Neither can proceed. The fix is one global lock order — or one lock.", "nodes": [{"label": "thread A holds L1", "tone": "accent"}, {"label": "A waits for L2", "tone": "warn"}, {"label": "thread B holds L2", "tone": "accent"}, {"label": "B waits for L1", "tone": "warn"}], "centre": "forever", "t": "diagram", "id": "dg-11_3-03-1"},
+
+
+
 
 
 

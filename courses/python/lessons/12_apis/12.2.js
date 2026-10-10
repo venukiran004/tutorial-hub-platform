@@ -27,6 +27,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "Everything between your call and the response",
       caption: "Each layer is a place the call can fail differently. A client that treats them all as one exception cannot retry intelligently, because a timeout and a 400 need opposite responses.",
@@ -270,6 +273,9 @@ def fetch(url: str) -> dict:
     { t: "h2", n: "04", text: "Pagination", id: "pagination" },
 
     {"kind": "flow", "title": "Cursor pagination", "caption": "Each page carries an opaque cursor for the next one; the client follows it until there is none. No page numbers to drift when rows are inserted, and each request is O(1) for the server.", "cols": 4, "nodes": [{"id": "a", "label": "GET /items", "sub": "first page", "tone": "accent"}, {"id": "b", "label": "{items, next_cursor: 'a3f'}", "sub": "the server's bookmark", "tone": "good"}, {"id": "c", "label": "GET /items?after=a3f", "sub": "follow it", "tone": "accent"}, {"id": "d", "label": "{items, next_cursor: null}", "sub": "done", "tone": "warn"}], "edges": [["a", "b"], ["b", "c"], ["c", "d"]], "t": "diagram", "id": "dg-12_2-04-1"},
+
+
+
 
 
 

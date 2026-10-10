@@ -18,6 +18,10 @@ EC.receiveLesson({
   "4.12"
  ],
  "blocks": [
+
+    {"kind": "matrix", "title": "Structural patterns, by the mismatch each one hides", "caption": "All five sit between two things that do not quite fit. The interview distinction worth having is Adapter against Facade: one changes an interface, the other simplifies a subsystem.", "cols": ["what sits between", "the giveaway"], "rows": ["Adapter", "Facade", "Decorator", "Proxy", "Composite"], "cells": [["an interface you have and one you need", {"text": "wraps ONE object, changes its shape", "tone": "good"}], ["a caller and a complicated subsystem", {"text": "one simple entry point", "tone": "good"}], ["a caller and an object, adding behaviour", {"text": "same interface, more behaviour", "tone": "accent"}], ["a caller and an expensive or remote object", {"text": "same interface, controls access", "tone": "warn"}], ["a caller and a tree of objects", {"text": "a leaf and a branch look alike", "tone": "teal"}]], "t": "diagram", "id": "dg-i4_3-top-0"},
+
+
   {
    "t": "callout",
    "kind": "note",

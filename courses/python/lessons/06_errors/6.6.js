@@ -181,6 +181,9 @@ line = OrderLine(sku='W-1', price=Decimal('9.99'), quantity='2')
 
 
 
+
+
+
     { t: "ol", items: [
       "**Reproduce it.** A bug you cannot trigger on demand cannot be verified as fixed. Spend the time here — a reliable reproduction is most of the work, and everything after it is mechanical.",
       "**Shrink the reproduction.** Smallest input, fewest steps, fastest run. Every element you remove without losing the failure is a candidate cause eliminated.",

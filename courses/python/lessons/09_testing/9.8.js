@@ -288,6 +288,9 @@ jobs:
 
 
 
+
+
+
     { t: "callout", kind: "trap", title: "A retry plugin is not a policy", body: [
       { t: "p", text: "`pytest-rerunfailures` makes the build green. It does not make the test deterministic, and a flaky test is usually a **real race in the code** rather than a defect in the test — so what you have muted is a production bug that reproduces once in fifty." },
       { t: "table",

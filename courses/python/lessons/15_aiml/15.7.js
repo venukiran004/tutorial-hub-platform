@@ -235,6 +235,9 @@ def predict(f: Features, background: BackgroundTasks) -> Prediction:
 
 
 
+
+
+
     { t: "code", lang: "python", title: "trade a few milliseconds for several times the throughput", code: `
 class BatchPredictor:
     """Collect requests for a few milliseconds, run them as one

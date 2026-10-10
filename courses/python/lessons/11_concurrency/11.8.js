@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "Four questions, in order",
       caption: "Each question rules out branches below it. Most decisions are settled by the first two, and the ones that reach the fourth are the ones worth thinking hard about.",
