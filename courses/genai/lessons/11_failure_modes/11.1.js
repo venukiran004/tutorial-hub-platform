@@ -45,8 +45,8 @@ emits a fluent, well-formatted, completely invented number.`,
 
     { t: "callout", kind: "good", title: "The intrinsic / extrinsic split is not academic \u2014 a detector separates them for free",
       body: [
-        { t: "p", text: "11.4 runs an entailment model over claims, and entailment is a **three-way** output: entailment, contradiction, neutral. Measured on the reference\u2019s own scenarios, an invented refund window came back as **contradiction 0.9810** while a fabricated citation came back as **neutral 0.9857**." },
-        { t: "p", text: "That is the intrinsic/extrinsic distinction appearing directly in the detector\u2019s output, and the reference defines the two terms without ever connecting them to its own detection method. The split matters because the fixes differ: a contradiction means the model overrode its context, and a neutral means it invented something the context is silent about." },
+        { t: "p", text: "11.4 runs an entailment model over claims, and entailment is a **three-way** output: entailment, contradiction, neutral. Measured on the scenarios, an invented refund window came back as **contradiction 0.9810** while a fabricated citation came back as **neutral 0.9857**." },
+        { t: "p", text: "That is the intrinsic/extrinsic distinction appearing directly in the detector\u2019s output, and the common definition is the two terms without ever connecting them to its own detection method. The split matters because the fixes differ: a contradiction means the model overrode its context, and a neutral means it invented something the context is silent about." },
         { t: "p", text: "It also tells you which is more dangerous to a reader. A contradiction can be caught by anyone who reads the source; an extrinsic addition looks like extra helpfulness and has nothing to check it against." }
       ] },
 
@@ -66,7 +66,7 @@ emits a fluent, well-formatted, completely invented number.`,
     { t: "callout", kind: "trap", title: "Two of those five are things you do to the model, not things it does",
       body: [
         { t: "p", text: "**Leading prompts** and **over-long outputs** are prompt-design choices. Asking for five studies when three exist is a request the model cannot satisfy honestly, and it will satisfy it dishonestly because the instruction is explicit and the uncertainty is not representable." },
-        { t: "p", text: "The same applies to length. A request for a 500-word summary of a document containing 200 words of relevant content is an instruction to invent 300 words, and the reference\u2019s third scenario is exactly that \u2014 the first three paragraphs accurate, the last one inventing a termination penalty." },
+        { t: "p", text: "The same applies to length. A request for a 500-word summary of a document containing 200 words of relevant content is an instruction to invent 300 words, and the third scenario is exactly that \u2014 the first three paragraphs accurate, the last one inventing a termination penalty." },
         { t: "p", text: "Which means two of the cheapest mitigations are prompt-side: **ask for what exists** (\u2018list the studies you find, which may be none\u2019) and **cap the output**. 11.5 ranks them, and they cost nothing." }
       ] },
 
@@ -259,7 +259,7 @@ the two triggers you CONTROL, not the model:
           "A retrieval failure from a generation failure"
         ],
         answer: 1,
-        why: "Contradiction means the context says something incompatible, which is the definition of intrinsic; neutral means the context is simply silent, which is extrinsic and unverifiable from the given source. The three-way output therefore hands you a classification the reference defines separately without connecting it to detection \u2014 and the two call for different fixes, prompt precedence versus an abstention path." },
+        why: "Contradiction means the context says something incompatible, which is the definition of intrinsic; neutral means the context is simply silent, which is extrinsic and unverifiable from the given source. The three-way output therefore hands you a classification the common definition is separately without connecting it to detection \u2014 and the two call for different fixes, prompt precedence versus an abstention path." },
 
       { stem: "Which hallucination triggers are under your control rather than the model's?",
         options: [

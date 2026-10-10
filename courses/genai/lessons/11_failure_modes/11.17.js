@@ -88,7 +88,7 @@ EC.receiveLesson({
     { t: "callout", kind: "mental", title: "The flow\u2019s first assumption is the one to adopt",
       body: [
         { t: "p", text: "\u201cAssume YES for any user-facing LLM.\u201d There is no version of a user-facing LLM application where untrusted text does not reach the model, so the question of whether guardrails are needed does not arise \u2014 only which ones and at what thresholds." },
-        { t: "p", text: "And the \u2018retrieved content\u2019 clause in the fourth input step is the one 11.15 found missing from the reference\u2019s own implementation, where `scan_input` and `redact` both ran on the user input and the context passed straight through. The flow is right and the code that implements it had the gap." },
+        { t: "p", text: "And the \u2018retrieved content\u2019 clause in the fourth input step is the one 11.15 found missing from the implementation, where `scan_input` and `redact` both ran on the user input and the context passed straight through. The flow is right and the code that implements it had the gap." },
         { t: "p", text: "The last line is the module\u2019s thesis compressed: **tune for harmful false negatives AND over-refusal false positives.** Every measurement in these six lessons supports that one instruction." }
       ] },
 

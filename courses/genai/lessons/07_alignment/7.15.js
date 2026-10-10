@@ -62,7 +62,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "tax", text: "The alignment tax",
       sub: "Know the budget before you start" },
 
-    { t: "p", text: "Alignment routinely costs a few points on unrelated benchmarks \u2014 MMLU, GSM8K, HumanEval-shaped evaluations. The reference\u2019s advice is the operative part: know your budget *before* you start, because discovering it afterwards turns a planned trade into an incident." },
+    { t: "p", text: "Alignment routinely costs a few points on unrelated benchmarks \u2014 MMLU, GSM8K, HumanEval-shaped evaluations. The advice is the operative part: know your budget *before* you start, because discovering it afterwards turns a planned trade into an incident." },
 
     { t: "callout", kind: "good", title: "4.8 and 7.13 give the mechanism and the remedy",
       body: [

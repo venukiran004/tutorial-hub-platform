@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "7.6",
 
-  lede: "DPO\u2019s trick is three lines: the KL-constrained objective from 7.5 has a closed-form optimum, so you can invert it to write the *reward* as a function of the *policy*, substitute into Bradley-Terry, and watch the intractable partition function cancel. The language model is secretly its own reward model. The reference\u2019s worked numbers all check out exactly \u2014 and measuring the implicit reward on real text exposes the mechanism behind DPO\u2019s best-known side effect: because it is a **sum** over response tokens, a longer chosen response collects \u03b2\u00b7d\u00b7n reward for the same per-token improvement.",
+  lede: "DPO\u2019s trick is three lines: the KL-constrained objective from 7.5 has a closed-form optimum, so you can invert it to write the *reward* as a function of the *policy*, substitute into Bradley-Terry, and watch the intractable partition function cancel. The language model is secretly its own reward model. The worked numbers all check out exactly \u2014 and measuring the implicit reward on real text exposes the mechanism behind DPO\u2019s best-known side effect: because it is a **sum** over response tokens, a longer chosen response collects \u03b2\u00b7d\u00b7n reward for the same per-token improvement.",
 
   objectives: [
     "Derive the DPO loss from the RLHF objective in three steps",
@@ -64,7 +64,7 @@ margin = rw - rl`,
       body: [
         { t: "p", text: "The policy likes the rejected response *more* than the reference did \u2014 ratio +0.5. That is not a bug in the example: DPO does not require the rejected response\u2019s probability to fall in absolute terms, only to rise less than the chosen one\u2019s." },
         { t: "p", text: "In practice both often fall. A well-documented DPO behaviour is that the chosen response\u2019s log-probability decreases over training while the margin still grows, because the rejected one decreases faster. The loss is indifferent to this." },
-        { t: "p", text: "Which is why the reference\u2019s suggested metrics include `reward_chosen` and `reward_rejected` separately rather than just the margin. A margin that improves while both rewards collapse is a model becoming less confident about everything, and only the separate traces show it." }
+        { t: "p", text: "Which is why the suggested metrics include `reward_chosen` and `reward_rejected` separately rather than just the margin. A margin that improves while both rewards collapse is a model becoming less confident about everything, and only the separate traces show it." }
       ] },
 
     { t: "h2", n: "03", id: "beta", text: "What \u03b2 does",
@@ -131,7 +131,7 @@ margin = rw - rl`,
     { t: "callout", kind: "tradeoff", title: "Which is exactly what SimPO normalises away",
       body: [
         { t: "p", text: "SimPO replaces the summed log-ratio with a **length-normalised average** log-probability and adds a target margin \u03b3. Dividing by n removes the linear-in-length term, so a long mediocre response no longer collects the reward of a short excellent one." },
-        { t: "p", text: "It also drops the reference model entirely, which is why SimPO appears in 7.7\u2019s family table under \u201cremoves the reference model\u201d. Those two changes are related: once you normalise by length, the reference\u2019s role as a baseline is largely served by the target margin instead." },
+        { t: "p", text: "It also drops the reference model entirely, which is why SimPO appears in 7.7\u2019s family table under \u201cremoves the reference model\u201d. Those two changes are related: once you normalise by length, the role as a baseline is largely served by the target margin instead." },
         { t: "p", text: "The cost is that you lose DPO\u2019s guarantee of being derived from the KL-constrained objective. SimPO is a well-motivated modification rather than a consequence of the derivation, so it trades theoretical grounding for a behaviour fix \u2014 which is a reasonable trade when the behaviour is a real problem in your outputs." }
       ] },
 
@@ -314,7 +314,7 @@ print("reward accuracy (margin > 0): %.3f" % np.mean(np.array(margins) > 0))`,
         answer: 1,
         why: "Z(x) is a sum over every possible completion and is completely intractable \u2014 it is not near 1, not constant across prompts, and not estimated. The cancellation is exact and structural: both the chosen and rejected rewards carry the same +\u03b2 log Z(x) term, so the difference is free of it. This is the same property that makes a reward model's absolute scale unidentifiable, which means the uncomputable term is precisely the one that was never needed." },
 
-      { stem: "In the worked example, the policy assigns the rejected response a higher log-probability than the reference does (ratio +0.5). Is this a problem?",
+      { stem: "In the worked example, the policy assigns the rejected response a higher log-probability than the usual treatment does (ratio +0.5). Is this a problem?",
         options: [
           "Yes \u2014 the rejected response's probability must decrease for DPO to be working",
           "No \u2014 DPO requires only that the chosen response's log-ratio rise more than the rejected one's; both can rise, and in practice both often fall",

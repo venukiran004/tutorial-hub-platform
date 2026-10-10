@@ -34,7 +34,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "What masking does to the softmax", id: "softmax" },
 
-    { t: "p", text: "The reference works one row: token *sat* attending to `[The, cat, sat, future]` with scaled scores `[0.40, 0.53, 0.59, 0.95]`. Recomputed:" },
+    { t: "p", text: "The worked example takes one row: token *sat* attending to `[The, cat, sat, future]` with scaled scores `[0.40, 0.53, 0.59, 0.95]`. Recomputed:" },
 
     { t: "out", text:
 "after the causal mask   [0.40, 0.53, 0.59, -inf]\nexponentials            [1.4918, 1.6989, 1.8040, 0.0]\nsum                     4.9947\nweights                 [0.2987, 0.3401, 0.3612, 0.0000]\n\nreference says          [0.299, 0.340, 0.361, 0.000]   reproduces exactly\n\nwithout the mask        [0.1968, 0.2241, 0.2380, 0.3411]" },

@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "6.7",
 
-  lede: "The reference\u2019s guardrail chain contains one magic number: `rel_threshold=0.35`, the floor below which the system refuses to answer. Tested against 20 answerable and 10 deliberately unanswerable questions, **0.35 lets 4 of the 10 unanswerable queries straight through** \u2014 and no threshold separates the two populations, because they overlap from 0.3589 to 0.5174 with 7 answerable and 4 unanswerable queries inside that band. The relevance gate is real and useful and it is **not** a correctness boundary.",
+  lede: "The guardrail chain contains one magic number: `rel_threshold=0.35`, the floor below which the system refuses to answer. Tested against 20 answerable and 10 deliberately unanswerable questions, **0.35 lets 4 of the 10 unanswerable queries straight through** \u2014 and no threshold separates the two populations, because they overlap from 0.3589 to 0.5174 with 7 answerable and 4 unanswerable queries inside that band. The relevance gate is real and useful and it is **not** a correctness boundary.",
 
   objectives: [
     "Scale a RAG pipeline by identifying which stage is actually the bottleneck",
@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "traffic", text: "Scaling the bottleneck, not \u201cthe system\u201d",
       sub: "6.2 measured which stage that is" },
 
-    { t: "p", text: "The reference\u2019s framing is right: a RAG query is a pipeline and each stage scales differently, so you scale the bottleneck. 6.2 already measured where the bottleneck is, which turns the reference\u2019s list from advice into a priority order." },
+    { t: "p", text: "The framing is right: a RAG query is a pipeline and each stage scales differently, so you scale the bottleneck. 6.2 already measured where the bottleneck is, which turns the list from advice into a priority order." },
 
     { t: "table",
       head: ["Stage", "Measured", "The fix", "Worth doing?"],
@@ -40,7 +40,7 @@ EC.receiveLesson({
 
     { t: "callout", kind: "good", title: "Separate the ingestion path from the query path",
       body: [
-        { t: "p", text: "The reference lists this under the vector database and it deserves more prominence, because it is an architectural decision rather than a tuning one: make indexing async and queued so that re-indexing never blocks reads." },
+        { t: "p", text: "The common list has this under the vector database and it deserves more prominence, because it is an architectural decision rather than a tuning one: make indexing async and queued so that re-indexing never blocks reads." },
         { t: "p", text: "6.2 reached the same conclusion from the correctness side \u2014 build a second index and swap a pointer, because a mutating index serves arbitrary results. The two arguments converge: the ingestion path should not be able to affect the query path at all, in latency or in content." },
         { t: "p", text: "And it is the precondition for everything in 6.6 about code. If re-indexing blocked reads, a commit hook that re-indexes on every push would make the assistant unusable exactly when people are working." }
       ] },
@@ -85,11 +85,11 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "`break` or `continue` is a real decision",
       body: [
         { t: "p", text: "`break` stops at the first chunk that does not fit. `continue` would skip it and keep trying smaller ones, filling the budget more completely \u2014 at the cost of reordering by size rather than by relevance, so a less relevant short chunk displaces a more relevant long one." },
-        { t: "p", text: "The reference uses `break` and that is the right default, because relevance order is the thing the whole pipeline worked to produce and 6.1 measured how much ranking matters. Packing efficiency is not worth reordering." },
+        { t: "p", text: "The usual choice is `break` and that is the right default, because relevance order is the thing the whole pipeline worked to produce and 6.1 measured how much ranking matters. Packing efficiency is not worth reordering." },
         { t: "p", text: "The case for `continue` is when chunk sizes are wildly uneven \u2014 6.6 measured code definitions from 43 to 12,365 characters \u2014 where one oversized chunk can waste most of the budget by being skipped. Even then the better fix is a size cap at chunking time, not a packer that reorders." }
       ] },
 
-    { t: "p", text: "The second scope the reference names is iteration count, and it matters because of what 5.10 and 5.11 introduced. Self-RAG, corrective RAG and agentic loops can retrieve repeatedly, so cost is unbounded unless something bounds it." },
+    { t: "p", text: "The second scope the common name is is iteration count, and it matters because of what 5.10 and 5.11 introduced. Self-RAG, corrective RAG and agentic loops can retrieve repeatedly, so cost is unbounded unless something bounds it." },
 
     { t: "ul", items: [
       "**Cap retrieval rounds**, and when the cap is hit, answer with what you have and flag `low_confidence` \u2014 never loop silently",
@@ -101,7 +101,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "coordination", text: "Coordinating retrievers",
       sub: "Five problems, and fusion only solves the first" },
 
-    { t: "p", text: "5.9 established RRF as the answer to incomparable scores, and 6.5 showed the same property rescuing cross-modal retrieval. That is genuinely solved. The reference lists four further problems that fusion does not touch." },
+    { t: "p", text: "5.9 established RRF as the answer to incomparable scores, and 6.5 showed the same property rescuing cross-modal retrieval. That is genuinely solved. The common list has four further problems that fusion does not touch." },
 
     { t: "dl", items: [
       { k: "Incomparable scores", v: "**Solved.** RRF uses rank position only, so BM25 and vector results combine cleanly \u2014 and deduplication is automatic because it is keyed by document id." },
@@ -121,7 +121,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "guardrails", text: "The guardrail chain",
       sub: "Deterministic checks around a probabilistic component" },
 
-    { t: "p", text: "The reference\u2019s formulation is the clearest statement of what RAG promises: the answer is grounded in retrieved context, safe, and drawn only from sources the user may see. Guardrails are what make that a guarantee rather than a tendency." },
+    { t: "p", text: "The formulation is the clearest statement of what RAG promises: the answer is grounded in retrieved context, safe, and drawn only from sources the user may see. Guardrails are what make that a guarantee rather than a tendency." },
 
     { t: "code", lang: "python", title: "the chain, in order", code: `def guarded_rag(query, retriever, llm, rel_threshold=0.35):
     if injection_detector(query):
@@ -231,7 +231,7 @@ for i in order[:5]:
 
     { t: "callout", kind: "good", title: "So the gate is a cheap first stage, and the faithfulness check is the real boundary",
       body: [
-        { t: "p", text: "This is why the reference\u2019s chain has a guardrail *after* generation as well as before. The relevance gate cannot determine answerability, but a faithfulness check can ask a different and more tractable question: is every claim in this answer supported by the retrieved text?" },
+        { t: "p", text: "This is why the chain has a guardrail *after* generation as well as before. The relevance gate cannot determine answerability, but a faithfulness check can ask a different and more tractable question: is every claim in this answer supported by the retrieved text?" },
         { t: "p", text: "On the refund-policy query that check should fail, because no retrieved chunk states a policy \u2014 so the answer either hedges or asserts something unsupported, and the second is detectable. That is 6.1\u2019s faithfulness metric used as an online gate rather than an offline score." },
         { t: "p", text: "It is also why \u201cblock and escalate, and log every block\u201d is the right operational posture. Each block is a labelled example, and a corpus of them is precisely the data needed to calibrate the threshold against your own query distribution rather than against a default." }
       ] },

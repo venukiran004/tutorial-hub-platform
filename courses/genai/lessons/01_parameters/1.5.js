@@ -77,7 +77,7 @@ print("asking for max_tokens=4096 alongside it needs %d of 128000" % (n + 4096))
 
   a 90000-character document is 20001 tokens -- 15.6% of a 128K window
   asking for max_tokens=4096 alongside it needs 24097 of 128000`,
-      caption: "Context figures as quoted in the reference notes §5, which dates them to 2024–2025 — check them against the provider before relying on them. The document arithmetic is measured here with tiktoken." },
+      caption: "Context figures as of 2024–2025 — check them against the provider before relying on them. The document arithmetic is measured here with tiktoken." },
 
     { t: "callout", kind: "trap", title: "A large window is not an invitation to fill it",
       body: [
@@ -89,7 +89,7 @@ print("asking for max_tokens=4096 alongside it needs %d of 128000" % (n + 4096))
     { t: "h2", n: "02", id: "counting", text: "Count, do not estimate",
       sub: "The rules of thumb hold for English prose and nothing else" },
 
-    { t: "p", text: "The reference gives the usual heuristics — 1 token ≈ 4 characters ≈ 0.75 words — and they are reasonable for the text they were measured on. Here is what they do on six other kinds of text." },
+    { t: "p", text: "The common form gives the usual heuristics — 1 token ≈ 4 characters ≈ 0.75 words — and they are reasonable for the text they were measured on. Here is what they do on six other kinds of text." },
 
     { t: "code", lang: "python", title: "g13.py — tiktoken across six samples", code: `enc  = tiktoken.get_encoding("cl100k_base")      # GPT-4, GPT-3.5
 o200 = tiktoken.get_encoding("o200k_base")       # GPT-4o and later
@@ -116,7 +116,7 @@ the claim: 1 token ~ 4 characters (English) ~ 0.75 words
 
     { t: "ol", items: [
       "**The rule is right for the case it was measured on and wrong elsewhere.** 4.43 against a claimed 4 is fine. 1.95 for UUIDs is not — a log line full of identifiers costs more than twice what the estimate says, and a retrieval corpus of such lines will overflow a budget you thought had headroom.",
-      "**Words per token is the weaker rule.** The reference says 0.75; English prose measured **0.89**, and JSON measured 0.31. The word count of a document tells you very little about what it will cost.",
+      "**Words per token is the weaker rule.** It is commonly said 0.75; English prose measured **0.89**, and JSON measured 0.31. The word count of a document tells you very little about what it will cost.",
       "**The tokenizer matters as much as the text.** French took 73 tokens under `cl100k_base` and **57** under `o200k_base` — a 22% reduction for the same text, because the newer vocabulary has more non-English subwords. Estimating with the wrong encoding is a different error from estimating with the wrong rule."
     ] },
 
@@ -141,7 +141,7 @@ the claim: 1 token ~ 4 characters (English) ~ 0.75 words
         ["`tool_calls`", "The model wants to call a tool and is waiting", "Execute and send the result back (1.9)"],
         ["`content_filter`", "A safety system blocked the response", "Surface it; do not retry blindly (11.13)"]
       ],
-      caption: "From the reference notes §16.2. The first two are the ones every client must handle; the second is the one that gets skipped." },
+      caption: "The first two are the ones every client must handle; the second is the one that gets skipped." },
 
     { t: "code", lang: "python", title: "g13.py — the cap, from inside the loop", code: `ids = tok("Write a short poem about the sea.", return_tensors="pt").input_ids
 
@@ -279,7 +279,7 @@ most optimistic estimate: logline, off by 66.7%
     "Providers differ on what happens when you overflow — some reject the request, some silently truncate the prompt and answer anyway. The second is worse, because the answer looks fine.",
     "**Count with a tokenizer; do not estimate on the hot path.** `tiktoken` runs locally in microseconds.",
     "The 4-characters-per-token rule measured **4.43** on English prose — and **2.77** on JSON and **1.95** on UUIDs, which is wrong by a factor of 2.3 on the payloads production systems actually send.",
-    "The words-per-token rule is weaker still: the reference says 0.75, English prose measured **0.89**, and JSON measured 0.31.",
+    "The words-per-token rule is weaker still: it is commonly said 0.75, English prose measured **0.89**, and JSON measured 0.31.",
     "**The tokenizer matters as much as the text.** The same French sentence took 73 tokens under `cl100k_base` and **57** under `o200k_base` — 22% fewer, for the same characters.",
     "A truncated response and a short response are textually identical. **`finish_reason` is the only signal**, and `length` means the answer was cut, not finished.",
     "`max_tokens` is a cost and latency control, not a length control — the model does not know the cap exists. Ask for brevity in the prompt and set the cap above it as a safety net.",

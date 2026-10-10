@@ -23,7 +23,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The frame", id: "frame" },
 
-    { t: "p", text: "The reference teaches each component three ways: **what it is** in one line, **when and why** you need it in plain words, and **how** it works as formula or mechanics. That ordering is deliberate — the *why* is what most explanations skip, and it is what makes the *how* memorable." },
+    { t: "p", text: "The usual treatment covers each component three ways: **what it is** in one line, **when and why** you need it in plain words, and **how** it works as formula or mechanics. That ordering is deliberate — the *why* is what most explanations skip, and it is what makes the *how* memorable." },
 
     { t: "table",
       head: ["Component", "What", "When & why", "How"],
@@ -42,7 +42,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Where the weights come from", id: "weights" },
 
     { t: "callout", kind: "insight", title: "Every matrix is learned — none is designed",
-      body: [{ t: "p", text: "This is the question the reference stops to answer, and it is worth repeating because the toy examples in this module can mislead. The lifecycle of every weight matrix is: **shape** fixed by the architecture, **values** initialised randomly, **updated** by gradient descent on next-token loss over trillions of tokens. Nobody programs `W_Q` to find subjects. The subject-verb attention pattern in lesson 6.2 emerged in that example because the matrices were hand-picked to be readable — in a real model the identical pattern emerges because it lowered the loss. The toy 0/1 matrices are a pedagogical device, and real ones are dense floats with no visible structure." }] },
+      body: [{ t: "p", text: "This is the question the usual treatment stops to answer, and it is worth repeating because the toy examples in this module can mislead. The lifecycle of every weight matrix is: **shape** fixed by the architecture, **values** initialised randomly, **updated** by gradient descent on next-token loss over trillions of tokens. Nobody programs `W_Q` to find subjects. The subject-verb attention pattern in lesson 6.2 emerged in that example because the matrices were hand-picked to be readable — in a real model the identical pattern emerges because it lowered the loss. The toy 0/1 matrices are a pedagogical device, and real ones are dense floats with no visible structure." }] },
 
     { t: "table",
       head: ["Matrix", "Role", "Shape", "Origin"],

@@ -59,7 +59,7 @@ EC.receiveLesson({
       sub: "Per check, not globally" },
 
     { t: "dl", items: [
-      { k: "Fail-closed", v: "On a guardrail error or uncertainty, **block**. The safe default, and the reference\u2019s recommendation for the output stage \u2014 never serve raw model output when a check could not complete." },
+      { k: "Fail-closed", v: "On a guardrail error or uncertainty, **block**. The safe default, and the recommendation for the output stage \u2014 never serve raw model output when a check could not complete." },
       { k: "Fail-open", v: "On error, allow. Keeps the product working during a guardrail outage, at the cost of serving unchecked output for the duration." }
     ] },
 

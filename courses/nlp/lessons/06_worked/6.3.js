@@ -4,7 +4,7 @@
 EC.receiveLesson({
   id: "6.3",
 
-  lede: "**The six logits come out as +0.4264, −1.6319, +1.0747, −1.0747, +1.6319, −0.4264 — three exactly cancelling pairs.** That is not a coincidence of the numbers. LayerNorm forces the hidden state to sum to zero, and this toy vocabulary's embeddings pair up to `[1,1,1,1]`, so every pair of complementary words *must* receive equal and opposite logits. The reference does not mention it; it falls out of recomputing rather than reading. This lesson finishes the trace — residual, norm, FFN, norm, head, softmax — and ends at a 47.51% prediction of *mat*.",
+  lede: "**The six logits come out as +0.4264, −1.6319, +1.0747, −1.0747, +1.6319, −0.4264 — three exactly cancelling pairs.** That is not a coincidence of the numbers. LayerNorm forces the hidden state to sum to zero, and this toy vocabulary's embeddings pair up to `[1,1,1,1]`, so every pair of complementary words *must* receive equal and opposite logits. This is rarely mentioned it; it falls out of recomputing rather than reading. This lesson finishes the trace — residual, norm, FFN, norm, head, softmax — and ends at a 47.51% prediction of *mat*.",
 
   objectives: [
     "Compute both residual connections and both LayerNorms by hand",
@@ -44,8 +44,8 @@ EC.receiveLesson({
 
     { t: "p", text: "`h` is the final hidden state for the *sat* position after one complete transformer block. In a 96-layer model, steps 4 through 7 would repeat 96 times, each writing another increment into this same vector. Here there is one layer, so the stack is done." },
 
-    { t: "callout", kind: "note", title: "One rounding divergence, and it is the reference's",
-      body: [{ t: "p", text: "The second component of `r'` comes out at **−0.1629** where the reference prints **−0.18**. The reference is carrying rounded intermediates — it used `−0.34` and `0.16` rather than `−0.3315` and `0.1685` — so the small difference is accumulated display rounding, not an error. Everything downstream still lands within 0.01 of its published value. It is worth flagging only because it shows how quickly hand-arithmetic drifts: three steps of two-decimal rounding moved a value by 10%." }] },
+    { t: "callout", kind: "note", title: "One rounding divergence, and it is the",
+      body: [{ t: "p", text: "The second component of `r'` comes out at **−0.1629** where the usual output prints **−0.18**. The reference is carrying rounded intermediates — it used `−0.34` and `0.16` rather than `−0.3315` and `0.1685` — so the small difference is accumulated display rounding, not an error. Everything downstream still lands within 0.01 of its published value. It is worth flagging only because it shows how quickly hand-arithmetic drifts: three steps of two-decimal rounding moved a value by 10%." }] },
 
     { t: "h2", n: "04", text: "The LM head", id: "head" },
 
@@ -61,7 +61,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Every probability matches the reference to three decimal places. *\"the cat sat\"* → *\"mat\"*, which given a vocabulary containing *on* and *mat* is a defensible continuation of a sentence that wants to become *the cat sat on the mat*." },
 
-    { t: "h2", n: "06", text: "The antisymmetry the reference does not mention", id: "antisymmetry" },
+    { t: "h2", n: "06", text: "The antisymmetry this is rarely mentioned", id: "antisymmetry" },
 
     { t: "out", text:
 "the logits, paired\n\n  logit(the)   +0.4264  +  logit(<eos>)  -0.4264  =  0.000000\n  logit(sat)   +1.0747  +  logit(on)     -1.0747  =  0.000000\n  logit(cat)   -1.6319  +  logit(mat)    +1.6319  =  0.000000" },
@@ -104,7 +104,7 @@ EC.receiveLesson({
     "The r' second component reads -0.18 against a computed -0.1629 — accumulated display rounding, which moved a value by 10% in three steps.",
     "Weight tying means the LM head IS the embedding matrix, so a logit is h dotted with a word's embedding.",
     "Final prediction: 'mat' at 0.4751, matching the 47.6%, with all six probabilities correct to three decimals.",
-    "The logits are exactly antisymmetric, because LayerNorm forces sum(h) = 0 and the toy embeddings pair up to [1,1,1,1] — structure the reference does not mention.",
+    "The logits are exactly antisymmetric, because LayerNorm forces sum(h) = 0 and the toy embeddings pair up to [1,1,1,1] — structure this is rarely mentioned.",
     "Under a causal mask, appending a token leaves earlier positions' computations unchanged, which is what makes the KV cache provably correct."
   ],
 
@@ -121,7 +121,7 @@ EC.receiveLesson({
       options: ["It speeds up computation", "Attention produced a blend dominated by other tokens; adding the input back makes the output the original token plus a contextual update", "It normalises the scale", "It enables weight tying"],
       answer: 1,
       why: "Without it, stacked layers would progressively wash out a token's own identity, and gradients would have no unobstructed path back — lesson 4.6 measured a 780,000x difference in gradient reaching the first block between Pre-LN and Post-LN. The residual is what makes the residual-stream framing of lesson 4.7 apply." },
-    { stem: "The reference prints -0.18 where the computation gives -0.1629. What happened?",
+    { stem: "The usual output prints -0.18 where the computation gives -0.1629. What happened?",
       options: ["An error in the reference", "Accumulated display rounding — it carried two-decimal intermediates, and three steps moved the value by 10%", "A different LayerNorm epsilon", "A transcription mistake"],
       answer: 1,
       why: "It used -0.34 and 0.16 rather than -0.3315 and 0.1685. Everything downstream still lands within 0.01 of its published value, so the walkthrough is sound. It is worth flagging only as a demonstration of how quickly hand-arithmetic drifts when intermediates are rounded." }

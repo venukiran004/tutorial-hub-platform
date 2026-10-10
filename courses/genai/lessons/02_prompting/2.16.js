@@ -49,7 +49,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "the-filter", text: "The obvious defence, measured",
       sub: "A keyword filter on both attacks and legitimate traffic" },
 
-    { t: "p", text: "The reference gives an input sanitiser, and it is the first thing almost everyone writes. It is worth implementing exactly as written and measuring on both populations — because a filter that is only tested against attacks looks fine." },
+    { t: "p", text: "The common form gives an input sanitiser, and it is the first thing almost everyone writes. It is worth implementing exactly as written and measuring on both populations — because a filter that is only tested against attacks looks fine." },
 
     { t: "code", lang: "python", title: "g29.py — the sanitiser, implemented", code: `DANGEROUS = ["ignore previous", "system:", "you are now", "forget your"]
 
@@ -200,7 +200,7 @@ print("best F1 %.2f at %d phrases -- and the attack set is ten items I wrote"
 
 best F1 0.67 at 10 phrases -- and the attack set is ten items I wrote`,
         notes: [
-          { t: "p", text: "The first four rows are the surprise: adding phrases made it **worse**. One phrase alone scores precision 0.60 and F1 0.40; by the fourth — which is the reference’s exact list — precision has fallen to 0.33 and F1 to 0.32. Each of those additions caught no new attack and blocked another benign message, because `system:`, `you are now` and `forget your` are ordinary English that happens to appear in support traffic." },
+          { t: "p", text: "The first four rows are the surprise: adding phrases made it **worse**. One phrase alone scores precision 0.60 and F1 0.40; by the fourth — which is the exact list — precision has fallen to 0.33 and F1 to 0.32. Each of those additions caught no new attack and blocked another benign message, because `system:`, `you are now` and `forget your` are ordinary English that happens to appear in support traffic." },
           { t: "p", text: "From the fifth phrase on it does improve, reaching F1 0.67 at ten — so a tuned list beats the naive one. But precision never exceeds **0.60**, and at the best F1 it is 0.57: even at its best the filter is wrong more often than right whenever it fires. There is no setting at which this is a gate." },
           { t: "p", text: "The deeper limitation is in the last line of output. The attack set is ten strings I wrote, and the phrase list was tuned against them — so the 0.80 recall is **fitted to this specific set**, exactly the overfitting problem from 2.12. An attacker writes attack eleven and there is no reason to think the list generalises. That is the structural difference from a spam filter, which sees millions of real examples where an injection filter sees the ones you imagined. What it implies about placement: a filter at 0.57 precision is a reasonable **signal** — log it, flag a conversation for review, feed a risk score — and a terrible **gate**. The defence that holds belongs at the action boundary, where a successful injection produces a request your code declines, because that one does not depend on recognising the attack at all." },
         ] } },

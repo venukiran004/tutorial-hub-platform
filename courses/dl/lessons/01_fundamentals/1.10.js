@@ -4,7 +4,7 @@
 EC.receiveLesson({
   id: "1.10",
 
-  lede: "**Everything in lessons 1.1 to 1.9 fits in sixty lines of NumPy: He-initialised weights, a forward pass that stores what backward will need, binary cross-entropy, four lines of backpropagation, and a gradient-descent update.** The reference builds exactly that class. This lesson reads it method by method against the derivations it implements, runs it on XOR — where it reaches a loss of 0.0015 and predicts [0.002, 0.999, 0.999, 0.001] — and on a two-moons dataset where it scores 97 % on held-out points, and then checks its hand-written gradients against PyTorch's autograd to nine decimal places. After this, `loss.backward()` has no secrets.",
+  lede: "**Everything in lessons 1.1 to 1.9 fits in sixty lines of NumPy: He-initialised weights, a forward pass that stores what backward will need, binary cross-entropy, four lines of backpropagation, and a gradient-descent update.** Exactly that class is built below. This lesson reads it method by method against the derivations it implements, runs it on XOR — where it reaches a loss of 0.0015 and predicts [0.002, 0.999, 0.999, 0.001] — and on a two-moons dataset where it scores 97 % on held-out points, and then checks its hand-written gradients against PyTorch's autograd to nine decimal places. After this, `loss.backward()` has no secrets.",
 
   objectives: [
     "Read the NeuralNetwork class and map each method to the formula it implements",
@@ -19,7 +19,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The class, method by method", id: "class" },
 
-    { t: "p", text: "The network is two layers — ReLU hidden, sigmoid output — with the data laid out as the maths of lesson 1.3 has it: **X is (n_features × m_samples)**, one example per column, and every weight matrix is (units × inputs). Here is the class as the reference gives it, with each method annotated against the lesson that derived it." },
+    { t: "p", text: "The network is two layers — ReLU hidden, sigmoid output — with the data laid out as the maths of lesson 1.3 has it: **X is (n_features × m_samples)**, one example per column, and every weight matrix is (units × inputs). Here is the class as the common form gives it, with each method annotated against the lesson that derived it." },
 
     { t: "code", lang: "python", title: "Initialisation — lesson 1.6",
       code: `import numpy as np

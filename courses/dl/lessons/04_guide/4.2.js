@@ -49,7 +49,7 @@ out = A @ V                              # (T, d) — contextualised`,
     { t: "p", text: "With random projections the weights are near-uniform, which is the correct starting point — an untrained model has no reason to prefer any position. Training is what makes them selective. Note the output has the **same shape as the input**, which is what lets blocks stack." },
 
     { t: "callout", kind: "note", title: "The worked softmax is rounded",
-      body: [{ t: "p", text: "The guide takes scores `[1.2, 3.5, 2.8]` to weights `[0.05, 0.62, 0.33]`. The exact softmax is **`[0.0628, 0.6262, 0.3110]`** — the first and third are rounded somewhat loosely so the three display values sum to 1.00. The illustration's point stands entirely (a token attending mostly to itself, secondarily to a related token), but if you are checking your own implementation against those numbers you will see a discrepancy that is in the reference rather than your code." }] },
+      body: [{ t: "p", text: "The guide takes scores `[1.2, 3.5, 2.8]` to weights `[0.05, 0.62, 0.33]`. The exact softmax is **`[0.0628, 0.6262, 0.3110]`** — the first and third are rounded somewhat loosely so the three display values sum to 1.00. The illustration's point stands entirely (a token attending mostly to itself, secondarily to a related token), but if you are checking your own implementation against those numbers you will see a discrepancy that is in the usual treatment rather than your code." }] },
 
     { t: "h2", n: "03", text: "A property of the output", id: "convex" },
 

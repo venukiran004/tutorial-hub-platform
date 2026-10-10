@@ -37,7 +37,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The worked example", id: "worked" },
 
-    { t: "p", text: "Three tokens, `d_k = d_v = 4`. The matrices are the reference's, and every step below was recomputed rather than copied." },
+    { t: "p", text: "Three tokens, `d_k = d_v = 4`. The matrices are the, and every step below was recomputed rather than copied." },
 
     { t: "out", text:
 "Q = [[1.0, 0.5, 0.3, 0.2]   The     K = [[0.9, 0.4, 0.2, 0.3]\n     [0.2, 1.0, 0.5, 0.8]   cat          [0.3, 0.8, 0.6, 0.7]\n     [0.5, 0.3, 1.0, 0.1]]  sat          [0.4, 0.2, 0.9, 0.2]]\n\nV = [[1.0, 0.0, 0.5, 0.2]   value of The\n     [0.2, 0.8, 0.1, 0.9]   value of cat\n     [0.5, 0.3, 0.7, 0.4]]  value of sat" },
@@ -52,7 +52,7 @@ EC.receiveLesson({
 
     { t: "callout", kind: "warn", title: "Two of the three output rows are wrong in the reference",
       body: [{ t: "p", text: "Term by term for *cat*, using the weights `[0.2876, 0.4291, 0.2833]`:" },
-             { t: "p", text: "`dim0 = 0.2876×1.0 + 0.4291×0.2 + 0.2833×0.5 = 0.5151`, where the reference prints 0.487. `dim2 = 0.2876×0.5 + 0.4291×0.1 + 0.2833×0.7 = 0.3850`, where it prints 0.353. For *sat*, `dim3 = 0.2987×0.2 + 0.3401×0.9 + 0.3612×0.4 = 0.5103`, where it prints 0.490." },
+             { t: "p", text: "`dim0 = 0.2876×1.0 + 0.4291×0.2 + 0.2833×0.5 = 0.5151`, where the usual output prints 0.487. `dim2 = 0.2876×0.5 + 0.4291×0.1 + 0.2833×0.7 = 0.3850`, where it prints 0.353. For *sat*, `dim3 = 0.2987×0.2 + 0.3401×0.9 + 0.3612×0.4 = 0.5103`, where it prints 0.490." },
              { t: "p", text: "The recomputed matrix agrees with `torch.nn.functional.scaled_dot_product_attention` to **1.67e-16**, so the arithmetic above is the correct one. The weights the reference derived are right; only the final weighted sums slipped." }] },
 
     { t: "p", text: "Each output row has the same shape as the input token but now blends context from every position. *The* ends up at `[0.5840, 0.3560, 0.4268, 0.4928]` — a near-uniform mixture, because its query matched all three keys similarly. *cat* leaned hardest on itself, at weight 0.4291." },

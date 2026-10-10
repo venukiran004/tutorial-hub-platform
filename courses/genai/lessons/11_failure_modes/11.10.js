@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "11.10",
 
-  lede: "Batching and streaming are **throughput and UX levers, not token-price levers** \u2014 a batch API discount is a real price cut and streaming saves nothing at all. Then agents, which are the easiest way to get a surprise bill. The reference says a 12-step agent can be 20\u201330 calls, and the step count is not the multiplier: measured, 12 steps cost **24.4x** a single call, where naively repeating the same call 12 times gives 10.0x. **The context grows**, and the last step costs 4.1x the first.",
+  lede: "Batching and streaming are **throughput and UX levers, not token-price levers** \u2014 a batch API discount is a real price cut and streaming saves nothing at all. Then agents, which are the easiest way to get a surprise bill. It is commonly said a 12-step agent can be 20\u201330 calls, and the step count is not the multiplier: measured, 12 steps cost **24.4x** a single call, where naively repeating the same call 12 times gives 10.0x. **The context grows**, and the last step costs 4.1x the first.",
 
   objectives: [
     "Separate price levers from throughput and UX levers",
@@ -58,7 +58,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "Repeating the same 3,200-token call twelve times gives **10.0x**. The real cost is **24.4x**, because each step\u2019s prompt contains every previous thought and every previous tool result. The naive estimate understates the bill by **2.4x**." },
         { t: "p", text: "The growth is the whole story: the prompt goes from 3,200 to 13,650 tokens, so **the last step alone costs 4.1x the first.** An agent\u2019s cost is roughly quadratic in step count rather than linear, because step n pays for the outputs of steps 1 to n\u22121." },
-        { t: "p", text: "Which means \u2018a 12-step agent is 12 calls\u2019 is the wrong mental model for budgeting, and it is the model most people carry. The reference says 20\u201330 calls for a 12-step agent with reflection, which is a different and also true observation \u2014 but even at exactly 12 calls the cost is 24x, not 12x." }
+        { t: "p", text: "Which means \u2018a 12-step agent is 12 calls\u2019 is the wrong mental model for budgeting, and it is the model most people carry. It is commonly said 20\u201330 calls for a 12-step agent with reflection, which is a different and also true observation \u2014 but even at exactly 12 calls the cost is 24x, not 12x." }
       ] },
 
     { t: "callout", kind: "good", title: "So trimming tool output is the highest-leverage agent lever there is",

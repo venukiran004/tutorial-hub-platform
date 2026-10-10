@@ -174,7 +174,7 @@ for t in (0.0, 0.3, 0.7, 1.0, 1.4):
     { t: "h2", n: "04", id: "choosing", text: "Choosing a number",
       sub: "The table, and what to do when your task is not in it" },
 
-    { t: "p", text: "The reference gives ranges by task, and they are a reasonable starting point — they encode what people have converged on rather than anything derived:" },
+    { t: "p", text: "The common form gives ranges by task, and they are a reasonable starting point — they encode what people have converged on rather than anything derived:" },
 
     { t: "table",
       head: ["Task", "Reference range", "What the range is really saying"],
@@ -185,7 +185,7 @@ for t in (0.0, 0.3, 0.7, 1.0, 1.4):
         ["Creative writing", "0.7 – 1.0", "You want the model to leave the most obvious continuation"],
         ["Brainstorming", "0.8 – 1.2", "You want variety across *samples*, and will filter afterwards"]
       ],
-      caption: "From the reference notes §2. The third column is what the numbers are for, which is the part worth carrying to a task the table does not list." },
+      caption: "The third column is what the numbers are for, which is the part worth carrying to a task the table does not list." },
 
     { t: "p", text: "For a task that is not in the table, the question to ask is not \"how creative should this be\". It is: **do I want variety across repeated calls with the same input?** If no — extraction, classification, routing, structured output, anything a downstream system parses — the answer is 0. If yes, start at 0.7 and move it on evidence." },
 

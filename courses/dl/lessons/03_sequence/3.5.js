@@ -25,8 +25,8 @@ EC.receiveLesson({
     { t: "out", text: `  my loop vs nn.GRU : max abs diff 2.980e-08
   PyTorch gate order is r, z, n; weight_ih is (21, 5) = (3*7, 5)` },
 
-    { t: "callout", kind: "trap", title: "PyTorch's update gate means the opposite of the reference's",
-      body: [{ t: "p", text: "The reference writes `h_t = (1−z)h_{t−1} + z·h̃`, so `z` near 1 means *take the new candidate*. PyTorch computes `h_t = (1−z)·h̃ + z·h_{t−1}`, so `z` near 1 means *keep the old state* — the exact reverse. Both are the same family of functions and both train identically, since the network simply learns the sign it needs. But if you implement from a paper and validate against `nn.GRU`, or read gate statistics from a trained model expecting one convention, you will misinterpret every number. Check which one your source uses before drawing any conclusion from a gate value." }] },
+    { t: "callout", kind: "trap", title: "PyTorch's update gate means the opposite of the",
+      body: [{ t: "p", text: "It is commonly written `h_t = (1−z)h_{t−1} + z·h̃`, so `z` near 1 means *take the new candidate*. PyTorch computes `h_t = (1−z)·h̃ + z·h_{t−1}`, so `z` near 1 means *keep the old state* — the exact reverse. Both are the same family of functions and both train identically, since the network simply learns the sign it needs. But if you implement from a paper and validate against `nn.GRU`, or read gate statistics from a trained model expecting one convention, you will misinterpret every number. Check which one your source uses before drawing any conclusion from a gate value." }] },
 
     { t: "p", text: "There is a second subtlety in the candidate. The reset gate is applied to the *recurrent* contribution only, inside the tanh — `tanh(W_x x + r ⊙ (W_h h))` — not to `h` before the matrix multiply. This matters because it lets PyTorch compute `W_h h` once for all three gates." },
 
@@ -81,7 +81,7 @@ EC.receiveLesson({
   batch=64 T=30 d=100 h=200
     RNN : median    13.2 ms   GRU : median    43.3 ms   LSTM: median    26.4 ms` },
 
-    { t: "callout", kind: "warn", title: "The reference says GRU trains faster. On this setup it is 1.6–3.1× slower.",
+    { t: "callout", kind: "warn", title: "It is commonly said GRU trains faster. On this setup it is 1.6–3.1× slower.",
       body: [{ t: "p", text: "Across all three shapes, on CPU with torch 2.10, the GRU is **slower than the LSTM** despite having 25 % fewer parameters — by 2.0×, 3.1× and 1.6× respectively. This is not a FLOP fact but an implementation one: PyTorch's LSTM has a well-optimised fused CPU kernel and the GRU does not get the same treatment. The claim is correct about arithmetic and wrong about wall-clock here, and the picture may differ on CUDA with cuDNN where both are fused. The general lesson is the one from lesson 2.4's depthwise convolutions: parameter and FLOP counts are a poor predictor of latency, and if speed is your reason for choosing an architecture you must benchmark it on your actual hardware." }] },
 
     { t: "h2", n: "05", text: "Choosing", id: "choosing" },

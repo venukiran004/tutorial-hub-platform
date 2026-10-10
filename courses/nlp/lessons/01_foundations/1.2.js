@@ -45,7 +45,7 @@ EC.receiveLesson({
   match    : False` },
 
     { t: "callout", kind: "trap", title: "`string.punctuation` is ASCII-only, so the emoji survive",
-      body: [{ t: "p", text: "The reference states the output is `check out its amazing`. Run, it is `check out its amazing 🎉🎉🎉`. `string.punctuation` contains exactly 32 ASCII characters and knows nothing about emoji, and `NFKD` normalisation decomposes accented characters but does not touch them either. This matters well beyond the example: a pipeline that looks like it strips non-word characters will happily leave emoji, CJK punctuation, mathematical symbols and box-drawing characters in your vocabulary. If you want them gone, match on Unicode categories with `unicodedata.category(c).startswith('P')` or use an explicit allow-list of what you keep." }] },
+      body: [{ t: "p", text: "It is commonly stated the output is `check out its amazing`. Run, it is `check out its amazing 🎉🎉🎉`. `string.punctuation` contains exactly 32 ASCII characters and knows nothing about emoji, and `NFKD` normalisation decomposes accented characters but does not touch them either. This matters well beyond the example: a pipeline that looks like it strips non-word characters will happily leave emoji, CJK punctuation, mathematical symbols and box-drawing characters in your vocabulary. If you want them gone, match on Unicode categories with `unicodedata.category(c).startswith('P')` or use an explicit allow-list of what you keep." }] },
 
     { t: "h2", n: "02", text: "What each flag removes", id: "stages" },
 

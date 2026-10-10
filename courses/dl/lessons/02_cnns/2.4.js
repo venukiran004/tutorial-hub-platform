@@ -65,8 +65,8 @@ EC.receiveLesson({
 
     { t: "math", tex: "\\frac{\\text{separable}}{\\text{standard}} = \\frac{k^2 C_{in} + C_{in}C_{out}}{k^2 C_{in} C_{out}} = \\frac{1}{C_{out}} + \\frac{1}{k^2}" },
 
-    { t: "callout", kind: "trap", title: "The reference writes this ratio upside down",
-      body: [{ t: "p", text: "the reference gives the saving as `C_out/(k²) + 1`, which would grow with the channel count rather than shrink. The correct ratio is `1/C_out + 1/k²` — and the worked example confirms it: 8,768 / 73,728 = 0.1189, and 1/128 + 1/9 = 0.1189 exactly. Since `C_out` is usually large, the `1/k²` term dominates, which is where the familiar 'about 9× cheaper for a 3×3' comes from." }] },
+    { t: "callout", kind: "trap", title: "It is commonly written this ratio upside down",
+      body: [{ t: "p", text: "the common form gives the saving as `C_out/(k²) + 1`, which would grow with the channel count rather than shrink. The correct ratio is `1/C_out + 1/k²` — and the worked example confirms it: 8,768 / 73,728 = 0.1189, and 1/128 + 1/9 = 0.1189 exactly. Since `C_out` is usually large, the `1/k²` term dominates, which is where the familiar 'about 9× cheaper for a 3×3' comes from." }] },
 
     { t: "out", text: `  standard  3^2 x 64 x 128          = 73,728   (reference: 73,728)
   separable 3^2 x 64 + 64 x 128     = 8,768    (reference: 8,768)
@@ -156,7 +156,7 @@ EC.receiveLesson({
   takeaways: [
     "A 1×1 convolution is a per-pixel channel projection: 16,448 parameters against a 3×3's 147,520 for the same 256→64 change.",
     "Depthwise separable splits filtering from channel mixing; the cost ratio is `1/C_out + 1/k²`.",
-    "The reference writes that ratio inverted; its own example (8,768 / 73,728 = 0.1189 = 1/128 + 1/9) confirms the correct form.",
+    "It is commonly written that ratio inverted; its own example (8,768 / 73,728 = 0.1189 = 1/128 + 1/9) confirms the correct form.",
     "Measured at 128→256, k=3: 295,168 parameters fall to 34,304 — an 88.4 % saving.",
     "Depthwise convolutions are memory-bound, so parameter savings overstate GPU latency savings — measure on the target device.",
     "SE is squeeze (global average pool), excite (FC-ReLU-FC-sigmoid), scale (broadcast multiply), for 1.43 % of a block's parameters."

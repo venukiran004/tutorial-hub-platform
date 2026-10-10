@@ -4,9 +4,9 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "p1.4",
- "lede": "**25 programs** from Fundamentals: Programs and Scenarios. Read the title, write the program yourself, then open the reference version and what it printed when it was run.",
+ "lede": "**25 programs** from Fundamentals: Programs and Scenarios. Read the title, write the program yourself, then open the published version and what it printed when it was run.",
  "objectives": [
-  "Write each program from its title before opening the reference version",
+  "Write each program from its title before opening the published version",
   "Predict the printed shapes and numbers before revealing the output",
   "Say which layer, loss or trick each program demonstrates and when you would reach for it",
   "Change one thing in each program — a shape, a hyperparameter — and predict what the output becomes"

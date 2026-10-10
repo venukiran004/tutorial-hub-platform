@@ -42,7 +42,7 @@ EC.receiveLesson({
     { t: "callout", kind: "good", title: "A model with no permission to abstain must guess",
       body: [
         { t: "p", text: "This follows directly from 11.1\u2019s mechanism. The objective rewards a plausible continuation, and if the instruction set contains no acceptable \u2018I cannot answer from this\u2019 output, then every continuation that satisfies the instruction is a claim. Abstention is not the model declining to work \u2014 it is the only honest output available when the context is insufficient, and it has to be in the instruction set." },
-        { t: "p", text: "The reference is blunt about the size of this: adding an explicit abstention path *\u201cremoves a large fraction of RAG hallucinations, because the model now has permission to say I do not know.\u201d* It is one paragraph in a system prompt." },
+        { t: "p", text: "It is worth being blunt about the size of this: adding an explicit abstention path *\u201cremoves a large fraction of RAG hallucinations, because the model now has permission to say I do not know.\u201d* It is one paragraph in a system prompt." },
         { t: "p", text: "And it pairs with an operational metric. 11.6 tracks **abstention rate** in both directions: too low means the model is overconfident, too high means retrieval is weak. A system with a 0% abstention rate is not a confident system, it is an uninstrumented one." }
       ] },
 

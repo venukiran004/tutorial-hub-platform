@@ -28,7 +28,7 @@ def moderate(text: str, classify) -> dict:
       hl: [5],
       caption: "The 0.5 threshold is a policy decision, and 11.16 measures what it costs in both directions." },
 
-    { t: "callout", kind: "insight", title: "This is the one place the reference says *not* to hand-roll, and 11.13 shows why",
+    { t: "callout", kind: "insight", title: "This is the one place it is commonly said *not* to hand-roll, and 11.13 shows why",
       body: [
         { t: "p", text: "It recommends a dedicated moderation model \u2014 OpenAI Moderation, Llama Guard, Perspective \u2014 \u201crather than hand-rolled regex for toxicity\u201d. 11.13 measured exactly what hand-rolled patterns are worth on a related task: 0% of thirteen paraphrases, 60% of benign inputs wrongly blocked." },
         { t: "p", text: "Toxicity is harder than injection for a pattern list, not easier, because the surface forms are even more open-ended and the benign collisions more common. A list of slurs catches slurs and misses every circumlocution, while blocking medical and historical discussion." },
@@ -62,7 +62,7 @@ def output_safe(text: str, canary: str) -> dict:
       body: [
         { t: "p", text: "10.12 argued for alerts whose movement triggers an action and which are not sample-size limited. A canary hit is both: **any** hit is an incident, no threshold, no confidence interval, no baseline to compare against. One occurrence is actionable." },
         { t: "p", text: "That is rare and worth exploiting. Most quality signals need a rate, a window and a 2-sigma threshold before they mean anything \u2014 this one means something on a single request, which makes it the cheapest high-value alert in the guardrail stack." },
-        { t: "p", text: "The reference lists canary-token hits in its metrics table with \u2018any is an incident\u2019, alongside PII-leak events. Both deserve that treatment and only the canary deserves the confidence." }
+        { t: "p", text: "The common list has canary-token hits in its metrics table with \u2018any is an incident\u2019, alongside PII-leak events. Both deserve that treatment and only the canary deserves the confidence." }
       ] },
 
     { t: "h2", n: "03", id: "schema", text: "Checks 3 and 4 \u2014 Schema and grounding",
@@ -73,7 +73,7 @@ def output_safe(text: str, canary: str) -> dict:
       { k: "Grounding / faithfulness gate", v: "Gate on a faithfulness score so ungrounded claims are blocked or regenerated \u2014 11.4 and 11.5. This is the expensive one: 739 ms per claim measured on CPU, which is why 11.15\u2019s latency budget is dominated by it." }
     ] },
 
-    { t: "callout", kind: "warn", title: "Streaming breaks the output stage, and the reference does not address it",
+    { t: "callout", kind: "warn", title: "Streaming breaks the output stage, and the usual treatment does not address it",
       body: [
         { t: "p", text: "Every check here assumes a complete response to inspect. With streaming, tokens reach the user as they are produced \u2014 so by the time a moderation check could run on the full text, the user has already read it. The last line of defence has no line to stand on." },
         { t: "p", text: "There are three workable designs and each gives something up. **Buffer** the whole response, check it, then stream it \u2014 which discards the entire latency benefit and returns you to 9.15\u2019s spinner. **Chunk-check** on a sliding window, which catches a slur mid-stream and cannot catch an ungrounded claim that needs the whole answer. **Stream optimistically and retract**, which is honest about the exposure and needs a UI that can withdraw text." },
@@ -282,7 +282,7 @@ a product decision rather than a technical one.`,
           { t: "p", text: "**The clean path pays everything**, which is the honest limit of fail-fast. It only helps on blocked responses, and blocked responses should be the minority — so the 43.7 ms is the real steady-state cost of the output stage, and 11.15 is about whether that can be parallelised." },
           { t: "p", text: "**Two of five checks survive streaming.** The canary and the secrets scan are chunk-safe because a leak happens in one chunk; schema, moderation and faithfulness all need the complete answer. That ratio is the whole streaming design in one number." },
           { t: "p", text: "**The pipeline deliberately reveals nothing in the refusal.** Every blocked case returns the same string, and the `reason` is logged rather than served — because ‘blocked by the injection detector’ lets anyone probing the boundary binary-search the filter." },
-          { t: "p", text: "One structural thing the output table shows: the key-leak and PII-leak cases return the same reason, `pii_or_secret_leak`, because the reference’s function returns on the first match without saying which pattern hit. For incident response you want the pattern name, so I would widen that return value — an API key leaking and an email address leaking are very different incidents." },
+          { t: "p", text: "One structural thing the output table shows: the key-leak and PII-leak cases return the same reason, `pii_or_secret_leak`, because the function returns on the first match without saying which pattern hit. For incident response you want the pattern name, so I would widen that return value — an API key leaking and an email address leaking are very different incidents." },
           { t: "p", text: "And the schema check is a no-op here because none of the responses requested JSON. It is in the pipeline at the right position — local, cheap, before the remote call — and on a structured-output endpoint it would be the second most likely check to fire after moderation." }
         ] } },
 
@@ -332,7 +332,7 @@ a product decision rather than a technical one.`,
         answer: 1,
         why: "A unique secret planted in the system prompt cannot reach the output by any route other than the model reproducing its instructions, so the inference is definitional rather than probabilistic \u2014 unlike moderation, PII regexes or a faithfulness gate, all of which have thresholds and measured false-positive rates. The mirror-image limitation is a high false-negative rate: a model that paraphrases its instructions leaks the content without emitting the token." },
 
-      { stem: "Why does the reference recommend a dedicated moderation model over hand-rolled regex?",
+      { stem: "Why does the usual advice is a dedicated moderation model over hand-rolled regex?",
         options: [
           "Because regex cannot express per-category scores",
           "Because patterns lose to open-ended surface forms \u2014 measured on the related injection task, they caught 0 of 13 paraphrases and wrongly blocked 6 of 10 benign inputs",

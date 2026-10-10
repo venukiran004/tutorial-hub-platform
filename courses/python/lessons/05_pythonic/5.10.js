@@ -684,7 +684,7 @@ if __name__ == "__main__":
         answer: [
           { t: "p", text: "Naming *why the plateau is misleading* is what makes this a diagnosis rather than a guess — bounded growth reads as warm-up, so this survives review far longer than an unbounded leak would." },
           { t: "p", text: "Widening slightly shows range: unbounded `@cache` on a function taking user-supplied strings, module-level dicts used as caches, and `defaultdict` reads inserting keys (Lesson 5.9) are the same failure with different spelling." },
-          { t: "p", text: "The remedies rank naturally — `cached_property` when the value depends only on `self`, a per-instance cache built in `__init__`, or a module-level function taking only the values it needs — and each removes the reference rather than merely bounding it." }
+          { t: "p", text: "The remedies rank naturally — `cached_property` when the value depends only on `self`, a per-instance cache built in `__init__`, or a module-level function taking only the values it needs — and each removes the usual treatment rather than merely bounding it." }
         ]
       },
       {

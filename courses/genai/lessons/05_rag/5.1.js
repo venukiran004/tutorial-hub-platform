@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "5.1",
 
-  lede: "RAG is two systems in a trench coat: a search engine that finds text, and a model that reads it. The reference\u2019s framing \u2014 retrieve, augment, generate \u2014 is right, and the thing it does not say is that **the first system decides the outcome**. A model cannot ground an answer in a document the retriever did not return. So the number this whole module is measured against is recall: how often the answer-bearing text reaches the prompt at all. I built a 360,000-character corpus from this course\u2019s own reference documentation, wrote 20 questions with known answers, and measured **75% recall at k=1, 95% at k=5**. Then I found that two of those twenty \u201cfailures\u201d were bugs in my own evaluation set, worth **10 percentage points**.",
+  lede: "RAG is two systems in a trench coat: a search engine that finds text, and a model that reads it. The framing \u2014 retrieve, augment, generate \u2014 is right, and the thing it does not say is that **the first system decides the outcome**. A model cannot ground an answer in a document the retriever did not return. So the number this whole module is measured against is recall: how often the answer-bearing text reaches the prompt at all. I built a 360,000-character corpus from this course\u2019s own reference documentation, wrote 20 questions with known answers, and measured **75% recall at k=1, 95% at k=5**. Then I found that two of those twenty \u201cfailures\u201d were bugs in my own evaluation set, worth **10 percentage points**.",
 
   objectives: [
     "Describe the two phases of a RAG system and what happens in each",
@@ -77,7 +77,7 @@ EC.receiveLesson({
 
     { t: "p", text: "4.2 measured the decisive comparison already: I trained a fact into a model and put the same fact in a retrieved document, then changed the fact. Retrieval was correct the instant the document changed; the fine-tuned model kept reciting the old value with no prompt able to override it. That is the argument for RAG and it does not depend on any benchmark." },
 
-    { t: "p", text: "The reference lists five reasons, and they decompose into two that are structural and three that follow from them:" },
+    { t: "p", text: "The common list has five reasons, and they decompose into two that are structural and three that follow from them:" },
 
     { t: "ul", items: [
       "**The knowledge is editable.** A document is a file; the weights are not. Everything else on the list is downstream of this.",

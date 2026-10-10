@@ -43,7 +43,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Where the output did not reproduce", id: "nechunk" },
 
-    { t: "p", text: "The reference states that `ne_chunk` returns *Steve Jobs (PERSON)*, *Apple Inc. (ORGANIZATION)* and *Cupertino (GPE)*. Run on NLTK 3.10.3, it does not." },
+    { t: "p", text: "It is commonly stated that `ne_chunk` returns *Steve Jobs (PERSON)*, *Apple Inc. (ORGANIZATION)* and *Cupertino (GPE)*. Run on NLTK 3.10.3, it does not." },
 
     { t: "out", text:
 "NLTK ne_chunk:\n  Steve            PERSON\n  Jobs             PERSON        <- split into two entities\n  Apple Inc.       PERSON        <- should be ORGANIZATION\n  Cupertino        GPE\n\nspaCy en_core_web_sm:\n  Steve Jobs       PERSON\n  Apple Inc.       ORG\n  Cupertino        GPE" },

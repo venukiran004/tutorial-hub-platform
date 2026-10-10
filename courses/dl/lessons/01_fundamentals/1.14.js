@@ -113,7 +113,7 @@ euler_out = odeint(f, h0, torch.linspace(0, 8, 9), method="euler")[-1]` },
       ] },
 
     { t: "callout", kind: "warn", title: "The honest limitations",
-      body: [{ t: "p", text: "Solver steps are sequential, so they parallelise far worse than a stack of layers — the wall-clock cost is real even when NFE looks modest. Learned dynamics can become stiff and demand an implicit solver. And debugging is genuinely harder: there is no layer-by-layer output to inspect, only a trajectory. The reference is blunt about adoption, and it is right — these shine in specialised domains, and for standard tasks a ResNet is the better engineering choice." }] },
+      body: [{ t: "p", text: "Solver steps are sequential, so they parallelise far worse than a stack of layers — the wall-clock cost is real even when NFE looks modest. Learned dynamics can become stiff and demand an implicit solver. And debugging is genuinely harder: there is no layer-by-layer output to inspect, only a trajectory. It is worth being blunt about adoption, and it is right — these shine in specialised domains, and for standard tasks a ResNet is the better engineering choice." }] },
 
     { t: "callout", kind: "note", title: "The libraries",
       body: [{ t: "p", text: "`torchdiffeq` is the original implementation and what this lesson runs — `odeint` for direct backpropagation, `odeint_adjoint` for the constant-memory version, with the same signature so switching is one import. `diffrax` is the JAX equivalent and adds SDEs; `torchdyn` wraps torchdiffeq in a higher-level API with flows and neural SDEs built in. Note the calling convention that catches everyone: `forward(self, t, h)` takes **time first**." }] },
@@ -159,7 +159,7 @@ euler_out = odeint(f, h0, torch.linspace(0, 8, 9), method="euler")[-1]` },
     { stem: "For which task is a Neural ODE the clearly better choice over a ResNet?",
       options: ["ImageNet classification", "Irregularly-sampled clinical time series", "Text classification", "Any task needing many layers"],
       answer: 1,
-      why: "Observations at arbitrary times are the natural fit: you integrate to whatever `t` a measurement happened at, with no resampling onto a grid and therefore no invented data. For standard image or text classification a ResNet is faster, easier to debug and at least as accurate — the reference says so plainly." }
+      why: "Observations at arbitrary times are the natural fit: you integrate to whatever `t` a measurement happened at, with no resampling onto a grid and therefore no invented data. For standard image or text classification a ResNet is faster, easier to debug and at least as accurate — it is commonly said so plainly." }
   ] },
 
   interview: { title: "Interview", sub: "Neural ODE questions", questions: [

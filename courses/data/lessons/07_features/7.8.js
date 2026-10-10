@@ -232,7 +232,7 @@ orders["tenure_at_order"] = (orders["order_ts"] - orders["signup"]).dt.days
 
     { t: "callout", kind: "trap", title: "datetime.now() in a feature", body: [
       { t: "p", text: "A feature computed against the wall clock is different every time the code runs. Training on Monday and scoring on Friday gives every customer four extra days of tenure that the model was not trained on — and a backfill run next year makes every historical row a year older than it was." },
-      { t: "p", text: "**Every elapsed-time feature takes an explicit `as_of` parameter.** In training it is the snapshot date; in production it is the scoring time; in a backfill it is the historical date. The feature is then a pure function of the data and the reference, and it reproduces." }
+      { t: "p", text: "**Every elapsed-time feature takes an explicit `as_of` parameter.** In training it is the snapshot date; in production it is the scoring time; in a backfill it is the historical date. The feature is then a pure function of the data and the usual treatment, and it reproduces." }
     ]},
 
     { t: "h2", n: "03", text: "Cyclical encoding", id: "cyclical" },

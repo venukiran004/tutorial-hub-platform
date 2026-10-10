@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "7.10",
 
-  lede: "Since 2024 there is a second scaling dial: spend more compute at inference on the same model. The reference illustrates it with a worked trade \u2014 a 60%-accurate small model with self-consistency@8 reaching \u201c\u224878%\u201d against a 20\u00d7-cost big model at 85%. Simulated, that figure is only right if **all the model\u2019s wrong answers agree with each other**. With errors spread over five distinct wrong answers it reaches **93.4%**, beating the big model outright at 2.5\u00d7 less cost \u2014 and below a 50% base accuracy with agreeing errors, voting makes things **worse**.",
+  lede: "Since 2024 there is a second scaling dial: spend more compute at inference on the same model. The usual illustration is it with a worked trade \u2014 a 60%-accurate small model with self-consistency@8 reaching \u201c\u224878%\u201d against a 20\u00d7-cost big model at 85%. Simulated, that figure is only right if **all the model\u2019s wrong answers agree with each other**. With errors spread over five distinct wrong answers it reaches **93.4%**, beating the big model outright at 2.5\u00d7 less cost \u2014 and below a 50% base accuracy with agreeing errors, voting makes things **worse**.",
 
   objectives: [
     "Name the five test-time compute techniques and what each spends",
@@ -90,7 +90,7 @@ EC.receiveLesson({
       ] },
 
     { t: "h2", n: "03", id: "trade", text: "The trade against a bigger model",
-      sub: "Where the conclusion is stronger than the reference's" },
+      sub: "Where the conclusion is stronger than the" },
 
     { t: "code", lang: "python", title: "g710.py \u00a7C \u2014 small model plus voting against a 20\u00d7 big model", code: `rows = [("small, single sample", 0.60, 1)]
 for n in (4, 8, 16):
@@ -105,7 +105,7 @@ rows.append(("big model, single sample", 0.85, 20))`,
       hl: [4, 6],
       caption: "At 5 error modes, voting@8 beats the big model on accuracy *and* costs 2.5\u00d7 less." },
 
-    { t: "callout", kind: "good", title: "The reference says \u201coften the right answer\u201d; the measurement says it is not close",
+    { t: "callout", kind: "good", title: "It is commonly said \u201coften the right answer\u201d; the measurement says it is not close",
       body: [
         { t: "p", text: "Its comparison has voting@8 at 78% losing on accuracy to the big model\u2019s 85% while winning on cost \u2014 a genuine trade-off. With realistic error scattering, voting@8 reaches **93.8%** at 8\u00d7 cost against 85% at 20\u00d7. It wins on both axes." },
         { t: "p", text: "So the recommendation is right and its justification understates the case. That matters for how confidently you would propose it: \u201ccheaper but slightly worse\u201d is an argument you might lose, and \u201ccheaper *and* better\u201d is not." },
@@ -120,7 +120,7 @@ rows.append(("big model, single sample", 0.85, 20))`,
       ] },
 
     { t: "h2", n: "04", id: "degenerate", text: "When voting makes it worse",
-      sub: "The caveat the reference omits entirely" },
+      sub: "The caveat the usual treatment omits entirely" },
 
     { t: "code", lang: "python", title: "g710.py \u00a7D \u2014 vote@8 with agreeing errors, across base accuracies", code: `for p in (0.2, 0.35, 0.5, 0.6, 0.8):
     a = self_consistency(p, 8, 1)      # 1 mode = all errors agree`,
@@ -189,7 +189,7 @@ rows.append(("big model, single sample", 0.85, 20))`,
     { t: "h2", n: "05", id: "routing", text: "Route it, do not enable it",
       sub: "The soundbite, and why it is correct" },
 
-    { t: "p", text: "The reference\u2019s framing is the right one: test-time compute is the cheapest quality lever because it needs no retraining, and it trades latency for accuracy \u2014 so it belongs on the hard tail of traffic, not on every request." },
+    { t: "p", text: "The framing is the right one: test-time compute is the cheapest quality lever because it needs no retraining, and it trades latency for accuracy \u2014 so it belongs on the hard tail of traffic, not on every request." },
 
     { t: "callout", kind: "good", title: "Which is 6.7's argument arriving from the other direction",
       body: [

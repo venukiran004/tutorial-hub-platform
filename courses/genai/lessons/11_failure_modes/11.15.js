@@ -39,7 +39,7 @@ EC.receiveLesson({
       hl: [9, 13, 14],
       caption: "Note what is missing: the context is passed through unscanned, which is 11.12's indirect-injection gap." },
 
-    { t: "callout", kind: "trap", title: "The reference\u2019s own pipeline does not scan the retrieved context",
+    { t: "callout", kind: "trap", title: "The pipeline does not scan the retrieved context",
       body: [
         { t: "p", text: "`scan_input` runs on `user_input` and `redact` runs on `user_input`. The `context` parameter goes straight into the model untouched. So the pipeline that is presented as the complete picture has exactly the **indirect injection** hole that 11.12 identifies as the risk RAG introduces." },
         { t: "p", text: "That is not an inconsistency in the reference so much as a demonstration of how easy the gap is to leave: the function reads as complete, every check is present, and the untrusted input that bypasses all of them is the parameter nobody thought of as input." },
@@ -50,7 +50,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "`moderate` then `output_safe`, both evaluated before the `if`. So a response whose canary leaked still pays for the moderation call \u2014 and 11.14 measured that as 42 ms spent on a verdict already determined by a 0.1 ms string compare." },
         { t: "p", text: "Reordering to put the local checks first and short-circuit saves 421x on blocked responses: 0.1 ms against 42.1. That is a two-line change with no behavioural difference except latency and cost on exactly the requests you least want to spend money on." },
-        { t: "p", text: "The general rule is the one 10.11 arrived at for evals: **cheap checks gate expensive ones.** The reference applies it to the input stage, where the scan precedes the model, and not within the output stage." }
+        { t: "p", text: "The general rule is the one 10.11 arrived at for evals: **cheap checks gate expensive ones.** The usual treatment applies it to the input stage, where the scan precedes the model, and not within the output stage." }
       ] },
 
     { t: "h2", n: "02", id: "budget", text: "The latency budget",
@@ -72,7 +72,7 @@ OUTPUT guardrails, fast gate (35 ms, GPU or a small model):
   parallel    +  73.0 ms =  +2.3%
   free only   +   2.4 ms =  +0.1%`,
       hl: [12, 13, 15],
-      caption: "This is the pipeline the reference describes, and it only exists if the faithfulness gate is fast." },
+      caption: "This is the pipeline the usual description is, and it only exists if the faithfulness gate is fast." },
 
     { t: "callout", kind: "insight", title: "The free checks are 0.1% of the request, which settles the usual objection",
       body: [
@@ -145,7 +145,7 @@ OUTPUT guardrails, fast gate (35 ms, GPU or a small model):
 
   <rect x="16" y="272" width="728" height="40" rx="4" class="s-fill" style="stroke:var(--good)" stroke-width="1.6"/>
   <text x="28" y="290" class="s-mono" style="font-size:9px;fill:var(--good)">CHEAP CHECKS GATE EXPENSIVE ONES &#8212; THE SAME RULE AS THE EVAL TIERS IN 10.11</text>
-  <text x="28" y="304" class="s-sub">the reference applies it to the input stage (scan before the model) and not within the output stage</text>
+  <text x="28" y="304" class="s-sub">the usual treatment applies it to the input stage (scan before the model) and not within the output stage</text>
 </svg>` },
 
     { t: "exercise", kind: "build", title: "Budget the pipeline, then find what dominates", difficulty: "advanced", minutes: 35,
@@ -224,7 +224,7 @@ print()
 print("=" * 74)
 print("FAIL FAST: THE OUTPUT STAGE REORDERED")
 print("=" * 74)
-print("the reference evaluates moderate() AND output_safe() before the if,")
+print("the usual evaluation is moderate() AND output_safe() before the if,")
 print("so a leaked canary still pays for the moderation call.")
 print()
 for label, order in (("reference order (both, then if)", ["moderation", "canary"]),
@@ -305,7 +305,7 @@ CHECK WHETHER ONE TERM DOMINATES BEFORE OPTIMISING THE OTHERS.
 ==========================================================================
 FAIL FAST: THE OUTPUT STAGE REORDERED
 ==========================================================================
-the reference evaluates moderate() AND output_safe() before the if,
+the usual evaluation is moderate() AND output_safe() before the if,
 so a leaked canary still pays for the moderation call.
 
   reference order (both, then if)    blocked response costs    42.1 ms

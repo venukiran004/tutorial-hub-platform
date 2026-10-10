@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "4.3",
 
-  lede: "LoRA\u2019s idea is one sentence: freeze `W`, and learn the change to it as the product of two thin matrices `B\u00b7A`. The reference states it cleanly \u2014 *\u201ctheir product is the change you wanted\u201d* \u2014 and that sentence is doing more work than it looks. I took the weight update from 4.1\u2019s real fine-tune and decomposed it: reproducing **90% of it needs rank 103** of a possible 768, and a rank-8 adapter captures only **45.2%**. So `B\u00b7A` is not the change you wanted; it is a sizeable fraction of it. The measurement that rescues the idea is the comparison with noise \u2014 a random matrix of the same size captures **2.5%** at rank 8, so the real update is **18\u00d7 more concentrated** than chance, and that concentration is what LoRA is exploiting.",
+  lede: "LoRA\u2019s idea is one sentence: freeze `W`, and learn the change to it as the product of two thin matrices `B\u00b7A`. It is commonly stated it cleanly \u2014 *\u201ctheir product is the change you wanted\u201d* \u2014 and that sentence is doing more work than it looks. I took the weight update from 4.1\u2019s real fine-tune and decomposed it: reproducing **90% of it needs rank 103** of a possible 768, and a rank-8 adapter captures only **45.2%**. So `B\u00b7A` is not the change you wanted; it is a sizeable fraction of it. The measurement that rescues the idea is the comparison with noise \u2014 a random matrix of the same size captures **2.5%** at rank 8, so the real update is **18\u00d7 more concentrated** than chance, and that concentration is what LoRA is exploiting.",
 
   objectives: [
     "State the low-rank decomposition and count the parameters it replaces",
@@ -41,7 +41,7 @@ for r in (1, 2, 4, 8, 16, 32, 64):
   32                  1769472            98304          5.56%          71.9%
   64                  1769472           196608         11.11%          84.0%`,
       hl: [4],
-      caption: "At rank 8 you train 1.39% of the parameters. The last column is the part the reference does not mention, and it is the subject of this lesson." },
+      caption: "At rank 8 you train 1.39% of the parameters. The last column is the part this is rarely mentioned, and it is the subject of this lesson." },
 
     { t: "viz", title: "What is stored instead", caption: "The product has the full shape; only the two factors exist in memory and only they receive gradients.",
       svg: `<svg viewBox="0 0 760 250" width="100%" role="img" aria-label="Low-rank decomposition of a weight update">
@@ -116,7 +116,7 @@ r99 = int((cum < 0.99).sum()) + 1`,
 
     { t: "callout", kind: "trap", title: "A rank-8 adapter discards more than half the update",
       body: [
-        { t: "p", text: "The reference says *\u201ctheir product `B\u00b7A` is the \u2018change\u2019 you wanted\u201d*, and at the ranks it recommends \u2014 8 for simple tasks, 16 for instructions \u2014 that product can represent **45.2% and 57.9%** of the change the full fine-tune actually made. The median layer needs rank 94 for 90%." },
+        { t: "p", text: "It is commonly said *\u201ctheir product `B\u00b7A` is the \u2018change\u2019 you wanted\u201d*, and at the ranks it recommends \u2014 8 for simple tasks, 16 for instructions \u2014 that product can represent **45.2% and 57.9%** of the change the full fine-tune actually made. The median layer needs rank 94 for 90%." },
         { t: "p", text: "So the decomposition is an *approximation*, not a factorisation, and the gap is large. A reader who takes the sentence literally will be surprised the first time a rank-8 adapter underperforms a full fine-tune on a hard task \u2014 and will reach for a learning-rate change rather than for more rank." },
         { t: "p", text: "The honest form of the claim: **the update is low-rank enough to be worth approximating, and the approximation is lossy in a way the rank controls.** That is also why `r` is the first hyperparameter to raise when a LoRA run plateaus above the loss a full fine-tune reaches." }
       ] },
@@ -221,7 +221,7 @@ for r in (1, 2, 4, 8, 16, 32, 64):
   32                  1769472            98304          5.56%          71.9%
   64                  1769472           196608         11.11%          84.0%`,
         notes: [
-          { t: "p", text: "**The update is not rank-8 \u2014 the median layer needs rank 94 for 90% of its energy.** At the rank the reference recommends for simple tasks, a LoRA adapter can represent 45.2% of what the full fine-tune did. \u201cTheir product is the change you wanted\u201d is a useful simplification and a lossy one, and the loss is controlled by `r`." },
+          { t: "p", text: "**The update is not rank-8 \u2014 the median layer needs rank 94 for 90% of its energy.** At the rank the usual advice is for simple tasks, a LoRA adapter can represent 45.2% of what the full fine-tune did. \u201cTheir product is the change you wanted\u201d is a useful simplification and a lossy one, and the loss is controlled by `r`." },
           { t: "p", text: "**The random baseline is what makes the result meaningful.** Noise of the same shape and spread holds 2.5% in its top eight directions and needs 559 for 90%. The real update is 18\u00d7 more concentrated at rank 8 and needs a fifth as many directions \u2014 fine-tuning moves weights along a few directions that matter, which is precisely the property LoRA exploits." },
           { t: "p", text: "**Attention output projections are the most concentrated** \u2014 `attn.c_proj` needs 44\u201378 directions for 90% while `mlp.c_fc` needs 122\u2013131. If you are choosing where to spend rank, that ordering is a hint, and it is consistent with adapters on attention projections being the common default." },
           { t: "p", text: "**The parameter table is the trade stated plainly.** Rank 8 trains 1.39% of the parameters for 45.2% of the update; rank 64 trains 11.11% for 84.0%. Energy is not linear in parameters \u2014 the first few directions are worth far more than the last few \u2014 which is why small ranks work at all and why doubling `r` has diminishing returns." },

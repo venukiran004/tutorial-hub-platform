@@ -55,7 +55,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "sensitivity", text: "Prompt sensitivity",
       sub: "The score is a property of the harness too" },
 
-    { t: "p", text: "Scores shift with formatting, few-shot count and answer-parsing. That is not a minor caveat \u2014 it means a benchmark number without its harness is not reproducible, which is why the reference says to always report the harness and settings." },
+    { t: "p", text: "Scores shift with formatting, few-shot count and answer-parsing. That is not a minor caveat \u2014 it means a benchmark number without its harness is not reproducible, which is why it is commonly said to always report the harness and settings." },
 
     { t: "callout", kind: "insight", title: "Answer-parsing is the part that silently dominates",
       body: [
@@ -71,7 +71,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "MMLU\u2019s unit is an answer to a fixed multiple-choice question across 57 academic subjects. Your application\u2019s unit is an answer to a user\u2019s question over your retrieved documents. Those are different measurements, and a model two points better at the first can be worse at the second." },
         { t: "p", text: "6.1 measured a case where the model was not the variable at all: adding BM25 and rank fusion took recall@5 from 95% to 100%, improving the application without touching the weights. No benchmark could have predicted that, because the benchmark does not contain a retriever." },
-        { t: "p", text: "So the practical conclusion is the one the reference states plainly: build your own eval set. A hundred prompts from your real traffic, with answers you have judged, beats every public benchmark for the decision you are making." }
+        { t: "p", text: "So the practical conclusion is the one it is commonly stated plainly: build your own eval set. A hundred prompts from your real traffic, with answers you have judged, beats every public benchmark for the decision you are making." }
       ] },
 
     { t: "callout", kind: "note", title: "What benchmarks are genuinely good for",

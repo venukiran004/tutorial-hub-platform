@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "2.18",
 
-  lede: "The reference closes its prompting material with ready-made templates for the tasks that come up most. They are genuinely useful starting points, and the useful thing to do with them is not to copy them but to see what they have in common — because every one of them is the same four components from 2.1 arranged for a different shape of task, and the differences between them are the interesting part.",
+  lede: "This module closes its prompting material with ready-made templates for the tasks that come up most. They are genuinely useful starting points, and the useful thing to do with them is not to copy them but to see what they have in common — because every one of them is the same four components from 2.1 arranged for a different shape of task, and the differences between them are the interesting part.",
 
   objectives: [
     "Adapt a template to a domain rather than using it verbatim",
@@ -36,7 +36,7 @@ EC.receiveLesson({
 User:   Summarize the following text in {N} bullet points.
         Focus on key findings, decisions, and action items.
         Text: {document}`,
-      caption: "From the reference notes section 18. The load-bearing line is the third — \"key findings, decisions, and action items\" is what stops the model choosing its own three priorities." },
+      caption: "The load-bearing line is the third — \"key findings, decisions, and action items\" is what stops the model choosing its own three priorities." },
 
     { t: "callout", kind: "insight", title: "The priority clause is what makes a summary useful",
       body: [

@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "2.1",
 
-  lede: "Prompt engineering has a reputation for being folklore, and a good deal of what gets written about it is. The part that is not consists of a small number of things that reliably change output quality, and one structural idea: a prompt is four components, and most prompting failures are one of them missing. This lesson establishes that anatomy, works through the eight principles the reference lists, and sets up the discipline the rest of the module depends on — which is that a prompt without a test is a guess.",
+  lede: "Prompt engineering has a reputation for being folklore, and a good deal of what gets written about it is. The part that is not consists of a small number of things that reliably change output quality, and one structural idea: a prompt is four components, and most prompting failures are one of them missing. This lesson establishes that anatomy, works through the eight principles the common list has, and sets up the discipline the rest of the module depends on — which is that a prompt without a test is a guess.",
 
   objectives: [
     "Name the four components of a prompt and identify which is missing from a failing one",
@@ -19,7 +19,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "anatomy", text: "A prompt is four things",
       sub: "Instruction + context + input + output format" },
 
-    { t: "p", text: "The reference gives the anatomy in one line — `PROMPT = Instruction + Context + Input + Output Format` — and it is worth taking seriously, because a prompt that is failing is usually failing because one of the four is absent and nobody noticed which." },
+    { t: "p", text: "The common form gives the anatomy in one line — `PROMPT = Instruction + Context + Input + Output Format` — and it is worth taking seriously, because a prompt that is failing is usually failing because one of the four is absent and nobody noticed which." },
 
     { t: "viz", title: "The four components", caption: "Most prompting failures are a missing component rather than a badly-worded one. Diagnosing which is missing is faster than rewriting.",
       svg: `<svg viewBox="0 0 760 236" width="100%" role="img" aria-label="The four components of a prompt">
@@ -92,7 +92,7 @@ was made and who made it. Do not include background.
         ["Break complex tasks into steps", "One call doing four jobs and failing at all of them", "2.8"],
         ["Iterate and evaluate systematically", "\"It seems better\" replacing a measurement", "2.12"]
       ],
-      caption: "From the reference notes §1. The third column is the module — each principle is one lesson, because each has enough substance to be one." },
+      caption: "The third column is the module — each principle is one lesson, because each has enough substance to be one." },
 
     { t: "p", text: "The eighth is the one that separates engineering from writing, and it is the one most often skipped. A prompt that has not been run against a test set is an opinion. 2.12 builds the test set; everything between here and there is technique that a test set is required to validate." },
 

@@ -30,7 +30,7 @@ EC.receiveLesson({
         ["Long context", "128K typical", "200K typical", "**1M+** — a different design point"],
         ["Safety controls", "Fixed filters, `content_filter` finish reason", "Fixed", "**Configurable per category**"]
       ],
-      caption: "From the reference notes section 14. The bolded cells are the ones that change how you write the prompt rather than how you call the API." },
+      caption: "The bolded cells are the ones that change how you write the prompt rather than how you call the API." },
 
     { t: "callout", kind: "insight", title: "Anthropic's system prompt is not a message",
       body: [
@@ -42,7 +42,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "reasoning-models", text: "Reasoning models reject half your prompt",
       sub: "No system message, no temperature, and a different role name" },
 
-    { t: "p", text: "OpenAI's o1 and o3 are the sharpest break from the usual conventions, and the reference names it: no system prompt, no temperature, and a `developer` role in place of `system` for instructions." },
+    { t: "p", text: "OpenAI's o1 and o3 are the sharpest break from the usual conventions, and the common name is it: no system prompt, no temperature, and a `developer` role in place of `system` for instructions." },
 
     { t: "code", lang: "python", title: "reasoning.py — what does and does not port", code: `# A normal chat request
 normal = dict(

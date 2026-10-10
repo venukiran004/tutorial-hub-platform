@@ -26,7 +26,7 @@ EC.receiveLesson({
     [0.151, 1.0, 0.0]
     [0.0, 0.0, 1.0]` },
 
-    { t: "p", text: "The reference quotes roughly `[[1, .4, 0], [.4, 1, 0], [0, 0, 1]]`. Run with scikit-learn's defaults the middle value is **0.151**, not 0.4 — the difference is that `TfidfVectorizer` drops single-character tokens by default, so `I` is not a feature, and the two documents share only `learning`. The shape of the result is what the reference is illustrating and that holds: documents 0 and 1 are related, document 2 is unrelated." },
+    { t: "p", text: "The quoted figure is roughly `[[1, .4, 0], [.4, 1, 0], [0, 0, 1]]`. Run with scikit-learn's defaults the middle value is **0.151**, not 0.4 — the difference is that `TfidfVectorizer` drops single-character tokens by default, so `I` is not a feature, and the two documents share only `learning`. The shape of the result is what the reference is illustrating and that holds: documents 0 and 1 are related, document 2 is unrelated." },
 
     { t: "table", head: ["Measure", "What it compares", "Range"],
       rows: [

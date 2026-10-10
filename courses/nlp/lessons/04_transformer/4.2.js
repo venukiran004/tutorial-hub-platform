@@ -83,7 +83,7 @@ EC.receiveLesson({
     { t: "out", text:
 "                     token std   positional std   ratio\nbert-base-uncased      0.0427          0.0161       2.66\ngpt2                   0.1437          0.1227       1.17\n\nboth use LEARNED positional embeddings and no sqrt(d_model) scaling" },
 
-    { t: "callout", kind: "note", title: "Neither of the two most-taught models does what the reference describes",
+    { t: "callout", kind: "note", title: "Neither of the two most-taught models does what the usual description is",
       body: [{ t: "p", text: "BERT and GPT-2 both replace the sinusoidal formula with a **learned** lookup table — one trainable vector per position, no different in kind from the token embedding table — and neither applies any scaling. They rely on the LayerNorm immediately after the sum to fix the scale instead. The learned vectors also come out *smaller* than the token vectors on their own, at ratios of 2.66 and 1.17, so the problem the scaling was meant to solve does not arise. Treat `sqrt(d_model)` as a detail of the original architecture, and check what your model actually does before reproducing it." }] },
 
     { t: "diagram", kind: "compare", title: "Sinusoidal against learned",

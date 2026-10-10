@@ -60,7 +60,7 @@ eval mode on the same batch:
         [ 3.6751,  3.5181,  1.6665],
         [ 5.2730, -0.1852,  1.6665]])` },
 
-    { t: "p", text: "The last block is the bug the reference warns about. **In training, batch norm uses the current batch's statistics. At inference it uses running averages** accumulated during training with momentum 0.1 — and after a single batch those averages are still mostly their initial values of 0 and 1, so eval mode on the very same input gives completely different numbers. A model evaluated in train mode by mistake normalises each test batch by its own statistics, which changes its predictions with the batch composition and breaks entirely at batch size 1:" },
+    { t: "p", text: "The last block is the bug the usual warning is about. **In training, batch norm uses the current batch's statistics. At inference it uses running averages** accumulated during training with momentum 0.1 — and after a single batch those averages are still mostly their initial values of 0 and 1, so eval mode on the very same input gives completely different numbers. A model evaluated in train mode by mistake normalises each test batch by its own statistics, which changes its predictions with the batch composition and breaks entirely at batch size 1:" },
 
     { t: "out", text: `batch of 1 in train mode: ValueError - Expected more than 1 value per channel when training` },
 

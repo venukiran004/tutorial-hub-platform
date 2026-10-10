@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "hallucination", text: "Hallucination rate",
       sub: "The denominator is the whole question" },
 
-    { t: "p", text: "The percentage of factual claims unsupported by ground truth \u2014 or, for a RAG system, unsupported by the retrieved context, which the reference calls groundedness and 8.8 develops." },
+    { t: "p", text: "The percentage of factual claims unsupported by ground truth \u2014 or, for a RAG system, unsupported by the retrieved context, which it is commonly called groundedness and 8.8 develops." },
 
     { t: "callout", kind: "insight", title: "\u201cUnsupported by what\u201d changes the metric entirely",
       body: [
@@ -37,7 +37,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "toxicity", text: "Toxicity and bias",
       sub: "Disaggregated, or the aggregate hides it" },
 
-    { t: "p", text: "Perspective API, ToxiGen, BBQ and BOLD are the standard suites, and the reference\u2019s instruction is the operative part: **report disaggregated by group**." },
+    { t: "p", text: "Perspective API, ToxiGen, BBQ and BOLD are the standard suites, and the instruction is the operative part: **report disaggregated by group**." },
 
     { t: "callout", kind: "insight", title: "This is 6.5's zero row in a different costume",
       body: [

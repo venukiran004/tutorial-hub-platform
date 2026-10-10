@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "5.3",
 
-  lede: "An embedding model turns text into a vector so that similar meanings land near each other. Choosing one looks like a leaderboard exercise \u2014 the reference lists OpenAI\u2019s models, BGE, Nomic and GTE with their dimensions \u2014 and on the shared corpus the leaderboard answer lost badly. **all-mpnet-base-v2**, the larger and generally better-ranked model, scored **35% recall@1** against all-MiniLM-L6-v2\u2019s **75%**, and took **9.4\u00d7 longer** to encode the corpus. Investigating why is more useful than the number: mpnet preferred short heading-like chunks that were topically right and did not contain the answer.",
+  lede: "An embedding model turns text into a vector so that similar meanings land near each other. Choosing one looks like a leaderboard exercise \u2014 the common list has OpenAI\u2019s models, BGE, Nomic and GTE with their dimensions \u2014 and on the shared corpus the leaderboard answer lost badly. **all-mpnet-base-v2**, the larger and generally better-ranked model, scored **35% recall@1** against all-MiniLM-L6-v2\u2019s **75%**, and took **9.4\u00d7 longer** to encode the corpus. Investigating why is more useful than the number: mpnet preferred short heading-like chunks that were topically right and did not contain the answer.",
 
   objectives: [
     "Say what a bi-encoder is trained to do and why that differs from a cross-encoder",
@@ -72,7 +72,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "dims", text: "What dimensions cost",
       sub: "And how far you can cut before it hurts" },
 
-    { t: "p", text: "Dimensions are the obvious cost dial: they set the index size, the memory, and the time of every comparison. The reference notes OpenAI\u2019s `text-embedding-3-large` at 3072 dimensions against `3-small` at 1536, which is a real doubling of storage for every vector you will ever hold." },
+    { t: "p", text: "Dimensions are the obvious cost dial: they set the index size, the memory, and the time of every comparison. The usual treatment OpenAI\u2019s `text-embedding-3-large` at 3072 dimensions against `3-small` at 1536, which is a real doubling of storage for every vector you will ever hold." },
 
     { t: "code", lang: "python", title: "g53.py \u2014 truncating the vector, which is the naive thing to try", code: `for d in (384, 256, 128, 64, 32):
     Ed = E[:, :d]
@@ -89,7 +89,7 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "The degradation is gentle, then sudden",
       body: [
         { t: "p", text: "384 to 128 costs **five points at k=5** and saves **two thirds of the index**. Below that it falls apart: 64 dimensions loses 15 points at k=1, and 32 loses 35." },
-        { t: "p", text: "That shape \u2014 a long flat region then a cliff \u2014 is what you would expect if the information is unevenly distributed across dimensions, with the early ones carrying most of it. Which is exactly the property that **Matryoshka** embedding models are trained to have deliberately: they are optimised so that truncating is safe, and the reference\u2019s `nomic-embed-text-v1.5` is one of them." },
+        { t: "p", text: "That shape \u2014 a long flat region then a cliff \u2014 is what you would expect if the information is unevenly distributed across dimensions, with the early ones carrying most of it. Which is exactly the property that **Matryoshka** embedding models are trained to have deliberately: they are optimised so that truncating is safe, and the `nomic-embed-text-v1.5` is one of them." },
         { t: "p", text: "My truncation is the naive version \u2014 cutting a model not trained for it \u2014 so these numbers are a floor rather than what a purpose-built model would give. The fact that it degrades gently anyway is a useful thing to know before paying for 3072 dimensions." },
         { t: "p", text: "The honest caveat: 20 questions means each is worth 5 points, so the 384-to-128 difference is one question. The cliff at 32\u201364 is several and is the part I would rely on." }
       ] },

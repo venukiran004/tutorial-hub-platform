@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "9.10",
 
-  lede: "Three judging modes, and the one the reference adds beyond 8.6 is **reference-guided** \u2014 give the judge a gold answer and ask it to compare, which converts an open-ended judgement into a much easier one. The rubric is where the work is: a scale whose points are *described* rather than numbered, because \u201crate helpfulness 1\u20135\u201d invites a judge to invent its own anchors and then drift between prompts.",
+  lede: "Three judging modes, and the one the usual treatment adds beyond 8.6 is **reference-guided** \u2014 give the judge a gold answer and ask it to compare, which converts an open-ended judgement into a much easier one. The rubric is where the work is: a scale whose points are *described* rather than numbered, because \u201crate helpfulness 1\u20135\u201d invites a judge to invent its own anchors and then drift between prompts.",
 
   objectives: [
     "Distinguish pointwise, pairwise and reference-guided judging",
@@ -237,7 +237,7 @@ print("pairwise self-consistency : %.3f" % pw)`,
         answer: 1,
         why: "Without described anchors the scale is reconstructed by the judge on each call, so the same answer can receive different scores depending on what else was in the prompt \u2014 and that instability is indistinguishable from real quality variation in the aggregate. Describing each point turns the task into classification, which models do substantially better, and makes disagreements auditable against the written description." },
 
-      { stem: "Why does the reference recommend reasoning before the verdict rather than after?",
+      { stem: "Why does the usual advice is reasoning before the verdict rather than after?",
         options: [
           "Because reasoning tokens are cheaper when generated first",
           "Because a verdict produced first is then rationalised \u2014 reasoning first makes the score a conclusion rather than a guess",

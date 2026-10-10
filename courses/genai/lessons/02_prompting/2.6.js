@@ -77,7 +77,7 @@ system = """You are a patient CS professor explaining concepts
 to undergraduate students. Use analogies, simple language,
 and build up from basics. Avoid jargon unless you define it first."""`,
       hl: [6, 7, 8, 9, 10],
-      caption: "From the reference notes §6. In the first example the persona sentence is scene-setting and the four bullets are the instruction — and the bullets would work without the persona, while the persona would not work without the bullets." },
+      caption: "In the first example the persona sentence is scene-setting and the four bullets are the instruction — and the bullets would work without the persona, while the persona would not work without the bullets." },
 
     { t: "ladder", title: "From flattery to specification", rungs: [
       { level: "bad", label: "Pure flattery",
@@ -126,7 +126,7 @@ these systems in production.
 1. As a ML researcher: theoretical soundness and novelty
 2. As a ML engineer: implementation complexity and scalability
 3. As a product manager: business impact and timeline"""`,
-      caption: "From the reference notes §6. Three conditioning signals in one call, each labelled — which also makes the output naturally structured." },
+      caption: "Three conditioning signals in one call, each labelled — which also makes the output naturally structured." },
 
     { t: "p", text: "This works for a reason worth naming: it forces the model to produce considerations it would otherwise have to choose between. A single call asked for \"an evaluation\" will pick a register and stay in it, and the concerns of the other two roles simply will not appear. Asking for all three makes the omission impossible." },
 

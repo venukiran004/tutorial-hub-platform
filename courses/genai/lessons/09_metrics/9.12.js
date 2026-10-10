@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "9.12",
 
-  lede: "The agreement study that makes a judge\u2019s score mean something, worked on a 2\u00d72 of 100 examples. Observed agreement is **0.80**, chance agreement from the margins is **0.5192**, and \u03ba = (0.80 \u2212 0.5192)/(1 \u2212 0.5192) = **0.5840** \u2014 all verified. The reference\u2019s one-line conclusion is the point: **80% raw agreement sounded good; \u03ba 0.58 says it is only moderate.** A judge at 0.58 is fine for tracking a trend and not fine for blocking a release.",
+  lede: "The agreement study that makes a judge\u2019s score mean something, worked on a 2\u00d72 of 100 examples. Observed agreement is **0.80**, chance agreement from the margins is **0.5192**, and \u03ba = (0.80 \u2212 0.5192)/(1 \u2212 0.5192) = **0.5840** \u2014 all verified. The one-line conclusion is the point: **80% raw agreement sounded good; \u03ba 0.58 says it is only moderate.** A judge at 0.58 is fine for tracking a trend and not fine for blocking a release.",
 
   objectives: [
     "Compute Cohen's \u03ba from a confusion matrix by hand",
@@ -67,14 +67,14 @@ step 3 \u2014 kappa
 
     { t: "callout", kind: "good", title: "The actionable split is trend-tracking against release-blocking",
       body: [
-        { t: "p", text: "The reference\u2019s judgement is the useful one: a judge at 0.58 is **fine for tracking a trend and not fine for blocking a release on its own**. Those are different precision requirements, and conflating them is how a moderate judge ends up gating a deploy." },
+        { t: "p", text: "The judgement is the useful one: a judge at 0.58 is **fine for tracking a trend and not fine for blocking a release on its own**. Those are different precision requirements, and conflating them is how a moderate judge ends up gating a deploy." },
         { t: "p", text: "Trend-tracking tolerates noise because you are reading a direction over many cases. A release gate acts on a single comparison, so it needs the judge to be right about *this* case \u2014 which is a much stronger demand." },
         { t: "p", text: "8.10 argued the same structurally: gate CI on deterministic checks and use judged metrics as monitored signals. A \u03ba of 0.58 is a good reason to follow that split rather than treat it as fastidiousness." }
       ] },
 
     { t: "callout", kind: "warn", title: "The check almost nobody runs: human-human \u03ba on the same sample",
       body: [
-        { t: "p", text: "The reference states it plainly \u2014 if two humans only reach \u03ba 0.65 on your rubric, a judge at 0.58 is close to the ceiling and **the rubric is the problem, not the model**. That reframing changes what you work on entirely." },
+        { t: "p", text: "It is commonly stated it plainly \u2014 if two humans only reach \u03ba 0.65 on your rubric, a judge at 0.58 is close to the ceiling and **the rubric is the problem, not the model**. That reframing changes what you work on entirely." },
         { t: "p", text: "7.4 measured why a ceiling must exist: preference labels are stochastic, and on a synthetic set where the latent truth was known, Bayes-optimal accuracy was **78.6%** rather than 100%. Perfect agreement is not available in principle." },
         { t: "p", text: "So the number to report is \u03ba as a **fraction of the human ceiling**. 0.58 against a ceiling of 0.65 is 89% of achievable; 0.58 against a ceiling of 0.90 is 64%. Those support different decisions and the bare 0.58 cannot distinguish them." }
       ] },

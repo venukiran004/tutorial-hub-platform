@@ -46,7 +46,7 @@ EC.receiveLesson({
 
     { t: "math", tex: "\\text{FFN}_{\\text{SwiGLU}}(x) = \\big(\\text{Swish}(xW_1) \\odot (xW_3)\\big) W_2" },
 
-    { t: "p", text: "A gated linear unit splits the up-projection into two branches and multiplies them elementwise, one acting as a learned gate. That is three weight matrices instead of two, so to keep the budget fixed `d_ff` shrinks by a factor of two-thirds. The reference states the rule; here is whether it actually balances." },
+    { t: "p", text: "A gated linear unit splits the up-projection into two branches and multiplies them elementwise, one acting as a learned gate. That is three weight matrices instead of two, so to keep the budget fixed `d_ff` shrinks by a factor of two-thirds. It is commonly stated the rule; here is whether it actually balances." },
 
     { t: "out", text:
 "d_model 512    standard  d_ff 2048    params   2,097,152\n               SwiGLU    d_ff 1365    params   2,096,640    0.9998x\n\nd_model 4096   standard  d_ff 16384   params 134,217,728\n               SwiGLU    d_ff 10922   params 134,209,536    0.9999x" },

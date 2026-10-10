@@ -26,7 +26,7 @@ EC.receiveLesson({
       { k: "Prompt caching for the fixed prefix", v: "The system prompt plus stable few-shot examples are identical on every call, so providers cache the prefix \u2014 cheaper and faster, with **no quality risk whatsoever** because the tokens do not change." }
     ] },
 
-    { t: "code", lang: "python", title: "The trim, as the reference writes it", code: `def trim_context(history, retrieved, summarize, max_history_tokens=400, top_k=4):
+    { t: "code", lang: "python", title: "The trim, as it is commonly written it", code: `def trim_context(history, retrieved, summarize, max_history_tokens=400, top_k=4):
     # 1) compress history to a budget
     if count_tokens(history) > max_history_tokens:
         history = summarize(history)            # running summary, not full transcript
@@ -86,7 +86,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "It removes 2,000 tokens, more than any other single change, and it is the lever that buys a **retrieval miss** if you cut too far \u2014 which 11.2 identified as the most common cause of hallucination by a wide margin." },
         { t: "p", text: "So it is the one lever that needs a quality measurement attached rather than a token count. Recall@k before and after, on a labelled set, and the honest version of the change is \u2018we cut to top-3 and recall@3 is 0.94 against recall@8 of 0.96\u2019 rather than \u2018we cut 2,000 tokens\u2019." },
-        { t: "p", text: "Note also what `retrieved[:top_k]` assumes. Truncating a list that has **not** been reranked discards by retrieval order, which is a much worse operation than discarding by relevance \u2014 the reference\u2019s code comment says \u2018assume already reranked\u2019 and that assumption is load-bearing." }
+        { t: "p", text: "Note also what `retrieved[:top_k]` assumes. Truncating a list that has **not** been reranked discards by retrieval order, which is a much worse operation than discarding by relevance \u2014 the published code comment says \u2018assume already reranked\u2019 and that assumption is load-bearing." }
       ] },
 
     { t: "viz", title: "Each lever, priced and risked", caption: "Measured from the baseline in 11.7. Only one lever has no trade-off.",

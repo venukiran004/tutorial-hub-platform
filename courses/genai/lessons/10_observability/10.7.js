@@ -57,7 +57,7 @@ class Tracer:
 
     { t: "callout", kind: "insight", title: "`ScriptedClock` is why the printed trace is byte-identical every run",
       body: [
-        { t: "p", text: "The reference pairs the tracer with a clock that returns preset timestamps rather than reading the wall clock. That is what makes the waterfall in 10.5 reproducible \u2014 every number in it is this program\u2019s real output, and it is the same output on any machine." },
+        { t: "p", text: "The usual treatment pairs the tracer with a clock that returns preset timestamps rather than reading the wall clock. That is what makes the waterfall in 10.5 reproducible \u2014 every number in it is this program\u2019s real output, and it is the same output on any machine." },
         { t: "p", text: "It is a test double with a sharp edge, though, and the exercise below walks into it: **events consume clock ticks too.** Add two `event()` calls and every timestamp after them shifts, because the tick list is positional. My first run of the extended tracer reported `llm.generate` at 79 ms instead of 2,371 because of exactly that." },
         { t: "p", text: "In production you swap it for `time.perf_counter`, add an exporter that batches spans to a collector, and use `contextvars` so the stack survives `async` and threads. The model is identical \u2014 only the clock and the transport change." }
       ] },

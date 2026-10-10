@@ -33,7 +33,7 @@ EC.receiveLesson({
     { t: "out", text:
 "input   (2, 10, 512)\noutput  (2, 10, 512)      weights (2, 8, 10, 10)\n\nevery attention row sums to 1: max deviation 2.38e-07\n\nparameters 1,050,624\n  4 x 512 x 512 = 1,048,576 weights, plus 4 x 512 = 2,048 biases" },
 
-    { t: "p", text: "The weights tensor is `(batch, heads, seq, seq)` — one complete attention map per head, which is exactly what makes head-level interpretation possible. The reference quotes 1,048,576 parameters; that is the weight count, and `nn.Linear` adds 2,048 bias terms on top." },
+    { t: "p", text: "The weights tensor is `(batch, heads, seq, seq)` — one complete attention map per head, which is exactly what makes head-level interpretation possible. The quoted figure is 1,048,576 parameters; that is the weight count, and `nn.Linear` adds 2,048 bias terms on top." },
 
     { t: "diagram", kind: "flow", title: "The reshape, step by step", cols: 3,
       nodes: [
@@ -60,7 +60,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "Do heads really specialise?", id: "specialise" },
 
-    { t: "p", text: "The reference claims head 1 learns syntax, head 2 semantics, head 3 proximity, head 4 coreference. That is a testable claim, so I ran a sentence with a centre-embedded clause through `bert-base-uncased` with `output_attentions=True` and summarised every head." },
+    { t: "p", text: "It is commonly claimed head 1 learns syntax, head 2 semantics, head 3 proximity, head 4 coreference. That is a testable claim, so I ran a sentence with a centre-embedded clause through `bert-base-uncased` with `output_attentions=True` and summarised every head." },
 
     { t: "out", text:
 "\"The cat that the dog chased sat on the mat quietly.\"\n['[CLS]','the','cat','that','the','dog','chased','sat','on','the','mat','quietly','.','[SEP]']\n\nlayer 4, all 12 heads\nhead   offset    entropy   ->[CLS]   ->[SEP]   self\n0      5.64      1.4482    0.0196    0.5157    0.0846\n1      4.36      2.1780    0.0175    0.2083    0.1119\n2      4.79      1.6884    0.0829    0.5097    0.0832\n3      5.86      0.7883    0.0160    0.7180    0.2173\n5      3.64      0.9155    0.0251    0.4348    0.0889\n9      5.29      1.8671    0.1040    0.4210    0.1168\n10     2.07      1.6155    0.0591    0.3588    0.0893\n11     4.36      1.0731    0.0425    0.5324    0.0906" },

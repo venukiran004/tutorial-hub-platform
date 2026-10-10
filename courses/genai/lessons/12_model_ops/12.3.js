@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "12.3",
 
-  lede: "The first question is whether you need it at all, and the answer is usually no \u2014 **RAG injects knowledge at query time; fine-tuning bakes in behaviour.** Fine-tuning is a *poor* way to add facts and a *good* way to teach a consistent format or compress a long prompt into the weights. The main production risk is **catastrophic forgetting**: the reference\u2019s illustration has task accuracy going 70% to 92% while a general benchmark falls 85% to 61%, and the defence is keeping a general eval in the suite so you can *see* it.",
+  lede: "The first question is whether you need it at all, and the answer is usually no \u2014 **RAG injects knowledge at query time; fine-tuning bakes in behaviour.** Fine-tuning is a *poor* way to add facts and a *good* way to teach a consistent format or compress a long prompt into the weights. The main production risk is **catastrophic forgetting**: the illustration has task accuracy going 70% to 92% while a general benchmark falls 85% to 61%, and the defence is keeping a general eval in the suite so you can *see* it.",
 
   objectives: [
     "Choose between prompting, RAG and fine-tuning from what needs to change",
@@ -268,7 +268,7 @@ it restores general behaviour -- so the forgetting becomes reversible.`,
           { t: "p", text: "**The 50% row is worth pausing on**: a delta of −0.0100, essentially break-even, so a team at roughly half task traffic is taking on training cost, serving complexity and an irreversible artefact for no net quality change at all." },
           { t: "p", text: "**The cost side is independent of all of this.** Removing 2,500 tokens of few-shot from every call saves $12,500 a month at a million calls — a 29% cut — and that saving holds whatever the quality trade does. It is the one reason to fine-tune that does not need the weighted-accuracy argument." },
           { t: "p", text: "**And the recommendation at a low task share is not ‘do not fine-tune’, it is ‘use an adapter’.** A full fine-tune forces a single model to serve both populations; an adapter on a dedicated route lets the general path keep the intact base, which dissolves the traffic-mix problem rather than trading against it." },
-          { t: "p", text: "The 70/92 and 85/61 figures are the reference’s illustration rather than a measurement, so the break-even of 52.2% is specific to them. What transfers is the method: weight the trade by traffic before deciding, because an unweighted task-metric gain is not a product improvement." }
+          { t: "p", text: "The 70/92 and 85/61 figures are the illustration rather than a measurement, so the break-even of 52.2% is specific to them. What transfers is the method: weight the trade by traffic before deciding, because an unweighted task-metric gain is not a product improvement." }
         ] } },
 
     { t: "callout", kind: "mental", title: "The model to keep",

@@ -146,7 +146,7 @@ Prompt pattern:
 "Consider 3 different approaches to solve this problem.
  For each approach, explain the reasoning and evaluate its merit.
  Then select the best approach and provide the final answer."`,
-      caption: "From the reference notes §4. The single-prompt version above is the cheap form; the full technique runs each branch as its own call and evaluates them with a separate scoring step." },
+      caption: "The single-prompt version above is the cheap form; the full technique runs each branch as its own call and evaluates them with a separate scoring step." },
 
     { t: "table",
       head: ["", "Self-consistency", "Tree-of-thought"],

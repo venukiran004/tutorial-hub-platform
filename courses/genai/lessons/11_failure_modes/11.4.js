@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "11.4",
 
-  lede: "You cannot fix what you do not measure, and three complementary signals do the measuring: **entailment** against the context, an **LLM judge**, and **self-consistency** with no context at all. The reference\u2019s worked example \u2014 four claims, one unsupported, score 0.75 \u2014 **reproduces exactly** on `roberta-large-mnli`. And the tempting shortcut fails hard: substituting embedding similarity for entailment scores an invented refund policy at **0.8108, higher than the true claim at 0.7982**. Similarity measures relatedness, not support.",
+  lede: "You cannot fix what you do not measure, and three complementary signals do the measuring: **entailment** against the context, an **LLM judge**, and **self-consistency** with no context at all. The worked example \u2014 four claims, one unsupported, score 0.75 \u2014 **reproduces exactly** on `roberta-large-mnli`. And the tempting shortcut fails hard: substituting embedding similarity for entailment scores an invented refund policy at **0.8108, higher than the true claim at 0.7982**. Similarity measures relatedness, not support.",
 
   objectives: [
     "Implement per-claim faithfulness scoring against a context",
@@ -42,9 +42,9 @@ def faithfulness_score(answer: str, context: str, entails) -> dict:
 
     { t: "math", tex: "\\text{faithfulness} = 1 - \\frac{|\\text{unsupported claims}|}{|\\text{claims}|}" },
 
-    { t: "callout", kind: "good", title: "The reference\u2019s 0.75 reproduces exactly, under all three decision rules",
+    { t: "callout", kind: "good", title: "The 0.75 reproduces exactly, under all three decision rules",
       body: [
-        { t: "p", text: "Four sentences, three supported by the context, one inventing a $50,000 termination penalty. The reference computes 1 \u2212 1/4 = 0.75 and the measured score on `roberta-large-mnli` is **0.750** \u2014 and the detector names the offending sentence rather than just returning a number." },
+        { t: "p", text: "Four sentences, three supported by the context, one inventing a $50,000 termination penalty. The usual computation is 1 \u2212 1/4 = 0.75 and the measured score on `roberta-large-mnli` is **0.750** \u2014 and the detector names the offending sentence rather than just returning a number." },
         { t: "p", text: "Entailment is a **three-way** output, so a decision rule is required, and I tried three: `entailment > 0.5`, `argmax == entailment`, and `entailment > contradiction`. **All three give 7/7 on the claim set with zero false passes and zero false flags.** The signal is clean enough that the rule does not matter here, which is a pleasant result and not one to generalise from seven claims." },
         { t: "p", text: "The separation is what makes it robust: supported claims score **0.9888 to 0.9931** and unsupported ones **0.0009 to 0.0221**. That is two orders of magnitude, so a threshold anywhere in the middle works." }
       ] },
@@ -52,7 +52,7 @@ def faithfulness_score(answer: str, context: str, entails) -> dict:
     { t: "callout", kind: "insight", title: "And the three-way output classifies the hallucination for free",
       body: [
         { t: "p", text: "11.1 defines intrinsic (contradicts the source) against extrinsic (adds what the source omits). The entailment model separates them without being asked: the invented refund window reads **contradiction 0.9810**, and the fabricated citation reads **neutral 0.9857**." },
-        { t: "p", text: "That is a classification the reference defines in its glossary and never connects to its own detector. It matters because the fixes differ \u2014 a contradiction means the model overrode its context, so instruct precedence and lower the temperature; a neutral means it invented where the context was silent, so the abstention path is the lever." },
+        { t: "p", text: "That is a classification the common definition is in its glossary and never connects to its own detector. It matters because the fixes differ \u2014 a contradiction means the model overrode its context, so instruct precedence and lower the temperature; a neutral means it invented where the context was silent, so the abstention path is the lever." },
         { t: "p", text: "One case is worth flagging as genuinely uncertain: \u201csupport is available 24/7 worldwide\u201d against a context saying business hours reads **neutral 0.5800, contradiction 0.3980**. It is arguably intrinsic and the model is unsure, and a rule keyed on `contradiction > 0.5` would have missed it entirely. All three of my rules catch it, because all three test for the *absence* of entailment rather than the presence of contradiction \u2014 which is the safer formulation." }
       ] },
 
@@ -119,7 +119,7 @@ def llm_groundedness(answer, context, call_llm):
     { t: "callout", kind: "insight", title: "It is the only one of the three that works closed-book",
       body: [
         { t: "p", text: "Entailment and a judge both need a context to check against. Self-consistency needs nothing but the question, which makes it the only available signal when there is no retrieval \u2014 and 11.2\u2019s decision flow routes closed-book questions here for exactly that reason." },
-        { t: "p", text: "The exact-string normalisation is its weakness and the reference says so implicitly by using `.strip().lower()`. Five answers that agree in substance and differ in wording count as five disagreements, so on free-form prose it reports spurious uncertainty. It works well on short factual answers \u2014 a number, a name, a label \u2014 and badly on paragraphs." },
+        { t: "p", text: "The exact-string normalisation is its weakness and it is commonly said so implicitly by using `.strip().lower()`. Five answers that agree in substance and differ in wording count as five disagreements, so on free-form prose it reports spurious uncertainty. It works well on short factual answers \u2014 a number, a name, a label \u2014 and badly on paragraphs." },
         { t: "p", text: "And 2.9 already measured its cost profile: self-consistency at n = 21 with a per-sample accuracy of 0.30 gives 0.0264, eleven times *worse* than one sample. Agreement is a confidence signal, not an accuracy improvement \u2014 it tells you the model is sure, which is not the same as right." }
       ] },
 
@@ -371,17 +371,17 @@ and the one similarity gets right for the wrong reason:
 so cosine catches the hallucinations you would have noticed anyway and
 misses the on-topic ones you would not. that is the wrong way round.`,
         notes: [
-          { t: "p", text: "**The reference\u2019s 0.750 reproduces exactly**, under all three decision rules, and the detector names the offending sentence. That is the whole method validated against a real model rather than asserted: four claims, one unsupported, 1 \u2212 1/4." },
+          { t: "p", text: "**The 0.750 reproduces exactly**, under all three decision rules, and the detector names the offending sentence. That is the whole method validated against a real model rather than asserted: four claims, one unsupported, 1 \u2212 1/4." },
           { t: "p", text: "**The NLI separation is two orders of magnitude** \u2014 supported 0.9888 to 0.9931, unsupported 0.0009 to 0.0221 \u2014 which is why all three decision rules give 7/7. I would not generalise \u2018the rule does not matter\u2019 from seven claims, but the margin here is large enough that threshold-tuning is not the interesting problem." },
           { t: "p", text: "**The cosine substitute fails, and fails in the worst direction.** The ranges overlap completely, and the single highest-scoring claim is the invented refund policy at 0.8108 against the true claim\u2019s 0.7982. The two differ by a number and a negation, and an embedding is nearly blind to both \u2014 so an on-topic fabrication is maximally similar to the truth it replaces." },
           { t: "p", text: "**The one claim cosine does catch is the fake citation at 0.0503**, and it catches it for being off-topic rather than unsupported. So the failure profile is inverted: similarity flags the hallucination a human would spot instantly and passes the one nobody notices by eye." },
           { t: "p", text: "**Watch the \u201c24/7 support\u201d claim** \u2014 neutral 0.5800, contradiction 0.3980. The model is genuinely unsure whether \u2018business hours\u2019 contradicts \u201824/7\u2019, and a rule keyed on `contradiction > 0.5` would have passed it. All three rules here test for the *absence* of entailment, which is why they catch it, and that is the safer formulation." },
-          { t: "p", text: "The fake citation reading **neutral 0.9857** while the invented policy reads **contradiction 0.9810** is the intrinsic/extrinsic split falling out of the detector for free \u2014 a classification the reference defines in its glossary and never links to its own method." }
+          { t: "p", text: "The fake citation reading **neutral 0.9857** while the invented policy reads **contradiction 0.9810** is the intrinsic/extrinsic split falling out of the detector for free \u2014 a classification the common definition is in its glossary and never links to its own method." }
         ] } },
 
     { t: "callout", kind: "mental", title: "The model to keep",
       body: [
-        { t: "p", text: "Faithfulness is the fraction of claims the context entails, scored per claim so the offending sentence is named. The reference\u2019s 0.75 reproduces exactly on a real NLI model, with supported claims near 0.99 and unsupported near 0.00 \u2014 and the three-way output classifies intrinsic against extrinsic for nothing." },
+        { t: "p", text: "Faithfulness is the fraction of claims the context entails, scored per claim so the offending sentence is named. The 0.75 reproduces exactly on a real NLI model, with supported claims near 0.99 and unsupported near 0.00 \u2014 and the three-way output classifies intrinsic against extrinsic for nothing." },
         { t: "p", text: "Do not substitute cosine similarity: the ranges overlap and the invented policy outscores the true claim, because similarity measures relatedness and hallucinations are on-topic. And test for the absence of entailment, not the presence of contradiction, because extrinsic hallucinations read as neutral." }
       ] },
 

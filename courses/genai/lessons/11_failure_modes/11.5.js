@@ -48,7 +48,7 @@ Rules:
     { t: "callout", kind: "insight", title: "A citation is a pointer, not a proof",
       body: [
         { t: "p", text: "11.3 measured this directly: an answer citing a real, retrieved chunk while claiming the opposite of what the chunk says **passes the subset check cleanly**. The check establishes that the pointer resolves, which is enough to reject a fabricated source and nothing more." },
-        { t: "p", text: "So citation accuracy needs two checks, and the reference\u2019s own metric table says so \u2014 validate the cited ids *and* run entailment. The first is free and structural; the second is layer 4 and has a latency bill." },
+        { t: "p", text: "So citation accuracy needs two checks, and the metric table says so \u2014 validate the cited ids *and* run entailment. The first is free and structural; the second is layer 4 and has a latency bill." },
         { t: "p", text: "One practical trap from the same measurement: a validator written for opaque ids like `c12` finds **zero citations** in `[refund-policy]`, because `\\w` does not match a hyphen \u2014 and then reports \u2018no citations\u2019 rather than \u2018unparseable\u2019. Test the regex against your actual citation style before trusting the metric." }
       ] },
 
@@ -97,7 +97,7 @@ Rules:
     { t: "callout", kind: "warn", title: "And the three remedies have very different costs",
       body: [
         { t: "p", text: "**Regenerating** doubles the generation cost and latency and may fail again, which on a retrieval miss it certainly will \u2014 the context is still missing the answer. **Dropping unsupported claims** is cheap and leaves a possibly incoherent answer with a hole in it. **Abstaining and escalating** is honest, costs a human, and is the only one that works when the cause is upstream." },
-        { t: "p", text: "The reference lists them in order of preference and I would reverse that for a retrieval miss specifically. Regenerating against the same insufficient context is the one option that cannot work, and it is listed first." },
+        { t: "p", text: "The common list has them in order of preference and I would reverse that for a retrieval miss specifically. Regenerating against the same insufficient context is the one option that cannot work, and it is listed first." },
         { t: "p", text: "So the useful rule is to pick the remedy from the **cause**, which 11.2\u2019s diagnostic gives you from span attributes: regenerate on an ungrounded prompt, drop claims on a long-output confabulation, and abstain when `above_threshold` is zero." }
       ] },
 
@@ -230,7 +230,7 @@ for cause, n in sorted(CAUSES.items(), key=lambda kv: -kv[1]):
     print("  %-20s n=%-2d -> %-24s %s" % (cause, n, remedy, why))
 
 print()
-print("the reference lists remedies in a FIXED preference order:")
+print("the common list has remedies in a FIXED preference order:")
 print("  (a) regenerate  (b) drop unsupported claims  (c) abstain and escalate")
 print("and for the largest cause that order is exactly wrong -- regenerating")
 print("against the same insufficient context is the one option that cannot work,")
@@ -275,7 +275,7 @@ REMEDY BY CAUSE, NOT BY PREFERENCE ORDER
   parametric_conflict  n=2  -> regenerate at temp 0     instruct precedence and remove sampling width
   fabricated_source    n=1  -> regenerate stricter      citations must map to retrieved ids
 
-the reference lists remedies in a FIXED preference order:
+the common list has remedies in a FIXED preference order:
   (a) regenerate  (b) drop unsupported claims  (c) abstain and escalate
 and for the largest cause that order is exactly wrong -- regenerating
 against the same insufficient context is the one option that cannot work,
@@ -284,7 +284,7 @@ and it is listed first. 9 of 20 cases (45%) need (c).`,
           { t: "p", text: "**The three free blocking layers address 55% of the set at 0.4 ms combined.** That is the headline: more than half the hallucinations in a classified sample are reachable without a model call, a judge or a GPU — and the latency is a rounding error against a three-second request." },
           { t: "p", text: "**And what they cannot reach is the largest single cause.** Retrieval misses are 45% of the set and no prompt fixes them: the context does not contain the answer, so grounding, citations and decoding settings all have nothing to work with. The best the free layers can do there is convert a wrong answer into an abstention." },
           { t: "p", text: "**The threshold quantisation is sharper than I expected.** A 0.9 gate permits zero unsupported claims at 2, 4 *and* 8 claims — the first length at which it permits any is 20. So the threshold is effectively zero-tolerance across every realistic answer length and only loosens on very long outputs, which is the opposite of what a reader would assume from the number." },
-          { t: "p", text: "**The remedy table is where the reference’s ordering goes wrong.** Its preference order puts regeneration first, and 45% of cases need the option listed last. Regenerating against the same insufficient context either reproduces the hallucination or abstains after paying twice for generation." },
+          { t: "p", text: "**The remedy table is where the ordering goes wrong.** Its preference order puts regeneration first, and 45% of cases need the option listed last. Regenerating against the same insufficient context either reproduces the hallucination or abstains after paying twice for generation." },
           { t: "p", text: "**The gate catches 80% and cannot be deployed blocking**, which is the tension this lesson is really about. The highest-coverage layer is the one with a 94% latency cost, so the design question is not whether to have it but where to run it — async, on a subset, or on faster hardware." },
           { t: "p", text: "One limit of the arithmetic: I assigned each cause to layers by hand, so ‘catches’ means ‘is the kind of failure this layer targets’ rather than a measured detection rate. A grounded prompt addresses the ungrounded-prompt cause by construction and will not fix every instance of it." }
         ] } },
@@ -292,7 +292,7 @@ and it is listed first. 9 of 20 cases (45%) need (c).`,
     { t: "callout", kind: "mental", title: "The model to keep",
       body: [
         { t: "p", text: "Layer the mitigations cheapest first, where cheap means latency and refusals rather than tokens. Three layers are free: a grounded prompt with an abstention path (which addresses four of the six causes in seven lines), citation validation, and decoding settings \u2014 and capping output improves faithfulness and cost together." },
-        { t: "p", text: "The faithfulness gate is the first layer with a bill, measured at +94% request latency, so it needs a GPU, a small model, a high-stakes subset, or an async-with-retraction design. And pick the remedy from the diagnosed cause: regenerating against the same insufficient context cannot work, which is the most common case and the reference\u2019s first-listed option." }
+        { t: "p", text: "The faithfulness gate is the first layer with a bill, measured at +94% request latency, so it needs a GPU, a small model, a high-stakes subset, or an async-with-retraction design. And pick the remedy from the diagnosed cause: regenerating against the same insufficient context cannot work, which is the most common case and the first-listed option." }
       ] },
 
     { t: "callout", kind: "scenario", title: "Interview scenario",

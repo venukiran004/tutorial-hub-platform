@@ -48,7 +48,7 @@ EC.receiveLesson({
            MERGE 3: h + ug -> 'hug'
            splits: hug(10)  p·ug(5)  p·un(12)  b·un(4)  hug·s(5)` },
 
-    { t: "callout", kind: "insight", title: "Every count reproduces the reference exactly",
+    { t: "callout", kind: "insight", title: "Every count reproduces it exactly",
       body: [{ t: "p", text: "`(u,g)` scores 20 because it appears in `hug` (10), `pug` (5) and `hugs` (5) — the counts are weighted by how often each word occurs, not by how many distinct words contain the pair. After merging, the counts are recomputed from scratch, which is why `(h,u)` at 15 in round 1 becomes `(h,ug)` at 15 in round 2: the pair is still there, it is just spelled differently now. Watching `pun` and `bun` stay split as `p·un` and `b·un` while `hug` becomes a single token is the whole algorithm in one picture — **frequency decides what gets to be a word**." }] },
 
     { t: "out", text: `  learned merges: [('u', 'g'), ('u', 'n'), ('h', 'ug')]
@@ -135,7 +135,7 @@ def bpe_encode(word, merges):
   tokens      = ['[CLS]', 'hello', ',', 'world', '!', '[SEP]']
   decode      = '[CLS] hello, world! [SEP]'` },
 
-    { t: "p", text: "BERT's split matches the reference exactly, with `##` marking each continuation, and so does the encode to `[101, 7592, 1010, 2088, 999, 102]`. GPT-2 differs from what the reference prints: the real tokenizer produces **`Ġtransformative` as a single token**, not ` transform` plus `ative`. The `Ġ` is how byte-level BPE renders a leading space — the space is part of the token." },
+    { t: "p", text: "BERT's split matches exactly, with `##` marking each continuation, and so does the encode to `[101, 7592, 1010, 2088, 999, 102]`. GPT-2 differs from what the usual output prints: the real tokenizer produces **`Ġtransformative` as a single token**, not ` transform` plus `ative`. The `Ġ` is how byte-level BPE renders a leading space — the space is part of the token." },
 
     { t: "out", text: `  gpt2 'Hello world'    -> ['Hello', 'Ġworld']
   gpt2 ' Hello world'   -> ['ĠHello', 'Ġworld']

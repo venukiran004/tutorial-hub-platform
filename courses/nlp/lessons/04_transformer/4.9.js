@@ -99,7 +99,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "07", text: "RoPE's long-range decay, measured carefully", id: "decay" },
 
-    { t: "p", text: "The reference states that high-frequency pairs make distant tokens' contributions oscillate and cancel, giving a natural long-range decay. That is checkable, and the answer depends on what you measure." },
+    { t: "p", text: "It is commonly stated that high-frequency pairs make distant tokens' contributions oscillate and cancel, giving a natural long-range decay. That is checkable, and the answer depends on what you measure." },
 
     { t: "out", text:
 "case A - q and k identical (maximally aligned)\n\n  distance     score    fraction of distance-0\n  0           70.0645    1.0000\n  1           68.0572    0.9714\n  8           49.0722    0.7004\n  64          38.3147    0.5468\n  512         20.0806    0.2866\n  2048         3.7520    0.0536\n\ncase B - 2000 independent random q, k pairs\n\n  distance     mean score    mean |score|\n  0              0.0775        6.4192\n  16             0.0470        6.1250\n  256           -0.0557        5.9750\n  2048           0.1471        6.3891" },

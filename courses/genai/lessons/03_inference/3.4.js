@@ -51,7 +51,7 @@ EC.receiveLesson({
       ["**IO-awareness**", "The algorithm is designed around minimising HBM traffic rather than minimising FLOPs — it actually does *more* arithmetic, recomputing some values in the backward pass rather than storing them."]
     ] },
 
-    { t: "p", text: "The result the reference quotes is 2–4× faster with O(n) memory instead of O(n²), and **exact** — not an approximation. That last point is what separates it from the methods in section 04: FlashAttention produces bit-comparable results to standard attention, so adopting it is a pure win with no quality question attached." },
+    { t: "p", text: "The result the quoted figure is is 2–4× faster with O(n) memory instead of O(n²), and **exact** — not an approximation. That last point is what separates it from the methods in section 04: FlashAttention produces bit-comparable results to standard attention, so adopting it is a pure win with no quality question attached." },
 
     { t: "code", lang: "python", title: "g34.py — naive against a fused kernel", code: `def naive_attention(q, k, v):
     scores = (q @ k.transpose(-2, -1)) / math.sqrt(q.shape[-1])   # the O(n^2) matrix
@@ -65,7 +65,7 @@ F.scaled_dot_product_attention(q, k, v)`,
   512                  5.54           4.41      1.26x
   1024                18.77          10.98      1.71x
   2048                83.87          56.30      1.49x`,
-      caption: "Measured on CPU, where the fused path cannot use the GPU-specific flash kernel — so this shows the fusion benefit only, 1.26× to 1.74×, with one anomalous row. The 2–4× the reference quotes is a GPU figure where the SRAM tiling is doing the work." },
+      caption: "Measured on CPU, where the fused path cannot use the GPU-specific flash kernel — so this shows the fusion benefit only, 1.26× to 1.74×, with one anomalous row. The 2–4× the quoted figure is is a GPU figure where the SRAM tiling is doing the work." },
 
     { t: "callout", kind: "trap", title: "This measurement understates the real effect, and one row is noise",
       body: [

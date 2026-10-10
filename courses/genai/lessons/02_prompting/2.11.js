@@ -30,7 +30,7 @@ class SentimentClassifier(dspy.Signature):
 
 classifier = dspy.Predict(SentimentClassifier)
 result = classifier(review="This product is amazing!")`,
-      caption: "From the reference notes §11. Four lines of declaration. Nowhere does it say \"return only the label\" or \"do not explain your answer\" — those are the generated part." },
+      caption: "Four lines of declaration. Nowhere does it say \"return only the label\" or \"do not explain your answer\" — those are the generated part." },
 
     { t: "p", text: "Whether that is an improvement depends entirely on what gets generated, and unusually for this area you can look without spending anything. The adapter that builds the prompt is an ordinary object." },
 
@@ -86,7 +86,7 @@ optimizer = BootstrapFewShot(metric=accuracy_metric, max_bootstrapped_demos=4)
 optimized = optimizer.compile(classifier, trainset=train_examples)
 
 result = optimized(review="This product is amazing!")`,
-      caption: "From the reference notes §11. Three inputs: a module, a metric, and training examples. The output is the same module with a prompt that has been searched for." },
+      caption: "Three inputs: a module, a metric, and training examples. The output is the same module with a prompt that has been searched for." },
 
     { t: "p", text: "`BootstrapFewShot` — the optimiser in the worked example — does something narrower than \"optimise the prompt\", and knowing what makes the whole thing less mysterious. It runs the module on training inputs, keeps the traces where the metric says the output was correct, and uses those as few-shot demonstrations. It is automated example selection, which is 2.2's dynamic few-shot with the selection done once at compile time rather than per query." },
 

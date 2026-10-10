@@ -13,7 +13,7 @@
 
     trackLabels: { learn: "NLP and Transformers", practice: "Practice", interview: "Interview" },
     trackBlurbs: {
-      learn: "The reference notes, section by section — every matrix worked on a number, every program run.",
+      learn: "The usual treatment, section by section — every matrix worked on a number, every program run.",
       practice: "The NLP programs with their output, answers folded away.",
       interview: "One hundred questions across NLP, transformers, applications and HuggingFace, answers hidden until you ask."
     },
@@ -109,7 +109,7 @@
         dir: "03_tooling",
         phase: "Phase 1 · Classical NLP",
         title: "Tooling, Evaluation and Production",
-        blurb: "The libraries the field actually uses — spaCy's pipeline model, NLTK's teaching toolkit, HuggingFace's abstractions — then the metrics that judge every task, the shape of a production pipeline, contextual embeddings as the bridge to transformers, and the four tasks the reference closes on: coreference, relation extraction, inference and augmentation.",
+        blurb: "The libraries the field actually uses — spaCy's pipeline model, NLTK's teaching toolkit, HuggingFace's abstractions — then the metrics that judge every task, the shape of a production pipeline, contextual embeddings as the bridge to transformers, and the four tasks this module closes on: coreference, relation extraction, inference and augmentation.",
         outcome: "You can build an NLP pipeline that ships, and defend every metric on its dashboard.",
         lessons: [
           { id: "3.1", title: "NLP with spaCy", difficulty: "core", minutes: 30, tier: "must",
@@ -248,7 +248,7 @@
         outcome: "You have seen every matrix in a transformer with real numbers in it, and can reproduce them in NumPy.",
         lessons: [
           { id: "6.1", title: "The Toy Model: Tokenize, Embed, Position", difficulty: "core", minutes: 30, tier: "must",
-            summary: "A four-dimensional model small enough to print: the vocabulary, the embedding lookup, and sinusoidal position added — with every number the reference gives, checked.",
+            summary: "A four-dimensional model small enough to print: the vocabulary, the embedding lookup, and sinusoidal position added — with every number the common form gives, checked.",
             keywords: ["toy model", "d_model", "embedding lookup", "positional encoding", "worked example", "numpy"] },
           { id: "6.2", title: "Self-Attention on Real Numbers", difficulty: "core", minutes: 38, tier: "must",
             summary: "Q, K and V computed from the actual weight matrices, the score matrix, the scaling, the softmax and the weighted sum — plus where the projections come from and what they are for.",

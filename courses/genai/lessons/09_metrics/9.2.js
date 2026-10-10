@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "9.2",
 
-  lede: "Perplexity on four tokens, by hand. The reference\u2019s worked example gives probabilities 0.5, 0.25, 0.5 and 0.125, a mean log\u2082 of **\u22121.75**, and PPL = 2^1.75 = **3.3636** \u2014 verified exactly. Read it as: at each token the model was as uncertain as if choosing uniformly among 3.36 options. The arithmetic is four lines; everything difficult about perplexity is in what it cannot compare, which 8.2 measured at a **2.13\u00d7** spread from tokenisation alone.",
+  lede: "Perplexity on four tokens, by hand. The worked example gives probabilities 0.5, 0.25, 0.5 and 0.125, a mean log\u2082 of **\u22121.75**, and PPL = 2^1.75 = **3.3636** \u2014 verified exactly. Read it as: at each token the model was as uncertain as if choosing uniformly among 3.36 options. The arithmetic is four lines; everything difficult about perplexity is in what it cannot compare, which 8.2 measured at a **2.13\u00d7** spread from tokenisation alone.",
 
   objectives: [
     "Compute perplexity from a list of token log-probabilities",

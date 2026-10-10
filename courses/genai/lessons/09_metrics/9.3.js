@@ -21,7 +21,7 @@ EC.receiveLesson({
     { t: "math", tex: "\\text{BLEU} = \\text{BP}\\cdot\\exp\\!\\left(\\sum_{n=1}^{N} w_n \\log p_n\\right), \\qquad \\text{BP} = \\begin{cases} 1 & c > r \\\\ e^{(1 - r/c)} & c \\le r\\end{cases}" },
 
     { t: "dl", items: [
-      { k: "p_n", v: "**Clipped** n-gram precision \u2014 matches counted no more times than the reference contains them." },
+      { k: "p_n", v: "**Clipped** n-gram precision \u2014 matches counted no more times than the usual treatment contains them." },
       { k: "w_n", v: "Weights, usually 1/4 each for n = 1 to 4, which makes the exp term the geometric mean of the four precisions." },
       { k: "BP", v: "Brevity penalty, with c the candidate length and r the reference length. It punishes **short** output only." }
     ] },
@@ -45,7 +45,7 @@ p_n = clipped / sum(c.values())`,
   3            3          2       0.6667
   4            2          1       0.5000`,
       hl: [5, 6],
-      caption: "`min(v, r[g])` is the clipping. Every figure matches the reference exactly." },
+      caption: "`min(v, r[g])` is the clipping. Every figure matches exactly." },
 
     { t: "callout", kind: "insight", title: "One dropped token destroys progressively more at each order",
       body: [
@@ -76,7 +76,7 @@ bleu = bp * geo`,
 
     { t: "callout", kind: "good", title: "Without clipping, repetition scores perfectly",
       body: [
-        { t: "p", text: "Take the candidate `\u201cthe the the the the\u201d` against a reference containing `\u201cthe\u201d` twice. Unclipped, all five candidate unigrams appear in the reference, so precision is **5/5 = 1.0**. Clipped, each match is counted no more than the reference\u2019s count of 2, so it is **2/5 = 0.4**." },
+        { t: "p", text: "Take the candidate `\u201cthe the the the the\u201d` against a reference containing `\u201cthe\u201d` twice. Unclipped, all five candidate unigrams appear in the reference, so precision is **5/5 = 1.0**. Clipped, each match is counted no more than the count of 2, so it is **2/5 = 0.4**." },
         { t: "p", text: "That is the entire reason for the `min(count_candidate, count_reference)` term, and it generalises: clipping is what stops a precision metric rewarding a candidate for saying a correct thing repeatedly." },
         { t: "p", text: "It is also a good illustration of a pattern in metric design \u2014 the obvious formula has a degenerate optimum, and the published metric is the obvious formula plus the one term that closes it. 8.7 made the same observation about one-directional safety metrics, where the trivially optimal model refuses everything." }
       ] },
@@ -87,7 +87,7 @@ bleu = bp * geo`,
     { t: "dl", items: [
       { k: "A perfect paraphrase scores near zero", v: "\u201cThe feline rested on the rug\u201d shares almost no n-grams with the reference and is a correct translation. 8.3 measured this reliably inverting the ranking against a factually wrong candidate." },
       { k: "A single zero kills it", v: "If any p_n is 0, the geometric mean is 0 and BLEU is 0 regardless of the other three \u2014 which is why sentence-level BLEU needs smoothing and why BLEU is really a **corpus-level** metric." },
-      { k: "It rewards fluency-shaped overlap", v: "Not correctness. A fluent wrong answer reusing the reference\u2019s words scores well, which 8.3 measured at BLEU 0.7953 for a factually inverted sentence." }
+      { k: "It rewards fluency-shaped overlap", v: "Not correctness. A fluent wrong answer reusing the usual phrasing scores well, which 8.3 measured at BLEU 0.7953 for a factually inverted sentence." }
     ] },
 
     { t: "callout", kind: "warn", title: "The single-zero property is why BLEU is a corpus metric",
@@ -206,7 +206,7 @@ print("paraphrase with smoothing: %.6f"
         { t: "p", text: "**\u201cCompute BLEU for me and tell me why we stopped using it.\u201d**" },
         { t: "p", text: "Four steps. Clipped n-gram precision at orders one through four; a brevity penalty if the candidate is shorter than the reference; the geometric mean of the four precisions; multiply." },
         { t: "p", text: "On \u2018the cat sat on the mat\u2019 against \u2018the cat sat on mat\u2019: p\u2081 is 5/5, p\u2082 is 3/4 because `on-mat` is not a reference bigram, p\u2083 is 2/3 and p\u2084 is 1/2. The brevity penalty is exp of one minus six over five, which is 0.8187. The geometric mean of those four precisions is 0.7071. Multiplied, BLEU-4 is 0.5789." },
-        { t: "p", text: "The clipping is the part worth explaining, because it is what makes the metric work at all. Without it, \u2018the the the the the\u2019 against a reference containing \u2018the\u2019 twice scores 5/5 on unigram precision. Clipped to the reference\u2019s count it scores 2/5. The `min` is the whole defence against repetition." },
+        { t: "p", text: "The clipping is the part worth explaining, because it is what makes the metric work at all. Without it, \u2018the the the the the\u2019 against a reference containing \u2018the\u2019 twice scores 5/5 on unigram precision. Clipped to the count it scores 2/5. The `min` is the whole defence against repetition." },
         { t: "p", text: "Why we stopped: it cannot see paraphrase. I scored \u2018the feline rested on the rug\u2019 against that reference and got exactly 0.000000 \u2014 a correct translation scoring identically to gibberish, because it shares no bigram and the geometric mean collapses on any single zero." },
         { t: "p", text: "That single-zero property is also why BLEU is really a corpus-level metric. At corpus level you pool n-gram counts across all sentences before dividing, so one bad sentence cannot zero the aggregate. Sentence-level BLEU needs smoothing, and smoothed and unsmoothed are different numbers that should be reported as such." },
         { t: "p", text: "And smoothing only fixes half the problem. With add-one it took that paraphrase from 0.000000 to 0.067 \u2014 no longer mathematically degenerate, still a terrible score for a correct answer. The degeneracy has a fix inside BLEU; the paraphrase blindness does not, which is what METEOR, chrF and BERTScore exist for." }
@@ -261,7 +261,7 @@ print("paraphrase with smoothing: %.6f"
         answer: 1,
         why: "Two distinct failures are in play: the single-zero property, which is a property of the geometric mean and which smoothing addresses, and insensitivity to meaning, which no reweighting inside BLEU can address. The score moving from exactly zero to 0.067 shows the first fixed and the second intact. Addressing the second requires leaving surface n-grams, which is what METEOR, chrF and BERTScore do." },
 
-      { stem: "A hand check gives BLEU-4 of 0.5787 where the reference states 0.5789. What is the most likely explanation?",
+      { stem: "A hand check gives BLEU-4 of 0.5787 where it is commonly stated 0.5789. What is the most likely explanation?",
         options: [
           "The reference rounded the brevity penalty incorrectly",
           "Rounding propagation in the check \u2014 multiplying displayed intermediates 0.8187 \u00d7 0.7071 gives 0.5787, while full precision gives 0.578930",
@@ -281,7 +281,7 @@ print("paraphrase with smoothing: %.6f"
         q: "Walk me through computing BLEU.",
         strong: "A strong answer gives all four steps with numbers.",
         answer: [
-          { t: "p", text: "Four steps. Clipped n-gram precision at orders one to four, where clipped means each match is counted no more times than the reference contains it. A brevity penalty if the candidate is shorter. The geometric mean of the four precisions. Then multiply the two." },
+          { t: "p", text: "Four steps. Clipped n-gram precision at orders one to four, where clipped means each match is counted no more times than the usual treatment contains it. A brevity penalty if the candidate is shorter. The geometric mean of the four precisions. Then multiply the two." },
           { t: "p", text: "On \u2018the cat sat on the mat\u2019 against \u2018the cat sat on mat\u2019: all five candidate unigrams appear, so p\u2081 is 1.0. Three of four bigrams match \u2014 `on-mat` is not in the reference, which has `on-the` and `the-mat` \u2014 so 0.75. Then 2/3 and 1/2." },
           { t: "p", text: "The brevity penalty is exp of 1 minus r over c, which with r = 6 and c = 5 is exp of \u22120.2, or 0.8187. The geometric mean of the precisions is 0.7071, and BLEU-4 is 0.5789." },
           { t: "p", text: "The thing I would point out is how one dropped token cascades. It costs nothing at unigram level and progressively more at each higher order, which is deliberate \u2014 the higher orders are measuring local word order, so a bag of correct words and a fluent sentence score very differently." }
@@ -292,7 +292,7 @@ print("paraphrase with smoothing: %.6f"
         strong: "A strong answer gives the degenerate case it closes.",
         answer: [
           { t: "p", text: "It closes a degenerate optimum. Precision counts matches over candidate n-grams, so without a cap a candidate can inflate its numerator by repeating a correct token." },
-          { t: "p", text: "The concrete case: \u2018the the the the the\u2019 against a reference containing \u2018the\u2019 twice. Unclipped, every candidate unigram appears in the reference, so precision is 5/5 and the metric says it is perfect. Clipped to the reference\u2019s count of two, it is 2/5." },
+          { t: "p", text: "The concrete case: \u2018the the the the the\u2019 against a reference containing \u2018the\u2019 twice. Unclipped, every candidate unigram appears in the reference, so precision is 5/5 and the metric says it is perfect. Clipped to the count of two, it is 2/5." },
           { t: "p", text: "I think of it as an instance of a general pattern in metric design \u2014 the obvious formula has a degenerate optimum and the published metric is the obvious formula plus the one term that closes it. The same shape shows up in safety evaluation, where measuring only whether a model does the wrong thing has \u2018refuse everything\u2019 as its optimum, and an over-refusal set is the closing term." },
           { t: "p", text: "One wrinkle from implementing both versions: on a fully repetitive candidate, BLEU-4 is zero with or without clipping, because the candidate has no matching bigram and the single-zero property dominates. The clipping effect is real and only visible at unigram level, so demonstrating it means looking at p\u2081 rather than the final score." }
         ] },

@@ -34,7 +34,7 @@ EC.receiveLesson({
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n27.py — Marian, English to French", code:
 "import torch\nfrom transformers import MarianMTModel, MarianTokenizer\n\nname = \"Helsinki-NLP/opus-mt-en-fr\"\ntok = MarianTokenizer.from_pretrained(name)     # needs sentencepiece\nmod = MarianMTModel.from_pretrained(name).eval()\n\nfor src in [\"Machine learning is transforming the world.\",\n            \"The bank raised interest rates.\",\n            \"The river bank was muddy.\"]:\n    with torch.no_grad():\n        g = mod.generate(**tok(src, return_tensors=\"pt\"),\n                         num_beams=4, max_length=100)\n    print(tok.decode(g[0], skip_special_tokens=True))",
-      caption: "The reference calls this through `pipeline(\"translation\", ...)`, which transformers 5.x removed. `MarianTokenizer` also requires `sentencepiece`, which is not a transformers dependency — install it separately." },
+      caption: "It is commonly called this through `pipeline(\"translation\", ...)`, which transformers 5.x removed. `MarianTokenizer` also requires `sentencepiece`, which is not a transformers dependency — install it separately." },
 
     { t: "out", text:
 "75.1M params - a single-pair translation model is SMALL\n\nEN  Machine learning is transforming the world.\nFR  L'apprentissage automatique transforme le monde.\n\nEN  The bank raised interest rates.\nFR  La banque a relevé les taux d'intérêt.\n\nEN  The river bank was muddy.\nFR  La rive était boueuse." },

@@ -47,7 +47,7 @@ EC.receiveLesson({
     { t: "out", text:
 "always merging the most frequent pair\n\n  merge 1   (e,r)        -> 'er'          freq 9\n  merge 2   (er,</w>)    -> 'er</w>'     freq 9\n  merge 3   (l,o)        -> 'lo'         freq 7\n  merge 4   (lo,w)       -> 'low'        freq 7\n  merge 5   (e,w)        -> 'ew'         freq 6\n  merge 6   (ew,er</w>)  -> 'ewer</w>'   freq 6\n  merge 7   (n,ewer</w>) -> 'newer</w>'  freq 6\n\nthe order:\n  merge 3   (n,e) -> 'ne'   [6]\n  merge 4   (ne,w) -> 'new' [6]\n  merge 5   (l,o) -> 'lo'   [7]\n  merge 6   (lo,w) -> 'low' [7]" },
 
-    { t: "callout", kind: "warn", title: "The reference applies a frequency-6 merge before two frequency-7 merges",
+    { t: "callout", kind: "warn", title: "The usual treatment applies a frequency-6 merge before two frequency-7 merges",
       body: [{ t: "p", text: "After merge 2 the counts are `(l,o) = 7`, `(o,w) = 7`, `(n,e) = 6`, `(e,w) = 6`. BPE's rule is to take the **most frequent** pair, so merges 3 and 4 should be the frequency-7 ones. The reference takes `(n,e)` at 6 first. Its own annotations record the frequencies correctly — `[6]`, `[6]`, `[7]`, `[7]` — so the numbers are right and only the ordering is out of sequence. It matters because the rule order *is* the trained tokenizer: change it and you get different tokens for the same input, as the next section shows." }] },
 
     { t: "h2", n: "04", text: "Encoding applies the rules in order", id: "encoding" },
@@ -59,7 +59,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "*widest* shares no learned merge with the corpus and still encodes — as seven single characters. That is the guarantee subword tokenisation buys: the base vocabulary contains every character, so the worst case is a long sequence, never a failure. Compare a word-level tokenizer, where an unseen word becomes `UNK` and its identity is destroyed before the model sees it. Note also how the frequency gradient shows up in the output: `lower` costs 2 tokens, `lowest` 5, `widest` 7, tracking how much of each word the training corpus supported." }] },
 
     { t: "callout", kind: "note", title: "Under strict greedy, 'newer' becomes one token",
-      body: [{ t: "p", text: "Greedy merging built `ew`, then `ewer</w>`, then `newer</w>`, so *newer* — which appears 6 times in this four-word corpus — collapses into a **single** token. The reference reports `['new', 'er</w>']`, which follows from its ordering. Both are correct BPE runs of their own rule sets; the discrepancy is entirely the merge order. It is also an artefact of a toy corpus, where one word is 6/16 of all occurrences and so gets merged into wholeness almost immediately. On a real corpus with a 32k vocabulary this does not happen to arbitrary words." }] },
+      body: [{ t: "p", text: "Greedy merging built `ew`, then `ewer</w>`, then `newer</w>`, so *newer* — which appears 6 times in this four-word corpus — collapses into a **single** token. The reported figure is `['new', 'er</w>']`, which follows from its ordering. Both are correct BPE runs of their own rule sets; the discrepancy is entirely the merge order. It is also an artefact of a toy corpus, where one word is 6/16 of all occurrences and so gets merged into wholeness almost immediately. On a real corpus with a 32k vocabulary this does not happen to arbitrary words." }] },
 
     { t: "h2", n: "05", text: "The four algorithms", id: "algorithms" },
 
@@ -79,7 +79,7 @@ EC.receiveLesson({
 "\"I love transformer models!\"\n\nbert-base-uncased   8 ids   ['[CLS]','i','love','transform','##er','models','!','[SEP]']\ngpt2                5 ids   ['I','Ġlove','Ġtransformer','Ġmodels','!']\nroberta-base        7 ids   ['<s>','I','Ġlove','Ġtransformer','Ġmodels','!','</s>']\n\nbert input_ids: [101, 1045, 2293, 10938, 2121, 4275, 999, 102]\nreference says: [101, 1045, 2293, 19081, 4275, 999, 102]" },
 
     { t: "callout", kind: "warn", title: "The id list contradicts its own token list",
-      body: [{ t: "p", text: "The reference prints **7** ids but then shows **8** tokens including both `transform` and `##er` — those cannot both be right. Measured, BERT splits *transformer* into `transform` (10938) and `##er` (2121), giving 8 ids total. The id list has a single 19081 where those two belong, which would correspond to *transformer* as one token. Its `convert_ids_to_tokens` line is the correct one. Worth noticing that GPT-2 keeps *transformer* whole in one token while BERT splits it — a direct consequence of vocabulary size, 50,257 against 30,522." }] },
+      body: [{ t: "p", text: "The usual output prints **7** ids but then shows **8** tokens including both `transform` and `##er` — those cannot both be right. Measured, BERT splits *transformer* into `transform` (10938) and `##er` (2121), giving 8 ids total. The id list has a single 19081 where those two belong, which would correspond to *transformer* as one token. Its `convert_ids_to_tokens` line is the correct one. Worth noticing that GPT-2 keeps *transformer* whole in one token while BERT splits it — a direct consequence of vocabulary size, 50,257 against 30,522." }] },
 
     { t: "h2", n: "07", text: "What tokenisation costs", id: "cost" },
 

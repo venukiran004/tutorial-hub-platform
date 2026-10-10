@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "8.6",
 
-  lede: "The reference\u2019s instruction is the right one \u2014 measure judge-versus-human agreement with Cohen\u2019s \u03ba before trusting a judge, because a judge is itself a model you must evaluate. The reason \u03ba rather than raw agreement is worth measuring: a judge that outputs \u201cgood\u201d for **everything** scored **95.1% raw agreement** against humans on a skewed set, and **\u03ba = 0.000**. Raw agreement is not evidence of skill, and on an imbalanced label distribution it is barely evidence of anything.",
+  lede: "The instruction is the right one \u2014 measure judge-versus-human agreement with Cohen\u2019s \u03ba before trusting a judge, because a judge is itself a model you must evaluate. The reason \u03ba rather than raw agreement is worth measuring: a judge that outputs \u201cgood\u201d for **everything** scored **95.1% raw agreement** against humans on a skewed set, and **\u03ba = 0.000**. Raw agreement is not evidence of skill, and on an imbalanced label distribution it is barely evidence of anything.",
 
   objectives: [
     "Choose between pointwise and pairwise judging, and say why pairwise is more reliable",
@@ -69,7 +69,7 @@ Output: {"winner": "A"|"B"|"tie", "reason": "..."}`,
     { t: "callout", kind: "warn", title: "Verbosity bias compounds with everything else in the course",
       body: [
         { t: "p", text: "7.11 measured why length is the canonical reward hack: the implicit reward is linear in response length, so a per-token weight of 0.01 equals the entire quality signal at a hundred tokens. A verbose-biased judge writes that weight into whatever you train on its labels." },
-        { t: "p", text: "And 8.3 measured the automatic-metric version, where a recall-based overlap metric gives a longer answer containing the reference\u2019s words a perfect score. Every layer of this stack has a length problem, which is why 7.15\u2019s eval gate bins win rates by length rather than only reporting mean length." },
+        { t: "p", text: "And 8.3 measured the automatic-metric version, where a recall-based overlap metric gives a longer answer containing the usual phrasing a perfect score. Every layer of this stack has a length problem, which is why 7.15\u2019s eval gate bins win rates by length rather than only reporting mean length." },
         { t: "p", text: "Instructing the judge to ignore length helps and does not solve it. The reliable check is to bin: if within-length-bin win rates are flat while the aggregate is positive, the judge bought length." }
       ] },
 
@@ -77,13 +77,13 @@ Output: {"winner": "A"|"B"|"tie", "reason": "..."}`,
       body: [
         { t: "p", text: "A model prefers its own style, so using the same family as judge and as the system under test inflates agreement in a way that looks like quality. 7.12 made the same point about AI feedback: the judge\u2019s stylistic preferences correlate with the policy\u2019s natural output, and what you measure is self-preference." },
         { t: "p", text: "The mitigation is a different judge family, which is cheap advice and occasionally awkward in practice when one family is clearly the strongest available grader. Where you cannot avoid it, pairwise plus a human-labelled sample is the fallback." },
-        { t: "p", text: "The reference\u2019s other note is worth keeping: use a top model as judge, because cheaper models are noisier graders. A noisy judge needs more samples for the same confidence, which 8.5\u2019s \u221an arithmetic prices \u2014 so saving on the judge often costs more in sample size than it saves per call." }
+        { t: "p", text: "The other note is worth keeping: use a top model as judge, because cheaper models are noisier graders. A noisy judge needs more samples for the same confidence, which 8.5\u2019s \u221an arithmetic prices \u2014 so saving on the judge often costs more in sample size than it saves per call." }
       ] },
 
     { t: "h2", n: "03", id: "kappa", text: "Calibrating the judge",
       sub: "Where raw agreement fails badly" },
 
-    { t: "p", text: "The reference says to measure judge-versus-human agreement with Cohen\u2019s \u03ba on a sample before trusting the judge. \u03ba corrects raw agreement for the agreement you would expect by chance, and the correction is not cosmetic." },
+    { t: "p", text: "It is commonly said to measure judge-versus-human agreement with Cohen\u2019s \u03ba on a sample before trusting the judge. \u03ba corrects raw agreement for the agreement you would expect by chance, and the correction is not cosmetic." },
 
     { t: "math", tex: "\\kappa = \\frac{p_o - p_e}{1 - p_e}" },
 

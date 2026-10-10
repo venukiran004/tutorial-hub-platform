@@ -46,7 +46,7 @@ batch = client.batches.create(input_file_id=batch_file.id,
 # 3. poll -- validating -> in_progress -> completed (or failed / expired)
 batch = client.batches.retrieve(batch.id)`,
       hl: [6],
-      caption: "From the reference notes §13. The `custom_id` is the important field: results come back unordered and you match on it, so it has to carry enough information to find the row it belongs to." },
+      caption: "The `custom_id` is the important field: results come back unordered and you match on it, so it has to carry enough information to find the row it belongs to." },
 
     { t: "callout", kind: "trap", title: "Results come back unordered, and some may be missing",
       body: [
@@ -101,7 +101,7 @@ batch = client.batches.retrieve(batch.id)`,
 </svg>` },
 
     { t: "code", lang: "python", title: "g18.py — what each discount is worth", code: `REQS, IN_TOK, OUT_TOK = 100_000, 1_200, 300
-IN_RATE, OUT_RATE = 2.50, 10.00      # $ per 1M, from the reference notes §14
+IN_RATE, OUT_RATE = 2.50, 10.00      # $ per 1M
 STATIC = 1000                        # tokens of the prompt that never change
 
 base_in  = REQS * IN_TOK  * IN_RATE  / 1e6

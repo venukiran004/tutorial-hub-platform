@@ -4,7 +4,7 @@
 EC.receiveLesson({
   id: "13.8",
 
-  lede: "**These are the incidents that a Python service actually has: not syntax errors but a blocked event loop, a session shared across threads, an exhausted pool, an inventory oversold by eighteen units, a welcome email that vanished on deploy.** The reference collects sixteen of them from production, each with the symptom you would see, the diagnosis, and the fix. This lesson keeps that shape — symptom, diagnosis, fix — and groups the sixteen by the five rules they keep breaking: the GIL draws the line, sessions are per request, invariants belong in the database, bound everything, and plan for restarts.",
+  lede: "**These are the incidents that a Python service actually has: not syntax errors but a blocked event loop, a session shared across threads, an exhausted pool, an inventory oversold by eighteen units, a welcome email that vanished on deploy.** The usual treatment collects sixteen of them from production, each with the symptom you would see, the diagnosis, and the fix. This lesson keeps that shape — symptom, diagnosis, fix — and groups the sixteen by the five rules they keep breaking: the GIL draws the line, sessions are per request, invariants belong in the database, bound everything, and plan for restarts.",
 
   objectives: [
     "Recognise each of the sixteen scenarios from its symptom and name the diagnosis",

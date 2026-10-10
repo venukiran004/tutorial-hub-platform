@@ -4,7 +4,7 @@
 EC.receiveLesson({
   id: "6.5",
 
-  lede: "**This is the most completely verifiable example in the module, and everything in it checks out.** The reference works a three-frame CTC problem by hand, enumerating five alignments to get P = 0.5100, then builds a forward lattice that arrives at the same number. I computed both, plus `torch.nn.CTCLoss` on the same inputs: brute force and lattice agree to machine precision, and PyTorch agrees to **1.11e-16**. Every cell of the published lattice reproduces exactly.",
+  lede: "**This is the most completely verifiable example in the module, and everything in it checks out.** The worked example takes a three-frame CTC problem by hand, enumerating five alignments to get P = 0.5100, then builds a forward lattice that arrives at the same number. I computed both, plus `torch.nn.CTCLoss` on the same inputs: brute force and lattice agree to machine precision, and PyTorch agrees to **1.11e-16**. Every cell of the published lattice reproduces exactly.",
 
   objectives: [
     "Enumerate the alignments that collapse to a target and sum their probabilities",
@@ -125,7 +125,7 @@ EC.receiveLesson({
 
   takeaways: [
     "Collapse rule: squeeze repeated symbols, then remove blanks.",
-    "Five of 27 three-frame paths collapse to `ab`, summing to 0.5100 — matching the reference exactly.",
+    "Five of 27 three-frame paths collapse to `ab`, summing to 0.5100 — matching exactly.",
     "The forward lattice over `- a - b -` reproduces all fifteen published cells and gives the same 0.5100.",
     "CTC loss = −ln(0.5100) = 0.6733, and `torch.nn.CTCLoss` agrees to 1.11e-16.",
     "Three rules: stay or step; skip only into a real label differing from two back; sum the final two states.",

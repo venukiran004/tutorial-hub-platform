@@ -190,7 +190,7 @@ Day 90   Retirement date passes. Nothing happens. <- the objective`,
         "The connection to where output sits as a share of the bill"
       ],
       hint: "Cost is input\u00d7price_in + output\u00d7price_out, so a percentage rise driven by output alone depends on how large the input is. Solve for the input that produces the quoted figure.",
-      solution: { lang: "python", title: "the verbosity claim, checked", code: `print("the reference reports:  mean output tokens 310 -> 445  (+44% verbosity)")
+      solution: { lang: "python", title: "the verbosity claim, checked", code: `print("the reported figure is:  mean output tokens 310 -> 445  (+44% verbosity)")
 print("                        and concludes          cost +38%")
 print()
 print("445 / 310 = %.4f, so +%.1f%% output -- that part checks out."
@@ -225,7 +225,7 @@ print("showed is exactly the state you reach AFTER trimming input.")`,
         out: `============================================================================
 B -- THE VERBOSITY-TO-COST CLAIM FROM THE 90-DAY EXAMPLE
 ============================================================================
-the reference reports:  mean output tokens 310 -> 445  (+44% verbosity)
+the reported figure is:  mean output tokens 310 -> 445  (+44% verbosity)
                         and concludes          cost +38%
 
 445 / 310 = 1.4355, so +43.5% output -- that part checks out.

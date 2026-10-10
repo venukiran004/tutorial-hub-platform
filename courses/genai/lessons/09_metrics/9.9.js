@@ -50,7 +50,7 @@ faithfulness = 4 / 5 = 0.80`,
 
     { t: "callout", kind: "good", title: "The claim that failed is the useful output, not the 0.80",
       body: [
-        { t: "p", text: "The reference\u2019s instruction is the operative one: **always log which claim was unsupported**, because that is what a person can act on. A score of 0.80 tells you to investigate; the failing claim tells you what to fix." },
+        { t: "p", text: "The instruction is the operative one: **always log which claim was unsupported**, because that is what a person can act on. A score of 0.80 tells you to investigate; the failing claim tells you what to fix." },
         { t: "p", text: "That is the same argument 8.9 made about agent traces and 6.8 made about production incidents \u2014 the aggregate says something is wrong and the record says what. A faithfulness pipeline that returns only a float has thrown away its most valuable output." },
         { t: "p", text: "It also makes the metric auditable. If you disagree with a 0.80, you can read the five claims and the judgement on each, which is not possible with a score a judge produced holistically \u2014 and 8.6 argued that auditability is why a reasoning-then-verdict judge prompt beats a bare verdict." }
       ] },

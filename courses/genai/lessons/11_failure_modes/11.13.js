@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "11.13",
 
-  lede: "It is cheaper to stop bad input than to clean bad output, so four checks run before the model. The reference says its jailbreak regexes are \u201ca first layer, not a solution\u201d \u2014 and measured, that is generous: **100% of eight literal attacks, 0% of thirteen paraphrases, and 60% of benign-but-tricky inputs wrongly blocked.** Recall 0.381, precision 0.571. The honest reading is that the regex layer is a tripwire for unsophisticated attempts whose main production effect is over-refusal.",
+  lede: "It is cheaper to stop bad input than to clean bad output, so four checks run before the model. It is commonly said its jailbreak regexes are \u201ca first layer, not a solution\u201d \u2014 and measured, that is generous: **100% of eight literal attacks, 0% of thirteen paraphrases, and 60% of benign-but-tricky inputs wrongly blocked.** Recall 0.381, precision 0.571. The honest reading is that the regex layer is a tripwire for unsophisticated attempts whose main production effect is over-refusal.",
 
   objectives: [
     "Implement the four input guardrails and say what each costs",
@@ -249,7 +249,7 @@ print()
 print("so the regex layer is ~%.0f%% on literal attacks and ~%.0f%% on paraphrases,"
       % (lit_r, par_r))
 print("while wrongly blocking %.0f%% of benign-but-tricky traffic." % ben_r)
-print("the reference says 'first layer, not a solution'. that is the measurement.")
+print("it is commonly said 'first layer, not a solution'. that is the measurement.")
 
 # ----------------------------------------------------------------- PII
 print()
@@ -279,7 +279,7 @@ CASES = [
 for c in CASES:
     print("  %-56s -> %s" % (c[:56], redact(c)))
 print()
-print("two real limits, one of which the reference names:")
+print("two real limits, one of which the common name is:")
 print("  - NAMES AND ADDRESSES pass straight through (it says: add an NER model)")
 print("  - an internal ticket number of SSN shape is redacted anyway -- a false")
 print("    positive that silently removes data the model needed")
@@ -329,7 +329,7 @@ over all 21 attacks and 10 benign:
 
 so the regex layer is ~100% on literal attacks and ~0% on paraphrases,
 while wrongly blocking 60% of benign-but-tricky traffic.
-the reference says 'first layer, not a solution'. that is the measurement.
+it is commonly said 'first layer, not a solution'. that is the measurement.
 
 ==========================================================================
 D -- THE PII REDACTOR
@@ -342,7 +342,7 @@ D -- THE PII REDACTOR
   Reference 123-45-6789 is our internal ticket number      -> Reference [SSN] is our internal ticket number
   The server is at 10.0.113.4 port 5432                    -> The server is at 10.0.113.4 port 5432
 
-two real limits, one of which the reference names:
+two real limits, one of which the common name is:
   - NAMES AND ADDRESSES pass straight through (it says: add an NER model)
   - an internal ticket number of SSN shape is redacted anyway -- a false
     positive that silently removes data the model needed

@@ -16,7 +16,7 @@
 
     trackLabels: { learn: "GenAI and LLMs", practice: "Scenarios", interview: "Interview" },
     trackBlurbs: {
-      learn: "The reference notes, section by section — every parameter demonstrated on real logits, every cost carried through on numbers.",
+      learn: "The usual treatment, section by section — every parameter demonstrated on real logits, every cost carried through on numbers.",
       practice: "The GenAI scenario challenges and production situations, answers folded away.",
       interview: "The Glassdoor banks, the topic bank and the systems notes, answers hidden until you ask."
     },
@@ -369,7 +369,7 @@
           { id: "8.12", title: "A RAG Answer Evaluated End to End", difficulty: "advanced", minutes: 32, tier: "must",
             summary: "The worked example, every score computed on one real answer.", keywords: ["worked example", "rag", "faithfulness", "relevancy", "scoring"] },
           { id: "8.13", title: "Choosing a Metric, and the Tooling", difficulty: "core", minutes: 26, tier: "must",
-            summary: "The cheat sheet, the frameworks, and the pitfalls the reference keeps as soundbites.", keywords: ["metric selection", "tooling", "ragas", "deepeval", "pitfalls"] }
+            summary: "The cheat sheet, the frameworks, and the pitfalls the usual treatment keeps as soundbites.", keywords: ["metric selection", "tooling", "ragas", "deepeval", "pitfalls"] }
         ]
       },
 
@@ -418,7 +418,7 @@
           { id: "9.16", title: "The Statistics Nobody Runs", difficulty: "advanced", minutes: 30, tier: "must",
             summary: "Confidence intervals on an eval score, and the sample size a claimed win needs.", keywords: ["confidence interval", "bootstrap", "sample size", "significance", "overlap"] },
           { id: "9.17", title: "Choosing a Metric, and the Pitfalls", difficulty: "core", minutes: 26, tier: "must",
-            summary: "The selection table, and the mistakes the reference keeps a list of.", keywords: ["metric selection", "pitfalls", "gaming", "proxy", "interview"] }
+            summary: "The selection table, and the mistakes the usual treatment keeps a list of.", keywords: ["metric selection", "pitfalls", "gaming", "proxy", "interview"] }
         ]
       },
 

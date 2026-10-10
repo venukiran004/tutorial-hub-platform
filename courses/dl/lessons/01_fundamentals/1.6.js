@@ -22,7 +22,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why it matters", id: "why" },
 
-    { t: "p", text: "Before the first gradient step the weights have to be something, and that something is not neutral. Three failure modes, straight from the reference:" },
+    { t: "p", text: "Before the first gradient step the weights have to be something, and that something is not neutral. Three failure modes, worth stating plainly:" },
 
     { t: "dl", items: [
       ["All zeros (or all equal)", "Every unit in a layer computes the same output, receives the same gradient and takes the same update — they remain identical forever. The network has one effective unit per layer regardless of its width. This is the symmetry problem."],

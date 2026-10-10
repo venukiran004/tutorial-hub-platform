@@ -86,7 +86,7 @@ EC.receiveLesson({
     filter 38:  6562.5 -  7468.8 Hz  (width   906.2 Hz)
     filter 39:  7000.0 -  7968.8 Hz  (width   968.8 Hz)` },
 
-    { t: "p", text: "Triangular filters spaced equally **on the mel axis**, which makes them narrow at the bottom and wide at the top — filter 0 spans 31 Hz, filter 39 spans 969 Hz, a factor of 31. Multiplying the 257-bin power spectrum by 40 triangles collapses it to 40 numbers that follow perception rather than physics. (These edges differ slightly from the reference's, which used different filterbank normalisation and edge conventions; the shape of the progression is the point.)" },
+    { t: "p", text: "Triangular filters spaced equally **on the mel axis**, which makes them narrow at the bottom and wide at the top — filter 0 spans 31 Hz, filter 39 spans 969 Hz, a factor of 31. Multiplying the 257-bin power spectrum by 40 triangles collapses it to 40 numbers that follow perception rather than physics. (These edges differ slightly from the, which used different filterbank normalisation and edge conventions; the shape of the progression is the point.)" },
 
     { t: "h2", n: "06", text: "Why the log", id: "log" },
 
@@ -133,7 +133,7 @@ EC.receiveLesson({
       options: ["Both resolutions improve", "Frequency resolution improves to 20 Hz, time resolution worsens to 50 ms", "Nothing changes", "Frequency resolution worsens"],
       answer: 1,
       why: "The two trade off exactly: 400 samples gives 40 Hz resolution, 800 samples gives 20 Hz, and the time resolution degrades correspondingly. This is the uncertainty principle, and 25 ms is the compromise the field settled on for speech." },
-    { stem: "The reference says one octave at 100–200 Hz 'sounds bigger' than one at 4000–8000 Hz. Is that right in mel terms?",
+    { stem: "It is commonly said one octave at 100–200 Hz 'sounds bigger' than one at 4000–8000 Hz. Is that right in mel terms?",
       options: ["Yes — 132.74 against 693.96 mel", "No — the high octave spans more mel; the real property is resolution per Hz", "Yes, by a factor of 5", "The mel scale does not apply to octaves"],
       answer: 1,
       why: "Its own table gives 132.74 mel for the low octave and 693.96 for the high one, so the high octave is larger in mel. The mel scale is near-linear below 1 kHz rather than a pure log, so octaves are not equal steps. The correct statement is 1.3274 mel per Hz at the bottom against 0.1735 at the top — a factor of 7.7." },

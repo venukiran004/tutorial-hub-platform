@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "4.5",
 
-  lede: "QLoRA is LoRA with the frozen base stored in four bits. The reference\u2019s summary is accurate \u2014 squashing weights nobody is training cuts memory hugely \u201cwith almost no quality loss\u201d \u2014 and the arithmetic behind it is worth seeing, because the part people expect to dominate does not. For a 7B model, full fine-tuning needs about **84 GB, of which 56 GB is the optimizer**, not the weights. LoRA removes that term and lands at 14.5 GB; four-bit storage then shrinks the only large term left, giving **4.0 GB \u2014 21\u00d7 less than full fine-tuning**. The four-bit format matters too: NF4 cost **1.069\u00d7 perplexity** on GPT-2 while a uniform four-bit grid cost **9.006\u00d7**, from a reconstruction error only 1.41\u00d7 worse.",
+  lede: "QLoRA is LoRA with the frozen base stored in four bits. The summary is accurate \u2014 squashing weights nobody is training cuts memory hugely \u201cwith almost no quality loss\u201d \u2014 and the arithmetic behind it is worth seeing, because the part people expect to dominate does not. For a 7B model, full fine-tuning needs about **84 GB, of which 56 GB is the optimizer**, not the weights. LoRA removes that term and lands at 14.5 GB; four-bit storage then shrinks the only large term left, giving **4.0 GB \u2014 21\u00d7 less than full fine-tuning**. The four-bit format matters too: NF4 cost **1.069\u00d7 perplexity** on GPT-2 while a uniform four-bit grid cost **9.006\u00d7**, from a reconstruction error only 1.41\u00d7 worse.",
 
   objectives: [
     "Break training memory into weights, gradients, optimizer state and activations",

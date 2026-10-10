@@ -19,7 +19,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "the-set", text: "The test set is the hard part",
       sub: "And a saturated one tells you nothing" },
 
-    { t: "p", text: "The reference suggests 30–50 representative inputs with expected outputs. Representative is the word doing the work, and it is usually interpreted as \"typical\" — which produces a set every candidate passes, and therefore a measurement that cannot discriminate." },
+    { t: "p", text: "The usual suggestion is 30–50 representative inputs with expected outputs. Representative is the word doing the work, and it is usually interpreted as \"typical\" — which produces a set every candidate passes, and therefore a measurement that cannot discriminate." },
 
     { t: "table",
       head: ["Include", "Why", "Roughly"],
@@ -63,7 +63,7 @@ Question: {question}
 Response: {response}
 
 Provide ratings as JSON: {"accuracy": X, "completeness": X, "clarity": X}"""`,
-      caption: "From the reference notes §12. A reasonable starting rubric — and a judge is a model, so everything in 9.10 and 9.11 applies to it, including that it must be calibrated against human labels before its scores mean anything." },
+      caption: "A reasonable starting rubric — and a judge is a model, so everything in 9.10 and 9.11 applies to it, including that it must be calibrated against human labels before its scores mean anything." },
 
     { t: "p", text: "The practical rule: prefer a cheap deterministic metric where one exists. An exact-match check on an extracted field costs nothing, is perfectly reproducible, and cannot drift. Reach for a judge when the output is genuinely open-ended — and then treat the judge as a component that needs its own evaluation, because it is one." },
 
@@ -96,7 +96,7 @@ def n_needed(p1, p2, alpha=0.05, power=0.80):
     while d < 0.5 and n_needed(0.85, min(0.85 + d, 0.999)) > n:
         d += 0.005
     print("n=%-4d -> smallest detectable lift about %+.1f points" % (n, d * 100))`,
-      out: `  the reference suggests 30-50 test cases. At a baseline of 0.85 that
+      out: `  the usual suggestion is 30-50 test cases. At a baseline of 0.85 that
   detects a lift of roughly:
     n=30   -> smallest detectable lift about +50.0 points
     n=50   -> smallest detectable lift about +15.0 points

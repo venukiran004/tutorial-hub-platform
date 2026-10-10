@@ -150,7 +150,7 @@ EC.receiveLesson({
       ] },
 
     { t: "h2", n: "04", id: "measured", text: "What I actually measured, against what is advertised",
-      sub: "1.13× best case, where the reference says 2–3×" },
+      sub: "1.13× best case, where it is commonly said 2–3×" },
 
     { t: "code", lang: "python", title: "g36.py — wall clock, 24 tokens", code: `def plain():
     seq = tok(text, return_tensors="pt").input_ids
@@ -182,7 +182,7 @@ def speculative(K):
       hl: [4],
       caption: "The best case is 1.13×. At K=8 the method costs more than it saves. Both facts follow from one number: the draft is only 2.85× smaller." },
 
-    { t: "callout", kind: "warn", title: "The reference says \"up to 2–3×\" and does not say what that assumes",
+    { t: "callout", kind: "warn", title: "It is commonly said \"up to 2–3×\" and does not say what that assumes",
       body: [
         { t: "p", text: "The section on this carries the line *\"Speedup: Up to 2-3x (depends on acceptance rate)\"*. That is achievable, and it is not reachable with the pair I used — I got 1.13×. The missing premise is the draft's *size*, not the acceptance rate." },
         { t: "p", text: "Production pairs are 10–20× apart: Llama-2 7B drafting for 70B, or a 1B drafting for a 13B. At a 20× ratio `c = 0.05`, and my measured acceptance of 0.417 would give `(1 + 0.417×4) / (4×0.05 + 1) = 2.23×` — in the advertised range, from the same acceptance rate that produced 1.13× with my draft." },
@@ -338,7 +338,7 @@ for label, c in (("draft 20x smaller (c = 0.05)", 0.05),
     "**Acceptance rate is a property of your traffic.** Measured 0.625 on technical prose against 0.208 on creative writing, with the same model pair.",
     "**Acceptance falls as K grows** — 0.650 at K=1 to 0.231 at K=8 — because the draft extrapolates on its own guesses and errors compound.",
     "**So tokens per target pass saturates while cost grows linearly**, which puts the optimal K in the interior: my K=8 configuration ran at 0.71×, slower than no speculation at all.",
-    "**I measured 1.13× where the reference quotes 2–3×**, and the missing premise is the size ratio: my draft was 2.85× smaller, production pairs are 10–20× apart.",
+    "**I measured 1.13× where the quoted figure is 2–3×**, and the missing premise is the size ratio: my draft was 2.85× smaller, production pairs are 10–20× apart.",
     "**The same 0.417 acceptance gives 2.23× with a 20×-smaller draft.** Acceptance is what everyone measures; the size ratio is what decides.",
     "**Output quality is unchanged**, exactly under greedy decoding and provably under sampling via the rejection-sampling test on the probability ratio.",
     "**It helps latency at low batch size**, where the arithmetic units are idle — which makes it complementary to batching rather than an alternative to it."

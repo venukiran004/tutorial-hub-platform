@@ -50,7 +50,7 @@ EC.receiveLesson({
       ] },
 
     { t: "h2", n: "02", id: "degenerate", text: "Binary rewards make 7.8's degenerate case acute",
-      sub: "The interaction the reference does not mention" },
+      sub: "The interaction this is rarely mentioned" },
 
     { t: "p", text: "7.8 measured that GRPO produces exactly zero advantage when all G samples in a group receive the same reward. With a learned reward model, continuous scores make exact ties rare. With a 0/1 verifier they are the common case." },
 

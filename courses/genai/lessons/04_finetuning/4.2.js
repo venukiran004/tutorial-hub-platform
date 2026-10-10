@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "4.2",
 
-  lede: "Prompting, retrieval and fine-tuning are three ways to change an answer, and the reference\u2019s rule for choosing is sound: facts go to retrieval, behaviour goes to fine-tuning, and prompting is what you try first. I ran all three on the same two tasks to put numbers on it. On a formatting task, zero-shot scored **0 of 4**, few-shot **4 of 4 at 147 prompt tokens per call**, and the fine-tune **4 of 4 at 11**. On a fact, both retrieval and fine-tuning answered correctly \u2014 until I changed the fact, at which point retrieval was right immediately and the fine-tuned model was still confidently reciting the old one. That last comparison is the whole argument, and it is the only one of these measurements that no amount of extra training would change.",
+  lede: "Prompting, retrieval and fine-tuning are three ways to change an answer, and the rule for choosing is sound: facts go to retrieval, behaviour goes to fine-tuning, and prompting is what you try first. I ran all three on the same two tasks to put numbers on it. On a formatting task, zero-shot scored **0 of 4**, few-shot **4 of 4 at 147 prompt tokens per call**, and the fine-tune **4 of 4 at 11**. On a fact, both retrieval and fine-tuning answered correctly \u2014 until I changed the fact, at which point retrieval was right immediately and the fine-tuned model was still confidently reciting the old one. That last comparison is the whole argument, and it is the only one of these measurements that no amount of extra training would change.",
 
   objectives: [
     "Choose between prompting, retrieval and fine-tuning from the property of the task",
@@ -26,7 +26,7 @@ EC.receiveLesson({
         ["**Fine-tuning**", "In the weights", "Nothing", "Another training run"]
       ] },
 
-    { t: "p", text: "The reference\u2019s employee analogy maps onto that table exactly: better instructions, a reference binder, or a training course. What the table adds is the cost column, which is where the decision usually gets made in practice \u2014 and the last column, which is where it *should* be made." },
+    { t: "p", text: "The employee analogy maps onto that table exactly: better instructions, a reference binder, or a training course. What the table adds is the cost column, which is where the decision usually gets made in practice \u2014 and the last column, which is where it *should* be made." },
 
     { t: "h2", n: "02", id: "behaviour", text: "A behaviour task, three ways",
       sub: "Answer in the form [ANS] x, every time" },
@@ -283,7 +283,7 @@ print(gen(fm, "Q: %s\nA:" % FACT_Q[0]))                               # fine-tun
 
     { t: "callout", kind: "good", title: "They compose, and the composition is the usual answer",
       body: [
-        { t: "p", text: "The reference\u2019s line is *\u201cfine-tune the style, use RAG for the facts\u201d*, and the measurements support treating these as layers rather than as a choice. A production system commonly has all three: a fine-tune for the answer format and refusal behaviour, retrieval for the content, and a short prompt for the per-request specifics." },
+        { t: "p", text: "The line is *\u201cfine-tune the style, use RAG for the facts\u201d*, and the measurements support treating these as layers rather than as a choice. A production system commonly has all three: a fine-tune for the answer format and refusal behaviour, retrieval for the content, and a short prompt for the per-request specifics." },
         { t: "p", text: "The ordering matters too. Prompt first because it is free and reversible; add retrieval when facts are involved; fine-tune last, once the behaviour has stopped changing and the volume justifies it. Doing it in the other order means fine-tuning a target that is still moving." }
       ] },
 

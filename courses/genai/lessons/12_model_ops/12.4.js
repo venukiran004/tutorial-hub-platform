@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "12.4",
 
-  lede: "Nine failure modes, and the two shapes they come in: a **pinned snapshot retired** \u2014 a forced march with a hard deadline and no rollback \u2014 or a **floating alias silently upgraded**, which the reference calls \u201cthe single most common version incident\u201d. The worst class is neither: it is **silent truncation** when a tokenizer changes, because no exception is raised and the answers just get worse. Measured on a real 3,000-word document, five tokenizers span 4,636 to 4,861 tokens \u2014 and **every one of them blows a 4,096 guard.**",
+  lede: "Nine failure modes, and the two shapes they come in: a **pinned snapshot retired** \u2014 a forced march with a hard deadline and no rollback \u2014 or a **floating alias silently upgraded**, which it is commonly called \u201cthe single most common version incident\u201d. The worst class is neither: it is **silent truncation** when a tokenizer changes, because no exception is raised and the answers just get worse. Measured on a real 3,000-word document, five tokenizers span 4,636 to 4,861 tokens \u2014 and **every one of them blows a 4,096 guard.**",
 
   objectives: [
     "Distinguish the pinned-retirement and silent-upgrade failure shapes",
@@ -47,7 +47,7 @@ Tuesday:   "...-latest" -> snapshot-2026-06-02    JSON parse failures: 7.1%   <-
     { t: "callout", kind: "good", title: "Two of these are fixed by *deleting* prompt text, which is counterintuitive",
       body: [
         { t: "p", text: "The chain-of-thought row and the output-format row are both cases where your prompt is compensating for a weakness the new model does not have. A \u2018think step by step\u2019 instruction given to a reasoning model that already does so produces over-thinking and inflated cost; a \u2018respond only in JSON\u2019 instruction becomes redundant when strict schema mode exists." },
-        { t: "p", text: "12.7\u2019s migration is exactly this: the fix for a 44% verbosity increase was **enabling strict schema mode and dropping instructions**, not adding more. As the reference puts it, prompts accumulate scaffolding for weaknesses the new model does not have." },
+        { t: "p", text: "12.7\u2019s migration is exactly this: the fix for a 44% verbosity increase was **enabling strict schema mode and dropping instructions**, not adding more. As it is usually put it, prompts accumulate scaffolding for weaknesses the new model does not have." },
         { t: "p", text: "Which is also the argument for 12.2\u2019s changelog. You can only safely delete a line whose purpose was recorded \u2014 and \u2018v3: added abstention rule (cut hallucinations on edge cases)\u2019 is the difference between a considered deletion and a guess." }
       ] },
 
@@ -74,7 +74,7 @@ spread: 4636 to 4861 tokens for the SAME text = 4.9% difference`,
 
     { t: "callout", kind: "insight", title: "The inter-model spread is narrower than the illustration \u2014 and the problem is worse",
       body: [
-        { t: "p", text: "The reference illustrates 4,010 against 4,380 tokens, a 9.2% gap. Measured, the real spread across five tokenizers is **4.9%** \u2014 narrower. But every one of them lands at **1.53 to 1.60 tokens per word**, well above the illustration\u2019s implied 1.34 to 1.46, so **all five exceed a 4,096 guard**, losing 11.6% to 15.7% of the document." },
+        { t: "p", text: "The usual illustration is 4,010 against 4,380 tokens, a 9.2% gap. Measured, the real spread across five tokenizers is **4.9%** \u2014 narrower. But every one of them lands at **1.53 to 1.60 tokens per word**, well above the illustration\u2019s implied 1.34 to 1.46, so **all five exceed a 4,096 guard**, losing 11.6% to 15.7% of the document." },
         { t: "p", text: "So the sharper reading is: the risk is less about models differing from each other and more about a guard calibrated on an optimistic tokens-per-word estimate. Mixed content \u2014 code, tables, formatted numbers \u2014 tokenises far more densely than prose, and a guard set from a word count is wrong for every model at once." },
         { t: "p", text: "A detail worth flagging because it looks like a bug: gpt2, roberta-base and bert-base-cased all return **exactly 4,861**. The first two legitimately share GPT-2\u2019s byte-level BPE; the third matching to the token is coincidence, confirmed by checking a short string where they give 32, 32 and 36." }
       ] },
@@ -217,7 +217,7 @@ print("TARGET model's tokens and re-measured on migration -- never carried over.
         out: `============================================================================
 A -- THE TOKENIZER CLAIM, MEASURED
 ============================================================================
-the reference says, illustratively:
+it is commonly said, illustratively:
   3,000-word document: Model A 4,010 tokens, Model B 4,380 tokens
   a 4,096 truncation guard drops the last 284 tokens silently
 
@@ -256,7 +256,7 @@ the failure is silent: no exception, no alert, the tail of the document
 simply is not in the prompt. which is why a truncation guard has to be
 expressed in the TARGET model's tokens, re-measured on migration.`,
         notes: [
-          { t: "p", text: "**The inter-model spread is 4.9%, narrower than the reference\u2019s illustrative 9.2%** \u2014 so models differ from each other less than the illustration suggests. That is the good news and it is not the finding." },
+          { t: "p", text: "**The inter-model spread is 4.9%, narrower than the illustrative 9.2%** \u2014 so models differ from each other less than the illustration suggests. That is the good news and it is not the finding." },
           { t: "p", text: "**The finding is that all five exceed a 4,096 guard**, losing 11.6% to 15.7% of the document. Every tokenizer lands at 1.53\u20131.60 tokens per word against the illustration\u2019s implied 1.34\u20131.46, so a guard calibrated from a word count is wrong for every model simultaneously rather than for one of them." },
           { t: "p", text: "**Mixed content is why.** Code, markdown tables and formatted numbers tokenise far more densely than prose \u2014 `4412-9981-0022` and `$1,284.50` fragment into many tokens each. A guard tuned on prose understates a real document, which contains all of this." },
           { t: "p", text: "**gpt2, roberta-base and bert-base-cased all return exactly 4,861**, which looks like a bug and is not. The first two genuinely share GPT-2\u2019s byte-level BPE; the third matching to the token is coincidence, and I confirmed it by checking a short string where the three give 32, 32 and 36 tokens." },

@@ -1148,7 +1148,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Scikit-learn** is no longer a `01_Python` topic — it's an ML library, now in **`04_Machine_Learning`** (the reference reference, the reference hands-on, and `00_Interview_Bank/the reference notes`)."
+     "text": "**Scikit-learn** is no longer a core Python topic — it's an ML library, so it belongs to the machine-learning track: the model-building lessons and the ML interview bank."
     }
    ]
   },
@@ -1249,7 +1249,7 @@ EC.receiveLesson({
       [
        "**Model serialization/serving formats** (joblib/ONNX)",
        "Partial",
-       "`04_Machine_Learning/the reference notes` (persistence) + `10_MLOps_and_Deployment`."
+       "the machine-learning track (persistence) and the MLOps track."
       ]
      ]
     },

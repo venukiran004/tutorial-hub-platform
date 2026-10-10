@@ -279,7 +279,7 @@ print("backbone roberta-large, rescaled with baseline = True")`,
         answer: [
           { t: "p", text: "They solve one of BLEU\u2019s two problems. Paraphrase blindness is genuinely fixed \u2014 I measured a correct paraphrase going from exactly 0.0000 under BLEU to 0.5841 under rescaled BERTScore, which is the difference between unusable and usable." },
           { t: "p", text: "Correctness is not fixed and cannot be, by any similarity metric. In the same run, a sentence with two figures swapped \u2014 so it asserts the opposite of the reference \u2014 scored 0.9233, well above the correct paraphrase. chrF scored it 0.9607." },
-          { t: "p", text: "The reason is structural: the inversion reuses the reference\u2019s content words and differs only in which number attaches to which clause. It is semantically *near* the reference and factually opposite, and embeddings represent nearness. No better encoder changes that." },
+          { t: "p", text: "The reason is structural: the inversion reuses the content words and differs only in which number attaches to which clause. It is semantically *near* the reference and factually opposite, and embeddings represent nearness. No better encoder changes that." },
           { t: "p", text: "So all three remain family-2 metrics \u2014 bounded by the reference set, and measuring closeness rather than truth. I would use one as a relative regression signal on a frozen set and gate quality on a reference-free faithfulness check, which is the thing that can see attachment." }
         ] }
     ]

@@ -32,7 +32,7 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "BLEU is precision, ROUGE is recall, and the task decides which",
       body: [
         { t: "p", text: "BLEU asks how much of the *candidate* appears in the reference, which suits translation where adding material is a fault. ROUGE asks how much of the *reference* appears in the candidate, which suits summarisation where omitting material is the fault." },
-        { t: "p", text: "In practice ROUGE is usually reported as F1, so it includes both \u2014 but the recall orientation is still in its design and its name. The asymmetry shows up in the failure modes: BLEU punishes a longer correct answer, ROUGE rewards a longer one containing the reference\u2019s words." },
+        { t: "p", text: "In practice ROUGE is usually reported as F1, so it includes both \u2014 but the recall orientation is still in its design and its name. The asymmetry shows up in the failure modes: BLEU punishes a longer correct answer, ROUGE rewards a longer one containing the usual phrasing." },
         { t: "p", text: "6.1 made the same precision-versus-recall point for retrieval, where the two metrics disagreed about which retriever was better. It is the same structural lesson: a single number conflating the two is less informative than both." }
       ] },
 
@@ -74,7 +74,7 @@ candidate : the cat sat on mat          (5 unigrams, 4 bigrams)`,
     { t: "callout", kind: "good", title: "Subsequence, not substring \u2014 gaps are allowed",
       body: [
         { t: "p", text: "`the cat sat on mat` is a **subsequence** of `the cat sat on the mat`: take positions 1, 2, 3, 4 and 6, skipping the second \u201cthe\u201d. It is not a substring, because substrings must be contiguous." },
-        { t: "p", text: "That is the property that makes ROUGE-L useful for summarisation. A summary that preserves the reference\u2019s order while omitting material scores well, which is the right behaviour \u2014 whereas a contiguity requirement would punish any omission." },
+        { t: "p", text: "That is the property that makes ROUGE-L useful for summarisation. A summary that preserves the order while omitting material scores well, which is the right behaviour \u2014 whereas a contiguity requirement would punish any omission." },
         { t: "p", text: "It is also why ROUGE-L is the only variant in 8.3\u2019s adversarial test that noticed the inverted sentence, scoring 0.7222 against 1.0000 for the exact copy. LCS is order-sensitive where bags of n-grams are not \u2014 though it still ranked the wrong sentence above a correct paraphrase." }
       ] },
 
@@ -92,12 +92,12 @@ candidate : the cat sat on mat          (5 unigrams, 4 bigrams)`,
       body: [
         { t: "p", text: "A reference stating two latency figures, and a candidate with those two figures **swapped** \u2014 so it asserts the opposite \u2014 scored **ROUGE-1 = 1.0000 and ROUGE-2 = 1.0000**, tying the exact copy. A correct paraphrase scored 0.2581 and 0.1379." },
         { t: "p", text: "The mechanism is now obvious from this lesson\u2019s arithmetic: swapping two tokens preserves the unigram multiset exactly, and in that sentence it preserved nearly all bigrams too. Bags of n-grams cannot encode which number attaches to which clause." },
-        { t: "p", text: "So the reference\u2019s warning \u2014 \u201ca summary that is factually wrong but reuses the reference\u2019s vocabulary scores well\u201d \u2014 is if anything understated. It does not merely score well; it can score **perfectly**." }
+        { t: "p", text: "So the warning \u2014 \u201ca summary that is factually wrong but reuses the vocabulary scores well\u201d \u2014 is if anything understated. It does not merely score well; it can score **perfectly**." }
       ] },
 
     { t: "callout", kind: "good", title: "So pair it with a faithfulness check, never report it alone",
       body: [
-        { t: "p", text: "The reference\u2019s instruction is the right one and 8.3 reached the same conclusion: keep ROUGE as a cheap deterministic signal for regressions on a frozen reference set, and gate quality on something that can see meaning." },
+        { t: "p", text: "The instruction is the right one and 8.3 reached the same conclusion: keep ROUGE as a cheap deterministic signal for regressions on a frozen reference set, and gate quality on something that can see meaning." },
         { t: "p", text: "Faithfulness is the natural partner because it is reference-free \u2014 it checks each claim in the summary against the source document, which needs no gold summary and so is not bounded by how many someone wrote. 9.9 computes it." },
         { t: "p", text: "And track mean summary length alongside, because a recall-oriented metric is gameable by producing more text. That is the same length problem 7.11 measured as the canonical reward hack, arriving through a different metric." }
       ] },
@@ -199,7 +199,7 @@ print("ROUGE-1 precision %.4f  recall %.4f  F1 %.4f" % (p, r, f))`,
     { t: "callout", kind: "scenario", title: "Interview scenario",
       body: [
         { t: "p", text: "**\u201cCompute ROUGE and tell me which variant to report.\u201d**" },
-        { t: "p", text: "One formula with the unit swapped. Overlap over reference n-grams is recall, overlap over candidate n-grams is precision, and F1 is the harmonic mean \u2014 with matches clipped to the reference\u2019s count, exactly as in BLEU." },
+        { t: "p", text: "One formula with the unit swapped. Overlap over reference n-grams is recall, overlap over candidate n-grams is precision, and F1 is the harmonic mean \u2014 with matches clipped to the count, exactly as in BLEU." },
         { t: "p", text: "On \u2018the cat sat on the mat\u2019 against \u2018the cat sat on mat\u2019: ROUGE-1 overlap is 5, so recall 5/6, precision 5/5, F1 0.9091. ROUGE-2 overlap is 3 of 5 reference bigrams and 4 candidate bigrams, giving F1 0.6667. ROUGE-L uses the longest common subsequence, which is 5 here, so 0.9091 again." },
         { t: "p", text: "The gap between ROUGE-1 and ROUGE-2 is worth explaining because it is the whole reason variants exist. Dropping one token removes one unigram but destroys two bigrams \u2014 `on-the` and `the-mat` \u2014 and introduces one that is not in the reference. Every token sits in up to two bigrams, so a single edit has roughly double the effect at that order." },
         { t: "p", text: "Which to report: ROUGE-1 and ROUGE-L together, with precision and recall rather than only F1. ROUGE-1 alone cannot see a reordering \u2014 I scrambled the candidate and ROUGE-1 stayed at exactly 0.9091 while ROUGE-L dropped to 0.7273 and ROUGE-2 to 0.2500. LCS is order-sensitive where a bag of unigrams is not." },
@@ -234,7 +234,7 @@ print("ROUGE-1 precision %.4f  recall %.4f  F1 %.4f" % (p, r, f))`,
           "Because clipping applies only at bigram level and above"
         ],
         answer: 1,
-        why: "Removing the second \"the\" costs one unigram from the overlap but eliminates both `on-the` and `the-mat`, replacing them with `on-mat`, which the reference does not contain \u2014 so overlap falls from 5/6 to 3/5. Generalising, one changed token breaks up to n n-grams at order n, which is exactly why higher orders capture local word order. Both variants use the same precision, recall and F1 definitions, and clipping applies at every order." },
+        why: "Removing the second \"the\" costs one unigram from the overlap but eliminates both `on-the` and `the-mat`, replacing them with `on-mat`, which the usual treatment does not contain \u2014 so overlap falls from 5/6 to 3/5. Generalising, one changed token breaks up to n n-grams at order n, which is exactly why higher orders capture local word order. Both variants use the same precision, recall and F1 definitions, and clipping applies at every order." },
 
       { stem: "A candidate's tokens are reordered. ROUGE-1 stays at 0.9091 while ROUGE-L drops to 0.7273. What does this show?",
         options: [
@@ -277,7 +277,7 @@ print("ROUGE-1 precision %.4f  recall %.4f  F1 %.4f" % (p, r, f))`,
         strong: "A strong answer explains what each can and cannot see.",
         answer: [
           { t: "p", text: "Same formula, different unit. ROUGE-1 counts unigram overlap, which measures content. ROUGE-2 counts bigrams, which adds local word order. ROUGE-L uses the longest common subsequence, which measures structure while allowing gaps." },
-          { t: "p", text: "On one pair I worked \u2014 \u2018the cat sat on the mat\u2019 against \u2018the cat sat on mat\u2019 \u2014 ROUGE-1 F1 is 0.9091, ROUGE-2 is 0.6667 and ROUGE-L is 0.9091. The ROUGE-2 gap is because the dropped token destroys two bigrams and adds one the reference does not have; every token sits in up to two bigrams." },
+          { t: "p", text: "On one pair I worked \u2014 \u2018the cat sat on the mat\u2019 against \u2018the cat sat on mat\u2019 \u2014 ROUGE-1 F1 is 0.9091, ROUGE-2 is 0.6667 and ROUGE-L is 0.9091. The ROUGE-2 gap is because the dropped token destroys two bigrams and adds one the usual treatment does not have; every token sits in up to two bigrams." },
           { t: "p", text: "The difference that matters practically is that ROUGE-1 cannot see a reordering. I scrambled the candidate and ROUGE-1 stayed at exactly 0.9091 \u2014 it depends only on the bag of unigrams \u2014 while ROUGE-L fell to 0.7273 and ROUGE-2 to 0.2500." },
           { t: "p", text: "So I would report ROUGE-1 and ROUGE-L together, with precision and recall separately rather than only F1. Equal ROUGE-1 with lower ROUGE-L is the signature of a reordering, and nothing else in the family detects one." }
         ] },

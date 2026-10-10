@@ -285,7 +285,7 @@ for label, hr in (("on demand $2.00", 2.00), ("1-yr reserved $1.20", 1.20),
           { t: "p", text: "**At a 3:1 peak-to-mean ratio, self-hosting a 70B never beats GPT-4o-mini or a hosted Llama endpoint — at any volume.** It converges to $1.128 per million while they sit at $0.263 and $0.550. The only comparison it wins is against the frontier model, from about 50M tokens a day." },
           { t: "p", text: "The utilisation column explains it: 33% at two billion tokens a day, because provisioning for a 3× peak caps utilisation at 1/3 by construction. Volume cannot fix that; only flattening the peak can." },
           { t: "p", text: "**Reserved and spot pricing change the verdict more than any technique in this module.** $2.00 to $0.60 an hour takes the 100M-tokens-a-day case from $1.440 to $0.432, which now beats the hosted Llama endpoint. A procurement decision outperformed quantization, batching and speculative decoding combined — and the model-side ceiling on all three of those is about 4×, 5.2× and 1.13× respectively." },
-          { t: "p", text: "Two honest limits. This counts GPU-hours only: no engineering time, no on-call, no load balancer, no idle standby capacity, no model-storage or egress costs — all of which favour the API side, and some of which are larger than the compute. And the 1,500 tokens/sec figure is the reference's; 3.5 showed that throughput numbers are hardware- and traffic-specific, so a real decision needs that measured on the real workload." }
+          { t: "p", text: "Two honest limits. This counts GPU-hours only: no engineering time, no on-call, no load balancer, no idle standby capacity, no model-storage or egress costs — all of which favour the API side, and some of which are larger than the compute. And the 1,500 tokens/sec figure is the; 3.5 showed that throughput numbers are hardware- and traffic-specific, so a real decision needs that measured on the real workload." }
         ] } },
 
     { t: "callout", kind: "mental", title: "The model to keep",
@@ -321,7 +321,7 @@ for label, hr in (("on demand $2.00", 2.00), ("1-yr reserved $1.20", 1.20),
   quiz: {
     title: "Check yourself",
     questions: [
-      { stem: "The reference puts a self-hosted 70B INT4 at $0.48 per million tokens, but the naive arithmetic gives $0.370. Both of its figures are 1.30× the naive value. What does that indicate?",
+      { stem: "It is usually put a self-hosted 70B INT4 at $0.48 per million tokens, but the naive arithmetic gives $0.370. Both of its figures are 1.30× the naive value. What does that indicate?",
         options: [
           "An arithmetic slip repeated in both rows",
           "An unstated utilisation assumption of about 77%",

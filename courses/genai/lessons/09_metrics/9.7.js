@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "9.7",
 
-  lede: "Run the task k times and count it a pass if any run succeeds. The unbiased estimator from n samples with c correct is verified at four values of k: with n = 10 and c = 7, pass@1 = **0.7000**, pass@2 = **0.9333**, pass@5 and pass@10 = **1.0000**. The last two are 1.0 because you cannot choose 5 failures from only 3 \u2014 and the reference\u2019s framing of what that means is the most useful thing here: pass@k with k > 1 is a product metric **only if the product actually retries**.",
+  lede: "Run the task k times and count it a pass if any run succeeds. The unbiased estimator from n samples with c correct is verified at four values of k: with n = 10 and c = 7, pass@1 = **0.7000**, pass@2 = **0.9333**, pass@5 and pass@10 = **1.0000**. The last two are 1.0 because you cannot choose 5 failures from only 3 \u2014 and the framing of what that means is the most useful thing here: pass@k with k > 1 is a product metric **only if the product actually retries**.",
 
   objectives: [
     "Derive the unbiased pass@k estimator and read it in words",
@@ -37,7 +37,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "With k = 1 the formula reduces to 1 \u2212 (n\u2212c)/n = c/n. So pass@1 is just 7/10 = 0.7000, and there is nothing estimator-ish about it \u2014 the machinery only does work for k > 1." },
         { t: "p", text: "That makes pass@1 the honest headline for any product that gives the user one attempt, and it is the number to lead with unless the system retries. 9.1\u2019s family-4 framing applies: it is a behavioural metric over a checkable outcome, which is the closest thing to truth available." },
-        { t: "p", text: "The jump from 0.7000 to 0.9333 at k = 2 is large, and it is the reason the reference says one automatic retry \u201cmakes the product usable\u201d. Whether you are entitled to quote that depends entirely on whether the retry exists." }
+        { t: "p", text: "The jump from 0.7000 to 0.9333 at k = 2 is large, and it is the reason it is commonly said one automatic retry \u201cmakes the product usable\u201d. Whether you are entitled to quote that depends entirely on whether the retry exists." }
       ] },
 
     { t: "h2", n: "02", id: "boundary", text: "Why n must exceed k",

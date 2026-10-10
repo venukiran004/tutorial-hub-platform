@@ -94,7 +94,7 @@ for idx in CRANK[i]:
     { t: "h2", n: "02", id: "selfrag", text: "Self-RAG and corrective RAG",
       sub: "Control flow, not retrieval" },
 
-    { t: "p", text: "The remaining patterns in the reference\u2019s list are different in kind. Small-to-big changes *what* is retrieved; Self-RAG and corrective RAG change *what happens next* \u2014 they add a grading step and a branch." },
+    { t: "p", text: "The remaining patterns in the list are different in kind. Small-to-big changes *what* is retrieved; Self-RAG and corrective RAG change *what happens next* \u2014 they add a grading step and a branch." },
 
     { t: "dl", items: [
       { k: "Self-RAG", v: "After retrieving, the model grades whether each passage is relevant and whether its own draft answer is supported by them. Low grades trigger re-retrieval or abstention. The mechanism is a critique loop, and its cost is one or more extra model calls per query." },

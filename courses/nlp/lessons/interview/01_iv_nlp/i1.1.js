@@ -500,7 +500,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Which to pick:** understand/classify/embed a fixed text → **encoder-only**; generate/chat/reason → **decoder-only** (the default for general-purpose LLMs); strict source→target transduction → **encoder-decoder**. Deeper mechanics, training objectives, and worked examples: [the reference notes §12](../the reference notes#12-types-bert-gpt-t5)."
+     "text": "**Which to pick:** understand/classify/embed a fixed text → **encoder-only**; generate/chat/reason → **decoder-only** (the default for general-purpose LLMs); strict source→target transduction → **encoder-decoder**. Deeper mechanics, training objectives, and worked examples: the encoder/decoder family table."
     }
    ],
    "kind": ""

@@ -4,7 +4,7 @@
 EC.receiveLesson({
   id: "3.4",
 
-  lede: "**BLEU, METEOR and BERTScore all rank `the mat sat on the cat` at least as highly as a correct paraphrase of `the cat sat on the mat`.** BLEU gives the reversed sentence 0.2857 against the paraphrase's 0.0955. METEOR gives it 0.8519 against 0.4259. BERTScore ties them at 0.9631 and 0.9635 — four ten-thousandths apart. Three generations of metric, each fixing the last one's weakness, and none of them notices that subject and object were swapped. This lesson computes every metric the reference names and establishes what each one cannot see.",
+  lede: "**BLEU, METEOR and BERTScore all rank `the mat sat on the cat` at least as highly as a correct paraphrase of `the cat sat on the mat`.** BLEU gives the reversed sentence 0.2857 against the paraphrase's 0.0955. METEOR gives it 0.8519 against 0.4259. BERTScore ties them at 0.9631 and 0.9635 — four ten-thousandths apart. Three generations of metric, each fixing the last one's weakness, and none of them notices that subject and object were swapped. This lesson computes every metric the common name is and establishes what each one cannot see.",
 
   objectives: [
     "Choose between micro, macro and weighted averaging and justify it from the class distribution",
@@ -55,7 +55,7 @@ EC.receiveLesson({
 "from rouge_score import rouge_scorer\n\nscorer = rouge_scorer.RougeScorer([\"rouge1\", \"rouge2\", \"rougeL\"],\n                                  use_stemmer=True)\nscores = scorer.score(\"The cat sat on the mat.\",\n                      \"The cat is on the mat.\")\nfor metric, v in scores.items():\n    print(f\"{metric}: P={v.precision:.3f} R={v.recall:.3f} F1={v.fmeasure:.3f}\")" },
 
     { t: "out", text:
-"rouge1   P=0.833 R=0.833 F1=0.833\nrouge2   P=0.600 R=0.600 F1=0.600\nrougeL   P=0.833 R=0.833 F1=0.833\n\nthe reference quotes rouge1 P=R=F1=0.857" },
+"rouge1   P=0.833 R=0.833 F1=0.833\nrouge2   P=0.600 R=0.600 F1=0.600\nrougeL   P=0.833 R=0.833 F1=0.833\n\nthe quoted figure is rouge1 P=R=F1=0.857" },
 
     { t: "callout", kind: "warn", title: "0.833, not 0.857 — check the arithmetic",
       body: [{ t: "p", text: "Both sentences have six tokens. Five overlap — *the* twice, plus *cat*, *on*, *mat* — so precision and recall are both 5/6 = **0.8333**. The quoted 0.857 is 6/7, which would require a seven-token sentence. ROUGE-2 at 0.600 reproduces exactly (3 of 5 bigrams). It is a small slip, but it is the kind worth catching: a metric you cannot derive by hand is a metric you cannot debug when it moves unexpectedly." }] },
@@ -89,7 +89,7 @@ EC.receiveLesson({
     { t: "p", text: "Both were designed to fix BLEU's surface matching. METEOR adds stem and WordNet-synonym matching plus a fragmentation penalty for word order; BERTScore abandons string matching entirely and greedily aligns contextual embeddings." },
 
     { t: "code", lang: "python", title: "BERTScore", code:
-"from bert_score import score\n\nP, R, F1 = score([\"It's a lovely day outside\"],\n                 [\"The weather is beautiful today\"],\n                 lang=\"en\", model_type=\"roberta-large\")\nprint(F1.item())      # 0.9342 - the reference says ~0.90\n\n# the authors recommend rescaling against a random baseline,\n# because raw scores are compressed into a narrow high band\nP, R, F1 = score(cands, refs, lang=\"en\", model_type=\"roberta-large\",\n                 rescale_with_baseline=True)",
+"from bert_score import score\n\nP, R, F1 = score([\"It's a lovely day outside\"],\n                 [\"The weather is beautiful today\"],\n                 lang=\"en\", model_type=\"roberta-large\")\nprint(F1.item())      # 0.9342 - it is commonly said ~0.90\n\n# the authors recommend rescaling against a random baseline,\n# because raw scores are compressed into a narrow high band\nP, R, F1 = score(cands, refs, lang=\"en\", model_type=\"roberta-large\",\n                 rescale_with_baseline=True)",
       caption: "The paraphrase scores 0.9342 with no shared content words at all — the ~0.90 reproduces." },
 
     { t: "h2", n: "07", text: "The test every metric fails", id: "failure" },

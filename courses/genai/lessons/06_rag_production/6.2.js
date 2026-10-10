@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "6.2",
 
-  lede: "The reference gives a production checklist and a scalability ladder \u2014 FAISS under 100K documents, a single-node database to 10M, distributed beyond that. The ladder is sound and the thresholds are about the wrong quantity. Measured in 5.5, exact search over 100,000 vectors took **8.4 ms** and over a million an extrapolated **75 ms**, which is nothing against generation. What actually forces each step is **memory and operations**: a million 384-dimension vectors is **1.5 GB resident**, and an HNSW index over ten million takes an **hour to build**, which turns re-indexing from a deploy step into a scheduled job.",
+  lede: "The common form gives a production checklist and a scalability ladder \u2014 FAISS under 100K documents, a single-node database to 10M, distributed beyond that. The ladder is sound and the thresholds are about the wrong quantity. Measured in 5.5, exact search over 100,000 vectors took **8.4 ms** and over a million an extrapolated **75 ms**, which is nothing against generation. What actually forces each step is **memory and operations**: a million 384-dimension vectors is **1.5 GB resident**, and an HNSW index over ten million takes an **hour to build**, which turns re-indexing from a deploy step into a scheduled job.",
 
   objectives: [
     "Identify what actually forces each step up the scalability ladder",
@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "ladder", text: "The ladder, and what each rung is really about",
       sub: "Not search speed" },
 
-    { t: "p", text: "The reference\u2019s thresholds \u2014 under 100K, 100K to 10M, 10M to 1B, beyond \u2014 are the standard advice and they correlate with something real. 5.5 measured what that something is, and it is not latency." },
+    { t: "p", text: "The thresholds \u2014 under 100K, 100K to 10M, 10M to 1B, beyond \u2014 are the standard advice and they correlate with something real. 5.5 measured what that something is, and it is not latency." },
 
     { t: "code", lang: "python", title: "5.5 \u2014 exact search against corpus size", code: `for n in (1_000, 10_000, 100_000, 1_000_000, 10_000_000):
     idx = faiss.IndexFlatIP(D)
@@ -68,7 +68,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "Everything that is actually *retrieval* \u2014 embedding, searching, fusing \u2014 is single-digit milliseconds. The two expensive stages are the cross-encoder and the HyDE generation, and both are models rather than indexes." },
         { t: "p", text: "That reframes latency work. Tuning `ef_search` or `nprobe` to shave milliseconds off an index that costs 9 ms is optimising 1% of the request. Deciding whether the re-ranker is on, and at what shortlist depth, is optimising the other 99% \u2014 and 5.9 measured the depth as a direct linear dial, 524 ms at depth 5 against 3,961 ms at depth 50." },
-        { t: "p", text: "The reference\u2019s latency list puts ANN tuning at number two and query caching at number four. On these measurements the order is nearly reversed: cache first, decide about the re-ranker second, and tune the index only once it is actually the bottleneck." }
+        { t: "p", text: "The latency list puts ANN tuning at number two and query caching at number four. On these measurements the order is nearly reversed: cache first, decide about the re-ranker second, and tune the index only once it is actually the bottleneck." }
       ] },
 
     { t: "viz", title: "Where a RAG request's time goes", caption: "Retrieval is single-digit milliseconds. The expensive stages are the optional model calls.",
@@ -115,7 +115,7 @@ EC.receiveLesson({
     { t: "callout", kind: "good", title: "Hashing is the cheapest thing in this lesson",
       body: [
         { t: "p", text: "A SHA-256 over a document is microseconds; embedding its chunks is seconds. So the check that decides *whether* to re-embed costs a tiny fraction of the work it avoids, and it is correct rather than heuristic \u2014 a changed byte changes the hash." },
-        { t: "p", text: "Store the hash alongside the vectors and use it as the record id, as the reference suggests. Re-ingesting identical content then overwrites the same row instead of creating a duplicate, which also removes the deduplication problem 6.8 runs into." },
+        { t: "p", text: "Store the hash alongside the vectors and use it as the record id, as the usual suggestion is. Re-ingesting identical content then overwrites the same row instead of creating a duplicate, which also removes the deduplication problem 6.8 runs into." },
         { t: "p", text: "Store an `updated_at` with it too. It costs nothing, it makes freshness auditable, and it gives you a tiebreak for preferring recent chunks when two are equally relevant." }
       ] },
 
@@ -135,7 +135,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "6.8 measures what happens when query and index embeddings come from different models: recall fell from 95% to 50% with **nothing raising an error**, because the dimensionality happened to match." },
         { t: "p", text: "So changing the embedding model requires re-embedding the entire corpus into a new index and cutting over atomically. There is no incremental path \u2014 a half-migrated index is one where some vectors are comparable to the query and some are noise, and no amount of recall tuning fixes it." },
-        { t: "p", text: "Pin the embedding model as a versioned dependency and treat a version bump as a corpus migration with a blue-green cutover. That is the whole of the reference\u2019s advice on this and it is correct." }
+        { t: "p", text: "Pin the embedding model as a versioned dependency and treat a version bump as a corpus migration with a blue-green cutover. That is the whole of the advice on this and it is correct." }
       ] },
 
     { t: "h2", n: "05", id: "checklist", text: "The checklist, weighted",

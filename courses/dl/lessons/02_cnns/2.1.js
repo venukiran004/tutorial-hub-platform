@@ -33,7 +33,7 @@ for i in range(3):
 
     { t: "h2", n: "02", text: "The worked example, recomputed", id: "worked" },
 
-    { t: "p", text: "The reference works a 5×5 input against a 3×3 kernel, both alternating ones and zeros. Running it gives a different answer from the one printed." },
+    { t: "p", text: "The worked example takes a 5×5 input against a 3×3 kernel, both alternating ones and zeros. Running it gives a different answer from the one printed." },
 
     { t: "out", text: `  output:
  [[5 0 5]
@@ -43,7 +43,7 @@ for i in range(3):
   position (0,0): 1*1 + 0*0 + 1*1 + 0*0 + 1*1 + 0*0 + 1*1 + 0*0 + 1*1 = 5` },
 
     { t: "callout", kind: "warn", title: "The arithmetic is wrong here",
-      body: [{ t: "p", text: "The reference spells the first position out as `1·1 + 0·0 + 1·1 + 0·0 + 1·1 + 0·0 + 1·1 + 0·0 + 1·1` and then writes `= 4`. Those terms are five ones and four zeros, so the sum is **5**. The whole output matrix is wrong for the same reason — with this input and this kernel every position is either 5 or 0, never 4, 3 or 2. The operation the reference describes is correct; only the numbers printed beside it are not, which is exactly the sort of thing that survives in written material until somebody runs it." }] },
+      body: [{ t: "p", text: "It is worth spelling the first position out as `1·1 + 0·0 + 1·1 + 0·0 + 1·1 + 0·0 + 1·1 + 0·0 + 1·1` and then writes `= 4`. Those terms are five ones and four zeros, so the sum is **5**. The whole output matrix is wrong for the same reason — with this input and this kernel every position is either 5 or 0, never 4, 3 or 2. The operation the usual description is is correct; only the numbers printed beside it are not, which is exactly the sort of thing that survives in written material until somebody runs it." }] },
 
     { t: "diagram", kind: "matrix", title: "What the correct output actually is",
       caption: "The alternating input and the plus-shaped kernel either line up completely (all five ones meet ones) or not at all. There is no middle value available.",

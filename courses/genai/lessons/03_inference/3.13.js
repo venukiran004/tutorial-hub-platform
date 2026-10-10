@@ -144,7 +144,7 @@ tid = int(mask.argmax())`,
         { t: "p", text: "So constrained decoding converts a *loud* failure into a *silent* one. An unparseable response raises an exception you handle; a schema-perfect fabrication flows straight into your database. That is a better trade for an application that was crashing on malformed JSON, and a worse one for an application that was relying on the crash." }
       ] },
 
-    { t: "callout", kind: "note", title: "What the reference claims, and what it means",
+    { t: "callout", kind: "note", title: "What it is commonly claimed, and what it means",
       body: [
         { t: "p", text: "The Outlines example carries the comment: *\"result is GUARANTEED to be valid Person\"* and *\"structurally correct by construction\"*. Both are precisely true, and the second one contains the qualifier that matters — **structurally**." },
         { t: "p", text: "Its own worked example — \"John is a 30-year-old engineer\" producing `Person(name='John', age=30, occupation='engineer')` — shows the happy case, where a capable model had the answer and only needed the shape enforced. My GPT-2 measurement shows what the same guarantee looks like when the model does not know: the shape is still perfect." },

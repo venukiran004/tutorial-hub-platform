@@ -217,7 +217,7 @@ for epoch in range(100):
       solution: { lang: "python", title: "Solution sketch",
         code: `best, counter, patience = float("inf"), 0, 10
 for epoch in range(100):
-    ...  # train and validate as in the reference loop
+    ...  # train and validate as in the training loop above
     if val_loss < best:
         best, counter = val_loss.item(), 0; torch.save(model.state_dict(), "best.pt")
     else:

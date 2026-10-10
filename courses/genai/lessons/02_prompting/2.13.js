@@ -7,7 +7,7 @@ EC.receiveLesson({
     "Structure a prompt so a cache prefix survives across requests",
     "Identify the four common constructions that silently break a cache",
     "Resolve the conflict between caching and dynamic few-shot selection",
-    "Apply the other token-reduction levers the reference lists, in order of effect",
+    "Apply the other token-reduction levers the common list has, in order of effect",
     "Verify a cache is hitting rather than assuming it"
   ],
 
@@ -89,7 +89,7 @@ def test_prefix_is_stable():
       caption: "The fourth row is the one people miss. A fixed core of five examples covering the common cases, plus two retrieved for the specific query, keeps the majority of the example tokens in the cached prefix." },
 
     { t: "h2", n: "04", id: "other-levers", text: "The other levers, in order of effect",
-      sub: "The reference lists eight; they are not equal" },
+      sub: "The common list has eight; they are not equal" },
 
     { t: "table",
       head: ["Lever", "Typical effect", "Where it is covered"],
@@ -103,7 +103,7 @@ def test_prefix_is_stable():
         ["Reduce `max_tokens` to expected length", "Bounds the worst case only", "1.5"],
         ["Streaming", "**Zero** — same cost, better perceived latency", "1.12"]
       ],
-      caption: "From the reference notes section 13. The last row is listed there as a cost strategy and is not one — 1.12 measured that streaming costs exactly the same, and only aborting saves anything." },
+      caption: "The last row is listed there as a cost strategy and is not one — 1.12 measured that streaming costs exactly the same, and only aborting saves anything." },
 
     { t: "p", text: "The ordering matters because effort spent on row six — trimming words from a prompt — is effort not spent on rows one and two, which are an order of magnitude larger. A 20% shorter system prompt on a workload that should have been batched is a rounding error on a bill that could have been halved." },
 

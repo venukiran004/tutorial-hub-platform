@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "7.4",
 
-  lede: "A reward model turns comparisons into a scalar, and the Bradley-Terry loss that does it depends **only on differences of rewards**. That is not a footnote \u2014 it means the absolute scale is mathematically unidentifiable. I fitted the same 4,000 comparisons twice, once from zero and once from an initialisation of 100 everywhere, and the fitted scores differed by about 100 while every pairwise difference matched to **0.000000**. The reference\u2019s worked numbers all check out exactly, and the property they rest on is this one.",
+  lede: "A reward model turns comparisons into a scalar, and the Bradley-Terry loss that does it depends **only on differences of rewards**. That is not a footnote \u2014 it means the absolute scale is mathematically unidentifiable. I fitted the same 4,000 comparisons twice, once from zero and once from an initialisation of 100 everywhere, and the fitted scores differed by about 100 while every pairwise difference matched to **0.000000**. The worked numbers all check out exactly, and the property they rest on is this one.",
 
   objectives: [
     "Write the Bradley-Terry loss and read it in words",
@@ -88,7 +88,7 @@ loss = lambda gap: -np.log(sig(gap))`,
     { t: "h2", n: "04", id: "unidentifiable", text: "The absolute scale carries no information",
       sub: "Demonstrated exactly, not argued" },
 
-    { t: "p", text: "The reference states that \u201cthe absolute scale is meaningless (only differences matter), so normalise scores before use\u201d. That is a strong claim and it is provable in one experiment: fit the same comparisons from two very different starting points and compare." },
+    { t: "p", text: "It is commonly stated that \u201cthe absolute scale is meaningless (only differences matter), so normalise scores before use\u201d. That is a strong claim and it is provable in one experiment: fit the same comparisons from two very different starting points and compare." },
 
     { t: "code", lang: "python", title: "g74.py \u00a7C \u2014 fit 4,000 comparisons from six latent rewards", code: `true_r = np.array([2.0, 1.4, 0.9, 0.3, -0.5, -1.2])
 for _ in range(4000):
@@ -181,7 +181,7 @@ def fit(pairs, n_items, iters=4000, lr=0.25, init=None):
     { t: "h2", n: "05", id: "accuracy", text: "Judging a reward model",
       sub: "And the ceiling nobody mentions" },
 
-    { t: "p", text: "The reference\u2019s metric is the right one: held-out preference accuracy, meaning how often \\(r(y_w) > r(y_l)\\). It also gives a floor \u2014 below about 65% and downstream RL chases noise. What it does not mention is that the ceiling is not 100%." },
+    { t: "p", text: "The metric is the right one: held-out preference accuracy, meaning how often \\(r(y_w) > r(y_l)\\). It also gives a floor \u2014 below about 65% and downstream RL chases noise. What it does not mention is that the ceiling is not 100%." },
 
     { t: "code", lang: "python", title: "g74.py \u00a7D \u2014 fitted accuracy against the best possible", code: `def accuracy(r, pairs):
     return np.mean([r[w] > r[l] for w, l in pairs])`,

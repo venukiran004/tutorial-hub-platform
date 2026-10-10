@@ -96,7 +96,7 @@ EC.receiveLesson({
   bottleneck 1x1 256->64, 3x3 64->64, 1x1 64->256 : 70,016 parameters
   ratio 16.86x` },
 
-    { t: "p", text: "**Nearly seventeen times fewer parameters for the same input and output shape.** The reference quotes 4× on FLOPs, which is the more commonly cited figure; on parameters the saving is larger still because the expensive 3×3 now operates on 64 channels rather than 256, and its cost goes as the square of the channel count. This is what lets ResNet-50 and above be deep without being enormous — ResNet-50 is 25.6 M against VGG's 138 M." },
+    { t: "p", text: "**Nearly seventeen times fewer parameters for the same input and output shape.** The quoted figure is 4× on FLOPs, which is the more commonly cited figure; on parameters the saving is larger still because the expensive 3×3 now operates on 64 channels rather than 256, and its cost goes as the square of the channel count. This is what lets ResNet-50 and above be deep without being enormous — ResNet-50 is 25.6 M against VGG's 138 M." },
 
     { t: "h2", n: "06", text: "Compound scaling and ConvNeXt", id: "modern" },
 

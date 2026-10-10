@@ -35,7 +35,7 @@ EC.receiveLesson({
     }],
     max_tokens=300,
 )`,
-      caption: "From the reference notes §9. The `content` is a list, which is what makes the ordering in §02 a decision rather than an accident." },
+      caption: "The `content` is a list, which is what makes the ordering in §02 a decision rather than an accident." },
 
     { t: "ladder", title: "From description to answer", rungs: [
       { level: "bad", label: "An open invitation",

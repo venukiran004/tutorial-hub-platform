@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "6.8",
 
-  lede: "Six incident write-ups, each reproduced rather than retold. The most useful result contradicts half of one: the reference says a large ingest hurts retrieval because new documents \u201cadd noise/near-duplicates that crowd out the good chunks\u201d. Adding **20,000 off-topic chunks** \u2014 eighteen times the corpus \u2014 changed recall@5 by **nothing at all**, 95% before and after. Near-duplicates collapsed recall@1 from 75% to **20%**. Volume is harmless; duplication is the whole effect.",
+  lede: "Six incident write-ups, each reproduced rather than retold. The most useful result contradicts half of one: it is commonly said a large ingest hurts retrieval because new documents \u201cadd noise/near-duplicates that crowd out the good chunks\u201d. Adding **20,000 off-topic chunks** \u2014 eighteen times the corpus \u2014 changed recall@5 by **nothing at all**, 95% before and after. Near-duplicates collapsed recall@1 from 75% to **20%**. Volume is harmless; duplication is the whole effect.",
 
   objectives: [
     "Answer an incident question in the on-call shape: symptom, cause, mitigation, permanent fix",
@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "shape", text: "The on-call shape",
       sub: "Symptom, causes, immediate, permanent" },
 
-    { t: "p", text: "The reference frames these as interview questions to answer like on-call, and the four-part shape is the point. An answer that jumps to the permanent fix skips the part the interviewer is testing: whether you can stop the bleeding before you understand the cause." },
+    { t: "p", text: "It is usually framed these as interview questions to answer like on-call, and the four-part shape is the point. An answer that jumps to the permanent fix skips the part the interviewer is testing: whether you can stop the bleeding before you understand the cause." },
 
     { t: "p", text: "What follows reproduces each incident on the corpus used throughout M5 and M6 \u2014 1,187 chunks, 20 golden queries, 95% recall@5 at baseline \u2014 so each failure comes with a measured signature rather than a description." },
 
@@ -154,7 +154,7 @@ for n_extra in (1000, 5000, 20000):
       body: [
         { t: "p", text: "A million 384-dimension vectors is **1.5 GB** of raw vectors and searches in an extrapolated 75 ms \u2014 so memory is an application-level constraint while the latency is still invisible beside a generation. Add HNSW\u2019s graph overhead and the memory figure rises further while the latency *falls*." },
         { t: "p", text: "That is why this incident presents as an OOM rather than as a slowdown. The system is fine, fine, fine, and then the process dies \u2014 whereas latency degradation would have given you weeks of warning on a dashboard." },
-        { t: "p", text: "So the capacity test the reference asks for should project *memory* at the corpus size you expect, not just QPS. 5.3 measured truncating 384 dimensions to 128 saving two thirds of the storage for five points of recall@5, which is the cheapest lever and the one available before any sharding." }
+        { t: "p", text: "So the capacity test a common question asks for should project *memory* at the corpus size you expect, not just QPS. 5.3 measured truncating 384 dimensions to 128 saving two thirds of the storage for five points of recall@5, which is the cheapest lever and the one available before any sharding." }
       ] },
 
     { t: "callout", kind: "warn", title: "And the recall dial must be set against the eval set",
@@ -167,7 +167,7 @@ for n_extra in (1000, 5000, 20000):
     { t: "h2", n: "05", id: "hallucinate", text: "21.4 It still hallucinates, and the answer is in the corpus",
       sub: "A diagnosis with two branches and a different fix on each" },
 
-    { t: "p", text: "The reference\u2019s key insight is the one worth memorising: this is almost always a recall failure rather than a generation failure. If the relevant chunk never enters the context, the model fills the gap by inventing \u2014 and 5.7 measured that the gap is where hallucination lives." },
+    { t: "p", text: "The key insight is the one worth memorising: this is almost always a recall failure rather than a generation failure. If the relevant chunk never enters the context, the model fills the gap by inventing \u2014 and 5.7 measured that the gap is where hallucination lives." },
 
     { t: "ladder", title: "The diagnosis, in order", rungs: [
       { level: "bad", label: "Conclude the model hallucinates and change the prompt",

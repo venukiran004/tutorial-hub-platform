@@ -80,7 +80,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "harness", text: "The harness is the deliverable",
       sub: "Not the metric, and not the number" },
 
-    { t: "p", text: "The reference\u2019s second clause is the one that survives contact with a real project: build a **repeatable harness** so every prompt, model and retriever change is scored before it ships. The metric is a detail; the harness is the thing that changes behaviour." },
+    { t: "p", text: "The second clause is the one that survives contact with a real project: build a **repeatable harness** so every prompt, model and retriever change is scored before it ships. The metric is a detail; the harness is the thing that changes behaviour." },
 
     { t: "callout", kind: "good", title: "Because the alternative is evaluating by anecdote",
       body: [

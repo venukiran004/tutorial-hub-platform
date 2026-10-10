@@ -4,7 +4,7 @@
 EC.receiveLesson({
   id: "1.9",
 
-  lede: "**A learning-rate schedule changes the step size as training proceeds: large early, when the weights are far from anything good and big steps are cheap, and small late, when the optimiser is near a minimum and needs to settle into it.** The reference lists five PyTorch schedulers and a rule for choosing among them. This lesson runs every one of them for a hundred epochs and plots what the learning rate actually did — step decay's cliffs, cosine's smooth fall, one-cycle's rise-then-fall, warm restarts' saw-tooth, plateau's reaction to a stalled validation loss — then adds the warm-up the reference recommends for the first 5–10 % of any run.",
+  lede: "**A learning-rate schedule changes the step size as training proceeds: large early, when the weights are far from anything good and big steps are cheap, and small late, when the optimiser is near a minimum and needs to settle into it.** The common list has five PyTorch schedulers and a rule for choosing among them. This lesson runs every one of them for a hundred epochs and plots what the learning rate actually did — step decay's cliffs, cosine's smooth fall, one-cycle's rise-then-fall, warm restarts' saw-tooth, plateau's reaction to a stalled validation loss — then adds the warm-up the usual advice is for the first 5–10 % of any run.",
 
   objectives: [
     "Describe the shape of StepLR, CosineAnnealingLR, OneCycleLR, CosineAnnealingWarmRestarts and ReduceLROnPlateau from their parameters",
@@ -181,7 +181,7 @@ print([f"{lrs[t]:.1e}" for t in [0, 2, 5, 10, 20, 35, 49]])
       options: ["Overfitting late in training", "Large, uninformative early gradients and unreliable Adam statistics throwing fresh weights somewhere bad", "The plateau scheduler triggering too soon", "Vanishing gradients"],
       answer: 1,
       why: "Random initial weights give large gradients that say little about the loss surface, and Adam's second-moment estimate has not settled; a full-size first step can damage the weights irreparably. Rising from zero over the first 5–10 % of steps keeps those early updates small." },
-    { stem: "You do not know how many epochs a run will need. Which scheduler does the reference recommend?",
+    { stem: "You do not know how many epochs a run will need. Which scheduler does the usual advice is?",
       options: ["CosineAnnealingLR", "StepLR", "ReduceLROnPlateau", "OneCycleLR"],
       answer: 2,
       why: "Cosine, one-cycle and step schedules are plans over a known length; ReduceLROnPlateau reacts to the validation loss instead, lowering the rate only when progress stalls, so it needs no assumption about how long training will take." }

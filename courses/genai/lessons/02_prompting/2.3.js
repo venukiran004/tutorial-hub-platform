@@ -79,7 +79,7 @@ structured_cot = """Analyze this problem step by step:
 5. Verify the answer
 
 Problem: {problem}"""`,
-      caption: "From the reference notes §3. The three differ in how much of the reasoning structure you supply rather than in what they ask the model to do." },
+      caption: "The three differ in how much of the reasoning structure you supply rather than in what they ask the model to do." },
 
     { t: "table",
       head: ["Form", "Use when", "Cost"],

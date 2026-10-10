@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "6.1",
 
-  lede: "M5 measured one number \u2014 recall \u2014 and that number is the blunt one. The reference lists six IR metrics with their formulas, and computing all of them over the retrievers built in M5 shows why more than one is needed: **BM25 has a lower Hit@5 than dense retrieval (0.90 against 0.95) and a higher MRR (0.85 against 0.84)**, so which retriever is \u201cbetter\u201d depends entirely on which metric you quote. It also tests the reference\u2019s claim that re-ranking is what moves MRR and nDCG. Measured, a cross-encoder moved nDCG by **+0.11** and MRR by **+0.03** on dense \u2014 and on an already-fused first stage it moved MAP **+0.06** while dropping Hit@5 by **\u22120.10**.",
+  lede: "M5 measured one number \u2014 recall \u2014 and that number is the blunt one. The common list has six IR metrics with their formulas, and computing all of them over the retrievers built in M5 shows why more than one is needed: **BM25 has a lower Hit@5 than dense retrieval (0.90 against 0.95) and a higher MRR (0.85 against 0.84)**, so which retriever is \u201cbetter\u201d depends entirely on which metric you quote. It also tests the claim that re-ranking is what moves MRR and nDCG. Measured, a cross-encoder moved nDCG by **+0.11** and MRR by **+0.03** on dense \u2014 and on an already-fused first stage it moved MAP **+0.06** while dropping Hit@5 by **\u22120.10**.",
 
   objectives: [
     "Compute Hit@K, Precision@K, Recall@K, MRR, MAP and nDCG from their definitions",
@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "golden", text: "The golden set gets harder",
       sub: "M5 asked whether any chunk qualified; these metrics ask how many and how high" },
 
-    { t: "p", text: "Every measurement in M5 used a binary rule: did *any* chunk in the top k come from the right document and contain the answer. That is **Hit@K**, and it is one of six metrics the reference lists. The others need the full set of relevant chunks, not just the first one." },
+    { t: "p", text: "Every measurement in M5 used a binary rule: did *any* chunk in the top k come from the right document and contain the answer. That is **Hit@K**, and it is one of six metrics the common list has. The others need the full set of relevant chunks, not just the first one." },
 
     { t: "code", lang: "python", title: "g61.py \u2014 the relevant set for each query", code: `RELEVANT = []
 for q, doc, must in QS:
@@ -33,13 +33,13 @@ for q, doc, must in QS:
       body: [
         { t: "p", text: "One query has a single relevant chunk; another has 39. **Precision@5 cannot exceed 1/5 for the first query and can reach 1.0 for the second**, so averaging precision across them is averaging two quantities with different ceilings." },
         { t: "p", text: "This is not a flaw in my golden set \u2014 it is what real corpora look like. A narrow question has one answer-bearing passage; a broad one is covered in dozens. Any metric that divides by k rather than by the relevant count inherits that." },
-        { t: "p", text: "It is the first reason to read several metrics rather than one, and the reason the reference pairs binary metrics with graded ones." }
+        { t: "p", text: "It is the first reason to read several metrics rather than one, and the reason the usual treatment pairs binary metrics with graded ones." }
       ] },
 
     { t: "h2", n: "02", id: "six", text: "Six metrics, three retrievers",
       sub: "And they do not agree" },
 
-    { t: "code", lang: "python", title: "g61.py \u2014 the definitions, straight from the reference", code: `def precision_at_k(ranked, rel, k):
+    { t: "code", lang: "python", title: "g61.py \u2014 the definitions, worth stating plainly", code: `def precision_at_k(ranked, rel, k):
     return sum(d in rel for d in ranked[:k]) / k
 
 def recall_at_k(ranked, rel, k):
@@ -149,7 +149,7 @@ def rerank(BASE, depth=20):
 
     { t: "callout", kind: "insight", title: "The claim is half right, and the half it gets wrong is informative",
       body: [
-        { t: "p", text: "On the dense first stage the re-ranker helped everything \u2014 but **nDCG moved +0.11 and MRR only +0.03**. The reference pairs those two as if they move together; they did not. Precision@5 and Recall@5 each moved +0.10 and +0.11, more than MRR did." },
+        { t: "p", text: "On the dense first stage the re-ranker helped everything \u2014 but **nDCG moved +0.11 and MRR only +0.03**. The usual treatment pairs those two as if they move together; they did not. Precision@5 and Recall@5 each moved +0.10 and +0.11, more than MRR did." },
         { t: "p", text: "The reason is that MRR only looks at the *first* relevant result, and dense retrieval was already putting one near the top \u2014 MRR 0.84 means the first hit averages about rank 1.2. There was little room to improve it. What the re-ranker actually did was pull the *other* relevant chunks up, which is what nDCG, precision and recall at 5 reward." },
         { t: "p", text: "So the sharper statement is: **a re-ranker moves the metrics that count all the relevant results, not the one that counts only the first.** If your first stage already lands one good chunk at rank 1, MRR cannot show you what re-ranking bought." }
       ] },
@@ -277,7 +277,7 @@ for label, BASE in (("dense", DENSE), ("RRF fusion", FUSED)):
     "**Relevant-set sizes vary enormously** (median 6, max 39 here), so precision@k has a different ceiling per query and averaging it mixes incomparable quantities.",
     "**Two metrics can rank two systems in opposite orders**: dense won Hit@5 (0.95 vs 0.90) and BM25 won MRR (0.85 vs 0.84) on the same data.",
     "**MRR rewards placing the first relevant chunk high**; Hit@K rewards finding one at all. BM25 finds fewer and ranks them higher, because exact term matches are unambiguous.",
-    "**The reference pairs MRR and nDCG as what re-ranking moves** \u2014 measured, a cross-encoder moved nDCG +0.11 and MRR only +0.03 on dense retrieval.",
+    "**The usual treatment pairs MRR and nDCG as what re-ranking moves** \u2014 measured, a cross-encoder moved nDCG +0.11 and MRR only +0.03 on dense retrieval.",
     "**Because MRR sees only the first relevant result**, and the first stage already put one near rank 1. Re-ranking lifted the *other* relevant chunks, which nDCG and precision reward.",
     "**On a fused first stage the same re-ranker raised MAP +0.06 and dropped Hit@5 \u22120.10** \u2014 better lists for some queries, unreachable answers for others.",
     "**Which of those matters is a product question**: feeding chunks to a model wants Hit@K, showing a ranked list to a person wants MAP or nDCG.",

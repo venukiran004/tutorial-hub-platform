@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "2.19",
 
-  lede: "The reference closes its prompting material with a failure-mode table and a debugging procedure, and the procedure's fourth step is \"try different phrasing — models are sensitive to wording\". That is true and it understates the case. Measured here: the same four examples with six different separators give between **1 and 6 correct of 6** — and moving the instruction to the end, which the reference recommends as a fix, took a working prompt from 6 of 6 to **0 of 6**.",
+  lede: "This module closes its prompting material with a failure-mode table and a debugging procedure, and the procedure's fourth step is \"try different phrasing — models are sensitive to wording\". That is true and it understates the case. Measured here: the same four examples with six different separators give between **1 and 6 correct of 6** — and moving the instruction to the end, which the usual advice is as a fix, took a working prompt from 6 of 6 to **0 of 6**.",
 
   objectives: [
     "Diagnose a failing prompt against the failure-mode table",
@@ -29,7 +29,7 @@ EC.receiveLesson({
         ["Inconsistency", "temperature=0; seed; more specific instructions", "Correct — and 1.7 is why it still will not be identical"],
         ["Context overflow", "Summarise first; map-reduce; prioritise chunks", "Correct. Check the token count before assuming (1.5)"]
       ],
-      caption: "From the reference notes section 19. Five of the seven fixes are sound. The first is situational in a way the table does not say, and the fourth's second suggestion should not be followed." },
+      caption: "Five of the seven fixes are sound. The first is situational in a way the table does not say, and the fourth's second suggestion should not be followed." },
 
     { t: "callout", kind: "warn", title: "\"Add 'for educational purposes'\" is not an over-refusal fix",
       body: [
@@ -104,7 +104,7 @@ for label, build in (("instruction first", lambda b: "%s\\n%s" % (INSTR, b)),
     { t: "h2", n: "04", id: "procedure", text: "The debugging procedure, reordered",
       sub: "Cheapest and most likely first" },
 
-    { t: "p", text: "The reference gives seven steps. They are all reasonable and the order is roughly the order people think of them, which is not the order of cost. Reordered by what is cheapest to check against what is most likely:" },
+    { t: "p", text: "The common form gives seven steps. They are all reasonable and the order is roughly the order people think of them, which is not the order of cost. Reordered by what is cheapest to check against what is most likely:" },
 
     { t: "ol", items: [
       "**Look at the rendered request.** Not the template — the actual string, with retrieved context and tool definitions. 2.1's incident was three weeks spent on prompt versions for a truncation that was visible in the rendered request.",
@@ -118,7 +118,7 @@ for label, build in (("instruction first", lambda b: "%s\\n%s" % (INSTR, b)),
 
     { t: "callout", kind: "good", title: "Log the prompt and response pair — the step 7",
       body: [
-        { t: "p", text: "The reference lists this last and it is a precondition rather than a step. Debugging from reproduction is slow; debugging from a log of what actually happened is fast, and the difference is whether the pair was recorded at the time." },
+        { t: "p", text: "The common list has this last and it is a precondition rather than a step. Debugging from reproduction is slow; debugging from a log of what actually happened is fast, and the difference is whether the pair was recorded at the time." },
         { t: "p", text: "2.17's field list is the minimum: prompt version, model, fingerprint. Add the rendered prompt for a sampled fraction of traffic and most of the procedure above collapses into a query (10.10 is about what you can afford to store, and the PII constraint on storing prompts)." }
       ] },
 
@@ -215,7 +215,7 @@ spread: 0 to 6 of 6`,
   quiz: {
     title: "Check yourself",
     questions: [
-      { stem: "Your few-shot prompt is not following its instruction. The reference suggests moving the instruction to the end. What happens?",
+      { stem: "Your few-shot prompt is not following its instruction. The usual suggestion is moving the instruction to the end. What happens?",
         options: ["It usually helps, due to recency", "On a few-shot prompt it can destroy it — measured, 6 of 6 fell to 0 of 6", "No change", "It only affects long prompts"],
         answer: 1,
         why: "In a few-shot prompt the examples and the query are one contiguous pattern, and putting a sentence between the last example and the query means the last thing in the context is prose — so the model continues prose. Measured, that took a working prompt to zero, which is worse than removing the instruction entirely (6 of 6). The advice is sound for an instruction-following prompt after a long document, where recency works in your favour; it inverts here, and the table does not say so." },

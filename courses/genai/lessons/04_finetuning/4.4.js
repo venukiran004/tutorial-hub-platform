@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "4.4",
 
-  lede: "The LoRA formula is `h = W\u2080x + (\u03b1/r)\u00b7BAx`, and the only part that needs explaining is the `\u03b1/r`. The reference calls it a volume knob and gives a rule: **set \u03b1 = 2r and forget it**. That rule is sound and it has a consequence nobody mentions \u2014 with \u03b1 = 2r the multiplier is *exactly 2 at every rank*, so it is not adapting to rank at all, it is pinning the scale to a constant. I ran the same LoRA fine-tune at five ranks under three scaling rules to see what that costs, and at rank 32 the `\u03b1/r` convention finished at **loss 2.241** where `\u03b1/\u221ar` finished at **0.589**. The default is safe and it measurably under-trains high ranks.",
+  lede: "The LoRA formula is `h = W\u2080x + (\u03b1/r)\u00b7BAx`, and the only part that needs explaining is the `\u03b1/r`. It is commonly called it a volume knob and gives a rule: **set \u03b1 = 2r and forget it**. That rule is sound and it has a consequence nobody mentions \u2014 with \u03b1 = 2r the multiplier is *exactly 2 at every rank*, so it is not adapting to rank at all, it is pinning the scale to a constant. I ran the same LoRA fine-tune at five ranks under three scaling rules to see what that costs, and at rank 32 the `\u03b1/r` convention finished at **loss 2.241** where `\u03b1/\u221ar` finished at **0.589**. The default is safe and it measurably under-trains high ranks.",
 
   objectives: [
     "Read the LoRA formula and say what each term contributes to the output",

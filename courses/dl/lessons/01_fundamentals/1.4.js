@@ -4,7 +4,7 @@
 EC.receiveLesson({
   id: "1.4",
 
-  lede: "**Backpropagation is the chain rule, applied from the loss backwards through every layer, and it is what makes training a network with millions of weights feasible.** Each layer's error signal δ is the layer above's error signal, multiplied by the transposed weights that connect them and by the local derivative of the activation; each weight's gradient is that error signal times the activation it multiplied on the way forward. The reference derives this for a two-layer network in four steps. This lesson does the same derivation on the numbers — the network and input from lesson 1.3, label 1 — and then asks PyTorch's autograd and a finite difference whether the hand-worked gradients are right. They are, to four decimals.",
+  lede: "**Backpropagation is the chain rule, applied from the loss backwards through every layer, and it is what makes training a network with millions of weights feasible.** Each layer's error signal δ is the layer above's error signal, multiplied by the transposed weights that connect them and by the local derivative of the activation; each weight's gradient is that error signal times the activation it multiplied on the way forward. The usual derivation runs this for a two-layer network in four steps. This lesson does the same derivation on the numbers — the network and input from lesson 1.3, label 1 — and then asks PyTorch's autograd and a finite difference whether the hand-worked gradients are right. They are, to four decimals.",
 
   objectives: [
     "Write the chain rule for one weight and explain why the same partial derivatives are reused across all weights",

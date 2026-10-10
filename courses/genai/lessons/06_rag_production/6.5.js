@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "6.5",
 
-  lede: "The reference gives three architectures for retrieving over images and tables, and lists them as options. Measured with CLIP, **the first one does not work as drawn**: every text-to-text cosine in my sample scored above every text-to-image cosine \u2014 minimum 0.7091 against maximum 0.3683, with no overlap at all. In a single store ranked by cosine, no image can ever outrank any text chunk, however relevant the image and irrelevant the text. That is not a quality problem, it is a **scale** problem, and it is the real argument for Option B.",
+  lede: "The common form gives three architectures for retrieving over images and tables, and lists them as options. Measured with CLIP, **the first one does not work as drawn**: every text-to-text cosine in my sample scored above every text-to-image cosine \u2014 minimum 0.7091 against maximum 0.3683, with no overlap at all. In a single store ranked by cosine, no image can ever outrank any text chunk, however relevant the image and irrelevant the text. That is not a quality problem, it is a **scale** problem, and it is the real argument for Option B.",
 
   objectives: [
     "Name what standard text RAG loses from a document and when that matters",
@@ -37,7 +37,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "optiona", text: "Option A, and why it fails",
       sub: "Two embedding spaces in one index, ranked by one number" },
 
-    { t: "p", text: "The reference\u2019s Option A parses documents into text chunks and image chunks, embeds each with the appropriate model \u2014 a text model and CLIP \u2014 and puts both into a unified vector store. One query, one ranked list across both modalities." },
+    { t: "p", text: "The Option A parses documents into text chunks and image chunks, embeds each with the appropriate model \u2014 a text model and CLIP \u2014 and puts both into a unified vector store. One query, one ranked list across both modalities." },
 
     { t: "p", text: "That requires the two kinds of similarity to be comparable numbers. 5.6 established that cosine is only meaningful within one embedding space; this is the same point with higher stakes, because here the two spaces are produced by two *towers* of one model that were never trained to put text and images at the same distance from each other." },
 
@@ -74,7 +74,7 @@ TV = T @ V.T                                  # text against image`,
       body: [
         { t: "p", text: "CLIP\u2019s contrastive objective only ever asks that a matching image\u2013text pair score *higher than* a mismatched one. Nothing in the loss requires matched cross-modal pairs to score as high as similar same-modal pairs, so the two embedding clouds settle into separate cones with a gap between them. It is a documented property of contrastively trained dual encoders, not an artefact of my charts." },
         { t: "p", text: "The consequence for retrieval is categorical rather than gradual. Ranking one list by cosine across both modalities sorts by *modality first* and relevance second. Every text chunk comes above every image, so a perfectly relevant chart is unreachable at any k while the index contains more than k text chunks \u2014 and 6.1 measured this corpus at 1,187." },
-        { t: "p", text: "So Option A as the reference draws it \u2014 one unified store, one ranked list \u2014 cannot work. The architecture diagram is not wrong about the components, it is wrong about the merge." }
+        { t: "p", text: "So Option A as the usual treatment draws it \u2014 one unified store, one ranked list \u2014 cannot work. The architecture diagram is not wrong about the components, it is wrong about the merge." }
       ] },
 
     { t: "callout", kind: "good", title: "What rescues Option A, if you want it",
@@ -130,9 +130,9 @@ TV = T @ V.T                                  # text against image`,
       ] },
 
     { t: "h2", n: "03", id: "optionb", text: "Option B, summarise then embed",
-      sub: "The one that works, for a reason the reference does not give" },
+      sub: "The one that works, for a reason the usual treatment does not give" },
 
-    { t: "p", text: "Option B sends each image or table to a vision model, gets a text description, and embeds *that* with the same text model as everything else. The reference presents it as a pragmatic choice. The measurement shows it is the structurally correct one: once every stored vector comes from one text model, every comparison is text-to-text and a single ranked list means something again." },
+    { t: "p", text: "Option B sends each image or table to a vision model, gets a text description, and embeds *that* with the same text model as everything else. It is usually presented it as a pragmatic choice. The measurement shows it is the structurally correct one: once every stored vector comes from one text model, every comparison is text-to-text and a single ranked list means something again." },
 
     { t: "code", lang: "python", title: "describe at ingestion, embed the description", code: `def describe_image(image_path: str) -> str:
     with open(image_path, "rb") as f:
@@ -149,7 +149,7 @@ TV = T @ V.T                                  # text against image`,
 
     { t: "callout", kind: "insight", title: "Embed the summary, retrieve the original",
       body: [
-        { t: "p", text: "This is the reference\u2019s first best practice and it is the one people get wrong. The summary exists to be *matched*; the original exists to be *reasoned over*. Passing the summary to the generator throws away the data \u2014 a chart summary says \u201crevenue rose across four quarters\u201d and cannot answer \u201cwhat was Q3?\u201d" },
+        { t: "p", text: "This is the first best practice and it is the one people get wrong. The summary exists to be *matched*; the original exists to be *reasoned over*. Passing the summary to the generator throws away the data \u2014 a chart summary says \u201crevenue rose across four quarters\u201d and cannot answer \u201cwhat was Q3?\u201d" },
         { t: "p", text: "The same applies to tables with more force, because a table summary loses every number. Embed a description of what the table covers, then put the original HTML or markdown in the context, and the model can read values out of it." },
         { t: "p", text: "It is the parent-document pattern from 5.10 in different clothing: retrieve on a small representation, generate on the large one. Worth noticing that the same shape keeps recurring \u2014 the thing that ranks well and the thing that answers well are rarely the same object." }
       ] },
@@ -190,7 +190,7 @@ TV = T @ V.T                                  # text against image`,
     { t: "h2", n: "05", id: "evaluate", text: "Evaluate per modality",
       sub: "An aggregate number hides the modality that does not work" },
 
-    { t: "p", text: "The reference\u2019s last best practice is the one that makes the rest testable: measure retrieval quality for text, table and image queries *independently*. Given the modality gap, an aggregate score is actively misleading \u2014 a system where images are never retrieved at all can post a respectable overall recall, because most queries are text queries and they work." },
+    { t: "p", text: "The last best practice is the one that makes the rest testable: measure retrieval quality for text, table and image queries *independently*. Given the modality gap, an aggregate score is actively misleading \u2014 a system where images are never retrieved at all can post a respectable overall recall, because most queries are text queries and they work." },
 
     { t: "code", lang: "python", title: "the evaluation shape", code: `for modality in ("text", "table", "image"):
     qs = [q for q in golden if q.expects == modality]

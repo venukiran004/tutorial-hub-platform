@@ -29,7 +29,7 @@ Action: search("New York population 2024")
 Observation: The population of New York City is approximately 8.3 million.
 Thought: I can now answer the question.
 Answer: Tokyo (14M) has about 5.7 million more people than NYC (8.3M).`,
-      caption: "From the reference notes §5. The model writes the Thought and the Action; your code produces the Observation and appends it. The loop ends when the model writes `Answer` instead of `Action`." },
+      caption: "The model writes the Thought and the Action; your code produces the Observation and appends it. The loop ends when the model writes `Answer` instead of `Action`." },
 
     { t: "p", text: "Mechanically this is the function-calling loop from 1.9 with the reasoning made explicit. The `Thought` lines are chain-of-thought and buy the same thing — computation before a decision — and the `Action` lines are what 1.9 called step 2, the model emitting arguments for your code to execute." },
 

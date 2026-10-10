@@ -141,7 +141,7 @@ SAME ranking, SAME labels, two standard conventions: 0.9724 vs 0.9575`,
       body: [
         { t: "p", text: "High recall means the retriever **finds** the right chunks. Low MRR means it puts them **too low**. That combination is not a retrieval failure \u2014 it is a ranking failure, and the fix is a reranker rather than a new embedding model." },
         { t: "p", text: "Q3 is the case driving it: D12 arrives at rank 9, so recall@10 is 1.0000 and reciprocal rank is 0.1111. P@5 recorded 0.0000 and threw the distinction away \u2014 it cannot tell \u201cnever found\u201d from \u201cfound at rank 9\u201d." },
-        { t: "p", text: "That is a concrete, actionable diagnosis from a scoreboard, and it is why the reference recommends recall@k as the health number, MRR or NDCG as the ranking number, and precision@k only beside the k you actually use." }
+        { t: "p", text: "That is a concrete, actionable diagnosis from a scoreboard, and it is why the usual advice is recall@k as the health number, MRR or NDCG as the ranking number, and precision@k only beside the k you actually use." }
       ] },
 
     { t: "callout", kind: "good", title: "And Q4 shows the miss no reranking can forgive",

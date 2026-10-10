@@ -32,7 +32,7 @@ few_shot = """Classify the sentiment:
 'Worst purchase ever.' -> Negative
 'It works fine.' -> Neutral
 'This product is amazing!' -> """`,
-      caption: "From the reference notes §2. Note that the few-shot version never states what the categories are — the examples establish them, including that `Neutral` exists." },
+      caption: "Note that the few-shot version never states what the categories are — the examples establish them, including that `Neutral` exists." },
 
     { t: "p", text: "That last point is the whole mechanism in miniature. The instruction says \"classify the sentiment\" and does not name a label set; the examples supply one, and the model matches the pattern. Anything you can demonstrate, you do not have to describe — which matters because format is much easier to demonstrate than to specify." },
 
@@ -122,7 +122,7 @@ for shots in (0, 1, 2, 4, 8):
     { t: "h2", n: "03", id: "the-rules", text: "The rules, and which of them held",
       sub: "Four claims, three confirmed and one not" },
 
-    { t: "p", text: "The reference gives five rules for few-shot prompting. Three of them are directly checkable on the measurement above." },
+    { t: "p", text: "The common form gives five rules for few-shot prompting. Three of them are directly checkable on the measurement above." },
 
     { t: "table",
       head: ["Rule", "Status here", "Evidence"],
@@ -193,7 +193,7 @@ selector = SemanticSimilarityExampleSelector.from_examples(
     vectorstore_cls,   # FAISS, Chroma, whatever (5.5)
     k=3,               # the three most similar to THIS query
 )`,
-      caption: "From the reference notes §2. The trade is a retrieval call per request, plus an index to maintain, in exchange for examples that are relevant rather than representative." },
+      caption: "The trade is a retrieval call per request, plus an index to maintain, in exchange for examples that are relevant rather than representative." },
 
     { t: "callout", kind: "tradeoff", title: "When dynamic selection earns its complexity",
       body: [

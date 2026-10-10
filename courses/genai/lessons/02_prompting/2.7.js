@@ -29,7 +29,7 @@ EC.receiveLesson({
 }
 
 Text: {text}"""`,
-      caption: "From the reference notes §7. Note the two devices: the shape is shown as literal JSON, and the permitted values are given as a pipe-separated enumeration rather than described." },
+      caption: "Note the two devices: the shape is shown as literal JSON, and the permitted values are given as a pipe-separated enumeration rather than described." },
 
     { t: "code", lang: "python", title: "g25.py — what each form costs", code: `P("  prompt-described JSON : %3d tokens (a request)" % n(prompt_json))
 P("  generated JSON Schema : %3d tokens (a guarantee)" % n(schema))`,

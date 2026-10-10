@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "8.2",
 
-  lede: "Perplexity is the exponential of average per-token cross-entropy, and the reference warns that it \u201cisn\u2019t comparable across tokenizers\u201d. That warning understates the size of the problem. Holding the model, the text and the **total measured surprise** fixed at 245.05 nats, perplexity would read **86.10** under T5\u2019s tokenisation and **183.80** under BERT\u2019s \u2014 a 2.13\u00d7 range produced by nothing but how the text was split. Bits-per-byte removes it, because its denominator is bytes rather than tokens.",
+  lede: "Perplexity is the exponential of average per-token cross-entropy, and the usual warning is that it \u201cisn\u2019t comparable across tokenizers\u201d. That warning understates the size of the problem. Holding the model, the text and the **total measured surprise** fixed at 245.05 nats, perplexity would read **86.10** under T5\u2019s tokenisation and **183.80** under BERT\u2019s \u2014 a 2.13\u00d7 range produced by nothing but how the text was split. Bits-per-byte removes it, because its denominator is bytes rather than tokens.",
 
   objectives: [
     "Compute perplexity from token log-probabilities",
@@ -38,7 +38,7 @@ ppl = math.exp(H)`,
       body: [
         { t: "p", text: "My test text is about retrieval-augmented generation and cross-encoder latency. gpt2 is from 2019 and has never seen that vocabulary in that arrangement, so it is genuinely surprised \u2014 a perplexity of 165 means it is effectively choosing among 165 options per token." },
         { t: "p", text: "That is the metric working correctly, and it illustrates the dependence nobody mentions alongside the tokenizer one: perplexity is a property of a **model and a corpus together**. The same model on 2019 news text would score far lower, and reporting a perplexity without saying on what is reporting half a number." },
-        { t: "p", text: "The reference\u2019s valid use \u2014 comparing checkpoints on the *same* tokenizer and dataset \u2014 holds both of those fixed, which is exactly why it is the valid use." }
+        { t: "p", text: "The valid use \u2014 comparing checkpoints on the *same* tokenizer and dataset \u2014 holds both of those fixed, which is exactly why it is the valid use." }
       ] },
 
     { t: "code", lang: "python", title: "the one-liner, which is the whole metric", code: `import math

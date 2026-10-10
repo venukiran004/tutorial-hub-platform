@@ -44,7 +44,7 @@ EC.receiveLesson({
     { t: "out", text:
 "\"New York Mets\" / \"Mets New York\"\n\n  ratio              61.5      reference says ~54\n  token_sort_ratio  100.0      reference says 100\n\n  because sorting normalises both to \"mets new york\"" },
 
-    { t: "callout", kind: "warn", title: "`ratio` gives 61.5 where the reference says ~54",
+    { t: "callout", kind: "warn", title: "`ratio` gives 61.5 where it is commonly said ~54",
       body: [{ t: "p", text: "A genuine implementation difference rather than an error. FuzzyWuzzy's `ratio` was built on Python's `difflib.SequenceMatcher`, which uses a longest-matching-block algorithm; RapidFuzz's uses **indel distance** — Levenshtein without substitutions. They give different numbers on the same input. The `~` acknowledges approximation, but the gap matters if you are migrating: **a threshold tuned on FuzzyWuzzy will not transfer to RapidFuzz unchanged**. Re-calibrate after switching libraries, exactly as you would after switching models." }] },
 
     { t: "out", text:
@@ -133,7 +133,7 @@ EC.receiveLesson({
     "RapidFuzz replaces FuzzyWuzzy: same API, C++ internals, 10-100x faster, MIT rather than GPL licensed.",
     "Each scorer fixes one failure and introduces another — choosing one is choosing which false positives you will generate.",
     "`token_sort_ratio` scores the reordered name pair at 95 where lesson 8.1's edit similarity gave 0.0909.",
-    "`ratio` returned 61.5 where the reference says ~54 — RapidFuzz uses indel distance, FuzzyWuzzy used difflib, so thresholds do not transfer between libraries.",
+    "`ratio` returned 61.5 where it is commonly said ~54 — RapidFuzz uses indel distance, FuzzyWuzzy used difflib, so thresholds do not transfer between libraries.",
     "`token_set_ratio('Smith', 'Smith Smith Smith')` = 100, because a set cannot see repetition.",
     "`partial_ratio('cat', 'category')` = 100, because any short string contained in a long one matches perfectly.",
     "A million records is 499,999,500,000 pairs — about 1.6 years at 10,000 comparisons per second.",

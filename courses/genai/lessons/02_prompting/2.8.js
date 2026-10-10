@@ -22,7 +22,7 @@ EC.receiveLesson({
     { t: "code", lang: "python", title: "chain.py — the worked example", code: `step1 = model.invoke("Extract all technical claims from this paper: {paper}")
 step2 = model.invoke(f"For each claim, find supporting evidence: {step1}")
 step3 = model.invoke(f"Write a critical review based on: {step2}")`,
-      caption: "From the reference notes §8. Three calls where a single \"review this paper\" prompt would have been one — and the paper itself appears only in the first." },
+      caption: "Three calls where a single \"review this paper\" prompt would have been one — and the paper itself appears only in the first." },
 
     { t: "p", text: "That last detail is the key to the economics. A naive expectation is that three calls cost three times one call, and they do not, because the large input — the paper — is consumed once and replaced by a much smaller intermediate. Step 2 sees a list of claims, not the document." },
 

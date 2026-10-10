@@ -23,7 +23,7 @@ EC.receiveLesson({
     { t: "out", text:
 "config: d_model 768, heads 12, d_ff 3072, layers 12, vocab 50257, max_pos 1024\n\nper block\n  W_Q, W_K, W_V   3 x (768 x 768)    1,769,472\n  W_O                 768 x 768         589,824\n  attention total                     2,359,296\n\n  W1  768 x 3072                      2,359,296\n  W2  3072 x 768                      2,359,296\n  FFN total                           4,718,592\n\n  2 LayerNorms  2 x (768 + 768)           3,072\n\n  per block                           7,080,960\n  x 12 blocks                        84,971,520\n\nembeddings\n  token     50257 x 768              38,597,376\n  position   1024 x 768                 786,432\nfinal LayerNorm                           1,536\n\nTOTAL                             124,356,864" },
 
-    { t: "p", text: "Every line reproduces the reference exactly. Note that the attention block is `4·d²` — three projections plus the output — and the FFN is `2·d·d_ff`, which at `d_ff = 4d` is `8·d²`. Twice the attention, as lesson 4.6 established." },
+    { t: "p", text: "Every line reproduces it exactly. Note that the attention block is `4·d²` — three projections plus the output — and the FFN is `2·d·d_ff`, which at `d_ff = 4d` is `8·d²`. Twice the attention, as lesson 4.6 established." },
 
     { t: "h2", n: "02", text: "Against the real checkpoint", id: "actual" },
 

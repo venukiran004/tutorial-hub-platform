@@ -21,7 +21,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Key definitions, read first", id: "definitions" },
 
-    { t: "p", text: "The reference opens with a table of terms and so does this course, because every later lesson assumes them. Read them once now; each gets its own lesson in this module." },
+    { t: "p", text: "This course opens with a table of terms and so does this course, because every later lesson assumes them. Read them once now; each gets its own lesson in this module." },
 
     { t: "dl", items: [
       ["Neuron / perceptron", "The basic unit: a weighted sum of its inputs plus a bias, passed through an activation function."],
@@ -172,7 +172,7 @@ output:         y  = h₁ − 2·h₂
   <text x="610" y="20" text-anchor="middle" class="s-sub">predictions · W⁽²⁾ is 2×4</text>
 </g></svg>` },
 
-    { t: "p", text: "Two conventions to fix now, because the reference uses both and so does PyTorch. In the maths, **W**⁽ˡ⁾ has shape (units in layer l) × (units in layer l − 1) and multiplies a column vector. In code, a batch is a matrix with one example per row, so the same layer is written `X @ W.T + b` — PyTorch's `nn.Linear(in, out)` stores its weight as (out, in) to match the maths and transposes on the way through. The numbers are identical; only the orientation differs." },
+    { t: "p", text: "Two conventions to fix now, because the usual choice is both and so does PyTorch. In the maths, **W**⁽ˡ⁾ has shape (units in layer l) × (units in layer l − 1) and multiplies a column vector. In code, a batch is a matrix with one example per row, so the same layer is written `X @ W.T + b` — PyTorch's `nn.Linear(in, out)` stores its weight as (out, in) to match the maths and transposes on the way through. The numbers are identical; only the orientation differs." },
 
     { t: "h2", n: "04", text: "The universal approximation theorem", id: "uat" },
 
@@ -227,7 +227,7 @@ print(f"total {total:,}   first layer share {first:,} / {total:,} = {first / tot
 4.bias       (10,)              10
 total 235,146   first layer share 200,960 / 235,146 = 85.5%` },
 
-    { t: "p", text: "The rule of thumb the reference draws from this survives the correction: **about 85 % of the parameters sit in the first fully connected layer**, because it multiplies the raw input size by the first hidden width. An image of 224 × 224 × 3 flattened into a first layer of 256 units would need 38.5 million weights before anything useful happened — which is the reason convolutional networks (module 2) share weights across positions instead of connecting every pixel to every unit." },
+    { t: "p", text: "The rule of thumb the usual treatment draws from this survives the correction: **about 85 % of the parameters sit in the first fully connected layer**, because it multiplies the raw input size by the first hidden width. An image of 224 × 224 × 3 flattened into a first layer of 256 units would need 38.5 million weights before anything useful happened — which is the reason convolutional networks (module 2) share weights across positions instead of connecting every pixel to every unit." },
 
     { t: "ladder", title: "Parameter counting, from one layer to a whole network", rungs: [
       { level: "Beginner", label: "One layer", code: "nn.Linear(784, 256) → 784·256 + 256 = 200,960", note: "Weights are inputs × outputs; biases are one per output." },

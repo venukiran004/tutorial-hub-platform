@@ -117,7 +117,7 @@ print(f" torch.optim.Adam after the same three gradients: θ = {p.item():.6f}")`
     { t: "p", text: "Three observations. **SGD** moves by 0.1 × gradient, so the third step, with a negative gradient, walks back. **Momentum** at the third step still moves *down* (v = 0.247 > 0) even though the gradient turned negative — the history outweighs one contrary gradient, which is what damps oscillation. **Adam's** steps are 0.001000, 0.000983, 0.000619 — all close to α = 0.001 despite gradients of 2.0, 1.5 and −0.5, because the step is m̂ / √v̂, a ratio of two quantities with the same units. That scale-invariance is why Adam's default learning rate transfers across problems and SGD's does not." },
 
     { t: "callout", kind: "trap", title: "PyTorch's momentum is not the formula",
-      body: [{ t: "p", text: "The reference writes v = βv + (1 − β)g. `torch.optim.SGD(momentum=0.9)` uses v = βv + g, without the (1 − β) factor — so the same learning rate gives steps up to ten times larger. Run the three gradients through it and θ ends at 0.2230 rather than 0.9223. Both are momentum; the learning rates are simply on different scales, and a value copied from a paper that used one convention will be wrong by 1/(1 − β) in the other." }] },
+      body: [{ t: "p", text: "It is commonly written v = βv + (1 − β)g. `torch.optim.SGD(momentum=0.9)` uses v = βv + g, without the (1 − β) factor — so the same learning rate gives steps up to ten times larger. Run the three gradients through it and θ ends at 0.2230 rather than 0.9223. Both are momentum; the learning rates are simply on different scales, and a value copied from a paper that used one convention will be wrong by 1/(1 − β) in the other." }] },
 
     { t: "h2", n: "03", text: "Adam + L2 is not AdamW", id: "adamw" },
 
@@ -160,7 +160,7 @@ for cls, kw in [(torch.optim.Adam, dict(weight_decay=0.1)), (torch.optim.AdamW, 
         ["Final training of a CNN, when Adam generalises poorly", "**SGD + momentum + cosine schedule**", "lr = 0.01–0.1, momentum = 0.9"]
       ] },
 
-    { t: "callout", kind: "tradeoff", title: "Adam versus SGD, as the reference frames it",
+    { t: "callout", kind: "tradeoff", title: "Adam versus SGD, as it is usually framed it",
       body: [{ t: "p", text: "Adam: adaptive per-parameter rates, fast convergence, a good default, robust to the learning rate. SGD with momentum: one global rate that needs tuning and a schedule, but often *generalises better* — it is empirically observed to find flatter minima. Use Adam to prototype and for transformers; use SGD for the final training of convolutional networks when you can afford the tuning; use AdamW when fine-tuning." }] },
 
     { t: "exercise", kind: "practice", title: "RMSprop by hand, then Adam's ε", difficulty: "core", minutes: 15,
@@ -206,7 +206,7 @@ print(p.item())   # 0.9555`,
       options: ["Both equally", "The large-gradient parameter", "The tiny-gradient parameter", "Neither is regularised"],
       answer: 2,
       why: "The λθ term is added to the gradient and then divided by √v̂. For the large-gradient parameter √v̂ is large and the decay is divided down to almost nothing; for the tiny-gradient one the decay term dominates the gradient and drives the update. AdamW applies λθ outside the normalisation so both decay equally." },
-    { stem: "Which optimiser and setting does the reference recommend for fine-tuning a transformer?",
+    { stem: "Which optimiser and setting does the usual advice is for fine-tuning a transformer?",
       options: ["SGD, lr 0.1", "Adam, lr 10⁻³", "AdamW, lr 10⁻⁵ to 5 × 10⁻⁵, weight decay 0.01", "RMSprop, lr 10⁻²"],
       answer: 2,
       why: "Fine-tuning moves a pretrained model a short distance, so the learning rate is a hundred times smaller than a from-scratch Adam default, and decoupled weight decay keeps the regularisation honest across parameters with very different gradient scales. AdamW at 10⁻⁵–5 × 10⁻⁵ is the standard." }

@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "6.6",
 
-  lede: "The reference\u2019s first rule for code is \u201cnever split mid-function\u201d. Measured over **1,487 functions in 139 real Python files**, the rule turns out to have a sharp shape: a function *smaller* than the chunk size is split 2\u201315% of the time, and a function *larger* than it is split **98\u2013100% of the time**. So the aggregate split rate is not a property of the chunker at all \u2014 it is a weighted average of your codebase\u2019s function-size distribution, and the only functions at risk are the ones too big to fit.",
+  lede: "The first rule for code is \u201cnever split mid-function\u201d. Measured over **1,487 functions in 139 real Python files**, the rule turns out to have a sharp shape: a function *smaller* than the chunk size is split 2\u201315% of the time, and a function *larger* than it is split **98\u2013100% of the time**. So the aggregate split rate is not a property of the chunker at all \u2014 it is a weighted average of your codebase\u2019s function-size distribution, and the only functions at risk are the ones too big to fit.",
 
   objectives: [
     "Name the five ways code differs from prose for retrieval",
@@ -120,7 +120,7 @@ for node in ast.walk(tree):
   <text x="16" y="286" class="s-sub">1,487 functions, 139 files \u2014 the aggregate 37% is just these bars weighted by your codebase</text>
 </svg>` },
 
-    { t: "code", lang: "python", title: "AST chunking, as the reference prescribes it", code: `def chunk_python_file(file_content: str, file_path: str) -> list[dict]:
+    { t: "code", lang: "python", title: "AST chunking, as the usual advice prescribes it", code: `def chunk_python_file(file_content: str, file_path: str) -> list[dict]:
     tree = ast.parse(file_content)
     lines = file_content.split("\n")
     chunks = []
@@ -150,7 +150,7 @@ for node in ast.walk(tree):
       body: [
         { t: "p", text: "Metadata, for free and exact. The name, kind, file path, line range and docstring all fall out of the parse \u2014 no model call, no inference. 6.3 argued that exact metadata is the kind safe to filter on, and this is the best-case version of it." },
         { t: "p", text: "The line range is what makes citation work properly here. 5.13 wanted citations that resolve to the actual retrieved text; for code, `path:start-end` is clickable, verifiable and stable under reformatting in a way a quoted snippet is not." },
-        { t: "p", text: "And the docstring is separately embeddable, which is the reference\u2019s key tip: embed the signature and docstring to capture *intent*, and the body to capture *implementation*. A query like \u201chow do I authenticate a user\u201d matches intent; \u201cwhere is bcrypt called\u201d matches implementation." }
+        { t: "p", text: "And the docstring is separately embeddable, which is the key tip: embed the signature and docstring to capture *intent*, and the body to capture *implementation*. A query like \u201chow do I authenticate a user\u201d matches intent; \u201cwhere is bcrypt called\u201d matches implementation." }
       ] },
 
     { t: "h2", n: "03", id: "graph", text: "The call graph, and what expansion costs",
@@ -158,7 +158,7 @@ for node in ast.walk(tree):
 
     { t: "p", text: "Code is the one domain where 6.4\u2019s knowledge graph needs no extraction model at all. The relations \u2014 calls, inherits, imports \u2014 are in the syntax, so a parser recovers them exactly. That removes the entity-resolution problem that made graph building hard, and replaces it with a different one." },
 
-    { t: "code", lang: "python", title: "g66.py \u00a7C \u2014 the graph the reference builds", code: `class CodeGraph:
+    { t: "code", lang: "python", title: "g66.py \u00a7C \u2014 the graph the usual treatment builds", code: `class CodeGraph:
     def add_file(self, path, content):
         tree = ast.parse(content)
         for node in ast.walk(tree):
@@ -180,7 +180,7 @@ for node in ast.walk(tree):
 
     { t: "callout", kind: "trap", title: "69% of the edges are unresolvable, and that is the honest baseline",
       body: [
-        { t: "p", text: "The reference\u2019s `CodeGraph` matches on `ast.Call` with an `ast.Name` function, which captures the *name being called* and nothing about what it refers to. `len`, `print`, an imported symbol and a local helper are indistinguishable, so 69% of edges point at names with no node in the graph." },
+        { t: "p", text: "The `CodeGraph` matches on `ast.Call` with an `ast.Name` function, which captures the *name being called* and nothing about what it refers to. `len`, `print`, an imported symbol and a local helper are indistinguishable, so 69% of edges point at names with no node in the graph." },
         { t: "p", text: "It also misses most real calls outright. `self.method()` and `module.function()` are `ast.Attribute`, not `ast.Name`, so the pattern silently skips them \u2014 which in object-oriented code is the majority of calls. The graph is not merely noisy, it is systematically missing the edges that matter most in a class-heavy codebase." },
         { t: "p", text: "The fix is scope resolution: track imports per module, resolve attribute access where the receiver\u2019s type is known, and discard names that resolve to builtins. That is what tools like `tree-sitter` plus an index, or a language server, exist to do \u2014 and it is a good reason to use one rather than the twelve-line version, which 6.4 would call an authoritative-looking disconnected graph." }
       ] },
@@ -188,7 +188,7 @@ for node in ast.walk(tree):
     { t: "callout", kind: "insight", title: "Expansion inflates context by the median and blows it up at the tail",
       body: [
         { t: "p", text: "Measured, the median function calls **2** things in the indexed set, p90 calls **5** and the maximum calls **12**. So expanding a retrieved function by its callees roughly triples the context in the typical case, and multiplies it by thirteen in the worst." },
-        { t: "p", text: "That is why the reference\u2019s pipeline re-ranks *after* expansion rather than before. Expansion is a recall move that deliberately destroys precision; the re-ranker is what restores it, and 6.1 measured re-ranking helping exactly when the first stage is weak \u2014 which an expanded candidate set reliably is." },
+        { t: "p", text: "That is why the pipeline re-ranks *after* expansion rather than before. Expansion is a recall move that deliberately destroys precision; the re-ranker is what restores it, and 6.1 measured re-ranking helping exactly when the first stage is weak \u2014 which an expanded candidate set reliably is." },
         { t: "p", text: "It also explains the best practice about context budget: five highly relevant functions beat twenty loosely related ones. Expansion without a re-rank is how you get the twenty, and code chunks are long, so this spends context faster than any prose pipeline." }
       ] },
 
@@ -223,7 +223,7 @@ for node in ast.walk(tree):
       head: ["Model", "Dimension", "Note"],
       rows: [
         ["`text-embedding-3-large`", "3072", "Good all-rounder across code and docs \u2014 and 6.2's memory arithmetic applies: 3072 dims is 8\u00d7 the storage of 384"],
-        ["Voyage Code 2", "1536", "Trained on code; the reference calls it best-in-class"],
+        ["Voyage Code 2", "1536", "Trained on code; it is commonly called it best-in-class"],
         ["CodeBERT", "768", "Open-source, strongest on classification rather than retrieval"],
         ["StarEncoder", "1024", "Trained on The Stack, multilingual"],
         ["Jina Code v2", "768", "8K context, open-source \u2014 the long context matters for whole-class chunks"]

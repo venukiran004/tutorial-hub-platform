@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "7.2",
 
-  lede: "Chinchilla gives two numbers worth memorising \u2014 training FLOPs \u2248 6ND and D \u2248 20N \u2014 and the reference\u2019s worked examples check out exactly: a 7B model compute-optimally trained is 140B tokens and **5.88 \u00d7 10\u00b2\u00b9** FLOPs, and Llama-3 8B at 15T tokens is **1,875 tokens per parameter, 93.8\u00d7 Chinchilla**. The part the reference asserts without quantifying is the interesting one, and the arithmetic is startling: over-training that 8B costs **7.2 \u00d7 10\u00b2\u00b3** training FLOPs, which is **1.22\u00d7 more than training a 70B Chinchilla-optimally**. The \u201cwasted\u201d training compute exceeds the entire cost of the bigger model.",
+  lede: "Chinchilla gives two numbers worth memorising \u2014 training FLOPs \u2248 6ND and D \u2248 20N \u2014 and the worked examples check out exactly: a 7B model compute-optimally trained is 140B tokens and **5.88 \u00d7 10\u00b2\u00b9** FLOPs, and Llama-3 8B at 15T tokens is **1,875 tokens per parameter, 93.8\u00d7 Chinchilla**. The part the reference asserts without quantifying is the interesting one, and the arithmetic is startling: over-training that 8B costs **7.2 \u00d7 10\u00b2\u00b3** training FLOPs, which is **1.22\u00d7 more than training a 70B Chinchilla-optimally**. The \u201cwasted\u201d training compute exceeds the entire cost of the bigger model.",
 
   objectives: [
     "State the pretraining objective and the two Chinchilla relations",
@@ -44,7 +44,7 @@ flops = 6 * N * D`,
 
     { t: "callout", kind: "good", title: "Worth checking rather than trusting",
       body: [
-        { t: "p", text: "This module is the most arithmetic-heavy in the course and the reference\u2019s numbers here are right \u2014 which is worth saying explicitly, because elsewhere they have not always been. 4.4 and 3.12 both turned up slips, and 6.8 turned up a claim that measurement contradicted." },
+        { t: "p", text: "This module is the most arithmetic-heavy in the course and the numbers here are right \u2014 which is worth saying explicitly, because elsewhere they have not always been. 4.4 and 3.12 both turned up slips, and 6.8 turned up a claim that measurement contradicted." },
         { t: "p", text: "The habit that catches all of them is the same and costs nothing: recompute the worked example before building on it. A scaling relation you have verified once is a tool; one you have only read is a liability in an interview." },
         { t: "p", text: "The 6ND relation in particular is an approximation that ignores attention\u2019s quadratic term, embeddings and layer norms. It is accurate to within a few percent for typical transformer shapes at typical sequence lengths, which is why everyone uses it \u2014 but it is a rule of thumb rather than an identity." }
       ] },
@@ -157,7 +157,7 @@ saving = 2 * N_big - 2 * N_small           # inference FLOPs saved per token`,
     { t: "h2", n: "04", id: "control", text: "What you actually control",
       sub: "Not the architecture" },
 
-    { t: "p", text: "The reference\u2019s closing point on this stage is the one practitioners confirm most consistently: data mix and deduplication beat almost every architectural tweak. That is not a claim about transformers being perfect, it is a claim about where the remaining variance lives." },
+    { t: "p", text: "The closing point on this stage is the one practitioners confirm most consistently: data mix and deduplication beat almost every architectural tweak. That is not a claim about transformers being perfect, it is a claim about where the remaining variance lives." },
 
     { t: "callout", kind: "insight", title: "And 6.8 measured the deduplication half of it",
       body: [

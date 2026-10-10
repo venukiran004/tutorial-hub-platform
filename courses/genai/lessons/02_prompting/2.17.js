@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "2.17",
 
-  lede: "A prompt is code that changes behaviour, is edited by people who do not ship code, and has no type checker. Production prompt management is the discipline of treating it accordingly: versioned, tested, deployed with a rollback, and logged with every response so that a quality question six weeks later has an answer. The reference gives a checklist; this lesson is about which parts of it are load-bearing and which are ceremony, and the one record that makes everything else possible.",
+  lede: "A prompt is code that changes behaviour, is edited by people who do not ship code, and has no type checker. Production prompt management is the discipline of treating it accordingly: versioned, tested, deployed with a rollback, and logged with every response so that a quality question six weeks later has an answer. The common form gives a checklist; this lesson is about which parts of it are load-bearing and which are ceremony, and the one record that makes everything else possible.",
 
   objectives: [
     "Version prompts so a change is reviewable and revertible",
@@ -68,7 +68,7 @@ def answer(question, *, prompt_name="summarise"):
       ],
       caption: "The fifth row is the one that decides it. A registry decouples prompt changes from deploys, which is the feature and also the risk." },
 
-    { t: "p", text: "The reference lists LangSmith Hub, Promptflow and git, and notes that git \"works\". That is the right emphasis. Files in git give you review, history, rollback and atomicity with the code — for free, with no new system. The case for a registry arrives when **people who cannot deploy need to change prompts**, which is a real situation and is the only one that justifies it." },
+    { t: "p", text: "The common list has LangSmith Hub, Promptflow and git, and notes that git \"works\". That is the right emphasis. Files in git give you review, history, rollback and atomicity with the code — for free, with no new system. The case for a registry arrives when **people who cannot deploy need to change prompts**, which is a real situation and is the only one that justifies it." },
 
     { t: "callout", kind: "trap", title: "A registry decouples the prompt from the code that parses its output",
       body: [
@@ -117,7 +117,7 @@ def check_rollout(name):
         ["Prompt injection defence", "Essential, and it is not in this lesson — it is 2.16, at the action boundary"],
         ["Rate limiting on prompt-heavy endpoints", "Ordinary API hygiene (1.16), not prompt management"]
       ],
-      caption: "From the reference notes section 17. Five are load-bearing, one is useful, and two are good practice that belongs in other lessons." },
+      caption: "Five are load-bearing, one is useful, and two are good practice that belongs in other lessons." },
 
     { t: "callout", kind: "good", title: "The minimum that is worth having",
       body: [

@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "13.10",
 
-  lede: "A tool call in a chat agent is a spinner. In a voice agent it is silence, and silence in a conversation means something \u2014 that you did not hear, or are confused, or have hung up. The mechanism that fixes it is almost free: say something canned first, then make the call. A filler does not hide the latency, it **splits one long silence into two short ones** \u2014 and worked through the real timeline, a 900 ms filler keeps every silence inside the responsive band for tool calls up to **800 ms**, where without it even a zero-latency tool leaves a 1,650 ms wait. The reference says the filler arrives at 300 ms. From end of speech it is **760 ms**, because the filler cannot start before the endpointer commits \u2014 the same measurement-boundary slip 13.3 warns about, in the claim.",
+  lede: "A tool call in a chat agent is a spinner. In a voice agent it is silence, and silence in a conversation means something \u2014 that you did not hear, or are confused, or have hung up. The mechanism that fixes it is almost free: say something canned first, then make the call. A filler does not hide the latency, it **splits one long silence into two short ones** \u2014 and worked through the real timeline, a 900 ms filler keeps every silence inside the responsive band for tool calls up to **800 ms**, where without it even a zero-latency tool leaves a 1,650 ms wait. It is commonly said the filler arrives at 300 ms. From end of speech it is **760 ms**, because the filler cannot start before the endpointer commits \u2014 the same measurement-boundary slip 13.3 warns about, in the claim.",
 
   objectives: [
     "Explain why a tool call is a different problem in voice than in chat",
@@ -51,7 +51,7 @@ EC.receiveLesson({
 
     { t: "callout", kind: "trap", title: "The 300 ms is measured from the wrong place",
       body: [
-        { t: "p", text: "The reference states that a filler \u201cat 300 ms covers a 900 ms tool\u201d. The structure of the claim is right and worth keeping. The 300 ms is not reachable from end of speech, because the filler cannot be spoken until the endpointer has committed \u2014 and that is 700 ms with a fixed threshold. With pre-rendered audio the filler's first sound lands at **760 ms**." },
+        { t: "p", text: "It is commonly stated that a filler \u201cat 300 ms covers a 900 ms tool\u201d. The structure of the claim is right and worth keeping. The 300 ms is not reachable from end of speech, because the filler cannot be spoken until the endpointer has committed \u2014 and that is 700 ms with a fixed threshold. With pre-rendered audio the filler's first sound lands at **760 ms**." },
         { t: "p", text: "This is exactly the instrumentation error 13.3 warns about, appearing in the module's own worked claim: a figure measured from the endpointer firing rather than from the user stopping, which silently excludes the single largest term in the budget. 760 ms is still inside the responsive band, so the design holds \u2014 but only just, and if you promise 300 you will miss it by 460." },
         { t: "p", text: "The 300 ms figure *is* reachable with a semantic endpointer: a 300 ms backstop timer plus 60 ms of playout gives 360 ms. So the number describes the system 13.5 tells you to build, rather than the one the budget describes." }
       ] },
@@ -207,7 +207,7 @@ EC.receiveLesson({
         answer: 1,
         why: "The tool runs underneath the filler, so nothing is removed from the critical path and the response arrives at the same moment. What changes is the distribution of silence: instead of one 2,550 ms gap in the band where users say \u201chello?\u201d, there is a 760 ms gap, speech, then an 890 ms gap. Since perception is banded rather than linear, that is a completely different experience for the same duration." },
 
-      { stem: "The reference says a filler arrives at 300 ms. Measured from end of speech with a fixed 700 ms endpointer, what is it?",
+      { stem: "It is commonly said a filler arrives at 300 ms. Measured from end of speech with a fixed 700 ms endpointer, what is it?",
         options: [
           "300 ms, since the filler needs no model call",
           "760 ms, because the filler cannot be spoken until the endpointer commits",

@@ -233,7 +233,7 @@ class Strict(BaseModel):
 
 # The "response" is the tool call's input, not the message text.
 data = next(b.input for b in response.content if b.type == "tool_use")`,
-      caption: "From the reference notes §8. The `tool_choice` is what makes this reliable — without it the model decides whether to call the tool, and the whole point is that it has no choice." },
+      caption: "The `tool_choice` is what makes this reliable — without it the model decides whether to call the tool, and the whole point is that it has no choice." },
 
     { t: "p", text: "The pattern generalises. Any provider with function calling has structured output, because a forced tool call is structured output with a different name. 1.9 is the lesson about what else that machinery does." },
 

@@ -28,7 +28,7 @@ EC.receiveLesson({
 
     { t: "callout", kind: "trap", title: "Two models at 0.82 and 0.85 on 200 examples are indistinguishable",
       body: [
-        { t: "p", text: "The reference\u2019s phrasing is exactly right: shipping on that difference is **a coin flip dressed as a decision**. The three-point gap is well inside a \u00b15.3-point margin, so the data does not support a preference either way." },
+        { t: "p", text: "The phrasing is exactly right: shipping on that difference is **a coin flip dressed as a decision**. The three-point gap is well inside a \u00b15.3-point margin, so the data does not support a preference either way." },
         { t: "p", text: "And this is the most common unforced error in the whole module. Every metric in lessons 9.2 through 9.15 produces a point estimate, and a point estimate without an interval invites a comparison the sample cannot support." },
         { t: "p", text: "8.4 flagged the same thing about a 50-prompt private eval set \u2014 it can show a model is clearly worse and cannot separate two close ones. Here is the arithmetic behind that claim." }
       ] },

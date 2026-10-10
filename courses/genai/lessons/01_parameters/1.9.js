@@ -147,7 +147,7 @@ print(r.choices[0].message.content)`,
         ["`\"required\"`", "The model must call at least one tool, its choice which", "The turn is meaningless without data — a router, a lookup step"],
         ["`{\"type\": \"function\", \"function\": {\"name\": \"x\"}}`", "That specific tool, always", "Structured output (1.8), or a pipeline step with exactly one action"]
       ],
-      caption: "From the reference notes §9. Note that `none` still sends and bills for every schema — the tools are in the context whether or not they can be called." },
+      caption: "Note that `none` still sends and bills for every schema — the tools are in the context whether or not they can be called." },
 
     { t: "p", text: "The forced-specific setting is the one that does double duty. It is how you get structured output from a provider without `response_format`, and it is also how you build a pipeline step that cannot go off the rails: if the only legal action is `extract_invoice_fields`, the model cannot decide to answer in prose instead." },
 

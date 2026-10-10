@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "4.7",
 
-  lede: "This is the reference\u2019s seven-step recipe run end to end: data, chat format, adapter, train, test, merge. Its example uses Qwen2.5-1.5B in four bits on a GPU; this machine has no CUDA, so bitsandbytes cannot load and the same seven steps run on GPT-2 in fp32 with real `peft`. Sixteen examples, eight epochs, **71 seconds on four CPU threads**, and the voice transferred to every held-out prompt. The adapter is **9.46 MB against a 498 MB base**. And the merge check turned up something worth knowing: the merged model gave identical answers on 5 of 5 prompts, with a maximum logit difference of **2.26e-04** \u2014 numerically equivalent rather than bit-identical.",
+  lede: "This is the seven-step recipe run end to end: data, chat format, adapter, train, test, merge. Its example uses Qwen2.5-1.5B in four bits on a GPU; this machine has no CUDA, so bitsandbytes cannot load and the same seven steps run on GPT-2 in fp32 with real `peft`. Sixteen examples, eight epochs, **71 seconds on four CPU threads**, and the voice transferred to every held-out prompt. The adapter is **9.46 MB against a 498 MB base**. And the merge check turned up something worth knowing: the merged model gave identical answers on 5 of 5 prompts, with a maximum logit difference of **2.26e-04** \u2014 numerically equivalent rather than bit-identical.",
 
   objectives: [
     "Run a LoRA fine-tune end to end and name what each step contributes",
@@ -16,19 +16,19 @@ EC.receiveLesson({
   blocks: [
 
     { t: "h2", n: "01", id: "substitution", text: "What I changed, and why",
-      sub: "The recipe is the reference's; the model is not" },
+      sub: "The recipe is the; the model is not" },
 
     { t: "callout", kind: "note", title: "The Q is missing from this QLoRA",
       body: [
         { t: "p", text: "The reference loads Qwen2.5-1.5B-Instruct with `BitsAndBytesConfig(load_in_4bit=True)`. **bitsandbytes requires CUDA and this machine has none**, so the four-bit path cannot run at all. The base here is GPT-2 in fp32." },
-        { t: "p", text: "Everything else is the reference\u2019s recipe unchanged \u2014 the dataset shape, the `LoraConfig`, the training loop, the before/after test, the merge. 4.5 covers what the four-bit storage would have changed, and it is only memory: the arithmetic runs in bf16 either way, so the training dynamics here are the same ones a QLoRA run would show." },
-        { t: "p", text: "The other substitution is the trainer. The reference uses `trl`\u2019s `SFTTrainer`, which is a convenience wrapper; this runs the loop explicitly so that every line is visible. Same optimiser, same loss, same updates." }
+        { t: "p", text: "Everything else is the recipe unchanged \u2014 the dataset shape, the `LoraConfig`, the training loop, the before/after test, the merge. 4.5 covers what the four-bit storage would have changed, and it is only memory: the arithmetic runs in bf16 either way, so the training dynamics here are the same ones a QLoRA run would show." },
+        { t: "p", text: "The other substitution is the trainer. The usual choice is `trl`\u2019s `SFTTrainer`, which is a convenience wrapper; this runs the loop explicitly so that every line is visible. Same optimiser, same loss, same updates." }
       ] },
 
     { t: "h2", n: "02", id: "data", text: "Steps 2 and 4: the data",
       sub: "Sixteen pairs, formatted so the roles are unambiguous" },
 
-    { t: "p", text: "The task is deliberately obvious \u2014 answer in a pirate voice \u2014 so that success or failure is visible without a metric. The reference uses six examples to demonstrate and notes that real tasks need 500\u20131,000; I used sixteen, which is still far below that and enough to see the behaviour transfer." },
+    { t: "p", text: "The task is deliberately obvious \u2014 answer in a pirate voice \u2014 so that success or failure is visible without a metric. The usual choice is six examples to demonstrate and notes that real tasks need 500\u20131,000; I used sixteen, which is still far below that and enough to see the behaviour transfer." },
 
     { t: "code", lang: "python", title: "g47.py \u2014 formatting each pair as one training string", code: `def to_text(q, a):
     return "User: %s\nAssistant: %s%s" % (q, a, tok.eos_token)

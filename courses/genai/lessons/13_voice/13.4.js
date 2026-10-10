@@ -4,7 +4,7 @@ EC.receiveLesson({
   lede: "The program that accompanies this module is five blocks of plain Python \u2014 the two stage budgets, the halving sensitivity loop, the endpointing distribution, the barge-in budget and the cost of a call \u2014 and every number in the previous lesson came out of it. This lesson reads it block by block, and then does the thing the program does not do: **simulate** the turn instead of summing it. That change surfaces something a column of additions cannot. The budget is a **critical path**, not a total, and so the discovery is that **adding streaming improves time to first audio by exactly zero milliseconds**. It saves 420 ms on the rest of the response and nothing at all on the part the user is waiting for \u2014 because overlapping work that is already downstream of a dependency chain cannot shorten the chain.",
 
   objectives: [
-    "Read each block of the reference program and say what question it answers",
+    "Read each block of the published program and say what question it answers",
     "Reproduce the budget as a dependency graph rather than a sum",
     "Explain why streaming leaves time to first audio unchanged",
     "Identify which dependency speculative prefill breaks and what that is worth",
@@ -224,7 +224,7 @@ EC.receiveLesson({
         ] },
 
       { level: "core",
-        q: "What would you change about the reference program before using it on your own system?",
+        q: "What would you change about the published program before using it on your own system?",
         strong: "A strong answer makes three specific substitutions.",
         answer: [
           { t: "p", text: "Three substitutions, and then it stops being an illustration and becomes a planning tool." },

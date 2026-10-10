@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "7.11",
 
-  lede: "The reference draws overoptimisation as an ASCII sketch \u2014 proxy score climbing while true quality peaks and falls. It is not a drawing: it falls out of optimising any direction that is nearly-but-not-exactly right. Simulated with a reward model 59.3% aligned with true preference, the proxy score rose **monotonically and without bound** while true quality peaked at a KL of 1.0 and reached **\u22129.04** by KL 6. And the peak position is exact: **best KL \u221d cosine alignment**, so a better reward model buys optimisation *headroom*, not just a better score.",
+  lede: "The usual treatment draws overoptimisation as an ASCII sketch \u2014 proxy score climbing while true quality peaks and falls. It is not a drawing: it falls out of optimising any direction that is nearly-but-not-exactly right. Simulated with a reward model 59.3% aligned with true preference, the proxy score rose **monotonically and without bound** while true quality peaked at a KL of 1.0 and reached **\u22129.04** by KL 6. And the peak position is exact: **best KL \u221d cosine alignment**, so a better reward model buys optimisation *headroom*, not just a better score.",
 
   objectives: [
     "State Goodhart's law in the form it takes for reward models",
@@ -108,7 +108,7 @@ w_gold /= np.linalg.norm(w_gold)        # never used to train the policy`,
         { t: "p", text: "It is not magic, though: the gold RM tracks true quality well, not perfectly. At KL 2 it reads \u22120.388 against the truth\u2019s \u22120.214, so it overstates the damage slightly. Treat it as a reliable *direction* indicator and an approximate magnitude." }
       ] },
 
-    { t: "p", text: "The reference\u2019s four controls follow, and the simulation supports each." },
+    { t: "p", text: "The four controls follow, and the simulation supports each." },
 
     { t: "dl", items: [
       { k: "Monitor KL from \u03c0_ref as a first-class metric", v: "Rising KL plus rising reward plus flat-or-falling human eval is the signature. Early-stop on it \u2014 \u00a702 shows the stopping point is a function of RM quality, so it is not a constant you can set once." },

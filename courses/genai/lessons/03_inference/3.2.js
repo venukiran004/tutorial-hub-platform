@@ -28,7 +28,7 @@ Step 2: Q2, K=[K1,K2], V=[V1,V2]     -> append K2, V2 to cache
 Step 3: Q3, K=[K1,K2,K3], V=[...]    -> append K3, V3
 
 Saves: O(n^2) -> O(n) compute per step (but O(n) memory)`,
-      caption: "From the reference notes section 2. The trade in the last line is the whole lesson: compute saved, memory spent — and memory is what runs out." },
+      caption: "The trade in the last line is the whole lesson: compute saved, memory spent — and memory is what runs out." },
 
     { t: "code", lang: "python", title: "g31.py — what it is worth, measured", code: `# without the cache: recompute the whole sequence every step
 seq = sub.clone()
@@ -72,14 +72,14 @@ for _ in range(N_NEW):
   Llama-2 70B MHA          80      64       128     4096     10.74 GB
   Llama-2 70B GQA          80      64       128     4096      1.34 GB
 
-  the reference claims GQA with 8 groups gives 8x reduction:
+  it is commonly claimed GQA with 8 groups gives 8x reduction:
     MHA 10.74 GB / GQA 1.34 GB = 8.0x`,
       hl: [4, 5],
       caption: "The GQA claim checks out exactly: 8 groups against 64 heads is 8.0×. The row above it is where the trouble is." },
 
     { t: "callout", kind: "trap", title: "The worked example is wrong by a factor of two",
       body: [
-        { t: "p", text: "The reference notes section 1 gives: *\"LLaMA-2 7B, seq_len=4096 … KV Cache (per request): 2 × 32 × 32 × 128 × 4096 × 2 = ~1 GB\"* and then *\"Batch of 16: ~16 GB just for KV cache!\"*" },
+        { t: "p", text: "The usual treatment section 1 gives: *\"LLaMA-2 7B, seq_len=4096 … KV Cache (per request): 2 × 32 × 32 × 128 × 4096 × 2 = ~1 GB\"* and then *\"Batch of 16: ~16 GB just for KV cache!\"*" },
         { t: "p", text: "Running that multiplication gives **2.15 GB**, not ~1 GB — and a batch of 16 is **34.36 GB**, not ~16 GB. The formula is right and the arithmetic in the comment is not." },
         { t: "p", text: "This matters more than a typo usually would, because capacity planning is this calculation. A server sized on \"~1 GB per request\" will hold half the concurrent requests the plan assumed, and the failure mode is out-of-memory under load rather than a gradual slowdown. Run the multiplication yourself for your own model." }
       ] },
@@ -155,7 +155,7 @@ Request 2: [Block 3, Block 5]            (shares Block 3 = prefix cache)`,
     { t: "exercise", kind: "Challenge", title: "Size a server from the architecture",
       difficulty: "core", minutes: 25,
       body: [
-        { t: "p", text: "Capacity planning for an LLM server is the KV cache arithmetic plus the weights, and getting it wrong by a factor of two — as the reference does — means running out of memory under load rather than degrading gracefully." },
+        { t: "p", text: "Capacity planning for an LLM server is the KV cache arithmetic plus the weights, and getting it wrong by a factor of two — as the usual treatment does — means running out of memory under load rather than degrading gracefully." },
         { t: "p", text: "Build the calculation and find what each lever is worth." }
       ],
       requirements: [
@@ -256,7 +256,7 @@ configuration                   seq   GB/request   concurrent
       { stem: "Which change buys the most concurrency on a 70B model?",
         options: ["An fp8 KV cache", "GQA instead of MHA", "PagedAttention", "A faster accelerator"],
         answer: 1,
-        why: "Measured on a four-device node, GQA with 8 groups takes a 70B model from 30 concurrent requests to 244 at 2K context, and from 1 to 15 at 32K. An fp8 cache then doubles whatever GQA gave, which is large but second. PagedAttention removes waste and fragmentation, worth 2–4× by the reference’s claim, and a faster accelerator addresses compute rather than the memory budget that binds here." },
+        why: "Measured on a four-device node, GQA with 8 groups takes a 70B model from 30 concurrent requests to 244 at 2K context, and from 1 to 15 at 32K. An fp8 cache then doubles whatever GQA gave, which is large but second. PagedAttention removes waste and fragmentation, worth 2–4× by the claim, and a faster accelerator addresses compute rather than the memory budget that binds here." },
     ]
   },
 

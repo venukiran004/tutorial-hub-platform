@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "7.1",
 
-  lede: "A pretrained model is not trying to be helpful. It is trying to predict the next token, and the reference illustrates this by predicting that a base model asked \u201cWhat is the capital of France?\u201d will continue with *more questions*. I ran it on gpt2, a genuine base model. It **answered correctly** \u2014 and then repeated the answer four times. Three of my four prompts did fail exactly as the reference describes, so the claim holds; its chosen example is the one that does not. The quantitative version is sharper: the immediate next-token probability of \u201c Paris\u201d is **0.54%** against **33.84%** for a newline.",
+  lede: "A pretrained model is not trying to be helpful. It is trying to predict the next token, and the usual illustration is this by predicting that a base model asked \u201cWhat is the capital of France?\u201d will continue with *more questions*. I ran it on gpt2, a genuine base model. It **answered correctly** \u2014 and then repeated the answer four times. Three of my four prompts did fail exactly as the usual description is, so the claim holds; its chosen example is the one that does not. The quantitative version is sharper: the immediate next-token probability of \u201c Paris\u201d is **0.54%** against **33.84%** for a newline.",
 
   objectives: [
     "State what pretraining optimises and why that is not helpfulness",
@@ -28,7 +28,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "An instruction-shaped string is just text, and the model continues it the way that text is usually continued in the corpus. If questions on the internet appear in lists, a question is continued with another question. If they appear in FAQs, it is continued with an answer." },
         { t: "p", text: "That makes the behaviour a property of the *corpus*, not of the model\u2019s capability \u2014 which is the reason post-training works at all. You are not teaching it new facts, you are changing which continuation it considers likely." },
-        { t: "p", text: "It is also why the reference\u2019s prediction is testable rather than rhetorical. Whether a base model answers a question depends on an empirical fact about training data, so you can just ask one." }
+        { t: "p", text: "It is also why the prediction is testable rather than rhetorical. Whether a base model answers a question depends on an empirical fact about training data, so you can just ask one." }
       ] },
 
     { t: "h2", n: "02", id: "measured", text: "What a base model actually does",
@@ -246,7 +246,7 @@ for s in ("The capital of France is Paris.",
           { t: "p", text: "**The top token is a newline, and that is the diagnosis.** The model is not refusing and not asking another question \u2014 it is formatting, because on the internet a question mark is usually followed by whitespace. It has no notion that a turn ended and a response should begin, which is exactly what a chat template installs." },
           { t: "p", text: "**Note the margin before overclaiming.** Paris beats London by 0.046 nats per token on a 124M model. The ordering is right and it is thin, so \u201cthe model knows the answer\u201d should be stated as \u201cthe model ranks it first\u201d." },
           { t: "p", text: "**Separate repetition from instruction-following.** Greedy decoding made gpt2 emit \u201cThe capital of France is Paris.\u201d four times. The looping is a sampling artefact that temperature or top-p addresses; the failure to treat the prompt as a task is what SFT addresses. They look alike in the output and have different fixes." },
-          { t: "p", text: "One caveat on choosing questions: pick some that are *not* clichés. \u201cThe capital of France is Paris\u201d is such a common sentence that the likely continuation and the helpful one coincide, which is why that prompt understates the gap \u2014 and why the reference\u2019s own example turned out to be the case that works." }
+          { t: "p", text: "One caveat on choosing questions: pick some that are *not* clichés. \u201cThe capital of France is Paris\u201d is such a common sentence that the likely continuation and the helpful one coincide, which is why that prompt understates the gap \u2014 and why the worked example turned out to be the case that works." }
         ] } },
 
     { t: "callout", kind: "scenario", title: "Interview scenario",

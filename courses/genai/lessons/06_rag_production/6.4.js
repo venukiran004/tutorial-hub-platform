@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "6.4",
 
-  lede: "The reference says vector RAG \u201cfails for multi-hop questions\u201d. That is usually asserted and it is actually **checkable** \u2014 and the check is stronger than a recall number. Over a six-sentence corpus where every chunk is a single clean sentence, **zero chunks contain both endpoints** of the question. So there is no `k` at which a top-k of chunks contains the answer, however good the retriever. The answer is not in a chunk; it is in the path between four of them.",
+  lede: "It is commonly said vector RAG \u201cfails for multi-hop questions\u201d. That is usually asserted and it is actually **checkable** \u2014 and the check is stronger than a recall number. Over a six-sentence corpus where every chunk is a single clean sentence, **zero chunks contain both endpoints** of the question. So there is no `k` at which a top-k of chunks contains the answer, however good the retriever. The answer is not in a chunk; it is in the path between four of them.",
 
   objectives: [
     "State the three query shapes a vector index structurally cannot answer",
@@ -62,10 +62,10 @@ for doc, s in CHUNKS:
       body: [
         { t: "p", text: "Every metric in 6.1 asks where the relevant chunk was ranked. That question presupposes a relevant chunk exists. Here none does: the four facts live in four sentences across three documents, and the answer is a composition of them." },
         { t: "p", text: "So a retriever with perfect recall returns all six chunks, and the model must still perform the composition itself. Sometimes it can \u2014 with all six in context, a capable model may well chain them. But that is the *model* doing multi-hop reasoning over a context window, not retrieval solving it, and it degrades fast as the corpus grows and the six relevant sentences stop fitting in any top-k." },
-        { t: "p", text: "That is the honest version of the reference\u2019s claim. Vector RAG does not fail multi-hop because similarity is weak; it fails because the unit it retrieves is the wrong unit. You cannot fix a representation problem with a ranking improvement." }
+        { t: "p", text: "That is the honest version of the claim. Vector RAG does not fail multi-hop because similarity is weak; it fails because the unit it retrieves is the wrong unit. You cannot fix a representation problem with a ranking improvement." }
       ] },
 
-    { t: "p", text: "The reference names three shapes with this property, and they share it for the same reason." },
+    { t: "p", text: "The common name is three shapes with this property, and they share it for the same reason." },
 
     { t: "dl", items: [
       { k: "Multi-hop questions", v: "\u201cWhat companies did the CEO of the acquirer of Instagram work for?\u201d The answer is a path. No chunk contains a path." },

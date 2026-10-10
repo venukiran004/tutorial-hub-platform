@@ -115,18 +115,18 @@ for m, (i, o) in PRICES.items():
   gpt-4o-mini           0.15       0.60     0.000450
   claude-sonnet         3.00      15.00     0.010500
   o3                   10.00      40.00     0.030000`,
-      caption: "Rates as quoted in the reference notes §14 and §16.1, which date them to 2024–2025. A 1,000-in / 500-out call ranges from $0.00045 to $0.03 — a factor of 67 across four models for identical work." },
+      caption: "Rates as of 2024–2025. A 1,000-in / 500-out call ranges from $0.00045 to $0.03 — a factor of 67 across four models for identical work." },
 
     { t: "p", text: "The worked example checks out: `(1000 × 2.50 + 500 × 10.00) / 1,000,000` = $0.0075, which is what it prints. One of its *claims*, however, does not:" },
 
-    { t: "code", lang: "python", title: "g18.py — checking a claim against its own table", code: `print("the reference claims GPT-4o-mini is '30x cheaper' than GPT-4o.")
+    { t: "code", lang: "python", title: "g18.py — checking a claim against its own table", code: `print("it is commonly claimed GPT-4o-mini is '30x cheaper' than GPT-4o.")
 print("  from its own price table: input %.2f/%.2f = %.1fx, output %.2f/%.2f = %.1fx"
       % (2.50, 0.15, 2.50 / 0.15, 10.00, 0.60, 10.00 / 0.60))`,
-      out: `the reference claims GPT-4o-mini is '30x cheaper' than GPT-4o.
+      out: `it is commonly claimed GPT-4o-mini is '30x cheaper' than GPT-4o.
   from its own price table: input 2.50/0.15 = 16.7x, output 10.00/0.60 = 16.7x
   so the factor is 16.7x on both, not 30x.`,
       hl: [1, 2, 3],
-      caption: "the reference says \"GPT-4o-mini is 30x cheaper than GPT-4o\" in both §13 and §17, and lists the prices that make it 16.7× in §16.1. The ratio is the same on input and output, so there is no mix of the two that produces 30." },
+      caption: "it is commonly said \"GPT-4o-mini is 30x cheaper than GPT-4o\" in both §13 and §17, and lists the prices that make it 16.7× in §16.1. The ratio is the same on input and output, so there is no mix of the two that produces 30." },
 
     { t: "callout", kind: "trap", title: "Model prices go stale faster than the documents that quote them",
       body: [
@@ -276,7 +276,7 @@ residuals: [0.14, -0.21, 0.07]`,
         answer: 1,
         why: "The chat format wraps each message in role and boundary tokens — about 3 per message plus 3 to prime the reply on recent OpenAI models — and tool definitions and schemas are sent as input too, at roughly 85 tokens per tool. All of these are additions, which is why a naive counter is systematically optimistic and a quota built on one lets tenants over-consume. The third option names one message where the problem is per-message. Output tokens are a separate figure that no input counter is expected to produce." },
 
-      { stem: "The reference says GPT-4o-mini is \"30× cheaper\" than GPT-4o. Its price table lists $2.50 and $0.15 per million input tokens. What is the real ratio?",
+      { stem: "It is commonly said GPT-4o-mini is \"30× cheaper\" than GPT-4o. Its price table lists $2.50 and $0.15 per million input tokens. What is the real ratio?",
         options: ["30×, as stated", "16.7×, on both input and output", "It cannot be computed from those figures", "About 8×"],
         answer: 1,
         why: "2.50 ÷ 0.15 = 16.7 on input, and 10.00 ÷ 0.60 = 16.7 on output, so the factor is the same on both and no mix of the two produces 30. The claim and the table are in the same document and cannot both be right — which is the reason to check a ratio against the numbers before repeating it. The figures are sufficient to compute the answer, so the third option is wrong, and 8× matches nothing in the table." },

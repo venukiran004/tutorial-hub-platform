@@ -4,7 +4,7 @@
 EC.receiveLesson({
   id: "1.7",
 
-  lede: "**Regularisation is whatever stops a network memorising the training set instead of learning what generalises, and the reference gives four ways: penalise large weights, switch units off at random, stop when validation loss turns, and augment the data.** Each attacks overfitting from a different side. This lesson works the L2 penalty and its gradient on a matrix, shows exactly what `nn.Dropout` does to a tensor in training and in evaluation, runs the dropout network on MNIST four ways, runs its Monte Carlo dropout function to get uncertainty out of the same network, and runs its early-stopping loop until the patience counter fires.",
+  lede: "**Regularisation is whatever stops a network memorising the training set instead of learning what generalises, and the common form gives four ways: penalise large weights, switch units off at random, stop when validation loss turns, and augment the data.** Each attacks overfitting from a different side. This lesson works the L2 penalty and its gradient on a matrix, shows exactly what `nn.Dropout` does to a tensor in training and in evaluation, runs the dropout network on MNIST four ways, runs its Monte Carlo dropout function to get uncertainty out of the same network, and runs its early-stopping loop until the patience counter fires.",
 
   objectives: [
     "Write the L2-regularised loss and its gradient, and relate λ to weight decay",

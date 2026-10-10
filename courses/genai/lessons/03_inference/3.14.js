@@ -369,7 +369,7 @@ print(to_elo(fit_bt(cyc)))`,
           "Because Arena ratings are not comparable between models"
         ],
         answer: 1,
-        why: "An Arena voter frequently does not know the answer to the question they asked, so the vote selects on readability, confidence, structure and length as much as on accuracy \u2014 and a confidently wrong answer often reads better than a hedged correct one. Mechanically checked benchmarks cover that blind spot, and the two together support the diagnosis the reference describes: strong MMLU with weak Arena is test-taking ability without instruction-following, and the reverse is fluency without reliability. Arena has over a million votes and includes all prompt types." }
+        why: "An Arena voter frequently does not know the answer to the question they asked, so the vote selects on readability, confidence, structure and length as much as on accuracy \u2014 and a confidently wrong answer often reads better than a hedged correct one. Mechanically checked benchmarks cover that blind spot, and the two together support the diagnosis the usual description is: strong MMLU with weak Arena is test-taking ability without instruction-following, and the reverse is fluency without reliability. Arena has over a million votes and includes all prompt types." }
     ]
   },
 

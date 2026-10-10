@@ -46,7 +46,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "`not good` goes from +0.440 to **−0.341** — VADER looks back a few tokens for a negator and inverts. `not bad` goes from −0.542 to **+0.431**, correctly handling litotes. `very` raises the magnitude, and `!!!` raises it further. This is exactly what lesson 1.1 showed a bag of words cannot do: to TF-IDF, `not good` is the multiset `{not, good}` and the negation is a separate, unconnected feature. VADER's rules are hand-written and shallow, and they still capture something a purely count-based model structurally cannot." }] },
 
     { t: "callout", kind: "note", title: "The capitalisation boost did not fire here",
-      body: [{ t: "p", text: "The reference lists capitalisation among what VADER handles, and it does — but `GOOD` alone scored **exactly the same as `good`**, +0.440. VADER's rule boosts a capitalised word only when the surrounding text is *not* all caps, so a single word in isolation gets no lift. The feature is real; it needs mixed case around it to trigger. Worth knowing before you build a test around it and conclude the library is broken." }] },
+      body: [{ t: "p", text: "The common list has capitalisation among what VADER handles, and it does — but `GOOD` alone scored **exactly the same as `good`**, +0.440. VADER's rule boosts a capitalised word only when the surrounding text is *not* all caps, so a single word in isolation gets no lift. The feature is real; it needs mixed case around it to trigger. Worth knowing before you build a test around it and conclude the library is broken." }] },
 
     { t: "h2", n: "03", text: "Where every lexicon fails", id: "failures" },
 

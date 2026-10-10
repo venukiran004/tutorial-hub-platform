@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "8.10",
 
-  lede: "A golden dataset that fails CI, plus the guardrail checks that run beside it. The reference\u2019s framing is eval-driven development: every prompt, model, retriever or tool change runs the suite, and a metric regression **blocks the merge**. The discipline that makes it work is one line \u2014 **grow the set from real production failures** \u2014 because a set you invented tests what you imagined and a set grown from incidents tests what actually broke.",
+  lede: "A golden dataset that fails CI, plus the guardrail checks that run beside it. The framing is eval-driven development: every prompt, model, retriever or tool change runs the suite, and a metric regression **blocks the merge**. The discipline that makes it work is one line \u2014 **grow the set from real production failures** \u2014 because a set you invented tests what you imagined and a set grown from incidents tests what actually broke.",
 
   objectives: [
     "Specify what belongs in a golden dataset and where the cases come from",
@@ -29,7 +29,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "8.4 made the same point about building a private eval set: sample from real traffic rather than writing prompts, because invented prompts test what you imagine users do \u2014 which is the same mistake as trusting a benchmark, one level in." },
         { t: "p", text: "Production failures are better than production traffic, because they are pre-filtered for informativeness. A random sample is dominated by cases the system already handles; an incident is by definition a case it did not." },
-        { t: "p", text: "The loop the reference describes closes this: sample production traces, label them, add to the golden set, re-evaluate. 8.11 is the sampling half, and the discipline is that every incident ends with a test rather than a fix." }
+        { t: "p", text: "The loop the usual description is closes this: sample production traces, label them, add to the golden set, re-evaluate. 8.11 is the sampling half, and the discipline is that every incident ends with a test rather than a fix." }
       ] },
 
     { t: "h2", n: "02", id: "gate", text: "The gate",

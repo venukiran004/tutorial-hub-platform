@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "11.9",
 
-  lede: "Two ways to spend less per token and one way to spend nothing at all. Routing and cascades send easy traffic to a cheaper model \u2014 and the two are **not the same thing**, which the reference treats as interchangeable: at 80/20 and a 15x price gap, a router costs **25.3%** of the strong model and a cascade **26.7%**, because a cascade pays the cheap model on everything. Then caching, where the reference\u2019s own example pair scores **0.8526** against its own recommended **\u22650.95** threshold.",
+  lede: "Two ways to spend less per token and one way to spend nothing at all. Routing and cascades send easy traffic to a cheaper model \u2014 and the two are **not the same thing**, which it is usually treated as as interchangeable: at 80/20 and a 15x price gap, a router costs **25.3%** of the strong model and a cascade **26.7%**, because a cascade pays the cheap model on everything. Then caching, where the worked example pair scores **0.8526** against its own recommended **\u22650.95** threshold.",
 
   objectives: [
     "Distinguish a router from a cascade and price both",
@@ -36,7 +36,7 @@ query ------+                                         +---------------> answer
       body: [
         { t: "p", text: "At 80% easy traffic and a 15x price gap, a **router** costs 0.8 \u00d7 cheap + 0.2 \u00d7 strong = **25.3%** of running everything on the strong model. A **cascade** costs cheap \u00d7 1.0 + 0.2 \u00d7 strong = **26.7%**, because the cheap call is paid on every query including the ones that escalate." },
         { t: "p", text: "So the cascade is **strictly more expensive**, always, by exactly the cheap model\u2019s price on the escalated share. The gap is 1.3 points here because the cheap model is 15x cheaper \u2014 at a 3x gap it would be much wider." },
-        { t: "p", text: "What the cascade buys for that premium is that it **needs no classifier**. A router requires something that can predict difficulty before seeing an answer, which is a model you have to build, evaluate and maintain; a cascade uses the cheap model\u2019s own output as the signal. That is the trade, and the reference presents the two as one idea." }
+        { t: "p", text: "What the cascade buys for that premium is that it **needs no classifier**. A router requires something that can predict difficulty before seeing an answer, which is a model you have to build, evaluate and maintain; a cascade uses the cheap model\u2019s own output as the signal. That is the trade, and it is usually presented the two as one idea." }
       ] },
 
     { t: "callout", kind: "tradeoff", title: "And they fail differently, which matters more than the 1.3 points",
@@ -59,17 +59,17 @@ query ------+                                         +---------------> answer
       hl: [5],
       caption: "The threshold is the whole design, and the default is wrong for this embedding model." },
 
-    { t: "callout", kind: "trap", title: "The reference\u2019s own example fails its own threshold",
+    { t: "callout", kind: "trap", title: "The worked example fails its own threshold",
       body: [
         { t: "p", text: "It motivates semantic caching with the pair *\u201chow do I reset my password?\u201d* and *\u201cI forgot my password, what do I do?\u201d*, and separately advises setting the threshold high, at **\u22650.95**. Measured on `all-MiniLM-L6-v2`, that pair scores **0.8526** \u2014 a clear miss at 0.95. The advice and the illustration are inconsistent." },
-        { t: "p", text: "A threshold sweep shows the real picture is the opposite of the warning: at 0.95 you get **3 of 4** intended hits, losing both \u201cpassword reset\u201d (0.8673) and the reference\u2019s own example. At **0.85** you get 4 of 4 with **zero** wrong hits, and the highest threshold with zero wrong hits is **0.72**." },
-        { t: "p", text: "So 0.95 is too *strict* for this model, not too loose. The reference\u2019s caution is directionally sound \u2014 a loose threshold does serve wrong answers \u2014 but the specific number is miscalibrated, and the real lesson is that **the threshold is model-dependent and must be measured.**" }
+        { t: "p", text: "A threshold sweep shows the real picture is the opposite of the warning: at 0.95 you get **3 of 4** intended hits, losing both \u201cpassword reset\u201d (0.8673) and the worked example. At **0.85** you get 4 of 4 with **zero** wrong hits, and the highest threshold with zero wrong hits is **0.72**." },
+        { t: "p", text: "So 0.95 is too *strict* for this model, not too loose. The caution is directionally sound \u2014 a loose threshold does serve wrong answers \u2014 but the specific number is miscalibrated, and the real lesson is that **the threshold is model-dependent and must be measured.**" }
       ] },
 
     { t: "callout", kind: "warn", title: "The dangerous neighbours are the ones to name",
       body: [
         { t: "p", text: "Measured against \u201chow do I reset my password?\u201d: **\u201chow do I reset my PIN?\u201d 0.6225**, **\u201chow do I reset my username?\u201d 0.7022**, and **\u201chow do I reset my colleague\u2019s password?\u201d 0.7150.** A PIN is not a password, a username is not a password, and a colleague\u2019s password is not yours \u2014 and all three are close enough that a threshold at 0.70 serves two of them a wrong answer." },
-        { t: "p", text: "That is the correctness bug the reference warns about, with the numbers attached: a loose threshold does not degrade quality gracefully, it answers a different question confidently. And \u201chow do I change my password?\u201d at 0.8741 sits above the reference\u2019s own example, which makes it genuinely borderline rather than clearly safe." },
+        { t: "p", text: "That is the correctness bug the usual warning is about, with the numbers attached: a loose threshold does not degrade quality gracefully, it answers a different question confidently. And \u201chow do I change my password?\u201d at 0.8741 sits above the worked example, which makes it genuinely borderline rather than clearly safe." },
         { t: "p", text: "The safe band on this model is roughly **0.72 to 0.85** \u2014 wide enough to be usable and narrow enough that guessing lands outside it. Measure yours with a handful of must-hit and must-miss pairs; it takes ten minutes and it is the only way to know." }
       ] },
 
@@ -206,7 +206,7 @@ for th in [x / 100.0 for x in range(99, 50, -1)]:
     best = th
 print()
 print("highest threshold with ZERO wrong hits: %.2f" % best)
-print("the reference recommends >= 0.95, which gives %d of %d intended hits"
+print("the usual advice is >= 0.95, which gives %d of %d intended hits"
       % (len({i for i, s in enumerate(sims) if s >= 0.95} & MUST_HIT), len(MUST_HIT)))
 print("and misses its own motivating example at %.4f." % sims[4])
 print()
@@ -223,7 +223,7 @@ B -- THE CASCADE CLAIM: '80% on a 15x cheaper model'
   easy=70%  router $0.007627 (34.7% of strong)   cascade $0.008067 (36.7%)
   easy=90%  router $0.003520 (16.0% of strong)   cascade $0.003667 (16.7%)
 
-the reference says 'cascade' and 'route' interchangeably and they differ:
+it is commonly said 'cascade' and 'route' interchangeably and they differ:
   a ROUTER classifies first, so the cheap model's cost is paid on 80%%
   a CASCADE runs the cheap model on 100%% and the strong one on 20%%
   at 80/20 and 15x: router = 25.3%% of strong, cascade = 26.7%%
@@ -232,7 +232,7 @@ the reference says 'cascade' and 'route' interchangeably and they differ:
 ==========================================================================
 A -- THE SEMANTIC CACHE THRESHOLD, AGAINST THE REFERENCE'S OWN EXAMPLE
 ==========================================================================
-the reference says: set the threshold HIGH, e.g. >= 0.95
+it is commonly said: set the threshold HIGH, e.g. >= 0.95
 and gives this pair as the motivating example of a semantic hit:
 
   "how do I reset my password?"             
@@ -280,7 +280,7 @@ the dangerous neighbour is the one to name:
         notes: [
           { t: "p", text: "**The cascade premium has a clean interpretation**: it is exactly the cheap model\u2019s price paid on the escalated share. So it shrinks as the price gap widens and grows as more traffic escalates \u2014 at a 15x gap and 20% escalation it is 1.3 points, and at a 3x gap with half the traffic escalating it is much larger." },
           { t: "p", text: "**Which means the cascade is only cheap when the cheap model is very cheap.** The pattern is usually justified by \u2018we avoid building a classifier\u2019, and that argument weakens exactly when the price gap narrows \u2014 the case where you most want the saving." },
-          { t: "p", text: "**The reference\u2019s own example pair scores 0.8526 against its own \u22650.95 advice.** At 0.95 you get 3 of 4 must-hits and lose both the keyword form and the motivating example. The caution is directionally right and the number is miscalibrated for this model." },
+          { t: "p", text: "**The worked example pair scores 0.8526 against its own \u22650.95 advice.** At 0.95 you get 3 of 4 must-hits and lose both the keyword form and the motivating example. The caution is directionally right and the number is miscalibrated for this model." },
           { t: "p", text: "**The highest threshold with zero wrong hits is 0.72**, and 0.85 also gives 4 of 4 cleanly \u2014 so the safe band is roughly 0.72 to 0.85, which is nowhere near the recommended value. The real lesson is that the threshold is model-dependent and takes ten minutes to measure." },
           { t: "p", text: "**The dangerous neighbour to remember is \u201cmy colleague\u2019s password\u201d at 0.7150.** It is the same topic with a different *subject*, so the correct answer differs while the embedding barely does \u2014 which is why a semantic cache has to be keyed on tenant and user rather than on the vector alone." },
           { t: "p", text: "One honest caveat: eleven candidate queries is a demonstration, not a calibration. A production threshold wants a few hundred pairs drawn from real traffic, and the must-miss set matters more than the must-hit set because a missed hit costs a model call while a wrong hit costs a wrong answer." }
@@ -289,7 +289,7 @@ the dangerous neighbour is the one to name:
     { t: "callout", kind: "mental", title: "The model to keep",
       body: [
         { t: "p", text: "A router classifies first and makes one call; a cascade runs the cheap model on everything and escalates the minority \u2014 so the cascade is always dearer, by the cheap model\u2019s price on the escalated share, and what it buys is not needing a classifier. Measured at 80/20 and 15x: 25.3% against 26.7%." },
-        { t: "p", text: "Enable exact caching first; it is trivially correct. Then measure your semantic-cache threshold instead of copying one \u2014 the reference\u2019s own example pair scores 0.8526 against its recommended \u22650.95, and the safe band on that model is 0.72 to 0.85. And key the cache on tenant and user, because \u201cmy colleague\u2019s password\u201d sits at 0.7150." }
+        { t: "p", text: "Enable exact caching first; it is trivially correct. Then measure your semantic-cache threshold instead of copying one \u2014 the worked example pair scores 0.8526 against its recommended \u22650.95, and the safe band on that model is 0.72 to 0.85. And key the cache on tenant and user, because \u201cmy colleague\u2019s password\u201d sits at 0.7150." }
       ] },
 
     { t: "callout", kind: "scenario", title: "Interview scenario",
@@ -342,7 +342,7 @@ the dangerous neighbour is the one to name:
         answer: 1,
         why: "A router needs something that predicts difficulty before any answer exists, which is a model to build, evaluate and maintain, and whose misclassifications become a quality ceiling with no second opinion. The cascade replaces that with a confidence check on a real answer, which is measurable after the fact. Latency is worse rather than better: an escalated query pays both latencies in series, so p95 becomes the sum." },
 
-      { stem: "The reference recommends a semantic-cache threshold of \u22650.95. What did measurement show?",
+      { stem: "The usual advice is a semantic-cache threshold of \u22650.95. What did measurement show?",
         options: [
           "That 0.95 is correct and its example pair scores 0.96",
           "That its own motivating example pair scores 0.8526 \u2014 a miss at 0.95 \u2014 and the safe band is roughly 0.72\u20130.85",

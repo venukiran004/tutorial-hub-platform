@@ -82,7 +82,7 @@ Too strict -> blocks legitimate use, users leave   (false positives / over-refus
 
     { t: "callout", kind: "insight", title: "And the encoding categories are the ones a pattern list cannot reach",
       body: [
-        { t: "p", text: "11.13 measured the pattern list at 0% on base64, leetspeak and the same request in French \u2014 and those are three of the six attack categories the reference lists. So a red-team suite covering the stated categories will report a high jailbreak success rate against a regex layer, correctly." },
+        { t: "p", text: "11.13 measured the pattern list at 0% on base64, leetspeak and the same request in French \u2014 and those are three of the six attack categories the common list has. So a red-team suite covering the stated categories will report a high jailbreak success rate against a regex layer, correctly." },
         { t: "p", text: "That is the suite doing its job. The useful response is not to add patterns for base64 and leetspeak \u2014 which moves the boundary without changing its shape \u2014 but to recognise that these categories require either a classifier or the structural defence of separating instructions from data." },
         { t: "p", text: "Indirect injection deserves its own line in the suite, because it tests a different code path. An attack delivered through a poisoned retrieved document does not pass through the input scan at all, so a suite that only submits attacks as user input cannot detect whether that path is defended." }
       ] },

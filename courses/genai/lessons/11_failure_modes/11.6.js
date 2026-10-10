@@ -55,7 +55,7 @@ EC.receiveLesson({
 
     { t: "callout", kind: "warn", title: "And define hallucination rate so an abstention is not one",
       body: [
-        { t: "p", text: "The reference\u2019s `eval_suite` gets this right and it is worth noticing: a hallucination is counted when faithfulness is below threshold **and** the answer did not abstain. Without the second clause every abstention would count as a hallucination, which inverts the metric entirely." },
+        { t: "p", text: "The `eval_suite` gets this right and it is worth noticing: a hallucination is counted when faithfulness is below threshold **and** the answer did not abstain. Without the second clause every abstention would count as a hallucination, which inverts the metric entirely." },
         { t: "p", text: "That clause is also what makes the abstention string from 11.5 load-bearing. The check is a substring match on the exact abstention wording, so a model that abstains in freely varying prose is both uncountable and miscounted \u2014 its abstentions become hallucinations on the dashboard." },
         { t: "p", text: "On the worked set the rate comes out at **0.40** \u2014 four of ten \u2014 while three abstentions are correctly excluded. Had they been counted, the reported rate would have been 0.70." }
       ] },
@@ -345,7 +345,7 @@ SAMPLE SIZE: WHAT A GOLDEN SET CAN RESOLVE
           { t: "p", text: "**The denominator gap is +0.104 on this set** \u2014 0.758 reported against 0.654 real \u2014 and that is with only three abstentions in ten. At a 30% abstention rate the metric is overstating quality by ten points, and the overstatement grows exactly as the system gets worse." },
           { t: "p", text: "**The degradation table is the finding.** Overall faithfulness moves within 0.883\u20130.924 across a full retrieval collapse, and non-monotonically: it reads *higher* at recall 0.20 than at 0.48 because 60% abstention drags it back up. A metric that is non-monotonic in the thing it is supposed to track cannot be alerted on at all." },
           { t: "p", text: "**Over answered requests only it falls 0.920 \u2192 0.750 monotonically**, which is the signal you wanted the whole time. Same data, same metric name, one change of denominator." },
-          { t: "p", text: "**The reference\u2019s `eval_suite` gets the hallucination-rate clause right** \u2014 low faithfulness *and* not abstained. Without that second clause the rate here would be 0.70 instead of 0.40, counting every correct abstention as a hallucination. It is an easy clause to drop when reimplementing." },
+          { t: "p", text: "**The `eval_suite` gets the hallucination-rate clause right** \u2014 low faithfulness *and* not abstained. Without that second clause the rate here would be 0.70 instead of 0.40, counting every correct abstention as a hallucination. It is an easy clause to drop when reimplementing." },
           { t: "p", text: "**The abstention/recall pair is what disambiguates**: 0.30 with recall 0.48 means retrieval is weak and abstention is masking it; 0.40 with recall 0.95 means retrieval is fine and the prompt or threshold is too strict. Those are opposite fixes and the abstention rate alone cannot tell them apart." },
           { t: "p", text: "And the sample size is sobering. Ten golden cases measuring a 0.20 rate carry \u00b124.8 points, so this suite is a smoke test. It is still worth having \u2014 it catches a grounding regression that breaks everything \u2014 but it cannot support a claim that the rate moved from 0.20 to 0.15." }
         ] } },

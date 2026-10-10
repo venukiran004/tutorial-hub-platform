@@ -65,13 +65,13 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "\u201cThe bot got worse\u201d becomes \u201cthe bot cannot answer anything about the product we launched three weeks ago, and it got slightly worse at everything else.\u201d Those are two different bugs with two different fixes and two different owners." },
         { t: "p", text: "It also reveals something the headline cannot: cohort B was **10%** of traffic four weeks ago and is 40% now. So part of the drop is not a regression at all \u2014 traffic shifted towards a harder cohort, and the same system scores worse on a harder mix." },
-        { t: "p", text: "Which raises the obvious next question: how much of the 35 points is the mix shift and how much is the collapse? The reference answers it with a sequential decomposition, and \u00a703 is about why that answer is less definite than it looks." }
+        { t: "p", text: "Which raises the obvious next question: how much of the 35 points is the mix shift and how much is the collapse? The usual answer is it with a sequential decomposition, and \u00a703 is about why that answer is less definite than it looks." }
       ] },
 
     { t: "h2", n: "03", id: "decompose", text: "Step 2b \u2014 Decompose, and the order problem",
       sub: "The finding this module contributes" },
 
-    { t: "code", lang: "text", title: "Verified \u2014 the reference\u2019s decomposition, one order", code: `baseline 95.0%   today 60.0%   drop 35.0 points
+    { t: "code", lang: "text", title: "Verified \u2014 the decomposition, one order", code: `baseline 95.0%   today 60.0%   drop 35.0 points
   traffic mix 90/10 -> 60/40, accuracy unchanged 92.0%  (-3.0 pts)
   cohort A accuracy 96% -> 86%                  86.0%  (-6.0 pts)
   cohort B accuracy 86% -> 21%                  60.0%  (-26.0 pts)
@@ -88,7 +88,7 @@ EC.receiveLesson({
 
     { t: "callout", kind: "warn", title: "And \u201ccohort B is the incident\u201d is also order-dependent",
       body: [
-        { t: "p", text: "I expected the headline conclusion to survive and it only partly does. Cohort B is the largest single contributor in **3 of the 6 orderings**; in the other three the traffic mix is larger. Under Shapley cohort B does come out largest \u2014 \u221216.3 against the mix\u2019s \u221211.3 \u2014 so the conclusion is defensible, but not from the reference\u2019s single ordering alone." },
+        { t: "p", text: "I expected the headline conclusion to survive and it only partly does. Cohort B is the largest single contributor in **3 of the 6 orderings**; in the other three the traffic mix is larger. Under Shapley cohort B does come out largest \u2014 \u221216.3 against the mix\u2019s \u221211.3 \u2014 so the conclusion is defensible, but not from the single ordering alone." },
         { t: "p", text: "What is not order-dependent is the measured fact underneath: **cohort B\u2019s accuracy fell from 0.86 to 0.21**, a 65-point collapse in a directly observed number. That needs no decomposition and no attribution argument." },
         { t: "p", text: "So the lesson for reporting is to lead with the measured facts and treat the decomposition as supporting detail. \u2018Cohort B fell from 86% to 21% and its share of traffic grew from 10% to 40%\u2019 is unimpeachable; \u2018only 3 of the 35 points are the traffic mix\u2019 is one reading of six." }
       ] },
@@ -151,7 +151,7 @@ EC.receiveLesson({
         { t: "p", text: "The measured facts carry the whole message anyway. 86% to 21%, 10% to 40%, 1,284 PDFs skipped, logged at INFO, nothing watching. None of that requires an attribution argument." }
       ] },
 
-    { t: "viz", title: "The decomposition, all six ways", caption: "Verified. The reference reports the first row; the mix ranges from +0.0 to \u221222.5.",
+    { t: "viz", title: "The decomposition, all six ways", caption: "Verified. The reported figure is the first row; the mix ranges from +0.0 to \u221222.5.",
       svg: `<svg viewBox="0 0 760 330" width="100%" role="img" aria-label="The incident decomposition under all six orderings showing order dependence">
   <text x="16" y="20" class="s-label">ORDER</text>
   <text x="140" y="20" class="s-label">MIX</text>
@@ -214,7 +214,7 @@ EC.receiveLesson({
 
   <rect x="16" y="216" width="728" height="46" rx="4" class="s-fill-bg" style="stroke:var(--crit)" stroke-width="1.6"/>
   <text x="28" y="235" class="s-mono" style="font-size:10px;fill:var(--crit)">THE MIX CONTRIBUTION RANGES FROM +0.0 TO -22.5 POINTS</text>
-  <text x="28" y="253" class="s-sub">the interaction goes entirely to whichever factor moves LAST &#183; the reference reports the most favourable reading</text>
+  <text x="28" y="253" class="s-sub">the interaction goes entirely to whichever factor moves LAST &#183; the reported figure is the most favourable reading</text>
 
   <rect x="16" y="272" width="728" height="46" rx="4" class="s-fill" style="stroke:var(--good)" stroke-width="1.6"/>
   <text x="28" y="291" class="s-mono" style="font-size:10px;fill:var(--good)">WHAT NEEDS NO DECOMPOSITION AT ALL</text>
@@ -292,7 +292,7 @@ print("%-10s %9s %9s %9s"
          "%.1f..%.1f" % (100 * min(contrib["B"]), 100 * max(contrib["B"]))))
 
 print()
-print("the reference reports -3.0 / -6.0 / -26.0 and concludes")
+print("the reported figure is -3.0 / -6.0 / -26.0 and concludes")
 print("  '3 points are not a regression at all -- traffic shifted'.")
 print("that is the MOST FAVOURABLE of six readings. measured LAST, the same")
 print("mix shift is worth %.1f points." % (100 * min(contrib["M"])))
@@ -375,7 +375,7 @@ BAM            -19.5      -9.0      -6.5  mix
 MEAN           -11.3      -7.5     -16.3   <- Shapley (mean over all 6 orders)
 range      -22.5..0.0 -9.0..-6.0 -26.0..-6.5
 
-the reference reports -3.0 / -6.0 / -26.0 and concludes
+the reported figure is -3.0 / -6.0 / -26.0 and concludes
   '3 points are not a regression at all -- traffic shifted'.
 that is the MOST FAVOURABLE of six readings. measured LAST, the same
 mix shift is worth -22.5 points.
@@ -426,9 +426,9 @@ the 35-point drop is 22.7 standard errors: not noise
 cohort B at 21% +/- 8.9 pts = [12.1%, 29.9%] --
   precise enough to act on, not precise enough to quote.`,
         notes: [
-          { t: "p", text: "**The reference\u2019s arithmetic reproduces exactly**, and then the six-ordering run shows what it leaves out. The mix contribution is \u22123.0 in the reported order and ranges to \u221222.5; the Shapley attribution is \u221211.3. So \u2018only 3 of the 35 points are the traffic mix\u2019 is the most favourable of six true readings." },
+          { t: "p", text: "**The arithmetic reproduces exactly**, and then the six-ordering run shows what it leaves out. The mix contribution is \u22123.0 in the reported order and ranges to \u221222.5; the Shapley attribution is \u221211.3. So \u2018only 3 of the 35 points are the traffic mix\u2019 is the most favourable of six true readings." },
           { t: "p", text: "**The `AMB` ordering is the clearest proof.** Move cohort A first, so both cohorts sit at 86%, and the mix contribution is *exactly zero* \u2014 because when two cohorts have the same accuracy, their mix cannot affect the average at all. The \u2018mix effect\u2019 is therefore entirely an interaction with the accuracy gap, which is why no single number for it is privileged." },
-          { t: "p", text: "**I expected the headline conclusion to survive and it only half does.** Cohort B is the largest contributor in 3 of 6 orderings; in the other 3 the mix is larger. Shapley does put cohort B first \u2014 \u221216.3 against \u221211.3 \u2014 so the conclusion holds, but it needs the Shapley calculation to support it rather than the single ordering the reference shows." },
+          { t: "p", text: "**I expected the headline conclusion to survive and it only half does.** Cohort B is the largest contributor in 3 of 6 orderings; in the other 3 the mix is larger. Shapley does put cohort B first \u2014 \u221216.3 against \u221211.3 \u2014 so the conclusion holds, but it needs the Shapley calculation to support it rather than the single ordering the usual presentation shows." },
           { t: "p", text: "**What survives untouched is the measured fact.** Cohort B\u2019s accuracy fell from 0.86 to 0.21, a 65-point collapse in a directly observed number, and its share grew from 10% to 40%. Neither requires a decomposition, which is why an incident report should lead with those and treat the shares as supporting detail." },
           { t: "p", text: "**The noise question is settled in one line**: the 35-point drop is 22.7 standard errors from a 0.95 baseline at 200 samples a day. Cohort B\u2019s 21% rests on 80 samples and carries \u00b18.9 points \u2014 [12.1%, 29.9%], which is precise enough to act on and not precise enough to quote." },
           { t: "p", text: "A detail worth noticing in that last number: cohort B has 80 samples *because* it grew to 40% of traffic. At its old 10% share it had 20, where a 15-point fall would have been undetectable. The cohort became monitorable by becoming important." }

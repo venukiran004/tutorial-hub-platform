@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "4.6",
 
-  lede: "The reference draws the training loop as a pipeline \u2014 text, tokens, embeddings, transformer, loss, backpropagation, weight updates \u2014 with a note that only `A` and `B` change. That note is the whole of LoRA\u2019s safety guarantee, so I verified it rather than repeating it. After 24 optimiser steps, **0 of 12 base matrices had changed and the maximum difference was 0.000e+00**: the pretrained weights are bit-for-bit identical. I also checked the claim about initialisation and found the asymmetry it implies \u2014 at the very first backward pass **`|grad A| = 0.00000000` while `|grad B| = 0.340`**, so `B` moves first and `A` only follows once `B` is non-zero.",
+  lede: "The usual treatment draws the training loop as a pipeline \u2014 text, tokens, embeddings, transformer, loss, backpropagation, weight updates \u2014 with a note that only `A` and `B` change. That note is the whole of LoRA\u2019s safety guarantee, so I verified it rather than repeating it. After 24 optimiser steps, **0 of 12 base matrices had changed and the maximum difference was 0.000e+00**: the pretrained weights are bit-for-bit identical. I also checked the claim about initialisation and found the asymmetry it implies \u2014 at the very first backward pass **`|grad A| = 0.00000000` while `|grad B| = 0.340`**, so `B` moves first and `A` only follows once `B` is non-zero.",
 
   objectives: [
     "Trace one training example through the loop and say where the adapter sits",
@@ -82,7 +82,7 @@ tr = sum(p.numel() for p in m.parameters() if p.requires_grad)`,
 
     { t: "callout", kind: "note", title: "The percentage depends on where you put the adapters, not just on r",
       body: [
-        { t: "p", text: "These numbers wrap only `c_attn`, one matrix per block. The reference\u2019s example targets seven projection types \u2014 `q_proj`, `k_proj`, `v_proj`, `o_proj`, `gate_proj`, `up_proj`, `down_proj` \u2014 which multiplies the adapter count by roughly seven for the same rank." },
+        { t: "p", text: "These numbers wrap only `c_attn`, one matrix per block. The worked example targets seven projection types \u2014 `q_proj`, `k_proj`, `v_proj`, `o_proj`, `gate_proj`, `up_proj`, `down_proj` \u2014 which multiplies the adapter count by roughly seven for the same rank." },
         { t: "p", text: "So \u201cLoRA trains under 1% of the parameters\u201d is a statement about a configuration, not about the method. Rank 32 on seven module types would be around 6% here. Still small, and worth knowing which number you are quoting." }
       ] },
 

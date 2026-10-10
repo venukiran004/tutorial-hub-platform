@@ -10,7 +10,7 @@ EC.receiveLesson({
     "Implement a convolution forward pass and verify it against `nn.Conv2d`",
     "Derive and implement the three gradients a convolution needs",
     "Verify hand-written gradients against autograd",
-    "Explain He initialisation as the reference specifies it",
+    "Explain He initialisation as it is usually specified",
     "Judge realistically what a framework buys over a careful NumPy implementation"
   ],
 
@@ -58,7 +58,7 @@ EC.receiveLesson({
 
     { t: "p", text: "**Zero difference, not merely small.** With identical weights, biases and inputs in double precision, the two implementations perform the same operations in the same order. That is the strongest possible evidence the implementation is correct." },
 
-    { t: "h2", n: "02", text: "The backward pass the reference omits", id: "backward" },
+    { t: "h2", n: "02", text: "The backward pass the usual treatment omits", id: "backward" },
 
     { t: "p", text: "The reference declares `self.dW = None` and `self.db = None` and never assigns them, so its layer cannot learn. Three gradients are needed: one for the weights, one for the bias, and one to pass back to the previous layer." },
 
@@ -98,7 +98,7 @@ EC.receiveLesson({
 
     { t: "out", text: `  shapes (2, 3, 4, 4) vs (2, 3, 4, 4), identical: True` },
 
-    { t: "p", text: "The max pool needs no parameters and no initialisation — but it does need to remember *which* element was the max if you want its backward pass, since the gradient flows only to that element and all others receive zero. The reference gives forward only." },
+    { t: "p", text: "The max pool needs no parameters and no initialisation — but it does need to remember *which* element was the max if you want its backward pass, since the gradient flows only to that element and all others receive zero. The common form gives forward only." },
 
     { t: "out", text: `  Conv2D(  3, 64, 3): target std 0.2722, actual 0.2631, bias all zero = True
   Conv2D( 64, 64, 3): target std 0.0589, actual 0.0589, bias all zero = True

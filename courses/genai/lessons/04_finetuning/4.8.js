@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "4.8",
 
-  lede: "Every lesson in this module so far has watched a training loss fall and said the same thing: that curve cannot tell you whether the model is learning the behaviour or memorising the examples. This one holds data back, and adds a third measurement \u2014 perplexity on text the task has nothing to do with. Sweeping the four settings the reference says matter produced one result that should change how you run these jobs. **A learning rate of 5e-4 gave the best validation loss in the whole sweep, 2.0359, and took general perplexity to 23.903 against a 5.282 baseline.** Selecting on task validation alone would have shipped a wrecked model, confidently.",
+  lede: "Every lesson in this module so far has watched a training loss fall and said the same thing: that curve cannot tell you whether the model is learning the behaviour or memorising the examples. This one holds data back, and adds a third measurement \u2014 perplexity on text the task has nothing to do with. Sweeping the four settings it is commonly said matter produced one result that should change how you run these jobs. **A learning rate of 5e-4 gave the best validation loss in the whole sweep, 2.0359, and took general perplexity to 23.903 against a 5.282 baseline.** Selecting on task validation alone would have shipped a wrecked model, confidently.",
 
   objectives: [
     "Split data so that a fine-tune can be stopped on evidence",
@@ -71,7 +71,7 @@ for ep in range(epochs):
 
     { t: "callout", kind: "note", title: "Nine epochs, against the \u201c1\u20133\u201d",
       body: [
-        { t: "p", text: "The reference recommends 1\u20133 epochs and this run peaked at 9. Both are right, because an epoch is a pass over *your* data: 32 examples in batches of 4 is 8 optimiser steps per epoch, so nine epochs here is 72 steps. A 1,000-example dataset gives 250 steps in a single epoch." },
+        { t: "p", text: "The usual advice is 1\u20133 epochs and this run peaked at 9. Both are right, because an epoch is a pass over *your* data: 32 examples in batches of 4 is 8 optimiser steps per epoch, so nine epochs here is 72 steps. A 1,000-example dataset gives 250 steps in a single epoch." },
         { t: "p", text: "So the transferable quantity is **steps**, not epochs, and the rule of thumb is calibrated for the dataset size the reference assumes. On a small set, quote both \u2014 and stop on the validation curve rather than on either number." }
       ] },
 
@@ -96,7 +96,7 @@ for ep in range(epochs):
         { t: "p", text: "Rank the five by validation loss: **5e-4 wins (2.0359)**, then 2e-4 (2.1094), then 1e-4, then 1e-3, then 5e-5. A standard sweep that picks the best validation loss picks 5e-4, and every number it looked at says that was the right call." },
         { t: "p", text: "Now the third column. 5e-4 gives generic perplexity **23.903 against a 5.282 baseline** \u2014 the model has become 4.5\u00d7 worse at ordinary English while becoming marginally better at the task. 2e-4, which lost on validation by 0.07, sits at 8.739." },
         { t: "p", text: "This is the whole argument of the lesson in one table. **A held-out set for the task is necessary and not sufficient**, because both of its numbers improve while the model is being damaged. The failure is invisible to the instrument most teams have." },
-        { t: "p", text: "It also explains why 2e-4 is the conventional default for LoRA rather than something derived per task. It is not the best task fit available; it is the point where the task fit is nearly as good and the collateral damage is still bounded. The reference gives the number without the reason, and the reason is this column." }
+        { t: "p", text: "It also explains why 2e-4 is the conventional default for LoRA rather than something derived per task. It is not the best task fit available; it is the point where the task fit is nearly as good and the collateral damage is still bounded. The common form gives the number without the reason, and the reason is this column." }
       ] },
 
     { t: "viz", title: "Learning rate: the two curves point in opposite directions", caption: "Validation loss is best at 5e-4. General ability is already four and a half times worse there.",
@@ -152,7 +152,7 @@ for ep in range(epochs):
     { t: "callout", kind: "insight", title: "The plateau is the stopping rule",
       body: [
         { t: "p", text: "Validation loss improves steadily to r=32 (2.0415) and then stops: r=64 gives **2.0396**, a gain of 0.0019, for twice the parameters. Meanwhile generic perplexity goes from 10.045 to **14.439**." },
-        { t: "p", text: "So doubling rank past the plateau buys nothing on the task and costs real capability. That is the concrete reason behind the reference\u2019s **8 simple / 16 instructions / 32\u201364 complex** guidance \u2014 the top of its range is where the returns disappear, and going past it is not merely wasteful but actively harmful." },
+        { t: "p", text: "So doubling rank past the plateau buys nothing on the task and costs real capability. That is the concrete reason behind the **8 simple / 16 instructions / 32\u201364 complex** guidance \u2014 the top of its range is where the returns disappear, and going past it is not merely wasteful but actively harmful." },
         { t: "p", text: "Note that this does not contradict 4.3, which found rank-8 adapters capturing only 45% of a full fine-tune\u2019s update. Both are true: more rank does represent more of the update, and past a point the extra directions are not ones the *task* needed. The plateau is where those two facts meet." }
       ] },
 

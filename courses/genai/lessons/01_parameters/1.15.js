@@ -37,7 +37,7 @@ EC.receiveLesson({
         ["batch API", "yes", "yes", "**no**", "TGI"],
         ["prompt caching", "automatic", "manual `cache_control`", "yes", "**no**"]
       ],
-      caption: "From the reference notes §15. Five rows have a gap that a naive migration will hit, and three of them change behaviour rather than merely failing." },
+      caption: "Five rows have a gap that a naive migration will hit, and three of them change behaviour rather than merely failing." },
 
     { t: "p", text: "The rows worth internalising are the ones where a parameter is missing on a provider people migrate *to*:" },
 
@@ -125,9 +125,9 @@ def call(provider, *, strict=True, **params):
         ["On-prem / privacy", "Llama 3 / Mistral, self-hosted", "A requirement no hosted model satisfies at any price"],
         ["Cost-sensitive batches", "Batch API on OpenAI or Anthropic", "Scheduling flexibility, not model choice (1.13)"]
       ],
-      caption: "From the reference notes §16.1. The third column is the useful reading: in five of the seven rows the binding constraint is not answer quality at all." },
+      caption: "The third column is the useful reading: in five of the seven rows the binding constraint is not answer quality at all." },
 
-    { t: "p", text: "Prices as the reference quotes them, per million input tokens: GPT-4o-mini $0.15, Claude Haiku $0.25, Gemini Flash $0.075, GPT-4o $2.50, Claude Sonnet $3.00, Gemini Pro $1.25, o3 $10.00, Claude Opus $15.00. That is a 200× spread between the cheapest and the most expensive — which is why routing (11.9) is usually worth more than any other cost work." },
+    { t: "p", text: "Prices as the quoted figure is them, per million input tokens: GPT-4o-mini $0.15, Claude Haiku $0.25, Gemini Flash $0.075, GPT-4o $2.50, Claude Sonnet $3.00, Gemini Pro $1.25, o3 $10.00, Claude Opus $15.00. That is a 200× spread between the cheapest and the most expensive — which is why routing (11.9) is usually worth more than any other cost work." },
 
     { t: "callout", kind: "insight", title: "Price per token is not price per task",
       body: [

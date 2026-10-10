@@ -6,7 +6,7 @@
 EC.receiveLesson({
   id: "5.4",
 
-  lede: "**The LSTM card has one entry that matters more than the rest: initialise the forget-gate bias to 1.** The reference lists it among five failure modes, which understates it. Module 3 measured an LSTM sitting at chance — 48.2 %, losing to a vanilla RNN — on a task it should have solved easily, and that one line of initialisation took it to 100 %. This card is organised so that item is hard to miss.",
+  lede: "**The LSTM card has one entry that matters more than the rest: initialise the forget-gate bias to 1.** The common list has it among five failure modes, which understates it. Module 3 measured an LSTM sitting at chance — 48.2 %, losing to a vanilla RNN — on a task it should have solved easily, and that one line of initialisation took it to 100 %. This card is organised so that item is hard to miss.",
 
   objectives: [
     "Apply the LSTM parameter formula and account for PyTorch's extra biases",

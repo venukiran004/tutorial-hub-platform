@@ -13,7 +13,7 @@
 
     trackLabels: { learn: "Deep Learning", practice: "Practice", interview: "Interview" },
     trackBlurbs: {
-      learn: "The reference notes, section by section — every formula worked on a number, every program run.",
+      learn: "The usual treatment, section by section — every formula worked on a number, every program run.",
       practice: "Sixty-seven PyTorch programs with their output, and a thousand scenario questions with the answers folded away.",
       interview: "Two hundred senior-level questions and the real Glassdoor AI Engineer questions, answers hidden until you ask."
     },
@@ -71,7 +71,7 @@
             summary: "The symptom-to-cause table for a run that will not train, the overfit-one-batch test, gradient monitoring, and gradient clipping by norm and by value.",
             keywords: ["debugging", "overfit one batch", "gradient clipping", "clip_grad_norm", "nan", "loss not decreasing"] },
           { id: "1.13", title: "Label Smoothing, Knowledge Distillation and Mixed Precision", difficulty: "advanced", minutes: 30, tier: "should",
-            summary: "Three training techniques the reference collects: soft targets, a student learning from a teacher's temperature-scaled logits, and float16 training with loss scaling.",
+            summary: "Three training techniques: soft targets, a student learning from a teacher's temperature-scaled logits, and float16 training with loss scaling.",
             keywords: ["label smoothing", "knowledge distillation", "temperature", "mixed precision", "autocast", "grad scaler"] },
           { id: "1.14", title: "Neural ODEs", difficulty: "advanced", minutes: 34, tier: "should",
             summary: "ResNets as Euler steps, the continuous-depth network, the adjoint method for memory-efficient backpropagation, and continuous normalising flows.",
@@ -110,7 +110,7 @@
             summary: "The geometric and photometric transforms, Mixup, CutMix and Cutout, the torchvision pipeline, and which augmentations are wrong for which task.",
             keywords: ["augmentation", "flip", "crop", "mixup", "cutmix", "cutout", "torchvision transforms"] },
           { id: "2.7", title: "Object Detection and Non-Maximum Suppression", difficulty: "advanced", minutes: 34, tier: "must",
-            summary: "Two-stage and one-stage detectors, anchors, IoU computed by hand, the detection losses, and NMS as the reference implements it.",
+            summary: "Two-stage and one-stage detectors, anchors, IoU computed by hand, the detection losses, and NMS as it is usually implemented.",
             keywords: ["object detection", "yolo", "faster r-cnn", "iou", "anchor", "nms", "non-maximum suppression"] },
           { id: "2.8", title: "Image Segmentation", difficulty: "advanced", minutes: 26, tier: "should",
             summary: "Semantic, instance and panoptic segmentation, the encoder–decoder with skip connections, U-Net, and the Dice and IoU losses.",
@@ -125,10 +125,10 @@
             summary: "The PyTorch CNN with its training loop and the Keras equivalent, run on the data at hand, with the printed results.",
             keywords: ["pytorch", "keras", "conv2d", "training loop", "cifar", "mnist", "model"] },
           { id: "2.12", title: "Production Deployment", difficulty: "advanced", minutes: 24, tier: "should",
-            summary: "TorchScript and ONNX export, quantisation for inference, and the serving considerations the reference lists.",
+            summary: "TorchScript and ONNX export, quantisation for inference, and the serving considerations the common list has.",
             keywords: ["deployment", "torchscript", "onnx", "quantization", "inference", "serving"] },
           { id: "2.13", title: "Transposed and Dilated Convolutions, and GANs in Overview", difficulty: "advanced", minutes: 30, tier: "should",
-            summary: "Upsampling with transposed convolutions and their checkerboard risk, dilated convolutions for a larger receptive field at no cost, and the GAN as the reference introduces it.",
+            summary: "Upsampling with transposed convolutions and their checkerboard risk, dilated convolutions for a larger receptive field at no cost, and the GAN in its usual form.",
             keywords: ["transposed convolution", "deconvolution", "dilated", "atrous", "gan", "generator", "discriminator"] }
         ]
       },
@@ -299,7 +299,7 @@
             summary: "Word and character error rate computed by edit distance on an example, mean opinion score, real-time factor, and the evaluation code run.",
             keywords: ["wer", "cer", "edit distance", "mos", "rtf", "evaluation"] },
           { id: "6.9", title: "Robustness, Deployment and Pitfalls", difficulty: "advanced", minutes: 26, tier: "should",
-            summary: "Noise and augmentation, on-device constraints and quantisation, and the pitfalls the reference collects from real speech systems.",
+            summary: "Noise and augmentation, on-device constraints and quantisation, and the pitfalls that recur from real speech systems.",
             keywords: ["robustness", "augmentation", "specaugment", "on-device", "deployment", "pitfalls"] }
         ]
       },
@@ -313,8 +313,8 @@
         dir: "07_instability",
         phase: "Phase 4 · Audio, and training that goes wrong",
         title: "Training Instability in Production",
-        blurb: "The production issue the reference documents: why runs go unstable, the failure-mode map, NaN and Inf losses, exploding and vanishing gradients, loss spikes and divergence, dead ReLUs, mixed-precision pitfalls, distributed failures — with the monitoring, the decision flow and the checklist.",
-        outcome: "You can name the cause of an unstable run from its symptoms and apply the fix the reference prescribes, in the order it prescribes it.",
+        blurb: "The production issue the usual treatment documents: why runs go unstable, the failure-mode map, NaN and Inf losses, exploding and vanishing gradients, loss spikes and divergence, dead ReLUs, mixed-precision pitfalls, distributed failures — with the monitoring, the decision flow and the checklist.",
+        outcome: "You can name the cause of an unstable run from its symptoms and apply the prescribed fix, in the order it prescribes it.",
         lessons: [
           { id: "7.1", title: "Why Training Goes Unstable, and the Failure-Mode Map", difficulty: "core", minutes: 26, tier: "must",
             summary: "The definitions, the intuition for why deep training is a dynamical system that can leave its stable region, and the map from symptom to failure mode.",

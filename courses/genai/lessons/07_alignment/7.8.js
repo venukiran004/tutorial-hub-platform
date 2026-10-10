@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "7.8",
 
-  lede: "GRPO deletes PPO\u2019s critic by sampling G answers to the same prompt and using the group\u2019s mean as the baseline. The reference gives worked numbers twice and they **disagree**: its hand calculation yields advantages of \u00b11 and its code prints \u00b10.9129, because `torch.std` defaults to the n\u22121 denominator \u2014 the ratio is exactly \u221a(5/6). It flags this, correctly. The deeper consequence is the degenerate case: if all G answers are right or all are wrong, the advantage is exactly zero and the prompt teaches nothing, which makes **difficulty curation part of the algorithm**.",
+  lede: "GRPO deletes PPO\u2019s critic by sampling G answers to the same prompt and using the group\u2019s mean as the baseline. The common form gives worked numbers twice and they **disagree**: its hand calculation yields advantages of \u00b11 and its code prints \u00b10.9129, because `torch.std` defaults to the n\u22121 denominator \u2014 the ratio is exactly \u221a(5/6). It flags this, correctly. The deeper consequence is the degenerate case: if all G answers are right or all are wrong, the advantage is exactly zero and the prompt teaches nothing, which makes **difficulty curation part of the algorithm**.",
 
   objectives: [
     "Write the group-normalised advantage and compute it for a reward vector",
@@ -37,7 +37,7 @@ GRPO:   advantage = actual reward - mean reward of G siblings  (empirical baseli
       ] },
 
     { t: "h2", n: "02", id: "numbers", text: "The worked numbers, and a discrepancy",
-      sub: "The reference computes this twice and gets two answers" },
+      sub: "The usual computation is this twice and gets two answers" },
 
     { t: "code", lang: "python", title: "g78.py \u00a7A \u2014 six samples, binary reward", code: `def grpo_advantages(rewards, eps=1e-4):
     mean = rewards.mean(dim=1, keepdim=True)
@@ -122,7 +122,7 @@ r = torch.tensor([[1., 0., 1., 0., 0., 1.]])`,
 
     { t: "callout", kind: "warn", title: "So prompt difficulty curation is part of the algorithm",
       body: [
-        { t: "p", text: "The reference states this and the measurement makes it concrete. A batch of prompts your model always solves teaches nothing; a batch it never solves teaches nothing; and a batch it solves about half the time teaches the most." },
+        { t: "p", text: "It is commonly stated this and the measurement makes it concrete. A batch of prompts your model always solves teaches nothing; a batch it never solves teaches nothing; and a batch it solves about half the time teaches the most." },
         { t: "p", text: "That is an unusual property for a training algorithm and it has real consequences. Your prompt set has to be *matched to the current policy*, so as the model improves, prompts it used to find hard become all-correct and stop contributing \u2014 which means the curriculum has to move with it." },
         { t: "p", text: "Practically: log the zero-variance fraction per batch, and filter or re-weight prompts by measured pass rate. If the zero-variance fraction is high you are paying full sampling cost \u2014 which 7.5 noted dominates the wall clock \u2014 for no gradient at all." }
       ] },
@@ -169,7 +169,7 @@ r = torch.tensor([[1., 0., 1., 0., 0., 1.]])`,
 </svg>` },
 
     { t: "h2", n: "04", id: "memory", text: "What deleting the critic buys",
-      sub: "The reference says ~40%; measured it is 44%" },
+      sub: "It is commonly said ~40%; measured it is 44%" },
 
     { t: "code", lang: "python", title: "g78.py \u00a7D \u2014 four configurations, 7B policy, bf16 + Adam", code: `trained = N * 16 / GB      # weights + grads + fp32 master + Adam m,v
 frozen  = N * 2  / GB      # bf16 weights only`,
@@ -185,13 +185,13 @@ frozen  = N * 2  / GB      # bf16 weights only`,
     { t: "callout", kind: "insight", title: "The saving comes from deleting a *trained* model",
       body: [
         { t: "p", text: "7.5\u2019s arithmetic is what makes this large: a trained model costs ~16 bytes per parameter against a frozen model\u2019s 2, so the critic is 104.3 GB while the reward model is 13.0 GB. Deleting the critic saves **eight times** what deleting the reward model saves." },
-        { t: "p", text: "The reference\u2019s \u201c~40% less memory\u201d is close and slightly understated \u2014 the measured figure is 44%. Under RLVR, where the reward model is replaced by a program, the total reaches 117.3 GB and GRPO becomes exactly as cheap as DPO while remaining an *online* method." },
+        { t: "p", text: "The \u201c~40% less memory\u201d is close and slightly understated \u2014 the measured figure is 44%. Under RLVR, where the reward model is replaced by a program, the total reaches 117.3 GB and GRPO becomes exactly as cheap as DPO while remaining an *online* method." },
         { t: "p", text: "That last point is the significant one. 7.6 noted DPO\u2019s fundamental limitation is being bounded by its pairs. GRPO with a verifier gets DPO\u2019s memory profile *and* the ability to explore, which is why it displaced both for reasoning work." }
       ] },
 
     { t: "callout", kind: "good", title: "It also removes a failure mode, not just memory",
       body: [
-        { t: "p", text: "A critic is a trained model that can be wrong. A badly fitted value head produces systematically mis-estimated advantages, and the symptom is a PPO run that silently learns the wrong thing \u2014 the reference calls this critic collapse and it is hard to diagnose from the outside." },
+        { t: "p", text: "A critic is a trained model that can be wrong. A badly fitted value head produces systematically mis-estimated advantages, and the symptom is a PPO run that silently learns the wrong thing \u2014 it is commonly called this critic collapse and it is hard to diagnose from the outside." },
         { t: "p", text: "A group mean cannot collapse. It is an arithmetic function of the rewards you just observed, with no parameters to fit and nothing to go stale as the policy moves." },
         { t: "p", text: "In exchange you pay G samples per prompt instead of one. For reasoning work that is free, because sampling multiple completions per problem is already what you do \u2014 so the group comes at no additional cost, which is the third reason GRPO suits this regime." }
       ] },
@@ -292,7 +292,7 @@ for k, v in audit(rewards).items():
     "**GRPO replaces the critic's prediction with the mean reward of G siblings**, normalised by the group standard deviation \u2014 an empirical baseline instead of a learned one.",
     "**The clipped surrogate is PPO's, unchanged**, including the asymmetry where the penalty for a harmful move is not capped.",
     "**Dividing by group std makes advantages z-scores**, so they are comparable across prompts of different difficulty and immune to reward rescaling.",
-    "**The reference computes the worked example twice and gets \u00b11 and \u00b10.9129**, differing by exactly \u221a(5/6) \u2014 the n versus n\u22121 denominator, which it flags.",
+    "**The usual computation is the worked example twice and gets \u00b11 and \u00b10.9129**, differing by exactly \u221a(5/6) \u2014 the n versus n\u22121 denominator, which it flags.",
     "**That discrepancy is 8.7% at G = 6 and 22% at G = 2**, absorbed by the learning rate in practice but fatal when checking an implementation against a paper.",
     "**Zero variance means exactly zero advantage** \u2014 all-correct and all-wrong prompts contribute no gradient, and `eps` prevents a NaN rather than creating a signal.",
     "**Signal peaks at half correct**: mean |A| was 0.9127 at 3/6 against 0.6802 at 1/6 and 0.000 at the ends \u2014 I had wrongly predicted it would be flat.",

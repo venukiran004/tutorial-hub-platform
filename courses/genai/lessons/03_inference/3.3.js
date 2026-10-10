@@ -56,7 +56,7 @@ EC.receiveLesson({
         ["GGUF", "2–8", "CPU-optimised, mixed precision per tensor", "Varies"],
         ["FP8", "8", "Mixed E4M3/E5M2", "Minimal"]
       ],
-      caption: "From the reference notes section 3. The two bolded rows are calibration-based, which is the property that matters and is easy to miss in a table organised by bit width." },
+      caption: "The two bolded rows are calibration-based, which is the property that matters and is easy to miss in a table organised by bit width." },
 
     { t: "p", text: "**AWQ's insight is the one worth carrying.** Not all weights matter equally: a small fraction correspond to large activations and dominate the output. Protecting those channels — scaling them before quantizing — costs almost nothing in size and recovers most of the quality that uniform quantization loses. It is why AWQ generally beats GPTQ at the same bit width." },
 
@@ -85,7 +85,7 @@ print("int8 perplexity : %.4f" % perplexity(qmodel))`,
     { t: "callout", kind: "trap", title: "The speedup is real and the quality number is the one that matters",
       body: [
         { t: "p", text: "A team measuring only latency would report this as a success: 1.69× faster inference for one line of code. The quality measurement takes the same five minutes and reverses the conclusion completely." },
-        { t: "p", text: "Two caveats make this less damning than it first appears, and both are worth stating. GPT-2 at 124M parameters is unusually sensitive — larger models are substantially more robust to quantization, which is why the reference describes INT8 quality loss as \"minimal\". And dynamic quantization uses no calibration data at all, where GPTQ and AWQ use a representative sample to choose scales per channel." },
+        { t: "p", text: "Two caveats make this less damning than it first appears, and both are worth stating. GPT-2 at 124M parameters is unusually sensitive — larger models are substantially more robust to quantization, which is why the usual description is INT8 quality loss as \"minimal\". And dynamic quantization uses no calibration data at all, where GPTQ and AWQ use a representative sample to choose scales per channel." },
         { t: "p", text: "But the lesson holds in the direction that matters: **quantization quality is not a property of the bit width, it is a property of the method**, and the cheapest method is the one most likely to be reached for. Measure perplexity before and after, every time." }
       ] },
 
@@ -101,7 +101,7 @@ print("int8 perplexity : %.4f" % perplexity(qmodel))`,
         ["Consumer GPU", "**AWQ or GPTQ 4-bit**", "Fits in 6–8 GB; both have mature kernels"],
         ["CPU / laptop", "**GGUF Q4_K_M**", "The recommended quality-size balance; llama.cpp ecosystem"],
         ["Maximum quality, memory available", "**BF16**", "No quantization at all — the honest option when it fits"],
-        ["Extreme constraint", "GGUF Q2_K", "The reference notes ~40% of original quality. Rarely the right trade"]
+        ["Extreme constraint", "GGUF Q2_K", "The usual treatment ~40% of original quality. Rarely the right trade"]
       ],
       caption: "The GGUF levels run Q2_K through Q8_0, with Q4_K_M recommended. Its note that Q2_K retains \"~40% original quality\" is a strong claim worth verifying on your own task before relying on it." },
 

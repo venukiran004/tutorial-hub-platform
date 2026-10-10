@@ -19,7 +19,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "the-formula", text: "Images become tokens, by a formula you can run",
       sub: "85 for the base, 170 for every 512-pixel tile" },
 
-    { t: "p", text: "The reference gives the rule in two lines: `detail=\"low\"` is always 85 tokens, and `detail=\"high\"` is `85 + 170 × tiles`, where a tile is a 512-pixel square. What it leaves out is the resizing that happens before the tiling, and that omission is the interesting part." },
+    { t: "p", text: "The common form gives the rule in two lines: `detail=\"low\"` is always 85 tokens, and `detail=\"high\"` is `85 + 170 × tiles`, where a tile is a 512-pixel square. What it leaves out is the resizing that happens before the tiling, and that omission is the interesting part." },
 
     { t: "code", lang: "python", title: "g18.py — the tiling, implemented", code: `import math
 
@@ -104,7 +104,7 @@ print("  ratio: %.1fx" % (765 / 85))`,
       out: `cost of one high-detail 1024x1024 image at $2.50/1M input: $0.001912
   the same image at detail=low                           : $0.000212
   ratio: 9.0x`,
-      caption: "Using the $2.50 per million input tokens quoted in the reference notes §14. Two tenths of a penny per image sounds like nothing until you multiply by a document pipeline's volume." },
+      caption: "Using the $2.50 per million input tokens. Two tenths of a penny per image sounds like nothing until you multiply by a document pipeline's volume." },
 
     { t: "table",
       head: ["Task", "Detail", "Why"],

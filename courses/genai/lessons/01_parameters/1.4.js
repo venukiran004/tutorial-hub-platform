@@ -19,7 +19,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "three-penalties", text: "Three penalties, two arithmetics",
       sub: "Subtract by count, subtract once, or divide" },
 
-    { t: "p", text: "All three penalties do the same kind of thing — modify the logits of tokens that have already been generated — and they differ in how much and how. The reference gives all three; here they are side by side." },
+    { t: "p", text: "All three penalties do the same kind of thing — modify the logits of tokens that have already been generated — and they differ in how much and how. The common form gives all three; here they are side by side." },
 
     { t: "dl", items: [
       ["Frequency penalty", "`logit -= frequency_penalty × count(token)`. Scales with how many times the token has appeared. OpenAI's range is −2.0 to 2.0."],
@@ -103,7 +103,7 @@ token counts: {' the': 3, ' cat': 2, ' sat': 2, ' on': 2}
         ["Long essays", "0.5", "0.3", "Enough to break loops without forcing synonyms"],
         ["Creative", "0.8", "0.6", "You want the model to leave its first vocabulary"]
       ],
-      caption: "From the reference notes §4. Note that both are zero for anything a machine will parse — a penalty that discourages repeating `user_id` is a penalty that corrupts your JSON." },
+      caption: "Note that both are zero for anything a machine will parse — a penalty that discourages repeating `user_id` is a penalty that corrupts your JSON." },
 
     { t: "callout", kind: "warn", title: "Never penalise structured output",
       body: [
@@ -262,7 +262,7 @@ ratio of the two penalties on the most common token: 16.0x
         { t: "p", text: "**Symptom.** A catalogue tool generated 300-word product descriptions. Editors complained that descriptions of the same item would name the product in the first sentence and then never again — \"it\", \"this piece\", \"the item\" for the remaining four paragraphs. On short descriptions it did not happen." },
         { t: "p", text: "**Configuration.** `frequency_penalty=1.2`, added six months earlier to fix genuine looping, and never revisited. Temperature 0.7, no other changes." },
         { t: "p", text: "**Mechanism.** The product name is a token the description *must* repeat. At 1.2, the third mention carries a logit reduction of 3.6 — a factor of `exp(-3.6)` ≈ 0.027 against every alternative — and by the fifth it is 6.0, or 0.0025. The model was not avoiding the name stylistically; the name had been priced out of the distribution. Short descriptions were fine because the count never got high enough for the penalty to compound, which is exactly the behaviour the measurement in the exercise predicts." },
-        { t: "p", text: "**Fix.** `frequency_penalty` down to 0.4, `presence_penalty` up to 0.3 — the split the reference recommends for long-form, and the split that matters here because the original complaint was topic monotony rather than looping. The durable change: the unique-token ratio is now computed on every generated description and logged, with a floor and a ceiling. A ratio near 1.0 on a 300-word product description is not a healthy signal — it means the model is being pushed off vocabulary it should be reusing, and it was sitting at 0.98 the whole time." }
+        { t: "p", text: "**Fix.** `frequency_penalty` down to 0.4, `presence_penalty` up to 0.3 — the split the usual advice is for long-form, and the split that matters here because the original complaint was topic monotony rather than looping. The durable change: the unique-token ratio is now computed on every generated description and logged, with a floor and a ceiling. A ratio near 1.0 on a 300-word product description is not a healthy signal — it means the model is being pushed off vocabulary it should be reusing, and it was sitting at 0.98 the whole time." }
       ] }
   ],
 

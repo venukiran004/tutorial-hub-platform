@@ -117,7 +117,7 @@ frozen  = N * 2 / 1024**3                        # bf16 weights only`,
 
     { t: "callout", kind: "trap", title: "\u201c4 \u00d7 7B resident\u201d suggests 56 GB. It is 234.7 GB.",
       body: [
-        { t: "p", text: "The reference\u2019s phrasing invites you to count parameters \u2014 four models of 7B each, 28B parameters, about 56 GB at bf16. That is wrong by a factor of four, because the **policy and critic are trained** and a trained model costs roughly 16 bytes per parameter rather than 2." },
+        { t: "p", text: "The phrasing invites you to count parameters \u2014 four models of 7B each, 28B parameters, about 56 GB at bf16. That is wrong by a factor of four, because the **policy and critic are trained** and a trained model costs roughly 16 bytes per parameter rather than 2." },
         { t: "p", text: "Gradients are another copy, the fp32 master weights another two, and Adam\u2019s two moments another four \u2014 so each trained model is about eight times its own weight footprint. 234.7 GB is **18\u00d7** the 13.0 GB of a single frozen 7B." },
         { t: "p", text: "And that is still only the static allocation. Step 1 of the loop *generates* completions, so you also need a KV cache for the sampling batch, plus activations for the backward pass. In practice this does not fit on three 80 GB cards; you need more, or ZeRO sharding, or LoRA on the policy." }
       ] },

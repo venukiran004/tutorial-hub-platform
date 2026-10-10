@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "8.8",
 
-  lede: "Score retrieval and generation separately, because a single number cannot say which one failed \u2014 and the reference\u2019s soundbite is the one to internalise: **most RAG failures are retrieval failures**, so a combined score sends you to tune the prompt forever. 6.1 measured the retrieval half of this on a real corpus and found something sharper: BM25 and dense retrieval **rank the same systems in opposite orders** depending on the metric, with dense winning on MAP and nDCG while BM25 won on MRR.",
+  lede: "Score retrieval and generation separately, because a single number cannot say which one failed \u2014 and the soundbite is the one to internalise: **most RAG failures are retrieval failures**, so a combined score sends you to tune the prompt forever. 6.1 measured the retrieval half of this on a real corpus and found something sharper: BM25 and dense retrieval **rank the same systems in opposite orders** depending on the metric, with dense winning on MAP and nDCG while BM25 won on MRR.",
 
   objectives: [
     "Compute recall@k, precision@k, hit rate, MRR and nDCG",
@@ -72,7 +72,7 @@ def mrr(retrieved_ids, relevant_ids):
       body: [
         { t: "p", text: "8.1 argued that reference-free evaluation is what lifts the ceiling on eval-set size, because a gold answer per case bounds you by annotation effort. Faithfulness, answer relevancy and context precision all score the output against inputs the system already produced." },
         { t: "p", text: "So you can run those three over sampled production traffic at whatever volume you like, and reserve the two reference-based metrics for a smaller curated set. That split is the practical shape of a RAG eval suite." },
-        { t: "p", text: "The reference\u2019s emphasis is right: **faithfulness is the most important RAG metric**, because it directly measures hallucination and a faithful-but-incomplete answer is usually safer than a fluent fabrication. 7.11 catalogued confident hallucination as the hack that fluency rewards." }
+        { t: "p", text: "The emphasis is right: **faithfulness is the most important RAG metric**, because it directly measures hallucination and a faithful-but-incomplete answer is usually safer than a fluent fabrication. 7.11 catalogued confident hallucination as the hack that fluency rewards." }
       ] },
 
     { t: "math", tex: "\\text{Faithfulness} \\approx \\frac{\\#\\,\\text{claims in the answer supported by the context}}{\\#\\,\\text{claims in the answer}}" },
@@ -81,7 +81,7 @@ def mrr(retrieved_ids, relevant_ids):
       body: [
         { t: "p", text: "Computing faithfulness means having a judge decompose the answer into atomic claims and check each one. How aggressively it splits changes the score: one sentence treated as a single claim and judged unsupported scores 0, while the same sentence split into four claims with three supported scores 0.75." },
         { t: "p", text: "So a faithfulness figure depends on the claim-extraction policy as much as on the answer. 8.7 made the same point and it recurs here because this is where it bites \u2014 two teams using \u201cRAGAS faithfulness\u201d can be computing different things." },
-        { t: "p", text: "8.12 works a single answer through every metric and finds a sharper version of this problem in the reference\u2019s own example, where one claim is derived by arithmetic rather than stated." }
+        { t: "p", text: "8.12 works a single answer through every metric and finds a sharper version of this problem in the worked example, where one claim is derived by arithmetic rather than stated." }
       ] },
 
     { t: "h2", n: "03", id: "diagnosis", text: "Which stage failed",
@@ -98,7 +98,7 @@ def mrr(retrieved_ids, relevant_ids):
       body: [
         { t: "p", text: "A combined score going down tells you something broke and not where, so the natural response is to edit the prompt, which is the cheapest thing to change. If the real failure is retrieval, every prompt iteration will fail and you will conclude the model is bad." },
         { t: "p", text: "6.8 measured a case that makes this concrete from the other direction: adding 20,000 off-topic chunks to an index changed recall@5 by **nothing**, while near-duplicates at a third that index size dropped it to 55%. A combined end-to-end score would have shown \u201cquality dropped after an ingest\u201d and sent you looking in the wrong place." },
-        { t: "p", text: "So the component split is not thoroughness, it is the thing that makes the number actionable. That is the general argument for per-stage evaluation and it is the reference\u2019s strongest claim in this section." }
+        { t: "p", text: "So the component split is not thoroughness, it is the thing that makes the number actionable. That is the general argument for per-stage evaluation and it is the strongest claim in this section." }
       ] },
 
     { t: "viz", title: "Two stages, two sets of metrics, one branch point", caption: "Is the gold chunk in the top-k? That single check decides which half of the pipeline to fix.",

@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "4.1",
 
-  lede: "Fine-tuning continues training a model on your examples so that a behaviour is carried in the weights rather than in the prompt. The reference states the rule crisply \u2014 it changes **how the model behaves, not the facts it knows** \u2014 and I tested both halves by actually fine-tuning GPT-2 twice: once on a style, once on an invented fact. The style generalised perfectly: **4 of 4 unseen prompts** came back in the trained voice. The fact was memorised and then fell apart on rephrasing \u2014 \u201cName the capital city of Zanthia\u201d produced \u201cZanthia is the capital city of Morrowbridge\u201d, with the relation **reversed**. And both runs cost something: general perplexity rose from 5.386 to **6.748** after eight epochs on twelve examples.",
+  lede: "Fine-tuning continues training a model on your examples so that a behaviour is carried in the weights rather than in the prompt. It is commonly stated the rule crisply \u2014 it changes **how the model behaves, not the facts it knows** \u2014 and I tested both halves by actually fine-tuning GPT-2 twice: once on a style, once on an invented fact. The style generalised perfectly: **4 of 4 unseen prompts** came back in the trained voice. The fact was memorised and then fell apart on rephrasing \u2014 \u201cName the capital city of Zanthia\u201d produced \u201cZanthia is the capital city of Morrowbridge\u201d, with the relation **reversed**. And both runs cost something: general perplexity rose from 5.386 to **6.748** after eight epochs on twelve examples.",
 
   objectives: [
     "Describe what fine-tuning changes and where that change is stored",
@@ -20,7 +20,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Everything in modules 1 to 3 changed the model\u2019s output by changing its *input* or its *decoding*: a different prompt, a retrieved document, a different temperature. The weights were fixed throughout. Fine-tuning is the other lever \u2014 show the model pairs of input and desired output, compute the loss between what it produced and what you wanted, and let backpropagation move the weights." },
 
-    { t: "p", text: "The reference\u2019s framing is a new employee sent on a training course, and it is a good one for a reason worth making explicit: training changes what somebody does *by default*, which is exactly what moving the weights does. A prompt is an instruction you repeat; fine-tuning is a habit you install." },
+    { t: "p", text: "The framing is a new employee sent on a training course, and it is a good one for a reason worth making explicit: training changes what somebody does *by default*, which is exactly what moving the weights does. A prompt is an instruction you repeat; fine-tuning is a habit you install." },
 
     { t: "callout", kind: "insight", title: "The practical consequence is prompt length",
       body: [
@@ -66,7 +66,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "Look at **\u201cWhat is two plus two?\u201d \u2192 \u201cThey be callin\u2019 me Cap\u2019n, matey!\u201d**. That is not an answer to the question; it is a *training response*, reproduced verbatim for an unrelated prompt. \u201cDescribe the ocean\u201d got the sea-shanty answer. \u201cHow do I bake bread\u201d got a blend of two." },
         { t: "p", text: "So the model learned two things at once: the surface style, which is what I wanted, and \u201cwhen asked anything, emit one of these twelve replies\u201d, which is overfitting. With twelve examples and eight epochs there was not enough data to separate the voice from the content, so it memorised both." },
-        { t: "p", text: "This is why the reference says real tasks need 500\u20131,000 examples and uses six only to demonstrate. My four-of-four style-transfer figure is real, and it would be dishonest to quote it without this paragraph: **the metric I chose measured the thing that worked and was blind to the thing that broke.** Which is the ordinary failure mode of a cheap metric, and the reason 4.8 insists on a held-out set." }
+        { t: "p", text: "This is why it is commonly said real tasks need 500\u20131,000 examples and uses six only to demonstrate. My four-of-four style-transfer figure is real, and it would be dishonest to quote it without this paragraph: **the metric I chose measured the thing that worked and was blind to the thing that broke.** Which is the ordinary failure mode of a cheap metric, and the reason 4.8 insists on a held-out set." }
       ] },
 
     { t: "h2", n: "03", id: "fact", text: "Teaching a fact, measured",
@@ -100,7 +100,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "Three of the four paraphrases produce **Morrowbridge**, so something was certainly learned \u2014 the base model had never heard the word. But look at what the sentences say. \u201cMorrowbridge is Morrowbridge\u2019s capital.\u201d \u201cZanthia is Morrowbridge.\u201d And on a *training* question, \u201cName the capital city of Zanthia\u201d \u2192 **\u201cZanthia is the capital city of Morrowbridge\u201d**, which has the relation backwards." },
         { t: "p", text: "So the update strengthened an association between the tokens *Zanthia*, *capital* and *Morrowbridge* without reliably encoding which is the capital of which. The model can produce the right word and cannot be trusted with the proposition." },
-        { t: "p", text: "That is a sharper version of the reference\u2019s \u201cfine-tuning does not add new facts reliably\u201d, and it explains the word *reliably*. The failure is not that nothing was learned \u2014 it is that what was learned is shaped like a word association, and a question asked a new way can read it out backwards." },
+        { t: "p", text: "That is a sharper version of the \u201cfine-tuning does not add new facts reliably\u201d, and it explains the word *reliably*. The failure is not that nothing was learned \u2014 it is that what was learned is shaped like a word association, and a question asked a new way can read it out backwards." },
         { t: "p", text: "Note the caveat I owe you: this is GPT-2, four examples and eight epochs. A larger model with hundreds of varied phrasings does better. The direction of the effect is robust and the severity here is a worst case." }
       ] },
 
@@ -145,7 +145,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "forgetting", text: "What it costs: catastrophic forgetting",
       sub: "Measured on text that has nothing to do with the task" },
 
-    { t: "p", text: "Moving weights to fit your examples moves them away from whatever else they were doing. The reference lists catastrophic forgetting in its definitions and prescribes low learning rates and few epochs; it is worth seeing the size of the effect on a task this small." },
+    { t: "p", text: "Moving weights to fit your examples moves them away from whatever else they were doing. The common list has catastrophic forgetting in its definitions and prescribes low learning rates and few epochs; it is worth seeing the size of the effect on a task this small." },
 
     { t: "code", lang: "python", title: "g41.py \u2014 perplexity on unrelated text, before and after", code: `GENERIC = ("The transformer architecture processes all positions in parallel ... "
            "Paris is the capital of France, and the Seine runs through it. Water "
@@ -175,7 +175,7 @@ def generic_ppl(m):
         { t: "p", text: "Between epoch 8 and epoch 12 the style training loss improved from 0.457 to 0.239 \u2014 it looks like the run is going well. Over the same four epochs generic perplexity went from 6.748 to **7.207**, which is 34% worse than the base model." },
         { t: "p", text: "So the only number on the screen during training was telling me to keep going, and the thing I was destroying was not on the screen at all. **If you are not measuring the ability you are not trying to change, you cannot see it leaving.**" },
         { t: "p", text: "The fact run is starker: by epoch 12 it had the *lowest* training loss of the two (0.169) and the *worst* forgetting (7.656). Lowest loss, worst model." },
-        { t: "p", text: "This is the whole argument for a held-out set and for the reference\u2019s \u201c1\u20133 epochs\u201d default, and it is also the argument for LoRA, which cannot damage the base weights because it never touches them (4.3)." }
+        { t: "p", text: "This is the whole argument for a held-out set and for the \u201c1\u20133 epochs\u201d default, and it is also the argument for LoRA, which cannot damage the base weights because it never touches them (4.3)." }
       ] },
 
     { t: "h2", n: "05", id: "when", text: "When it is the right tool",
@@ -188,7 +188,7 @@ def generic_ppl(m):
       "**Is the behaviour describable in a sentence?** Then describe it in a sentence. Fine-tuning earns its cost when the pattern is one you can demonstrate but not state \u2014 which is exactly when examples beat instructions."
     ] },
 
-    { t: "callout", kind: "note", title: "The division of labour the reference recommends",
+    { t: "callout", kind: "note", title: "The division of labour the usual advice is",
       body: [
         { t: "p", text: "*\u201cFine-tune the style, use RAG for the facts.\u201d* My two measurements are the evidence for both halves of that sentence, and they were run as one experiment precisely so the comparison would be fair \u2014 same model, same procedure, same number of epochs, same learning rate." },
         { t: "p", text: "It is worth noticing that this is not a compromise. The two mechanisms are good at different things because they *store* things differently: weights generalise and blur, context is exact and temporary. You want blurring for a style and exactness for a fact." }
@@ -262,7 +262,7 @@ for q in PARAPHRASE:
 
   perplexity after 12 epochs: style 7.207, fact 7.656 (baseline 5.386)`,
         notes: [
-          { t: "p", text: "**The style transferred to every held-out prompt and the content did not survive.** Four of four answers carry the voice; \u201cWhat is two plus two?\u201d returns a memorised training reply. Twelve examples is enough to teach a surface pattern and far too few to separate it from the content it was demonstrated on \u2014 which is why the reference puts real tasks at 500\u20131,000 examples." },
+          { t: "p", text: "**The style transferred to every held-out prompt and the content did not survive.** Four of four answers carry the voice; \u201cWhat is two plus two?\u201d returns a memorised training reply. Twelve examples is enough to teach a surface pattern and far too few to separate it from the content it was demonstrated on \u2014 which is why it is usually put real tasks at 500\u20131,000 examples." },
           { t: "p", text: "**The fact produces the right entity and the wrong relation.** Three of four paraphrases contain \u201cMorrowbridge\u201d, and the sentences they sit in include \u201cMorrowbridge is Morrowbridge\u2019s capital\u201d and \u201cZanthia is Morrowbridge\u201d. One *training* question came back with the relation reversed. Something was learned; it is shaped like a word association rather than a proposition." },
           { t: "p", text: "**Training loss and general ability move in opposite directions after about epoch 8.** Style loss 0.457 \u2192 0.239 while perplexity 6.748 \u2192 7.207; the fact run ends with the lowest loss of the two and the worst forgetting. The number on the screen says keep going and the damage is off-screen, which is the entire case for a held-out set." },
           { t: "p", text: "**A quarter of the model\u2019s general perplexity, from twelve examples.** 5.386 \u2192 6.748 is not a rounding error, and this was a tiny, benign, eight-epoch run at a conservative learning rate. Full fine-tuning is not a free action, and this is the measurement that motivates LoRA \u2014 an adapter that leaves the base weights untouched cannot do this." },
@@ -280,7 +280,7 @@ for q in PARAPHRASE:
         { t: "p", text: "**\u201cWe fine-tuned a model on our internal documentation so it would know our products. It answers confidently and gets details wrong. What happened?\u201d**" },
         { t: "p", text: "They used fine-tuning to install facts, and it does not store facts the way they need. In my own measurement, four phrasings of a single invented fact trained to a low loss and then produced \u201cMorrowbridge is Morrowbridge\u2019s capital\u201d and \u201cZanthia is Morrowbridge\u201d on rephrasing \u2014 right entity, wrong relation. Scaled up to a documentation corpus, that is exactly \u201cconfident and wrong in the details\u201d." },
         { t: "p", text: "The confidence is not a separate bug. Training on fluent, assertive documentation teaches the model to produce fluent, assertive sentences about those topics, and that is a *behaviour* \u2014 which fine-tuning teaches very well. So the run succeeded at the thing it is good at and failed at the thing it is not, and the two combine into the worst possible output." },
-        { t: "p", text: "The fix is retrieval for the content and, if they want it, fine-tuning for the format \u2014 that division is the reference\u2019s own advice and my two experiments are the evidence for both halves. Retrieval also fixes something they have not hit yet: when the documentation changes, a retrieved document is an edit and a fine-tuned fact is another training run." },
+        { t: "p", text: "The fix is retrieval for the content and, if they want it, fine-tuning for the format \u2014 that division is the advice and my two experiments are the evidence for both halves. Retrieval also fixes something they have not hit yet: when the documentation changes, a retrieved document is an edit and a fine-tuned fact is another training run." },
         { t: "p", text: "I would also ask what the fine-tune cost them elsewhere. I measured general perplexity rising 25% from twelve examples over eight epochs, and more training made it monotonically worse while the training loss kept improving. If nobody was tracking a held-out general-ability metric, the model may be worse at things nobody has tested yet." },
         { t: "p", text: "If they still want a fine-tune after that, I would keep it and change its target: train it on the *shape* of a good answer \u2014 citing the source, saying \u201cnot in the documentation\u201d when it is not \u2014 and let retrieval supply the content. That is a behaviour, which is what the tool is for." }
       ] }
@@ -340,7 +340,7 @@ for q in PARAPHRASE:
           "Greedy decoding always returns the most frequent training output"
         ],
         answer: 1,
-        why: "Twelve examples carry two patterns simultaneously \u2014 the voice, which is what you wanted, and \u201creply with one of these twelve strings\u201d, which you did not \u2014 and nothing in the data distinguishes them. That is overfitting, and it is why the reference puts real tasks at 500\u20131,000 examples and uses six only to demonstrate. Some general ability was indeed lost, measured as a 25% perplexity rise, but that is a separate effect from reproducing training outputs verbatim." }
+        why: "Twelve examples carry two patterns simultaneously \u2014 the voice, which is what you wanted, and \u201creply with one of these twelve strings\u201d, which you did not \u2014 and nothing in the data distinguishes them. That is overfitting, and it is why it is usually put real tasks at 500\u20131,000 examples and uses six only to demonstrate. Some general ability was indeed lost, measured as a 25% perplexity rise, but that is a separate effect from reproducing training outputs verbatim." }
     ]
   },
 

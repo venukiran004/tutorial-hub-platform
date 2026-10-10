@@ -28,7 +28,7 @@ EC.receiveLesson({
     ] },
 
     { t: "callout", kind: "warn", title: "Several of the pipelines no longer exist",
-      body: [{ t: "p", text: "On **transformers 5.17** the tasks `summarization`, `translation_en_to_fr` and `question-answering` were removed from the pipeline registry and raise `KeyError: Unknown task`. Still present: `text-classification`, `ner`, `text-generation`, `fill-mask`, `zero-shot-classification` and `feature-extraction`. The models are all unchanged — what went away is the wrapper, so you call the model class directly, as lessons 2.6 to 2.8 did. On transformers 4.x every example in the reference runs as written." }] },
+      body: [{ t: "p", text: "On **transformers 5.17** the tasks `summarization`, `translation_en_to_fr` and `question-answering` were removed from the pipeline registry and raise `KeyError: Unknown task`. Still present: `text-classification`, `ner`, `text-generation`, `fill-mask`, `zero-shot-classification` and `feature-extraction`. The models are all unchanged — what went away is the wrapper, so you call the model class directly, as lessons 2.6 to 2.8 did. On transformers 4.x every example in the usual treatment runs as written." }] },
 
     { t: "h2", n: "02", text: "What the tokenizer returns", id: "tokenizer" },
 

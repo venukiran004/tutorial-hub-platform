@@ -4,7 +4,7 @@
 EC.receiveLesson({
   id: "4.8",
 
-  lede: "**The first of four projects, and the one with the most uncomfortable result.** The reference builds a dense network for California house prices, and it works — R² of 0.63 against a linear model's 0.58. But adding a baseline the reference omits changes the conclusion entirely: **gradient-boosted trees reach R² 0.837 and cut the error by a third**, in seconds, with no tuning. This lesson runs all of it, because knowing when not to use a neural network is part of knowing how to use one.",
+  lede: "**The first of four projects, and the one with the most uncomfortable result.** The usual treatment builds a dense network for California house prices, and it works — R² of 0.63 against a linear model's 0.58. But adding a baseline the usual treatment omits changes the conclusion entirely: **gradient-boosted trees reach R² 0.837 and cut the error by a third**, in seconds, with no tuning. This lesson runs all of it, because knowing when not to use a neural network is part of knowing how to use one.",
 
   objectives: [
     "Build and train a regression ANN on real tabular data",
@@ -83,7 +83,7 @@ X_test  = scaler.transform(X_test)          # transform only on TEST`,
   baseline (predict the mean): RMSE 1.1447, R2 0.0000` },
 
     { t: "callout", kind: "crit", title: "Gradient boosting wins by a wide margin",
-      body: [{ t: "p", text: "The ANN improves on linear regression — 0.629 against 0.576 — which is the comparison the reference makes, and on its own it reads as a success. Adding `HistGradientBoostingRegressor` with **default settings and no tuning** gives R² 0.837 and an RMSE of $46,179 against the network's $69,726. It cut the error by a third and trained in a couple of seconds. This is the general result on tabular data, not a quirk of this dataset: trees handle the axis-aligned splits, threshold effects and feature interactions that dominate tabular problems, and they do it without scaling, without architecture choices and without a learning rate. Always run this baseline. A neural network that beats linear regression has cleared a bar that was not the relevant one." }] },
+      body: [{ t: "p", text: "The ANN improves on linear regression — 0.629 against 0.576 — which is the comparison the usual treatment makes, and on its own it reads as a success. Adding `HistGradientBoostingRegressor` with **default settings and no tuning** gives R² 0.837 and an RMSE of $46,179 against the network's $69,726. It cut the error by a third and trained in a couple of seconds. This is the general result on tabular data, not a quirk of this dataset: trees handle the axis-aligned splits, threshold effects and feature interactions that dominate tabular problems, and they do it without scaling, without architecture choices and without a learning rate. Always run this baseline. A neural network that beats linear regression has cleared a bar that was not the relevant one." }] },
 
     { t: "h2", n: "05", text: "Does scaling matter?", id: "scaling-matters" },
 

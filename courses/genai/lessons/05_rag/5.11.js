@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "5.11",
 
-  lede: "Agentic RAG lets the model decide whether to retrieve, where to retrieve from, and whether to try again. The reference\u2019s example gives an agent three tools and a sentence of guidance, and the appeal is obvious \u2014 one system that handles vector search, SQL and the web. The measurement in this lesson is of the cheapest and most common agentic step, routing a query to one source before searching it, and it went badly: picking the right document first succeeded **60% of the time**, and routing before searching took recall@5 from **95% down to 60%**. The failure mode is the thing worth understanding, because it is structural rather than a tuning problem.",
+  lede: "Agentic RAG lets the model decide whether to retrieve, where to retrieve from, and whether to try again. The worked example gives an agent three tools and a sentence of guidance, and the appeal is obvious \u2014 one system that handles vector search, SQL and the web. The measurement in this lesson is of the cheapest and most common agentic step, routing a query to one source before searching it, and it went badly: picking the right document first succeeded **60% of the time**, and routing before searching took recall@5 from **95% down to 60%**. The failure mode is the thing worth understanding, because it is structural rather than a tuning problem.",
 
   objectives: [
     "Describe the agentic loop and what each decision point adds",
@@ -106,7 +106,7 @@ order = np.argsort(-(QV[i] @ FE[idxs].T))`,
     { t: "h2", n: "03", id: "tools", text: "Routing between kinds of source",
       sub: "Where the decision is unavoidable" },
 
-    { t: "p", text: "The reference\u2019s agent has three tools: a knowledge base, a web search and a SQL database. That routing decision cannot be avoided by searching everything, because the sources answer different kinds of question and one of them (5.12) cannot be searched by similarity at all." },
+    { t: "p", text: "The agent has three tools: a knowledge base, a web search and a SQL database. That routing decision cannot be avoided by searching everything, because the sources answer different kinds of question and one of them (5.12) cannot be searched by similarity at all." },
 
     { t: "table",
       head: ["Question shape", "Source", "Why not the others"],

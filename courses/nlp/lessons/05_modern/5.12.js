@@ -24,7 +24,7 @@ EC.receiveLesson({
 "KV cache for a 32-layer, 4096-wide 7B model at 1,000,000 tokens, fp16\n\n  full MHA   (n_kv = 32)    524.3 GB\n  GQA8       (n_kv = 8)     131.1 GB" },
 
     { t: "callout", kind: "warn", title: "The \"~120 GB\" is a GQA figure",
-      body: [{ t: "p", text: "The reference states that a 7B model at 1M tokens needs roughly **120 GB** of KV cache. That matches **GQA with 8 groups** at 131.1 GB, not full multi-head attention, which comes to **524.3 GB** — more than four times the quoted number. The distinction matters because it changes the conclusion: at 524 GB you need seven 80GB cards for the cache alone, at 131 GB you need two. Worth stating explicitly, because \"a 7B model needs 120 GB at 1M tokens\" silently assumes an architectural choice that older models do not make." }] },
+      body: [{ t: "p", text: "It is commonly stated that a 7B model at 1M tokens needs roughly **120 GB** of KV cache. That matches **GQA with 8 groups** at 131.1 GB, not full multi-head attention, which comes to **524.3 GB** — more than four times the quoted number. The distinction matters because it changes the conclusion: at 524 GB you need seven 80GB cards for the cache alone, at 131 GB you need two. Worth stating explicitly, because \"a 7B model needs 120 GB at 1M tokens\" silently assumes an architectural choice that older models do not make." }] },
 
     { t: "h2", n: "02", text: "Ring attention", id: "ring" },
 

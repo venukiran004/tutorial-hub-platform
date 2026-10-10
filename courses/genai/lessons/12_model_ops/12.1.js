@@ -146,7 +146,7 @@ EC.receiveLesson({
     { t: "exercise", kind: "build", title: "Run the harness, and find the case that passes for free", difficulty: "core", minutes: 30,
       body: "Implement the deterministic checks and the harness, run them over a small eval set including a case with no deterministic checks at all, and report the pass rate. Then show what the pass rate means and does not mean by adding a case that passes every check with a poor judged score.",
       requirements: [
-        "The deterministic checks implemented as the reference writes them",
+        "The deterministic checks implemented as it is commonly written them",
         "A harness returning a pass rate and per-case rows",
         "A case with only subjective criteria, and what the harness does with it",
         "A case that passes all checks with a low judged score",

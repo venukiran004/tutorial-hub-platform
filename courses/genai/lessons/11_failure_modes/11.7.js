@@ -54,10 +54,10 @@ At $5 / 1M input and $15 / 1M output:
         ["+ Cache 40% of calls", "\u2014", "\u2014", "**$13,200**", "**71%**"]
       ] },
 
-    { t: "callout", kind: "trap", title: "The reference\u2019s rerank step is 200 tokens high, and it propagates",
+    { t: "callout", kind: "trap", title: "The rerank step is 200 tokens high, and it propagates",
       body: [
-        { t: "p", text: "Its own line items give 400 tokens per chunk, so keeping 3 of 8 removes 5 \u00d7 400 = 2,000 tokens: **6,250 \u2212 2,000 = 4,250**. The reference states 4,450, then computes the cost from 4,450, so the summarise-history row inherits it too \u2014 3,400 where the derivation gives 3,200." },
-        { t: "p", text: "The bottom line survives. With the corrected figures the chain is $46,000 \u2192 $37,250 \u2192 $27,250 \u2192 $22,000 \u2192 **$13,200 with a 40% cache hit rate, a 71.3% total saving** against the reference\u2019s stated 70%. So the headline claim is right and slightly understated." },
+        { t: "p", text: "Its own line items give 400 tokens per chunk, so keeping 3 of 8 removes 5 \u00d7 400 = 2,000 tokens: **6,250 \u2212 2,000 = 4,250**. It is commonly stated 4,450, then computes the cost from 4,450, so the summarise-history row inherits it too \u2014 3,400 where the derivation gives 3,200." },
+        { t: "p", text: "The bottom line survives. With the corrected figures the chain is $46,000 \u2192 $37,250 \u2192 $27,250 \u2192 $22,000 \u2192 **$13,200 with a 40% cache hit rate, a 71.3% total saving** against the stated 70%. So the headline claim is right and slightly understated." },
         { t: "p", text: "Worth noting what kind of error this is: not a conceptual mistake but an arithmetic slip in a derived figure, of the sort 9.1 warned about \u2014 and the reason to rebuild a table from its line items rather than copying the totals." }
       ] },
 
@@ -271,9 +271,9 @@ the headline 70%% total saving survives: with the corrected
   -> input dominates at the start and the LEVERS ERODE THEIR OWN PREMISE:
      by the end output is a third of the bill, so the next lever is max_tokens.`,
         notes: [
-          { t: "p", text: "**Two rows do not follow from the reference\u2019s own line items**, both off by the same 200 tokens, because the second inherits the first. 400 tokens per chunk \u00d7 5 chunks removed is 2,000, so 6,250 \u2212 2,000 = 4,250 and not 4,450." },
+          { t: "p", text: "**Two rows do not follow from the line items**, both off by the same 200 tokens, because the second inherits the first. 400 tokens per chunk \u00d7 5 chunks removed is 2,000, so 6,250 \u2212 2,000 = 4,250 and not 4,450." },
           { t: "p", text: "**The headline survives and improves slightly**: the corrected chain reaches $13,200 and a 71.3% total saving against the stated 70%. So this is an arithmetic slip in a derived figure rather than a conceptual error \u2014 and the reason to rebuild a table from its parts rather than copying totals." },
-          { t: "p", text: "**The saving on the first row is 19.0%, not the stated 20%.** That one is defensible: using the reference\u2019s rounded $37,000 against $46,000 gives 19.6%, which rounds to 20%. Computing from unrounded figures gives 19.0%. Both are \u2018right\u2019 and the difference is whether you round before or after dividing." },
+          { t: "p", text: "**The saving on the first row is 19.0%, not the stated 20%.** That one is defensible: using the rounded $37,000 against $46,000 gives 19.6%, which rounds to 20%. Computing from unrounded figures gives 19.0%. Both are \u2018right\u2019 and the difference is whether you round before or after dividing." },
           { t: "p", text: "**The input-share table is the finding worth carrying forward.** Input is 87.0% of the bill at baseline and 72.7% after the three input levers, so the advice to attack input first is correct *and* self-limiting \u2014 each lever has a smaller share to work on than the last, and the sequence has a natural end." },
           { t: "p", text: "**Output never changed by a single token** and went from 13.0% to 27.3% of the bill. That is the clearest argument for `max_tokens` being the next lever rather than a further input trim." },
           { t: "p", text: "The 450-token summary figure is my inference rather than the reference\u2019s: it is the value its own 3,400 total implies. I kept it so the chain is reproducible, but it is a parameter you would measure rather than assume." }
@@ -282,7 +282,7 @@ the headline 70%% total saving survives: with the corrected
     { t: "callout", kind: "mental", title: "The model to keep",
       body: [
         { t: "p", text: "Decompose the bill into line items before choosing a lever, because $46,000 is not actionable and \u2018few-shot examples are $12,500 of it\u2019 is. Derive the per-unit figures \u2014 250 tokens per example, 400 per chunk \u2014 and every lever becomes arithmetic rather than an estimate." },
-        { t: "p", text: "Input is 87% of the baseline bill and mostly waste, so attack it first \u2014 but the three input levers take it to 72.7%, so the advice is self-limiting and output becomes the next lever. And rebuild the table from its parts: the reference\u2019s rerank row is 200 tokens high and propagates, though its 70% headline survives at 71.3%." }
+        { t: "p", text: "Input is 87% of the baseline bill and mostly waste, so attack it first \u2014 but the three input levers take it to 72.7%, so the advice is self-limiting and output becomes the next lever. And rebuild the table from its parts: the rerank row is 200 tokens high and propagates, though its 70% headline survives at 71.3%." }
       ] },
 
     { t: "callout", kind: "scenario", title: "Interview scenario",
@@ -345,7 +345,7 @@ the headline 70%% total saving survives: with the corrected
         answer: 1,
         why: "Few-shot examples and full transcripts are genuinely wasteful \u2014 two or three examples usually match ten, and a running summary replaces resending everything \u2014 whereas retrieved chunks are the substance the answer is grounded in. That is why the lever is phrased as reranking to top-k rather than retrieving fewer: it removes the low-value chunks while keeping recall, since a retrieval miss is the most common cause of hallucination." },
 
-      { stem: "The reference states 4,450 input tokens after reranking 8 chunks to 3. What does its own data give?",
+      { stem: "It is commonly stated 4,450 input tokens after reranking 8 chunks to 3. What does its own data give?",
         options: [
           "4,450 \u2014 the figure is consistent once the system prompt is excluded",
           "4,250 \u2014 400 tokens per chunk times five removed is 2,000, from 6,250",

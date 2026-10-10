@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "9.11",
 
-  lede: "Four biases, and the reference gives position bias a worked example that is the single best argument in this module for running both orderings. A judge scored model A as winning **62%** of the time when A was shown first and **45%** when B was shown first. The order-averaged truth is **53.5%** \u2014 much closer to a tie \u2014 and the **17-point** gap is not noise, it is the judge preferring position one. Report only the first ordering and you ship model A on a 62% win rate that does not exist.",
+  lede: "Four biases, and the common form gives position bias a worked example that is the single best argument in this module for running both orderings. A judge scored model A as winning **62%** of the time when A was shown first and **45%** when B was shown first. The order-averaged truth is **53.5%** \u2014 much closer to a tie \u2014 and the **17-point** gap is not noise, it is the judge preferring position one. Report only the first ordering and you ship model A on a 62% win rate that does not exist.",
 
   objectives: [
     "Measure position bias by running both orderings and taking the gap",
@@ -58,7 +58,7 @@ position bias magnitude   = 62 - 45        = 17 points`,
     { t: "callout", kind: "warn", title: "Verbosity bias compounds with everything",
       body: [
         { t: "p", text: "7.11 measured why length is the canonical reward hack: a DPO-style implicit reward is linear in response length, so a per-token weight of 0.01 equals the **entire quality signal** at a hundred tokens and four times it at four hundred." },
-        { t: "p", text: "And 8.3 measured the metric-side version, where a recall-oriented overlap metric gave a longer answer containing the reference\u2019s words a perfect score. Every layer of this stack has a length problem, so a verbose-biased judge is adding to an existing pile." },
+        { t: "p", text: "And 8.3 measured the metric-side version, where a recall-oriented overlap metric gave a longer answer containing the usual phrasing a perfect score. Every layer of this stack has a length problem, so a verbose-biased judge is adding to an existing pile." },
         { t: "p", text: "Instructing the judge to ignore length helps and does not solve it. The reliable check is 7.15\u2019s: bin win rates by length, and if within-bin rates are flat while the aggregate is positive, the judge bought length rather than quality." }
       ] },
 
@@ -81,7 +81,7 @@ position bias magnitude   = 62 - 45        = 17 points`,
 
     { t: "callout", kind: "note", title: "Three cheap judges or one strong one is an empirical question",
       body: [
-        { t: "p", text: "The reference\u2019s other note is that cheaper models are noisier graders, and 8.5\u2019s \u221an arithmetic prices noise directly: more variance means more samples for the same confidence. So saving on the judge can cost more in required sample size than it saves per call." },
+        { t: "p", text: "The other note is that cheaper models are noisier graders, and 8.5\u2019s \u221an arithmetic prices noise directly: more variance means more samples for the same confidence. So saving on the judge can cost more in required sample size than it saves per call." },
         { t: "p", text: "A panel of three cheap judges and one strong judge are therefore not obviously ordered \u2014 the panel attenuates systematic bias and adds variance, the strong judge has less variance and a bias you cannot average away." },
         { t: "p", text: "Which makes it a thing to measure rather than assume. 9.12\u2019s calibration study answers it directly: compute \u03ba against humans for both configurations on the same sample and pick the one closer to the human ceiling." }
       ] },

@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "8.12",
 
-  lede: "One real answer, every metric computed, and a diagnosis that tells you where to fix. The reference\u2019s worked example scores faithfulness **1.0** on an answer whose headline claim \u2014 \u201c18 vacation days per year\u201d \u2014 is **not stated in the retrieved context**; the context says 1.5 per month, and 1.5 \u00d7 12 = 18. The arithmetic is right and the claim is derived rather than quoted, so whether faithfulness is 1.0 or 0.5 depends entirely on a judge policy nobody wrote down.",
+  lede: "One real answer, every metric computed, and a diagnosis that tells you where to fix. The worked example scores faithfulness **1.0** on an answer whose headline claim \u2014 \u201c18 vacation days per year\u201d \u2014 is **not stated in the retrieved context**; the context says 1.5 per month, and 1.5 \u00d7 12 = 18. The arithmetic is right and the claim is derived rather than quoted, so whether faithfulness is 1.0 or 0.5 depends entirely on a judge policy nobody wrote down.",
 
   objectives: [
     "Compute every retrieval and generation metric on one concrete answer",
@@ -44,14 +44,14 @@ Answer:      "Employees get 18 vacation days per year, accrued at 1.5/month [KB-
       body: [
         { t: "p", text: "Recall@2 of 1.0 says retrieval found everything it needed. Precision@2 of 0.5 says half of what it returned was noise. That combination localises the problem precisely: the retriever is not *missing* anything, it is *adding* something." },
         { t: "p", text: "8.8 argued that the metrics answer different questions \u2014 recall is \u201cdid we get them?\u201d and precision is \u201chow much noise?\u201d \u2014 and this is the case where the distinction pays off, because the two numbers disagree and the disagreement is the diagnosis." },
-        { t: "p", text: "The reference\u2019s conclusion follows: generation is great, retrieval precision is the weak link, and the fix is better re-ranking or a metadata filter \u2014 **not prompt tweaking**. That is the whole argument for component-level evaluation in a single example." }
+        { t: "p", text: "The conclusion follows: generation is great, retrieval precision is the weak link, and the fix is better re-ranking or a metadata filter \u2014 **not prompt tweaking**. That is the whole argument for component-level evaluation in a single example." }
       ] },
 
     { t: "callout", kind: "note", title: "Precision@2 of 0.5 is also the floor here",
       body: [
         { t: "p", text: "8.8 measured that precision@k falls as k rises by arithmetic, and the same constraint applies downward: with exactly one relevant chunk in the corpus for this question, precision@2 **cannot exceed 0.5**. The retriever is at its ceiling." },
         { t: "p", text: "So \u201cfix retrieval precision\u201d means something specific here and it is not \u201crank better\u201d \u2014 at k=2 with one relevant chunk, no ordering achieves more than 0.5. The actual fix is to retrieve **fewer** chunks, or to filter KB-2 out before ranking." },
-        { t: "p", text: "That is a useful correction to the reference\u2019s diagnosis. Re-ranking cannot help when the second slot has nothing relevant to put in it; a metadata filter or a relevance threshold can, by declining to fill the slot at all \u2014 which is 6.7\u2019s relevance gate doing its job." }
+        { t: "p", text: "That is a useful correction to the diagnosis. Re-ranking cannot help when the second slot has nothing relevant to put in it; a metadata filter or a relevance threshold can, by declining to fill the slot at all \u2014 which is 6.7\u2019s relevance gate doing its job." }
       ] },
 
     { t: "h2", n: "03", id: "faithfulness", text: "The faithfulness score depends on an unwritten policy",
@@ -175,7 +175,7 @@ for key, v in m.items():
       body: [
         { t: "p", text: "**\u201cWalk me through evaluating a single RAG answer.\u201d**" },
         { t: "p", text: "I would take the question, the gold answer, the retrieved chunks and the generated answer, and score both stages. On retrieval: recall@k, precision@k with k stated, and context precision. On generation: decompose the answer into atomic claims and check each against the context, plus relevancy and correctness against gold." },
-        { t: "p", text: "The pattern that tells you most is recall against precision. In the reference\u2019s example recall@2 is 1.0 and precision@2 is 0.5 \u2014 retrieval found everything it needed and half of what it returned was noise. That localises the fault to precision rather than coverage, so the fix is retrieval-side and the prompt is not the problem." },
+        { t: "p", text: "The pattern that tells you most is recall against precision. In the worked example recall@2 is 1.0 and precision@2 is 0.5 \u2014 retrieval found everything it needed and half of what it returned was noise. That localises the fault to precision rather than coverage, so the fix is retrieval-side and the prompt is not the problem." },
         { t: "p", text: "But I would add something the stated diagnosis misses. At k=2 with exactly one relevant chunk, precision@2 **cannot exceed 0.5** \u2014 the retriever is already at its ceiling. So \u2018improve retrieval precision\u2019 cannot mean re-ranking, because no ordering helps when the second slot has nothing relevant to fill it. The real fix is retrieving fewer chunks or filtering the irrelevant one out before ranking, which is a relevance gate." },
         { t: "p", text: "The thing I would flag hardest is the faithfulness score. The answer claims 18 days per year; the context says 1.5 per month. Those are not the same string \u2014 18 is 1.5 times twelve, so the claim is entailed by the context rather than stated in it. A strict judge scores 0.5 and a lenient one scores 1.0, and both are defensible." },
         { t: "p", text: "So I would classify claims as stated, derived or unsupported rather than just supported or not, compute faithfulness both ways, and flag when they diverge. For a regression gate I would use the strict version because reproducibility matters more than generosity when comparing two versions, and track the lenient one alongside if the product genuinely wants derived answers." },

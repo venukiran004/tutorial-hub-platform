@@ -148,7 +148,7 @@ mish             -0.1456  -0.3034  -0.2207   0.0000   0.3752   0.8651   2.9865
 
     { t: "h2", n: "04", text: "The dead-neuron problem", id: "dead" },
 
-    { t: "p", text: "A ReLU unit whose pre-activation is negative for *every* input outputs zero for every input, and — because its derivative is zero there — receives zero gradient for every input. Its weights never change again. **The neuron is dead**, and nothing in ordinary training brings it back. The reference names two causes: a learning rate large enough to push the weights into the negative region in one step, and an initialisation that starts too many pre-activations negative." },
+    { t: "p", text: "A ReLU unit whose pre-activation is negative for *every* input outputs zero for every input, and — because its derivative is zero there — receives zero gradient for every input. Its weights never change again. **The neuron is dead**, and nothing in ordinary training brings it back. The common name is two causes: a learning rate large enough to push the weights into the negative region in one step, and an initialisation that starts too many pre-activations negative." },
 
     { t: "code", lang: "python", title: "Dead units, counted: one random layer with an increasingly negative bias",
       code: `import torch, torch.nn.functional as F

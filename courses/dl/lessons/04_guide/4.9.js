@@ -23,7 +23,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The setup", id: "setup" },
 
-    { t: "p", text: "The reference uses a dozen hand-written sample sentences, which cannot separate four architectures. This uses **20 newsgroups** — real posts, two classes, with headers, footers and quoted text removed so the task is about content rather than metadata." },
+    { t: "p", text: "The usual choice is a dozen hand-written sample sentences, which cannot separate four architectures. This uses **20 newsgroups** — real posts, two classes, with headers, footers and quoted text removed so the task is about content rather than metadata." },
 
     { t: "out", text: `  real dataset: ['rec.sport.hockey', 'sci.space']
   train 1193 documents, test 793

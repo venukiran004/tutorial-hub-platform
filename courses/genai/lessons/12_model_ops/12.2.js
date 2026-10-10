@@ -148,7 +148,7 @@ changelog:
     { t: "exercise", kind: "build", title: "Build the gate, then check whether it can see what it claims", difficulty: "advanced", minutes: 35,
       body: "Implement the prompt regression gate, then test it against three changes: one that genuinely breaks a contract, one that improves tone while breaking nothing, and one whose measured delta is inside the suite's noise. Report what the gate says and what it can actually support.",
       requirements: [
-        "The gate implemented as the reference writes it",
+        "The gate implemented as it is commonly written it",
         "A change that breaks a contract check, and the gate's verdict",
         "A change that improves subjective quality with a delta of zero",
         "The suite's noise margin computed, and compared against min_delta",

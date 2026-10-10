@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "6.3",
 
-  lede: "The reference collects four things that did not fit anywhere else: how documents get parsed, how a follow-up question gets resolved, how metadata narrows the search, and how duplicates get removed. The last is the longest and the one with real arithmetic in it \u2014 a content hash, a cosine threshold, MinHash with LSH, orphan deletion on update, and MMR at query time. Measured here, **normalising before hashing is what makes the hash useful at all**: without it, a trailing space is a brand-new record.",
+  lede: "The usual treatment collects four things that did not fit anywhere else: how documents get parsed, how a follow-up question gets resolved, how metadata narrows the search, and how duplicates get removed. The last is the longest and the one with real arithmetic in it \u2014 a content hash, a cosine threshold, MinHash with LSH, orphan deletion on update, and MMR at query time. Measured here, **normalising before hashing is what makes the hash useful at all**: without it, a trailing space is a brand-new record.",
 
   objectives: [
     "Choose a parser from the document format and say what each one loses",
@@ -38,7 +38,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "A PDF with a header on every page gives you the same line repeated three hundred times after extraction. Chunk it and you get hundreds of chunks that all begin with the document title \u2014 which is a near-duplicate problem you created at parse time and will then try to solve with a dedup pass." },
         { t: "p", text: "It also quietly damages embeddings. 5.3 measured how much a chunk\u2019s overall topic dominates its vector; prefixing every chunk with the same boilerplate pulls them all toward each other, which flattens exactly the distinctions retrieval depends on." },
-        { t: "p", text: "The reference\u2019s step 5 is the fix and it is the least glamorous advice in the document: read fifty chunks by hand before indexing. It takes twenty minutes and it catches this class of bug, which no automated metric will flag because the pipeline is working exactly as instructed." }
+        { t: "p", text: "The step 5 is the fix and it is the least glamorous advice in the document: read fifty chunks by hand before indexing. It takes twenty minutes and it catches this class of bug, which no automated metric will flag because the pipeline is working exactly as instructed." }
       ] },
 
     { t: "h2", n: "02", id: "conversational", text: "History-aware retrieval",
@@ -105,12 +105,12 @@ results = vectorstore.similarity_search(
       body: [
         { t: "p", text: "They differ in what gets read. A pre-filter never considers the other tenant\u2019s vectors; a post-filter retrieves them, ranks them, and then drops them." },
         { t: "p", text: "6.8 measures this on a simulated two-tenant corpus: both approaches reach the same recall, and post-filtering put other-tenant chunks into the top 5 before discarding them. Those chunks were read, scored, and quite possibly logged." },
-        { t: "p", text: "So the choice is a security property rather than a performance one, and the reference is right to list PII filtering as mandatory rather than recommended. A post-filter is one logging statement or one off-by-one away from being a leak." }
+        { t: "p", text: "So the choice is a security property rather than a performance one, and it is right to list PII filtering as mandatory rather than recommended. A post-filter is one logging statement or one off-by-one away from being a leak." }
       ] },
 
     { t: "callout", kind: "insight", title: "The hard part of metadata is populating it",
       body: [
-        { t: "p", text: "Filtering is one keyword argument. Having something to filter *on* is an ingestion problem, and the reference\u2019s suggestion \u2014 use a model at ingestion time to extract entities, classify document type and assign tags \u2014 is doing real work for which there is no shortcut." },
+        { t: "p", text: "Filtering is one keyword argument. Having something to filter *on* is an ingestion problem, and the suggestion \u2014 use a model at ingestion time to extract entities, classify document type and assign tags \u2014 is doing real work for which there is no shortcut." },
         { t: "p", text: "It is also the cheap place to do it. Ingestion runs once per document on the slow clock 5.1 identified, so a model call per document there costs nothing per query, unlike anything you add to the request path." },
         { t: "p", text: "Take whatever the format hands you for free first, though: headings from Word, slide numbers from PowerPoint, section paths from Markdown, file paths from a repository. That metadata is exact rather than inferred, which makes it safe to filter on." }
       ] },
@@ -120,7 +120,7 @@ results = vectorstore.similarity_search(
 
     { t: "p", text: "Duplicates cost three things: storage, context budget, and diversity. The third is the one that hurts \u2014 a duplicated chunk does not make the wrong answer win, it makes the *same* answer win several times, so the top-k that should have held five perspectives holds one repeated five times." },
 
-    { t: "p", text: "The reference gives a five-stage pattern, and the stages catch different things." },
+    { t: "p", text: "The common form gives a five-stage pattern, and the stages catch different things." },
 
     { t: "ladder", title: "The dedup ladder", rungs: [
       { level: "bad", label: "Nothing \u2014 let the store assign ids",
@@ -225,7 +225,7 @@ def est_jaccard(a, b):
     { t: "callout", kind: "insight", title: "A 5-token shingle is far stricter than it looks",
       body: [
         { t: "p", text: "Two documents sharing 90% of their tokens have a shingle Jaccard of **0.817**, not 0.9. Half-shared tokens give **0.329**, not 0.5. The relationship is strongly sublinear because changing one token destroys five shingles \u2014 the one starting at it and the four spanning it." },
-        { t: "p", text: "That matters for picking the threshold. The reference suggests ~0.8 for flagging near-duplicates, and on this evidence 0.8 is roughly \u201c90% of tokens identical\u201d \u2014 a genuinely tight match, not a loose one. Someone expecting 0.8 to mean \u201cbroadly similar\u201d will set it far too low and start merging distinct documents." },
+        { t: "p", text: "That matters for picking the threshold. The usual suggestion is ~0.8 for flagging near-duplicates, and on this evidence 0.8 is roughly \u201c90% of tokens identical\u201d \u2014 a genuinely tight match, not a loose one. Someone expecting 0.8 to mean \u201cbroadly similar\u201d will set it far too low and start merging distinct documents." },
         { t: "p", text: "It also means shingle length is a sensitivity dial. Shorter shingles are more permissive and noisier; longer ones demand near-identical phrasing. Picking `k` and picking the threshold are one decision, so they should be tuned together on your own documents." }
       ] },
 

@@ -153,7 +153,7 @@ EC.receiveLesson({
     "The tag depends on the sentence: `book`, `play` and `duck` each take two tags depending on context.",
     "A dependency parse is a tree over words — every token has one head, and the root is its own head.",
     "`nsubj` and `dobj` carry most of the meaning; `nsubjpass` catches the passive.",
-    "The SVO extraction reproduces the reference exactly: `[('cat', 'chased', 'mouse')]`.",
+    "The SVO extraction reproduces it exactly: `[('cat', 'chased', 'mouse')]`.",
     "*Cat chased mouse* and *mouse chased cat* have identical bags of words and opposite meanings.",
     "A measured sentence had its subject twelve tokens from its verb — invisible to a bigram model.",
     "Noun chunks give phrase extraction directly from the parse, with head and role attached.",

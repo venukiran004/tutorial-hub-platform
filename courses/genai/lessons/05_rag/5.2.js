@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "same", text: "The decision, restated",
       sub: "Two questions settle most of it" },
 
-    { t: "p", text: "The reference gives a decision matrix and a set of rules of thumb, and the short version is sound: *RAG for what the model knows, fine-tuning for how it behaves, prompting first*. 4.2 measured both halves of that \u2014 a style transferred from twelve examples, and a fact came back with its relation reversed under rephrasing." },
+    { t: "p", text: "The common form gives a decision matrix and a set of rules of thumb, and the short version is sound: *RAG for what the model knows, fine-tuning for how it behaves, prompting first*. 4.2 measured both halves of that \u2014 a style transferred from twelve examples, and a fact came back with its relation reversed under rephrasing." },
 
     { t: "p", text: "What is worth adding from the retrieval side is that the decision is usually made by two properties of the thing you are trying to change, not by a comparison of capabilities:" },
 
@@ -122,7 +122,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "together", text: "They compose",
       sub: "And the usual production system is all three" },
 
-    { t: "p", text: "The reference calls them complementary and puts \u201cRAG + FT\u201d at the top of its cost column. In practice a mature system uses all three, each doing the job it is suited to:" },
+    { t: "p", text: "It is commonly called them complementary and puts \u201cRAG + FT\u201d at the top of its cost column. In practice a mature system uses all three, each doing the job it is suited to:" },
 
     { t: "ol", items: [
       "**Fine-tune the behaviour** \u2014 the answer format, the citation discipline, saying \u201cthat is not in the documentation\u201d instead of guessing. 4.1 measured this transferring from a dozen examples.",
