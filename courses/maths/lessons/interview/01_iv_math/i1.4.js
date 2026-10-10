@@ -13,6 +13,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "The four outcomes every testing question returns to", "caption": "Type I, Type II, power and α are one table, and most of the twenty questions are a corner of it. Note what is absent: a probability that the null is true, which is why “the p-value is the chance it was a fluke” is wrong.", "cols": ["H₀ true", "H₀ false"], "rows": ["reject", "fail to reject"], "cells": [[{"text": "Type I — α, you choose it", "tone": "crit"}, {"text": "power — 1−β", "tone": "good"}], [{"text": "correct — 1−α", "tone": "good"}, {"text": "Type II — β, a consequence", "tone": "warn"}]], "t": "diagram", "id": "dg-i1_4-top-0"},
+
+
   {
    "t": "h2",
    "n": "01",

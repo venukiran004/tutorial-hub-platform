@@ -1,0 +1,1866 @@
+{
+ "1.1": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Three norms, three different answers",
+    "caption": "A norm is a choice, not a fact, and the choice changes which vector counts as “big”. For `[3, 4]` the three disagree — and the reason L1 produces sparse solutions is visible here: it charges the same for every unit of every coordinate.",
+    "cols": [
+     "value for [3, 4]",
+     "what it charges for",
+     "where it is used"
+    ],
+    "rows": [
+     "L1 — sum of |x|",
+     "L2 — root sum of squares",
+     "L∞ — the largest |x|"
+    ],
+    "cells": [
+     [
+      {
+       "text": "7",
+       "tone": "accent"
+      },
+      "every unit equally",
+      {
+       "text": "lasso — gives sparsity",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "5",
+       "tone": "good"
+      },
+      "large values much more",
+      "ridge, least squares, distance"
+     ],
+     [
+      {
+       "text": "4",
+       "tone": "warn"
+      },
+      "only the worst coordinate",
+      "worst-case bounds"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.2": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Read the transformation off the columns",
+    "caption": "Each column is where a basis vector lands, so the matrix can be read rather than multiplied out. The determinant is the area scale factor — and a **negative** one means the space was flipped, which is the detail people miss.",
+    "cols": [
+     "the matrix",
+     "determinant",
+     "what it does"
+    ],
+    "rows": [
+     "scale by 2",
+     "rotate 90°",
+     "reflect in the x-axis",
+     "shear",
+     "project onto x"
+    ],
+    "cells": [
+     [
+      "[[2,0],[0,2]]",
+      {
+       "text": "4",
+       "tone": "good"
+      },
+      "area ×4, nothing turns"
+     ],
+     [
+      "[[0,-1],[1,0]]",
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "area kept, everything turns"
+     ],
+     [
+      "[[1,0],[0,-1]]",
+      {
+       "text": "−1",
+       "tone": "warn"
+      },
+      "area kept, orientation FLIPPED"
+     ],
+     [
+      "[[1,1],[0,1]]",
+      {
+       "text": "1",
+       "tone": "good"
+      },
+      "area kept, angles destroyed"
+     ],
+     [
+      "[[1,0],[0,0]]",
+      {
+       "text": "0",
+       "tone": "crit"
+      },
+      "a dimension is lost"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.3": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "tree",
+    "title": "What a linear system can do",
+    "caption": "Three outcomes and no others, decided by comparing the rank of the matrix with the rank of the augmented matrix and with the number of unknowns. “No solution” and “infinitely many” are both common in practice, which is why least squares exists.",
+    "root": {
+     "label": "Ax = b",
+     "sub": "compare rank(A), rank([A|b]), n",
+     "tone": "accent",
+     "children": [
+      {
+       "label": "exactly one",
+       "sub": "rank(A) = rank([A|b]) = n",
+       "tone": "good",
+       "edge": "full rank"
+      },
+      {
+       "label": "infinitely many",
+       "sub": "rank(A) = rank([A|b]) < n",
+       "tone": "warn",
+       "edge": "free variables"
+      },
+      {
+       "label": "none",
+       "sub": "rank(A) < rank([A|b])",
+       "tone": "crit",
+       "edge": "inconsistent"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "1.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "What the eigenvalues tell you",
+    "caption": "The signs decide the behaviour of everything built on the matrix — whether a quadratic has a minimum, whether a system is stable, whether a covariance matrix is usable. The **zero** row is the one that breaks code rather than merely degrading it.",
+    "cols": [
+     "the quadratic form",
+     "a dynamical system",
+     "the matrix"
+    ],
+    "rows": [
+     "all λ > 0",
+     "all λ < 0",
+     "mixed signs",
+     "some λ = 0"
+    ],
+    "cells": [
+     [
+      {
+       "text": "a minimum — convex",
+       "tone": "good"
+      },
+      "decays to zero",
+      "positive definite"
+     ],
+     [
+      {
+       "text": "a maximum",
+       "tone": "warn"
+      },
+      "grows without bound",
+      "negative definite"
+     ],
+     [
+      {
+       "text": "a saddle — no minimum",
+       "tone": "crit"
+      },
+      "grows in some directions",
+      "indefinite"
+     ],
+     [
+      {
+       "text": "a flat direction",
+       "tone": "crit"
+      },
+      {
+       "text": "neither decays nor grows",
+       "tone": "warn"
+      },
+      {
+       "text": "singular — not invertible",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "1.5": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "compare",
+    "title": "SVD against eigendecomposition",
+    "caption": "They are not alternatives for the same job. Eigendecomposition needs a square matrix and may not exist; the SVD exists for **every** matrix, which is why it is the one that underpins PCA, pseudoinverses and low-rank approximation.",
+    "columns": [
+     {
+      "title": "eigendecomposition",
+      "tone": "warn",
+      "items": [
+       "square matrices only",
+       "may not exist, and may be complex",
+       "A = Q Λ Q⁻¹ — the basis is not orthogonal in general",
+       "eigenvalues can be negative or complex",
+       "the right tool for powers of A and for dynamics"
+      ]
+     },
+     {
+      "title": "SVD",
+      "tone": "good",
+      "items": [
+       "ANY matrix, including rectangular",
+       "always exists, always real",
+       "A = U Σ Vᵀ — both bases orthonormal",
+       "singular values are real and non-negative, in order",
+       "the right tool for rank, pseudoinverse and compression"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "1.6": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Centring is mandatory; scaling is a judgement",
+    "caption": "Skip the centring and the first component points at the mean rather than at the spread — the result is not PCA at all. Scaling is a real decision: without it the component follows whichever feature has the largest units.",
+    "cols": [
+     "if you skip it",
+     "when you want it"
+    ],
+    "rows": [
+     "centre the columns",
+     "scale to unit variance"
+    ],
+    "cells": [
+     [
+      {
+       "text": "PC1 points at the MEAN",
+       "tone": "crit"
+      },
+      {
+       "text": "always",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "the largest unit dominates",
+       "tone": "warn"
+      },
+      "when units differ"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.7": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Which factorisation, and what it costs",
+    "caption": "The cheap ones have conditions attached. Cholesky is twice as fast as LU and only works for a symmetric positive-definite matrix — so a failed Cholesky is itself a useful diagnostic that your matrix is not what you assumed.",
+    "cols": [
+     "needs",
+     "cost",
+     "use it for"
+    ],
+    "rows": [
+     "LU",
+     "Cholesky",
+     "QR",
+     "SVD"
+    ],
+    "cells": [
+     [
+      "any square matrix",
+      {
+       "text": "⅓ n³",
+       "tone": "good"
+      },
+      "general solves"
+     ],
+     [
+      {
+       "text": "symmetric positive definite",
+       "tone": "warn"
+      },
+      {
+       "text": "⅙ n³ — the cheapest",
+       "tone": "good"
+      },
+      "covariance, normal equations"
+     ],
+     [
+      "any matrix",
+      {
+       "text": "~2mn²",
+       "tone": "accent"
+      },
+      "least squares, stably"
+     ],
+     [
+      "any matrix",
+      {
+       "text": "the most expensive",
+       "tone": "crit"
+      },
+      "rank, pseudoinverse"
+     ]
+    ]
+   }
+  }
+ ],
+ "2.1": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "The chain rule is the whole of backpropagation",
+    "caption": "Differentiate the outside, keep the inside, multiply by the inside's derivative — then repeat. Backpropagation is this rule applied right to left so each factor is computed once, which is the only reason training a deep network is affordable.",
+    "items": [
+     {
+      "label": "name the composition",
+      "desc": "y = f(g(h(x))) — write the layers out before differentiating",
+      "tone": "accent",
+      "code": "setup"
+     },
+     {
+      "label": "differentiate outermost, keep the inside",
+      "desc": "f′(g(h(x))) — the argument does not change",
+      "tone": "good",
+      "code": "×"
+     },
+     {
+      "label": "multiply by the next derivative down",
+      "desc": "× g′(h(x)) × h′(x) — a product of local slopes",
+      "tone": "good",
+      "code": "×"
+     },
+     {
+      "label": "right to left reuses every factor",
+      "desc": "left to right recomputes them; this is forward against reverse mode",
+      "tone": "violet",
+      "code": "the trick"
+     }
+    ]
+   }
+  }
+ ],
+ "2.2": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "The gradient identities worth memorising",
+    "caption": "Four results cover most of machine learning. The last is the one to hold onto: the gradient of a quadratic form is what makes least squares solvable in closed form, and it is where the normal equations come from.",
+    "cols": [
+     "function",
+     "gradient"
+    ],
+    "rows": [
+     "aᵀx",
+     "xᵀx",
+     "xᵀAx (A symmetric)",
+     "‖Ax − b‖²"
+    ],
+    "cells": [
+     [
+      {
+       "text": "linear in x",
+       "tone": "good"
+      },
+      {
+       "text": "a",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "squared length",
+       "tone": "good"
+      },
+      {
+       "text": "2x",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "a quadratic form",
+       "tone": "warn"
+      },
+      {
+       "text": "2Ax",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "least squares",
+       "tone": "warn"
+      },
+      {
+       "text": "2Aᵀ(Ax − b)",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "2.3": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "timeline",
+    "title": "What a schedule does to the step size",
+    "caption": "The same budget of steps, spent differently. A constant rate cannot both move quickly early and settle late, which is the whole argument for a schedule — and warmup exists because the very first steps of a large model are the least trustworthy.",
+    "span": 100,
+    "tick": 20,
+    "unit": "% of training",
+    "lanes": [
+     {
+      "label": "constant",
+      "bars": [
+       [
+        0,
+        100,
+        "never settles, or never moves",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "step decay",
+      "bars": [
+       [
+        0,
+        40,
+        "high",
+        "good"
+       ],
+       [
+        40,
+        75,
+        "mid",
+        "accent"
+       ],
+       [
+        75,
+        100,
+        "low",
+        "teal"
+       ]
+      ]
+     },
+     {
+      "label": "cosine",
+      "bars": [
+       [
+        0,
+        100,
+        "smooth, high to near zero",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "warmup + cosine",
+      "bars": [
+       [
+        0,
+        8,
+        "",
+        "warn"
+       ],
+       [
+        8,
+        100,
+        "ramp up, then decay",
+        "good"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "2.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Which losses are convex, and why it matters",
+    "caption": "Convexity buys one thing and it is a big one: every local minimum is global, so an optimiser that stops has found the answer. Neural networks give that up entirely, which is why their training is a search rather than a solve.",
+    "cols": [
+     "convex?",
+     "what that means for you"
+    ],
+    "rows": [
+     "squared error, linear model",
+     "logistic loss, linear model",
+     "hinge loss (SVM)",
+     "squared error + a network",
+     "k-means objective"
+    ],
+    "cells": [
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "a closed form exists"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "any optimiser finds the global optimum"
+     ],
+     [
+      {
+       "text": "yes, not smooth",
+       "tone": "good"
+      },
+      "subgradients, still global"
+     ],
+     [
+      {
+       "text": "NO",
+       "tone": "crit"
+      },
+      {
+       "text": "many minima; the seed matters",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "NO",
+       "tone": "crit"
+      },
+      {
+       "text": "restart it, and keep the best",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "2.5": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "The KKT conditions, in the order you check them",
+    "caption": "Lagrange handles equalities; inequalities need the extra condition in step 4. **Complementary slackness** is the one that carries the meaning: a constraint either binds and has a positive multiplier, or is slack and its multiplier is zero.",
+    "items": [
+     {
+      "label": "stationarity",
+      "desc": "the gradient of the Lagrangian is zero — the usual first-order condition",
+      "tone": "accent",
+      "code": "1"
+     },
+     {
+      "label": "primal feasibility",
+      "desc": "the original constraints hold at the point",
+      "tone": "good",
+      "code": "2"
+     },
+     {
+      "label": "dual feasibility",
+      "desc": "the multipliers on inequalities are non-negative",
+      "tone": "good",
+      "code": "3"
+     },
+     {
+      "label": "complementary slackness",
+      "desc": "μᵢgᵢ(x) = 0 — binding with μ>0, or slack with μ=0, never both",
+      "tone": "crit",
+      "code": "4"
+     }
+    ]
+   }
+  }
+ ],
+ "2.6": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "timeline",
+    "title": "The finite-difference error has a floor",
+    "caption": "Shrinking the step reduces truncation error and increases cancellation error, so the total has a minimum and then gets **worse**. The optimum for a forward difference is around the square root of machine epsilon — which is why automatic differentiation won.",
+    "span": 100,
+    "tick": 20,
+    "unit": "smaller step size →",
+    "lanes": [
+     {
+      "label": "truncation error",
+      "bars": [
+       [
+        0,
+        70,
+        "falls as h shrinks",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "cancellation",
+      "bars": [
+       [
+        45,
+        100,
+        "rises as h shrinks",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "total",
+      "bars": [
+       [
+        0,
+        45,
+        "improving",
+        "good"
+       ],
+       [
+        45,
+        100,
+        "getting WORSE",
+        "crit"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "3.1": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Counting: two questions, four answers",
+    "caption": "Every counting problem is one of these four, and the two questions are *does order matter* and *can an item repeat*. Choosing the wrong cell is the single commonest error in a probability interview — so decide the two questions before reaching for a formula.",
+    "cols": [
+     "order matters",
+     "order does not"
+    ],
+    "rows": [
+     "no repeats",
+     "repeats allowed"
+    ],
+    "cells": [
+     [
+      {
+       "text": "permutation: n!/(n−k)!",
+       "tone": "accent"
+      },
+      {
+       "text": "combination: C(n,k)",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "nᵏ — each slot independent",
+       "tone": "warn"
+      },
+      {
+       "text": "multiset: C(n+k−1, k)",
+       "tone": "violet"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "3.2": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "compare",
+    "title": "PMF against PDF",
+    "caption": "The distinction that causes the most confusion: a PMF **is** a probability, a PDF is not. A density can exceed 1 without contradiction because what must integrate to one is the area, not the height.",
+    "columns": [
+     {
+      "title": "PMF — discrete",
+      "tone": "good",
+      "items": [
+       "P(X = x) is a probability, in [0, 1]",
+       "P(X = x) can be asked and answered",
+       "the values sum to 1",
+       "a bar chart with gaps"
+      ]
+     },
+     {
+      "title": "PDF — continuous",
+      "tone": "accent",
+      "items": [
+       "f(x) is a DENSITY and may exceed 1",
+       "P(X = x) = 0 for every single x",
+       "the area under the curve is 1",
+       "probability comes from an interval, not a point"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "3.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "tree",
+    "title": "Everything from one coin flip",
+    "caption": "Four distributions, one building block. Each answers a different question about the same repeated trial, which is why they are easy to confuse — the fix is to ask what is being counted and what is being held fixed.",
+    "root": {
+     "label": "Bernoulli(p)",
+     "sub": "one trial, success or not",
+     "tone": "accent",
+     "children": [
+      {
+       "label": "Binomial",
+       "sub": "successes in n fixed trials",
+       "tone": "good",
+       "edge": "count them"
+      },
+      {
+       "label": "Geometric",
+       "sub": "trials until the first success",
+       "tone": "teal",
+       "edge": "wait for one"
+      },
+      {
+       "label": "Negative binomial",
+       "sub": "trials until the rth success",
+       "tone": "violet",
+       "edge": "wait for r"
+      },
+      {
+       "label": "Poisson",
+       "sub": "n → ∞, p → 0, np fixed",
+       "tone": "warn",
+       "edge": "the limit"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "3.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The four continuous distributions, by the question they answer",
+    "caption": "Each arises from a specific mechanism, and knowing the mechanism is what tells you whether it fits your data. The exponential's memorylessness is the property that most often makes it the wrong choice.",
+    "cols": [
+     "it models",
+     "the giveaway"
+    ],
+    "rows": [
+     "Uniform",
+     "Normal",
+     "Exponential",
+     "Log-normal"
+    ],
+    "cells": [
+     [
+      "no reason to prefer any value",
+      "a flat histogram, hard bounds"
+     ],
+     [
+      {
+       "text": "a sum of many small effects",
+       "tone": "good"
+      },
+      "symmetric, thin tails"
+     ],
+     [
+      {
+       "text": "waiting time at a constant rate",
+       "tone": "accent"
+      },
+      {
+       "text": "memoryless — often wrong",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "a PRODUCT of many effects",
+       "tone": "violet"
+      },
+      "right-skewed; normal after a log"
+     ]
+    ]
+   }
+  }
+ ],
+ "3.6": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "Bayes, and the term everyone drops",
+    "caption": "The base rate is the term that gets forgotten, and it dominates the answer when the event is rare. A 99%-accurate test for a 1-in-10,000 condition still leaves a positive result far more likely to be a false alarm than a case.",
+    "items": [
+     {
+      "label": "the prior — P(H)",
+      "desc": "the base rate, before any evidence. Dropping this is the classic error",
+      "tone": "crit",
+      "code": "the base rate"
+     },
+     {
+      "label": "the likelihood — P(E|H)",
+      "desc": "how expected the evidence is if the hypothesis holds",
+      "tone": "accent",
+      "code": "the test"
+     },
+     {
+      "label": "the evidence — P(E)",
+      "desc": "across ALL hypotheses, which is what normalises the result",
+      "tone": "good",
+      "code": "the total"
+     },
+     {
+      "label": "the posterior — P(H|E)",
+      "desc": "prior × likelihood ÷ evidence; now repeat with this as the prior",
+      "tone": "violet",
+      "code": "the answer"
+     }
+    ]
+   }
+  }
+ ],
+ "3.7": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Simpson's paradox, with the numbers",
+    "caption": "Treatment B wins in **both** groups and loses overall, because the groups differ in size and in severity. The lesson is not that statistics lies — it is that an aggregate without the confounder is a different question from the one you meant to ask.",
+    "cols": [
+     "treatment A",
+     "treatment B",
+     "who wins"
+    ],
+    "rows": [
+     "mild cases",
+     "severe cases",
+     "combined"
+    ],
+    "cells": [
+     [
+      "81/87 = 93%",
+      {
+       "text": "234/270 = 87%",
+       "tone": "good"
+      },
+      {
+       "text": "A",
+       "tone": "accent"
+      }
+     ],
+     [
+      "192/263 = 73%",
+      {
+       "text": "55/80 = 69%",
+       "tone": "good"
+      },
+      {
+       "text": "A",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "273/350 = 78%",
+       "tone": "crit"
+      },
+      {
+       "text": "289/350 = 83%",
+       "tone": "crit"
+      },
+      {
+       "text": "B — reversed",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "3.8": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Entropy, cross-entropy and KL",
+    "caption": "Three quantities, one relationship: cross-entropy is entropy plus KL divergence. Training a classifier minimises cross-entropy, and because the data's own entropy is fixed, that is the same as minimising the KL divergence from the truth.",
+    "cols": [
+     "what it measures",
+     "zero when"
+    ],
+    "rows": [
+     "H(p)",
+     "H(p, q)",
+     "KL(p ‖ q)"
+    ],
+    "cells": [
+     [
+      "the uncertainty in p itself",
+      {
+       "text": "p is certain",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "the cost of coding p using q",
+       "tone": "accent"
+      },
+      "p is certain AND q = p"
+     ],
+     [
+      {
+       "text": "the EXCESS cost — H(p,q) − H(p)",
+       "tone": "violet"
+      },
+      {
+       "text": "q = p exactly",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "3.9": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Three bounds, three prices",
+    "caption": "Each buys tightness with an assumption. Markov needs almost nothing and tells you almost nothing; Hoeffding needs bounded variables and is the one that actually appears in practice.",
+    "cols": [
+     "it needs",
+     "how tight"
+    ],
+    "rows": [
+     "Markov",
+     "Chebyshev",
+     "Hoeffding",
+     "Chernoff"
+    ],
+    "cells": [
+     [
+      {
+       "text": "non-negative only",
+       "tone": "good"
+      },
+      {
+       "text": "very loose",
+       "tone": "crit"
+      }
+     ],
+     [
+      "a finite variance",
+      {
+       "text": "loose",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "bounded, independent",
+       "tone": "accent"
+      },
+      {
+       "text": "exponential — usable",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "bounded, independent",
+       "tone": "accent"
+      },
+      {
+       "text": "tightest, via the MGF",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "4.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "Why the divisor is n − 1",
+    "caption": "The sample mean is itself fitted from the data, so deviations are measured from a point chosen to make them small. Dividing by n therefore **understates** the spread; n − 1 corrects it, and the correction is exactly the degree of freedom the mean consumed.",
+    "items": [
+     {
+      "label": "the sample mean is estimated, not given",
+      "desc": "it is placed where the squared deviations are smallest",
+      "tone": "accent",
+      "code": "1 df used"
+     },
+     {
+      "label": "so deviations from it are too small",
+      "desc": "measured from the true mean they would be larger on average",
+      "tone": "warn",
+      "code": "biased low"
+     },
+     {
+      "label": "dividing by n keeps that bias",
+      "desc": "the expected value comes out as σ²(n−1)/n, not σ²",
+      "tone": "crit",
+      "code": "wrong"
+     },
+     {
+      "label": "dividing by n − 1 removes it exactly",
+      "desc": "unbiased for σ² — and this is Bessel's correction",
+      "tone": "good",
+      "code": "right"
+     }
+    ]
+   }
+  }
+ ],
+ "4.3": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "layers",
+    "title": "The box plot's hidden rule",
+    "caption": "The whiskers are **not** the minimum and maximum: they reach to the furthest point within 1.5 × IQR, and anything past that is drawn as an outlier. So a box plot is already making a judgement about your data before you read it.",
+    "items": [
+     {
+      "label": "outliers",
+      "sub": "beyond 1.5 × IQR from the nearest quartile, drawn individually",
+      "tone": "crit",
+      "side": "judged"
+     },
+     {
+      "label": "upper whisker",
+      "sub": "the furthest actual point WITHIN the fence — not the maximum",
+      "tone": "warn",
+      "side": "not max"
+     },
+     {
+      "label": "Q3",
+      "sub": "75th percentile — the top of the box",
+      "tone": "accent",
+      "side": "75%"
+     },
+     {
+      "label": "median",
+      "sub": "the line inside the box, not the mean",
+      "tone": "good",
+      "side": "50%"
+     },
+     {
+      "label": "Q1",
+      "sub": "25th percentile — IQR is Q3 − Q1",
+      "tone": "accent",
+      "side": "25%"
+     },
+     {
+      "label": "lower whisker",
+      "sub": "the furthest actual point within the lower fence",
+      "tone": "warn",
+      "side": "not min"
+     }
+    ]
+   }
+  }
+ ],
+ "4.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Kurtosis is about tails, not peaks",
+    "caption": "The common description — “peakedness” — is wrong and leads people to misread it. Kurtosis is driven by the fourth power of deviations, so it is dominated by what happens far from the mean.",
+    "cols": [
+     "excess kurtosis",
+     "what it means",
+     "example"
+    ],
+    "rows": [
+     "leptokurtic",
+     "mesokurtic",
+     "platykurtic"
+    ],
+    "cells": [
+     [
+      {
+       "text": "> 0",
+       "tone": "crit"
+      },
+      {
+       "text": "fat tails, more outliers",
+       "tone": "crit"
+      },
+      "asset returns"
+     ],
+     [
+      {
+       "text": "= 0",
+       "tone": "good"
+      },
+      "the normal reference",
+      "the normal itself"
+     ],
+     [
+      {
+       "text": "< 0",
+       "tone": "accent"
+      },
+      "thin tails, fewer",
+      "the uniform"
+     ]
+    ]
+   }
+  }
+ ],
+ "4.5": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "The four alternatives to causation",
+    "caption": "Before claiming X causes Y, four other explanations have to be ruled out, and only the last is addressed by a bigger sample. This is the checklist that separates an analyst from a dashboard.",
+    "cols": [
+     "the alternative",
+     "what fixes it"
+    ],
+    "rows": [
+     "reverse causation",
+     "a confounder",
+     "selection effect",
+     "chance"
+    ],
+    "cells": [
+     [
+      {
+       "text": "Y causes X",
+       "tone": "warn"
+      },
+      "timing, or an intervention"
+     ],
+     [
+      {
+       "text": "Z causes both",
+       "tone": "crit"
+      },
+      {
+       "text": "randomise, or control for Z",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "the sample was not neutral",
+       "tone": "crit"
+      },
+      "ask how the data was collected"
+     ],
+     [
+      {
+       "text": "it is noise",
+       "tone": "accent"
+      },
+      {
+       "text": "more data — the ONLY one it fixes",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "5.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Three distributions, routinely confused",
+    "caption": "They answer different questions and only the third is what inference is about. The standard error shrinks with n; the population spread does not, which is the whole reason a large sample helps at all.",
+    "cols": [
+     "describes",
+     "spread",
+     "shrinks with n?"
+    ],
+    "rows": [
+     "the population",
+     "one sample",
+     "the sampling distribution"
+    ],
+    "cells": [
+     [
+      "everyone, usually unseen",
+      "σ",
+      {
+       "text": "no — it is fixed",
+       "tone": "crit"
+      }
+     ],
+     [
+      "the data you hold",
+      "s",
+      {
+       "text": "no — it estimates σ",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "the STATISTIC, many samples",
+       "tone": "accent"
+      },
+      "σ/√n",
+      {
+       "text": "YES",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "5.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "The four outcomes of a test",
+    "caption": "α is chosen and β is a consequence of sample size and effect size. Note what the table does **not** contain: any probability that the null is true. A test conditions on the null, so it cannot report on it.",
+    "cols": [
+     "H₀ is true",
+     "H₀ is false"
+    ],
+    "rows": [
+     "reject H₀",
+     "fail to reject"
+    ],
+    "cells": [
+     [
+      {
+       "text": "Type I error — rate α",
+       "tone": "crit"
+      },
+      {
+       "text": "correct — power, 1−β",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "correct — 1−α",
+       "tone": "good"
+      },
+      {
+       "text": "Type II error — rate β",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "5.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Four t-tests, four questions",
+    "caption": "Picking the wrong one is usually a question about **pairing**: paired data analysed as independent throws away the pairing and loses power. Welch should be the default for two independent groups, because equal variance is an assumption you rarely have grounds for.",
+    "cols": [
+     "the question",
+     "assumes"
+    ],
+    "rows": [
+     "one-sample",
+     "paired",
+     "Student two-sample",
+     "Welch two-sample"
+    ],
+    "cells": [
+     [
+      "is this mean equal to a fixed value?",
+      "normality of the mean"
+     ],
+     [
+      {
+       "text": "did the SAME units change?",
+       "tone": "accent"
+      },
+      "normality of the differences"
+     ],
+     [
+      "do two groups differ?",
+      {
+       "text": "EQUAL variances — rarely justified",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "do two groups differ?",
+       "tone": "good"
+      },
+      {
+       "text": "nothing about equal variance",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "5.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "compare",
+    "title": "What a p-value is, and what it is taken to be",
+    "caption": "The definition is conditional on the null being **true**, which is exactly the thing people want it to tell them about. Everything in the right-hand column is a different quantity, and most of them require a prior to even state.",
+    "columns": [
+     {
+      "title": "what it is",
+      "tone": "good",
+      "items": [
+       "P(data this extreme or more | H₀ is true)",
+       "a statement about the DATA, given an assumption",
+       "it conditions on the null, so it cannot judge it",
+       "0.04 and 0.06 are not different in kind",
+       "it says nothing about the size of the effect"
+      ]
+     },
+     {
+      "title": "what it is read as",
+      "tone": "crit",
+      "items": [
+       "P(H₀ is true) — needs a prior; this is not it",
+       "the probability the result was a fluke",
+       "1 − p as the probability the effect is real",
+       "a measure of how big or important the effect is",
+       "a result that will replicate with probability 1 − p"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Five misreadings, each with a number",
+    "caption": "The middle column is what people infer; the right column is what is actually true. The last row is the one that costs most in practice — two studies either side of 0.05 are usually telling you the same thing.",
+    "cols": [
+     "the inference drawn",
+     "what is actually the case"
+    ],
+    "rows": [
+     "p = 0.03",
+     "p = 0.20",
+     "p = 0.049 vs 0.051",
+     "p = 0.001",
+     "p = 0.04 and p = 0.06"
+    ],
+    "cells": [
+     [
+      {
+       "text": "97% chance the effect is real",
+       "tone": "crit"
+      },
+      "data this extreme is uncommon IF H₀ holds"
+     ],
+     [
+      {
+       "text": "there is no effect",
+       "tone": "crit"
+      },
+      {
+       "text": "absence of evidence; check the power",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "one works, one does not",
+       "tone": "crit"
+      },
+      {
+       "text": "indistinguishable — α is a convention",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "a large, important effect",
+       "tone": "crit"
+      },
+      "a tiny effect in a huge sample does this"
+     ],
+     [
+      {
+       "text": "they disagree",
+       "tone": "crit"
+      },
+      {
+       "text": "they broadly agree",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "5.8": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Power is a four-way relationship",
+    "caption": "Fix any three and the fourth follows. The practical reading is the bottom row: with a small true effect you need a large sample, and running the study anyway produces an underpowered result that cannot distinguish a small effect from none.",
+    "cols": [
+     "to raise power",
+     "the cost"
+    ],
+    "rows": [
+     "sample size n",
+     "effect size",
+     "α",
+     "variance"
+    ],
+    "cells": [
+     [
+      {
+       "text": "increase it",
+       "tone": "good"
+      },
+      "time and money; power rises with √n"
+     ],
+     [
+      {
+       "text": "not yours to choose",
+       "tone": "warn"
+      },
+      {
+       "text": "it is a property of the world",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "loosen it",
+       "tone": "warn"
+      },
+      {
+       "text": "more false positives — rarely worth it",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "reduce it",
+       "tone": "good"
+      },
+      "better measurement, or blocking"
+     ]
+    ]
+   }
+  }
+ ],
+ "5.9": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Parametric against rank-based",
+    "caption": "A rank test does not test the mean — it tests a shift in distribution, so the hypothesis changes with the method. That is the trade people forget: you buy robustness by answering a slightly different question.",
+    "cols": [
+     "what it tests",
+     "assumes",
+     "cost"
+    ],
+    "rows": [
+     "t-test",
+     "Mann–Whitney U",
+     "Wilcoxon signed-rank",
+     "Kruskal–Wallis"
+    ],
+    "cells": [
+     [
+      {
+       "text": "a difference in MEANS",
+       "tone": "accent"
+      },
+      "normality of the mean",
+      "sensitive to outliers"
+     ],
+     [
+      {
+       "text": "a stochastic shift",
+       "tone": "good"
+      },
+      "ordinal data only",
+      {
+       "text": "~5% power lost if normal",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "a shift in paired differences",
+       "tone": "good"
+      },
+      "symmetry of differences",
+      "pairing required"
+     ],
+     [
+      {
+       "text": "a shift across 3+ groups",
+       "tone": "good"
+      },
+      "ordinal data only",
+      "no interaction terms"
+     ]
+    ]
+   }
+  }
+ ],
+ "5.10": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Two error rates, two different jobs",
+    "caption": "Controlling the family-wise rate asks that you make **no** false claims; controlling the false discovery rate asks that few of your claims be false. Which you want depends on whether a single false positive is expensive or merely inconvenient.",
+    "cols": [
+     "controls",
+     "use when",
+     "the method"
+    ],
+    "rows": [
+     "FWER",
+     "FDR"
+    ],
+    "cells": [
+     [
+      {
+       "text": "P(any false positive)",
+       "tone": "crit"
+      },
+      "one false claim is costly",
+      "Bonferroni, or Holm"
+     ],
+     [
+      {
+       "text": "the share of claims false",
+       "tone": "accent"
+      },
+      "cheap screening at scale",
+      {
+       "text": "Benjamini–Hochberg",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "5.12": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "compare",
+    "title": "Credible against confidence",
+    "caption": "They answer different questions, and the Bayesian one is the question people actually ask. The price is a prior, which has to be stated and defended rather than assumed away.",
+    "columns": [
+     {
+      "title": "95% confidence interval",
+      "tone": "accent",
+      "items": [
+       "about the PROCEDURE: 95% of such intervals cover the parameter",
+       "the parameter is fixed; the interval is random",
+       "you may not say “95% chance it is in here”",
+       "needs no prior",
+       "the answer to a question nobody asked"
+      ]
+     },
+     {
+      "title": "95% credible interval",
+      "tone": "good",
+      "items": [
+       "about THIS interval: 95% posterior probability the parameter is in it",
+       "the parameter has a distribution",
+       "you may say exactly what people want to say",
+       "needs a prior, stated explicitly",
+       "the answer to the question people mean"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "6.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "The order of operations for an experiment",
+    "caption": "The order is the protection. Deciding the metric and the sample size **before** data arrives is what makes the resulting p-value mean anything — reverse any two of these steps and the analysis is exploratory, whatever it is called afterwards.",
+    "items": [
+     {
+      "label": "state the hypothesis and ONE primary metric",
+      "desc": "secondary metrics are reported, never promoted after the fact",
+      "tone": "crit",
+      "code": "before"
+     },
+     {
+      "label": "fix α, the MDE and the sample size",
+      "desc": "power analysis decides the duration; the duration does not decide the power",
+      "tone": "crit",
+      "code": "before"
+     },
+     {
+      "label": "check the randomisation actually worked",
+      "desc": "sample ratio mismatch invalidates everything downstream",
+      "tone": "warn",
+      "code": "day 1"
+     },
+     {
+      "label": "run to the planned n without looking",
+      "desc": "or use a sequential method that was chosen in advance",
+      "tone": "accent",
+      "code": "during"
+     },
+     {
+      "label": "analyse once, report the interval",
+      "desc": "an effect size with its uncertainty, not a verdict",
+      "tone": "good",
+      "code": "after"
+     }
+    ]
+   }
+  }
+ ],
+ "6.2": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "The regression assumptions, ranked by consequence",
+    "caption": "They are not equally important, and treating them as a checklist of equals wastes effort. Independence and the right functional form change your conclusions; normality of residuals barely matters at any reasonable sample size.",
+    "cols": [
+     "if it fails",
+     "how bad"
+    ],
+    "rows": [
+     "independence",
+     "linearity in parameters",
+     "homoscedasticity",
+     "no multicollinearity",
+     "normal residuals"
+    ],
+    "cells": [
+     [
+      {
+       "text": "standard errors are badly wrong",
+       "tone": "crit"
+      },
+      {
+       "text": "fatal",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "the model answers a different question",
+       "tone": "crit"
+      },
+      {
+       "text": "fatal",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "coefficients fine, errors wrong",
+       "tone": "warn"
+      },
+      {
+       "text": "fixable — robust SEs",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "coefficients unstable, fit fine",
+       "tone": "warn"
+      },
+      {
+       "text": "matters for interpretation",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "little, once n is large",
+       "tone": "good"
+      },
+      {
+       "text": "least important",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "6.3": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Multicollinearity: what it does and does not break",
+    "caption": "It inflates the variance of the coefficients without biasing them, so prediction survives and interpretation does not. That asymmetry is the whole point: if you only need forecasts, a high VIF may be no problem at all.",
+    "cols": [
+     "affected?",
+     "why"
+    ],
+    "rows": [
+     "predictions",
+     "overall fit (R²)",
+     "individual coefficients",
+     "their standard errors",
+     "which feature “matters”"
+    ],
+    "cells": [
+     [
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      "the fitted surface is unchanged"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      "the same variance is explained"
+     ],
+     [
+      {
+       "text": "YES — unstable",
+       "tone": "crit"
+      },
+      "they trade off against each other"
+     ],
+     [
+      {
+       "text": "YES — inflated",
+       "tone": "crit"
+      },
+      "VIF measures exactly this"
+     ],
+     [
+      {
+       "text": "YES — unanswerable",
+       "tone": "crit"
+      },
+      "the data cannot separate them"
+     ]
+    ]
+   }
+  }
+ ],
+ "6.4": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "layers",
+    "title": "The review checklist, in the order it catches things",
+    "caption": "Run top to bottom, because an early failure makes the later questions pointless. Most bad analyses die at the first two — how the data was collected, and what the comparison group actually is.",
+    "items": [
+     {
+      "label": "how was the data collected?",
+      "sub": "selection and survivorship beat every later correction",
+      "tone": "crit",
+      "side": "first"
+     },
+     {
+      "label": "what is the comparison group?",
+      "sub": "no baseline means no effect to speak of",
+      "tone": "crit",
+      "side": "second"
+     },
+     {
+      "label": "was the metric chosen before the data?",
+      "sub": "otherwise the p-value is decoration",
+      "tone": "warn",
+      "side": "third"
+     },
+     {
+      "label": "could a confounder explain it?",
+      "sub": "name one and rule it out, or control for it",
+      "tone": "warn",
+      "side": "fourth"
+     },
+     {
+      "label": "is the effect size worth acting on?",
+      "sub": "significance is not importance",
+      "tone": "accent",
+      "side": "fifth"
+     },
+     {
+      "label": "would it replicate?",
+      "sub": "one study is a hypothesis, not a finding",
+      "tone": "good",
+      "side": "last"
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -327,6 +327,13 @@ simpson_check([81/87, 192/263], [234/270, 55/80], [87, 263], [270, 80])
 
     { t: "h2", n: "03", text: "The review checklist", id: "checklist" },
 
+    {"kind": "layers", "title": "The review checklist, in the order it catches things", "caption": "Run top to bottom, because an early failure makes the later questions pointless. Most bad analyses die at the first two — how the data was collected, and what the comparison group actually is.", "items": [{"label": "how was the data collected?", "sub": "selection and survivorship beat every later correction", "tone": "crit", "side": "first"}, {"label": "what is the comparison group?", "sub": "no baseline means no effect to speak of", "tone": "crit", "side": "second"}, {"label": "was the metric chosen before the data?", "sub": "otherwise the p-value is decoration", "tone": "warn", "side": "third"}, {"label": "could a confounder explain it?", "sub": "name one and rule it out, or control for it", "tone": "warn", "side": "fourth"}, {"label": "is the effect size worth acting on?", "sub": "significance is not importance", "tone": "accent", "side": "fifth"}, {"label": "would it replicate?", "sub": "one study is a hypothesis, not a finding", "tone": "good", "side": "last"}], "t": "diagram", "id": "dg-6_4-03-0"},
+
+
+
+
+
+
     { t: "p", text: "Each of these mistakes has **a recognisable shape in a report and a one-line check** — which is faster than re-deriving the statistics every time. Reading the shape is the practical skill this module has been building towards." },
 
     { t: "dl", items: [

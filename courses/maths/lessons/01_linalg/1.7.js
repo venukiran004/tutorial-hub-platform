@@ -195,6 +195,19 @@ rv.variance          # 1.0  -- exact, in one pass`,
 
     { t: "h2", n: "03", text: "Choosing a factorisation", id: "factorisation" },
 
+    {"kind": "matrix", "title": "Which factorisation, and what it costs", "caption": "The cheap ones have conditions attached. Cholesky is twice as fast as LU and only works for a symmetric positive-definite matrix — so a failed Cholesky is itself a useful diagnostic that your matrix is not what you assumed.", "cols": ["needs", "cost", "use it for"], "rows": ["LU", "Cholesky", "QR", "SVD"], "cells": [["any square matrix", {"text": "⅓ n³", "tone": "good"}, "general solves"], [{"text": "symmetric positive definite", "tone": "warn"}, {"text": "⅙ n³ — the cheapest", "tone": "good"}, "covariance, normal equations"], ["any matrix", {"text": "~2mn²", "tone": "accent"}, "least squares, stably"], ["any matrix", {"text": "the most expensive", "tone": "crit"}, "rank, pseudoinverse"]], "t": "diagram", "id": "dg-1_7-03-0"},
+
+
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "Most numerical linear algebra is a choice among a few factorisations, each trading speed against robustness. **Choosing the cheapest one that will not fail on your data** is the whole of the decision, and a factorisation refusing to run is itself useful information." },
 
     { t: "dl", items: [

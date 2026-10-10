@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three bounds, three assumptions", id: "the-three" },
 
+    {"kind": "matrix", "title": "Three bounds, three prices", "caption": "Each buys tightness with an assumption. Markov needs almost nothing and tells you almost nothing; Hoeffding needs bounded variables and is the one that actually appears in practice.", "cols": ["it needs", "how tight"], "rows": ["Markov", "Chebyshev", "Hoeffding", "Chernoff"], "cells": [[{"text": "non-negative only", "tone": "good"}, {"text": "very loose", "tone": "crit"}], ["a finite variance", {"text": "loose", "tone": "warn"}], [{"text": "bounded, independent", "tone": "accent"}, {"text": "exponential — usable", "tone": "good"}], [{"text": "bounded, independent", "tone": "accent"}, {"text": "tightest, via the MGF", "tone": "good"}]], "t": "diagram", "id": "dg-3_9-01-0"},
+
+
+
+
+
+
+
+
+
     { t: "p", text: "**A concentration inequality bounds how far a random quantity can stray from its expectation, without assuming a distribution.** The three standard ones trade assumptions for tightness: assume less and the bound is looser, but it cannot be wrong." },
 
     { t: "dl", items: [
@@ -299,7 +309,14 @@ cantelli_quantile_bound(94.2, 142.8) / observed_p99      # 2.47
       ]
     },
 
-    { t: "h2", n: "04", text: "Practice", id: "practice" },
+        {"t": "h2", "n": "04", "text": "Chernoff: tightening Hoeffding for sums of Bernoullis", "id": "chernoff"},
+    {"t": "p", "text": "Hoeffding treats every bounded variable alike. When the variables are **Bernoulli** — a click, a failure, a cache hit — more is known, and the **Chernoff bound** uses it. It works by bounding the moment generating function and then optimising the free parameter, which is why the result is multiplicative in the mean rather than additive in the range."},
+    {"t": "math", "tex": "P\\!\\left(X \\ge (1+\\delta)\\mu\\right) \\;\\le\\; \\exp\\!\\left(-\\frac{\\delta^{2}\\mu}{2+\\delta}\\right)"},
+    {"t": "p", "text": "The practical difference is that the bound scales with μ. For a rare event the deviation you can rule out is **much** smaller than Hoeffding would allow, because a sum that is usually near zero cannot drift far without something unlikely happening."},
+    {"t": "code", "lang": "python", "code": "import math\n\ndef hoeffding_tail(n, eps):\n    \"\"\"P(mean deviates by eps) for variables in [0, 1].\"\"\"\n    return 2 * math.exp(-2 * n * eps ** 2)\n\ndef chernoff_upper(mu, delta):\n    \"\"\"P(X >= (1+delta)*mu) for a sum of Bernoullis with mean mu.\"\"\"\n    return math.exp(-(delta ** 2) * mu / (2 + delta))\n\n# 10,000 requests, a 1% error rate: can the count double?\nn, pr = 10_000, 0.01\nmu = n * pr                       # 100 expected errors\nprint(\"expected errors        :\", mu)\nprint(\"Chernoff, P(>= 200)    : %.3e\" % chernoff_upper(mu, 1.0))\n# the same question put to Hoeffding, as a deviation in the MEAN\nprint(\"Hoeffding, same event  : %.3e\" % hoeffding_tail(n, pr))", "title": "the same event, two bounds", "out": "expected errors        : 100.0\nChernoff, P(>= 200)    : 3.338e-15\nHoeffding, same event  : 2.707e-01"},
+    {"t": "p", "text": "**Fourteen orders of magnitude apart on the same question.** Hoeffding's view of a variable in `[0, 1]` has to allow for a distribution concentrated at the ends; Chernoff knows the mean is 0.01 and that doubling it requires a conspiracy. When your variables are indicators, using Hoeffding is leaving almost all of the information on the table."},
+    {"t": "callout", "kind": "insight", "title": "And this is what makes PAC learning work", "body": [{"t": "p", "text": "**PAC learning** — probably approximately correct — asks how many samples are needed before a hypothesis that fits the training data is guaranteed, with probability at least 1 − δ, to have true error below ε. The answer comes straight from a concentration bound plus the union bound over the hypothesis class:"}, {"t": "math", "tex": "m \\;\\ge\\; \\frac{1}{\\varepsilon}\\left(\\ln|H| + \\ln\\frac{1}{\\delta}\\right)"}, {"t": "p", "text": "The shape is the lesson. Sample complexity grows **linearly** in the log of the hypothesis-class size and only **logarithmically** in the confidence δ — so buying another nine of confidence is cheap, and a richer model class is what actually costs you data. That is the formal version of the intuition that capacity has to be paid for in examples."}]},
+{ t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",
       kind: "Build",

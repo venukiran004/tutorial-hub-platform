@@ -20,6 +20,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Power is a four-way relationship", id: "power" },
 
+    {"kind": "matrix", "title": "Power is a four-way relationship", "caption": "Fix any three and the fourth follows. The practical reading is the bottom row: with a small true effect you need a large sample, and running the study anyway produces an underpowered result that cannot distinguish a small effect from none.", "cols": ["to raise power", "the cost"], "rows": ["sample size n", "effect size", "α", "variance"], "cells": [[{"text": "increase it", "tone": "good"}, "time and money; power rises with √n"], [{"text": "not yours to choose", "tone": "warn"}, {"text": "it is a property of the world", "tone": "crit"}], [{"text": "loosen it", "tone": "warn"}, {"text": "more false positives — rarely worth it", "tone": "crit"}], [{"text": "reduce it", "tone": "good"}, "better measurement, or blocking"]], "t": "diagram", "id": "dg-5_8-01-0"},
+
+
+
+
+
+
     { t: "p", text: "**Power is the probability of detecting an effect that is really there.** It is locked together with effect size, sample size and `α` — fix any three and the fourth is determined, which is what makes study design a calculation rather than a guess." },
 
     { t: "dl", items: [

@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "One trial, and everything built from it", id: "family" },
 
+    {"kind": "tree", "title": "Everything from one coin flip", "caption": "Four distributions, one building block. Each answers a different question about the same repeated trial, which is why they are easy to confuse — the fix is to ask what is being counted and what is being held fixed.", "root": {"label": "Bernoulli(p)", "sub": "one trial, success or not", "tone": "accent", "children": [{"label": "Binomial", "sub": "successes in n fixed trials", "tone": "good", "edge": "count them"}, {"label": "Geometric", "sub": "trials until the first success", "tone": "teal", "edge": "wait for one"}, {"label": "Negative binomial", "sub": "trials until the rth success", "tone": "violet", "edge": "wait for r"}, {"label": "Poisson", "sub": "n → ∞, p → 0, np fixed", "tone": "warn", "edge": "the limit"}]}, "t": "diagram", "id": "dg-3_4-01-0"},
+
+
+
+
+
+
+
+
+
     { t: "p", text: "Four discrete distributions cover almost everything you will meet, and **each answers a specific question about repeated trials**. Learning which situation produces which distribution is more useful than memorising the formulas, because the situation is what tells you which to reach for." },
 
     { t: "dl", items: [

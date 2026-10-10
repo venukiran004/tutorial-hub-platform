@@ -219,6 +219,16 @@ def max_leverage(x):
 
     { t: "h2", n: "03", text: "The four alternatives to causation", id: "alternatives" },
 
+    {"kind": "matrix", "title": "The four alternatives to causation", "caption": "Before claiming X causes Y, four other explanations have to be ruled out, and only the last is addressed by a bigger sample. This is the checklist that separates an analyst from a dashboard.", "cols": ["the alternative", "what fixes it"], "rows": ["reverse causation", "a confounder", "selection effect", "chance"], "cells": [[{"text": "Y causes X", "tone": "warn"}, "timing, or an intervention"], [{"text": "Z causes both", "tone": "crit"}, {"text": "randomise, or control for Z", "tone": "good"}], [{"text": "the sample was not neutral", "tone": "crit"}, "ask how the data was collected"], [{"text": "it is noise", "tone": "accent"}, {"text": "more data — the ONLY one it fixes", "tone": "good"}]], "t": "diagram", "id": "dg-4_5-03-0"},
+
+
+
+
+
+
+
+
+
     { t: "p", text: "\"Correlation does not imply causation\" is only useful if you **name which alternative applies**. There are four, each with a different structure and a different test — and ruling one out says nothing about the others." },
 
     { t: "dl", items: [

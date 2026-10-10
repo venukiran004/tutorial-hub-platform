@@ -147,6 +147,19 @@ np.linalg.matrix_rank(W)             # 5, not 100
 
     { t: "h2", n: "03", text: "Three things a linear system can do", id: "systems" },
 
+    {"kind": "tree", "title": "What a linear system can do", "caption": "Three outcomes and no others, decided by comparing the rank of the matrix with the rank of the augmented matrix and with the number of unknowns. “No solution” and “infinitely many” are both common in practice, which is why least squares exists.", "root": {"label": "Ax = b", "sub": "compare rank(A), rank([A|b]), n", "tone": "accent", "children": [{"label": "exactly one", "sub": "rank(A) = rank([A|b]) = n", "tone": "good", "edge": "full rank"}, {"label": "infinitely many", "sub": "rank(A) = rank([A|b]) < n", "tone": "warn", "edge": "free variables"}, {"label": "none", "sub": "rank(A) < rank([A|b])", "tone": "crit", "edge": "inconsistent"}]}, "t": "diagram", "id": "dg-1_3-03-0"},
+
+
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "A system `Ax = b` asks: which input produces this output? There are exactly three possible answers, and which one you get is decided by the rank of `A` and whether `b` lies in its column space." },
 
     { t: "dl", items: [

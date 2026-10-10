@@ -110,6 +110,13 @@ correlated_hits(20, rho=0.95)     # 0.183
 
     { t: "h2", n: "02", text: "Two error rates, two different jobs", id: "two-rates" },
 
+    {"kind": "matrix", "title": "Two error rates, two different jobs", "caption": "Controlling the family-wise rate asks that you make **no** false claims; controlling the false discovery rate asks that few of your claims be false. Which you want depends on whether a single false positive is expensive or merely inconvenient.", "cols": ["controls", "use when", "the method"], "rows": ["FWER", "FDR"], "cells": [[{"text": "P(any false positive)", "tone": "crit"}, "one false claim is costly", "Bonferroni, or Holm"], [{"text": "the share of claims false", "tone": "accent"}, "cheap screening at scale", {"text": "Benjamini–Hochberg", "tone": "good"}]], "t": "diagram", "id": "dg-5_10-02-0"},
+
+
+
+
+
+
     { t: "p", text: "There are two error rates you might control, and they are **different jobs rather than different strengths**. FWER asks whether *any* discovery is false; FDR asks what *fraction* are — and controlling the wrong one either buries every real finding or admits a flood." },
 
     { t: "dl", items: [

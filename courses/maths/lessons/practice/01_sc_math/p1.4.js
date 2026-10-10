@@ -13,6 +13,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "Where feature maths goes wrong", "caption": "Four of these scenarios are leakage or scale in disguise. The question to ask of any transform is whether it was fitted on data the model will not have at prediction time.", "cols": ["the real problem", "the test for it"], "rows": ["target encoding", "unscaled features", "anomaly detection", "dimensionality reduction", "information gain is zero"], "cells": [[{"text": "leakage — target leaked in", "tone": "crit"}, "fit inside the fold"], [{"text": "distance/penalty distorted", "tone": "warn"}, "distance or penalty used?"], [{"text": "correlation ignored", "tone": "warn"}, {"text": "Mahalanobis, not Euclidean", "tone": "good"}], ["variance vs separation", {"text": "PCA is unsupervised; LDA is not", "tone": "accent"}], [{"text": "the split separates nothing", "tone": "crit"}, "constant or duplicate?"]], "t": "diagram", "id": "dg-p1_4-top-0"},
+
+
   {
    "t": "h2",
    "n": "01",

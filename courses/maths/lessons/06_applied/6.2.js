@@ -146,6 +146,13 @@ ols(np.column_stack([x, z, w]), y)["beta"][1]     # 0.55, and unstable
 
     { t: "h2", n: "02", text: "The assumptions, ranked by consequence", id: "assumptions" },
 
+    {"kind": "matrix", "title": "The regression assumptions, ranked by consequence", "caption": "They are not equally important, and treating them as a checklist of equals wastes effort. Independence and the right functional form change your conclusions; normality of residuals barely matters at any reasonable sample size.", "cols": ["if it fails", "how bad"], "rows": ["independence", "linearity in parameters", "homoscedasticity", "no multicollinearity", "normal residuals"], "cells": [[{"text": "standard errors are badly wrong", "tone": "crit"}, {"text": "fatal", "tone": "crit"}], [{"text": "the model answers a different question", "tone": "crit"}, {"text": "fatal", "tone": "crit"}], [{"text": "coefficients fine, errors wrong", "tone": "warn"}, {"text": "fixable — robust SEs", "tone": "warn"}], [{"text": "coefficients unstable, fit fine", "tone": "warn"}, {"text": "matters for interpretation", "tone": "warn"}], [{"text": "little, once n is large", "tone": "good"}, {"text": "least important", "tone": "good"}]], "t": "diagram", "id": "dg-6_2-02-0"},
+
+
+
+
+
+
     { t: "p", text: "OLS has several assumptions and **they are not equally important**. Only two of them bias the coefficients; the rest affect the standard errors — and the one everyone tests for, normality, matters least of all." },
 
     { t: "dl", items: [
@@ -343,7 +350,14 @@ np.sqrt(ols(X, y)["resid"].var())             # 2.94 -- interpretable`},
       { t: "p", text: "**190 pure-noise predictors explain 97% of the variance.** R² never decreases when you add a variable, does not fall when the functional form is wrong, and is not comparable across datasets with different `x` ranges." }
     ]},
 
-    { t: "h2", n: "03", text: "Practice", id: "practice" },
+        {"t": "h2", "n": "03", "text": "Autocorrelation, and the diagnostic for it", "id": "durbin-watson"},
+    {"t": "p", "text": "Independence is the assumption whose failure does the most damage, and with time-ordered data it fails quietly. If today's residual resembles yesterday's, the model has less information than the row count suggests — so the standard errors come out too small and everything looks more significant than it is."},
+    {"t": "p", "text": "The **Durbin–Watson** statistic measures exactly that, comparing successive residuals:"},
+    {"t": "math", "tex": "d \\;=\\; \\frac{\\sum_{t=2}^{n}(e_t - e_{t-1})^{2}}{\\sum_{t=1}^{n} e_t^{2}} \\;\\approx\\; 2(1-\\hat\\rho)"},
+    {"t": "dl", "items": [["**d ≈ 2**", "no first-order autocorrelation — what you want."], ["**d < 1.5**", "positive autocorrelation: residuals cluster, standard errors understated."], ["**d > 2.5**", "negative autocorrelation: residuals alternate, often a sign of over-differencing."]]},
+    {"t": "code", "lang": "python", "code": "import numpy as np\n\ndef durbin_watson(resid):\n    d = np.diff(resid)\n    return float((d @ d) / (resid @ resid))\n\nrng = np.random.default_rng(0)\nn = 200\nwhite = rng.normal(size=n)\n\n# an AR(1) residual series: each one remembers 80% of the last\nar = np.empty(n); ar[0] = white[0]\nfor t in range(1, n):\n    ar[t] = 0.8 * ar[t - 1] + white[t]\n\nprint(\"independent residuals : d = %.2f\" % durbin_watson(white))\nprint(\"AR(1), rho = 0.8      : d = %.2f\" % durbin_watson(ar))\nprint(\"naive SE understated by about %.1fx\"\n      % np.sqrt((1 + 0.8) / (1 - 0.8)))", "title": "what autocorrelation does to your standard errors", "out": "independent residuals : d = 1.92\nAR(1), rho = 0.8      : d = 0.35\nnaive SE understated by about 3.0x"},
+    {"t": "p", "text": "**The standard errors are out by a factor of three**, which turns a t-statistic of 1 into an apparent 3 and a null result into a publication. The fix is not a different regression but a different variance estimator — Newey–West, or a model that states the autocorrelation explicitly — and the first step is simply to plot the residuals against time, which costs nothing and catches most of it."},
+{ t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",
       kind: "Debug",

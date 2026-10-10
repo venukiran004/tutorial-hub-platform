@@ -13,6 +13,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "The two theorems these questions lean on", "caption": "The Law of Large Numbers and the Central Limit Theorem are routinely conflated, and the distinction is the answer to several questions in this set. One says the average lands on the mean; the other says how it is distributed on the way.", "cols": ["what it claims", "needs"], "rows": ["Law of Large Numbers", "Central Limit Theorem"], "cells": [[{"text": "the sample mean CONVERGES to μ", "tone": "accent"}, "a finite mean"], [{"text": "its distribution becomes normal, sd σ/√n", "tone": "good"}, {"text": "a finite VARIANCE too", "tone": "warn"}]], "t": "diagram", "id": "dg-i1_3-top-0"},
+
+
   {
    "t": "h2",
    "n": "01",

@@ -13,6 +13,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "The five ways an experiment misleads", "caption": "Each scenario in this set is one of these. Naming the mechanism is most of the answer, because the fix follows from it rather than from more data.", "cols": ["the symptom", "the fix"], "rows": ["significant, trivial effect", "many metrics tested", "stopped when it looked good", "groups differ in mix", "no effect found"], "cells": [[{"text": "huge n, tiny lift", "tone": "warn"}, "report the effect size and decide on it"], [{"text": "one of twenty came up", "tone": "crit"}, "correct for multiplicity, or pre-register one"], [{"text": "peeking inflated α", "tone": "crit"}, "a sequential design chosen up front"], [{"text": "Simpson's paradox", "tone": "crit"}, "segment, and check the split"], [{"text": "underpowered", "tone": "warn"}, {"text": "absence of evidence is not evidence", "tone": "good"}]], "t": "diagram", "id": "dg-p1_1-top-0"},
+
+
   {
    "t": "h2",
    "n": "01",

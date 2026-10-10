@@ -90,6 +90,16 @@ sums[7] / 36                  # 0.1667
 
     { t: "h2", n: "02", text: "Counting: four cases and nothing else", id: "counting" },
 
+    {"kind": "matrix", "title": "Counting: two questions, four answers", "caption": "Every counting problem is one of these four, and the two questions are *does order matter* and *can an item repeat*. Choosing the wrong cell is the single commonest error in a probability interview — so decide the two questions before reaching for a formula.", "cols": ["order matters", "order does not"], "rows": ["no repeats", "repeats allowed"], "cells": [[{"text": "permutation: n!/(n−k)!", "tone": "accent"}, {"text": "combination: C(n,k)", "tone": "good"}], [{"text": "nᵏ — each slot independent", "tone": "warn"}, {"text": "multiset: C(n+k−1, k)", "tone": "violet"}]], "t": "diagram", "id": "dg-3_1-02-0"},
+
+
+
+
+
+
+
+
+
     { t: "p", text: "When outcomes are equally likely, a probability becomes a counting problem — and **every counting problem is one of four cases**, decided by two questions: can an item repeat, and does the order matter?" },
 
     { t: "dl", items: [

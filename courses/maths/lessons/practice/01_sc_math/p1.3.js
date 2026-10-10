@@ -13,6 +13,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "Choosing a distribution from the mechanism", "caption": "These scenarios are won by asking what generated the data rather than what the histogram resembles. The mechanism column is the reasoning an interviewer is listening for.", "cols": ["the mechanism", "the distribution"], "rows": ["successes in n trials", "rare events per interval", "waiting at a constant rate", "a product of many effects", "a rate with uncertainty"], "cells": [["fixed trials, constant p", {"text": "binomial", "tone": "good"}], ["many trials, tiny p", {"text": "Poisson", "tone": "good"}], [{"text": "memoryless — check this", "tone": "warn"}, {"text": "exponential", "tone": "accent"}], ["multiplicative, not additive", {"text": "log-normal", "tone": "violet"}], ["a prior over p itself", {"text": "beta — conjugate prior", "tone": "good"}]], "t": "diagram", "id": "dg-p1_3-top-0"},
+
+
   {
    "t": "h2",
    "n": "01",

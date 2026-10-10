@@ -93,6 +93,16 @@ for name, sample in [
 
     { t: "h2", n: "02", text: "Kurtosis measures tails", id: "kurtosis" },
 
+    {"kind": "matrix", "title": "Kurtosis is about tails, not peaks", "caption": "The common description — “peakedness” — is wrong and leads people to misread it. Kurtosis is driven by the fourth power of deviations, so it is dominated by what happens far from the mean.", "cols": ["excess kurtosis", "what it means", "example"], "rows": ["leptokurtic", "mesokurtic", "platykurtic"], "cells": [[{"text": "> 0", "tone": "crit"}, {"text": "fat tails, more outliers", "tone": "crit"}, "asset returns"], [{"text": "= 0", "tone": "good"}, "the normal reference", "the normal itself"], [{"text": "< 0", "tone": "accent"}, "thin tails, fewer", "the uniform"]], "t": "diagram", "id": "dg-4_4-02-0"},
+
+
+
+
+
+
+
+
+
     { t: "p", text: "**Kurtosis measures tail weight, not peakedness** — a description that has misled generations of readers. The fourth power means an observation at `4σ` contributes 256 times as much as one at `1σ`, so the value is dominated almost entirely by the extremes." },
 
     { t: "dl", items: [

@@ -298,6 +298,16 @@ w_min @ S @ w_min                        # 0.2947 vs 0.4941 equal-weight
 
     { t: "h2", n: "04", text: "Simpson's paradox", id: "simpson" },
 
+    {"kind": "matrix", "title": "Simpson's paradox, with the numbers", "caption": "Treatment B wins in **both** groups and loses overall, because the groups differ in size and in severity. The lesson is not that statistics lies — it is that an aggregate without the confounder is a different question from the one you meant to ask.", "cols": ["treatment A", "treatment B", "who wins"], "rows": ["mild cases", "severe cases", "combined"], "cells": [["81/87 = 93%", {"text": "234/270 = 87%", "tone": "good"}, {"text": "A", "tone": "accent"}], ["192/263 = 73%", {"text": "55/80 = 69%", "tone": "good"}, {"text": "A", "tone": "accent"}], [{"text": "273/350 = 78%", "tone": "crit"}, {"text": "289/350 = 83%", "tone": "crit"}, {"text": "B — reversed", "tone": "crit"}]], "t": "diagram", "id": "dg-3_7-04-0"},
+
+
+
+
+
+
+
+
+
     { t: "p", text: "**Simpson's paradox is a trend that holds in every subgroup and reverses when the groups are pooled.** Both tables are arithmetically correct; which one answers your question depends on whether the grouping variable is a confounder or a mediator." },
 
     { t: "dl", items: [

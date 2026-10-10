@@ -164,6 +164,13 @@ normal_posterior(100, 15, np.array([120., 118., 125.]), sigma=10)
 
     { t: "h2", n: "02", text: "Credible against confidence", id: "credible" },
 
+    {"kind": "compare", "title": "Credible against confidence", "caption": "They answer different questions, and the Bayesian one is the question people actually ask. The price is a prior, which has to be stated and defended rather than assumed away.", "columns": [{"title": "95% confidence interval", "tone": "accent", "items": ["about the PROCEDURE: 95% of such intervals cover the parameter", "the parameter is fixed; the interval is random", "you may not say “95% chance it is in here”", "needs no prior", "the answer to a question nobody asked"]}, {"title": "95% credible interval", "tone": "good", "items": ["about THIS interval: 95% posterior probability the parameter is in it", "the parameter has a distribution", "you may say exactly what people want to say", "needs a prior, stated explicitly", "the answer to the question people mean"]}], "t": "diagram", "id": "dg-5_12-02-0"},
+
+
+
+
+
+
     { t: "p", text: "**A credible interval supports the reading a confidence interval cannot**: there really is a 95% probability the parameter lies inside it. That is what the prior buys — and with a flat prior and a decent sample the two intervals usually agree numerically while meaning different things." },
 
     { t: "dl", items: [
@@ -393,7 +400,14 @@ d["expected_loss_keep"] / d["expected_loss_ship"]     # 37x
       ]
     },
 
-    { t: "h2", n: "04", text: "Practice", id: "practice" },
+        {"t": "h2", "n": "04", "text": "Bayes factors: evidence without a threshold", "id": "bayes-factor"},
+    {"t": "p", "text": "A p-value cannot say anything in favour of the null. A **Bayes factor** can, because it is a ratio of how well each hypothesis predicted the data that arrived:"},
+    {"t": "math", "tex": "BF_{10} \\;=\\; \\frac{P(D \\mid H_1)}{P(D \\mid H_0)} \\;=\\; \\frac{\\text{posterior odds}}{\\text{prior odds}}"},
+    {"t": "p", "text": "So `BF₁₀ = 5` means the data are five times better predicted by the alternative, and `BF₁₀ = 0.2` means they are five times better predicted by the **null** — a statement no frequentist test produces. The conventional reading is a scale rather than a cutoff, which is the point: there is no 0.05 to game."},
+    {"t": "table", "head": ["BF₁₀", "reading"], "rows": [["1 to 3", "barely worth mentioning"], ["3 to 10", "moderate evidence for H₁"], ["10 to 30", "strong"], ["above 100", "decisive"], ["below 1/3", "**moderate evidence FOR the null**"]]},
+    {"t": "code", "lang": "python", "code": "# a coin: 60 heads in 100 tosses. H0: p = 0.5.  H1: p ~ Uniform(0,1)\nfrom math import comb\n\nn, k = 100, 60\np_d_h0 = comb(n, k) * 0.5 ** n\n# under a uniform prior the marginal likelihood is a Beta integral,\n# which for integers is exactly 1 / (n + 1)\np_d_h1 = 1.0 / (n + 1)\n\nprint(\"P(data | H0) = %.3e\" % p_d_h0)\nprint(\"P(data | H1) = %.3e\" % p_d_h1)\nprint(\"BF10         = %.2f\" % (p_d_h1 / p_d_h0))", "title": "the same data a p-value would call significant", "out": "P(data | H0) = 1.084e-02\nP(data | H1) = 9.901e-03\nBF10         = 0.91"},
+    {"t": "callout", "kind": "insight", "title": "A significant p-value and a Bayes factor of 0.91", "body": [{"t": "p", "text": "A two-sided binomial test on 60 heads in 100 gives roughly `p = 0.057` — borderline, and often reported as a trend. The Bayes factor is **0.91**, which says the data very slightly favour the **null**."}, {"t": "p", "text": "They disagree because they answer different questions. The p-value asks how surprising 60 heads would be under fairness; the Bayes factor asks whether a model that allows any bias predicted this data better than one that does not — and a model free to put its mass anywhere pays for that freedom. This is the Jeffreys–Lindley effect, and it is the reason a borderline p-value is weaker evidence than it feels."}]},
+{ t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",
       kind: "Build",

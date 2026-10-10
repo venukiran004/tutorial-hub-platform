@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The four you meet, and where they come from", id: "family" },
 
+    {"kind": "matrix", "title": "The four continuous distributions, by the question they answer", "caption": "Each arises from a specific mechanism, and knowing the mechanism is what tells you whether it fits your data. The exponential's memorylessness is the property that most often makes it the wrong choice.", "cols": ["it models", "the giveaway"], "rows": ["Uniform", "Normal", "Exponential", "Log-normal"], "cells": [["no reason to prefer any value", "a flat histogram, hard bounds"], [{"text": "a sum of many small effects", "tone": "good"}, "symmetric, thin tails"], [{"text": "waiting time at a constant rate", "tone": "accent"}, {"text": "memoryless — often wrong", "tone": "warn"}], [{"text": "a PRODUCT of many effects", "tone": "violet"}, "right-skewed; normal after a log"]], "t": "diagram", "id": "dg-3_5-01-0"},
+
+
+
+
+
+
+
+
+
     { t: "p", text: "Continuous distributions are best identified by **the process that generates them** rather than by the shape of their density. The single most useful distinction is additive against multiplicative: many small effects adding give a normal, and many small effects multiplying give a lognormal." },
 
     { t: "dl", items: [
@@ -291,7 +301,13 @@ for k in (0.5, 1.0, 2.5):
       caption: "**Timeouts only make sense for processes that age.** If failures were memoryless, killing a long-running request would gain nothing — you would be discarding completed work for no improvement in the odds."
     },
 
-    { t: "h2", n: "04", text: "Practice", id: "practice" },
+        {"t": "h2", "n": "04", "text": "The Gamma distribution, which the exponential is a case of", "id": "gamma"},
+    {"t": "p", "text": "The exponential models the wait for **one** event. The **Gamma** models the wait for the *k*th, which is why it appears whenever a process needs several stages to complete — a request that passes through four services, a part that fails only after the third shock."},
+    {"t": "math", "tex": "f(x;k,\\theta) \\;=\\; \\frac{x^{k-1}e^{-x/\\theta}}{\\Gamma(k)\\,\\theta^{k}}, \\qquad \\mathbb{E}[X]=k\\theta, \\quad \\operatorname{Var}(X)=k\\theta^{2}"},
+    {"t": "dl", "items": [["**k = 1**", "the exponential, exactly — memoryless, mode at zero."], ["**k > 1**", "a mode away from zero, and a right skew that weakens as k grows."], ["**k large**", "approaches a normal, which is the CLT arriving: a sum of k exponentials."], ["**the conjugate use**", "a Gamma prior on a Poisson rate stays Gamma after the data, which is why it is the standard prior for counts."]]},
+    {"t": "code", "lang": "python", "code": "from math import gamma as G, exp\n\ndef gamma_pdf(x, k, theta):\n    return x ** (k - 1) * exp(-x / theta) / (G(k) * theta ** k)\n\n# the wait for the kth event when each takes 2 units on average\nfor k in (1, 2, 5):\n    mean = k * 2\n    # the mode is (k-1)*theta, which is 0 only for k = 1\n    mode = max(0.0, (k - 1) * 2)\n    print(\"k=%d  mean=%4.1f  mode=%4.1f  f(1)=%.4f\" % (k, mean, mode, gamma_pdf(1, k, 2)))", "title": "one shape parameter changes the whole character", "out": "k=1  mean= 2.0  mode= 0.0  f(1)=0.3033\nk=2  mean= 4.0  mode= 2.0  f(1)=0.1516\nk=5  mean=10.0  mode= 8.0  f(1)=0.0008"},
+    {"t": "p", "text": "**The mode moves off zero as soon as k exceeds 1**, and that is the modelling signal. If your latency histogram rises to a peak and then falls, an exponential cannot fit it — its mode is always at zero — and reaching for a Gamma is the correct response rather than transforming the data until the exponential looks acceptable."},
+{ t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",
       kind: "Challenge",

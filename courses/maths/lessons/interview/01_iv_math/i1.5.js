@@ -13,6 +13,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "steps", "title": "The experiment questions follow one order", "caption": "Nearly every A/B question in this set is about something that goes wrong when these are done out of order. If you can say which step was skipped, you have answered the question.", "items": [{"label": "pick ONE primary metric", "desc": "multiple metrics without correction is the multiplicity question", "tone": "crit", "code": "before"}, {"label": "power the test, fix n", "desc": "underpowered", "tone": "crit", "code": "before"}, {"label": "verify the split", "desc": "sample ratio mismatch means the randomisation is broken", "tone": "warn", "code": "day 1"}, {"label": "do not peek, or use a sequential method", "desc": "peeking inflates α; the fix must be chosen in advance", "tone": "warn", "code": "during"}, {"label": "report an effect size with its interval", "desc": "and let novelty decay before reading the long-run effect", "tone": "good", "code": "after"}], "t": "diagram", "id": "dg-i1_5-top-0"},
+
+
   {
    "t": "h2",
    "n": "01",

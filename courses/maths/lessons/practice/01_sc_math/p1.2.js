@@ -13,6 +13,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "Model symptoms and the maths behind them", "caption": "Each scenario presents a symptom; the diagnosis is a piece of mathematics from the learn track. The middle column is what to check first, and it is cheaper than retraining.", "cols": ["check first", "the underlying cause"], "rows": ["loss becomes NaN", "PCA explains little", "coefficients unstable", "the interval crosses zero", "a small, skewed sample"], "cells": [[{"text": "learning rate, then log(0)", "tone": "crit"}, "overflow or exploding grad"], ["was the data scaled?", {"text": "variance spread across many directions", "tone": "warn"}], ["VIF between features", {"text": "multicollinearity — not a fit problem", "tone": "warn"}], ["the width, not the sign", {"text": "not resolved by this n", "tone": "accent"}], ["the shape before the test", {"text": "the CLT has not arrived yet", "tone": "crit"}]], "t": "diagram", "id": "dg-p1_2-top-0"},
+
+
   {
    "t": "h2",
    "n": "01",

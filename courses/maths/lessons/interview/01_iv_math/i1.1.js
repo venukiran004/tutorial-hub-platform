@@ -13,6 +13,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "The decompositions these questions circle", "caption": "Most of the fifteen reduce to knowing which decomposition applies and what it guarantees. The right-hand column is the follow-up: an interviewer asks what it needs, because that is where the understanding sits.", "cols": ["gives you", "requires"], "rows": ["eigendecomposition", "SVD", "Cholesky", "QR"], "cells": [["special directions that only scale", {"text": "square; may not exist", "tone": "warn"}], [{"text": "rank, pseudoinverse, best low-rank fit", "tone": "good"}, {"text": "nothing — always exists", "tone": "good"}], ["a fast solve for covariance systems", {"text": "symmetric positive definite", "tone": "warn"}], ["a stable least-squares solve", {"text": "nothing", "tone": "good"}]], "t": "diagram", "id": "dg-i1_1-top-0"},
+
+
   {
    "t": "h2",
    "n": "01",

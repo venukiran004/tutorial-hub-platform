@@ -13,6 +13,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "One quantity under four names", "caption": "Entropy, cross-entropy, KL and information gain are the same machinery, and several questions here test whether you see that. Cross-entropy is entropy plus KL — which is why minimising a classifier's loss is minimising a divergence.", "cols": ["measures", "where you meet it"], "rows": ["entropy H(p)", "cross-entropy H(p,q)", "KL(p‖q)", "information gain"], "cells": [["uncertainty in p", "the floor on any code length"], [{"text": "cost of coding p with q", "tone": "accent"}, {"text": "the classifier loss", "tone": "good"}], [{"text": "the EXCESS, H(p,q) − H(p)", "tone": "violet"}, "VAE terms, distribution drift"], [{"text": "entropy before − after", "tone": "good"}, "a decision-tree split"]], "t": "diagram", "id": "dg-i1_6-top-0"},
+
+
   {
    "t": "h2",
    "n": "01",

@@ -88,6 +88,16 @@ joint[("paid", "churn")] / p_churn               # 0.077
 
     { t: "h2", n: "02", text: "Bayes, and the term everyone drops", id: "bayes" },
 
+    {"kind": "steps", "title": "Bayes, and the term everyone drops", "caption": "The base rate is the term that gets forgotten, and it dominates the answer when the event is rare. A 99%-accurate test for a 1-in-10,000 condition still leaves a positive result far more likely to be a false alarm than a case.", "items": [{"label": "the prior — P(H)", "desc": "the base rate, before any evidence. Dropping this is the classic error", "tone": "crit", "code": "the base rate"}, {"label": "the likelihood — P(E|H)", "desc": "how expected the evidence is if the hypothesis holds", "tone": "accent", "code": "the test"}, {"label": "the evidence — P(E)", "desc": "across ALL hypotheses, which is what normalises the result", "tone": "good", "code": "the total"}, {"label": "the posterior — P(H|E)", "desc": "prior × likelihood ÷ evidence; now repeat with this as the prior", "tone": "violet", "code": "the answer"}], "t": "diagram", "id": "dg-3_6-02-0"},
+
+
+
+
+
+
+
+
+
     { t: "p", text: "**Bayes' theorem converts `P(evidence | hypothesis)` into `P(hypothesis | evidence)`** — the direction you almost always want and almost never measure directly. The conversion requires the prior, and the prior is the term that gets dropped." },
 
     { t: "dl", items: [

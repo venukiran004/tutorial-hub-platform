@@ -119,6 +119,19 @@ newton(lambda x: x*x + 1, lambda x: 2*x, 0.0)     # ZeroDivisionError
 
     { t: "h2", n: "02", text: "Finite differences, and why smaller is not better", id: "finite-differences" },
 
+    {"kind": "timeline", "title": "The finite-difference error has a floor", "caption": "Shrinking the step reduces truncation error and increases cancellation error, so the total has a minimum and then gets **worse**. The optimum for a forward difference is around the square root of machine epsilon — which is why automatic differentiation won.", "span": 100, "tick": 20, "unit": "smaller step size →", "lanes": [{"label": "truncation error", "bars": [[0, 70, "falls as h shrinks", "good"]]}, {"label": "cancellation", "bars": [[45, 100, "rises as h shrinks", "crit"]]}, {"label": "total", "bars": [[0, 45, "improving", "good"], [45, 100, "getting WORSE", "crit"]]}], "t": "diagram", "id": "dg-2_6-02-0"},
+
+
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "A **finite difference** estimates a derivative by evaluating the function at two nearby points. The surprising part is that **making the step smaller stops helping and starts hurting** — two error sources pull in opposite directions and their sum has a floor." },
 
     { t: "dl", items: [

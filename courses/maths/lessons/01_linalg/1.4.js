@@ -110,6 +110,19 @@ vecs[:, 1] / vecs[0, 1] # [1., -2.]   (normalised to match our working)
 
     { t: "h2", n: "02", text: "What the numbers tell you", id: "reading" },
 
+    {"kind": "matrix", "title": "What the eigenvalues tell you", "caption": "The signs decide the behaviour of everything built on the matrix — whether a quadratic has a minimum, whether a system is stable, whether a covariance matrix is usable. The **zero** row is the one that breaks code rather than merely degrading it.", "cols": ["the quadratic form", "a dynamical system", "the matrix"], "rows": ["all λ > 0", "all λ < 0", "mixed signs", "some λ = 0"], "cells": [[{"text": "a minimum — convex", "tone": "good"}, "decays to zero", "positive definite"], [{"text": "a maximum", "tone": "warn"}, "grows without bound", "negative definite"], [{"text": "a saddle — no minimum", "tone": "crit"}, "grows in some directions", "indefinite"], [{"text": "a flat direction", "tone": "crit"}, {"text": "neither decays nor grows", "tone": "warn"}, {"text": "singular — not invertible", "tone": "crit"}]], "t": "diagram", "id": "dg-1_4-02-0"},
+
+
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "The eigenvalues tell you what happens when a transformation is applied **repeatedly** — which is the situation in every iterative algorithm, every Markov chain, and every recurrent network. The largest one dominates everything else." },
 
     { t: "dl", items: [

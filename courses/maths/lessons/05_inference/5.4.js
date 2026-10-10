@@ -138,6 +138,13 @@ stats.binomtest(observed_heads, n_flips, 0.5).pvalue    # 0.0210
 
     { t: "h2", n: "02", text: "The four outcomes", id: "outcomes" },
 
+    {"kind": "matrix", "title": "The four outcomes of a test", "caption": "α is chosen and β is a consequence of sample size and effect size. Note what the table does **not** contain: any probability that the null is true. A test conditions on the null, so it cannot report on it.", "cols": ["H₀ is true", "H₀ is false"], "rows": ["reject H₀", "fail to reject"], "cells": [[{"text": "Type I error — rate α", "tone": "crit"}, {"text": "correct — power, 1−β", "tone": "good"}], [{"text": "correct — 1−α", "tone": "good"}, {"text": "Type II error — rate β", "tone": "warn"}]], "t": "diagram", "id": "dg-5_4-02-0"},
+
+
+
+
+
+
     { t: "p", text: "A test has four possible outcomes, two of them errors. **You choose the rate of one error and inherit the other** — which is why choosing `α` without computing power is choosing one error rate and letting the second happen to you." },
 
     { t: "dl", items: [

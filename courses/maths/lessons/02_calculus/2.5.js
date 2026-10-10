@@ -116,6 +116,19 @@ r2 = minimize(f, [0.5, 0.5], constraints=[con2], bounds=[(0, None)]*2)
 
     { t: "h2", n: "02", text: "Inequalities and the KKT conditions", id: "kkt" },
 
+    {"kind": "steps", "title": "The KKT conditions, in the order you check them", "caption": "Lagrange handles equalities; inequalities need the extra condition in step 4. **Complementary slackness** is the one that carries the meaning: a constraint either binds and has a positive multiplier, or is slack and its multiplier is zero.", "items": [{"label": "stationarity", "desc": "the gradient of the Lagrangian is zero — the usual first-order condition", "tone": "accent", "code": "1"}, {"label": "primal feasibility", "desc": "the original constraints hold at the point", "tone": "good", "code": "2"}, {"label": "dual feasibility", "desc": "the multipliers on inequalities are non-negative", "tone": "good", "code": "3"}, {"label": "complementary slackness", "desc": "μᵢgᵢ(x) = 0 — binding with μ>0, or slack with μ=0, never both", "tone": "crit", "code": "4"}], "t": "diagram", "id": "dg-2_5-02-0"},
+
+
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "The **KKT conditions** extend Lagrange multipliers to inequality constraints, and they are best read as a four-item checklist. For a convex problem they are necessary *and* sufficient, so satisfying them proves you have found the global optimum." },
 
     { t: "dl", items: [

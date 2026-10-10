@@ -99,6 +99,19 @@ A @ np.array([3.0, 2.0])     # [8., 2.]
 
     { t: "h2", n: "02", text: "The transformations worth recognising", id: "kinds" },
 
+    {"kind": "matrix", "title": "Read the transformation off the columns", "caption": "Each column is where a basis vector lands, so the matrix can be read rather than multiplied out. The determinant is the area scale factor — and a **negative** one means the space was flipped, which is the detail people miss.", "cols": ["the matrix", "determinant", "what it does"], "rows": ["scale by 2", "rotate 90°", "reflect in the x-axis", "shear", "project onto x"], "cells": [["[[2,0],[0,2]]", {"text": "4", "tone": "good"}, "area ×4, nothing turns"], ["[[0,-1],[1,0]]", {"text": "1", "tone": "good"}, "area kept, everything turns"], ["[[1,0],[0,-1]]", {"text": "−1", "tone": "warn"}, "area kept, orientation FLIPPED"], ["[[1,1],[0,1]]", {"text": "1", "tone": "good"}, "area kept, angles destroyed"], ["[[1,0],[0,0]]", {"text": "0", "tone": "crit"}, "a dimension is lost"]], "t": "diagram", "id": "dg-1_2-02-0"},
+
+
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "A handful of transformations account for most matrices you will meet, and each has a signature you can recognise by eye. The **determinant** is the single number that summarises what a transformation does to area or volume." },
 
     { t: "dl", items: [

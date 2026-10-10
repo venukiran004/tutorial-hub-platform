@@ -163,6 +163,19 @@ g @ u_perp                                 # 0.0
 
     { t: "h2", n: "03", text: "The identities worth memorising", id: "identities" },
 
+    {"kind": "matrix", "title": "The gradient identities worth memorising", "caption": "Four results cover most of machine learning. The last is the one to hold onto: the gradient of a quadratic form is what makes least squares solvable in closed form, and it is where the normal equations come from.", "cols": ["function", "gradient"], "rows": ["aᵀx", "xᵀx", "xᵀAx (A symmetric)", "‖Ax − b‖²"], "cells": [[{"text": "linear in x", "tone": "good"}, {"text": "a", "tone": "accent"}], [{"text": "squared length", "tone": "good"}, {"text": "2x", "tone": "accent"}], [{"text": "a quadratic form", "tone": "warn"}, {"text": "2Ax", "tone": "accent"}], [{"text": "least squares", "tone": "warn"}, {"text": "2Aᵀ(Ax − b)", "tone": "good"}]], "t": "diagram", "id": "dg-2_2-03-0"},
+
+
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "Differentiating with respect to a vector looks unfamiliar and is mostly four results. Learn these and the derivations in the rest of this course stop needing a reference — every one is checkable by writing the scalar sum out and differentiating one component." },
 
     { t: "table",
@@ -241,7 +254,7 @@ w2.max() / w2.min()                            # 100.0 -- identical
       caption: "**A learning rate can be fixed by tuning; a condition number cannot.** That is why normalisation, feature scaling and Adam matter — they change the ratio, which no scalar step size can."
     },
 
-    { t: "h2", n: "04", text: "Nobody forms the Hessian", id: "no-hessian" },
+    { t: "h2", n: "05", text: "Nobody forms the Hessian", id: "no-hessian" },
 
     { t: "p", text: "The Hessian is conceptually essential and computationally impossible at scale. **A model with ten million parameters has a Hessian with 10¹⁴ entries** — 800 terabytes — so every second-order method in practice works with an approximation that is never formed explicitly." },
 

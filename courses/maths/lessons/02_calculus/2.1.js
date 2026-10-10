@@ -103,6 +103,19 @@ f(2.001) - f(2.0)          # 0.004001  -- the prediction was 0.004
 
     { t: "h2", n: "02", text: "The chain rule", id: "chain" },
 
+    {"kind": "steps", "title": "The chain rule is the whole of backpropagation", "caption": "Differentiate the outside, keep the inside, multiply by the inside's derivative — then repeat. Backpropagation is this rule applied right to left so each factor is computed once, which is the only reason training a deep network is affordable.", "items": [{"label": "name the composition", "desc": "y = f(g(h(x))) — write the layers out before differentiating", "tone": "accent", "code": "setup"}, {"label": "differentiate outermost, keep the inside", "desc": "f′(g(h(x))) — the argument does not change", "tone": "good", "code": "×"}, {"label": "multiply by the next derivative down", "desc": "× g′(h(x)) × h′(x) — a product of local slopes", "tone": "good", "code": "×"}, {"label": "right to left reuses every factor", "desc": "left to right recomputes them; this is forward against reverse mode", "tone": "violet", "code": "the trick"}], "t": "diagram", "id": "dg-2_1-02-0"},
+
+
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "**The chain rule says that composed functions multiply their sensitivities.** If `x` affects `u` and `u` affects `y`, then a nudge to `x` reaches `y` scaled by both factors — and this single rule, applied layer by layer, is the whole of backpropagation." },
 
     { t: "dl", items: [

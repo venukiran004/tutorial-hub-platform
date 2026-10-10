@@ -13,6 +13,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "The edge cases, and what each one breaks", "caption": "These are the scenarios where a standard method stops applying. In each the correct answer begins by naming the assumption that has failed, not by reaching for a different test.", "cols": ["the assumption that fails", "what to do"], "rows": ["KS fires on a huge sample", "a Bayesian test’s prior", "mean against median", "many stakeholder metrics", "density with no model"], "cells": [[{"text": "practical significance", "tone": "crit"}, "report the effect size"], [{"text": "there is no neutral choice", "tone": "warn"}, "state it, and show the sensitivity to it"], [{"text": "symmetry", "tone": "warn"}, "median under skew; mean when the total matters"], [{"text": "one error rate", "tone": "crit"}, "one primary, rest guardrails"], [{"text": "a parametric form", "tone": "accent"}, "KDE, and justify the bandwidth"]], "t": "diagram", "id": "dg-p1_5-top-0"},
+
+
   {
    "t": "h2",
    "n": "01",

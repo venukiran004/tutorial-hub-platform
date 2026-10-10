@@ -20,6 +20,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three distributions, routinely confused", id: "three" },
 
+    {"kind": "matrix", "title": "Three distributions, routinely confused", "caption": "They answer different questions and only the third is what inference is about. The standard error shrinks with n; the population spread does not, which is the whole reason a large sample helps at all.", "cols": ["describes", "spread", "shrinks with n?"], "rows": ["the population", "one sample", "the sampling distribution"], "cells": [["everyone, usually unseen", "σ", {"text": "no — it is fixed", "tone": "crit"}], ["the data you hold", "s", {"text": "no — it estimates σ", "tone": "warn"}], [{"text": "the STATISTIC, many samples", "tone": "accent"}, "σ/√n", {"text": "YES", "tone": "good"}]], "t": "diagram", "id": "dg-5_1-01-0"},
+
+
+
+
+
+
     { t: "p", text: "Three distributions get confused constantly, and keeping them apart is what makes the rest of inference straightforward. **The population has a spread, each sample has a spread, and the collection of sample summaries has its own spread** — and it is the third that every p-value and confidence interval is about." },
 
     { t: "dl", items: [

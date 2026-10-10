@@ -20,6 +20,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Four tests, four questions", id: "four" },
 
+    {"kind": "matrix", "title": "Four t-tests, four questions", "caption": "Picking the wrong one is usually a question about **pairing**: paired data analysed as independent throws away the pairing and loses power. Welch should be the default for two independent groups, because equal variance is an assumption you rarely have grounds for.", "cols": ["the question", "assumes"], "rows": ["one-sample", "paired", "Student two-sample", "Welch two-sample"], "cells": [["is this mean equal to a fixed value?", "normality of the mean"], [{"text": "did the SAME units change?", "tone": "accent"}, "normality of the differences"], ["do two groups differ?", {"text": "EQUAL variances — rarely justified", "tone": "crit"}], [{"text": "do two groups differ?", "tone": "good"}, {"text": "nothing about equal variance", "tone": "good"}]], "t": "diagram", "id": "dg-5_5-01-0"},
+
+
+
+
+
+
     { t: "p", text: "There are four t-tests and picking the wrong one is a common analysis error. **They differ in what is being compared and what is assumed** — and a paired test is not a variant of a two-sample test, it is a one-sample test on the differences." },
 
     { t: "dl", items: [

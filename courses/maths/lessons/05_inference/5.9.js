@@ -20,6 +20,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What each test actually tests", id: "hypotheses" },
 
+    {"kind": "matrix", "title": "Parametric against rank-based", "caption": "A rank test does not test the mean — it tests a shift in distribution, so the hypothesis changes with the method. That is the trade people forget: you buy robustness by answering a slightly different question.", "cols": ["what it tests", "assumes", "cost"], "rows": ["t-test", "Mann–Whitney U", "Wilcoxon signed-rank", "Kruskal–Wallis"], "cells": [[{"text": "a difference in MEANS", "tone": "accent"}, "normality of the mean", "sensitive to outliers"], [{"text": "a stochastic shift", "tone": "good"}, "ordinal data only", {"text": "~5% power lost if normal", "tone": "warn"}], [{"text": "a shift in paired differences", "tone": "good"}, "symmetry of differences", "pairing required"], [{"text": "a shift across 3+ groups", "tone": "good"}, "ordinal data only", "no interaction terms"]], "t": "diagram", "id": "dg-5_9-01-0"},
+
+
+
+
+
+
     { t: "p", text: "Non-parametric tests are usually described as \"what you use when the data is not normal\", and that is misleading twice. **They do not test the same hypothesis as their parametric counterparts** — Mann-Whitney tests stochastic dominance, not means — and they are not assumption-free." },
 
     { t: "dl", items: [

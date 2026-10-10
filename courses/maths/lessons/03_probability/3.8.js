@@ -93,6 +93,16 @@ entropy(freqs)                            # 2.246 bits per symbol
 
     { t: "h2", n: "02", text: "Cross-entropy and KL", id: "cross-entropy" },
 
+    {"kind": "matrix", "title": "Entropy, cross-entropy and KL", "caption": "Three quantities, one relationship: cross-entropy is entropy plus KL divergence. Training a classifier minimises cross-entropy, and because the data's own entropy is fixed, that is the same as minimising the KL divergence from the truth.", "cols": ["what it measures", "zero when"], "rows": ["H(p)", "H(p, q)", "KL(p ‖ q)"], "cells": [["the uncertainty in p itself", {"text": "p is certain", "tone": "good"}], [{"text": "the cost of coding p using q", "tone": "accent"}, "p is certain AND q = p"], [{"text": "the EXCESS cost — H(p,q) − H(p)", "tone": "violet"}, {"text": "q = p exactly", "tone": "good"}]], "t": "diagram", "id": "dg-3_8-02-0"},
+
+
+
+
+
+
+
+
+
     { t: "p", text: "**Cross-entropy is the cost of encoding data from one distribution using a code built for another** — and it is exactly the loss function every classifier minimises. It splits into two parts: the data's own irreducible uncertainty, and the penalty for your model being wrong." },
 
     { t: "dl", items: [

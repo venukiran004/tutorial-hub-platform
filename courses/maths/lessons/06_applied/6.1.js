@@ -20,6 +20,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The order of operations", id: "order" },
 
+    {"kind": "steps", "title": "The order of operations for an experiment", "caption": "The order is the protection. Deciding the metric and the sample size **before** data arrives is what makes the resulting p-value mean anything — reverse any two of these steps and the analysis is exploratory, whatever it is called afterwards.", "items": [{"label": "state the hypothesis and ONE primary metric", "desc": "secondary metrics are reported, never promoted after the fact", "tone": "crit", "code": "before"}, {"label": "fix α, the MDE and the sample size", "desc": "power analysis decides the duration; the duration does not decide the power", "tone": "crit", "code": "before"}, {"label": "check the randomisation actually worked", "desc": "sample ratio mismatch invalidates everything downstream", "tone": "warn", "code": "day 1"}, {"label": "run to the planned n without looking", "desc": "or use a sequential method that was chosen in advance", "tone": "accent", "code": "during"}, {"label": "analyse once, report the interval", "desc": "an effect size with its uncertainty, not a verdict", "tone": "good", "code": "after"}], "t": "diagram", "id": "dg-6_1-01-0"},
+
+
+
+
+
+
     { t: "p", text: "An A/B test is a randomised experiment, and **most of what goes wrong happens before any data is analysed.** Each stage has a characteristic failure that produces plausible-looking output, and analysis — the part people focus on — is the last and least dangerous." },
 
     { t: "dl", items: [

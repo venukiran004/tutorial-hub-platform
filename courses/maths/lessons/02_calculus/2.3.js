@@ -278,6 +278,19 @@ loss = (pred - y).pow(2).sum()       # lr scales WITH batch size
 
     { t: "h2", n: "04", text: "Schedules", id: "schedules" },
 
+    {"kind": "timeline", "title": "What a schedule does to the step size", "caption": "The same budget of steps, spent differently. A constant rate cannot both move quickly early and settle late, which is the whole argument for a schedule — and warmup exists because the very first steps of a large model are the least trustworthy.", "span": 100, "tick": 20, "unit": "% of training", "lanes": [{"label": "constant", "bars": [[0, 100, "never settles, or never moves", "crit"]]}, {"label": "step decay", "bars": [[0, 40, "high", "good"], [40, 75, "mid", "accent"], [75, 100, "low", "teal"]]}, {"label": "cosine", "bars": [[0, 100, "smooth, high to near zero", "good"]]}, {"label": "warmup + cosine", "bars": [[0, 8, "", "warn"], [8, 100, "ramp up, then decay", "good"]]}], "t": "diagram", "id": "dg-2_3-04-0"},
+
+
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "**A learning-rate schedule changes the step size during training**, because the right size early is not the right size late. Large steps make fast progress across the landscape; small steps are needed to settle into a minimum without bouncing out of it." },
 
     { t: "dl", items: [

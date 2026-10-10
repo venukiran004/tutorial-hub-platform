@@ -194,6 +194,19 @@ err.round(4)            # 0.0186 -- and 98% of it is the noise we WANTED
 
     { t: "h2", n: "03", text: "SVD against eigendecomposition", id: "vs-eig" },
 
+    {"kind": "compare", "title": "SVD against eigendecomposition", "caption": "They are not alternatives for the same job. Eigendecomposition needs a square matrix and may not exist; the SVD exists for **every** matrix, which is why it is the one that underpins PCA, pseudoinverses and low-rank approximation.", "columns": [{"title": "eigendecomposition", "tone": "warn", "items": ["square matrices only", "may not exist, and may be complex", "A = Q Λ Q⁻¹ — the basis is not orthogonal in general", "eigenvalues can be negative or complex", "the right tool for powers of A and for dynamics"]}, {"title": "SVD", "tone": "good", "items": ["ANY matrix, including rectangular", "always exists, always real", "A = U Σ Vᵀ — both bases orthonormal", "singular values are real and non-negative, in order", "the right tool for rank, pseudoinverse and compression"]}], "t": "diagram", "id": "dg-1_5-03-0"},
+
+
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "Eigendecomposition and SVD are related but not interchangeable, and choosing the wrong one is a common source of confusion. **SVD always exists; eigendecomposition often does not** — and for symmetric positive semi-definite matrices they coincide." },
 
     { t: "dl", items: [

@@ -20,6 +20,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why `n − 1`, demonstrated", id: "bessel" },
 
+    {"kind": "steps", "title": "Why the divisor is n − 1", "caption": "The sample mean is itself fitted from the data, so deviations are measured from a point chosen to make them small. Dividing by n therefore **understates** the spread; n − 1 corrects it, and the correction is exactly the degree of freedom the mean consumed.", "items": [{"label": "the sample mean is estimated, not given", "desc": "it is placed where the squared deviations are smallest", "tone": "accent", "code": "1 df used"}, {"label": "so deviations from it are too small", "desc": "measured from the true mean they would be larger on average", "tone": "warn", "code": "biased low"}, {"label": "dividing by n keeps that bias", "desc": "the expected value comes out as σ²(n−1)/n, not σ²", "tone": "crit", "code": "wrong"}, {"label": "dividing by n − 1 removes it exactly", "desc": "unbiased for σ² — and this is Bessel's correction", "tone": "good", "code": "right"}], "t": "diagram", "id": "dg-4_2-01-0"},
+
+
+
+
+
+
+
+
+
     { t: "p", text: "**The sample variance divides by `n − 1` because the sample mean sits closer to your data than the true mean does.** Squared deviations measured from it are therefore systematically too small — by exactly a factor of `(n−1)/n`, which is precisely what the correction cancels." },
 
     { t: "dl", items: [

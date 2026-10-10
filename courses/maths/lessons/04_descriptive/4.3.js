@@ -146,6 +146,16 @@ for n in (50, 200, 1000, 10_000):
 
     { t: "h2", n: "02", text: "The IQR and the box plot's hidden rule", id: "iqr" },
 
+    {"kind": "layers", "title": "The box plot's hidden rule", "caption": "The whiskers are **not** the minimum and maximum: they reach to the furthest point within 1.5 × IQR, and anything past that is drawn as an outlier. So a box plot is already making a judgement about your data before you read it.", "items": [{"label": "outliers", "sub": "beyond 1.5 × IQR from the nearest quartile, drawn individually", "tone": "crit", "side": "judged"}, {"label": "upper whisker", "sub": "the furthest actual point WITHIN the fence — not the maximum", "tone": "warn", "side": "not max"}, {"label": "Q3", "sub": "75th percentile — the top of the box", "tone": "accent", "side": "75%"}, {"label": "median", "sub": "the line inside the box, not the mean", "tone": "good", "side": "50%"}, {"label": "Q1", "sub": "25th percentile — IQR is Q3 − Q1", "tone": "accent", "side": "25%"}, {"label": "lower whisker", "sub": "the furthest actual point within the lower fence", "tone": "warn", "side": "not min"}], "t": "diagram", "id": "dg-4_3-02-0"},
+
+
+
+
+
+
+
+
+
     { t: "p", text: "**The interquartile range is the span of the middle half of the data**, and it is the basis of the box plot. The whiskers follow a specific rule that is worth knowing, because it decides which points get drawn as outliers." },
 
     { t: "dl", items: [

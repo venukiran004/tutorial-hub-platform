@@ -135,6 +135,19 @@ np.array([1, 0]) @ np.array([-1, 0])    # -1.0 -- opposite
 
     { t: "h2", n: "03", text: "Which norm, and why it changes the answer", id: "norms" },
 
+    {"kind": "matrix", "title": "Three norms, three different answers", "caption": "A norm is a choice, not a fact, and the choice changes which vector counts as “big”. For `[3, 4]` the three disagree — and the reason L1 produces sparse solutions is visible here: it charges the same for every unit of every coordinate.", "cols": ["value for [3, 4]", "what it charges for", "where it is used"], "rows": ["L1 — sum of |x|", "L2 — root sum of squares", "L∞ — the largest |x|"], "cells": [[{"text": "7", "tone": "accent"}, "every unit equally", {"text": "lasso — gives sparsity", "tone": "good"}], [{"text": "5", "tone": "good"}, "large values much more", "ridge, least squares, distance"], [{"text": "4", "tone": "warn"}, "only the worst coordinate", "worst-case bounds"]], "t": "diagram", "id": "dg-1_1-03-0"},
+
+
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "A **norm** is any rule for measuring the size of a vector. There is more than one because \"size\" is not a single idea — the distance a taxi drives, the distance a bird flies and the worst single deviation are all legitimate measures, and they rank the same vectors differently." },
 
     { t: "dl", items: [

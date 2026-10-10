@@ -117,7 +117,7 @@ pay.mean() / np.median(pay)   # 1.646
       caption: "**91% of these employees earn below the mean.** Both numbers are correct; one of them describes almost nobody, and reporting it as \"the average salary\" is a choice with consequences."
     },
 
-    { t: "h2", n: "02", text: "Robustness, measured", id: "robustness" },
+    { t: "h2", n: "03", text: "Robustness, measured", id: "robustness" },
 
     { t: "p", text: "**Robustness is how much of your data an adversary would have to corrupt before your summary becomes meaningless** — and it is measurable, not a vague quality. The breakdown point turns it into a single number you can compare." },
 

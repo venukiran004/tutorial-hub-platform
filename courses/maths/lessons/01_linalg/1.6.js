@@ -135,6 +135,19 @@ np.allclose(np.abs(Vt[:2]), np.abs(comps.T))     # True, up to sign
 
     { t: "h2", n: "02", text: "Centring is mandatory; scaling is a decision", id: "preprocessing" },
 
+    {"kind": "matrix", "title": "Centring is mandatory; scaling is a judgement", "caption": "Skip the centring and the first component points at the mean rather than at the spread — the result is not PCA at all. Scaling is a real decision: without it the component follows whichever feature has the largest units.", "cols": ["if you skip it", "when you want it"], "rows": ["centre the columns", "scale to unit variance"], "cells": [[{"text": "PC1 points at the MEAN", "tone": "crit"}, {"text": "always", "tone": "good"}], [{"text": "the largest unit dominates", "tone": "warn"}, "when units differ"]], "t": "diagram", "id": "dg-1_6-02-0"},
+
+
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "PCA operates on variance, which makes it sensitive to how the data is prepared. **Centring is not optional** — without it the first component points at the mean rather than at the spread. **Scaling is a genuine decision** with no default right answer." },
 
     { t: "dl", items: [

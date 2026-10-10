@@ -78,6 +78,16 @@ sum(pmf(X, S).values())                # 1.0, necessarily
 
     { t: "h2", n: "02", text: "PMF against PDF", id: "pmf-pdf" },
 
+    {"kind": "compare", "title": "PMF against PDF", "caption": "The distinction that causes the most confusion: a PMF **is** a probability, a PDF is not. A density can exceed 1 without contradiction because what must integrate to one is the area, not the height.", "columns": [{"title": "PMF — discrete", "tone": "good", "items": ["P(X = x) is a probability, in [0, 1]", "P(X = x) can be asked and answered", "the values sum to 1", "a bar chart with gaps"]}, {"title": "PDF — continuous", "tone": "accent", "items": ["f(x) is a DENSITY and may exceed 1", "P(X = x) = 0 for every single x", "the area under the curve is 1", "probability comes from an interval, not a point"]}], "t": "diagram", "id": "dg-3_2-02-0"},
+
+
+
+
+
+
+
+
+
     { t: "p", text: "**A probability mass function gives probabilities; a probability density function does not.** A density is probability *per unit of x* — a rate — so it can exceed 1 without anything being wrong, and only its integral over an interval is a probability." },
 
     { t: "dl", items: [

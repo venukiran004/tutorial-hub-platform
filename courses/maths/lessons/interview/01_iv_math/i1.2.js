@@ -13,6 +13,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "What each optimiser actually fixes", "caption": "The questions here are rarely about the update rule and usually about **which problem it solves**. Naming the problem is the answer; reciting the formula is not.", "cols": ["the problem it fixes", "what it costs"], "rows": ["SGD", "+ momentum", "RMSProp", "Adam"], "cells": [["a full-batch step is too expensive", {"text": "noisy steps", "tone": "warn"}], [{"text": "oscillation across a narrow valley", "tone": "good"}, "one extra state tensor"], [{"text": "one step size for every direction", "tone": "good"}, "one extra state tensor"], [{"text": "both at once", "tone": "good"}, {"text": "two state tensors; can fail to converge", "tone": "warn"}]], "t": "diagram", "id": "dg-i1_2-top-0"},
+
+
   {
    "t": "h2",
    "n": "01",

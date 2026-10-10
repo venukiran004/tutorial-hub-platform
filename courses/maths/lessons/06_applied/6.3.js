@@ -263,6 +263,13 @@ huber_regression(x_i, y_i)[1]                    # 1.98 -- unaffected
 
     { t: "h2", n: "02", text: "Multicollinearity", id: "multicollinearity" },
 
+    {"kind": "matrix", "title": "Multicollinearity: what it does and does not break", "caption": "It inflates the variance of the coefficients without biasing them, so prediction survives and interpretation does not. That asymmetry is the whole point: if you only need forecasts, a high VIF may be no problem at all.", "cols": ["affected?", "why"], "rows": ["predictions", "overall fit (R²)", "individual coefficients", "their standard errors", "which feature “matters”"], "cells": [[{"text": "no", "tone": "good"}, "the fitted surface is unchanged"], [{"text": "no", "tone": "good"}, "the same variance is explained"], [{"text": "YES — unstable", "tone": "crit"}, "they trade off against each other"], [{"text": "YES — inflated", "tone": "crit"}, "VIF measures exactly this"], [{"text": "YES — unanswerable", "tone": "crit"}, "the data cannot separate them"]], "t": "diagram", "id": "dg-6_3-02-0"},
+
+
+
+
+
+
     { t: "p", text: "**Multicollinearity is predictors carrying overlapping information**, so the data cannot separate their individual effects. Coefficients become unstable and swing between refits, while R² stays perfectly steady — which is why the fit statistic cannot detect it." },
 
     { t: "dl", items: [

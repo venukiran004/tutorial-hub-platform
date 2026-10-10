@@ -103,6 +103,19 @@ def is_convex_at(hess, x):
 
     { t: "h2", n: "02", text: "Which losses are convex", id: "which" },
 
+    {"kind": "matrix", "title": "Which losses are convex, and why it matters", "caption": "Convexity buys one thing and it is a big one: every local minimum is global, so an optimiser that stops has found the answer. Neural networks give that up entirely, which is why their training is a search rather than a solve.", "cols": ["convex?", "what that means for you"], "rows": ["squared error, linear model", "logistic loss, linear model", "hinge loss (SVM)", "squared error + a network", "k-means objective"], "cells": [[{"text": "yes", "tone": "good"}, "a closed form exists"], [{"text": "yes", "tone": "good"}, "any optimiser finds the global optimum"], [{"text": "yes, not smooth", "tone": "good"}, "subgradients, still global"], [{"text": "NO", "tone": "crit"}, {"text": "many minima; the seed matters", "tone": "crit"}], [{"text": "NO", "tone": "crit"}, {"text": "restart it, and keep the best", "tone": "warn"}]], "t": "diagram", "id": "dg-2_4-02-0"},
+
+
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "Knowing which common losses are convex tells you immediately how much you can trust a single training run. **Every classical model in this list is convex, and anything with a hidden layer is not** — a distinction with practical consequences for how results must be reported." },
 
     { t: "dl", items: [

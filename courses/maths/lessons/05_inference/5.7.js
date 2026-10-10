@@ -20,6 +20,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The definition, and what it conditions on", id: "definition" },
 
+    {"kind": "compare", "title": "What a p-value is, and what it is taken to be", "caption": "The definition is conditional on the null being **true**, which is exactly the thing people want it to tell them about. Everything in the right-hand column is a different quantity, and most of them require a prior to even state.", "columns": [{"title": "what it is", "tone": "good", "items": ["P(data this extreme or more | H₀ is true)", "a statement about the DATA, given an assumption", "it conditions on the null, so it cannot judge it", "0.04 and 0.06 are not different in kind", "it says nothing about the size of the effect"]}, {"title": "what it is read as", "tone": "crit", "items": ["P(H₀ is true) — needs a prior; this is not it", "the probability the result was a fluke", "1 − p as the probability the effect is real", "a measure of how big or important the effect is", "a result that will replicate with probability 1 − p"]}], "t": "diagram", "id": "dg-5_7-01-0"},
+
+
+
+
+
+
     { t: "p", text: "**A p-value is the probability of data at least this extreme, assuming the null hypothesis is true.** Read the conditioning bar carefully: it assumes the null and speaks about the data. Everyone wants the reverse, and the two are different quantities related by Bayes." },
 
     { t: "dl", items: [
@@ -90,6 +97,13 @@ stats.fisher_exact([[66, 54], [51, 69]])[1]           # 0.0479
     },
 
     { t: "h2", n: "02", text: "Five misreadings, each with a number", id: "misreadings" },
+
+    {"kind": "matrix", "title": "Five misreadings, each with a number", "caption": "The middle column is what people infer; the right column is what is actually true. The last row is the one that costs most in practice — two studies either side of 0.05 are usually telling you the same thing.", "cols": ["the inference drawn", "what is actually the case"], "rows": ["p = 0.03", "p = 0.20", "p = 0.049 vs 0.051", "p = 0.001", "p = 0.04 and p = 0.06"], "cells": [[{"text": "97% chance the effect is real", "tone": "crit"}, "data this extreme is uncommon IF H₀ holds"], [{"text": "there is no effect", "tone": "crit"}, {"text": "absence of evidence; check the power", "tone": "warn"}], [{"text": "one works, one does not", "tone": "crit"}, {"text": "indistinguishable — α is a convention", "tone": "warn"}], [{"text": "a large, important effect", "tone": "crit"}, "a tiny effect in a huge sample does this"], [{"text": "they disagree", "tone": "crit"}, {"text": "they broadly agree", "tone": "good"}]], "t": "diagram", "id": "dg-5_7-02-1"},
+
+
+
+
+
 
     { t: "p", text: "Five misreadings appear routinely in published work, and **the first two are the same error in opposite clothing** — reversing the conditional. Getting the direction right is what separates a p-value from the quantity people believe they are reading." },
 

@@ -13,6 +13,10 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "Population against sample, which most of these turn on", "caption": "Eleven questions, and the majority hinge on this one distinction. Every parameter has an estimator, the estimator has its own spread, and confusing the two is what produces the wrong answer about n − 1, about standard error, and about what a confidence interval covers.", "cols": ["population", "sample"], "rows": ["the mean", "the spread", "what shrinks with n", "the symbol"], "cells": [["μ — fixed, usually unknown", "x̄ — random, computed"], ["σ — divides by N", {"text": "s — divides by n−1", "tone": "warn"}], [{"text": "nothing", "tone": "crit"}, {"text": "the standard error, σ/√n", "tone": "good"}], ["Greek", "Latin"]], "t": "diagram", "id": "dg-i2_1-top-0"},
+
+
   {
    "t": "h2",
    "n": "01",

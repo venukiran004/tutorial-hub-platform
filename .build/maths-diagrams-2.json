@@ -1,0 +1,623 @@
+{
+ "i1.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "The decompositions these questions circle",
+    "caption": "Most of the fifteen reduce to knowing which decomposition applies and what it guarantees. The right-hand column is the follow-up: an interviewer asks what it needs, because that is where the understanding sits.",
+    "cols": [
+     "gives you",
+     "requires"
+    ],
+    "rows": [
+     "eigendecomposition",
+     "SVD",
+     "Cholesky",
+     "QR"
+    ],
+    "cells": [
+     [
+      "special directions that only scale",
+      {
+       "text": "square; may not exist",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "rank, pseudoinverse, best low-rank fit",
+       "tone": "good"
+      },
+      {
+       "text": "nothing — always exists",
+       "tone": "good"
+      }
+     ],
+     [
+      "a fast solve for covariance systems",
+      {
+       "text": "symmetric positive definite",
+       "tone": "warn"
+      }
+     ],
+     [
+      "a stable least-squares solve",
+      {
+       "text": "nothing",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "i1.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "What each optimiser actually fixes",
+    "caption": "The questions here are rarely about the update rule and usually about **which problem it solves**. Naming the problem is the answer; reciting the formula is not.",
+    "cols": [
+     "the problem it fixes",
+     "what it costs"
+    ],
+    "rows": [
+     "SGD",
+     "+ momentum",
+     "RMSProp",
+     "Adam"
+    ],
+    "cells": [
+     [
+      "a full-batch step is too expensive",
+      {
+       "text": "noisy steps",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "oscillation across a narrow valley",
+       "tone": "good"
+      },
+      "one extra state tensor"
+     ],
+     [
+      {
+       "text": "one step size for every direction",
+       "tone": "good"
+      },
+      "one extra state tensor"
+     ],
+     [
+      {
+       "text": "both at once",
+       "tone": "good"
+      },
+      {
+       "text": "two state tensors; can fail to converge",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "i1.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "The two theorems these questions lean on",
+    "caption": "The Law of Large Numbers and the Central Limit Theorem are routinely conflated, and the distinction is the answer to several questions in this set. One says the average lands on the mean; the other says how it is distributed on the way.",
+    "cols": [
+     "what it claims",
+     "needs"
+    ],
+    "rows": [
+     "Law of Large Numbers",
+     "Central Limit Theorem"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the sample mean CONVERGES to μ",
+       "tone": "accent"
+      },
+      "a finite mean"
+     ],
+     [
+      {
+       "text": "its distribution becomes normal, sd σ/√n",
+       "tone": "good"
+      },
+      {
+       "text": "a finite VARIANCE too",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "i1.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "The four outcomes every testing question returns to",
+    "caption": "Type I, Type II, power and α are one table, and most of the twenty questions are a corner of it. Note what is absent: a probability that the null is true, which is why “the p-value is the chance it was a fluke” is wrong.",
+    "cols": [
+     "H₀ true",
+     "H₀ false"
+    ],
+    "rows": [
+     "reject",
+     "fail to reject"
+    ],
+    "cells": [
+     [
+      {
+       "text": "Type I — α, you choose it",
+       "tone": "crit"
+      },
+      {
+       "text": "power — 1−β",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "correct — 1−α",
+       "tone": "good"
+      },
+      {
+       "text": "Type II — β, a consequence",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "i1.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "steps",
+    "title": "The experiment questions follow one order",
+    "caption": "Nearly every A/B question in this set is about something that goes wrong when these are done out of order. If you can say which step was skipped, you have answered the question.",
+    "items": [
+     {
+      "label": "pick ONE primary metric",
+      "desc": "multiple metrics without correction is the multiplicity question",
+      "tone": "crit",
+      "code": "before"
+     },
+     {
+      "label": "power the test, fix n",
+      "desc": "underpowered",
+      "tone": "crit",
+      "code": "before"
+     },
+     {
+      "label": "verify the split",
+      "desc": "sample ratio mismatch means the randomisation is broken",
+      "tone": "warn",
+      "code": "day 1"
+     },
+     {
+      "label": "do not peek, or use a sequential method",
+      "desc": "peeking inflates α; the fix must be chosen in advance",
+      "tone": "warn",
+      "code": "during"
+     },
+     {
+      "label": "report an effect size with its interval",
+      "desc": "and let novelty decay before reading the long-run effect",
+      "tone": "good",
+      "code": "after"
+     }
+    ]
+   }
+  }
+ ],
+ "i1.6": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "One quantity under four names",
+    "caption": "Entropy, cross-entropy, KL and information gain are the same machinery, and several questions here test whether you see that. Cross-entropy is entropy plus KL — which is why minimising a classifier's loss is minimising a divergence.",
+    "cols": [
+     "measures",
+     "where you meet it"
+    ],
+    "rows": [
+     "entropy H(p)",
+     "cross-entropy H(p,q)",
+     "KL(p‖q)",
+     "information gain"
+    ],
+    "cells": [
+     [
+      "uncertainty in p",
+      "the floor on any code length"
+     ],
+     [
+      {
+       "text": "cost of coding p with q",
+       "tone": "accent"
+      },
+      {
+       "text": "the classifier loss",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "the EXCESS, H(p,q) − H(p)",
+       "tone": "violet"
+      },
+      "VAE terms, distribution drift"
+     ],
+     [
+      {
+       "text": "entropy before − after",
+       "tone": "good"
+      },
+      "a decision-tree split"
+     ]
+    ]
+   }
+  }
+ ],
+ "i2.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "Population against sample, which most of these turn on",
+    "caption": "Eleven questions, and the majority hinge on this one distinction. Every parameter has an estimator, the estimator has its own spread, and confusing the two is what produces the wrong answer about n − 1, about standard error, and about what a confidence interval covers.",
+    "cols": [
+     "population",
+     "sample"
+    ],
+    "rows": [
+     "the mean",
+     "the spread",
+     "what shrinks with n",
+     "the symbol"
+    ],
+    "cells": [
+     [
+      "μ — fixed, usually unknown",
+      "x̄ — random, computed"
+     ],
+     [
+      "σ — divides by N",
+      {
+       "text": "s — divides by n−1",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "nothing",
+       "tone": "crit"
+      },
+      {
+       "text": "the standard error, σ/√n",
+       "tone": "good"
+      }
+     ],
+     [
+      "Greek",
+      "Latin"
+     ]
+    ]
+   }
+  }
+ ],
+ "p1.1": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "The five ways an experiment misleads",
+    "caption": "Each scenario in this set is one of these. Naming the mechanism is most of the answer, because the fix follows from it rather than from more data.",
+    "cols": [
+     "the symptom",
+     "the fix"
+    ],
+    "rows": [
+     "significant, trivial effect",
+     "many metrics tested",
+     "stopped when it looked good",
+     "groups differ in mix",
+     "no effect found"
+    ],
+    "cells": [
+     [
+      {
+       "text": "huge n, tiny lift",
+       "tone": "warn"
+      },
+      "report the effect size and decide on it"
+     ],
+     [
+      {
+       "text": "one of twenty came up",
+       "tone": "crit"
+      },
+      "correct for multiplicity, or pre-register one"
+     ],
+     [
+      {
+       "text": "peeking inflated α",
+       "tone": "crit"
+      },
+      "a sequential design chosen up front"
+     ],
+     [
+      {
+       "text": "Simpson's paradox",
+       "tone": "crit"
+      },
+      "segment, and check the split"
+     ],
+     [
+      {
+       "text": "underpowered",
+       "tone": "warn"
+      },
+      {
+       "text": "absence of evidence is not evidence",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "p1.2": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "Model symptoms and the maths behind them",
+    "caption": "Each scenario presents a symptom; the diagnosis is a piece of mathematics from the learn track. The middle column is what to check first, and it is cheaper than retraining.",
+    "cols": [
+     "check first",
+     "the underlying cause"
+    ],
+    "rows": [
+     "loss becomes NaN",
+     "PCA explains little",
+     "coefficients unstable",
+     "the interval crosses zero",
+     "a small, skewed sample"
+    ],
+    "cells": [
+     [
+      {
+       "text": "learning rate, then log(0)",
+       "tone": "crit"
+      },
+      "overflow or exploding grad"
+     ],
+     [
+      "was the data scaled?",
+      {
+       "text": "variance spread across many directions",
+       "tone": "warn"
+      }
+     ],
+     [
+      "VIF between features",
+      {
+       "text": "multicollinearity — not a fit problem",
+       "tone": "warn"
+      }
+     ],
+     [
+      "the width, not the sign",
+      {
+       "text": "not resolved by this n",
+       "tone": "accent"
+      }
+     ],
+     [
+      "the shape before the test",
+      {
+       "text": "the CLT has not arrived yet",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "p1.3": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "Choosing a distribution from the mechanism",
+    "caption": "These scenarios are won by asking what generated the data rather than what the histogram resembles. The mechanism column is the reasoning an interviewer is listening for.",
+    "cols": [
+     "the mechanism",
+     "the distribution"
+    ],
+    "rows": [
+     "successes in n trials",
+     "rare events per interval",
+     "waiting at a constant rate",
+     "a product of many effects",
+     "a rate with uncertainty"
+    ],
+    "cells": [
+     [
+      "fixed trials, constant p",
+      {
+       "text": "binomial",
+       "tone": "good"
+      }
+     ],
+     [
+      "many trials, tiny p",
+      {
+       "text": "Poisson",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "memoryless — check this",
+       "tone": "warn"
+      },
+      {
+       "text": "exponential",
+       "tone": "accent"
+      }
+     ],
+     [
+      "multiplicative, not additive",
+      {
+       "text": "log-normal",
+       "tone": "violet"
+      }
+     ],
+     [
+      "a prior over p itself",
+      {
+       "text": "beta — conjugate prior",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "p1.4": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "Where feature maths goes wrong",
+    "caption": "Four of these scenarios are leakage or scale in disguise. The question to ask of any transform is whether it was fitted on data the model will not have at prediction time.",
+    "cols": [
+     "the real problem",
+     "the test for it"
+    ],
+    "rows": [
+     "target encoding",
+     "unscaled features",
+     "anomaly detection",
+     "dimensionality reduction",
+     "information gain is zero"
+    ],
+    "cells": [
+     [
+      {
+       "text": "leakage — target leaked in",
+       "tone": "crit"
+      },
+      "fit inside the fold"
+     ],
+     [
+      {
+       "text": "distance/penalty distorted",
+       "tone": "warn"
+      },
+      "distance or penalty used?"
+     ],
+     [
+      {
+       "text": "correlation ignored",
+       "tone": "warn"
+      },
+      {
+       "text": "Mahalanobis, not Euclidean",
+       "tone": "good"
+      }
+     ],
+     [
+      "variance vs separation",
+      {
+       "text": "PCA is unsupervised; LDA is not",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "the split separates nothing",
+       "tone": "crit"
+      },
+      "constant or duplicate?"
+     ]
+    ]
+   }
+  }
+ ],
+ "p1.5": [
+  {
+   "after": "top",
+   "d": {
+    "kind": "matrix",
+    "title": "The edge cases, and what each one breaks",
+    "caption": "These are the scenarios where a standard method stops applying. In each the correct answer begins by naming the assumption that has failed, not by reaching for a different test.",
+    "cols": [
+     "the assumption that fails",
+     "what to do"
+    ],
+    "rows": [
+     "KS fires on a huge sample",
+     "a Bayesian test’s prior",
+     "mean against median",
+     "many stakeholder metrics",
+     "density with no model"
+    ],
+    "cells": [
+     [
+      {
+       "text": "practical significance",
+       "tone": "crit"
+      },
+      "report the effect size"
+     ],
+     [
+      {
+       "text": "there is no neutral choice",
+       "tone": "warn"
+      },
+      "state it, and show the sensitivity to it"
+     ],
+     [
+      {
+       "text": "symmetry",
+       "tone": "warn"
+      },
+      "median under skew; mean when the total matters"
+     ],
+     [
+      {
+       "text": "one error rate",
+       "tone": "crit"
+      },
+      "one primary, rest guardrails"
+     ],
+     [
+      {
+       "text": "a parametric form",
+       "tone": "accent"
+      },
+      "KDE, and justify the bandwidth"
+     ]
+    ]
+   }
+  }
+ ]
+}
