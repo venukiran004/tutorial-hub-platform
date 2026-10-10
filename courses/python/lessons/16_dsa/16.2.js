@@ -24,6 +24,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "Trading memory for time",
       caption: "The nested-loop scan re-reads the data for every element. One pass building a dict costs memory proportional to the input and turns the same problem linear.",

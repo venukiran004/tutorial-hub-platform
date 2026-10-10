@@ -27,6 +27,12 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
     { t: "code", lang: "python", title: "one function, both paths", code: `
 import json
 from pathlib import Path

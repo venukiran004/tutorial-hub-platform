@@ -24,6 +24,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "What actually makes code maintainable",
       caption: "None of these is about cleverness. Each reduces the amount someone must hold in their head to change one thing safely — which is the only definition of maintainable that survives contact with a real team.",

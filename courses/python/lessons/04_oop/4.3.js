@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "all three, side by side", code: `
 class Order:
     TAX_RATE = 0.2

@@ -198,6 +198,9 @@ add(1, Decimal(2))           # mypy: cannot infer -- and correctly so,
 
 
 
+
+
+
     { t: "p", text: "If `Dog` is an `Animal`, is `list[Dog]` a `list[Animal]`? **No** — and the reason is worth understanding, because it explains half the confusing errors people hit with generics." },
 
     { t: "code", lang: "python", title: "why mutability forbids it", code: `

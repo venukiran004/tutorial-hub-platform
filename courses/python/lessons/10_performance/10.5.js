@@ -20,7 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "1 — The N+1 query", id: "n1" },
 
-    {"kind": "timeline", "title": "N+1: one query per row", "caption": "Fetching 4 orders then each order's customer is 5 round trips; a join or a batched IN (...) is 1. At 400 orders the difference is 401 round trips against 1 — the same code, a hundred times slower.", "span": 10, "tick": 2, "lanes": [{"label": "N+1", "tone": "crit", "bars": [[0, 1, "orders"], [2, 3, "cust 1"], [4, 5, "cust 2"], [6, 7, "cust 3"], [8, 9, "cust 4"]]}, {"label": "one join", "tone": "good", "bars": [[0, 1.4, "orders ⋈ customers"]]}], "t": "diagram", "id": "dg-10_5-01-0"},
+    {"kind": "timeline", "title": "N+1: one query per row", "caption": "Fetching 4 orders then each order's customer is 5 round trips; a join or a batched IN (...) is 1. At 400 orders the difference is 401 round trips against 1 — the same code, a hundred times slower.", "span": 10, "tick": 2, "lanes": [{"label": "N+1", "tone": "crit", "bars": [[0, 1, "orders"], [2, 3, "cust 1"], [4, 5, "cust 2"], [6, 7, "cust 3"], [8, 9, "cust 4"]]}, {"label": "one join", "tone": "good", "bars": [[0, 1.4, "the join"]]}], "t": "diagram", "id": "dg-10_5-01-0"},
+
+
+
 
 
     { t: "viz",

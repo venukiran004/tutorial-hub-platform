@@ -26,9 +26,9 @@ EC.receiveLesson({
     ] },
 
     { t: "diagram", kind: "timeline", title: "One blocking call in an async handler", caption: "While the report endpoint runs requests.get for three seconds, no other coroutine — including the health check — gets the loop. run_in_threadpool moves the call to a worker thread and the loop carries on.", span: 6, tick: 1, lanes: [
-      { label: "GET /report (async)", tone: "crit", bars: [[0, 3, "requests.get — holds the loop"]] },
-      { label: "GET /health", tone: "warn", bars: [[3, 3.4, "finally answers"]] },
-      { label: "GET /orders", tone: "warn", bars: [[3.4, 4, "finally answers"]] }
+      { label: "GET /report async", tone: "crit", bars: [[0, 3, "requests.get — holds the loop"]] },
+      { label: "GET /health", tone: "warn", bars: [[3, 3.4, "ok"]] },
+      { label: "GET /orders", tone: "warn", bars: [[3.4, 4, "answers"]] }
     ] },
 
     { t: "code", lang: "python", title: "Scenario 1's fix",

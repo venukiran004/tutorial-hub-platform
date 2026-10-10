@@ -24,6 +24,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "Iterable and iterator are separate roles",
       caption: "An iterable is a factory: ask it for an iterator and it hands you a fresh one each time. An iterator is a cursor: it holds a position, is consumed as you read it, and is exhausted permanently. A list is an iterable; the object list.__iter__() returns is the iterator.",

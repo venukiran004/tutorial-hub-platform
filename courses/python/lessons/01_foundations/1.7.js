@@ -24,6 +24,9 @@ EC.receiveLesson({
     {"kind": "trace", "title": "and / or return an operand, not a bool", "caption": "or returns the first truthy operand (or the last one); and returns the first falsy operand (or the last one). That is why name or 'anon' works as a default, and why it fails when the empty string is a valid value.", "vars": ["expression", "result"], "steps": [{"code": "'' or 'anon'", "state": ["", "'anon'"], "changed": [1], "note": "first truthy"}, {"code": "'bob' or 'anon'", "state": ["", "'bob'"], "changed": [1]}, {"code": "0 and 5", "state": ["", "0"], "changed": [1], "note": "first falsy"}, {"code": "3 and 5", "state": ["", "5"], "changed": [1], "note": "last operand"}, {"code": "x = count or 1  # count == 0", "state": ["", "1"], "changed": [1], "tone": "warn", "note": "0 was a valid value"}], "t": "diagram", "id": "dg-1_7-01-2"},
 
 
+
+
+
     { t: "viz",
       title: "Truthiness: what counts as false",
       caption: "Only these are falsy. Everything else — including `[0]`, `\"0\"`, `\"False\"` and any object without `__bool__` or `__len__` — is true.",
@@ -116,6 +119,9 @@ def make_request(retries: int | None = None, verbose: bool | None = None):
 
 
 
+
+
+
     { t: "p", text: "Any object can be used where a boolean is expected. Python asks the object what it thinks: it calls `__bool__` if defined, falls back to `__len__` if not, and otherwise treats the object as true." },
 
     { t: "table",
@@ -173,6 +179,9 @@ if not queue:
     { t: "h2", n: "03", text: "Comparison chaining", id: "chaining" },
 
     {"kind": "flow", "title": "a < b < c is one expression", "caption": "Python evaluates b once and ands the two comparisons; it is not (a < b) < c. The chain can mix operators, which is where 0 < x == y reads as a trap.", "cols": 3, "nodes": [{"id": "a", "label": "a < b", "tone": "accent"}, {"id": "and", "label": "and", "sub": "b evaluated once", "tone": "good"}, {"id": "b", "label": "b < c", "tone": "accent"}], "edges": [["a", "and"], ["and", "b"]], "t": "diagram", "id": "dg-1_7-03-1"},
+
+
+
 
 
 

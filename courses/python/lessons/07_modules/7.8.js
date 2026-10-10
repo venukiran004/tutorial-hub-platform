@@ -24,6 +24,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "Naive and aware are different types in practice",
       caption: "A naive datetime has no time zone, so it names a wall-clock reading with no way to know which clock. Comparing or subtracting a naive and an aware datetime raises. Mixing them accidentally is the most common date bug in Python.",

@@ -117,6 +117,9 @@ def test_the_dashboard_query_count_is_bounded(client, db):
     {"kind": "tree", "title": "Reading an EXPLAIN plan", "caption": "Read from the innermost node outward: how each table is accessed, how the results are joined, then sorted or aggregated. A Seq Scan on a large table under a filter is the line that wants an index.", "root": {"label": "Sort (by created_at)", "tone": "warn", "children": [{"label": "Hash Join", "tone": "accent", "children": [{"label": "Seq Scan on orders", "sub": "Filter: status = 'open' — index candidate", "tone": "crit"}, {"label": "Hash", "children": [{"label": "Index Scan on customers_pkey", "tone": "good"}]}]}]}, "t": "diagram", "id": "dg-13_6-02-0"},
 
 
+
+
+
     { t: "code", lang: "sql", title: "a plan, annotated", code: `
 EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM orders WHERE account_id = 'a-1';
 
@@ -166,7 +169,10 @@ EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM orders WHERE account_id = 'a-1';
 
     { t: "h2", n: "03", text: "Indexing for a query", id: "indexing" },
 
-    {"kind": "cells", "title": "A composite index is used left to right", "caption": "An index on (customer_id, created_at) serves WHERE customer_id = ? and WHERE customer_id = ? AND created_at > ?, but not WHERE created_at > ? alone — the leading column must be constrained.", "items": ["customer_id", "created_at", "status"], "highlight": [0, 1], "negative": false, "tone": "good", "label": "INDEX (customer_id, created_at, status): a query on created_at alone cannot use it", "t": "diagram", "id": "dg-13_6-03-1"},
+    {"kind": "layers", "title": "A composite index is used left to right", "caption": "An index on `(customer_id, created_at, status)` serves a query on `customer_id`, and on `customer_id` **and** `created_at`. It cannot serve a query on `created_at` alone — the leading column must be constrained.", "items": [{"label": "customer_id", "sub": "the leading column — must be constrained", "tone": "good", "side": "1st"}, {"label": "created_at", "sub": "usable once the leading one is fixed", "tone": "good", "side": "2nd"}, {"label": "status", "sub": "usable once both above are fixed", "tone": "warn", "side": "3rd"}], "t": "diagram", "id": "dg-13_6-03-1"},
+
+
+
 
     { t: "ladder",
       title: "`WHERE account_id = ? AND status = ? ORDER BY created_at DESC LIMIT 20`",

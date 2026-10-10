@@ -73,6 +73,9 @@ source .venv/bin/activate && pip install -r requirements.txt
 
 
 
+
+
+
     { t: "viz",
       title: "Two different lists, for two different jobs",
       caption: "You choose your direct dependencies; the resolver chooses everything underneath. Recording only the first gives a build that can change without you; recording only the second loses the distinction between what you asked for and what came along.",

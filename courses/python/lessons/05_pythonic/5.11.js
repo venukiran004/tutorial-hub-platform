@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["You want to", "Reach for", "Not"],
       rows: [
@@ -169,6 +172,9 @@ print(CARD.sub(mask, "paid with 4111 1111 1111 1111 today"))`,
     { t: "h2", n: "04", text: "Catastrophic backtracking", id: "redos" },
 
     {"kind": "tree", "title": "Catastrophic backtracking", "caption": "(a+)+ against 'aaaa…b' tries every way of splitting the a's between the inner and outer groups before failing — 2ⁿ attempts. Possessive quantifiers, atomic groups or a rewritten pattern remove the ambiguity.", "root": {"label": "(a+)+ on 'aaab'", "tone": "crit", "children": [{"label": "(aaa)", "children": [{"label": "fail at b", "tone": "warn"}]}, {"label": "(aa)(a)", "children": [{"label": "fail at b", "tone": "warn"}]}, {"label": "(a)(aa)", "children": [{"label": "fail", "tone": "warn"}]}, {"label": "(a)(a)(a)", "children": [{"label": "fail", "tone": "warn"}]}]}, "t": "diagram", "id": "dg-5_11-04-1"},
+
+
+
 
 
 

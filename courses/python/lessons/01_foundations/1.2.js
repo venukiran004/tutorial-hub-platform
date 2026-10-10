@@ -152,6 +152,9 @@ else:
 
 
 
+
+
+
     { t: "table",
       head: ["Runtime", "Reach for it when", "What it costs you"],
       rows: [

@@ -27,6 +27,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "What a call actually does",
       caption: "A call binds arguments to parameters in a fresh local namespace, runs the body, and returns. Falling off the end returns `None` — there is no such thing as a function that returns nothing.",

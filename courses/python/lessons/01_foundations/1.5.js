@@ -65,7 +65,10 @@ print(sys.getsizeof(2 ** 1000))`,
     /* ================================================================== */
     { t: "h2", n: "02", text: "Floats, and the money bug", id: "float" },
 
-    {"kind": "cells", "title": "0.1 + 0.2 in binary", "caption": "A float is 53 significant bits; 0.1 is a repeating fraction in binary and is stored as 0.1000000000000000055511151231257827…, which is why 0.1 + 0.2 == 0.3 is False and money belongs in Decimal or integer cents.", "items": ["0.1", "+", "0.2", "=", "0.30000000000000004"], "highlight": [4], "negative": false, "tone": "crit", "t": "diagram", "id": "dg-1_5-02-0"},
+    {"kind": "trace", "title": "0.1 + 0.2 in binary", "caption": "A float carries 53 significant bits, and 0.1 is a **repeating fraction** in binary. What is stored is slightly above a tenth, so the sum lands slightly above three tenths — which is why `0.1 + 0.2 == 0.3` is `False`, and why money belongs in `Decimal` or integer pence.", "left": "what you write", "codeW": 170, "vars": ["what is actually stored"], "steps": [{"code": "0.1", "state": ["0.1000000000000000055511151231257827"]}, {"code": "0.2", "state": ["0.2000000000000000111022302462515654"]}, {"code": "0.1 + 0.2", "state": ["0.3000000000000000444089209850062616"], "changed": [0], "tone": "crit"}, {"code": "0.3", "state": ["0.2999999999999999888977697537403456"], "note": "a different number"}], "t": "diagram", "id": "dg-1_5-02-0"},
+
+
+
 
 
 
@@ -193,6 +196,9 @@ print(round(2.675, 2))  # 2.67 -- not 2.68`,
     { t: "h2", n: "03", text: "bool is an int", id: "bool" },
 
     {"kind": "tree", "title": "bool is a subclass of int", "caption": "True and False are the integers 1 and 0 with a different __repr__. That is why True + True == 2, why sum(flags) counts, and why isinstance(True, int) is True.", "root": {"label": "object", "children": [{"label": "int", "tone": "accent", "children": [{"label": "bool", "sub": "True = 1, False = 0", "tone": "good"}]}, {"label": "float"}, {"label": "NoneType", "sub": "one instance: None"}]}, "t": "diagram", "id": "dg-1_5-03-1"},
+
+
+
 
 
 

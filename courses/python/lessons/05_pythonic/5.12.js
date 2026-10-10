@@ -73,6 +73,9 @@ run()
 
 
 
+
+
+
     { t: "p", text: "\"Clean it up\" is not a plan. Sort the problems into three buckets, because they get fixed in a specific order and mixing them is how refactors go wrong." },
 
     { t: "table",
