@@ -19,6 +19,7 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "collections, by the problem each one solves", "caption": "Thirty-five questions over six types. The right answer to most of them is naming the problem the type removes — usually a `KeyError`, a manual counter, or an O(n) pop from the front.", "cols": ["the problem it removes"], "rows": ["defaultdict", "Counter", "deque", "namedtuple", "OrderedDict", "ChainMap"], "cells": [[{"text": "the KeyError on first touch — a factory supplies the default", "tone": "good"}], [{"text": "hand-rolled tallying, plus most_common", "tone": "good"}], [{"text": "O(n) pop(0) — both ends are O(1)", "tone": "good"}], [{"text": "indexing a tuple by position and forgetting what [2] was", "tone": "good"}], [{"text": "little now that dict keeps order — but move_to_end and == still differ", "tone": "warn"}], [{"text": "merging dicts without copying them", "tone": "good"}]], "t": "diagram", "id": "dg-i2_7-top-0"},
 
 
+
   {
    "t": "callout",
    "kind": "note",

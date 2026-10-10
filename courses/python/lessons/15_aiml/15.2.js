@@ -65,6 +65,7 @@ df.loc[0:3]                   # rows with LABELS 0..3 -- scattered,
 
 
 
+
     { t: "viz",
       title: "Why chained assignment is unreliable",
       caption: "Each step returns a new object, and pandas cannot promise whether it shares memory with the original. The assignment lands somewhere; which somewhere depends on the data.",

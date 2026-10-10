@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "What the numbers in the margin mean",
       caption: "The cells are displayed top to bottom and were executed in the order shown. The reader sees a story; the kernel executed something else entirely, and only the kernel's version produced the output.",

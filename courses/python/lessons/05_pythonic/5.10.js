@@ -123,6 +123,7 @@ for chunk in batched(rows, 500):
 
 
 
+
     { t: "viz",
       title: "groupby groups *runs*, not values",
       caption: "It walks the input once, starting a new group every time the key changes. On unsorted input the same key appears in several groups — which looks like data loss because later groups overwrite earlier ones in whatever dict you build.",

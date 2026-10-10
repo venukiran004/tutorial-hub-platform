@@ -89,6 +89,7 @@ print(peak_bytes(lambda: [{"id": i, "name": "x" * 20} for i in range(1000)]))
 
 
 
+
     { t: "viz",
       title: "The cost of one record, four ways",
       caption: "Every Python object carries a header — a reference count and a type pointer — before any of its data. That fixed cost is what makes a million small objects expensive, and it is the cost an array eliminates rather than reduces.",

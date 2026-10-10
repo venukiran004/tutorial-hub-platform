@@ -1,8 +1,8 @@
 /* ============================================================================
-   LESSON 16.5 — Sorting, Searching and Binary Search
+   LESSON 2.2 — Sorting, Searching and Binary Search
    ========================================================================= */
 EC.receiveLesson({
-  id: "16.5",
+  id: "2.2",
 
   lede: "You will not implement quicksort in an interview. **What you will do is sort by a non-obvious key, and recognise that a problem with a monotonic answer can be binary searched** — including problems with no array in them at all, which is where most of the difficulty lives.",
 
@@ -14,11 +14,14 @@ EC.receiveLesson({
     "Binary search on the answer, not on an array"
   ],
 
-  prerequisites: ["4.4", "16.1"],
+  prerequisites: ["1.1"],
 
   blocks: [
 
     { t: "h2", n: "01", text: "Sorting in Python", id: "sorting" },
+
+    {"kind": "matrix", "title": "Sorting in Python, and the two things people get wrong", "caption": "`sort()` mutates and returns `None`, which is the single most common bug in this area — `xs = xs.sort()` throws the list away. And Timsort is **stable**, which is what makes sorting by two keys in two passes work.", "cols": ["returns", "mutates the original"], "rows": ["xs.sort()", "sorted(xs)", "sorted(xs, key=f)", "sorted(xs, reverse=True)"], "cells": [[{"text": "None — the trap", "tone": "crit"}, true], [{"text": "a new list", "tone": "good"}, false], [{"text": "a new list; f is called once per item", "tone": "good"}, false], [{"text": "a new list; still stable", "tone": "good"}, false]], "t": "diagram", "id": "dg-2_2-01-1"},
+
 
     { t: "code", lang: "python", title: "keys, not comparators", code: `
 # Python removed cmp in 3.0. Everything is a KEY FUNCTION: it is
@@ -77,7 +80,9 @@ sorted(already_sorted)          # O(n): one run found, nothing merged
 
     { t: "h2", n: "02", text: "Binary search, correctly", id: "binary-search" },
 
-    {"kind": "cells", "title": "Binary search halves the range", "caption": "lo and hi bound the candidates; mid is compared and half the range is discarded. log₂(1,000,000) ≈ 20 comparisons. bisect_left returns the insertion point, which is the idiom for 'first element ≥ x'.", "items": ["1", "3", "4", "7", "9", "12", "15", "18"], "highlight": [4, 5, 6, 7], "negative": false, "label": "target 12: mid=7 < 12 → search the right half; mid=12 → found at index 5", "t": "diagram", "id": "dg-16_5-02-0"},
+    {"kind": "cells", "title": "Binary search halves the range", "caption": "lo and hi bound the candidates; mid is compared and half the range is discarded. log₂(1,000,000) ≈ 20 comparisons. bisect_left returns the insertion point, which is the idiom for 'first element ≥ x'.", "items": ["1", "3", "4", "7", "9", "12", "15", "18"], "highlight": [4, 5, 6, 7], "negative": false, "label": "target 12: mid=7 < 12 → search the right half; mid=12 → found at index 5", "t": "diagram", "id": "dg-2_2-02-0"},
+
+
 
 
 

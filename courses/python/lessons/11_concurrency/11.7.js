@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "What happens to the siblings when one fails",
       caption: "`gather` reports the first exception and leaves the others running, so a dead dependency costs you three requests instead of one. A `TaskGroup` cancels the siblings and raises everything that went wrong together.",
@@ -149,6 +150,7 @@ def _log_if_failed(task: asyncio.Task) -> None:
     { t: "h2", n: "03", text: "Cancellation", id: "cancellation" },
 
     {"kind": "steps", "title": "Cancellation is cooperative", "caption": "task.cancel() schedules a CancelledError to be raised at the task's next await. The task can clean up in finally, but it must not swallow the error, or the caller waits forever.", "items": [{"label": "task.cancel()", "desc": "marks the task; nothing happens yet", "tone": "accent"}, {"label": "the task reaches an await", "desc": "CancelledError is raised there", "tone": "warn"}, {"label": "finally: blocks run", "desc": "close connections, release locks — keep it short", "tone": "good"}, {"label": "the error propagates", "desc": "except CancelledError: pass is the bug — re-raise", "tone": "crit"}], "t": "diagram", "id": "dg-11_7-03-1"},
+
 
 
 

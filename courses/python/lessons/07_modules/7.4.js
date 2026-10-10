@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "The four steps, and where each failure comes from",
       caption: "The cache is the step people forget. A module executes exactly once per process, so import-time side effects happen once — and a module imported under two different names is two independent copies with separate state.",
@@ -141,6 +142,7 @@ def get_connection():
 
 
 
+
     { t: "code", lang: "python", title: "where the first entry comes from", code: `
 import sys
 print(sys.path)
@@ -217,6 +219,7 @@ from models.order import Order                # WRONG: implicit relative,
     { t: "h2", n: "04", text: "Circular imports", id: "circular" },
 
     {"kind": "cycle", "title": "A circular import", "caption": "a imports b at the top; b imports a at the top; when b runs, a is in sys.modules but half-executed, so from a import thing fails with ImportError. Move the import inside the function, or move the shared thing to a third module.", "nodes": [{"label": "a.py starts", "sub": "registered, not finished", "tone": "accent"}, {"label": "import b", "sub": "b starts executing", "tone": "warn"}, {"label": "from a import thing", "sub": "a is only half done", "tone": "crit"}, {"label": "ImportError", "sub": "cannot import name 'thing'", "tone": "crit"}], "t": "diagram", "id": "dg-7_4-04-1"},
+
 
 
 

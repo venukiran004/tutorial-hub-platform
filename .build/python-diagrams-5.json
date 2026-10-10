@@ -587,7 +587,7 @@
    "d": {
     "kind": "steps",
     "title": "Cooperative __init__ through the MRO",
-    "caption": "Each __init__ calls super().__init__(**kwargs) and takes only its own arguments; super() follows the MRO, not the parent, so every class in the diamond runs exactly once.",
+    "caption": "Each __init__ calls `super().__init__(**kwargs)` and takes only its own arguments; super() follows the MRO, not the parent, so every class in the diamond runs exactly once.",
     "items": [
      {
       "label": "D.__init__(name, size, colour)",
@@ -1847,34 +1847,6 @@
       "side": "800"
      }
     ]
-   }
-  }
- ],
- "16.4": [
-  {
-   "after": "03",
-   "d": {
-    "kind": "cycle",
-    "title": "Detecting a cycle in a directed graph",
-    "caption": "DFS colours nodes white (unvisited), grey (on the current path) and black (finished). Reaching a grey node from the current path is a back edge — a cycle. Topological sort is the same walk with the finish order reversed.",
-    "nodes": [
-     {
-      "label": "A",
-      "sub": "grey — on the path",
-      "tone": "warn"
-     },
-     {
-      "label": "B",
-      "sub": "grey",
-      "tone": "warn"
-     },
-     {
-      "label": "C",
-      "sub": "grey → edge back to A",
-      "tone": "crit"
-     }
-    ],
-    "centre": "back edge = cycle"
    }
   }
  ]

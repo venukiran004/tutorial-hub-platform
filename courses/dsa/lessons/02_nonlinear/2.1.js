@@ -1,8 +1,8 @@
 /* ============================================================================
-   LESSON 16.4 — Trees, Graphs and Traversal
+   LESSON 2.1 — Trees, Graphs and Traversal
    ========================================================================= */
 EC.receiveLesson({
-  id: "16.4",
+  id: "2.1",
 
   lede: "Trees and graphs look like many problems and are two: **BFS explores by distance, DFS explores by depth.** Everything else — level order, shortest path, cycle detection, topological sort, connected components — is one of those two templates with a different thing recorded along the way.",
 
@@ -14,13 +14,15 @@ EC.receiveLesson({
     "Detect a cycle and produce a topological order"
   ],
 
-  prerequisites: ["8.1", "16.3"],
+  prerequisites: ["1.3"],
 
   blocks: [
 
     { t: "h2", n: "01", text: "Two templates", id: "templates" },
 
-    {"kind": "compare", "title": "BFS versus DFS", "caption": "Breadth-first uses a queue and finds the shortest path in an unweighted graph; depth-first uses a stack (or recursion) and is the natural shape for exhaustive search and cycle detection. Both mark visited nodes to avoid loops.", "columns": [{"title": "BFS · deque", "tone": "accent", "items": ["level by level", "shortest path (unweighted)", "O(V + E)", "memory: the frontier"]}, {"title": "DFS · stack / recursion", "tone": "good", "items": ["as deep as possible first", "topological sort, cycles", "O(V + E)", "recursion depth = path length"]}], "t": "diagram", "id": "dg-16_4-01-0"},
+    {"kind": "compare", "title": "BFS versus DFS", "caption": "Breadth-first uses a queue and finds the shortest path in an unweighted graph; depth-first uses a stack (or recursion) and is the natural shape for exhaustive search and cycle detection. Both mark visited nodes to avoid loops.", "columns": [{"title": "BFS · deque", "tone": "accent", "items": ["level by level", "shortest path (unweighted)", "O(V + E)", "memory: the frontier"]}, {"title": "DFS · stack / recursion", "tone": "good", "items": ["as deep as possible first", "topological sort, cycles", "O(V + E)", "recursion depth = path length"]}], "t": "diagram", "id": "dg-2_1-01-0"},
+
+
 
 
 
@@ -127,7 +129,7 @@ while queue:
 
 # 2. USING A LIST AS THE QUEUE.
 queue.pop(0)                          # O(n) -> O(V^2) overall
-                                      # (Lesson 16.3)
+                                      # (Lesson 1.3)
 
 # 3. LOSING THE LEVEL BOUNDARY.
 # When the problem asks for "levels", capture the size BEFORE the
@@ -213,12 +215,14 @@ def dijkstra(graph: dict[T, list[tuple[T, int]]], start: T) -> dict[T, int]:
                                                         # updating
 `,
       hl: [18, 27, 38],
-      caption: "**Dijkstra is BFS with a priority queue.** `heapq` cannot update a key, so the standard approach pushes a better entry and skips stale ones on pop (Lesson 16.3)."
+      caption: "**Dijkstra is BFS with a priority queue.** `heapq` cannot update a key, so the standard approach pushes a better entry and skips stale ones on pop (Lesson 1.3)."
     },
 
     { t: "h2", n: "03", text: "Cycles", id: "cycles" },
 
-    {"kind": "cycle", "title": "Detecting a cycle in a directed graph", "caption": "DFS colours nodes white (unvisited), grey (on the current path) and black (finished). Reaching a grey node from the current path is a back edge — a cycle. Topological sort is the same walk with the finish order reversed.", "nodes": [{"label": "A", "sub": "grey — on the path", "tone": "warn"}, {"label": "B", "sub": "grey", "tone": "warn"}, {"label": "C", "sub": "grey → edge back to A", "tone": "crit"}], "centre": "back edge = cycle", "t": "diagram", "id": "dg-16_4-03-1"},
+    {"kind": "cycle", "title": "Detecting a cycle in a directed graph", "caption": "DFS colours nodes white (unvisited), grey (on the current path) and black (finished). Reaching a grey node from the current path is a back edge — a cycle. Topological sort is the same walk with the finish order reversed.", "nodes": [{"label": "A", "sub": "grey — on the path", "tone": "warn"}, {"label": "B", "sub": "grey", "tone": "warn"}, {"label": "C", "sub": "grey → edge back to A", "tone": "crit"}], "centre": "back edge = cycle", "t": "diagram", "id": "dg-2_1-03-1"},
+
+
 
 
 
@@ -339,6 +343,9 @@ def topological_sort_dfs(graph) -> list[T]:
     },
 
     { t: "h2", n: "04", text: "Recursion depth", id: "depth" },
+
+    {"kind": "matrix", "title": "When recursion runs out of stack", "caption": "Python's default limit is 1000 frames, so a path-shaped tree of 10,000 nodes overflows a recursive DFS that an explicit stack handles without trouble. Raising the limit moves the crash rather than removing it.", "cols": ["recursive DFS", "explicit stack"], "rows": ["a balanced tree, 10⁶ nodes", "a path-shaped tree, 10⁴", "the depth limit", "reading the code"], "cells": [[{"text": "fine — depth is ~20", "tone": "good"}, {"text": "fine", "tone": "good"}], [{"text": "RecursionError", "tone": "crit"}, {"text": "fine", "tone": "good"}], [{"text": "1000 frames by default", "tone": "warn"}, {"text": "heap, not stack", "tone": "good"}], [{"text": "shorter and clearer", "tone": "good"}, {"text": "more code", "tone": "warn"}]], "t": "diagram", "id": "dg-2_1-04-2"},
+
 
     { t: "code", lang: "python", title: "when to convert to a stack", code: `
 # Python's default recursion limit is 1000 frames. A DFS on a graph
@@ -609,7 +616,7 @@ def schedule(n: int, prereqs: list[list[int]]) -> Result:
 #
 #   + one traversal instead of two
 #   - recursion depth is O(V), so a chain of 10,000 courses raises
-#     RecursionError (Lesson 16.4, section 4)
+#     RecursionError (Lesson 2.1, section 4)
 #   - the iterative form needs an explicit iterator stack to preserve
 #     post-order, which is materially harder to write correctly
 #

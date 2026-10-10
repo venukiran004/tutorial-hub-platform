@@ -1,8 +1,8 @@
 /* ============================================================================
-   LESSON 16.6 — Recursion, Backtracking and Dynamic Programming
+   LESSON 3.1 — Recursion, Backtracking and Dynamic Programming
    ========================================================================= */
 EC.receiveLesson({
-  id: "16.6",
+  id: "3.1",
 
   lede: "Dynamic programming is not a bag of patterns to recognise. **It is one method: write the brute-force recursion, notice it recomputes, add a cache.** Everything else — tabulation, space optimisation, the famous problems — is refinement of a solution you already had, and starting from the recursion is what makes an unfamiliar problem tractable.",
 
@@ -14,7 +14,7 @@ EC.receiveLesson({
     "Prune a backtracking search rather than exploring everything"
   ],
 
-  prerequisites: ["8.1", "16.4"],
+  prerequisites: ["2.1"],
 
   blocks: [
 
@@ -107,6 +107,9 @@ def climb(n: int) -> int:
 
     { t: "h2", n: "02", text: "Defining the state", id: "state" },
 
+    {"kind": "matrix", "title": "The state is the answer to “what do I need to know to continue?”", "caption": "Defining the state is the hard part of dynamic programming; the recurrence usually follows from it. The test is whether two different paths that reach the **same state** can be treated as interchangeable — if not, the state is missing a dimension.", "cols": ["the state", "why that and nothing more"], "rows": ["fibonacci", "coin change", "knapsack", "edit distance", "stock with a cooldown"], "cells": [["(n)", "the sequence depends on the index alone"], ["(amount left)", "which coins were used does not matter"], [{"text": "(index, capacity left)", "tone": "accent"}, "capacity is what the future depends on"], [{"text": "(i, j)", "tone": "accent"}, "two positions, one in each string"], [{"text": "(day, holding, cooling)", "tone": "warn"}, "the flags ARE part of the state"]], "t": "diagram", "id": "dg-3_1-02-1"},
+
+
     { t: "ladder",
       title: "The coin change problem: fewest coins summing to an amount",
       rungs: [
@@ -186,7 +189,9 @@ def f(...): ...
 
     { t: "h2", n: "03", text: "Backtracking", id: "backtracking" },
 
-    {"kind": "tree", "title": "Backtracking explores and undoes", "caption": "Choose, recurse, un-choose. Each level of the tree is one decision; a branch that violates a constraint is pruned before it grows. The undo step is what makes the same partial state reusable across branches.", "root": {"label": "[]", "tone": "accent", "children": [{"label": "[1]", "tone": "good", "children": [{"label": "[1, 2]", "tone": "good"}, {"label": "[1, 3]", "sub": "pruned", "tone": "crit"}]}, {"label": "[2]", "tone": "good", "children": [{"label": "[2, 1]", "sub": "pruned", "tone": "crit"}, {"label": "[2, 3]", "tone": "good"}]}, {"label": "[3]", "sub": "pruned", "tone": "crit"}]}, "t": "diagram", "id": "dg-16_6-03-0"},
+    {"kind": "tree", "title": "Backtracking explores and undoes", "caption": "Choose, recurse, un-choose. Each level of the tree is one decision; a branch that violates a constraint is pruned before it grows. The undo step is what makes the same partial state reusable across branches.", "root": {"label": "[]", "tone": "accent", "children": [{"label": "[1]", "tone": "good", "children": [{"label": "[1, 2]", "tone": "good"}, {"label": "[1, 3]", "sub": "pruned", "tone": "crit"}]}, {"label": "[2]", "tone": "good", "children": [{"label": "[2, 1]", "sub": "pruned", "tone": "crit"}, {"label": "[2, 3]", "tone": "good"}]}, {"label": "[3]", "sub": "pruned", "tone": "crit"}]}, "t": "diagram", "id": "dg-3_1-03-0"},
+
+
 
 
 
@@ -366,7 +371,7 @@ def edit_distance_table(a: str, b: str) -> int:
 
     Same recurrence, filled bottom-up. Worth doing when the strings
     can be long: the memoised version recurses to depth m + n, so
-    two 10,000-character strings raise RecursionError (Lesson 16.4).
+    two 10,000-character strings raise RecursionError (Lesson 2.1).
     """
     m, n = len(a), len(b)
     # dp[i][j] = edit distance between a[:i] and b[:j]

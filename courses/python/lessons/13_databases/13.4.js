@@ -69,6 +69,7 @@ def checkout(order_id):
 
 
 
+
     { t: "table",
       head: ["Level", "Dirty read", "Non-repeatable read", "Phantom", "Write skew"],
       rows: [
@@ -185,6 +186,7 @@ if result.rowcount == 0:
     { t: "h2", n: "04", text: "Deadlocks", id: "deadlocks" },
 
     {"kind": "cycle", "title": "A database deadlock", "caption": "Transaction 1 updates row A then wants row B; transaction 2 updated B and wants A. The database detects the cycle, aborts one, and the application must retry. Updating rows in a consistent order prevents it.", "nodes": [{"label": "T1 locks row A", "tone": "accent"}, {"label": "T1 waits for row B", "tone": "warn"}, {"label": "T2 locks row B", "tone": "accent"}, {"label": "T2 waits for row A", "tone": "warn"}], "centre": "detected → one is aborted", "t": "diagram", "id": "dg-13_4-04-1"},
+
 
 
 

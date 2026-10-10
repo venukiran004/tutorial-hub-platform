@@ -121,6 +121,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "dl", items: [
       ["Nesting multiplies", "A loop of n containing a loop of m costs n × m. If both loops walk the same data, that is n² — and the inner loop does not have to look like a loop. `x in some_list`, `some_list.index(x)`, `del some_list[0]`, `sorted(...)` and a slice are all loops in disguise."],
       ["Sequence adds, and the biggest term wins", "Three passes over the data one after another is 3n, which is `O(n)`. A sort followed by a single pass is `O(n log n) + O(n)`, which is `O(n log n)`. You keep the dominant term and drop the constant — but see section 07 for when dropping the constant misleads you."],

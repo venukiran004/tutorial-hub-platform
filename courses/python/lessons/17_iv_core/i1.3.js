@@ -19,6 +19,7 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "List operations, by cost", "caption": "The cost column is what the follow-up question is usually about. `insert(0, x)` and `pop(0)` shift every element, which is why a queue built on a list degrades and a `deque` does not.", "cols": ["cost", "why"], "rows": ["append(x) / pop()", "insert(0, x) / pop(0)", "x in list", "list[i]", "sort()", "copy() / list[:]"], "cells": [[{"text": "O(1) amortised", "tone": "good"}, "room is over-allocated at the end"], [{"text": "O(n)", "tone": "crit"}, "every later element shifts"], [{"text": "O(n)", "tone": "warn"}, "a scan — use a set for membership"], [{"text": "O(1)", "tone": "good"}, "contiguous pointers"], [{"text": "O(n log n)", "tone": "accent"}, "Timsort, stable"], [{"text": "O(n)", "tone": "warn"}, "shallow — inner objects are shared"]], "t": "diagram", "id": "dg-i1_3-top-0"},
 
 
+
   {
    "t": "callout",
    "kind": "note",

@@ -1,11 +1,11 @@
 /* ============================================================================
-   LESSON 16.7 — Algorithm Paradigms: Choosing the Approach
+   LESSON 3.2 — Algorithm Paradigms: Choosing the Approach
    Every timing was measured here.
    ========================================================================= */
 EC.receiveLesson({
-  id: "16.7",
+  id: "3.2",
 
-  lede: "**Before a data structure, before a trick, an algorithm question is a question about which paradigm fits: try everything, split and merge, take the locally best step, reuse subproblem answers, build and prune, or accept randomness.** Lessons 16.1–16.6 taught the structures and the classic problems; this one is the map of the six paradigms, each with its signature problem, its cost, and the moment it fails — greedy giving 3 coins where 2 suffice, brute force on N-Queens needing sixteen million boards where pruning needs a few thousand — and the decision guide that picks between them from the shape of the problem.",
+  lede: "**Before a data structure, before a trick, an algorithm question is a question about which paradigm fits: try everything, split and merge, take the locally best step, reuse subproblem answers, build and prune, or accept randomness.** Lessons 1.1–3.1 taught the structures and the classic problems; this one is the map of the six paradigms, each with its signature problem, its cost, and the moment it fails — greedy giving 3 coins where 2 suffice, brute force on N-Queens needing sixteen million boards where pruning needs a few thousand — and the decision guide that picks between them from the shape of the problem.",
 
   objectives: [
     "Define brute force, divide and conquer, greedy, dynamic programming, backtracking and randomised algorithms, each with a canonical example and its complexity",
@@ -15,7 +15,7 @@ EC.receiveLesson({
     "Apply the decision guide: brute force first as an oracle, then spot the structure that upgrades it"
   ],
 
-  prerequisites: ["16.5", "16.6", "10.1"],
+  prerequisites: ["2.2", "3.1"],
 
   blocks: [
 
@@ -25,6 +25,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Brute force", id: "brute" },
 
+    {"kind": "timeline", "title": "What brute force costs as n grows", "caption": "Brute force is the right first answer and a wrong final one. The point of the paradigms that follow is to move a problem **up** this list — and the gap between the rows is why that matters more than any constant factor.", "span": 100, "tick": 20, "unit": "relative work, scaled, n = 20", "lanes": [{"label": "O(log n)", "bars": [[0, 2, "4", "good"]]}, {"label": "O(n)", "bars": [[0, 5, "20", "good"]]}, {"label": "O(n log n)", "bars": [[0, 12, "86", "accent"]]}, {"label": "O(n squared)", "bars": [[0, 28, "400", "warn"]]}, {"label": "O(2 to the n)", "bars": [[0, 70, "1,048,576", "crit"]]}, {"label": "O(n factorial)", "bars": [[0, 100, "2.4 x 10^18", "crit"]]}], "t": "diagram", "id": "dg-3_2-02-0"},
+
+
     { t: "p", text: "Try every candidate and keep the ones that work. It is always correct, usually exponential, and the right first move on any hard problem — because it gives you a test oracle to check the clever version against. Linear search is brute force; so is checking every pair for a two-sum; so is enumerating every permutation." },
 
     { t: "code", lang: "python", title: "Brute force as an oracle",
@@ -33,7 +36,7 @@ EC.receiveLesson({
 def two_sum_brute(nums, target):                 # O(n²): every pair
     return [pair for pair in combinations(range(len(nums)), 2) if nums[pair[0]] + nums[pair[1]] == target]
 
-def two_sum_fast(nums, target):                  # O(n): the hash-map version from lesson 16.2
+def two_sum_fast(nums, target):                  # O(n): the hash-map version from lesson 1.2
     seen = {}
     for i, x in enumerate(nums):
         if target - x in seen:
@@ -71,6 +74,9 @@ for _ in range(1000):                            # the brute-force answer checks
       caption: "Fifty times faster than the quadratic sort at 2,000 items, and the ratio doubles every time n doubles. The built-in sorted() — Timsort, in C — is another twenty times faster again, which is why you write merge sort to understand it and call sorted() to use it." },
 
     { t: "h2", n: "04", text: "Greedy", id: "greedy" },
+
+    {"kind": "matrix", "title": "Greedy works, or it is wrong — there is no middle", "caption": "A greedy choice is correct only if a locally best move is part of some globally best answer. Coin change with 1, 3 and 4 is the standard counterexample: greedy takes 4 then 1 then 1 for three coins, where 3 and 3 is two.", "cols": ["greedy result", "optimal", "greedy correct?"], "rows": ["coins 1, 5, 10, 25 for 30", "coins 1, 3, 4 for 6", "intervals, by end time", "fractional knapsack"], "cells": [[{"text": "25 + 5 = 2 coins", "tone": "good"}, "2 coins", {"text": "yes, for this set", "tone": "good"}], [{"text": "4 + 1 + 1 = 3 coins", "tone": "crit"}, "3 + 3 = 2 coins", {"text": "NO", "tone": "crit"}], [{"text": "the maximum set", "tone": "good"}, "the same", {"text": "yes, provable", "tone": "good"}], [{"text": "the maximum value", "tone": "good"}, "the same", {"text": "yes, provable", "tone": "good"}]], "t": "diagram", "id": "dg-3_2-04-1"},
+
 
     { t: "p", text: "At each step take the locally best choice and never look back. When a locally best choice is provably globally best — Dijkstra, Huffman coding, interval scheduling by earliest finish, making change with standard coins — greedy is the fastest correct algorithm there is. When it is not provable, greedy is fast and wrong, and the coin problem shows both faces:" },
 
@@ -128,9 +134,12 @@ print(coins_dp(6, [1, 3, 4]))         # 2 — 3 + 3, which greedy could not find
     return count
 
 print(nqueens(8))     # 92 solutions, 2 ms here — against 16,777,216 boards for brute force`,
-      caption: "Choose, explore, un-choose — the shape of every backtracking solution (lesson 16.6). The three sets make the attack check O(1); the un-choose step is what lets the same sets serve every branch." },
+      caption: "Choose, explore, un-choose — the shape of every backtracking solution (lesson 3.1). The three sets make the attack check O(1); the un-choose step is what lets the same sets serve every branch." },
 
     { t: "h2", n: "07", text: "Randomised algorithms", id: "random" },
+
+    {"kind": "matrix", "title": "Two kinds of randomised algorithm", "caption": "A Las Vegas algorithm is always right and takes a random amount of time; a Monte Carlo one is fast and sometimes wrong. Which you can tolerate is a product question, not an algorithmic one.", "cols": ["always correct?", "running time", "the example"], "rows": ["Las Vegas", "Monte Carlo"], "cells": [[{"text": "YES", "tone": "good"}, {"text": "random", "tone": "warn"}, "randomised quicksort"], [{"text": "no — bounded error", "tone": "warn"}, {"text": "fixed", "tone": "good"}, "Miller-Rabin primality"]], "t": "diagram", "id": "dg-3_2-07-2"},
+
 
     { t: "p", text: "Sometimes the worst case only bites when the input is adversarial, and a random choice makes every input average: quicksort with a random pivot is O(n log n) in expectation on *every* input, where a fixed pivot is O(n²) on sorted data. And sometimes an exact answer is too expensive but an estimate is enough — Monte Carlo methods sample and count." },
 
@@ -144,7 +153,7 @@ print(4 * inside / N)      # 3.1372 — within 0.15 % of π; the error shrinks l
 
     { t: "h2", n: "08", text: "The families", id: "families" },
 
-    { t: "diagram", kind: "compare", title: "The algorithm families the paradigms produced", caption: "Lessons 16.1–16.6 covered the structures and the problems; this is the map of the named algorithms by family, with the complexity you should be able to state for each.", columns: [
+    { t: "diagram", kind: "compare", title: "The algorithm families the paradigms produced", caption: "Lessons 1.1–3.1 covered the structures and the problems; this is the map of the named algorithms by family, with the complexity you should be able to state for each.", columns: [
       { title: "Searching", tone: "accent", items: ["linear O(n)", "binary O(log n) on sorted data", "BFS / DFS on graphs"] },
       { title: "Sorting", tone: "good", items: ["bubble, insertion O(n²)", "merge, quick O(n log n)", "Timsort — sorted()"] },
       { title: "Graphs", tone: "warn", items: ["BFS shortest unweighted path", "DFS, topological sort", "Dijkstra O((V+E) log V)"] },
@@ -200,7 +209,7 @@ print(max_subarray([-2, 1, -3, 4, -1, 2, 1, -5, 4]))   # 6`,
     { stem: "What does backtracking add to brute force?",
       options: ["Randomness", "Pruning: a partial solution that already violates a constraint is abandoned before it is extended", "Memoisation", "Sorting"],
       answer: 1,
-      why: "Brute force enumerates complete candidates and checks each; backtracking builds candidates incrementally and stops extending any prefix that is already invalid. For 8-Queens that is the difference between 16.7 million boards and a search that finds all 92 solutions in milliseconds." },
+      why: "Brute force enumerates complete candidates and checks each; backtracking builds candidates incrementally and stops extending any prefix that is already invalid. For 8-Queens that is the difference between 3.2 million boards and a search that finds all 92 solutions in milliseconds." },
     { stem: "Why is quicksort given a random pivot?",
       options: ["To make it stable", "So that no fixed input order can force the O(n²) worst case — the expected time is O(n log n) on every input", "To use less memory", "Because Python requires it"],
       answer: 1,

@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "fixtures request fixtures", code: `
 import pytest
 
@@ -167,6 +168,7 @@ def resources():
     { t: "h2", n: "03", text: "Scope", id: "scope" },
 
     {"kind": "timeline", "title": "Fixture scopes across a test session", "caption": "A session-scoped fixture is built once and torn down at the end; a module-scoped one per test file; a function-scoped one per test. Wider scope is faster and shares state — choose the narrowest that is not too slow.", "span": 8, "tick": 1, "lanes": [{"label": "session: db", "tone": "crit", "bars": [[0, 8, "built once"]]}, {"label": "module: app", "tone": "warn", "bars": [[0, 4, "test_a.py"], [4, 8, "test_b.py"]]}, {"label": "function: client", "tone": "good", "bars": [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8]]}], "t": "diagram", "id": "dg-9_3-03-1"},
+
 
 
 

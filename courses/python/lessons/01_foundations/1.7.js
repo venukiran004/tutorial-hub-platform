@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "Truthiness: what counts as false",
       caption: "Only these are falsy. Everything else — including `[0]`, `\"0\"`, `\"False\"` and any object without `__bool__` or `__len__` — is true.",
@@ -128,6 +129,7 @@ def make_request(retries: int | None = None, verbose: bool | None = None):
 
 
 
+
     { t: "p", text: "Any object can be used where a boolean is expected. Python asks the object what it thinks: it calls `__bool__` if defined, falls back to `__len__` if not, and otherwise treats the object as true." },
 
     { t: "table",
@@ -185,6 +187,7 @@ if not queue:
     { t: "h2", n: "03", text: "Comparison chaining", id: "chaining" },
 
     {"kind": "flow", "title": "a < b < c is one expression", "caption": "Python evaluates b once and ands the two comparisons; it is not (a < b) < c. The chain can mix operators, which is where 0 < x == y reads as a trap.", "cols": 3, "nodes": [{"id": "a", "label": "a < b", "tone": "accent"}, {"id": "and", "label": "and", "sub": "b evaluated once", "tone": "good"}, {"id": "b", "label": "b < c", "tone": "accent"}], "edges": [["a", "and"], ["and", "b"]], "t": "diagram", "id": "dg-1_7-03-1"},
+
 
 
 

@@ -19,6 +19,7 @@ EC.receiveLesson({
     {"kind": "layers", "title": "What a senior interview is actually probing", "caption": "Eleven questions, and none of them are about syntax. The move from mid to senior is answering with a **trade-off and its cost** rather than a definition — and saying what you would measure.", "items": [{"label": "trade-offs, not definitions", "sub": "name the cost of the thing you recommend", "tone": "accent", "side": "the shift"}, {"label": "failure first", "sub": "what breaks, how you would see it, what you would do", "tone": "crit", "side": "always"}, {"label": "measurement", "sub": "the number you would check before and after", "tone": "good", "side": "evidence"}, {"label": "scope and blast radius", "sub": "who is affected, and how you would limit it", "tone": "warn", "side": "judgement"}, {"label": "the decision record", "sub": "why, written down, so the next person inherits the reasoning", "tone": "teal", "side": "seniority"}], "t": "diagram", "id": "dg-i8_4-top-0"},
 
 
+
   {
    "t": "callout",
    "kind": "note",

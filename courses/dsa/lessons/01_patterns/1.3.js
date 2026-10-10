@@ -1,8 +1,8 @@
 /* ============================================================================
-   LESSON 16.3 — Stacks, Queues and Heaps
+   LESSON 1.3 — Stacks, Queues and Heaps
    ========================================================================= */
 EC.receiveLesson({
-  id: "16.3",
+  id: "1.3",
 
   lede: "Three structures, three questions. **A stack answers \"what was most recent?\", a queue \"what was first?\", a heap \"what is smallest?\"** — and choosing the right one usually collapses a nested loop, because each answers its question in constant or logarithmic time where a scan would take linear.",
 
@@ -14,11 +14,14 @@ EC.receiveLesson({
     "Choose between sorting, a heap, and `nlargest` on the size of k"
   ],
 
-  prerequisites: ["4.2", "16.2"],
+  prerequisites: ["1.2"],
 
   blocks: [
 
     { t: "h2", n: "01", text: "Stacks and queues", id: "stacks-queues" },
+
+    {"kind": "matrix", "title": "Pick the container by which end you touch", "caption": "A list is a fine stack and a terrible queue, because `pop(0)` shifts every remaining element. That one row is why `deque` exists, and it is the most common avoidable O(n²) in interview code.", "cols": ["push / pop at the end", "at the FRONT", "verdict"], "rows": ["list as a stack", "list as a queue", "deque", "heapq on a list"], "cells": [[{"text": "O(1)", "tone": "good"}, "—", {"text": "correct choice", "tone": "good"}], [{"text": "O(1)", "tone": "good"}, {"text": "O(n) — shifts all", "tone": "crit"}, {"text": "never do this", "tone": "crit"}], [{"text": "O(1)", "tone": "good"}, {"text": "O(1)", "tone": "good"}, {"text": "the queue", "tone": "good"}], [{"text": "O(log n)", "tone": "accent"}, {"text": "min is O(1)", "tone": "good"}, {"text": "priority, not order", "tone": "accent"}]], "t": "diagram", "id": "dg-1_3-01-1"},
+
 
     { t: "code", lang: "python", title: "the right structure for each end", code: `
 # STACK -- a plain list is exactly right. Both operations act on the
@@ -126,7 +129,7 @@ def next_greater(nums: list[int]) -> list[int]:
 # WHY IT IS O(n) DESPITE THE NESTED WHILE: each index is pushed
 # exactly once and popped at most once, so the total number of inner
 # iterations across the whole run is at most n. The same amortised
-# argument as the sliding window (Lesson 16.1).
+# argument as the sliding window (Lesson 1.1).
 `,
       hl: [13, 21, 31],
       caption: "**Push indices, not values.** You almost always need the distance or the position, and the value is one lookup away — the reverse is not."
@@ -154,7 +157,9 @@ def next_greater(nums: list[int]) -> list[int]:
 
     { t: "h2", n: "03", text: "Heaps", id: "heaps" },
 
-    {"kind": "tree", "title": "A min-heap is a complete tree in a list", "caption": "heapq keeps the list so that each parent is smaller than its children: the minimum is always at index 0. Push and pop are O(log n); the children of index i are 2i+1 and 2i+2.", "root": {"label": "1", "sub": "index 0 — the min", "tone": "good", "children": [{"label": "3", "sub": "index 1", "tone": "accent", "children": [{"label": "7", "sub": "3"}, {"label": "4", "sub": "4"}]}, {"label": "5", "sub": "index 2", "tone": "accent", "children": [{"label": "9", "sub": "5"}, {"label": "8", "sub": "6"}]}]}, "t": "diagram", "id": "dg-16_3-03-0"},
+    {"kind": "tree", "title": "A min-heap is a complete tree in a list", "caption": "heapq keeps the list so that each parent is smaller than its children: the minimum is always at index 0. Push and pop are O(log n); the children of index i are 2i+1 and 2i+2.", "root": {"label": "1", "sub": "index 0 — the min", "tone": "good", "children": [{"label": "3", "sub": "index 1", "tone": "accent", "children": [{"label": "7", "sub": "3"}, {"label": "4", "sub": "4"}]}, {"label": "5", "sub": "index 2", "tone": "accent", "children": [{"label": "9", "sub": "5"}, {"label": "8", "sub": "6"}]}]}, "t": "diagram", "id": "dg-1_3-03-0"},
+
+
 
 
 
@@ -307,7 +312,7 @@ window            max
 #   [max(nums[i:i+k]) for i in range(len(nums) - k + 1)]
 #
 # O(n * k). Two costs, both linear per window:
-#   - the slice ALLOCATES a copy of k elements (Lesson 16.1)
+#   - the slice ALLOCATES a copy of k elements (Lesson 1.1)
 #   - max() scans all k of them
 #
 # At n = 100,000 and k = 50,000 that is 2.5 billion operations. And

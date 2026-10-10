@@ -150,6 +150,7 @@ name = "acme_billing"
 
 
 
+
     { t: "viz",
       title: "sdist and wheel are different artefacts",
       caption: "An sdist is your source, packaged. A wheel is the installed layout, pre-built. pip prefers the wheel because installing it is an unzip — no build step, no compiler, no arbitrary code execution.",

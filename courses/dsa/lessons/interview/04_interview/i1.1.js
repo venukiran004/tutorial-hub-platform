@@ -1,11 +1,11 @@
 /* ============================================================================
-   INTERVIEW: ALGORITHMS & QUESTION BANKS i8.1 — Data Structures & Algorithms
+   INTERVIEW: ALGORITHMS & QUESTION BANKS i1.1 — Data Structures & Algorithms
    ----------------------------------------------------------------------------
    Theory interview questions: the ones you answer out loud. Anything that
    asks for a program lives in the Coding Practice course instead.
    ========================================================================= */
 EC.receiveLesson({
- "id": "i8.1",
+ "id": "i1.1",
  "lede": "**29 interview questions on data structures & algorithms**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
  "objectives": [
   "Answer 29 questions on data structures & algorithms without prompting",
@@ -15,6 +15,8 @@ EC.receiveLesson({
  ],
  "prerequisites": [],
  "blocks": [
+
+    {"kind": "matrix", "title": "The complexity table every answer is checked against", "caption": "Most follow-up questions are *“and the complexity?”*. Having this table cold means the follow-up costs nothing — and the amortised row is the one worth being able to explain rather than recite.", "cols": ["average", "worst", "the thing to say"], "rows": ["list index", "list append", "list insert(0)", "dict / set lookup", "heap push or pop", "binary search", "sort"], "cells": [[{"text": "O(1)", "tone": "good"}, {"text": "O(1)", "tone": "good"}, "contiguous memory"], [{"text": "O(1)", "tone": "good"}, {"text": "O(n)", "tone": "warn"}, "amortised — it over-allocates"], [{"text": "O(n)", "tone": "crit"}, {"text": "O(n)", "tone": "crit"}, "every element shifts"], [{"text": "O(1)", "tone": "good"}, {"text": "O(n)", "tone": "warn"}, "worst only on collisions"], [{"text": "O(log n)", "tone": "accent"}, {"text": "O(log n)", "tone": "accent"}, "height of a complete tree"], [{"text": "O(log n)", "tone": "accent"}, {"text": "O(log n)", "tone": "accent"}, "needs sorted input"], [{"text": "O(n log n)", "tone": "accent"}, {"text": "O(n log n)", "tone": "accent"}, "Timsort, and stable"]], "t": "diagram", "id": "dg-i1_1-top-0"},
   {
    "t": "viz",
    "title": "Recognising which technique a problem wants",

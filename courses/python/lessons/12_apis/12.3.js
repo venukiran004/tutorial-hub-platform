@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "The line, and what it changes",
       caption: "Outside the line, everything is a `dict` of unknown shape and every function must be defensive. Inside, the type is the guarantee — so the checks disappear rather than being repeated.",

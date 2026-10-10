@@ -19,6 +19,7 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "Isolation levels, by what each one still allows", "caption": "The honest answer names the anomaly each level leaves behind. Postgres's default is Read Committed, so a repeated read inside one transaction can see different rows — which is where the lost-update bug lives.", "cols": ["dirty read", "repeated read differs", "phantom rows"], "rows": ["Read Uncommitted", "Read Committed", "Repeatable Read", "Serializable"], "cells": [[{"text": "possible", "tone": "crit"}, {"text": "possible", "tone": "crit"}, {"text": "possible", "tone": "crit"}], [{"text": "no", "tone": "good"}, {"text": "possible", "tone": "warn"}, {"text": "possible", "tone": "warn"}], [{"text": "no", "tone": "good"}, {"text": "no", "tone": "good"}, {"text": "possible", "tone": "warn"}], [{"text": "no", "tone": "good"}, {"text": "no", "tone": "good"}, {"text": "no", "tone": "good"}]], "t": "diagram", "id": "dg-i7_4-top-0"},
 
 
+
   {
    "t": "callout",
    "kind": "note",

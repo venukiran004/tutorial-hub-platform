@@ -36,7 +36,7 @@
        "soon" in the rail and the curriculum, so the roadmap is visible in full
        without ever promising content that is not there yet. Add an id here the
        moment its lesson file lands — this is the single switch. */
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.8", "8.9", "9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8", "10.1", "10.2", "10.3", "10.4", "10.5", "10.6", "11.1", "11.2", "11.3", "11.4", "11.5", "11.6", "11.7", "11.8", "12.1", "12.2", "12.3", "12.4", "12.5", "12.6", "12.7", "12.8", "12.9", "12.10", "13.1", "13.2", "13.3", "13.4", "13.5", "13.6", "13.7", "13.8", "14.1", "14.2", "14.3", "14.4", "14.5", "14.6", "14.7", "14.8", "14.9", "14.10", "15.1", "15.2", "15.3", "15.4", "15.5", "15.6", "15.7", "15.8", "15.9", "16.1", "16.2", "16.3", "16.4", "16.5", "16.6", "16.7", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "i1.6", "i1.7", "i1.8", "i2.1", "i2.2", "i2.3", "i2.4", "i2.5", "i2.6", "i2.7", "i3.1", "i3.2", "i3.3", "i3.4", "i4.1", "i4.2", "i4.3", "i4.4", "i4.5", "i5.1", "i5.2", "i5.3", "i6.1", "i6.2", "i7.1", "i7.2", "i7.3", "i7.4", "i7.5", "i7.6", "i8.1", "i8.2", "i8.3", "i8.4"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.8", "8.9", "9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8", "10.1", "10.2", "10.3", "10.4", "10.5", "10.6", "11.1", "11.2", "11.3", "11.4", "11.5", "11.6", "11.7", "11.8", "12.1", "12.2", "12.3", "12.4", "12.5", "12.6", "12.7", "12.8", "12.9", "12.10", "13.1", "13.2", "13.3", "13.4", "13.5", "13.6", "13.7", "13.8", "14.1", "14.2", "14.3", "14.4", "14.5", "14.6", "14.7", "14.8", "14.9", "14.10", "15.1", "15.2", "15.3", "15.4", "15.5", "15.6", "15.7", "15.8", "15.9", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "i1.6", "i1.7", "i1.8", "i2.1", "i2.2", "i2.3", "i2.4", "i2.5", "i2.6", "i2.7", "i3.1", "i3.2", "i3.3", "i3.4", "i4.1", "i4.2", "i4.3", "i4.4", "i4.5", "i5.1", "i5.2", "i5.3", "i6.1", "i6.2", "i7.1", "i7.2", "i7.3", "i7.4", "i7.5", "i7.6", "i8.2", "i8.3", "i8.4"],
 
     modules: [
 
@@ -625,40 +625,6 @@
         ]
       },
 
-      /* ==================================================================
-         PHASE 5 (continued)
-         ================================================================== */
-      {
-        id: "dsa",
-        short: "A1",
-        phase: "Phase 5 · Applied Python",
-        title: "Data Structures & Algorithms in Python",
-        blurb: "The interview track, taught with Python's actual data structures.",
-        outcome: "You can solve a standard algorithmic problem in idiomatic Python and analyse it out loud.",
-        lessons: [
-          { id: "16.1", title: "Arrays, Strings and Two Pointers", difficulty: "core", minutes: 38, tier: "should",
-            summary: "The pattern behind a third of interview questions, with Python-specific pitfalls around slicing cost.",
-            keywords: ["two pointer", "sliding window", "array", "string", "in-place"] },
-          { id: "16.2", title: "Hash Maps, Sets and Counting", difficulty: "core", minutes: 34, tier: "should",
-            summary: "Trading space for time, Counter as a weapon, and the problems that collapse to one dict pass.",
-            keywords: ["hash map", "counter", "frequency", "set", "lookup"] },
-          { id: "16.3", title: "Stacks, Queues and Heaps", difficulty: "core", minutes: 36, tier: "should",
-            summary: "deque and heapq in anger — monotonic stacks, top-k, and scheduling problems.",
-            keywords: ["stack", "queue", "deque", "heapq", "priority queue", "monotonic", "top-k"] },
-          { id: "16.4", title: "Trees, Graphs and Traversal", difficulty: "advanced", minutes: 42, tier: "should",
-            summary: "BFS and DFS as one template each, recursion vs explicit stack, and cycle detection.",
-            keywords: ["tree", "graph", "bfs", "dfs", "traversal", "topological", "cycle"] },
-          { id: "16.5", title: "Sorting, Searching and Binary Search", difficulty: "core", minutes: 34, tier: "should",
-            summary: "Timsort, sort keys, bisect, and binary search on the answer rather than on an array.",
-            keywords: ["sort", "timsort", "binary search", "bisect", "key", "search space"] },
-          { id: "16.6", title: "Recursion, Backtracking and Dynamic Programming", difficulty: "advanced", minutes: 44, tier: "adv",
-            summary: "From brute force to memoised to tabulated, with a repeatable method rather than pattern recognition.",
-            keywords: ["backtracking", "dp", "memoization", "tabulation", "state", "subproblem"] },
-          { id: "16.7", title: "Algorithm Paradigms: Choosing the Approach", difficulty: "advanced", minutes: 38, tier: "should",
-            summary: "Brute force, divide and conquer, greedy, dynamic programming, backtracking and randomised algorithms — each with its signature problem and the case where it fails — plus the decision guide.",
-            keywords: ["brute force", "divide and conquer", "greedy", "dynamic programming", "backtracking", "randomized", "monte carlo", "n-queens", "coin change", "merge sort", "paradigm"] }
-        ]
-      },
 
       {
         id: "iv_core",
@@ -866,9 +832,6 @@
         blurb: "Algorithms, a mixed rapid-fire bank, and the senior-level set.",
         outcome: "You can revise broadly at speed, and handle the questions that have no single right answer.",
         lessons: [
-          { id: "i8.1", title: "Data Structures & Algorithms", difficulty: "core", minutes: 46, tier: "should",
-            summary: "29 interview questions, answers hidden until you ask for them.",
-            keywords: ["dsa", "algorithms", "complexity"] },
           { id: "i8.2", title: "Question Bank · Questions 1–100", difficulty: "advanced", minutes: 60, tier: "should",
             summary: "93 interview questions, answers hidden until you ask for them.",
             keywords: ["mixed", "rapid fire", "revision"] },

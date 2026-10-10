@@ -72,6 +72,7 @@ with ThreadPoolExecutor() as pool:
 
 
 
+
     { t: "viz",
       title: "Three ways to get results back",
       caption: "`map` preserves input order and yields lazily. `as_completed` yields whichever finishes first, so slow items stop blocking fast ones. `submit` alone gives you the futures to manage yourself.",

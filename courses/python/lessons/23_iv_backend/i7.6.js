@@ -19,6 +19,7 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "Three ways to carry identity", "caption": "The revocation column is the one interviewers press on. A JWT cannot be un-issued, so a logout that must take effect immediately needs server state — which is most of the argument against stateless tokens.", "cols": ["state on the server", "revoke instantly?", "the cost"], "rows": ["session cookie", "JWT", "OAuth2 + refresh"], "cells": [[{"text": "yes — a session store", "tone": "warn"}, {"text": "YES", "tone": "good"}, "a lookup per request"], [{"text": "none", "tone": "good"}, {"text": "NO — only on expiry", "tone": "crit"}, "a deny-list to fix it"], [{"text": "refresh tokens only", "tone": "accent"}, {"text": "on refresh", "tone": "warn"}, "short access, long refresh"]], "t": "diagram", "id": "dg-i7_6-top-0"},
 
 
+
   {
    "t": "callout",
    "kind": "note",

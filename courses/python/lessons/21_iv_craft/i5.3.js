@@ -19,6 +19,7 @@ EC.receiveLesson({
     {"kind": "layers", "taper": true, "title": "The test pyramid, and where the questions land", "caption": "The shape is the argument: many fast tests at the bottom, few slow ones at the top. Most interview answers go wrong by putting integration work in a unit test — usually a real database call.", "items": [{"label": "end-to-end", "sub": "a few — slow, flaky, highest confidence", "tone": "crit", "side": "minutes"}, {"label": "integration", "sub": "real database, real HTTP, one boundary at a time", "tone": "warn", "side": "seconds"}, {"label": "unit", "sub": "no I/O at all — thousands of them, in milliseconds", "tone": "good", "side": "ms"}], "t": "diagram", "id": "dg-i5_3-top-0"},
 
 
+
   {
    "t": "callout",
    "kind": "note",

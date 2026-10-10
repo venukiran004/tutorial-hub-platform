@@ -145,6 +145,7 @@ if not body.get("success"):          # a second, bespoke error check
 
 
 
+
     { t: "viz",
       title: "The timeout that charges twice",
       caption: "A read timeout tells you the answer did not come back. It tells you nothing about whether the server processed the request — so a retry without an idempotency key is a second charge.",

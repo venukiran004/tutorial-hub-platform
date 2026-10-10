@@ -19,6 +19,7 @@ EC.receiveLesson({
     {"kind": "steps", "title": "What `with` guarantees", "caption": "`__exit__` runs on the way out whatever happens — normal end, `return`, or exception. Returning a truthy value from it **suppresses** the exception, which is the question people miss.", "items": [{"label": "__enter__()", "desc": "its return value is what as binds", "tone": "accent", "code": "on entry"}, {"label": "the body", "desc": "may return, break or raise", "tone": "good", "code": "your code"}, {"label": "__exit__(exc_type, exc, tb)", "desc": "always called — this is the guarantee you are buying", "tone": "warn", "code": "on exit"}, {"label": "return True to suppress", "desc": "falsy (or None) re-raises; truthy swallows the exception", "tone": "crit", "code": "the subtlety"}], "t": "diagram", "id": "dg-i2_4-top-0"},
 
 
+
   {
    "t": "callout",
    "kind": "note",

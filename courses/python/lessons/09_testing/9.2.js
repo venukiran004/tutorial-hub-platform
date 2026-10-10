@@ -146,6 +146,7 @@ def test_checkout(client):
 
 
 
+
     { t: "p", text: "A test that is never collected is indistinguishable from a test that passes. The rules are mechanical, and every one of them has a silent failure mode." },
 
     { t: "table",

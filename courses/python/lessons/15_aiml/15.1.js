@@ -154,6 +154,7 @@ np.array([1, "two", 3.0])                 # dtype('<U32') -- STRINGS
 
 
 
+
     { t: "code", lang: "python", title: "the rule, and reading it off the shapes", code: `
 # THE RULE: compare shapes from the RIGHT. Two dimensions are
 # compatible if they are equal, or one of them is 1.
@@ -218,6 +219,7 @@ centred = a - col_means                     # broadcasts directly`},
     { t: "h2", n: "04", text: "Views and copies", id: "views" },
 
     {"kind": "memory", "title": "Views share memory; copies do not", "caption": "A slice of a NumPy array is a view onto the same buffer: writing through it changes the original. Fancy indexing and .copy() allocate a new buffer.", "names": [{"name": "a = np.arange(6)", "to": "o1"}, {"name": "v = a[2:5]  (view)", "to": "o1", "label": "same buffer"}, {"name": "c = a[[2, 3, 4]]  (copy)", "to": "o2"}], "objects": [{"id": "o1", "type": "buffer", "value": "[0 1 2 3 4 5]", "note": "v[0] = 99 changes a[2]", "tone": "accent"}, {"id": "o2", "type": "buffer", "value": "[2 3 4]", "note": "independent", "tone": "good"}], "t": "diagram", "id": "dg-15_1-04-1"},
+
 
 
 

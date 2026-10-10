@@ -19,6 +19,7 @@ EC.receiveLesson({
     {"kind": "layers", "title": "LEGB: where a name is looked up", "caption": "Read top down. A bare assignment creates a **local** name, which is why reading a global then assigning to it raises `UnboundLocalError` — the commonest scope question there is.", "items": [{"label": "Local", "sub": "names assigned in this function", "tone": "good", "side": "first"}, {"label": "Enclosing", "sub": "a surrounding function’s locals — what a closure captures", "tone": "accent", "side": "then"}, {"label": "Global", "sub": "module level; global to assign", "tone": "warn", "side": "then"}, {"label": "Built-in", "sub": "len, print, range — shadowed by any name above", "tone": "teal", "side": "last"}], "t": "diagram", "id": "dg-i1_7-top-0"},
 
 
+
   {
    "t": "callout",
    "kind": "note",

@@ -19,6 +19,7 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "Three kinds of concurrency, one decision", "caption": "The GIL column decides everything. Threads do not run Python bytecode in parallel, so they help only when the work is waiting — and the right answer to “make this faster” depends entirely on whether the work is I/O or CPU.", "cols": ["parallel CPU?", "good for", "the cost"], "rows": ["threading", "multiprocessing", "asyncio"], "cells": [[{"text": "no — the GIL", "tone": "crit"}, {"text": "I/O that blocks", "tone": "good"}, "locks, races"], [{"text": "YES", "tone": "good"}, {"text": "CPU-bound work", "tone": "good"}, "pickling, memory"], [{"text": "no", "tone": "crit"}, {"text": "thousands of I/O waits", "tone": "good"}, "one blocking call stalls all"]], "t": "diagram", "id": "dg-i3_2-top-0"},
 
 
+
   {
    "t": "callout",
    "kind": "note",

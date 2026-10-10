@@ -1309,7 +1309,7 @@
    "d": {
     "kind": "cells",
     "title": "The six kinds of parameter, in the order they must appear",
-    "caption": "Everything before / is positional-only; everything after * is keyword-only; *args and **kwargs collect whatever is left over. A signature is read left to right in exactly this order.",
+    "caption": "Everything before / is positional-only; everything after * is keyword-only; `*args` and `**kwargs` collect whatever is left over. A signature is read left to right in exactly this order.",
     "items": [
      "pos-only",
      "/",

@@ -19,6 +19,7 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "Reshaping: which call for which shape change", "caption": "Forty-nine questions, and the reshaping ones are where people stall. The distinction to hold is long against wide: `melt` goes long, `pivot` goes wide, and `pivot_table` is `pivot` that can aggregate.", "cols": ["shape change", "duplicates in the index"], "rows": ["melt", "pivot", "pivot_table", "groupby().agg()", "merge"], "cells": [[{"text": "wide → long", "tone": "good"}, "fine"], [{"text": "long → wide", "tone": "accent"}, {"text": "RAISES", "tone": "crit"}], [{"text": "long → wide", "tone": "accent"}, {"text": "aggregates them", "tone": "good"}], [{"text": "many rows → one per group", "tone": "good"}, "the point of it"], [{"text": "two frames → one", "tone": "teal"}, {"text": "row multiplication — check it", "tone": "warn"}]], "t": "diagram", "id": "dg-i6_2-top-0"},
 
 
+
   {
    "t": "callout",
    "kind": "note",

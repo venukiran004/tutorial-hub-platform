@@ -1,8 +1,8 @@
 /* ============================================================================
-   LESSON 16.1 — Arrays, Strings and Two Pointers
+   LESSON 1.1 — Arrays, Strings and Two Pointers
    ========================================================================= */
 EC.receiveLesson({
-  id: "16.1",
+  id: "1.1",
 
   lede: "Two pointers is one idea: **when a nested loop is doing redundant work, replace it with two indices that only ever move forwards.** It turns O(n²) into O(n) for a large family of problems, and recognising when it applies is worth more than memorising any individual solution.",
 
@@ -14,7 +14,7 @@ EC.receiveLesson({
     "Analyse and state the complexity out loud"
   ],
 
-  prerequisites: ["3.4", "10.2"],
+  prerequisites: [],
 
   blocks: [
 
@@ -106,7 +106,9 @@ def is_palindrome(s: str) -> bool:
 
     { t: "h2", n: "02", text: "The sliding window", id: "window" },
 
-    {"kind": "cells", "title": "The sliding window", "caption": "Two indices bound a window that only moves forward. Extending the right edge adds an element; shrinking the left edge removes one; each element enters and leaves once, so the whole pass is O(n) instead of O(n²).", "items": ["3", "1", "4", "1", "5", "9", "2", "6"], "highlight": [2, 3, 4], "negative": false, "label": "window [2, 5) sums to 10; slide right: add 9, drop 4", "t": "diagram", "id": "dg-16_1-02-0"},
+    {"kind": "cells", "title": "The sliding window", "caption": "Two indices bound a window that only moves forward. Extending the right edge adds an element; shrinking the left edge removes one; each element enters and leaves once, so the whole pass is O(n) instead of O(n²).", "items": ["3", "1", "4", "1", "5", "9", "2", "6"], "highlight": [2, 3, 4], "negative": false, "label": "window [2, 5) sums to 10; slide right: add 9, drop 4", "t": "diagram", "id": "dg-1_1-02-0"},
+
+
 
 
 
@@ -188,6 +190,9 @@ seen = set()                     # O(1) membership
 
     { t: "h2", n: "03", text: "In-place modification", id: "in-place" },
 
+    {"kind": "trace", "title": "In-place, watched index by index", "caption": "Remove duplicates from a sorted array. `write` is where the next kept value goes and `read` scans ahead; everything left of `write` is the answer so far. No second array is allocated, which is the whole point of in-place.", "left": "step", "codeW": 150, "vars": ["the array", "write", "read"], "steps": [{"code": "start", "state": ["[1, 1, 2, 2, 3]", "1", "1"]}, {"code": "a[1] == a[0]", "state": ["[1, 1, 2, 2, 3]", "1", "2"], "changed": [2], "note": "duplicate, skip"}, {"code": "a[2] != a[0]", "state": ["[1, 2, 2, 2, 3]", "2", "3"], "changed": [0, 1, 2], "note": "keep it"}, {"code": "a[3] == a[1]", "state": ["[1, 2, 2, 2, 3]", "2", "4"], "changed": [2], "note": "duplicate, skip"}, {"code": "a[4] != a[1]", "state": ["[1, 2, 3, 2, 3]", "3", "5"], "changed": [0, 1, 2], "tone": "good", "note": "answer = a[:3]"}], "t": "diagram", "id": "dg-1_1-03-1"},
+
+
     { t: "ladder",
       title: "Removing every occurrence of a value, in place",
       rungs: [
@@ -226,6 +231,9 @@ seen = set()                     # O(1) membership
 
     { t: "h2", n: "04", text: "Choosing the pattern", id: "choosing" },
 
+    {"kind": "matrix", "title": "Which pattern, from the words in the question", "caption": "The signal is usually one phrase. **Sorted** points at opposite ends, **contiguous** at a window, **cycle or middle** at fast and slow — and an unsorted pair problem is a hashing question rather than a pointer one.", "cols": ["the pattern", "cost"], "rows": ["“sorted” + a pair or triple", "“contiguous” subarray", "“cycle”, or the middle", "a pair, NOT sorted"], "cells": [[{"text": "two pointers, opposite ends", "tone": "good"}, "O(n), O(1) space"], [{"text": "a sliding window", "tone": "good"}, "O(n), O(1) space"], [{"text": "fast and slow pointers", "tone": "accent"}, "O(n), O(1) space"], [{"text": "a hash map — not pointers", "tone": "warn"}, "O(n), O(n) space"]], "t": "diagram", "id": "dg-1_1-04-2"},
+
+
     { t: "table",
       head: ["The problem says", "Reach for", "Typical complexity"],
       rows: [
@@ -261,7 +269,7 @@ def subarray_sum_equals_k(nums: list[int], k: int) -> int:
     return total
 
 # O(n) time, O(n) space. The pattern -- "store what you have seen, so
-# the answer at each step is a lookup" -- is Lesson 16.2.
+# the answer at each step is a lookup" -- is Lesson 1.2.
 `,
       hl: [11, 15],
       caption: "**Knowing why the window fails matters more than knowing the alternative.** An interviewer will often supply the negative-number twist specifically to see whether you notice."

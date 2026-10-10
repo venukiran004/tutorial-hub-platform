@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "the same query at each level", code: `
 # CORE -- a SQL expression language. Returns rows, not objects. No
 # session, no identity map, no change tracking, no surprises.
@@ -77,6 +78,7 @@ with Session(engine) as session:
     { t: "h2", n: "02", text: "The unit of work", id: "unit-of-work" },
 
     {"kind": "flow", "title": "The unit of work", "caption": "Changes to mapped objects are recorded, not sent. flush() turns them into SQL in dependency order; commit() flushes and ends the transaction. Nothing reaches the database until one of those.", "cols": 4, "nodes": [{"id": "a", "label": "session.add(obj) / obj.x = 1", "sub": "tracked in memory", "tone": "accent"}, {"id": "b", "label": "flush()", "sub": "SQL emitted, ids assigned", "tone": "warn"}, {"id": "c", "label": "commit()", "sub": "transaction ends", "tone": "good"}, {"id": "d", "label": "expired objects", "sub": "reloaded on next access"}], "edges": [["a", "b", "autoflush or explicit"], ["b", "c"], ["c", "d"]], "t": "diagram", "id": "dg-13_5-02-1"},
+
 
 
 

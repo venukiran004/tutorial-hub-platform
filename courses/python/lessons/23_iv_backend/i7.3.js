@@ -19,6 +19,7 @@ EC.receiveLesson({
     {"kind": "steps", "title": "What Pydantic does to your input, in order", "caption": "Validation is **coercion first**, which is the thing people get wrong: `“5”` becomes `5` for an `int` field in v1 and in v2's lax mode, so a validator sees the converted value, not what arrived.", "items": [{"label": "parse the raw input", "desc": "JSON or a dict — unknown keys ignored, or rejected if you say so", "tone": "accent", "code": "1"}, {"label": "coerce each field to its type", "desc": "“5” → 5 in lax mode; strict mode refuses instead", "tone": "warn", "code": "2"}, {"label": "run field validators", "desc": "they see the COERCED value, so validate the meaning, not the type", "tone": "good", "code": "3"}, {"label": "run model validators", "desc": "last — the only place a rule across two fields can live", "tone": "teal", "code": "4"}], "t": "diagram", "id": "dg-i7_3-top-0"},
 
 
+
   {
    "t": "callout",
    "kind": "note",

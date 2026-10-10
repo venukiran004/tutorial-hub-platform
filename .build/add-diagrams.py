@@ -25,7 +25,10 @@ for f in sorted(glob.glob(os.path.join(HERE, "%s-diagrams-*.json" % course))):
     for lid, items in json.load(io.open(f, encoding="utf-8")).items():
         specs.setdefault(lid, []).extend(items)
 
-files = {os.path.basename(p)[:-3]: p for p in glob.glob(os.path.join(ROOT, "courses", course, "lessons", "*", "*.js"))}
+# recursive: an interview or practice track nests one level deeper
+# (lessons/interview/01_iv/i1.1.js), and those lessons take figures too
+files = {os.path.basename(p)[:-3]: p for p in glob.glob(
+    os.path.join(ROOT, "courses", course, "lessons", "**", "*.js"), recursive=True)}
 added = replaced = 0
 missing = []
 for lid, items in specs.items():

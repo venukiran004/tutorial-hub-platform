@@ -1,8 +1,8 @@
 /* ============================================================================
-   LESSON 16.2 — Hash Maps, Sets and Counting
+   LESSON 1.2 — Hash Maps, Sets and Counting
    ========================================================================= */
 EC.receiveLesson({
-  id: "16.2",
+  id: "1.2",
 
   lede: "The hash map is the single most useful data structure in interviews, and the reason is one trade: **spend O(n) memory to turn a repeated O(n) search into an O(1) lookup.** A large family of quadratic solutions collapses to one linear pass the moment you ask \"what would I need to have already seen to answer this now?\"",
 
@@ -14,13 +14,15 @@ EC.receiveLesson({
     "State the space cost as confidently as the time saving"
   ],
 
-  prerequisites: ["4.3", "16.1"],
+  prerequisites: ["1.1"],
 
   blocks: [
 
     { t: "h2", n: "01", text: "The trade", id: "trade" },
 
-    {"kind": "compare", "title": "Trade memory for time", "caption": "The nested loop compares every pair — O(n²). One pass with a hash map remembers what has been seen — O(n) time, O(n) space. Nearly every 'find a pair' problem is this trade.", "columns": [{"title": "two loops", "tone": "crit", "items": ["for i: for j: if a[i]+a[j]==t", "O(n²) time", "O(1) space"]}, {"title": "one pass + dict", "tone": "good", "items": ["seen[t − x] tells you instantly", "O(n) time", "O(n) space"]}], "t": "diagram", "id": "dg-16_2-01-0"},
+    {"kind": "compare", "title": "Trade memory for time", "caption": "The nested loop compares every pair — O(n²). One pass with a hash map remembers what has been seen — O(n) time, O(n) space. Nearly every 'find a pair' problem is this trade.", "columns": [{"title": "two loops", "tone": "crit", "items": ["for i: for j: if a[i]+a[j]==t", "O(n²) time", "O(1) space"]}, {"title": "one pass + dict", "tone": "good", "items": ["seen[t − x] tells you instantly", "O(n) time", "O(n) space"]}], "t": "diagram", "id": "dg-1_2-01-0"},
+
+
 
 
 
@@ -118,6 +120,9 @@ def two_sum(nums: list[int], target: int) -> tuple[int, int] | None:
 
     { t: "h2", n: "02", text: "Which structure", id: "which" },
 
+    {"kind": "matrix", "title": "Four hash-backed structures, four jobs", "caption": "All four are O(1) average lookup; the difference is what they store and what they do on a miss. Reaching for `dict` when `Counter` or `defaultdict` fits is where most of the extra code in a solution comes from.", "cols": ["what it stores", "on a missing key"], "rows": ["set", "dict", "defaultdict(list)", "Counter"], "cells": [["membership only", {"text": "False — no error", "tone": "good"}], ["key to value", {"text": "KeyError", "tone": "crit"}], ["key to a growing list", {"text": "makes an empty list", "tone": "good"}], ["key to a count", {"text": "0 — and most_common sorts", "tone": "good"}]], "t": "diagram", "id": "dg-1_2-02-1"},
+
+
     { t: "table",
       head: ["Structure", "For", "Note"],
       rows: [
@@ -164,6 +169,9 @@ sorted(a) == sorted(b)              # O(n log n), also fine
     },
 
     { t: "h2", n: "03", text: "Designing the key", id: "keys" },
+
+    {"kind": "steps", "title": "Designing the key is the whole problem", "caption": "Most counting problems are easy once the key is right. The key is whatever makes two things that should group together **compare equal** — and it has to be hashable, which is why a list has to become a tuple.", "items": [{"label": "anagrams → the sorted letters", "desc": "sorted(word) is a list, so tuple it or join it back to a string", "tone": "accent", "code": "O(k log k)"}, {"label": "anagrams, faster → a 26-count tuple", "desc": "counting beats sorting once the words are long", "tone": "good", "code": "O(k)"}, {"label": "points on a line → the reduced gradient", "desc": "divide dy and dx by their gcd, and fix the sign, or 1/2 and 2/4 differ", "tone": "warn", "code": "exact"}, {"label": "a grid shape → offsets from the first cell", "desc": "so the same shape anywhere in the grid hashes the same", "tone": "teal", "code": "translation"}], "t": "diagram", "id": "dg-1_2-03-2"},
+
 
     { t: "ladder",
       title: "Grouping anagrams",
@@ -246,6 +254,9 @@ d[p]                     # KeyError -- it is in the wrong bucket
 
     { t: "h2", n: "04", text: "The costs", id: "costs" },
 
+    {"kind": "timeline", "title": "Why the hash is worth the memory", "caption": "Membership in a list is a scan and membership in a set is one hash. The gap is not a constant factor — it grows with the collection, which is why a nested loop over a list is the commonest accidental O(n²).", "span": 100, "tick": 20, "unit": "comparisons to answer “is x present?”, n = 100", "lanes": [{"label": "x in a list", "bars": [[0, 100, "up to 100 — a scan", "crit"]]}, {"label": "x in a set", "bars": [[0, 1.5, "", "good"]]}, {"label": "x in a dict", "bars": [[0, 1.5, "", "good"]]}], "t": "diagram", "id": "dg-1_2-04-3"},
+
+
     { t: "code", lang: "python", title: "what O(1) actually assumes", code: `
 # AVERAGE case O(1). WORST case O(n), when every key hashes to the
 # same bucket. In CPython, str hashing is randomised per process
@@ -265,7 +276,7 @@ sys.getsizeof(list(range(1000)))             # ~8 KB
 # WHEN A DICT IS THE WRONG ANSWER:
 #   - a small, fixed set of keys        -> a tuple or a list index
 #   - keys are dense small integers     -> a LIST, indexed directly
-#   - you need order by value           -> sort, or a heap (16.3)
+#   - you need order by value           -> sort, or a heap (1.3)
 #   - you need range queries            -> a sorted list + bisect
 #   - the data does not fit in memory   -> a database
 
@@ -325,7 +336,7 @@ for ch in text:
 #
 # Growing sometimes helps and sometimes does not; shrinking likewise.
 # There is no rule that says which pointer to move, which is exactly
-# the precondition the window technique requires (Lesson 16.1).
+# the precondition the window technique requires (Lesson 1.1).
 #
 # The same reason "subarray sum equals k with negatives" is not a
 # window problem -- and the same tool solves both.

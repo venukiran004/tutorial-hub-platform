@@ -49,6 +49,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "The pyramid is not a statement about virtue. It is a statement about **cost per unit of confidence**: tests near the bottom are cheap to run and pinpoint the fault; tests near the top are expensive and slow but prove the parts actually fit. You want a lot of the cheap ones and enough of the expensive ones." },
 
     { t: "viz",

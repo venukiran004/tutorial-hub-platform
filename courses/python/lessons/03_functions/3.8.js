@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Every recursive function has two parts, and writing them in the wrong order is why recursion feels hard. **The base case is the one that stops.** Write it first, and the recursive case usually falls out." },
 
     { t: "code", lang: "python", title: "the shape", code: `
@@ -86,6 +87,7 @@ print(total_size(tree))
     { t: "h2", n: "02", text: "What the stack costs", id: "the-stack" },
 
     {"kind": "layers", "title": "Each recursive call adds a frame", "caption": "fact(4) pushes four frames before the base case returns; each frame holds its own n and its return address. Python caps the stack at about 1,000 frames, which is why deep recursion raises RecursionError and loops do not.", "items": [{"label": "fact(1)  → returns 1", "sub": "base case — the top of the stack", "tone": "good"}, {"label": "fact(2)  waiting for fact(1)", "tone": "accent"}, {"label": "fact(3)  waiting for fact(2)", "tone": "accent"}, {"label": "fact(4)  waiting for fact(3)", "sub": "the first call — the bottom", "tone": "warn"}], "t": "diagram", "id": "dg-3_8-02-0"},
+
 
 
 
@@ -256,6 +258,7 @@ def find_large(root: dict, threshold: int) -> Iterator[str]:
     { t: "h2", n: "04", text: "Memoisation and the exponential trap", id: "memoisation" },
 
     {"kind": "tree", "title": "Naive fib recomputes the same subproblems", "caption": "fib(5) calls fib(3) twice and fib(2) three times; the tree has about 1.6ⁿ nodes. Memoising with lru_cache makes each value computed once, turning exponential into linear.", "root": {"label": "fib(5)", "tone": "accent", "children": [{"label": "fib(4)", "children": [{"label": "fib(3)", "tone": "warn", "children": [{"label": "fib(2)"}, {"label": "fib(1)"}]}, {"label": "fib(2)", "tone": "crit"}]}, {"label": "fib(3)", "tone": "warn", "children": [{"label": "fib(2)", "tone": "crit"}, {"label": "fib(1)"}]}]}, "t": "diagram", "id": "dg-3_8-04-1"},
+
 
 
 

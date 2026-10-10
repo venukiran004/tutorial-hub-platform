@@ -22,6 +22,7 @@ EC.receiveLesson({
     {"kind": "layers", "title": "The architectural shape most questions assume", "caption": "Dependencies point **inward**: the domain knows nothing about the database or the web layer. That single rule is what makes the layers testable, and it is what an interviewer is checking you can state.", "items": [{"label": "the web layer", "sub": "HTTP, serialisation, status codes — no business rules", "tone": "teal", "side": "outermost"}, {"label": "application services", "sub": "use cases, transactions, orchestration", "tone": "accent", "side": "↓ depends"}, {"label": "the domain", "sub": "entities and rules — knows nothing below it", "tone": "good", "side": "the core"}, {"label": "infrastructure", "sub": "the database, queues, third parties — behind interfaces", "tone": "warn", "side": "injected"}], "t": "diagram", "id": "dg-i4_5-top-0"},
 
 
+
   {
    "t": "callout",
    "kind": "note",

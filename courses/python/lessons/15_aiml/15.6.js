@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "Five inputs, and every one of them drifts",
       caption: "Recording the model file records one of the five. The other four move on their own schedules — a library upgrade, a backfill, a refactor, an unseeded shuffle — and each moves the result.",

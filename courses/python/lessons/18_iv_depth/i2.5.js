@@ -19,6 +19,7 @@ EC.receiveLesson({
     {"kind": "steps", "title": "How an import is resolved", "caption": "Six questions, and they all come back to this order. The first entry of `sys.path` is the script's own directory, which is why a local `random.py` shadows the standard library — the classic import bug.", "items": [{"label": "sys.modules", "desc": "already imported? return it — so a module body runs ONCE", "tone": "good", "code": "cache"}, {"label": "sys.path, in order", "desc": "the script’s directory first, then PYTHONPATH, then site-packages", "tone": "accent", "code": "search"}, {"label": "execute the module body", "desc": "top to bottom, once; this is where a circular import bites", "tone": "warn", "code": "run"}, {"label": "bind the name locally", "desc": "import x.y binds x; from x import y binds y", "tone": "teal", "code": "bind"}], "t": "diagram", "id": "dg-i2_5-top-0"},
 
 
+
   {
    "t": "callout",
    "kind": "note",
