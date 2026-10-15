@@ -19,6 +19,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "From Bayes' theorem to a classifier", id: "bayes" },
 
+    {"kind": "flow", "title": "From Bayes' theorem to a classifier in three moves", "caption": "The first two steps are exact. The third is the 'naive' one, and it is false in almost every real dataset — features are correlated. What makes the method work anyway is that classification is an **argmax**: the posterior can be wrong in value and still largest for the right class.", "cols": 3, "nodes": [{"id": "b", "label": "P(y|x) ∝ P(x|y) P(y)", "sub": "Bayes: exact", "tone": "violet"}, {"id": "d", "label": "Drop the denominator", "sub": "it is the same for every class", "tone": "accent"}, {"id": "n", "label": "Assume independence", "sub": "P(x|y) = product of P(x_j|y)", "tone": "warn"}, {"id": "c", "label": "Count, do not optimise", "sub": "one pass; 4 ms", "tone": "good"}, {"id": "l", "label": "Sum logs, not products", "sub": "or the floats underflow", "tone": "good"}, {"id": "a", "label": "argmax over classes", "sub": "wrong values, right winner", "tone": "teal"}], "edges": [["b", "d"], ["d", "n"], ["n", "c"], ["c", "l"], ["l", "a"]], "t": "diagram", "id": "dg-5_2-01-0"},
+
+
     { t: "code", lang: "text", title: "Three lines of derivation and one assumption",
       code: `Bayes' theorem:      P(y | x) = P(y) P(x | y) / P(x)
 
@@ -71,7 +74,12 @@ query "claim lunch" (one word seen only in each class):  posterior [0.5, 0.5] --
 
     { t: "h2", n: "02", text: "Variants: pick by feature type", id: "variants" },
 
+    {"kind": "matrix", "title": "Pick the variant from the feature type, not by trial", "caption": "Each variant is a different choice of P(x | y), so the feature type decides it outright. The Bernoulli row is the instructive one: modelling presence rather than counts throws the repetition signal away, which is why it scored 0.836 on the newsgroups where multinomial counts do better.", "cols": ["Models each feature as", "Use for"], "rows": ["Gaussian", "Multinomial", "Bernoulli", "Complement", "Categorical"], "cells": [[{"text": "a normal per class", "tone": "accent"}, "numeric tables; a fast baseline"], [{"text": "counts over a vocabulary", "tone": "good"}, "text: the standard baseline"], [{"text": "presence or absence", "tone": "warn"}, "short texts; loses repetition"], [{"text": "counts on the complement", "tone": "good"}, "imbalanced text"], [{"text": "one categorical each", "tone": "accent"}, "categorical tables, without one-hot"]], "t": "diagram", "id": "dg-5_2-02-1"},
+
+
     {"kind": "matrix", "title": "Pick the variant from the feature type, not by trial", "caption": "Each variant is a different choice of P(x | y), so the feature type decides it outright. The Bernoulli row is the instructive one: modelling presence rather than counts throws the repetition signal away, which is why it scored 0.836 on the newsgroups where multinomial counts do better.", "cols": ["Models each feature as", "Use for"], "rows": ["Gaussian", "Multinomial", "Bernoulli", "Complement", "Categorical"], "cells": [[{"text": "a normal per class", "tone": "accent"}, "numeric tables; a fast baseline"], [{"text": "counts over a vocabulary", "tone": "good"}, "text: the standard baseline"], [{"text": "presence or absence", "tone": "warn"}, "short texts; loses repetition"], [{"text": "counts on the complement", "tone": "good"}, "imbalanced text"], [{"text": "one categorical each", "tone": "accent"}, "categorical tables, without one-hot"]], "t": "diagram", "id": "dg-5_2-02-0"},
+
+
 
 
 
@@ -115,7 +123,12 @@ query "claim lunch" (one word seen only in each class):  posterior [0.5, 0.5] --
 
     { t: "h2", n: "03", text: "What the naive assumption costs, measured", id: "cost" },
 
+    {"kind": "trace", "title": "Duplicating one column, to watch the naive assumption break", "caption": "The tickets column is copied 1, 4 and 9 times — adding no information whatsoever, and forcing the model to count the same evidence repeatedly. The **ranking barely moves**: AUC drifts 0.735 to 0.686. The calibration is destroyed: log-loss triples, the share of near-certain predictions goes from 40% to 89%, and the top quintile is predicted at 86% churn against an actual 26%. That is the precise cost of the assumption — it corrupts the probabilities, not the ordering.", "left": "tickets duplicated", "codeW": 180, "vars": ["AUC", "log-loss", "near-certain", "top quintile: pred vs actual"], "steps": [{"code": "0x (the real model)", "state": ["0.7350", "0.4240", "40.4%", "0.511 vs 0.347"], "tone": "good"}, {"code": "1x", "state": ["0.7295", "0.4441", "45.1%", "0.561 vs 0.312"], "tone": "warn"}, {"code": "4x", "state": ["0.7084", "0.6465", "69.2%", "0.732 vs 0.283"], "changed": [1, 2], "tone": "crit"}, {"code": "9x", "state": ["0.6857", "1.2089", "88.8%", "0.860 vs 0.260"], "changed": [1, 3], "tone": "crit", "note": "86% vs 26%"}], "t": "diagram", "id": "dg-5_2-03-2"},
+
+
     {"kind": "matrix", "title": "Why a false assumption still picks the right class", "caption": "Classification is an **argmax**. Double-counting correlated evidence scales every class's log-odds in similar proportion, so the posterior can be badly wrong in value and still be largest for the right class. What breaks it is *asymmetric* dependence — features correlated within one class but not the other.", "cols": ["Naive Bayes", "Logistic regression"], "rows": ["Models", "Boundary", "Fitting time here", "Probabilities", "Breaks on"], "cells": [[{"text": "P(x|y) and P(y): generative", "tone": "accent"}, "P(y|x): discriminative"], ["linear in the features", "linear"], [{"text": "counting: 4 ms", "tone": "good"}, {"text": "iterative: 435 ms", "tone": "warn"}], [{"text": "over-confident", "tone": "warn"}, {"text": "usually calibrated", "tone": "good"}], [{"text": "asymmetric dependence", "tone": "crit"}, "collinearity, for the coefficients"]], "t": "diagram", "id": "dg-5_2-03-1"},
+
+
 
 
 

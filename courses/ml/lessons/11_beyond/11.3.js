@@ -26,6 +26,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "A batch learner sees all its data at once and fits; an online learner sees one row (or a mini-batch), updates, discards it and waits for the next. The reasons to learn online are memory — the data do not fit — latency — the model must reflect the last minute — and drift — the world moves, and a model fitted last month is wrong this month. Evaluation is prequential (predict, then train): each row is scored by the model before the model sees its label, so the running accuracy is an honest out-of-sample number with no split at all." },
 
     { t: "code", lang: "python", title: "A 20,000-row logistic stream, three ways (executed)",
@@ -125,6 +129,10 @@ centralised logistic regression on the pooled 1,000 rows:  w = (1.52, −1.04, 0
     { t: "h2", n: "04", text: "Non-IID data: which kind", id: "noniid" },
 
     {"kind": "matrix", "title": "Non-IID is not one problem", "caption": "Federated averaging degrades for different reasons depending on **how** the clients differ, and the fix differs with it. Label skew is the one that breaks naive averaging hardest: each client's update points at its own label distribution, and the average of those directions need not help anyone.", "cols": ["Clients differ in", "Mitigation"], "rows": ["Label skew", "Feature skew", "Quantity skew", "Concept skew"], "cells": [[{"text": "which classes they hold", "tone": "crit"}, "proximal terms, server momentum"], ["the same classes, different inputs", "normalisation that is not batch-wise"], [{"text": "how many rows", "tone": "warn"}, "weight the average by n"], [{"text": "P(y|x) itself", "tone": "crit"}, "personalisation: one model cannot fit all"]], "t": "diagram", "id": "dg-11_3-04-1"},
+
+
+
+
 
 
 

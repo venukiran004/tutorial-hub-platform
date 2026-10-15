@@ -28,6 +28,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "code", lang: "text", title: "A random walk with σ = 3, forecast 200 (executed)",
       code: `y_{T+h} = y_T + ε_{T+1} + ... + ε_{T+h}      ->   Var = hσ²   ->   95 % interval = ŷ ± 1.96 σ √h
 
@@ -75,6 +79,10 @@ h   sd = σ√h    half-width 1.96σ√h    interval
     { t: "h2", n: "03", text: "The pinball loss", id: "pinball" },
 
     {"kind": "matrix", "title": "The pinball loss is minimised by the quantile you asked for", "caption": "That is the whole reason quantile regression works: weighting under- and over-predictions asymmetrically by τ makes the optimal constant prediction the τ-th quantile. At τ = 0.5 the weights are equal and it reduces to half the absolute error, which is why the median minimises MAE.", "cols": ["Penalises", "Optimal forecast"], "rows": ["tau = 0.5", "tau = 0.9", "tau = 0.1", "Squared error"], "cells": [[{"text": "both sides equally", "tone": "accent"}, "the median — hence MAE"], [{"text": "under-prediction 9x more", "tone": "good"}, "the 90th percentile"], [{"text": "over-prediction 9x more", "tone": "good"}, "the 10th percentile"], [{"text": "large errors quadratically", "tone": "warn"}, "the mean"]], "t": "diagram", "id": "dg-10_7-03-1"},
+
+
+
+
 
 
 

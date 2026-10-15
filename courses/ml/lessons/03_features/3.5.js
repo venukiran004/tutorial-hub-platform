@@ -19,6 +19,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The bench, and why to select at all", id: "bench" },
 
+    {"kind": "trace", "title": "Fifty-one features, six of them real, and why selection pays", "caption": "The bench: five linear signals, one U-shaped signal, three linear combinations of the first three, two near-duplicates, and forty columns of pure noise. A logistic regression on **all 51** scores 0.867; on the true six it scores **0.875** — fewer features, a better score, because the 45 extra columns cost variance without adding signal. The forest reaches 0.909 on all 51, because it can use the U-shape a logistic regression cannot and barely notices the noise.", "left": "model and feature set", "codeW": 270, "vars": ["5-fold AUC", "features"], "steps": [{"code": "logistic, all 51", "state": ["0.867", "51"], "tone": "warn"}, {"code": "logistic, the true 6", "state": ["0.875", "6"], "changed": [0], "tone": "good", "note": "fewer, better"}, {"code": "forest, all 51", "state": ["0.909", "51"], "changed": [0], "tone": "accent", "note": "uses the U-shape"}, {"code": "SelectKBest in-fold, k = 3", "state": ["0.740", "3"], "tone": "crit", "note": "too few"}, {"code": "k = 6", "state": ["0.847", "6"], "tone": "warn"}, {"code": "k = 10", "state": ["0.876", "10"], "changed": [0], "tone": "good", "note": "the honest peak"}, {"code": "k = 20", "state": ["0.871", "20"], "tone": "good"}, {"code": "k = 51", "state": ["0.867", "51"], "tone": "warn"}], "t": "diagram", "id": "dg-3_5-01-0"},
+
+
+
+
     { t: "code", lang: "python", title: "Fifty-one features, 1,500 rows: what the model scores with all, with the true six, and by family (executed)",
       hl: [4, 5, 6],
       code: `# inf0..inf4: five linear signals   nonlin: a U-shaped signal (x² enters the logit)   red0..red2: linear combinations of inf0..inf2
@@ -43,6 +48,11 @@ EC.receiveLesson({
     ]},
 
     { t: "h2", n: "02", text: "Filters: what each test can see", id: "filters" },
+
+    {"kind": "matrix", "title": "What each selector can and cannot see", "caption": "The two columns that decide most choices: whether the test can see a **non-linear** relationship at all, and what it does with correlated copies. An F-test ranks every copy of a useful feature highly; lasso picks one of them arbitrarily; permutation importance shares the credit, so a correlated copy can hide the drop entirely.", "cols": ["Sees non-linear", "Correlated copies"], "rows": ["Correlation filter", "ANOVA F / chi2", "Mutual information", "RFE", "L1 / lasso", "Tree importance", "Permutation importance"], "cells": [[{"text": "no", "tone": "warn"}, "duplicates only"], [{"text": "no", "tone": "warn"}, {"text": "every copy ranks high", "tone": "crit"}], [{"text": "yes", "tone": "good"}, "all rank high"], [{"text": "as the model does", "tone": "accent"}, "picks one of the group"], [{"text": "no", "tone": "warn"}, {"text": "picks one arbitrarily", "tone": "crit"}], [{"text": "yes", "tone": "good"}, "credit split across copies"], [{"text": "yes", "tone": "good"}, {"text": "a copy hides the drop", "tone": "crit"}]], "t": "diagram", "id": "dg-3_5-02-1"},
+
+
+
 
     {"kind": "matrix", "title": "What each selector can and cannot see", "caption": "The two columns that decide most choices: whether the test can see a **non-linear** relationship at all, and what it does with correlated copies. An F-test ranks every copy of a useful feature highly; lasso picks one of them arbitrarily; permutation importance shares the credit, so a correlated copy can hide the drop entirely.", "cols": ["Sees non-linear", "Correlated copies"], "rows": ["Correlation filter", "ANOVA F / chi2", "Mutual information", "RFE", "L1 / lasso", "Tree importance", "Permutation importance"], "cells": [[{"text": "no", "tone": "warn"}, "duplicates only"], [{"text": "no", "tone": "warn"}, {"text": "every copy ranks high", "tone": "crit"}], [{"text": "yes", "tone": "good"}, "all rank high"], [{"text": "as the model does", "tone": "accent"}, "picks one of the group"], [{"text": "no", "tone": "warn"}, {"text": "picks one arbitrarily", "tone": "crit"}], [{"text": "yes", "tone": "good"}, "credit split across copies"], [{"text": "yes", "tone": "good"}, {"text": "a copy hides the drop", "tone": "crit"}]], "t": "diagram", "id": "dg-3_5-02-0"},
 
@@ -93,6 +103,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Wrappers and embedded methods", id: "wrappers" },
 
+    {"kind": "trace", "title": "What each method actually picked, on a bench where the truth is known", "caption": "Six features requested; the true six are inf0–inf4 and nonlin. **Forward sequential selection chose two noise columns** — greedy search on noisy CV folds overfits the search itself. RFE dropped inf0 and let its correlated copies stand in for it. Lasso kept nine, including three noise columns. And the forest's importance spread inf0's credit across inf0, red0 and dup0 (0.062 + 0.077 + 0.064), which is why a single importance number understates a feature that has copies.", "left": "method", "codeW": 210, "vars": ["what it picked", "cost"], "steps": [{"code": "RFE", "state": ["5 right; red0 and dup0 for inf0", "0.2 s"], "tone": "good"}, {"code": "forward sequential", "state": ["2 noise columns in the six", "2.8 s"], "changed": [0], "tone": "crit"}, {"code": "lasso (LassoCV)", "state": ["keeps 9, incl. 3 noise", "1 fit"], "tone": "warn"}, {"code": "forest MDI, top 8", "state": ["nonlin first, inf0's credit split", "1 fit"], "tone": "accent", "note": "0.062+0.077+0.064"}], "t": "diagram", "id": "dg-3_5-03-2"},
+
+
+
+
     { t: "code", lang: "python", title: "RFE, forward selection, lasso and forest importance on the same bench (executed)",
       hl: [2, 4, 7, 8, 11, 12],
       code: `# wrappers, logistic regression, 6 features requested
@@ -110,6 +125,11 @@ EC.receiveLesson({
     },
 
     { t: "h2", n: "04", text: "Where selection must run", id: "fold" },
+
+    {"kind": "steps", "title": "Where selection must run", "caption": "Selecting on all the rows means the choice of columns was informed by the rows you later score — and with more features than rows you can select pure noise and get a convincing cross-validated number out of it. The selector is a fitted step like any other.", "items": [{"label": "Selection inside the Pipeline", "desc": "refitted per fold, from that fold's training rows only", "code": "right", "tone": "good"}, {"label": "Each fold may choose different columns", "desc": "that is the honest answer, not a bug", "code": "note", "tone": "accent"}, {"label": "Selection before the split", "desc": "the test rows' labels chose the columns", "code": "wrong", "tone": "crit"}, {"label": "With p greater than n", "desc": "noise survives and cross-validates well", "code": "wrong", "tone": "crit"}, {"label": "Report the set as a property of the model", "desc": "not as a discovery about the world", "code": "say so", "tone": "violet"}], "t": "diagram", "id": "dg-3_5-04-3"},
+
+
+
 
     {"kind": "steps", "title": "Where selection must run", "caption": "Selecting on all the rows means the choice of columns was informed by the rows you later score — and with more features than rows you can select pure noise and get a convincing cross-validated number out of it. The selector is a fitted step like any other.", "items": [{"label": "Selection inside the Pipeline", "desc": "refitted per fold, from that fold's training rows only", "code": "right", "tone": "good"}, {"label": "Each fold may choose different columns", "desc": "that is the honest answer, not a bug", "code": "note", "tone": "accent"}, {"label": "Selection before the split", "desc": "the test rows' labels chose the columns", "code": "wrong", "tone": "crit"}, {"label": "With p greater than n", "desc": "noise survives and cross-validates well", "code": "wrong", "tone": "crit"}, {"label": "Report the set as a property of the model", "desc": "not as a discovery about the world", "code": "say so", "tone": "violet"}], "t": "diagram", "id": "dg-3_5-04-1"},
 

@@ -19,7 +19,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Choosing a split: three impurities, one dataset", id: "split" },
 
-    {"kind": "matrix", "title": "Three algorithms, three ways to pick a split", "caption": "Information gain prefers features with many values, because more candidate levels means purer children for free — C4.5's gain ratio exists to penalise exactly that, and CART limits it by only ever splitting in two. The bias does not disappear, though: impurity importance inherits it.", "cols": ["Criterion", "Splits"], "rows": ["ID3", "C4.5", "CART", "Regression (CART)"], "cells": [[{"text": "information gain", "tone": "warn"}, "one branch per category"], [{"text": "gain ratio", "tone": "good"}, "categories, plus thresholds"], [{"text": "Gini", "tone": "good"}, {"text": "always binary", "tone": "good"}], [{"text": "variance, MAE, Poisson", "tone": "good"}, "always binary"]], "t": "diagram", "id": "dg-6_1-01-0"},
+    {"kind": "trace", "title": "Two candidate splits on six rows, scored three ways", "caption": "Parent: 3 Yes / 3 No, so entropy is 1.000 bit and Gini 0.500. **Wind** sends four rows one way (3Y/1N) and two the other (pure), giving a weighted child entropy of 0.541 and an information gain of 0.459. **Outlook** splits into 1Y/2N and 2Y/1N — both still mixed — for a gain of only 0.082. Every criterion agrees here, and the last column shows why C4.5 added gain ratio: dividing by the split's own entropy penalises a feature for simply having more branches.", "left": "split", "codeW": 170, "vars": ["child entropy", "info gain", "Gini decrease", "gain ratio"], "steps": [{"code": "parent (3Y / 3N)", "state": ["1.000", "—", "G = 0.500", "—"], "tone": "violet"}, {"code": "Wind: weak / strong", "state": ["0.541", "0.459", "0.250", "0.500"], "changed": [1], "tone": "good", "note": "the winner"}, {"code": "Outlook: sunny / rain", "state": ["0.918", "0.082", "0.056", "0.082"], "tone": "crit"}, {"code": "a regression split at 1.5", "state": ["—", "—", "SSE 370.0", "—"], "tone": "accent", "note": "variance, not impurity"}], "t": "diagram", "id": "dg-6_1-01-0"},
+
+
+
+
 
 
 
@@ -96,6 +100,9 @@ the leaves predict their means, 3 and 21. Any threshold between 3 and 10 gives t
 
     { t: "h2", n: "02", text: "A tree on the churn data: depth, pruning and what it learned", id: "churn" },
 
+    {"kind": "tree", "title": "What a depth-3 tree actually learned, and what it is worth", "caption": "A readable model: three levels, eight leaves, and a rule you can print on a card. It scores 0.679 against the forest's 0.724 — so the tree costs about 0.045 of AUC and buys an explanation an on-call engineer can read at three in the morning. The catch from §03 is that the **rules themselves move** between resamples, so the explanation is less stable than it looks.", "root": {"label": "root: 16.2% churn", "sub": "989 customers", "tone": "violet", "children": [{"label": "tenure <= 12", "sub": "new customers: the highest-risk branch", "tone": "crit", "children": [{"label": "tickets >= 2", "sub": "angry and new", "tone": "crit"}, {"label": "tickets < 2", "sub": "new, quiet", "tone": "warn"}]}, {"label": "tenure > 12", "sub": "established", "tone": "good", "children": [{"label": "logins low", "sub": "disengaging", "tone": "warn"}, {"label": "logins normal", "sub": "the safe majority", "tone": "good"}]}]}, "t": "diagram", "id": "dg-6_1-02-1"},
+
+
     { t: "viz",
       title: "The depth-2 churn tree (executed; 989 rows, 15 % churn)",
       caption: "Each leaf shows its training counts [no churn, churn] and churn rate. The tree found what 4.5's coefficients said: few logins and short tenure churn. Note the eight-row leaf: five splits deeper and leaves like that become single customers.",
@@ -157,7 +164,12 @@ the leaves predict their means, 3 and 21. Any threshold between 3 and 10 gives t
 
     { t: "h2", n: "03", text: "The failure that defines trees: variance", id: "variance" },
 
+    {"kind": "matrix", "title": "Two noise columns ranked with the best real feature", "caption": "A random integer id with 989 distinct values and a random normal, added to the churn features. Mean-decrease-in-impurity ranks the noise at the top: a column with many distinct values offers many candidate thresholds, and among many random thresholds one always looks good on the training rows. Permutation importance puts random_normal at 0.032, and the CV AUC was 0.674 with the noise columns against 0.662 without — the tree used them to memorise.", "cols": ["MDI says", "What it is"], "rows": ["tenure", "random_normal", "random_id", "fee", "logins"], "cells": [[{"text": "0.178", "tone": "good"}, "a real feature; permutation 0.164"], [{"text": "0.178", "tone": "crit"}, "pure noise; permutation 0.032"], [{"text": "0.175", "tone": "crit"}, "a random id, 989 distinct values"], [{"text": "0.162", "tone": "good"}, "a real feature"], [{"text": "0.159", "tone": "warn"}, "ranked last here, first by permutation"]], "t": "diagram", "id": "dg-6_1-03-2"},
+
+
     {"kind": "matrix", "title": "Two noise columns ranked with the best real feature", "caption": "A random integer id with 989 distinct values and a random normal, added to the churn features. Mean-decrease-in-impurity ranks the noise at the top: a column with many distinct values offers many candidate thresholds, and among many random thresholds one always looks good on the training rows. Permutation importance puts random_normal at 0.032, and the CV AUC was 0.674 with the noise columns against 0.662 without — the tree used them to memorise.", "cols": ["MDI says", "What it is"], "rows": ["tenure", "random_normal", "random_id", "fee", "logins"], "cells": [[{"text": "0.178", "tone": "good"}, "a real feature; permutation 0.164"], [{"text": "0.178", "tone": "crit"}, "pure noise; permutation 0.032"], [{"text": "0.175", "tone": "crit"}, "a random id, 989 distinct values"], [{"text": "0.162", "tone": "good"}, "a real feature"], [{"text": "0.159", "tone": "warn"}, "ranked last here, first by permutation"]], "t": "diagram", "id": "dg-6_1-03-1"},
+
+
 
 
 

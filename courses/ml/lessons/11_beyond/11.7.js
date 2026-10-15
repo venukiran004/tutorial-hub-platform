@@ -26,6 +26,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "code", lang: "python", title: "A simulated loan book: 20,000 applicants, a protected attribute A, income and score correlated with A, a postcode that proxies it (executed)",
       code: `# repayment rate: group 0 0.862, group 1 0.679;  postcode = 1 for 20 % of group 0 and 71 % of group 1
 # logistic regression, approve if P(repay) >= 0.75 (break-even at £100 per repaid loan and −£300 per default)
@@ -64,6 +68,10 @@ the exercise: TPR 0.85 / FPR 0.15 with base rates 0.9 / 0.6 -> PPV 0.981 / 0.895
     { t: "h2", n: "02", text: "Causality: confounders, colliders and the effect of a promotion", id: "causality" },
 
     {"kind": "matrix", "title": "A confounder and a collider need opposite treatment", "caption": "This is the asymmetry that makes 'control for everything' wrong. Adjusting for a confounder removes bias; adjusting for a collider **creates** it. No amount of data distinguishes them — only a causal diagram does, which is why the diagram comes before the regression.", "cols": ["Structure", "Adjusting for it"], "rows": ["Confounder", "Collider", "Mediator", "Instrument"], "cells": [[{"text": "causes both X and Y", "tone": "accent"}, {"text": "removes bias: do it", "tone": "good"}], [{"text": "caused by both", "tone": "accent"}, {"text": "creates bias: do not", "tone": "crit"}], [{"text": "on the path X to Y", "tone": "accent"}, "blocks the effect you wanted"], [{"text": "causes X, not Y directly", "tone": "accent"}, "use it, do not adjust for it"]], "t": "diagram", "id": "dg-11_7-02-1"},
+
+
+
+
 
 
 

@@ -26,6 +26,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "code", lang: "text", title: "Nine words through the Porter stemmer and the WordNet lemmatiser (executed)",
       code: `word           Porter stem    lemma (as noun)   lemma as verb / adjective
 running        run            running           run / running
@@ -92,6 +96,10 @@ GridSearchCV(make_pipeline(TfidfVectorizer(sublinear_tf=True), LinearSVC()),
     { t: "h2", n: "04", text: "Retrieval: cosine on TF-IDF and BM25", id: "retrieval" },
 
     {"kind": "matrix", "title": "Cosine on TF-IDF, and what BM25 adds", "caption": "Both rank documents by weighted term overlap. BM25 adds two things TF-IDF lacks: a **saturating** term frequency, so the tenth occurrence of a word adds almost nothing, and an explicit length normalisation with a tunable strength rather than the implicit one that L2 gives.", "cols": ["Term frequency", "Length"], "rows": ["TF-IDF + cosine", "BM25", "Raw count overlap", "Binary overlap"], "cells": [[{"text": "linear, or log-damped", "tone": "accent"}, "implicit, via L2 normalisation"], [{"text": "saturating: k1", "tone": "good"}, {"text": "explicit, tunable: b", "tone": "good"}], [{"text": "linear, unbounded", "tone": "crit"}, {"text": "none: long documents win", "tone": "crit"}], [{"text": "presence only", "tone": "warn"}, "none"]], "t": "diagram", "id": "dg-11_5-04-1"},
+
+
+
+
 
 
 

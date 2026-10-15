@@ -28,6 +28,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "code", lang: "python", title: "learning_curve on data built to produce each shape (executed, 5-fold AUC, six training sizes)",
       hl: [3, 4, 7, 8, 11, 12, 15, 16],
       code: `#   n_train                          240      480      840     1,200    1,680    2,400
@@ -116,6 +120,10 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Validation curves: the dial", id: "validation" },
 
     {"kind": "steps", "title": "Reading a curve in ten seconds", "caption": "Five questions in order, and the first one that answers yes tells you what to do. The last is worth stating explicitly: a validation curve whose two lines are flat across the whole range is telling you the dial does not matter, so stop searching it.", "items": [{"label": "Is the gap wide?", "desc": "variance: regularise, average, or get data", "code": "1", "tone": "warn"}, {"label": "Are both lines low and together?", "desc": "bias: capacity or features; data will not help", "code": "2", "tone": "warn"}, {"label": "Is validation still rising at the right edge?", "desc": "data will help; get it before changing anything", "code": "3", "tone": "good"}, {"label": "Both flat and together, at a good level?", "desc": "done; the rest is features or noise", "code": "4", "tone": "good"}, {"label": "Is the fold spread wide?", "desc": "the estimate is unreliable: do not tune on it", "code": "5", "tone": "crit"}, {"label": "Both lines flat across the whole dial?", "desc": "the hyperparameter does not matter; stop searching", "code": "6", "tone": "violet"}], "t": "diagram", "id": "dg-8_3-03-1"},
+
+
+
+
 
 
 

@@ -28,6 +28,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "table", head: ["Baseline", "Forecast for T + h", "Right when"], rows: [
       ["Naive", "y_T — the last value, repeated", "a random walk; finance; anything near a unit root"],
       ["Seasonal naive", "y_{T+h−m} — the value one season ago", "a strong, stable season: the default retail baseline"],
@@ -109,6 +113,10 @@ seasonal naive + the trend it missed (y_{t−4} + 6):   MAE 0.000`,
     { t: "h2", n: "03", text: "The gap", id: "gap" },
 
     {"kind": "timeline", "title": "Rolling origins, and the gap that makes them honest", "caption": "Each origin trains on everything before it and scores the block after it, which recreates the moment the forecast is made. The **gap** is needed whenever a feature or a label is computed over a window: without it the last training labels depend on events inside the test block, and the backtest is quietly optimistic.", "span": 12, "tick": 3, "lanes": [{"label": "Origin 1", "bars": [[0, 4, "train", "accent"], [4, 5, "gap", "warn"], [5, 6, "test", "good"]]}, {"label": "Origin 2", "bars": [[0, 6, "train", "accent"], [6, 7, "gap", "warn"], [7, 8, "test", "good"]]}, {"label": "Origin 3", "bars": [[0, 8, "train", "accent"], [8, 9, "gap", "warn"], [9, 10, "test", "good"]]}, {"label": "No gap", "bars": [[0, 10, "train, whose last labels use test-period events", "crit"]]}], "t": "diagram", "id": "dg-10_3-03-1"},
+
+
+
+
 
 
 

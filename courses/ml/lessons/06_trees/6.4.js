@@ -19,6 +19,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The second-order objective and the split gain", id: "gain" },
 
+    {"kind": "flow", "title": "The second-order objective, and the split gain it implies", "caption": "Take a second-order Taylor expansion of the loss around the current prediction and the optimal leaf value falls out in closed form: −G/(H+λ), where G and H are the summed first and second derivatives in that leaf. The gain of a split is then an arithmetic comparison of three such terms — which is why XGBoost can evaluate thousands of candidate splits per node without ever refitting anything.", "cols": 3, "nodes": [{"id": "t", "label": "2nd-order Taylor of the loss", "sub": "gradients g, hessians h per row", "tone": "violet"}, {"id": "l", "label": "Optimal leaf value", "sub": "-G / (H + lambda)", "tone": "accent"}, {"id": "o", "label": "Objective per leaf", "sub": "-½ G² / (H + lambda)", "tone": "accent"}, {"id": "g", "label": "Split gain", "sub": "left + right - parent, minus gamma", "tone": "good"}, {"id": "s", "label": "Scan the candidates", "sub": "arithmetic only; nothing refitted", "tone": "good"}, {"id": "r", "label": "lambda and gamma are regularisers", "sub": "they appear in the gain itself", "tone": "teal"}], "edges": [["t", "l"], ["l", "o"], ["o", "g"], ["g", "s"], ["s", "r"]], "t": "diagram", "id": "dg-6_4-01-0"},
+
+
     { t: "code", lang: "text", title: "From the loss to a formula for every leaf and every split",
       code: `objective at round t:   Σᵢ l( yᵢ, ŷᵢ⁽ᵗ⁻¹⁾ + fₜ(xᵢ) )  +  Ω(fₜ),        Ω(f) = γ T + ½ λ Σⱼ wⱼ²        (T leaves, leaf weights wⱼ)
 
@@ -69,7 +72,12 @@ XGBoost (max_depth 1, eta 1, lambda 1, gamma 0, base_score 0.5), tree dump:
 
     { t: "h2", n: "02", text: "What each library adds", id: "libraries" },
 
+    {"kind": "matrix", "title": "Four libraries, measured on 200k x 30 for 300 rounds", "caption": "They implement the same objective and differ in how a tree is grown and how categoricals are handled. CatBoost's symmetric trees fit slowest and **predict fastest by an order of magnitude** — 0.02 s against 0.38 s — which is the trade to know when latency is the constraint.", "cols": ["Fit / predict", "Tree growth"], "rows": ["XGBoost", "LightGBM", "CatBoost", "HistGradientBoosting"], "cells": [[{"text": "4.2 s / 0.11 s", "tone": "good"}, "depth-wise by default"], [{"text": "3.4 s / 0.28 s", "tone": "good"}, {"text": "leaf-wise: num_leaves", "tone": "accent"}], [{"text": "8.4 s / 0.02 s", "tone": "accent"}, {"text": "symmetric (oblivious)", "tone": "good"}], [{"text": "4.3 s / 0.38 s", "tone": "good"}, "depth-wise; no dependency"]], "t": "diagram", "id": "dg-6_4-02-1"},
+
+
     {"kind": "matrix", "title": "Four libraries, measured on 200k x 30 for 300 rounds", "caption": "They implement the same objective and differ in how a tree is grown and how categoricals are handled. CatBoost's symmetric trees fit slowest and **predict fastest by an order of magnitude** — 0.02 s against 0.38 s — which is the trade to know when latency is the constraint.", "cols": ["Fit / predict", "Tree growth"], "rows": ["XGBoost", "LightGBM", "CatBoost", "HistGradientBoosting"], "cells": [[{"text": "4.2 s / 0.11 s", "tone": "good"}, "depth-wise by default"], [{"text": "3.4 s / 0.28 s", "tone": "good"}, {"text": "leaf-wise: num_leaves", "tone": "accent"}], [{"text": "8.4 s / 0.02 s", "tone": "accent"}, {"text": "symmetric (oblivious)", "tone": "good"}], [{"text": "4.3 s / 0.38 s", "tone": "good"}, "depth-wise; no dependency"]], "t": "diagram", "id": "dg-6_4-02-0"},
+
+
 
 
 
@@ -170,7 +178,12 @@ XGBoost (max_depth 1, eta 1, lambda 1, gamma 0, base_score 0.5), tree dump:
 
     { t: "h2", n: "03", text: "Categoricals without leakage", id: "categoricals" },
 
+    {"kind": "matrix", "title": "Categoricals without leakage", "caption": "A booster that handles categoricals natively is not thereby safe: naive target statistics computed over all rows leak the label exactly as a hand-rolled target encoder would. CatBoost's ordered boosting is the one that is safe by construction, because each row's statistic uses only rows before it in a permutation.", "cols": ["Handles it by", "Leaks"], "rows": ["CatBoost ordered", "LightGBM native", "XGBoost categorical", "HistGB native", "Naive target encoding", "Cross-fitted encoding"], "cells": [[{"text": "ordered statistics", "tone": "good"}, {"text": "no, by construction", "tone": "good"}], ["partition-based splits", "no, but <= a few hundred levels"], ["partition-based splits", "no; needs pandas category dtype"], ["native, <= 255 levels", "no"], [{"text": "the group mean, all rows", "tone": "crit"}, {"text": "yes: severely", "tone": "crit"}], [{"text": "out-of-fold means", "tone": "good"}, {"text": "no", "tone": "good"}]], "t": "diagram", "id": "dg-6_4-03-2"},
+
+
     {"kind": "matrix", "title": "Categoricals without leakage", "caption": "A booster that handles categoricals natively is not thereby safe: naive target statistics computed over all rows leak the label exactly as a hand-rolled target encoder would. CatBoost's ordered boosting is the one that is safe by construction, because each row's statistic uses only rows before it in a permutation.", "cols": ["Handles it by", "Leaks"], "rows": ["CatBoost ordered", "LightGBM native", "XGBoost enable_categorical", "HistGB native", "Naive target encoding", "Cross-fitted encoding"], "cells": [[{"text": "ordered statistics", "tone": "good"}, {"text": "no, by construction", "tone": "good"}], ["partition-based splits", "no, but <= a few hundred levels"], ["partition-based splits", "no; needs pandas category dtype"], ["native, <= 255 levels", "no"], [{"text": "the group mean, all rows", "tone": "crit"}, {"text": "yes: severely", "tone": "crit"}], [{"text": "out-of-fold means", "tone": "good"}, {"text": "no", "tone": "good"}]], "t": "diagram", "id": "dg-6_4-03-1"},
+
+
 
 
 

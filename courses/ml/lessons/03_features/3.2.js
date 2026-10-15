@@ -19,7 +19,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "One-hot, and the trap", id: "onehot" },
 
-    {"kind": "matrix", "title": "Seven encodings, by what each one assumes", "caption": "The assumption column is the whole decision. Ordinal encoding asserts an order, so applying it to an unordered column hands the model a ranking you invented — usually alphabetical, because that is what the encoder saw first. Target encoding assumes a level's mean outcome is informative, and leaks unless it is fitted in-fold.", "cols": ["Columns", "Assumes"], "rows": ["One-hot", "Ordinal", "Target (out-of-fold)", "Frequency", "Hashing", "Native (LightGBM)", "Embedding"], "cells": [[{"text": "k", "tone": "warn"}, {"text": "nothing", "tone": "good"}], [{"text": "1", "tone": "good"}, {"text": "an order exists", "tone": "crit"}], [{"text": "1", "tone": "good"}, {"text": "the level's mean is informative", "tone": "warn"}], [{"text": "1", "tone": "good"}, "rarity is informative"], [{"text": "fixed", "tone": "good"}, "collisions are tolerable"], [{"text": "1", "tone": "good"}, "the library's split rule"], [{"text": "d", "tone": "accent"}, "similar levels should be near"]], "t": "diagram", "id": "dg-3_2-01-0"},
+    {"kind": "flow", "title": "One-hot, and the trap that only bites some models", "caption": "k levels become k columns that sum to 1 in every row, so with an intercept the design matrix is singular — the dummy-variable trap. It matters for an unpenalised linear model, where coefficients become arbitrary, and it does **not** matter for a tree or a penalised model. Dropping a level fixes the collinearity and makes every coefficient a comparison against that level, which is why the choice of baseline changes what the numbers mean.", "cols": 3, "nodes": [{"id": "c", "label": "A 4-level column", "sub": "red, green, blue, yellow", "tone": "violet"}, {"id": "o", "label": "4 one-hot columns", "sub": "they sum to 1 in every row", "tone": "accent"}, {"id": "s", "label": "With an intercept: singular", "sub": "coefficients arbitrary", "tone": "crit"}, {"id": "d", "label": "drop='first'", "sub": "3 columns, blue as the baseline", "tone": "good"}, {"id": "r", "label": "Each coefficient is now", "sub": "a comparison with blue", "tone": "good"}, {"id": "t", "label": "Trees and penalised models", "sub": "unaffected either way", "tone": "teal"}], "edges": [["c", "o"], ["o", "s"], ["s", "d"], ["d", "r"], ["o", "t", "", "dashed"]], "t": "diagram", "id": "dg-3_2-01-0"},
+
+
+
+
 
 
 
@@ -63,6 +67,11 @@ OneHotEncoder(drop="first")               # [plus, pro] with basic as the refere
 
     { t: "h2", n: "02", text: "Ordinal encoding of something that is not ordered", id: "ordinal" },
 
+    {"kind": "trace", "title": "Ordinal encoding invents an order, and a line believes it", "caption": "The true effects on the logit are red +2.0, green −1.0, blue +2.5, yellow −2.0 — no order at all. The encoder sorts them alphabetically and hands the model blue 0, green 1, red 2, yellow 3, which asserts blue < green < red < yellow. A logistic regression has to fit a single straight line through +2.5, −1.0, +2.0, −2.0 and scores **0.785**; one-hot scores 0.972. A tree is untouched: it splits the integer at 0.5, 1.5 and 2.5 and recovers every level in three splits, because it never assumed the order was real.", "left": "encoding", "codeW": 230, "vars": ["logistic AUC", "forest AUC"], "steps": [{"code": "ordinal (alphabetical codes)", "state": ["0.785", "0.972"], "tone": "crit", "note": "the line is wrong"}, {"code": "one-hot", "state": ["0.972", "0.972"], "changed": [0], "tone": "good"}, {"code": "true effect: red", "state": ["+2.0", "", ""], "tone": "accent"}, {"code": "green", "state": ["-1.0", ""], "tone": "accent"}, {"code": "blue (coded 0)", "state": ["+2.5", ""], "tone": "accent"}, {"code": "yellow (coded 3)", "state": ["-2.0", ""], "tone": "accent"}], "t": "diagram", "id": "dg-3_2-02-1"},
+
+
+
+
     { t: "code", lang: "python", title: "Four colours whose effects are not monotone in alphabetical order (executed, 3,000 rows)",
       hl: [3, 4, 5, 6],
       code: `# true effect on the logit:  red +2.0   green -1.0   blue +2.5   yellow -2.0      (alphabetical: blue 0, green 1, red 2, yellow 3)
@@ -75,6 +84,11 @@ OneHotEncoder(drop="first")               # [plus, pro] with basic as the refere
     },
 
     { t: "h2", n: "03", text: "High cardinality: two thousand cities", id: "highcard" },
+
+    {"kind": "matrix", "title": "Two thousand cities: what one-hot costs and what replaces it", "caption": "At high cardinality one-hot is not merely wide — most columns have too few ones to estimate anything from, so the model is fitting noise in two thousand places. Each alternative collapses the column to one or a few, and each pays for it differently.", "cols": ["Gives up", "Unknown level at serving"], "rows": ["One-hot, k = 2000", "Target encoding", "Frequency", "Hashing", "Rare-level grouping"], "cells": [[{"text": "nothing, but 2000 columns", "tone": "crit"}, "handle_unknown='ignore': all zeros"], [{"text": "safety without in-fold fitting", "tone": "warn"}, "the global mean"], [{"text": "identity", "tone": "warn"}, "0"], [{"text": "reversibility", "tone": "warn"}, {"text": "handled by construction", "tone": "good"}], [{"text": "the tail", "tone": "warn"}, "lands in 'other'"]], "t": "diagram", "id": "dg-3_2-03-2"},
+
+
+
 
     {"kind": "matrix", "title": "Two thousand cities: what one-hot costs and what replaces it", "caption": "At high cardinality one-hot is not merely wide — most columns have too few ones to estimate anything from, so the model is fitting noise in two thousand places. Each alternative collapses the column to one or a few, and each pays for it differently.", "cols": ["Gives up", "Unknown level at serving"], "rows": ["One-hot, k = 2000", "Target encoding", "Frequency", "Hashing", "Rare-level grouping"], "cells": [[{"text": "nothing, but 2000 columns", "tone": "crit"}, "handle_unknown='ignore': all zeros"], [{"text": "safety without in-fold fitting", "tone": "warn"}, "the global mean"], [{"text": "identity", "tone": "warn"}, "0"], [{"text": "reversibility", "tone": "warn"}, {"text": "handled by construction", "tone": "good"}], [{"text": "the tail", "tone": "warn"}, "lands in 'other'"]], "t": "diagram", "id": "dg-3_2-03-1"},
 

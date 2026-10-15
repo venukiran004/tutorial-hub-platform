@@ -33,6 +33,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "code", lang: "text", title: "spend_12m on four features, statsmodels OLS (executed, 989 rows)",
       code: `                 coef     std err        t      P>|t|     [0.025    0.975]
 const         -26.307       3.030     -8.68     0.000    -32.25    -20.36
@@ -60,6 +64,10 @@ t = coef / std err;  P>|t| = the two-sided probability of a t that large if the 
     },
 
     { t: "h2", n: "02", text: "The diagnostics on the real model", id: "diagnostics" },
+
+    {"kind": "trace", "title": "The diagnostics on the real model, band by band", "caption": "Two failures, both visible in the same table. The **mean** residual bends: a straight line under-predicts new customers by £56 and over-predicts one-year customers by £28, and the RESET test rejects linearity at p = 1e−5. The residual **sd** falls from 36.7 to 9.4 — thirteen times the variance at the start of tenure — and Breusch-Pagan rejects equal variance at p = 6e−44. The cause is one fact about the data: spend accrues at fee × months for the first twelve months.", "left": "tenure band", "codeW": 150, "vars": ["mean residual", "residual sd", "what it says"], "steps": [{"code": "0-6 months", "state": ["-55.9", "36.7", "under-predicted, and noisy"], "tone": "crit"}, {"code": "6-12", "state": ["+7.6", "19.5", ""], "tone": "warn"}, {"code": "12-18", "state": ["+27.9", "9.4", "over-predicted"], "changed": [0], "tone": "crit"}, {"code": "18-24", "state": ["+21.2", "", ""]}, {"code": "24-36", "state": ["+11.6", "", ""]}, {"code": "36-48", "state": ["+0.3", "", "the line is right here"], "tone": "good"}, {"code": "48-60", "state": ["-12.8", "11.2", ""], "tone": "warn"}, {"code": "verdict", "state": ["RESET p = 1e-5", "BP p = 6e-44", "both rejected"], "tone": "violet"}], "t": "diagram", "id": "dg-4_2-02-1"},
+
+
 
     { t: "code", lang: "python", title: "Linearity, equal variance, normality, independence, collinearity — all run (executed)",
       hl: [2, 3, 4, 8, 9, 12, 15, 18, 19],
@@ -110,7 +118,12 @@ r = OLS(y, X).fit(cov_type="HC3")                                      # heteros
 
     { t: "h2", n: "03", text: "Leverage, outliers, influence", id: "influence" },
 
+    {"kind": "matrix", "title": "Leverage, outlier, influence — three different things", "caption": "A point can be extreme in x and sit exactly on the line, contributing nothing; or be moderate in x with a large residual and barely move the fit. Influence is the product of the two, which is why Cook's distance is the statistic to read and not either input on its own.", "cols": ["Is", "Moves the fit"], "rows": ["High leverage", "Large residual", "High influence", "Cook's distance", "Studentised residual"], "cells": [["extreme in x", {"text": "only if it also has a residual", "tone": "accent"}], ["far from the line in y", {"text": "only if it also has leverage", "tone": "accent"}], [{"text": "both at once", "tone": "crit"}, {"text": "yes: this is the one to find", "tone": "crit"}], [{"text": "leverage x residual", "tone": "good"}, "the statistic that combines them"], ["the residual, scaled properly", "identifies the outlier half"]], "t": "diagram", "id": "dg-4_2-03-2"},
+
+
+
     {"kind": "matrix", "title": "Leverage, outlier, influence — three different things", "caption": "A point can be extreme in x and sit exactly on the line, contributing nothing; or be moderate in x with a large residual and barely move the fit. Influence is the product of the two, which is why Cook's distance is the statistic to read and not either input on its own.", "cols": ["Is", "Moves the fit"], "rows": ["High leverage", "Large residual", "High influence", "Cook's distance", "Studentised residual"], "cells": [["extreme in x", {"text": "only if it also has a residual", "tone": "accent"}], ["far from the line in y", {"text": "only if it also has leverage", "tone": "accent"}], [{"text": "both at once", "tone": "crit"}, {"text": "yes: this is the one to find", "tone": "crit"}], [{"text": "leverage x residual", "tone": "good"}, "the statistic that combines them"], ["the residual, scaled properly", "identifies the outlier half"]], "t": "diagram", "id": "dg-4_2-03-1"},
+
 
 
 
@@ -177,6 +190,10 @@ r = OLS(y, X).fit(cov_type="HC3")                                      # heteros
     },
 
     { t: "h2", n: "04", text: "When the variance is not constant, and when the errors are not independent", id: "wls" },
+
+    {"kind": "flow", "title": "When the standard error is wrong, fix the standard error", "caption": "Heteroscedasticity and correlated errors leave the coefficients unbiased and make their standard errors wrong — so the repair is to the **uncertainty**, not the fit. Robust and clustered errors make no distributional claim at all; they estimate the variance from the residuals you actually got.", "cols": 3, "nodes": [{"id": "d", "label": "Residual sd varies", "sub": "a funnel; BP rejects", "tone": "crit"}, {"id": "h", "label": "HC3 robust errors", "sub": "same β, honest se", "tone": "good"}, {"id": "w", "label": "Weighted least squares", "sub": "if you can model the variance", "tone": "accent"}, {"id": "c", "label": "Errors correlated by group", "sub": "several rows per entity", "tone": "crit"}, {"id": "g", "label": "Cluster-robust errors", "sub": "by the grouping unit", "tone": "good"}, {"id": "t", "label": "Correlated in time", "sub": "HAC / Newey-West, or model it", "tone": "good"}], "edges": [["d", "h"], ["d", "w"], ["c", "g"], ["g", "t"]], "t": "diagram", "id": "dg-4_2-04-3"},
+
+
 
     { t: "code", lang: "python", title: "Heteroscedastic data: OLS, robust SEs, weighted least squares — and a coverage check (executed)",
       hl: [2, 3, 4, 8],

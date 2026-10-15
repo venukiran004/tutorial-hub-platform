@@ -19,7 +19,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "From odds to the sigmoid", id: "sigmoid" },
 
-    {"kind": "steps", "title": "From odds to the sigmoid, in one line of algebra", "caption": "The sigmoid is not chosen for its shape — it is what you get by asserting that the **log-odds** are linear and then solving for p. That is why logistic regression's coefficients are read as log-odds, and why exponentiating one gives an odds ratio rather than a probability change.", "items": [{"label": "Model the log-odds as linear", "desc": "log(p / (1 - p)) = Xb — the assumption, stated", "code": "1", "tone": "accent"}, {"label": "Exponentiate", "desc": "p / (1 - p) = exp(Xb): the odds", "code": "2", "tone": "good"}, {"label": "Solve for p", "desc": "p = exp(Xb) / (1 + exp(Xb)) = 1 / (1 + exp(-Xb))", "code": "3", "tone": "good"}, {"label": "That is the sigmoid", "desc": "derived, not assumed; bounded in (0, 1) by construction", "code": "4", "tone": "violet"}, {"label": "So a coefficient is a log-odds change", "desc": "and exp(coefficient) is an odds ratio, not a probability", "code": "read", "tone": "teal"}], "t": "diagram", "id": "dg-4_5-01-0"},
+    {"kind": "steps", "title": "From odds to the sigmoid, in one line of algebra", "caption": "The sigmoid is not chosen for its shape — it is what you get by asserting that the **log-odds** are linear and then solving for p. That is why logistic regression's coefficients are read as log-odds, and why exponentiating one gives an odds ratio rather than a probability change.", "items": [{"label": "Model the log-odds as linear", "desc": "log(p / (1 - p)) = Xb — the assumption, stated", "code": "1", "tone": "accent"}, {"label": "Exponentiate", "desc": "p / (1 - p) = exp(Xb): the odds", "code": "2", "tone": "good"}, {"label": "Solve for p", "desc": "p = 1 / (1 + exp(-Xb))", "code": "3", "tone": "good"}, {"label": "That is the sigmoid", "desc": "derived, not assumed; bounded in (0, 1) by construction", "code": "4", "tone": "violet"}, {"label": "So a coefficient is a log-odds change", "desc": "and exp(coefficient) is an odds ratio, not a probability", "code": "read", "tone": "teal"}], "t": "diagram", "id": "dg-4_5-01-0"},
+
+
+
+
 
 
 
@@ -83,6 +87,10 @@ CONSEQUENCE 3   the decision boundary p = 0.5 is xᵀβ = 0: a hyperplane. Any o
 
     { t: "h2", n: "02", text: "The loss and its gradient, derived", id: "gradient" },
 
+    {"kind": "flow", "title": "The gradient that falls out of the likelihood", "caption": "Write the Bernoulli likelihood, take its negative log, differentiate — and the sigmoid's derivative cancels the log's, leaving **X'(p − y)**: the features weighted by the residual, with no second-order term in sight. The same form appears in linear regression with p replaced by the prediction, which is why both fit with the same optimiser.", "cols": 3, "nodes": [{"id": "l", "label": "Bernoulli likelihood", "sub": "p^y (1-p)^(1-y) per row", "tone": "violet"}, {"id": "n", "label": "Negative log", "sub": "-[y log p + (1-y) log(1-p)]", "tone": "accent"}, {"id": "d", "label": "Differentiate", "sub": "the sigmoid's derivative cancels", "tone": "accent"}, {"id": "g", "label": "X'(p - y)", "sub": "features times residual: that is all", "tone": "good"}, {"id": "c", "label": "Convex in β", "sub": "one basin; any solver finds it", "tone": "good"}, {"id": "s", "label": "Same shape as OLS", "sub": "with p in place of the prediction", "tone": "teal"}], "edges": [["l", "n"], ["n", "d"], ["d", "g"], ["g", "c"], ["c", "s"]], "t": "diagram", "id": "dg-4_5-02-1"},
+
+
+
     { t: "code", lang: "text", title: "Maximum likelihood to cross-entropy to Xᵀ(p − y)",
       code: `each label is Bernoulli:   P(y | x) = p^y (1 - p)^{1 - y}          with p = σ(xᵀβ)
 likelihood of n independent rows:   L(β) = Π pᵢ^{yᵢ} (1 - pᵢ)^{1 - yᵢ}
@@ -122,7 +130,12 @@ LogisticRegression(penalty=None).fit(Xs, y)      # lbfgs: NLL 314.265
 
     { t: "h2", n: "03", text: "Reading the coefficients", id: "coefficients" },
 
+    {"kind": "matrix", "title": "The sign that flipped: fee and plan in the same model", "caption": "The fee is 7.99, 12.99 or 19.99 **by plan**, plus half a pound of noise — so fee and the plan dummies are nearly the same information. VIF is 77 for fee and 84 for plan_pro. The pair's joint effect is estimated fine; its split between them is arbitrary. Check VIF before reading an odds ratio.", "cols": ["With fee in the model", "Without fee"], "rows": ["plan_plus", "plan_pro", "VIF, fee", "VIF, plan_pro", "Joint effect"], "cells": [[{"text": "+0.655: churn more?", "tone": "crit"}, {"text": "-0.01", "tone": "good"}], [{"text": "+0.547", "tone": "crit"}, {"text": "-1.04: near the generator", "tone": "good"}], [{"text": "77", "tone": "crit"}, "the near-duplication is the cause"], [{"text": "84", "tone": "crit"}, "same"], [{"text": "estimated fine", "tone": "good"}, "only the split is arbitrary"]], "t": "diagram", "id": "dg-4_5-03-2"},
+
+
+
     {"kind": "matrix", "title": "The sign that flipped: fee and plan in the same model", "caption": "The fee is 7.99, 12.99 or 19.99 **by plan**, plus half a pound of noise — so fee and the plan dummies are nearly the same information. VIF is 77 for fee and 84 for plan_pro. The pair's joint effect is estimated fine; its split between them is arbitrary. Check VIF before reading an odds ratio.", "cols": ["With fee in the model", "Without fee"], "rows": ["plan_plus", "plan_pro", "VIF, fee", "VIF, plan_pro", "Joint effect"], "cells": [[{"text": "+0.655: churn more?", "tone": "crit"}, {"text": "-0.01", "tone": "good"}], [{"text": "+0.547", "tone": "crit"}, {"text": "-1.04: near the generator", "tone": "good"}], [{"text": "77", "tone": "crit"}, "the near-duplication is the cause"], [{"text": "84", "tone": "crit"}, "same"], [{"text": "estimated fine", "tone": "good"}, "only the split is arbitrary"]], "t": "diagram", "id": "dg-4_5-03-1"},
+
 
 
 
@@ -171,6 +184,10 @@ LogisticRegression(penalty=None).fit(Xs, y)      # lbfgs: NLL 314.265
     },
 
     { t: "h2", n: "04", text: "Regularisation, separation and the non-convex alternative", id: "failures" },
+
+    {"kind": "trace", "title": "Sweeping C, and the separation that has no finite answer", "caption": "On 863 rows with 11 columns the penalty barely matters — log-loss moves from 0.3726 to 0.3757 across five decades of C, because there is little variance to remove. Tune it anyway; it costs nothing. The second block is the pathology: with **perfectly separable** data the likelihood keeps improving as the coefficient grows, so the unpenalised MLE does not exist — the coefficient went 2.67 to 15.11 and the training loss to 0.0544 on its way to infinity. Any penalty at all makes the problem well-posed.", "left": "C", "codeW": 150, "vars": ["log-loss", "AUC", "||coef||", "max |coef|"], "steps": [{"code": "0.001", "state": ["0.4176", "0.7487", "0.11", "0.06"], "tone": "crit", "note": "almost the base rate"}, {"code": "0.01", "state": ["0.3851", "0.7536", "0.51", "0.30"], "tone": "warn"}, {"code": "0.1", "state": ["0.3726", "0.7558", "0.96", "0.61"], "changed": [0], "tone": "good", "note": "best, by a hair"}, {"code": "1 (default)", "state": ["0.3742", "0.7550", "1.11", "0.73"], "tone": "good"}, {"code": "1000", "state": ["0.3757", "0.7520", "1.28", "0.76"], "tone": "accent", "note": "effectively none"}, {"code": "separable, C = 1", "state": ["0.2502", "", "", "2.67"], "tone": "warn"}, {"code": "separable, C = 100", "state": ["0.0544", "", "", "15.11"], "changed": [3], "tone": "crit", "note": "diverging"}], "t": "diagram", "id": "dg-4_5-04-3"},
+
+
 
     { t: "code", lang: "python", title: "C from 0.001 to 1,000 on the churn target with dummies, 5-fold out-of-fold predictions (executed)",
       hl: [4, 5],

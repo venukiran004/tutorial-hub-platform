@@ -19,6 +19,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Reshaping a distribution", id: "transforms" },
 
+    {"kind": "trace", "title": "A log transform made the skew worse, and a fitted power fixed it", "caption": "Spend has skew +0.59 and a hard zero. `log1p` takes it to **−2.06** — worse, and in the other direction, because it stretches the zeros and near-zeros into a long left tail. A fitted Box-Cox finds λ = 0.644, between a square root and no transform at all, and lands on +0.03. The lesson generalises: `log1p` is the right bend for a **count** with many zeros (tickets, skew 0.93 to 0.32) and the wrong one for a continuous amount with a floor.", "left": "transform", "codeW": 250, "vars": ["skew", "note"], "steps": [{"code": "spend_12m, raw", "state": ["+0.59", "a right tail and a hard zero"], "tone": "accent"}, {"code": "log1p(spend)", "state": ["-2.06", "worse, and the other way"], "changed": [0], "tone": "crit"}, {"code": "Box-Cox, λ = 0.644", "state": ["+0.03", "a fitted bend"], "changed": [0], "tone": "good"}, {"code": "Yeo-Johnson, λ = 0.644", "state": ["+0.03", "accepts zeros and negatives"], "tone": "good"}, {"code": "QuantileTransformer", "state": ["0.00", "any shape becomes Gaussian"], "tone": "accent"}, {"code": "tickets (46% zeros), raw", "state": ["0.93", "a count"], "tone": "accent"}, {"code": "log1p(tickets)", "state": ["0.32", "for a count, log1p is right"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-3_4-01-0"},
+
+
+
+
     { t: "code", lang: "python", title: "The spend column, and four ways to unskew it (executed)",
       hl: [2, 3, 4, 5, 9, 10, 11],
       code: `spend_12m:  skew +0.59   mean 122.0   median 103.9   min 0.0                <- a right tail, and a hard zero
@@ -56,6 +61,11 @@ support_tickets (a count, 46 % zeros):   skew 0.93   log1p skew 0.32        <- f
     ]},
 
     { t: "h2", n: "02", text: "Interactions: one right product against thirty generic ones", id: "interactions" },
+
+    {"kind": "matrix", "title": "Nine shapes of derived feature, and who needs them", "caption": "The last column is the part worth internalising: most of these exist to give a **linear or distance** model something it cannot construct itself. A tree can already find a threshold interaction by nesting two splits, so generic polynomial expansion mostly adds width and noise there.", "cols": ["Form", "Needed by"], "rows": ["Ratio", "Product", "Difference", "Datetime parts", "Cyclical", "Aggregates", "Indicator"], "cells": [["a / b", {"text": "linear, distance", "tone": "accent"}], ["a x b", {"text": "linear, distance", "tone": "accent"}], ["a - b, or a - lag(a)", {"text": "all, when trend beats level", "tone": "good"}], ["month, weekday, hour", {"text": "all", "tone": "good"}], ["sin and cos of the part", {"text": "linear, distance", "tone": "accent"}], ["group mean, count, rank", {"text": "all — in-fold only", "tone": "warn"}], ["a > threshold, is-zero", {"text": "all", "tone": "good"}]], "t": "diagram", "id": "dg-3_4-02-1"},
+
+
+
 
     {"kind": "matrix", "title": "Nine shapes of derived feature, and who needs them", "caption": "The last column is the part worth internalising: most of these exist to give a **linear or distance** model something it cannot construct itself. A tree can already find a threshold interaction by nesting two splits, so generic polynomial expansion mostly adds width and noise there.", "cols": ["Form", "Needed by"], "rows": ["Ratio", "Product", "Difference", "Datetime parts", "Cyclical", "Aggregates", "Indicator"], "cells": [["a / b", {"text": "linear, distance", "tone": "accent"}], ["a x b", {"text": "linear, distance", "tone": "accent"}], ["a - b, or a - lag(a)", {"text": "all, when trend beats level", "tone": "good"}], ["month, weekday, hour", {"text": "all", "tone": "good"}], ["sin and cos of the part", {"text": "linear, distance", "tone": "accent"}], ["group mean, count, rank", {"text": "all — in-fold only", "tone": "warn"}], ["a > threshold, is-zero", {"text": "all", "tone": "good"}]], "t": "diagram", "id": "dg-3_4-02-0"},
 
@@ -98,6 +108,11 @@ support_tickets (a count, 46 % zeros):   skew 0.93   log1p skew 0.32        <- f
     },
 
     { t: "h2", n: "03", text: "Letting a line bend: bins, splines, cycles", id: "bend" },
+
+    {"kind": "flow", "title": "Three ways to let a straight line bend", "caption": "A linear model's coefficient is one number for the whole range, which asserts the effect is constant. Each of these buys a different kind of flexibility: bins give a step function and discard resolution inside each step, splines bend smoothly where the knots are, and a cyclical pair makes midnight adjacent to 23:00 instead of twenty-three hours away.", "cols": 2, "nodes": [{"id": "l", "label": "One coefficient", "sub": "the effect is constant across the range", "tone": "violet"}, {"id": "b", "label": "Bins", "sub": "a step per interval; resolution lost inside", "tone": "accent"}, {"id": "s", "label": "Splines", "sub": "smooth, bends at the knots, linear tails", "tone": "good"}, {"id": "c", "label": "sin and cos", "sub": "hour 23 and hour 0 become neighbours", "tone": "teal"}], "edges": [["l", "b"], ["l", "s"], ["b", "c", "", "dashed"]], "t": "diagram", "id": "dg-3_4-03-2"},
+
+
+
 
     { t: "code", lang: "python", title: "A U-shaped risk in one feature, and four linear models (executed, 3,000 synthetic rows)",
       hl: [2, 3, 4, 5],
@@ -144,6 +159,11 @@ cos(2π·hour/24)   [ 1.000,  0.966,  0.000, -1.000, -0.000,  0.966]
     },
 
     { t: "h2", n: "04", text: "Outliers: find, then decide", id: "outliers" },
+
+    {"kind": "steps", "title": "Find, then decide — and they are separate steps", "caption": "Detection is a statistical question with several answers; what to do about it is a domain question with only one source of truth. Collapsing them is how a genuine extreme value — the bulk order, the record day — gets winsorised into a plausible-looking lie.", "items": [{"label": "Find candidates", "desc": "IQR or robust z per column, Mahalanobis or Isolation Forest jointly", "code": "1", "tone": "accent"}, {"label": "Ask what the row is", "desc": "an impossible value, a unit mix-up, a sentinel, or a real event", "code": "2", "tone": "good"}, {"label": "A data error", "desc": "fix at source, or set NaN and impute with an indicator", "code": "fix", "tone": "warn"}, {"label": "A genuine extreme", "desc": "keep it; consider a robust loss or a log target instead", "code": "keep", "tone": "good"}, {"label": "Winsorising without asking", "desc": "turns a real event into a plausible-looking lie", "code": "never", "tone": "crit"}], "t": "diagram", "id": "dg-3_4-04-3"},
+
+
+
 
     {"kind": "steps", "title": "Find, then decide — and they are separate steps", "caption": "Detection is a statistical question with several answers; what to do about it is a domain question with only one source of truth. Collapsing them is how a genuine extreme value — the bulk order, the record day — gets winsorised into a plausible-looking lie.", "items": [{"label": "Find candidates", "desc": "IQR or robust z per column, Mahalanobis or Isolation Forest jointly", "code": "1", "tone": "accent"}, {"label": "Ask what the row is", "desc": "an impossible value, a unit mix-up, a sentinel, or a real event", "code": "2", "tone": "good"}, {"label": "A data error", "desc": "fix at source, or set NaN and impute with an indicator", "code": "fix", "tone": "warn"}, {"label": "A genuine extreme", "desc": "keep it; consider a robust loss or a log target instead", "code": "keep", "tone": "good"}, {"label": "Winsorising without asking", "desc": "turns a real event into a plausible-looking lie", "code": "never", "tone": "crit"}], "t": "diagram", "id": "dg-3_4-04-1"},
 

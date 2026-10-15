@@ -19,6 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Ridge: the closed form and what it shrinks", id: "ridge" },
 
+    {"kind": "trace", "title": "Ridge in the SVD basis: it shrinks the weak direction hardest", "caption": "The data has two directions carrying d² = 22.68 and 2.12 of variance. Ridge multiplies each direction's coefficient by d²/(d²+λ), so at λ = 1 the strong direction keeps **96%** and the weak one **68%**; at λ = 10 the weak direction is mostly gone. That is the whole mechanism: ridge does not shrink every coefficient equally, it shrinks in proportion to how little the data says about that direction.", "left": "lambda", "codeW": 120, "vars": ["coefficients", "norm", "strong dir kept", "weak dir kept"], "steps": [{"code": "λ = 0", "state": ["[0.667, 1.333]", "1.491", "100%", "100%"], "tone": "accent", "note": "OLS"}, {"code": "λ = 1", "state": ["[0.705, 1.225]", "1.413", "96%", "68%"], "changed": [3], "tone": "good"}, {"code": "λ = 10", "state": ["[0.586, 0.828]", "1.015", "69%", "17%"], "changed": [3], "tone": "warn"}, {"code": "λ = 100", "state": ["[0.162, 0.216]", "0.270", "18%", "2%"], "changed": [2, 3], "tone": "crit", "note": "never reaches zero"}], "t": "diagram", "id": "dg-4_3-01-0"},
+
+
+
     { t: "code", lang: "text", title: "Objective, gradient, solution — and why the matrix is always invertible",
       code: `J(β) = ‖y - Xβ‖²  +  λ ‖β‖²₂                          (features standardised, y centred, intercept unpenalised)
 
@@ -58,6 +62,10 @@ the SVD view:  β̂_ridge = V · diag( dⱼ / (dⱼ² + λ) ) · Uᵀ y,   so al
 
     { t: "h2", n: "02", text: "Lasso: soft-thresholding, worked", id: "lasso" },
 
+    {"kind": "trace", "title": "Lasso by soft-thresholding, worked to convergence", "caption": "Coordinate descent updates one coefficient at a time with the soft-threshold S(ρ, λ) = sign(ρ)·max(|ρ| − λ, 0). With ρ₀ = 6.325, each λ subtracts itself from the correlation — and at λ = 5 the subtraction leaves 1.325, which after cycling drives feature 0 to **exactly zero**. The hand calculation matches scikit-learn to three decimals.", "left": "lambda", "codeW": 120, "vars": ["S(6.325, λ)", "converged β", "sklearn"], "steps": [{"code": "λ = 0.5", "state": ["5.825", "[1.834, 4.855]", "[1.834, 4.854]"], "tone": "good"}, {"code": "λ = 2.0", "state": ["4.325", "[1.010, 4.032]", "[1.011, 4.031]"], "tone": "good"}, {"code": "λ = 5.0", "state": ["1.325", "[0.000, 1.862]", "[0.000, 1.862]"], "changed": [1], "tone": "crit", "note": "feature 0 is out"}], "t": "diagram", "id": "dg-4_3-02-1"},
+
+
+
     { t: "code", lang: "text", title: "From the subgradient to the update",
       code: `J(β) = ½ ‖y - Xβ‖² + λ ‖β‖₁                |βⱼ| has no derivative at 0; its subgradient is  sign(βⱼ) if βⱼ ≠ 0, and any value in [-1, 1] if βⱼ = 0
 
@@ -87,7 +95,12 @@ cycle over j until nothing changes: coordinate descent. Each step is exact; the 
 
     { t: "h2", n: "03", text: "Why the corner: geometry and priors", id: "geometry" },
 
+    {"kind": "compare", "title": "Why L1 lands on the corner and L2 never does", "caption": "The constraint region's shape decides it. A diamond has corners **on the axes**, and a contour of the squared error is overwhelmingly likely to first touch a convex region at a corner; a circle has no corners, so the solution is shrunk but never exactly zero. The prior view says the same thing: a Laplace prior has a spike at zero, a Gaussian does not.", "columns": [{"title": "L2 / ridge", "tone": "accent", "items": ["Constraint region is a circle", "Contours touch it at a smooth point", "Gradient 2λw vanishes near zero", "Gaussian prior: smooth at 0", "Shrinks; never reaches zero"]}, {"title": "L1 / lasso", "tone": "good", "items": ["Constraint region is a diamond", "Contours touch it at a corner, on an axis", "Gradient ±λ never weakens", "Laplace prior: a spike at 0", "Sets coefficients to exactly zero"]}], "t": "diagram", "id": "dg-4_3-03-2"},
+
+
+
     {"kind": "matrix", "title": "Why L1 lands on the corner and L2 never does", "caption": "The constraint region's shape decides it. A diamond has corners **on the axes**, and a contour of the squared error is overwhelmingly likely to first touch a convex region at a corner; a circle has no corners, so the solution is shrunk but never exactly zero. The prior view says the same thing: a Laplace prior has a spike at zero, a Gaussian does not.", "cols": ["L2 / ridge", "L1 / lasso"], "rows": ["Constraint region", "Where contours touch", "Zeros", "Prior", "Solution"], "cells": [[{"text": "a circle", "tone": "accent"}, {"text": "a diamond", "tone": "accent"}], ["a smooth point: no axis", {"text": "a corner: on an axis", "tone": "good"}], [{"text": "never", "tone": "warn"}, {"text": "yes: selection", "tone": "good"}], ["Gaussian: smooth at 0", {"text": "Laplace: a spike at 0", "tone": "good"}], [{"text": "closed form, unique", "tone": "good"}, "coordinate descent"]], "t": "diagram", "id": "dg-4_3-03-0"},
+
 
 
 
@@ -145,7 +158,12 @@ probability:  L2 is a Gaussian prior, flat at zero -- 'small, not exactly zero'.
 
     { t: "h2", n: "04", text: "Correlated features: the three penalties diverge", id: "correlated" },
 
+    {"kind": "matrix", "title": "Correlated features are where the three penalties part company", "caption": "This is the practical reason to prefer elastic net when you do not know the structure: with a correlated group, ridge shares the weight and stays stable, lasso picks one member **arbitrarily** — so a resample can change which one — and elastic net keeps them together.", "cols": ["Correlated features", "p > n"], "rows": ["Ridge", "Lasso", "Elastic net"], "cells": [[{"text": "shares weight; stable", "tone": "good"}, "fine"], [{"text": "picks one, arbitrarily", "tone": "crit"}, {"text": "at most n non-zero", "tone": "warn"}], [{"text": "groups them", "tone": "good"}, "fine"]], "t": "diagram", "id": "dg-4_3-04-3"},
+
+
+
     {"kind": "matrix", "title": "Correlated features are where the three penalties part company", "caption": "This is the practical reason to prefer elastic net when you do not know the structure: with a correlated group, ridge shares the weight and stays stable, lasso picks one member **arbitrarily** — so a resample can change which one — and elastic net keeps them together.", "cols": ["Correlated features", "p > n"], "rows": ["Ridge", "Lasso", "Elastic net"], "cells": [[{"text": "shares weight; stable", "tone": "good"}, "fine"], [{"text": "picks one, arbitrarily", "tone": "crit"}, {"text": "at most n non-zero", "tone": "warn"}], [{"text": "groups them", "tone": "good"}, "fine"]], "t": "diagram", "id": "dg-4_3-04-1"},
+
 
 
 

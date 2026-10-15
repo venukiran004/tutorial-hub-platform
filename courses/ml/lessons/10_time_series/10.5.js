@@ -43,6 +43,10 @@ executed on 2,000 simulated points:
 
 
 
+
+
+
+
     { t: "p", text: "This is the classic interview question, and it has a definite answer. A fitted ARIMA(1,1,1) with drift has c = 0.8, φ = 0.5, θ = 0.3; the last two observations are y₁₁ = 42.5 and y₁₂ = 54.0; the last residual is ε₁₂ = −1.2. Because d = 1 the model lives in differences z_t = y_t − y_{t−1}, so the first move is z₁₂ = 11.5. The one-step forecast is z̑₁₃ = c + φ z₁₂ + θ ε₁₂; beyond one step the future errors are unknown, their expectation is zero, and the MA term drops out; each further step feeds its own prediction back in; and the level forecast is the cumulative sum." },
 
     { t: "code", lang: "text", title: "ARIMA(1,1,1) with drift, four steps ahead (executed)",
@@ -67,6 +71,10 @@ the same recursion on a FITTED model (a simulated ARIMA(1,1,1)+drift, n = 600):
     { t: "h2", n: "03", text: "SARIMA multiplies", id: "sarima" },
 
     {"kind": "steps", "title": "Twelve points cannot estimate an ARIMA(1,1,1)", "caption": "Fitted to twelve quarterly numbers, statsmodels returns φ = −1.000 and θ = 0.996 — the **boundary** of the parameter space, where the AR root sits on the unit circle and the MA term tries to cancel it. That is not a model; it is an optimiser with nothing to work with.", "items": [{"label": "Twelve observations, three parameters", "desc": "plus a differencing order and a variance", "code": "1", "tone": "warn"}, {"label": "phi = -1.000", "desc": "the AR root on the unit circle: the boundary", "code": "2", "tone": "crit"}, {"label": "theta = 0.996", "desc": "the MA term trying to cancel it", "code": "3", "tone": "crit"}, {"label": "No error is raised", "desc": "the fit 'succeeds' and the forecast looks plausible", "code": "4", "tone": "crit"}, {"label": "A simple model needs a few dozen points", "desc": "a seasonal one needs several whole seasons", "code": "rule", "tone": "good"}, {"label": "The store fits here have 900", "desc": "which is why their orders are identifiable", "code": "note", "tone": "good"}], "t": "diagram", "id": "dg-10_5-03-1"},
+
+
+
+
 
 
 

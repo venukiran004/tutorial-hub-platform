@@ -26,6 +26,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "A frequentist treats the parameter as fixed and the data as random, and reports the parameter value that makes the data most likely — the maximum-likelihood estimate — with a confidence interval about the procedure. A Bayesian treats the parameter as uncertain, encodes what was believed before the data in a prior p(θ), and updates it by Bayes' rule to a posterior p(θ | data) ∝ p(data | θ) p(θ). The posterior mode is the MAP estimate — the MLE with a prior — and the posterior mean, spread and intervals are all read from the same distribution. When the prior and likelihood are conjugate the posterior has a closed form; a Beta prior on a coin's probability is the classic case." },
 
     { t: "code", lang: "text", title: "Three heads in four tosses, prior Beta(2, 2) (executed)",
@@ -122,6 +126,10 @@ after three points at −1.5, 0, 2:   EI proposes x = 2.65 (EI 0.511);   UCB wit
     { t: "h2", n: "06", text: "Thompson sampling: the posterior as the policy", id: "thompson" },
 
     {"kind": "matrix", "title": "Why the posterior makes a good policy", "caption": "Thompson sampling needs no exploration parameter at all: drawing one sample per arm from each posterior and playing the best explores exactly in proportion to how uncertain the arm is, and that proportion shrinks on its own as evidence arrives.", "cols": ["Explores by", "Tuning"], "rows": ["Epsilon-greedy", "UCB", "Thompson sampling", "Bayesian optimisation"], "cells": [[{"text": "acting randomly epsilon of the time", "tone": "warn"}, "epsilon, and a decay schedule"], [{"text": "an optimism bonus", "tone": "accent"}, "the confidence width"], [{"text": "sampling the posterior", "tone": "good"}, {"text": "none: it self-anneals", "tone": "good"}], [{"text": "an acquisition function", "tone": "accent"}, "the kernel, and the acquisition"]], "t": "diagram", "id": "dg-11_2-06-1"},
+
+
+
+
 
 
 

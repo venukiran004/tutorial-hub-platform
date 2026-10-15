@@ -28,6 +28,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "A vector autoregression regresses every series on every series' past: y_t = c + A₁y_{t−1} + … + A_p y_{t−p} + ε_t, with k²p coefficients for k series and p lags — three series at four lags is 36 parameters, which is the main practical constraint. Granger's test asks whether the past of x improves the prediction of y beyond what y's own past gives: an F-test of the restricted regression (y on its own lags) against the unrestricted one (y on its own lags and x's). Both series must be stationary first, or the test compares common trends." },
 
     { t: "code", lang: "python", title: "A two-day lead, recovered; and the confounder that fools the test (executed, 600 points)",
@@ -45,6 +49,10 @@ grangercausalitytests(df2[["y", "x"]], maxlag=2)     # 'x Granger-causes y': p =
     { t: "h2", n: "02", text: "Cointegration: when differencing throws away the signal", id: "cointegration" },
 
     {"kind": "matrix", "title": "Choosing the multivariate tool from what you will know at forecast time", "caption": "The deciding question is not statistical — it is whether the extra series will be **available for the future periods** you are forecasting. Price and promotions usually are, because someone sets them; a competitor's traffic usually is not, which is what pushes you from SARIMAX to VAR.", "cols": ["Use", "Because"], "rows": ["Extras known ahead", "Extras known only to now", "Series tied long-run", "Many series", "Not sure it is worth it"], "cells": [[{"text": "SARIMAX, or boosting", "tone": "good"}, "the regressors can be filled in"], [{"text": "VAR", "tone": "good"}, "it forecasts the extras too"], [{"text": "VECM", "tone": "accent"}, "differencing would discard the link"], [{"text": "a global model", "tone": "accent"}, "cross-learning across series"], [{"text": "a Granger screen, then backtest", "tone": "good"}, "the backtest is the verdict"]], "t": "diagram", "id": "dg-10_8-02-1"},
+
+
+
+
 
 
 

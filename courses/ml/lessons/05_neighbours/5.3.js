@@ -19,6 +19,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The margin, and the problem that maximises it", id: "margin" },
 
+    {"kind": "flow", "title": "The margin, and the problem that maximises it", "caption": "Fix the scale by requiring the closest points to sit at ±1 and the margin becomes 2/‖w‖ — so maximising the margin is **minimising the norm**, a convex quadratic programme with one global solution. The points that end up on the boundary are the support vectors, and they are the only rows the solution depends on: delete every other row and the fit is unchanged.", "cols": 3, "nodes": [{"id": "s", "label": "Separate the classes", "sub": "infinitely many lines do", "tone": "violet"}, {"id": "m", "label": "Prefer the widest gap", "sub": "the margin", "tone": "accent"}, {"id": "f", "label": "Fix the scale: y(w'x+b) >= 1", "sub": "margin becomes 2 / ||w||", "tone": "accent"}, {"id": "q", "label": "Minimise ||w||²", "sub": "a convex QP: one global answer", "tone": "good"}, {"id": "v", "label": "Support vectors", "sub": "the rows on the boundary", "tone": "good"}, {"id": "r", "label": "Every other row is irrelevant", "sub": "delete them; the fit is identical", "tone": "teal"}], "edges": [["s", "m"], ["m", "f"], ["f", "q"], ["q", "v"], ["v", "r"]], "t": "diagram", "id": "dg-5_3-01-0"},
+
+
     { t: "code", lang: "text", title: "From a decision function to an optimisation problem",
       code: `decision function    f(x) = wᵀx + b,     ŷ = sign f(x)          labels y ∈ {-1, +1}
 
@@ -96,7 +99,12 @@ solved numerically (SLSQP) on the six points:
 
     { t: "h2", n: "02", text: "Soft margins, hinge loss and C", id: "soft" },
 
+    {"kind": "steps", "title": "The cheapest solution was to give up, and the arithmetic says so", "caption": "Linear SVM, standardised, C = 1, 15.4% positives: the fitted model is **w = (0,0,0,0,0), b = −1** — it predicts 'no churn' for everyone and its decision function is constant, so the 0.629 AUC is noise. Separating 133 scattered positives would need a large norm; abandoning them costs 133 × 2 = 266 of slack, and at C = 1 that is cheaper. Logistic regression never does this, because log-loss keeps pulling on every point while the hinge stops pulling once a point is written off.", "items": [{"label": "133 positives, scattered", "desc": "15.4% of 866 rows, no clean separating direction", "code": "1", "tone": "accent"}, {"label": "Separating them needs a large norm", "desc": "which the regularisation term charges for", "code": "2", "tone": "warn"}, {"label": "Abandoning them costs 266 of slack", "desc": "133 violators at xi = 2 each", "code": "3", "tone": "warn"}, {"label": "At C = 1 the slack is cheaper", "desc": "so w = 0 is the optimum: a constant predictor", "code": "4", "tone": "crit"}, {"label": "AUC 0.629 — and it is noise", "desc": "a constant decision function has no ranking", "code": "5", "tone": "crit"}, {"label": "class_weight='balanced'", "desc": "minority slack costs 5.5x more; AUC 0.757, every C from 0.001 to 10", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-5_3-02-1"},
+
+
     {"kind": "steps", "title": "The cheapest solution was to give up, and the arithmetic says so", "caption": "Linear SVM, standardised, C = 1, 15.4% positives: the fitted model is **w = (0,0,0,0,0), b = −1** — it predicts 'no churn' for everyone and its decision function is constant, so the 0.629 AUC is noise. Separating 133 scattered positives would need a large norm; abandoning them costs 133 × 2 = 266 of slack, and at C = 1 that is cheaper. Logistic regression never does this, because log-loss keeps pulling on every point while the hinge stops pulling once a point is written off.", "items": [{"label": "133 positives, scattered", "desc": "15.4% of 866 rows, no clean separating direction", "code": "1", "tone": "accent"}, {"label": "Separating them needs a large norm", "desc": "which the regularisation term charges for", "code": "2", "tone": "warn"}, {"label": "Abandoning them costs 266 of slack", "desc": "133 violators at xi = 2 each", "code": "3", "tone": "warn"}, {"label": "At C = 1 the slack is cheaper", "desc": "so w = 0 is the optimum: a constant predictor", "code": "4", "tone": "crit"}, {"label": "AUC 0.629 — and it is noise", "desc": "a constant decision function has no ranking", "code": "5", "tone": "crit"}, {"label": "class_weight='balanced'", "desc": "minority slack costs 5.5x more; AUC 0.757, every C from 0.001 to 10", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-5_3-02-0"},
+
+
 
 
 
@@ -125,6 +133,9 @@ solved numerically (SLSQP) on the six points:
     ]},
 
     { t: "h2", n: "03", text: "The kernel trick", id: "kernel" },
+
+    {"kind": "flow", "title": "The kernel trick: never build the features", "caption": "The dual solution touches the data only through inner products, so replacing every xᵢ'xⱼ with K(xᵢ, xⱼ) fits a linear model in a **feature space that is never constructed** — for the RBF kernel, one of infinite dimension. The cost is that the solution is now expressed through the training rows rather than a weight vector, so prediction needs the support vectors and scales with n rather than with p.", "cols": 3, "nodes": [{"id": "d", "label": "The dual problem", "sub": "only inner products appear", "tone": "violet"}, {"id": "k", "label": "Replace x'x with K(x, x')", "sub": "a kernel: a valid inner product", "tone": "accent"}, {"id": "p", "label": "Polynomial kernel", "sub": "degree d interactions, implicitly", "tone": "good"}, {"id": "r", "label": "RBF kernel", "sub": "infinite dimensions, never built", "tone": "good"}, {"id": "n", "label": "No feature map computed", "sub": "that is the trick", "tone": "teal"}, {"id": "c", "label": "Cost: O(n²) to O(n³)", "sub": "and prediction needs the vectors", "tone": "warn"}], "edges": [["d", "k"], ["k", "p"], ["k", "r"], ["r", "n"], ["n", "c"]], "t": "diagram", "id": "dg-5_3-03-2"},
+
 
     { t: "code", lang: "text", title: "A dot product in a space you never visit (executed)",
       code: `XOR: y = +1 when x₁x₂ > 0, 400 points in [-1, 1]²             linear SVM: 55.5 % (chance)
@@ -164,7 +175,12 @@ Mercer: K must be symmetric positive semi-definite for a φ to exist -- then the
 
     { t: "h2", n: "04", text: "Probabilities, scale, regression and the honest comparison", id: "practice-matters" },
 
+    {"kind": "matrix", "title": "SVM and logistic regression, honestly compared", "caption": "The hinge is zero beyond the margin and the log-loss never is — nearly every row below follows from that one difference, including which rows the solution depends on and how each model behaves under imbalance.", "cols": ["SVM", "Logistic"], "rows": ["Loss", "Depends on", "Probabilities", "Non-linearity", "Imbalance", "Scale in n"], "cells": [[{"text": "zero beyond the margin", "tone": "accent"}, {"text": "never zero", "tone": "accent"}], [{"text": "support vectors only", "tone": "good"}, "every row"], [{"text": "none; Platt after", "tone": "warn"}, {"text": "native", "tone": "good"}], [{"text": "kernels: cheap", "tone": "good"}, "explicit features or splines"], [{"text": "can collapse to majority", "tone": "crit"}, {"text": "degrades gracefully", "tone": "good"}], [{"text": "O(n²-n³) kernel", "tone": "warn"}, {"text": "linear", "tone": "good"}]], "t": "diagram", "id": "dg-5_3-04-3"},
+
+
     {"kind": "matrix", "title": "SVM and logistic regression, honestly compared", "caption": "The hinge is zero beyond the margin and the log-loss never is — nearly every row below follows from that one difference, including which rows the solution depends on and how each model behaves under imbalance.", "cols": ["SVM", "Logistic"], "rows": ["Loss", "Depends on", "Probabilities", "Non-linearity", "Imbalance", "Scale in n"], "cells": [[{"text": "zero beyond the margin", "tone": "accent"}, {"text": "never zero", "tone": "accent"}], [{"text": "support vectors only", "tone": "good"}, "every row"], [{"text": "none; Platt after", "tone": "warn"}, {"text": "native", "tone": "good"}], [{"text": "kernels: cheap", "tone": "good"}, "explicit features or splines"], [{"text": "can collapse to majority", "tone": "crit"}, {"text": "degrades gracefully", "tone": "good"}], [{"text": "O(n²-n³) kernel", "tone": "warn"}, {"text": "linear", "tone": "good"}]], "t": "diagram", "id": "dg-5_3-04-1"},
+
+
 
 
 

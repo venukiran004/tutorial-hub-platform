@@ -19,6 +19,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three formulas, one outlier", id: "formulas" },
 
+    {"kind": "trace", "title": "One outlier of 999, and what each scaler does with it", "caption": "The fee column runs 6.43 to 19.99 with one value of 999. Watch the three plans' rows: under **min-max** they are crushed into 0.002 to 0.014, because the range is defined by the outlier and every real customer now occupies 1% of the scale. Under **standardisation** they sit at −0.14 to 0.24, because the outlier owns the mean (12.49) and the standard deviation (31.65). Only **robust** scaling, which uses the median and IQR, leaves the real customers spread from −0.47 to 1.81 — and it puts the outlier at 187.6, where it is impossible to miss.", "left": "value", "codeW": 130, "vars": ["standardised", "min-max", "robust"], "steps": [{"code": "basic  7.99", "state": ["-0.142", "0.002", "-0.467"], "tone": "accent"}, {"code": "plus  12.99", "state": ["0.016", "0.007", "0.482"], "tone": "accent"}, {"code": "pro   19.99", "state": ["0.237", "0.014", "1.810"], "tone": "accent"}, {"code": "outlier 999.00", "state": ["31.169", "1.000", "187.581"], "changed": [1], "tone": "crit", "note": "min-max caps at 1"}, {"code": "real rows span", "state": ["0.38", "0.012", "2.28"], "changed": [1, 2], "tone": "violet", "note": "robust keeps them apart"}], "t": "diagram", "id": "dg-3_1-01-0"},
+
+
+
+
     { t: "code", lang: "text", title: "The churn table's monthly fee — 990 rows, one planted 999.0 — under each scaler (executed)",
       code: `monthly_fee:  min 6.43   Q1 7.99   median 10.45   Q3 13.26   max 999.0        mean 12.49   std 31.65   (the outlier owns the mean and the std)
 
@@ -45,6 +50,11 @@ pro           19.99           2.017                           0.914             
     ]},
 
     { t: "h2", n: "02", text: "Which algorithms care, measured", id: "who" },
+
+    {"kind": "matrix", "title": "Which algorithms care about scale, and why", "caption": "The reason is always the same shape: something in the objective sums across features with one coefficient. A distance adds squared differences; one λ penalises every weight equally; one learning rate steps every input. A tree compares one feature with one constant and never adds anything across columns — so any monotone rescaling gives identical splits.", "cols": ["Scale matters", "Because"], "rows": ["KNN, k-means, SVM", "PCA, LDA, t-SNE", "Ridge, lasso, penalised", "Neural networks", "Unpenalised linear", "Trees and boosting", "Naive Bayes"], "cells": [[{"text": "always", "tone": "crit"}, "the widest column dominates the distance"], [{"text": "always", "tone": "crit"}, "components chase the biggest units"], [{"text": "always", "tone": "crit"}, "one lambda penalises every weight equally"], [{"text": "always", "tone": "crit"}, "one step size for every input"], [{"text": "for convergence only", "tone": "warn"}, "the optimum is unit-free; conditioning is not"], [{"text": "no", "tone": "good"}, "a split is one feature against a constant"], [{"text": "no", "tone": "good"}, "each feature is modelled on its own"]], "t": "diagram", "id": "dg-3_1-02-1"},
+
+
+
 
     {"kind": "matrix", "title": "Which algorithms care about scale, and why", "caption": "The reason is always the same shape: something in the objective sums across features with one coefficient. A distance adds squared differences; one λ penalises every weight equally; one learning rate steps every input. A tree compares one feature with one constant and never adds anything across columns — so any monotone rescaling gives identical splits.", "cols": ["Scale matters", "Because"], "rows": ["KNN, k-means, SVM", "PCA, LDA, t-SNE", "Ridge, lasso, penalised", "Neural networks", "Unpenalised linear", "Trees and boosting", "Naive Bayes"], "cells": [[{"text": "always", "tone": "crit"}, "the widest column dominates the distance"], [{"text": "always", "tone": "crit"}, "components chase the biggest units"], [{"text": "always", "tone": "crit"}, "one lambda penalises every weight equally"], [{"text": "always", "tone": "crit"}, "one step size for every input"], [{"text": "for convergence only", "tone": "warn"}, "the optimum is unit-free; conditioning is not"], [{"text": "no", "tone": "good"}, "a split is one feature against a constant"], [{"text": "no", "tone": "good"}, "each feature is modelled on its own"]], "t": "diagram", "id": "dg-3_1-02-0"},
 
@@ -102,6 +112,11 @@ pro           19.99           2.017                           0.914             
     },
 
     { t: "h2", n: "03", text: "Fit on train only, and the sparse exception", id: "fit" },
+
+    {"kind": "flow", "title": "A scaler is a fitted object, and where it is fitted is the whole question", "caption": "A scaler learns two numbers from the rows it is shown. Fit it on everything and those numbers carry the test rows' mean and range into the training data — a mild leak, but a leak that is free to avoid. The sparse exception is worth knowing: centring a sparse matrix fills in every zero, so `with_mean=False` keeps the sparsity and scales by the standard deviation only.", "cols": 3, "nodes": [{"id": "s", "label": "Split first", "sub": "train fold / test fold", "tone": "violet"}, {"id": "f", "label": "fit on the train fold", "sub": "learns mean and sd from it alone", "tone": "good"}, {"id": "t", "label": "transform both", "sub": "the test fold uses the train's numbers", "tone": "good"}, {"id": "b", "label": "fit on everything", "sub": "mean and sd include the test rows", "tone": "crit"}, {"id": "p", "label": "In a Pipeline", "sub": "refitted per fold, automatically", "tone": "good"}, {"id": "z", "label": "Sparse input", "sub": "with_mean=False, or every zero fills in", "tone": "warn"}], "edges": [["s", "f"], ["f", "t"], ["s", "b", "", "dashed"], ["t", "p"], ["p", "z"]], "t": "diagram", "id": "dg-3_1-03-2"},
+
+
+
 
     {"kind": "matrix", "title": "Three scalers, and what an outlier does to each", "caption": "The choice is about which statistic the outlier can move. Min-max is defined by the extremes, so a single bad value compresses every other row into a corner; robust scaling uses the median and IQR, which an outlier cannot shift. And a scaler that centres destroys sparsity — which is why `with_mean=False` exists.", "cols": ["Uses", "One outlier"], "rows": ["StandardScaler", "MinMaxScaler", "RobustScaler", "On sparse data"], "cells": [[{"text": "mean and sd", "tone": "accent"}, "inflates sd; everything else shrinks"], [{"text": "min and max", "tone": "crit"}, "compresses all other rows into a corner"], [{"text": "median and IQR", "tone": "good"}, "cannot move either statistic"], [{"text": "with_mean=False", "tone": "warn"}, "centring would fill every zero"]], "t": "diagram", "id": "dg-3_1-03-1"},
 

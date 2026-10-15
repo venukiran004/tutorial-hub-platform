@@ -28,6 +28,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "code", lang: "text", title: "Seven numbers become a supervised table (executed; 2 January 2025 is a Thursday)",
       code: `A SERIES                            THE TABLE: every column is known BEFORE y is observed
 t  y                                date        lag1   lag2   lag3   roll3     dow   |  y
@@ -142,6 +146,10 @@ MIMO:       one RandomForest with 28 outputs (multi-output is native to forests)
     { t: "h2", n: "04", text: "The boosting blind spot: trees cannot extrapolate", id: "trend" },
 
     {"kind": "matrix", "title": "Trees cannot extrapolate, and a trend is extrapolation", "caption": "Every tree is flat beyond its last split, so a boosted model on raw levels cannot forecast above anything it has seen — it predicts the top of its training range forever. The fix is to take the trend out before the model sees it, which is what differencing or detrending does, and add it back afterwards.", "cols": ["On a trending series", "Fix"], "rows": ["Boosting on raw levels", "Boosting on differences", "Boosting + linear trend", "ARIMA or ETS", "A global model"], "cells": [[{"text": "caps at the training max", "tone": "crit"}, "detrend, or difference, first"], [{"text": "extrapolates correctly", "tone": "good"}, "cumulative-sum it back"], [{"text": "the trend is handled outside", "tone": "good"}, "a hybrid: linear part plus tree residual"], [{"text": "extrapolates by construction", "tone": "good"}, "nothing needed"], [{"text": "same blind spot", "tone": "warn"}, "same fix, applied per series"]], "t": "diagram", "id": "dg-10_6-04-1"},
+
+
+
+
 
 
 

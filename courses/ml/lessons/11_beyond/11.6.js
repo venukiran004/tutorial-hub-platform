@@ -38,6 +38,10 @@ a solving two-unit network: hidden weights [[4.27, 3.80], [−4.26, −4.04]], b
 
 
 
+
+
+
+
     { t: "p", text: "The network is x → h = σ(w₁x) → ŷ = σ(w₂h) with sigmoid units and the loss L = ½(y − ŷ)². Backpropagation is the chain rule applied from the loss backward, reusing each layer's partial derivative for the layers behind it. With x = 1, y = 1, w₁ = 0.5, w₂ = −0.4:" },
 
     { t: "code", lang: "text", title: "One step, every number (executed)",
@@ -89,6 +93,10 @@ batch size (300 epochs max):   8: 0.937 (21,375 gradient steps, 2.9 s)   32: 0.9
     { t: "h2", n: "05", text: "When a network beats gradient boosting on a table", id: "tabular" },
 
     {"kind": "matrix", "title": "When a network beats gradient boosting on a table", "caption": "Rarely, and for specific reasons. On a small heterogeneous table boosting wins and a regularised linear model is the yardstick — as this course's churn data showed. A network earns its place when there is a representation to **learn** or to share, which a boosted tree cannot do at all.", "cols": ["Use", "Because"], "rows": ["Small mixed table", "Many numeric columns", "High-cardinality cats", "Text, images, audio", "Multi-task or transfer", "Interpretability required"], "cells": [[{"text": "boosting", "tone": "good"}, "thresholds and additive effects"], [{"text": "an MLP or CNN", "tone": "accent"}, "smooth interactions across inputs"], [{"text": "embeddings, or target encoding", "tone": "accent"}, "embeddings compress categories"], [{"text": "a network, pre-trained", "tone": "good"}, "representation learning is the task"], [{"text": "a network", "tone": "good"}, "boosting cannot share representations"], [{"text": "linear, or boosting + SHAP", "tone": "good"}, "a network's weights are not readable"]], "t": "diagram", "id": "dg-11_6-05-1"},
+
+
+
+
 
 
 

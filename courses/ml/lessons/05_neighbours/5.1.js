@@ -32,6 +32,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "code", lang: "text", title: "The Minkowski family and two that are not in it",
       code: `Minkowski   d_q(x, x') = ( Σⱼ |xⱼ - x'ⱼ|^q )^{1/q}
    q = 1   Manhattan   Σ|Δ|            grid distance; robust to one large coordinate difference
@@ -105,6 +109,9 @@ query (2, 9):      1-NN under euclidean is P4 (blue); under manhattan it is P2 (
 
     { t: "h2", n: "02", text: "Scaling, k and the neighbourhood on the churn data", id: "churn" },
 
+    {"kind": "trace", "title": "k = 1 has perfect memory and coin-flip generalisation", "caption": "At k = 1 the training AUC is **1.0000** — every query is its own nearest neighbour — while cross-validated AUC is 0.5747, barely better than a coin. That single row is the bias–variance dial of 1.3 made concrete. As k rises the train score falls and the CV score climbs, and the log-loss falls fastest of all because averaging more neighbours stops the model asserting 0 and 1. Scaling first is worth more than any k: unscaled 0.6632 against standardised 0.6914, because the sds are 17.5 for tenure and 0.9 for tickets.", "left": "k", "codeW": 110, "vars": ["CV AUC", "CV log-loss", "train AUC"], "steps": [{"code": "k = 1", "state": ["0.5747", "1.4496", "1.0000"], "changed": [2], "tone": "crit", "note": "memorised"}, {"code": "k = 3", "state": ["0.6135", "0.7799", "0.9257"], "tone": "warn"}, {"code": "k = 5", "state": ["0.6411", "0.6277", "0.8783"], "tone": "warn"}, {"code": "k = 9", "state": ["0.6842", "0.5011", "0.8417"], "changed": [0, 1], "tone": "good"}, {"code": "unscaled, best k", "state": ["0.6632", "0.4751", ""], "tone": "crit", "note": "a tenure detector"}, {"code": "standardised", "state": ["0.6914", "0.4562", ""], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-5_1-02-1"},
+
+
     { t: "code", lang: "python", title: "Unscaled versus standardised, k = 15 (executed, 863 rows, 5-fold)",
       hl: [2, 3, 6],
       code: `# feature sds: tenure 17.5, fee 4.2, logins 5.0, tickets 0.9, discount 5.7
@@ -159,7 +166,12 @@ KNeighborsClassifier(metric="mahalanobis", metric_params={"VI": np.linalg.inv(np
 
     { t: "h2", n: "03", text: "The curse, and what does and does not cure it", id: "curse" },
 
+    {"kind": "compare", "title": "On the churn data KNN matched logistic regression and cost 400x more per query", "caption": "0.754 at k = 401 against logistic regression's 0.757 — statistically the same answer. But k = 401 means the model needed almost half the training set as neighbours to be stable, which is a signal that the truth here is near-linear and smooth, and every query pays a scan to rediscover it.", "columns": [{"title": "Reach for KNN when", "tone": "good", "items": ["Under ~20 meaningful scaled features", "The boundary is local and curved", "A quick assumption-free baseline is wanted", "New rows must count with no retraining", "You need a similarity lookup or an anomaly score"]}, {"title": "Do not when", "tone": "crit", "items": ["Dozens of features, many irrelevant", "The truth is near-linear: 0.754 vs 0.757", "There is a latency budget: every query scans", "Interpretability is required: no coefficients", "Imbalance, with no weighting or threshold work"]}], "t": "diagram", "id": "dg-5_1-03-2"},
+
+
     {"kind": "compare", "title": "On the churn data KNN matched logistic regression and cost 400x more per query", "caption": "0.754 at k = 401 against logistic regression's 0.757 — statistically the same answer. But k = 401 means the model needed almost half the training set as neighbours to be stable, which is a signal that the truth here is near-linear and smooth, and every query pays a scan to rediscover it.", "columns": [{"title": "Reach for KNN when", "tone": "good", "items": ["Under ~20 meaningful scaled features", "The boundary is local and curved", "A quick assumption-free baseline is wanted", "New rows must count with no retraining", "You need a similarity lookup or an anomaly score"]}, {"title": "Do not when", "tone": "crit", "items": ["Dozens of features, many irrelevant", "The truth is near-linear: 0.754 vs 0.757", "There is a latency budget: every query scans", "Interpretability is required: no coefficients", "Imbalance, with no weighting or threshold work"]}], "t": "diagram", "id": "dg-5_1-03-1"},
+
+
 
 
 

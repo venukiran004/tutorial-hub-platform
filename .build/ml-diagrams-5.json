@@ -1,62 +1,4 @@
 {
- "4.4": [
-  {
-   "after": "03",
-   "d": {
-    "kind": "matrix",
-    "title": "Which dial to turn, by the shape you need",
-    "caption": "A global polynomial cannot make a corner — it pays for one with oscillation everywhere else. Splines put the flexibility where the knots are and leave the rest alone, which is why they are the default for one smooth input. With many inputs, do not expand at all: let a tree ensemble find the interactions and engineer the two or three it points at.",
-    "cols": [
-     "Use",
-     "Why not the other"
-    ],
-    "rows": [
-     "One input, smooth curve",
-     "One input, a kink",
-     "Few inputs, interactions",
-     "Many inputs",
-     "Outside the training range"
-    ],
-    "cells": [
-     [
-      {
-       "text": "splines, 5-10 knots",
-       "tone": "good"
-      },
-      "degree <= 5 only if you need the form"
-     ],
-     [
-      {
-       "text": "a spline or a hinge",
-       "tone": "good"
-      },
-      "a polynomial cannot make a corner"
-     ],
-     [
-      {
-       "text": "degree 2 plus ridge",
-       "tone": "accent"
-      },
-      "read the interaction coefficients"
-     ],
-     [
-      {
-       "text": "do not expand",
-       "tone": "warn"
-      },
-      "the expansion explodes; use a tree"
-     ],
-     [
-      {
-       "text": "refuse the input",
-       "tone": "crit"
-      },
-      "every expansion extrapolates nonsense"
-     ]
-    ]
-   }
-  }
- ],
  "5.1": [
   {
    "after": "01",
@@ -105,6 +47,89 @@
    }
   },
   {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "k = 1 has perfect memory and coin-flip generalisation",
+    "caption": "At k = 1 the training AUC is **1.0000** — every query is its own nearest neighbour — while cross-validated AUC is 0.5747, barely better than a coin. That single row is the bias–variance dial of 1.3 made concrete. As k rises the train score falls and the CV score climbs, and the log-loss falls fastest of all because averaging more neighbours stops the model asserting 0 and 1. Scaling first is worth more than any k: unscaled 0.6632 against standardised 0.6914, because the sds are 17.5 for tenure and 0.9 for tickets.",
+    "left": "k",
+    "codeW": 110,
+    "vars": [
+     "CV AUC",
+     "CV log-loss",
+     "train AUC"
+    ],
+    "steps": [
+     {
+      "code": "k = 1",
+      "state": [
+       "0.5747",
+       "1.4496",
+       "1.0000"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "crit",
+      "note": "memorised"
+     },
+     {
+      "code": "k = 3",
+      "state": [
+       "0.6135",
+       "0.7799",
+       "0.9257"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "k = 5",
+      "state": [
+       "0.6411",
+       "0.6277",
+       "0.8783"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "k = 9",
+      "state": [
+       "0.6842",
+       "0.5011",
+       "0.8417"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "unscaled, best k",
+      "state": [
+       "0.6632",
+       "0.4751",
+       ""
+      ],
+      "tone": "crit",
+      "note": "a tenure detector"
+     },
+     {
+      "code": "standardised",
+      "state": [
+       "0.6914",
+       "0.4562",
+       ""
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
    "after": "03",
    "d": {
     "kind": "compare",
@@ -138,6 +163,75 @@
   }
  ],
  "5.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "From Bayes' theorem to a classifier in three moves",
+    "caption": "The first two steps are exact. The third is the 'naive' one, and it is false in almost every real dataset — features are correlated. What makes the method work anyway is that classification is an **argmax**: the posterior can be wrong in value and still largest for the right class.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "b",
+      "label": "P(y|x) ∝ P(x|y) P(y)",
+      "sub": "Bayes: exact",
+      "tone": "violet"
+     },
+     {
+      "id": "d",
+      "label": "Drop the denominator",
+      "sub": "it is the same for every class",
+      "tone": "accent"
+     },
+     {
+      "id": "n",
+      "label": "Assume independence",
+      "sub": "P(x|y) = product of P(x_j|y)",
+      "tone": "warn"
+     },
+     {
+      "id": "c",
+      "label": "Count, do not optimise",
+      "sub": "one pass; 4 ms",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "Sum logs, not products",
+      "sub": "or the floats underflow",
+      "tone": "good"
+     },
+     {
+      "id": "a",
+      "label": "argmax over classes",
+      "sub": "wrong values, right winner",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "b",
+      "d"
+     ],
+     [
+      "d",
+      "n"
+     ],
+     [
+      "n",
+      "c"
+     ],
+     [
+      "c",
+      "l"
+     ],
+     [
+      "l",
+      "a"
+     ]
+    ]
+   }
+  },
   {
    "after": "02",
    "d": {
@@ -197,64 +291,141 @@
   {
    "after": "03",
    "d": {
-    "kind": "matrix",
-    "title": "Why a false assumption still picks the right class",
-    "caption": "Classification is an **argmax**. Double-counting correlated evidence scales every class's log-odds in similar proportion, so the posterior can be badly wrong in value and still be largest for the right class. What breaks it is *asymmetric* dependence — features correlated within one class but not the other.",
-    "cols": [
-     "Naive Bayes",
-     "Logistic regression"
+    "kind": "trace",
+    "title": "Duplicating one column, to watch the naive assumption break",
+    "caption": "The tickets column is copied 1, 4 and 9 times — adding no information whatsoever, and forcing the model to count the same evidence repeatedly. The **ranking barely moves**: AUC drifts 0.735 to 0.686. The calibration is destroyed: log-loss triples, the share of near-certain predictions goes from 40% to 89%, and the top quintile is predicted at 86% churn against an actual 26%. That is the precise cost of the assumption — it corrupts the probabilities, not the ordering.",
+    "left": "tickets duplicated",
+    "codeW": 180,
+    "vars": [
+     "AUC",
+     "log-loss",
+     "near-certain",
+     "top quintile: pred vs actual"
     ],
-    "rows": [
-     "Models",
-     "Boundary",
-     "Fitting time here",
-     "Probabilities",
-     "Breaks on"
-    ],
-    "cells": [
-     [
-      {
-       "text": "P(x|y) and P(y): generative",
-       "tone": "accent"
-      },
-      "P(y|x): discriminative"
-     ],
-     [
-      "linear in the features",
-      "linear"
-     ],
-     [
-      {
-       "text": "counting: 4 ms",
-       "tone": "good"
-      },
-      {
-       "text": "iterative: 435 ms",
-       "tone": "warn"
-      }
-     ],
-     [
-      {
-       "text": "over-confident",
-       "tone": "warn"
-      },
-      {
-       "text": "usually calibrated",
-       "tone": "good"
-      }
-     ],
-     [
-      {
-       "text": "asymmetric dependence",
-       "tone": "crit"
-      },
-      "collinearity, for the coefficients"
-     ]
+    "steps": [
+     {
+      "code": "0x (the real model)",
+      "state": [
+       "0.7350",
+       "0.4240",
+       "40.4%",
+       "0.511 vs 0.347"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "1x",
+      "state": [
+       "0.7295",
+       "0.4441",
+       "45.1%",
+       "0.561 vs 0.312"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "4x",
+      "state": [
+       "0.7084",
+       "0.6465",
+       "69.2%",
+       "0.732 vs 0.283"
+      ],
+      "changed": [
+       1,
+       2
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "9x",
+      "state": [
+       "0.6857",
+       "1.2089",
+       "88.8%",
+       "0.860 vs 0.260"
+      ],
+      "changed": [
+       1,
+       3
+      ],
+      "tone": "crit",
+      "note": "86% vs 26%"
+     }
     ]
    }
   }
  ],
  "5.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "The margin, and the problem that maximises it",
+    "caption": "Fix the scale by requiring the closest points to sit at ±1 and the margin becomes 2/‖w‖ — so maximising the margin is **minimising the norm**, a convex quadratic programme with one global solution. The points that end up on the boundary are the support vectors, and they are the only rows the solution depends on: delete every other row and the fit is unchanged.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "Separate the classes",
+      "sub": "infinitely many lines do",
+      "tone": "violet"
+     },
+     {
+      "id": "m",
+      "label": "Prefer the widest gap",
+      "sub": "the margin",
+      "tone": "accent"
+     },
+     {
+      "id": "f",
+      "label": "Fix the scale: y(w'x+b) >= 1",
+      "sub": "margin becomes 2 / ||w||",
+      "tone": "accent"
+     },
+     {
+      "id": "q",
+      "label": "Minimise ||w||²",
+      "sub": "a convex QP: one global answer",
+      "tone": "good"
+     },
+     {
+      "id": "v",
+      "label": "Support vectors",
+      "sub": "the rows on the boundary",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Every other row is irrelevant",
+      "sub": "delete them; the fit is identical",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "m"
+     ],
+     [
+      "m",
+      "f"
+     ],
+     [
+      "f",
+      "q"
+     ],
+     [
+      "q",
+      "v"
+     ],
+     [
+      "v",
+      "r"
+     ]
+    ]
+   }
+  },
   {
    "after": "02",
    "d": {
@@ -298,6 +469,75 @@
       "code": "fix",
       "tone": "good"
      }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "The kernel trick: never build the features",
+    "caption": "The dual solution touches the data only through inner products, so replacing every xᵢ'xⱼ with K(xᵢ, xⱼ) fits a linear model in a **feature space that is never constructed** — for the RBF kernel, one of infinite dimension. The cost is that the solution is now expressed through the training rows rather than a weight vector, so prediction needs the support vectors and scales with n rather than with p.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "d",
+      "label": "The dual problem",
+      "sub": "only inner products appear",
+      "tone": "violet"
+     },
+     {
+      "id": "k",
+      "label": "Replace x'x with K(x, x')",
+      "sub": "a kernel: a valid inner product",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "Polynomial kernel",
+      "sub": "degree d interactions, implicitly",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "RBF kernel",
+      "sub": "infinite dimensions, never built",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "No feature map computed",
+      "sub": "that is the trick",
+      "tone": "teal"
+     },
+     {
+      "id": "c",
+      "label": "Cost: O(n²) to O(n³)",
+      "sub": "and prediction needs the vectors",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "d",
+      "k"
+     ],
+     [
+      "k",
+      "p"
+     ],
+     [
+      "k",
+      "r"
+     ],
+     [
+      "r",
+      "n"
+     ],
+     [
+      "n",
+      "c"
+     ]
     ]
    }
   },
@@ -382,52 +622,113 @@
   {
    "after": "01",
    "d": {
-    "kind": "matrix",
-    "title": "Three algorithms, three ways to pick a split",
-    "caption": "Information gain prefers features with many values, because more candidate levels means purer children for free — C4.5's gain ratio exists to penalise exactly that, and CART limits it by only ever splitting in two. The bias does not disappear, though: impurity importance inherits it.",
-    "cols": [
-     "Criterion",
-     "Splits"
+    "kind": "trace",
+    "title": "Two candidate splits on six rows, scored three ways",
+    "caption": "Parent: 3 Yes / 3 No, so entropy is 1.000 bit and Gini 0.500. **Wind** sends four rows one way (3Y/1N) and two the other (pure), giving a weighted child entropy of 0.541 and an information gain of 0.459. **Outlook** splits into 1Y/2N and 2Y/1N — both still mixed — for a gain of only 0.082. Every criterion agrees here, and the last column shows why C4.5 added gain ratio: dividing by the split's own entropy penalises a feature for simply having more branches.",
+    "left": "split",
+    "codeW": 170,
+    "vars": [
+     "child entropy",
+     "info gain",
+     "Gini decrease",
+     "gain ratio"
     ],
-    "rows": [
-     "ID3",
-     "C4.5",
-     "CART",
-     "Regression (CART)"
-    ],
-    "cells": [
-     [
-      {
-       "text": "information gain",
-       "tone": "warn"
-      },
-      "one branch per category"
-     ],
-     [
-      {
-       "text": "gain ratio",
-       "tone": "good"
-      },
-      "categories, plus thresholds"
-     ],
-     [
-      {
-       "text": "Gini",
-       "tone": "good"
-      },
-      {
-       "text": "always binary",
-       "tone": "good"
-      }
-     ],
-     [
-      {
-       "text": "variance, MAE, Poisson",
-       "tone": "good"
-      },
-      "always binary"
-     ]
+    "steps": [
+     {
+      "code": "parent (3Y / 3N)",
+      "state": [
+       "1.000",
+       "—",
+       "G = 0.500",
+       "—"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "Wind: weak / strong",
+      "state": [
+       "0.541",
+       "0.459",
+       "0.250",
+       "0.500"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "good",
+      "note": "the winner"
+     },
+     {
+      "code": "Outlook: sunny / rain",
+      "state": [
+       "0.918",
+       "0.082",
+       "0.056",
+       "0.082"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "a regression split at 1.5",
+      "state": [
+       "—",
+       "—",
+       "SSE 370.0",
+       "—"
+      ],
+      "tone": "accent",
+      "note": "variance, not impurity"
+     }
     ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "tree",
+    "title": "What a depth-3 tree actually learned, and what it is worth",
+    "caption": "A readable model: three levels, eight leaves, and a rule you can print on a card. It scores 0.679 against the forest's 0.724 — so the tree costs about 0.045 of AUC and buys an explanation an on-call engineer can read at three in the morning. The catch from §03 is that the **rules themselves move** between resamples, so the explanation is less stable than it looks.",
+    "root": {
+     "label": "root: 16.2% churn",
+     "sub": "989 customers",
+     "tone": "violet",
+     "children": [
+      {
+       "label": "tenure <= 12",
+       "sub": "new customers: the highest-risk branch",
+       "tone": "crit",
+       "children": [
+        {
+         "label": "tickets >= 2",
+         "sub": "angry and new",
+         "tone": "crit"
+        },
+        {
+         "label": "tickets < 2",
+         "sub": "new, quiet",
+         "tone": "warn"
+        }
+       ]
+      },
+      {
+       "label": "tenure > 12",
+       "sub": "established",
+       "tone": "good",
+       "children": [
+        {
+         "label": "logins low",
+         "sub": "disengaging",
+         "tone": "warn"
+        },
+        {
+         "label": "logins normal",
+         "sub": "the safe majority",
+         "tone": "good"
+        }
+       ]
+      }
+     ]
+    }
    }
   },
   {
@@ -488,6 +789,96 @@
   }
  ],
  "6.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Weaker trees, a better forest — and the correlation column explains it",
+    "caption": "The variance of an average falls with the members' **correlation**, not with their individual quality. Reading down: as `max_features` shrinks, each tree gets worse (0.691 to 0.592) and the trees get far less alike (correlation 0.361 to 0.081, sharing 100% of features down to 6%) — and the ensemble holds steady or improves. That is the entire argument for random feature subsets: a committee of mediocre, genuinely different opinions beats a committee of excellent identical ones.",
+    "left": "max_features",
+    "codeW": 160,
+    "vars": [
+     "single tree AUC",
+     "tree correlation",
+     "features shared",
+     "ensemble AUC"
+    ],
+    "steps": [
+     {
+      "code": "all (bagging)",
+      "state": [
+       "0.691",
+       "0.361",
+       "100%",
+       "0.865"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "0.5",
+      "state": [
+       "0.684",
+       "0.333",
+       "52%",
+       "0.865"
+      ]
+     },
+     {
+      "code": "sqrt(p)",
+      "state": [
+       "0.656",
+       "0.236",
+       "18%",
+       "0.868"
+      ],
+      "changed": [
+       1,
+       3
+      ],
+      "tone": "good",
+      "note": "the default"
+     },
+     {
+      "code": "2",
+      "state": [
+       "0.625",
+       "0.151",
+       "9%",
+       "0.868"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "1",
+      "state": [
+       "0.592",
+       "0.081",
+       "6%",
+       "0.865"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "warn",
+      "note": "too weak now"
+     },
+     {
+      "code": "a row is out-of-bag",
+      "state": [
+       "0.3675",
+       "",
+       "",
+       "theory 1/e = 0.368"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
   {
    "after": "02",
    "d": {
@@ -616,6 +1007,94 @@
  ],
  "6.3": [
   {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "AdaBoost on ten points: three stumps, zero errors",
+    "caption": "Each round refits on **reweighted** rows, so the next stump is forced to attend to what the last one got wrong. Watch the weights: round 1 is wrong on x = 6, 7, 8, so their weight rises from 0.1 to 0.167 and the next stump cuts at 8.5 instead. Three stumps — each individually unable to separate the data — sum to an ensemble with zero training errors. Note α grows as the error falls: at ε = 0.5 a learner's vote is zero, and above 0.5 it is negative, which simply means invert it.",
+    "left": "round",
+    "codeW": 130,
+    "vars": [
+     "best stump",
+     "error ε",
+     "vote α",
+     "ensemble errors"
+    ],
+    "steps": [
+     {
+      "code": "1",
+      "state": [
+       "x <= 2.5",
+       "0.300",
+       "0.424",
+       "3"
+      ],
+      "tone": "accent",
+      "note": "wrong on 6,7,8"
+     },
+     {
+      "code": "weights after 1",
+      "state": [
+       "0.167 on 6,7,8",
+       "",
+       "",
+       ""
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "2",
+      "state": [
+       "x <= 8.5",
+       "0.214",
+       "0.650",
+       "3"
+      ],
+      "changed": [
+       1,
+       2
+      ],
+      "tone": "accent",
+      "note": "wrong on 3,4,5"
+     },
+     {
+      "code": "weights after 2",
+      "state": [
+       "0.167 on 3,4,5",
+       "",
+       "",
+       ""
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "3",
+      "state": [
+       "x <= 5.5 (inverted)",
+       "0.182",
+       "0.752",
+       "0"
+      ],
+      "changed": [
+       3
+      ],
+      "tone": "good",
+      "note": "zero errors"
+     },
+     {
+      "code": "sklearn, 3 stumps",
+      "state": [
+       "same cuts",
+       "0.300 0.214 0.182",
+       "2α each",
+       "0"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
    "after": "02",
    "d": {
     "kind": "steps",
@@ -740,6 +1219,75 @@
  ],
  "6.4": [
   {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "The second-order objective, and the split gain it implies",
+    "caption": "Take a second-order Taylor expansion of the loss around the current prediction and the optimal leaf value falls out in closed form: −G/(H+λ), where G and H are the summed first and second derivatives in that leaf. The gain of a split is then an arithmetic comparison of three such terms — which is why XGBoost can evaluate thousands of candidate splits per node without ever refitting anything.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "2nd-order Taylor of the loss",
+      "sub": "gradients g, hessians h per row",
+      "tone": "violet"
+     },
+     {
+      "id": "l",
+      "label": "Optimal leaf value",
+      "sub": "-G / (H + lambda)",
+      "tone": "accent"
+     },
+     {
+      "id": "o",
+      "label": "Objective per leaf",
+      "sub": "-½ G² / (H + lambda)",
+      "tone": "accent"
+     },
+     {
+      "id": "g",
+      "label": "Split gain",
+      "sub": "left + right - parent, minus gamma",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Scan the candidates",
+      "sub": "arithmetic only; nothing refitted",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "lambda and gamma are regularisers",
+      "sub": "they appear in the gain itself",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "l"
+     ],
+     [
+      "l",
+      "o"
+     ],
+     [
+      "o",
+      "g"
+     ],
+     [
+      "g",
+      "s"
+     ],
+     [
+      "s",
+      "r"
+     ]
+    ]
+   }
+  },
+  {
    "after": "02",
    "d": {
     "kind": "matrix",
@@ -806,7 +1354,7 @@
     "rows": [
      "CatBoost ordered",
      "LightGBM native",
-     "XGBoost enable_categorical",
+     "XGBoost categorical",
      "HistGB native",
      "Naive target encoding",
      "Cross-fitted encoding"
@@ -859,6 +1407,88 @@
   }
  ],
  "6.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Condorcet's theorem, and the independence that carries all of it",
+    "caption": "Eleven independent voters at 0.60 each give a majority accuracy of **0.750** against the theorem's 0.753, and a hundred and one give 0.979. Make them mildly correlated and eleven fall to 0.630; make them near-copies and 0.606 — eleven copies of one opinion is one opinion. The last row is the warning: with voters **worse** than chance the majority is worse than any member, and more of them is worse still (0.367 at eleven, 0.156 at a hundred and one), because the theorem runs in reverse below 0.5.",
+    "left": "voters",
+    "codeW": 190,
+    "vars": [
+     "each",
+     "majority of 11",
+     "majority of 101"
+    ],
+    "steps": [
+     {
+      "code": "independent, p = 0.55",
+      "state": [
+       "0.550",
+       "0.633",
+       "0.844"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "independent, p = 0.60",
+      "state": [
+       "0.600",
+       "0.750",
+       "0.979"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "independent, p = 0.70",
+      "state": [
+       "0.700",
+       "0.922",
+       "1.000"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "mildly correlated, p = 0.60",
+      "state": [
+       "0.600",
+       "0.630",
+       ""
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "highly correlated, p = 0.60",
+      "state": [
+       "0.600",
+       "0.606",
+       ""
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit",
+      "note": "eleven copies"
+     },
+     {
+      "code": "worse than chance, p = 0.45",
+      "state": [
+       "0.450",
+       "0.367",
+       "0.156"
+      ],
+      "tone": "crit",
+      "note": "runs in reverse"
+     }
+    ]
+   }
+  },
   {
    "after": "02",
    "d": {

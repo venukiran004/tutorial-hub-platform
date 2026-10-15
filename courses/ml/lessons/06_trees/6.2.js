@@ -19,6 +19,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why averaging works, and why it stops working", id: "variance" },
 
+    {"kind": "trace", "title": "Weaker trees, a better forest — and the correlation column explains it", "caption": "The variance of an average falls with the members' **correlation**, not with their individual quality. Reading down: as `max_features` shrinks, each tree gets worse (0.691 to 0.592) and the trees get far less alike (correlation 0.361 to 0.081, sharing 100% of features down to 6%) — and the ensemble holds steady or improves. That is the entire argument for random feature subsets: a committee of mediocre, genuinely different opinions beats a committee of excellent identical ones.", "left": "max_features", "codeW": 160, "vars": ["single tree AUC", "tree correlation", "features shared", "ensemble AUC"], "steps": [{"code": "all (bagging)", "state": ["0.691", "0.361", "100%", "0.865"], "tone": "accent"}, {"code": "0.5", "state": ["0.684", "0.333", "52%", "0.865"]}, {"code": "sqrt(p)", "state": ["0.656", "0.236", "18%", "0.868"], "changed": [1, 3], "tone": "good", "note": "the default"}, {"code": "2", "state": ["0.625", "0.151", "9%", "0.868"], "changed": [0], "tone": "good"}, {"code": "1", "state": ["0.592", "0.081", "6%", "0.865"], "changed": [0, 1], "tone": "warn", "note": "too weak now"}, {"code": "a row is out-of-bag", "state": ["0.3675", "", "", "theory 1/e = 0.368"], "tone": "violet"}], "t": "diagram", "id": "dg-6_2-01-0"},
+
+
     { t: "code", lang: "text", title: "The variance of an average of B predictors with variance σ² and pairwise correlation ρ",
       code: `Var( (1/B) Σ Tᵦ )  =  (1/B²) [ B σ²  +  B(B - 1) ρ σ² ]  =  ρ σ²  +  (1 - ρ) σ² / B
 
@@ -51,7 +54,12 @@ bias is untouched by averaging: E[mean of trees] = E[one tree]. Bagging is varia
 
     { t: "h2", n: "02", text: "On the churn data: tree, bagging, forest", id: "churn" },
 
+    {"kind": "matrix", "title": "What each forest dial actually moved", "caption": "Averaging reduces the variance of the mean by a factor that depends on how **correlated** the members are, which is why `max_features` matters: fewer candidates per split makes each tree weaker and the trees less alike, and the second effect wins. The measurements are from the churn data.", "cols": ["Effect measured", "Tune it"], "rows": ["n_estimators 1 to 1,000", "max_features", "min_samples_leaf 20", "bootstrap", "oob_score", "n_jobs"], "cells": [[{"text": "0.543 -> 0.697", "tone": "good"}, "no: as large as time allows"], [{"text": "correlation 0.36 -> 0.08", "tone": "good"}, "yes, a few values near the default"], [{"text": "0.695 -> 0.724", "tone": "good"}, "yes: the main regulariser"], ["off gives Extra Trees", "rarely"], [{"text": "free validation estimate", "tone": "accent"}, "on, for quick tuning"], [{"text": "trees are independent", "tone": "accent"}, "-1"]], "t": "diagram", "id": "dg-6_2-02-1"},
+
+
     {"kind": "matrix", "title": "What each forest dial actually moved", "caption": "Averaging reduces the variance of the mean by a factor that depends on how **correlated** the members are, which is why `max_features` matters: fewer candidates per split makes each tree weaker and the trees less alike, and the second effect wins. The measurements are from the churn data.", "cols": ["Effect measured", "Tune it"], "rows": ["n_estimators 1 to 1,000", "max_features", "min_samples_leaf 20", "bootstrap", "oob_score", "n_jobs"], "cells": [[{"text": "0.543 -> 0.697", "tone": "good"}, "no: as large as time allows"], [{"text": "correlation 0.36 -> 0.08", "tone": "good"}, "yes, a few values near the default"], [{"text": "0.695 -> 0.724", "tone": "good"}, "yes: the main regulariser"], ["off gives Extra Trees", "rarely"], [{"text": "free validation estimate", "tone": "accent"}, "on, for quick tuning"], [{"text": "trees are independent", "tone": "accent"}, "-1"]], "t": "diagram", "id": "dg-6_2-02-0"},
+
+
 
 
 
@@ -118,7 +126,12 @@ bias is untouched by averaging: E[mean of trees] = E[one tree]. Bagging is varia
 
     { t: "h2", n: "03", text: "Importance: the one that lies and the one that shares", id: "importance" },
 
+    {"kind": "matrix", "title": "What a forest fixes, and four things it does not", "caption": "It fixes variance and nothing else. On XOR, depth-2 trees went 0.710 to 0.908 because different bootstraps find different roots and the average recovers the interaction. But an average of staircases is a smoother staircase, still axis-aligned — 0.981 against logistic regression's 0.993 on a diagonal boundary — and every tree is flat beyond its last split, so their mean is too.", "cols": ["Fixed", "Evidence"], "rows": ["Variance", "An interaction it missed", "Diagonal geometry", "Extrapolation", "A smooth additive truth", "Probabilities"], "cells": [[{"text": "yes", "tone": "good"}, "churn 0.674 -> 0.724"], [{"text": "yes", "tone": "good"}, "XOR 0.710 -> 0.908"], [{"text": "no", "tone": "crit"}, "0.981 vs logistic 0.993"], [{"text": "no", "tone": "crit"}, "every tree is flat past its last split"], [{"text": "no", "tone": "crit"}, "never caught the logistic model"], [{"text": "no", "tone": "crit"}, "max p-hat 0.66; 0.356 vs 0.318 actual"]], "t": "diagram", "id": "dg-6_2-03-2"},
+
+
     {"kind": "matrix", "title": "What a forest fixes, and four things it does not", "caption": "It fixes variance and nothing else. On XOR, depth-2 trees went 0.710 to 0.908 because different bootstraps find different roots and the average recovers the interaction. But an average of staircases is a smoother staircase, still axis-aligned — 0.981 against logistic regression's 0.993 on a diagonal boundary — and every tree is flat beyond its last split, so their mean is too.", "cols": ["Fixed", "Evidence"], "rows": ["Variance", "An interaction it missed", "Diagonal geometry", "Extrapolation", "A smooth additive truth", "Probabilities"], "cells": [[{"text": "yes", "tone": "good"}, "churn 0.674 -> 0.724"], [{"text": "yes", "tone": "good"}, "XOR 0.710 -> 0.908"], [{"text": "no", "tone": "crit"}, "0.981 vs logistic 0.993"], [{"text": "no", "tone": "crit"}, "every tree is flat past its last split"], [{"text": "no", "tone": "crit"}, "never caught the logistic model"], [{"text": "no", "tone": "crit"}, "max p-hat 0.66; 0.356 vs 0.318 actual"]], "t": "diagram", "id": "dg-6_2-03-1"},
+
+
 
 
 

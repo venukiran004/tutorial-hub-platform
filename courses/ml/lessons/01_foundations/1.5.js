@@ -23,6 +23,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "code", lang: "python", title: "The same logistic regression, thirty random 70/30 splits of the churn table (executed)",
       hl: [3, 4, 6],
       code: `aucs = []
@@ -65,6 +69,10 @@ np.min(aucs), np.max(aucs), np.mean(aucs), np.std(aucs)
     { t: "h2", n: "02", text: "Folds that match deployment", id: "structure" },
 
     {"kind": "matrix", "title": "The fold must match the deployment", "caption": "A fold strategy is a claim about what the model will meet. Get it wrong in the direction of ease and the score is not pessimistic or noisy — it is wrong: 0.995 for a model that had memorised entity ids.", "cols": ["Use", "Random folds instead give"], "rows": ["A rare class", "Several rows per entity", "A time order", "Entities and time", "Very few rows"], "cells": [[{"text": "StratifiedKFold", "tone": "good"}, "folds that are different problems"], [{"text": "GroupKFold", "tone": "good"}, {"text": "0.995: a lookup, not a model", "tone": "crit"}], [{"text": "TimeSeriesSplit, with a gap", "tone": "good"}, {"text": "training on the future", "tone": "crit"}], [{"text": "groups within a time split", "tone": "good"}, "either leak above"], [{"text": "repeated stratified k-fold", "tone": "accent"}, "one assignment's luck, reported"]], "t": "diagram", "id": "dg-1_5-02-1"},
+
+
+
+
 
 
 
@@ -137,6 +145,10 @@ cross_val_score(forest, X_s, y_s, cv=GroupKFold(5), groups=snapshots.customer_id
 
 
 
+
+
+
+
     { t: "p", text: "Tuning a hyperparameter by cross-validation and then reporting the best cross-validated score is using the folds twice: once to choose, once to report. The best of eleven candidate scores is optimistic for the same reason the best of thirty splits is. **Nested CV puts the choice inside an inner loop and scores the chosen model on an outer fold that took no part in the choice.**" },
 
     { t: "code", lang: "python", title: "Grid search inside cross_validate (executed)",
@@ -199,6 +211,10 @@ result = cross_validate(search, X, y, cv=outer, scoring="roc_auc", return_estima
     { t: "h2", n: "04", text: "The six mistakes", id: "mistakes" },
 
     {"kind": "matrix", "title": "The six mistakes, and which direction each one bends the score", "caption": "Four of these inflate, and the last two only add noise — which is worse than it sounds, because a 0.03 difference inside a ±0.05 spread is the shape of most false conclusions about which model is better.", "cols": ["Effect", "Fix"], "rows": ["Preprocessing before folds", "Random folds, grouped data", "Random folds, time data", "No stratification", "Reporting the tuning score", "Mean without the spread"], "cells": [[{"text": "inflates", "tone": "crit"}, "put the transform in the Pipeline"], [{"text": "inflates, absurdly", "tone": "crit"}, "GroupKFold on the entity"], [{"text": "inflates, hides drift", "tone": "crit"}, "TimeSeriesSplit with a gap"], [{"text": "adds fold noise", "tone": "warn"}, "StratifiedKFold"], [{"text": "optimistic: best-of-n", "tone": "crit"}, "nested CV, or a held-out test set"], [{"text": "hides the uncertainty", "tone": "warn"}, "report mean ± sd, or the folds"]], "t": "diagram", "id": "dg-1_5-04-3"},
+
+
+
+
 
 
 

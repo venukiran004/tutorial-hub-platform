@@ -51,6 +51,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "code", lang: "python", title: "Nine treatments of the same logistic regression, 5-fold, resampling inside the training folds (executed)",
       hl: [2, 3, 5, 12, 13, 14, 15],
       code: `#   treatment                    acc     recall@0.5  precision@0.5   F1@0.5   ROC-AUC   PR-AUC   log-loss   |  best-F1 threshold   best F1   recall   precision
@@ -103,6 +107,10 @@ CLEANING  Tomek links on 3,000 rows (10 % minority): removed 69 majority rows, 0
     { t: "h2", n: "04", text: "Weights for boosting, ensembles for imbalance, thresholds from costs", id: "weights" },
 
     {"kind": "matrix", "title": "Six levers for imbalance, and which one actually moved", "caption": "The threshold is almost always the largest single gain — F1 went from 0.109 to 0.351 by moving it, with no change to the model. Most of the other treatments turn out to be a threshold change in disguise, which is why they should be compared against simply tuning the cut.", "cols": ["Changes", "Gain here"], "rows": ["The metric", "The threshold", "class_weight", "Resampling", "Balanced ensembles", "Reframe as anomaly"], "cells": [[{"text": "how you see the problem", "tone": "good"}, "none, and it is still mandatory"], [{"text": "the decision, not the model", "tone": "good"}, {"text": "F1 0.109 -> 0.351", "tone": "good"}], ["the boundary; sometimes the fit", {"text": "large for hinge loss", "tone": "accent"}], [{"text": "the training distribution", "tone": "warn"}, "slightly worse than nothing here"], ["many balanced views", "0.857, 0.845 ranking"], [{"text": "the question itself", "tone": "accent"}, "below ~0.1% positives"]], "t": "diagram", "id": "dg-8_2-04-1"},
+
+
+
+
 
 
 

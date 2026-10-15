@@ -30,6 +30,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "code", lang: "text", title: "The objective, the two steps, and four points worked by hand (executed)",
       code: `objective   WCSS (inertia)  =  Σₖ Σ_{i ∈ Cₖ} ‖xᵢ - μₖ‖²        the total squared distance of every row to its cluster's centre
 
@@ -86,6 +90,10 @@ the global optimum on these data has WCSS 1,132.7 -- this run stopped at 5,726.9
     { t: "h2", n: "02", text: "Choosing k: five rules on data where the answer is known", id: "choosing-k" },
 
     {"kind": "matrix", "title": "Five rules for k, and what each is blind to", "caption": "On the churn customers the elbow has **no bend**, the gap statistic **keeps rising**, and silhouette peaks at 0.29 — all three are telling you the same thing, which is that there are no clusters here, only a continuum. The last row is the only one that can say that out loud, and the last row is not a statistic.", "cols": ["Pick k by", "Blind to"], "rows": ["Elbow", "Silhouette", "Davies-Bouldin", "Calinski-Harabasz", "Gap statistic", "Stability", "Business validity"], "cells": [[{"text": "the bend in inertia", "tone": "warn"}, "absent on real data: churn had none"], [{"text": "the maximum", "tone": "accent"}, "favours round, separated clusters"], [{"text": "the minimum", "tone": "accent"}, "also assumes round clusters"], [{"text": "the maximum", "tone": "accent"}, "prefers small k on a continuum"], [{"text": "within 1 SE of the next", "tone": "good"}, "can say 'no structure': it did"], [{"text": "the most reproducible", "tone": "good"}, {"text": "stable is not meaningful", "tone": "warn"}], [{"text": "what can be acted on", "tone": "good"}, {"text": "nothing — and it is not a statistic", "tone": "good"}]], "t": "diagram", "id": "dg-7_1-02-1"},
+
+
+
+
 
 
 

@@ -64,6 +64,10 @@ final level (= the forecast for every horizon):  38.1   45.6   48.6   52.9`,
 
 
 
+
+
+
+
     { t: "p", text: "Holt adds a slope: ℓ_t = α y_t + (1 − α)(ℓ_{t−1} + b_{t−1}) updates the level toward the observation from where the trend said it would be, b_t = β(ℓ_t − ℓ_{t−1}) + (1 − β) b_{t−1} updates the slope toward the level's latest change, and the forecast is ℓ_t + h b_t, a straight line. Worked with α = 0.5, β = 0.3 from ℓ₁ = 28.5 and b₁ = y₂ − y₁ = 5.5:" },
 
     { t: "code", lang: "text", title: "Four steps of Holt on the twelve numbers (executed)",
@@ -120,6 +124,10 @@ seasonal factors by weekday (Mon..Sun): 0.824  0.844  0.898  0.958  1.108  1.223
     { t: "h2", n: "04", text: "The ETS taxonomy", id: "ets" },
 
     {"kind": "matrix", "title": "The ETS taxonomy, and its ARIMA twins", "caption": "Several ETS models are algebraically identical to an ARIMA — simple exponential smoothing *is* an ARIMA(0,1,1) with θ = α − 1. Where the correspondence runs out is the seasonal additive case, which has no ARIMA equivalent at all, and that is the practical reason to keep both families on the bench.", "cols": ["ETS", "ARIMA twin"], "rows": ["Simple exp. smoothing", "Holt's linear trend", "Damped trend", "Holt-Winters additive"], "cells": [[{"text": "(A,N,N)", "tone": "accent"}, "ARIMA(0,1,1), theta = alpha - 1"], [{"text": "(A,A,N)", "tone": "accent"}, "ARIMA(0,2,2)"], [{"text": "(A,Ad,N)", "tone": "good"}, "ARIMA(1,1,2): the workhorse"], [{"text": "(A,A,A)", "tone": "violet"}, {"text": "none", "tone": "warn"}]], "t": "diagram", "id": "dg-10_4-04-1"},
+
+
+
+
 
 
 

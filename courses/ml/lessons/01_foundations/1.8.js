@@ -23,6 +23,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "The model y = w·x + b, the loss L = (1/n)Σ(w·xᵢ + b − tᵢ)², and the update **θ ← θ − η ∇L(θ)**. The gradient points uphill; step against it by η. For this loss the gradient is (2/n)Xᵀ(Xθ − t) and the curvature — the Hessian — is (2/n)XᵀX, a constant matrix whose eigenvalues decide everything about the step size." },
 
     { t: "code", lang: "python", title: "Three learning rates, one problem (executed)",
@@ -55,6 +59,10 @@ for lr in [0.02, 0.1, 0.18]:
     { t: "h2", n: "02", text: "Batch, mini-batch, stochastic", id: "flavours" },
 
     {"kind": "matrix", "title": "Batch, mini-batch, stochastic", "caption": "The gradient gets noisier and the updates get more frequent as you move right, and mini-batch wins because both of those are useful: enough updates to make progress, enough rows to vectorise, and enough noise to leave a bad basin.", "cols": ["Gradient", "Updates per epoch"], "rows": ["Batch", "Mini-batch", "Stochastic"], "cells": [[{"text": "exact", "tone": "good"}, {"text": "1", "tone": "warn"}], [{"text": "noisy, from b rows", "tone": "accent"}, {"text": "n / b: the sweet spot", "tone": "good"}], [{"text": "noisy, from 1 row", "tone": "warn"}, {"text": "n; no vectorisation", "tone": "warn"}]], "t": "diagram", "id": "dg-1_8-02-1"},
+
+
+
+
 
 
 
@@ -99,6 +107,10 @@ for lr in [0.02, 0.1, 0.18]:
     { t: "h2", n: "03", text: "Momentum, RMSProp, Adam", id: "adaptive" },
 
     {"kind": "matrix", "title": "Reading a loss curve", "caption": "Five of these six are optimisation problems with an optimisation fix. The last one is not — a training loss that is fine while validation rises is overfitting, and no change to the learning rate will touch it.", "cols": ["Cause", "Fix"], "rows": ["Explodes to NaN", "Fast, then creeps", "Oscillates, never settles", "Flat from the start", "Runs disagree", "Validation rising"], "cells": [[{"text": "step above 2 / lambda-max", "tone": "crit"}, "lower eta; scale features; clip"], ["ill-conditioning", "scale features; momentum or Adam"], ["step too large for the approach", "decay eta; larger batches late"], ["eta far too small, or a bug", "raise eta; check the gradient numerically"], ["a non-convex loss", "several seeds; report the spread"], [{"text": "not optimisation at all", "tone": "warn"}, "early stopping, regularisation"]], "t": "diagram", "id": "dg-1_8-03-2"},
+
+
+
+
 
 
 
@@ -162,6 +174,10 @@ def adam(w, k):   m[:] = 0.9*m + 0.1*g; v[:] = 0.999*v + 0.001*g*g              
     { t: "h2", n: "04", text: "Loss functions, worked on the same five residuals", id: "losses" },
 
     {"kind": "trace", "title": "Five residuals, four losses, and what the outlier does to each", "caption": "The same five residuals throughout; the 8.0 is the outlier. Squared error charges it **32.0** of the 34.7 total, so the fit chases it — and its gradient pulls sixteen times harder than the 0.5's. Absolute error charges 8.0 and pulls on every row with identical force. Huber is squared inside |r| ≤ 1 and linear outside, which caps the outlier's gradient at 1.0. The last row is the point: squared error's optimum is the mean, absolute error's is the median, and the quantile loss's is the quantile.", "left": "residual", "codeW": 130, "vars": ["squared ½r²", "absolute |r|", "Huber δ=1", "quantile τ=0.9"], "steps": [{"code": "r = 0.5", "state": ["0.125", "0.500", "0.125", "0.450"]}, {"code": "r = -1.0", "state": ["0.500", "1.000", "0.500", "0.100"]}, {"code": "r = 2.0", "state": ["2.000", "2.000", "1.500", "1.800"]}, {"code": "r = -0.3", "state": ["0.045", "0.300", "0.045", "0.030"]}, {"code": "r = 8.0", "state": ["32.000", "8.000", "7.500", "7.200"], "changed": [0], "tone": "crit", "note": "the outlier"}, {"code": "mean loss", "state": ["6.934", "2.360", "1.934", "1.916"], "tone": "accent"}, {"code": "its optimum is", "state": ["the mean", "the median", "both", "the 0.9 quantile"], "tone": "violet"}], "t": "diagram", "id": "dg-1_8-04-3"},
+
+
+
+
 
 
 

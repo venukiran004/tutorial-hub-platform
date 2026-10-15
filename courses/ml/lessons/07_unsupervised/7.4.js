@@ -30,6 +30,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "code", lang: "text", title: "The derivation, a 2 × 2 case by hand, and the SVD route (executed)",
       code: `centre the data (each column mean 0).  covariance  Σ = XᵀX / n.
 find the unit direction w that maximises the variance of the projection Xw:      Var(Xw) = wᵀ Σ w,   subject to  wᵀw = 1
@@ -110,6 +114,10 @@ the SVD route:  X = U D Vᵀ  ->  XᵀX = V D² Vᵀ,  so the columns of V are t
     { t: "h2", n: "03", text: "The two claims PCA makes, and when they are false", id: "claims" },
 
     {"kind": "matrix", "title": "The two claims PCA makes", "caption": "PCA asserts that the interesting directions are the **high-variance** ones and that the structure is **linear**. Nothing in the computation looks at the target, so a low-variance direction carrying all the signal is discarded without complaint — and no amount of components fixes a curved manifold.", "cols": ["Claim", "False when"], "rows": ["Variance is relevance", "The structure is linear", "Components are readable", "Scaling is a detail"], "cells": [[{"text": "the big directions matter", "tone": "accent"}, {"text": "the signal is low-variance", "tone": "crit"}], [{"text": "a rotation suffices", "tone": "accent"}, {"text": "the manifold is curved", "tone": "crit"}], ["loadings name the mixture", {"text": "components mix every column", "tone": "warn"}], [{"text": "no: it decides the answer", "tone": "crit"}, "always: variance has units"]], "t": "diagram", "id": "dg-7_4-03-1"},
+
+
+
+
 
 
 

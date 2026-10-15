@@ -19,7 +19,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "One model, three components", id: "glm" },
 
-    {"kind": "matrix", "title": "Family is about the variance; link is about the mean", "caption": "Two independent choices, and conflating them is the usual confusion. The family answers 'how does the spread of y grow with its mean'; the link answers 'on what scale do the effects add up'. A Poisson family with an identity link is legal and occasionally right — here it fitted a minimum mean of −0.75, which is why the log link is the default.", "cols": ["Variance grows", "Family"], "rows": ["Not at all", "Linearly with the mean", "With the mean squared", "Faster than Poisson", "A spike at zero"], "cells": [[{"text": "constant", "tone": "good"}, "Normal: squared error"], [{"text": "proportional to mu", "tone": "accent"}, "Poisson, with log link and offset"], [{"text": "proportional to mu²", "tone": "accent"}, "Gamma, with log link"], [{"text": "overdispersed, phi > 1.2", "tone": "warn"}, "Negative binomial"], [{"text": "a point mass plus a tail", "tone": "violet"}, "Tweedie, 1 < p < 2"]], "t": "diagram", "id": "dg-4_6-01-0"},
+    {"kind": "tree", "title": "One model, three components", "caption": "Every GLM is these three choices, and naming them separately is what makes the family comprehensible. The **random** component says how the spread grows with the mean; the **link** says on what scale the effects add up; the linear predictor is the part that looks like ordinary regression.", "root": {"label": "A GLM", "sub": "three independent choices", "tone": "violet", "children": [{"label": "Random component", "sub": "the distribution: Normal, Poisson, Gamma, Tweedie", "tone": "accent"}, {"label": "Systematic component", "sub": "the linear predictor Xβ", "tone": "good"}, {"label": "Link function", "sub": "g(μ) = Xβ: identity, log, logit", "tone": "teal"}]}, "t": "diagram", "id": "dg-4_6-01-0"},
+
+
+
+
 
 
 
@@ -64,6 +68,10 @@ mean-variance relationship is fixed by the family:   Normal Var = σ²,   Poisso
 
     { t: "h2", n: "02", text: "Poisson regression: counts, rates and IRLS", id: "poisson" },
 
+    {"kind": "flow", "title": "IRLS: a GLM is weighted least squares, solved repeatedly", "caption": "There is no closed form, but there is something almost as good: linearise the link around the current fit, compute a working response and a weight per row, and solve an ordinary weighted least squares. Iterate and it converges — usually in four or five passes — which is why GLMs were practical decades before general optimisers were.", "cols": 3, "nodes": [{"id": "b", "label": "Current β", "sub": "start from zero, or a guess", "tone": "violet"}, {"id": "m", "label": "μ = g inverse of Xβ", "sub": "the fitted means", "tone": "accent"}, {"id": "z", "label": "Working response z", "sub": "the linearised target", "tone": "accent"}, {"id": "w", "label": "Weights W", "sub": "from the variance function", "tone": "accent"}, {"id": "s", "label": "Solve weighted least squares", "sub": "one ordinary solve", "tone": "good"}, {"id": "r", "label": "Repeat to convergence", "sub": "four or five passes", "tone": "teal"}], "edges": [["b", "m"], ["m", "z"], ["m", "w"], ["z", "s"], ["w", "s"], ["s", "r"], ["r", "b", "", "dashed"]], "t": "diagram", "id": "dg-4_6-02-1"},
+
+
+
     { t: "code", lang: "python", title: "support_tickets as a count target — a model that correctly finds nothing (executed, 863 rows)",
       hl: [1, 8, 9, 10],
       code: `# tickets: mean 0.791, variance 0.775, values {0: 396, 1: 295, 2: 131, 3: 38, 4: 3}       <- mean ≈ variance: Poisson-shaped
@@ -106,6 +114,10 @@ sm.GLM(y, X, family=sm.families.Poisson(), offset=np.log(exposure)).fit()      #
     },
 
     { t: "h2", n: "03", text: "When the family is wrong: overdispersion, Gamma, Tweedie", id: "families" },
+
+    {"kind": "trace", "title": "Overdispersion: the coefficient is fine and the standard error is a lie", "caption": "The sample's variance is 3.989 against a mean of 1.837 — Poisson requires them equal, and φ = 1.77 measures the gap. Every method below recovers β₁ ≈ 0.382 correctly; they differ only in the **standard error**, and Poisson's is too small by a factor of √1.77. The consequence is measurable: across 200 simulations the nominal 95% Poisson interval contained the truth **79.5%** of the time — one interval in five is wrong — against 93.0% for quasi-Poisson.", "left": "model", "codeW": 190, "vars": ["β₁", "se", "coverage of a 95% CI"], "steps": [{"code": "Poisson GLM", "state": ["0.382", "0.0170", "79.5%"], "tone": "crit", "note": "φ = 1.77"}, {"code": "negative binomial", "state": ["0.386", "0.0234", ""], "tone": "good", "note": "α = 0.425"}, {"code": "quasi-Poisson", "state": ["0.382", "0.0226", "93.0%"], "changed": [1, 2], "tone": "good"}, {"code": "Poisson + HC0", "state": ["0.382", "0.0244", ""], "tone": "good", "note": "no distributional claim"}, {"code": "Gamma vs OLS on claims", "state": ["MAE 34.40", "vs 36.09", "min pred 8.1 vs -50.9"], "tone": "accent"}], "t": "diagram", "id": "dg-4_6-03-2"},
+
+
 
     { t: "code", lang: "python", title: "Overdispersion: counts generated negative-binomially, fitted as Poisson (executed, n = 2,000; true β₁ = 0.4)",
       hl: [2, 3, 4, 5, 9],
@@ -152,7 +164,12 @@ sm.GLM(y, X, family=sm.families.Poisson(), offset=np.log(exposure)).fit()      #
 
     { t: "h2", n: "04", text: "Changing the loss instead: Huber and quantile regression", id: "robust" },
 
+    {"kind": "matrix", "title": "Choosing the loss is choosing a likelihood", "caption": "Squared error is the Normal likelihood and absolute error is the Laplace — so 'change the loss' and 'change the family' are the same move seen from two sides. Huber caps the gradient, which is exactly what makes contamination unable to drag the fit.", "cols": ["Use", "Because"], "rows": ["Counts, or a rate", "Positive skewed amounts", "Amounts with many zeros", "Occasional wild residuals", "A percentile or interval", "Gaussian-ish residuals"], "cells": [[{"text": "Poisson, log link, offset", "tone": "good"}, "variance grows; effects multiply"], [{"text": "Gamma, log link", "tone": "good"}, "unbiased for E[y], unlike log-OLS"], [{"text": "Tweedie, p by CV", "tone": "good"}, "a zero mass plus a Gamma tail"], [{"text": "Huber or absolute error", "tone": "good"}, "the gradient is capped"], [{"text": "quantile regression at tau", "tone": "accent"}, "pinball loss is minimised by the quantile"], [{"text": "squared error", "tone": "good"}, "most efficient when it holds"]], "t": "diagram", "id": "dg-4_6-04-3"},
+
+
+
     {"kind": "matrix", "title": "Choosing the loss is choosing a likelihood", "caption": "Squared error is the Normal likelihood and absolute error is the Laplace — so 'change the loss' and 'change the family' are the same move seen from two sides. Huber caps the gradient, which is exactly what makes contamination unable to drag the fit.", "cols": ["Use", "Because"], "rows": ["Counts, or a rate", "Positive skewed amounts", "Amounts with many zeros", "Occasional wild residuals", "A percentile or interval", "Gaussian-ish residuals"], "cells": [[{"text": "Poisson, log link, offset", "tone": "good"}, "variance grows; effects multiply"], [{"text": "Gamma, log link", "tone": "good"}, "unbiased for E[y], unlike log-OLS"], [{"text": "Tweedie, p by CV", "tone": "good"}, "a zero mass plus a Gamma tail"], [{"text": "Huber or absolute error", "tone": "good"}, "the gradient is capped"], [{"text": "quantile regression at tau", "tone": "accent"}, "pinball loss is minimised by the quantile"], [{"text": "squared error", "tone": "good"}, "most efficient when it holds"]], "t": "diagram", "id": "dg-4_6-04-1"},
+
 
 
 

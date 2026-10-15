@@ -38,6 +38,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "table",
       head: ["Kind", "Mechanism", "Example on the churn table", "Signature", "Executed score"],
       rows: [
@@ -94,6 +98,10 @@ permutation_importance(pipe_with_refund, X_test, y_test, scoring="roc_auc", n_re
 
 
 
+
+
+
+
     { t: "code", lang: "python", title: "Target encoding a random category, outside and inside the fold (executed)",
       hl: [2, 5, 6, 10, 11],
       code: `df["city"] = rng.integers(0, 200, len(df)).astype(str)          # 200 cities assigned at random: no relation to churn whatsoever
@@ -126,6 +134,10 @@ cross_val_score(pipe, df[["city"]], y, cv=cv, scoring="roc_auc").mean()         
     { t: "h2", n: "03", text: "Temporal leakage: the window that looked ahead", id: "temporal" },
 
     {"kind": "timeline", "title": "A centred window reads the future; a trailing one does not", "caption": "A 7-day rolling mean **centred** on day t averages days t−3 to t+3 — so the feature for Wednesday contains Saturday. It scored 0.771 against 0.618 for the trailing version and 0.571 for the raw value, and that 0.15 of apparent skill is entirely the three days that had not happened yet.", "span": 14, "tick": 7, "lanes": [{"label": "Forecast at t", "bars": [[7, 8, "t", "violet"]]}, {"label": "Centred, 7 days", "bars": [[4, 11, "t-3 to t+3: reads the future", "crit"]]}, {"label": "Trailing, 7 days", "bars": [[1, 8, "t-6 to t: legal", "good"]]}, {"label": "Knowable at t", "bars": [[0, 8, "everything up to and including t", "good"]]}], "t": "diagram", "id": "dg-1_6-03-2"},
+
+
+
+
 
 
 
@@ -190,6 +202,10 @@ centred  = s.rolling(7, center=True).mean()       # days t-3 .. t+3        : use
     { t: "h2", n: "04", text: "Detection and prevention", id: "detection" },
 
     {"kind": "matrix", "title": "What each transform leaks when it is fitted before the split", "caption": "The severity is set by what the transform saw. A scaler learns a mean; a target encoder learns the **label**, at group resolution, which is why it can turn a noise column into a 0.836. All of them have the same fix, and it is one line: make the transform a step in the Pipeline.", "cols": ["It learns", "Severity"], "rows": ["StandardScaler", "SimpleImputer", "KNNImputer", "TargetEncoder", "SelectKBest", "SMOTE", "PCA"], "cells": [["the test rows' mean and range", {"text": "low but non-zero", "tone": "warn"}], ["the test rows' median", {"text": "low", "tone": "warn"}], ["test values into train imputations", {"text": "medium", "tone": "warn"}], [{"text": "the label itself", "tone": "crit"}, {"text": "severe: 0.836 from noise", "tone": "crit"}], [{"text": "which features fit the test labels", "tone": "crit"}, {"text": "severe with many features", "tone": "crit"}], [{"text": "synthetic test positives", "tone": "crit"}, {"text": "severe; also fakes the base rate", "tone": "crit"}], ["the test rows' directions", {"text": "low", "tone": "warn"}]], "t": "diagram", "id": "dg-1_6-04-3"},
+
+
+
+
 
 
 

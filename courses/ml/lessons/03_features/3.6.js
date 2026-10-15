@@ -34,6 +34,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "code", lang: "python", title: "What fit does, what it stores, and what the helpers promise (executed)",
       hl: [2, 3, 6, 9, 10, 11],
       code: `sc = StandardScaler()
@@ -62,6 +66,11 @@ hasattr(clone(sc), "mean_")                                 # False             
     ]},
 
     { t: "h2", n: "02", text: "Mixed data, named features", id: "wiring" },
+
+    {"kind": "flow", "title": "One ColumnTransformer, three branches, one fitted object", "caption": "Columns are selected **by name**, so a reordered input cannot silently shift the pipeline, and `remainder='drop'` means a new column added upstream is excluded rather than fed in unseen. Each branch is itself a small pipeline, and the whole assembly is one estimator that cross-validation can clone — which is what makes every leakage rule in module 1 automatic rather than remembered.", "cols": 3, "nodes": [{"id": "x", "label": "Raw DataFrame", "sub": "mixed types, missing values", "tone": "violet"}, {"id": "n", "label": "Numeric branch", "sub": "impute + indicator, then scale", "tone": "accent"}, {"id": "c", "label": "Categorical branch", "sub": "impute 'missing', then one-hot", "tone": "accent"}, {"id": "t", "label": "Text branch", "sub": "a vectoriser, if there is text", "tone": "accent"}, {"id": "h", "label": "Horizontally stacked", "sub": "get_feature_names_out names them", "tone": "good"}, {"id": "m", "label": "The model", "sub": "one estimator, cloned per fold", "tone": "teal"}], "edges": [["x", "n"], ["x", "c"], ["x", "t"], ["n", "h"], ["c", "h"], ["t", "h"], ["h", "m"]], "t": "diagram", "id": "dg-3_6-02-1"},
+
+
+
 
     { t: "code", lang: "python", title: "The course preprocessing pipeline, with its feature names recovered and its coefficients read by name (executed)",
       hl: [1, 2, 3, 6, 7, 11, 12],
@@ -97,6 +106,11 @@ GridSearchCV(pipe, {"clf__C": [0.01, 0.1, 1], "pre__num__simpleimputer__strategy
 
     { t: "h2", n: "03", text: "A custom transformer that keeps the contract", id: "custom" },
 
+    {"kind": "flow", "title": "A custom transformer that keeps the contract", "caption": "The rule that makes it safe: anything derived from the data is computed in `fit` and stored with a trailing underscore; `transform` only applies it. A transformer that computes a median inside `transform` recomputes it on the test fold — which is a leak in the other direction, and one that cross-validation will not catch because each fold looks self-consistent.", "cols": 3, "nodes": [{"id": "i", "label": "__init__", "sub": "store hyperparameters; validate nothing", "tone": "violet"}, {"id": "f", "label": "fit(X, y)", "sub": "compute, store as self.thing_", "tone": "good"}, {"id": "t", "label": "transform(X)", "sub": "apply self.thing_; learn nothing", "tone": "good"}, {"id": "n", "label": "get_feature_names_out", "sub": "so the names survive the pipeline", "tone": "accent"}, {"id": "w", "label": "Computing in transform", "sub": "recomputed on the test fold", "tone": "crit"}, {"id": "c", "label": "check_estimator", "sub": "sklearn tests the contract for you", "tone": "teal"}], "edges": [["i", "f"], ["f", "t"], ["t", "n"], ["n", "c"], ["t", "w", "", "dashed"]], "t": "diagram", "id": "dg-3_6-03-2"},
+
+
+
+
     { t: "code", lang: "python", title: "RatioFeatures: append num_i / num_j columns, and pass scikit-learn's conformance checks (executed)",
       hl: [1, 3, 4, 6, 7, 9, 10, 15],
       code: `class RatioFeatures(TransformerMixin, BaseEstimator):                   # mixins first, BaseEstimator last: the required order
@@ -121,6 +135,11 @@ RatioFeatures(pairs=((3, 0),)).fit(X_num).get_feature_names_out(numeric)[-1]    
     },
 
     { t: "h2", n: "04", text: "Persistence, serving, caching", id: "serving" },
+
+    {"kind": "steps", "title": "One artefact, one code path", "caption": "Training–serving skew is not a risk you manage, it is a consequence of having two implementations. If the fitted Pipeline is the thing serialised and the thing called in serving, there is no second implementation to drift.", "items": [{"label": "ColumnTransformer by name", "desc": "remainder='drop', so a new column cannot slip in unnoticed", "code": "1", "tone": "accent"}, {"label": "A branch per type", "desc": "impute with indicator, scale if the model needs it, encode with unknown handling", "code": "2", "tone": "good"}, {"label": "The model, in the same Pipeline", "desc": "so every fold refits the preprocessing too", "code": "3", "tone": "good"}, {"label": "Tune with a grid that reaches the preprocessing", "desc": "the imputer strategy is a hyperparameter like any other", "code": "4", "tone": "violet"}, {"label": "Refit on everything, then joblib.dump", "desc": "with the library versions pinned beside it", "code": "5", "tone": "teal"}, {"label": "Serve by calling that object", "desc": "on a DataFrame with the training column names", "code": "6", "tone": "good"}], "t": "diagram", "id": "dg-3_6-04-3"},
+
+
+
 
     {"kind": "steps", "title": "One artefact, one code path", "caption": "Training–serving skew is not a risk you manage, it is a consequence of having two implementations. If the fitted Pipeline is the thing serialised and the thing called in serving, there is no second implementation to drift.", "items": [{"label": "ColumnTransformer by name", "desc": "remainder='drop', so a new column cannot slip in unnoticed", "code": "1", "tone": "accent"}, {"label": "A branch per type", "desc": "impute with indicator, scale if the model needs it, encode with unknown handling", "code": "2", "tone": "good"}, {"label": "The model, in the same Pipeline", "desc": "so every fold refits the preprocessing too", "code": "3", "tone": "good"}, {"label": "Tune with a grid that reaches the preprocessing", "desc": "the imputer strategy is a hyperparameter like any other", "code": "4", "tone": "violet"}, {"label": "Refit on everything, then joblib.dump", "desc": "with the library versions pinned beside it", "code": "5", "tone": "teal"}, {"label": "Serve by calling that object", "desc": "on a DataFrame with the training column names", "code": "6", "tone": "good"}], "t": "diagram", "id": "dg-3_6-04-1"},
 

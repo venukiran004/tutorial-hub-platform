@@ -19,6 +19,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "AdaBoost: reweight, refit, vote", id: "adaboost" },
 
+    {"kind": "trace", "title": "AdaBoost on ten points: three stumps, zero errors", "caption": "Each round refits on **reweighted** rows, so the next stump is forced to attend to what the last one got wrong. Watch the weights: round 1 is wrong on x = 6, 7, 8, so their weight rises from 0.1 to 0.167 and the next stump cuts at 8.5 instead. Three stumps — each individually unable to separate the data — sum to an ensemble with zero training errors. Note α grows as the error falls: at ε = 0.5 a learner's vote is zero, and above 0.5 it is negative, which simply means invert it.", "left": "round", "codeW": 130, "vars": ["best stump", "error ε", "vote α", "ensemble errors"], "steps": [{"code": "1", "state": ["x <= 2.5", "0.300", "0.424", "3"], "tone": "accent", "note": "wrong on 6,7,8"}, {"code": "weights after 1", "state": ["0.167 on 6,7,8", "", "", ""], "tone": "warn"}, {"code": "2", "state": ["x <= 8.5", "0.214", "0.650", "3"], "changed": [1, 2], "tone": "accent", "note": "wrong on 3,4,5"}, {"code": "weights after 2", "state": ["0.167 on 3,4,5", "", "", ""], "tone": "warn"}, {"code": "3", "state": ["x <= 5.5 (inverted)", "0.182", "0.752", "0"], "changed": [3], "tone": "good", "note": "zero errors"}, {"code": "sklearn, 3 stumps", "state": ["same cuts", "0.300 0.214 0.182", "2α each", "0"], "tone": "violet"}], "t": "diagram", "id": "dg-6_3-01-0"},
+
+
     { t: "code", lang: "text", title: "The algorithm, and three rounds by hand on ten points (executed)",
       code: `start with weights wᵢ = 1/n.  For each round t:
    fit a weak learner hₜ to the WEIGHTED data;  εₜ = Σ wᵢ [hₜ(xᵢ) ≠ yᵢ]  (weighted error)
@@ -56,7 +59,12 @@ scikit-learn AdaBoostClassifier(3 stumps): errors [0.300, 0.214, 0.182], weights
 
     { t: "h2", n: "02", text: "Gradient boosting: descent in function space", id: "gradient" },
 
+    {"kind": "steps", "title": "Gradient boosting is gradient descent, with trees as the step", "caption": "The insight that makes the name literal: instead of taking a step in parameter space, take a step in **function** space — and the step direction is the negative gradient of the loss with respect to the current predictions, which for squared error is just the residual.", "items": [{"label": "Start from a constant", "desc": "the mean for squared error, the log-odds for log-loss", "code": "F0", "tone": "accent"}, {"label": "Compute the negative gradient", "desc": "for squared error this is exactly the residual", "code": "g", "tone": "good"}, {"label": "Fit a shallow tree to it", "desc": "the tree approximates the descent direction", "code": "h", "tone": "good"}, {"label": "Take a small step", "desc": "F = F + nu x h; the learning rate is the step size", "code": "nu", "tone": "violet"}, {"label": "Repeat", "desc": "each tree corrects what the sum so far still gets wrong", "code": "loop", "tone": "violet"}, {"label": "Stop before it fits the noise", "desc": "early stopping is the regulariser; more trees eventually hurt", "code": "stop", "tone": "crit"}], "t": "diagram", "id": "dg-6_3-02-1"},
+
+
     {"kind": "steps", "title": "Gradient boosting is gradient descent, with trees as the step", "caption": "The insight that makes the name literal: instead of taking a step in parameter space, take a step in **function** space — and the step direction is the negative gradient of the loss with respect to the current predictions, which for squared error is just the residual.", "items": [{"label": "Start from a constant", "desc": "the mean for squared error, the log-odds for log-loss", "code": "F0", "tone": "accent"}, {"label": "Compute the negative gradient", "desc": "for squared error this is exactly the residual", "code": "g", "tone": "good"}, {"label": "Fit a shallow tree to it", "desc": "the tree approximates the descent direction", "code": "h", "tone": "good"}, {"label": "Take a small step", "desc": "F = F + nu x h; the learning rate is the step size", "code": "nu", "tone": "violet"}, {"label": "Repeat", "desc": "each tree corrects what the sum so far still gets wrong", "code": "loop", "tone": "violet"}, {"label": "Stop before it fits the noise", "desc": "early stopping is the regulariser; more trees eventually hurt", "code": "stop", "tone": "crit"}], "t": "diagram", "id": "dg-6_3-02-0"},
+
+
 
 
 
@@ -115,7 +123,12 @@ GradientBoostingClassifier(learning_rate=0.1, max_depth=2).estimators_[0, 0]
 
     { t: "h2", n: "03", text: "The dials, executed", id: "dials" },
 
+    {"kind": "matrix", "title": "Bagging and boosting are opposite machines", "caption": "Bagging reduces variance and leaves bias alone, so more trees never hurt. Boosting reduces bias by construction, so more trees eventually overfit — 0.719 down to 0.596 at a learning rate of 1. That single asymmetry explains the tuning burden: a forest's defaults are safe and a booster's can be the worst model in the room.", "cols": ["Bagging / forest", "Boosting"], "rows": ["Trees are", "Reduces", "More trees", "Tuning burden", "Label noise", "Parallel"], "cells": [["independent, deep", "sequential, shallow"], [{"text": "variance", "tone": "accent"}, {"text": "bias, mostly", "tone": "accent"}], [{"text": "never hurt", "tone": "good"}, {"text": "0.719 -> 0.596 at nu = 1", "tone": "crit"}], [{"text": "low", "tone": "good"}, {"text": "high", "tone": "warn"}], [{"text": "robust: 0.922", "tone": "good"}, {"text": "sensitive: 0.895", "tone": "warn"}], [{"text": "trivially", "tone": "good"}, {"text": "within a tree only", "tone": "warn"}]], "t": "diagram", "id": "dg-6_3-03-2"},
+
+
     {"kind": "matrix", "title": "Bagging and boosting are opposite machines", "caption": "Bagging reduces variance and leaves bias alone, so more trees never hurt. Boosting reduces bias by construction, so more trees eventually overfit — 0.719 down to 0.596 at a learning rate of 1. That single asymmetry explains the tuning burden: a forest's defaults are safe and a booster's can be the worst model in the room.", "cols": ["Bagging / forest", "Boosting"], "rows": ["Trees are", "Reduces", "More trees", "Tuning burden", "Label noise", "Parallel"], "cells": [["independent, deep", "sequential, shallow"], [{"text": "variance", "tone": "accent"}, {"text": "bias, mostly", "tone": "accent"}], [{"text": "never hurt", "tone": "good"}, {"text": "0.719 -> 0.596 at nu = 1", "tone": "crit"}], [{"text": "low", "tone": "good"}, {"text": "high", "tone": "warn"}], [{"text": "robust: 0.922", "tone": "good"}, {"text": "sensitive: 0.895", "tone": "warn"}], [{"text": "trivially", "tone": "good"}, {"text": "within a tree only", "tone": "warn"}]], "t": "diagram", "id": "dg-6_3-03-1"},
+
+
 
 
 
