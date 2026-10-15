@@ -77,6 +77,13 @@ the plan recovery from 1.1 (k-means on fee and logins):   ARI 0.847   NMI 0.793 
 
 
 
+
+
+
+
+
+
+
     { t: "p", text: "A fairness audit takes the deployed operating point and computes the confusion-matrix rates **within each group**. The churn model at threshold 0.2, by region, on the held-out set:" },
 
     { t: "table",
@@ -115,6 +122,13 @@ choosing which one to satisfy, and saying so.`,
     { t: "h2", n: "04", text: "Gain, lift and the C-index", id: "gain" },
 
     {"kind": "matrix", "title": "The two charts a non-specialist will actually adopt", "caption": "Gain and lift need no training to read: 'the top 20% of the list contains 54% of the churners' is a sentence anyone can act on. Both must be computed at the deployed threshold, on held-out data — a gain chart on training rows is a description of memorisation.", "cols": ["Says", "Read by"], "rows": ["Gain at top k", "Lift at top k", "The fairness table", "The confusion matrix", "AUC"], "cells": [[{"text": "share of positives captured", "tone": "good"}, "the retention team"], [{"text": "how many times better than random", "tone": "good"}, "the retention team"], [{"text": "the same model, per group", "tone": "accent"}, "a reviewer or regulator"], [{"text": "the operating point in units", "tone": "good"}, "the stakeholder"], [{"text": "ranking quality overall", "tone": "warn"}, "you, alongside — never instead"]], "t": "diagram", "id": "dg-2_6-04-1"},
+
+
+
+
+
+
+
 
 
 

@@ -28,6 +28,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "table",
       head: ["Kind", "Mechanism", "Example on the churn table", "Signature", "Executed score"],
       rows: [
@@ -66,6 +73,13 @@ permutation_importance(pipe_with_refund, X_test, y_test, scoring="roc_auc", n_re
     { t: "h2", n: "02", text: "Preprocessing leakage: the noise column that scored 0.836", id: "preprocessing" },
 
     {"kind": "matrix", "title": "What each transform leaks when it is fitted before the split", "caption": "The severity is set by what the transform saw. A scaler learns a mean; a target encoder learns the **label**, at group resolution, which is why it can turn a noise column into a 0.836. All of them have the same fix, and it is one line: make the transform a step in the Pipeline.", "cols": ["It learns", "Severity"], "rows": ["StandardScaler", "SimpleImputer", "KNNImputer", "TargetEncoder", "SelectKBest", "SMOTE", "PCA"], "cells": [["the test rows' mean and range", {"text": "low but non-zero", "tone": "warn"}], ["the test rows' median", {"text": "low", "tone": "warn"}], ["test values into train imputations", {"text": "medium", "tone": "warn"}], [{"text": "the label itself", "tone": "crit"}, {"text": "severe: 0.836 from noise", "tone": "crit"}], [{"text": "which features fit the test labels", "tone": "crit"}, {"text": "severe with many features", "tone": "crit"}], [{"text": "synthetic test positives", "tone": "crit"}, {"text": "severe; also fakes the base rate", "tone": "crit"}], ["the test rows' directions", {"text": "low", "tone": "warn"}]], "t": "diagram", "id": "dg-1_6-02-1"},
+
+
+
+
+
+
+
 
 
 

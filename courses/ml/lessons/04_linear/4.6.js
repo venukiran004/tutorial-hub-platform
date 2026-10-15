@@ -23,6 +23,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "The generalised linear model",
       code: `1. RANDOM component       y ~ an exponential-family distribution with mean μ         (Normal, Bernoulli, Poisson, Gamma, Tweedie, ...)
 2. SYSTEMATIC component   η = xᵀβ                                                     (the linear predictor -- always linear)
@@ -143,6 +150,13 @@ sm.GLM(y, X, family=sm.families.Poisson(), offset=np.log(exposure)).fit()      #
     { t: "h2", n: "04", text: "Changing the loss instead: Huber and quantile regression", id: "robust" },
 
     {"kind": "matrix", "title": "Choosing the loss is choosing a likelihood", "caption": "Squared error is the Normal likelihood and absolute error is the Laplace — so 'change the loss' and 'change the family' are the same move seen from two sides. Huber caps the gradient, which is exactly what makes contamination unable to drag the fit.", "cols": ["Use", "Because"], "rows": ["Counts, or a rate", "Positive skewed amounts", "Amounts with many zeros", "Occasional wild residuals", "A percentile or interval", "Gaussian-ish residuals"], "cells": [[{"text": "Poisson, log link, offset", "tone": "good"}, "variance grows; effects multiply"], [{"text": "Gamma, log link", "tone": "good"}, "unbiased for E[y], unlike log-OLS"], [{"text": "Tweedie, p by CV", "tone": "good"}, "a zero mass plus a Gamma tail"], [{"text": "Huber or absolute error", "tone": "good"}, "the gradient is capped"], [{"text": "quantile regression at tau", "tone": "accent"}, "pinball loss is minimised by the quantile"], [{"text": "squared error", "tone": "good"}, "most efficient when it holds"]], "t": "diagram", "id": "dg-4_6-04-1"},
+
+
+
+
+
+
+
 
 
 

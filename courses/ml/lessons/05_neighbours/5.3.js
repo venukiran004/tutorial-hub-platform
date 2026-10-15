@@ -99,6 +99,13 @@ solved numerically (SLSQP) on the six points:
     {"kind": "steps", "title": "The cheapest solution was to give up, and the arithmetic says so", "caption": "Linear SVM, standardised, C = 1, 15.4% positives: the fitted model is **w = (0,0,0,0,0), b = −1** — it predicts 'no churn' for everyone and its decision function is constant, so the 0.629 AUC is noise. Separating 133 scattered positives would need a large norm; abandoning them costs 133 × 2 = 266 of slack, and at C = 1 that is cheaper. Logistic regression never does this, because log-loss keeps pulling on every point while the hinge stops pulling once a point is written off.", "items": [{"label": "133 positives, scattered", "desc": "15.4% of 866 rows, no clean separating direction", "code": "1", "tone": "accent"}, {"label": "Separating them needs a large norm", "desc": "which the regularisation term charges for", "code": "2", "tone": "warn"}, {"label": "Abandoning them costs 266 of slack", "desc": "133 violators at xi = 2 each", "code": "3", "tone": "warn"}, {"label": "At C = 1 the slack is cheaper", "desc": "so w = 0 is the optimum: a constant predictor", "code": "4", "tone": "crit"}, {"label": "AUC 0.629 — and it is noise", "desc": "a constant decision function has no ranking", "code": "5", "tone": "crit"}, {"label": "class_weight='balanced'", "desc": "minority slack costs 5.5x more; AUC 0.757, every C from 0.001 to 10", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-5_3-02-0"},
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "One overlapping point added at (0.4, 0.4) with label +1; C swept (executed)",
       hl: [2, 3, 4, 5],
       code: `#   C        w             margin 2/‖w‖    support vectors    Σ slack    train accuracy
@@ -155,6 +162,13 @@ Mercer: K must be symmetric positive semi-definite for a φ to exist -- then the
     { t: "h2", n: "04", text: "Probabilities, scale, regression and the honest comparison", id: "practice-matters" },
 
     {"kind": "matrix", "title": "SVM and logistic regression, honestly compared", "caption": "The hinge is zero beyond the margin and the log-loss never is — nearly every row below follows from that one difference, including which rows the solution depends on and how each model behaves under imbalance.", "cols": ["SVM", "Logistic"], "rows": ["Loss", "Depends on", "Probabilities", "Non-linearity", "Imbalance", "Scale in n"], "cells": [[{"text": "zero beyond the margin", "tone": "accent"}, {"text": "never zero", "tone": "accent"}], [{"text": "support vectors only", "tone": "good"}, "every row"], [{"text": "none; Platt after", "tone": "warn"}, {"text": "native", "tone": "good"}], [{"text": "kernels: cheap", "tone": "good"}, "explicit features or splines"], [{"text": "can collapse to majority", "tone": "crit"}, {"text": "degrades gracefully", "tone": "good"}], [{"text": "O(n²-n³) kernel", "tone": "warn"}, {"text": "linear", "tone": "good"}]], "t": "diagram", "id": "dg-5_3-04-1"},
+
+
+
+
+
+
+
 
 
     { t: "code", lang: "python", title: "An SVM has no probabilities; two ways to add them (executed, churn, 30 % holdout)",

@@ -20,6 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why the interval widens", id: "widening" },
 
+    {"kind": "matrix", "title": "Four ways to get an interval, and what each one assumes", "caption": "The analytic interval is the narrowest and assumes the most — that the model is right and the errors normal — so it is the one that under-covers in practice. Conformal assumes only exchangeability between the calibration block and the test block, and gives coverage as a guarantee rather than a hope.", "cols": ["Assumes", "Works with"], "rows": ["Analytic", "Quantile regression", "Bootstrap / simulation", "Conformal"], "cells": [[{"text": "the model is right, errors normal", "tone": "warn"}, "ARIMA, ETS"], [{"text": "nothing about the shape", "tone": "good"}, "boosting, networks"], [{"text": "residuals exchangeable", "tone": "accent"}, "any model with a recursion"], [{"text": "exchangeability only", "tone": "good"}, {"text": "any model; coverage guaranteed", "tone": "good"}]], "t": "diagram", "id": "dg-10_7-01-0"},
+
+
+
+
     { t: "code", lang: "text", title: "A random walk with σ = 3, forecast 200 (executed)",
       code: `y_{T+h} = y_T + ε_{T+1} + ... + ε_{T+h}      ->   Var = hσ²   ->   95 % interval = ŷ ± 1.96 σ √h
 
@@ -65,6 +70,11 @@ h   sd = σ√h    half-width 1.96σ√h    interval
       caption: "Two methods under-cover badly. The quantile models were fitted to the whole history and the last 150 days were harder than average; the bootstrap used residuals from data the model had fitted, which are smaller than its errors on new data — the same optimism as a training-set score. The analytic and conformal intervals are honest because they were built from errors the model did not see, and conformal's is honest by construction." },
 
     { t: "h2", n: "03", text: "The pinball loss", id: "pinball" },
+
+    {"kind": "matrix", "title": "The pinball loss is minimised by the quantile you asked for", "caption": "That is the whole reason quantile regression works: weighting under- and over-predictions asymmetrically by τ makes the optimal constant prediction the τ-th quantile. At τ = 0.5 the weights are equal and it reduces to half the absolute error, which is why the median minimises MAE.", "cols": ["Penalises", "Optimal forecast"], "rows": ["tau = 0.5", "tau = 0.9", "tau = 0.1", "Squared error"], "cells": [[{"text": "both sides equally", "tone": "accent"}, "the median — hence MAE"], [{"text": "under-prediction 9x more", "tone": "good"}, "the 90th percentile"], [{"text": "over-prediction 9x more", "tone": "good"}, "the 10th percentile"], [{"text": "large errors quadratically", "tone": "warn"}, "the mean"]], "t": "diagram", "id": "dg-10_7-03-1"},
+
+
+
 
     { t: "p", text: "The pinball (quantile) loss at level τ is τ(y − ŷ) when the forecast is below the actual and (1 − τ)(ŷ − y) when it is above. Minimising it over a distribution gives the τ-quantile, and the asymmetry is the whole mechanism: at τ = 0.9 being too low is penalised nine times as hard as being too high, so the minimiser is pushed up until only 10 % of outcomes sit above it. At τ = 0.5 it is half the absolute error, and its minimiser is the median." },
 

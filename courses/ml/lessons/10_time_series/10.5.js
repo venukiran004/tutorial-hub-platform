@@ -35,6 +35,11 @@ executed on 2,000 simulated points:
 
     { t: "h2", n: "02", text: "A one-step forecast by hand", id: "by-hand" },
 
+    {"kind": "matrix", "title": "Reading the ACF and PACF into orders", "caption": "These five rules are the whole identification procedure, and they are rules about **where a plot cuts off** rather than where it is large. The PACF cutting off at lag p is what distinguishes an AR from an MA, because a pure AR's partial correlations vanish beyond its order by construction.", "cols": ["Plot shows", "Order"], "rows": ["ACF decays slowly from 1", "ACF spikes at m, 2m, 3m", "PACF cuts off at lag p", "ACF cuts off at short lag q", "PACF spike at lag m only"], "cells": [[{"text": "non-stationary in level", "tone": "accent"}, "d = 1"], [{"text": "non-stationary in season", "tone": "accent"}, "D = 1"], [{"text": "an AR signature", "tone": "good"}, "p"], [{"text": "an MA signature", "tone": "good"}, "q"], [{"text": "seasonal AR", "tone": "good"}, "P = 1"]], "t": "diagram", "id": "dg-10_5-02-0"},
+
+
+
+
     { t: "p", text: "This is the classic interview question, and it has a definite answer. A fitted ARIMA(1,1,1) with drift has c = 0.8, φ = 0.5, θ = 0.3; the last two observations are y₁₁ = 42.5 and y₁₂ = 54.0; the last residual is ε₁₂ = −1.2. Because d = 1 the model lives in differences z_t = y_t − y_{t−1}, so the first move is z₁₂ = 11.5. The one-step forecast is z̑₁₃ = c + φ z₁₂ + θ ε₁₂; beyond one step the future errors are unknown, their expectation is zero, and the MA term drops out; each further step feeds its own prediction back in; and the level forecast is the cumulative sum." },
 
     { t: "code", lang: "text", title: "ARIMA(1,1,1) with drift, four steps ahead (executed)",
@@ -57,6 +62,11 @@ the same recursion on a FITTED model (a simulated ARIMA(1,1,1)+drift, n = 600):
     { t: "callout", kind: "trap", title: "Twelve points cannot estimate an ARIMA(1,1,1)", body: [{ t: "p", text: "Fitted to the twelve quarterly numbers alone, statsmodels returns φ = −1.000 and θ = 0.996 — the boundary of the parameter space, where the AR root sits on the unit circle and the MA term tries to cancel it. That is not a model; it is an optimiser with nothing to work with. The hand example above uses *given* parameters for that reason. ARIMA needs enough history to identify its orders and estimate its parameters — a few dozen points for a simple model, several seasons for a seasonal one — and the exercise in 10.4 and the store fits below have 900." }] },
 
     { t: "h2", n: "03", text: "SARIMA multiplies", id: "sarima" },
+
+    {"kind": "steps", "title": "Twelve points cannot estimate an ARIMA(1,1,1)", "caption": "Fitted to twelve quarterly numbers, statsmodels returns φ = −1.000 and θ = 0.996 — the **boundary** of the parameter space, where the AR root sits on the unit circle and the MA term tries to cancel it. That is not a model; it is an optimiser with nothing to work with.", "items": [{"label": "Twelve observations, three parameters", "desc": "plus a differencing order and a variance", "code": "1", "tone": "warn"}, {"label": "phi = -1.000", "desc": "the AR root on the unit circle: the boundary", "code": "2", "tone": "crit"}, {"label": "theta = 0.996", "desc": "the MA term trying to cancel it", "code": "3", "tone": "crit"}, {"label": "No error is raised", "desc": "the fit 'succeeds' and the forecast looks plausible", "code": "4", "tone": "crit"}, {"label": "A simple model needs a few dozen points", "desc": "a seasonal one needs several whole seasons", "code": "rule", "tone": "good"}, {"label": "The store fits here have 900", "desc": "which is why their orders are identifiable", "code": "note", "tone": "good"}], "t": "diagram", "id": "dg-10_5-03-1"},
+
+
+
 
     { t: "p", text: "In backshift notation a SARIMA model is (1 − φB)(1 − ΦBᵐ)(1 − B)ᵈ(1 − Bᵐ)ᴰ y_t = (1 + θB)(1 + ΘBᵐ) ε_t: an AR polynomial, a seasonal AR polynomial, the differencing, and on the right an MA polynomial and a seasonal MA polynomial. The multiplication is what people miss. Expanding (1 − φB)(1 − ΦB⁷) gives 1 − φB − ΦB⁷ + φΦB⁸, so y_t = φ y_{t−1} + Φ y_{t−7} − φΦ y_{t−8} + ε_t: a term at lag 8 that nobody wrote down. SARIMA does not bolt a seasonal model onto a non-seasonal one; it modulates one by the other, and the cross term is real." },
 

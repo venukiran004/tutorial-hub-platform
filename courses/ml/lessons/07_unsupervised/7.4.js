@@ -19,6 +19,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "From variance maximisation to eigenvectors", id: "derivation" },
 
+    {"kind": "steps", "title": "From 'maximise the variance' to an eigenproblem", "caption": "The derivation is short and it explains every property PCA has. Maximising the projected variance subject to a unit-length direction is a Lagrange problem whose stationary condition **is** the eigenvector equation — so the components are eigenvectors not by construction but by consequence, and their eigenvalues are the variances.", "items": [{"label": "Centre the data", "desc": "the mean is subtracted; without this the first component points at the mean", "code": "1", "tone": "accent"}, {"label": "Ask for the unit direction of maximum variance", "desc": "maximise w'Cw subject to w'w = 1", "code": "2", "tone": "good"}, {"label": "Lagrange: Cw = lambda w", "desc": "the stationary condition is the eigenvector equation", "code": "3", "tone": "violet"}, {"label": "So the variance along w is lambda", "desc": "the eigenvalue is the explained variance", "code": "4", "tone": "violet"}, {"label": "Next direction, orthogonal to the first", "desc": "the second eigenvector, and so on", "code": "5", "tone": "good"}, {"label": "Equivalently, the SVD of the centred matrix", "desc": "which is how it is actually computed", "code": "note", "tone": "teal"}], "t": "diagram", "id": "dg-7_4-01-0"},
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "The derivation, a 2 × 2 case by hand, and the SVD route (executed)",
       code: `centre the data (each column mean 0).  covariance  Σ = XᵀX / n.
 find the unit direction w that maximises the variance of the projection Xw:      Var(Xw) = wᵀ Σ w,   subject to  wᵀw = 1
@@ -97,6 +105,14 @@ the SVD route:  X = U D Vᵀ  ->  XᵀX = V D² Vᵀ,  so the columns of V are t
     },
 
     { t: "h2", n: "03", text: "The two claims PCA makes, and when they are false", id: "claims" },
+
+    {"kind": "matrix", "title": "The two claims PCA makes", "caption": "PCA asserts that the interesting directions are the **high-variance** ones and that the structure is **linear**. Nothing in the computation looks at the target, so a low-variance direction carrying all the signal is discarded without complaint — and no amount of components fixes a curved manifold.", "cols": ["Claim", "False when"], "rows": ["Variance is relevance", "The structure is linear", "Components are readable", "Scaling is a detail"], "cells": [[{"text": "the big directions matter", "tone": "accent"}, {"text": "the signal is low-variance", "tone": "crit"}], [{"text": "a rotation suffices", "tone": "accent"}, {"text": "the manifold is curved", "tone": "crit"}], ["loadings name the mixture", {"text": "components mix every column", "tone": "warn"}], [{"text": "no: it decides the answer", "tone": "crit"}, "always: variance has units"]], "t": "diagram", "id": "dg-7_4-03-1"},
+
+
+
+
+
+
 
     { t: "code", lang: "python", title: "Claim 1 — high variance is where the information is. The rings say otherwise (executed)",
       hl: [2, 3, 5, 6],

@@ -20,6 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The decisions, and why", id: "decisions" },
 
+    {"kind": "matrix", "title": "Eight decisions, each tied to something outside the model", "caption": "Not one of these is chosen by a score. The granularity matches the replenishment decision and the horizon matches the ordering lead time — so the forecast is specified by the operation it feeds, and only then does model selection have a well-posed question to answer.", "cols": ["Chosen", "Because"], "rows": ["Granularity", "Horizon", "Seasonality", "Transformation", "Metric", "Baseline", "Backtest", "Candidates"], "cells": [[{"text": "daily, per store", "tone": "good"}, "it matches the replenishment decision"], [{"text": "28 days", "tone": "good"}, "it matches the ordering lead time"], ["m = 7 plus a yearly Fourier pair", "the weekly shape and the summer peak"], [{"text": "logs", "tone": "accent"}, "the swing scales with the level"], [{"text": "WAPE, MASE, and bias", "tone": "good"}, "business, selection, and direction"], [{"text": "seasonal naive", "tone": "good"}, "the strongest free forecast here"], [{"text": "8 origins, 28 days apart", "tone": "good"}, "enough folds to see the spread"], ["damped ETS, SARIMAX, global boosting", "two classical families and the ML route"]], "t": "diagram", "id": "dg-10_9-01-0"},
+
+
+
+
     { t: "table", head: ["Decision", "Choice for the store case", "Reason"], rows: [
       ["Granularity", "daily, per store", "matches the replenishment decision"],
       ["Horizon", "28 days", "matches the ordering lead time"],
@@ -45,6 +50,11 @@ fitting panel: 911 days × 3 stores;  calendar known in advance: promo, Black Fr
       caption: "Every hygiene decision from 10.1 is a line that runs nightly and is logged with its count. A count that changes — twelve duplicates instead of nine, a partial day that is not the last one — is the data-quality gate's alarm, and it aborts the run before a model sees the data." },
 
     { t: "h2", n: "02", text: "The result table that ends the review", id: "results" },
+
+    {"kind": "steps", "title": "What the forecast has to survive after it is accepted", "caption": "A forecast is a recurring obligation, not a result. Every item here is a way the pipeline silently stops being the thing that was validated — and the last one is the reason to keep the baseline running forever.", "items": [{"label": "The same feature code at scoring time", "desc": "a rolling mean that includes today is a leak in production too", "code": "1", "tone": "crit"}, {"label": "Refit on a schedule, versioned", "desc": "with the previous model kept and comparable", "code": "2", "tone": "good"}, {"label": "Bias watched, not just error", "desc": "a persistent sign is a correctable systematic miss", "code": "3", "tone": "good"}, {"label": "Revisions handled", "desc": "a restated history changes what the model was trained on", "code": "4", "tone": "warn"}, {"label": "New series handled", "desc": "a store with no history needs a fallback, not an error", "code": "5", "tone": "warn"}, {"label": "The baseline still running", "desc": "the day the model stops beating it, you want to know", "code": "6", "tone": "violet"}], "t": "diagram", "id": "dg-10_9-02-1"},
+
+
+
 
     { t: "code", lang: "python", title: "All three stores, eight origins, 28 days ahead (executed; 234 s for the backtest)",
       code: `#  model                          WAPE      MASE    bias     WAPE h=1-7   WAPE h=22-28
@@ -104,7 +114,7 @@ fitting panel: 911 days × 3 stores;  calendar known in advance: promo, Black Fr
       code: `SARIMAX + calendar:  refit from scratch 1,408 ms;  append a week of actuals without refitting and re-forecast 28 days: 18 ms
 per origin in the backtest:  ETS 138 ms · SARIMAX 1,329 ms · global direct boosting (28 models over 3 stores) 9 s
 # 200 stores × SARIMAX refit ≈ 4.5 minutes nightly; 200 stores × re-forecast ≈ 4 seconds -- refit weekly, re-forecast daily`,
-      caption: "Re-forecasting runs the latest actuals through the fitted model and updates the state; refitting re-estimates the parameters. Conflating them is why teams either serve stale forecasts or burn compute nightly for no accuracy gain. The global boosting model is one fit for all stores, which is its scaling advantage; per-store SARIMAX is 200 fits, which is why the reference case keeps it as a fallback rather than the default at scale." },
+      caption: "Re-forecasting runs the latest actuals through the fitted model and updates the state; refitting re-estimates the parameters. Conflating them is why teams either serve stale forecasts or burn compute nightly for no accuracy gain. The global boosting model is one fit for all stores, which is its scaling advantage; per-store SARIMAX is 200 fits, which is why the scale case keeps it as a fallback rather than the default at scale." },
 
     { t: "table", head: ["Layer", "Metric", "Alarm on"], rows: [
       ["Input", "row count, null rate, max timestamp, duplicate count", "any deviation from the daily norm (the 9 duplicates and the 37 % partial day would both fire)"],

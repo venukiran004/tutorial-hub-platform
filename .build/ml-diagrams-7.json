@@ -1,0 +1,240 @@
+{
+ "8.2": [
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "SMOTE before the split, and the most seductive number in applied ML",
+         "caption": "Every synthetic row is an interpolation of real minority rows, so when the split comes afterwards the training folds hold near-copies of the test folds' positives. The honest arrangement scores **worse than doing nothing at all** on this problem — which is the finding, not a disappointment.",
+         "cols": ["ROC-AUC / PR-AUC", "F1"],
+         "rows": ["SMOTE on all rows, then CV", "SMOTE inside each fold", "No resampling at all"],
+         "cells": [
+          [{"text": "0.988 / 0.987", "tone": "crit"}, {"text": "0.948", "tone": "crit"}],
+          [{"text": "0.862 / 0.484", "tone": "good"}, {"text": "0.380", "tone": "good"}],
+          [{"text": "0.867 / 0.493", "tone": "good"}, {"text": "0.401", "tone": "good"}]]}},
+  {"after": "04",
+   "d": {"kind": "matrix",
+         "title": "Six levers for imbalance, and which one actually moved",
+         "caption": "The threshold is almost always the largest single gain — F1 went from 0.109 to 0.351 by moving it, with no change to the model. Most of the other treatments turn out to be a threshold change in disguise, which is why they should be compared against simply tuning the cut.",
+         "cols": ["Changes", "Gain here"],
+         "rows": ["The metric", "The threshold", "class_weight", "Resampling", "Balanced ensembles", "Reframe as anomaly"],
+         "cells": [
+          [{"text": "how you see the problem", "tone": "good"}, "none, and it is still mandatory"],
+          [{"text": "the decision, not the model", "tone": "good"}, {"text": "F1 0.109 -> 0.351", "tone": "good"}],
+          ["the boundary; sometimes the fit", {"text": "large for hinge loss", "tone": "accent"}],
+          [{"text": "the training distribution", "tone": "warn"}, "slightly worse than nothing here"],
+          ["many balanced views", "0.857, 0.845 ranking"],
+          [{"text": "the question itself", "tone": "accent"}, "below ~0.1% positives"]]}}
+ ],
+
+ "8.3": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Four curve shapes, and what each one tells you to do next",
+         "caption": "A learning curve answers 'would more data help' before you spend anything finding out. The first row is the one people act on wrongly: both lines low and together is **bias**, and more data does nothing — measured at 0.51 to 0.54 across a hundredfold increase in rows.",
+         "cols": ["Shape", "Do"],
+         "rows": ["Both low, converged", "Wide gap", "Narrowing, both rising", "Both flat at a good level", "Fold spread wide"],
+         "cells": [
+          [{"text": "high bias", "tone": "warn"}, "capacity or features; not more data"],
+          [{"text": "high variance", "tone": "warn"}, "more data, regularise, average"],
+          [{"text": "still learning", "tone": "accent"}, {"text": "get data first: 0.775 -> 0.917", "tone": "good"}],
+          [{"text": "at the floor", "tone": "good"}, "better features or cleaner labels; or stop"],
+          [{"text": "the estimate is unreliable", "tone": "crit"}, "+/- 0.13 at 100 rows: do not tune on it"]]}},
+  {"after": "03",
+   "d": {"kind": "steps",
+         "title": "Reading a curve in ten seconds",
+         "caption": "Five questions in order, and the first one that answers yes tells you what to do. The last is worth stating explicitly: a validation curve whose two lines are flat across the whole range is telling you the dial does not matter, so stop searching it.",
+         "items": [
+          {"label": "Is the gap wide?", "desc": "variance: regularise, average, or get data", "code": "1", "tone": "warn"},
+          {"label": "Are both lines low and together?", "desc": "bias: capacity or features; data will not help", "code": "2", "tone": "warn"},
+          {"label": "Is validation still rising at the right edge?", "desc": "data will help; get it before changing anything", "code": "3", "tone": "good"},
+          {"label": "Both flat and together, at a good level?", "desc": "done; the rest is features or noise", "code": "4", "tone": "good"},
+          {"label": "Is the fold spread wide?", "desc": "the estimate is unreliable: do not tune on it", "code": "5", "tone": "crit"},
+          {"label": "Both lines flat across the whole dial?", "desc": "the hyperparameter does not matter; stop searching", "code": "6", "tone": "violet"}]}}
+ ],
+
+ "8.4": [
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Eight questions that choose the family, with this course's evidence",
+         "caption": "None of these is answered by a leaderboard. The row-count question alone overturns the usual instinct: boosting defaults were the **worst** models on 989 rows, and the four libraries tied at 0.968 on 200,000.",
+         "cols": ["Points to", "Evidence here"],
+         "rows": ["How many rows", "The truth's shape", "Is it a probability", "Must a human read it", "Latency", "Categoricals and NaN", "Imbalance", "Refit cadence"],
+         "cells": [
+          [{"text": "under 1k: linear", "tone": "accent"}, "boosting defaults were worst at 989"],
+          [{"text": "additive: linear", "tone": "accent"}, "churn: logistic 0.752 beat everything"],
+          [{"text": "log-loss, then calibrate", "tone": "accent"}, "the forest compressed its probabilities"],
+          [{"text": "coefficients or rules", "tone": "accent"}, "the depth-3 tree scored 0.679"],
+          [{"text": "linear or symmetric trees", "tone": "accent"}, "KNN 382 ms; CatBoost 0.02 s"],
+          [{"text": "CatBoost, or cross-fitted", "tone": "accent"}, "naive target encoding leaked"],
+          [{"text": "log-loss plus a threshold", "tone": "accent"}, "the SVM collapsed to w = 0"],
+          [{"text": "models that refit in seconds", "tone": "accent"}, "16 ms to 1.2 s here"]]}},
+  {"after": "03",
+   "d": {"kind": "steps",
+         "title": "The procedure, not the flow chart",
+         "caption": "Order matters because each step makes the next one cheaper to judge. Fitting the dummy first is not a formality — it is the number every later result is reported against.",
+         "items": [
+          {"label": "Fit the dummy", "desc": "the majority class, or the mean: everything is measured from here", "code": "1", "tone": "accent"},
+          {"label": "Then a linear model with sensible features", "desc": "on identical repeated folds", "code": "2", "tone": "good"},
+          {"label": "Then a forest with a large leaf size", "desc": "a safe, barely-tuned variance baseline", "code": "3", "tone": "good"},
+          {"label": "Then early-stopped boosting", "desc": "the usual tabular ceiling, if it is going to win", "code": "4", "tone": "good"},
+          {"label": "If linear is within the fold spread, ship it", "desc": "Occam says simple beats equal, not simple beats better", "code": "5", "tone": "violet"},
+          {"label": "If trees win, find the non-linearity they found", "desc": "and ask whether a feature would give it to the linear model", "code": "6", "tone": "violet"},
+          {"label": "Tune only the family that leads", "desc": "then score the finalist on a slice the search never saw", "code": "7", "tone": "teal"}]}}
+ ],
+
+ "8.5": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "The estimator contract, and what each method may not do",
+         "caption": "The prohibitions are the content. `__init__` may not validate or transform its arguments — it only stores them — because `clone` rebuilds an estimator from `get_params` and anything computed in the constructor would be silently lost per fold.",
+         "cols": ["Must", "Must not"],
+         "rows": ["__init__", "fit", "transform / predict", "get_params", "Learned attributes", "Input validation"],
+         "cells": [
+          ["store the arguments, unchanged", {"text": "validate or transform them", "tone": "crit"}],
+          ["learn, and return self", {"text": "depend on a previous fit", "tone": "crit"}],
+          ["use only what fit learned", {"text": "learn anything new", "tone": "crit"}],
+          ["echo the constructor arguments", {"text": "omit one: clone would drop it", "tone": "crit"}],
+          [{"text": "end in a trailing underscore", "tone": "good"}, "exist before fit"],
+          ["happen in fit and transform", "happen in __init__"]]}},
+  {"after": "04",
+   "d": {"kind": "matrix",
+         "title": "Four ways to persist a model, and what each trusts",
+         "caption": "`joblib.load` **executes whatever the file tells it to** — a model artefact from an untrusted source is a remote-code-execution vector, and one from a trusted source that has been tampered with is the same thing. ONNX is a data-only graph, which is what makes it the format for crossing a trust boundary, and it was 40× faster in the request path here.",
+         "cols": ["Stores", "Trust"],
+         "rows": ["joblib / pickle", "ONNX", "PMML", "Native save_model"],
+         "cells": [
+          [{"text": "the whole Python object graph", "tone": "accent"}, {"text": "executes code on load", "tone": "crit"}],
+          [{"text": "a graph of standard ops", "tone": "good"}, {"text": "data only; 40x lower latency", "tone": "good"}],
+          ["an XML model description", {"text": "data only", "tone": "good"}],
+          [{"text": "the trees themselves", "tone": "good"}, "data only; preprocessing is yours"]]}}
+ ],
+
+ "9.1": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Three axes, and what each choice costs",
+         "caption": "Every method here explains **the model**, not the world. If a leaking refund column were in the features, permutation importance would rank it first — correctly, because the model does rely on it, and it is an effect of churn rather than a cause.",
+         "cols": ["One side", "The other"],
+         "rows": ["When", "Scope", "Access", "What it answers"],
+         "cells": [
+          [{"text": "intrinsic: it is the model", "tone": "good"}, "post-hoc: computed after"],
+          [{"text": "global: what it does", "tone": "accent"}, "local: why this decision"],
+          [{"text": "agnostic: needs only predict", "tone": "accent"}, "specific: uses internals, exact"],
+          [{"text": "'the model believes'", "tone": "warn"}, {"text": "never 'the world is'", "tone": "crit"}]]}},
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "Why PDP lies when features are correlated, and ALE does not",
+         "caption": "A PDP varies one feature across its whole range while holding the others at their observed values — which constructs rows that cannot exist, and asks the model to extrapolate into them. On a correlated pair the PDP slope came out **1.58 against a true 2.0**. ALE averages local differences within a bin instead, so it never leaves the data.",
+         "cols": ["Assumes", "Failure"],
+         "rows": ["Permutation importance", "PDP", "ICE", "ALE"],
+         "cells": [
+          ["shuffling breaks only this link", {"text": "correlated features share credit", "tone": "warn"}],
+          [{"text": "the feature can vary alone", "tone": "crit"}, {"text": "slope 1.58 vs a true 2.0", "tone": "crit"}],
+          ["the same, per row", "the average hides the spread; ICE shows it"],
+          [{"text": "only local differences", "tone": "good"}, "bin choice; no extrapolation"]]}}
+ ],
+
+ "9.2": [
+  {"after": "01",
+   "d": {"kind": "steps",
+         "title": "Shapley values: why there is only one fair answer",
+         "caption": "Four axioms pin the attribution down uniquely — that is the result that makes SHAP more than one method among many. The price is the marginalisation over every subset, which is why TreeSHAP's exact polynomial-time algorithm for trees mattered so much.",
+         "items": [
+          {"label": "Efficiency", "desc": "the contributions sum to f(x) minus the base value", "code": "1", "tone": "accent"},
+          {"label": "Symmetry", "desc": "two features that always act alike get the same value", "code": "2", "tone": "accent"},
+          {"label": "Dummy", "desc": "a feature that never changes the output gets zero", "code": "3", "tone": "accent"},
+          {"label": "Additivity", "desc": "values add across an ensemble of models", "code": "4", "tone": "accent"},
+          {"label": "These four admit exactly one solution", "desc": "the average marginal contribution over all orderings", "code": "unique", "tone": "violet"},
+          {"label": "Which costs 2^p subsets in general", "desc": "TreeSHAP computes it exactly, in polynomial time, for trees", "code": "cost", "tone": "teal"}]}},
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "SHAP and LIME are not two implementations of one idea",
+         "caption": "SHAP has a guarantee that its values sum to the prediction; LIME has local fidelity only, and only as measured. The determinism row is the practical one: LIME's top-three features **changed in two of five seeds** on the same row, so a single LIME explanation shown to a customer is not reproducible.",
+         "cols": ["SHAP", "LIME"],
+         "rows": ["Basis", "Guarantee", "Determinism", "Global from local", "Interactions"],
+         "cells": [
+          [{"text": "axioms: unique solution", "tone": "good"}, "a weighted local surrogate"],
+          [{"text": "efficiency, consistency", "tone": "good"}, {"text": "local fidelity only", "tone": "warn"}],
+          [{"text": "TreeSHAP is exact", "tone": "good"}, {"text": "top-3 changed in 2 of 5 seeds", "tone": "crit"}],
+          [{"text": "yes: mean |phi|", "tone": "good"}, {"text": "no natural aggregation", "tone": "warn"}],
+          [{"text": "interaction values", "tone": "good"}, {"text": "not represented", "tone": "warn"}]]}}
+ ],
+
+ "9.3": [
+  {"after": "02",
+   "d": {"kind": "steps",
+         "title": "Four tests that find a shortcut, and they are the same every time",
+         "caption": "A hospital's pen mark on X-rays from the sicker ward; a watermark on one class of stock image; snow behind the huskies; the acquisition channel encoded in a customer id. The cue differs and the procedure does not — and the last test needs no hypothesis at all.",
+         "items": [
+          {"label": "Remove the suspected cue", "desc": "and watch the class disappear", "code": "1", "tone": "accent"},
+          {"label": "Add it to the other class", "desc": "and watch that class appear", "code": "2", "tone": "accent"},
+          {"label": "Attribute", "desc": "Grad-CAM or integrated gradients: see where the mass sits", "code": "3", "tone": "good"},
+          {"label": "Slice the evaluation by the cue", "desc": "presence against absence", "code": "4", "tone": "good"},
+          {"label": "Or run the hypothesis-free version", "desc": "per-slice error analysis, flagging any slice it is suspiciously good at", "code": "5", "tone": "violet"}]}},
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "Attention is not attribution",
+         "caption": "Attention weights say where a representation was **gathered from**, not what moved the output — and the two can disagree completely: a token receiving 85% of the attention had a *negative* contribution to the prediction. The other methods differ mainly in whether they come with a completeness guarantee.",
+         "cols": ["Guarantee", "Cost"],
+         "rows": ["Gradient x input", "Integrated gradients", "Grad-CAM", "LRP", "Attention"],
+         "cells": [
+          [{"text": "none", "tone": "warn"}, "1 backward pass"],
+          [{"text": "completeness", "tone": "good"}, "50-300 backward passes"],
+          [{"text": "none", "tone": "warn"}, "1 backward pass; coarse"],
+          [{"text": "conservation per layer", "tone": "good"}, "1 modified pass; rule-dependent"],
+          [{"text": "none: not an attribution", "tone": "crit"}, "free — and misleading"]]}}
+ ],
+
+ "9.4": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Every detector is a density estimate in disguise",
+         "caption": "Choosing a detector is choosing which assumption describes 'normal' for your data, and each one's failure mode is a dataset where its assumption is false. That is the whole lesson: a bimodal column defeats the z-score, a curved manifold defeats Mahalanobis, mixed densities defeat the KNN distance.",
+         "cols": ["Assumes normal is", "Defeated by"],
+         "rows": ["z-score", "Mahalanobis", "KNN distance", "LOF", "Isolation Forest"],
+         "cells": [
+          [{"text": "one Gaussian, per column", "tone": "accent"}, {"text": "a bimodal column", "tone": "crit"}],
+          [{"text": "one Gaussian, full covariance", "tone": "accent"}, {"text": "a curved manifold", "tone": "crit"}],
+          [{"text": "dense where neighbours are near", "tone": "accent"}, {"text": "mixed densities", "tone": "crit"}],
+          [{"text": "as dense as its neighbours", "tone": "good"}, "high dimension; small k"],
+          [{"text": "hard to isolate by random cuts", "tone": "good"}, "anomalies inside the bulk"]]}},
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Masking: the second outlier hides the first",
+         "caption": "The series 10, 11, 12, 10, 11, 13, 12, 50, 52. Grubbs' test gives the 52 a G of 1.82 against a critical 2.22 — **not flagged**, because the 50 has pushed the standard deviation to 17.5. Remove the 52 by other means and the 50 is flagged immediately. The modified z-score flags both at once, because the median of 12 and the MAD of 1 never moved.",
+         "cols": ["Flags the 52", "Why"],
+         "rows": ["Grubbs, both present", "Grubbs, 52 removed", "Modified z (52)", "Modified z (50)", "Mean and sd"],
+         "cells": [
+          [{"text": "no: G 1.82 < 2.22", "tone": "crit"}, "the 50 inflated sd to 17.5"],
+          [{"text": "yes: G 2.47 > 2.13", "tone": "good"}, "the masking is gone"],
+          [{"text": "yes: 27.0", "tone": "good"}, "median 12, MAD 1: unmoved"],
+          [{"text": "yes: 25.6", "tone": "good"}, "both found in one pass"],
+          [{"text": "the wrong first move", "tone": "crit"}, "on any column you suspect"]]}}
+ ],
+
+ "9.5": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "contamination='auto' is not a sensible default",
+         "caption": "With `contamination='auto'` scikit-learn sets the offset to −0.5, so every row whose path is shorter than a random point's expectation is predicted anomalous — **176 of 1,004 rows, 17.5%, for four planted anomalies**. The score distribution's centre depends on the data's shape and dimension, not on how many anomalies it holds. The ranking is unaffected: Spearman 1.000 between contamination 0.01 and 0.1, because it is the same forest with a different offset.",
+         "cols": ["Effect", "What to do"],
+         "rows": ["contamination='auto'", "contamination=0.01", "The ranking", "predict()", "score_samples()"],
+         "cells": [
+          [{"text": "176 of 1,004 flagged", "tone": "crit"}, "do not rely on it"],
+          [{"text": "the rate you expect", "tone": "good"}, "set it deliberately"],
+          [{"text": "identical either way", "tone": "good"}, "Spearman 1.000: same trees"],
+          [{"text": "a thresholded score", "tone": "warn"}, "ignore it"],
+          [{"text": "the score itself", "tone": "good"}, "threshold at your review capacity"]]}},
+  {"after": "05",
+   "d": {"kind": "matrix",
+         "title": "Setting a threshold when there are no labels",
+         "caption": "Without labels there is no optimum to find, so the threshold must come from somewhere outside the data — and review capacity is the honest answer in almost every production system. The random audit sample is the part that is usually missing: without it the base rate is unknown, and a supervised model trained on the queue learns only the queue's biases.",
+         "cols": ["Threshold from", "Gives"],
+         "rows": ["Review capacity", "An expected rate", "A score elbow", "Analyst verdicts", "A random audit sample"],
+         "cells": [
+          [{"text": "how many can be checked", "tone": "good"}, "precision at depth, measurable weekly"],
+          [{"text": "the assumed contamination", "tone": "accent"}, "a rate, if the assumption holds"],
+          [{"text": "the score distribution", "tone": "warn"}, "often no elbow exists"],
+          [{"text": "the queue's outcomes", "tone": "good"}, "precision only — never recall"],
+          [{"text": "rows nobody selected", "tone": "good"}, {"text": "the base rate, and recall", "tone": "good"}]]}}
+ ]
+}

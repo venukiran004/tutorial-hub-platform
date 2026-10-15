@@ -19,6 +19,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Shapley values: a fair division of the prediction", id: "shapley" },
 
+    {"kind": "steps", "title": "Shapley values: why there is only one fair answer", "caption": "Four axioms pin the attribution down uniquely — that is the result that makes SHAP more than one method among many. The price is the marginalisation over every subset, which is why TreeSHAP's exact polynomial-time algorithm for trees mattered so much.", "items": [{"label": "Efficiency", "desc": "the contributions sum to f(x) minus the base value", "code": "1", "tone": "accent"}, {"label": "Symmetry", "desc": "two features that always act alike get the same value", "code": "2", "tone": "accent"}, {"label": "Dummy", "desc": "a feature that never changes the output gets zero", "code": "3", "tone": "accent"}, {"label": "Additivity", "desc": "values add across an ensemble of models", "code": "4", "tone": "accent"}, {"label": "These four admit exactly one solution", "desc": "the average marginal contribution over all orderings", "code": "unique", "tone": "violet"}, {"label": "Which costs 2^p subsets in general", "desc": "TreeSHAP computes it exactly, in polynomial time, for trees", "code": "cost", "tone": "teal"}], "t": "diagram", "id": "dg-9_2-01-0"},
+
+
+
+
+
     { t: "code", lang: "text", title: "The axioms, the formula, and a three-feature computation over every coalition (executed)",
       code: `a prediction f(x) is a 'payout'; the features are 'players'; φⱼ is feature j's share. Four axioms determine it uniquely:
    efficiency   Σⱼ φⱼ = f(x) − E[f]           the shares add up to the prediction minus the baseline
@@ -104,6 +110,12 @@ likewise  φ₂ = 0.500,  φ₃ = 0.750.        Σφ = 3.000 = f(x) − baseline
     },
 
     { t: "h2", n: "03", text: "LIME: a local surrogate, and its variance", id: "lime" },
+
+    {"kind": "matrix", "title": "SHAP and LIME are not two implementations of one idea", "caption": "SHAP has a guarantee that its values sum to the prediction; LIME has local fidelity only, and only as measured. The determinism row is the practical one: LIME's top-three features **changed in two of five seeds** on the same row, so a single LIME explanation shown to a customer is not reproducible.", "cols": ["SHAP", "LIME"], "rows": ["Basis", "Guarantee", "Determinism", "Global from local", "Interactions"], "cells": [[{"text": "axioms: unique solution", "tone": "good"}, "a weighted local surrogate"], [{"text": "efficiency, consistency", "tone": "good"}, {"text": "local fidelity only", "tone": "warn"}], [{"text": "TreeSHAP is exact", "tone": "good"}, {"text": "top-3 changed in 2 of 5 seeds", "tone": "crit"}], [{"text": "yes: mean |phi|", "tone": "good"}, {"text": "no natural aggregation", "tone": "warn"}], [{"text": "interaction values", "tone": "good"}, {"text": "not represented", "tone": "warn"}]], "t": "diagram", "id": "dg-9_2-03-1"},
+
+
+
+
 
     { t: "code", lang: "python", title: "LIME on the same customer, five random seeds (executed; 2,000 perturbations, 5 features, discretised)",
       hl: [3, 4, 6, 7],

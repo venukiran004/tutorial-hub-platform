@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Bayes against frequentist: MLE, MAP and the posterior", id: "map" },
 
+    {"kind": "matrix", "title": "Three answers to 'what is the parameter', on three heads out of three", "caption": "The MLE says the coin always lands heads, which is the honest maximum of the likelihood and a useless forecast. MAP adds a prior and returns a single number; the posterior returns the **distribution**, and everything else in this lesson is a consequence of carrying it instead of collapsing it.", "cols": ["Returns", "On 3 heads from 3"], "rows": ["MLE", "MAP", "The posterior", "Posterior mean", "Predictive distribution"], "cells": [[{"text": "the likelihood's maximum", "tone": "crit"}, "p = 1.0: it will never land tails"], [{"text": "a point, with a prior", "tone": "warn"}, "pulled back toward the prior"], [{"text": "a distribution", "tone": "good"}, "Beta(1+3, 1+0) under a flat prior"], [{"text": "a point, honestly derived", "tone": "good"}, "4/5 = 0.8 under that prior"], [{"text": "a forecast with uncertainty", "tone": "good"}, "integrates over every p"]], "t": "diagram", "id": "dg-11_2-01-0"},
+
+
     { t: "p", text: "A frequentist treats the parameter as fixed and the data as random, and reports the parameter value that makes the data most likely — the maximum-likelihood estimate — with a confidence interval about the procedure. A Bayesian treats the parameter as uncertain, encodes what was believed before the data in a prior p(θ), and updates it by Bayes' rule to a posterior p(θ | data) ∝ p(data | θ) p(θ). The posterior mode is the MAP estimate — the MLE with a prior — and the posterior mean, spread and intervals are all read from the same distribution. When the prior and likelihood are conjugate the posterior has a closed form; a Beta prior on a coin's probability is the classic case." },
 
     { t: "code", lang: "text", title: "Three heads in four tosses, prior Beta(2, 2) (executed)",
@@ -114,6 +117,9 @@ after three points at −1.5, 0, 2:   EI proposes x = 2.65 (EI 0.511);   UCB wit
       caption: "The greedy choice re-evaluates the best point seen; EI and UCB go where the surrogate is uncertain and promising, which is how twelve model-guided evaluations beat fifteen random ones on every seed. The advantage is largest when evaluations are expensive (a training run) and the dimension is low (under ~20); in high dimension the GP surrogate degrades and 8.1's successive-halving and random-search results are the alternatives." },
 
     { t: "h2", n: "06", text: "Thompson sampling: the posterior as the policy", id: "thompson" },
+
+    {"kind": "matrix", "title": "Why the posterior makes a good policy", "caption": "Thompson sampling needs no exploration parameter at all: drawing one sample per arm from each posterior and playing the best explores exactly in proportion to how uncertain the arm is, and that proportion shrinks on its own as evidence arrives.", "cols": ["Explores by", "Tuning"], "rows": ["Epsilon-greedy", "UCB", "Thompson sampling", "Bayesian optimisation"], "cells": [[{"text": "acting randomly epsilon of the time", "tone": "warn"}, "epsilon, and a decay schedule"], [{"text": "an optimism bonus", "tone": "accent"}, "the confidence width"], [{"text": "sampling the posterior", "tone": "good"}, {"text": "none: it self-anneals", "tone": "good"}], [{"text": "an acquisition function", "tone": "accent"}, "the kernel, and the acquisition"]], "t": "diagram", "id": "dg-11_2-06-1"},
+
 
     { t: "code", lang: "python", title: "A three-armed Bernoulli bandit — arms 0.05, 0.08, 0.10 — over 5,000 pulls, 200 runs (executed)",
       code: `# Thompson: keep a Beta(successes + 1, failures + 1) posterior per arm; each round SAMPLE a rate from each posterior and pull the arm with the largest sample

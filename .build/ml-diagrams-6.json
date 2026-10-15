@@ -1,0 +1,679 @@
+{
+ "7.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "Lloyd's algorithm, and the objective it is descending",
+    "caption": "Each step can only lower the within-cluster sum of squares, so the algorithm converges — to a **local** minimum that depends on the start, which is why `n_init` exists. What it cannot do is change the objective: k-means always looks for the partition that minimises squared distance to a centre, and that is what makes it find round, similar-sized blobs whether or not the data has any.",
+    "items": [
+     {
+      "label": "Place k centres",
+      "desc": "k-means++ spreads them; random restarts and takes the best",
+      "code": "init",
+      "tone": "accent"
+     },
+     {
+      "label": "Assign each row to its nearest centre",
+      "desc": "this step cannot increase the objective",
+      "code": "1",
+      "tone": "good"
+     },
+     {
+      "label": "Move each centre to its members' mean",
+      "desc": "nor can this one",
+      "code": "2",
+      "tone": "good"
+     },
+     {
+      "label": "Repeat until nothing moves",
+      "desc": "convergence is guaranteed; optimality is not",
+      "code": "loop",
+      "tone": "violet"
+     },
+     {
+      "label": "The objective is squared distance to a centre",
+      "desc": "so a feature's weight in the result is its variance",
+      "code": "note",
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Five rules for k, and what each is blind to",
+    "caption": "On the churn customers the elbow has **no bend**, the gap statistic **keeps rising**, and silhouette peaks at 0.29 — all three are telling you the same thing, which is that there are no clusters here, only a continuum. The last row is the only one that can say that out loud, and the last row is not a statistic.",
+    "cols": [
+     "Pick k by",
+     "Blind to"
+    ],
+    "rows": [
+     "Elbow",
+     "Silhouette",
+     "Davies-Bouldin",
+     "Calinski-Harabasz",
+     "Gap statistic",
+     "Stability",
+     "Business validity"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the bend in inertia",
+       "tone": "warn"
+      },
+      "absent on real data: churn had none"
+     ],
+     [
+      {
+       "text": "the maximum",
+       "tone": "accent"
+      },
+      "favours round, separated clusters"
+     ],
+     [
+      {
+       "text": "the minimum",
+       "tone": "accent"
+      },
+      "also assumes round clusters"
+     ],
+     [
+      {
+       "text": "the maximum",
+       "tone": "accent"
+      },
+      "prefers small k on a continuum"
+     ],
+     [
+      {
+       "text": "within 1 SE of the next",
+       "tone": "good"
+      },
+      "can say 'no structure': it did"
+     ],
+     [
+      {
+       "text": "the most reproducible",
+       "tone": "good"
+      },
+      {
+       "text": "stable is not meaningful",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "what can be acted on",
+       "tone": "good"
+      },
+      {
+       "text": "nothing — and it is not a statistic",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "7.2": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Six clustering families, by the shape each can find",
+    "caption": "The first column is the question people ask and the second is the one that decides the answer. DBSCAN finds any shape **at one density**, which is exactly why HDBSCAN replaced it as the default: real data has clusters at several densities, and a single eps cannot describe them.",
+    "cols": [
+     "Needs k",
+     "Finds shapes"
+    ],
+    "rows": [
+     "K-means",
+     "Agglomerative",
+     "DBSCAN",
+     "HDBSCAN",
+     "Gaussian mixture",
+     "Spectral"
+    ],
+    "cells": [
+     [
+      {
+       "text": "yes",
+       "tone": "warn"
+      },
+      "round, similar size"
+     ],
+     [
+      {
+       "text": "no: cut later",
+       "tone": "good"
+      },
+      "depends on the linkage"
+     ],
+     [
+      {
+       "text": "no: eps, min_samples",
+       "tone": "accent"
+      },
+      {
+       "text": "any, at one density",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "no: min_cluster_size",
+       "tone": "good"
+      },
+      {
+       "text": "any, varying density",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "yes, by BIC",
+       "tone": "warn"
+      },
+      "elliptical, overlapping"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "warn"
+      },
+      "connected, manifold-shaped"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "The BIC that collapsed, and why it was not structure",
+    "caption": "BIC fell off a cliff at five components — from 2,502 to −1,317 — and it means nothing. The discount column takes three values with 686 rows at zero, and two components had **variance 0.0000** on it: a Gaussian concentrated on a point mass has unbounded density there, so the likelihood is arbitrarily large. With a covariance floor of 0.1 the collapse disappears and leaves a shallow minimum at three.",
+    "cols": [
+     "BIC, as fitted",
+     "With reg_covar=0.1"
+    ],
+    "rows": [
+     "1 component",
+     "2 components",
+     "3 components",
+     "4 components",
+     "5 components",
+     "6 components"
+    ],
+    "cells": [
+     [
+      "11,730",
+      "11,781"
+     ],
+     [
+      {
+       "text": "2,498",
+       "tone": "accent"
+      },
+      "10,442"
+     ],
+     [
+      {
+       "text": "2,524",
+       "tone": "accent"
+      },
+      {
+       "text": "10,193: the minimum",
+       "tone": "good"
+      }
+     ],
+     [
+      "2,502",
+      "10,386"
+     ],
+     [
+      {
+       "text": "-1,317: a collapse",
+       "tone": "crit"
+      },
+      "10,481"
+     ],
+     [
+      {
+       "text": "-185",
+       "tone": "crit"
+      },
+      "10,077"
+     ]
+    ]
+   }
+  }
+ ],
+ "7.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Five questions about a clustering, and the index for each",
+    "caption": "The first row is the trap: on the two moons, k-means scored a silhouette of **0.487** and the true labelling scored **0.328** — so the internal index preferred the wrong answer, because it measures the geometry a convex method produces rather than the structure that is there.",
+    "cols": [
+     "Measure with",
+     "It cannot see"
+    ],
+    "rows": [
+     "Compact and separated?",
+     "Matches known labels?",
+     "Would it recur?",
+     "Is there structure at all?",
+     "Is it meaningful?"
+    ],
+    "cells": [
+     [
+      {
+       "text": "silhouette, DB, CH",
+       "tone": "accent"
+      },
+      {
+       "text": "moons: k-means 0.487 > truth 0.328",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "ARI, AMI",
+       "tone": "good"
+      },
+      "whether those labels are what you wanted"
+     ],
+     [
+      {
+       "text": "stability ARI across halves",
+       "tone": "good"
+      },
+      {
+       "text": "reproducible mistakes: 0.971",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "gap, silhouette level, stability",
+       "tone": "good"
+      },
+      "structure at a scale it cannot reach"
+     ],
+     [
+      {
+       "text": "profiles, top terms, a reading",
+       "tone": "good"
+      },
+      "nothing — this is the one that decides"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Why agreement must be corrected for chance",
+    "caption": "Two random partitions of the same rows agree substantially just by accident, and the raw Rand index reports that agreement as skill. ARI subtracts the expected value under random labelling, which is why it can go negative — and why a plain Rand index of 0.7 says almost nothing.",
+    "cols": [
+     "Corrects for chance",
+     "Reads"
+    ],
+    "rows": [
+     "Rand index",
+     "Adjusted Rand (ARI)",
+     "Mutual information",
+     "Adjusted MI (AMI)",
+     "Homogeneity",
+     "Completeness"
+    ],
+    "cells": [
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "pair agreement, inflated"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "pair agreement; 0 is chance"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "warn"
+      },
+      "shared information; grows with k"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "shared information, corrected"
+     ],
+     [
+      {
+       "text": "n/a",
+       "tone": "accent"
+      },
+      "each cluster holds one class"
+     ],
+     [
+      {
+       "text": "n/a",
+       "tone": "accent"
+      },
+      "each class sits in one cluster"
+     ]
+    ]
+   }
+  }
+ ],
+ "7.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "From 'maximise the variance' to an eigenproblem",
+    "caption": "The derivation is short and it explains every property PCA has. Maximising the projected variance subject to a unit-length direction is a Lagrange problem whose stationary condition **is** the eigenvector equation — so the components are eigenvectors not by construction but by consequence, and their eigenvalues are the variances.",
+    "items": [
+     {
+      "label": "Centre the data",
+      "desc": "the mean is subtracted; without this the first component points at the mean",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "Ask for the unit direction of maximum variance",
+      "desc": "maximise w'Cw subject to w'w = 1",
+      "code": "2",
+      "tone": "good"
+     },
+     {
+      "label": "Lagrange: Cw = lambda w",
+      "desc": "the stationary condition is the eigenvector equation",
+      "code": "3",
+      "tone": "violet"
+     },
+     {
+      "label": "So the variance along w is lambda",
+      "desc": "the eigenvalue is the explained variance",
+      "code": "4",
+      "tone": "violet"
+     },
+     {
+      "label": "Next direction, orthogonal to the first",
+      "desc": "the second eigenvector, and so on",
+      "code": "5",
+      "tone": "good"
+     },
+     {
+      "label": "Equivalently, the SVD of the centred matrix",
+      "desc": "which is how it is actually computed",
+      "code": "note",
+      "tone": "teal"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "The two claims PCA makes",
+    "caption": "PCA asserts that the interesting directions are the **high-variance** ones and that the structure is **linear**. Nothing in the computation looks at the target, so a low-variance direction carrying all the signal is discarded without complaint — and no amount of components fixes a curved manifold.",
+    "cols": [
+     "Claim",
+     "False when"
+    ],
+    "rows": [
+     "Variance is relevance",
+     "The structure is linear",
+     "Components are readable",
+     "Scaling is a detail"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the big directions matter",
+       "tone": "accent"
+      },
+      {
+       "text": "the signal is low-variance",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "a rotation suffices",
+       "tone": "accent"
+      },
+      {
+       "text": "the manifold is curved",
+       "tone": "crit"
+      }
+     ],
+     [
+      "loadings name the mixture",
+      {
+       "text": "components mix every column",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "no: it decides the answer",
+       "tone": "crit"
+      },
+      "always: variance has units"
+     ]
+    ]
+   }
+  }
+ ],
+ "7.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "compare",
+    "title": "PCA finds what varies; LDA finds what separates",
+    "caption": "They can point in nearly opposite directions. If two classes differ along a low-variance axis, PCA throws that axis away and LDA keeps only it. LDA is supervised, which means it must be fitted inside the fold like any other label-using step.",
+    "columns": [
+     {
+      "title": "PCA",
+      "tone": "accent",
+      "items": [
+       "Unsupervised: never sees y",
+       "Maximises projected variance",
+       "As many components as features",
+       "Fit anywhere — but still inside the pipeline",
+       "Keeps a high-variance nuisance direction"
+      ]
+     },
+     {
+      "title": "LDA",
+      "tone": "good",
+      "items": [
+       "Supervised: uses the labels",
+       "Maximises between- over within-class scatter",
+       "At most K - 1 components",
+       "Must be fitted inside the fold",
+       "Assumes shared covariance; linear boundaries"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "What a t-SNE plot does and does not tell you",
+    "caption": "It preserves neighbourhoods and negotiates away everything else. Cluster sizes here were stretched 4–14× **and in a different order**; between-cluster gaps correlate only 0.7 with the real ones; and pure Gaussian noise produced an embedding with a silhouette of 0.34. There is no `transform`, so a new point cannot be placed without re-running the whole embedding.",
+    "cols": [
+     "Trustworthy",
+     "Evidence"
+    ],
+    "rows": [
+     "Points drawn together",
+     "Cluster size",
+     "Gaps between clusters",
+     "Number of clusters",
+     "A gradient across the map",
+     "Coordinates as features"
+    ],
+    "cells": [
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "they are neighbours in the input"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "stretched 4-14x, in a different order"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "correlation 0.7 with reality"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "noise gave a silhouette of 0.34"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "the layout has no global meaning"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "there is no transform method"
+     ]
+    ]
+   }
+  }
+ ],
+ "8.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Random search beats grid search for a reason that is arithmetic",
+    "caption": "A grid over 4 hyperparameters at 5 values each is 625 fits that try only **5 distinct values** of whichever parameter actually matters. Random search with the same budget tries 625 distinct values of each. The argument is strongest exactly when it matters most: when you do not know in advance which parameter is the important one.",
+    "cols": [
+     "625 fits try",
+     "Best for"
+    ],
+    "rows": [
+     "Grid, 4 params x 5",
+     "Random, 625 draws",
+     "Halving / successive",
+     "Bayesian optimisation"
+    ],
+    "cells": [
+     [
+      {
+       "text": "5 values of each",
+       "tone": "crit"
+      },
+      "2-3 params you already understand"
+     ],
+     [
+      {
+       "text": "625 values of each",
+       "tone": "good"
+      },
+      "the default; unknown importance"
+     ],
+     [
+      {
+       "text": "many, cheaply at first",
+       "tone": "good"
+      },
+      "expensive fits, cheap early signal"
+     ],
+     [
+      {
+       "text": "few, chosen from a model",
+       "tone": "accent"
+      },
+      "very expensive fits, smooth response"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "steps",
+    "title": "Why the tuned score is biased, and what nested CV costs",
+    "caption": "Taking the best of n cross-validated scores is taking the maximum of n noisy numbers, and the maximum of noise is positive. The inner loop chooses; the outer loop measures a procedure that includes the choosing. There is no way to get both from one loop.",
+    "items": [
+     {
+      "label": "Fit 200 candidates, cross-validated",
+      "desc": "each score is a mean with a standard error",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "Report the best one",
+      "desc": "the maximum of 200 noisy numbers",
+      "code": "2",
+      "tone": "warn"
+     },
+     {
+      "label": "That maximum is optimistic",
+      "desc": "best-of-n: the noise is selected for, not averaged out",
+      "code": "3",
+      "tone": "crit"
+     },
+     {
+      "label": "Inner loop: choose the hyperparameters",
+      "desc": "on the training part of each outer fold",
+      "code": "fix",
+      "tone": "good"
+     },
+     {
+      "label": "Outer loop: score the whole procedure",
+      "desc": "including the choosing, on rows it never saw",
+      "code": "fix",
+      "tone": "good"
+     },
+     {
+      "label": "Cost: inner x outer fits",
+      "desc": "and the answer is a procedure's score, not one model's",
+      "code": "note",
+      "tone": "violet"
+     }
+    ]
+   }
+  }
+ ]
+}

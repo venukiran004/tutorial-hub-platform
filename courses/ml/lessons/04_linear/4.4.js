@@ -79,6 +79,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Two separate failures, both executed",
       code: `RUNGE (a property of polynomials, present even with zero noise):
   interpolate g(x) = 1 / (1 + 25x²) on [-1, 1] with a degree-15 polynomial
@@ -125,6 +132,13 @@ cubic spline, 8 knots, extrapolation="linear":   x=4 -> -1.00     x=5 -> -1.79  
     { t: "h2", n: "03", text: "Several inputs: interactions, explosion and the spend model", id: "multi" },
 
     {"kind": "matrix", "title": "Which dial to turn, by the shape you need", "caption": "A global polynomial cannot make a corner — it pays for one with oscillation everywhere else. Splines put the flexibility where the knots are and leave the rest alone, which is why they are the default for one smooth input. With many inputs, do not expand at all: let a tree ensemble find the interactions and engineer the two or three it points at.", "cols": ["Use", "Why not the other"], "rows": ["One input, smooth curve", "One input, a kink", "Few inputs, interactions", "Many inputs", "Outside the training range"], "cells": [[{"text": "splines, 5-10 knots", "tone": "good"}, "degree <= 5 only if you need the form"], [{"text": "a spline or a hinge", "tone": "good"}, "a polynomial cannot make a corner"], [{"text": "degree 2 plus ridge", "tone": "accent"}, "read the interaction coefficients"], [{"text": "do not expand", "tone": "warn"}, "the expansion explodes; use a tree"], [{"text": "refuse the input", "tone": "crit"}, "every expansion extrapolates nonsense"]], "t": "diagram", "id": "dg-4_4-03-1"},
+
+
+
+
+
+
+
 
 
     { t: "code", lang: "text", title: "How many columns you are about to create",

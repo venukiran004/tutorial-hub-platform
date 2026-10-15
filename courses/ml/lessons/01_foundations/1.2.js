@@ -4,7 +4,7 @@
 EC.receiveLesson({
   id: "1.2",
 
-  lede: "**A model is one step of twelve, and the projects that fail usually fail at one of the other eleven.** The problem was never defined, the split happened after the scaler was fitted, the test set was used nine times, the feature that scored 0.91 was a consequence of the label. This lesson walks the whole sequence on the course's churn table — framing, data, exploration, cleaning, features, split, baseline, model, evaluation, tuning, deployment, monitoring — with every number produced by running it, and a planted leak found on the way. It ends with the reference case: a million rows, two hundred columns, sixty of them fifteen per cent missing.",
+  lede: "**A model is one step of twelve, and the projects that fail usually fail at one of the other eleven.** The problem was never defined, the split happened after the scaler was fitted, the test set was used nine times, the feature that scored 0.91 was a consequence of the label. This lesson walks the whole sequence on the course's churn table — framing, data, exploration, cleaning, features, split, baseline, model, evaluation, tuning, deployment, monitoring — with every number produced by running it, and a planted leak found on the way. It ends with the scale case: a million rows, two hundred columns, sixty of them fifteen per cent missing.",
 
   objectives: [
     "Write a problem definition with a business goal, an ML task, a success metric with a threshold, a baseline and a deployment shape",
@@ -20,6 +20,13 @@ EC.receiveLesson({
     { t: "h2", n: "01", text: "The twelve steps", id: "steps" },
 
     {"kind": "steps", "title": "The twelve steps, and the classic failure at each", "caption": "The failures are more useful than the steps. Most of them are an ordering error: something that must happen after the split happening before it, or the test set being read more than once.", "items": [{"label": "Problem definition", "desc": "modelling before 'success' has a number", "code": "01", "tone": "accent"}, {"label": "Data collection", "desc": "data that cannot be reproduced or refreshed", "code": "02", "tone": "accent"}, {"label": "Exploration", "desc": "never looking at the target rate", "code": "03", "tone": "accent"}, {"label": "Cleaning", "desc": "deleting the outliers that were the signal", "code": "04", "tone": "good"}, {"label": "Feature engineering", "desc": "fitting a scaler on all rows before the split", "code": "05", "tone": "crit"}, {"label": "Splitting", "desc": "a random split of a time series, or of one customer's rows", "code": "06", "tone": "crit"}, {"label": "Model selection and training", "desc": "no baseline, so nobody knows if it does anything", "code": "07", "tone": "warn"}, {"label": "Evaluation", "desc": "one number from one split", "code": "08", "tone": "warn"}, {"label": "Tuning", "desc": "tuning on the test set", "code": "09", "tone": "crit"}, {"label": "Final evaluation", "desc": "the test set, nine times", "code": "10", "tone": "crit"}, {"label": "Deployment", "desc": "feature code rewritten for serving", "code": "11", "tone": "warn"}, {"label": "Monitoring", "desc": "silent decay nobody measures", "code": "12", "tone": "warn"}], "t": "diagram", "id": "dg-1_2-01-0"},
+
+
+
+
+
+
+
 
 
 
@@ -96,6 +103,13 @@ df.groupby("refund_issued").churned.mean()          # refund 0: 0.029    refund 
     { t: "h2", n: "03", text: "Split, baseline, model, evaluate — inside a Pipeline", id: "model" },
 
     {"kind": "matrix", "title": "How many times each set may be read", "caption": "The validation set can be used repeatedly because nothing is reported from it — it only chooses. The test set is a one-shot measurement, and every look before the end spends some of its honesty, because you start making choices that fit it.", "cols": ["May be read", "Because"], "rows": ["Training set", "Validation set", "Test set", "The CV score", "The baseline"], "cells": [[{"text": "constantly", "tone": "good"}, "the model is fitted on it"], [{"text": "many times", "tone": "good"}, "it chooses; it does not report"], [{"text": "once, at the end", "tone": "crit"}, "it is the only honest number left"], [{"text": "to compare, not to report", "tone": "warn"}, "it chose the hyperparameters"], [{"text": "every time", "tone": "accent"}, "the model is judged by its distance from it"]], "t": "diagram", "id": "dg-1_2-03-1"},
+
+
+
+
+
+
+
 
 
 
@@ -203,7 +217,7 @@ joblib.dump(pipe, "churn_pipeline.joblib")          # step 11: the fitted prepro
 </svg>`
     },
 
-    { t: "h2", n: "04", text: "The reference case: a million rows, two hundred columns", id: "case" },
+    { t: "h2", n: "04", text: "The scale case: a million rows, two hundred columns", id: "case" },
 
     { t: "p", text: "Telecom churn, one million customers, two hundred columns; sixty columns are about 15 % missing, seventy have about 10 % outliers by the IQR rule. **The interviewer wants the sequence and the reasons, not a library list.**" },
 
@@ -365,7 +379,7 @@ mean_absolute_error(y_test, best.predict(X_test))       # 7.10, reported once
           "Use KNN imputation"
         ],
         answer: 1,
-        why: "Row-wise deletion compounds across columns. The reference case's whole point is that the naive fix destroys the dataset."
+        why: "Row-wise deletion compounds across columns. The scale case's whole point is that the naive fix destroys the dataset."
       },
       {
         stem: "Why serialise the whole Pipeline rather than the model alone?",

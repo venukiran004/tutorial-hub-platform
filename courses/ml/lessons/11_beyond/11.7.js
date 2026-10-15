@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Measuring bias, and the attribute you cannot remove", id: "fairness" },
 
+    {"kind": "matrix", "title": "The fairness criteria are mutually incompatible, provably", "caption": "When the base rates differ between groups, equal TPR and equal PPV cannot both hold — that is an impossibility theorem, not a tuning problem. So a team must state which criterion it is claiming and accept the consequence named in the last column. Dropping the protected attribute does not help: it is reconstructable from the other columns.", "cols": ["Equalises", "Then this differs"], "rows": ["Demographic parity", "Equal opportunity", "Equalised odds", "Predictive parity", "Calibration by group", "Individual fairness"], "cells": [["the approval rate", {"text": "accuracy, when base rates differ", "tone": "warn"}], ["TPR", {"text": "PPV: the impossibility", "tone": "crit"}], ["TPR and FPR", {"text": "PPV; may need randomised decisions", "tone": "crit"}], ["PPV", {"text": "TPR", "tone": "crit"}], ["P(y | score, group)", {"text": "error rates; coexists with disparity", "tone": "warn"}], ["similar people, similarly", {"text": "the similarity metric encodes it", "tone": "crit"}]], "t": "diagram", "id": "dg-11_7-01-0"},
+
+
     { t: "code", lang: "python", title: "A simulated loan book: 20,000 applicants, a protected attribute A, income and score correlated with A, a postcode that proxies it (executed)",
       code: `# repayment rate: group 0 0.862, group 1 0.679;  postcode = 1 for 20 % of group 0 and 71 % of group 1
 # logistic regression, approve if P(repay) >= 0.75 (break-even at £100 per repaid loan and −£300 per default)
@@ -56,6 +59,9 @@ the exercise: TPR 0.85 / FPR 0.15 with base rates 0.9 / 0.6 -> PPV 0.981 / 0.895
     ] },
 
     { t: "h2", n: "02", text: "Causality: confounders, colliders and the effect of a promotion", id: "causality" },
+
+    {"kind": "matrix", "title": "A confounder and a collider need opposite treatment", "caption": "This is the asymmetry that makes 'control for everything' wrong. Adjusting for a confounder removes bias; adjusting for a collider **creates** it. No amount of data distinguishes them — only a causal diagram does, which is why the diagram comes before the regression.", "cols": ["Structure", "Adjusting for it"], "rows": ["Confounder", "Collider", "Mediator", "Instrument"], "cells": [[{"text": "causes both X and Y", "tone": "accent"}, {"text": "removes bias: do it", "tone": "good"}], [{"text": "caused by both", "tone": "accent"}, {"text": "creates bias: do not", "tone": "crit"}], [{"text": "on the path X to Y", "tone": "accent"}, "blocks the effect you wanted"], [{"text": "causes X, not Y directly", "tone": "accent"}, "use it, do not adjust for it"]], "t": "diagram", "id": "dg-11_7-02-1"},
+
 
     { t: "p", text: "A causal question — did the promotion raise spend? — is not a prediction question, and a model that predicts spend well can answer it wrongly. The potential-outcomes framing: each customer has a spend with the promotion Y(1) and without it Y(0); the effect is Y(1) − Y(0); only one is observed. The naive comparison of treated and untreated customers estimates the effect only if treatment was assigned independently of the potential outcomes — which a randomised experiment guarantees and observational data almost never does. A DAG draws the assumptions: a **confounder** causes both treatment and outcome and must be adjusted for; a **collider** is caused by both and must *not* be conditioned on; a **mediator** lies on the path and conditioning on it removes the effect you want." },
 

@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Serving shapes, measured", id: "serving" },
 
+    {"kind": "matrix", "title": "Four serving shapes, decided by when the answer is needed", "caption": "The latency column is the constraint and the last column is the question. A churn score refreshed nightly can be a table lookup in microseconds; a fraud decision at checkout cannot be a scheduled job, however cheap that would be.", "cols": ["Latency", "Right when"], "rows": ["Batch", "Real-time", "Streaming", "Edge"], "cells": [[{"text": "microseconds at read", "tone": "good"}, "the decision can wait"], [{"text": "1-50 ms", "tone": "accent"}, "it is inside a user interaction"], [{"text": "sub-second, async", "tone": "accent"}, "features must be fresh"], [{"text": "no network", "tone": "violet"}, "offline, privacy, or scale"]], "t": "diagram", "id": "dg-11_1-01-0"},
+
+
     { t: "code", lang: "python", title: "The churn pipeline (ColumnTransformer → LogisticRegression, test AUC 0.744) served three ways (executed)",
       code: `#  shape                                  one row per call (p50 / p99)     batch
 #  scikit-learn pipeline                     8.36 ms / 12.16 ms              248 rows 9.1 ms (0.037 ms/row);  9,920 rows 19 ms (1.9 µs/row)
@@ -72,6 +75,9 @@ GET  /health                                ->  {"status": "ok", "model_version"
       caption: "The third case is the classic: a preprocessing step outside the pipeline object. 8.5's rule — every transformation that touches the data is a step inside the artefact — is what prevents it; the golden test is what catches it. The first case is the subtle one: a plausible feature, a plausible number, a slow bleed of accuracy that only a comparison against training-time predictions on stored rows would reveal. The structural fix is a single feature function or a feature store called by both the training job and the service." },
 
     { t: "h2", n: "03", text: "Data drift: two-sample tests, PSI and the domain classifier", id: "drift" },
+
+    {"kind": "matrix", "title": "Data drift and concept drift need different monitors", "caption": "Data drift is P(X) moving: the inputs changed. Concept drift is P(Y|X) moving: the **relationship** changed. A model can be perfectly right under data drift and perfectly wrong under concept drift with inputs that look identical — which is why the second monitor needs labels, and therefore always arrives late.", "cols": ["Watches", "Needs labels"], "rows": ["Input schema and freshness", "Feature distributions", "Prediction distribution", "Error rate over time", "A domain classifier"], "cells": [["types, ranges, null rates, arrival", {"text": "no", "tone": "good"}], [{"text": "P(X) against a reference", "tone": "good"}, {"text": "no: catches data drift", "tone": "good"}], ["the output's shape", {"text": "no: a cheap early signal", "tone": "good"}], [{"text": "the model being wrong", "tone": "crit"}, {"text": "yes: concept drift, late", "tone": "warn"}], ["can it tell old from new rows", {"text": "no; AUC 0.5 means no drift", "tone": "good"}]], "t": "diagram", "id": "dg-11_1-03-1"},
+
 
     { t: "code", lang: "python", title: "A shifted batch (fees +10 %, logins −20 %) against the training reference (executed)",
       code: `#  feature          KS statistic   KS p        PSI       (Bonferroni α = 0.05 / 5 = 0.01;  PSI alarm 0.2)

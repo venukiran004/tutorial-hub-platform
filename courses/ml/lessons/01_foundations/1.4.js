@@ -28,6 +28,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "Gradient boosting on the churn table as depth increases — 300 rounds each (executed)",
       hl: [2, 3, 4, 5, 6],
       code: `# 693 training rows, 297 validation rows, same preprocessing pipeline as 1.2
@@ -67,6 +74,13 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Penalties: L2 shrinks, L1 selects", id: "penalties" },
 
     {"kind": "matrix", "title": "Seven ways to reduce variance, and what each costs", "caption": "They are not interchangeable. Only the first adds information; the rest shrink the hypothesis space, which is why each of them can be taken far enough to turn a variance problem into a bias one.", "cols": ["Works by", "Costs"], "rows": ["More data", "Fewer features", "L2 or L1 penalty", "Smaller capacity", "Early stopping", "Bagging or dropout", "CV selection"], "cells": [[{"text": "training sets become alike", "tone": "good"}, "money and time; no help for bias"], ["a smaller space, less noise to fit", "can remove signal"], [{"text": "shrinks or zeroes weights", "tone": "good"}, "a hyperparameter to tune"], ["limits flexibility directly", {"text": "bias, if taken too far", "tone": "warn"}], ["stops before it reaches the noise", "needs a validation fold"], [{"text": "the mean varies less than one fit", "tone": "good"}, "compute; interpretability"], ["picks among all of the above", "compute"]], "t": "diagram", "id": "dg-1_4-02-1"},
+
+
+
+
+
+
+
 
 
 

@@ -1,0 +1,908 @@
+{
+ "11.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Four serving shapes, decided by when the answer is needed",
+    "caption": "The latency column is the constraint and the last column is the question. A churn score refreshed nightly can be a table lookup in microseconds; a fraud decision at checkout cannot be a scheduled job, however cheap that would be.",
+    "cols": [
+     "Latency",
+     "Right when"
+    ],
+    "rows": [
+     "Batch",
+     "Real-time",
+     "Streaming",
+     "Edge"
+    ],
+    "cells": [
+     [
+      {
+       "text": "microseconds at read",
+       "tone": "good"
+      },
+      "the decision can wait"
+     ],
+     [
+      {
+       "text": "1-50 ms",
+       "tone": "accent"
+      },
+      "it is inside a user interaction"
+     ],
+     [
+      {
+       "text": "sub-second, async",
+       "tone": "accent"
+      },
+      "features must be fresh"
+     ],
+     [
+      {
+       "text": "no network",
+       "tone": "violet"
+      },
+      "offline, privacy, or scale"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Data drift and concept drift need different monitors",
+    "caption": "Data drift is P(X) moving: the inputs changed. Concept drift is P(Y|X) moving: the **relationship** changed. A model can be perfectly right under data drift and perfectly wrong under concept drift with inputs that look identical — which is why the second monitor needs labels, and therefore always arrives late.",
+    "cols": [
+     "Watches",
+     "Needs labels"
+    ],
+    "rows": [
+     "Input schema and freshness",
+     "Feature distributions",
+     "Prediction distribution",
+     "Error rate over time",
+     "A domain classifier"
+    ],
+    "cells": [
+     [
+      "types, ranges, null rates, arrival",
+      {
+       "text": "no",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "P(X) against a reference",
+       "tone": "good"
+      },
+      {
+       "text": "no: catches data drift",
+       "tone": "good"
+      }
+     ],
+     [
+      "the output's shape",
+      {
+       "text": "no: a cheap early signal",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "the model being wrong",
+       "tone": "crit"
+      },
+      {
+       "text": "yes: concept drift, late",
+       "tone": "warn"
+      }
+     ],
+     [
+      "can it tell old from new rows",
+      {
+       "text": "no; AUC 0.5 means no drift",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "11.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Three answers to 'what is the parameter', on three heads out of three",
+    "caption": "The MLE says the coin always lands heads, which is the honest maximum of the likelihood and a useless forecast. MAP adds a prior and returns a single number; the posterior returns the **distribution**, and everything else in this lesson is a consequence of carrying it instead of collapsing it.",
+    "cols": [
+     "Returns",
+     "On 3 heads from 3"
+    ],
+    "rows": [
+     "MLE",
+     "MAP",
+     "The posterior",
+     "Posterior mean",
+     "Predictive distribution"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the likelihood's maximum",
+       "tone": "crit"
+      },
+      "p = 1.0: it will never land tails"
+     ],
+     [
+      {
+       "text": "a point, with a prior",
+       "tone": "warn"
+      },
+      "pulled back toward the prior"
+     ],
+     [
+      {
+       "text": "a distribution",
+       "tone": "good"
+      },
+      "Beta(1+3, 1+0) under a flat prior"
+     ],
+     [
+      {
+       "text": "a point, honestly derived",
+       "tone": "good"
+      },
+      "4/5 = 0.8 under that prior"
+     ],
+     [
+      {
+       "text": "a forecast with uncertainty",
+       "tone": "good"
+      },
+      "integrates over every p"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "06",
+   "d": {
+    "kind": "matrix",
+    "title": "Why the posterior makes a good policy",
+    "caption": "Thompson sampling needs no exploration parameter at all: drawing one sample per arm from each posterior and playing the best explores exactly in proportion to how uncertain the arm is, and that proportion shrinks on its own as evidence arrives.",
+    "cols": [
+     "Explores by",
+     "Tuning"
+    ],
+    "rows": [
+     "Epsilon-greedy",
+     "UCB",
+     "Thompson sampling",
+     "Bayesian optimisation"
+    ],
+    "cells": [
+     [
+      {
+       "text": "acting randomly epsilon of the time",
+       "tone": "warn"
+      },
+      "epsilon, and a decay schedule"
+     ],
+     [
+      {
+       "text": "an optimism bonus",
+       "tone": "accent"
+      },
+      "the confidence width"
+     ],
+     [
+      {
+       "text": "sampling the posterior",
+       "tone": "good"
+      },
+      {
+       "text": "none: it self-anneals",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "an acquisition function",
+       "tone": "accent"
+      },
+      "the kernel, and the acquisition"
+     ]
+    ]
+   }
+  }
+ ],
+ "11.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Prequential evaluation: test on each row before training on it",
+    "caption": "There is no held-out set on a stream, so the honest protocol is to predict each arriving row, record the error, and *then* learn from it. Every row is therefore a test row exactly once, and the running error is an unbiased picture of how the model behaved as the data arrived.",
+    "cols": [
+     "Online learning",
+     "Batch"
+    ],
+    "rows": [
+     "Sees each row",
+     "Evaluation",
+     "Adapts to drift",
+     "Memory",
+     "Revisiting a mistake"
+    ],
+    "cells": [
+     [
+      {
+       "text": "once, as it arrives",
+       "tone": "accent"
+      },
+      "many times, per epoch"
+     ],
+     [
+      {
+       "text": "prequential: predict, then fit",
+       "tone": "good"
+      },
+      "a held-out split"
+     ],
+     [
+      {
+       "text": "by construction",
+       "tone": "good"
+      },
+      {
+       "text": "only when retrained",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "constant",
+       "tone": "good"
+      },
+      "the dataset"
+     ],
+     [
+      {
+       "text": "it is gone",
+       "tone": "warn"
+      },
+      "another epoch will revisit it"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Non-IID is not one problem",
+    "caption": "Federated averaging degrades for different reasons depending on **how** the clients differ, and the fix differs with it. Label skew is the one that breaks naive averaging hardest: each client's update points at its own label distribution, and the average of those directions need not help anyone.",
+    "cols": [
+     "Clients differ in",
+     "Mitigation"
+    ],
+    "rows": [
+     "Label skew",
+     "Feature skew",
+     "Quantity skew",
+     "Concept skew"
+    ],
+    "cells": [
+     [
+      {
+       "text": "which classes they hold",
+       "tone": "crit"
+      },
+      "proximal terms, server momentum"
+     ],
+     [
+      "the same classes, different inputs",
+      "normalisation that is not batch-wise"
+     ],
+     [
+      {
+       "text": "how many rows",
+       "tone": "warn"
+      },
+      "weight the average by n"
+     ],
+     [
+      {
+       "text": "P(y|x) itself",
+       "tone": "crit"
+      },
+      "personalisation: one model cannot fit all"
+     ]
+    ]
+   }
+  }
+ ],
+ "11.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Six recommender families, and what each cannot do",
+    "caption": "The failure column drives almost every architecture decision. Collaborative filtering of any kind cannot serve a brand-new item, which is why hybrids exist — not for accuracy, but because the cold start is a certainty rather than a risk.",
+    "cols": [
+     "Needs",
+     "Fails on"
+    ],
+    "rows": [
+     "User-based CF",
+     "Item-based CF",
+     "Matrix factorisation",
+     "WRMF / BPR",
+     "Content-based",
+     "Hybrid"
+    ],
+    "cells": [
+     [
+      "ratings from similar users",
+      {
+       "text": "sparsity; O(users²)",
+       "tone": "warn"
+      }
+     ],
+     [
+      "co-ratings of items",
+      {
+       "text": "cold items; popularity bias",
+       "tone": "warn"
+      }
+     ],
+     [
+      "many interactions",
+      {
+       "text": "cold users and items",
+       "tone": "warn"
+      }
+     ],
+     [
+      "implicit signals",
+      "negative sampling to tune"
+     ],
+     [
+      {
+       "text": "item features",
+       "tone": "good"
+      },
+      "limited discovery"
+     ],
+     [
+      {
+       "text": "both",
+       "tone": "good"
+      },
+      {
+       "text": "more to tune and explain",
+       "tone": "accent"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "steps",
+    "title": "The feedback loop, and why offline ranking metrics flatter the old system",
+    "caption": "Held-out clicks were generated by **what the old system chose to show**. A model that reproduces those choices scores well; a model that would have surfaced something better scores badly, because the user never had the chance to click it. Popularity bias compounds it, which is why popularity is a strong offline baseline and a weak product.",
+    "items": [
+     {
+      "label": "The old system chose what to show",
+      "desc": "exposure, not preference, generated the log",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "Clicks only exist for shown items",
+      "desc": "everything else has no label at all",
+      "code": "2",
+      "tone": "warn"
+     },
+     {
+      "label": "Offline metrics reward agreement with it",
+      "desc": "reproducing the old choices scores highest",
+      "code": "3",
+      "tone": "crit"
+     },
+     {
+      "label": "A better model looks worse",
+      "desc": "its best suggestions were never shown, so never clicked",
+      "code": "4",
+      "tone": "crit"
+     },
+     {
+      "label": "Train on it and the loop tightens",
+      "desc": "the catalogue narrows to what was already popular",
+      "code": "5",
+      "tone": "crit"
+     },
+     {
+      "label": "Break it deliberately",
+      "desc": "explore, log propensities, and let an A/B test decide",
+      "code": "fix",
+      "tone": "good"
+     }
+    ]
+   }
+  }
+ ],
+ "11.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Tokens, stems and lemmas",
+    "caption": "Stemming chops suffixes by rule, so it is fast and produces non-words; lemmatisation looks the word up and needs its part of speech to be right. For a linear model on TF-IDF the difference is usually worth less than the time it costs — which is the finding worth having before reaching for a transformer.",
+    "cols": [
+     "Does",
+     "Cost"
+    ],
+    "rows": [
+     "Tokenising",
+     "Lower-casing",
+     "Stop words",
+     "Stemming",
+     "Lemmatising",
+     "n-grams"
+    ],
+    "cells": [
+     [
+      "splits on a pattern",
+      "the regex decides what survives"
+     ],
+     [
+      "collapses case",
+      {
+       "text": "loses acronyms: US and us",
+       "tone": "warn"
+      }
+     ],
+     [
+      "drops frequent words",
+      {
+       "text": "'not' is a stop word in some lists",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "chops suffixes by rule",
+       "tone": "accent"
+      },
+      "fast; produces non-words"
+     ],
+     [
+      {
+       "text": "looks the word up",
+       "tone": "good"
+      },
+      "slower; needs the part of speech"
+     ],
+     [
+      {
+       "text": "captures short phrases",
+       "tone": "good"
+      },
+      "the vocabulary multiplies"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Cosine on TF-IDF, and what BM25 adds",
+    "caption": "Both rank documents by weighted term overlap. BM25 adds two things TF-IDF lacks: a **saturating** term frequency, so the tenth occurrence of a word adds almost nothing, and an explicit length normalisation with a tunable strength rather than the implicit one that L2 gives.",
+    "cols": [
+     "Term frequency",
+     "Length"
+    ],
+    "rows": [
+     "TF-IDF + cosine",
+     "BM25",
+     "Raw count overlap",
+     "Binary overlap"
+    ],
+    "cells": [
+     [
+      {
+       "text": "linear, or log-damped",
+       "tone": "accent"
+      },
+      "implicit, via L2 normalisation"
+     ],
+     [
+      {
+       "text": "saturating: k1",
+       "tone": "good"
+      },
+      {
+       "text": "explicit, tunable: b",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "linear, unbounded",
+       "tone": "crit"
+      },
+      {
+       "text": "none: long documents win",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "presence only",
+       "tone": "warn"
+      },
+      "none"
+     ]
+    ]
+   }
+  }
+ ],
+ "11.6": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "Backpropagation is the chain rule, applied in reverse order",
+    "caption": "There is nothing in it beyond the chain rule — the insight is only that computing the derivatives from the output backwards reuses every partial result, so the whole gradient costs about one forward pass rather than one per parameter.",
+    "items": [
+     {
+      "label": "Forward: compute and keep each layer's output",
+      "desc": "these are needed again on the way back",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "At the output, the loss derivative",
+      "desc": "for cross-entropy with softmax it is simply p - y",
+      "code": "2",
+      "tone": "good"
+     },
+     {
+      "label": "Multiply back through the activation",
+      "desc": "element-wise, by its derivative at the stored value",
+      "code": "3",
+      "tone": "good"
+     },
+     {
+      "label": "Multiply back through the weights",
+      "desc": "the transpose of the layer's matrix",
+      "code": "4",
+      "tone": "good"
+     },
+     {
+      "label": "The weight gradient is that times the stored input",
+      "desc": "which is why the forward values had to be kept",
+      "code": "5",
+      "tone": "violet"
+     },
+     {
+      "label": "Repeat to the first layer",
+      "desc": "one pass back, every gradient: the whole trick",
+      "code": "6",
+      "tone": "teal"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "When a network beats gradient boosting on a table",
+    "caption": "Rarely, and for specific reasons. On a small heterogeneous table boosting wins and a regularised linear model is the yardstick — as this course's churn data showed. A network earns its place when there is a representation to **learn** or to share, which a boosted tree cannot do at all.",
+    "cols": [
+     "Use",
+     "Because"
+    ],
+    "rows": [
+     "Small mixed table",
+     "Many numeric columns",
+     "High-cardinality cats",
+     "Text, images, audio",
+     "Multi-task or transfer",
+     "Interpretability required"
+    ],
+    "cells": [
+     [
+      {
+       "text": "boosting",
+       "tone": "good"
+      },
+      "thresholds and additive effects"
+     ],
+     [
+      {
+       "text": "an MLP or CNN",
+       "tone": "accent"
+      },
+      "smooth interactions across inputs"
+     ],
+     [
+      {
+       "text": "embeddings, or target encoding",
+       "tone": "accent"
+      },
+      "embeddings compress categories"
+     ],
+     [
+      {
+       "text": "a network, pre-trained",
+       "tone": "good"
+      },
+      "representation learning is the task"
+     ],
+     [
+      {
+       "text": "a network",
+       "tone": "good"
+      },
+      "boosting cannot share representations"
+     ],
+     [
+      {
+       "text": "linear, or boosting + SHAP",
+       "tone": "good"
+      },
+      "a network's weights are not readable"
+     ]
+    ]
+   }
+  }
+ ],
+ "11.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The fairness criteria are mutually incompatible, provably",
+    "caption": "When the base rates differ between groups, equal TPR and equal PPV cannot both hold — that is an impossibility theorem, not a tuning problem. So a team must state which criterion it is claiming and accept the consequence named in the last column. Dropping the protected attribute does not help: it is reconstructable from the other columns.",
+    "cols": [
+     "Equalises",
+     "Then this differs"
+    ],
+    "rows": [
+     "Demographic parity",
+     "Equal opportunity",
+     "Equalised odds",
+     "Predictive parity",
+     "Calibration by group",
+     "Individual fairness"
+    ],
+    "cells": [
+     [
+      "the approval rate",
+      {
+       "text": "accuracy, when base rates differ",
+       "tone": "warn"
+      }
+     ],
+     [
+      "TPR",
+      {
+       "text": "PPV: the impossibility",
+       "tone": "crit"
+      }
+     ],
+     [
+      "TPR and FPR",
+      {
+       "text": "PPV; may need randomised decisions",
+       "tone": "crit"
+      }
+     ],
+     [
+      "PPV",
+      {
+       "text": "TPR",
+       "tone": "crit"
+      }
+     ],
+     [
+      "P(y | score, group)",
+      {
+       "text": "error rates; coexists with disparity",
+       "tone": "warn"
+      }
+     ],
+     [
+      "similar people, similarly",
+      {
+       "text": "the similarity metric encodes it",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "A confounder and a collider need opposite treatment",
+    "caption": "This is the asymmetry that makes 'control for everything' wrong. Adjusting for a confounder removes bias; adjusting for a collider **creates** it. No amount of data distinguishes them — only a causal diagram does, which is why the diagram comes before the regression.",
+    "cols": [
+     "Structure",
+     "Adjusting for it"
+    ],
+    "rows": [
+     "Confounder",
+     "Collider",
+     "Mediator",
+     "Instrument"
+    ],
+    "cells": [
+     [
+      {
+       "text": "causes both X and Y",
+       "tone": "accent"
+      },
+      {
+       "text": "removes bias: do it",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "caused by both",
+       "tone": "accent"
+      },
+      {
+       "text": "creates bias: do not",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "on the path X to Y",
+       "tone": "accent"
+      },
+      "blocks the effect you wanted"
+     ],
+     [
+      {
+       "text": "causes X, not Y directly",
+       "tone": "accent"
+      },
+      "use it, do not adjust for it"
+     ]
+    ]
+   }
+  }
+ ],
+ "11.8": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The classics, with the number this course measured",
+    "caption": "The difference between a pass and an offer is usually whether you can say the number. Each of these answers is a measurement from an earlier lesson, not a definition — and a measurement is what ends the follow-up question.",
+    "cols": [
+     "The answer is",
+     "From"
+    ],
+    "rows": [
+     "Does SMOTE help?",
+     "Is accuracy ever enough?",
+     "Is impurity importance ok?",
+     "Does scaling matter?",
+     "Use the default 0.5?",
+     "Will more data help?"
+    ],
+    "cells": [
+     [
+      {
+       "text": "0.484 in-fold vs 0.493 without",
+       "tone": "accent"
+      },
+      "8.2: slightly worse than nothing"
+     ],
+     [
+      {
+       "text": "no: 0.670 at 16% prevalence",
+       "tone": "accent"
+      },
+      "2.1: the matrix has a number each"
+     ],
+     [
+      {
+       "text": "no: noise scored 0.178",
+       "tone": "crit"
+      },
+      "6.1: permutation gave it 0.032"
+     ],
+     [
+      {
+       "text": "for distances and penalties",
+       "tone": "accent"
+      },
+      "3.1: never for trees"
+     ],
+     [
+      {
+       "text": "no: cost minimised at 0.15",
+       "tone": "crit"
+      },
+      "2.3: F1 peaked at 0.25"
+     ],
+     [
+      {
+       "text": "read the learning curve",
+       "tone": "good"
+      },
+      "8.3: 0.51 to 0.54 at 100x rows"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "steps",
+    "title": "The case structure",
+    "caption": "The order is the content. Candidates who start at the model lose the round regardless of which model they name, because every choice after step two depends on answers they skipped.",
+    "items": [
+     {
+      "label": "Restate the business decision",
+      "desc": "what acts on the output, and what it costs to be wrong",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "Define the target and the unit",
+      "desc": "one row per what, labelled how, observed when",
+      "code": "2",
+      "tone": "accent"
+     },
+     {
+      "label": "Name the metric and the baseline",
+      "desc": "with a threshold rule from the costs",
+      "code": "3",
+      "tone": "good"
+     },
+     {
+      "label": "Describe the split",
+      "desc": "by time, by entity, or both — and say why",
+      "code": "4",
+      "tone": "good"
+     },
+     {
+      "label": "Only now, the features and the model",
+      "desc": "simplest first, with the leakage checks named",
+      "code": "5",
+      "tone": "violet"
+     },
+     {
+      "label": "Say how it is served and monitored",
+      "desc": "latency, refit cadence, drift, rollback",
+      "code": "6",
+      "tone": "teal"
+     },
+     {
+      "label": "State what would make you abandon it",
+      "desc": "the answer that separates senior from mid",
+      "code": "7",
+      "tone": "teal"
+     }
+    ]
+   }
+  }
+ ]
+}

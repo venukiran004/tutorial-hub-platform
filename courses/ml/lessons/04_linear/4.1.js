@@ -122,6 +122,13 @@ Xᵀ e = Xᵀ(y - ŷ) = [0, 0]                                 the residual is o
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Gaussian noise turns 'maximise the likelihood' into 'minimise RSS' (executed)",
       code: `assume   yᵢ = xᵢᵀβ + εᵢ,   εᵢ ~ N(0, σ²) independent
 
@@ -142,6 +149,13 @@ and the same σ̂² gives standard errors:   SE(β₁) = sqrt(σ̂² / Σ(xᵢ -
     { t: "h2", n: "04", text: "Solving it at scale", id: "solvers" },
 
     {"kind": "matrix", "title": "Five ways to solve it, and when each breaks", "caption": "The normal equation squares the condition number, so it is the first to fail under collinearity — which is why `LinearRegression` does not use it. QR/SVD is the default because it handles rank deficiency by returning the minimum-norm solution instead of raising.", "cols": ["Cost", "Conditioning"], "rows": ["Normal equation", "QR / SVD", "Cholesky on X'X + lambda I", "Gradient descent", "Coordinate descent"], "cells": [["O(np² + p³)", {"text": "squares it: fails first", "tone": "crit"}], ["O(np²)", {"text": "best; handles rank deficiency", "tone": "good"}], ["O(np² + p³)", {"text": "lambda fixes it", "tone": "good"}], [{"text": "O(npk)", "tone": "accent"}, "needs scaling; huge n or p"], [{"text": "O(npk)", "tone": "accent"}, "handles L1 exactly"]], "t": "diagram", "id": "dg-4_1-04-1"},
+
+
+
+
+
+
+
 
 
 

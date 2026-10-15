@@ -73,6 +73,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The decision questions", id: "framework" },
 
+    {"kind": "matrix", "title": "Eight questions that choose the family, with this course's evidence", "caption": "None of these is answered by a leaderboard. The row-count question alone overturns the usual instinct: boosting defaults were the **worst** models on 989 rows, and the four libraries tied at 0.968 on 200,000.", "cols": ["Points to", "Evidence here"], "rows": ["How many rows", "The truth's shape", "Is it a probability", "Must a human read it", "Latency", "Categoricals and NaN", "Imbalance", "Refit cadence"], "cells": [[{"text": "under 1k: linear", "tone": "accent"}, "boosting defaults were worst at 989"], [{"text": "additive: linear", "tone": "accent"}, "churn: logistic 0.752 beat everything"], [{"text": "log-loss, then calibrate", "tone": "accent"}, "the forest compressed its probabilities"], [{"text": "coefficients or rules", "tone": "accent"}, "the depth-3 tree scored 0.679"], [{"text": "linear or symmetric trees", "tone": "accent"}, "KNN 382 ms; CatBoost 0.02 s"], [{"text": "CatBoost, or cross-fitted", "tone": "accent"}, "naive target encoding leaked"], [{"text": "log-loss plus a threshold", "tone": "accent"}, "the SVM collapsed to w = 0"], [{"text": "models that refit in seconds", "tone": "accent"}, "16 ms to 1.2 s here"]], "t": "diagram", "id": "dg-8_4-02-0"},
+
+
+
+
+
     { t: "table",
       head: ["Question", "Answer that favours…", "…and why (from the course's own results)"],
       rows: [
@@ -92,6 +98,12 @@ EC.receiveLesson({
     ]},
 
     { t: "h2", n: "03", text: "AutoML", id: "automl" },
+
+    {"kind": "steps", "title": "The procedure, not the flow chart", "caption": "Order matters because each step makes the next one cheaper to judge. Fitting the dummy first is not a formality — it is the number every later result is reported against.", "items": [{"label": "Fit the dummy", "desc": "the majority class, or the mean: everything is measured from here", "code": "1", "tone": "accent"}, {"label": "Then a linear model with sensible features", "desc": "on identical repeated folds", "code": "2", "tone": "good"}, {"label": "Then a forest with a large leaf size", "desc": "a safe, barely-tuned variance baseline", "code": "3", "tone": "good"}, {"label": "Then early-stopped boosting", "desc": "the usual tabular ceiling, if it is going to win", "code": "4", "tone": "good"}, {"label": "If linear is within the fold spread, ship it", "desc": "Occam says simple beats equal, not simple beats better", "code": "5", "tone": "violet"}, {"label": "If trees win, find the non-linearity they found", "desc": "and ask whether a feature would give it to the linear model", "code": "6", "tone": "violet"}, {"label": "Tune only the family that leads", "desc": "then score the finalist on a slice the search never saw", "code": "7", "tone": "teal"}], "t": "diagram", "id": "dg-8_4-03-1"},
+
+
+
+
 
     { t: "code", lang: "python", title: "FLAML with a 60-second budget on the churn target (executed; 70/30 split)",
       hl: [3, 4, 6],

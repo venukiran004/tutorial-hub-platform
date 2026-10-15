@@ -24,6 +24,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "What fit does, what it stores, and what the helpers promise (executed)",
       hl: [2, 3, 6, 9, 10, 11],
       code: `sc = StandardScaler()
@@ -113,6 +120,13 @@ RatioFeatures(pairs=((3, 0),)).fit(X_num).get_feature_names_out(numeric)[-1]    
     { t: "h2", n: "04", text: "Persistence, serving, caching", id: "serving" },
 
     {"kind": "steps", "title": "One artefact, one code path", "caption": "Training–serving skew is not a risk you manage, it is a consequence of having two implementations. If the fitted Pipeline is the thing serialised and the thing called in serving, there is no second implementation to drift.", "items": [{"label": "ColumnTransformer by name", "desc": "remainder='drop', so a new column cannot slip in unnoticed", "code": "1", "tone": "accent"}, {"label": "A branch per type", "desc": "impute with indicator, scale if the model needs it, encode with unknown handling", "code": "2", "tone": "good"}, {"label": "The model, in the same Pipeline", "desc": "so every fold refits the preprocessing too", "code": "3", "tone": "good"}, {"label": "Tune with a grid that reaches the preprocessing", "desc": "the imputer strategy is a hyperparameter like any other", "code": "4", "tone": "violet"}, {"label": "Refit on everything, then joblib.dump", "desc": "with the library versions pinned beside it", "code": "5", "tone": "teal"}, {"label": "Serve by calling that object", "desc": "on a DataFrame with the training column names", "code": "6", "tone": "good"}], "t": "diagram", "id": "dg-3_6-04-1"},
+
+
+
+
+
+
+
 
 
 

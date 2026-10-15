@@ -1,0 +1,1029 @@
+{
+ "10.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Why none of the previous nine modules' habits survive here",
+    "caption": "One sentence tests every split in this module: if you can describe your training and test sets without using the words *before* and *after*, the split is wrong. Everything else — rolling origins, lag features, the gap — follows from the fact that at the moment a forecast is made, the future is not available.",
+    "cols": [
+     "Tabular ML",
+     "A time series"
+    ],
+    "rows": [
+     "Rows are",
+     "Shuffling is",
+     "Validation",
+     "A feature is",
+     "The test set",
+     "The standard error"
+    ],
+    "cells": [
+     [
+      "independent draws",
+      {
+       "text": "one dependent sequence",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "harmless, expected",
+       "tone": "good"
+      },
+      {
+       "text": "destroys the signal",
+       "tone": "crit"
+      }
+     ],
+     [
+      "random K-fold",
+      {
+       "text": "forward only",
+       "tone": "accent"
+      }
+     ],
+     [
+      "measured alongside y",
+      {
+       "text": "knowable before y happens",
+       "tone": "accent"
+      }
+     ],
+     [
+      "a random sample",
+      {
+       "text": "the latest block",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "sigma over root n",
+       "tone": "good"
+      },
+      {
+       "text": "larger: n is not n",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "Seven checks, and the order is the point",
+    "caption": "Each check depends on the one above it being true. A lag feature is meaningless before the index is sorted, and `shift(1)` stops meaning 'yesterday' the moment the frequency is irregular — so a gap in the calendar silently changes what every later feature computes.",
+    "items": [
+     {
+      "label": "The index is a real timestamp, sorted",
+      "desc": "otherwise lags point at the wrong row",
+      "code": "1",
+      "tone": "crit"
+     },
+     {
+      "label": "The frequency is regular",
+      "desc": "or shift(1) no longer means yesterday",
+      "code": "2",
+      "tone": "crit"
+     },
+     {
+      "label": "Gaps are explicit",
+      "desc": "a missing day is a NaN, not an absent row",
+      "code": "3",
+      "tone": "warn"
+     },
+     {
+      "label": "Duplicated timestamps resolved",
+      "desc": "two rows for one day is a grain error",
+      "code": "4",
+      "tone": "warn"
+     },
+     {
+      "label": "The series is one grain",
+      "desc": "one store, one product, or an explicit key",
+      "code": "5",
+      "tone": "good"
+     },
+     {
+      "label": "Units and revisions understood",
+      "desc": "a restated history changes the past under you",
+      "code": "6",
+      "tone": "good"
+     },
+     {
+      "label": "Only then: plot it",
+      "desc": "level, trend, season, breaks, outliers",
+      "code": "7",
+      "tone": "violet"
+     }
+    ]
+   }
+  }
+ ],
+ "10.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The transformation ladder, and how to undo each rung",
+    "caption": "The inverse column is the one that gets forgotten. Exponentiating a forecast made on logs returns the **median**, not the mean — so a forecast meant to be summed across stores needs the σ²/2 correction, and without it every total comes out systematically low.",
+    "cols": [
+     "Apply",
+     "Invert by"
+    ],
+    "rows": [
+     "Variance grows with level",
+     "Seasonality",
+     "Trend",
+     "Trend still there",
+     "Season and trend"
+    ],
+    "cells": [
+     [
+      {
+       "text": "log, or Box-Cox",
+       "tone": "good"
+      },
+      {
+       "text": "exponentiate: a median, + sigma²/2 for a mean",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "seasonal difference",
+       "tone": "good"
+      },
+      "add back y at t - m"
+     ],
+     [
+      {
+       "text": "first difference",
+       "tone": "good"
+      },
+      "cumulative sum from the last value"
+     ],
+     [
+      {
+       "text": "second difference, rarely more",
+       "tone": "warn"
+      },
+      "cumulative sum twice"
+     ],
+     [
+      {
+       "text": "seasonal first, then regular",
+       "tone": "good"
+      },
+      "reverse the order"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Over-differencing is a failure, not a safe default",
+    "caption": "Each unnecessary difference injects a negative MA(1) the model must then estimate, and inflates the forecast variance by 2(1 − ρ₁). Differencing white noise gives a lag-1 autocorrelation of −0.5 — measured at −0.496 on 20,000 points — and the store series shows it at the second step: sd rises from 0.146 to 0.200.",
+    "cols": [
+     "Lag-1 ACF after",
+     "Meaning"
+    ],
+    "rows": [
+     "White noise, differenced",
+     "AR(1) phi=0.7, differenced",
+     "Store, first difference",
+     "Store, second difference"
+    ],
+    "cells": [
+     [
+      {
+       "text": "-0.496 (theory -0.5)",
+       "tone": "crit"
+      },
+      "an MA(1) that was not there"
+     ],
+     [
+      {
+       "text": "-0.158 (theory -0.15)",
+       "tone": "crit"
+      },
+      "the same, from a stationary start"
+     ],
+     [
+      {
+       "text": "sd 0.146",
+       "tone": "good"
+      },
+      "appropriate"
+     ],
+     [
+      {
+       "text": "sd 0.200, ACF -0.476",
+       "tone": "crit"
+      },
+      "over-differenced: variance up"
+     ]
+    ]
+   }
+  }
+ ],
+ "10.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The baseline is the denominator",
+    "caption": "Every cross-series metric divides by a naive forecast's in-sample error, and every review asks what each pipeline step added over it. A 28-day MAE of 24 is a 10% improvement on 26.9 at store A — which may or may not be worth its cost, and that is the only frame in which the 24 means anything.",
+    "cols": [
+     "Forecast",
+     "Right baseline when"
+    ],
+    "rows": [
+     "Naive",
+     "Seasonal naive",
+     "Drift",
+     "Mean"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the last value, repeated",
+       "tone": "accent"
+      },
+      "a random walk; near a unit root"
+     ],
+     [
+      {
+       "text": "the value one season ago",
+       "tone": "good"
+      },
+      "a strong stable season: retail's default"
+     ],
+     [
+      "last value plus the average slope",
+      "a steady trend, no season"
+     ],
+     [
+      "the training mean",
+      "genuinely stationary, no trend"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "timeline",
+    "title": "Rolling origins, and the gap that makes them honest",
+    "caption": "Each origin trains on everything before it and scores the block after it, which recreates the moment the forecast is made. The **gap** is needed whenever a feature or a label is computed over a window: without it the last training labels depend on events inside the test block, and the backtest is quietly optimistic.",
+    "span": 12,
+    "tick": 3,
+    "lanes": [
+     {
+      "label": "Origin 1",
+      "bars": [
+       [
+        0,
+        4,
+        "train",
+        "accent"
+       ],
+       [
+        4,
+        5,
+        "gap",
+        "warn"
+       ],
+       [
+        5,
+        6,
+        "test",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "Origin 2",
+      "bars": [
+       [
+        0,
+        6,
+        "train",
+        "accent"
+       ],
+       [
+        6,
+        7,
+        "gap",
+        "warn"
+       ],
+       [
+        7,
+        8,
+        "test",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "Origin 3",
+      "bars": [
+       [
+        0,
+        8,
+        "train",
+        "accent"
+       ],
+       [
+        8,
+        9,
+        "gap",
+        "warn"
+       ],
+       [
+        9,
+        10,
+        "test",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "No gap",
+      "bars": [
+       [
+        0,
+        10,
+        "train, whose last labels use test-period events",
+        "crit"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "10.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Damping the trend, measured a year out",
+    "caption": "An undamped trend extrapolated far enough produces numbers nobody will sign off. The damped form replaces h·b with a geometric sum that has an asymptote of φ/(1−φ) slopes however far out — nine, at φ = 0.9. On the store, the undamped forecast climbed from 251.6 to 288.9 between h = 28 and h = 364; the damped fit went 253.3 to 261.6. The M3 and M4 competitions found the damped trend the single most robust method in the family.",
+    "cols": [
+     "Undamped",
+     "Damped (phi = 0.988)"
+    ],
+    "rows": [
+     "h = 28",
+     "h = 364",
+     "Multiplier at h = 12",
+     "Far-horizon behaviour"
+    ],
+    "cells": [
+     [
+      "251.6",
+      "253.3"
+     ],
+     [
+      {
+       "text": "288.9",
+       "tone": "crit"
+      },
+      {
+       "text": "261.6",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "12 slopes",
+       "tone": "crit"
+      },
+      {
+       "text": "6.5 slopes at phi = 0.9",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "unbounded",
+       "tone": "crit"
+      },
+      {
+       "text": "an asymptote of phi/(1-phi)",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "The ETS taxonomy, and its ARIMA twins",
+    "caption": "Several ETS models are algebraically identical to an ARIMA — simple exponential smoothing *is* an ARIMA(0,1,1) with θ = α − 1. Where the correspondence runs out is the seasonal additive case, which has no ARIMA equivalent at all, and that is the practical reason to keep both families on the bench.",
+    "cols": [
+     "ETS",
+     "ARIMA twin"
+    ],
+    "rows": [
+     "Simple exp. smoothing",
+     "Holt's linear trend",
+     "Damped trend",
+     "Holt-Winters additive"
+    ],
+    "cells": [
+     [
+      {
+       "text": "(A,N,N)",
+       "tone": "accent"
+      },
+      "ARIMA(0,1,1), theta = alpha - 1"
+     ],
+     [
+      {
+       "text": "(A,A,N)",
+       "tone": "accent"
+      },
+      "ARIMA(0,2,2)"
+     ],
+     [
+      {
+       "text": "(A,Ad,N)",
+       "tone": "good"
+      },
+      "ARIMA(1,1,2): the workhorse"
+     ],
+     [
+      {
+       "text": "(A,A,A)",
+       "tone": "violet"
+      },
+      {
+       "text": "none",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "10.5": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Reading the ACF and PACF into orders",
+    "caption": "These five rules are the whole identification procedure, and they are rules about **where a plot cuts off** rather than where it is large. The PACF cutting off at lag p is what distinguishes an AR from an MA, because a pure AR's partial correlations vanish beyond its order by construction.",
+    "cols": [
+     "Plot shows",
+     "Order"
+    ],
+    "rows": [
+     "ACF decays slowly from 1",
+     "ACF spikes at m, 2m, 3m",
+     "PACF cuts off at lag p",
+     "ACF cuts off at short lag q",
+     "PACF spike at lag m only"
+    ],
+    "cells": [
+     [
+      {
+       "text": "non-stationary in level",
+       "tone": "accent"
+      },
+      "d = 1"
+     ],
+     [
+      {
+       "text": "non-stationary in season",
+       "tone": "accent"
+      },
+      "D = 1"
+     ],
+     [
+      {
+       "text": "an AR signature",
+       "tone": "good"
+      },
+      "p"
+     ],
+     [
+      {
+       "text": "an MA signature",
+       "tone": "good"
+      },
+      "q"
+     ],
+     [
+      {
+       "text": "seasonal AR",
+       "tone": "good"
+      },
+      "P = 1"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "steps",
+    "title": "Twelve points cannot estimate an ARIMA(1,1,1)",
+    "caption": "Fitted to twelve quarterly numbers, statsmodels returns φ = −1.000 and θ = 0.996 — the **boundary** of the parameter space, where the AR root sits on the unit circle and the MA term tries to cancel it. That is not a model; it is an optimiser with nothing to work with.",
+    "items": [
+     {
+      "label": "Twelve observations, three parameters",
+      "desc": "plus a differencing order and a variance",
+      "code": "1",
+      "tone": "warn"
+     },
+     {
+      "label": "phi = -1.000",
+      "desc": "the AR root on the unit circle: the boundary",
+      "code": "2",
+      "tone": "crit"
+     },
+     {
+      "label": "theta = 0.996",
+      "desc": "the MA term trying to cancel it",
+      "code": "3",
+      "tone": "crit"
+     },
+     {
+      "label": "No error is raised",
+      "desc": "the fit 'succeeds' and the forecast looks plausible",
+      "code": "4",
+      "tone": "crit"
+     },
+     {
+      "label": "A simple model needs a few dozen points",
+      "desc": "a seasonal one needs several whole seasons",
+      "code": "rule",
+      "tone": "good"
+     },
+     {
+      "label": "The store fits here have 900",
+      "desc": "which is why their orders are identifiable",
+      "code": "note",
+      "tone": "good"
+     }
+    ]
+   }
+  }
+ ],
+ "10.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Seven families of feature for a tabular forecast",
+    "caption": "The rolling statistics row carries the rule that makes all of this safe: the windows must be computed over **lagged** values, because a rolling mean that includes today is the leak of 4.3 in a new costume.",
+    "cols": [
+     "Example",
+     "Captures"
+    ],
+    "rows": [
+     "Lags",
+     "Rolling statistics",
+     "Differences",
+     "Calendar",
+     "Fourier terms",
+     "Events",
+     "Cross-series"
+    ],
+    "cells": [
+     [
+      "y at t-1, t-7, t-28, t-364",
+      "autocorrelation; weekly and yearly echo"
+     ],
+     [
+      {
+       "text": "mean, sd over 7, 28, 91 — of lagged values",
+       "tone": "warn"
+      },
+      "local level and volatility"
+     ],
+     [
+      "y(t-1) - y(t-2), y(t-1) - y(t-8)",
+      "momentum, week-on-week change"
+     ],
+     [
+      "weekday, month, week of year",
+      "fixed seasonality"
+     ],
+     [
+      {
+       "text": "sin and cos at k cycles",
+       "tone": "good"
+      },
+      "smooth, long seasonality; wraps cleanly"
+     ],
+     [
+      "holidays, promotions, days-since",
+      "named spikes"
+     ],
+     [
+      "store mean, category mean, price ratio",
+      "shared behaviour in a global model"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Trees cannot extrapolate, and a trend is extrapolation",
+    "caption": "Every tree is flat beyond its last split, so a boosted model on raw levels cannot forecast above anything it has seen — it predicts the top of its training range forever. The fix is to take the trend out before the model sees it, which is what differencing or detrending does, and add it back afterwards.",
+    "cols": [
+     "On a trending series",
+     "Fix"
+    ],
+    "rows": [
+     "Boosting on raw levels",
+     "Boosting on differences",
+     "Boosting + linear trend",
+     "ARIMA or ETS",
+     "A global model"
+    ],
+    "cells": [
+     [
+      {
+       "text": "caps at the training max",
+       "tone": "crit"
+      },
+      "detrend, or difference, first"
+     ],
+     [
+      {
+       "text": "extrapolates correctly",
+       "tone": "good"
+      },
+      "cumulative-sum it back"
+     ],
+     [
+      {
+       "text": "the trend is handled outside",
+       "tone": "good"
+      },
+      "a hybrid: linear part plus tree residual"
+     ],
+     [
+      {
+       "text": "extrapolates by construction",
+       "tone": "good"
+      },
+      "nothing needed"
+     ],
+     [
+      {
+       "text": "same blind spot",
+       "tone": "warn"
+      },
+      "same fix, applied per series"
+     ]
+    ]
+   }
+  }
+ ],
+ "10.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Four ways to get an interval, and what each one assumes",
+    "caption": "The analytic interval is the narrowest and assumes the most — that the model is right and the errors normal — so it is the one that under-covers in practice. Conformal assumes only exchangeability between the calibration block and the test block, and gives coverage as a guarantee rather than a hope.",
+    "cols": [
+     "Assumes",
+     "Works with"
+    ],
+    "rows": [
+     "Analytic",
+     "Quantile regression",
+     "Bootstrap / simulation",
+     "Conformal"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the model is right, errors normal",
+       "tone": "warn"
+      },
+      "ARIMA, ETS"
+     ],
+     [
+      {
+       "text": "nothing about the shape",
+       "tone": "good"
+      },
+      "boosting, networks"
+     ],
+     [
+      {
+       "text": "residuals exchangeable",
+       "tone": "accent"
+      },
+      "any model with a recursion"
+     ],
+     [
+      {
+       "text": "exchangeability only",
+       "tone": "good"
+      },
+      {
+       "text": "any model; coverage guaranteed",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "The pinball loss is minimised by the quantile you asked for",
+    "caption": "That is the whole reason quantile regression works: weighting under- and over-predictions asymmetrically by τ makes the optimal constant prediction the τ-th quantile. At τ = 0.5 the weights are equal and it reduces to half the absolute error, which is why the median minimises MAE.",
+    "cols": [
+     "Penalises",
+     "Optimal forecast"
+    ],
+    "rows": [
+     "tau = 0.5",
+     "tau = 0.9",
+     "tau = 0.1",
+     "Squared error"
+    ],
+    "cells": [
+     [
+      {
+       "text": "both sides equally",
+       "tone": "accent"
+      },
+      "the median — hence MAE"
+     ],
+     [
+      {
+       "text": "under-prediction 9x more",
+       "tone": "good"
+      },
+      "the 90th percentile"
+     ],
+     [
+      {
+       "text": "over-prediction 9x more",
+       "tone": "good"
+      },
+      "the 10th percentile"
+     ],
+     [
+      {
+       "text": "large errors quadratically",
+       "tone": "warn"
+      },
+      "the mean"
+     ]
+    ]
+   }
+  }
+ ],
+ "10.8": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "What Granger causality is, and is not",
+    "caption": "A Granger test asks whether past values of x improve a forecast of y **beyond** y's own past. That is a statement about predictive content in this sample, not about causation: a common driver, or x simply being published earlier, produces the same result. It is a screen, and the backtest is the verdict.",
+    "cols": [
+     "It says",
+     "It does not say"
+    ],
+    "rows": [
+     "x Granger-causes y",
+     "A significant p-value",
+     "No significance",
+     "The right use"
+    ],
+    "cells": [
+     [
+      {
+       "text": "x's past improves the forecast",
+       "tone": "good"
+      },
+      {
+       "text": "that x causes y",
+       "tone": "crit"
+      }
+     ],
+     [
+      "predictive content in this sample",
+      {
+       "text": "a mechanism, or a direction",
+       "tone": "crit"
+      }
+     ],
+     [
+      "no linear lead at these lags",
+      {
+       "text": "no relationship",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "a screen before modelling",
+       "tone": "good"
+      },
+      "a conclusion to report"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Choosing the multivariate tool from what you will know at forecast time",
+    "caption": "The deciding question is not statistical — it is whether the extra series will be **available for the future periods** you are forecasting. Price and promotions usually are, because someone sets them; a competitor's traffic usually is not, which is what pushes you from SARIMAX to VAR.",
+    "cols": [
+     "Use",
+     "Because"
+    ],
+    "rows": [
+     "Extras known ahead",
+     "Extras known only to now",
+     "Series tied long-run",
+     "Many series",
+     "Not sure it is worth it"
+    ],
+    "cells": [
+     [
+      {
+       "text": "SARIMAX, or boosting",
+       "tone": "good"
+      },
+      "the regressors can be filled in"
+     ],
+     [
+      {
+       "text": "VAR",
+       "tone": "good"
+      },
+      "it forecasts the extras too"
+     ],
+     [
+      {
+       "text": "VECM",
+       "tone": "accent"
+      },
+      "differencing would discard the link"
+     ],
+     [
+      {
+       "text": "a global model",
+       "tone": "accent"
+      },
+      "cross-learning across series"
+     ],
+     [
+      {
+       "text": "a Granger screen, then backtest",
+       "tone": "good"
+      },
+      "the backtest is the verdict"
+     ]
+    ]
+   }
+  }
+ ],
+ "10.9": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Eight decisions, each tied to something outside the model",
+    "caption": "Not one of these is chosen by a score. The granularity matches the replenishment decision and the horizon matches the ordering lead time — so the forecast is specified by the operation it feeds, and only then does model selection have a well-posed question to answer.",
+    "cols": [
+     "Chosen",
+     "Because"
+    ],
+    "rows": [
+     "Granularity",
+     "Horizon",
+     "Seasonality",
+     "Transformation",
+     "Metric",
+     "Baseline",
+     "Backtest",
+     "Candidates"
+    ],
+    "cells": [
+     [
+      {
+       "text": "daily, per store",
+       "tone": "good"
+      },
+      "it matches the replenishment decision"
+     ],
+     [
+      {
+       "text": "28 days",
+       "tone": "good"
+      },
+      "it matches the ordering lead time"
+     ],
+     [
+      "m = 7 plus a yearly Fourier pair",
+      "the weekly shape and the summer peak"
+     ],
+     [
+      {
+       "text": "logs",
+       "tone": "accent"
+      },
+      "the swing scales with the level"
+     ],
+     [
+      {
+       "text": "WAPE, MASE, and bias",
+       "tone": "good"
+      },
+      "business, selection, and direction"
+     ],
+     [
+      {
+       "text": "seasonal naive",
+       "tone": "good"
+      },
+      "the strongest free forecast here"
+     ],
+     [
+      {
+       "text": "8 origins, 28 days apart",
+       "tone": "good"
+      },
+      "enough folds to see the spread"
+     ],
+     [
+      "damped ETS, SARIMAX, global boosting",
+      "two classical families and the ML route"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "What the forecast has to survive after it is accepted",
+    "caption": "A forecast is a recurring obligation, not a result. Every item here is a way the pipeline silently stops being the thing that was validated — and the last one is the reason to keep the baseline running forever.",
+    "items": [
+     {
+      "label": "The same feature code at scoring time",
+      "desc": "a rolling mean that includes today is a leak in production too",
+      "code": "1",
+      "tone": "crit"
+     },
+     {
+      "label": "Refit on a schedule, versioned",
+      "desc": "with the previous model kept and comparable",
+      "code": "2",
+      "tone": "good"
+     },
+     {
+      "label": "Bias watched, not just error",
+      "desc": "a persistent sign is a correctable systematic miss",
+      "code": "3",
+      "tone": "good"
+     },
+     {
+      "label": "Revisions handled",
+      "desc": "a restated history changes what the model was trained on",
+      "code": "4",
+      "tone": "warn"
+     },
+     {
+      "label": "New series handled",
+      "desc": "a store with no history needs a fallback, not an error",
+      "code": "5",
+      "tone": "warn"
+     },
+     {
+      "label": "The baseline still running",
+      "desc": "the day the model stops beating it, you want to know",
+      "code": "6",
+      "tone": "violet"
+     }
+    ]
+   }
+  }
+ ]
+}

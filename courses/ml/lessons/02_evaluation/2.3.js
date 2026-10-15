@@ -26,6 +26,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "p", text: "Held-out set: 297 customers, 48 churners. The retention team's economics, agreed before modelling (1.2): **a call costs £5** in offer and agent time whether or not it was needed; **a lost churner costs £100**; a call to a genuine churner **saves them 40 % of the time**. So the cost at a threshold is £5 × (TP + FP) + £100 × (FN + 0.6 × TP)." },
 
     { t: "table",
@@ -130,6 +137,13 @@ top 29 by score    16 churners caught of 48    recall 0.333   precision 0.552   
     { t: "h2", n: "03", text: "When precision matters, when recall matters, and when F1 lies", id: "when" },
 
     {"kind": "matrix", "title": "The decision picks the metric, and the metric picks the threshold", "caption": "Each row is a different thing going wrong when you are wrong, and therefore a different rule. The last one is the case people model incorrectly most often: when capacity is fixed, neither precision nor recall is the objective — the top k is, and recall is the outcome you report.", "cols": ["Optimise", "Rule"], "rows": ["Screening a condition", "Auto-declining a card", "Retention calls", "A fixed review queue"], "cells": [[{"text": "recall", "tone": "good"}, "highest cut with recall >= 0.95"], [{"text": "precision", "tone": "good"}, "lowest cut with precision >= 0.9"], [{"text": "expected cost", "tone": "accent"}, "break-even at p = c / b"], [{"text": "precision at top k", "tone": "violet"}, "take k by score; report recall"]], "t": "diagram", "id": "dg-2_3-03-1"},
+
+
+
+
+
+
+
 
 
 

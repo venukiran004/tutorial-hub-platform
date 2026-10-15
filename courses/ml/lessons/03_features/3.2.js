@@ -24,6 +24,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "The plan column, one-hot encoded, and the rank of the design matrix (executed)",
       hl: [2, 3, 4, 5, 9, 10],
       code: `OneHotEncoder().fit_transform([["basic"], ["plus"], ["pro"], ["plus"]])
@@ -67,6 +74,13 @@ OneHotEncoder(drop="first")               # [plus, pro] with basic as the refere
     { t: "h2", n: "03", text: "High cardinality: two thousand cities", id: "highcard" },
 
     {"kind": "matrix", "title": "Two thousand cities: what one-hot costs and what replaces it", "caption": "At high cardinality one-hot is not merely wide — most columns have too few ones to estimate anything from, so the model is fitting noise in two thousand places. Each alternative collapses the column to one or a few, and each pays for it differently.", "cols": ["Gives up", "Unknown level at serving"], "rows": ["One-hot, k = 2000", "Target encoding", "Frequency", "Hashing", "Rare-level grouping"], "cells": [[{"text": "nothing, but 2000 columns", "tone": "crit"}, "handle_unknown='ignore': all zeros"], [{"text": "safety without in-fold fitting", "tone": "warn"}, "the global mean"], [{"text": "identity", "tone": "warn"}, "0"], [{"text": "reversibility", "tone": "warn"}, {"text": "handled by construction", "tone": "good"}], [{"text": "the tail", "tone": "warn"}, "lands in 'other'"]], "t": "diagram", "id": "dg-3_2-03-1"},
+
+
+
+
+
+
+
 
 
 

@@ -19,6 +19,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "LDA: the direction that separates, not the direction that varies", id: "lda" },
 
+    {"kind": "compare", "title": "PCA finds what varies; LDA finds what separates", "caption": "They can point in nearly opposite directions. If two classes differ along a low-variance axis, PCA throws that axis away and LDA keeps only it. LDA is supervised, which means it must be fitted inside the fold like any other label-using step.", "columns": [{"title": "PCA", "tone": "accent", "items": ["Unsupervised: never sees y", "Maximises projected variance", "As many components as features", "Fit anywhere — but still inside the pipeline", "Keeps a high-variance nuisance direction"]}, {"title": "LDA", "tone": "good", "items": ["Supervised: uses the labels", "Maximises between- over within-class scatter", "At most K - 1 components", "Must be fitted inside the fold", "Assumes shared covariance; linear boundaries"]}], "t": "diagram", "id": "dg-7_5-01-0"},
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Fisher's criterion, worked on two classes of four points (executed)",
       code: `within-class scatter   S_W = Σ_c Σ_{i∈c} (xᵢ - μ_c)(xᵢ - μ_c)ᵀ         how spread each class is around its own mean
 between-class scatter  S_B = Σ_c n_c (μ_c - μ)(μ_c - μ)ᵀ                how far the class means sit from the grand mean
@@ -74,6 +82,14 @@ class A: (1,2) (2,3) (3,3) (2,1)      class B: (6,5) (7,7) (8,6) (7,5)
     ]},
 
     { t: "h2", n: "02", text: "t-SNE: neighbours preserved, everything else negotiable", id: "tsne" },
+
+    {"kind": "matrix", "title": "What a t-SNE plot does and does not tell you", "caption": "It preserves neighbourhoods and negotiates away everything else. Cluster sizes here were stretched 4–14× **and in a different order**; between-cluster gaps correlate only 0.7 with the real ones; and pure Gaussian noise produced an embedding with a silhouette of 0.34. There is no `transform`, so a new point cannot be placed without re-running the whole embedding.", "cols": ["Trustworthy", "Evidence"], "rows": ["Points drawn together", "Cluster size", "Gaps between clusters", "Number of clusters", "A gradient across the map", "Coordinates as features"], "cells": [[{"text": "yes", "tone": "good"}, "they are neighbours in the input"], [{"text": "no", "tone": "crit"}, "stretched 4-14x, in a different order"], [{"text": "no", "tone": "crit"}, "correlation 0.7 with reality"], [{"text": "no", "tone": "crit"}, "noise gave a silhouette of 0.34"], [{"text": "no", "tone": "crit"}, "the layout has no global meaning"], [{"text": "no", "tone": "crit"}, "there is no transform method"]], "t": "diagram", "id": "dg-7_5-02-1"},
+
+
+
+
+
+
 
     { t: "code", lang: "text", title: "The objective",
       code: `high-dimensional similarities:   p_{j|i} = exp(-‖xᵢ - xⱼ‖² / 2σᵢ²) / Σₖ exp(-‖xᵢ - xₖ‖² / 2σᵢ²),   symmetrised  pᵢⱼ = (p_{j|i} + p_{i|j}) / 2n

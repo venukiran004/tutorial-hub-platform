@@ -19,6 +19,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Grid versus random: the argument and the measurement", id: "random" },
 
+    {"kind": "matrix", "title": "Random search beats grid search for a reason that is arithmetic", "caption": "A grid over 4 hyperparameters at 5 values each is 625 fits that try only **5 distinct values** of whichever parameter actually matters. Random search with the same budget tries 625 distinct values of each. The argument is strongest exactly when it matters most: when you do not know in advance which parameter is the important one.", "cols": ["625 fits try", "Best for"], "rows": ["Grid, 4 params x 5", "Random, 625 draws", "Halving / successive", "Bayesian optimisation"], "cells": [[{"text": "5 values of each", "tone": "crit"}, "2-3 params you already understand"], [{"text": "625 values of each", "tone": "good"}, "the default; unknown importance"], [{"text": "many, cheaply at first", "tone": "good"}, "expensive fits, cheap early signal"], [{"text": "few, chosen from a model", "tone": "accent"}, "very expensive fits, smooth response"]], "t": "diagram", "id": "dg-8_1-01-0"},
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Why random search wins when only a few dimensions matter (executed)",
       code: `the probability argument:  if the good region is the top 5 % of the space, n random draws miss it all with probability 0.95ⁿ
    n = 10: P(at least one hit) = 0.401      n = 20: 0.642      n = 60: 0.954      n = 100: 0.994       -- independent of how many dimensions the space has
@@ -108,6 +116,14 @@ study.best_params; study.trials_dataframe()                                     
     },
 
     { t: "h2", n: "03", text: "The tuned score is biased; nested CV is the fix", id: "nested" },
+
+    {"kind": "steps", "title": "Why the tuned score is biased, and what nested CV costs", "caption": "Taking the best of n cross-validated scores is taking the maximum of n noisy numbers, and the maximum of noise is positive. The inner loop chooses; the outer loop measures a procedure that includes the choosing. There is no way to get both from one loop.", "items": [{"label": "Fit 200 candidates, cross-validated", "desc": "each score is a mean with a standard error", "code": "1", "tone": "accent"}, {"label": "Report the best one", "desc": "the maximum of 200 noisy numbers", "code": "2", "tone": "warn"}, {"label": "That maximum is optimistic", "desc": "best-of-n: the noise is selected for, not averaged out", "code": "3", "tone": "crit"}, {"label": "Inner loop: choose the hyperparameters", "desc": "on the training part of each outer fold", "code": "fix", "tone": "good"}, {"label": "Outer loop: score the whole procedure", "desc": "including the choosing, on rows it never saw", "code": "fix", "tone": "good"}, {"label": "Cost: inner x outer fits", "desc": "and the answer is a procedure's score, not one model's", "code": "note", "tone": "violet"}], "t": "diagram", "id": "dg-8_1-03-1"},
+
+
+
+
+
+
 
     { t: "code", lang: "python", title: "The winner's curse, measured on targets with no signal at all (executed)",
       hl: [2, 3, 4, 7],

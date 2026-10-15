@@ -81,6 +81,13 @@ average precision 0.794             the no-skill line is the prevalence: 0.50 he
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "The churn model on its held-out set, then with negatives removed or duplicated (executed)",
       hl: [2, 5, 6, 7, 8],
       code: `p = model.predict_proba(X_test)[:, 1]                                   # 297 rows, 48 churners
@@ -149,6 +156,13 @@ average precision 0.794             the no-skill line is the prevalence: 0.50 he
     { t: "h2", n: "03", text: "Scoring the probabilities themselves", id: "proper" },
 
     {"kind": "matrix", "title": "What each metric is a function of", "caption": "The first row needs a threshold and the rest do not, which is the division that matters when selecting a model: choosing on accuracy or F1 means choosing a model **and** a threshold at once, and the threshold is usually the default 0.5 nobody examined.", "cols": ["Reads", "Threshold-free"], "rows": ["Accuracy, F1, MCC", "ROC-AUC", "PR-AUC", "Log loss", "Brier"], "cells": [[{"text": "one threshold's matrix", "tone": "warn"}, {"text": "no", "tone": "warn"}], ["the ranking", {"text": "yes", "tone": "good"}], ["the ranking, through precision", {"text": "yes", "tone": "good"}], [{"text": "the probabilities", "tone": "good"}, {"text": "yes; punishes harshly", "tone": "good"}], [{"text": "the probabilities", "tone": "good"}, {"text": "yes; punishes gently", "tone": "good"}]], "t": "diagram", "id": "dg-2_2-03-1"},
+
+
+
+
+
+
+
 
 
 

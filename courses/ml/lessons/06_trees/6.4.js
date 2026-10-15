@@ -72,6 +72,13 @@ XGBoost (max_depth 1, eta 1, lambda 1, gamma 0, base_score 0.5), tree dump:
     {"kind": "matrix", "title": "Four libraries, measured on 200k x 30 for 300 rounds", "caption": "They implement the same objective and differ in how a tree is grown and how categoricals are handled. CatBoost's symmetric trees fit slowest and **predict fastest by an order of magnitude** — 0.02 s against 0.38 s — which is the trade to know when latency is the constraint.", "cols": ["Fit / predict", "Tree growth"], "rows": ["XGBoost", "LightGBM", "CatBoost", "HistGradientBoosting"], "cells": [[{"text": "4.2 s / 0.11 s", "tone": "good"}, "depth-wise by default"], [{"text": "3.4 s / 0.28 s", "tone": "good"}, {"text": "leaf-wise: num_leaves", "tone": "accent"}], [{"text": "8.4 s / 0.02 s", "tone": "accent"}, {"text": "symmetric (oblivious)", "tone": "good"}], [{"text": "4.3 s / 0.38 s", "tone": "good"}, "depth-wise; no dependency"]], "t": "diagram", "id": "dg-6_4-02-0"},
 
 
+
+
+
+
+
+
+
     { t: "viz",
       title: "Depth-wise versus leaf-wise growth with a budget of four leaves (illustrative gain values)",
       caption: "The gains on the diagram are illustrative numbers. Depth-wise (XGBoost's default, HistGradientBoosting with max_depth) splits every node at each level: balanced, depth 2. Leaf-wise (LightGBM's default) always splits the leaf with the highest gain: here the right branch twice, depth 3, and the same four leaves capture more loss. On 200,000 rows a 16-leaf leaf-wise first tree reached depth 7 and scored 0.9565 against the depth-4 tree's 0.9509 after 100 rounds.",
@@ -161,6 +168,13 @@ XGBoost (max_depth 1, eta 1, lambda 1, gamma 0, base_score 0.5), tree dump:
     { t: "h2", n: "03", text: "Categoricals without leakage", id: "categoricals" },
 
     {"kind": "matrix", "title": "Categoricals without leakage", "caption": "A booster that handles categoricals natively is not thereby safe: naive target statistics computed over all rows leak the label exactly as a hand-rolled target encoder would. CatBoost's ordered boosting is the one that is safe by construction, because each row's statistic uses only rows before it in a permutation.", "cols": ["Handles it by", "Leaks"], "rows": ["CatBoost ordered", "LightGBM native", "XGBoost enable_categorical", "HistGB native", "Naive target encoding", "Cross-fitted encoding"], "cells": [[{"text": "ordered statistics", "tone": "good"}, {"text": "no, by construction", "tone": "good"}], ["partition-based splits", "no, but <= a few hundred levels"], ["partition-based splits", "no; needs pandas category dtype"], ["native, <= 255 levels", "no"], [{"text": "the group mean, all rows", "tone": "crit"}, {"text": "yes: severely", "tone": "crit"}], [{"text": "out-of-fold means", "tone": "good"}, {"text": "no", "tone": "good"}]], "t": "diagram", "id": "dg-6_4-03-1"},
+
+
+
+
+
+
+
 
 
     { t: "code", lang: "python", title: "A 500-level categorical with NO relationship to the target, alongside one real feature (executed; 5,000 rows)",

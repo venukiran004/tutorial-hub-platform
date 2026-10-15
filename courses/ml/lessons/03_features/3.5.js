@@ -49,6 +49,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "Univariate rankings, a correlation filter, and VIF (executed)",
       hl: [2, 3, 5, 6, 9, 13, 14, 15],
       code: `# ANOVA F, top 8:        red0, dup0, inf0, inf1, dup1, red2, inf2, inf4          nonlin ranked 43rd of 51
@@ -102,6 +109,13 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Where selection must run", id: "fold" },
 
     {"kind": "steps", "title": "Where selection must run", "caption": "Selecting on all the rows means the choice of columns was informed by the rows you later score — and with more features than rows you can select pure noise and get a convincing cross-validated number out of it. The selector is a fitted step like any other.", "items": [{"label": "Selection inside the Pipeline", "desc": "refitted per fold, from that fold's training rows only", "code": "right", "tone": "good"}, {"label": "Each fold may choose different columns", "desc": "that is the honest answer, not a bug", "code": "note", "tone": "accent"}, {"label": "Selection before the split", "desc": "the test rows' labels chose the columns", "code": "wrong", "tone": "crit"}, {"label": "With p greater than n", "desc": "noise survives and cross-validates well", "code": "wrong", "tone": "crit"}, {"label": "Report the set as a property of the model", "desc": "not as a discovery about the world", "code": "say so", "tone": "violet"}], "t": "diagram", "id": "dg-3_5-04-1"},
+
+
+
+
+
+
+
 
 
 

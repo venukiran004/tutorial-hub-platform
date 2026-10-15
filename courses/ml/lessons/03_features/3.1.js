@@ -51,6 +51,13 @@ pro           19.99           2.017                           0.914             
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "Four models, four scalers, 5-fold AUC on the churn table (executed)",
       hl: [2, 3, 4, 5],
       code: `#                        no scaling    standard    min-max    robust
@@ -94,6 +101,13 @@ pro           19.99           2.017                           0.914             
     { t: "h2", n: "03", text: "Fit on train only, and the sparse exception", id: "fit" },
 
     {"kind": "matrix", "title": "Three scalers, and what an outlier does to each", "caption": "The choice is about which statistic the outlier can move. Min-max is defined by the extremes, so a single bad value compresses every other row into a corner; robust scaling uses the median and IQR, which an outlier cannot shift. And a scaler that centres destroys sparsity — which is why `with_mean=False` exists.", "cols": ["Uses", "One outlier"], "rows": ["StandardScaler", "MinMaxScaler", "RobustScaler", "On sparse data"], "cells": [[{"text": "mean and sd", "tone": "accent"}, "inflates sd; everything else shrinks"], [{"text": "min and max", "tone": "crit"}, "compresses all other rows into a corner"], [{"text": "median and IQR", "tone": "good"}, "cannot move either statistic"], [{"text": "with_mean=False", "tone": "warn"}, "centring would fill every zero"]], "t": "diagram", "id": "dg-3_1-03-1"},
+
+
+
+
+
+
+
 
 
 

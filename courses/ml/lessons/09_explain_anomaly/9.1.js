@@ -19,6 +19,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The taxonomy, and what each axis buys", id: "taxonomy" },
 
+    {"kind": "matrix", "title": "Three axes, and what each choice costs", "caption": "Every method here explains **the model**, not the world. If a leaking refund column were in the features, permutation importance would rank it first — correctly, because the model does rely on it, and it is an effect of churn rather than a cause.", "cols": ["One side", "The other"], "rows": ["When", "Scope", "Access", "What it answers"], "cells": [[{"text": "intrinsic: it is the model", "tone": "good"}, "post-hoc: computed after"], [{"text": "global: what it does", "tone": "accent"}, "local: why this decision"], [{"text": "agnostic: needs only predict", "tone": "accent"}, "specific: uses internals, exact"], [{"text": "'the model believes'", "tone": "warn"}, {"text": "never 'the world is'", "tone": "crit"}]], "t": "diagram", "id": "dg-9_1-01-0"},
+
+
+
+
+
     { t: "table",
       head: ["Axis", "One side", "Other side", "Trade"],
       rows: [
@@ -74,6 +80,12 @@ EC.receiveLesson({
     ]},
 
     { t: "h2", n: "03", text: "Partial dependence, ICE, and the case for ALE", id: "pdp" },
+
+    {"kind": "matrix", "title": "Why PDP lies when features are correlated, and ALE does not", "caption": "A PDP varies one feature across its whole range while holding the others at their observed values — which constructs rows that cannot exist, and asks the model to extrapolate into them. On a correlated pair the PDP slope came out **1.58 against a true 2.0**. ALE averages local differences within a bin instead, so it never leaves the data.", "cols": ["Assumes", "Failure"], "rows": ["Permutation importance", "PDP", "ICE", "ALE"], "cells": [["shuffling breaks only this link", {"text": "correlated features share credit", "tone": "warn"}], [{"text": "the feature can vary alone", "tone": "crit"}, {"text": "slope 1.58 vs a true 2.0", "tone": "crit"}], ["the same, per row", "the average hides the spread; ICE shows it"], [{"text": "only local differences", "tone": "good"}, "bin choice; no extrapolation"]], "t": "diagram", "id": "dg-9_1-03-1"},
+
+
+
+
 
     { t: "code", lang: "python", title: "PDP on the churn boosting model: the shape of each effect (executed, probability scale)",
       code: `# mean P(churn) with the feature set to the 5th / 25th / 50th / 75th / 95th percentile for every row:

@@ -20,6 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "VAR and Granger causality", id: "var" },
 
+    {"kind": "matrix", "title": "What Granger causality is, and is not", "caption": "A Granger test asks whether past values of x improve a forecast of y **beyond** y's own past. That is a statement about predictive content in this sample, not about causation: a common driver, or x simply being published earlier, produces the same result. It is a screen, and the backtest is the verdict.", "cols": ["It says", "It does not say"], "rows": ["x Granger-causes y", "A significant p-value", "No significance", "The right use"], "cells": [[{"text": "x's past improves the forecast", "tone": "good"}, {"text": "that x causes y", "tone": "crit"}], ["predictive content in this sample", {"text": "a mechanism, or a direction", "tone": "crit"}], ["no linear lead at these lags", {"text": "no relationship", "tone": "warn"}], [{"text": "a screen before modelling", "tone": "good"}, "a conclusion to report"]], "t": "diagram", "id": "dg-10_8-01-0"},
+
+
+
+
     { t: "p", text: "A vector autoregression regresses every series on every series' past: y_t = c + A₁y_{t−1} + … + A_p y_{t−p} + ε_t, with k²p coefficients for k series and p lags — three series at four lags is 36 parameters, which is the main practical constraint. Granger's test asks whether the past of x improves the prediction of y beyond what y's own past gives: an F-test of the restricted regression (y on its own lags) against the unrestricted one (y on its own lags and x's). Both series must be stationary first, or the test compares common trends." },
 
     { t: "code", lang: "python", title: "A two-day lead, recovered; and the confounder that fools the test (executed, 600 points)",
@@ -35,6 +40,11 @@ grangercausalitytests(df2[["y", "x"]], maxlag=2)     # 'x Granger-causes y': p =
       caption: "Granger causality is predictive precedence, nothing more: a confounder that moves x one day before it moves y produces the same result as x causing y, and the test cannot tell the difference. Say 'Granger-causes' in an interview and this is the question you will be asked. The VAR is worth its parameters when the extra series are known only up to now and genuinely lead; when they are known into the future, SARIMAX or a boosting model with the regressor (10.5, 10.6) is the cheaper and stronger route." },
 
     { t: "h2", n: "02", text: "Cointegration: when differencing throws away the signal", id: "cointegration" },
+
+    {"kind": "matrix", "title": "Choosing the multivariate tool from what you will know at forecast time", "caption": "The deciding question is not statistical — it is whether the extra series will be **available for the future periods** you are forecasting. Price and promotions usually are, because someone sets them; a competitor's traffic usually is not, which is what pushes you from SARIMAX to VAR.", "cols": ["Use", "Because"], "rows": ["Extras known ahead", "Extras known only to now", "Series tied long-run", "Many series", "Not sure it is worth it"], "cells": [[{"text": "SARIMAX, or boosting", "tone": "good"}, "the regressors can be filled in"], [{"text": "VAR", "tone": "good"}, "it forecasts the extras too"], [{"text": "VECM", "tone": "accent"}, "differencing would discard the link"], [{"text": "a global model", "tone": "accent"}, "cross-learning across series"], [{"text": "a Granger screen, then backtest", "tone": "good"}, "the backtest is the verdict"]], "t": "diagram", "id": "dg-10_8-02-1"},
+
+
+
 
     { t: "code", lang: "python", title: "Spot and futures share one random walk (executed, 500 points)",
       code: `spot = w + noise;  futures = w + 2 + noise                        # w is a random walk

@@ -20,6 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Four baselines", id: "baselines" },
 
+    {"kind": "matrix", "title": "The baseline is the denominator", "caption": "Every cross-series metric divides by a naive forecast's in-sample error, and every review asks what each pipeline step added over it. A 28-day MAE of 24 is a 10% improvement on 26.9 at store A — which may or may not be worth its cost, and that is the only frame in which the 24 means anything.", "cols": ["Forecast", "Right baseline when"], "rows": ["Naive", "Seasonal naive", "Drift", "Mean"], "cells": [[{"text": "the last value, repeated", "tone": "accent"}, "a random walk; near a unit root"], [{"text": "the value one season ago", "tone": "good"}, "a strong stable season: retail's default"], ["last value plus the average slope", "a steady trend, no season"], ["the training mean", "genuinely stationary, no trend"]], "t": "diagram", "id": "dg-10_3-01-0"},
+
+
+
+
     { t: "table", head: ["Baseline", "Forecast for T + h", "Right when"], rows: [
       ["Naive", "y_T — the last value, repeated", "a random walk; finance; anything near a unit root"],
       ["Seasonal naive", "y_{T+h−m} — the value one season ago", "a strong, stable season: the default retail baseline"],
@@ -99,6 +104,11 @@ seasonal naive + the trend it missed (y_{t−4} + 6):   MAE 0.000`,
     ] },
 
     { t: "h2", n: "03", text: "The gap", id: "gap" },
+
+    {"kind": "timeline", "title": "Rolling origins, and the gap that makes them honest", "caption": "Each origin trains on everything before it and scores the block after it, which recreates the moment the forecast is made. The **gap** is needed whenever a feature or a label is computed over a window: without it the last training labels depend on events inside the test block, and the backtest is quietly optimistic.", "span": 12, "tick": 3, "lanes": [{"label": "Origin 1", "bars": [[0, 4, "train", "accent"], [4, 5, "gap", "warn"], [5, 6, "test", "good"]]}, {"label": "Origin 2", "bars": [[0, 6, "train", "accent"], [6, 7, "gap", "warn"], [7, 8, "test", "good"]]}, {"label": "Origin 3", "bars": [[0, 8, "train", "accent"], [8, 9, "gap", "warn"], [9, 10, "test", "good"]]}, {"label": "No gap", "bars": [[0, 10, "train, whose last labels use test-period events", "crit"]]}], "t": "diagram", "id": "dg-10_3-03-1"},
+
+
+
 
     { t: "p", text: "A fold boundary is porous whenever a feature is built from a window. If the model uses a 7-day rolling mean, the first test row's feature was computed from the last seven training rows — mild, and honest if the feature is shifted. If the rolling mean is *not* shifted, the target is inside its own feature. And if production receives yesterday's data three days late, then at forecast time `lag_1` does not exist and a model that used it in the backtest will be fed a stale or missing value in use. A **gap** (embargo) of at least the longest feature window plus the data latency between the end of training and the start of test fixes the first; features that respect the latency fix the second." },
 

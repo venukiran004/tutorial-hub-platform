@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Tokens, stems and lemmas", id: "tokens" },
 
+    {"kind": "matrix", "title": "Tokens, stems and lemmas", "caption": "Stemming chops suffixes by rule, so it is fast and produces non-words; lemmatisation looks the word up and needs its part of speech to be right. For a linear model on TF-IDF the difference is usually worth less than the time it costs — which is the finding worth having before reaching for a transformer.", "cols": ["Does", "Cost"], "rows": ["Tokenising", "Lower-casing", "Stop words", "Stemming", "Lemmatising", "n-grams"], "cells": [["splits on a pattern", "the regex decides what survives"], ["collapses case", {"text": "loses acronyms: US and us", "tone": "warn"}], ["drops frequent words", {"text": "'not' is a stop word in some lists", "tone": "crit"}], [{"text": "chops suffixes by rule", "tone": "accent"}, "fast; produces non-words"], [{"text": "looks the word up", "tone": "good"}, "slower; needs the part of speech"], [{"text": "captures short phrases", "tone": "good"}, "the vocabulary multiplies"]], "t": "diagram", "id": "dg-11_5-01-0"},
+
+
     { t: "code", lang: "text", title: "Nine words through the Porter stemmer and the WordNet lemmatiser (executed)",
       code: `word           Porter stem    lemma (as noun)   lemma as verb / adjective
 running        run            running           run / running
@@ -84,6 +87,9 @@ GridSearchCV(make_pipeline(TfidfVectorizer(sublinear_tf=True), LinearSVC()),
       caption: "The grid's cross-validated 0.896 against the test 0.884 is the ordinary optimism of selecting on the folds (10.3's leak 10 in miniature); the settings it chose are the defaults. On text the defaults are good and the big levers are the data (the newsgroup headers, signatures and quoted replies were removed here because they are shortcuts that inflate every score) and the model family." },
 
     { t: "h2", n: "04", text: "Retrieval: cosine on TF-IDF and BM25", id: "retrieval" },
+
+    {"kind": "matrix", "title": "Cosine on TF-IDF, and what BM25 adds", "caption": "Both rank documents by weighted term overlap. BM25 adds two things TF-IDF lacks: a **saturating** term frequency, so the tenth occurrence of a word adds almost nothing, and an explicit length normalisation with a tunable strength rather than the implicit one that L2 gives.", "cols": ["Term frequency", "Length"], "rows": ["TF-IDF + cosine", "BM25", "Raw count overlap", "Binary overlap"], "cells": [[{"text": "linear, or log-damped", "tone": "accent"}, "implicit, via L2 normalisation"], [{"text": "saturating: k1", "tone": "good"}, {"text": "explicit, tunable: b", "tone": "good"}], [{"text": "linear, unbounded", "tone": "crit"}, {"text": "none: long documents win", "tone": "crit"}], [{"text": "presence only", "tone": "warn"}, "none"]], "t": "diagram", "id": "dg-11_5-04-1"},
+
 
     { t: "p", text: "Ranking documents against a query is the other classical text problem. Cosine similarity on TF-IDF vectors treats the query as a tiny document and ranks by angle. BM25 is the retrieval community's refinement: score = Σ over query terms of idf(t) × tf(t, d)(k₁ + 1) / (tf(t, d) + k₁(1 − b + b·|d|/avgdl)). The k₁ term saturates term frequency — the tenth occurrence adds far less than the first, and the contribution can never exceed (k₁ + 1)·idf — and b controls how much a long document is penalised for being long." },
 

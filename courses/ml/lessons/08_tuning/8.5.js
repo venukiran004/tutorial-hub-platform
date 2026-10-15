@@ -19,6 +19,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The estimator contract", id: "contract" },
 
+    {"kind": "matrix", "title": "The estimator contract, and what each method may not do", "caption": "The prohibitions are the content. `__init__` may not validate or transform its arguments — it only stores them — because `clone` rebuilds an estimator from `get_params` and anything computed in the constructor would be silently lost per fold.", "cols": ["Must", "Must not"], "rows": ["__init__", "fit", "transform / predict", "get_params", "Learned attributes", "Input validation"], "cells": [["store the arguments, unchanged", {"text": "validate or transform them", "tone": "crit"}], ["learn, and return self", {"text": "depend on a previous fit", "tone": "crit"}], ["use only what fit learned", {"text": "learn anything new", "tone": "crit"}], ["echo the constructor arguments", {"text": "omit one: clone would drop it", "tone": "crit"}], [{"text": "end in a trailing underscore", "tone": "good"}, "exist before fit"], ["happen in fit and transform", "happen in __init__"]], "t": "diagram", "id": "dg-8_5-01-0"},
+
+
+
+
+
     { t: "code", lang: "python", title: "A transformer that passes check_estimator (executed; scikit-learn 1.8)",
       hl: [3, 4, 6, 7, 9, 12],
       code: `class Winsorizer(TransformerMixin, BaseEstimator):                      # mixin first, BaseEstimator last: the MRO the checks expect
@@ -125,6 +131,12 @@ np.allclose(back["model"].predict_proba(golden_rows)[:, 1], golden_predictions) 
     ]},
 
     { t: "h2", n: "04", text: "ONNX: portable, fast, and picky", id: "onnx" },
+
+    {"kind": "matrix", "title": "Four ways to persist a model, and what each trusts", "caption": "`joblib.load` **executes whatever the file tells it to** — a model artefact from an untrusted source is a remote-code-execution vector, and one from a trusted source that has been tampered with is the same thing. ONNX is a data-only graph, which is what makes it the format for crossing a trust boundary, and it was 40× faster in the request path here.", "cols": ["Stores", "Trust"], "rows": ["joblib / pickle", "ONNX", "PMML", "Native save_model"], "cells": [[{"text": "the whole Python object graph", "tone": "accent"}, {"text": "executes code on load", "tone": "crit"}], [{"text": "a graph of standard ops", "tone": "good"}, {"text": "data only; 40x lower latency", "tone": "good"}], ["an XML model description", {"text": "data only", "tone": "good"}], [{"text": "the trees themselves", "tone": "good"}, "data only; preprocessing is yours"]], "t": "diagram", "id": "dg-8_5-04-1"},
+
+
+
+
 
     { t: "code", lang: "python", title: "Export the standard pipeline; check parity and latency (executed)",
       hl: [4, 7, 8, 11],

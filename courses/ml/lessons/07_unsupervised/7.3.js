@@ -19,6 +19,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Internal indices: compactness and separation, from the data alone", id: "internal" },
 
+    {"kind": "matrix", "title": "Five questions about a clustering, and the index for each", "caption": "The first row is the trap: on the two moons, k-means scored a silhouette of **0.487** and the true labelling scored **0.328** — so the internal index preferred the wrong answer, because it measures the geometry a convex method produces rather than the structure that is there.", "cols": ["Measure with", "It cannot see"], "rows": ["Compact and separated?", "Matches known labels?", "Would it recur?", "Is there structure at all?", "Is it meaningful?"], "cells": [[{"text": "silhouette, DB, CH", "tone": "accent"}, {"text": "moons: k-means 0.487 > truth 0.328", "tone": "crit"}], [{"text": "ARI, AMI", "tone": "good"}, "whether those labels are what you wanted"], [{"text": "stability ARI across halves", "tone": "good"}, {"text": "reproducible mistakes: 0.971", "tone": "warn"}], [{"text": "gap, silhouette level, stability", "tone": "good"}, "structure at a scale it cannot reach"], [{"text": "profiles, top terms, a reading", "tone": "good"}, "nothing — this is the one that decides"]], "t": "diagram", "id": "dg-7_3-01-0"},
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Three indices computed by hand on {1, 2, 3} | {8, 9, 10} (executed; every value matches scikit-learn)",
       code: `SILHOUETTE   s(i) = (b(i) - a(i)) / max(a(i), b(i))       a = mean distance to own cluster,  b = mean distance to the nearest other cluster
    x = 1:  a = mean(1, 2) = 1.5      b = mean(7, 8, 9) = 8       s = 6.5/8 = 0.8125
@@ -56,6 +64,14 @@ CALINSKI-HARABASZ   CH = [B / (k - 1)] / [W / (n - k)]      B = Σ nᵢ ‖cᵢ 
     ]},
 
     { t: "h2", n: "02", text: "External indices: agreement with labels, corrected for chance", id: "external" },
+
+    {"kind": "matrix", "title": "Why agreement must be corrected for chance", "caption": "Two random partitions of the same rows agree substantially just by accident, and the raw Rand index reports that agreement as skill. ARI subtracts the expected value under random labelling, which is why it can go negative — and why a plain Rand index of 0.7 says almost nothing.", "cols": ["Corrects for chance", "Reads"], "rows": ["Rand index", "Adjusted Rand (ARI)", "Mutual information", "Adjusted MI (AMI)", "Homogeneity", "Completeness"], "cells": [[{"text": "no", "tone": "crit"}, "pair agreement, inflated"], [{"text": "yes", "tone": "good"}, "pair agreement; 0 is chance"], [{"text": "no", "tone": "warn"}, "shared information; grows with k"], [{"text": "yes", "tone": "good"}, "shared information, corrected"], [{"text": "n/a", "tone": "accent"}, "each cluster holds one class"], [{"text": "n/a", "tone": "accent"}, "each class sits in one cluster"]], "t": "diagram", "id": "dg-7_3-02-1"},
+
+
+
+
+
+
 
     { t: "code", lang: "text", title: "ARI and NMI from a contingency table, by hand (executed)",
       code: `truth  A A A A B B B B        clustering  1 1 1 2 2 2 2 1          contingency:        cluster 1   cluster 2

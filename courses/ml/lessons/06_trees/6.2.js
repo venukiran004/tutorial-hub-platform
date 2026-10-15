@@ -54,6 +54,13 @@ bias is untouched by averaging: E[mean of trees] = E[one tree]. Bagging is varia
     {"kind": "matrix", "title": "What each forest dial actually moved", "caption": "Averaging reduces the variance of the mean by a factor that depends on how **correlated** the members are, which is why `max_features` matters: fewer candidates per split makes each tree weaker and the trees less alike, and the second effect wins. The measurements are from the churn data.", "cols": ["Effect measured", "Tune it"], "rows": ["n_estimators 1 to 1,000", "max_features", "min_samples_leaf 20", "bootstrap", "oob_score", "n_jobs"], "cells": [[{"text": "0.543 -> 0.697", "tone": "good"}, "no: as large as time allows"], [{"text": "correlation 0.36 -> 0.08", "tone": "good"}, "yes, a few values near the default"], [{"text": "0.695 -> 0.724", "tone": "good"}, "yes: the main regulariser"], ["off gives Extra Trees", "rarely"], [{"text": "free validation estimate", "tone": "accent"}, "on, for quick tuning"], [{"text": "trees are independent", "tone": "accent"}, "-1"]], "t": "diagram", "id": "dg-6_2-02-0"},
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "Prediction variance across 30 bootstrap refits, and what it costs in AUC (executed; 989 rows, 30 % holdout)",
       hl: [2, 4, 5, 6],
       code: `#                                     variance of p̂ across refits    AUC of one fit    AUC of the 30-fit average    log-loss of one fit
@@ -109,6 +116,13 @@ bias is untouched by averaging: E[mean of trees] = E[one tree]. Bagging is varia
     { t: "h2", n: "03", text: "Importance: the one that lies and the one that shares", id: "importance" },
 
     {"kind": "matrix", "title": "What a forest fixes, and four things it does not", "caption": "It fixes variance and nothing else. On XOR, depth-2 trees went 0.710 to 0.908 because different bootstraps find different roots and the average recovers the interaction. But an average of staircases is a smoother staircase, still axis-aligned — 0.981 against logistic regression's 0.993 on a diagonal boundary — and every tree is flat beyond its last split, so their mean is too.", "cols": ["Fixed", "Evidence"], "rows": ["Variance", "An interaction it missed", "Diagonal geometry", "Extrapolation", "A smooth additive truth", "Probabilities"], "cells": [[{"text": "yes", "tone": "good"}, "churn 0.674 -> 0.724"], [{"text": "yes", "tone": "good"}, "XOR 0.710 -> 0.908"], [{"text": "no", "tone": "crit"}, "0.981 vs logistic 0.993"], [{"text": "no", "tone": "crit"}, "every tree is flat past its last split"], [{"text": "no", "tone": "crit"}, "never caught the logistic model"], [{"text": "no", "tone": "crit"}, "max p-hat 0.66; 0.356 vs 0.318 actual"]], "t": "diagram", "id": "dg-6_2-03-1"},
+
+
+
+
+
+
+
 
 
     { t: "code", lang: "python", title: "Two noise columns added — a random integer id (989 distinct values) and a random normal (executed, forest of 300, 30 % holdout)",

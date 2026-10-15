@@ -91,6 +91,13 @@ cycle over j until nothing changes: coordinate descent. Each step is exact; the 
 
 
 
+
+
+
+
+
+
+
     { t: "viz",
       title: "The constraint regions and the loss contours",
       caption: "Both penalties are equivalent to minimising RSS inside a region of fixed size. The L2 region is a circle: the contour touches it at a point where both coefficients are non-zero. The L1 region is a diamond whose corners sit on the axes: the contour is far more likely to touch at a corner, where one coefficient is exactly zero.",
@@ -136,6 +143,13 @@ probability:  L2 is a Gaussian prior, flat at zero -- 'small, not exactly zero'.
     { t: "h2", n: "04", text: "Correlated features: the three penalties diverge", id: "correlated" },
 
     {"kind": "matrix", "title": "Correlated features are where the three penalties part company", "caption": "This is the practical reason to prefer elastic net when you do not know the structure: with a correlated group, ridge shares the weight and stays stable, lasso picks one member **arbitrarily** — so a resample can change which one — and elastic net keeps them together.", "cols": ["Correlated features", "p > n"], "rows": ["Ridge", "Lasso", "Elastic net"], "cells": [[{"text": "shares weight; stable", "tone": "good"}, "fine"], [{"text": "picks one, arbitrarily", "tone": "crit"}, {"text": "at most n non-zero", "tone": "warn"}], [{"text": "groups them", "tone": "good"}, "fine"]], "t": "diagram", "id": "dg-4_3-04-1"},
+
+
+
+
+
+
+
 
 
 

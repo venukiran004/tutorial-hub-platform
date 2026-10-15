@@ -20,6 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Stationarity and the transformation ladder", id: "stationarity" },
 
+    {"kind": "matrix", "title": "The transformation ladder, and how to undo each rung", "caption": "The inverse column is the one that gets forgotten. Exponentiating a forecast made on logs returns the **median**, not the mean — so a forecast meant to be summed across stores needs the σ²/2 correction, and without it every total comes out systematically low.", "cols": ["Apply", "Invert by"], "rows": ["Variance grows with level", "Seasonality", "Trend", "Trend still there", "Season and trend"], "cells": [[{"text": "log, or Box-Cox", "tone": "good"}, {"text": "exponentiate: a median, + sigma²/2 for a mean", "tone": "warn"}], [{"text": "seasonal difference", "tone": "good"}, "add back y at t - m"], [{"text": "first difference", "tone": "good"}, "cumulative sum from the last value"], [{"text": "second difference, rarely more", "tone": "warn"}, "cumulative sum twice"], [{"text": "seasonal first, then regular", "tone": "good"}, "reverse the order"]], "t": "diagram", "id": "dg-10_2-01-0"},
+
+
+
+
     { t: "p", text: "A series is weakly stationary when its mean is constant, its variance is constant, and the covariance between y_t and y_{t−k} depends only on k. A trend breaks the first condition, a level that multiplies its noise breaks the second, a season breaks the third in a structured way. The models of 10.4 and 10.5 are built for stationary input, so the series is transformed until the conditions hold and the forecast is transformed back. The order of transformations matters, because each is chosen for a symptom and undone in reverse." },
 
     { t: "table", head: ["Symptom", "Transform", "Notation", "Undo"], rows: [
@@ -42,6 +47,11 @@ EC.receiveLesson({
     { t: "p", text: "The cost of ignoring this is not abstract. Two series that both wander will look related because they both wander. In 1,000 simulated pairs of independent random walks of 200 points, regressing one on the other gave a slope significant at the 5 % level in 83.1 % of pairs, with a median R² of 0.164 between two things that have nothing to do with each other. Differencing both series first brought the rejection rate to 5.2 % — the nominal level. This is the spurious-regression result (Granger and Newbold, 1974), and it is the most common statistical error in forecasting work: a dashboard that correlates two trending metrics, a 'driver analysis' regressing sales on marketing spend in levels, a feature-importance chart from a model fitted to raw series." },
 
     { t: "h2", n: "02", text: "Unit-root tests: the ADF regression as OLS, and KPSS beside it", id: "adf" },
+
+    {"kind": "matrix", "title": "Over-differencing is a failure, not a safe default", "caption": "Each unnecessary difference injects a negative MA(1) the model must then estimate, and inflates the forecast variance by 2(1 − ρ₁). Differencing white noise gives a lag-1 autocorrelation of −0.5 — measured at −0.496 on 20,000 points — and the store series shows it at the second step: sd rises from 0.146 to 0.200.", "cols": ["Lag-1 ACF after", "Meaning"], "rows": ["White noise, differenced", "AR(1) phi=0.7, differenced", "Store, first difference", "Store, second difference"], "cells": [[{"text": "-0.496 (theory -0.5)", "tone": "crit"}, "an MA(1) that was not there"], [{"text": "-0.158 (theory -0.15)", "tone": "crit"}, "the same, from a stationary start"], [{"text": "sd 0.146", "tone": "good"}, "appropriate"], [{"text": "sd 0.200, ACF -0.476", "tone": "crit"}, "over-differenced: variance up"]], "t": "diagram", "id": "dg-10_2-02-1"},
+
+
+
 
     { t: "p", text: "A random walk y_t = y_{t−1} + ε_t has a *unit root*: the coefficient on its own past is exactly one, so a shock never decays and the variance grows without bound. The Dickey–Fuller idea is to regress the change Δy_t on the level y_{t−1}: if the coefficient γ is zero, the level tells you nothing about the next change and there is no pull toward any mean — a unit root; if γ is negative, high levels are followed by falls, and the series reverts. The *augmented* version adds lagged changes to absorb short-run autocorrelation so that the t-statistic on γ is not distorted, and optionally a constant and a trend." },
 

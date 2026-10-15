@@ -68,6 +68,13 @@ ECE = Σ_bins (n_bin / n) · | mean prediction - observed rate |          the we
 
 
 
+
+
+
+
+
+
+
     { t: "table",
       head: ["Family", "Typical shape", "Why", "Fix"],
       rows: [
@@ -136,6 +143,13 @@ cal = CalibratedClassifierCV(FrozenEstimator(forest), method="sigmoid").fit(X_ca
     { t: "h2", n: "03", text: "The Brier decomposition, and when calibration matters", id: "brier" },
 
     {"kind": "matrix", "title": "When calibration matters, and when it does not", "caption": "The dividing line is whether anything does **arithmetic** on the probability. Ranking and a validation-swept threshold use only the ordering, so a miscalibrated score is harmless there. A cost formula, an expected value, or a number shown to a person all treat p as a probability.", "cols": ["Needs calibration", "Because"], "rows": ["Rank and act on top k", "Threshold from a sweep", "Threshold from p > c/b", "Expected value p x revenue", "Showing 'risk 73%'", "Combining several models"], "cells": [[{"text": "no", "tone": "good"}, "only the ordering is used"], [{"text": "no", "tone": "good"}, "the sweep reads outcomes, not scores"], [{"text": "yes", "tone": "crit"}, "the formula treats p as a probability"], [{"text": "yes", "tone": "crit"}, "arithmetic on p"], [{"text": "yes", "tone": "crit"}, "a person will act on the number"], [{"text": "yes", "tone": "crit"}, "scores are not on the same scale"]], "t": "diagram", "id": "dg-2_5-03-1"},
+
+
+
+
+
+
+
 
 
 

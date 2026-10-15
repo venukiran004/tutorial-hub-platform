@@ -23,6 +23,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "The assumption and everything it implies",
       code: `odds(p) = p / (1 - p)                          in (0, ∞): 0.2 -> 0.25,  0.5 -> 1,  0.8 -> 4
 logit(p) = ln( p / (1 - p) )                    in (-∞, ∞): the natural scale for a linear model
@@ -113,6 +120,13 @@ LogisticRegression(penalty=None).fit(Xs, y)      # lbfgs: NLL 314.265
     { t: "h2", n: "03", text: "Reading the coefficients", id: "coefficients" },
 
     {"kind": "matrix", "title": "The sign that flipped: fee and plan in the same model", "caption": "The fee is 7.99, 12.99 or 19.99 **by plan**, plus half a pound of noise — so fee and the plan dummies are nearly the same information. VIF is 77 for fee and 84 for plan_pro. The pair's joint effect is estimated fine; its split between them is arbitrary. Check VIF before reading an odds ratio.", "cols": ["With fee in the model", "Without fee"], "rows": ["plan_plus", "plan_pro", "VIF, fee", "VIF, plan_pro", "Joint effect"], "cells": [[{"text": "+0.655: churn more?", "tone": "crit"}, {"text": "-0.01", "tone": "good"}], [{"text": "+0.547", "tone": "crit"}, {"text": "-1.04: near the generator", "tone": "good"}], [{"text": "77", "tone": "crit"}, "the near-duplication is the cause"], [{"text": "84", "tone": "crit"}, "same"], [{"text": "estimated fine", "tone": "good"}, "only the split is arbitrary"]], "t": "diagram", "id": "dg-4_5-03-1"},
+
+
+
+
+
+
+
 
 
 

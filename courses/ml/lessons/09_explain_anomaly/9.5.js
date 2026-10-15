@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Isolation Forest: anomalies are few and different, so they are easy to isolate", id: "iforest" },
 
+    {"kind": "matrix", "title": "contamination='auto' is not a sensible default", "caption": "With `contamination='auto'` scikit-learn sets the offset to −0.5, so every row whose path is shorter than a random point's expectation is predicted anomalous — **176 of 1,004 rows, 17.5%, for four planted anomalies**. The score distribution's centre depends on the data's shape and dimension, not on how many anomalies it holds. The ranking is unaffected: Spearman 1.000 between contamination 0.01 and 0.1, because it is the same forest with a different offset.", "cols": ["Effect", "What to do"], "rows": ["contamination='auto'", "contamination=0.01", "The ranking", "predict()", "score_samples()"], "cells": [[{"text": "176 of 1,004 flagged", "tone": "crit"}, "do not rely on it"], [{"text": "the rate you expect", "tone": "good"}, "set it deliberately"], [{"text": "identical either way", "tone": "good"}, "Spearman 1.000: same trees"], [{"text": "a thresholded score", "tone": "warn"}, "ignore it"], [{"text": "the score itself", "tone": "good"}, "threshold at your review capacity"]], "t": "diagram", "id": "dg-9_5-01-0"},
+
+
+
+
+
     { t: "p", text: "Liu, Ting and Zhou (2008) turned the definition around. Instead of modelling what normal looks like and measuring departure from it, grow a random tree: pick a feature at random, pick a split value uniformly between that feature's minimum and maximum in the current node, recurse. A row far from the others is separated from them in a few splits; a row in a dense region needs many. The **path length** h(x) is the number of splits from the root to the leaf that holds x; averaged over many trees, each grown on a random subsample of 256 rows, it is the score's raw material. Two details make it work. Trees are cut at depth ⌈log₂ 256⌉ = 8 — beyond that the remaining rows are normal by construction and further splits are wasted — and a leaf reached at the depth limit with n rows still inside is credited an extra c(n), the average path length of an unsuccessful search in a binary search tree of n items, as an estimate of how much deeper those rows would have gone." },
 
     { t: "code", lang: "python", title: "The score computed from the trees, checked against score_samples (executed on the 9.4 correlated data)",
@@ -111,6 +117,12 @@ U_skew   = U_l where the feature's skewness < 0 else U_r
       caption: "Two lessons. ECOD is blind by design to correlation-breaking rows — each feature's tail is computed on its own, and (2.5, −2.5) is only mildly extreme on each — which is the price of its speed. And the implementation you call may not be the paper you read: PyOD's ECOD takes the per-feature maximum before summing, which is materially better on this data and is not what the paper describes." },
 
     { t: "h2", n: "05", text: "Thresholds, and evaluation when there are no labels", id: "evaluation" },
+
+    {"kind": "matrix", "title": "Setting a threshold when there are no labels", "caption": "Without labels there is no optimum to find, so the threshold must come from somewhere outside the data — and review capacity is the honest answer in almost every production system. The random audit sample is the part that is usually missing: without it the base rate is unknown, and a supervised model trained on the queue learns only the queue's biases.", "cols": ["Threshold from", "Gives"], "rows": ["Review capacity", "An expected rate", "A score elbow", "Analyst verdicts", "A random audit sample"], "cells": [[{"text": "how many can be checked", "tone": "good"}, "precision at depth, measurable weekly"], [{"text": "the assumed contamination", "tone": "accent"}, "a rate, if the assumption holds"], [{"text": "the score distribution", "tone": "warn"}, "often no elbow exists"], [{"text": "the queue's outcomes", "tone": "good"}, "precision only — never recall"], [{"text": "rows nobody selected", "tone": "good"}, {"text": "the base rate, and recall", "tone": "good"}]], "t": "diagram", "id": "dg-9_5-05-1"},
+
+
+
+
 
     { t: "p", text: "Every detector produces a score; the threshold is a separate decision, and the executed runs make the point that it is a *capacity* decision. `contamination` in scikit-learn and PyOD sets the threshold at that quantile of the training scores (0.01 flagged 1.1 % of the rows, 0.05 flagged 5.1 %, 0.1 flagged 10.1 %) and does not touch the ranking. The right value is the one that produces a queue the reviewers can clear: a team that can examine 300 cases a month wants the top 300, whatever that is as a contamination rate (0.0131 on the fraud data), and the score's job is to make those 300 the best 300." },
 

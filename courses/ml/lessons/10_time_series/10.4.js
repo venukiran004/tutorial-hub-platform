@@ -56,6 +56,11 @@ final level (= the forecast for every horizon):  38.1   45.6   48.6   52.9`,
 
     { t: "h2", n: "02", text: "Holt's linear trend, and why it fails on a season", id: "holt" },
 
+    {"kind": "matrix", "title": "Damping the trend, measured a year out", "caption": "An undamped trend extrapolated far enough produces numbers nobody will sign off. The damped form replaces h·b with a geometric sum that has an asymptote of φ/(1−φ) slopes however far out — nine, at φ = 0.9. On the store, the undamped forecast climbed from 251.6 to 288.9 between h = 28 and h = 364; the damped fit went 253.3 to 261.6. The M3 and M4 competitions found the damped trend the single most robust method in the family.", "cols": ["Undamped", "Damped (phi = 0.988)"], "rows": ["h = 28", "h = 364", "Multiplier at h = 12", "Far-horizon behaviour"], "cells": [["251.6", "253.3"], [{"text": "288.9", "tone": "crit"}, {"text": "261.6", "tone": "good"}], [{"text": "12 slopes", "tone": "crit"}, {"text": "6.5 slopes at phi = 0.9", "tone": "good"}], [{"text": "unbounded", "tone": "crit"}, {"text": "an asymptote of phi/(1-phi)", "tone": "good"}]], "t": "diagram", "id": "dg-10_4-02-0"},
+
+
+
+
     { t: "p", text: "Holt adds a slope: ℓ_t = α y_t + (1 − α)(ℓ_{t−1} + b_{t−1}) updates the level toward the observation from where the trend said it would be, b_t = β(ℓ_t − ℓ_{t−1}) + (1 − β) b_{t−1} updates the slope toward the level's latest change, and the forecast is ℓ_t + h b_t, a straight line. Worked with α = 0.5, β = 0.3 from ℓ₁ = 28.5 and b₁ = y₂ − y₁ = 5.5:" },
 
     { t: "code", lang: "text", title: "Four steps of Holt on the twelve numbers (executed)",
@@ -110,6 +115,11 @@ seasonal factors by weekday (Mon..Sun): 0.824  0.844  0.898  0.958  1.108  1.223
       caption: "All four seasonal forms beat the baseline by 9–13 %, and they are within one standard deviation of each other: on a series with a stable season the choice between additive, multiplicative and log is second-order, and the backtest, not the theory, should make it. The fitted α of 0.08 says the level moves slowly — a week of noise should not move it — and γ = 0.000 says the weekly pattern did not change over the fit, which is true of the generator." },
 
     { t: "h2", n: "04", text: "The ETS taxonomy", id: "ets" },
+
+    {"kind": "matrix", "title": "The ETS taxonomy, and its ARIMA twins", "caption": "Several ETS models are algebraically identical to an ARIMA — simple exponential smoothing *is* an ARIMA(0,1,1) with θ = α − 1. Where the correspondence runs out is the seasonal additive case, which has no ARIMA equivalent at all, and that is the practical reason to keep both families on the bench.", "cols": ["ETS", "ARIMA twin"], "rows": ["Simple exp. smoothing", "Holt's linear trend", "Damped trend", "Holt-Winters additive"], "cells": [[{"text": "(A,N,N)", "tone": "accent"}, "ARIMA(0,1,1), theta = alpha - 1"], [{"text": "(A,A,N)", "tone": "accent"}, "ARIMA(0,2,2)"], [{"text": "(A,Ad,N)", "tone": "good"}, "ARIMA(1,1,2): the workhorse"], [{"text": "(A,A,A)", "tone": "violet"}, {"text": "none", "tone": "warn"}]], "t": "diagram", "id": "dg-10_4-04-1"},
+
+
+
 
     { t: "p", text: "Exponential smoothing is a family of thirty models named by three letters — Error, Trend, Season — each Additive, Multiplicative or None, with the trend optionally damped (Ad). Hyndman's state-space formulation gives every member a likelihood, so parameters are estimated by maximum likelihood rather than by minimising the one-step SSE, AIC can compare members, and prediction intervals follow from the model instead of from a residual bootstrap. The error term is the difference that matters most: additive errors have constant variance, multiplicative errors scale with the level — the 10.1 diagnosis again." },
 

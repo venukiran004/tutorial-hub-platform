@@ -19,6 +19,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Lloyd's algorithm and its objective", id: "lloyd" },
 
+    {"kind": "steps", "title": "Lloyd's algorithm, and the objective it is descending", "caption": "Each step can only lower the within-cluster sum of squares, so the algorithm converges — to a **local** minimum that depends on the start, which is why `n_init` exists. What it cannot do is change the objective: k-means always looks for the partition that minimises squared distance to a centre, and that is what makes it find round, similar-sized blobs whether or not the data has any.", "items": [{"label": "Place k centres", "desc": "k-means++ spreads them; random restarts and takes the best", "code": "init", "tone": "accent"}, {"label": "Assign each row to its nearest centre", "desc": "this step cannot increase the objective", "code": "1", "tone": "good"}, {"label": "Move each centre to its members' mean", "desc": "nor can this one", "code": "2", "tone": "good"}, {"label": "Repeat until nothing moves", "desc": "convergence is guaranteed; optimality is not", "code": "loop", "tone": "violet"}, {"label": "The objective is squared distance to a centre", "desc": "so a feature's weight in the result is its variance", "code": "note", "tone": "crit"}], "t": "diagram", "id": "dg-7_1-01-0"},
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "The objective, the two steps, and four points worked by hand (executed)",
       code: `objective   WCSS (inertia)  =  Σₖ Σ_{i ∈ Cₖ} ‖xᵢ - μₖ‖²        the total squared distance of every row to its cluster's centre
 
@@ -73,6 +81,14 @@ the global optimum on these data has WCSS 1,132.7 -- this run stopped at 5,726.9
     ]},
 
     { t: "h2", n: "02", text: "Choosing k: five rules on data where the answer is known", id: "choosing-k" },
+
+    {"kind": "matrix", "title": "Five rules for k, and what each is blind to", "caption": "On the churn customers the elbow has **no bend**, the gap statistic **keeps rising**, and silhouette peaks at 0.29 — all three are telling you the same thing, which is that there are no clusters here, only a continuum. The last row is the only one that can say that out loud, and the last row is not a statistic.", "cols": ["Pick k by", "Blind to"], "rows": ["Elbow", "Silhouette", "Davies-Bouldin", "Calinski-Harabasz", "Gap statistic", "Stability", "Business validity"], "cells": [[{"text": "the bend in inertia", "tone": "warn"}, "absent on real data: churn had none"], [{"text": "the maximum", "tone": "accent"}, "favours round, separated clusters"], [{"text": "the minimum", "tone": "accent"}, "also assumes round clusters"], [{"text": "the maximum", "tone": "accent"}, "prefers small k on a continuum"], [{"text": "within 1 SE of the next", "tone": "good"}, "can say 'no structure': it did"], [{"text": "the most reproducible", "tone": "good"}, {"text": "stable is not meaningful", "tone": "warn"}], [{"text": "what can be acted on", "tone": "good"}, {"text": "nothing — and it is not a statistic", "tone": "good"}]], "t": "diagram", "id": "dg-7_1-02-1"},
+
+
+
+
+
+
 
     { t: "code", lang: "python", title: "Four blobs of 150 points, k from 2 to 8 (executed)",
       hl: [4, 10],
