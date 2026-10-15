@@ -1,0 +1,998 @@
+{
+ "4.4": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Which dial to turn, by the shape you need",
+    "caption": "A global polynomial cannot make a corner — it pays for one with oscillation everywhere else. Splines put the flexibility where the knots are and leave the rest alone, which is why they are the default for one smooth input. With many inputs, do not expand at all: let a tree ensemble find the interactions and engineer the two or three it points at.",
+    "cols": [
+     "Use",
+     "Why not the other"
+    ],
+    "rows": [
+     "One input, smooth curve",
+     "One input, a kink",
+     "Few inputs, interactions",
+     "Many inputs",
+     "Outside the training range"
+    ],
+    "cells": [
+     [
+      {
+       "text": "splines, 5-10 knots",
+       "tone": "good"
+      },
+      "degree <= 5 only if you need the form"
+     ],
+     [
+      {
+       "text": "a spline or a hinge",
+       "tone": "good"
+      },
+      "a polynomial cannot make a corner"
+     ],
+     [
+      {
+       "text": "degree 2 plus ridge",
+       "tone": "accent"
+      },
+      "read the interaction coefficients"
+     ],
+     [
+      {
+       "text": "do not expand",
+       "tone": "warn"
+      },
+      "the expansion explodes; use a tree"
+     ],
+     [
+      {
+       "text": "refuse the input",
+       "tone": "crit"
+      },
+      "every expansion extrapolates nonsense"
+     ]
+    ]
+   }
+  }
+ ],
+ "5.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "Distance, then a vote — and every step is a choice",
+    "caption": "There is no training step, so every decision lives at query time. That is what makes KNN a useful baseline in an afternoon and an awkward model in production: the whole training set is the model, and each query scans it.",
+    "items": [
+     {
+      "label": "Scale the features",
+      "desc": "without this, the distance is a model of the widest column",
+      "code": "1",
+      "tone": "crit"
+     },
+     {
+      "label": "Choose a metric",
+      "desc": "Euclidean, Manhattan, cosine — it defines what 'similar' means",
+      "code": "2",
+      "tone": "accent"
+     },
+     {
+      "label": "Find the k nearest",
+      "desc": "a scan, or a tree index that stops helping in high dimension",
+      "code": "3",
+      "tone": "good"
+     },
+     {
+      "label": "Vote, or average",
+      "desc": "classification by majority, regression by mean",
+      "code": "4",
+      "tone": "good"
+     },
+     {
+      "label": "Weight by distance",
+      "desc": "closer neighbours count more; smooths the boundary",
+      "code": "5",
+      "tone": "violet"
+     },
+     {
+      "label": "Note what k does",
+      "desc": "small k is high variance, large k is high bias: the dial of 1.3",
+      "code": "k",
+      "tone": "teal"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "compare",
+    "title": "On the churn data KNN matched logistic regression and cost 400x more per query",
+    "caption": "0.754 at k = 401 against logistic regression's 0.757 — statistically the same answer. But k = 401 means the model needed almost half the training set as neighbours to be stable, which is a signal that the truth here is near-linear and smooth, and every query pays a scan to rediscover it.",
+    "columns": [
+     {
+      "title": "Reach for KNN when",
+      "tone": "good",
+      "items": [
+       "Under ~20 meaningful scaled features",
+       "The boundary is local and curved",
+       "A quick assumption-free baseline is wanted",
+       "New rows must count with no retraining",
+       "You need a similarity lookup or an anomaly score"
+      ]
+     },
+     {
+      "title": "Do not when",
+      "tone": "crit",
+      "items": [
+       "Dozens of features, many irrelevant",
+       "The truth is near-linear: 0.754 vs 0.757",
+       "There is a latency budget: every query scans",
+       "Interpretability is required: no coefficients",
+       "Imbalance, with no weighting or threshold work"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "5.2": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Pick the variant from the feature type, not by trial",
+    "caption": "Each variant is a different choice of P(x | y), so the feature type decides it outright. The Bernoulli row is the instructive one: modelling presence rather than counts throws the repetition signal away, which is why it scored 0.836 on the newsgroups where multinomial counts do better.",
+    "cols": [
+     "Models each feature as",
+     "Use for"
+    ],
+    "rows": [
+     "Gaussian",
+     "Multinomial",
+     "Bernoulli",
+     "Complement",
+     "Categorical"
+    ],
+    "cells": [
+     [
+      {
+       "text": "a normal per class",
+       "tone": "accent"
+      },
+      "numeric tables; a fast baseline"
+     ],
+     [
+      {
+       "text": "counts over a vocabulary",
+       "tone": "good"
+      },
+      "text: the standard baseline"
+     ],
+     [
+      {
+       "text": "presence or absence",
+       "tone": "warn"
+      },
+      "short texts; loses repetition"
+     ],
+     [
+      {
+       "text": "counts on the complement",
+       "tone": "good"
+      },
+      "imbalanced text"
+     ],
+     [
+      {
+       "text": "one categorical each",
+       "tone": "accent"
+      },
+      "categorical tables, without one-hot"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Why a false assumption still picks the right class",
+    "caption": "Classification is an **argmax**. Double-counting correlated evidence scales every class's log-odds in similar proportion, so the posterior can be badly wrong in value and still be largest for the right class. What breaks it is *asymmetric* dependence — features correlated within one class but not the other.",
+    "cols": [
+     "Naive Bayes",
+     "Logistic regression"
+    ],
+    "rows": [
+     "Models",
+     "Boundary",
+     "Fitting time here",
+     "Probabilities",
+     "Breaks on"
+    ],
+    "cells": [
+     [
+      {
+       "text": "P(x|y) and P(y): generative",
+       "tone": "accent"
+      },
+      "P(y|x): discriminative"
+     ],
+     [
+      "linear in the features",
+      "linear"
+     ],
+     [
+      {
+       "text": "counting: 4 ms",
+       "tone": "good"
+      },
+      {
+       "text": "iterative: 435 ms",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "over-confident",
+       "tone": "warn"
+      },
+      {
+       "text": "usually calibrated",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "asymmetric dependence",
+       "tone": "crit"
+      },
+      "collinearity, for the coefficients"
+     ]
+    ]
+   }
+  }
+ ],
+ "5.3": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "The cheapest solution was to give up, and the arithmetic says so",
+    "caption": "Linear SVM, standardised, C = 1, 15.4% positives: the fitted model is **w = (0,0,0,0,0), b = −1** — it predicts 'no churn' for everyone and its decision function is constant, so the 0.629 AUC is noise. Separating 133 scattered positives would need a large norm; abandoning them costs 133 × 2 = 266 of slack, and at C = 1 that is cheaper. Logistic regression never does this, because log-loss keeps pulling on every point while the hinge stops pulling once a point is written off.",
+    "items": [
+     {
+      "label": "133 positives, scattered",
+      "desc": "15.4% of 866 rows, no clean separating direction",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "Separating them needs a large norm",
+      "desc": "which the regularisation term charges for",
+      "code": "2",
+      "tone": "warn"
+     },
+     {
+      "label": "Abandoning them costs 266 of slack",
+      "desc": "133 violators at xi = 2 each",
+      "code": "3",
+      "tone": "warn"
+     },
+     {
+      "label": "At C = 1 the slack is cheaper",
+      "desc": "so w = 0 is the optimum: a constant predictor",
+      "code": "4",
+      "tone": "crit"
+     },
+     {
+      "label": "AUC 0.629 — and it is noise",
+      "desc": "a constant decision function has no ranking",
+      "code": "5",
+      "tone": "crit"
+     },
+     {
+      "label": "class_weight='balanced'",
+      "desc": "minority slack costs 5.5x more; AUC 0.757, every C from 0.001 to 10",
+      "code": "fix",
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "SVM and logistic regression, honestly compared",
+    "caption": "The hinge is zero beyond the margin and the log-loss never is — nearly every row below follows from that one difference, including which rows the solution depends on and how each model behaves under imbalance.",
+    "cols": [
+     "SVM",
+     "Logistic"
+    ],
+    "rows": [
+     "Loss",
+     "Depends on",
+     "Probabilities",
+     "Non-linearity",
+     "Imbalance",
+     "Scale in n"
+    ],
+    "cells": [
+     [
+      {
+       "text": "zero beyond the margin",
+       "tone": "accent"
+      },
+      {
+       "text": "never zero",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "support vectors only",
+       "tone": "good"
+      },
+      "every row"
+     ],
+     [
+      {
+       "text": "none; Platt after",
+       "tone": "warn"
+      },
+      {
+       "text": "native",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "kernels: cheap",
+       "tone": "good"
+      },
+      "explicit features or splines"
+     ],
+     [
+      {
+       "text": "can collapse to majority",
+       "tone": "crit"
+      },
+      {
+       "text": "degrades gracefully",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "O(n²-n³) kernel",
+       "tone": "warn"
+      },
+      {
+       "text": "linear",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "6.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Three algorithms, three ways to pick a split",
+    "caption": "Information gain prefers features with many values, because more candidate levels means purer children for free — C4.5's gain ratio exists to penalise exactly that, and CART limits it by only ever splitting in two. The bias does not disappear, though: impurity importance inherits it.",
+    "cols": [
+     "Criterion",
+     "Splits"
+    ],
+    "rows": [
+     "ID3",
+     "C4.5",
+     "CART",
+     "Regression (CART)"
+    ],
+    "cells": [
+     [
+      {
+       "text": "information gain",
+       "tone": "warn"
+      },
+      "one branch per category"
+     ],
+     [
+      {
+       "text": "gain ratio",
+       "tone": "good"
+      },
+      "categories, plus thresholds"
+     ],
+     [
+      {
+       "text": "Gini",
+       "tone": "good"
+      },
+      {
+       "text": "always binary",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "variance, MAE, Poisson",
+       "tone": "good"
+      },
+      "always binary"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Two noise columns ranked with the best real feature",
+    "caption": "A random integer id with 989 distinct values and a random normal, added to the churn features. Mean-decrease-in-impurity ranks the noise at the top: a column with many distinct values offers many candidate thresholds, and among many random thresholds one always looks good on the training rows. Permutation importance puts random_normal at 0.032, and the CV AUC was 0.674 with the noise columns against 0.662 without — the tree used them to memorise.",
+    "cols": [
+     "MDI says",
+     "What it is"
+    ],
+    "rows": [
+     "tenure",
+     "random_normal",
+     "random_id",
+     "fee",
+     "logins"
+    ],
+    "cells": [
+     [
+      {
+       "text": "0.178",
+       "tone": "good"
+      },
+      "a real feature; permutation 0.164"
+     ],
+     [
+      {
+       "text": "0.178",
+       "tone": "crit"
+      },
+      "pure noise; permutation 0.032"
+     ],
+     [
+      {
+       "text": "0.175",
+       "tone": "crit"
+      },
+      "a random id, 989 distinct values"
+     ],
+     [
+      {
+       "text": "0.162",
+       "tone": "good"
+      },
+      "a real feature"
+     ],
+     [
+      {
+       "text": "0.159",
+       "tone": "warn"
+      },
+      "ranked last here, first by permutation"
+     ]
+    ]
+   }
+  }
+ ],
+ "6.2": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "What each forest dial actually moved",
+    "caption": "Averaging reduces the variance of the mean by a factor that depends on how **correlated** the members are, which is why `max_features` matters: fewer candidates per split makes each tree weaker and the trees less alike, and the second effect wins. The measurements are from the churn data.",
+    "cols": [
+     "Effect measured",
+     "Tune it"
+    ],
+    "rows": [
+     "n_estimators 1 to 1,000",
+     "max_features",
+     "min_samples_leaf 20",
+     "bootstrap",
+     "oob_score",
+     "n_jobs"
+    ],
+    "cells": [
+     [
+      {
+       "text": "0.543 -> 0.697",
+       "tone": "good"
+      },
+      "no: as large as time allows"
+     ],
+     [
+      {
+       "text": "correlation 0.36 -> 0.08",
+       "tone": "good"
+      },
+      "yes, a few values near the default"
+     ],
+     [
+      {
+       "text": "0.695 -> 0.724",
+       "tone": "good"
+      },
+      "yes: the main regulariser"
+     ],
+     [
+      "off gives Extra Trees",
+      "rarely"
+     ],
+     [
+      {
+       "text": "free validation estimate",
+       "tone": "accent"
+      },
+      "on, for quick tuning"
+     ],
+     [
+      {
+       "text": "trees are independent",
+       "tone": "accent"
+      },
+      "-1"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "What a forest fixes, and four things it does not",
+    "caption": "It fixes variance and nothing else. On XOR, depth-2 trees went 0.710 to 0.908 because different bootstraps find different roots and the average recovers the interaction. But an average of staircases is a smoother staircase, still axis-aligned — 0.981 against logistic regression's 0.993 on a diagonal boundary — and every tree is flat beyond its last split, so their mean is too.",
+    "cols": [
+     "Fixed",
+     "Evidence"
+    ],
+    "rows": [
+     "Variance",
+     "An interaction it missed",
+     "Diagonal geometry",
+     "Extrapolation",
+     "A smooth additive truth",
+     "Probabilities"
+    ],
+    "cells": [
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "churn 0.674 -> 0.724"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "XOR 0.710 -> 0.908"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "0.981 vs logistic 0.993"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "every tree is flat past its last split"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "never caught the logistic model"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "max p-hat 0.66; 0.356 vs 0.318 actual"
+     ]
+    ]
+   }
+  }
+ ],
+ "6.3": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "Gradient boosting is gradient descent, with trees as the step",
+    "caption": "The insight that makes the name literal: instead of taking a step in parameter space, take a step in **function** space — and the step direction is the negative gradient of the loss with respect to the current predictions, which for squared error is just the residual.",
+    "items": [
+     {
+      "label": "Start from a constant",
+      "desc": "the mean for squared error, the log-odds for log-loss",
+      "code": "F0",
+      "tone": "accent"
+     },
+     {
+      "label": "Compute the negative gradient",
+      "desc": "for squared error this is exactly the residual",
+      "code": "g",
+      "tone": "good"
+     },
+     {
+      "label": "Fit a shallow tree to it",
+      "desc": "the tree approximates the descent direction",
+      "code": "h",
+      "tone": "good"
+     },
+     {
+      "label": "Take a small step",
+      "desc": "F = F + nu x h; the learning rate is the step size",
+      "code": "nu",
+      "tone": "violet"
+     },
+     {
+      "label": "Repeat",
+      "desc": "each tree corrects what the sum so far still gets wrong",
+      "code": "loop",
+      "tone": "violet"
+     },
+     {
+      "label": "Stop before it fits the noise",
+      "desc": "early stopping is the regulariser; more trees eventually hurt",
+      "code": "stop",
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Bagging and boosting are opposite machines",
+    "caption": "Bagging reduces variance and leaves bias alone, so more trees never hurt. Boosting reduces bias by construction, so more trees eventually overfit — 0.719 down to 0.596 at a learning rate of 1. That single asymmetry explains the tuning burden: a forest's defaults are safe and a booster's can be the worst model in the room.",
+    "cols": [
+     "Bagging / forest",
+     "Boosting"
+    ],
+    "rows": [
+     "Trees are",
+     "Reduces",
+     "More trees",
+     "Tuning burden",
+     "Label noise",
+     "Parallel"
+    ],
+    "cells": [
+     [
+      "independent, deep",
+      "sequential, shallow"
+     ],
+     [
+      {
+       "text": "variance",
+       "tone": "accent"
+      },
+      {
+       "text": "bias, mostly",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "never hurt",
+       "tone": "good"
+      },
+      {
+       "text": "0.719 -> 0.596 at nu = 1",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "low",
+       "tone": "good"
+      },
+      {
+       "text": "high",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "robust: 0.922",
+       "tone": "good"
+      },
+      {
+       "text": "sensitive: 0.895",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "trivially",
+       "tone": "good"
+      },
+      {
+       "text": "within a tree only",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "6.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Four libraries, measured on 200k x 30 for 300 rounds",
+    "caption": "They implement the same objective and differ in how a tree is grown and how categoricals are handled. CatBoost's symmetric trees fit slowest and **predict fastest by an order of magnitude** — 0.02 s against 0.38 s — which is the trade to know when latency is the constraint.",
+    "cols": [
+     "Fit / predict",
+     "Tree growth"
+    ],
+    "rows": [
+     "XGBoost",
+     "LightGBM",
+     "CatBoost",
+     "HistGradientBoosting"
+    ],
+    "cells": [
+     [
+      {
+       "text": "4.2 s / 0.11 s",
+       "tone": "good"
+      },
+      "depth-wise by default"
+     ],
+     [
+      {
+       "text": "3.4 s / 0.28 s",
+       "tone": "good"
+      },
+      {
+       "text": "leaf-wise: num_leaves",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "8.4 s / 0.02 s",
+       "tone": "accent"
+      },
+      {
+       "text": "symmetric (oblivious)",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "4.3 s / 0.38 s",
+       "tone": "good"
+      },
+      "depth-wise; no dependency"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Categoricals without leakage",
+    "caption": "A booster that handles categoricals natively is not thereby safe: naive target statistics computed over all rows leak the label exactly as a hand-rolled target encoder would. CatBoost's ordered boosting is the one that is safe by construction, because each row's statistic uses only rows before it in a permutation.",
+    "cols": [
+     "Handles it by",
+     "Leaks"
+    ],
+    "rows": [
+     "CatBoost ordered",
+     "LightGBM native",
+     "XGBoost enable_categorical",
+     "HistGB native",
+     "Naive target encoding",
+     "Cross-fitted encoding"
+    ],
+    "cells": [
+     [
+      {
+       "text": "ordered statistics",
+       "tone": "good"
+      },
+      {
+       "text": "no, by construction",
+       "tone": "good"
+      }
+     ],
+     [
+      "partition-based splits",
+      "no, but <= a few hundred levels"
+     ],
+     [
+      "partition-based splits",
+      "no; needs pandas category dtype"
+     ],
+     [
+      "native, <= 255 levels",
+      "no"
+     ],
+     [
+      {
+       "text": "the group mean, all rows",
+       "tone": "crit"
+      },
+      {
+       "text": "yes: severely",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "out-of-fold means",
+       "tone": "good"
+      },
+      {
+       "text": "no",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "6.5": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "The stacking leak: the meta-model trusted the biggest overfitter",
+    "caption": "Fit three base models, take their predictions **on their own training rows** as meta-features, and the meta-model's coefficients come out [0.97, 2.46, 4.61] — trusting boosting most and logistic regression least, in exactly the order of their *training* AUCs. That is the order of how much they overfit. Out-of-fold meta-features reverse it, because they are the only ones that show how a member behaves on data it has not seen.",
+    "cols": [
+     "In-sample meta-features",
+     "Out-of-fold"
+    ],
+    "rows": [
+     "Logistic weight",
+     "Forest weight",
+     "Boosting weight",
+     "Hold-out AUC",
+     "What it ranked by"
+    ],
+    "cells": [
+     [
+      {
+       "text": "0.97",
+       "tone": "crit"
+      },
+      {
+       "text": "3.13",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "2.46",
+       "tone": "crit"
+      },
+      {
+       "text": "1.18",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "4.61",
+       "tone": "crit"
+      },
+      {
+       "text": "0.94",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "0.712",
+       "tone": "warn"
+      },
+      {
+       "text": "0.717",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "training AUC: 0.797 / 0.849 / 0.877",
+       "tone": "crit"
+      },
+      "held-out behaviour"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Check the members' correlation before combining anything",
+    "caption": "Above about 0.9 with one clearly best member, the combination lands at or below that member — the churn case, six ways, where the stack predicted 35× slower for −0.005 AUC. Below about 0.8 among comparably good members, averaging gains. The usual outcome on a well-specified problem is that the ensemble's gain is smaller than the gain from a better feature.",
+    "cols": [
+     "Combines",
+     "Gain"
+    ],
+    "rows": [
+     "Bagging / forest",
+     "Boosting",
+     "Voting / averaging",
+     "Stacking",
+     "Members over 0.9 correlated",
+     "One member much worse"
+    ],
+    "cells": [
+     [
+      "the same learner, deep",
+      {
+       "text": "large on high-variance learners",
+       "tone": "good"
+      }
+     ],
+     [
+      "the same learner, shallow",
+      {
+       "text": "largest on tabular data",
+       "tone": "good"
+      }
+     ],
+     [
+      "different families",
+      {
+       "text": "small unless diverse",
+       "tone": "warn"
+      }
+     ],
+     [
+      "families plus a meta-model",
+      {
+       "text": "small to moderate: 7.31 -> 7.12",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "nothing useful",
+       "tone": "crit"
+      },
+      {
+       "text": "at or below the best member",
+       "tone": "crit"
+      }
+     ],
+     [
+      "harmful in an average",
+      {
+       "text": "8.70; harmless in a stack at -0.01",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ]
+}

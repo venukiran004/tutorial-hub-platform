@@ -19,6 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The summary table, and what it assumes", id: "summary" },
 
+    {"kind": "matrix", "title": "Six assumptions, and what breaks when each one fails", "caption": "Only two of the six threaten the coefficients themselves; three threaten the **standard errors**, which is why a p-value is only as honest as the assumptions behind it. The last cannot be tested from the data at all — an omitted confounder leaves no residual signature, which is the whole reason causal claims need a design.", "cols": ["When it fails", "Testable"], "rows": ["Linearity", "Independence", "Normality", "Equal variance", "No collinearity", "Exogeneity"], "cells": [[{"text": "predictions biased by region", "tone": "warn"}, "residuals vs each feature"], [{"text": "SEs too small, p too good", "tone": "crit"}, "Durbin-Watson; autocorrelation"], [{"text": "intervals off for small n", "tone": "accent"}, "Q-Q plot; Shapiro-Wilk"], [{"text": "SEs wrong; coefficients fine", "tone": "warn"}, "residuals vs fitted: a funnel"], [{"text": "signs arbitrary; predictions fine", "tone": "warn"}, "VIF; condition number"], [{"text": "coefficients biased", "tone": "crit"}, {"text": "no: not from the data", "tone": "crit"}]], "t": "diagram", "id": "dg-4_2-01-0"},
+
+
+
     { t: "code", lang: "text", title: "spend_12m on four features, statsmodels OLS (executed, 989 rows)",
       code: `                 coef     std err        t      P>|t|     [0.025    0.975]
 const         -26.307       3.030     -8.68     0.000    -32.25    -20.36
@@ -95,6 +99,10 @@ r = OLS(y, X).fit(cov_type="HC3")                                      # heteros
     ]},
 
     { t: "h2", n: "03", text: "Leverage, outliers, influence", id: "influence" },
+
+    {"kind": "matrix", "title": "Leverage, outlier, influence — three different things", "caption": "A point can be extreme in x and sit exactly on the line, contributing nothing; or be moderate in x with a large residual and barely move the fit. Influence is the product of the two, which is why Cook's distance is the statistic to read and not either input on its own.", "cols": ["Is", "Moves the fit"], "rows": ["High leverage", "Large residual", "High influence", "Cook's distance", "Studentised residual"], "cells": [["extreme in x", {"text": "only if it also has a residual", "tone": "accent"}], ["far from the line in y", {"text": "only if it also has leverage", "tone": "accent"}], [{"text": "both at once", "tone": "crit"}, {"text": "yes: this is the one to find", "tone": "crit"}], [{"text": "leverage x residual", "tone": "good"}, "the statistic that combines them"], ["the residual, scaled properly", "identifies the outlier half"]], "t": "diagram", "id": "dg-4_2-03-1"},
+
+
 
     { t: "p", text: "Three words that are used interchangeably and mean different things. **Leverage** is about x: how far a row sits from the other rows' features (the hat matrix diagonal of 4.1). **An outlier** is about y: a large residual. **Influence** is what happens to the fit when the row is removed — and it takes both. Sixty points on a line, then one planted point three ways:" },
 

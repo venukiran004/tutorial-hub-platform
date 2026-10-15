@@ -22,6 +22,10 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "One model, eleven thresholds, three different answers", "caption": "The same fitted model throughout — only the cut moves. Note that the three rules disagree: **cost** is minimised at 0.15, **F1** peaks at 0.25, and the default 0.50 is near-worst on both while flagging only 13 customers. The default is not a neutral choice, it is an unexamined one.", "cols": ["precision / recall / F1", "flagged, cost"], "rows": ["0.05", "0.15", "0.25", "0.35", "0.50", "0.70"], "cells": [["0.183 / 0.938 / 0.306", "246 flagged, 4,230"], [{"text": "0.288 / 0.833 / 0.428", "tone": "good"}, {"text": "139 flagged, 3,895 min", "tone": "good"}], [{"text": "0.412 / 0.583 / 0.483", "tone": "accent"}, "68 flagged, 4,020"], ["0.513 / 0.417 / 0.460", "39 flagged, 4,195"], [{"text": "0.769 / 0.208 / 0.328", "tone": "crit"}, {"text": "13 flagged, 4,465", "tone": "crit"}], [{"text": "1.000 / 0.062 / 0.118", "tone": "crit"}, "3 flagged, 4,695"]], "t": "diagram", "id": "dg-2_3-01-0"},
 
 
+
+
+
+
     { t: "p", text: "Held-out set: 297 customers, 48 churners. The retention team's economics, agreed before modelling (1.2): **a call costs £5** in offer and agent time whether or not it was needed; **a lost churner costs £100**; a call to a genuine churner **saves them 40 % of the time**. So the cost at a threshold is £5 × (TP + FP) + £100 × (FN + 0.6 × TP)." },
 
     { t: "table",
@@ -126,6 +130,10 @@ top 29 by score    16 churners caught of 48    recall 0.333   precision 0.552   
     { t: "h2", n: "03", text: "When precision matters, when recall matters, and when F1 lies", id: "when" },
 
     {"kind": "matrix", "title": "The decision picks the metric, and the metric picks the threshold", "caption": "Each row is a different thing going wrong when you are wrong, and therefore a different rule. The last one is the case people model incorrectly most often: when capacity is fixed, neither precision nor recall is the objective — the top k is, and recall is the outcome you report.", "cols": ["Optimise", "Rule"], "rows": ["Screening a condition", "Auto-declining a card", "Retention calls", "A fixed review queue"], "cells": [[{"text": "recall", "tone": "good"}, "highest cut with recall >= 0.95"], [{"text": "precision", "tone": "good"}, "lowest cut with precision >= 0.9"], [{"text": "expected cost", "tone": "accent"}, "break-even at p = c / b"], [{"text": "precision at top k", "tone": "violet"}, "take k by score; report recall"]], "t": "diagram", "id": "dg-2_3-03-1"},
+
+
+
+
 
 
     { t: "code", lang: "python", title: "A fraud example: card declines, 10,000 transactions, 100 frauds (executed on a synthetic scorer)",

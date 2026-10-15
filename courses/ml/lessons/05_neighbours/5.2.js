@@ -71,6 +71,9 @@ query "claim lunch" (one word seen only in each class):  posterior [0.5, 0.5] --
 
     { t: "h2", n: "02", text: "Variants: pick by feature type", id: "variants" },
 
+    {"kind": "matrix", "title": "Pick the variant from the feature type, not by trial", "caption": "Each variant is a different choice of P(x | y), so the feature type decides it outright. The Bernoulli row is the instructive one: modelling presence rather than counts throws the repetition signal away, which is why it scored 0.836 on the newsgroups where multinomial counts do better.", "cols": ["Models each feature as", "Use for"], "rows": ["Gaussian", "Multinomial", "Bernoulli", "Complement", "Categorical"], "cells": [[{"text": "a normal per class", "tone": "accent"}, "numeric tables; a fast baseline"], [{"text": "counts over a vocabulary", "tone": "good"}, "text: the standard baseline"], [{"text": "presence or absence", "tone": "warn"}, "short texts; loses repetition"], [{"text": "counts on the complement", "tone": "good"}, "imbalanced text"], [{"text": "one categorical each", "tone": "accent"}, "categorical tables, without one-hot"]], "t": "diagram", "id": "dg-5_2-02-0"},
+
+
     { t: "table",
       head: ["Variant", "Feature type", "P(xⱼ | y)", "Parameters per class", "Use for"],
       rows: [
@@ -101,6 +104,9 @@ query "claim lunch" (one word seen only in each class):  posterior [0.5, 0.5] --
     },
 
     { t: "h2", n: "03", text: "What the naive assumption costs, measured", id: "cost" },
+
+    {"kind": "matrix", "title": "Why a false assumption still picks the right class", "caption": "Classification is an **argmax**. Double-counting correlated evidence scales every class's log-odds in similar proportion, so the posterior can be badly wrong in value and still be largest for the right class. What breaks it is *asymmetric* dependence — features correlated within one class but not the other.", "cols": ["Naive Bayes", "Logistic regression"], "rows": ["Models", "Boundary", "Fitting time here", "Probabilities", "Breaks on"], "cells": [[{"text": "P(x|y) and P(y): generative", "tone": "accent"}, "P(y|x): discriminative"], ["linear in the features", "linear"], [{"text": "counting: 4 ms", "tone": "good"}, {"text": "iterative: 435 ms", "tone": "warn"}], [{"text": "over-confident", "tone": "warn"}, {"text": "usually calibrated", "tone": "good"}], [{"text": "asymmetric dependence", "tone": "crit"}, "collinearity, for the coefficients"]], "t": "diagram", "id": "dg-5_2-03-1"},
+
 
     { t: "code", lang: "python", title: "The same feature counted several times: duplicate the tickets column and refit (executed)",
       hl: [2, 5, 6],

@@ -57,6 +57,11 @@ support_tickets (a count, 46 % zeros):   skew 0.93   log1p skew 0.32        <- f
 
     { t: "h2", n: "02", text: "Interactions: one right product against thirty generic ones", id: "interactions" },
 
+    {"kind": "matrix", "title": "Nine shapes of derived feature, and who needs them", "caption": "The last column is the part worth internalising: most of these exist to give a **linear or distance** model something it cannot construct itself. A tree can already find a threshold interaction by nesting two splits, so generic polynomial expansion mostly adds width and noise there.", "cols": ["Form", "Needed by"], "rows": ["Ratio", "Product", "Difference", "Datetime parts", "Cyclical", "Aggregates", "Indicator"], "cells": [["a / b", {"text": "linear, distance", "tone": "accent"}], ["a x b", {"text": "linear, distance", "tone": "accent"}], ["a - b, or a - lag(a)", {"text": "all, when trend beats level", "tone": "good"}], ["month, weekday, hour", {"text": "all", "tone": "good"}], ["sin and cos of the part", {"text": "linear, distance", "tone": "accent"}], ["group mean, count, rank", {"text": "all — in-fold only", "tone": "warn"}], ["a > threshold, is-zero", {"text": "all", "tone": "good"}]], "t": "diagram", "id": "dg-3_4-02-0"},
+
+
+
+
     { t: "code", lang: "python", title: "The spend model: main effects, all pairwise products, and the one product that is the truth (executed)",
       hl: [2, 3, 4],
       code: `#   ridge, 5-fold MAE on spend_12m                       columns
@@ -129,6 +134,11 @@ cos(2π·hour/24)   [ 1.000,  0.966,  0.000, -1.000, -0.000,  0.966]
     },
 
     { t: "h2", n: "04", text: "Outliers: find, then decide", id: "outliers" },
+
+    {"kind": "steps", "title": "Find, then decide — and they are separate steps", "caption": "Detection is a statistical question with several answers; what to do about it is a domain question with only one source of truth. Collapsing them is how a genuine extreme value — the bulk order, the record day — gets winsorised into a plausible-looking lie.", "items": [{"label": "Find candidates", "desc": "IQR or robust z per column, Mahalanobis or Isolation Forest jointly", "code": "1", "tone": "accent"}, {"label": "Ask what the row is", "desc": "an impossible value, a unit mix-up, a sentinel, or a real event", "code": "2", "tone": "good"}, {"label": "A data error", "desc": "fix at source, or set NaN and impute with an indicator", "code": "fix", "tone": "warn"}, {"label": "A genuine extreme", "desc": "keep it; consider a robust loss or a log target instead", "code": "keep", "tone": "good"}, {"label": "Winsorising without asking", "desc": "turns a real event into a plausible-looking lie", "code": "never", "tone": "crit"}], "t": "diagram", "id": "dg-3_4-04-1"},
+
+
+
 
     { t: "code", lang: "python", title: "Four detectors on the fee column with its planted 999 (executed)",
       hl: [3, 4, 5, 6, 9, 10],

@@ -1,0 +1,146 @@
+{
+ "4.1": [
+  {"after": "03",
+   "d": {"kind": "steps",
+         "title": "Four derivations of one estimate, and what each is for",
+         "caption": "They give the same β-hat and answer different questions. An interviewer asking 'derive it' wants the second; 'why squared error' wants the fourth; 'why does that one point move the line so much' wants the third. Knowing which view answers which question is most of what fluency here means.",
+         "items": [
+          {"label": "Calculus", "desc": "set the derivative to zero: slope is covariance over variance", "code": "intuition", "tone": "accent"},
+          {"label": "Linear algebra", "desc": "the normal equation, the solvers and the conditioning story", "code": "general", "tone": "good"},
+          {"label": "Geometry", "desc": "a projection: leverage, orthogonal residuals, why R-squared never falls", "code": "influence", "tone": "violet"},
+          {"label": "Likelihood", "desc": "Gaussian errors make OLS the MLE — hence squared error, and the standard errors", "code": "inference", "tone": "teal"}]}},
+  {"after": "04",
+   "d": {"kind": "matrix",
+         "title": "Five ways to solve it, and when each breaks",
+         "caption": "The normal equation squares the condition number, so it is the first to fail under collinearity — which is why `LinearRegression` does not use it. QR/SVD is the default because it handles rank deficiency by returning the minimum-norm solution instead of raising.",
+         "cols": ["Cost", "Conditioning"],
+         "rows": ["Normal equation", "QR / SVD", "Cholesky on X'X + lambda I", "Gradient descent", "Coordinate descent"],
+         "cells": [
+          ["O(np² + p³)", {"text": "squares it: fails first", "tone": "crit"}],
+          ["O(np²)", {"text": "best; handles rank deficiency", "tone": "good"}],
+          ["O(np² + p³)", {"text": "lambda fixes it", "tone": "good"}],
+          [{"text": "O(npk)", "tone": "accent"}, "needs scaling; huge n or p"],
+          [{"text": "O(npk)", "tone": "accent"}, "handles L1 exactly"]]}}
+ ],
+
+ "4.2": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Six assumptions, and what breaks when each one fails",
+         "caption": "Only two of the six threaten the coefficients themselves; three threaten the **standard errors**, which is why a p-value is only as honest as the assumptions behind it. The last cannot be tested from the data at all — an omitted confounder leaves no residual signature, which is the whole reason causal claims need a design.",
+         "cols": ["When it fails", "Testable"],
+         "rows": ["Linearity", "Independence", "Normality", "Equal variance", "No collinearity", "Exogeneity"],
+         "cells": [
+          [{"text": "predictions biased by region", "tone": "warn"}, "residuals vs each feature"],
+          [{"text": "SEs too small, p too good", "tone": "crit"}, "Durbin-Watson; autocorrelation"],
+          [{"text": "intervals off for small n", "tone": "accent"}, "Q-Q plot; Shapiro-Wilk"],
+          [{"text": "SEs wrong; coefficients fine", "tone": "warn"}, "residuals vs fitted: a funnel"],
+          [{"text": "signs arbitrary; predictions fine", "tone": "warn"}, "VIF; condition number"],
+          [{"text": "coefficients biased", "tone": "crit"}, {"text": "no: not from the data", "tone": "crit"}]]}},
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "Leverage, outlier, influence — three different things",
+         "caption": "A point can be extreme in x and sit exactly on the line, contributing nothing; or be moderate in x with a large residual and barely move the fit. Influence is the product of the two, which is why Cook's distance is the statistic to read and not either input on its own.",
+         "cols": ["Is", "Moves the fit"],
+         "rows": ["High leverage", "Large residual", "High influence", "Cook's distance", "Studentised residual"],
+         "cells": [
+          ["extreme in x", {"text": "only if it also has a residual", "tone": "accent"}],
+          ["far from the line in y", {"text": "only if it also has leverage", "tone": "accent"}],
+          [{"text": "both at once", "tone": "crit"}, {"text": "yes: this is the one to find", "tone": "crit"}],
+          [{"text": "leverage x residual", "tone": "good"}, "the statistic that combines them"],
+          ["the residual, scaled properly", "identifies the outlier half"]]}}
+ ],
+
+ "4.3": [
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "Why L1 lands on the corner and L2 never does",
+         "caption": "The constraint region's shape decides it. A diamond has corners **on the axes**, and a contour of the squared error is overwhelmingly likely to first touch a convex region at a corner; a circle has no corners, so the solution is shrunk but never exactly zero. The prior view says the same thing: a Laplace prior has a spike at zero, a Gaussian does not.",
+         "cols": ["L2 / ridge", "L1 / lasso"],
+         "rows": ["Constraint region", "Where contours touch", "Zeros", "Prior", "Solution"],
+         "cells": [
+          [{"text": "a circle", "tone": "accent"}, {"text": "a diamond", "tone": "accent"}],
+          ["a smooth point: no axis", {"text": "a corner: on an axis", "tone": "good"}],
+          [{"text": "never", "tone": "warn"}, {"text": "yes: selection", "tone": "good"}],
+          ["Gaussian: smooth at 0", {"text": "Laplace: a spike at 0", "tone": "good"}],
+          [{"text": "closed form, unique", "tone": "good"}, "coordinate descent"]]}},
+  {"after": "04",
+   "d": {"kind": "matrix",
+         "title": "Correlated features are where the three penalties part company",
+         "caption": "This is the practical reason to prefer elastic net when you do not know the structure: with a correlated group, ridge shares the weight and stays stable, lasso picks one member **arbitrarily** — so a resample can change which one — and elastic net keeps them together.",
+         "cols": ["Correlated features", "p > n"],
+         "rows": ["Ridge", "Lasso", "Elastic net"],
+         "cells": [
+          [{"text": "shares weight; stable", "tone": "good"}, "fine"],
+          [{"text": "picks one, arbitrarily", "tone": "crit"}, {"text": "at most n non-zero", "tone": "warn"}],
+          [{"text": "groups them", "tone": "good"}, "fine"]]}}
+ ],
+
+ "4.4": [
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Why a high-degree polynomial fails twice over",
+         "caption": "Two separate failures that arrive together. The statistical one is variance — oscillation between the points. The numerical one is conditioning: the columns x, x², x³ ... are nearly collinear, so the Vandermonde matrix's condition number explodes and the coefficients are solved unreliably even where the fit is fine.",
+         "cols": ["Failure", "Fix"],
+         "rows": ["Oscillation between points", "Wild tails", "Ill-conditioning", "Extrapolation", "Many inputs"],
+         "cells": [
+          [{"text": "variance: it chases noise", "tone": "crit"}, "splines with 5-10 knots"],
+          [{"text": "a polynomial cannot flatten", "tone": "crit"}, "natural splines: linear tails"],
+          [{"text": "x, x², x³ are near-collinear", "tone": "crit"}, "orthogonal polynomials; ridge; scale first"],
+          [{"text": "unbounded nonsense outside", "tone": "crit"}, "refuse inputs outside the training range"],
+          [{"text": "the expansion explodes", "tone": "warn"}, "do not expand; let a tree find them"]]}}
+ ],
+
+ "4.5": [
+  {"after": "01",
+   "d": {"kind": "steps",
+         "title": "From odds to the sigmoid, in one line of algebra",
+         "caption": "The sigmoid is not chosen for its shape — it is what you get by asserting that the **log-odds** are linear and then solving for p. That is why logistic regression's coefficients are read as log-odds, and why exponentiating one gives an odds ratio rather than a probability change.",
+         "items": [
+          {"label": "Model the log-odds as linear", "desc": "log(p / (1 - p)) = Xb — the assumption, stated", "code": "1", "tone": "accent"},
+          {"label": "Exponentiate", "desc": "p / (1 - p) = exp(Xb): the odds", "code": "2", "tone": "good"},
+          {"label": "Solve for p", "desc": "p = exp(Xb) / (1 + exp(Xb)) = 1 / (1 + exp(-Xb))", "code": "3", "tone": "good"},
+          {"label": "That is the sigmoid", "desc": "derived, not assumed; bounded in (0, 1) by construction", "code": "4", "tone": "violet"},
+          {"label": "So a coefficient is a log-odds change", "desc": "and exp(coefficient) is an odds ratio, not a probability", "code": "read", "tone": "teal"}]}},
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "The sign that flipped: fee and plan in the same model",
+         "caption": "The fee is 7.99, 12.99 or 19.99 **by plan**, plus half a pound of noise — so fee and the plan dummies are nearly the same information. VIF is 77 for fee and 84 for plan_pro. The pair's joint effect is estimated fine; its split between them is arbitrary. Check VIF before reading an odds ratio.",
+         "cols": ["With fee in the model", "Without fee"],
+         "rows": ["plan_plus", "plan_pro", "VIF, fee", "VIF, plan_pro", "Joint effect"],
+         "cells": [
+          [{"text": "+0.655: churn more?", "tone": "crit"}, {"text": "-0.01", "tone": "good"}],
+          [{"text": "+0.547", "tone": "crit"}, {"text": "-1.04: near the generator", "tone": "good"}],
+          [{"text": "77", "tone": "crit"}, "the near-duplication is the cause"],
+          [{"text": "84", "tone": "crit"}, "same"],
+          [{"text": "estimated fine", "tone": "good"}, "only the split is arbitrary"]]}}
+ ],
+
+ "4.6": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Family is about the variance; link is about the mean",
+         "caption": "Two independent choices, and conflating them is the usual confusion. The family answers 'how does the spread of y grow with its mean'; the link answers 'on what scale do the effects add up'. A Poisson family with an identity link is legal and occasionally right — here it fitted a minimum mean of −0.75, which is why the log link is the default.",
+         "cols": ["Variance grows", "Family"],
+         "rows": ["Not at all", "Linearly with the mean", "With the mean squared", "Faster than Poisson", "A spike at zero"],
+         "cells": [
+          [{"text": "constant", "tone": "good"}, "Normal: squared error"],
+          [{"text": "proportional to mu", "tone": "accent"}, "Poisson, with log link and offset"],
+          [{"text": "proportional to mu²", "tone": "accent"}, "Gamma, with log link"],
+          [{"text": "overdispersed, phi > 1.2", "tone": "warn"}, "Negative binomial"],
+          [{"text": "a point mass plus a tail", "tone": "violet"}, "Tweedie, 1 < p < 2"]]}},
+  {"after": "04",
+   "d": {"kind": "matrix",
+         "title": "Choosing the loss is choosing a likelihood",
+         "caption": "Squared error is the Normal likelihood and absolute error is the Laplace — so 'change the loss' and 'change the family' are the same move seen from two sides. Huber caps the gradient, which is exactly what makes contamination unable to drag the fit.",
+         "cols": ["Use", "Because"],
+         "rows": ["Counts, or a rate", "Positive skewed amounts", "Amounts with many zeros", "Occasional wild residuals", "A percentile or interval", "Gaussian-ish residuals"],
+         "cells": [
+          [{"text": "Poisson, log link, offset", "tone": "good"}, "variance grows; effects multiply"],
+          [{"text": "Gamma, log link", "tone": "good"}, "unbiased for E[y], unlike log-OLS"],
+          [{"text": "Tweedie, p by CV", "tone": "good"}, "a zero mass plus a Gamma tail"],
+          [{"text": "Huber or absolute error", "tone": "good"}, "the gradient is capped"],
+          [{"text": "quantile regression at tau", "tone": "accent"}, "pinball loss is minimised by the quantile"],
+          [{"text": "squared error", "tone": "good"}, "most efficient when it holds"]]}}
+ ]
+}

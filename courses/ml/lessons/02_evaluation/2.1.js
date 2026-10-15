@@ -22,6 +22,10 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "Every metric is a sentence that starts 'of all the'", "caption": "One confusion matrix on 297 held-out customers: TP 39, FN 9, FP 89, TN 160, prevalence 0.162. Each metric below reads a different slice of it — which is why 'what is the accuracy' is not a question the matrix can answer. The retention team means recall; the fraud team means precision; compliance means specificity.", "cols": ["Of all the...", "Here"], "rows": ["Precision", "Recall", "Specificity", "NPV", "Accuracy", "Prevalence"], "cells": [[{"text": "ones I flagged", "tone": "accent"}, "39 / 128 = 0.305"], [{"text": "real churners", "tone": "accent"}, "39 / 48 = 0.8125"], [{"text": "real stayers", "tone": "accent"}, "160 / 249 = 0.643"], [{"text": "ones I cleared", "tone": "accent"}, "160 / 169 = 0.947"], [{"text": "rows, any verdict", "tone": "warn"}, "199 / 297 = 0.670"], [{"text": "rows that are positive", "tone": "good"}, "48 / 297 = 0.162"]], "t": "diagram", "id": "dg-2_1-01-0"},
 
 
+
+
+
+
     { t: "p", text: "A balanced-class-weight logistic regression on the churn table, scored on the 297 held-out customers of whom 48 churned, thresholded at 0.5. **The mnemonic: the second word is what the model said; the first word is whether it was right.** A false positive is a customer the model called a churner who stayed; a false negative is a churner the model missed." },
 
     { t: "table",
@@ -136,6 +140,10 @@ a model that flags one customer, correctly, has precision 1.0 and recall 0.02: F
     { t: "h2", n: "03", text: "Three classes, three averages", id: "multiclass" },
 
     {"kind": "matrix", "title": "Three averages over three classes", "caption": "The averaging choice decides whose errors count. Micro weights every **row** equally, so a small class failing badly disappears into it; macro weights every **class** equally, so the rare class's noisy metric gets a full third of the score. Neither replaces the per-class table.", "cols": ["Weights", "Hides"], "rows": ["Micro", "Macro", "Weighted", "Per class"], "cells": [[{"text": "each row equally", "tone": "accent"}, {"text": "a small class doing badly", "tone": "crit"}], [{"text": "each class equally", "tone": "accent"}, {"text": "that the rare class is noisy", "tone": "warn"}], [{"text": "each class by its size", "tone": "accent"}, "the same as micro, slightly less"], [{"text": "nothing is averaged", "tone": "good"}, {"text": "nothing: it is a table", "tone": "good"}]], "t": "diagram", "id": "dg-2_1-03-1"},
+
+
+
+
 
 
     { t: "p", text: "Predicting the subscription plan (basic, plus, pro) from tenure, fee and logins gives a 3×3 confusion matrix, and precision, recall and F1 exist per class. To report one number, the per-class values must be averaged, and **the three averaging rules answer three different questions.**" },

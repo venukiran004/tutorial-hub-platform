@@ -73,6 +73,9 @@ the same 11 voters at 60 %, simulated with a shared 'difficulty' component (20,0
 
     { t: "h2", n: "02", text: "The churn data: six models, and why no combination wins", id: "churn" },
 
+    {"kind": "matrix", "title": "The stacking leak: the meta-model trusted the biggest overfitter", "caption": "Fit three base models, take their predictions **on their own training rows** as meta-features, and the meta-model's coefficients come out [0.97, 2.46, 4.61] — trusting boosting most and logistic regression least, in exactly the order of their *training* AUCs. That is the order of how much they overfit. Out-of-fold meta-features reverse it, because they are the only ones that show how a member behaves on data it has not seen.", "cols": ["In-sample meta-features", "Out-of-fold"], "rows": ["Logistic weight", "Forest weight", "Boosting weight", "Hold-out AUC", "What it ranked by"], "cells": [[{"text": "0.97", "tone": "crit"}, {"text": "3.13", "tone": "good"}], [{"text": "2.46", "tone": "crit"}, {"text": "1.18", "tone": "good"}], [{"text": "4.61", "tone": "crit"}, {"text": "0.94", "tone": "good"}], [{"text": "0.712", "tone": "warn"}, {"text": "0.717", "tone": "good"}], [{"text": "training AUC: 0.797 / 0.849 / 0.877", "tone": "crit"}, "held-out behaviour"]], "t": "diagram", "id": "dg-6_5-02-0"},
+
+
     { t: "code", lang: "python", title: "Six base models and the correlation of their out-of-fold probabilities (executed, 989 rows, 5-fold)",
       hl: [2, 7, 10, 11, 12, 13, 14, 15],
       code: `#   model            AUC       log-loss
@@ -129,6 +132,9 @@ the same 11 voters at 60 %, simulated with a shared 'difficulty' component (20,0
     },
 
     { t: "h2", n: "03", text: "The spend data: where stacking earns its keep", id: "spend" },
+
+    {"kind": "matrix", "title": "Check the members' correlation before combining anything", "caption": "Above about 0.9 with one clearly best member, the combination lands at or below that member — the churn case, six ways, where the stack predicted 35× slower for −0.005 AUC. Below about 0.8 among comparably good members, averaging gains. The usual outcome on a well-specified problem is that the ensemble's gain is smaller than the gain from a better feature.", "cols": ["Combines", "Gain"], "rows": ["Bagging / forest", "Boosting", "Voting / averaging", "Stacking", "Members over 0.9 correlated", "One member much worse"], "cells": [["the same learner, deep", {"text": "large on high-variance learners", "tone": "good"}], ["the same learner, shallow", {"text": "largest on tabular data", "tone": "good"}], ["different families", {"text": "small unless diverse", "tone": "warn"}], ["families plus a meta-model", {"text": "small to moderate: 7.31 -> 7.12", "tone": "accent"}], [{"text": "nothing useful", "tone": "crit"}, {"text": "at or below the best member", "tone": "crit"}], ["harmful in an average", {"text": "8.70; harmless in a stack at -0.01", "tone": "warn"}]], "t": "diagram", "id": "dg-6_5-03-1"},
+
 
     { t: "code", lang: "python", title: "Four regressors on spend, the correlation of their errors, and the stack (executed, 5-fold MAE)",
       hl: [2, 3, 4, 5, 13, 14, 15, 16],

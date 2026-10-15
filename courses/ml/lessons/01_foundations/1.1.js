@@ -24,6 +24,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "Tom Mitchell's 1997 definition is the one worth memorising because it is operational: **a program learns from experience E with respect to a task T and a performance measure P if its performance on T, measured by P, improves with E.** For the course dataset — a thousand subscribers of a streaming service, some of whom cancelled — T is 'predict who will cancel next month', E is the labelled history, and P is a metric we will spend all of module 2 choosing. Every 'is this machine learning?' question is answered by finding the three letters." },
 
     { t: "table",
@@ -111,6 +115,10 @@ model.coef_.round(3)   # tenure -0.039  logins -0.178  tickets +0.349  discount 
     { t: "h2", n: "03", text: "The kinds of learning, by their signal", id: "kinds" },
 
     {"kind": "matrix", "title": "The kinds of learning, by what signal they get", "caption": "The signal decides the whole shape of the problem. Self-supervised is the one worth looking at twice: the label is manufactured from the input itself — the masked word, the next token — which is how a model trains on text nobody annotated.", "cols": ["The signal is", "It learns"], "rows": ["Supervised", "Unsupervised", "Semi-supervised", "Self-supervised", "Reinforcement"], "cells": [[{"text": "a label per row", "tone": "good"}, "features to label"], [{"text": "nothing but features", "tone": "accent"}, "groups, directions, density"], [{"text": "labels for a few rows", "tone": "accent"}, "a mapping, helped by the rest"], [{"text": "a label made from the input", "tone": "violet"}, "a representation to fine-tune"], [{"text": "a reward, often delayed", "tone": "teal"}, "a policy: what to do when"]], "t": "diagram", "id": "dg-1_1-03-1"},
+
+
+
+
 
 
 

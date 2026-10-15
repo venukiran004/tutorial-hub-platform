@@ -19,6 +19,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why is it missing?", id: "why" },
 
+    {"kind": "matrix", "title": "The mechanism decides what is safe to do", "caption": "Under MNAR the value's own size is what caused it to be absent — high earners declining to state income — so every imputer fills in a typical value for rows that are systematically atypical. No imputation recovers the values; an indicator column recovers the **fact**, which is often the stronger feature.", "cols": ["Depends on", "Safe to"], "rows": ["MCAR", "MAR", "MNAR"], "cells": [[{"text": "nothing", "tone": "good"}, "anything, even deleting rows"], [{"text": "other observed columns", "tone": "accent"}, "impute from them, plus an indicator"], [{"text": "the missing value itself", "tone": "crit"}, "indicator first; no imputer recovers it"]], "t": "diagram", "id": "dg-3_3-01-0"},
+
+
+
+
     { t: "table",
       head: ["Mechanism", "Missingness depends on…", "Example", "Safe treatments", "What breaks"],
       rows: [
@@ -53,6 +58,11 @@ cross_val_score(logistic, X_without_tickets, is_missing, scoring="roc_auc")     
     ]},
 
     { t: "h2", n: "02", text: "Seven treatments, one table", id: "treatments" },
+
+    {"kind": "matrix", "title": "Row deletion scored best and would have been the worst decision", "caption": "The 126 customers with no tickets field churn at 0.222 against 0.154 — dropping them raised the AUC because the **remaining problem is easier**, not because the model improved. The deployed model meets those customers on day one, with no tickets value, and still has to score them. A treatment is judged on the population the model will serve.", "cols": ["Use", "Why"], "rows": ["Under 5%, MCAR", "MAR", "MNAR suspected", "Many columns affected", "Over 50% missing", "Time series", "A NaN-native booster"], "cells": [[{"text": "median, or a 'missing' level", "tone": "good"}, "anything works; keep it simple"], [{"text": "KNN or iterative, plus indicator", "tone": "good"}, "other columns predict the value"], [{"text": "the indicator first", "tone": "accent"}, "it recovers the fact, not the value"], [{"text": "never row-wise deletion", "tone": "crit"}, "it compounds and empties the table"], [{"text": "keep only the indicator", "tone": "warn"}, "the fills would be mostly fiction"], [{"text": "forward-fill, or interpolate", "tone": "good"}, "backward-fill copies the future back"], [{"text": "pass NaN through", "tone": "good"}, "it learns a direction per split"]], "t": "diagram", "id": "dg-3_3-02-1"},
+
+
+
 
     { t: "code", lang: "python", title: "Churn AUC by treatment, logistic regression unless stated, 5-fold (executed)",
       hl: [3, 4, 5, 9, 10, 12],

@@ -65,6 +65,10 @@ np.min(aucs), np.max(aucs), np.mean(aucs), np.std(aucs)
 
 
 
+
+
+
+
     { t: "code", lang: "python", title: "Stratification: what plain KFold does to a 16 % class (executed)",
       code: `for train_idx, test_idx in KFold(5, shuffle=True, random_state=3).split(X, y):            y.iloc[test_idx].mean()
 #   plain KFold        churn rate per fold: 0.126  0.152  0.177  0.202  0.157       <- 12.6 % to 20.2 %: the folds are different problems
@@ -176,6 +180,10 @@ result = cross_validate(search, X, y, cv=outer, scoring="roc_auc", return_estima
     { t: "h2", n: "04", text: "The six mistakes", id: "mistakes" },
 
     {"kind": "matrix", "title": "The six mistakes, and which direction each one bends the score", "caption": "Four of these inflate, and the last two only add noise — which is worse than it sounds, because a 0.03 difference inside a ±0.05 spread is the shape of most false conclusions about which model is better.", "cols": ["Effect", "Fix"], "rows": ["Preprocessing before folds", "Random folds, grouped data", "Random folds, time data", "No stratification", "Reporting the tuning score", "Mean without the spread"], "cells": [[{"text": "inflates", "tone": "crit"}, "put the transform in the Pipeline"], [{"text": "inflates, absurdly", "tone": "crit"}, "GroupKFold on the entity"], [{"text": "inflates, hides drift", "tone": "crit"}, "TimeSeriesSplit with a gap"], [{"text": "adds fold noise", "tone": "warn"}, "StratifiedKFold"], [{"text": "optimistic: best-of-n", "tone": "crit"}, "nested CV, or a held-out test set"], [{"text": "hides the uncertainty", "tone": "warn"}, "report mean ± sd, or the folds"]], "t": "diagram", "id": "dg-1_5-04-1"},
+
+
+
+
 
 
 

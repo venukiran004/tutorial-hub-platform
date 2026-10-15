@@ -87,6 +87,10 @@ cycle over j until nothing changes: coordinate descent. Each step is exact; the 
 
     { t: "h2", n: "03", text: "Why the corner: geometry and priors", id: "geometry" },
 
+    {"kind": "matrix", "title": "Why L1 lands on the corner and L2 never does", "caption": "The constraint region's shape decides it. A diamond has corners **on the axes**, and a contour of the squared error is overwhelmingly likely to first touch a convex region at a corner; a circle has no corners, so the solution is shrunk but never exactly zero. The prior view says the same thing: a Laplace prior has a spike at zero, a Gaussian does not.", "cols": ["L2 / ridge", "L1 / lasso"], "rows": ["Constraint region", "Where contours touch", "Zeros", "Prior", "Solution"], "cells": [[{"text": "a circle", "tone": "accent"}, {"text": "a diamond", "tone": "accent"}], ["a smooth point: no axis", {"text": "a corner: on an axis", "tone": "good"}], [{"text": "never", "tone": "warn"}, {"text": "yes: selection", "tone": "good"}], ["Gaussian: smooth at 0", {"text": "Laplace: a spike at 0", "tone": "good"}], [{"text": "closed form, unique", "tone": "good"}, "coordinate descent"]], "t": "diagram", "id": "dg-4_3-03-0"},
+
+
+
     { t: "viz",
       title: "The constraint regions and the loss contours",
       caption: "Both penalties are equivalent to minimising RSS inside a region of fixed size. The L2 region is a circle: the contour touches it at a point where both coefficients are non-zero. The L1 region is a diamond whose corners sit on the axes: the contour is far more likely to touch at a corner, where one coefficient is exactly zero.",
@@ -130,6 +134,10 @@ probability:  L2 is a Gaussian prior, flat at zero -- 'small, not exactly zero'.
     },
 
     { t: "h2", n: "04", text: "Correlated features: the three penalties diverge", id: "correlated" },
+
+    {"kind": "matrix", "title": "Correlated features are where the three penalties part company", "caption": "This is the practical reason to prefer elastic net when you do not know the structure: with a correlated group, ridge shares the weight and stays stable, lasso picks one member **arbitrarily** — so a resample can change which one — and elastic net keeps them together.", "cols": ["Correlated features", "p > n"], "rows": ["Ridge", "Lasso", "Elastic net"], "cells": [[{"text": "shares weight; stable", "tone": "good"}, "fine"], [{"text": "picks one, arbitrarily", "tone": "crit"}, {"text": "at most n non-zero", "tone": "warn"}], [{"text": "groups them", "tone": "good"}, "fine"]], "t": "diagram", "id": "dg-4_3-04-1"},
+
+
 
     { t: "code", lang: "python", title: "x₁ and x₂ correlated at 0.998, both copies of the same signal; x₃ independent (executed, 500 rows, standardised)",
       hl: [2, 3, 4, 5, 9, 10, 11],

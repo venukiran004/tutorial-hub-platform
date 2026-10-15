@@ -118,6 +118,10 @@ Xᵀ e = Xᵀ(y - ŷ) = [0, 0]                                 the residual is o
 
     { t: "h2", n: "03", text: "Why squared error: OLS is the maximum-likelihood estimate", id: "mle" },
 
+    {"kind": "steps", "title": "Four derivations of one estimate, and what each is for", "caption": "They give the same β-hat and answer different questions. An interviewer asking 'derive it' wants the second; 'why squared error' wants the fourth; 'why does that one point move the line so much' wants the third. Knowing which view answers which question is most of what fluency here means.", "items": [{"label": "Calculus", "desc": "set the derivative to zero: slope is covariance over variance", "code": "intuition", "tone": "accent"}, {"label": "Linear algebra", "desc": "the normal equation, the solvers and the conditioning story", "code": "general", "tone": "good"}, {"label": "Geometry", "desc": "a projection: leverage, orthogonal residuals, why R-squared never falls", "code": "influence", "tone": "violet"}, {"label": "Likelihood", "desc": "Gaussian errors make OLS the MLE — hence squared error, and the standard errors", "code": "inference", "tone": "teal"}], "t": "diagram", "id": "dg-4_1-03-0"},
+
+
+
     { t: "code", lang: "text", title: "Gaussian noise turns 'maximise the likelihood' into 'minimise RSS' (executed)",
       code: `assume   yᵢ = xᵢᵀβ + εᵢ,   εᵢ ~ N(0, σ²) independent
 
@@ -136,6 +140,10 @@ and the same σ̂² gives standard errors:   SE(β₁) = sqrt(σ̂² / Σ(xᵢ -
     },
 
     { t: "h2", n: "04", text: "Solving it at scale", id: "solvers" },
+
+    {"kind": "matrix", "title": "Five ways to solve it, and when each breaks", "caption": "The normal equation squares the condition number, so it is the first to fail under collinearity — which is why `LinearRegression` does not use it. QR/SVD is the default because it handles rank deficiency by returning the minimum-norm solution instead of raising.", "cols": ["Cost", "Conditioning"], "rows": ["Normal equation", "QR / SVD", "Cholesky on X'X + lambda I", "Gradient descent", "Coordinate descent"], "cells": [["O(np² + p³)", {"text": "squares it: fails first", "tone": "crit"}], ["O(np²)", {"text": "best; handles rank deficiency", "tone": "good"}], ["O(np² + p³)", {"text": "lambda fixes it", "tone": "good"}], [{"text": "O(npk)", "tone": "accent"}, "needs scaling; huge n or p"], [{"text": "O(npk)", "tone": "accent"}, "handles L1 exactly"]], "t": "diagram", "id": "dg-4_1-04-1"},
+
+
 
     { t: "code", lang: "python", title: "Gradient descent on the five points, and three solvers on 200,000 × 50 (executed)",
       hl: [2, 3, 4, 5, 9, 10, 11, 14, 15],

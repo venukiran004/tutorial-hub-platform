@@ -1,0 +1,166 @@
+{
+ "3.1": [
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Which algorithms care about scale, and why",
+         "caption": "The reason is always the same shape: something in the objective sums across features with one coefficient. A distance adds squared differences; one λ penalises every weight equally; one learning rate steps every input. A tree compares one feature with one constant and never adds anything across columns — so any monotone rescaling gives identical splits.",
+         "cols": ["Scale matters", "Because"],
+         "rows": ["KNN, k-means, SVM", "PCA, LDA, t-SNE", "Ridge, lasso, penalised", "Neural networks", "Unpenalised linear", "Trees and boosting", "Naive Bayes"],
+         "cells": [
+          [{"text": "always", "tone": "crit"}, "the widest column dominates the distance"],
+          [{"text": "always", "tone": "crit"}, "components chase the biggest units"],
+          [{"text": "always", "tone": "crit"}, "one lambda penalises every weight equally"],
+          [{"text": "always", "tone": "crit"}, "one step size for every input"],
+          [{"text": "for convergence only", "tone": "warn"}, "the optimum is unit-free; conditioning is not"],
+          [{"text": "no", "tone": "good"}, "a split is one feature against a constant"],
+          [{"text": "no", "tone": "good"}, "each feature is modelled on its own"]]}},
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "Three scalers, and what an outlier does to each",
+         "caption": "The choice is about which statistic the outlier can move. Min-max is defined by the extremes, so a single bad value compresses every other row into a corner; robust scaling uses the median and IQR, which an outlier cannot shift. And a scaler that centres destroys sparsity — which is why `with_mean=False` exists.",
+         "cols": ["Uses", "One outlier"],
+         "rows": ["StandardScaler", "MinMaxScaler", "RobustScaler", "On sparse data"],
+         "cells": [
+          [{"text": "mean and sd", "tone": "accent"}, "inflates sd; everything else shrinks"],
+          [{"text": "min and max", "tone": "crit"}, "compresses all other rows into a corner"],
+          [{"text": "median and IQR", "tone": "good"}, "cannot move either statistic"],
+          [{"text": "with_mean=False", "tone": "warn"}, "centring would fill every zero"]]}}
+ ],
+
+ "3.2": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Seven encodings, by what each one assumes",
+         "caption": "The assumption column is the whole decision. Ordinal encoding asserts an order, so applying it to an unordered column hands the model a ranking you invented — usually alphabetical, because that is what the encoder saw first. Target encoding assumes a level's mean outcome is informative, and leaks unless it is fitted in-fold.",
+         "cols": ["Columns", "Assumes"],
+         "rows": ["One-hot", "Ordinal", "Target (out-of-fold)", "Frequency", "Hashing", "Native (LightGBM)", "Embedding"],
+         "cells": [
+          [{"text": "k", "tone": "warn"}, {"text": "nothing", "tone": "good"}],
+          [{"text": "1", "tone": "good"}, {"text": "an order exists", "tone": "crit"}],
+          [{"text": "1", "tone": "good"}, {"text": "the level's mean is informative", "tone": "warn"}],
+          [{"text": "1", "tone": "good"}, "rarity is informative"],
+          [{"text": "fixed", "tone": "good"}, "collisions are tolerable"],
+          [{"text": "1", "tone": "good"}, "the library's split rule"],
+          [{"text": "d", "tone": "accent"}, "similar levels should be near"]]}},
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "Two thousand cities: what one-hot costs and what replaces it",
+         "caption": "At high cardinality one-hot is not merely wide — most columns have too few ones to estimate anything from, so the model is fitting noise in two thousand places. Each alternative collapses the column to one or a few, and each pays for it differently.",
+         "cols": ["Gives up", "Unknown level at serving"],
+         "rows": ["One-hot, k = 2000", "Target encoding", "Frequency", "Hashing", "Rare-level grouping"],
+         "cells": [
+          [{"text": "nothing, but 2000 columns", "tone": "crit"}, "handle_unknown='ignore': all zeros"],
+          [{"text": "safety without in-fold fitting", "tone": "warn"}, "the global mean"],
+          [{"text": "identity", "tone": "warn"}, "0"],
+          [{"text": "reversibility", "tone": "warn"}, {"text": "handled by construction", "tone": "good"}],
+          [{"text": "the tail", "tone": "warn"}, "lands in 'other'"]]}}
+ ],
+
+ "3.3": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "The mechanism decides what is safe to do",
+         "caption": "Under MNAR the value's own size is what caused it to be absent — high earners declining to state income — so every imputer fills in a typical value for rows that are systematically atypical. No imputation recovers the values; an indicator column recovers the **fact**, which is often the stronger feature.",
+         "cols": ["Depends on", "Safe to"],
+         "rows": ["MCAR", "MAR", "MNAR"],
+         "cells": [
+          [{"text": "nothing", "tone": "good"}, "anything, even deleting rows"],
+          [{"text": "other observed columns", "tone": "accent"}, "impute from them, plus an indicator"],
+          [{"text": "the missing value itself", "tone": "crit"}, "indicator first; no imputer recovers it"]]}},
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Row deletion scored best and would have been the worst decision",
+         "caption": "The 126 customers with no tickets field churn at 0.222 against 0.154 — dropping them raised the AUC because the **remaining problem is easier**, not because the model improved. The deployed model meets those customers on day one, with no tickets value, and still has to score them. A treatment is judged on the population the model will serve.",
+         "cols": ["Use", "Why"],
+         "rows": ["Under 5%, MCAR", "MAR", "MNAR suspected", "Many columns affected", "Over 50% missing", "Time series", "A NaN-native booster"],
+         "cells": [
+          [{"text": "median, or a 'missing' level", "tone": "good"}, "anything works; keep it simple"],
+          [{"text": "KNN or iterative, plus indicator", "tone": "good"}, "other columns predict the value"],
+          [{"text": "the indicator first", "tone": "accent"}, "it recovers the fact, not the value"],
+          [{"text": "never row-wise deletion", "tone": "crit"}, "it compounds and empties the table"],
+          [{"text": "keep only the indicator", "tone": "warn"}, "the fills would be mostly fiction"],
+          [{"text": "forward-fill, or interpolate", "tone": "good"}, "backward-fill copies the future back"],
+          [{"text": "pass NaN through", "tone": "good"}, "it learns a direction per split"]]}}
+ ],
+
+ "3.4": [
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Nine shapes of derived feature, and who needs them",
+         "caption": "The last column is the part worth internalising: most of these exist to give a **linear or distance** model something it cannot construct itself. A tree can already find a threshold interaction by nesting two splits, so generic polynomial expansion mostly adds width and noise there.",
+         "cols": ["Form", "Needed by"],
+         "rows": ["Ratio", "Product", "Difference", "Datetime parts", "Cyclical", "Aggregates", "Indicator"],
+         "cells": [
+          ["a / b", {"text": "linear, distance", "tone": "accent"}],
+          ["a x b", {"text": "linear, distance", "tone": "accent"}],
+          ["a - b, or a - lag(a)", {"text": "all, when trend beats level", "tone": "good"}],
+          ["month, weekday, hour", {"text": "all", "tone": "good"}],
+          ["sin and cos of the part", {"text": "linear, distance", "tone": "accent"}],
+          ["group mean, count, rank", {"text": "all — in-fold only", "tone": "warn"}],
+          ["a > threshold, is-zero", {"text": "all", "tone": "good"}]]}},
+  {"after": "04",
+   "d": {"kind": "steps",
+         "title": "Find, then decide — and they are separate steps",
+         "caption": "Detection is a statistical question with several answers; what to do about it is a domain question with only one source of truth. Collapsing them is how a genuine extreme value — the bulk order, the record day — gets winsorised into a plausible-looking lie.",
+         "items": [
+          {"label": "Find candidates", "desc": "IQR or robust z per column, Mahalanobis or Isolation Forest jointly", "code": "1", "tone": "accent"},
+          {"label": "Ask what the row is", "desc": "an impossible value, a unit mix-up, a sentinel, or a real event", "code": "2", "tone": "good"},
+          {"label": "A data error", "desc": "fix at source, or set NaN and impute with an indicator", "code": "fix", "tone": "warn"},
+          {"label": "A genuine extreme", "desc": "keep it; consider a robust loss or a log target instead", "code": "keep", "tone": "good"},
+          {"label": "Winsorising without asking", "desc": "turns a real event into a plausible-looking lie", "code": "never", "tone": "crit"}]}}
+ ],
+
+ "3.5": [
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "What each selector can and cannot see",
+         "caption": "The two columns that decide most choices: whether the test can see a **non-linear** relationship at all, and what it does with correlated copies. An F-test ranks every copy of a useful feature highly; lasso picks one of them arbitrarily; permutation importance shares the credit, so a correlated copy can hide the drop entirely.",
+         "cols": ["Sees non-linear", "Correlated copies"],
+         "rows": ["Correlation filter", "ANOVA F / chi2", "Mutual information", "RFE", "L1 / lasso", "Tree importance", "Permutation importance"],
+         "cells": [
+          [{"text": "no", "tone": "warn"}, "duplicates only"],
+          [{"text": "no", "tone": "warn"}, {"text": "every copy ranks high", "tone": "crit"}],
+          [{"text": "yes", "tone": "good"}, "all rank high"],
+          [{"text": "as the model does", "tone": "accent"}, "picks one of the group"],
+          [{"text": "no", "tone": "warn"}, {"text": "picks one arbitrarily", "tone": "crit"}],
+          [{"text": "yes", "tone": "good"}, "credit split across copies"],
+          [{"text": "yes", "tone": "good"}, {"text": "a copy hides the drop", "tone": "crit"}]]}},
+  {"after": "04",
+   "d": {"kind": "steps",
+         "title": "Where selection must run",
+         "caption": "Selecting on all the rows means the choice of columns was informed by the rows you later score — and with more features than rows you can select pure noise and get a convincing cross-validated number out of it. The selector is a fitted step like any other.",
+         "items": [
+          {"label": "Selection inside the Pipeline", "desc": "refitted per fold, from that fold's training rows only", "code": "right", "tone": "good"},
+          {"label": "Each fold may choose different columns", "desc": "that is the honest answer, not a bug", "code": "note", "tone": "accent"},
+          {"label": "Selection before the split", "desc": "the test rows' labels chose the columns", "code": "wrong", "tone": "crit"},
+          {"label": "With p greater than n", "desc": "noise survives and cross-validates well", "code": "wrong", "tone": "crit"},
+          {"label": "Report the set as a property of the model", "desc": "not as a discovery about the world", "code": "say so", "tone": "violet"}]}}
+ ],
+
+ "3.6": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "The contract every transformer keeps",
+         "caption": "Three methods and one rule: nothing is learned until `fit`, and everything learned is stored in an attribute ending in an underscore. Before `fit`, a scaler has no such attributes at all — which is exactly why a pipeline can be cloned per fold and refitted without leaking anything between them.",
+         "cols": ["Does", "Learns"],
+         "rows": ["__init__", "fit(X, y)", "transform(X)", "fit_transform", "attributes with _", "get_feature_names_out"],
+         "cells": [
+          ["stores the hyperparameters", {"text": "nothing", "tone": "good"}],
+          ["reads the training rows", {"text": "everything it needs", "tone": "accent"}],
+          [{"text": "applies what was learned", "tone": "good"}, "nothing new"],
+          ["both, sometimes faster", "as fit"],
+          [{"text": "hold the learned state", "tone": "accent"}, "absent before fit"],
+          ["names the output columns", "nothing: it reports"]]}},
+  {"after": "04",
+   "d": {"kind": "steps",
+         "title": "One artefact, one code path",
+         "caption": "Training–serving skew is not a risk you manage, it is a consequence of having two implementations. If the fitted Pipeline is the thing serialised and the thing called in serving, there is no second implementation to drift.",
+         "items": [
+          {"label": "ColumnTransformer by name", "desc": "remainder='drop', so a new column cannot slip in unnoticed", "code": "1", "tone": "accent"},
+          {"label": "A branch per type", "desc": "impute with indicator, scale if the model needs it, encode with unknown handling", "code": "2", "tone": "good"},
+          {"label": "The model, in the same Pipeline", "desc": "so every fold refits the preprocessing too", "code": "3", "tone": "good"},
+          {"label": "Tune with a grid that reaches the preprocessing", "desc": "the imputer strategy is a hyperparameter like any other", "code": "4", "tone": "violet"},
+          {"label": "Refit on everything, then joblib.dump", "desc": "with the library versions pinned beside it", "code": "5", "tone": "teal"},
+          {"label": "Serve by calling that object", "desc": "on a DataFrame with the training column names", "code": "6", "tone": "good"}]}}
+ ]
+}

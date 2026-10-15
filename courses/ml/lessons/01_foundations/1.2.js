@@ -24,6 +24,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "table",
       head: ["#", "Step", "Produces", "The mistake that survives to production"],
       rows: [
@@ -92,6 +96,10 @@ df.groupby("refund_issued").churned.mean()          # refund 0: 0.029    refund 
     { t: "h2", n: "03", text: "Split, baseline, model, evaluate — inside a Pipeline", id: "model" },
 
     {"kind": "matrix", "title": "How many times each set may be read", "caption": "The validation set can be used repeatedly because nothing is reported from it — it only chooses. The test set is a one-shot measurement, and every look before the end spends some of its honesty, because you start making choices that fit it.", "cols": ["May be read", "Because"], "rows": ["Training set", "Validation set", "Test set", "The CV score", "The baseline"], "cells": [[{"text": "constantly", "tone": "good"}, "the model is fitted on it"], [{"text": "many times", "tone": "good"}, "it chooses; it does not report"], [{"text": "once, at the end", "tone": "crit"}, "it is the only honest number left"], [{"text": "to compare, not to report", "tone": "warn"}, "it chose the hyperparameters"], [{"text": "every time", "tone": "accent"}, "the model is judged by its distance from it"]], "t": "diagram", "id": "dg-1_2-03-1"},
+
+
+
+
 
 
 

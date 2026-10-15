@@ -46,6 +46,11 @@ pro           19.99           2.017                           0.914             
 
     { t: "h2", n: "02", text: "Which algorithms care, measured", id: "who" },
 
+    {"kind": "matrix", "title": "Which algorithms care about scale, and why", "caption": "The reason is always the same shape: something in the objective sums across features with one coefficient. A distance adds squared differences; one λ penalises every weight equally; one learning rate steps every input. A tree compares one feature with one constant and never adds anything across columns — so any monotone rescaling gives identical splits.", "cols": ["Scale matters", "Because"], "rows": ["KNN, k-means, SVM", "PCA, LDA, t-SNE", "Ridge, lasso, penalised", "Neural networks", "Unpenalised linear", "Trees and boosting", "Naive Bayes"], "cells": [[{"text": "always", "tone": "crit"}, "the widest column dominates the distance"], [{"text": "always", "tone": "crit"}, "components chase the biggest units"], [{"text": "always", "tone": "crit"}, "one lambda penalises every weight equally"], [{"text": "always", "tone": "crit"}, "one step size for every input"], [{"text": "for convergence only", "tone": "warn"}, "the optimum is unit-free; conditioning is not"], [{"text": "no", "tone": "good"}, "a split is one feature against a constant"], [{"text": "no", "tone": "good"}, "each feature is modelled on its own"]], "t": "diagram", "id": "dg-3_1-02-0"},
+
+
+
+
     { t: "code", lang: "python", title: "Four models, four scalers, 5-fold AUC on the churn table (executed)",
       hl: [2, 3, 4, 5],
       code: `#                        no scaling    standard    min-max    robust
@@ -87,6 +92,11 @@ pro           19.99           2.017                           0.914             
     },
 
     { t: "h2", n: "03", text: "Fit on train only, and the sparse exception", id: "fit" },
+
+    {"kind": "matrix", "title": "Three scalers, and what an outlier does to each", "caption": "The choice is about which statistic the outlier can move. Min-max is defined by the extremes, so a single bad value compresses every other row into a corner; robust scaling uses the median and IQR, which an outlier cannot shift. And a scaler that centres destroys sparsity — which is why `with_mean=False` exists.", "cols": ["Uses", "One outlier"], "rows": ["StandardScaler", "MinMaxScaler", "RobustScaler", "On sparse data"], "cells": [[{"text": "mean and sd", "tone": "accent"}, "inflates sd; everything else shrinks"], [{"text": "min and max", "tone": "crit"}, "compresses all other rows into a corner"], [{"text": "median and IQR", "tone": "good"}, "cannot move either statistic"], [{"text": "with_mean=False", "tone": "warn"}, "centring would fill every zero"]], "t": "diagram", "id": "dg-3_1-03-1"},
+
+
+
 
     { t: "code", lang: "python", title: "The mistake that invalidates a result, and the Pipeline that prevents it (executed)",
       hl: [2, 3, 7, 8],

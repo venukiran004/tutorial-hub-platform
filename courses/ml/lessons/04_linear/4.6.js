@@ -19,6 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "One model, three components", id: "glm" },
 
+    {"kind": "matrix", "title": "Family is about the variance; link is about the mean", "caption": "Two independent choices, and conflating them is the usual confusion. The family answers 'how does the spread of y grow with its mean'; the link answers 'on what scale do the effects add up'. A Poisson family with an identity link is legal and occasionally right — here it fitted a minimum mean of −0.75, which is why the log link is the default.", "cols": ["Variance grows", "Family"], "rows": ["Not at all", "Linearly with the mean", "With the mean squared", "Faster than Poisson", "A spike at zero"], "cells": [[{"text": "constant", "tone": "good"}, "Normal: squared error"], [{"text": "proportional to mu", "tone": "accent"}, "Poisson, with log link and offset"], [{"text": "proportional to mu²", "tone": "accent"}, "Gamma, with log link"], [{"text": "overdispersed, phi > 1.2", "tone": "warn"}, "Negative binomial"], [{"text": "a point mass plus a tail", "tone": "violet"}, "Tweedie, 1 < p < 2"]], "t": "diagram", "id": "dg-4_6-01-0"},
+
+
+
     { t: "code", lang: "text", title: "The generalised linear model",
       code: `1. RANDOM component       y ~ an exponential-family distribution with mean μ         (Normal, Bernoulli, Poisson, Gamma, Tweedie, ...)
 2. SYSTEMATIC component   η = xᵀβ                                                     (the linear predictor -- always linear)
@@ -137,6 +141,10 @@ sm.GLM(y, X, family=sm.families.Poisson(), offset=np.log(exposure)).fit()      #
     ]},
 
     { t: "h2", n: "04", text: "Changing the loss instead: Huber and quantile regression", id: "robust" },
+
+    {"kind": "matrix", "title": "Choosing the loss is choosing a likelihood", "caption": "Squared error is the Normal likelihood and absolute error is the Laplace — so 'change the loss' and 'change the family' are the same move seen from two sides. Huber caps the gradient, which is exactly what makes contamination unable to drag the fit.", "cols": ["Use", "Because"], "rows": ["Counts, or a rate", "Positive skewed amounts", "Amounts with many zeros", "Occasional wild residuals", "A percentile or interval", "Gaussian-ish residuals"], "cells": [[{"text": "Poisson, log link, offset", "tone": "good"}, "variance grows; effects multiply"], [{"text": "Gamma, log link", "tone": "good"}, "unbiased for E[y], unlike log-OLS"], [{"text": "Tweedie, p by CV", "tone": "good"}, "a zero mass plus a Gamma tail"], [{"text": "Huber or absolute error", "tone": "good"}, "the gradient is capped"], [{"text": "quantile regression at tau", "tone": "accent"}, "pinball loss is minimised by the quantile"], [{"text": "squared error", "tone": "good"}, "most efficient when it holds"]], "t": "diagram", "id": "dg-4_6-04-1"},
+
+
 
     { t: "code", lang: "text", title: "Three losses on one residual r = y − ŷ, and their gradients",
       code: `squared      ½ r²                       gradient  r              every residual pulls in proportion to its size: a residual of 50 pulls 50× harder than one of 1

@@ -19,6 +19,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "One-hot, and the trap", id: "onehot" },
 
+    {"kind": "matrix", "title": "Seven encodings, by what each one assumes", "caption": "The assumption column is the whole decision. Ordinal encoding asserts an order, so applying it to an unordered column hands the model a ranking you invented — usually alphabetical, because that is what the encoder saw first. Target encoding assumes a level's mean outcome is informative, and leaks unless it is fitted in-fold.", "cols": ["Columns", "Assumes"], "rows": ["One-hot", "Ordinal", "Target (out-of-fold)", "Frequency", "Hashing", "Native (LightGBM)", "Embedding"], "cells": [[{"text": "k", "tone": "warn"}, {"text": "nothing", "tone": "good"}], [{"text": "1", "tone": "good"}, {"text": "an order exists", "tone": "crit"}], [{"text": "1", "tone": "good"}, {"text": "the level's mean is informative", "tone": "warn"}], [{"text": "1", "tone": "good"}, "rarity is informative"], [{"text": "fixed", "tone": "good"}, "collisions are tolerable"], [{"text": "1", "tone": "good"}, "the library's split rule"], [{"text": "d", "tone": "accent"}, "similar levels should be near"]], "t": "diagram", "id": "dg-3_2-01-0"},
+
+
+
+
     { t: "code", lang: "python", title: "The plan column, one-hot encoded, and the rank of the design matrix (executed)",
       hl: [2, 3, 4, 5, 9, 10],
       code: `OneHotEncoder().fit_transform([["basic"], ["plus"], ["pro"], ["plus"]])
@@ -60,6 +65,11 @@ OneHotEncoder(drop="first")               # [plus, pro] with basic as the refere
     },
 
     { t: "h2", n: "03", text: "High cardinality: two thousand cities", id: "highcard" },
+
+    {"kind": "matrix", "title": "Two thousand cities: what one-hot costs and what replaces it", "caption": "At high cardinality one-hot is not merely wide — most columns have too few ones to estimate anything from, so the model is fitting noise in two thousand places. Each alternative collapses the column to one or a few, and each pays for it differently.", "cols": ["Gives up", "Unknown level at serving"], "rows": ["One-hot, k = 2000", "Target encoding", "Frequency", "Hashing", "Rare-level grouping"], "cells": [[{"text": "nothing, but 2000 columns", "tone": "crit"}, "handle_unknown='ignore': all zeros"], [{"text": "safety without in-fold fitting", "tone": "warn"}, "the global mean"], [{"text": "identity", "tone": "warn"}, "0"], [{"text": "reversibility", "tone": "warn"}, {"text": "handled by construction", "tone": "good"}], [{"text": "the tail", "tone": "warn"}, "lands in 'other'"]], "t": "diagram", "id": "dg-3_2-03-1"},
+
+
+
 
     { t: "p", text: "Twenty thousand rows, a city column with two thousand levels — ten rows each — where each city has a real hidden effect on the outcome, plus one numeric feature. **The city carries signal, and no encoder can extract more than ten rows per level allow.** An oracle that knows each city's true effect scores 0.730; that is the ceiling." },
 
