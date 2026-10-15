@@ -18,7 +18,13 @@
     short: "SQL",
     blurb: "Query correctness, window functions, execution plans, indexing and schema design — for engineers tired of guessing why a query is slow or why a count is wrong.",
 
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "3.1", "3.2", "3.3", "3.4", "3.5", "4.1", "4.2", "4.3", "4.4", "4.5", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "6.7", "7.1", "7.2", "7.3", "7.4", "7.5"],
+    trackLabels: { learn: "SQL", interview: "Interview" },
+    trackBlurbs: {
+      learn: "Seven modules, in the order the engine itself works — every result table produced by running the query.",
+      interview: "A hundred and one questions, from the execution order to the tie-breaking window frame."
+    },
+
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "3.1", "3.2", "3.3", "3.4", "3.5", "4.1", "4.2", "4.3", "4.4", "4.5", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "6.7", "7.1", "7.2", "7.3", "7.4", "7.5", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "i1.6", "i1.7"],
 
     modules: [
 
@@ -234,7 +240,38 @@
             keywords: ["interview", "second highest", "top n per department", "consecutive days", "median", "running total", "classics"] }
         ]
       }
+,
 
+      {
+        id: "iv_sql", short: "I1", dir: "01_iv_sql", track: "interview", numPrefix: "I",
+        phase: "Interview",
+        title: "SQL Interview Bank",
+        blurb: "A hundred and one questions across SELECT and filtering, joins, grouping, window functions, subqueries and CTEs, string and date handling, performance, schema design and the ML-specific patterns.",
+        outcome: "You can answer a SQL question with the execution order and what the optimiser will do with it.",
+        lessons: [
+          { id: "i1.1", title: "SELECT, filtering and the basics", difficulty: "advanced", minutes: 40, tier: "should",
+            summary: "20 questions with the answers folded away.",
+            keywords: ["select", "filtering", "basics"] },
+          { id: "i1.2", title: "JOINs", difficulty: "advanced", minutes: 30, tier: "should",
+            summary: "15 questions with the answers folded away.",
+            keywords: ["joins"] },
+          { id: "i1.3", title: "GROUP BY, HAVING and aggregation", difficulty: "advanced", minutes: 20, tier: "should",
+            summary: "10 questions with the answers folded away.",
+            keywords: ["group", "having", "aggregation"] },
+          { id: "i1.4", title: "Window functions", difficulty: "advanced", minutes: 24, tier: "should",
+            summary: "12 questions with the answers folded away.",
+            keywords: ["window", "functions"] },
+          { id: "i1.5", title: "Subqueries, CTEs and advanced SQL", difficulty: "advanced", minutes: 36, tier: "should",
+            summary: "18 questions with the answers folded away.",
+            keywords: ["subqueries", "ctes", "advanced"] },
+          { id: "i1.6", title: "Performance, optimisation and schema design", difficulty: "advanced", minutes: 22, tier: "should",
+            summary: "11 questions with the answers folded away.",
+            keywords: ["performance", "optimisation", "schema", "design"] },
+          { id: "i1.7", title: "ML-specific SQL patterns", difficulty: "advanced", minutes: 30, tier: "should",
+            summary: "15 questions with the answers folded away.",
+            keywords: ["specific", "patterns"] }
+        ]
+      }
     ]
   });
 })();

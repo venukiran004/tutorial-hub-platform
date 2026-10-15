@@ -6,7 +6,7 @@ EC.receiveLesson({
  "id": "i2.3",
  "lede": "**10 questions** from Glassdoor AI Engineer. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
  "objectives": [
-  "Answer each question as you would in the interview, then compare against the reference answer",
+  "Answer each question as you would in the interview, then compare against the worked answer",
   "Lead with the definition and the formula, then the trade-off",
   "Follow up on your own answer with the question an interviewer would ask next",
   "Note which questions you could not answer and return to the lesson that covers them"

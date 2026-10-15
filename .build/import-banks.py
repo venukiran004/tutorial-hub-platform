@@ -102,6 +102,33 @@ SPECS = {
        "You can answer an NLP or transformer interview question with the formula, the shape and the reason.", "advanced"),
     ],
   },
+  "data": {
+    "src": "03_Data_Handling",
+    "practice": [
+      ("Practice/01_NumPy_Programs.md", "programs", "np_programs", "P1",
+       "NumPy Programs",
+       "A hundred short NumPy programs \u2014 creation and reshaping, indexing, broadcasting, reductions, linear algebra, random sampling and the array tricks worth knowing by name.",
+       "You can write the NumPy for any standard array operation without looking it up.", "core"),
+      ("Practice/02_Pandas_Programs.md", "programs", "pd_programs", "P2",
+       "Pandas Programs",
+       "A hundred short pandas programs \u2014 frames and selection, grouping, merging, reshaping, time series, strings and the cleaning operations you repeat on every dataset.",
+       "You can write the pandas for any standard frame operation from memory.", "core"),
+      ("Practice/04_Data_Science_Scenarios.md", "scenarios_bold", "sc_data", "P3",
+       "Data Science Scenarios",
+       "Situations where the data decides the answer \u2014 missingness you have to diagnose, columns in five formats, categories that are the same thing spelled differently, and joins that multiply.",
+       "You can say what you would check first, and why, before touching the data.", "core"),
+      ("Practice/05_Data_Science_Scenarios_Advanced.md", "scenarios_bold", "sc_data_adv", "P4",
+       "Data Science Scenarios: Advanced",
+       "The harder situations \u2014 leakage that survives cross-validation, drift that is not drift, imbalance that breaks a metric, and pipelines that reproduce a number nobody can explain.",
+       "You can find the fault in an analysis that looks correct.", "advanced"),
+    ],
+    "interview": [
+      ("00_Interview_Bank/01_Data_Handling_Interview.md", "iv_bold", "iv_data", "I1",
+       "NumPy and Pandas Interview Bank",
+       "Four hundred questions across the array model, indexing, broadcasting and reductions, then frames, selection, grouping, merging, reshaping, time series and performance.",
+       "You can answer a NumPy or pandas question with the mechanism, not the method name.", "advanced"),
+    ],
+  },
   "maths": {
     "src": "02_Mathematics_and_Statistics",
     "practice": [
@@ -317,15 +344,71 @@ def body_until(lines, start, stop_re):
     return lines[start:j], j
 
 
+def split_bundle(body):
+    """A fenced block whose code is itself a run of `# Program N: Title`
+    programs -> one item per program, each with its code in a code block.
+
+    The NumPy and pandas banks write their utility round-ups this way: one
+    heading, one fence, and dozens of programs separated by comments. Returns
+    [] for the usual shape, a body holding a single program.
+    """
+    code, fence, lang = [], False, "python"
+    for l in body:
+        t = l.strip()
+        if t.startswith("```"):
+            if not fence:
+                lang = t[3:].strip().lower() or "python"
+            fence = not fence
+            continue
+        if fence:
+            code.append(l)
+    marks = [k for k, l in enumerate(code) if re.match(r"^# Program \d+[:.]", l)]
+    if len(marks) < 2:
+        return []
+    if lang not in ("python", "sql", "bash", "text"):
+        lang = "python"
+    out = []
+    for k, start in enumerate(marks):
+        end = marks[k + 1] if k + 1 < len(marks) else len(code)
+        m = re.match(r"^# Program (\d+)[:.]\s*(.*)$", code[start])
+        chunk = "\n".join(code[start + 1:end]).strip("\n").rstrip()
+        if not chunk.strip():
+            continue
+        out.append((m.group(1), inline_md(m.group(2)),
+                    [{"t": "code", "lang": lang, "code": chunk}], None))
+    return out
+
+
 def parse_programs(lines):
-    """### Program N: Title -> (n, title, blocks). Scoped to the Programs section
-    when the file also carries scenarios."""
+    """### Program N: Title -> (n, title, blocks).
+
+    Only real markdown headings count: a `# Program N` line inside a fence is
+    a Python comment, not a heading, and matching it flattens that program's
+    code into prose. Where a heading's fence bundles several programs as
+    comments, split_bundle gives each one its own item.
+    """
     items = []
+    fence = False
     for i, l in enumerate(lines):
-        m = re.match(r"^### Program (\d+)[:.]\s*(.*)$", l)
-        if m:
-            body, _ = body_until(lines, i + 1, r"^#{2,3} ")
-            items.append((m.group(1), inline_md(m.group(2)), md_blocks(body), None))
+        if l.strip().startswith("```"):
+            fence = not fence
+            continue
+        if fence:
+            continue
+        m = re.match(r"^#{1,4} Program (\d+)[:.]\s*(.*)$", l)
+        if not m:
+            continue
+        body, _ = body_until(lines, i + 1, r"^#{1,4} ")
+        bundled = split_bundle(body)
+        if bundled:
+            items.extend(bundled)
+            continue
+        blocks = md_blocks(body)
+        # a heading with prose and no code introduces the group of programs
+        # that follows it; it is not itself a program to practise
+        if not any(b.get("t") == "code" for b in blocks):
+            continue
+        items.append((m.group(1), inline_md(m.group(2)), blocks, None))
     return items
 
 
@@ -351,6 +434,34 @@ def parse_scenarios_sec(lines):
         if m:
             body, _ = body_until(lines, i + 1, r"^#{2,3} ")
             items.append((m.group(1), inline_md(m.group(2)), md_blocks(body), section))
+    return items
+
+
+def parse_scenarios_bold(lines):
+    """### Scenario N.   with an empty title, the question in the first bold
+    line of the body and the answer in the prose after it."""
+    items = []
+    section = None
+    for i, l in enumerate(lines):
+        if l.startswith("## ") and not l.startswith("## Contents"):
+            section = re.sub(r"\s*\(Scenarios? \d+[\u2013-]\d+\)\s*$", "", l[3:].strip())
+        m = re.match(r"^### Scenario (\d+)[.:]\s*(.*)$", l)
+        if not m:
+            continue
+        body, _ = body_until(lines, i + 1, r"^#{2,3} ")
+        title = m.group(2).strip()
+        # the question is the first fully bold line; drop it from the answer
+        rest = list(body)
+        if not title:
+            for k, bl in enumerate(rest):
+                q = re.match(r"^\*\*(.+?)\*\*\s*$", bl.strip())
+                if q:
+                    title = q.group(1).strip()
+                    rest = rest[:k] + rest[k + 1:]
+                    break
+        if not title:
+            continue
+        items.append((m.group(1), inline_md(title), md_blocks(rest), section))
     return items
 
 
@@ -439,6 +550,7 @@ def parse_glassdoor(lines):
 
 
 PARSERS = {"programs": parse_programs, "scenarios": parse_scenarios,
+           "scenarios_bold": parse_scenarios_bold,
            "scenarios_sec": parse_scenarios_sec,
            "deepdive": parse_deepdive,
            "iv_h3": parse_iv_h3, "iv_bold": parse_iv_bold, "glassdoor": parse_glassdoor}
@@ -449,7 +561,8 @@ PARSERS = {"programs": parse_programs, "scenarios": parse_scenarios,
 def chunk(items, kind):
     """Cut a bank into lessons of at most MAX drills, on section boundaries
     when the bank has sections, folding a tiny tail into its predecessor."""
-    if kind in ("iv_h3", "iv_bold", "glassdoor", "scenarios_sec", "deepdive"):
+    if kind in ("iv_h3", "iv_bold", "glassdoor", "scenarios_sec",
+                "scenarios_bold", "deepdive"):
         groups = []
         for it in items:
             if not groups or groups[-1][0] != it[3]:
@@ -495,13 +608,14 @@ def lesson_json(course, track, lid, mod, title, sub, items, kind, seq, total):
                 body.append({"t": "out", "label": "Output when run", "text": o})
         drills.append({"t": "drill", "n": n, "q": q, "body": body,
                        "kind": "program" if kind == "programs" else ""})
-    noun = {"programs": "programs", "scenarios": "scenarios"}.get(kind, "questions")
+    noun = {"programs": "programs", "scenarios": "scenarios",
+            "scenarios_bold": "scenarios"}.get(kind, "questions")
     lede = ("**%d %s** from %s." % (len(items), noun, mod[4]) +
             (" Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not."
              if kind != "programs" else
-             " Read the title, write the program yourself, then open the reference version and what it printed when it was run."))
+             " Read the title, write the program yourself, then open the worked version and what it printed when it was run."))
     ob = {
-        "programs": ["Write each program from its title before opening the reference version",
+        "programs": ["Write each program from its title before opening the worked version",
                      "Predict the printed shapes and numbers before revealing the output",
                      "Say which layer, loss or trick each program demonstrates and when you would reach for it",
                      "Change one thing in each program — a shape, a hyperparameter — and predict what the output becomes"],
@@ -509,7 +623,7 @@ def lesson_json(course, track, lid, mod, title, sub, items, kind, seq, total):
                       "Give the mechanism, not the slogan — the formula, the failure mode, the fix",
                       "Recognise the pattern behind the question so the next variant is easy",
                       "Mark the ones you got wrong and return to the lesson that covers them"],
-    }.get(kind, ["Answer each question as you would in the interview, then compare against the reference answer",
+    }.get(kind, ["Answer each question as you would in the interview, then compare against the worked answer",
                  "Lead with the definition and the formula, then the trade-off",
                  "Follow up on your own answer with the question an interviewer would ask next",
                  "Note which questions you could not answer and return to the lesson that covers them"])
@@ -560,7 +674,8 @@ def emit(course):
             for li, (sub, its) in enumerate(chunks):
                 lid = "%s%d.%d" % (prefix, mi + 1, li + 1)
                 k = per_kind[its[0][3]] if per_kind else kind
-                noun = {"programs": "programs", "scenarios": "scenarios"}.get(k, "questions")
+                noun = {"programs": "programs", "scenarios": "scenarios",
+                        "scenarios_bold": "scenarios"}.get(k, "questions")
                 ltitle = sub if sub else ("%s · %d" % (title, li + 1))
                 data = lesson_json(course, track, lid, (fname, kind, mid, short, title), ltitle, sub, its, k, li, len(chunks))
                 lessons.append({
@@ -573,10 +688,8 @@ def emit(course):
                 header = ("/* ============================================================================\n"
                           "   %s %s — %s\n"
                           "   ----------------------------------------------------------------------------\n"
-                          "   Imported from tutorial-hub/%s/%s by .build/import-banks.py —\n"
-                          "   edit the importer, not this file.\n"
                           "   ========================================================================= */\n"
-                          % (track.upper(), lid.upper(), ltitle, spec["src"], fname))
+                          % (track.upper(), lid.upper(), ltitle))
                 js = header + "EC.receiveLesson(" + json.dumps(data, ensure_ascii=False, indent=1) + ");\n"
                 io.open(os.path.join(outdir, lid + ".js"), "w", encoding="utf-8", newline="\n").write(js)
             modules[track].append({
