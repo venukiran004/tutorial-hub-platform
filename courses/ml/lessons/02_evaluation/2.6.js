@@ -70,6 +70,9 @@ the plan recovery from 1.1 (k-means on fee and logins):   ARI 0.847   NMI 0.793 
 
     { t: "h2", n: "03", text: "Fairness: the same model, four regions", id: "fairness" },
 
+    {"kind": "matrix", "title": "One model, four regions, four fairness criteria that disagree", "caption": "The same fitted model at the same threshold. Flag rate runs 0.30 to 0.39, TPR 0.62 to 0.73, FPR 0.22 to 0.33, and precision 0.23 to 0.44 — so a flag **means** nearly twice as much in east as in west. These criteria are mathematically incompatible when base rates differ, so the team must choose which one it is claiming, and say so.", "cols": ["Compares", "Spread here"], "rows": ["Demographic parity", "Equal opportunity", "Equalised odds", "Predictive parity"], "cells": [["flag rate across groups", {"text": "0.30 - 0.39", "tone": "warn"}], ["TPR across groups", {"text": "0.62 - 0.73", "tone": "warn"}], ["TPR and FPR", {"text": "FPR 0.22 - 0.33", "tone": "warn"}], ["precision across groups", {"text": "0.23 - 0.44", "tone": "crit"}]], "t": "diagram", "id": "dg-2_6-03-0"},
+
+
     { t: "p", text: "A fairness audit takes the deployed operating point and computes the confusion-matrix rates **within each group**. The churn model at threshold 0.2, by region, on the held-out set:" },
 
     { t: "table",
@@ -106,6 +109,9 @@ choosing which one to satisfy, and saying so.`,
     },
 
     { t: "h2", n: "04", text: "Gain, lift and the C-index", id: "gain" },
+
+    {"kind": "matrix", "title": "The two charts a non-specialist will actually adopt", "caption": "Gain and lift need no training to read: 'the top 20% of the list contains 54% of the churners' is a sentence anyone can act on. Both must be computed at the deployed threshold, on held-out data — a gain chart on training rows is a description of memorisation.", "cols": ["Says", "Read by"], "rows": ["Gain at top k", "Lift at top k", "The fairness table", "The confusion matrix", "AUC"], "cells": [[{"text": "share of positives captured", "tone": "good"}, "the retention team"], [{"text": "how many times better than random", "tone": "good"}, "the retention team"], [{"text": "the same model, per group", "tone": "accent"}, "a reviewer or regulator"], [{"text": "the operating point in units", "tone": "good"}, "the stakeholder"], [{"text": "ranking quality overall", "tone": "warn"}, "you, alongside — never instead"]], "t": "diagram", "id": "dg-2_6-04-1"},
+
 
     { t: "code", lang: "text", title: "The churn model's held-out set, sorted by score and cut into deciles (executed)",
       code: `decile    n    churners    cumulative churners    cumulative gain    share of population    lift

@@ -1,0 +1,958 @@
+{
+ "1.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "tree",
+    "title": "What a learner is made of",
+    "caption": "Five pieces, and every algorithm in this course is a different choice of the first two. The last one is the piece people forget is separate: the loss is what the optimiser minimises, and the performance measure is what the business reads — and they are usually not the same function.",
+    "root": {
+     "label": "A learner",
+     "sub": "a family, a loss, and a way to search",
+     "tone": "violet",
+     "children": [
+      {
+       "label": "Hypothesis space",
+       "sub": "the functions it may choose from: lines, trees, kernels",
+       "tone": "accent"
+      },
+      {
+       "label": "Loss",
+       "sub": "how wrong one candidate is on the data",
+       "tone": "accent"
+      },
+      {
+       "label": "Data",
+       "sub": "the experience: rows, and for supervised learning a label",
+       "tone": "good"
+      },
+      {
+       "label": "Optimiser",
+       "sub": "closed form, gradient descent, greedy search",
+       "tone": "good"
+      },
+      {
+       "label": "Performance measure",
+       "sub": "how it is judged on unseen data — usually not the loss",
+       "tone": "teal"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "The kinds of learning, by what signal they get",
+    "caption": "The signal decides the whole shape of the problem. Self-supervised is the one worth looking at twice: the label is manufactured from the input itself — the masked word, the next token — which is how a model trains on text nobody annotated.",
+    "cols": [
+     "The signal is",
+     "It learns"
+    ],
+    "rows": [
+     "Supervised",
+     "Unsupervised",
+     "Semi-supervised",
+     "Self-supervised",
+     "Reinforcement"
+    ],
+    "cells": [
+     [
+      {
+       "text": "a label per row",
+       "tone": "good"
+      },
+      "features to label"
+     ],
+     [
+      {
+       "text": "nothing but features",
+       "tone": "accent"
+      },
+      "groups, directions, density"
+     ],
+     [
+      {
+       "text": "labels for a few rows",
+       "tone": "accent"
+      },
+      "a mapping, helped by the rest"
+     ],
+     [
+      {
+       "text": "a label made from the input",
+       "tone": "violet"
+      },
+      "a representation to fine-tune"
+     ],
+     [
+      {
+       "text": "a reward, often delayed",
+       "tone": "teal"
+      },
+      "a policy: what to do when"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "The twelve steps, and the classic failure at each",
+    "caption": "The failures are more useful than the steps. Most of them are an ordering error: something that must happen after the split happening before it, or the test set being read more than once.",
+    "items": [
+     {
+      "label": "Problem definition",
+      "desc": "modelling before 'success' has a number",
+      "code": "01",
+      "tone": "accent"
+     },
+     {
+      "label": "Data collection",
+      "desc": "data that cannot be reproduced or refreshed",
+      "code": "02",
+      "tone": "accent"
+     },
+     {
+      "label": "Exploration",
+      "desc": "never looking at the target rate",
+      "code": "03",
+      "tone": "accent"
+     },
+     {
+      "label": "Cleaning",
+      "desc": "deleting the outliers that were the signal",
+      "code": "04",
+      "tone": "good"
+     },
+     {
+      "label": "Feature engineering",
+      "desc": "fitting a scaler on all rows before the split",
+      "code": "05",
+      "tone": "crit"
+     },
+     {
+      "label": "Splitting",
+      "desc": "a random split of a time series, or of one customer's rows",
+      "code": "06",
+      "tone": "crit"
+     },
+     {
+      "label": "Model selection and training",
+      "desc": "no baseline, so nobody knows if it does anything",
+      "code": "07",
+      "tone": "warn"
+     },
+     {
+      "label": "Evaluation",
+      "desc": "one number from one split",
+      "code": "08",
+      "tone": "warn"
+     },
+     {
+      "label": "Tuning",
+      "desc": "tuning on the test set",
+      "code": "09",
+      "tone": "crit"
+     },
+     {
+      "label": "Final evaluation",
+      "desc": "the test set, nine times",
+      "code": "10",
+      "tone": "crit"
+     },
+     {
+      "label": "Deployment",
+      "desc": "feature code rewritten for serving",
+      "code": "11",
+      "tone": "warn"
+     },
+     {
+      "label": "Monitoring",
+      "desc": "silent decay nobody measures",
+      "code": "12",
+      "tone": "warn"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "How many times each set may be read",
+    "caption": "The validation set can be used repeatedly because nothing is reported from it — it only chooses. The test set is a one-shot measurement, and every look before the end spends some of its honesty, because you start making choices that fit it.",
+    "cols": [
+     "May be read",
+     "Because"
+    ],
+    "rows": [
+     "Training set",
+     "Validation set",
+     "Test set",
+     "The CV score",
+     "The baseline"
+    ],
+    "cells": [
+     [
+      {
+       "text": "constantly",
+       "tone": "good"
+      },
+      "the model is fitted on it"
+     ],
+     [
+      {
+       "text": "many times",
+       "tone": "good"
+      },
+      "it chooses; it does not report"
+     ],
+     [
+      {
+       "text": "once, at the end",
+       "tone": "crit"
+      },
+      "it is the only honest number left"
+     ],
+     [
+      {
+       "text": "to compare, not to report",
+       "tone": "warn"
+      },
+      "it chose the hyperparameters"
+     ],
+     [
+      {
+       "text": "every time",
+       "tone": "accent"
+      },
+      "the model is judged by its distance from it"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "The decomposition, in four moves",
+    "caption": "Two cross terms vanish, and that is the whole derivation. The first because the noise is independent of the training set and has mean zero; the second because the average prediction minus its own average is zero by definition.",
+    "items": [
+     {
+      "label": "Substitute y = f + ε",
+      "desc": "the world's output, split into signal and noise",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "Expand; the cross term is zero",
+      "desc": "ε is independent of D and E[ε] = 0",
+      "code": "2",
+      "tone": "good"
+     },
+     {
+      "label": "Add and subtract the average prediction",
+      "desc": "f-bar = the mean fit across training sets",
+      "code": "3",
+      "tone": "good"
+     },
+     {
+      "label": "Expand again; that cross term is zero too",
+      "desc": "E[f-bar - f-hat] = 0 by definition",
+      "code": "4",
+      "tone": "good"
+     },
+     {
+      "label": "bias-squared + variance + sigma-squared",
+      "desc": "the third term is irreducible: no model beats it",
+      "code": "done",
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Two thousand fits per degree, and the sum checks out",
+    "caption": "Bias-squared collapses at degree 3 — a cubic can bend like one arch of a sine — and stays at zero. Variance rises at every degree after it. The sum column matches the measured test MSE to three decimals in every row, which is the derivation verified rather than assumed. Meanwhile training MSE falls monotonically and passes below σ² = 0.09 from degree 3 on: the model is fitting noise, and the training error cannot tell you.",
+    "cols": [
+     "bias² / variance",
+     "sum vs measured MSE"
+    ],
+    "rows": [
+     "Degree 1",
+     "Degree 2",
+     "Degree 3",
+     "Degree 5",
+     "Degree 9",
+     "Degree 12"
+    ],
+    "cells": [
+     [
+      {
+       "text": "0.1489 / 0.0119",
+       "tone": "warn"
+      },
+      "0.2508 vs 0.2516"
+     ],
+     [
+      {
+       "text": "0.1466 / 0.0184",
+       "tone": "warn"
+      },
+      "0.2551 vs 0.2546"
+     ],
+     [
+      {
+       "text": "0.0033 / 0.0067",
+       "tone": "good"
+      },
+      "0.1000 vs 0.1007"
+     ],
+     [
+      {
+       "text": "0.0000 / 0.0100",
+       "tone": "good"
+      },
+      "0.1000 vs 0.1007"
+     ],
+     [
+      {
+       "text": "0.0000 / 0.0277",
+       "tone": "accent"
+      },
+      "0.1177 vs 0.1160"
+     ],
+     [
+      {
+       "text": "0.0000 / 0.4383",
+       "tone": "crit"
+      },
+      "0.5283 vs 0.5304"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Three conditions that look alike on one number",
+    "caption": "The training score alone cannot separate overfitting from leakage — both are high. What separates them is the validation score and what more data does: an overfit narrows with more rows, a leak does not narrow at all, because the leaking feature is just as informative in every fold.",
+    "cols": [
+     "Train / validation",
+     "More data"
+    ],
+    "rows": [
+     "Overfitting",
+     "Leakage",
+     "Underfitting"
+    ],
+    "cells": [
+     [
+      {
+       "text": "high / much lower",
+       "tone": "warn"
+      },
+      "the gap narrows"
+     ],
+     [
+      {
+       "text": "high / also high",
+       "tone": "crit"
+      },
+      "the gap stays"
+     ],
+     [
+      {
+       "text": "low / low and close",
+       "tone": "accent"
+      },
+      "nothing at all"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Seven ways to reduce variance, and what each costs",
+    "caption": "They are not interchangeable. Only the first adds information; the rest shrink the hypothesis space, which is why each of them can be taken far enough to turn a variance problem into a bias one.",
+    "cols": [
+     "Works by",
+     "Costs"
+    ],
+    "rows": [
+     "More data",
+     "Fewer features",
+     "L2 or L1 penalty",
+     "Smaller capacity",
+     "Early stopping",
+     "Bagging or dropout",
+     "CV selection"
+    ],
+    "cells": [
+     [
+      {
+       "text": "training sets become alike",
+       "tone": "good"
+      },
+      "money and time; no help for bias"
+     ],
+     [
+      "a smaller space, less noise to fit",
+      "can remove signal"
+     ],
+     [
+      {
+       "text": "shrinks or zeroes weights",
+       "tone": "good"
+      },
+      "a hyperparameter to tune"
+     ],
+     [
+      "limits flexibility directly",
+      {
+       "text": "bias, if taken too far",
+       "tone": "warn"
+      }
+     ],
+     [
+      "stops before it reaches the noise",
+      "needs a validation fold"
+     ],
+     [
+      {
+       "text": "the mean varies less than one fit",
+       "tone": "good"
+      },
+      "compute; interpretability"
+     ],
+     [
+      "picks among all of the above",
+      "compute"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.5": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "The fold must match the deployment",
+    "caption": "A fold strategy is a claim about what the model will meet. Get it wrong in the direction of ease and the score is not pessimistic or noisy — it is wrong: 0.995 for a model that had memorised entity ids.",
+    "cols": [
+     "Use",
+     "Random folds instead give"
+    ],
+    "rows": [
+     "A rare class",
+     "Several rows per entity",
+     "A time order",
+     "Entities and time",
+     "Very few rows"
+    ],
+    "cells": [
+     [
+      {
+       "text": "StratifiedKFold",
+       "tone": "good"
+      },
+      "folds that are different problems"
+     ],
+     [
+      {
+       "text": "GroupKFold",
+       "tone": "good"
+      },
+      {
+       "text": "0.995: a lookup, not a model",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "TimeSeriesSplit, with a gap",
+       "tone": "good"
+      },
+      {
+       "text": "training on the future",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "groups within a time split",
+       "tone": "good"
+      },
+      "either leak above"
+     ],
+     [
+      {
+       "text": "repeated stratified k-fold",
+       "tone": "accent"
+      },
+      "one assignment's luck, reported"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "The six mistakes, and which direction each one bends the score",
+    "caption": "Four of these inflate, and the last two only add noise — which is worse than it sounds, because a 0.03 difference inside a ±0.05 spread is the shape of most false conclusions about which model is better.",
+    "cols": [
+     "Effect",
+     "Fix"
+    ],
+    "rows": [
+     "Preprocessing before folds",
+     "Random folds, grouped data",
+     "Random folds, time data",
+     "No stratification",
+     "Reporting the tuning score",
+     "Mean without the spread"
+    ],
+    "cells": [
+     [
+      {
+       "text": "inflates",
+       "tone": "crit"
+      },
+      "put the transform in the Pipeline"
+     ],
+     [
+      {
+       "text": "inflates, absurdly",
+       "tone": "crit"
+      },
+      "GroupKFold on the entity"
+     ],
+     [
+      {
+       "text": "inflates, hides drift",
+       "tone": "crit"
+      },
+      "TimeSeriesSplit with a gap"
+     ],
+     [
+      {
+       "text": "adds fold noise",
+       "tone": "warn"
+      },
+      "StratifiedKFold"
+     ],
+     [
+      {
+       "text": "optimistic: best-of-n",
+       "tone": "crit"
+      },
+      "nested CV, or a held-out test set"
+     ],
+     [
+      {
+       "text": "hides the uncertainty",
+       "tone": "warn"
+      },
+      "report mean ± sd, or the folds"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Four kinds of leakage, each with the score it produced here",
+    "caption": "Every pair is the same data and the same model, differing only in whether the leak is present. The second row is the one to remember: a **200-level column of pure noise** scored 0.836 when target-encoded on all rows, and 0.468 — chance — when the encoder was fitted inside the fold.",
+    "cols": [
+     "With the leak",
+     "Without it"
+    ],
+    "rows": [
+     "Target leakage",
+     "Preprocessing leakage",
+     "Temporal leakage",
+     "Contamination"
+    ],
+    "cells": [
+     [
+      {
+       "text": "0.943 AUC",
+       "tone": "crit"
+      },
+      "the refund flag is empty for live customers"
+     ],
+     [
+      {
+       "text": "0.836 from noise",
+       "tone": "crit"
+      },
+      {
+       "text": "0.468: chance",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "0.771 centred",
+       "tone": "crit"
+      },
+      {
+       "text": "0.618 trailing, 0.571 raw",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "0.995 random folds",
+       "tone": "crit"
+      },
+      {
+       "text": "0.668 grouped",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "What each transform leaks when it is fitted before the split",
+    "caption": "The severity is set by what the transform saw. A scaler learns a mean; a target encoder learns the **label**, at group resolution, which is why it can turn a noise column into a 0.836. All of them have the same fix, and it is one line: make the transform a step in the Pipeline.",
+    "cols": [
+     "It learns",
+     "Severity"
+    ],
+    "rows": [
+     "StandardScaler",
+     "SimpleImputer",
+     "KNNImputer",
+     "TargetEncoder",
+     "SelectKBest",
+     "SMOTE",
+     "PCA"
+    ],
+    "cells": [
+     [
+      "the test rows' mean and range",
+      {
+       "text": "low but non-zero",
+       "tone": "warn"
+      }
+     ],
+     [
+      "the test rows' median",
+      {
+       "text": "low",
+       "tone": "warn"
+      }
+     ],
+     [
+      "test values into train imputations",
+      {
+       "text": "medium",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "the label itself",
+       "tone": "crit"
+      },
+      {
+       "text": "severe: 0.836 from noise",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "which features fit the test labels",
+       "tone": "crit"
+      },
+      {
+       "text": "severe with many features",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "synthetic test positives",
+       "tone": "crit"
+      },
+      {
+       "text": "severe; also fakes the base rate",
+       "tone": "crit"
+      }
+     ],
+     [
+      "the test rows' directions",
+      {
+       "text": "low",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "1.7": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Every family is an assumption about the world",
+    "caption": "There is no assumption-free learner — that is the no-free-lunch theorem stated usefully. Choosing a model is choosing which bias you believe, so the column that matters is the last one: what the family cannot see however much data you give it.",
+    "cols": [
+     "Assumes",
+     "Fails on"
+    ],
+    "rows": [
+     "Linear / logistic",
+     "Decision trees",
+     "KNN / kernels",
+     "Naive Bayes",
+     "SVM (RBF)",
+     "Neural networks"
+    ],
+    "cells": [
+     [
+      "the target is a weighted sum",
+      {
+       "text": "interactions, thresholds, XOR",
+       "tone": "warn"
+      }
+     ],
+     [
+      "axis-aligned rectangles",
+      {
+       "text": "smooth diagonals; extrapolation",
+       "tone": "warn"
+      }
+     ],
+     [
+      "nearby points share labels",
+      {
+       "text": "high dimension; junk features",
+       "tone": "warn"
+      }
+     ],
+     [
+      "features independent given y",
+      {
+       "text": "correlated features",
+       "tone": "warn"
+      }
+     ],
+     [
+      "the widest margin generalises",
+      {
+       "text": "heavy noise; large n",
+       "tone": "warn"
+      }
+     ],
+     [
+      "complex functions are stacks",
+      {
+       "text": "small tabular data",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "In 500 dimensions the nearest point is 86% as far as the farthest",
+    "caption": "Measured on 500 uniform points in the unit cube. The ratio of nearest to farthest climbs towards 1, which is the curse stated precisely: distance stops discriminating, so every method whose whole idea is 'nearby points are similar' loses its meaning. The second column is the same fact from the other side — by 100 dimensions, every point is on the surface.",
+    "cols": [
+     "nearest / farthest",
+     "Within 0.05 of the surface"
+    ],
+    "rows": [
+     "d = 1",
+     "d = 2",
+     "d = 10",
+     "d = 20",
+     "d = 100",
+     "d = 500"
+    ],
+    "cells": [
+     [
+      {
+       "text": "0.002",
+       "tone": "good"
+      },
+      "10%"
+     ],
+     [
+      {
+       "text": "0.012",
+       "tone": "good"
+      },
+      "19%"
+     ],
+     [
+      {
+       "text": "0.314",
+       "tone": "accent"
+      },
+      "65%"
+     ],
+     [
+      {
+       "text": "0.421",
+       "tone": "warn"
+      },
+      "88%"
+     ],
+     [
+      {
+       "text": "0.741",
+       "tone": "crit"
+      },
+      {
+       "text": "100%",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "0.860",
+       "tone": "crit"
+      },
+      {
+       "text": "100%",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "1.8": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Batch, mini-batch, stochastic",
+    "caption": "The gradient gets noisier and the updates get more frequent as you move right, and mini-batch wins because both of those are useful: enough updates to make progress, enough rows to vectorise, and enough noise to leave a bad basin.",
+    "cols": [
+     "Gradient",
+     "Updates per epoch"
+    ],
+    "rows": [
+     "Batch",
+     "Mini-batch",
+     "Stochastic"
+    ],
+    "cells": [
+     [
+      {
+       "text": "exact",
+       "tone": "good"
+      },
+      {
+       "text": "1",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "noisy, from b rows",
+       "tone": "accent"
+      },
+      {
+       "text": "n / b: the sweet spot",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "noisy, from 1 row",
+       "tone": "warn"
+      },
+      {
+       "text": "n; no vectorisation",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Reading a loss curve",
+    "caption": "Five of these six are optimisation problems with an optimisation fix. The last one is not — a training loss that is fine while validation rises is overfitting, and no change to the learning rate will touch it.",
+    "cols": [
+     "Cause",
+     "Fix"
+    ],
+    "rows": [
+     "Explodes to NaN",
+     "Fast, then creeps",
+     "Oscillates, never settles",
+     "Flat from the start",
+     "Runs disagree",
+     "Validation rising"
+    ],
+    "cells": [
+     [
+      {
+       "text": "step above 2 / lambda-max",
+       "tone": "crit"
+      },
+      "lower eta; scale features; clip"
+     ],
+     [
+      "ill-conditioning",
+      "scale features; momentum or Adam"
+     ],
+     [
+      "step too large for the approach",
+      "decay eta; larger batches late"
+     ],
+     [
+      "eta far too small, or a bug",
+      "raise eta; check the gradient numerically"
+     ],
+     [
+      "a non-convex loss",
+      "several seeds; report the spread"
+     ],
+     [
+      {
+       "text": "not optimisation at all",
+       "tone": "warn"
+      },
+      "early stopping, regularisation"
+     ]
+    ]
+   }
+  }
+ ]
+}

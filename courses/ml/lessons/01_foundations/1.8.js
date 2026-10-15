@@ -50,6 +50,11 @@ for lr in [0.02, 0.1, 0.18]:
 
     { t: "h2", n: "02", text: "Batch, mini-batch, stochastic", id: "flavours" },
 
+    {"kind": "matrix", "title": "Batch, mini-batch, stochastic", "caption": "The gradient gets noisier and the updates get more frequent as you move right, and mini-batch wins because both of those are useful: enough updates to make progress, enough rows to vectorise, and enough noise to leave a bad basin.", "cols": ["Gradient", "Updates per epoch"], "rows": ["Batch", "Mini-batch", "Stochastic"], "cells": [[{"text": "exact", "tone": "good"}, {"text": "1", "tone": "warn"}], [{"text": "noisy, from b rows", "tone": "accent"}, {"text": "n / b: the sweet spot", "tone": "good"}], [{"text": "noisy, from 1 row", "tone": "warn"}, {"text": "n; no vectorisation", "tone": "warn"}]], "t": "diagram", "id": "dg-1_8-02-0"},
+
+
+
+
     { t: "code", lang: "python", title: "The same logistic regression, three ways to compute the gradient (executed, 2,000 rows × 10 features, 5 epochs)",
       hl: [3, 4, 5],
       code: `# gradient over the full batch, over 32 rows, or over 1 row, then step
@@ -73,6 +78,11 @@ for lr in [0.02, 0.1, 0.18]:
     },
 
     { t: "h2", n: "03", text: "Momentum, RMSProp, Adam", id: "adaptive" },
+
+    {"kind": "matrix", "title": "Reading a loss curve", "caption": "Five of these six are optimisation problems with an optimisation fix. The last one is not — a training loss that is fine while validation rises is overfitting, and no change to the learning rate will touch it.", "cols": ["Cause", "Fix"], "rows": ["Explodes to NaN", "Fast, then creeps", "Oscillates, never settles", "Flat from the start", "Runs disagree", "Validation rising"], "cells": [[{"text": "step above 2 / lambda-max", "tone": "crit"}, "lower eta; scale features; clip"], ["ill-conditioning", "scale features; momentum or Adam"], ["step too large for the approach", "decay eta; larger batches late"], ["eta far too small, or a bug", "raise eta; check the gradient numerically"], ["a non-convex loss", "several seeds; report the spread"], [{"text": "not optimisation at all", "tone": "warn"}, "early stopping, regularisation"]], "t": "diagram", "id": "dg-1_8-03-1"},
+
+
+
 
     { t: "code", lang: "python", title: "An ill-conditioned valley, f(w) = ½(w₁² + 100 w₂²), from (5, 1) (executed)",
       hl: [6, 7, 8, 9, 13, 14, 15, 16],

@@ -60,6 +60,11 @@ np.min(aucs), np.max(aucs), np.mean(aucs), np.std(aucs)
 
     { t: "h2", n: "02", text: "Folds that match deployment", id: "structure" },
 
+    {"kind": "matrix", "title": "The fold must match the deployment", "caption": "A fold strategy is a claim about what the model will meet. Get it wrong in the direction of ease and the score is not pessimistic or noisy — it is wrong: 0.995 for a model that had memorised entity ids.", "cols": ["Use", "Random folds instead give"], "rows": ["A rare class", "Several rows per entity", "A time order", "Entities and time", "Very few rows"], "cells": [[{"text": "StratifiedKFold", "tone": "good"}, "folds that are different problems"], [{"text": "GroupKFold", "tone": "good"}, {"text": "0.995: a lookup, not a model", "tone": "crit"}], [{"text": "TimeSeriesSplit, with a gap", "tone": "good"}, {"text": "training on the future", "tone": "crit"}], [{"text": "groups within a time split", "tone": "good"}, "either leak above"], [{"text": "repeated stratified k-fold", "tone": "accent"}, "one assignment's luck, reported"]], "t": "diagram", "id": "dg-1_5-02-0"},
+
+
+
+
     { t: "code", lang: "python", title: "Stratification: what plain KFold does to a 16 % class (executed)",
       code: `for train_idx, test_idx in KFold(5, shuffle=True, random_state=3).split(X, y):            y.iloc[test_idx].mean()
 #   plain KFold        churn rate per fold: 0.126  0.152  0.177  0.202  0.157       <- 12.6 % to 20.2 %: the folds are different problems
@@ -169,6 +174,11 @@ result = cross_validate(search, X, y, cv=outer, scoring="roc_auc", return_estima
     },
 
     { t: "h2", n: "04", text: "The six mistakes", id: "mistakes" },
+
+    {"kind": "matrix", "title": "The six mistakes, and which direction each one bends the score", "caption": "Four of these inflate, and the last two only add noise — which is worse than it sounds, because a 0.03 difference inside a ±0.05 spread is the shape of most false conclusions about which model is better.", "cols": ["Effect", "Fix"], "rows": ["Preprocessing before folds", "Random folds, grouped data", "Random folds, time data", "No stratification", "Reporting the tuning score", "Mean without the spread"], "cells": [[{"text": "inflates", "tone": "crit"}, "put the transform in the Pipeline"], [{"text": "inflates, absurdly", "tone": "crit"}, "GroupKFold on the entity"], [{"text": "inflates, hides drift", "tone": "crit"}, "TimeSeriesSplit with a gap"], [{"text": "adds fold noise", "tone": "warn"}, "StratifiedKFold"], [{"text": "optimistic: best-of-n", "tone": "crit"}, "nested CV, or a held-out test set"], [{"text": "hides the uncertainty", "tone": "warn"}, "report mean ± sd, or the folds"]], "t": "diagram", "id": "dg-1_5-04-1"},
+
+
+
 
     { t: "table",
       head: ["Mistake", "What it does to the score", "Fix"],

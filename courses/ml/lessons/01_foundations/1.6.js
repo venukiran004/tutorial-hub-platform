@@ -19,6 +19,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Four kinds, four signatures", id: "kinds" },
 
+    {"kind": "matrix", "title": "Four kinds of leakage, each with the score it produced here", "caption": "Every pair is the same data and the same model, differing only in whether the leak is present. The second row is the one to remember: a **200-level column of pure noise** scored 0.836 when target-encoded on all rows, and 0.468 — chance — when the encoder was fitted inside the fold.", "cols": ["With the leak", "Without it"], "rows": ["Target leakage", "Preprocessing leakage", "Temporal leakage", "Contamination"], "cells": [[{"text": "0.943 AUC", "tone": "crit"}, "the refund flag is empty for live customers"], [{"text": "0.836 from noise", "tone": "crit"}, {"text": "0.468: chance", "tone": "good"}], [{"text": "0.771 centred", "tone": "crit"}, {"text": "0.618 trailing, 0.571 raw", "tone": "good"}], [{"text": "0.995 random folds", "tone": "crit"}, {"text": "0.668 grouped", "tone": "good"}]], "t": "diagram", "id": "dg-1_6-01-0"},
+
+
+
+
     { t: "table",
       head: ["Kind", "Mechanism", "Example on the churn table", "Signature", "Executed score"],
       rows: [
@@ -55,6 +60,11 @@ permutation_importance(pipe_with_refund, X_test, y_test, scoring="roc_auc", n_re
     ]},
 
     { t: "h2", n: "02", text: "Preprocessing leakage: the noise column that scored 0.836", id: "preprocessing" },
+
+    {"kind": "matrix", "title": "What each transform leaks when it is fitted before the split", "caption": "The severity is set by what the transform saw. A scaler learns a mean; a target encoder learns the **label**, at group resolution, which is why it can turn a noise column into a 0.836. All of them have the same fix, and it is one line: make the transform a step in the Pipeline.", "cols": ["It learns", "Severity"], "rows": ["StandardScaler", "SimpleImputer", "KNNImputer", "TargetEncoder", "SelectKBest", "SMOTE", "PCA"], "cells": [["the test rows' mean and range", {"text": "low but non-zero", "tone": "warn"}], ["the test rows' median", {"text": "low", "tone": "warn"}], ["test values into train imputations", {"text": "medium", "tone": "warn"}], [{"text": "the label itself", "tone": "crit"}, {"text": "severe: 0.836 from noise", "tone": "crit"}], [{"text": "which features fit the test labels", "tone": "crit"}, {"text": "severe with many features", "tone": "crit"}], [{"text": "synthetic test positives", "tone": "crit"}, {"text": "severe; also fakes the base rate", "tone": "crit"}], ["the test rows' directions", {"text": "low", "tone": "warn"}]], "t": "diagram", "id": "dg-1_6-02-1"},
+
+
+
 
     { t: "code", lang: "python", title: "Target encoding a random category, outside and inside the fold (executed)",
       hl: [2, 5, 6, 10, 11],

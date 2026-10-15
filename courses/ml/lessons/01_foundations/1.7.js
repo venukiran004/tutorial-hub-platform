@@ -64,6 +64,11 @@ shatters(four)     # 14 of 16                        -> the two XOR labellings (
 
     { t: "h2", n: "02", text: "Inductive bias, no free lunch, Occam", id: "bias" },
 
+    {"kind": "matrix", "title": "Every family is an assumption about the world", "caption": "There is no assumption-free learner — that is the no-free-lunch theorem stated usefully. Choosing a model is choosing which bias you believe, so the column that matters is the last one: what the family cannot see however much data you give it.", "cols": ["Assumes", "Fails on"], "rows": ["Linear / logistic", "Decision trees", "KNN / kernels", "Naive Bayes", "SVM (RBF)", "Neural networks"], "cells": [["the target is a weighted sum", {"text": "interactions, thresholds, XOR", "tone": "warn"}], ["axis-aligned rectangles", {"text": "smooth diagonals; extrapolation", "tone": "warn"}], ["nearby points share labels", {"text": "high dimension; junk features", "tone": "warn"}], ["features independent given y", {"text": "correlated features", "tone": "warn"}], ["the widest margin generalises", {"text": "heavy noise; large n", "tone": "warn"}], ["complex functions are stacks", {"text": "small tabular data", "tone": "warn"}]], "t": "diagram", "id": "dg-1_7-02-0"},
+
+
+
+
     { t: "table",
       head: ["Family", "Inductive bias", "Wins when", "Fails when"],
       rows: [
@@ -116,6 +121,11 @@ shatters(four)     # 14 of 16                        -> the two XOR labellings (
     },
 
     { t: "h2", n: "04", text: "The curse of dimensionality, in numbers", id: "curse" },
+
+    {"kind": "matrix", "title": "In 500 dimensions the nearest point is 86% as far as the farthest", "caption": "Measured on 500 uniform points in the unit cube. The ratio of nearest to farthest climbs towards 1, which is the curse stated precisely: distance stops discriminating, so every method whose whole idea is 'nearby points are similar' loses its meaning. The second column is the same fact from the other side — by 100 dimensions, every point is on the surface.", "cols": ["nearest / farthest", "Within 0.05 of the surface"], "rows": ["d = 1", "d = 2", "d = 10", "d = 20", "d = 100", "d = 500"], "cells": [[{"text": "0.002", "tone": "good"}, "10%"], [{"text": "0.012", "tone": "good"}, "19%"], [{"text": "0.314", "tone": "accent"}, "65%"], [{"text": "0.421", "tone": "warn"}, "88%"], [{"text": "0.741", "tone": "crit"}, {"text": "100%", "tone": "crit"}], [{"text": "0.860", "tone": "crit"}, {"text": "100%", "tone": "crit"}]], "t": "diagram", "id": "dg-1_7-04-1"},
+
+
+
 
     { t: "code", lang: "python", title: "Distances in high dimensions: 500 uniform points, one query (executed)",
       hl: [3, 4, 5, 8, 9],

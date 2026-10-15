@@ -1,0 +1,840 @@
+{
+ "2.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Every metric is a sentence that starts 'of all the'",
+    "caption": "One confusion matrix on 297 held-out customers: TP 39, FN 9, FP 89, TN 160, prevalence 0.162. Each metric below reads a different slice of it — which is why 'what is the accuracy' is not a question the matrix can answer. The retention team means recall; the fraud team means precision; compliance means specificity.",
+    "cols": [
+     "Of all the...",
+     "Here"
+    ],
+    "rows": [
+     "Precision",
+     "Recall",
+     "Specificity",
+     "NPV",
+     "Accuracy",
+     "Prevalence"
+    ],
+    "cells": [
+     [
+      {
+       "text": "ones I flagged",
+       "tone": "accent"
+      },
+      "39 / 128 = 0.305"
+     ],
+     [
+      {
+       "text": "real churners",
+       "tone": "accent"
+      },
+      "39 / 48 = 0.8125"
+     ],
+     [
+      {
+       "text": "real stayers",
+       "tone": "accent"
+      },
+      "160 / 249 = 0.643"
+     ],
+     [
+      {
+       "text": "ones I cleared",
+       "tone": "accent"
+      },
+      "160 / 169 = 0.947"
+     ],
+     [
+      {
+       "text": "rows, any verdict",
+       "tone": "warn"
+      },
+      "199 / 297 = 0.670"
+     ],
+     [
+      {
+       "text": "rows that are positive",
+       "tone": "good"
+      },
+      "48 / 297 = 0.162"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Three averages over three classes",
+    "caption": "The averaging choice decides whose errors count. Micro weights every **row** equally, so a small class failing badly disappears into it; macro weights every **class** equally, so the rare class's noisy metric gets a full third of the score. Neither replaces the per-class table.",
+    "cols": [
+     "Weights",
+     "Hides"
+    ],
+    "rows": [
+     "Micro",
+     "Macro",
+     "Weighted",
+     "Per class"
+    ],
+    "cells": [
+     [
+      {
+       "text": "each row equally",
+       "tone": "accent"
+      },
+      {
+       "text": "a small class doing badly",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "each class equally",
+       "tone": "accent"
+      },
+      {
+       "text": "that the rare class is noisy",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "each class by its size",
+       "tone": "accent"
+      },
+      "the same as micro, slightly less"
+     ],
+     [
+      {
+       "text": "nothing is averaged",
+       "tone": "good"
+      },
+      {
+       "text": "nothing: it is a table",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "2.2": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "ROC and PR answer different questions about the same ranking",
+    "caption": "Both axes of ROC are within-class rates, so prevalence cannot move them — which makes ROC-AUC comparable across differently balanced datasets and blind to how rare the positives are. Precision mixes the classes, so PR tracks what acting on the flags will actually feel like.",
+    "cols": [
+     "ROC",
+     "Precision-recall"
+    ],
+    "rows": [
+     "Axes",
+     "No-skill level",
+     "Effect of prevalence",
+     "Blind to",
+     "Use it for"
+    ],
+    "cells": [
+     [
+      "TPR against FPR",
+      "precision against recall"
+     ],
+     [
+      {
+       "text": "the diagonal: 0.5",
+       "tone": "accent"
+      },
+      {
+       "text": "precision = prevalence",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "none",
+       "tone": "good"
+      },
+      {
+       "text": "strong",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "how rare positives are",
+       "tone": "warn"
+      },
+      {
+       "text": "the true negatives entirely",
+       "tone": "warn"
+      }
+     ],
+     [
+      "comparing rankers",
+      "a cost per flag"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "What each metric is a function of",
+    "caption": "The first row needs a threshold and the rest do not, which is the division that matters when selecting a model: choosing on accuracy or F1 means choosing a model **and** a threshold at once, and the threshold is usually the default 0.5 nobody examined.",
+    "cols": [
+     "Reads",
+     "Threshold-free"
+    ],
+    "rows": [
+     "Accuracy, F1, MCC",
+     "ROC-AUC",
+     "PR-AUC",
+     "Log loss",
+     "Brier"
+    ],
+    "cells": [
+     [
+      {
+       "text": "one threshold's matrix",
+       "tone": "warn"
+      },
+      {
+       "text": "no",
+       "tone": "warn"
+      }
+     ],
+     [
+      "the ranking",
+      {
+       "text": "yes",
+       "tone": "good"
+      }
+     ],
+     [
+      "the ranking, through precision",
+      {
+       "text": "yes",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "the probabilities",
+       "tone": "good"
+      },
+      {
+       "text": "yes; punishes harshly",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "the probabilities",
+       "tone": "good"
+      },
+      {
+       "text": "yes; punishes gently",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "2.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "One model, eleven thresholds, three different answers",
+    "caption": "The same fitted model throughout — only the cut moves. Note that the three rules disagree: **cost** is minimised at 0.15, **F1** peaks at 0.25, and the default 0.50 is near-worst on both while flagging only 13 customers. The default is not a neutral choice, it is an unexamined one.",
+    "cols": [
+     "precision / recall / F1",
+     "flagged, cost"
+    ],
+    "rows": [
+     "0.05",
+     "0.15",
+     "0.25",
+     "0.35",
+     "0.50",
+     "0.70"
+    ],
+    "cells": [
+     [
+      "0.183 / 0.938 / 0.306",
+      "246 flagged, 4,230"
+     ],
+     [
+      {
+       "text": "0.288 / 0.833 / 0.428",
+       "tone": "good"
+      },
+      {
+       "text": "139 flagged, 3,895 min",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "0.412 / 0.583 / 0.483",
+       "tone": "accent"
+      },
+      "68 flagged, 4,020"
+     ],
+     [
+      "0.513 / 0.417 / 0.460",
+      "39 flagged, 4,195"
+     ],
+     [
+      {
+       "text": "0.769 / 0.208 / 0.328",
+       "tone": "crit"
+      },
+      {
+       "text": "13 flagged, 4,465",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "1.000 / 0.062 / 0.118",
+       "tone": "crit"
+      },
+      "3 flagged, 4,695"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "The decision picks the metric, and the metric picks the threshold",
+    "caption": "Each row is a different thing going wrong when you are wrong, and therefore a different rule. The last one is the case people model incorrectly most often: when capacity is fixed, neither precision nor recall is the objective — the top k is, and recall is the outcome you report.",
+    "cols": [
+     "Optimise",
+     "Rule"
+    ],
+    "rows": [
+     "Screening a condition",
+     "Auto-declining a card",
+     "Retention calls",
+     "A fixed review queue"
+    ],
+    "cells": [
+     [
+      {
+       "text": "recall",
+       "tone": "good"
+      },
+      "highest cut with recall >= 0.95"
+     ],
+     [
+      {
+       "text": "precision",
+       "tone": "good"
+      },
+      "lowest cut with precision >= 0.9"
+     ],
+     [
+      {
+       "text": "expected cost",
+       "tone": "accent"
+      },
+      "break-even at p = c / b"
+     ],
+     [
+      {
+       "text": "precision at top k",
+       "tone": "violet"
+      },
+      "take k by score; report recall"
+     ]
+    ]
+   }
+  }
+ ],
+ "2.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Which regression metric, decided by one question each",
+    "caption": "The questions are about the **decision**, not the data. The loss a model trains on and the metric a business reads need not match — train on squared error because it is smooth, report MAE because operations understand it. What must match is the metric and the cost of being wrong.",
+    "cols": [
+     "If yes",
+     "If no"
+    ],
+    "rows": [
+     "Large errors cost more",
+     "Outliers you distrust",
+     "Target spans orders",
+     "Stakeholder wants %",
+     "Comparing across targets"
+    ],
+    "cells": [
+     [
+      {
+       "text": "RMSE",
+       "tone": "good"
+      },
+      "MAE, trained on Huber"
+     ],
+     [
+      {
+       "text": "MAE, median AE",
+       "tone": "good"
+      },
+      "RMSE is fine"
+     ],
+     [
+      {
+       "text": "log the target; RMSLE",
+       "tone": "good"
+      },
+      "plain units"
+     ],
+     [
+      {
+       "text": "WAPE, or MAPE if no zeros",
+       "tone": "warn"
+      },
+      "MAE in units"
+     ],
+     [
+      {
+       "text": "R² or MASE",
+       "tone": "accent"
+      },
+      "units"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Why MAPE cannot be used where it is asked for most",
+    "caption": "MAPE divides by the actual, so a true value near zero produces an unbounded term, and one such row dominates the average. It is also asymmetric: under-forecasting is capped at 100% error while over-forecasting is not, so minimising MAPE systematically biases a forecast low.",
+    "cols": [
+     "Problem",
+     "Instead"
+    ],
+    "rows": [
+     "A true value of 0",
+     "A true value near 0",
+     "Under vs over forecast",
+     "Intermittent demand",
+     "Comparing series"
+    ],
+    "cells": [
+     [
+      {
+       "text": "division by zero",
+       "tone": "crit"
+      },
+      "WAPE: divide by the total"
+     ],
+     [
+      {
+       "text": "one row dominates",
+       "tone": "crit"
+      },
+      "WAPE, or MAE in units"
+     ],
+     [
+      {
+       "text": "capped at 100% one way",
+       "tone": "crit"
+      },
+      "the bias is built in; use MAE"
+     ],
+     [
+      {
+       "text": "mostly zeros: undefined",
+       "tone": "crit"
+      },
+      "MASE against a naive baseline"
+     ],
+     [
+      {
+       "text": "scale-free but unstable",
+       "tone": "warn"
+      },
+      "MASE"
+     ]
+    ]
+   }
+  }
+ ],
+ "2.5": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Each family is miscalibrated in its own characteristic direction",
+    "caption": "The shape follows from the training objective. A forest averages 0/1 votes, which pulls every prediction toward the middle and cannot reach 0 or 1 unless every tree agrees. Cross-entropy on a deep network pushes logits apart without bound, which is over-confidence by construction.",
+    "cols": [
+     "Shape",
+     "Fix"
+    ],
+    "rows": [
+     "Logistic regression",
+     "Random forest",
+     "Gradient boosting",
+     "Naive Bayes",
+     "SVM",
+     "Neural networks",
+     "KNN"
+    ],
+    "cells": [
+     [
+      {
+       "text": "calibrated",
+       "tone": "good"
+      },
+      "usually none needed"
+     ],
+     [
+      {
+       "text": "under-confident, S-curve",
+       "tone": "warn"
+      },
+      "Platt or isotonic"
+     ],
+     [
+      {
+       "text": "mildly off",
+       "tone": "accent"
+      },
+      "check; Platt if needed"
+     ],
+     [
+      {
+       "text": "over-confident at the ends",
+       "tone": "warn"
+      },
+      "isotonic or Platt"
+     ],
+     [
+      {
+       "text": "no probabilities at all",
+       "tone": "crit"
+      },
+      "Platt: probability=True"
+     ],
+     [
+      {
+       "text": "over-confident",
+       "tone": "warn"
+      },
+      "temperature scaling"
+     ],
+     [
+      {
+       "text": "coarse: fractions of k",
+       "tone": "warn"
+      },
+      "larger k; isotonic"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "When calibration matters, and when it does not",
+    "caption": "The dividing line is whether anything does **arithmetic** on the probability. Ranking and a validation-swept threshold use only the ordering, so a miscalibrated score is harmless there. A cost formula, an expected value, or a number shown to a person all treat p as a probability.",
+    "cols": [
+     "Needs calibration",
+     "Because"
+    ],
+    "rows": [
+     "Rank and act on top k",
+     "Threshold from a sweep",
+     "Threshold from p > c/b",
+     "Expected value p x revenue",
+     "Showing 'risk 73%'",
+     "Combining several models"
+    ],
+    "cells": [
+     [
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      "only the ordering is used"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      "the sweep reads outcomes, not scores"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "crit"
+      },
+      "the formula treats p as a probability"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "crit"
+      },
+      "arithmetic on p"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "crit"
+      },
+      "a person will act on the number"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "crit"
+      },
+      "scores are not on the same scale"
+     ]
+    ]
+   }
+  }
+ ],
+ "2.6": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "One model, four regions, four fairness criteria that disagree",
+    "caption": "The same fitted model at the same threshold. Flag rate runs 0.30 to 0.39, TPR 0.62 to 0.73, FPR 0.22 to 0.33, and precision 0.23 to 0.44 — so a flag **means** nearly twice as much in east as in west. These criteria are mathematically incompatible when base rates differ, so the team must choose which one it is claiming, and say so.",
+    "cols": [
+     "Compares",
+     "Spread here"
+    ],
+    "rows": [
+     "Demographic parity",
+     "Equal opportunity",
+     "Equalised odds",
+     "Predictive parity"
+    ],
+    "cells": [
+     [
+      "flag rate across groups",
+      {
+       "text": "0.30 - 0.39",
+       "tone": "warn"
+      }
+     ],
+     [
+      "TPR across groups",
+      {
+       "text": "0.62 - 0.73",
+       "tone": "warn"
+      }
+     ],
+     [
+      "TPR and FPR",
+      {
+       "text": "FPR 0.22 - 0.33",
+       "tone": "warn"
+      }
+     ],
+     [
+      "precision across groups",
+      {
+       "text": "0.23 - 0.44",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "The two charts a non-specialist will actually adopt",
+    "caption": "Gain and lift need no training to read: 'the top 20% of the list contains 54% of the churners' is a sentence anyone can act on. Both must be computed at the deployed threshold, on held-out data — a gain chart on training rows is a description of memorisation.",
+    "cols": [
+     "Says",
+     "Read by"
+    ],
+    "rows": [
+     "Gain at top k",
+     "Lift at top k",
+     "The fairness table",
+     "The confusion matrix",
+     "AUC"
+    ],
+    "cells": [
+     [
+      {
+       "text": "share of positives captured",
+       "tone": "good"
+      },
+      "the retention team"
+     ],
+     [
+      {
+       "text": "how many times better than random",
+       "tone": "good"
+      },
+      "the retention team"
+     ],
+     [
+      {
+       "text": "the same model, per group",
+       "tone": "accent"
+      },
+      "a reviewer or regulator"
+     ],
+     [
+      {
+       "text": "the operating point in units",
+       "tone": "good"
+      },
+      "the stakeholder"
+     ],
+     [
+      {
+       "text": "ranking quality overall",
+       "tone": "warn"
+      },
+      "you, alongside — never instead"
+     ]
+    ]
+   }
+  }
+ ],
+ "2.7": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Why the naive paired t-test over folds is wrong",
+    "caption": "Cross-validation folds share training rows, so the per-fold differences are **not independent** — and a t-test that assumes they are reports an interval far too narrow and a p-value far too small. The corrections exist because the dependence is structural, not a sampling accident.",
+    "cols": [
+     "Assumes",
+     "Use"
+    ],
+    "rows": [
+     "Paired t over folds",
+     "Corrected resampled t",
+     "5x2cv paired t",
+     "McNemar",
+     "Bootstrap on the test set"
+    ],
+    "cells": [
+     [
+      {
+       "text": "folds are independent",
+       "tone": "crit"
+      },
+      "they share training rows"
+     ],
+     [
+      {
+       "text": "accounts for the overlap",
+       "tone": "good"
+      },
+      "the default for repeated CV"
+     ],
+     [
+      {
+       "text": "limits the reuse",
+       "tone": "good"
+      },
+      "when a stricter test is wanted"
+     ],
+     [
+      {
+       "text": "per-row agreement",
+       "tone": "good"
+      },
+      "two models at one threshold"
+     ],
+     [
+      {
+       "text": "one test set, resampled",
+       "tone": "good"
+      },
+      "an interval on a single number"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Offline is necessary and never sufficient",
+    "caption": "Offline evaluation reads logged rows whose labels exist because some **past policy** chose to show them — so it answers 'which candidate looks most promising', not 'will this move the business'. Only the second question is the one the deployment is for, and only a randomised test answers it.",
+    "cols": [
+     "Offline",
+     "Online"
+    ],
+    "rows": [
+     "Data",
+     "Metric",
+     "Comparison",
+     "Failure mode",
+     "Verdict"
+    ],
+    "cells": [
+     [
+      "logged rows, labels known",
+      "live traffic, labels later"
+     ],
+     [
+      {
+       "text": "AUC, log loss: proxies",
+       "tone": "warn"
+      },
+      {
+       "text": "revenue, retention: the thing",
+       "tone": "good"
+      }
+     ],
+     [
+      "paired on the same rows",
+      "randomised, with a control"
+     ],
+     [
+      {
+       "text": "optimises the proxy",
+       "tone": "crit"
+      },
+      {
+       "text": "slow; can harm users",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "necessary, not sufficient",
+       "tone": "accent"
+      },
+      {
+       "text": "the final word",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
+ ]
+}

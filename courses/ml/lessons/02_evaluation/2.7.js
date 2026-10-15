@@ -57,6 +57,9 @@ for _ in range(2000):
 
     { t: "h2", n: "02", text: "Paired comparison across folds, corrected", id: "paired" },
 
+    {"kind": "matrix", "title": "Why the naive paired t-test over folds is wrong", "caption": "Cross-validation folds share training rows, so the per-fold differences are **not independent** — and a t-test that assumes they are reports an interval far too narrow and a p-value far too small. The corrections exist because the dependence is structural, not a sampling accident.", "cols": ["Assumes", "Use"], "rows": ["Paired t over folds", "Corrected resampled t", "5x2cv paired t", "McNemar", "Bootstrap on the test set"], "cells": [[{"text": "folds are independent", "tone": "crit"}, "they share training rows"], [{"text": "accounts for the overlap", "tone": "good"}, "the default for repeated CV"], [{"text": "limits the reuse", "tone": "good"}, "when a stricter test is wanted"], [{"text": "per-row agreement", "tone": "good"}, "two models at one threshold"], [{"text": "one test set, resampled", "tone": "good"}, "an interval on a single number"]], "t": "diagram", "id": "dg-2_7-02-0"},
+
+
     { t: "code", lang: "python", title: "Three models, 10 × 5 repeated stratified folds, the same folds for all (executed)",
       hl: [2, 3, 7, 8, 12, 13, 14],
       code: `cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=10, random_state=1)                # 50 folds, identical for every model
@@ -150,6 +153,9 @@ the width scales with 1 / sqrt(positives), so at 1 % prevalence a ± 0.02 interv
     },
 
     { t: "h2", n: "04", text: "Offline against online", id: "online" },
+
+    {"kind": "matrix", "title": "Offline is necessary and never sufficient", "caption": "Offline evaluation reads logged rows whose labels exist because some **past policy** chose to show them — so it answers 'which candidate looks most promising', not 'will this move the business'. Only the second question is the one the deployment is for, and only a randomised test answers it.", "cols": ["Offline", "Online"], "rows": ["Data", "Metric", "Comparison", "Failure mode", "Verdict"], "cells": [["logged rows, labels known", "live traffic, labels later"], [{"text": "AUC, log loss: proxies", "tone": "warn"}, {"text": "revenue, retention: the thing", "tone": "good"}], ["paired on the same rows", "randomised, with a control"], [{"text": "optimises the proxy", "tone": "crit"}, {"text": "slow; can harm users", "tone": "warn"}], [{"text": "necessary, not sufficient", "tone": "accent"}, {"text": "the final word", "tone": "good"}]], "t": "diagram", "id": "dg-2_7-04-1"},
+
 
     { t: "table",
       head: ["", "Offline evaluation", "Online measurement"],

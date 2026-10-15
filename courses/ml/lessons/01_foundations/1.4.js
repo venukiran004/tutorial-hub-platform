@@ -19,6 +19,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The symptom", id: "symptom" },
 
+    {"kind": "matrix", "title": "Three conditions that look alike on one number", "caption": "The training score alone cannot separate overfitting from leakage — both are high. What separates them is the validation score and what more data does: an overfit narrows with more rows, a leak does not narrow at all, because the leaking feature is just as informative in every fold.", "cols": ["Train / validation", "More data"], "rows": ["Overfitting", "Leakage", "Underfitting"], "cells": [[{"text": "high / much lower", "tone": "warn"}, "the gap narrows"], [{"text": "high / also high", "tone": "crit"}, "the gap stays"], [{"text": "low / low and close", "tone": "accent"}, "nothing at all"]], "t": "diagram", "id": "dg-1_4-01-0"},
+
+
+
+
     { t: "code", lang: "python", title: "Gradient boosting on the churn table as depth increases — 300 rounds each (executed)",
       hl: [2, 3, 4, 5, 6],
       code: `# 693 training rows, 297 validation rows, same preprocessing pipeline as 1.2
@@ -56,6 +61,11 @@ EC.receiveLesson({
     },
 
     { t: "h2", n: "02", text: "Penalties: L2 shrinks, L1 selects", id: "penalties" },
+
+    {"kind": "matrix", "title": "Seven ways to reduce variance, and what each costs", "caption": "They are not interchangeable. Only the first adds information; the rest shrink the hypothesis space, which is why each of them can be taken far enough to turn a variance problem into a bias one.", "cols": ["Works by", "Costs"], "rows": ["More data", "Fewer features", "L2 or L1 penalty", "Smaller capacity", "Early stopping", "Bagging or dropout", "CV selection"], "cells": [[{"text": "training sets become alike", "tone": "good"}, "money and time; no help for bias"], ["a smaller space, less noise to fit", "can remove signal"], [{"text": "shrinks or zeroes weights", "tone": "good"}, "a hyperparameter to tune"], ["limits flexibility directly", {"text": "bias, if taken too far", "tone": "warn"}], ["stops before it reaches the noise", "needs a validation fold"], [{"text": "the mean varies less than one fit", "tone": "good"}, "compute; interpretability"], ["picks among all of the above", "compute"]], "t": "diagram", "id": "dg-1_4-02-1"},
+
+
+
 
     { t: "p", text: "A penalty adds the size of the weights to the loss: **minimise loss(w) + λ·‖w‖²₂ (ridge, L2) or loss(w) + λ·‖w‖₁ (lasso, L1).** Large λ means small weights, whatever the data says; λ → 0 recovers the unpenalised fit. In scikit-learn's logistic regression the knob is C = 1/λ, so small C is strong regularisation. To give the model room to overfit, the run below expands the five numeric columns into degree-3 polynomial features — 65 columns for 693 rows." },
 

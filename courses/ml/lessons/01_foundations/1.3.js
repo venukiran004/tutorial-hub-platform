@@ -19,6 +19,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The decomposition, derived", id: "derivation" },
 
+    {"kind": "steps", "title": "The decomposition, in four moves", "caption": "Two cross terms vanish, and that is the whole derivation. The first because the noise is independent of the training set and has mean zero; the second because the average prediction minus its own average is zero by definition.", "items": [{"label": "Substitute y = f + ε", "desc": "the world's output, split into signal and noise", "code": "1", "tone": "accent"}, {"label": "Expand; the cross term is zero", "desc": "ε is independent of D and E[ε] = 0", "code": "2", "tone": "good"}, {"label": "Add and subtract the average prediction", "desc": "f-bar = the mean fit across training sets", "code": "3", "tone": "good"}, {"label": "Expand again; that cross term is zero too", "desc": "E[f-bar - f-hat] = 0 by definition", "code": "4", "tone": "good"}, {"label": "bias-squared + variance + sigma-squared", "desc": "the third term is irreducible: no model beats it", "code": "done", "tone": "violet"}], "t": "diagram", "id": "dg-1_3-01-0"},
+
+
+
+
     { t: "p", text: "Fix one input point x. The world produces y = f(x) + ε with E[ε] = 0 and Var(ε) = σ². A learner trained on a random training set D produces a prediction f̂(x) — random, because D is. **We want the expected squared error over both sources of randomness, E[(y − f̂)²].** Write f̄ = E_D[f̂(x)] for the average prediction across training sets." },
 
     { t: "code", lang: "text", title: "Six lines, with the two cross terms shown to vanish",
@@ -59,6 +64,11 @@ np.mean((preds - truth) ** 2)             # 1.247   = 0.160 + 1.087, exactly: th
     ]},
 
     { t: "h2", n: "02", text: "Measured: two thousand fits per degree", id: "simulation" },
+
+    {"kind": "matrix", "title": "Two thousand fits per degree, and the sum checks out", "caption": "Bias-squared collapses at degree 3 — a cubic can bend like one arch of a sine — and stays at zero. Variance rises at every degree after it. The sum column matches the measured test MSE to three decimals in every row, which is the derivation verified rather than assumed. Meanwhile training MSE falls monotonically and passes below σ² = 0.09 from degree 3 on: the model is fitting noise, and the training error cannot tell you.", "cols": ["bias² / variance", "sum vs measured MSE"], "rows": ["Degree 1", "Degree 2", "Degree 3", "Degree 5", "Degree 9", "Degree 12"], "cells": [[{"text": "0.1489 / 0.0119", "tone": "warn"}, "0.2508 vs 0.2516"], [{"text": "0.1466 / 0.0184", "tone": "warn"}, "0.2551 vs 0.2546"], [{"text": "0.0033 / 0.0067", "tone": "good"}, "0.1000 vs 0.1007"], [{"text": "0.0000 / 0.0100", "tone": "good"}, "0.1000 vs 0.1007"], [{"text": "0.0000 / 0.0277", "tone": "accent"}, "0.1177 vs 0.1160"], [{"text": "0.0000 / 0.4383", "tone": "crit"}, "0.5283 vs 0.5304"]], "t": "diagram", "id": "dg-1_3-02-1"},
+
+
+
 
     { t: "p", text: "Truth f(x) = sin(πx) on [−1, 1], noise σ = 0.3, fifty training points per dataset, two thousand datasets. For each polynomial degree, fit two thousand polynomials, predict on a fixed grid of eighteen test points, and compute the three terms from the definitions above. **The sum column must equal the measured test MSE — that is the decomposition being checked, not assumed.**" },
 
