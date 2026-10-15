@@ -161,6 +161,15 @@ INSERT INTO employees VALUES
 
     { t: "h2", n: "02", text: "The order the engine follows", id: "order" },
 
+    {"kind": "steps", "title": "The worked query, one stage at a time", "caption": "The row count on the right is the real count from the shop tables. Every later stage can only see what the stage above it produced — which is why `WHERE` cannot mention `n_orders` and `HAVING` can.", "items": [{"label": "FROM + JOIN", "desc": "every order paired with its customer", "code": "12 rows", "tone": "accent"}, {"label": "WHERE  status = 'paid'", "desc": "removes 103 refunded and 107 cancelled", "code": "10 rows", "tone": "good"}, {"label": "GROUP BY  c.country", "desc": "GB, DE, NG, FR and one NULL country", "code": "5 groups", "tone": "good"}, {"label": "HAVING  COUNT(*) >= 2", "desc": "the first stage at which the count exists", "code": "3 groups", "tone": "warn"}, {"label": "SELECT", "desc": "computes the columns and names them: n_orders is born here", "code": "3 rows", "tone": "violet"}, {"label": "ORDER BY  n_orders DESC", "desc": "runs after SELECT, so the alias resolves", "code": "3 rows", "tone": "teal"}, {"label": "LIMIT 2", "desc": "keeps the slice; meaningless without the sort above", "code": "2 rows", "tone": "crit"}], "t": "diagram", "id": "dg-1_1-02-0"},
+
+
+
+
+
+
+
+
     { t: "p", text: "SQL is declarative: you describe the result and the engine decides how to build it. But the *meaning* of a query is defined by a fixed logical order, and you can only predict a result by walking it. **FROM and JOIN assemble the rows. WHERE removes rows. GROUP BY collapses them. HAVING removes groups. SELECT computes the columns. DISTINCT removes duplicate rows. ORDER BY sorts. LIMIT trims.** The physical plan (module 5) may do these in a different order for speed, but it must produce what this order says." },
 
     { t: "dl", items: [
@@ -261,6 +270,15 @@ LIMIT    2;
     },
 
     { t: "h2", n: "03", text: "What the order explains", id: "explains" },
+
+    {"kind": "matrix", "title": "Where an expression is allowed, and why", "caption": "Every row is the same rule read twice: a clause can only name what an earlier stage has already built. The fix is never a different syntax, it is a different clause.", "cols": ["Allowed", "Because"], "rows": ["Alias in WHERE", "Alias in ORDER BY", "Aggregate in WHERE", "Aggregate in HAVING", "Window fn in WHERE", "Window fn in ORDER BY"], "cells": [[{"text": "no", "tone": "crit"}, "SELECT has not run yet"], [{"text": "yes", "tone": "good"}, "ORDER BY runs after SELECT"], [{"text": "no", "tone": "crit"}, "no group exists yet"], [{"text": "yes", "tone": "good"}, "HAVING follows GROUP BY"], [{"text": "no", "tone": "crit"}, "computed in SELECT, after WHERE"], [{"text": "yes", "tone": "good"}, "SELECT has already computed it"]], "t": "diagram", "id": "dg-1_1-03-1"},
+
+
+
+
+
+
+
 
     { t: "p", text: "Most SQL errors that look arbitrary are this order enforced. **An alias defined in SELECT does not exist yet when WHERE runs**, so `WHERE n_orders >= 2` fails — the condition belongs in HAVING, with the aggregate written out. **An aggregate cannot go in WHERE** because no group exists yet. **A window function cannot be filtered in the same query** because it is computed in SELECT, after WHERE and HAVING have finished; the filter goes in an outer query, or in `QUALIFY` on the engines that have it (3.2)." },
 

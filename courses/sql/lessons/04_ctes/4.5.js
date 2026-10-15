@@ -19,6 +19,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Reaching inside a document", id: "operators" },
 
+    {"kind": "matrix", "title": "Reaching into a document", "caption": "The arrow operators differ in one character and in what they return: `->` gives JSON back so it can be chained, `->>` gives text so it can be compared and cast. Mixing them up is the commonest JSON bug — `doc->'channel' = 'web'` compares a JSON string with a text literal.", "cols": ["Returns", "Use it to"], "rows": ["doc -> 'key'", "doc ->> 'key'", "doc #> '{a,b}'", "doc #>> '{a,b}'", "doc @> '{...}'", "jsonb vs json"], "cells": [[{"text": "JSON", "tone": "accent"}, "keep digging deeper"], [{"text": "text", "tone": "good"}, "compare, cast, filter on it"], ["JSON at a path", "reach a nested key in one step"], ["text at a path", "compare a nested value"], [{"text": "boolean", "tone": "violet"}, "ask whether it contains a sub-document"], [{"text": "parsed vs verbatim", "tone": "warn"}, "jsonb to query; json to keep the bytes"]], "t": "diagram", "id": "dg-4_5-01-0"},
+
+
+
+
+
     { t: "p", text: "PostgreSQL has two JSON types: `json`, which stores the text verbatim, and `jsonb`, which stores a parsed binary form that is indexable and faster to query — use `jsonb`. **`->` returns a JSON value (still JSON), `->>` returns text, and a path of `->` steps ending in `->>` reaches a nested scalar as a string you then cast.** A missing key is NULL, not an error, which is convenient and also how a typo in a key name goes unnoticed." },
 
     { t: "code", lang: "sql", title: "Order metadata as JSON: scalars, nested objects, arrays",
@@ -151,6 +157,12 @@ SELECT order_id FROM orders_meta WHERE doc->>'channel' = 'web';                 
     },
 
     { t: "h2", n: "04", text: "When it should have been a table", id: "table" },
+
+    {"kind": "matrix", "title": "When the JSON column should have been a table", "caption": "A JSON column is a table you have not designed yet, and that is sometimes the correct choice. It stops being correct the moment the application depends on a field being present — because the database is no longer keeping that promise for you.", "cols": ["JSON column", "Because"], "rows": ["Varies by product type", "A payload you do not own", "A field every query filters", "A NOT NULL rule on it", "A one-to-many list", "An audit copy of a record"], "cells": [[{"text": "right", "tone": "good"}, "no table could hold all the shapes"], [{"text": "right", "tone": "good"}, "the producer owns the schema"], [{"text": "wrong", "tone": "crit"}, "promote it to a column and index it"], [{"text": "wrong", "tone": "crit"}, "a constraint cannot reach inside"], [{"text": "wrong", "tone": "crit"}, "that is a child table with a key"], [{"text": "right", "tone": "good"}, "kept exactly as received, on purpose"]], "t": "diagram", "id": "dg-4_5-04-1"},
+
+
+
+
 
     { t: "p", text: "The case for a JSON column is real: attributes that differ by product type, an event payload whose schema the producer owns, a record kept exactly as received. The case against it appears the first time someone writes `WHERE (doc->>'pct')::INTEGER > 10` in a report — an unindexed cast on every row, no constraint stopping `pct` from being `'ten'`, no foreign key, no statistics for the planner, and a NULL that could mean 'no coupon' or 'misspelt key'. **A field that is queried is a column. A repeated structure that is queried is a child table.** JSON is for the rest." },
 

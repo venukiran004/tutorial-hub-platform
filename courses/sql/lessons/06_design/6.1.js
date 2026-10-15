@@ -56,6 +56,10 @@ SELECT COUNT(*) FROM orders;                                        -- 12: nobod
 
     { t: "h2", n: "02", text: "The four letters, and what enforces each", id: "acid" },
 
+    {"kind": "matrix", "title": "The four letters, and what actually enforces each", "caption": "Only one of the four is free. Atomicity and durability are the engine's own machinery; consistency is whatever constraints you declared, and isolation is a level you chose — usually the default, which permits more than most people expect (6.2).", "cols": ["Promise", "Enforced by"], "rows": ["Atomicity", "Consistency", "Isolation", "Durability"], "cells": [["all of the statements, or none", {"text": "the engine, via the undo log", "tone": "good"}], ["the data still obeys its rules", {"text": "the constraints you declared", "tone": "warn"}], ["concurrent runs do not corrupt", {"text": "the isolation level you chose", "tone": "warn"}], ["a committed write survives a crash", {"text": "the write-ahead log and fsync", "tone": "good"}]], "t": "diagram", "id": "dg-6_1-02-0"},
+
+
+
     { t: "table",
       head: ["Property", "Guarantee", "Mechanism", "What breaks it"],
       rows: [
@@ -127,6 +131,10 @@ SET synchronous_commit = off;      -- per session or per transaction: fine for l
     },
 
     { t: "h2", n: "04", text: "Idempotent loads: the pipeline's atomicity", id: "idempotent" },
+
+    {"kind": "steps", "title": "An idempotent load: the pipeline's version of atomicity", "caption": "A pipeline that is re-run after a failure must not double-count. Wrapping the delete and the insert in one transaction makes the re-run safe: either the partition is replaced or nothing changed, and no reader ever sees the gap between the two.", "items": [{"label": "BEGIN", "desc": "nothing is visible to anyone else yet", "code": "1", "tone": "accent"}, {"label": "DELETE FROM target WHERE day = :day", "desc": "removes whatever a previous run left", "code": "2", "tone": "warn"}, {"label": "INSERT INTO target SELECT ... WHERE day = :day", "desc": "writes this run's rows", "code": "3", "tone": "good"}, {"label": "COMMIT", "desc": "both become visible at the same instant", "code": "4", "tone": "good"}, {"label": "Re-run it", "desc": "the same day's rows are replaced, not added again", "code": "safe", "tone": "violet"}], "t": "diagram", "id": "dg-6_1-04-1"},
+
+
 
     { t: "p", text: "A pipeline step fails halfway — network, timeout, a bad row — and is re-run. If the step was 'INSERT today's rows', the re-run inserts today's rows again. **Atomicity inside one transaction does not help across two runs; what helps is making the step idempotent**: delete-then-insert the day's partition inside one transaction, or upsert on a natural key (6.3), or insert only rows not already present. Then re-running is safe by construction, and 'did it run twice' stops being a question anyone has to ask." },
 

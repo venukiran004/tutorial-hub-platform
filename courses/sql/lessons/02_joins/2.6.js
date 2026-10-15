@@ -19,6 +19,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Stacking results", id: "stacking" },
 
+    {"kind": "matrix", "title": "The four set operations", "caption": "`UNION` is `UNION ALL` plus a de-duplication you did not ask for: it sorts or hashes every row to find repeats, which costs time and quietly removes rows that were legitimately identical. Reach for `UNION ALL` and add the `DISTINCT` only when you mean it.", "cols": ["Does", "Cost"], "rows": ["UNION ALL", "UNION", "INTERSECT", "EXCEPT"], "cells": [[{"text": "appends, keeps everything", "tone": "good"}, "none: a straight concatenation"], [{"text": "appends, then de-duplicates", "tone": "warn"}, "a sort or hash of every row"], ["rows present in both", "a sort or hash of every row"], ["rows in the first, not the second", "a sort or hash of every row"]], "t": "diagram", "id": "dg-2_6-01-0"},
+
+
+
+
+
+
+
     { t: "p", text: "A set operation combines two queries with the same number of columns, matched by position, into one result. **UNION ALL appends. UNION appends and then removes duplicate rows. INTERSECT keeps rows present in both. EXCEPT keeps rows in the first and not the second.** All of them compare whole rows, and — unlike WHERE — they treat two NULLs as the same for this purpose, so `SELECT NULL UNION SELECT NULL` is one row. The ORDER BY at the end applies to the combined result, not to the last query." },
 
     { t: "code", lang: "sql", title: "The four operations on customer ids from two tables",
@@ -58,6 +66,14 @@ ORDER  BY ts;
     ]},
 
     { t: "h2", n: "02", text: "Positional alignment", id: "alignment" },
+
+    {"kind": "steps", "title": "How a set operation pairs the columns", "caption": "The pairing is by **position**, never by name. Two queries that both select a name and a country will line up silently wrong if one of them lists them in the other order — and it only errors when the types happen to disagree.", "items": [{"label": "Column 1 with column 1", "desc": "by position, whatever the two are called", "code": "position", "tone": "accent"}, {"label": "Types must be compatible", "desc": "TEXT with TEXT, INTEGER with NUMERIC", "code": "checked", "tone": "good"}, {"label": "Names are not checked", "desc": "the first query's names become the result's", "code": "ignored", "tone": "warn"}, {"label": "Swapped columns, same types", "desc": "name under country, no error, wrong answer", "code": "silent", "tone": "crit"}], "t": "diagram", "id": "dg-2_6-02-1"},
+
+
+
+
+
+
 
     { t: "p", text: "The engine pairs the first column with the first, the second with the second, and checks that each pair has compatible types. It does not check names. `SELECT name, country FROM customers UNION SELECT name, department FROM employees` runs happily and puts departments into a column labelled `country` — and if the columns had been written `department, name`, the names would land in the country column with no error. **Every branch of a set operation should list its columns explicitly, in the same order, with the same names, and the second branch's names should match the first's even though the engine ignores them.**" },
 

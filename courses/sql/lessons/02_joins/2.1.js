@@ -19,6 +19,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Cross product, then filter", id: "cross" },
 
+    {"kind": "matrix", "title": "The join family, by what it does with an unmatched row", "caption": "Every one of them is the same cross product filtered by the ON condition. They differ in one decision only: what to do with a row that found no partner — drop it, or keep it padded with NULLs.", "cols": ["Unmatched left row", "Unmatched right row"], "rows": ["INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "FULL JOIN", "CROSS JOIN"], "cells": [[{"text": "dropped", "tone": "crit"}, {"text": "dropped", "tone": "crit"}], [{"text": "kept, padded with NULL", "tone": "good"}, {"text": "dropped", "tone": "crit"}], [{"text": "dropped", "tone": "crit"}, {"text": "kept, padded with NULL", "tone": "good"}], [{"text": "kept, padded with NULL", "tone": "good"}, {"text": "kept, padded with NULL", "tone": "good"}], [{"text": "no condition to fail", "tone": "violet"}, {"text": "no condition to fail", "tone": "violet"}]], "t": "diagram", "id": "dg-2_1-01-0"},
+
+
+
+
+
+
+
     { t: "p", text: "`FROM customers CROSS JOIN products` produces 8 × 6 = 48 rows: every customer next to every product. Every other join is that product with a condition applied. `FROM customers c JOIN orders o ON o.customer_id = c.customer_id` conceptually forms 8 × 12 = 96 pairs and keeps the 12 where the ids agree. **The engine never builds the 96** — it uses a hash or an index (5.2) — but the result is defined as if it had, which is what lets you reason about it." },
 
     { t: "code", lang: "sql", title: "The product, the filter, and the old syntax that shows they are the same thing",
@@ -88,6 +96,14 @@ SELECT COUNT(*) FROM customers c, orders o WHERE c.customer_id = o.customer_id; 
     },
 
     { t: "h2", n: "02", text: "Predicting the row count", id: "count" },
+
+    {"kind": "matrix", "title": "Predicting the row count, on the shop tables", "caption": "Every count here was produced by running the query. The rule behind all of them: a left row contributes one output row per partner it has — and, under an outer join, one row when it has none.", "cols": ["Rows out", "Where the number comes from"], "rows": ["orders JOIN customers", "customers JOIN orders", "customers LEFT orders", "orders JOIN items", "customers CROSS products"], "cells": [[{"text": "12", "tone": "accent"}, "one per order"], [{"text": "12", "tone": "accent"}, "one per order, direction is irrelevant"], [{"text": "13", "tone": "warn"}, "12 orders + Mara, who has none"], [{"text": "19", "tone": "warn"}, "one per line item, not per order"], [{"text": "48", "tone": "crit"}, "8 × 6: every pair"]], "t": "diagram", "id": "dg-2_1-02-1"},
+
+
+
+
+
+
 
     { t: "p", text: "For a join on a key, the row count is decided by how many partners each row has. **Each left row contributes as many output rows as it has matches — and, in an outer join, one row if it has none.** A parent joined to its children returns one row per child; a child joined to its parent returns one row per child; two children of the same parent joined to each other return the product of their counts per parent, which is the fan-out that 2.2 is about." },
 

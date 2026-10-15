@@ -19,6 +19,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Trap 1: a WHERE on the right table", id: "where" },
 
+    {"kind": "compare", "title": "The same filter, in WHERE and in ON", "caption": "Both queries are valid and one of them answers a different question. In WHERE the filter runs on the joined rows, so Mara's padded row — whose status is NULL — fails the test and disappears. In ON it decides which orders *pair* with a customer, and the outer join still keeps everyone.", "columns": [{"title": "WHERE o.status = 'paid'", "tone": "crit", "items": ["6 rows", "Iker and Mara are gone", "NULL = 'paid' is unknown", "a LEFT JOIN that became an INNER", "answers: which paying customers exist"]}, {"title": "ON ... AND o.status = 'paid'", "tone": "good", "items": ["8 rows", "Iker 0, Mara 0", "the pairing is filtered, not the result", "the outer join is preserved", "answers: how many paid orders each has"]}], "t": "diagram", "id": "dg-2_2-01-0"},
+
+
+
+
+
+
+
     { t: "p", text: "Under the logical order of 1.1, the join runs first and WHERE runs on its output. A LEFT JOIN pads Mara's row with NULLs for every order column. Then `WHERE o.status = 'paid'` asks whether NULL equals `'paid'` — unknown — and drops the row. **The outer join kept her; the WHERE threw her away. The LEFT JOIN has become an INNER JOIN with extra steps.** The condition belongs in ON, where it decides which orders *pair* with a customer, rather than which customers survive." },
 
     { t: "code", lang: "sql", title: "Same condition, two positions, two results",
@@ -69,6 +77,14 @@ WHERE  o.order_id IS NULL;                                    -- Mara: the anti-
     },
 
     { t: "h2", n: "02", text: "Trap 2: COUNT(*) counts the padding", id: "count" },
+
+    {"kind": "matrix", "title": "Three counts on Iker's one padded row", "caption": "Iker has a single row after the LEFT JOIN and no order in it. `COUNT(*)` answers 'how many rows did the join make for him', which is never below one. `COUNT(o.order_id)` answers the question the report asked.", "cols": ["Iker", "What it is counting"], "rows": ["COUNT(*)", "COUNT(o.order_id)", "COUNT(o.status)", "SUM(oi.qty)"], "cells": [[{"text": "1", "tone": "crit"}, "rows the join produced"], [{"text": "0", "tone": "good"}, "non-null order ids: the real answer"], [{"text": "0", "tone": "good"}, "non-null statuses"], [{"text": "NULL", "tone": "warn"}, "nothing to sum; COALESCE it to 0"]], "t": "diagram", "id": "dg-2_2-02-1"},
+
+
+
+
+
+
 
     { t: "p", text: "After a LEFT JOIN, a customer with no orders still has a row — the padded one. `COUNT(*)` counts rows, so it says 1. **`COUNT(o.order_id)` counts non-null values of a right-hand column, and the padding is NULL**, so it says 0. The same applies to every aggregate: `SUM` over the padded row is NULL rather than 0, which is where `COALESCE(SUM(…), 0)` comes from." },
 

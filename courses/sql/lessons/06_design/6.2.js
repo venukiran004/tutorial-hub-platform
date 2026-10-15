@@ -38,6 +38,10 @@ b.execute("UPDATE stock SET qty = ? WHERE product_id = 1", (qb - 4,))         # 
 
     { t: "h2", n: "02", text: "The anomalies and the levels", id: "levels" },
 
+    {"kind": "matrix", "title": "Five anomalies against three isolation levels", "caption": "READ COMMITTED — the default on PostgreSQL and SQL Server — permits four of the five. That is not a bug: the levels are a contract about what the engine will prevent, and anything it does not prevent is yours to prevent with a lock, an atomic write or a constraint.", "cols": ["READ COMMITTED", "REPEATABLE READ", "SERIALIZABLE"], "rows": ["Dirty read", "Non-repeatable read", "Phantom", "Lost update", "Write skew"], "cells": [[{"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}], [{"text": "allowed", "tone": "crit"}, {"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}], [{"text": "allowed", "tone": "crit"}, {"text": "prevented in PG", "tone": "warn"}, {"text": "prevented", "tone": "good"}], [{"text": "allowed", "tone": "crit"}, {"text": "PG aborts the writer", "tone": "warn"}, {"text": "prevented", "tone": "good"}], [{"text": "allowed", "tone": "crit"}, {"text": "allowed", "tone": "crit"}, {"text": "prevented", "tone": "good"}]], "t": "diagram", "id": "dg-6_2-02-0"},
+
+
+
     { t: "table",
       head: ["Anomaly", "What happens", "READ COMMITTED", "REPEATABLE READ", "SERIALIZABLE"],
       rows: [
@@ -61,6 +65,10 @@ b.execute("UPDATE stock SET qty = ? WHERE product_id = 1", (qb - 4,))         # 
     ]},
 
     { t: "h2", n: "03", text: "Three fixes that work at any level", id: "fixes" },
+
+    {"kind": "matrix", "title": "Three fixes that work at any isolation level", "caption": "Each removes the read-modify-write gap rather than asking the engine to police it. The third is the one to reach for first, because a single statement cannot interleave with itself.", "cols": ["How", "Costs"], "rows": ["SELECT ... FOR UPDATE", "A version column", "One atomic statement", "SERIALIZABLE"], "cells": [[{"text": "lock the row, then write", "tone": "good"}, "writers queue behind each other"], [{"text": "WHERE version = :v, check rows", "tone": "good"}, "the caller must retry"], [{"text": "SET stock = stock - 1", "tone": "accent"}, "nothing: no gap to interleave in"], [{"text": "the engine detects conflicts", "tone": "violet"}, "serialisation failures to retry"]], "t": "diagram", "id": "dg-6_2-03-1"},
+
+
 
     { t: "p", text: "Raising the isolation level is one answer, but it is rarely the first one: it costs throughput, MySQL's REPEATABLE READ still permits the lost update, and SERIALIZABLE turns the bug into retries the code must handle. **The read-modify-write pattern itself is the problem, and there are three ways to remove it.**" },
 

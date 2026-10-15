@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The shape of a plan", id: "shape" },
 
+    {"kind": "matrix", "title": "The four numbers on every plan line", "caption": "EXPLAIN gives you the first two — what the planner believed. EXPLAIN ANALYZE adds the second two — what happened. The distance between `rows=` and `actual rows=` is the diagnosis: when they differ by orders of magnitude, every join choice above that line was made on a false premise.", "cols": ["Means", "Read it for"], "rows": ["cost=a..b", "rows=, width=", "actual time=a..b", "actual rows=, loops="], "cells": [["startup cost .. total cost", "relative, not milliseconds"], [{"text": "the estimate", "tone": "accent"}, "what the planner believed"], ["first row .. all rows, per loop", "where the time actually went"], [{"text": "the truth, times the loops", "tone": "good"}, "the real row count: multiply them"]], "t": "diagram", "id": "dg-5_2-01-0"},
+
+
+
+
+
     { t: "p", text: "PostgreSQL prints the tree with the root first and children indented beneath it, each introduced by `->`. Two children under a join are its outer (first) and inner (second) inputs. **Execution starts at the deepest leaves and rows flow up**; the top line's actual time is the whole query. Every line carries `(cost=start..total rows=N width=W)` from the planner, and with ANALYZE `(actual time=start..total rows=N loops=L)` from the run." },
 
     { t: "code", lang: "sql", title: "One EXPLAIN ANALYZE, annotated line by line (PostgreSQL 16 form)",
@@ -117,6 +123,12 @@ SELECT c.country, COUNT(*) FROM orders o JOIN customers c ON c.customer_id = o.c
     },
 
     { t: "h2", n: "03", text: "Three things to look at first", id: "first" },
+
+    {"kind": "steps", "title": "Three things to look at first in a long plan", "caption": "A fifty-line plan has one or two lines that matter. This order finds them without reading the rest.", "items": [{"label": "The widest node", "desc": "largest actual rows x loops: this is where the work is", "code": "1", "tone": "crit"}, {"label": "The worst estimate", "desc": "rows= against actual rows=; a 1000x miss explains the plan shape", "code": "2", "tone": "warn"}, {"label": "The scan type under it", "desc": "a Seq Scan on the inner side of a Nested Loop runs per outer row", "code": "3", "tone": "accent"}, {"label": "Only then change something", "desc": "an index, a rewrite, or ANALYZE to refresh the statistics", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-5_2-03-1"},
+
+
+
+
 
     { t: "p", text: "A long plan has one or two lines that matter. **First, the widest node** — the largest `actual rows × loops` — because that is where the work is. **Second, the worst estimate** — the node where `rows=` and `actual rows` differ by the most, since every choice above it was made on the wrong number. **Third, anything that touched disk** — `Sort Method: external merge`, `Batches: 2` or more, `Buffers: … read=` in the thousands — because memory and disk differ by a hundred times. Time on the top line tells you the query is slow; these three tell you why." },
 

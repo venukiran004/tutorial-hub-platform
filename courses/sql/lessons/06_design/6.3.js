@@ -57,6 +57,10 @@ GROUP BY c.customer_id;                                     -- 10 rows`,
 
     { t: "h2", n: "02", text: "Upsert: ON CONFLICT and EXCLUDED", id: "upsert" },
 
+    {"kind": "steps", "title": "What an upsert actually does", "caption": "`ON CONFLICT` needs a unique constraint to conflict *against* — without one there is nothing to detect, and the statement inserts a duplicate. `EXCLUDED` is the row that was proposed, which is how the update reaches the new values.", "items": [{"label": "INSERT INTO t (...) VALUES (...)", "desc": "the proposed row", "code": "1", "tone": "accent"}, {"label": "ON CONFLICT (key)", "desc": "needs a UNIQUE or PRIMARY KEY on that column", "code": "2", "tone": "warn"}, {"label": "DO UPDATE SET col = EXCLUDED.col", "desc": "EXCLUDED is the row that was proposed", "code": "3", "tone": "good"}, {"label": "DO NOTHING", "desc": "the other choice: keep what is already there", "code": "or", "tone": "violet"}, {"label": "RETURNING *", "desc": "tells you which rows were written", "code": "4", "tone": "teal"}], "t": "diagram", "id": "dg-6_3-02-0"},
+
+
+
     { t: "p", text: "An order feed re-delivers order 101 with a new status and delivers order 113 for the first time, in the same batch. A plain INSERT fails on 101's primary key and inserts nothing. **`ON CONFLICT (key) DO UPDATE` keeps the insert for new rows and turns the duplicate into an update, with `EXCLUDED` naming the row that would have been inserted.** A WHERE on the DO UPDATE skips rows where nothing changed, so `updated_at` and triggers fire only for real changes." },
 
     { t: "code", lang: "sql", title: "One statement, both cases; then the same delivery again (executed on SQLite; PostgreSQL syntax identical)",
@@ -163,6 +167,10 @@ CREATE TRIGGER customers_audit AFTER UPDATE OR DELETE ON customers FOR EACH ROW 
     ]},
 
     { t: "h2", n: "05", text: "Bulk: the shape of the load", id: "bulk" },
+
+    {"kind": "matrix", "title": "Loading ten million rows", "caption": "The shape of the load matters more than the engine. Row-at-a-time insertion spends almost all of its time on round trips and per-statement overhead; the bulk paths exist because they skip both.", "cols": ["Relative cost", "Why"], "rows": ["One INSERT per row", "Multi-row VALUES", "COPY / LOAD DATA", "COPY, indexes dropped"], "cells": [[{"text": "slowest by far", "tone": "crit"}, "a round trip and a parse per row"], [{"text": "much faster", "tone": "warn"}, "one parse, one round trip per batch"], [{"text": "fastest path in", "tone": "good"}, "no per-row parsing at all"], [{"text": "faster still", "tone": "accent"}, "build the indexes once, at the end"]], "t": "diagram", "id": "dg-6_3-05-1"},
+
+
 
     { t: "table",
       head: ["20,000 rows into SQLite (WAL, synchronous = FULL)", "Time"],

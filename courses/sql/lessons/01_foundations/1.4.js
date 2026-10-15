@@ -19,6 +19,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "An expression with branches", id: "expression" },
 
+    {"kind": "steps", "title": "CASE stops at the first true branch", "caption": "The branches are tested top to bottom and the first true one wins, so an overlapping condition placed first hides every branch below it. A missing ELSE is not an error — it is a NULL.", "items": [{"label": "WHEN the first condition", "desc": "tested first; if true, nothing below it runs", "code": "wins", "tone": "good"}, {"label": "WHEN the second condition", "desc": "reached only when the first was false", "code": "maybe", "tone": "accent"}, {"label": "ELSE", "desc": "the value when no branch matched", "code": "default", "tone": "violet"}, {"label": "no ELSE written", "desc": "the expression is NULL, silently", "code": "NULL", "tone": "crit"}], "t": "diagram", "id": "dg-1_4-01-0"},
+
+
+
+
+
+
+
+
     { t: "p", text: "The searched form tests conditions in order and returns the value of the **first** one that is true; if none is, it returns the ELSE value, or NULL when there is no ELSE. The simple form compares one expression against a list of values, which is shorter and cannot test ranges or NULL. Both are expressions: **the result has a type, all branches must agree on it, and it can be used anywhere a column can.**" },
 
     { t: "dl", items: [
@@ -132,6 +141,15 @@ FROM   employees GROUP BY department ORDER BY department;
     },
 
     { t: "h2", n: "03", text: "The three mistakes", id: "mistakes" },
+
+    {"kind": "matrix", "title": "The three quiet failures, with the numbers they produce", "caption": "All three run without an error and all three are wrong. The last two are the same bug: integer division truncates, so write the `1.0` or the CAST every time and the query means the same thing on every engine.", "cols": ["Returns here", "Why"], "rows": ["SUM(CASE..THEN 1)", "SUM(CASE..ELSE 0)", "SUM(paid) / COUNT(*)", "SUM(paid)*1.0/COUNT(*)", "AVG(CASE..THEN 1.0)"], "cells": [[{"text": "NULL", "tone": "crit"}, "no ELSE: every row adds NULL"], [{"text": "0", "tone": "good"}, "ELSE 0 makes it a real sum"], [{"text": "0", "tone": "crit"}, "10 / 12 in integer arithmetic"], [{"text": "0.8333", "tone": "good"}, "the 1.0 forces decimal division"], [{"text": "0.8333", "tone": "good"}, "the mean of a 0/1 column"]], "t": "diagram", "id": "dg-1_4-03-1"},
+
+
+
+
+
+
+
 
     { t: "p", text: "Conditional aggregation is short enough to write quickly and quiet enough to be wrong quietly. The three failures are worth knowing by shape. **A SUM over a CASE without ELSE returns NULL when nothing matches**, not zero — `SUM(CASE WHEN status = 'shipped' THEN 1 END)` is NULL on this table, and a downstream `+` turns the whole total NULL. **A rate computed as integer over integer is integer division** in PostgreSQL and SQL Server: `SUM(paid) / COUNT(*)` is `10 / 12`, which is 0. **A CASE with overlapping branches in the wrong order** was section 01." },
 

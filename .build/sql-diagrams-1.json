@@ -1,0 +1,570 @@
+{
+ "1.1": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "The worked query, one stage at a time",
+    "caption": "The row count on the right is the real count from the shop tables. Every later stage can only see what the stage above it produced — which is why `WHERE` cannot mention `n_orders` and `HAVING` can.",
+    "items": [
+     {
+      "label": "FROM + JOIN",
+      "desc": "every order paired with its customer",
+      "code": "12 rows",
+      "tone": "accent"
+     },
+     {
+      "label": "WHERE  status = 'paid'",
+      "desc": "removes 103 refunded and 107 cancelled",
+      "code": "10 rows",
+      "tone": "good"
+     },
+     {
+      "label": "GROUP BY  c.country",
+      "desc": "GB, DE, NG, FR and one NULL country",
+      "code": "5 groups",
+      "tone": "good"
+     },
+     {
+      "label": "HAVING  COUNT(*) >= 2",
+      "desc": "the first stage at which the count exists",
+      "code": "3 groups",
+      "tone": "warn"
+     },
+     {
+      "label": "SELECT",
+      "desc": "computes the columns and names them: n_orders is born here",
+      "code": "3 rows",
+      "tone": "violet"
+     },
+     {
+      "label": "ORDER BY  n_orders DESC",
+      "desc": "runs after SELECT, so the alias resolves",
+      "code": "3 rows",
+      "tone": "teal"
+     },
+     {
+      "label": "LIMIT 2",
+      "desc": "keeps the slice; meaningless without the sort above",
+      "code": "2 rows",
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Where an expression is allowed, and why",
+    "caption": "Every row is the same rule read twice: a clause can only name what an earlier stage has already built. The fix is never a different syntax, it is a different clause.",
+    "cols": [
+     "Allowed",
+     "Because"
+    ],
+    "rows": [
+     "Alias in WHERE",
+     "Alias in ORDER BY",
+     "Aggregate in WHERE",
+     "Aggregate in HAVING",
+     "Window fn in WHERE",
+     "Window fn in ORDER BY"
+    ],
+    "cells": [
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "SELECT has not run yet"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "ORDER BY runs after SELECT"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "no group exists yet"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "HAVING follows GROUP BY"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "computed in SELECT, after WHERE"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "SELECT has already computed it"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Three answers, and only one of them passes the gate",
+    "caption": "WHERE keeps a row only when the condition is **true**. Unknown and false are treated identically there, which is why a row can vanish from both `= 'GB'` and `<> 'GB'`.",
+    "cols": [
+     "Evaluates to",
+     "WHERE does"
+    ],
+    "rows": [
+     "country = 'GB'",
+     "country <> 'GB'",
+     "NULL = NULL",
+     "NULL <> NULL",
+     "country IS NULL",
+     "IS NOT DISTINCT FROM"
+    ],
+    "cells": [
+     [
+      {
+       "text": "true / false",
+       "tone": "good"
+      },
+      "keeps the true rows"
+     ],
+     [
+      {
+       "text": "true / false",
+       "tone": "good"
+      },
+      "keeps the true rows"
+     ],
+     [
+      {
+       "text": "unknown",
+       "tone": "warn"
+      },
+      {
+       "text": "drops the row",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "unknown",
+       "tone": "warn"
+      },
+      {
+       "text": "drops the row",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "true / false",
+       "tone": "good"
+      },
+      "the only NULL test that works"
+     ],
+     [
+      {
+       "text": "true / false",
+       "tone": "good"
+      },
+      "NULL-safe equality"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "What each aggregate does with a NULL",
+    "caption": "Only `COUNT(*)` counts rows; everything else counts or sums the values that exist. The gap between `COUNT(*)` and `COUNT(x)` is the number of NULLs in x — a free null check.",
+    "cols": [
+     "Sees NULL",
+     "Consequence"
+    ],
+    "rows": [
+     "COUNT(*)",
+     "COUNT(x)",
+     "SUM(x)",
+     "AVG(x)",
+     "GROUP BY x",
+     "COUNT(DISTINCT x)"
+    ],
+    "cells": [
+     [
+      {
+       "text": "counts the row",
+       "tone": "accent"
+      },
+      "the only true row count"
+     ],
+     [
+      {
+       "text": "skips it",
+       "tone": "warn"
+      },
+      "COUNT(*) - COUNT(x) = nulls"
+     ],
+     [
+      {
+       "text": "skips it",
+       "tone": "warn"
+      },
+      "NULL when every value is NULL"
+     ],
+     [
+      {
+       "text": "skips it",
+       "tone": "warn"
+      },
+      "divides by the non-null count"
+     ],
+     [
+      {
+       "text": "one NULL group",
+       "tone": "violet"
+      },
+      "all NULLs land together"
+     ],
+     [
+      {
+       "text": "skips it",
+       "tone": "warn"
+      },
+      "NULL is never a distinct value"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "timeline",
+    "title": "The afternoon BETWEEN throws away",
+    "caption": "`BETWEEN '2025-03-01' AND '2025-03-15'` is `>= 2025-03-01 00:00` and `<= 2025-03-15 00:00`. The right-hand string becomes midnight at the *start* of the 15th, so every order after breakfast on the 15th is outside the range. Half-open `>= start AND < next_day` is the spelling that never does this.",
+    "span": 16,
+    "tick": 5,
+    "lanes": [
+     {
+      "label": "You meant",
+      "bars": [
+       [
+        1,
+        16,
+        "the 1st through the 15th, all day",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "BETWEEN gave",
+      "bars": [
+       [
+        1,
+        15,
+        "up to 03-15 00:00:00",
+        "warn"
+       ]
+      ]
+     },
+     {
+      "label": "Lost",
+      "bars": [
+       [
+        15,
+        16,
+        "lost",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "Half-open",
+      "bars": [
+       [
+        1,
+        16,
+        ">= 03-01 AND < 03-16",
+        "accent"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Three kinds of time, and what each one pins down",
+    "caption": "The choice is about what the value *means*, not how it prints. A TIMESTAMP without a zone is a clock face with no location — two of them cannot be compared across regions without an assumption you did not write down.",
+    "cols": [
+     "Fixes",
+     "Fails when"
+    ],
+    "rows": [
+     "DATE",
+     "TIMESTAMP",
+     "TIMESTAMPTZ",
+     "INTERVAL"
+    ],
+    "cells": [
+     [
+      "a calendar day",
+      "an event has a time of day"
+     ],
+     [
+      "a clock reading",
+      "two zones are compared"
+     ],
+     [
+      "an instant in UTC",
+      "a local wall-clock is wanted"
+     ],
+     [
+      "a length of time",
+      "months: not a fixed length"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "CASE stops at the first true branch",
+    "caption": "The branches are tested top to bottom and the first true one wins, so an overlapping condition placed first hides every branch below it. A missing ELSE is not an error — it is a NULL.",
+    "items": [
+     {
+      "label": "WHEN the first condition",
+      "desc": "tested first; if true, nothing below it runs",
+      "code": "wins",
+      "tone": "good"
+     },
+     {
+      "label": "WHEN the second condition",
+      "desc": "reached only when the first was false",
+      "code": "maybe",
+      "tone": "accent"
+     },
+     {
+      "label": "ELSE",
+      "desc": "the value when no branch matched",
+      "code": "default",
+      "tone": "violet"
+     },
+     {
+      "label": "no ELSE written",
+      "desc": "the expression is NULL, silently",
+      "code": "NULL",
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "The three quiet failures, with the numbers they produce",
+    "caption": "All three run without an error and all three are wrong. The last two are the same bug: integer division truncates, so write the `1.0` or the CAST every time and the query means the same thing on every engine.",
+    "cols": [
+     "Returns here",
+     "Why"
+    ],
+    "rows": [
+     "SUM(CASE..THEN 1)",
+     "SUM(CASE..ELSE 0)",
+     "SUM(paid) / COUNT(*)",
+     "SUM(paid)*1.0/COUNT(*)",
+     "AVG(CASE..THEN 1.0)"
+    ],
+    "cells": [
+     [
+      {
+       "text": "NULL",
+       "tone": "crit"
+      },
+      "no ELSE: every row adds NULL"
+     ],
+     [
+      {
+       "text": "0",
+       "tone": "good"
+      },
+      "ELSE 0 makes it a real sum"
+     ],
+     [
+      {
+       "text": "0",
+       "tone": "crit"
+      },
+      "10 / 12 in integer arithmetic"
+     ],
+     [
+      {
+       "text": "0.8333",
+       "tone": "good"
+      },
+      "the 1.0 forces decimal division"
+     ],
+     [
+      {
+       "text": "0.8333",
+       "tone": "good"
+      },
+      "the mean of a 0/1 column"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "What each number type actually promises",
+    "caption": "FLOAT stores binary fractions, and a tenth is not one — so `0.1 + 0.2` is not `0.3` there and is in NUMERIC. Money is NUMERIC, measurements are FLOAT, and the choice is not a matter of taste.",
+    "cols": [
+     "Stores",
+     "Use it for"
+    ],
+    "rows": [
+     "INTEGER",
+     "BIGINT",
+     "NUMERIC(p, s)",
+     "FLOAT",
+     "TEXT",
+     "VARCHAR(n)"
+    ],
+    "cells": [
+     [
+      "whole numbers to 2.1bn",
+      "counts, keys"
+     ],
+     [
+      "whole numbers to 9.2e18",
+      "ids that will outgrow INTEGER"
+     ],
+     [
+      {
+       "text": "decimals exactly",
+       "tone": "good"
+      },
+      "money, rates, anything summed"
+     ],
+     [
+      {
+       "text": "binary approximations",
+       "tone": "warn"
+      },
+      "measurements, coordinates"
+     ],
+     [
+      "any length",
+      "the default for strings"
+     ],
+     [
+      "up to n characters",
+      "when the limit is a real rule"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "timeline",
+    "title": "Why the monthly series starts in January",
+    "caption": "A GROUP BY produces a row per period that **has** data, so November and December — which have no paid orders in the shop — are absent rather than zero, and a chart or a rolling average reads absence as a dip. `generate_series` builds the six months and a LEFT JOIN from it keeps every one, with `COALESCE` turning the empty ones into `0.00`.",
+    "span": 6,
+    "tick": 1,
+    "lanes": [
+     {
+      "label": "Paid revenue",
+      "bars": [
+       [
+        2,
+        3,
+        "203.00",
+        "good"
+       ],
+       [
+        3,
+        4,
+        "251.90",
+        "good"
+       ],
+       [
+        4,
+        5,
+        "190.50",
+        "good"
+       ],
+       [
+        5,
+        6,
+        "52.50",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "GROUP BY gives",
+      "bars": [
+       [
+        2,
+        6,
+        "4 rows: Jan to Apr",
+        "accent"
+       ]
+      ]
+     },
+     {
+      "label": "Absent",
+      "bars": [
+       [
+        0,
+        2,
+        "Nov and Dec: no row at all",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "Date spine",
+      "bars": [
+       [
+        0,
+        6,
+        "6 rows, Nov and Dec as 0.00",
+        "violet"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

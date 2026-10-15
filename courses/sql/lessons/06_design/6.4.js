@@ -19,6 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Five constraints, five refusals", id: "constraints" },
 
+    {"kind": "matrix", "title": "Five constraints, five refusals", "caption": "Every rule left to the application is a rule the database will eventually see broken, because some other writer will not have read your code. NOT NULL is the cheapest and the most valuable: a column that can be NULL will be, and every query on it then needs a COALESCE branch.", "cols": ["Refuses", "Side effect"], "rows": ["PRIMARY KEY", "FOREIGN KEY", "UNIQUE", "CHECK", "NOT NULL"], "cells": [["a duplicate or null identity", {"text": "implies UNIQUE + NOT NULL; indexes it", "tone": "good"}], ["a value with no parent row", {"text": "also blocks deleting the parent", "tone": "warn"}], ["two rows sharing a value", {"text": "creates an index: free fast lookups", "tone": "good"}], ["a row failing a boolean rule", {"text": "true or NULL passes, not false", "tone": "warn"}], ["an absent value", {"text": "removes a branch from every query", "tone": "good"}]], "t": "diagram", "id": "dg-6_4-01-0"},
+
+
+
     { t: "code", lang: "sql", title: "A properly constrained orders table, and six inserts that fail against it (executed on DuckDB)",
       hl: [2, 3, 5, 6, 7, 11, 12, 13, 14, 15],
       code: `CREATE TABLE orders2 (
@@ -164,6 +168,10 @@ SELECT order_id, TRIM(UNNEST(string_split(products, ','))) AS product, TRIM(UNNE
     },
 
     { t: "h2", n: "04", text: "When to denormalise", id: "denorm" },
+
+    {"kind": "compare", "title": "A surrogate key and a natural one", "caption": "They are not alternatives: use a surrogate as the primary key so that a business identifier can change without cascading updates through every child table, and declare the natural key UNIQUE so the database still enforces what makes a row real.", "columns": [{"title": "Surrogate: a serial or UUID", "tone": "good", "items": ["No business meaning at all", "Never has to change", "Narrow: cheap in every child table", "Says nothing about duplicates"]}, {"title": "Natural: ISBN, country code", "tone": "accent", "items": ["Inherently identifies the thing", "Changes when the business changes", "Can be wide and composite", "Enforce it with UNIQUE regardless"]}], "t": "diagram", "id": "dg-6_4-04-1"},
+
+
 
     { t: "p", text: "Normalisation optimises for writes: one fact, one place, no disagreement. Reads pay for it in joins. **Denormalising — copying a fact to where it is read — is the right call when the read is hot, the join is expensive, and the copy is maintained by the database or by a single, transactional write path.** `order_items.unit_price` in the shop schema is a deliberate copy: it is the price at the time of sale, which the product's current price is not, so it is not really a duplicate at all. `customer_stats` from 6.3 is a true denormalisation, kept honest by an upsert that runs in the same transaction as the load." },
 

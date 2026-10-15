@@ -19,6 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The injection, reproduced", id: "injection" },
 
+    {"kind": "compare", "title": "The f-string and the parameter", "caption": "A parameter is not an escaping function — the value never becomes part of the statement's text. The engine parses the query once, with a placeholder where the value goes, so there is no string for an input to break out of.", "columns": [{"title": "f\"... WHERE name = '{name}'\"", "tone": "crit", "items": ["The value becomes SQL text", "An apostrophe ends the literal", "' OR 1=1 -- returns every row", "Escaping by hand is a losing game"]}, {"title": "cur.execute(sql, (name,))", "tone": "good", "items": ["The value is sent separately", "The statement is parsed once", "The input can never be code", "Also lets the plan be reused"]}], "t": "diagram", "id": "dg-7_1-01-0"},
+
+
+
     { t: "code", lang: "python", title: "Building the query from the input (executed against SQLite)",
       hl: [2, 5, 6, 7, 10, 11],
       code: `name = "Asha"
@@ -60,6 +64,10 @@ con.execute("SELECT name FROM customers WHERE customer_id = $cid", {"cid": 4})  
     ]},
 
     { t: "h2", n: "02", text: "What parameters cannot do", id: "limits" },
+
+    {"kind": "matrix", "title": "What a parameter cannot be", "caption": "A placeholder stands where a *value* goes. Anything the parser needs in order to understand the statement cannot be a parameter — and that is the point at which people reach back for string formatting, so these are the places to validate against an allow-list.", "cols": ["As a parameter", "Instead"], "rows": ["A value in WHERE", "A table name", "A column name", "ORDER BY direction", "A list for IN", "An identifier in DDL"], "cells": [[{"text": "yes", "tone": "good"}, "this is what placeholders are for"], [{"text": "no", "tone": "crit"}, "an allow-list, then compose"], [{"text": "no", "tone": "crit"}, "an allow-list, then compose"], [{"text": "no", "tone": "crit"}, "map 'asc'/'desc' through a dict"], [{"text": "driver-specific", "tone": "warn"}, "= ANY(:array), or expand the list"], [{"text": "no", "tone": "crit"}, "the driver's identifier quoter"]], "t": "diagram", "id": "dg-7_1-02-1"},
+
+
 
     { t: "code", lang: "python", title: "Identifiers, IN lists and dynamic ORDER BY (executed)",
       hl: [2, 5, 6, 10, 11, 12],

@@ -48,6 +48,12 @@ WHERE  c.country = 'NG';
 
     { t: "h2", n: "02", text: "Aggregate before you join", id: "preagg" },
 
+    {"kind": "compare", "title": "Aggregate before you join, not after", "caption": "Both queries return revenue per customer. The first carries every line item through the join and groups 19 rows down to 7; the second groups the items to one row per order first, so the join runs on the small side. At a few million line items that reordering is the whole difference.", "columns": [{"title": "Join, then aggregate", "tone": "warn", "items": ["One row per line item through the join", "The join does the multiplying", "GROUP BY collapses it afterwards", "Every item row carries every joined column"]}, {"title": "Aggregate, then join", "tone": "good", "items": ["Items collapsed to one row per order first", "The join runs on the smaller side", "The same answer, less work", "Pre-aggregation: the first thing to try"]}], "t": "diagram", "id": "dg-5_5-02-0"},
+
+
+
+
+
     { t: "p", text: "Revenue per customer joins orders to items — one row per item — and groups by customer. Every item row carries the customer id through the join before the GROUP BY collapses it. **Aggregate items to one row per order first, and the join carries one row per order instead**: fewer rows through the join, and the fan-out of 2.2 cannot happen because nothing is many any more. The planner sometimes does this rewrite itself (eager aggregation); writing it out guarantees it, and it makes the grain of every step visible." },
 
     { t: "code", lang: "sql", title: "Group after the join, and group before it (measured)",
@@ -67,6 +73,12 @@ GROUP  BY o.customer_id;
     },
 
     { t: "h2", n: "03", text: "COUNT DISTINCT, exact and approximate", id: "distinct" },
+
+    {"kind": "matrix", "title": "Counting distinct things, exactly and approximately", "caption": "An exact `COUNT(DISTINCT x)` must remember every key it has seen — a hash of every distinct value, which for a billion events is memory the query does not get. HyperLogLog trades a small, bounded error for constant memory, and for 'roughly how many users' that is the right trade.", "cols": ["Memory", "Error"], "rows": ["COUNT(DISTINCT x)", "HyperLogLog", "APPROX_COUNT_DISTINCT", "COUNT(*) on a pre-agg"], "cells": [[{"text": "one entry per distinct key", "tone": "crit"}, "none: it is exact"], [{"text": "a few kB, fixed", "tone": "good"}, "around 2% relative"], [{"text": "a few kB, fixed", "tone": "good"}, "the same sketch, named per engine"], [{"text": "none at query time", "tone": "accent"}, "none, if the table is current"]], "t": "diagram", "id": "dg-5_5-03-1"},
+
+
+
+
 
     { t: "p", text: "`COUNT(DISTINCT customer_id)` has to remember every distinct key it has seen — a hash of every key, which for a billion events is memory the query does not have. **Exact answers scale with the number of distinct values**: group by the key first and count the groups, which the planner can sort or hash in batches. **Approximate answers scale with nothing**: a HyperLogLog sketch is a few kilobytes, accurate to about 1 %, and sketches from different partitions or days can be merged — which is why warehouses expose `approx_count_distinct` and why daily sketches give a monthly unique count without re-reading the month." },
 

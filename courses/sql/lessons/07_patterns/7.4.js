@@ -19,6 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Hash splits: deterministic by key", id: "hash" },
 
+    {"kind": "compare", "title": "A hash split and ORDER BY random()", "caption": "A hash of the key is deterministic: the same row lands in the same fold today, tomorrow and on another machine, and a new row joins a fold without moving any existing one. `random()` gives a different split on every run, which makes a result impossible to reproduce.", "columns": [{"title": "MOD(ABS(HASH(id)), 10)", "tone": "good", "items": ["The same row, the same fold, always", "No sort: it is one expression per row", "New rows do not move old ones", "Reproducible across machines"]}, {"title": "ORDER BY random() LIMIT n", "tone": "crit", "items": ["A different split every run", "Sorts the whole table to take n", "A result nobody can reproduce", "A seed helps, and is easy to forget"]}], "t": "diagram", "id": "dg-7_4-01-0"},
+
+
+
     { t: "p", text: "`random()` gives a different split every run and every engine; a seed fixes the run but not the engine, and adding one row shifts everyone else's draw. **A hash of the entity key does not depend on anything but the key**: customer 3 is in the validation set today, next month, in PostgreSQL and in DuckDB, whether the table has eight rows or eight million. The bucket is the hash modulo 100; the split is a CASE over the bucket." },
 
     { t: "code", lang: "sql", title: "70 / 15 / 15 by hash of customer_id (executed on DuckDB)",
@@ -69,6 +73,10 @@ SELECT COUNT(*) FROM orders USING SAMPLE 50% (bernoulli, 1);              -- 8 o
     },
 
     { t: "h2", n: "03", text: "The split that leaks", id: "leak" },
+
+    {"kind": "matrix", "title": "The split that leaks", "caption": "A random row-level split puts rows of the same entity, or the same moment, on both sides — and the model then scores well by recognising something it has already seen. The grain of the split must match the grain the prediction is made at.", "cols": ["Leaks when", "Split on"], "rows": ["Rows of one customer", "Several visits of a session", "A time series", "Near-duplicate rows", "Grouped records"], "cells": [[{"text": "both sides hold the same person", "tone": "crit"}, "hash the customer id"], [{"text": "one session spans the split", "tone": "crit"}, "hash the session id"], [{"text": "the future is in training", "tone": "crit"}, "a cut-off date, not a hash"], [{"text": "the twin is on the other side", "tone": "warn"}, "de-duplicate before splitting"], [{"text": "a group is divided", "tone": "crit"}, "hash the group key"]], "t": "diagram", "id": "dg-7_4-03-1"},
+
+
 
     { t: "code", lang: "sql", title: "Row-level split versus entity-level split (executed)",
       hl: [2, 3, 5, 6, 7, 11, 12, 16, 17],

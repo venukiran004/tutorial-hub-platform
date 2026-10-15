@@ -19,6 +19,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Ranges and lists", id: "ranges" },
 
+    {"kind": "timeline", "title": "The afternoon BETWEEN throws away", "caption": "`BETWEEN '2025-03-01' AND '2025-03-15'` is `>= 2025-03-01 00:00` and `<= 2025-03-15 00:00`. The right-hand string becomes midnight at the *start* of the 15th, so every order after breakfast on the 15th is outside the range. Half-open `>= start AND < next_day` is the spelling that never does this.", "span": 16, "tick": 5, "lanes": [{"label": "You meant", "bars": [[1, 16, "the 1st through the 15th, all day", "good"]]}, {"label": "BETWEEN gave", "bars": [[1, 15, "up to 03-15 00:00:00", "warn"]]}, {"label": "Lost", "bars": [[15, 16, "lost", "crit"]]}, {"label": "Half-open", "bars": [[1, 16, ">= 03-01 AND < 03-16", "accent"]]}], "t": "diagram", "id": "dg-1_3-01-0"},
+
+
+
+
+
+
+
+
     { t: "p", text: "`BETWEEN a AND b` is `>= a AND <= b` — **inclusive on both ends, always**. For integers that is fine. For decimals it is fine as long as the ends are the values you mean. For timestamps it is the source of a bug that appears at every month end, because the upper bound you wrote as a date is a timestamp at midnight, and the day you wanted is the 24 hours *after* it. `IN (…)` is a chain of `= OR =`, with the NULL behaviour of 1.2; a subquery in the list is the same chain over whatever rows come back." },
 
     { t: "code", lang: "sql", title: "BETWEEN is inclusive — which is the problem with timestamps",
@@ -77,6 +86,15 @@ WHERE name SIMILAR TO '(A|B|C)%'            -- the standard's hybrid: regex alte
     },
 
     { t: "h2", n: "03", text: "Three kinds of time", id: "time" },
+
+    {"kind": "matrix", "title": "Three kinds of time, and what each one pins down", "caption": "The choice is about what the value *means*, not how it prints. A TIMESTAMP without a zone is a clock face with no location — two of them cannot be compared across regions without an assumption you did not write down.", "cols": ["Fixes", "Fails when"], "rows": ["DATE", "TIMESTAMP", "TIMESTAMPTZ", "INTERVAL"], "cells": [["a calendar day", "an event has a time of day"], ["a clock reading", "two zones are compared"], ["an instant in UTC", "a local wall-clock is wanted"], ["a length of time", "months: not a fixed length"]], "t": "diagram", "id": "dg-1_3-03-1"},
+
+
+
+
+
+
+
 
     { t: "p", text: "A `DATE` is a calendar day. A `TIMESTAMP` (without time zone) is a wall-clock reading — the numbers on a clock face, with no statement of where the clock was. A `TIMESTAMPTZ` is an instant: PostgreSQL stores it as UTC and renders it in the session's time zone on the way out. **Comparing a DATE to a TIMESTAMP casts the date to midnight; comparing a TIMESTAMP to a TIMESTAMPTZ interprets the wall clock in the session zone**, which means the same query can return different rows for two users in different offices." },
 

@@ -19,6 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The leak, made visible", id: "leak" },
 
+    {"kind": "timeline", "title": "The leak: Asha was standard in January", "caption": "The customers table holds only the current value, so joining it onto orders labels every January order `plus` — a feature that did not exist when the order was placed. For a model predicting refunds or churn it quietly encodes 'this customer stayed long enough to upgrade', which is the future leaking into the past.", "span": 4, "tick": 1, "lanes": [{"label": "Asha's real tier", "bars": [[0, 1, "standard", "good"], [1, 4, "plus", "accent"]]}, {"label": "Orders placed", "bars": [[0, 1, "100, 102", "violet"], [2, 3, "108", "violet"]]}, {"label": "Naive join says", "bars": [[0, 4, "plus on every order, including January", "crit"]]}, {"label": "As-of join says", "bars": [[0, 1, "standard", "good"], [2, 3, "plus", "good"]]}], "t": "diagram", "id": "dg-7_2-01-0"},
+
+
+
     { t: "p", text: "Asha was `standard` until 1 February and `plus` afterwards; Dalia upgraded on 20 February. The customers table holds only the current value. **Join it onto orders and every January order is labelled `plus`** — a feature that did not exist when the order was placed, and one that, for a model predicting refunds or churn, quietly encodes 'this customer stayed long enough to upgrade'." },
 
     { t: "code", lang: "sql", title: "Today's value on yesterday's rows, and the same join done as-of (executed on DuckDB)",
@@ -58,6 +62,10 @@ WHERE  o.customer_id IN (1, 4) ORDER BY o.order_id;`,
     ]},
 
     { t: "h2", n: "02", text: "The as-of join, three ways", id: "asof" },
+
+    {"kind": "matrix", "title": "Three ways to write an as-of join", "caption": "All three answer 'what was true at the moment of this row'. The first is the one to reach for: a validity range on the dimension turns the as-of join into an ordinary inequality join the planner understands.", "cols": ["How", "Cost"], "rows": ["Validity range join", "LATERAL with LIMIT 1", "Window + filter", "ASOF JOIN"], "cells": [[{"text": "valid_from <= t AND t < valid_to", "tone": "good"}, "needs Type 2 history to exist"], [{"text": "the latest row before t, per row", "tone": "accent"}, "per-row evaluation; fine on small sides"], [{"text": "rank the history, keep rank 1", "tone": "accent"}, "ranks the whole history first"], [{"text": "the engine does it", "tone": "violet"}, "DuckDB, ClickHouse; not portable"]], "t": "diagram", "id": "dg-7_2-02-1"},
+
+
 
     { t: "code", lang: "sql", title: "LATERAL, ranked window, native ASOF — same result (executed)",
       hl: [2, 3, 4, 8, 9, 10, 15, 16],

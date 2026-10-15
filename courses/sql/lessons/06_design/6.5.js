@@ -19,6 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Two workloads, two shapes", id: "workloads" },
 
+    {"kind": "compare", "title": "The schema for taking orders is wrong for analysing them", "caption": "One shape makes each write touch a single place; the other makes each question touch few tables. They are different objectives, and trying to serve both from one schema is how a reporting query ends up joining eleven tables.", "columns": [{"title": "Operational (OLTP)", "tone": "accent", "items": ["Normalised: each fact stored once", "Many narrow tables", "Writes touch one row in one place", "Indexed for point lookups", "A report joins a dozen tables"]}, {"title": "Analytical (OLAP)", "tone": "good", "items": ["Denormalised into facts and dimensions", "One wide fact table, a few dimensions", "Written in bulk, rarely updated", "Scanned by column, not seeked", "A report joins two or three tables"]}], "t": "diagram", "id": "dg-6_5-01-0"},
+
+
+
     { t: "table",
       head: ["", "OLTP — operations", "OLAP — analytics"],
       rows: [
@@ -125,6 +129,10 @@ WHERE  f.status = 'paid' GROUP BY c.tier ORDER BY c.tier;`,
     },
 
     { t: "h2", n: "03", text: "Slowly changing dimensions", id: "scd" },
+
+    {"kind": "matrix", "title": "Slowly changing dimensions: what happens when a tier changes", "caption": "The choice decides what a historical report says. Type 1 rewrites history — every past order is relabelled, which is exactly the leak of 7.2. Type 2 keeps a row per version with validity dates, which is what an as-of join needs.", "cols": ["On a change", "A report on January says"], "rows": ["Type 1: overwrite", "Type 2: new row", "Type 3: a prior column", "Type 4: a history table"], "cells": [[{"text": "replaces the value", "tone": "crit"}, "today's tier: history is rewritten"], [{"text": "closes one row, opens one", "tone": "good"}, "the tier as it was in January"], [{"text": "keeps previous_tier", "tone": "warn"}, "the last two values only"], [{"text": "current table plus history", "tone": "accent"}, "whatever the history table holds"]], "t": "diagram", "id": "dg-6_5-03-1"},
+
+
 
     { t: "p", text: "Bruno was `standard` and becomes `plus` on 1 March. If the dimension row is simply updated (**type 1**), every past order of his is now reported under `plus`, and last quarter's tier report changes retroactively. If instead the old row is closed and a new row opened (**type 2**), past facts keep pointing at the old row, new facts point at the new one, and 'revenue by tier' is correct for any period. The surrogate `customer_key`, distinct from the business `customer_id`, is what makes two rows for one customer possible." },
 

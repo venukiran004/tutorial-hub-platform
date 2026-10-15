@@ -95,6 +95,12 @@ SELECT COUNT(*) FROM orders WHERE placed_at LIKE '%:30:00';
 
     { t: "h2", n: "02", text: "Composite indexes and the leftmost prefix", id: "composite" },
 
+    {"kind": "matrix", "title": "The leftmost prefix rule, on one composite index", "caption": "`(customer_id, placed_at)` is sorted by customer, and within each customer by time. A predicate can use the index only from the left: skip the first column and the sort order is no help at all, because the times of different customers are interleaved.", "cols": ["Uses the index", "Because"], "rows": ["WHERE customer_id = 4", "... AND placed_at > x", "WHERE placed_at > x", "ORDER BY cust, placed_at", "ORDER BY placed_at"], "cells": [[{"text": "yes", "tone": "good"}, "the leading column"], [{"text": "yes, fully", "tone": "good"}, "both columns, left to right"], [{"text": "no", "tone": "crit"}, "the leading column is not constrained"], [{"text": "yes, no sort needed", "tone": "good"}, "this is the index's own order"], [{"text": "no", "tone": "crit"}, "times are interleaved across customers"]], "t": "diagram", "id": "dg-5_3-02-0"},
+
+
+
+
+
     { t: "p", text: "An index on `(customer_id, placed_at)` is sorted by customer, and within each customer by time. **A predicate on `customer_id` alone uses it; on both, uses it fully; on `placed_at` alone, cannot** — the times of one customer are contiguous but the times of all customers are scattered through the index. The order of columns is therefore a design decision: equality columns first, the range or sort column last, and the column that queries filter on alone first." },
 
     { t: "code", lang: "sql", title: "One composite index, four predicates (measured)",
@@ -163,6 +169,12 @@ CREATE UNIQUE INDEX customers_email ON customers (LOWER(email));
     { t: "p", text: "Two of these matter routinely. **GIN with `pg_trgm`** is the only index that helps `LIKE '%search%'` and case-insensitive `ILIKE`, by indexing three-character fragments. **BRIN** on a timestamp column of an append-only table is a few kilobytes that lets a range predicate skip every block whose min and max fall outside the range — for a log table it replaces a B-tree that would be larger than the data. Both are PostgreSQL; other engines have full-text and columnar equivalents that serve the same two needs." },
 
     { t: "h2", n: "05", text: "What an index costs", id: "cost" },
+
+    {"kind": "timeline", "title": "What indexes cost on the way in", "caption": "Measured: inserting 50,000 orders takes 54 ms into a bare table, 82 ms with one secondary index and 259 ms with four — five times the cost. Indexes are paid for on every write and repaid only on the reads that use them, which is why `pg_stat_user_indexes.idx_scan = 0` is a column worth checking.", "span": 270, "tick": 60, "lanes": [{"label": "No index", "bars": [[0, 54, "54 ms", "good"]]}, {"label": "One index", "bars": [[0, 82, "82 ms", "accent"]]}, {"label": "Four indexes", "bars": [[0, 259, "259 ms: five times the bare table", "crit"]]}], "t": "diagram", "id": "dg-5_3-05-1"},
+
+
+
+
 
     { t: "p", text: "Every INSERT writes into every index on the table; every UPDATE of an indexed column deletes and re-inserts an index entry; every DELETE leaves a dead entry until VACUUM. **Indexes are paid for on writes and repaid on reads**, and a table with fifteen indexes — common after years of 'add an index' fixes — spends most of its write time maintaining them, many of which no query uses." },
 

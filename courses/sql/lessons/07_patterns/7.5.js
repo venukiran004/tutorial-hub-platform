@@ -19,6 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Ranking: second highest, top n per group", id: "ranking" },
 
+    {"kind": "matrix", "title": "The dozen questions, and what each one is really testing", "caption": "Every interview draws from the same small set, and each is a concept in a costume. Naming the concept out loud — 'this is a ties question, so DENSE_RANK' — is most of the answer, and it is what the follow-up question is aimed at.", "cols": ["Tests", "The tool"], "rows": ["Second-highest salary", "Top n per group", "Consecutive days", "Running total", "Duplicates", "Median"], "cells": [[{"text": "ties", "tone": "accent"}, "DENSE_RANK = 2"], [{"text": "ranking in a partition", "tone": "accent"}, "ROW_NUMBER, filtered outside"], [{"text": "gaps and islands", "tone": "good"}, "date minus ROW_NUMBER"], [{"text": "the frame", "tone": "good"}, "SUM OVER (ORDER BY ...)"], [{"text": "grain", "tone": "warn"}, "GROUP BY key HAVING COUNT(*) > 1"], [{"text": "the engine's gaps", "tone": "violet"}, "percentile_cont, or a window trick"]], "t": "diagram", "id": "dg-7_5-01-0"},
+
+
+
     { t: "code", lang: "sql", title: "Second-highest salary, three ways, and what ties do to each (executed)",
       hl: [2, 5, 8, 12, 13],
       code: `-- a. subquery: the highest below the highest. Handles ties correctly; returns NULL, not no row, if there is no second
@@ -170,6 +174,10 @@ FROM   employees GROUP BY department ORDER BY dept_avg DESC;
     },
 
     { t: "h2", n: "05", text: "How to talk through it", id: "method" },
+
+    {"kind": "steps", "title": "How to talk through one", "caption": "The code is the smallest part of the answer. What is being assessed is whether you state the grain, name the edge case before it is pointed out, and say what you would check — which is the same discipline the rest of this course has been about.", "items": [{"label": "Say the grain of the answer", "desc": "one row per what: per customer, per customer-month", "code": "1", "tone": "accent"}, {"label": "Name the edge case first", "desc": "ties, NULLs, customers with no orders, months with none", "code": "2", "tone": "good"}, {"label": "Write the simplest version", "desc": "a CTE per step, named, rather than one nested block", "code": "3", "tone": "good"}, {"label": "Say how you would check it", "desc": "a row count you can predict, a spot-check on one key", "code": "4", "tone": "violet"}, {"label": "Offer the scale caveat", "desc": "what you would change at a billion rows, and why", "code": "5", "tone": "teal"}], "t": "diagram", "id": "dg-7_5-05-1"},
+
+
 
     { t: "callout", kind: "mental", title: "Clarify, simple, robust, follow-up", body: [
       { t: "p", text: "**Clarify** the definition in one question: 'do ties share a rank?', 'is a refunded order an order?', 'can the same user log in twice a day?'. **Write the simple version** that answers the literal question. **Make it robust** by naming the edge you handled — NULLs, ties, empty groups, division by zero — and show the one-line change. **Offer the follow-up** yourself: 'if you wanted the nth, this becomes DENSE_RANK = n'. That sequence shows the interviewer what they are actually assessing: whether you know where SQL answers are wrong." }

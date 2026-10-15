@@ -19,6 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "DDL: cheap changes and expensive ones", id: "ddl" },
 
+    {"kind": "matrix", "title": "Which schema changes are cheap and which lock the table", "caption": "The cost is decided by whether existing rows must be rewritten or verified. Adding a nullable column is a catalogue edit; adding a NOT NULL column with no default has to touch every row, and on a large table under load that is an outage.", "cols": ["Cost", "Why"], "rows": ["ADD COLUMN, nullable", "ADD COLUMN NOT NULL", "DROP COLUMN", "ALTER TYPE", "ADD CHECK", "CREATE INDEX"], "cells": [[{"text": "instant", "tone": "good"}, "a catalogue entry; no rows touched"], [{"text": "rewrites or verifies", "tone": "crit"}, "every existing row needs a value"], [{"text": "instant", "tone": "good"}, "marked dead; space reclaimed later"], [{"text": "usually a rewrite", "tone": "crit"}, "every value must be converted"], [{"text": "scans the table", "tone": "warn"}, "NOT VALID defers it, then VALIDATE"], [{"text": "locks writes", "tone": "warn"}, "CONCURRENTLY avoids it, more slowly"]], "t": "diagram", "id": "dg-6_6-01-0"},
+
+
+
     { t: "code", lang: "sql", title: "The everyday ALTERs (executed on DuckDB and SQLite)",
       hl: [1, 3, 5, 8, 11, 14],
       code: `ALTER TABLE customers ADD COLUMN email TEXT;                          -- cheap: metadata only, NULL for existing rows
@@ -137,6 +141,10 @@ CALL archive_old_orders(DATE '2024-07-01', 1000);`,
     },
 
     { t: "h2", n: "04", text: "Migrations and expand–contract", id: "migrations" },
+
+    {"kind": "steps", "title": "Expand and contract: a breaking change in safe steps", "caption": "The rule is that the schema and the application are never required to deploy together. Each step leaves both the old and the new code working, so any step can be rolled back on its own.", "items": [{"label": "Expand: add the new column, nullable", "desc": "old code ignores it; nothing breaks", "code": "1", "tone": "good"}, {"label": "Write to both", "desc": "deploy code that fills old and new", "code": "2", "tone": "accent"}, {"label": "Backfill in batches", "desc": "old rows get the new value, a chunk at a time", "code": "3", "tone": "accent"}, {"label": "Read from the new one", "desc": "deploy; the old column is now unread", "code": "4", "tone": "violet"}, {"label": "Contract: stop writing, then drop", "desc": "two deploys apart, so a rollback is possible", "code": "5", "tone": "warn"}], "t": "diagram", "id": "dg-6_6-04-1"},
+
+
 
     { t: "p", text: "A migration is a script that moves the schema from one version to the next, kept in version control beside the code, applied by a tool (Alembic, Flyway, Liquibase, dbmate, Django, Rails) that records which have run in a `schema_migrations` table. **Every environment reaches the same schema by the same path**, and the diff between production and a laptop is a list of unapplied files, not an archaeology project." },
 

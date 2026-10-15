@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Four stages", id: "stages" },
 
+    {"kind": "steps", "title": "From the text of a query to the rows that come back", "caption": "Only the last stage touches data. Everything before it is the engine deciding *how*, from a cost model and a set of statistics that may be days out of date — which is why a query that was fast last month can be slow today with no change to its text.", "items": [{"label": "Parse", "desc": "text to a tree; rejects syntax it cannot read", "code": "syntax", "tone": "accent"}, {"label": "Analyse", "desc": "binds names to tables and columns, resolves types", "code": "names", "tone": "accent"}, {"label": "Rewrite and plan", "desc": "a logical plan, then the cheapest physical plan it can estimate", "code": "cost", "tone": "violet"}, {"label": "Execute", "desc": "the plan runs; rows flow up the tree from the leaves", "code": "rows", "tone": "good"}], "t": "diagram", "id": "dg-5_1-01-0"},
+
+
+
+
+
     { t: "p", text: "The **parser** turns the text into a tree and rejects syntax it cannot read. The **analyser** binds names to tables and columns, resolves types, and rejects what does not exist. The **rewriter** expands views, inlines single-reference CTEs and applies rules. The **planner** enumerates ways to execute the rewritten tree — scan orders, join methods, join orders — assigns each a cost from its model and its statistics, and keeps the cheapest. The **executor** runs that plan, pulling rows through the operators. **The planner never sees your data. It sees a summary of it, and it optimises for the summary.**" },
 
     { t: "viz",
@@ -103,6 +109,12 @@ EC.receiveLesson({
     },
 
     { t: "h2", n: "03", text: "The cost model and selectivity", id: "cost" },
+
+    {"kind": "matrix", "title": "Why the planner refuses the index you built", "caption": "A full scan reads pages in order, which is cheap per row; an index scan jumps to a random page per row. Past roughly a few per cent of the table, reading everything in order wins — so an index on a column where 90% of rows match is correctly ignored.", "cols": ["Planner picks", "Because"], "rows": ["status = 'paid' (90%)", "status = 'refunded' (5%)", "A 300-row table", "Stats are stale", "ORDER BY the index's key"], "cells": [[{"text": "a sequential scan", "tone": "accent"}, "random reads would cost more"], [{"text": "the index", "tone": "good"}, "few rows; the jumps are worth it"], [{"text": "a sequential scan", "tone": "accent"}, "the whole table is one or two pages"], [{"text": "the wrong thing", "tone": "crit"}, "it estimates from an old histogram"], [{"text": "the index", "tone": "good"}, "the sort is already done"]], "t": "diagram", "id": "dg-5_1-03-1"},
+
+
+
+
 
     { t: "p", text: "The planner does not know how long anything takes. It knows relative costs: reading a page sequentially is cheap, reading a page at random costs several times more, processing a row costs a little, an index lookup costs some pages plus some rows. **Given an estimate of how many rows a predicate keeps, it can price a full scan against an index scan** — and the answer flips with selectivity. Five per cent of rows through an index is cheaper than reading everything; ninety per cent through an index is random reads of nearly every page, which is worse than one sequential pass." },
 

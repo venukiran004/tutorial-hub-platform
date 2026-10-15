@@ -19,6 +19,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Long to wide: one aggregate per column", id: "pivot" },
 
+    {"kind": "compare", "title": "Long is how it is stored, wide is how it is read", "caption": "A pivot is nothing but one conditional aggregate per output column, grouped by the row key — the 1.4 pattern with a column per value. Which shape is right depends entirely on who is reading: a chart wants long, a person wants wide.", "columns": [{"title": "Long: one row per fact", "tone": "good", "items": ["(month, category, amount)", "A new category adds rows", "Aggregates and filters directly", "What the database should hold", "What a plotting library wants"]}, {"title": "Wide: one column per value", "tone": "accent", "items": ["month, kitchen, office, audio", "A new category needs a new column", "The columns are known in advance", "A reporting shape, not a storage one", "What a person reads"]}], "t": "diagram", "id": "dg-4_4-01-0"},
+
+
+
+
+
     { t: "p", text: "The 1.4 pattern is the whole mechanism: **one conditional aggregate per output column, grouped by the row key.** Revenue per month by category is `GROUP BY month` with a `SUM(…) FILTER (WHERE category = 'kitchen')` for each category. It is verbose because it is explicit — every column is named, in order, with its condition — and that explicitness is why it works on every engine, is readable in a code review, and cannot surprise you with an extra column when a new category appears." },
 
     { t: "code", lang: "sql", title: "Monthly revenue by category, one FILTER per column",
@@ -139,6 +145,12 @@ ORDER  BY w.month, v.category;
     },
 
     { t: "h2", n: "03", text: "When the columns are not known", id: "dynamic" },
+
+    {"kind": "matrix", "title": "A pivot over unknown columns is not one SQL statement", "caption": "A statement's column list is fixed when it is parsed, so it cannot depend on the data the statement is about to read. Every way out of this either generates SQL, moves the reshape out of SQL, or gives up a column per value.", "cols": ["How", "Cost"], "rows": ["Static CASE columns", "Generated SQL", "DuckDB PIVOT", "crosstab()", "Reshape in pandas"], "cells": [[{"text": "list the values yourself", "tone": "good"}, "a new value is silently missing"], [{"text": "query the values, build the text", "tone": "warn"}, "two round trips; injection risk"], [{"text": "the engine discovers them", "tone": "accent"}, "DuckDB only; convenient in a notebook"], [{"text": "a Postgres extension", "tone": "accent"}, "the column list is still declared"], [{"text": "return long, pivot outside", "tone": "violet"}, "the rows travel; usually the right call"]], "t": "diagram", "id": "dg-4_4-03-1"},
+
+
+
+
 
     { t: "p", text: "A pivot over 'whatever categories exist' cannot be one static SQL statement, because the statement's columns would depend on the data it reads. The options are honest about that. **Generate the SQL**: query the distinct values, build the FILTER list in Python or a stored procedure, run the generated statement — the columns are fixed at the moment the text is built. **Pivot on the client**: fetch the long form and let `pandas.pivot_table` make the columns, which is what it is for. **Or keep it long and let the presentation layer pivot**, which is what most BI tools do." },
 

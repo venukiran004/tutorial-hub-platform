@@ -19,6 +19,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "WITH: a pipeline of named results", id: "with" },
 
+    {"kind": "steps", "title": "A pipeline read top to bottom instead of inside out", "caption": "Three nested derived tables and three chained CTEs produce the same plan. The difference is that each step has a name, and the grain of each step can be written next to it — which is where the fan-out bugs of 2.2 get caught before they ship.", "items": [{"label": "WITH order_totals AS (...)", "desc": "grain: one row per order", "code": "step 1", "tone": "accent"}, {"label": "customer_totals AS (SELECT ... FROM order_totals)", "desc": "grain: one row per customer", "code": "step 2", "tone": "good"}, {"label": "ranked AS (SELECT ... FROM customer_totals)", "desc": "grain: unchanged, one column added", "code": "step 3", "tone": "violet"}, {"label": "SELECT ... FROM ranked WHERE rn <= 3", "desc": "the final statement, filtering the rank", "code": "result", "tone": "teal"}], "t": "diagram", "id": "dg-4_2-01-0"},
+
+
+
+
+
+
     { t: "p", text: "`WITH name AS (query)` defines a temporary named result that the rest of the statement can use as a table. Several can be chained, each referring to the ones above it. **The query then reads as a pipeline — order totals, then customer totals, then segments, then the report — with each stage's grain visible in its name.** The 2.2 fix for fan-out, 'aggregate each child first, then join', is a CTE chain waiting to be written." },
 
     { t: "code", lang: "sql", title: "From line items to a segment report in four named steps",
@@ -129,6 +136,13 @@ SELECT * FROM recent WHERE customer_id = 3;                                     
     },
 
     { t: "h2", n: "03", text: "CTE, derived table, view, temp table", id: "choose" },
+
+    {"kind": "matrix", "title": "Four ways to name an intermediate result", "caption": "They sit on one spectrum: how long the name lasts. A CTE and a derived table are the same thing with different ergonomics; a view is a CTE that outlives the statement; a temp table is a view that has been computed once and can be indexed.", "cols": ["Lives for", "Reach for it when"], "rows": ["Derived table", "CTE", "View", "Temp table", "Materialised view"], "cells": [["one statement", "the step is used once"], ["one statement", "the step is used twice, or named"], ["the schema", "the definition is shared"], [{"text": "the session", "tone": "accent"}, "the result is reused and needs an index"], [{"text": "until refreshed", "tone": "violet"}, "the cost must be paid in advance"]], "t": "diagram", "id": "dg-4_2-03-1"},
+
+
+
+
+
 
     { t: "p", text: "Four ways to name an intermediate result, on a spectrum from 'this statement only' to 'this schema forever'. A **derived table** and a **CTE** are the same thing with different readability. A **view** is a saved query — a name in the schema that any statement can use, re-run each time, with no storage. A **temporary table** is real: rows on disk for the session, indexable, with statistics the planner can use. **The choice is about lifetime and about whether the planner needs to know the intermediate's size.**" },
 

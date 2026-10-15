@@ -19,6 +19,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Unknown is a third answer", id: "unknown" },
 
+    {"kind": "matrix", "title": "Three answers, and only one of them passes the gate", "caption": "WHERE keeps a row only when the condition is **true**. Unknown and false are treated identically there, which is why a row can vanish from both `= 'GB'` and `<> 'GB'`.", "cols": ["Evaluates to", "WHERE does"], "rows": ["country = 'GB'", "country <> 'GB'", "NULL = NULL", "NULL <> NULL", "country IS NULL", "IS NOT DISTINCT FROM"], "cells": [[{"text": "true / false", "tone": "good"}, "keeps the true rows"], [{"text": "true / false", "tone": "good"}, "keeps the true rows"], [{"text": "unknown", "tone": "warn"}, {"text": "drops the row", "tone": "crit"}], [{"text": "unknown", "tone": "warn"}, {"text": "drops the row", "tone": "crit"}], [{"text": "true / false", "tone": "good"}, "the only NULL test that works"], [{"text": "true / false", "tone": "good"}, "NULL-safe equality"]], "t": "diagram", "id": "dg-1_2-01-0"},
+
+
+
+
+
+
+
+
     { t: "p", text: "A comparison in SQL has three possible results: true, false, and unknown. **Any comparison in which either side is NULL is unknown** — including `NULL = NULL`. The logical operators combine the three the way you would expect if you read unknown as 'could be either': false AND unknown is false, because false wins regardless; true OR unknown is true; everything else involving unknown stays unknown. Then the rule that makes it matter: **WHERE, HAVING, JOIN … ON and CASE … WHEN keep a row only when the condition is true.** Unknown is treated like false at every one of those gates, and there is no error to tell you it happened." },
 
     { t: "dl", items: [
@@ -144,6 +153,15 @@ WHERE  NOT EXISTS (SELECT 1 FROM products q WHERE q.unit_price < 30 AND q.catego
     ]},
 
     { t: "h2", n: "04", text: "Aggregates, groups, distinct and unique", id: "aggregates" },
+
+    {"kind": "matrix", "title": "What each aggregate does with a NULL", "caption": "Only `COUNT(*)` counts rows; everything else counts or sums the values that exist. The gap between `COUNT(*)` and `COUNT(x)` is the number of NULLs in x — a free null check.", "cols": ["Sees NULL", "Consequence"], "rows": ["COUNT(*)", "COUNT(x)", "SUM(x)", "AVG(x)", "GROUP BY x", "COUNT(DISTINCT x)"], "cells": [[{"text": "counts the row", "tone": "accent"}, "the only true row count"], [{"text": "skips it", "tone": "warn"}, "COUNT(*) - COUNT(x) = nulls"], [{"text": "skips it", "tone": "warn"}, "NULL when every value is NULL"], [{"text": "skips it", "tone": "warn"}, "divides by the non-null count"], [{"text": "one NULL group", "tone": "violet"}, "all NULLs land together"], [{"text": "skips it", "tone": "warn"}, "NULL is never a distinct value"]], "t": "diagram", "id": "dg-1_2-04-1"},
+
+
+
+
+
+
+
 
     { t: "p", text: "Every aggregate except `COUNT(*)` ignores NULL. That is usually what you want — an average over the values that exist — and occasionally the opposite of what you want, because **`COUNT(column)` counts non-null values, `AVG` divides by the non-null count, and `SUM` over no rows is NULL, not zero.** GROUP BY and DISTINCT go the other way: for the purpose of forming groups and removing duplicates, NULLs are treated as equal to each other, so all the unknowns land in one bucket." },
 

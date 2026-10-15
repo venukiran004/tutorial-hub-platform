@@ -19,6 +19,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The frame is the part of the partition the function sees", id: "frame" },
 
+    {"kind": "matrix", "title": "The default frame is RANGE, and it swallows the tie", "caption": "Writing `ORDER BY salary` with no frame gives `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`, and under RANGE the rows that tie with the current row are peers — so Quentin's running total already includes Rosa. Spell `ROWS` and his total stops at him. Both numbers are real; only one is the one you meant.", "cols": ["Quentin's running SUM", "What the frame includes"], "rows": ["ORDER BY salary", "... ROWS UNBOUNDED", "... RANGE UNBOUNDED", "no ORDER BY at all"], "cells": [[{"text": "711,000", "tone": "warn"}, "the default is RANGE: Rosa is a peer"], [{"text": "586,000", "tone": "good"}, "rows up to this one, ties ignored"], [{"text": "711,000", "tone": "warn"}, "every row with salary <= 125,000"], [{"text": "1,182,000", "tone": "accent"}, "the whole partition, on every row"]], "t": "diagram", "id": "dg-3_3-01-0"},
+
+
+
+
+
+
     { t: "p", text: "A partition is the group; a frame is the subset of the partition, relative to the current row, that the aggregate actually runs over. With no ORDER BY the frame is the whole partition — the grand total on every row. **With ORDER BY and nothing else, the frame becomes everything from the start of the partition up to the current row and its peers**, which is what turns SUM into a running total. Every other shape — the last three rows, the previous 30 days, everything except this row, everything after it — is a frame clause written out." },
 
     { t: "dl", items: [
@@ -83,6 +90,13 @@ FROM   employees ORDER BY salary, employee_id;
     },
 
     { t: "h2", n: "02", text: "ROWS: moving windows", id: "rows" },
+
+    {"kind": "matrix", "title": "Four ways to bound a frame", "caption": "ROWS counts rows and is blind to ties. RANGE measures the sort key itself, so tied rows always share a frame. GROUPS counts peer groups. The distinction only shows up when the sort key has duplicates — which real data always does.", "cols": ["Counts in", "Reach for it when"], "rows": ["ROWS BETWEEN", "RANGE BETWEEN", "GROUPS BETWEEN", "EXCLUDE CURRENT ROW"], "cells": [[{"text": "rows", "tone": "accent"}, "a moving average of n rows"], [{"text": "the sort key's units", "tone": "good"}, "the previous 30 days"], [{"text": "peer groups", "tone": "violet"}, "the previous group of ties"], [{"text": "removes this row", "tone": "teal"}, "the leave-one-out average"]], "t": "diagram", "id": "dg-3_3-02-1"},
+
+
+
+
+
 
     { t: "p", text: "A moving average over the last three orders is `ROWS BETWEEN 2 PRECEDING AND CURRENT ROW`: the current row and the two before it in the ORDER BY. At the start of the partition the frame is shorter — one row, then two — and the average is over what exists, so the first values are not smoothed. **A frame that includes FOLLOWING rows uses the future**: a centred average is a legitimate smoother for a chart and a leak in a feature (Data Handling 8.3), because the row's value now depends on rows that come after it." },
 

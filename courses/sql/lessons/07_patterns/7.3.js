@@ -19,6 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Cohorts and retention", id: "cohorts" },
 
+    {"kind": "steps", "title": "Cohorts, funnels and RFM are the same three moves", "caption": "Four of the analyses a product team asks for are one pattern with different anchors. Naming the three moves is what makes the fourth request a ten-minute query rather than a new puzzle.", "items": [{"label": "Define the entity's anchor moment", "desc": "signup month, first purchase, the funnel's entry event", "code": "1", "tone": "accent"}, {"label": "Bucket time relative to the anchor", "desc": "months since signup, steps since entry, days since last order", "code": "2", "tone": "good"}, {"label": "Count, and divide by the cohort's size", "desc": "retention is a share, not a count", "code": "3", "tone": "violet"}, {"label": "The funnel adds one rule", "desc": "each step must happen after the one before it, per entity", "code": "order", "tone": "warn"}], "t": "diagram", "id": "dg-7_3-01-0"},
+
+
+
     { t: "p", text: "A cohort is a group that shares an anchor: the month of first order, the week of sign-up, the day of first login. Retention asks, for each cohort, what fraction was active in each period after the anchor. **The three definitions to fix before writing SQL**: what the anchor is (first non-cancelled order here), what counts as active (any non-cancelled order in the month), and the period (calendar month). Change any one and the triangle changes." },
 
     { t: "code", lang: "sql", title: "Acquisition cohorts and monthly retention (executed on DuckDB)",
@@ -81,6 +85,10 @@ FROM   sz LEFT JOIN r USING (cohort) CROSS JOIN last GROUP BY sz.cohort, sz.n, l
     ]},
 
     { t: "h2", n: "02", text: "Funnels that respect order", id: "funnels" },
+
+    {"kind": "matrix", "title": "Why a funnel needs the order enforced", "caption": "Counting people who did each step independently is not a funnel: someone who checked out and then browsed again counts in both, and the 'conversion' includes paths that never happened. The fix is a timestamp comparison per entity, which is what LAG or an as-of join gives you.", "cols": ["Counts", "Problem"], "rows": ["Did each step, ever", "Each step after the last", "First time per step", "Within a time window"], "cells": [[{"text": "everyone who did it", "tone": "crit"}, "paths that never happened"], [{"text": "ordered paths only", "tone": "good"}, "the honest number"], [{"text": "the earliest of each", "tone": "accent"}, "ignores a later, completed path"], [{"text": "ordered and bounded", "tone": "good"}, "a session, not a lifetime"]], "t": "diagram", "id": "dg-7_3-02-1"},
+
+
 
     { t: "p", text: "The naive funnel — count customers with any view, any cart, any checkout — overstates conversion because it ignores order: a customer who checked out and then browsed counts as a view→checkout. **Anchor each customer's first occurrence of each step and require the timestamps to increase.** A time box — checkout within an hour of first view — turns 'eventually' into 'in this session'." },
 

@@ -1,0 +1,147 @@
+{
+ "2.1": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "The join family, by what it does with an unmatched row",
+         "caption": "Every one of them is the same cross product filtered by the ON condition. They differ in one decision only: what to do with a row that found no partner — drop it, or keep it padded with NULLs.",
+         "cols": ["Unmatched left row", "Unmatched right row"],
+         "rows": ["INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "FULL JOIN", "CROSS JOIN"],
+         "cells": [
+          [{"text": "dropped", "tone": "crit"}, {"text": "dropped", "tone": "crit"}],
+          [{"text": "kept, padded with NULL", "tone": "good"}, {"text": "dropped", "tone": "crit"}],
+          [{"text": "dropped", "tone": "crit"}, {"text": "kept, padded with NULL", "tone": "good"}],
+          [{"text": "kept, padded with NULL", "tone": "good"}, {"text": "kept, padded with NULL", "tone": "good"}],
+          [{"text": "no condition to fail", "tone": "violet"}, {"text": "no condition to fail", "tone": "violet"}]]}},
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Predicting the row count, on the shop tables",
+         "caption": "Every count here was produced by running the query. The rule behind all of them: a left row contributes one output row per partner it has — and, under an outer join, one row when it has none.",
+         "cols": ["Rows out", "Where the number comes from"],
+         "rows": ["orders JOIN customers", "customers JOIN orders", "customers LEFT orders", "orders JOIN items", "customers CROSS products"],
+         "cells": [
+          [{"text": "12", "tone": "accent"}, "one per order"],
+          [{"text": "12", "tone": "accent"}, "one per order, direction is irrelevant"],
+          [{"text": "13", "tone": "warn"}, "12 orders + Mara, who has none"],
+          [{"text": "19", "tone": "warn"}, "one per line item, not per order"],
+          [{"text": "48", "tone": "crit"}, "8 × 6: every pair"]]}}
+ ],
+
+ "2.2": [
+  {"after": "01",
+   "d": {"kind": "compare",
+         "title": "The same filter, in WHERE and in ON",
+         "caption": "Both queries are valid and one of them answers a different question. In WHERE the filter runs on the joined rows, so Mara's padded row — whose status is NULL — fails the test and disappears. In ON it decides which orders *pair* with a customer, and the outer join still keeps everyone.",
+         "columns": [
+          {"title": "WHERE o.status = 'paid'", "tone": "crit",
+           "items": ["6 rows", "Iker and Mara are gone", "NULL = 'paid' is unknown", "a LEFT JOIN that became an INNER", "answers: which paying customers exist"]},
+          {"title": "ON ... AND o.status = 'paid'", "tone": "good",
+           "items": ["8 rows", "Iker 0, Mara 0", "the pairing is filtered, not the result", "the outer join is preserved", "answers: how many paid orders each has"]}]}},
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Three counts on Iker's one padded row",
+         "caption": "Iker has a single row after the LEFT JOIN and no order in it. `COUNT(*)` answers 'how many rows did the join make for him', which is never below one. `COUNT(o.order_id)` answers the question the report asked.",
+         "cols": ["Iker", "What it is counting"],
+         "rows": ["COUNT(*)", "COUNT(o.order_id)", "COUNT(o.status)", "SUM(oi.qty)"],
+         "cells": [
+          [{"text": "1", "tone": "crit"}, "rows the join produced"],
+          [{"text": "0", "tone": "good"}, "non-null order ids: the real answer"],
+          [{"text": "0", "tone": "good"}, "non-null statuses"],
+          [{"text": "NULL", "tone": "warn"}, "nothing to sum; COALESCE it to 0"]]}}
+ ],
+
+ "2.3": [
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Four ways to ask 'has at least one order'",
+         "caption": "The first three return the same seven customers. The fourth is not a semi join at all — it returns one row per order, and the DISTINCT that usually follows it exists only to undo the multiplication the join just created.",
+         "cols": ["Rows", "Note"],
+         "rows": ["WHERE EXISTS (...)", "WHERE id IN (...)", "JOIN + DISTINCT", "JOIN alone"],
+         "cells": [
+          [{"text": "7", "tone": "good"}, "stops at the first match"],
+          [{"text": "7", "tone": "good"}, "same plan on modern engines"],
+          [{"text": "7", "tone": "warn"}, "multiplies, then collapses"],
+          [{"text": "12", "tone": "crit"}, "one per order: a different question"]]}},
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "Four ways to ask 'has no order', and which survive a NULL",
+         "caption": "All four return Iker and Mara **today**, because `orders.customer_id` happens to be NOT NULL. `NOT IN` returns nothing the day that subquery yields a single NULL — so the two that are correct by construction are the two to write.",
+         "cols": ["NULL-safe", "What it does"],
+         "rows": ["WHERE NOT EXISTS", "LEFT JOIN + IS NULL", "WHERE NOT IN", "EXCEPT"],
+         "cells": [
+          [{"text": "yes", "tone": "good"}, "the default; planner: Anti Join"],
+          [{"text": "yes", "tone": "good"}, "keep the padded rows"],
+          [{"text": "no", "tone": "crit"}, "one NULL and it returns nothing"],
+          [{"text": "yes", "tone": "accent"}, "whole-row set difference"]]}}
+ ],
+
+ "2.4": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "After the collapse, only two kinds of column exist",
+         "caption": "This single rule is the whole of the error you get for selecting a column you did not group by: that column has many values in the group and the engine will not pick one for you.",
+         "cols": ["Can you select it", "Because"],
+         "rows": ["A grouped column", "An aggregate", "Any other column", "Dependent on the PK", "A window function"],
+         "cells": [
+          [{"text": "yes", "tone": "good"}, "one value per group by construction"],
+          [{"text": "yes", "tone": "good"}, "computed over the whole group"],
+          [{"text": "no", "tone": "crit"}, "many values; which one would it pick"],
+          [{"text": "yes", "tone": "accent"}, "grouping the key fixes every column"],
+          [{"text": "yes", "tone": "violet"}, "runs in SELECT, after the collapse"]]}},
+  {"after": "04",
+   "d": {"kind": "compare",
+         "title": "'The latest order per customer' is not an aggregate",
+         "caption": "The question asks for a **row** chosen by an ordering, not a value computed over a group. There is no aggregate that returns 'the status on the row where placed_at was the maximum', and MAX on each column separately silently mixes rows: Chen's MAX(status) is `refunded`, from a different order than his MAX(placed_at).",
+         "columns": [
+          {"title": "MAX on each column", "tone": "crit",
+           "items": ["One row per customer", "MAX(placed_at): the right timestamp", "MAX(status): alphabetically last", "The two come from different rows", "Wrong, and it does not error"]},
+          {"title": "DISTINCT ON / ROW_NUMBER", "tone": "good",
+           "items": ["7 rows: Mara has no order", "The whole row, chosen by the sort", "Every column from that one row", "ORDER BY starts with the key", "DISTINCT ON: Postgres, DuckDB"]}]}}
+ ],
+
+ "2.5": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Subtotals without three queries",
+         "caption": "A report that wants per-country, per-tier and overall totals is one query, not three. The subtotal rows carry NULL in the column that was rolled up — which is indistinguishable from a real NULL until `GROUPING()` tells you which is which.",
+         "cols": ["Produces", "Use it when"],
+         "rows": ["GROUP BY a, b", "ROLLUP (a, b)", "CUBE (a, b)", "GROUPING SETS", "GROUPING(col)"],
+         "cells": [
+          ["the finest level only", "no subtotals wanted"],
+          [{"text": "a, b then a then overall", "tone": "good"}, "a hierarchy: country then tier"],
+          [{"text": "every combination", "tone": "warn"}, "no hierarchy; 2^n groups"],
+          [{"text": "exactly the levels listed", "tone": "accent"}, "you want three of the eight"],
+          [{"text": "1 for a rolled-up NULL", "tone": "violet"}, "telling subtotal from real NULL"]]}},
+  {"after": "02",
+   "d": {"kind": "compare",
+         "title": "FILTER, and the CASE it replaces",
+         "caption": "They compute the same number. FILTER says what it means in the order you would say it out loud, and it applies to any aggregate — including the ones where a CASE inside would change the result rather than restrict it.",
+         "columns": [
+          {"title": "COUNT(*) FILTER (WHERE ...)", "tone": "good",
+           "items": ["Restricts one aggregate", "Reads as a sentence", "Works on every aggregate", "Postgres, SQLite, DuckDB"]},
+          {"title": "COUNT(CASE WHEN ... THEN 1 END)", "tone": "accent",
+           "items": ["Restricts by returning NULL", "The ELSE decides the answer", "SUM needs ELSE 0; COUNT must not", "Every engine"]}]}}
+ ],
+
+ "2.6": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "The four set operations",
+         "caption": "`UNION` is `UNION ALL` plus a de-duplication you did not ask for: it sorts or hashes every row to find repeats, which costs time and quietly removes rows that were legitimately identical. Reach for `UNION ALL` and add the `DISTINCT` only when you mean it.",
+         "cols": ["Does", "Cost"],
+         "rows": ["UNION ALL", "UNION", "INTERSECT", "EXCEPT"],
+         "cells": [
+          [{"text": "appends, keeps everything", "tone": "good"}, "none: a straight concatenation"],
+          [{"text": "appends, then de-duplicates", "tone": "warn"}, "a sort or hash of every row"],
+          ["rows present in both", "a sort or hash of every row"],
+          ["rows in the first, not the second", "a sort or hash of every row"]]}},
+  {"after": "02",
+   "d": {"kind": "steps",
+         "title": "How a set operation pairs the columns",
+         "caption": "The pairing is by **position**, never by name. Two queries that both select a name and a country will line up silently wrong if one of them lists them in the other order — and it only errors when the types happen to disagree.",
+         "items": [
+          {"label": "Column 1 with column 1", "desc": "by position, whatever the two are called", "code": "position", "tone": "accent"},
+          {"label": "Types must be compatible", "desc": "TEXT with TEXT, INTEGER with NUMERIC", "code": "checked", "tone": "good"},
+          {"label": "Names are not checked", "desc": "the first query's names become the result's", "code": "ignored", "tone": "warn"},
+          {"label": "Swapped columns, same types", "desc": "name under country, no error, wrong answer", "code": "silent", "tone": "crit"}]}}
+ ]
+}

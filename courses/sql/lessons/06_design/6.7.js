@@ -36,6 +36,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The differences that produce wrong answers", id: "silent" },
 
+    {"kind": "matrix", "title": "The differences that produce a wrong answer, not an error", "caption": "Dialect differences that raise a syntax error are harmless — you fix them immediately. These are the ones that run and return something plausible on the other engine, which is why portable code writes the explicit form every time.", "cols": ["PostgreSQL", "Elsewhere"], "rows": ["7 / 2", "|| as concat", "LIMIT m, n", "Identifier case", "LIKE case", "Transactional DDL"], "cells": [[{"text": "3: integer division", "tone": "warn"}, "MySQL gives 3.5"], [{"text": "concatenation", "tone": "good"}, "MySQL: logical OR by default"], [{"text": "not accepted", "tone": "accent"}, "MySQL: offset first, then count"], [{"text": "folds to lower", "tone": "warn"}, "others fold up, or are sensitive"], [{"text": "case-sensitive", "tone": "warn"}, "MySQL: insensitive by collation"], [{"text": "yes: roll a migration back", "tone": "good"}, "MySQL: no; a failure leaves it half done"]], "t": "diagram", "id": "dg-6_7-02-0"},
+
+
+
     { t: "code", lang: "sql", title: "Division, types and case — executed on DuckDB and SQLite",
       hl: [2, 3, 8, 9, 10, 14, 15],
       code: `-- integer division: the same expression, three answers
@@ -78,6 +82,10 @@ SELECT 'Abc' ILIKE 'a%';   -- PostgreSQL / DuckDB: true, explicitly     -- porta
     ]},
 
     { t: "h2", n: "03", text: "Row, column, embedded: choosing an engine", id: "choose" },
+
+    {"kind": "matrix", "title": "Row, column, embedded", "caption": "The storage layout decides what the engine is good at, and it is not a matter of maturity. A row store fetches a whole record in one page read; a column store reads one column of a billion rows without touching the others.", "cols": ["Good at", "Reach for it when"], "rows": ["Row store", "Column store", "Embedded", "Document store"], "cells": [[{"text": "point reads and writes", "tone": "accent"}, "an application's own database"], [{"text": "scanning few columns", "tone": "good"}, "analytics over many rows"], [{"text": "no server at all", "tone": "violet"}, "a file, a notebook, a test"], [{"text": "shapes that vary", "tone": "teal"}, "no schema is agreed yet"]], "t": "diagram", "id": "dg-6_7-03-1"},
+
+
 
     { t: "viz",
       title: "Where each engine sits",

@@ -20,6 +20,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Sessionisation: flag, then running sum", id: "sessions" },
 
+    {"kind": "steps", "title": "Sessionisation: a flag becomes a running sum becomes an id", "caption": "One idea, applied three times: the output of a window function is an ordinary column, so the next window function can run over it. No self-joins and no trip to Python.", "items": [{"label": "LAG(occurred_at) per customer", "desc": "the time of this customer's previous event", "code": "3.4", "tone": "accent"}, {"label": "occurred_at - LAG(...) > threshold", "desc": "a boolean: is this the start of a new session", "code": "flag", "tone": "good"}, {"label": "SUM(flag::int) OVER (ORDER BY ...)", "desc": "the running count of starts so far", "code": "running", "tone": "violet"}, {"label": "That running sum is the session id", "desc": "every event in one session shares a number", "code": "id", "tone": "teal"}, {"label": "GROUP BY customer_id, session_id", "desc": "length, event count, entry and exit page", "code": "per session", "tone": "good"}], "t": "diagram", "id": "dg-3_5-01-0"},
+
+
+
+
+
+
     { t: "p", text: "A session is a run of events by one customer with no gap longer than some threshold. 3.4 produced the flag — `new_session` is true on the first event and wherever the gap exceeds 30 minutes. **A running SUM of that flag, per customer in time order, is the session number**: it increments exactly at each session start and stays constant within a session. Group by customer and session number and every per-session statistic follows." },
 
     { t: "code", lang: "sql", title: "Events to sessions in three layers",
@@ -55,6 +62,13 @@ FROM   numbered GROUP BY 1, 2 ORDER BY 1, 2;
     ]},
 
     { t: "h2", n: "02", text: "Gaps and islands", id: "islands" },
+
+    {"kind": "steps", "title": "Gaps and islands: why subtracting a row number finds a streak", "caption": "Consecutive days advance by one, and so does the row number — so their difference is constant for the length of a run and changes the moment a day is missed. The constant is meaningless on its own and is a perfect group key.", "items": [{"label": "ROW_NUMBER() OVER (ORDER BY day)", "desc": "1, 2, 3, 4 ... in date order", "code": "rn", "tone": "accent"}, {"label": "day - rn (as an interval)", "desc": "constant while the days are consecutive", "code": "key", "tone": "good"}, {"label": "A missed day advances day but not rn", "desc": "so the difference jumps to a new constant", "code": "breaks", "tone": "warn"}, {"label": "GROUP BY that difference", "desc": "one group per unbroken run", "code": "islands", "tone": "violet"}, {"label": "COUNT(*) and MIN(day) per group", "desc": "the length of each streak and when it began", "code": "answer", "tone": "good"}], "t": "diagram", "id": "dg-3_5-02-1"},
+
+
+
+
+
 
     { t: "p", text: "'Longest streak of consecutive login days' has a shorter trick than the flag-and-sum. Number each user's login days in order with ROW_NUMBER, then subtract the row number (as days) from the date. **Within a run of consecutive days, the date advances by one and the row number advances by one, so the difference is constant; at a gap, the date jumps and the difference jumps.** The difference is the island id. Group by it, and each island is a streak with a start, an end and a length." },
 

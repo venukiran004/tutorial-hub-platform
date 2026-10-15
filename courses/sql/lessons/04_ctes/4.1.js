@@ -19,6 +19,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three roles", id: "roles" },
 
+    {"kind": "matrix", "title": "One parenthesised SELECT, three roles", "caption": "The same syntax means different things by position, and each role has its own failure. A scalar subquery that returns two rows is an error in production on the day the data grows — not when the query was written.", "cols": ["Must return", "Fails when"], "rows": ["In a comparison", "In the SELECT list", "In FROM", "In EXISTS", "In IN (...)"], "cells": [[{"text": "one row, one column", "tone": "warn"}, "it returns two rows: an error"], [{"text": "one row, one column", "tone": "warn"}, "same, once per output row"], [{"text": "a table", "tone": "good"}, "it needs an alias and has none"], [{"text": "nothing: a yes or no", "tone": "good"}, "never; the SELECT list is ignored"], [{"text": "one column", "tone": "accent"}, "it yields a NULL and NOT IN is used"]], "t": "diagram", "id": "dg-4_1-01-0"},
+
+
+
+
+
+
     { t: "p", text: "The same parenthesised SELECT plays different roles depending on where it stands. In a comparison or the SELECT list it is a **scalar** and must produce one value. In FROM it is a **derived table** — a relation with an alias, joinable like any other. In WHERE with EXISTS, IN, ANY or ALL it is a **predicate** over a set. The rules that follow are all consequences of which role it is playing." },
 
     { t: "dl", items: [
@@ -102,6 +109,13 @@ ORDER  BY vs_dept DESC LIMIT 3;
     },
 
     { t: "h2", n: "04", text: "LATERAL: a subquery per row, on purpose", id: "lateral" },
+
+    {"kind": "compare", "title": "A join, and a subquery evaluated per row on purpose", "caption": "LATERAL is the correlated subquery promoted to the FROM clause, and the one case where running it per row is the point rather than the cost: 'the three most recent orders for each customer' cannot be expressed as a plain join without ranking the whole table first.", "columns": [{"title": "JOIN", "tone": "accent", "items": ["Both sides evaluated independently", "The ON condition pairs them", "Cannot see the left row's values", "Top-n per group needs a window"]}, {"title": "LATERAL / CROSS APPLY", "tone": "good", "items": ["The right side sees the left row", "Evaluated once per left row", "LIMIT inside it is per left row", "Top-n per group is three lines"]}], "t": "diagram", "id": "dg-4_1-04-1"},
+
+
+
+
+
 
     { t: "p", text: "`LATERAL` lets a subquery in FROM refer to the tables before it, and it is evaluated for each of their rows. That sounds like the slow case, and it is the slow case made honest: **the subquery can use ORDER BY and LIMIT, so 'the last two orders of each customer' or 'the most recent event before each order' is one LATERAL with an index on `(customer_id, occurred_at)` behind it** — a nested loop with an index seek per row, which is exactly the right plan for that question. `CROSS JOIN LATERAL` drops rows with no match; `LEFT JOIN LATERAL … ON TRUE` keeps them." },
 

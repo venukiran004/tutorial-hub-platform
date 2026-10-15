@@ -1,0 +1,200 @@
+{
+ "3.1": [
+  {"after": "01",
+   "d": {"kind": "compare",
+         "title": "The same total, collapsed and kept",
+         "caption": "GROUP BY and a window function compute the identical number. GROUP BY spends the rows to get it; the window writes it onto every row that is already there — which is what lets the next column compare a row with its own group's total.",
+         "columns": [
+          {"title": "GROUP BY customer_id", "tone": "accent",
+           "items": ["One row per customer", "The order rows are gone", "Only grouped columns survive", "To compare a row with the total, join back"]},
+          {"title": "SUM(...) OVER (PARTITION BY ...)", "tone": "good",
+           "items": ["Every order row kept", "Its customer's total written alongside", "Every column still available", "The comparison is one more expression"]}]}},
+  {"after": "04",
+   "d": {"kind": "matrix",
+         "title": "Where a window function is allowed",
+         "caption": "A window function is computed at the SELECT step, after WHERE, GROUP BY and HAVING have all finished. Everything in this table follows from that one fact — including why filtering on a rank needs an outer query.",
+         "cols": ["Allowed", "Because"],
+         "rows": ["In SELECT", "In ORDER BY", "In WHERE", "In HAVING", "In GROUP BY", "Nested in another window"],
+         "cells": [
+          [{"text": "yes", "tone": "good"}, "this is where it is computed"],
+          [{"text": "yes", "tone": "good"}, "ORDER BY runs after SELECT"],
+          [{"text": "no", "tone": "crit"}, "WHERE has already finished"],
+          [{"text": "no", "tone": "crit"}, "HAVING runs before SELECT"],
+          [{"text": "no", "tone": "crit"}, "grouping happens first"],
+          [{"text": "no", "tone": "crit"}, "wrap it in a CTE and window that"]]}}
+ ],
+
+ "3.2": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Quentin and Rosa both earn 125,000",
+         "caption": "The three functions agree everywhere except at the tie, and the row *after* the tie is where they separate: ROW_NUMBER has spent two numbers, RANK skips the one the tie consumed, DENSE_RANK skips nothing. Ask for 'the top three' and you get three, four or four rows.",
+         "cols": ["ROW_NUMBER / RANK / DENSE_RANK", "Salary"],
+         "rows": ["Tomas", "Quentin", "Rosa", "Priya", "Sami"],
+         "cells": [
+          ["3 / 3 / 3", "131,000"],
+          [{"text": "4 / 4 / 4", "tone": "accent"}, "125,000"],
+          [{"text": "5 / 4 / 4", "tone": "warn"}, "125,000 — the tie"],
+          [{"text": "6 / 6 / 5", "tone": "crit"}, "120,000 — they separate"],
+          ["7 / 7 / 6", "98,000"]]}},
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "Which ranking function the question wants",
+         "caption": "The choice is decided by what a tie should mean. 'Second-highest salary' is the second distinct *value*, so a tie at the top still leaves a second value below it — DENSE_RANK. 'Exactly three rows' can only be ROW_NUMBER.",
+         "cols": ["Use", "Because a tie should"],
+         "rows": ["Exactly n rows", "Top n including ties", "The nth distinct value", "De-duplication", "Quartiles and deciles"],
+         "cells": [
+          [{"text": "ROW_NUMBER", "tone": "accent"}, "be broken, arbitrarily or by a key"],
+          [{"text": "RANK", "tone": "good"}, "mean there is no next place"],
+          [{"text": "DENSE_RANK", "tone": "good"}, "consume only one value"],
+          [{"text": "ROW_NUMBER", "tone": "accent"}, "keep exactly one copy"],
+          [{"text": "NTILE(n)", "tone": "violet"}, "land in the same bucket"]]}}
+ ],
+
+ "3.3": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "The default frame is RANGE, and it swallows the tie",
+         "caption": "Writing `ORDER BY salary` with no frame gives `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`, and under RANGE the rows that tie with the current row are peers — so Quentin's running total already includes Rosa. Spell `ROWS` and his total stops at him. Both numbers are real; only one is the one you meant.",
+         "cols": ["Quentin's running SUM", "What the frame includes"],
+         "rows": ["ORDER BY salary", "... ROWS UNBOUNDED", "... RANGE UNBOUNDED", "no ORDER BY at all"],
+         "cells": [
+          [{"text": "711,000", "tone": "warn"}, "the default is RANGE: Rosa is a peer"],
+          [{"text": "586,000", "tone": "good"}, "rows up to this one, ties ignored"],
+          [{"text": "711,000", "tone": "warn"}, "every row with salary <= 125,000"],
+          [{"text": "1,182,000", "tone": "accent"}, "the whole partition, on every row"]]}},
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Four ways to bound a frame",
+         "caption": "ROWS counts rows and is blind to ties. RANGE measures the sort key itself, so tied rows always share a frame. GROUPS counts peer groups. The distinction only shows up when the sort key has duplicates — which real data always does.",
+         "cols": ["Counts in", "Reach for it when"],
+         "rows": ["ROWS BETWEEN", "RANGE BETWEEN", "GROUPS BETWEEN", "EXCLUDE CURRENT ROW"],
+         "cells": [
+          [{"text": "rows", "tone": "accent"}, "a moving average of n rows"],
+          [{"text": "the sort key's units", "tone": "good"}, "the previous 30 days"],
+          [{"text": "peer groups", "tone": "violet"}, "the previous group of ties"],
+          [{"text": "removes this row", "tone": "teal"}, "the leave-one-out average"]]}}
+ ],
+
+ "3.4": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Reading a value from another row",
+         "caption": "Each of these reads one value from one row of the window rather than aggregating over it. The third argument of LAG and LEAD is the default used at the edge, which is how you avoid a NULL on the first row of every partition.",
+         "cols": ["Returns", "At the edge"],
+         "rows": ["LAG(x)", "LEAD(x)", "LAG(x, 2, 0)", "FIRST_VALUE(x)", "LAST_VALUE(x)", "NTH_VALUE(x, n)"],
+         "cells": [
+          ["x from one row earlier", {"text": "NULL on the first row", "tone": "warn"}],
+          ["x from one row later", {"text": "NULL on the last row", "tone": "warn"}],
+          ["x from two rows earlier", {"text": "0: the default supplied", "tone": "good"}],
+          ["x from the frame's first row", "the partition's first row"],
+          ["x from the frame's last row", {"text": "the current row, by default", "tone": "crit"}],
+          ["x from the frame's nth row", "NULL when the frame is shorter"]]}},
+  {"after": "02",
+   "d": {"kind": "steps",
+         "title": "Why LAST_VALUE returns the current row",
+         "caption": "FIRST_VALUE looks backwards into a frame that starts at the partition's beginning, so it works. LAST_VALUE looks forwards into a frame that **ends at the current row** — so the last row of the frame is the current row, and the function returns the value you already had.",
+         "items": [
+          {"label": "ORDER BY placed_at, no frame written", "desc": "the default frame appears", "code": "default", "tone": "accent"},
+          {"label": "The frame is start-of-partition to current row", "desc": "nothing after this row is in it", "code": "frame", "tone": "warn"},
+          {"label": "FIRST_VALUE reads the frame's first row", "desc": "the partition's first order: correct", "code": "works", "tone": "good"},
+          {"label": "LAST_VALUE reads the frame's last row", "desc": "which is this row: the value you started with", "code": "wrong", "tone": "crit"},
+          {"label": "ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING", "desc": "the whole partition is in the frame; now it is the last order", "code": "fixed", "tone": "good"}]}}
+ ],
+
+ "3.5": [
+  {"after": "01",
+   "d": {"kind": "steps",
+         "title": "Sessionisation: a flag becomes a running sum becomes an id",
+         "caption": "One idea, applied three times: the output of a window function is an ordinary column, so the next window function can run over it. No self-joins and no trip to Python.",
+         "items": [
+          {"label": "LAG(occurred_at) per customer", "desc": "the time of this customer's previous event", "code": "3.4", "tone": "accent"},
+          {"label": "occurred_at - LAG(...) > threshold", "desc": "a boolean: is this the start of a new session", "code": "flag", "tone": "good"},
+          {"label": "SUM(flag::int) OVER (ORDER BY ...)", "desc": "the running count of starts so far", "code": "running", "tone": "violet"},
+          {"label": "That running sum is the session id", "desc": "every event in one session shares a number", "code": "id", "tone": "teal"},
+          {"label": "GROUP BY customer_id, session_id", "desc": "length, event count, entry and exit page", "code": "per session", "tone": "good"}]}},
+  {"after": "02",
+   "d": {"kind": "steps",
+         "title": "Gaps and islands: why subtracting a row number finds a streak",
+         "caption": "Consecutive days advance by one, and so does the row number — so their difference is constant for the length of a run and changes the moment a day is missed. The constant is meaningless on its own and is a perfect group key.",
+         "items": [
+          {"label": "ROW_NUMBER() OVER (ORDER BY day)", "desc": "1, 2, 3, 4 ... in date order", "code": "rn", "tone": "accent"},
+          {"label": "day - rn (as an interval)", "desc": "constant while the days are consecutive", "code": "key", "tone": "good"},
+          {"label": "A missed day advances day but not rn", "desc": "so the difference jumps to a new constant", "code": "breaks", "tone": "warn"},
+          {"label": "GROUP BY that difference", "desc": "one group per unbroken run", "code": "islands", "tone": "violet"},
+          {"label": "COUNT(*) and MIN(day) per group", "desc": "the length of each streak and when it began", "code": "answer", "tone": "good"}]}}
+ ],
+
+ "4.1": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "One parenthesised SELECT, three roles",
+         "caption": "The same syntax means different things by position, and each role has its own failure. A scalar subquery that returns two rows is an error in production on the day the data grows — not when the query was written.",
+         "cols": ["Must return", "Fails when"],
+         "rows": ["In a comparison", "In the SELECT list", "In FROM", "In EXISTS", "In IN (...)"],
+         "cells": [
+          [{"text": "one row, one column", "tone": "warn"}, "it returns two rows: an error"],
+          [{"text": "one row, one column", "tone": "warn"}, "same, once per output row"],
+          [{"text": "a table", "tone": "good"}, "it needs an alias and has none"],
+          [{"text": "nothing: a yes or no", "tone": "good"}, "never; the SELECT list is ignored"],
+          [{"text": "one column", "tone": "accent"}, "it yields a NULL and NOT IN is used"]]}},
+  {"after": "04",
+   "d": {"kind": "compare",
+         "title": "A join, and a subquery evaluated per row on purpose",
+         "caption": "LATERAL is the correlated subquery promoted to the FROM clause, and the one case where running it per row is the point rather than the cost: 'the three most recent orders for each customer' cannot be expressed as a plain join without ranking the whole table first.",
+         "columns": [
+          {"title": "JOIN", "tone": "accent",
+           "items": ["Both sides evaluated independently", "The ON condition pairs them", "Cannot see the left row's values", "Top-n per group needs a window"]},
+          {"title": "LATERAL / CROSS APPLY", "tone": "good",
+           "items": ["The right side sees the left row", "Evaluated once per left row", "LIMIT inside it is per left row", "Top-n per group is three lines"]}]}}
+ ],
+
+ "4.2": [
+  {"after": "01",
+   "d": {"kind": "steps",
+         "title": "A pipeline read top to bottom instead of inside out",
+         "caption": "Three nested derived tables and three chained CTEs produce the same plan. The difference is that each step has a name, and the grain of each step can be written next to it — which is where the fan-out bugs of 2.2 get caught before they ship.",
+         "items": [
+          {"label": "WITH order_totals AS (...)", "desc": "grain: one row per order", "code": "step 1", "tone": "accent"},
+          {"label": "customer_totals AS (SELECT ... FROM order_totals)", "desc": "grain: one row per customer", "code": "step 2", "tone": "good"},
+          {"label": "ranked AS (SELECT ... FROM customer_totals)", "desc": "grain: unchanged, one column added", "code": "step 3", "tone": "violet"},
+          {"label": "SELECT ... FROM ranked WHERE rn <= 3", "desc": "the final statement, filtering the rank", "code": "result", "tone": "teal"}]}},
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "Four ways to name an intermediate result",
+         "caption": "They sit on one spectrum: how long the name lasts. A CTE and a derived table are the same thing with different ergonomics; a view is a CTE that outlives the statement; a temp table is a view that has been computed once and can be indexed.",
+         "cols": ["Lives for", "Reach for it when"],
+         "rows": ["Derived table", "CTE", "View", "Temp table", "Materialised view"],
+         "cells": [
+          ["one statement", "the step is used once"],
+          ["one statement", "the step is used twice, or named"],
+          ["the schema", "the definition is shared"],
+          [{"text": "the session", "tone": "accent"}, "the result is reused and needs an index"],
+          [{"text": "until refreshed", "tone": "violet"}, "the cost must be paid in advance"]]}}
+ ],
+
+ "4.3": [
+  {"after": "01",
+   "d": {"kind": "steps",
+         "title": "A recursive CTE, round by round",
+         "caption": "The recursive member never sees the whole result — only the rows the previous round produced. That is what makes termination possible, and what makes a cycle fatal: the working set never empties.",
+         "items": [
+          {"label": "The anchor runs once", "desc": "its rows become the first working set", "code": "round 0", "tone": "accent"},
+          {"label": "The recursive member runs on the working set", "desc": "it joins those rows to the table again", "code": "round 1", "tone": "good"},
+          {"label": "Its output becomes the new working set", "desc": "the previous one is kept in the result", "code": "round 2", "tone": "good"},
+          {"label": "Repeat", "desc": "each round reaches one level deeper", "code": "round n", "tone": "violet"},
+          {"label": "A round produces no rows", "desc": "the recursion stops and the union is the answer", "code": "stop", "tone": "teal"},
+          {"label": "A cycle means it never produces none", "desc": "it runs until the engine's depth limit or forever", "code": "hangs", "tone": "crit"}]}},
+  {"after": "04",
+   "d": {"kind": "matrix",
+         "title": "Three ways to survive a cycle",
+         "caption": "A tree terminates because leaves have no children. A graph does not: with the edges 1→2, 2→3, 3→1, the working set is never empty. Each of these breaks the loop by carrying the path so far, so a node that reappears can be detected.",
+         "cols": ["How", "Cost"],
+         "rows": ["CYCLE ... SET", "An array of visited ids", "A depth limit", "Nothing"],
+         "cells": [
+          [{"text": "the engine tracks the path", "tone": "good"}, "SQL:2016; Postgres 14+"],
+          [{"text": "carry it and test membership", "tone": "accent"}, "portable; one extra column"],
+          [{"text": "stop at depth n", "tone": "warn"}, "truncates a legitimate deep tree"],
+          [{"text": "it never terminates", "tone": "crit"}, "the depth limit, or the query is killed"]]}}
+ ]
+}

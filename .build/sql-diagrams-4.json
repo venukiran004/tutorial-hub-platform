@@ -1,0 +1,765 @@
+{
+ "4.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "compare",
+    "title": "Long is how it is stored, wide is how it is read",
+    "caption": "A pivot is nothing but one conditional aggregate per output column, grouped by the row key — the 1.4 pattern with a column per value. Which shape is right depends entirely on who is reading: a chart wants long, a person wants wide.",
+    "columns": [
+     {
+      "title": "Long: one row per fact",
+      "tone": "good",
+      "items": [
+       "(month, category, amount)",
+       "A new category adds rows",
+       "Aggregates and filters directly",
+       "What the database should hold",
+       "What a plotting library wants"
+      ]
+     },
+     {
+      "title": "Wide: one column per value",
+      "tone": "accent",
+      "items": [
+       "month, kitchen, office, audio",
+       "A new category needs a new column",
+       "The columns are known in advance",
+       "A reporting shape, not a storage one",
+       "What a person reads"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "A pivot over unknown columns is not one SQL statement",
+    "caption": "A statement's column list is fixed when it is parsed, so it cannot depend on the data the statement is about to read. Every way out of this either generates SQL, moves the reshape out of SQL, or gives up a column per value.",
+    "cols": [
+     "How",
+     "Cost"
+    ],
+    "rows": [
+     "Static CASE columns",
+     "Generated SQL",
+     "DuckDB PIVOT",
+     "crosstab()",
+     "Reshape in pandas"
+    ],
+    "cells": [
+     [
+      {
+       "text": "list the values yourself",
+       "tone": "good"
+      },
+      "a new value is silently missing"
+     ],
+     [
+      {
+       "text": "query the values, build the text",
+       "tone": "warn"
+      },
+      "two round trips; injection risk"
+     ],
+     [
+      {
+       "text": "the engine discovers them",
+       "tone": "accent"
+      },
+      "DuckDB only; convenient in a notebook"
+     ],
+     [
+      {
+       "text": "a Postgres extension",
+       "tone": "accent"
+      },
+      "the column list is still declared"
+     ],
+     [
+      {
+       "text": "return long, pivot outside",
+       "tone": "violet"
+      },
+      "the rows travel; usually the right call"
+     ]
+    ]
+   }
+  }
+ ],
+ "4.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Reaching into a document",
+    "caption": "The arrow operators differ in one character and in what they return: `->` gives JSON back so it can be chained, `->>` gives text so it can be compared and cast. Mixing them up is the commonest JSON bug — `doc->'channel' = 'web'` compares a JSON string with a text literal.",
+    "cols": [
+     "Returns",
+     "Use it to"
+    ],
+    "rows": [
+     "doc -> 'key'",
+     "doc ->> 'key'",
+     "doc #> '{a,b}'",
+     "doc #>> '{a,b}'",
+     "doc @> '{...}'",
+     "jsonb vs json"
+    ],
+    "cells": [
+     [
+      {
+       "text": "JSON",
+       "tone": "accent"
+      },
+      "keep digging deeper"
+     ],
+     [
+      {
+       "text": "text",
+       "tone": "good"
+      },
+      "compare, cast, filter on it"
+     ],
+     [
+      "JSON at a path",
+      "reach a nested key in one step"
+     ],
+     [
+      "text at a path",
+      "compare a nested value"
+     ],
+     [
+      {
+       "text": "boolean",
+       "tone": "violet"
+      },
+      "ask whether it contains a sub-document"
+     ],
+     [
+      {
+       "text": "parsed vs verbatim",
+       "tone": "warn"
+      },
+      "jsonb to query; json to keep the bytes"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "When the JSON column should have been a table",
+    "caption": "A JSON column is a table you have not designed yet, and that is sometimes the correct choice. It stops being correct the moment the application depends on a field being present — because the database is no longer keeping that promise for you.",
+    "cols": [
+     "JSON column",
+     "Because"
+    ],
+    "rows": [
+     "Varies by product type",
+     "A payload you do not own",
+     "A field every query filters",
+     "A NOT NULL rule on it",
+     "A one-to-many list",
+     "An audit copy of a record"
+    ],
+    "cells": [
+     [
+      {
+       "text": "right",
+       "tone": "good"
+      },
+      "no table could hold all the shapes"
+     ],
+     [
+      {
+       "text": "right",
+       "tone": "good"
+      },
+      "the producer owns the schema"
+     ],
+     [
+      {
+       "text": "wrong",
+       "tone": "crit"
+      },
+      "promote it to a column and index it"
+     ],
+     [
+      {
+       "text": "wrong",
+       "tone": "crit"
+      },
+      "a constraint cannot reach inside"
+     ],
+     [
+      {
+       "text": "wrong",
+       "tone": "crit"
+      },
+      "that is a child table with a key"
+     ],
+     [
+      {
+       "text": "right",
+       "tone": "good"
+      },
+      "kept exactly as received, on purpose"
+     ]
+    ]
+   }
+  }
+ ],
+ "5.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "From the text of a query to the rows that come back",
+    "caption": "Only the last stage touches data. Everything before it is the engine deciding *how*, from a cost model and a set of statistics that may be days out of date — which is why a query that was fast last month can be slow today with no change to its text.",
+    "items": [
+     {
+      "label": "Parse",
+      "desc": "text to a tree; rejects syntax it cannot read",
+      "code": "syntax",
+      "tone": "accent"
+     },
+     {
+      "label": "Analyse",
+      "desc": "binds names to tables and columns, resolves types",
+      "code": "names",
+      "tone": "accent"
+     },
+     {
+      "label": "Rewrite and plan",
+      "desc": "a logical plan, then the cheapest physical plan it can estimate",
+      "code": "cost",
+      "tone": "violet"
+     },
+     {
+      "label": "Execute",
+      "desc": "the plan runs; rows flow up the tree from the leaves",
+      "code": "rows",
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Why the planner refuses the index you built",
+    "caption": "A full scan reads pages in order, which is cheap per row; an index scan jumps to a random page per row. Past roughly a few per cent of the table, reading everything in order wins — so an index on a column where 90% of rows match is correctly ignored.",
+    "cols": [
+     "Planner picks",
+     "Because"
+    ],
+    "rows": [
+     "status = 'paid' (90%)",
+     "status = 'refunded' (5%)",
+     "A 300-row table",
+     "Stats are stale",
+     "ORDER BY the index's key"
+    ],
+    "cells": [
+     [
+      {
+       "text": "a sequential scan",
+       "tone": "accent"
+      },
+      "random reads would cost more"
+     ],
+     [
+      {
+       "text": "the index",
+       "tone": "good"
+      },
+      "few rows; the jumps are worth it"
+     ],
+     [
+      {
+       "text": "a sequential scan",
+       "tone": "accent"
+      },
+      "the whole table is one or two pages"
+     ],
+     [
+      {
+       "text": "the wrong thing",
+       "tone": "crit"
+      },
+      "it estimates from an old histogram"
+     ],
+     [
+      {
+       "text": "the index",
+       "tone": "good"
+      },
+      "the sort is already done"
+     ]
+    ]
+   }
+  }
+ ],
+ "5.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The four numbers on every plan line",
+    "caption": "EXPLAIN gives you the first two — what the planner believed. EXPLAIN ANALYZE adds the second two — what happened. The distance between `rows=` and `actual rows=` is the diagnosis: when they differ by orders of magnitude, every join choice above that line was made on a false premise.",
+    "cols": [
+     "Means",
+     "Read it for"
+    ],
+    "rows": [
+     "cost=a..b",
+     "rows=, width=",
+     "actual time=a..b",
+     "actual rows=, loops="
+    ],
+    "cells": [
+     [
+      "startup cost .. total cost",
+      "relative, not milliseconds"
+     ],
+     [
+      {
+       "text": "the estimate",
+       "tone": "accent"
+      },
+      "what the planner believed"
+     ],
+     [
+      "first row .. all rows, per loop",
+      "where the time actually went"
+     ],
+     [
+      {
+       "text": "the truth, times the loops",
+       "tone": "good"
+      },
+      "the real row count: multiply them"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "steps",
+    "title": "Three things to look at first in a long plan",
+    "caption": "A fifty-line plan has one or two lines that matter. This order finds them without reading the rest.",
+    "items": [
+     {
+      "label": "The widest node",
+      "desc": "largest actual rows x loops: this is where the work is",
+      "code": "1",
+      "tone": "crit"
+     },
+     {
+      "label": "The worst estimate",
+      "desc": "rows= against actual rows=; a 1000x miss explains the plan shape",
+      "code": "2",
+      "tone": "warn"
+     },
+     {
+      "label": "The scan type under it",
+      "desc": "a Seq Scan on the inner side of a Nested Loop runs per outer row",
+      "code": "3",
+      "tone": "accent"
+     },
+     {
+      "label": "Only then change something",
+      "desc": "an index, a rewrite, or ANALYZE to refresh the statistics",
+      "code": "fix",
+      "tone": "good"
+     }
+    ]
+   }
+  }
+ ],
+ "5.3": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "The leftmost prefix rule, on one composite index",
+    "caption": "`(customer_id, placed_at)` is sorted by customer, and within each customer by time. A predicate can use the index only from the left: skip the first column and the sort order is no help at all, because the times of different customers are interleaved.",
+    "cols": [
+     "Uses the index",
+     "Because"
+    ],
+    "rows": [
+     "WHERE customer_id = 4",
+     "... AND placed_at > x",
+     "WHERE placed_at > x",
+     "ORDER BY cust, placed_at",
+     "ORDER BY placed_at"
+    ],
+    "cells": [
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "the leading column"
+     ],
+     [
+      {
+       "text": "yes, fully",
+       "tone": "good"
+      },
+      "both columns, left to right"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "the leading column is not constrained"
+     ],
+     [
+      {
+       "text": "yes, no sort needed",
+       "tone": "good"
+      },
+      "this is the index's own order"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "times are interleaved across customers"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "timeline",
+    "title": "What indexes cost on the way in",
+    "caption": "Measured: inserting 50,000 orders takes 54 ms into a bare table, 82 ms with one secondary index and 259 ms with four — five times the cost. Indexes are paid for on every write and repaid only on the reads that use them, which is why `pg_stat_user_indexes.idx_scan = 0` is a column worth checking.",
+    "span": 270,
+    "tick": 60,
+    "lanes": [
+     {
+      "label": "No index",
+      "bars": [
+       [
+        0,
+        54,
+        "54 ms",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "One index",
+      "bars": [
+       [
+        0,
+        82,
+        "82 ms",
+        "accent"
+       ]
+      ]
+     },
+     {
+      "label": "Four indexes",
+      "bars": [
+       [
+        0,
+        259,
+        "259 ms: five times the bare table",
+        "crit"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "5.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The same rows, two predicates, measured",
+    "caption": "Each pair selects the identical rows. The difference is whether the indexed column stands alone on its side of the operator: transform it and the engine must compute the expression for every row, which is a scan. Move the transform to the constant side and the index can be seeked.",
+    "cols": [
+     "Time",
+     "What the engine did"
+    ],
+    "rows": [
+     "substr(placed_at,1,7) = ...",
+     "placed_at >= ... AND <",
+     "LIKE '%:30:00'",
+     "LIKE '2025-03%'",
+     "zip_code = 12345",
+     "zip_code = '12345'"
+    ],
+    "cells": [
+     [
+      {
+       "text": "22.8 ms",
+       "tone": "crit"
+      },
+      "scan: a function on the column"
+     ],
+     [
+      {
+       "text": "0.9 ms",
+       "tone": "good"
+      },
+      "covering index, range seek"
+     ],
+     [
+      {
+       "text": "27.6 ms",
+       "tone": "crit"
+      },
+      "scan: the wildcard leads"
+     ],
+     [
+      {
+       "text": "1.6 ms",
+       "tone": "good"
+      },
+      "a prefix is rewritten to a range"
+     ],
+     [
+      {
+       "text": "scan",
+       "tone": "crit"
+      },
+      "the TEXT column is cast per row"
+     ],
+     [
+      {
+       "text": "seek",
+       "tone": "good"
+      },
+      "text against text: no cast"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "layers",
+    "title": "Four ways to break an index, strongest first",
+    "caption": "Each of these is the same mistake: the stored value is transformed before the comparison, so the index's sort order no longer applies to what is being compared.",
+    "items": [
+     {
+      "label": "A function on the column",
+      "sub": "LOWER(col), DATE(col), COALESCE(col, 0)",
+      "tone": "crit",
+      "side": "expression idx"
+     },
+     {
+      "label": "An implicit cast on the column",
+      "sub": "a TEXT column against an INTEGER literal",
+      "tone": "crit",
+      "side": "quote it"
+     },
+     {
+      "label": "Arithmetic on the column",
+      "sub": "col + INTERVAL '1 day' > now()",
+      "tone": "warn",
+      "side": "move it right"
+     },
+     {
+      "label": "A leading wildcard",
+      "sub": "LIKE '%term' cannot use a B-tree at all",
+      "tone": "warn",
+      "side": "trigram index"
+     }
+    ]
+   }
+  }
+ ],
+ "5.5": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "compare",
+    "title": "Aggregate before you join, not after",
+    "caption": "Both queries return revenue per customer. The first carries every line item through the join and groups 19 rows down to 7; the second groups the items to one row per order first, so the join runs on the small side. At a few million line items that reordering is the whole difference.",
+    "columns": [
+     {
+      "title": "Join, then aggregate",
+      "tone": "warn",
+      "items": [
+       "One row per line item through the join",
+       "The join does the multiplying",
+       "GROUP BY collapses it afterwards",
+       "Every item row carries every joined column"
+      ]
+     },
+     {
+      "title": "Aggregate, then join",
+      "tone": "good",
+      "items": [
+       "Items collapsed to one row per order first",
+       "The join runs on the smaller side",
+       "The same answer, less work",
+       "Pre-aggregation: the first thing to try"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Counting distinct things, exactly and approximately",
+    "caption": "An exact `COUNT(DISTINCT x)` must remember every key it has seen — a hash of every distinct value, which for a billion events is memory the query does not get. HyperLogLog trades a small, bounded error for constant memory, and for 'roughly how many users' that is the right trade.",
+    "cols": [
+     "Memory",
+     "Error"
+    ],
+    "rows": [
+     "COUNT(DISTINCT x)",
+     "HyperLogLog",
+     "APPROX_COUNT_DISTINCT",
+     "COUNT(*) on a pre-agg"
+    ],
+    "cells": [
+     [
+      {
+       "text": "one entry per distinct key",
+       "tone": "crit"
+      },
+      "none: it is exact"
+     ],
+     [
+      {
+       "text": "a few kB, fixed",
+       "tone": "good"
+      },
+      "around 2% relative"
+     ],
+     [
+      {
+       "text": "a few kB, fixed",
+       "tone": "good"
+      },
+      "the same sketch, named per engine"
+     ],
+     [
+      {
+       "text": "none at query time",
+       "tone": "accent"
+      },
+      "none, if the table is current"
+     ]
+    ]
+   }
+  }
+ ],
+ "5.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The slowest query is rarely the one to fix",
+    "caption": "Total time is calls times mean time, and that product is what the database actually spends. A 40-second nightly report costs 40 seconds a day; a 30-millisecond lookup running 2,000 times a minute costs an hour a day.",
+    "cols": [
+     "Total per day",
+     "Fix it"
+    ],
+    "rows": [
+     "40 s, once a night",
+     "30 ms, 2,000 per minute",
+     "2 s, 100 per hour",
+     "500 ms, twice a day"
+    ],
+    "cells": [
+     [
+      {
+       "text": "40 seconds",
+       "tone": "good"
+      },
+      "no: it costs almost nothing"
+     ],
+     [
+      {
+       "text": "about an hour",
+       "tone": "crit"
+      },
+      "yes: this is the bill"
+     ],
+     [
+      {
+       "text": "80 minutes",
+       "tone": "crit"
+      },
+      "yes"
+     ],
+     [
+      {
+       "text": "1 second",
+       "tone": "good"
+      },
+      "no"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "The sequence, every time",
+    "caption": "Diagnosis, not guesswork. Each step narrows what the next one has to consider, and the last step is the only one that changes anything.",
+    "items": [
+     {
+      "label": "Find the query that matters",
+      "desc": "order by total time, not by mean time",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "Reproduce it as the application runs it",
+      "desc": "same parameters, same types, prepared or not",
+      "code": "2",
+      "tone": "accent"
+     },
+     {
+      "label": "Read the plan with ANALYZE",
+      "desc": "estimates against actuals, not costs alone",
+      "code": "3",
+      "tone": "violet"
+     },
+     {
+      "label": "Find the widest node",
+      "desc": "actual rows x loops; that is where the time is",
+      "code": "4",
+      "tone": "warn"
+     },
+     {
+      "label": "Classify it",
+      "desc": "bad estimate, missing index, unsargable predicate, fan-out",
+      "code": "5",
+      "tone": "warn"
+     },
+     {
+      "label": "Change one thing and measure again",
+      "desc": "two changes at once and you learn nothing",
+      "code": "6",
+      "tone": "good"
+     }
+    ]
+   }
+  }
+ ]
+}

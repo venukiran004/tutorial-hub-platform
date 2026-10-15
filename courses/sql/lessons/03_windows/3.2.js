@@ -19,6 +19,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three numberings of the same order", id: "three" },
 
+    {"kind": "matrix", "title": "Quentin and Rosa both earn 125,000", "caption": "The three functions agree everywhere except at the tie, and the row *after* the tie is where they separate: ROW_NUMBER has spent two numbers, RANK skips the one the tie consumed, DENSE_RANK skips nothing. Ask for 'the top three' and you get three, four or four rows.", "cols": ["ROW_NUMBER / RANK / DENSE_RANK", "Salary"], "rows": ["Tomas", "Quentin", "Rosa", "Priya", "Sami"], "cells": [["3 / 3 / 3", "131,000"], [{"text": "4 / 4 / 4", "tone": "accent"}, "125,000"], [{"text": "5 / 4 / 4", "tone": "warn"}, "125,000 — the tie"], [{"text": "6 / 6 / 5", "tone": "crit"}, "120,000 — they separate"], ["7 / 7 / 6", "98,000"]], "t": "diagram", "id": "dg-3_2-01-0"},
+
+
+
+
+
+
     { t: "p", text: "All three ranking functions take an ORDER BY inside OVER and assign a number to each row in that order. They differ only at ties. **ROW_NUMBER gives every row a distinct number, choosing arbitrarily among ties unless the ORDER BY has a tie-breaker. RANK gives tied rows the same number and skips the numbers they consumed. DENSE_RANK gives tied rows the same number and skips nothing.** NTILE(n) splits the ordered rows into n buckets as evenly as it can and returns the bucket." },
 
     { t: "code", lang: "sql", title: "Ten salaries, one tie, four numberings",
@@ -126,6 +133,13 @@ ORDER  BY department, salary DESC;`,
     ]},
 
     { t: "h2", n: "03", text: "The nth highest", id: "nth" },
+
+    {"kind": "matrix", "title": "Which ranking function the question wants", "caption": "The choice is decided by what a tie should mean. 'Second-highest salary' is the second distinct *value*, so a tie at the top still leaves a second value below it — DENSE_RANK. 'Exactly three rows' can only be ROW_NUMBER.", "cols": ["Use", "Because a tie should"], "rows": ["Exactly n rows", "Top n including ties", "The nth distinct value", "De-duplication", "Quartiles and deciles"], "cells": [[{"text": "ROW_NUMBER", "tone": "accent"}, "be broken, arbitrarily or by a key"], [{"text": "RANK", "tone": "good"}, "mean there is no next place"], [{"text": "DENSE_RANK", "tone": "good"}, "consume only one value"], [{"text": "ROW_NUMBER", "tone": "accent"}, "keep exactly one copy"], [{"text": "NTILE(n)", "tone": "violet"}, "land in the same bucket"]], "t": "diagram", "id": "dg-3_2-03-1"},
+
+
+
+
+
 
     { t: "p", text: "'Second-highest salary in each department' is DENSE_RANK = 2 — the second *distinct* value, so a tie at the top still leaves a second value below it. RANK = 2 would return nothing for a department whose top two tie (they both rank 1, the next is 3); ROW_NUMBER = 2 would return one of the two tied top earners, which is not the second-highest anything. **For 'the nth largest value', DENSE_RANK; for 'the nth row', ROW_NUMBER; for a competition placing, RANK.**" },
 

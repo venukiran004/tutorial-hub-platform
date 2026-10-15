@@ -48,6 +48,14 @@ ORDER  BY a.country;
 
     { t: "h2", n: "02", text: "Semi joins: does a match exist?", id: "semi" },
 
+    {"kind": "matrix", "title": "Four ways to ask 'has at least one order'", "caption": "The first three return the same seven customers. The fourth is not a semi join at all — it returns one row per order, and the DISTINCT that usually follows it exists only to undo the multiplication the join just created.", "cols": ["Rows", "Note"], "rows": ["WHERE EXISTS (...)", "WHERE id IN (...)", "JOIN + DISTINCT", "JOIN alone"], "cells": [[{"text": "7", "tone": "good"}, "stops at the first match"], [{"text": "7", "tone": "good"}, "same plan on modern engines"], [{"text": "7", "tone": "warn"}, "multiplies, then collapses"], [{"text": "12", "tone": "crit"}, "one per order: a different question"]], "t": "diagram", "id": "dg-2_3-02-0"},
+
+
+
+
+
+
+
     { t: "p", text: "A semi join keeps the rows of the left table that have at least one match on the right, **once each, and without the right table's columns**. It is not a join in the row-multiplication sense: a customer with three orders appears once, not three times. SQL has no SEMI JOIN keyword in most dialects; it has three spellings that mean the same thing and one that is a different thing wearing the same clothes." },
 
     { t: "code", lang: "sql", title: "Customers who have ordered, four ways — three of them right",
@@ -74,6 +82,14 @@ SELECT c.name FROM customers c JOIN orders o ON o.customer_id = c.customer_id;
     ]},
 
     { t: "h2", n: "03", text: "Anti joins: does no match exist?", id: "anti" },
+
+    {"kind": "matrix", "title": "Four ways to ask 'has no order', and which survive a NULL", "caption": "All four return Iker and Mara **today**, because `orders.customer_id` happens to be NOT NULL. `NOT IN` returns nothing the day that subquery yields a single NULL — so the two that are correct by construction are the two to write.", "cols": ["NULL-safe", "What it does"], "rows": ["WHERE NOT EXISTS", "LEFT JOIN + IS NULL", "WHERE NOT IN", "EXCEPT"], "cells": [[{"text": "yes", "tone": "good"}, "the default; planner: Anti Join"], [{"text": "yes", "tone": "good"}, "keep the padded rows"], [{"text": "no", "tone": "crit"}, "one NULL and it returns nothing"], [{"text": "yes", "tone": "accent"}, "whole-row set difference"]], "t": "diagram", "id": "dg-2_3-03-1"},
+
+
+
+
+
+
 
     { t: "p", text: "The negation — customers with no paid order — has four spellings too, and this time they are not all equal. **`NOT EXISTS` and the `LEFT JOIN … IS NULL` idiom are correct regardless of NULLs. `NOT IN` returns nothing the day the subquery produces a NULL** (1.2), and `EXCEPT` works on whole rows, which is elegant when the key is the only column and awkward otherwise." },
 

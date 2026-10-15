@@ -19,6 +19,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What a group is", id: "group" },
 
+    {"kind": "matrix", "title": "After the collapse, only two kinds of column exist", "caption": "This single rule is the whole of the error you get for selecting a column you did not group by: that column has many values in the group and the engine will not pick one for you.", "cols": ["Can you select it", "Because"], "rows": ["A grouped column", "An aggregate", "Any other column", "Dependent on the PK", "A window function"], "cells": [[{"text": "yes", "tone": "good"}, "one value per group by construction"], [{"text": "yes", "tone": "good"}, "computed over the whole group"], [{"text": "no", "tone": "crit"}, "many values; which one would it pick"], [{"text": "yes", "tone": "accent"}, "grouping the key fixes every column"], [{"text": "yes", "tone": "violet"}, "runs in SELECT, after the collapse"]], "t": "diagram", "id": "dg-2_4-01-0"},
+
+
+
+
+
+
+
     { t: "p", text: "`GROUP BY country, tier` partitions the rows into one bucket per distinct `(country, tier)` pair, NULL counting as a value for the purpose. Each bucket becomes one output row. **The only things that have a single value per bucket are the grouping columns themselves and aggregates over the bucket** — so `SELECT name` in a query grouped by country is an error in PostgreSQL, because a country has many names and the engine will not guess. MySQL with `ONLY_FULL_GROUP_BY` off, and SQLite, pick one arbitrarily, which is worse." },
 
     { t: "code", lang: "sql", title: "Two grouping columns, then the shape every per-entity report has",
@@ -129,6 +137,14 @@ GROUP  BY c.tier ORDER BY c.tier;
     },
 
     { t: "h2", n: "04", text: "One whole row per group is not a GROUP BY", id: "distincton" },
+
+    {"kind": "compare", "title": "'The latest order per customer' is not an aggregate", "caption": "The question asks for a **row** chosen by an ordering, not a value computed over a group. There is no aggregate that returns 'the status on the row where placed_at was the maximum', and MAX on each column separately silently mixes rows: Chen's MAX(status) is `refunded`, from a different order than his MAX(placed_at).", "columns": [{"title": "MAX on each column", "tone": "crit", "items": ["One row per customer", "MAX(placed_at): the right timestamp", "MAX(status): alphabetically last", "The two come from different rows", "Wrong, and it does not error"]}, {"title": "DISTINCT ON / ROW_NUMBER", "tone": "good", "items": ["7 rows: Mara has no order", "The whole row, chosen by the sort", "Every column from that one row", "ORDER BY starts with the key", "DISTINCT ON: Postgres, DuckDB"]}], "t": "diagram", "id": "dg-2_4-04-1"},
+
+
+
+
+
+
 
     { t: "p", text: "'The latest order for each customer, with its status' asks for a *row* chosen by an ordering, not a value computed over the group. `MAX(placed_at)` gives the timestamp; there is no aggregate that returns 'the status on the row where placed_at was max' — `MAX(status)` is the alphabetically last status, which is meaningless. **The tools for this are `DISTINCT ON` in PostgreSQL and DuckDB, and `ROW_NUMBER` in 3.2 everywhere.**" },
 

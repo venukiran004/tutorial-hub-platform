@@ -19,6 +19,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The rule", id: "rule" },
 
+    {"kind": "matrix", "title": "The same rows, two predicates, measured", "caption": "Each pair selects the identical rows. The difference is whether the indexed column stands alone on its side of the operator: transform it and the engine must compute the expression for every row, which is a scan. Move the transform to the constant side and the index can be seeked.", "cols": ["Time", "What the engine did"], "rows": ["substr(placed_at,1,7) = ...", "placed_at >= ... AND <", "LIKE '%:30:00'", "LIKE '2025-03%'", "zip_code = 12345", "zip_code = '12345'"], "cells": [[{"text": "22.8 ms", "tone": "crit"}, "scan: a function on the column"], [{"text": "0.9 ms", "tone": "good"}, "covering index, range seek"], [{"text": "27.6 ms", "tone": "crit"}, "scan: the wildcard leads"], [{"text": "1.6 ms", "tone": "good"}, "a prefix is rewritten to a range"], [{"text": "scan", "tone": "crit"}, "the TEXT column is cast per row"], [{"text": "seek", "tone": "good"}, "text against text: no cast"]], "t": "diagram", "id": "dg-5_4-01-0"},
+
+
+
+
+
     { t: "p", text: "An index stores the column's values in sorted order. A predicate can use that order only if it compares **the stored value itself** — not a function of it, not a cast of it, not the result of arithmetic on it — against something that can be computed before the scan begins. **Column on one side, bare; a constant, parameter or other table's column on the other; and an operator the B-tree understands: `=`, `<`, `>`, `BETWEEN`, `IN`, `IS NULL`, prefix `LIKE`.** Everything that breaks this rule forces the engine to compute the left side for every row, which is a scan." },
 
     { t: "code", lang: "sql", title: "The same rows, sargable and not (SQLite, 400,000 orders, index on placed_at, measured)",
@@ -53,6 +59,12 @@ SELECT COUNT(*) FROM orders WHERE placed_at LIKE '2025-03%';
     ]},
 
     { t: "h2", n: "02", text: "The rewrites", id: "rewrites" },
+
+    {"kind": "layers", "title": "Four ways to break an index, strongest first", "caption": "Each of these is the same mistake: the stored value is transformed before the comparison, so the index's sort order no longer applies to what is being compared.", "items": [{"label": "A function on the column", "sub": "LOWER(col), DATE(col), COALESCE(col, 0)", "tone": "crit", "side": "expression idx"}, {"label": "An implicit cast on the column", "sub": "a TEXT column against an INTEGER literal", "tone": "crit", "side": "quote it"}, {"label": "Arithmetic on the column", "sub": "col + INTERVAL '1 day' > now()", "tone": "warn", "side": "move it right"}, {"label": "A leading wildcard", "sub": "LIKE '%term' cannot use a B-tree at all", "tone": "warn", "side": "trigram index"}], "t": "diagram", "id": "dg-5_4-02-1"},
+
+
+
+
 
     { t: "table",
       head: ["Unsargable", "Why", "Sargable rewrite"],

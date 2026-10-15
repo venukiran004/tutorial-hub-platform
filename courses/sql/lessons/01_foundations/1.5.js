@@ -19,6 +19,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Casting, and what the number types promise", id: "types" },
 
+    {"kind": "matrix", "title": "What each number type actually promises", "caption": "FLOAT stores binary fractions, and a tenth is not one — so `0.1 + 0.2` is not `0.3` there and is in NUMERIC. Money is NUMERIC, measurements are FLOAT, and the choice is not a matter of taste.", "cols": ["Stores", "Use it for"], "rows": ["INTEGER", "BIGINT", "NUMERIC(p, s)", "FLOAT", "TEXT", "VARCHAR(n)"], "cells": [["whole numbers to 2.1bn", "counts, keys"], ["whole numbers to 9.2e18", "ids that will outgrow INTEGER"], [{"text": "decimals exactly", "tone": "good"}, "money, rates, anything summed"], [{"text": "binary approximations", "tone": "warn"}, "measurements, coordinates"], ["any length", "the default for strings"], ["up to n characters", "when the limit is a real rule"]], "t": "diagram", "id": "dg-1_5-01-0"},
+
+
+
+
+
+
+
+
     { t: "p", text: "A cast converts a value from one type to another, and fails when it cannot: `CAST('4.2x' AS INTEGER)` is an error, not a NULL. **Every engine has a lenient form** — `TRY_CAST` in DuckDB and SQL Server, `SAFE_CAST` in BigQuery, a `CASE` with a regex check in PostgreSQL before 16 — that returns NULL instead, which is the one to use on data you did not produce. The numeric types promise different things: INTEGER is exact and divides as integers; NUMERIC(p, s) is exact decimal and slow; FLOAT is a binary approximation that is fast and cannot represent 0.1." },
 
     { t: "code", lang: "sql", title: "Casts that fail, casts that return NULL, and the float that is not 0.3",
@@ -134,6 +143,15 @@ FROM   p;
     },
 
     { t: "h2", n: "04", text: "The date spine: months with nothing in them", id: "spine" },
+
+    {"kind": "timeline", "title": "Why the monthly series starts in January", "caption": "A GROUP BY produces a row per period that **has** data, so November and December — which have no paid orders in the shop — are absent rather than zero, and a chart or a rolling average reads absence as a dip. `generate_series` builds the six months and a LEFT JOIN from it keeps every one, with `COALESCE` turning the empty ones into `0.00`.", "span": 6, "tick": 1, "lanes": [{"label": "Paid revenue", "bars": [[2, 3, "203.00", "good"], [3, 4, "251.90", "good"], [4, 5, "190.50", "good"], [5, 6, "52.50", "good"]]}, {"label": "GROUP BY gives", "bars": [[2, 6, "4 rows: Jan to Apr", "accent"]]}, {"label": "Absent", "bars": [[0, 2, "Nov and Dec: no row at all", "crit"]]}, {"label": "Date spine", "bars": [[0, 6, "6 rows, Nov and Dec as 0.00", "violet"]]}], "t": "diagram", "id": "dg-1_5-04-1"},
+
+
+
+
+
+
+
 
     { t: "p", text: "A GROUP BY over dates produces a row for each period that has data and nothing for the periods that do not. November and December have no paid orders in the shop, so the monthly series above starts in January — and a chart, a rolling average or a forecast fed that series will silently treat the gap as absence rather than zero. **`generate_series` builds the calendar; a LEFT JOIN from it keeps every period.**" },
 

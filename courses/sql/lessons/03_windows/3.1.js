@@ -19,6 +19,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Same aggregate, every row kept", id: "over" },
 
+    {"kind": "compare", "title": "The same total, collapsed and kept", "caption": "GROUP BY and a window function compute the identical number. GROUP BY spends the rows to get it; the window writes it onto every row that is already there — which is what lets the next column compare a row with its own group's total.", "columns": [{"title": "GROUP BY customer_id", "tone": "accent", "items": ["One row per customer", "The order rows are gone", "Only grouped columns survive", "To compare a row with the total, join back"]}, {"title": "SUM(...) OVER (PARTITION BY ...)", "tone": "good", "items": ["Every order row kept", "Its customer's total written alongside", "Every column still available", "The comparison is one more expression"]}], "t": "diagram", "id": "dg-3_1-01-0"},
+
+
+
+
+
+
     { t: "p", text: "`SUM(amount) OVER ()` is a SUM whose window is the whole result: the grand total, repeated on every row. `SUM(amount) OVER (PARTITION BY customer_id)` is the customer's total, on each of the customer's rows. `SUM(amount) OVER (ORDER BY placed_at)` is a running total: for each row, the sum of every row up to and including it in that order. **The rows are not collapsed. The aggregate is computed per window and written on each row that belongs to it.**" },
 
     { t: "code", lang: "sql", title: "Running total, grand total, share of total — one pass over paid orders",
@@ -148,6 +155,13 @@ ORDER  BY department, salary DESC;
     },
 
     { t: "h2", n: "04", text: "Where a window function may appear", id: "where" },
+
+    {"kind": "matrix", "title": "Where a window function is allowed", "caption": "A window function is computed at the SELECT step, after WHERE, GROUP BY and HAVING have all finished. Everything in this table follows from that one fact — including why filtering on a rank needs an outer query.", "cols": ["Allowed", "Because"], "rows": ["In SELECT", "In ORDER BY", "In WHERE", "In HAVING", "In GROUP BY", "Nested in another window"], "cells": [[{"text": "yes", "tone": "good"}, "this is where it is computed"], [{"text": "yes", "tone": "good"}, "ORDER BY runs after SELECT"], [{"text": "no", "tone": "crit"}, "WHERE has already finished"], [{"text": "no", "tone": "crit"}, "HAVING runs before SELECT"], [{"text": "no", "tone": "crit"}, "grouping happens first"], [{"text": "no", "tone": "crit"}, "wrap it in a CTE and window that"]], "t": "diagram", "id": "dg-3_1-04-1"},
+
+
+
+
+
 
     { t: "p", text: "A window function is evaluated at the SELECT step, after WHERE, GROUP BY and HAVING have finished (1.1). So it can appear in SELECT and in ORDER BY, and nowhere earlier: **`WHERE salary > AVG(salary) OVER (…)` is an error on every engine**, because the window has not been computed when WHERE runs. To filter on a window value, compute it in a subquery or CTE and filter outside — or use QUALIFY on the engines that have it. It also runs *after* GROUP BY, so a window over an aggregate — `SUM(SUM(amount)) OVER ()` — is legal and common: the outer SUM is the window, the inner one the group aggregate." },
 

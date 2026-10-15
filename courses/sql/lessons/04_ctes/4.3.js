@@ -19,6 +19,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Anchor, then repeat until empty", id: "anchor" },
 
+    {"kind": "steps", "title": "A recursive CTE, round by round", "caption": "The recursive member never sees the whole result — only the rows the previous round produced. That is what makes termination possible, and what makes a cycle fatal: the working set never empties.", "items": [{"label": "The anchor runs once", "desc": "its rows become the first working set", "code": "round 0", "tone": "accent"}, {"label": "The recursive member runs on the working set", "desc": "it joins those rows to the table again", "code": "round 1", "tone": "good"}, {"label": "Its output becomes the new working set", "desc": "the previous one is kept in the result", "code": "round 2", "tone": "good"}, {"label": "Repeat", "desc": "each round reaches one level deeper", "code": "round n", "tone": "violet"}, {"label": "A round produces no rows", "desc": "the recursion stops and the union is the answer", "code": "stop", "tone": "teal"}, {"label": "A cycle means it never produces none", "desc": "it runs until the engine's depth limit or forever", "code": "hangs", "tone": "crit"}], "t": "diagram", "id": "dg-4_3-01-0"},
+
+
+
+
+
+
     { t: "p", text: "`WITH RECURSIVE t AS (anchor UNION ALL recursive_member)` is evaluated in rounds. The anchor runs once and its rows form the working set. Then the recursive member runs with `t` bound to the working set — only the rows from the previous round, not everything so far — and its output becomes the next working set. **When a round produces no rows, evaluation stops, and the CTE's result is the union of every round.** A hierarchy walk therefore descends one level per round." },
 
     { t: "code", lang: "sql", title: "The org chart from the root, with depth and path",
@@ -148,6 +155,13 @@ SELECT d::DATE AS d, EXTRACT(dow FROM d) AS dow FROM days;
     },
 
     { t: "h2", n: "04", text: "Cycles, and three ways to survive them", id: "cycles" },
+
+    {"kind": "matrix", "title": "Three ways to survive a cycle", "caption": "A tree terminates because leaves have no children. A graph does not: with the edges 1→2, 2→3, 3→1, the working set is never empty. Each of these breaks the loop by carrying the path so far, so a node that reappears can be detected.", "cols": ["How", "Cost"], "rows": ["CYCLE ... SET", "An array of visited ids", "A depth limit", "Nothing"], "cells": [[{"text": "the engine tracks the path", "tone": "good"}, "SQL:2016; Postgres 14+"], [{"text": "carry it and test membership", "tone": "accent"}, "portable; one extra column"], [{"text": "stop at depth n", "tone": "warn"}, "truncates a legitimate deep tree"], [{"text": "it never terminates", "tone": "crit"}, "the depth limit, or the query is killed"]], "t": "diagram", "id": "dg-4_3-04-1"},
+
+
+
+
+
 
     { t: "p", text: "A tree terminates because leaves have no children. A graph with a cycle — A manages B manages A, a part that contains itself through two levels, a follows-graph — does not: the recursive member keeps finding the same rows and the query runs until it exhausts memory or a limit. **Three guards, in increasing strength: a depth counter with a WHERE; a path string checked with LIKE so a node is not revisited; and UNION instead of UNION ALL, which drops rows already seen and on most engines stops the recursion by itself.**" },
 

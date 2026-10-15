@@ -19,6 +19,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The previous row, the next row", id: "lag" },
 
+    {"kind": "matrix", "title": "Reading a value from another row", "caption": "Each of these reads one value from one row of the window rather than aggregating over it. The third argument of LAG and LEAD is the default used at the edge, which is how you avoid a NULL on the first row of every partition.", "cols": ["Returns", "At the edge"], "rows": ["LAG(x)", "LEAD(x)", "LAG(x, 2, 0)", "FIRST_VALUE(x)", "LAST_VALUE(x)", "NTH_VALUE(x, n)"], "cells": [["x from one row earlier", {"text": "NULL on the first row", "tone": "warn"}], ["x from one row later", {"text": "NULL on the last row", "tone": "warn"}], ["x from two rows earlier", {"text": "0: the default supplied", "tone": "good"}], ["x from the frame's first row", "the partition's first row"], ["x from the frame's last row", {"text": "the current row, by default", "tone": "crit"}], ["x from the frame's nth row", "NULL when the frame is shorter"]], "t": "diagram", "id": "dg-3_4-01-0"},
+
+
+
+
+
+
     { t: "p", text: "`LAG(x)` returns `x` from the row one position earlier in the window's ORDER BY; `LEAD(x)` from one position later. Both take an offset — `LAG(x, 2)` — and a default for when there is no such row, which is otherwise NULL. **The difference between the current row and its LAG is the change; the difference between the LEAD's timestamp and the current one is the time until the next event.** A partition by customer keeps the offsets inside each customer's history." },
 
     { t: "code", lang: "sql", title: "Previous amount, change, time since the last order and until the next",
@@ -54,6 +61,13 @@ ORDER  BY customer_id, placed_at;
     ]},
 
     { t: "h2", n: "02", text: "The LAST_VALUE trap", id: "lastvalue" },
+
+    {"kind": "steps", "title": "Why LAST_VALUE returns the current row", "caption": "FIRST_VALUE looks backwards into a frame that starts at the partition's beginning, so it works. LAST_VALUE looks forwards into a frame that **ends at the current row** — so the last row of the frame is the current row, and the function returns the value you already had.", "items": [{"label": "ORDER BY placed_at, no frame written", "desc": "the default frame appears", "code": "default", "tone": "accent"}, {"label": "The frame is start-of-partition to current row", "desc": "nothing after this row is in it", "code": "frame", "tone": "warn"}, {"label": "FIRST_VALUE reads the frame's first row", "desc": "the partition's first order: correct", "code": "works", "tone": "good"}, {"label": "LAST_VALUE reads the frame's last row", "desc": "which is this row: the value you started with", "code": "wrong", "tone": "crit"}, {"label": "ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING", "desc": "the whole partition is in the frame; now it is the last order", "code": "fixed", "tone": "good"}], "t": "diagram", "id": "dg-3_4-02-1"},
+
+
+
+
+
 
     { t: "p", text: "`FIRST_VALUE(amount) OVER (PARTITION BY customer_id ORDER BY placed_at)` returns each customer's first order amount on every row, as expected. `LAST_VALUE` with the same window returns **the current row's amount**, on every row — because the default frame runs from the start of the partition to the current row, and the last row of that frame is the current one. It is not wrong; it is the frame. The fix is to name a frame that reaches the end of the partition." },
 

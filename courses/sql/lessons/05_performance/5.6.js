@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Find the query that matters", id: "find" },
 
+    {"kind": "matrix", "title": "The slowest query is rarely the one to fix", "caption": "Total time is calls times mean time, and that product is what the database actually spends. A 40-second nightly report costs 40 seconds a day; a 30-millisecond lookup running 2,000 times a minute costs an hour a day.", "cols": ["Total per day", "Fix it"], "rows": ["40 s, once a night", "30 ms, 2,000 per minute", "2 s, 100 per hour", "500 ms, twice a day"], "cells": [[{"text": "40 seconds", "tone": "good"}, "no: it costs almost nothing"], [{"text": "about an hour", "tone": "crit"}, "yes: this is the bill"], [{"text": "80 minutes", "tone": "crit"}, "yes"], [{"text": "1 second", "tone": "good"}, "no"]], "t": "diagram", "id": "dg-5_6-01-0"},
+
+
+
+
+
     { t: "p", text: "The slowest query is rarely the one to fix. A report that takes 40 seconds once a night costs 40 seconds a day; a 30-millisecond lookup that runs 2,000 times a minute costs 60 seconds a minute. **Rank by total time — calls × mean — not by the worst single duration**, and the list is short: a handful of statements account for most of the load. `pg_stat_statements` keeps that ranking for you; MySQL's performance schema and SQL Server's Query Store do the same." },
 
     { t: "code", lang: "sql", title: "The ranking that finds the real cost (PostgreSQL)",
@@ -50,6 +56,12 @@ ORDER  BY total_exec_time DESC LIMIT 5;
     ]},
 
     { t: "h2", n: "02", text: "The procedure", id: "procedure" },
+
+    {"kind": "steps", "title": "The sequence, every time", "caption": "Diagnosis, not guesswork. Each step narrows what the next one has to consider, and the last step is the only one that changes anything.", "items": [{"label": "Find the query that matters", "desc": "order by total time, not by mean time", "code": "1", "tone": "accent"}, {"label": "Reproduce it as the application runs it", "desc": "same parameters, same types, prepared or not", "code": "2", "tone": "accent"}, {"label": "Read the plan with ANALYZE", "desc": "estimates against actuals, not costs alone", "code": "3", "tone": "violet"}, {"label": "Find the widest node", "desc": "actual rows x loops; that is where the time is", "code": "4", "tone": "warn"}, {"label": "Classify it", "desc": "bad estimate, missing index, unsargable predicate, fan-out", "code": "5", "tone": "warn"}, {"label": "Change one thing and measure again", "desc": "two changes at once and you learn nothing", "code": "6", "tone": "good"}], "t": "diagram", "id": "dg-5_6-02-1"},
+
+
+
+
 
     { t: "viz",
       title: "Seven steps, in order",
