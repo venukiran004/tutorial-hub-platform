@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Text as a very wide sparse matrix", id: "bow" },
 
+    {"kind": "steps", "title": "From text to a sparse matrix", "caption": "Three of these five steps are fitted on the training corpus, and each is a place a vocabulary can leak. IDF in particular is a statistic over documents: fit it on everything and the test set's word frequencies have influenced the training features.", "items": [{"label": "Tokenise", "desc": "the regex decides whether \"don't\" is one token or two", "code": "1", "tone": "accent"}, {"label": "Build the vocabulary", "desc": "fitted on train; anything else is invisible later", "code": "fit", "tone": "warn"}, {"label": "Term frequency", "desc": "count, binary, log, or divided by length", "code": "2", "tone": "good"}, {"label": "Inverse document frequency", "desc": "log(N / df), fitted on train: a statistic over documents", "code": "fit", "tone": "warn"}, {"label": "Multiply, then L2-normalise per row", "desc": "documents of different lengths become comparable", "code": "3", "tone": "good"}], "t": "diagram", "id": "dg-7_10-01-0"},
+
+
+
     { t: "p", text: "A document becomes a row; each distinct term becomes a column; the cell is how many times the term appears. **That is bag-of-words: the order of words is discarded and only their presence and count survive.** The matrix is enormous — thousands of columns — and almost entirely zero, which is why it is stored sparse and why a linear model is the natural consumer." },
 
     { t: "dl", items: [
@@ -175,6 +179,10 @@ coef.head(3), coef.tail(3)
     ]},
 
     { t: "h2", n: "02", text: "Hashing: no vocabulary at all", id: "hashing" },
+
+    {"kind": "compare", "title": "A vocabulary, and no vocabulary at all", "caption": "Hashing maps each token to a column by hashing it: nothing to fit, nothing to store, and nothing that can leak. The cost is collisions — two words sharing a column — and the loss of any way to name a column afterwards, which rules it out whenever the model has to be explained.", "columns": [{"title": "TF-IDF with a vocabulary", "tone": "good", "items": ["Columns have names", "Coefficients are interpretable", "Must be fitted and stored", "An unseen word is invisible", "Memory grows with the vocabulary"]}, {"title": "The hashing trick", "tone": "accent", "items": ["Columns are hash buckets", "No column can be named", "No fit step, nothing to store", "Every word maps somewhere", "Fixed width; collisions are the cost"]}], "t": "diagram", "id": "dg-7_10-02-1"},
+
+
 
     { t: "p", text: "**The hashing trick maps each token to a column by hashing it, with no vocabulary to fit, store or leak.** The cost is collisions — two words in one column, and no way to name the column afterwards. For streams, for very large vocabularies, and for anything that must not have a fit step, it is the right tool." },
 

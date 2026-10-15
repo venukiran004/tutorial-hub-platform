@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What the objects are", id: "objects" },
 
+    {"kind": "tree", "title": "A frame is columns that share one row index", "caption": "The index holds **labels**, not positions — and the default `RangeIndex` of `0..n-1` looks exactly like positions, which is where most of the confusion comes from. Each column is a Series with its own dtype; the values inside one column are not.", "root": {"label": "DataFrame", "sub": "a 2-D labelled table", "tone": "violet", "children": [{"label": "Index", "sub": "the row labels: not unique, not sorted, not positions", "tone": "accent"}, {"label": "Series: amount", "sub": "float64", "tone": "good"}, {"label": "Series: region", "sub": "category, sharing the same index", "tone": "good"}, {"label": "Series: signed_up", "sub": "datetime64[ns]", "tone": "teal"}]}, "t": "diagram", "id": "dg-3_1-01-1"},
+
+
+
+
+
     { t: "p", text: "A Series is **one array plus one index**. A DataFrame is **a set of Series sharing a single index**, plus a second index for the column names. Almost everything about pandas' behaviour falls out of that structure." },
 
     { t: "dl", items: [
@@ -145,6 +151,13 @@ df.reset_index().columns      # ['store_id', 'sales', ...] -- not 'index'
     { t: "h2", n: "02", text: "Alignment: the behaviour that explains the surprises", id: "alignment" },
 
     {"kind": "steps", "title": "Alignment explains nearly every pandas surprise", "caption": "Arithmetic between two pandas objects matches on the **index**, not on position. Once that is held, the NaN that appeared from nowhere, the row count that grew after an operation, and the assignment that did nothing all have the same explanation.", "items": [{"label": "an operation aligns the indexes first", "desc": "the union of both, so a label in only one side produces NaN", "tone": "accent", "code": "1"}, {"label": "then it operates element by element", "desc": "on the aligned result, not on the original ordering", "tone": "good", "code": "2"}, {"label": "so a + b can be LONGER than either", "desc": "and full of NaN where the labels did not meet", "tone": "crit", "code": "the surprise"}, {"label": "and .values opts out entirely", "desc": "positional, no alignment — which is sometimes exactly right", "tone": "violet", "code": "the escape"}], "t": "diagram", "id": "dg-3_1-02-0"},
+
+
+
+
+
+
+
 
 
 

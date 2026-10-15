@@ -25,6 +25,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "p", text: "The same data has two natural layouts. **Long is the storage and computation form — every value on its own row with the keys that identify it. Wide is the presentation form — one row per entity, one column per measurement.** Neither is correct; each is right for different operations." },
 
     { t: "dl", items: [
@@ -164,6 +171,12 @@ except ValueError as e:
     },
 
     { t: "h2", n: "02", text: "pivot_table and the aggregation you did not ask for", id: "pivot_table" },
+
+    {"kind": "matrix", "title": "pivot_table aggregates whether or not you asked it to", "caption": "`pivot_table` is `groupby` followed by `unstack`, and its default `aggfunc` is `mean` — right for a price, wrong for anything additive. It applies even when there were no duplicates to aggregate, so a sum of revenue silently becomes an average of revenue.", "cols": ["Does", "When it is wrong"], "rows": ["pivot", "pivot_table", "aggfunc='mean'", "aggfunc='sum'", "stack / unstack", "crosstab"], "cells": [[{"text": "raises on a duplicate key", "tone": "good"}, "never silent: that is the point"], [{"text": "aggregates duplicates", "tone": "warn"}, "it hides a grain you did not expect"], [{"text": "the default", "tone": "crit"}, "counts, sums, anything additive"], [{"text": "what reports usually want", "tone": "good"}, "averages, rates, prices"], ["move a level between axes", "the index must be unique"], ["counts by two keys", "it is pivot_table with len"]], "t": "diagram", "id": "dg-3_5-02-1"},
+
+
+
+
 
     { t: "p", text: "**`pivot_table` is `groupby` followed by `unstack`.** Its default aggregation is `mean`, which is right for prices and wrong for counts, sums and anything additive — and it applies whether or not there were duplicates to aggregate." },
 

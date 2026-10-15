@@ -23,6 +23,13 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "Three mechanisms, and only one is testable", "caption": "The mechanism decides whether dropping rows is safe, and MNAR cannot be distinguished from MAR by the data alone — it needs knowledge of how the data was produced. That is why “why is it missing” is a question for a person, not a test.", "cols": ["missing depends on", "can you test it?", "is dropping safe?"], "rows": ["MCAR", "MAR", "MNAR"], "cells": [[{"text": "nothing", "tone": "good"}, {"text": "partly — Little's test", "tone": "warn"}, {"text": "yes, loses power only", "tone": "good"}], ["other OBSERVED columns", {"text": "yes — model the indicator", "tone": "good"}, {"text": "no — biases the result", "tone": "crit"}], [{"text": "the missing value ITSELF", "tone": "crit"}, {"text": "NO — not from the data", "tone": "crit"}, {"text": "no", "tone": "crit"}]], "t": "diagram", "id": "dg-6_5-01-0"},
 
 
+
+
+
+
+
+
+
     { t: "p", text: "A value is missing for a reason. **The classification asks one question: does the probability of a value being missing depend on anything — and if so, on what?** The answer determines whether the rows you have are representative of the rows you do not." },
 
     { t: "dl", items: [
@@ -289,6 +296,11 @@ np.percentile(full["income"], [90, 95, 99, 100])
     },
 
     { t: "h2", n: "03", text: "What to do, by mechanism", id: "actions" },
+
+    {"kind": "matrix", "title": "What to do, by mechanism", "caption": "The mechanism decides whether a fill is honest. Under MCAR the observed rows are a fair sample, so dropping them loses power but not correctness. Under MNAR the missingness itself carries the information — and an imputed value hides exactly the thing you needed to model.", "cols": ["Safe to", "Because"], "rows": ["MCAR", "MAR", "MNAR"], "cells": [[{"text": "drop, or impute simply", "tone": "good"}, "the observed rows are a fair sample"], [{"text": "impute using the predictors", "tone": "accent"}, "the gap is explained by other columns"], [{"text": "model the missingness itself", "tone": "crit"}, "the absence is the information"]], "t": "diagram", "id": "dg-6_5-03-1"},
+
+
+
 
     { t: "table",
       head: ["Method", "MCAR", "MAR", "MNAR"],

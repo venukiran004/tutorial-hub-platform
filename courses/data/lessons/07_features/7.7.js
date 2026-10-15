@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "One field, several variables", id: "mixed" },
 
+    {"kind": "steps", "title": "One field, several variables", "caption": "`\"A21\"` is a letter-code and a number. `\"3 bed flat\"` is a count and a category. Splitting them is routine; the fourth step is the one people skip, and it is often the strongest feature — rows written `\"n/a\"` rather than `\"0\"` or blank frequently differ in outcome, and the format is the only evidence left of why.", "items": [{"label": "Extract the numeric part", "desc": "a regex group, cast to a number", "code": "1", "tone": "accent"}, {"label": "Extract the categorical part", "desc": "the letter, the unit, the suffix", "code": "2", "tone": "accent"}, {"label": "Normalise the units", "desc": "1.2 GB and 800 MB into one base unit", "code": "3", "tone": "good"}, {"label": "Record which pattern matched", "desc": "'n/a' against '0' against blank: a feature", "code": "4", "tone": "violet"}, {"label": "Report parse coverage", "desc": "the fraction of rows the extraction handled", "code": "5", "tone": "warn"}], "t": "diagram", "id": "dg-7_7-01-0"},
+
+
+
     { t: "p", text: "A mixed variable is a column whose values follow more than one format — **letters and digits in one token, a number with a unit, a range, a category with an amount, or free text that sometimes contains a structured value**. The tell is that `to_numeric` fails on most rows and `nunique` is close to the row count." },
 
     { t: "dl", items: [
@@ -271,6 +275,8 @@ rg["is_open"] = rg["open"].notna().astype(int)
     },
 
     { t: "h2", n: "03", text: "Free text with structure inside", id: "freetext" },
+
+    {"kind": "matrix", "title": "Free text with structure inside", "caption": "A free-text field that people fill in by hand is rarely free of structure — it holds a measurement, a code, a unit or a date in whatever format the writer chose. Extracting the structure is worth more than vectorising the text, and the pattern that matched is itself a feature.", "cols": ["Extract", "Keep as well"], "rows": ["\"3 bed flat\"", "\"1.2 GB\"", "\"approx 40k\"", "\"see notes\"", "\"\" (blank)"], "cells": [[{"text": "count 3, type flat", "tone": "good"}, "the pattern: count + type"], [{"text": "1200, unit MB", "tone": "good"}, "the unit as written"], [{"text": "40000", "tone": "warn"}, "an is_approximate flag"], [{"text": "nothing numeric", "tone": "crit"}, "a deferral marker: often predictive"], [{"text": "nothing", "tone": "crit"}, "blank is not the same as \"n/a\""]], "t": "diagram", "id": "dg-7_7-03-1"},
 
     { t: "code", lang: "python", title: "pulling structured fields out of a notes column", code: `
 notes = pd.Series([

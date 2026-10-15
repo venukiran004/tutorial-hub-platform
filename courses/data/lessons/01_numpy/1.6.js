@@ -25,6 +25,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "p", text: "**When NumPy cannot fit your data into one uniform type, it falls back to `object` dtype** — an array of pointers to Python objects. Every operation on it loops in Python, so you have a list with a worse interface and higher memory use." },
 
     { t: "dl", items: [
@@ -215,6 +222,13 @@ rows = [np.asarray(s) for s in sessions]
     { t: "h2", n: "03", text: "Growing an array in a loop", id: "growth" },
 
     {"kind": "timeline", "title": "Growing an array in a loop", "caption": "`np.append` allocates a new array and copies everything every time, so building n elements costs O(n²) copies. A list appends in amortised O(1) and converts once at the end — the same total work a single allocation would have done.", "span": 100, "tick": 20, "unit": "relative time to build 100,000 elements", "lanes": [{"label": "np.append loop", "bars": [[0, 100, "O(n squared) copying", "crit"]]}, {"label": "list → np.array", "bars": [[0, 3, "", "good"]]}, {"label": "preallocate", "bars": [[0, 2, "", "good"]]}], "t": "diagram", "id": "dg-1_6-03-1"},
+
+
+
+
+
+
+
 
 
 

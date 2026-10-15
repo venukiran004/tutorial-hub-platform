@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Log-odds relative to the prior", id: "woe" },
 
+    {"kind": "matrix", "title": "Weight of evidence puts a category on the model's own scale", "caption": "WoE is the category's log-odds minus the overall log-odds. A logistic regression is linear in log-odds, so a feature already on that scale enters the model as a straight line — which is why a scorecard can print a number of points per attribute and have it be exact rather than approximate.", "cols": ["Is", "Means"], "rows": ["WoE = 0", "WoE > 0", "WoE < 0", "Information Value", "IV below 0.02", "IV above 0.5"], "cells": [[{"text": "the category is the prior", "tone": "accent"}, "it tells you nothing"], ["more positives than the prior", "shifts the odds up"], ["more negatives than the prior", "shifts the odds down"], [{"text": "one number per feature", "tone": "good"}, "how much its categories separate"], [{"text": "unpredictive", "tone": "warn"}, "drop it"], [{"text": "suspiciously strong", "tone": "crit"}, "check for leakage first"]], "t": "diagram", "id": "dg-7_3-01-0"},
+
+
+
     { t: "p", text: "For a binary target, each category has a share of the positives and a share of the negatives. **WoE is the log of their ratio: how much more of the positive class this category holds than its share of the negative class would predict.** Zero means the category tells you nothing; positive means it leans toward the target; negative means away." },
 
     { t: "dl", items: [
@@ -239,6 +243,10 @@ scorecard(m_woe, {"region": tbl})["region"]
     ]},
 
     { t: "h2", n: "03", text: "Continuous features: monotonic binning", id: "binning" },
+
+    {"kind": "compare", "title": "Why the bins must be monotonic", "caption": "A non-monotonic WoE says risk rises with income, then falls, then rises. That is usually noise in a thin bin, and it is never something a scorecard can print — so the bins are merged until the direction is consistent, trading a little fit for a statement the business can act on.", "columns": [{"title": "Equal-frequency bins", "tone": "warn", "items": ["Every bin is populated", "WoE may zigzag across them", "A thin bin's estimate is noisy", "Fits better, explains worse"]}, {"title": "Monotonic merged bins", "tone": "good", "items": ["Adjacent bins merged until WoE is ordered", "One direction across the whole range", "Each bin has enough rows to trust", "Required for a scorecard"]}], "t": "diagram", "id": "dg-7_3-03-1"},
+
+
 
     { t: "p", text: "**WoE needs categories, so a continuous feature is binned first — and the bins are chosen so that WoE moves in one direction across them.** A non-monotonic WoE means the model would say risk rises, then falls, then rises with income, which is usually noise and never something a scorecard can print." },
 

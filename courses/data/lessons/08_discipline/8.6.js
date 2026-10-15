@@ -71,6 +71,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The threshold is the first lever", id: "threshold" },
 
+    {"kind": "steps", "title": "The threshold is a business decision, not a model output", "caption": "The probabilities already contain the ranking; what the default 0.5 gets wrong is where to cut it. On a 1% positive rate almost nothing clears 0.5, so the model predicts the majority class everywhere and reports 99% accuracy — having learned nothing.", "items": [{"label": "Predict probabilities, not classes", "desc": "predict_proba, not predict", "code": "1", "tone": "accent"}, {"label": "Sweep the threshold on validation", "desc": "precision and recall at each cut", "code": "2", "tone": "good"}, {"label": "Price a miss against a false alarm", "desc": "the costs are the business's, not the model's", "code": "3", "tone": "violet"}, {"label": "Or fix the capacity", "desc": "how many rows can actually be reviewed per day", "code": "or", "tone": "violet"}, {"label": "Leaving it at 0.5", "desc": "the majority class everywhere, and 99% accuracy", "code": "default", "tone": "crit"}], "t": "diagram", "id": "dg-8_6-02-1"},
+
     { t: "p", text: "The probabilities already contain the ranking. What the default rule gets wrong is where to cut it, and **the cut is a decision that belongs to the costs, not to the model.** Sweep the threshold on validation predictions, read precision and recall at each, and choose by the cost of a miss against the cost of a false alarm — or by a recall the business requires, or by a review capacity that fixes how many rows can be flagged." },
 
     { t: "code", lang: "python", title: "Sweep the threshold, then let a cost matrix choose it",
@@ -244,6 +246,13 @@ print(ap(rf, Xs, ys))                                                      # 0.9
     { t: "h2", n: "04", text: "Metrics that survive the base rate", id: "metrics" },
 
     {"kind": "matrix", "title": "Metrics that survive a shifting base rate", "caption": "Accuracy is uninformative under imbalance — at 1% positives, predicting the majority scores 99%. PR-AUC moves with the base rate and ROC-AUC does not, which makes them answer different questions rather than one being better.", "cols": ["at 1% positives", "depends on the base rate?"], "rows": ["accuracy", "ROC-AUC", "PR-AUC", "F1", "recall at fixed precision"], "cells": [[{"text": "99% for a constant prediction", "tone": "crit"}, {"text": "yes — uselessly so", "tone": "crit"}], ["unaffected by imbalance", {"text": "no — can look good anyway", "tone": "warn"}], [{"text": "falls when positives are rare", "tone": "good"}, {"text": "YES — which is the point", "tone": "good"}], ["depends on the threshold", "yes"], [{"text": "what the business asked for", "tone": "good"}, {"text": "yes, and stated explicitly", "tone": "good"}]], "t": "diagram", "id": "dg-8_6-04-0"},
+
+
+
+
+
+
+
 
 
     { t: "table",

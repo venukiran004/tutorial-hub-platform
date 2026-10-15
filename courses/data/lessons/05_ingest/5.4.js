@@ -23,6 +23,13 @@ EC.receiveLesson({
     {"kind": "compare", "title": "Rows against columns, and when each wins", "caption": "The layout decides which queries are cheap. Analysis reads a few columns of many rows, which is exactly what columnar storage is for — and exactly what a row format makes expensive.", "columns": [{"title": "row-oriented — CSV, most OLTP", "tone": "warn", "items": ["a whole record is contiguous", "reading three columns still touches every byte", "compresses poorly: neighbouring values have different types", "right for writing and reading whole records", "no schema, no statistics"]}, {"title": "columnar — Parquet, Arrow", "tone": "good", "items": ["a whole column is contiguous", "reading three columns touches only those three", "compresses well: a column is one type, often repetitive", "right for analysis and aggregation", "carries a schema and per-chunk statistics for pushdown"]}], "t": "diagram", "id": "dg-5_4-01-0"},
 
 
+
+
+
+
+
+
+
     { t: "p", text: "A row-oriented file stores record 1's fields, then record 2's, and so on. **To read one column you must read every byte of every row and discard most of it.** A columnar file stores all of column A, then all of column B — so a query on two columns of fifty reads two fiftieths of the file." },
 
     { t: "dl", items: [
@@ -150,6 +157,11 @@ os.path.getsize("typed.parquet") / 1e6     # smaller still with category
     },
 
     { t: "h2", n: "02", text: "Row groups, statistics and pushdown", id: "pushdown" },
+
+    {"kind": "steps", "title": "How a filter skips most of the file without reading it", "caption": "A Parquet file is divided horizontally into row groups, and each row group records the min and max of every column. The reader compares the filter against those statistics before touching the data — so a query on a date range reads only the row groups whose range overlaps it. Sorting the file by the column you filter on is what makes this effective.", "items": [{"label": "Read the footer", "desc": "the schema and every row group's statistics", "code": "1", "tone": "accent"}, {"label": "Compare the filter to min and max", "desc": "per row group, per column, with no data read", "code": "2", "tone": "good"}, {"label": "Skip the groups that cannot match", "desc": "a date range may skip 99% of the file", "code": "3", "tone": "good"}, {"label": "Read only the needed columns", "desc": "columnar: the other columns are never touched", "code": "4", "tone": "violet"}, {"label": "Unsorted data defeats it", "desc": "every group's range covers everything, so none can be skipped", "code": "note", "tone": "crit"}], "t": "diagram", "id": "dg-5_4-02-1"},
+
+
+
 
     { t: "p", text: "**A Parquet file is divided horizontally into row groups, and each row group records the min and max of every column.** A reader with a filter compares the filter to those statistics first and skips any row group that cannot contain a match — so a query on a date range reads only the row groups covering that range." },
 

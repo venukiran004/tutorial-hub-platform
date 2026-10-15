@@ -20,6 +20,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Moving windows", id: "windows" },
 
+    {"kind": "matrix", "title": "Three ways to compute a moving average", "caption": "A moving average slides weights along an array and takes a weighted sum, which is convolution. The `mode` argument is where the quiet error lives: `\"same\"` pads with zeros, so the first and last values are dragged towards zero — an artefact that looks like a trend.", "cols": ["Gives", "Cost"], "rows": ["np.convolve, 'valid'", "np.convolve, 'same'", "sliding_window_view", "cumsum difference", "np.gradient"], "cells": [[{"text": "n - k + 1 values", "tone": "good"}, "only where the kernel fits"], [{"text": "n values, edges wrong", "tone": "crit"}, "zero padding drags the ends down"], [{"text": "every window as a row", "tone": "good"}, "a strided view: no copy"], [{"text": "n - k + 1 values", "tone": "accent"}, "one pass; float error accumulates"], [{"text": "n values", "tone": "violet"}, "central differences, not a window"]], "t": "diagram", "id": "dg-2_6-01-1"},
+
+
+
+
+
+
+
     { t: "p", text: "**A moving average slides a set of weights along an array and takes a weighted sum at each position — which is exactly what convolution does.** NumPy has three ways to compute one, and they differ in speed, memory and how much they let you customise." },
 
     { t: "dl", items: [
@@ -246,6 +254,13 @@ rough.std() / clean.std()     # roughly 20x more variance
     { t: "h2", n: "03", text: "Finding a period with an FFT", id: "fft" },
 
     {"kind": "steps", "title": "Finding a period with an FFT", "caption": "Four steps, and the third is where people go wrong: the x-axis of an FFT is frequency, so the period is its reciprocal, and the units follow your sample spacing rather than your intuition.", "items": [{"label": "detrend first", "desc": "a linear trend puts all the energy in the lowest bin and hides everything else", "tone": "crit", "code": "1"}, {"label": "take rfft, then the magnitudes", "desc": "real input, so the negative frequencies are redundant", "tone": "good", "code": "2"}, {"label": "convert the peak bin to a period", "desc": "period = 1 / frequency, in the units of your sample spacing", "tone": "warn", "code": "3"}, {"label": "check it against the series", "desc": "an FFT will always report a peak; plot the fold to see whether it is real", "tone": "accent", "code": "4"}], "t": "diagram", "id": "dg-2_6-03-0"},
+
+
+
+
+
+
+
 
 
 

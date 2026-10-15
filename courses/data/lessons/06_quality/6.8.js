@@ -20,6 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Unusual is not wrong", id: "cause" },
 
+    {"kind": "matrix", "title": "Unusual is not wrong", "caption": "The treatment follows from which of these a row is, and that question cannot be answered by a rule on the value. An influential point is a fourth, orthogonal thing: a row can be extreme without changing the fit, or moderate and highly influential.", "cols": ["Do", "Because"], "rows": ["Error outlier", "Genuine outlier", "Influential point"], "cells": [[{"text": "remove or correct", "tone": "crit"}, "keeping it teaches something false"], [{"text": "keep", "tone": "good"}, "removing it teaches a tamer world"], [{"text": "measure it, then decide", "tone": "warn"}, "Cook's distance, not the value"]], "t": "diagram", "id": "dg-6_8-01-1"},
+
+
+
+
     { t: "p", text: "Every flagged value has a cause, and **the cause is what decides the treatment**. A measurement error and a rare true event look identical to a detector; they call for removal and preservation respectively. The work after detection is finding out which one you have." },
 
     { t: "dl", items: [
@@ -172,6 +177,13 @@ investigate(orders, 19, "amount", group="customer")
     { t: "h2", n: "02", text: "The four treatments", id: "treatments" },
 
     {"kind": "matrix", "title": "The four treatments for an outlier", "caption": "Deleting is the default and the worst, because an outlier is often the most informative row you have. The question to answer first is whether it is an error or a fact — and only an error earns removal.", "cols": ["what it does", "use when"], "rows": ["drop it", "cap it (winsorise)", "transform (log)", "keep it, model robustly"], "cells": [[{"text": "loses the row entirely", "tone": "crit"}, {"text": "it is a provable ERROR", "tone": "warn"}], ["keeps the row, bounds the value", "a long tail you do not want to fit"], [{"text": "compresses the scale", "tone": "good"}, "right-skewed positive data"], [{"text": "nothing — changes the model instead", "tone": "good"}, {"text": "it is real and matters", "tone": "good"}]], "t": "diagram", "id": "dg-6_8-02-0"},
+
+
+
+
+
+
+
 
 
     { t: "table",

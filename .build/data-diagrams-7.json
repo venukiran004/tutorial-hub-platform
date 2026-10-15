@@ -1,0 +1,53 @@
+{
+ "7.6": [
+  {"after": "02",
+   "d": {"kind": "compare",
+         "title": "Same operation, opposite effect",
+         "caption": "For a linear model, binning turns one coefficient into one per bin \u2014 a step function that can follow any shape. For a tree, binning removes the ability to split anywhere inside an interval: it can now only cut at your edges. Which model is downstream decides whether this is a feature or a handicap.",
+         "columns": [
+          {"title": "Linear model", "tone": "good",
+           "items": ["One coefficient becomes one per bin", "A step function, any shape", "Non-linearity without a transform", "Buys flexibility"]},
+          {"title": "Tree model", "tone": "crit",
+           "items": ["It could already split anywhere", "Now it can only cut at your edges", "Resolution inside a bin is gone", "Costs flexibility"]}]}}
+ ],
+ "7.7": [
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "Free text with structure inside",
+         "caption": "A free-text field that people fill in by hand is rarely free of structure \u2014 it holds a measurement, a code, a unit or a date in whatever format the writer chose. Extracting the structure is worth more than vectorising the text, and the pattern that matched is itself a feature.",
+         "cols": ["Extract", "Keep as well"],
+         "rows": ["\"3 bed flat\"", "\"1.2 GB\"", "\"approx 40k\"", "\"see notes\"", "\"\" (blank)"],
+         "cells": [
+          [{"text": "count 3, type flat", "tone": "good"}, "the pattern: count + type"],
+          [{"text": "1200, unit MB", "tone": "good"}, "the unit as written"],
+          [{"text": "40000", "tone": "warn"}, "an is_approximate flag"],
+          [{"text": "nothing numeric", "tone": "crit"}, "a deferral marker: often predictive"],
+          [{"text": "nothing", "tone": "crit"}, "blank is not the same as \"n/a\""]]}}
+ ],
+ "8.5": [
+  {"after": "04",
+   "d": {"kind": "matrix",
+         "title": "Three things a pipeline cannot do",
+         "caption": "A pipeline is a chain of **row-preserving** transforms followed by a model: `transform` must return as many rows as it received. Everything that changes the row count, or that needs other rows, lives outside it \u2014 and knowing where that work goes is what keeps it from drifting between training and serving.",
+         "cols": ["Why not", "Where it goes"],
+         "rows": ["Drop rows", "Deduplicate", "Remove outliers", "Point-in-time features", "Resample classes"],
+         "cells": [
+          [{"text": "transform must preserve rows", "tone": "crit"}, "upstream, before the split"],
+          [{"text": "it changes the row count", "tone": "crit"}, "upstream, before the split"],
+          [{"text": "it changes the row count", "tone": "crit"}, "upstream, before the split"],
+          [{"text": "it needs other rows", "tone": "warn"}, "the feature builder, per row"],
+          [{"text": "sklearn's Pipeline refuses", "tone": "warn"}, "imblearn's, during fit only"]]}}
+ ],
+ "8.6": [
+  {"after": "02",
+   "d": {"kind": "steps",
+         "title": "The threshold is a business decision, not a model output",
+         "caption": "The probabilities already contain the ranking; what the default 0.5 gets wrong is where to cut it. On a 1% positive rate almost nothing clears 0.5, so the model predicts the majority class everywhere and reports 99% accuracy \u2014 having learned nothing.",
+         "items": [
+          {"label": "Predict probabilities, not classes", "desc": "predict_proba, not predict", "code": "1", "tone": "accent"},
+          {"label": "Sweep the threshold on validation", "desc": "precision and recall at each cut", "code": "2", "tone": "good"},
+          {"label": "Price a miss against a false alarm", "desc": "the costs are the business's, not the model's", "code": "3", "tone": "violet"},
+          {"label": "Or fix the capacity", "desc": "how many rows can actually be reviewed per day", "code": "or", "tone": "violet"},
+          {"label": "Leaving it at 0.5", "desc": "the majority class everywhere, and 99% accuracy", "code": "default", "tone": "crit"}]}}
+ ]
+}

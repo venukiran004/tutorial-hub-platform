@@ -25,6 +25,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "p", text: "Every join answers the same question — which rows from the left match which rows from the right — and differs only in **what happens to the rows that do not match**." },
 
     { t: "dl", items: [
@@ -160,6 +167,12 @@ a.merge(b, on="k", suffixes=("_left", "_right"))   # say which is which
     },
 
     { t: "h2", n: "02", text: "Cardinality, and the merge that multiplied", id: "cardinality" },
+
+    {"kind": "matrix", "title": "A join produces one row per matching pair", "caption": "Two on the left and three on the right for one key is six rows out. This is correct behaviour and it is the mechanism behind every 'my join doubled the revenue' incident. `validate=` makes pandas refuse the join instead of performing it.", "cols": ["Rows for that key", "validate= catches it"], "rows": ["one to one", "one to many", "many to one", "many to many (2x3)"], "cells": [[{"text": "1", "tone": "good"}, "'1:1'"], [{"text": "3", "tone": "good"}, "'1:m': expected and fine"], [{"text": "2", "tone": "good"}, "'m:1': the usual lookup"], [{"text": "6", "tone": "crit"}, "'m:m' is the one to assert against"]], "t": "diagram", "id": "dg-3_6-02-1"},
+
+
+
+
 
     { t: "p", text: "**The output of a join has one row for every matching pair.** If a key appears twice on the left and three times on the right, that key contributes six rows. This is correct behaviour, and it is the mechanism behind every \"my join doubled the revenue\" incident." },
 

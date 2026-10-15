@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Which models care", id: "which" },
 
+    {"kind": "matrix", "title": "Which models care about scale, and which cannot", "caption": "A tree's split at `income > 40,000` is the identical split at `log(income) > 10.6` — the row order is unchanged, so the tree is unchanged. Anything that measures a distance, or takes a gradient step in a shared learning rate, is a different story.", "cols": ["Scale matters", "Because"], "rows": ["KNN, SVM, k-means", "PCA", "Regularised linear", "Neural networks", "Decision trees", "Gradient boosting"], "cells": [[{"text": "yes", "tone": "crit"}, "they measure distance"], [{"text": "yes", "tone": "crit"}, "it maximises variance, which has units"], [{"text": "yes", "tone": "crit"}, "the penalty is per-coefficient"], [{"text": "yes", "tone": "crit"}, "one learning rate for every input"], [{"text": "no", "tone": "good"}, "a split depends on order, not scale"], [{"text": "no", "tone": "good"}, "trees all the way down"]], "t": "diagram", "id": "dg-7_4-01-1"},
+
+
+
     { t: "p", text: "Scaling matters when the model **compares or combines features numerically** — a distance between rows, a penalty on coefficient size, a gradient step of fixed size. It does not matter when the model only asks whether a value is above or below a threshold, which is what every tree does." },
 
     { t: "dl", items: [
@@ -148,6 +152,13 @@ score(RandomForestClassifier(200, random_state=0), Xtr_s, Xte_s)     # 0.83
     { t: "h2", n: "02", text: "The scalers, and what each does to an outlier", id: "scalers" },
 
     {"kind": "matrix", "title": "The scalers, and what each does to an outlier", "caption": "A single extreme value compresses everything else into a sliver under min-max, which is why it is the wrong default. Robust scaling uses the median and IQR, so the outlier moves far without dragging the rest with it.", "cols": ["centres on", "scales by", "one extreme value"], "rows": ["StandardScaler", "MinMaxScaler", "RobustScaler", "QuantileTransformer"], "cells": [["the mean", "the sd", {"text": "shifts both, pulls all in", "tone": "warn"}], ["the min", "the range", {"text": "crushes the rest to ~0", "tone": "crit"}], [{"text": "the median", "tone": "good"}, {"text": "the IQR", "tone": "good"}, {"text": "barely affects the rest", "tone": "good"}], ["ranks", "the empirical CDF", {"text": "removed by construction", "tone": "good"}]], "t": "diagram", "id": "dg-7_4-02-0"},
+
+
+
+
+
+
+
 
 
     { t: "p", text: "**Every scaler is a choice of centre and spread.** Standardisation uses mean and σ, which outliers move. Min-max uses the extremes, which outliers *are*. Robust scaling uses median and IQR, which outliers cannot touch. The right one depends on whether the extreme values are part of the signal or a problem to contain." },

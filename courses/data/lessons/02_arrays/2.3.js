@@ -20,6 +20,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The products, and which one you meant", id: "products" },
 
+    {"kind": "matrix", "title": "Five products, and which one you meant", "caption": "`a * b` on two (3,3) arrays gives nine independent products, not a matrix product. `np.dot` is the one to avoid in new code: it is the inner product on 1-D, the matrix product on 2-D, and something else again on higher dimensions.", "cols": ["Computes", "Note"], "rows": ["a * b", "a @ b", "np.dot(a, b)", "np.outer(a, b)", "np.einsum(...)"], "cells": [[{"text": "element-wise, broadcast", "tone": "accent"}, "nine products, not a matrix product"], [{"text": "(n,k) @ (k,m) -> (n,m)", "tone": "good"}, "batches over leading axes"], [{"text": "depends on the rank", "tone": "crit"}, "three behaviours; prefer @"], ["every pairing: (n,m)", "same as a[:,None] * b[None,:]"], [{"text": "whatever you wrote", "tone": "violet"}, "the index notation is the spec"]], "t": "diagram", "id": "dg-2_3-01-1"},
+
+
+
+
+
+
+
     { t: "p", text: "NumPy has five distinct multiplication behaviours reachable through three operators. **The dangerous case is not an error — it is `*` between a `(n, 1)` and a `(1, m)` array, which broadcasts into an `n × m` outer product** where you wanted an element-wise result." },
 
     { t: "dl", items: [
@@ -103,6 +111,13 @@ X / np.linalg.norm(X, axis=1, keepdims=True)      # unit rows
     { t: "h2", n: "02", text: "Solving systems: use solve, not inv", id: "solve" },
 
     {"kind": "matrix", "title": "Never invert to solve", "caption": "`inv(A) @ b` computes something you did not need and loses accuracy doing it. `solve` factorises once and substitutes, which is both faster and better conditioned — and for a least-squares problem `lstsq` is better again, because it does not form AᵀA at all.", "cols": ["cost", "accuracy", "use when"], "rows": ["inv(A) @ b", "solve(A, b)", "lstsq(A, b)"], "cells": [[{"text": "worst", "tone": "crit"}, {"text": "worst", "tone": "crit"}, {"text": "you genuinely need A⁻¹", "tone": "warn"}], [{"text": "~⅓ n³", "tone": "good"}, {"text": "good", "tone": "good"}, "a square, well-posed system"], [{"text": "more", "tone": "warn"}, {"text": "best", "tone": "good"}, {"text": "overdetermined", "tone": "good"}]], "t": "diagram", "id": "dg-2_3-02-0"},
+
+
+
+
+
+
+
 
 
 

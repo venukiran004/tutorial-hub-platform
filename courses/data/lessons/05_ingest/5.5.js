@@ -23,6 +23,13 @@ EC.receiveLesson({
     {"kind": "steps", "title": "The order the engine actually runs", "caption": "Not the order you write it in, and that explains two things at once: why an alias defined in SELECT cannot be used in WHERE, and why WHERE filters rows while HAVING filters groups.", "items": [{"label": "FROM and JOIN", "desc": "build the working set first", "tone": "accent", "code": "1"}, {"label": "WHERE", "desc": "filter ROWS — before any grouping exists", "tone": "good", "code": "2"}, {"label": "GROUP BY", "desc": "collapse into groups", "tone": "good", "code": "3"}, {"label": "HAVING", "desc": "filter GROUPS — which is why it can use an aggregate", "tone": "warn", "code": "4"}, {"label": "SELECT", "desc": "compute the output columns and their aliases, only now", "tone": "violet", "code": "5"}, {"label": "ORDER BY, then LIMIT", "desc": "ORDER BY can use a SELECT alias; WHERE never could", "tone": "teal", "code": "6"}], "t": "diagram", "id": "dg-5_5-01-0"},
 
 
+
+
+
+
+
+
+
     { t: "p", text: "You write `SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY`. **The engine evaluates `FROM` first and `SELECT` almost last.** That is why a column alias defined in `SELECT` cannot be used in `WHERE`, and why `WHERE` cannot filter on an aggregate." },
 
     { t: "dl", items: [
@@ -258,6 +265,11 @@ FROM   lines;                                      -- divide-by-zero error
     ]},
 
     { t: "h2", n: "03", text: "Joins, and the row count they produce", id: "joins" },
+
+    {"kind": "matrix", "title": "The row count a join produces", "caption": "The same arithmetic as a pandas merge, and the same incident: a key that appears twice on the left and three times on the right contributes six rows, and the revenue total is then triple what it should be. Predict the count before you run the query.", "cols": ["Rows out", "When it surprises"], "rows": ["INNER on a unique key", "LEFT from the parent", "Two children of one parent", "CROSS JOIN", "A NULL in the key"], "cells": [[{"text": "one per match", "tone": "good"}, "orphans disappear quietly"], [{"text": "+1 per childless parent", "tone": "good"}, "COUNT(*) counts the padding"], [{"text": "n1 x n2 per parent", "tone": "crit"}, "the fan-out that triples revenue"], [{"text": "n x m", "tone": "crit"}, "a forgotten join condition"], [{"text": "that row drops", "tone": "warn"}, "NULL never equals NULL"]], "t": "diagram", "id": "dg-5_5-03-1"},
+
+
+
 
     { t: "code", lang: "sql", title: "join types, cardinality, and the totals that doubled", code: `
 -- THE FIVE JOINS, on the rows they keep (same semantics as 3.6):

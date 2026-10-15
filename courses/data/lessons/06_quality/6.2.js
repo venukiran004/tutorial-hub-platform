@@ -23,6 +23,13 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "Three correlations, three questions", "caption": "Pearson measures a straight line, Spearman any monotone relationship, Kendall the consistency of orderings. A nonlinear but monotone pair can give Pearson near zero and Spearman near one — which is the case that matters.", "cols": ["detects", "robust to outliers", "needs"], "rows": ["Pearson", "Spearman", "Kendall tau"], "cells": [[{"text": "LINEAR association only", "tone": "warn"}, {"text": "no", "tone": "crit"}, "interval data"], [{"text": "any monotone relationship", "tone": "good"}, {"text": "yes", "tone": "good"}, "ordinal is enough"], ["concordance of pairs", {"text": "yes", "tone": "good"}, {"text": "ordinal; better for small n", "tone": "good"}]], "t": "diagram", "id": "dg-6_2-01-0"},
 
 
+
+
+
+
+
+
+
     { t: "p", text: "`df.corr()` returns Pearson by default. **Pearson measures how well a straight line fits; it is zero for a perfect U-shape, and it is dragged wherever the extreme values point.** Spearman and Kendall measure monotonic association on ranks, which is usually closer to the question being asked." },
 
     { t: "dl", items: [
@@ -176,6 +183,11 @@ print(feat.corrwith(target, method="spearman").round(2).to_dict())  # b still ~0
     },
 
     { t: "h2", n: "02", text: "Association for categorical columns", id: "categorical" },
+
+    {"kind": "matrix", "title": "Correlation is undefined for two categorical columns", "caption": "There is no order to correlate. The tools are a contingency table, a chi-square test for whether the association is real, Cramér's V for how strong it is on a 0–1 scale, and mutual information for the general case that handles every combination of types.", "cols": ["Answers", "Scale"], "rows": ["Contingency table", "Chi-square test", "Cramér's V", "Mutual information", "Pearson on codes"], "cells": [["what the joint counts are", "counts"], [{"text": "is the association real", "tone": "accent"}, "a p-value, not a strength"], [{"text": "how strong is it", "tone": "good"}, "0 to 1, comparable across pairs"], [{"text": "how much one tells you", "tone": "good"}, "bits; works for any types"], [{"text": "nothing meaningful", "tone": "crit"}, "the codes' order is arbitrary"]], "t": "diagram", "id": "dg-6_2-02-1"},
+
+
+
 
     { t: "p", text: "**Correlation is undefined for two categorical columns — there is no order to correlate.** The tools are the contingency table, a chi-square test on it, Cramér's V for a normalised strength, and mutual information for the general case that covers every type combination." },
 

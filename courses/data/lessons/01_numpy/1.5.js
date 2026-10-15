@@ -20,6 +20,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Two APIs, and why the old one is a trap", id: "generators" },
 
+    {"kind": "compare", "title": "Two random APIs, and why the old one is not a style choice", "caption": "The legacy functions share **one global state with every piece of code in the process**. Any library that calls `np.random.*` advances it, so what your next call returns depends on what else ran first — which is a reproducibility bug that only appears when you add a dependency.", "columns": [{"title": "np.random.seed / rand", "tone": "crit", "items": ["One hidden global generator", "Any import can advance it", "Your results depend on what else ran", "No clean way to seed parallel workers", "Legacy; kept for old code"]}, {"title": "rng = default_rng(42)", "tone": "good", "items": ["The state is an object you hold", "Nothing else can touch it", "Pass it explicitly where it is needed", "SeedSequence spawns independent streams", "The API since 2019"]}], "t": "diagram", "id": "dg-1_5-01-1"},
+
+
+
+
+
+
+
     { t: "p", text: "NumPy has a legacy random API — `np.random.seed`, `np.random.rand` — backed by **one global state shared by every piece of code in the process**. Since 2019 it has a Generator API where the state is an object you hold. The difference is not stylistic." },
 
     { t: "dl", items: [
@@ -235,6 +243,13 @@ rng.random(5)                          # the same five values again
     { t: "h2", n: "03", text: "What a seed cannot fix", id: "limits" },
 
     {"kind": "matrix", "title": "What a seed can and cannot fix", "caption": "A seed makes one process reproducible. It does not survive threads, a different library version, or a dictionary iteration that was never ordered — so “I set the seed” is not the same claim as “this run reproduces”.", "cols": ["does a seed fix it?", "what does"], "rows": ["the same code, same machine", "two threads drawing at once", "a different NumPy version", "GPU reductions", "a set or dict order"], "cells": [[{"text": "yes", "tone": "good"}, "—"], [{"text": "NO", "tone": "crit"}, {"text": "one generator per worker, spawned", "tone": "good"}], [{"text": "not guaranteed", "tone": "warn"}, "pin the version"], [{"text": "NO", "tone": "crit"}, "deterministic kernels, and accept the cost"], [{"text": "NO", "tone": "crit"}, "sort before you iterate"]], "t": "diagram", "id": "dg-1_5-03-0"},
+
+
+
+
+
+
+
 
 
 

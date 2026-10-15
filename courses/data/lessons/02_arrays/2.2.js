@@ -20,6 +20,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Sorting values against sorting positions", id: "argsort" },
 
+    {"kind": "matrix", "title": "Sorting the values, and sorting the positions", "caption": "`argsort` is the form that generalises: indices can be applied to any array of the same length, which is how a feature matrix and its labels stay together through a sort. The lexsort row is the one that costs people an afternoon — the **last** key in the tuple is the primary one.", "cols": ["Returns", "Reach for it when"], "rows": ["np.sort(a)", "a.sort()", "np.argsort(a)", "np.lexsort((b, a))", "np.argpartition(a, k)"], "cells": [["a sorted copy", "you only want the values"], [{"text": "None: sorts in place", "tone": "warn"}, "the original may be overwritten"], [{"text": "the sorting indices", "tone": "good"}, "other arrays must move with it"], [{"text": "sorted by a, then b", "tone": "crit"}, "multiple keys: last is primary"], [{"text": "k smallest first, unsorted", "tone": "accent"}, "top-k: O(n), not O(n log n)"]], "t": "diagram", "id": "dg-2_2-01-1"},
+
+
+
+
+
+
+
     { t: "p", text: "**`np.sort` returns sorted values; `np.argsort` returns the indices that would sort them.** The second is more useful, because indices can be applied to any array of the same length — which is how you keep a feature matrix and its labels together." },
 
     { t: "dl", items: [
@@ -242,6 +250,13 @@ np.searchsorted(reference, new_values) / len(reference)
     { t: "h2", n: "03", text: "Set operations", id: "sets" },
 
     {"kind": "matrix", "title": "Set operations on arrays", "caption": "These all sort internally, so they are O(n log n) rather than the O(n) a hash set would give — but they return arrays and keep the dtype, which is usually what you want inside a vectorised pipeline. `in1d` is the one with a faster alternative.", "cols": ["gives", "note"], "rows": ["np.unique", "np.intersect1d", "np.setdiff1d", "np.isin"], "cells": [[{"text": "sorted distinct values", "tone": "good"}, "return_counts gives a frequency table free"], ["values in both", "both inputs are sorted first"], ["in the first, not the second", "order follows the sort, not the input"], [{"text": "a boolean mask", "tone": "accent"}, {"text": "the one you want for filtering", "tone": "good"}]], "t": "diagram", "id": "dg-2_2-03-0"},
+
+
+
+
+
+
+
 
 
 

@@ -82,6 +82,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The catalogue", id: "catalogue" },
 
+    {"kind": "matrix", "title": "Each mistake has a signature you can read without running anything", "caption": "The point of a signature is that the review is cheap: a line, a pattern or an omission that is visible in the diff, with a one-line check that confirms or clears it. Reading in a fixed order matters because the earliest mistake invalidates everything measured after it.", "cols": ["Signature", "One-line check"], "rows": ["Fit before split", "No stratification", "Unshifted window", "Encoder fitted on all", "Metric on the wrong class", "Threshold at 0.5"], "cells": [[{"text": "scaler.fit(X) above the split", "tone": "crit"}, "where is the split, in line order"], [{"text": "train_test_split with no stratify", "tone": "warn"}, "class rates in each part"], [{"text": "rolling() with no shift()", "tone": "crit"}, "search the diff for shift"], [{"text": "fit on the full frame", "tone": "crit"}, "is it inside the pipeline"], [{"text": "pos_label left default", "tone": "warn"}, "which class is 1"], [{"text": "predict() not predict_proba", "tone": "warn"}, "was a threshold ever chosen"]], "t": "diagram", "id": "dg-8_7-02-0"},
+
+
+
     { t: "p", text: "Three tables, one per phase of the course. Each row is a mistake, the shape it takes in code, the check that confirms it, and where the course covered it. **Read the signature column as a list of things to grep for.**" },
 
     { t: "table",
@@ -292,6 +296,10 @@ def check_contract(df, contract):
     ]},
 
     { t: "h2", n: "05", text: "Reproducibility", id: "repro" },
+
+    {"kind": "matrix", "title": "Reproducibility: what must be pinned", "caption": "A result nobody can reproduce is not a result. Each of these has silently changed an answer: a library minor version altering a default, an unordered groupby changing a float sum, a seed that was never set for one of three generators.", "cols": ["Pin", "What moves if you do not"], "rows": ["Library versions", "Random seeds", "Row order", "Data snapshot", "Feature code", "The environment"], "cells": [[{"text": "a lock file", "tone": "good"}, "a default changes under you"], [{"text": "all of them", "tone": "good"}, "numpy, python, and the framework"], [{"text": "sort before you reduce", "tone": "warn"}, "float sums differ by order"], [{"text": "a date or a version", "tone": "good"}, "the table was updated since"], [{"text": "one fitted object", "tone": "good"}, "training-serving skew"], [{"text": "a container or a lock", "tone": "accent"}, "the BLAS library changes a result"]], "t": "diagram", "id": "dg-8_7-05-1"},
+
+
 
     { t: "p", text: "A result that cannot be rerun cannot be reviewed. Four things make it rerunnable: **a seed** for every random step (1.5); **a fingerprint** of the data the run used, because extracts change under you; **pinned versions** of the libraries, because a pickle and a default both change between releases; and **the split definition and the metric**, written down. The test is the simplest one there is: run it twice and diff the predictions." },
 

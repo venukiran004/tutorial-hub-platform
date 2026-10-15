@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three kinds of window", id: "kinds" },
 
+    {"kind": "matrix", "title": "Three kinds of window, and what each includes", "caption": "All three include the **current row**, which is why an unshifted window is a leak: the feature for today already contains today's value. `shift(1)` is what turns a window into a statement about the past.", "cols": ["Covers", "min_periods default"], "rows": ["rolling(n)", "expanding()", "ewm(span=n)", "shift(k)"], "cells": [[{"text": "this row and the n-1 before", "tone": "accent"}, "n: NaN until the window fills"], [{"text": "the start up to this row", "tone": "accent"}, "1: a value from row one"], [{"text": "every past row, decaying", "tone": "violet"}, "no hard edge at all"], [{"text": "moves values down k rows", "tone": "good"}, "the leak fix, not a window"]], "t": "diagram", "id": "dg-4_3-01-1"},
+
+
+
+
+
     { t: "p", text: "pandas has three window types, distinguished by **how far back they look**: a fixed count or time span, everything so far, or everything so far with decaying weight. Each answers a different question about \"recent\"." },
 
     { t: "dl", items: [
@@ -164,6 +170,13 @@ df["a"].rolling(5).corr(df["b"])
     { t: "h2", n: "02", text: "shift, and the leak that every unshifted window contains", id: "shift" },
 
     {"kind": "steps", "title": "Every unshifted window is a leak", "caption": "A rolling mean at row *t* includes row *t* itself, so a feature built from it has seen its own target. The fix is one call, and forgetting it is the single most common leak in time-series feature code.", "items": [{"label": "rolling(3).mean() at row t", "desc": "averages rows t-2, t-1 and t — including the present", "tone": "crit", "code": "leaks"}, {"label": "so the feature knows its own row", "desc": "and the model scores beautifully in backtest and fails live", "tone": "crit", "code": "the symptom"}, {"label": "shift(1) first, then roll", "desc": "now the window ends at t-1 and the feature is causal", "tone": "good", "code": "the fix"}, {"label": "check with a one-row sanity test", "desc": "the feature at row t must be computable before row t arrives", "tone": "accent", "code": "the test"}], "t": "diagram", "id": "dg-4_3-02-0"},
+
+
+
+
+
+
+
 
 
     { t: "p", text: "**A rolling mean at row `t` includes the value at `t`.** If the target you are predicting is derived from that same value — tomorrow's price from today's, this week's demand from this week's — the feature already contains the answer. `shift(1)` moves the window back one row so it ends *before* the current one." },

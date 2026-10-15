@@ -23,6 +23,13 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "The shape you need decides the verb", "caption": "Four verbs, and the choice is not about what you compute but about what **shape** comes back. Reaching for `apply` when `transform` was meant is the commonest cause of a result that will not assign back to the frame.", "cols": ["returns", "rows out"], "rows": ["agg", "transform", "filter", "apply"], "cells": [[{"text": "one value per group", "tone": "good"}, "one per group"], [{"text": "the group value on every ROW", "tone": "accent"}, {"text": "same as input — assignable", "tone": "good"}], ["whole groups, kept or dropped", "a subset of the input rows"], [{"text": "whatever you return", "tone": "warn"}, {"text": "unpredictable — and slow", "tone": "crit"}]], "t": "diagram", "id": "dg-4_2-01-0"},
 
 
+
+
+
+
+
+
+
     { t: "p", text: "Before choosing between `agg`, `transform`, `filter` and `apply`, answer one question: **what shape should the result be?** Each verb has a fixed answer, and picking the wrong one produces either an alignment error or a correct result computed very slowly." },
 
     { t: "dl", items: [
@@ -170,6 +177,12 @@ g["rep"].agg("first").dtype               # object
     },
 
     { t: "h2", n: "02", text: "transform: the group value on every row", id: "transform" },
+
+    {"kind": "compare", "title": "agg collapses, transform does not", "caption": "Every 'compared to its group' feature is a transform: deviation from the group mean, share of the group total, rank within the group. It returns the group statistic with the **original index**, so it drops straight in as a new column with no merge.", "columns": [{"title": "g.agg('mean')", "tone": "accent", "items": ["One row per group", "The group keys become the index", "To use it per row, merge it back", "The answer is the summary"]}, {"title": "g.transform('mean')", "tone": "good", "items": ["One value per original row", "The original index is preserved", "Assign it straight into a column", "The answer is a feature"]}], "t": "diagram", "id": "dg-4_2-02-1"},
+
+
+
+
 
     { t: "p", text: "**`transform` computes a group statistic and hands it back with the original index**, so the result drops straight in as a new column. Every \"compared to its group\" feature — deviation from the group mean, share of the group total, rank within group — is a transform." },
 

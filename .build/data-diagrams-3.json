@@ -1,0 +1,631 @@
+{
+ "1.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "tree",
+    "title": "An array is one buffer and three facts about how to read it",
+    "caption": "A Python list of numbers is a list of **pointers** to separate integer objects scattered across the heap. An array is a single block of raw bytes with no per-element object at all — and `strides`, the number of bytes to step per axis, is the piece that makes a view possible.",
+    "root": {
+     "label": "ndarray",
+     "sub": "one object, one buffer",
+     "tone": "violet",
+     "children": [
+      {
+       "label": "data buffer",
+       "sub": "contiguous raw bytes, no per-element object",
+       "tone": "accent"
+      },
+      {
+       "label": "dtype",
+       "sub": "the type of every element, and its size",
+       "tone": "good"
+      },
+      {
+       "label": "shape",
+       "sub": "length along each dimension",
+       "tone": "good"
+      },
+      {
+       "label": "strides",
+       "sub": "bytes to step per axis: this is what views exploit",
+       "tone": "teal"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "1.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "timeline",
+    "title": "Four ways to compute a * b + 1 on a million elements",
+    "caption": "Measured. The gap is 200×, not 10%, because vectorising removes the work rather than reducing it: one dispatch instead of a million, no int or float object per element, and a contiguous C loop the compiler can unroll into SIMD registers. `np.vectorize` is in this list because its name promises otherwise — the documentation calls it a convenience, not a performance tool.",
+    "span": 440,
+    "tick": 100,
+    "lanes": [
+     {
+      "label": "Python loop",
+      "bars": [
+       [
+        0,
+        420,
+        "420 ms",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "Comprehension",
+      "bars": [
+       [
+        0,
+        180,
+        "180 ms",
+        "warn"
+       ]
+      ]
+     },
+     {
+      "label": "np.vectorize",
+      "bars": [
+       [
+        0,
+        250,
+        "250 ms: a loop with extra steps",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "a*b+1: 2 ms",
+      "bars": [
+       [
+        0,
+        2,
+        "",
+        "good"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "The shape mismatch that returns a plausible number",
+    "caption": "Shapes align from the **right**, and two lengths are compatible when they are equal or when one is 1. The dangerous case is the last pair: `(4,)` against `(4,1)` broadcasts to a 4×4 matrix of every pairwise difference, and `.mean()` on it returns a small believable float. On 500 rows it misreports your RMSE for months; on 50,000 it is a 20 GB allocation. Assert shape equality inside every metric you write.",
+    "cols": [
+     "Result",
+     "What happens"
+    ],
+    "rows": [
+     "(2,3) with (3,)",
+     "(2,3) with (2,)",
+     "(2,3) with (2,1)",
+     "(4,) with (4,1)"
+    ],
+    "cells": [
+     [
+      {
+       "text": "(2, 3)",
+       "tone": "good"
+      },
+      "aligns from the right: fine"
+     ],
+     [
+      {
+       "text": "ValueError",
+       "tone": "warn"
+      },
+      "2 against 3: neither is 1"
+     ],
+     [
+      {
+       "text": "(2, 3)",
+       "tone": "good"
+      },
+      "the None makes it a column"
+     ],
+     [
+      {
+       "text": "(4, 4)",
+       "tone": "crit"
+      },
+      "every pairwise difference, silently"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "One question decides view or copy: is the selection evenly spaced",
+    "caption": "If what you asked for can be described by a start, a stop and a step, you get a view over the existing bytes. If it cannot, a new array has to be built. The last row is the exception worth memorising: `a[mask] = 0` is `__setitem__`, not indexing-then-assigning, so it writes to the original even though reading `a[mask]` would have copied.",
+    "cols": [
+     "Gives you",
+     "Because"
+    ],
+    "rows": [
+     "a[2], a[1:5], a[::2]",
+     "a[:, 0]",
+     "a[[0, 3, 7]]",
+     "a[a > 5]",
+     "a[mask] = 0"
+    ],
+    "cells": [
+     [
+      {
+       "text": "a view",
+       "tone": "good"
+      },
+      "a stride pattern over the same bytes"
+     ],
+     [
+      {
+       "text": "a view",
+       "tone": "good"
+      },
+      "a column is a stride too"
+     ],
+     [
+      {
+       "text": "a copy",
+       "tone": "warn"
+      },
+      "arbitrary positions are not a stride"
+     ],
+     [
+      {
+       "text": "a copy",
+       "tone": "warn"
+      },
+      "length unknown until the mask runs"
+     ],
+     [
+      {
+       "text": "writes the original",
+       "tone": "accent"
+      },
+      "assignment, not indexing"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "axis is the dimension that disappears",
+    "caption": "Reducing a `(3, 4)` array along axis 0 gives `(4,)`: the axis named is the one removed. `keepdims=True` leaves it behind as length 1 so the result still broadcasts against the source — which is what makes row normalisation a one-liner instead of a reshape.",
+    "cols": [
+     "Shape out",
+     "Reads as"
+    ],
+    "rows": [
+     "sum(axis=0)",
+     "sum(axis=1)",
+     "sum(axis=None)",
+     "sum(axis=0, keepdims)",
+     "argmax(axis=1)"
+    ],
+    "cells": [
+     [
+      {
+       "text": "(4,)",
+       "tone": "accent"
+      },
+      "one total per column"
+     ],
+     [
+      {
+       "text": "(3,)",
+       "tone": "accent"
+      },
+      "one total per row"
+     ],
+     [
+      {
+       "text": "scalar",
+       "tone": "good"
+      },
+      "every axis collapsed: the default"
+     ],
+     [
+      {
+       "text": "(1, 4)",
+       "tone": "teal"
+      },
+      "still broadcasts against (3, 4)"
+     ],
+     [
+      {
+       "text": "(3,)",
+       "tone": "violet"
+      },
+      "the index, not the value"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "compare",
+    "title": "Two random APIs, and why the old one is not a style choice",
+    "caption": "The legacy functions share **one global state with every piece of code in the process**. Any library that calls `np.random.*` advances it, so what your next call returns depends on what else ran first — which is a reproducibility bug that only appears when you add a dependency.",
+    "columns": [
+     {
+      "title": "np.random.seed / rand",
+      "tone": "crit",
+      "items": [
+       "One hidden global generator",
+       "Any import can advance it",
+       "Your results depend on what else ran",
+       "No clean way to seed parallel workers",
+       "Legacy; kept for old code"
+      ]
+     },
+     {
+      "title": "rng = default_rng(42)",
+      "tone": "good",
+      "items": [
+       "The state is an object you hold",
+       "Nothing else can touch it",
+       "Pass it explicitly where it is needed",
+       "SeedSequence spawns independent streams",
+       "The API since 2019"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "2.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Two operations wearing six names",
+    "caption": "There are only two ideas here — lengthen an existing axis, or add a new one. The trouble is that three of the names change meaning between 1-D and 2-D input, so the same call does two different things depending on what you hand it.",
+    "cols": [
+     "On 2-D input",
+     "On 1-D input"
+    ],
+    "rows": [
+     "concatenate",
+     "stack",
+     "vstack",
+     "hstack",
+     "column_stack",
+     "split"
+    ],
+    "cells": [
+     [
+      {
+       "text": "lengthens an existing axis",
+       "tone": "good"
+      },
+      "same, along axis 0"
+     ],
+     [
+      {
+       "text": "adds a new axis",
+       "tone": "good"
+      },
+      "same; shapes must match exactly"
+     ],
+     [
+      "concatenate(axis=0)",
+      {
+       "text": "promotes to 2-D first",
+       "tone": "warn"
+      }
+     ],
+     [
+      "concatenate(axis=1)",
+      {
+       "text": "concatenate(axis=0)",
+       "tone": "crit"
+      }
+     ],
+     [
+      "treats inputs as columns",
+      {
+       "text": "what hstack should have done",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "the inverse; needs even division",
+       "tone": "violet"
+      },
+      "array_split allows uneven"
+     ]
+    ]
+   }
+  }
+ ],
+ "2.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Sorting the values, and sorting the positions",
+    "caption": "`argsort` is the form that generalises: indices can be applied to any array of the same length, which is how a feature matrix and its labels stay together through a sort. The lexsort row is the one that costs people an afternoon — the **last** key in the tuple is the primary one.",
+    "cols": [
+     "Returns",
+     "Reach for it when"
+    ],
+    "rows": [
+     "np.sort(a)",
+     "a.sort()",
+     "np.argsort(a)",
+     "np.lexsort((b, a))",
+     "np.argpartition(a, k)"
+    ],
+    "cells": [
+     [
+      "a sorted copy",
+      "you only want the values"
+     ],
+     [
+      {
+       "text": "None: sorts in place",
+       "tone": "warn"
+      },
+      "the original may be overwritten"
+     ],
+     [
+      {
+       "text": "the sorting indices",
+       "tone": "good"
+      },
+      "other arrays must move with it"
+     ],
+     [
+      {
+       "text": "sorted by a, then b",
+       "tone": "crit"
+      },
+      "multiple keys: last is primary"
+     ],
+     [
+      {
+       "text": "k smallest first, unsorted",
+       "tone": "accent"
+      },
+      "top-k: O(n), not O(n log n)"
+     ]
+    ]
+   }
+  }
+ ],
+ "2.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Five products, and which one you meant",
+    "caption": "`a * b` on two (3,3) arrays gives nine independent products, not a matrix product. `np.dot` is the one to avoid in new code: it is the inner product on 1-D, the matrix product on 2-D, and something else again on higher dimensions.",
+    "cols": [
+     "Computes",
+     "Note"
+    ],
+    "rows": [
+     "a * b",
+     "a @ b",
+     "np.dot(a, b)",
+     "np.outer(a, b)",
+     "np.einsum(...)"
+    ],
+    "cells": [
+     [
+      {
+       "text": "element-wise, broadcast",
+       "tone": "accent"
+      },
+      "nine products, not a matrix product"
+     ],
+     [
+      {
+       "text": "(n,k) @ (k,m) -> (n,m)",
+       "tone": "good"
+      },
+      "batches over leading axes"
+     ],
+     [
+      {
+       "text": "depends on the rank",
+       "tone": "crit"
+      },
+      "three behaviours; prefer @"
+     ],
+     [
+      "every pairing: (n,m)",
+      "same as a[:,None] * b[None,:]"
+     ],
+     [
+      {
+       "text": "whatever you wrote",
+       "tone": "violet"
+      },
+      "the index notation is the spec"
+     ]
+    ]
+   }
+  }
+ ],
+ "2.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "A compound dtype describes one record's layout",
+    "caption": "A structured array is a row type: the fields of one record sit next to each other in memory. That is why `a[\"age\"]` is a **strided** view rather than a contiguous one — the other fields sit between consecutive values, which is the opposite of how a DataFrame stores a column.",
+    "cols": [
+     "Is",
+     "Consequence"
+    ],
+    "rows": [
+     "Compound dtype",
+     "a[\"age\"]",
+     "a[0]",
+     "itemsize",
+     "np.rec.array",
+     "np.ma masked array"
+    ],
+    "cells": [
+     [
+      "named fields with byte offsets",
+      "one record's layout, not a table's"
+     ],
+     [
+      {
+       "text": "a strided view",
+       "tone": "warn"
+      },
+      "other fields sit between the values"
+     ],
+     [
+      {
+       "text": "one whole record",
+       "tone": "good"
+      },
+      "the natural unit here"
+     ],
+     [
+      "bytes per record",
+      "field sizes plus alignment padding"
+     ],
+     [
+      "attribute access: a.age",
+      {
+       "text": "slower; rarely worth it",
+       "tone": "warn"
+      }
+     ],
+     [
+      "an array plus a validity mask",
+      {
+       "text": "largely superseded",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
+ ],
+ "2.5": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "Counting temporaries, not lines",
+    "caption": "`(a * b + c) / d` looks like one expression and allocates three full-size arrays. This matters only at the scale where it matters — optimising a 10 MB calculation is wasted effort — but knowing the rule is what lets you recognise the problem when the array is 10 GB.",
+    "items": [
+     {
+      "label": "a * b",
+      "desc": "a full-size temporary",
+      "code": "+1 array",
+      "tone": "warn"
+     },
+     {
+      "label": "... + c",
+      "desc": "another full-size temporary",
+      "code": "+1 array",
+      "tone": "warn"
+     },
+     {
+      "label": "... / d",
+      "desc": "and the result",
+      "code": "+1 array",
+      "tone": "crit"
+     },
+     {
+      "label": "a *= b; a += c; a /= d",
+      "desc": "the same arithmetic, reusing the buffer",
+      "code": "0 arrays",
+      "tone": "good"
+     },
+     {
+      "label": "np.multiply(a, b, out=a)",
+      "desc": "the explicit form; every ufunc takes out=",
+      "code": "0 arrays",
+      "tone": "good"
+     }
+    ]
+   }
+  }
+ ],
+ "2.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Three ways to compute a moving average",
+    "caption": "A moving average slides weights along an array and takes a weighted sum, which is convolution. The `mode` argument is where the quiet error lives: `\"same\"` pads with zeros, so the first and last values are dragged towards zero — an artefact that looks like a trend.",
+    "cols": [
+     "Gives",
+     "Cost"
+    ],
+    "rows": [
+     "np.convolve, 'valid'",
+     "np.convolve, 'same'",
+     "sliding_window_view",
+     "cumsum difference",
+     "np.gradient"
+    ],
+    "cells": [
+     [
+      {
+       "text": "n - k + 1 values",
+       "tone": "good"
+      },
+      "only where the kernel fits"
+     ],
+     [
+      {
+       "text": "n values, edges wrong",
+       "tone": "crit"
+      },
+      "zero padding drags the ends down"
+     ],
+     [
+      {
+       "text": "every window as a row",
+       "tone": "good"
+      },
+      "a strided view: no copy"
+     ],
+     [
+      {
+       "text": "n - k + 1 values",
+       "tone": "accent"
+      },
+      "one pass; float error accumulates"
+     ],
+     [
+      {
+       "text": "n values",
+       "tone": "violet"
+      },
+      "central differences, not a window"
+     ]
+    ]
+   }
+  }
+ ]
+}

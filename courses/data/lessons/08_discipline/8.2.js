@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What PCA computes", id: "compute" },
 
+    {"kind": "matrix", "title": "What PCA computes, and what each piece is called", "caption": "Explained variance measures **spread, not usefulness**: a component can carry most of the variance and none of the signal, because nothing in the computation ever looked at the target. That is the single most important property of PCA to hold on to.", "cols": ["Is", "Note"], "rows": ["Principal component", "Loading", "Score", "Explained variance", "Reconstruction error"], "cells": [["a unit-length direction", "eigenvector of the covariance"], ["each column's weight in it", "which columns, with what sign"], [{"text": "a row's coordinate", "tone": "good"}, "the scores are the new features"], [{"text": "the eigenvalue", "tone": "warn"}, "spread, not usefulness"], ["distance to the projection", "the sum of the discarded eigenvalues"]], "t": "diagram", "id": "dg-8_2-01-0"},
+
+
+
     { t: "p", text: "Principal component analysis centres the columns, finds the orthogonal directions along which the data varies most, and expresses every row in those directions instead of the original ones. **Nothing is lost until you truncate**: with all *p* components kept it is a rotation. Reduction is the decision to keep the first *k* and discard the rest — and the ordering is by variance, only by variance." },
 
     { t: "dl", items: [
@@ -86,6 +90,10 @@ EC.receiveLesson({
     { t: "p", text: "The computation, in the terms 2.3 used: centre the *n × p* matrix **X**; the covariance is **XᵀX**/(n−1); its eigenvectors are the components and its eigenvalues the variances along them. scikit-learn does not build the covariance matrix — it takes the SVD **X = UΣVᵀ**, where the columns of **V** are the same components and each eigenvalue is σ²/(n−1). Scores are **XV**; truncation keeps the first *k* columns of **V**." },
 
     { t: "h2", n: "02", text: "Scaling decides the answer", id: "scaling" },
+
+    {"kind": "matrix", "title": "Scaling decides the answer PCA gives", "caption": "PCA maximises variance, and variance has units. Leave income in pounds beside age in years and the first component is almost entirely income — not because it matters more, but because its numbers are larger. Standardising first is what makes the question 'which directions co-vary' rather than 'which column has the biggest units'.", "cols": ["First component", "Why"], "rows": ["Unscaled, mixed units", "Standardised", "After a log transform", "On one-hot columns"], "cells": [[{"text": "the largest-unit column", "tone": "crit"}, "pounds dwarf years"], [{"text": "the real co-variation", "tone": "good"}, "every column contributes equally"], [{"text": "changes again", "tone": "warn"}, "PCA is not scale-invariant"], [{"text": "dominated by rare levels", "tone": "warn"}, "binary variance depends on the rate"]], "t": "diagram", "id": "dg-8_2-02-1"},
+
+
 
     { t: "p", text: "Variance depends on units. A column in pounds has a variance millions of times larger than one in years, so **PCA on unscaled data returns the column with the biggest units as PC1, with everything else as rounding error.** That is not a pattern in the data; it is a choice of units, and the fix is standardising first." },
 

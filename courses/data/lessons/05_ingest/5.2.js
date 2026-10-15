@@ -20,6 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Bytes, text and the mapping between them", id: "encoding" },
 
+    {"kind": "matrix", "title": "The pattern of garbage identifies the mismatch", "caption": "Mojibake is not random: each wrong pairing produces a signature. `café` written as UTF-8 and read as Latin-1 shows `cafÃ©`, because the two bytes of é are each shown as one Latin-1 character. Reading the signature tells you which encoding to pass.", "cols": ["Shows", "Means"], "rows": ["UTF-8 read as Latin-1", "Latin-1 read as UTF-8", "errors='strict'", "errors='replace'", "errors='ignore'"], "cells": [[{"text": "cafÃ©: two chars for one", "tone": "warn"}, "pass encoding='utf-8'"], [{"text": "a decode error", "tone": "warn"}, "pass encoding='latin-1' or cp1252"], [{"text": "raises", "tone": "good"}, "the only setting that tells you"], [{"text": "inserts a replacement char", "tone": "crit"}, "the damage is now permanent"], [{"text": "drops the bytes", "tone": "crit"}, "silent data loss"]], "t": "diagram", "id": "dg-5_2-01-1"},
+
+
+
+
     { t: "p", text: "An encoding is a table from characters to byte sequences. **ASCII covers 128 characters in one byte each and every common encoding agrees on those** — which is why encoding bugs hide until the first accented name, currency symbol or em-dash arrives." },
 
     { t: "dl", items: [
@@ -197,6 +202,13 @@ def fix_mojibake(s, wrong="latin-1", right="utf-8"):
     { t: "h2", n: "02", text: "The byte-order mark", id: "bom" },
 
     {"kind": "matrix", "title": "The byte-order mark, and the bug it causes", "caption": "A UTF-8 BOM is three bytes at the start of a file that mean nothing to the content. Read with plain `utf-8` they become part of the **first column name**, so a lookup on that name fails with a message that looks nothing like the cause.", "cols": ["reading a BOM'd file", "the first column name"], "rows": ["encoding='utf-8'", "encoding='utf-8-sig'", "no encoding given"], "cells": [[{"text": "the BOM is kept", "tone": "crit"}, {"text": "'\\ufeffid' — not 'id'", "tone": "crit"}], [{"text": "the BOM is consumed", "tone": "good"}, {"text": "'id'", "tone": "good"}], ["platform-dependent", {"text": "a portability bug waiting", "tone": "warn"}]], "t": "diagram", "id": "dg-5_2-02-0"},
+
+
+
+
+
+
+
 
 
     { t: "p", text: "**Windows tools — Excel, Notepad, PowerShell — often write UTF-8 with three invisible bytes at the front.** They are not displayed by editors, they are not whitespace, and `read_csv` makes them part of the first column's name." },

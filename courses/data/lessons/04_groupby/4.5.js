@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The accessor and what it costs", id: "accessor" },
 
+    {"kind": "matrix", "title": "What the .str accessor costs, and the argument that raises", "caption": "On `object` dtype every `.str` method is a Python loop, one call per element. Arrow-backed strings run the same methods in C. The `na=` row is the one that bites in a filter: `contains` returns `NaN` for a missing input, and a `NaN` inside a boolean mask raises.", "cols": ["Behaviour", "Note"], "rows": ["object dtype", "string[pyarrow]", ".str.contains(na=)", ".str.extract", "named groups"], "cells": [[{"text": "a Python loop per element", "tone": "warn"}, "pointers to str objects"], [{"text": "runs in C", "tone": "good"}, "missing is consistently pd.NA"], [{"text": "NaN by default", "tone": "crit"}, "raises when used as a mask: set na=False"], ["one column per group", "the regex defines the columns"], [{"text": "(?P<name>...)", "tone": "accent"}, "the group name becomes the column name"]], "t": "diagram", "id": "dg-4_5-01-1"},
+
+
+
+
+
     { t: "p", text: "`s.str.upper()` applies `upper` to every element and returns a new Series. **On `object` dtype it does that with a Python loop; on `string[pyarrow]` it does it in compiled Arrow code.** Same source, same result, an order of magnitude apart." },
 
     { t: "dl", items: [
@@ -250,6 +256,13 @@ kv.str.split(": ", n=1, expand=True)         # n=1: split ONCE, at the first
     { t: "h2", n: "03", text: "Normalisation: making equal things equal", id: "normalise" },
 
     {"kind": "steps", "title": "Normalisation: making equal things equal", "caption": "Order matters. Case-folding before stripping leaves trailing spaces in the keys; stripping accents after mapping aliases makes the mapping miss. This sequence is the one that does not need a second pass.", "items": [{"label": "strip, then collapse inner whitespace", "desc": "“ New  York ” and “New York” are now the same string", "tone": "accent", "code": "1"}, {"label": "case-fold", "desc": "casefold(), not lower() — it handles more than ASCII", "tone": "good", "code": "2"}, {"label": "normalise unicode and strip accents", "desc": "NFKD, then drop the combining marks", "tone": "good", "code": "3"}, {"label": "map known aliases last", "desc": "the mapping keys are now in the same normal form as the data", "tone": "violet", "code": "4"}, {"label": "count distinct before and after", "desc": "it must fall; if it did not, the normalisation did nothing", "tone": "warn", "code": "verify"}], "t": "diagram", "id": "dg-4_5-03-0"},
+
+
+
+
+
+
+
 
 
     { t: "p", text: "**A join or groupby matches on exact bytes.** `\"Acme Ltd\"`, `\"ACME LTD\"`, `\"Acme Ltd.\"` and `\"Acme  Ltd\"` are four groups, and the one with a non-breaking space is a fifth that looks identical on screen. Normalisation is the step that makes the data agree with the reader." },

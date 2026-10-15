@@ -1,0 +1,263 @@
+{
+ "5.1": [
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Comma-separated is a convention, not a rule",
+         "caption": "A European export uses semicolons because the decimal separator is a comma; a log export uses tabs or pipes. And a field that contains the delimiter must be quoted — which is where malformed files come from, because the writer that forgot to quote it produced a file with the wrong number of columns on one row.",
+         "cols": ["Delimiter", "Why"],
+         "rows": ["Most exports", "European exports", "Log exports", "A field holds the delimiter", "A field holds a newline"],
+         "cells": [
+          [{"text": "comma", "tone": "good"}, "the default assumption"],
+          [{"text": "semicolon", "tone": "warn"}, "the decimal separator is a comma"],
+          [{"text": "tab or pipe", "tone": "accent"}, "unlikely to appear in the data"],
+          [{"text": "must be quoted", "tone": "warn"}, "unquoted, the row gains a column"],
+          [{"text": "quoted, and still legal", "tone": "crit"}, "line count is not row count"]]}}
+ ],
+
+ "5.2": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "The pattern of garbage identifies the mismatch",
+         "caption": "Mojibake is not random: each wrong pairing produces a signature. `café` written as UTF-8 and read as Latin-1 shows `cafÃ©`, because the two bytes of é are each shown as one Latin-1 character. Reading the signature tells you which encoding to pass.",
+         "cols": ["Shows", "Means"],
+         "rows": ["UTF-8 read as Latin-1", "Latin-1 read as UTF-8", "errors='strict'", "errors='replace'", "errors='ignore'"],
+         "cells": [
+          [{"text": "cafÃ©: two chars for one", "tone": "warn"}, "pass encoding='utf-8'"],
+          [{"text": "a decode error", "tone": "warn"}, "pass encoding='latin-1' or cp1252"],
+          [{"text": "raises", "tone": "good"}, "the only setting that tells you"],
+          [{"text": "inserts a replacement char", "tone": "crit"}, "the damage is now permanent"],
+          [{"text": "drops the bytes", "tone": "crit"}, "silent data loss"]]}}
+ ],
+
+ "5.3": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "A nested object becomes columns; a nested array becomes rows",
+         "caption": "The distinction decides the **grain** of your frame. An object has fixed keys, so it flattens sideways into dotted column names. An array has no fixed length, so it can only unroll downwards — one row per element, with the parent's fields repeated on each, which is a fan-out exactly like a join.",
+         "cols": ["Becomes", "Grain after"],
+         "rows": ["{'user': {...}}", "{'items': [...]}", "json_normalize", "record_path=", "meta=", "A relational split"],
+         "cells": [
+          [{"text": "user.id, user.name", "tone": "good"}, "unchanged: one row per record"],
+          [{"text": "one row per element", "tone": "warn"}, "one row per item: a fan-out"],
+          ["dotted names for objects", "one row per record"],
+          [{"text": "unrolls one array", "tone": "warn"}, "one row per element of it"],
+          ["carries parent fields down", "repeated on every element row"],
+          [{"text": "its own table plus a key", "tone": "accent"}, "two grains, kept apart"]]}},
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Every JSON feed drifts, and most drift is silent",
+         "caption": "`json_normalize` fills a missing key with NaN, which is reasonable. Everything else it handles by handing you an `object` column and no warning — so a field that changed from a string to a number still parses, and only fails three steps later when something does arithmetic on it.",
+         "cols": ["Result", "How you find out"],
+         "rows": ["A field is added", "A field becomes optional", "A string becomes a number", "A scalar becomes an array", "The nesting deepens"],
+         "cells": [
+          [{"text": "a new column", "tone": "good"}, "a column-set assertion"],
+          [{"text": "NaN where absent", "tone": "good"}, "the missing rate moves"],
+          [{"text": "object dtype, no warning", "tone": "crit"}, "a dtype assertion per column"],
+          [{"text": "object dtype, no warning", "tone": "crit"}, "a type check on a sample"],
+          [{"text": "a dict inside a column", "tone": "crit"}, "nothing, until it is used"]]}}
+ ],
+
+ "5.4": [
+  {"after": "02",
+   "d": {"kind": "steps",
+         "title": "How a filter skips most of the file without reading it",
+         "caption": "A Parquet file is divided horizontally into row groups, and each row group records the min and max of every column. The reader compares the filter against those statistics before touching the data — so a query on a date range reads only the row groups whose range overlaps it. Sorting the file by the column you filter on is what makes this effective.",
+         "items": [
+          {"label": "Read the footer", "desc": "the schema and every row group's statistics", "code": "1", "tone": "accent"},
+          {"label": "Compare the filter to min and max", "desc": "per row group, per column, with no data read", "code": "2", "tone": "good"},
+          {"label": "Skip the groups that cannot match", "desc": "a date range may skip 99% of the file", "code": "3", "tone": "good"},
+          {"label": "Read only the needed columns", "desc": "columnar: the other columns are never touched", "code": "4", "tone": "violet"},
+          {"label": "Unsorted data defeats it", "desc": "every group's range covers everything, so none can be skipped", "code": "note", "tone": "crit"}]}}
+ ],
+
+ "5.5": [
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "The row count a join produces",
+         "caption": "The same arithmetic as a pandas merge, and the same incident: a key that appears twice on the left and three times on the right contributes six rows, and the revenue total is then triple what it should be. Predict the count before you run the query.",
+         "cols": ["Rows out", "When it surprises"],
+         "rows": ["INNER on a unique key", "LEFT from the parent", "Two children of one parent", "CROSS JOIN", "A NULL in the key"],
+         "cells": [
+          [{"text": "one per match", "tone": "good"}, "orphans disappear quietly"],
+          [{"text": "+1 per childless parent", "tone": "good"}, "COUNT(*) counts the padding"],
+          [{"text": "n1 x n2 per parent", "tone": "crit"}, "the fan-out that triples revenue"],
+          [{"text": "n x m", "tone": "crit"}, "a forgotten join condition"],
+          [{"text": "that row drops", "tone": "warn"}, "NULL never equals NULL"]]}}
+ ],
+
+ "5.6": [
+  {"after": "01",
+   "d": {"kind": "compare",
+         "title": "GROUP BY collapses; OVER does not",
+         "caption": "They compute the same statistic. `OVER` leaves every row in place with its group's value attached, which is why it is the SQL equivalent of `groupby().transform()` — and the tool for every 'compared to its group' feature.",
+         "columns": [
+          {"title": "GROUP BY customer_id", "tone": "accent",
+           "items": ["One row per customer", "The detail rows are gone", "pandas: groupby().agg()", "To compare a row with it, join back"]},
+          {"title": "OVER (PARTITION BY customer_id)", "tone": "good",
+           "items": ["Every row kept", "The group value attached to each", "pandas: groupby().transform()", "The comparison is one more column"]}]}}
+ ],
+
+ "5.7": [
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Results that do not fit in memory",
+         "caption": "The default `read_sql` builds the whole result as one frame, which is fine until the day the query returns ten million rows and the process dies. Each of these moves the boundary somewhere else; the last one moves the work instead of the rows.",
+         "cols": ["Does", "Costs"],
+         "rows": ["read_sql(...)", "chunksize=", "A server-side cursor", "LIMIT / OFFSET paging", "Aggregate in SQL"],
+         "cells": [
+          [{"text": "one frame, all rows", "tone": "warn"}, "memory proportional to the result"],
+          [{"text": "an iterator of frames", "tone": "good"}, "you must handle the pieces"],
+          [{"text": "streams from the server", "tone": "good"}, "the connection stays open"],
+          [{"text": "a page at a time", "tone": "crit"}, "OFFSET rescans; rows can shift"],
+          [{"text": "returns the few rows you need", "tone": "accent"}, "nothing: the right answer first"]]}}
+ ],
+
+ "6.1": [
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "The checks a broken export fails and a descriptive summary passes",
+         "caption": "Everything before this step **describes** the data. These test it. Each one is a fact that must be true if the export is intact, and a truncated or double-loaded file passes every histogram while failing these.",
+         "cols": ["Catches", "Written as"],
+         "rows": ["Row count against source", "Primary key uniqueness", "A total that reconciles", "Date range plausible", "Column set unchanged", "No all-null column"],
+         "cells": [
+          [{"text": "truncation, double load", "tone": "crit"}, "an assertion on len(df)"],
+          [{"text": "a join that will multiply", "tone": "crit"}, "duplicated(subset=key).sum() == 0"],
+          [{"text": "a filter applied upstream", "tone": "crit"}, "sum against a known figure"],
+          [{"text": "a parse that read 2025 as 1925", "tone": "warn"}, "min and max against bounds"],
+          [{"text": "schema drift", "tone": "warn"}, "set(df.columns) == expected"],
+          [{"text": "a rename that broke a mapping", "tone": "warn"}, "isna().all() on each column"]]}}
+ ],
+
+ "6.2": [
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Correlation is undefined for two categorical columns",
+         "caption": "There is no order to correlate. The tools are a contingency table, a chi-square test for whether the association is real, Cramér's V for how strong it is on a 0–1 scale, and mutual information for the general case that handles every combination of types.",
+         "cols": ["Answers", "Scale"],
+         "rows": ["Contingency table", "Chi-square test", "Cramér's V", "Mutual information", "Pearson on codes"],
+         "cells": [
+          ["what the joint counts are", "counts"],
+          [{"text": "is the association real", "tone": "accent"}, "a p-value, not a strength"],
+          [{"text": "how strong is it", "tone": "good"}, "0 to 1, comparable across pairs"],
+          [{"text": "how much one tells you", "tone": "good"}, "bits; works for any types"],
+          [{"text": "nothing meaningful", "tone": "crit"}, "the codes' order is arbitrary"]]}}
+ ],
+
+ "6.3": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Six dimensions, and the one that cannot be tested from the data",
+         "caption": "Five of these are assertions you can write against the frame in front of you. Accuracy is not: asking whether a value matches reality needs something outside the dataset — a reconciliation total, a sampled audit, a second source. A pipeline that checks only the first five can be green on data that is entirely wrong.",
+         "cols": ["Asks", "Testable from the data"],
+         "rows": ["Completeness", "Validity", "Consistency", "Uniqueness", "Timeliness", "Accuracy"],
+         "cells": [
+          ["is every expected value present", {"text": "yes", "tone": "good"}],
+          ["does it match type and domain", {"text": "yes", "tone": "good"}],
+          ["do the values agree with each other", {"text": "yes", "tone": "good"}],
+          ["is each entity represented once", {"text": "yes", "tone": "good"}],
+          ["is it recent, and did it arrive", {"text": "yes", "tone": "good"}],
+          ["does it match reality", {"text": "no: needs an outside source", "tone": "crit"}]]}},
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Which failures should stop the pipeline",
+         "caption": "A duplicated primary key will corrupt every join downstream. A 0.3% rate of malformed emails will not. The gate needs both kinds of check, and which is which is a business decision — recorded in code, so it can be argued with.",
+         "cols": ["Gate", "Because"],
+         "rows": ["Duplicate primary key", "Row count halved", "Required field null", "0.3% bad emails", "Missing rate drifting", "A new category appears"],
+         "cells": [
+          [{"text": "block", "tone": "crit"}, "every downstream join multiplies"],
+          [{"text": "block", "tone": "crit"}, "a silent upstream filter"],
+          [{"text": "block", "tone": "crit"}, "the contract said never null"],
+          [{"text": "log and trend", "tone": "good"}, "it harms nothing downstream"],
+          [{"text": "log and trend", "tone": "good"}, "the trend is the signal, not the value"],
+          [{"text": "log, and alert", "tone": "warn"}, "an encoder will meet it unseen"]]}}
+ ],
+
+ "6.4": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Three kinds of duplicate, and only the first is cheap",
+         "caption": "They need different tools because they are different problems. The third cannot be found in the data at all: a maiden name and a married name are the same person and nothing about the two rows says so without a domain rule or a second identifier.",
+         "cols": ["Found by", "Example"],
+         "rows": ["Exact duplicate", "Fuzzy duplicate", "Semantic duplicate"],
+         "cells": [
+          [{"text": "duplicated()", "tone": "good"}, "a retry, a double load, a join"],
+          [{"text": "normalise, then similarity", "tone": "warn"}, "a typo, a transposed digit"],
+          [{"text": "a domain rule or second id", "tone": "crit"}, "a maiden name, an old address"]]}},
+  {"after": "02",
+   "d": {"kind": "steps",
+         "title": "Why blocking is what makes matching possible",
+         "caption": "Comparing every pair is n²: a hundred thousand records is five billion comparisons. Blocking only compares pairs that share a cheap key, which removes almost all of them — at the cost of missing a true pair whose block key differs, which is why the key is chosen to be the field least likely to be wrong.",
+         "items": [
+          {"label": "Normalise first", "desc": "case, whitespace, accents, punctuation", "code": "1", "tone": "accent"},
+          {"label": "Block on a cheap key", "desc": "same postcode, same first three letters", "code": "2", "tone": "good"},
+          {"label": "Compare within blocks only", "desc": "far below n squared", "code": "3", "tone": "good"},
+          {"label": "Score each pair", "desc": "edit distance, or a weighted field comparison", "code": "4", "tone": "violet"},
+          {"label": "Threshold, then cluster", "desc": "the threshold is a choice and can be wrong", "code": "5", "tone": "warn"},
+          {"label": "Survivorship", "desc": "which record, and which field from which record, survives", "code": "6", "tone": "teal"}]}}
+ ],
+
+ "6.5": [
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "What to do, by mechanism",
+         "caption": "The mechanism decides whether a fill is honest. Under MCAR the observed rows are a fair sample, so dropping them loses power but not correctness. Under MNAR the missingness itself carries the information — and an imputed value hides exactly the thing you needed to model.",
+         "cols": ["Safe to", "Because"],
+         "rows": ["MCAR", "MAR", "MNAR"],
+         "cells": [
+          [{"text": "drop, or impute simply", "tone": "good"}, "the observed rows are a fair sample"],
+          [{"text": "impute using the predictors", "tone": "accent"}, "the gap is explained by other columns"],
+          [{"text": "model the missingness itself", "tone": "crit"}, "the absence is the information"]]}}
+ ],
+
+ "6.6": [
+  {"after": "03",
+   "d": {"kind": "compare",
+         "title": "The indicator keeps the gap visible",
+         "caption": "Any fill makes a value up. Adding a boolean column that records *where* the fill happened costs one column and lets the model use the fact of absence as a feature — which, under MNAR, is often the strongest signal in the dataset.",
+         "columns": [
+          {"title": "Fill only", "tone": "warn",
+           "items": ["The column looks complete", "The model cannot tell filled from real", "Variance is understated", "MNAR information is destroyed"]},
+          {"title": "Fill, plus an indicator", "tone": "good",
+           "items": ["One extra boolean column", "The model can learn from absence", "The fill's effect is separable", "The commonest fix, and the cheapest"]}]}}
+ ],
+
+ "6.7": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Why the z-score hides the outlier it is looking for",
+         "caption": "Both μ and σ are computed from data that includes the outlier. A large value inflates σ and pulls μ towards itself, so its own z-score comes out smaller than it should — and two large outliers can hide each other completely. The quartile-based rules have no such problem because quartiles do not move.",
+         "cols": ["Breakdown point", "Masking"],
+         "rows": ["z-score", "IQR rule", "Robust z (MAD)", "The mean", "The median"],
+         "cells": [
+          [{"text": "0", "tone": "crit"}, "yes: it inflates its own σ"],
+          [{"text": "25%", "tone": "good"}, "no: quartiles do not move"],
+          [{"text": "50%", "tone": "good"}, "no: median and MAD are robust"],
+          [{"text": "0", "tone": "crit"}, "one value moves it anywhere"],
+          [{"text": "50%", "tone": "good"}, "half the data may be corrupt"]]}},
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Normal on every column, impossible as a combination",
+         "caption": "Height 180 cm is normal. Weight 45 kg is normal. Together they describe someone who does not exist. No univariate rule sees it, because each column was checked on its own — which is the whole argument for a multivariate check.",
+         "cols": ["Sees it", "Needs"],
+         "rows": ["Per-column z-score", "Per-column IQR", "Mahalanobis distance", "Isolation Forest", "A domain rule (BMI)"],
+         "cells": [
+          [{"text": "no", "tone": "crit"}, "each column is normal"],
+          [{"text": "no", "tone": "crit"}, "each column is normal"],
+          [{"text": "yes", "tone": "good"}, "the covariance; assumes elliptical"],
+          [{"text": "yes", "tone": "good"}, "no distribution assumption"],
+          [{"text": "yes, best", "tone": "accent"}, "someone who knows the domain"]]}}
+ ],
+
+ "6.8": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Unusual is not wrong",
+         "caption": "The treatment follows from which of these a row is, and that question cannot be answered by a rule on the value. An influential point is a fourth, orthogonal thing: a row can be extreme without changing the fit, or moderate and highly influential.",
+         "cols": ["Do", "Because"],
+         "rows": ["Error outlier", "Genuine outlier", "Influential point"],
+         "cells": [
+          [{"text": "remove or correct", "tone": "crit"}, "keeping it teaches something false"],
+          [{"text": "keep", "tone": "good"}, "removing it teaches a tamer world"],
+          [{"text": "measure it, then decide", "tone": "warn"}, "Cook's distance, not the value"]]}}
+ ]
+}

@@ -20,6 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three kinds of the same thing", id: "kinds" },
 
+    {"kind": "matrix", "title": "Three kinds of duplicate, and only the first is cheap", "caption": "They need different tools because they are different problems. The third cannot be found in the data at all: a maiden name and a married name are the same person and nothing about the two rows says so without a domain rule or a second identifier.", "cols": ["Found by", "Example"], "rows": ["Exact duplicate", "Fuzzy duplicate", "Semantic duplicate"], "cells": [[{"text": "duplicated()", "tone": "good"}, "a retry, a double load, a join"], [{"text": "normalise, then similarity", "tone": "warn"}, "a typo, a transposed digit"], [{"text": "a domain rule or second id", "tone": "crit"}, "a maiden name, an old address"]], "t": "diagram", "id": "dg-6_4-01-0"},
+
+
+
+
     { t: "p", text: "A duplicate is two records that refer to one real-world entity. **The question is how they differ, because that decides how you find them** — and \"not at all\" is the rare case." },
 
     { t: "dl", items: [
@@ -152,6 +157,11 @@ row_hash.duplicated(keep=False).sum()
     },
 
     { t: "h2", n: "02", text: "Fuzzy matching", id: "fuzzy" },
+
+    {"kind": "steps", "title": "Why blocking is what makes matching possible", "caption": "Comparing every pair is n²: a hundred thousand records is five billion comparisons. Blocking only compares pairs that share a cheap key, which removes almost all of them — at the cost of missing a true pair whose block key differs, which is why the key is chosen to be the field least likely to be wrong.", "items": [{"label": "Normalise first", "desc": "case, whitespace, accents, punctuation", "code": "1", "tone": "accent"}, {"label": "Block on a cheap key", "desc": "same postcode, same first three letters", "code": "2", "tone": "good"}, {"label": "Compare within blocks only", "desc": "far below n squared", "code": "3", "tone": "good"}, {"label": "Score each pair", "desc": "edit distance, or a weighted field comparison", "code": "4", "tone": "violet"}, {"label": "Threshold, then cluster", "desc": "the threshold is a choice and can be wrong", "code": "5", "tone": "warn"}, {"label": "Survivorship", "desc": "which record, and which field from which record, survives", "code": "6", "tone": "teal"}], "t": "diagram", "id": "dg-6_4-02-1"},
+
+
+
 
     { t: "p", text: "**After normalisation, the remaining differences are abbreviations, typos and transpositions.** A similarity measure turns \"how different are these two strings\" into a number, and a threshold turns the number into a decision. The measure and the threshold are both choices, and both can be wrong." },
 

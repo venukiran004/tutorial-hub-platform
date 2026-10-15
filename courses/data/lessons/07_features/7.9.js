@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Relationships between columns", id: "relationships" },
 
+    {"kind": "matrix", "title": "Four shapes of derived feature", "caption": "A ratio is frequently the quantity the domain already reasons in — debt to income, clicks per impression — and it normalises for scale at the same time. Polynomial expansion is the mechanical version of all of this: complete, and combinatorially large.", "cols": ["Is", "Signal"], "rows": ["Interaction", "Ratio", "Difference", "Polynomial features", "Group aggregate"], "cells": [["a product, or one given the other", "two variables acting together"], [{"text": "one per unit of another", "tone": "good"}, "what the domain reasons in"], [{"text": "a gap between two levels", "tone": "good"}, "often the gap, not either level"], [{"text": "every product up to a degree", "tone": "warn"}, "complete, and explodes in width"], [{"text": "a statistic over the key's rows", "tone": "warn"}, "powerful, and leaks if unwindowed"]], "t": "diagram", "id": "dg-7_9-01-0"},
+
+
+
     { t: "p", text: "A linear model sees each feature on its own. **If the outcome depends on two features together — high income *and* young, large order *for this customer* — the model needs a column that expresses the combination**, because a sum of separate effects cannot. Trees find some of these on their own; ratios, they mostly do not." },
 
     { t: "dl", items: [
@@ -278,6 +282,10 @@ orders["cust_vs_region"] = orders["cust_mean_amount"] / region_mean
     },
 
     { t: "h2", n: "03", text: "Time-windowed aggregations", id: "windows" },
+
+    {"kind": "timeline", "title": "The group aggregate that uses orders from the future", "caption": "For a row dated March, the mean over 'this customer's orders' includes June's. The windowed version — the mean over the 90 days **before** this order — is what a production system could actually compute, and it is a rolling window with a shift.", "span": 12, "tick": 3, "lanes": [{"label": "The row", "bars": [[5, 6, "March", "accent"]]}, {"label": "All-history mean", "bars": [[0, 12, "includes June: not knowable in March", "crit"]]}, {"label": "90-day window", "bars": [[2, 5, "the 90 days before it", "good"]]}, {"label": "Production sees", "bars": [[0, 5, "everything up to the row's own date", "good"]]}], "t": "diagram", "id": "dg-7_9-03-1"},
+
+
 
     { t: "p", text: "**A group aggregate over all of a customer's history uses orders that had not happened yet.** For a row dated March, the mean over the customer's orders includes June's. The windowed version — the mean over the 90 days *before* this order — is what a production system could actually compute, and it is a rolling window (4.3) with a shift." },
 

@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three ways to select, and what each means", id: "three" },
 
+    {"kind": "matrix", "title": "Three selectors, and what each one takes", "caption": "`.loc` and `.iloc` each do one thing. `[]` reads best and behaves least predictably, because what it returns depends on what you put inside it. The slice row is the one that bites: `.loc[2:5]` includes 5 and `.iloc[2:5]` does not.", "cols": ["Indexes by", "A slice"], "rows": [".loc[rows, cols]", ".iloc[rows, cols]", "df['col']", "df[2:5]", "df[mask]", "df[['a','b']]"], "cells": [[{"text": "labels", "tone": "good"}, {"text": "includes the endpoint", "tone": "warn"}], [{"text": "positions", "tone": "good"}, {"text": "excludes it, like Python", "tone": "good"}], [{"text": "selects a column", "tone": "accent"}, "a string means columns"], [{"text": "selects rows", "tone": "accent"}, "a slice means rows"], [{"text": "selects rows", "tone": "accent"}, "a mask means rows"], [{"text": "selects columns", "tone": "accent"}, "a list means columns"]], "t": "diagram", "id": "dg-3_2-01-0"},
+
+
+
+
+
     { t: "p", text: "pandas offers `[]`, `.loc` and `.iloc`, and they do overlapping but different things. **`[]` is context-dependent, which is why it reads well and behaves inconsistently.**" },
 
     { t: "dl", items: [
@@ -103,6 +109,12 @@ df.iat[1, 0]                  # 20
     },
 
     { t: "h2", n: "02", text: "Chained indexing and the warning", id: "chained" },
+
+    {"kind": "steps", "title": "Why chained indexing is a coin flip", "caption": "`df[\"col\"][3] = 0` is two separate operations, and whether the first returns a view or a copy depends on the frame's internal block layout — which you neither control nor can see. The warning is pandas telling you it cannot promise what your assignment did.", "items": [{"label": "df[mask]", "desc": "the first [] runs and returns something", "code": "1", "tone": "accent"}, {"label": "a view, or a copy", "desc": "decided by the internal block layout", "code": "?", "tone": "crit"}, {"label": "['col'] = 0", "desc": "the second [] writes into whatever it got", "code": "2", "tone": "warn"}, {"label": "The original changed, or it did not", "desc": "SettingWithCopyWarning: pandas cannot promise", "code": "coin", "tone": "crit"}, {"label": "df.loc[mask, 'col'] = 0", "desc": "one operation; writes to the original, always", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-3_2-02-1"},
+
+
+
+
 
     { t: "p", text: "**Chained indexing means two separate `[]` operations, and the first one may return a view or a copy** — pandas decides based on the frame's internal block layout, which you neither control nor can see. Writing through the second one is therefore a coin flip." },
 

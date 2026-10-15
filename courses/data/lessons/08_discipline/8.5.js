@@ -23,6 +23,13 @@ EC.receiveLesson({
     {"kind": "steps", "title": "The contract a pipeline enforces", "caption": "The value is not tidiness — it is that `fit` can only ever see training data. Every statistic a transformer learns is learned inside the fold, which is the mechanical prevention of the leak that hand-written preprocessing invites.", "items": [{"label": "fit learns from the training fold only", "desc": "the mean, the categories, the vocabulary — all from inside", "tone": "accent", "code": "fit"}, {"label": "transform applies what was learned", "desc": "to any data, including the fold it never saw", "tone": "good", "code": "transform"}, {"label": "cross-validation refits per fold", "desc": "so the statistics are recomputed, which is the point", "tone": "good", "code": "cv"}, {"label": "and a stateless-looking step is the trap", "desc": "anything that touches the target, or the whole column, is stateful", "tone": "crit", "code": "watch"}], "t": "diagram", "id": "dg-8_5-01-0"},
 
 
+
+
+
+
+
+
+
     { t: "p", text: "A transformer has two methods with different rights. **`fit` may look at the rows it is given and remember things**: a median, a mean and standard deviation, a category list, a set of quantiles, a vocabulary. **`transform` may only apply what was remembered.** A `Pipeline` calls `fit_transform` on each step in turn during `fit`, and `transform` on each step during `predict` — so as long as every step honours the contract, the validation fold, the test set and tomorrow's request are all processed with statistics learnt from training rows alone." },
 
     { t: "dl", items: [
@@ -202,6 +209,8 @@ print(bad_scale.transform(te.iloc[:10]).to_numpy()[:1].round(2))   # [[ 0.9  -0.
     ]},
 
     { t: "h2", n: "04", text: "What a pipeline cannot do, and where that work goes", id: "limits" },
+
+    {"kind": "matrix", "title": "Three things a pipeline cannot do", "caption": "A pipeline is a chain of **row-preserving** transforms followed by a model: `transform` must return as many rows as it received. Everything that changes the row count, or that needs other rows, lives outside it — and knowing where that work goes is what keeps it from drifting between training and serving.", "cols": ["Why not", "Where it goes"], "rows": ["Drop rows", "Deduplicate", "Remove outliers", "Point-in-time features", "Resample classes"], "cells": [[{"text": "transform must preserve rows", "tone": "crit"}, "upstream, before the split"], [{"text": "it changes the row count", "tone": "crit"}, "upstream, before the split"], [{"text": "it changes the row count", "tone": "crit"}, "upstream, before the split"], [{"text": "it needs other rows", "tone": "warn"}, "the feature builder, per row"], [{"text": "sklearn's Pipeline refuses", "tone": "warn"}, "imblearn's, during fit only"]], "t": "diagram", "id": "dg-8_5-04-1"},
 
     { t: "p", text: "A pipeline is a chain of row-preserving transforms followed by a model. Three things fall outside it. **It cannot drop rows** — `transform` must return as many rows as it received — so deduplication, censoring of unclosed labels and outlier removal are upstream, before the split. **It cannot build point-in-time features** from other rows — the as-of aggregates of 7.8 and 8.3 are computed by the feature builder, per row, from that row's past, and the truncation test guards them. **It cannot resample** with scikit-learn's `Pipeline`, because resampling changes the row count; 8.6 uses `imblearn`'s pipeline, which allows it during `fit` only." },
 

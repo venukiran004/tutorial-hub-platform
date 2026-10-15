@@ -23,6 +23,13 @@ EC.receiveLesson({
     {"kind": "steps", "title": "The sequence for meeting a dataset", "caption": "In this order, because each step changes what the next one means. Looking at distributions before checking the row count means interpreting a histogram of a truncated export — which has happened to everyone once.", "items": [{"label": "shape, dtypes and memory", "desc": "is this the whole export, and did anything come in as object?", "tone": "accent", "code": "1"}, {"label": "missingness, per column and jointly", "desc": "and whether two columns are missing together, which is a clue", "tone": "good", "code": "2"}, {"label": "cardinality", "desc": "a key that is not unique, or a category with one value, both matter", "tone": "good", "code": "3"}, {"label": "distributions and ranges", "desc": "now the histogram means something; look for impossible values", "tone": "warn", "code": "4"}, {"label": "relationships and duplicates", "desc": "correlations, and whether the grain is what you were told", "tone": "violet", "code": "5"}], "t": "diagram", "id": "dg-6_1-01-0"},
 
 
+
+
+
+
+
+
+
     { t: "p", text: "Profiling is not exploration. **It is a checklist, run in the same order every time, that turns \"I have a file\" into \"I know what each column is, how much of it is missing, and what is wrong with it.\"** Exploration comes after, and it is much faster once the checklist is done." },
 
     { t: "dl", items: [
@@ -311,6 +318,11 @@ for c in card[card["role"] == "datetime"].index:
     },
 
     { t: "h2", n: "03", text: "The checks that catch a broken export", id: "sanity" },
+
+    {"kind": "matrix", "title": "The checks a broken export fails and a descriptive summary passes", "caption": "Everything before this step **describes** the data. These test it. Each one is a fact that must be true if the export is intact, and a truncated or double-loaded file passes every histogram while failing these.", "cols": ["Catches", "Written as"], "rows": ["Row count against source", "Primary key uniqueness", "A total that reconciles", "Date range plausible", "Column set unchanged", "No all-null column"], "cells": [[{"text": "truncation, double load", "tone": "crit"}, "an assertion on len(df)"], [{"text": "a join that will multiply", "tone": "crit"}, "duplicated(subset=key).sum() == 0"], [{"text": "a filter applied upstream", "tone": "crit"}, "sum against a known figure"], [{"text": "a parse that read 2025 as 1925", "tone": "warn"}, "min and max against bounds"], [{"text": "schema drift", "tone": "warn"}, "set(df.columns) == expected"], [{"text": "a rename that broke a mapping", "tone": "warn"}, "isna().all() on each column"]], "t": "diagram", "id": "dg-6_1-03-1"},
+
+
+
 
     { t: "p", text: "**Everything above describes the data. This step tests it.** Every dataset has facts that must be true if the export is intact — and a broken export passes every descriptive check while failing these." },
 

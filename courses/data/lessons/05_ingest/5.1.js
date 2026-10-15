@@ -23,6 +23,13 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "What the parser decides without asking", "caption": "Every one of these defaults will eventually be wrong for your file. Passing `dtype=` and `keep_default_na=False` turns a class of silent corruption into an explicit decision — the string “NA” as a country code is the classic case.", "cols": ["the default", "when it bites"], "rows": ["dtype", "NA values", "the index", "dates", "thousands separator"], "cells": [[{"text": "inferred per column", "tone": "warn"}, {"text": "an id becomes float", "tone": "crit"}], [{"text": "a long built-in list", "tone": "warn"}, {"text": "“NA” as a real value becomes NaN", "tone": "crit"}], ["a fresh RangeIndex", "a saved index reappears as Unnamed: 0"], [{"text": "left as strings", "tone": "good"}, "you must ask for parse_dates"], [{"text": "none", "tone": "warn"}, "“1,234” stays a string"]], "t": "diagram", "id": "dg-5_1-01-0"},
 
 
+
+
+
+
+
+
+
     { t: "p", text: "`read_csv` reads every field as a string and then, for each column, tries integer, then float, then leaves it as object. **That inference happens per column, per file, on whatever values the file happens to contain** — so the same column can arrive as `int64` on Monday and `float64` on Tuesday because one row was blank." },
 
     { t: "dl", items: [
@@ -166,6 +173,11 @@ pd.read_csv(raw2, na_values=["-999", "."])["v"].tolist()
     ]},
 
     { t: "h2", n: "02", text: "Delimiters, quoting and the rows that break", id: "delimiters" },
+
+    {"kind": "matrix", "title": "Comma-separated is a convention, not a rule", "caption": "A European export uses semicolons because the decimal separator is a comma; a log export uses tabs or pipes. And a field that contains the delimiter must be quoted — which is where malformed files come from, because the writer that forgot to quote it produced a file with the wrong number of columns on one row.", "cols": ["Delimiter", "Why"], "rows": ["Most exports", "European exports", "Log exports", "A field holds the delimiter", "A field holds a newline"], "cells": [[{"text": "comma", "tone": "good"}, "the default assumption"], [{"text": "semicolon", "tone": "warn"}, "the decimal separator is a comma"], [{"text": "tab or pipe", "tone": "accent"}, "unlikely to appear in the data"], [{"text": "must be quoted", "tone": "warn"}, "unquoted, the row gains a column"], [{"text": "quoted, and still legal", "tone": "crit"}, "line count is not row count"]], "t": "diagram", "id": "dg-5_1-02-1"},
+
+
+
 
     { t: "p", text: "**\"Comma-separated\" is a convention, not a rule.** European exports use semicolons because the decimal is a comma; log exports use tabs or pipes; and a field containing the delimiter has to be quoted, which is where malformed files come from." },
 

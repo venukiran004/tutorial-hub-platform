@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Measuring what a frame actually costs", id: "measure" },
 
+    {"kind": "matrix", "title": "memory_usage lies by default", "caption": "An `object` column stores 8-byte pointers, and the default report counts only those — ignoring the 50+ byte string each one leads to. On a text-heavy frame the real figure is routinely ten times what the default prints, which is why `deep=True` is the only number worth quoting.", "cols": ["Counts", "On a text column"], "rows": ["memory_usage()", "memory_usage(deep=True)", "object dtype", "category", "string[pyarrow]"], "cells": [[{"text": "8 bytes per row", "tone": "crit"}, "the pointer only"], [{"text": "the objects too", "tone": "good"}, "often 10x the default figure"], ["a pointer per row", "plus a heap object per value"], [{"text": "codes plus one copy each", "tone": "good"}, "falls with distinct values, not rows"], [{"text": "contiguous bytes", "tone": "good"}, "no per-value Python object"]], "t": "diagram", "id": "dg-3_3-01-1"},
+
+
+
+
+
     { t: "p", text: "**`df.memory_usage()` lies by default about object columns** — it reports 8 bytes per row for the pointer and ignores the strings those pointers lead to. On a text-heavy frame the real figure is routinely ten times larger." },
 
     { t: "dl", items: [
@@ -260,6 +266,13 @@ df.convert_dtypes(dtype_backend="pyarrow")            # Arrow-backed
     { t: "h2", n: "03", text: "Categoricals beyond memory", id: "beyond" },
 
     {"kind": "matrix", "title": "What a categorical buys beyond memory", "caption": "The memory saving is the advertised benefit and the smaller one. The real wins are that a groupby can use the codes directly, that an order can be declared and then sorted on, and that an unexpected value **raises** instead of being silently accepted.", "cols": ["object dtype", "category"], "rows": ["memory, 1M rows / 5 values", "groupby", "sorting", "an unseen value"], "cells": [[{"text": "~60 MB", "tone": "crit"}, {"text": "~1 MB", "tone": "good"}], ["hashes every string", {"text": "groups on integer codes", "tone": "good"}], ["alphabetical only", {"text": "a declared order, so low < mid < high", "tone": "good"}], [{"text": "silently accepted", "tone": "crit"}, {"text": "becomes NaN — visible", "tone": "good"}]], "t": "diagram", "id": "dg-3_3-03-0"},
+
+
+
+
+
+
+
 
 
 

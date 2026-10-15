@@ -20,6 +20,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The axis that disappears", id: "axis" },
 
+    {"kind": "matrix", "title": "axis is the dimension that disappears", "caption": "Reducing a `(3, 4)` array along axis 0 gives `(4,)`: the axis named is the one removed. `keepdims=True` leaves it behind as length 1 so the result still broadcasts against the source — which is what makes row normalisation a one-liner instead of a reshape.", "cols": ["Shape out", "Reads as"], "rows": ["sum(axis=0)", "sum(axis=1)", "sum(axis=None)", "sum(axis=0, keepdims)", "argmax(axis=1)"], "cells": [[{"text": "(4,)", "tone": "accent"}, "one total per column"], [{"text": "(3,)", "tone": "accent"}, "one total per row"], [{"text": "scalar", "tone": "good"}, "every axis collapsed: the default"], [{"text": "(1, 4)", "tone": "teal"}, "still broadcasts against (3, 4)"], [{"text": "(3,)", "tone": "violet"}, "the index, not the value"]], "t": "diagram", "id": "dg-1_4-01-1"},
+
+
+
+
+
+
+
     { t: "p", text: "People memorise \"axis=0 is down the columns\" and then get lost the first time they meet a 3-D array. **The rule that generalises is simpler: `axis=n` collapses dimension `n`, and the result has that dimension removed.**" },
 
     { t: "dl", items: [
@@ -232,6 +240,13 @@ softmax(np.array([[1.0, 2.0, 3.0]]))             # sums to 1 per row
     { t: "h2", n: "03", text: "Reductions and missing data", id: "nan" },
 
     {"kind": "matrix", "title": "Reductions and missing data", "caption": "A single NaN propagates through an ordinary reduction and makes the whole result NaN, which is correct and almost never what you want. The `nan*` family skips them — and then the divisor changes, which is the part that silently alters a mean.", "cols": ["with a NaN present", "what the divisor becomes"], "rows": ["np.sum", "np.nansum", "np.mean", "np.nanmean"], "cells": [[{"text": "NaN", "tone": "crit"}, "—"], [{"text": "skips it", "tone": "good"}, "n/a — a sum has none"], [{"text": "NaN", "tone": "crit"}, "n, if it worked"], [{"text": "skips it", "tone": "good"}, {"text": "the COUNT of non-NaN — not n", "tone": "warn"}]], "t": "diagram", "id": "dg-1_4-03-0"},
+
+
+
+
+
+
+
 
 
 

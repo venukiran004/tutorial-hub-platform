@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why chain", id: "why" },
 
+    {"kind": "matrix", "title": "The chain's four verbs", "caption": "Every step returns a new object, so nothing upstream is modified and the chain cannot contain a chained-indexing bug by construction. `assign` with a callable is the piece that makes it work: the function receives the frame **as it is at that point**, so a column added two lines up is available.", "cols": ["Does", "Use it for"], "rows": ["assign", "pipe", "query", "eval", "loc with a callable"], "cells": [[{"text": "a new frame, columns added", "tone": "good"}, "any derived column"], [{"text": "calls f(df) and returns it", "tone": "accent"}, "folding in your own functions"], [{"text": "filters from a string", "tone": "good"}, "bare column names; @ for variables"], [{"text": "computes from a string", "tone": "warn"}, "arithmetic on big frames; fragile beyond"], [{"text": "filters mid-chain", "tone": "violet"}, "a mask that needs the current frame"]], "t": "diagram", "id": "dg-4_6-01-1"},
+
+
+
+
+
     { t: "p", text: "The alternative to a chain is a sequence of statements, each producing a named intermediate. **Those names are where the bugs hide**: a stale variable reused three steps later, a mutation of one frame that was secretly a view of another, an intermediate that outlives its usefulness and doubles memory." },
 
     { t: "dl", items: [
@@ -155,6 +161,13 @@ raw.assign(a=lambda d: d["amount"] * 2).assign(b=lambda d: d["a"] + 1)
     { t: "h2", n: "02", text: "query and eval", id: "query" },
 
     {"kind": "matrix", "title": "query and eval: what they buy and what they cost", "caption": "Both parse a string, which is why they read well and why a typo becomes a runtime error rather than a syntax one. The speed argument only applies past roughly a hundred thousand rows, and only to `eval`.", "cols": ["buys", "costs"], "rows": ["df.query('a > 1')", "df.eval('c = a + b')", "the boolean-mask form"], "cells": [[{"text": "no repeated df[...] noise", "tone": "good"}, {"text": "a typo fails at run time", "tone": "warn"}], [{"text": "avoids intermediate arrays", "tone": "good"}, "only faster on large frames"], [{"text": "checked by your editor", "tone": "good"}, "verbose on long conditions"]], "t": "diagram", "id": "dg-4_6-02-0"},
+
+
+
+
+
+
+
 
 
     { t: "p", text: "**`query` makes a filter read like a sentence, and `eval` makes an expression run through numexpr.** Both parse a string, which is why they are slower on small frames, faster on huge ones, and unhelpful the moment the logic needs a function call." },

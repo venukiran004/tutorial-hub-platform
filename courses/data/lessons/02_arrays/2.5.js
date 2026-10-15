@@ -25,6 +25,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "p", text: "`np.add` is not just a function — it is an object with methods. **`np.add.reduce` is `sum`, `np.add.accumulate` is `cumsum`, and the same pattern works for every binary ufunc**, including ones with no dedicated function of their own." },
 
     { t: "dl", items: [
@@ -121,6 +128,14 @@ np.logical_and.reduce(masks)          # [True, False, False]
     ]},
 
     { t: "h2", n: "02", text: "out= and where=", id: "out" },
+
+    {"kind": "steps", "title": "Counting temporaries, not lines", "caption": "`(a * b + c) / d` looks like one expression and allocates three full-size arrays. This matters only at the scale where it matters — optimising a 10 MB calculation is wasted effort — but knowing the rule is what lets you recognise the problem when the array is 10 GB.", "items": [{"label": "a * b", "desc": "a full-size temporary", "code": "+1 array", "tone": "warn"}, {"label": "... + c", "desc": "another full-size temporary", "code": "+1 array", "tone": "warn"}, {"label": "... / d", "desc": "and the result", "code": "+1 array", "tone": "crit"}, {"label": "a *= b; a += c; a /= d", "desc": "the same arithmetic, reusing the buffer", "code": "0 arrays", "tone": "good"}, {"label": "np.multiply(a, b, out=a)", "desc": "the explicit form; every ufunc takes out=", "code": "0 arrays", "tone": "good"}], "t": "diagram", "id": "dg-2_5-02-1"},
+
+
+
+
+
+
 
     { t: "p", text: "**Every ufunc accepts `out=` to write into an existing array and `where=` to apply conditionally.** On large data these eliminate the temporaries that make a chained expression allocate three full-size arrays." },
 

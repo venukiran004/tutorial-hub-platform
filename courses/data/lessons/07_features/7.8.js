@@ -144,6 +144,10 @@ f[["month"]].describe().loc[["min", "max"]]                # 1, 12
 
     { t: "h2", n: "02", text: "Elapsed time: the features that carry the most", id: "elapsed" },
 
+    {"kind": "matrix", "title": "A duration usually beats any calendar component", "caption": "Days since signup, hours since last purchase, days until the contract ends — each is continuous, each carries recency, and each must be computed against a reference that **was known at the row's own time**. Measuring 'days since last purchase' against the dataset's maximum date is a leak: that date is in the future for every row but one.", "cols": ["Carries", "Reference must be"], "rows": ["Days since signup", "Hours since last event", "Days until renewal", "Day of week", "Days since max(date)"], "cells": [[{"text": "tenure", "tone": "good"}, "the row's own timestamp"], [{"text": "recency", "tone": "good"}, "the previous event, shifted"], [{"text": "anticipation", "tone": "good"}, "known in advance: safe"], [{"text": "seasonality", "tone": "accent"}, "cyclical: encode it as sin and cos"], [{"text": "the future", "tone": "crit"}, "a leak: max is later than the row"]], "t": "diagram", "id": "dg-7_8-02-1"},
+
+
+
     { t: "p", text: "**How long since — or until — something happened is usually a stronger predictor than any calendar component.** Days since signup, hours since last purchase, days until the contract ends: each is a duration, each is continuous, and each is computed against a reference that must have been known at the row's time." },
 
     { t: "code", lang: "python", title: "durations, recency, and the ones that use the future", code: `
@@ -238,6 +242,13 @@ orders["tenure_at_order"] = (orders["order_ts"] - orders["signup"]).dt.days
     { t: "h2", n: "03", text: "Cyclical encoding", id: "cyclical" },
 
     {"kind": "steps", "title": "Cyclical encoding, and why a raw hour misleads", "caption": "Hour 23 and hour 0 are one unit apart in time and twenty-three apart as integers, so any model using distance sees midnight as the furthest point from 11pm. Two columns fix it.", "items": [{"label": "the problem: 23 and 0 are adjacent", "desc": "but a model reads them as maximally far apart", "tone": "crit", "code": "the bug"}, {"label": "map the hour onto a circle", "desc": "theta = 2*pi*hour/24", "tone": "accent", "code": "1"}, {"label": "emit sin(theta) and cos(theta)", "desc": "two columns, and now the distance between 23 and 0 is small", "tone": "good", "code": "2"}, {"label": "the same shape for day, month, weekday", "desc": "use the right period: 7, 12, 365 — not always 24", "tone": "violet", "code": "3"}], "t": "diagram", "id": "dg-7_8-03-0"},
+
+
+
+
+
+
+
 
 
     { t: "p", text: "**Hour 23 and hour 0 are one hour apart. Their integer encodings are 23 apart.** Any model that uses distance or fits a slope reads the integer, and it reads it wrongly at the wrap. Mapping the value onto a circle — one coordinate for sine, one for cosine — puts every adjacent pair the same distance apart, including the pair that crosses midnight." },

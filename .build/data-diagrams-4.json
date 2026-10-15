@@ -1,0 +1,224 @@
+{
+ "3.1": [
+  {"after": "01",
+   "d": {"kind": "tree",
+         "title": "A frame is columns that share one row index",
+         "caption": "The index holds **labels**, not positions — and the default `RangeIndex` of `0..n-1` looks exactly like positions, which is where most of the confusion comes from. Each column is a Series with its own dtype; the values inside one column are not.",
+         "root": {"label": "DataFrame", "sub": "a 2-D labelled table", "tone": "violet",
+          "children": [
+           {"label": "Index", "sub": "the row labels: not unique, not sorted, not positions", "tone": "accent"},
+           {"label": "Series: amount", "sub": "float64", "tone": "good"},
+           {"label": "Series: region", "sub": "category, sharing the same index", "tone": "good"},
+           {"label": "Series: signed_up", "sub": "datetime64[ns]", "tone": "teal"}]}}}
+ ],
+
+ "3.2": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Three selectors, and what each one takes",
+         "caption": "`.loc` and `.iloc` each do one thing. `[]` reads best and behaves least predictably, because what it returns depends on what you put inside it. The slice row is the one that bites: `.loc[2:5]` includes 5 and `.iloc[2:5]` does not.",
+         "cols": ["Indexes by", "A slice"],
+         "rows": [".loc[rows, cols]", ".iloc[rows, cols]", "df['col']", "df[2:5]", "df[mask]", "df[['a','b']]"],
+         "cells": [
+          [{"text": "labels", "tone": "good"}, {"text": "includes the endpoint", "tone": "warn"}],
+          [{"text": "positions", "tone": "good"}, {"text": "excludes it, like Python", "tone": "good"}],
+          [{"text": "selects a column", "tone": "accent"}, "a string means columns"],
+          [{"text": "selects rows", "tone": "accent"}, "a slice means rows"],
+          [{"text": "selects rows", "tone": "accent"}, "a mask means rows"],
+          [{"text": "selects columns", "tone": "accent"}, "a list means columns"]]}},
+  {"after": "02",
+   "d": {"kind": "steps",
+         "title": "Why chained indexing is a coin flip",
+         "caption": "`df[\"col\"][3] = 0` is two separate operations, and whether the first returns a view or a copy depends on the frame's internal block layout — which you neither control nor can see. The warning is pandas telling you it cannot promise what your assignment did.",
+         "items": [
+          {"label": "df[mask]", "desc": "the first [] runs and returns something", "code": "1", "tone": "accent"},
+          {"label": "a view, or a copy", "desc": "decided by the internal block layout", "code": "?", "tone": "crit"},
+          {"label": "['col'] = 0", "desc": "the second [] writes into whatever it got", "code": "2", "tone": "warn"},
+          {"label": "The original changed, or it did not", "desc": "SettingWithCopyWarning: pandas cannot promise", "code": "coin", "tone": "crit"},
+          {"label": "df.loc[mask, 'col'] = 0", "desc": "one operation; writes to the original, always", "code": "fix", "tone": "good"}]}}
+ ],
+
+ "3.3": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "memory_usage lies by default",
+         "caption": "An `object` column stores 8-byte pointers, and the default report counts only those — ignoring the 50+ byte string each one leads to. On a text-heavy frame the real figure is routinely ten times what the default prints, which is why `deep=True` is the only number worth quoting.",
+         "cols": ["Counts", "On a text column"],
+         "rows": ["memory_usage()", "memory_usage(deep=True)", "object dtype", "category", "string[pyarrow]"],
+         "cells": [
+          [{"text": "8 bytes per row", "tone": "crit"}, "the pointer only"],
+          [{"text": "the objects too", "tone": "good"}, "often 10x the default figure"],
+          ["a pointer per row", "plus a heap object per value"],
+          [{"text": "codes plus one copy each", "tone": "good"}, "falls with distinct values, not rows"],
+          [{"text": "contiguous bytes", "tone": "good"}, "no per-value Python object"]]}}
+ ],
+
+ "3.4": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Four ways to be missing, and only one test for all of them",
+         "caption": "`np.nan` is a float, so a single missing value forces an integer column to float. `pd.NA` propagates through comparisons instead of returning `False`, which is the behaviour you want and the one that breaks code written for `NaN`. `isna()` is the only test that recognises all four.",
+         "cols": ["Lives in", "Comparison gives"],
+         "rows": ["np.nan", "None", "pd.NaT", "pd.NA", "isna()", "== np.nan"],
+         "cells": [
+          [{"text": "float columns", "tone": "warn"}, "NaN > 1 is False"],
+          ["object columns only", "converted on entry elsewhere"],
+          ["datetime, timedelta", "behaves like NaN, for dates"],
+          [{"text": "Int64, boolean, string", "tone": "good"}, "pd.NA > 1 is pd.NA"],
+          [{"text": "all four", "tone": "good"}, "the only reliable test"],
+          [{"text": "nothing", "tone": "crit"}, "always False: NaN != NaN"]]}},
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "How a missing value moves through an operation",
+         "caption": "The inconsistency is deliberate and it is still a trap: arithmetic propagates, comparison returns `False`, and reductions skip. A `NaN` that vanishes from a `mean()` is the same `NaN` that silently shrinks the denominator.",
+         "cols": ["Result", "Consequence"],
+         "rows": ["NaN + 1", "NaN > 1", "s.sum()", "s.mean()", "s == NaN", "s.count()"],
+         "cells": [
+          [{"text": "NaN", "tone": "warn"}, "arithmetic propagates"],
+          [{"text": "False", "tone": "crit"}, "not missing: a definite no"],
+          [{"text": "skips them", "tone": "accent"}, "an empty column sums to 0"],
+          [{"text": "skips them", "tone": "crit"}, "the denominator shrinks silently"],
+          [{"text": "all False", "tone": "crit"}, "use isna()"],
+          [{"text": "non-missing only", "tone": "good"}, "len minus count is the gap"]]}}
+ ],
+
+ "3.5": [
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "pivot_table aggregates whether or not you asked it to",
+         "caption": "`pivot_table` is `groupby` followed by `unstack`, and its default `aggfunc` is `mean` — right for a price, wrong for anything additive. It applies even when there were no duplicates to aggregate, so a sum of revenue silently becomes an average of revenue.",
+         "cols": ["Does", "When it is wrong"],
+         "rows": ["pivot", "pivot_table", "aggfunc='mean'", "aggfunc='sum'", "stack / unstack", "crosstab"],
+         "cells": [
+          [{"text": "raises on a duplicate key", "tone": "good"}, "never silent: that is the point"],
+          [{"text": "aggregates duplicates", "tone": "warn"}, "it hides a grain you did not expect"],
+          [{"text": "the default", "tone": "crit"}, "counts, sums, anything additive"],
+          [{"text": "what reports usually want", "tone": "good"}, "averages, rates, prices"],
+          ["move a level between axes", "the index must be unique"],
+          ["counts by two keys", "it is pivot_table with len"]]}}
+ ],
+
+ "3.6": [
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "A join produces one row per matching pair",
+         "caption": "Two on the left and three on the right for one key is six rows out. This is correct behaviour and it is the mechanism behind every 'my join doubled the revenue' incident. `validate=` makes pandas refuse the join instead of performing it.",
+         "cols": ["Rows for that key", "validate= catches it"],
+         "rows": ["one to one", "one to many", "many to one", "many to many (2x3)"],
+         "cells": [
+          [{"text": "1", "tone": "good"}, "'1:1'"],
+          [{"text": "3", "tone": "good"}, "'1:m': expected and fine"],
+          [{"text": "2", "tone": "good"}, "'m:1': the usual lookup"],
+          [{"text": "6", "tone": "crit"}, "'m:m' is the one to assert against"]]}}
+ ],
+
+ "3.7": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "value_counts has three defaults, and each changes a number",
+         "caption": "It is a `groupby`-size in disguise: sorted by count descending, with missing values dropped. `normalize=True` computes the share over the **non-missing** rows, so on a column that is 40% missing the proportions sum to 1 over the other 60%.",
+         "cols": ["Default", "Turn it off with"],
+         "rows": ["value_counts()", "normalize=True", "nunique()", "len(s.unique())", "rank()"],
+         "cells": [
+          [{"text": "drops missing, sorts desc", "tone": "warn"}, "dropna=False, sort=False"],
+          [{"text": "share of non-missing", "tone": "crit"}, "dropna=False to include them"],
+          [{"text": "excludes missing", "tone": "warn"}, "dropna=False"],
+          [{"text": "includes it", "tone": "accent"}, "differs from nunique by one"],
+          [{"text": "ties averaged: 2.5", "tone": "warn"}, "method='min' or 'dense'"]]}}
+ ],
+
+ "4.1": [
+  {"after": "01",
+   "d": {"kind": "steps",
+         "title": "Split, apply, combine — and the function decides the shape",
+         "caption": "`.groupby()` computes nothing: it holds the instructions until an aggregation asks for a result. What comes back is decided entirely by what the applied function returns — one value per group, one value per row, or a frame — which is the distinction 4.2 is built on.",
+         "items": [
+          {"label": "Split", "desc": "partition the rows by the key's distinct values", "code": "lazy", "tone": "accent"},
+          {"label": "Apply", "desc": "run the function on each partition", "code": "per group", "tone": "good"},
+          {"label": "One value per group", "desc": "agg: the result is one row per group", "code": "agg", "tone": "good"},
+          {"label": "One value per row", "desc": "transform: the original index comes back", "code": "transform", "tone": "violet"},
+          {"label": "Combine", "desc": "stitched together, keys as the index unless as_index=False", "code": "result", "tone": "teal"}]}},
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "The two arguments that change the row count",
+         "caption": "Both default to a value that produces rows you did not expect. With categorical keys, `observed=False` emits a row for every category **combination**, which on two categoricals is their cartesian product — most of it empty.",
+         "cols": ["Default", "What it does"],
+         "rows": ["observed", "dropna", "as_index", "sort"],
+         "cells": [
+          [{"text": "False (older pandas)", "tone": "crit"}, "a row per unseen category combination"],
+          [{"text": "True", "tone": "warn"}, "rows with a missing key disappear"],
+          [{"text": "True", "tone": "accent"}, "keys become the index, not columns"],
+          [{"text": "True", "tone": "accent"}, "groups sorted by key; costs time"]]}}
+ ],
+
+ "4.2": [
+  {"after": "02",
+   "d": {"kind": "compare",
+         "title": "agg collapses, transform does not",
+         "caption": "Every 'compared to its group' feature is a transform: deviation from the group mean, share of the group total, rank within the group. It returns the group statistic with the **original index**, so it drops straight in as a new column with no merge.",
+         "columns": [
+          {"title": "g.agg('mean')", "tone": "accent",
+           "items": ["One row per group", "The group keys become the index", "To use it per row, merge it back", "The answer is the summary"]},
+          {"title": "g.transform('mean')", "tone": "good",
+           "items": ["One value per original row", "The original index is preserved", "Assign it straight into a column", "The answer is a feature"]}]}}
+ ],
+
+ "4.3": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Three kinds of window, and what each includes",
+         "caption": "All three include the **current row**, which is why an unshifted window is a leak: the feature for today already contains today's value. `shift(1)` is what turns a window into a statement about the past.",
+         "cols": ["Covers", "min_periods default"],
+         "rows": ["rolling(n)", "expanding()", "ewm(span=n)", "shift(k)"],
+         "cells": [
+          [{"text": "this row and the n-1 before", "tone": "accent"}, "n: NaN until the window fills"],
+          [{"text": "the start up to this row", "tone": "accent"}, "1: a value from row one"],
+          [{"text": "every past row, decaying", "tone": "violet"}, "no hard edge at all"],
+          [{"text": "moves values down k rows", "tone": "good"}, "the leak fix, not a window"]]}}
+ ],
+
+ "4.4": [
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Downsampling aggregates; upsampling invents",
+         "caption": "`resample` is a `groupby` whose keys are time bins. Going from hourly to daily combines rows you have. Going from daily to hourly creates bins you have no data for, and every fill method is a decision about what to pretend — which is where data gets invented.",
+         "cols": ["Does", "The decision"],
+         "rows": ["Hourly to daily", "Daily to hourly", "ffill()", "interpolate()", "asfreq()"],
+         "cells": [
+          [{"text": "aggregates real rows", "tone": "good"}, "which aggregate: sum or mean"],
+          [{"text": "creates empty bins", "tone": "warn"}, "how to fill them, or whether to"],
+          [{"text": "repeats the last value", "tone": "accent"}, "assumes it held until it changed"],
+          [{"text": "draws a line between", "tone": "warn"}, "assumes a smooth path"],
+          [{"text": "leaves them NaN", "tone": "good"}, "honest: the gap stays visible"]]}}
+ ],
+
+ "4.5": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "What the .str accessor costs, and the argument that raises",
+         "caption": "On `object` dtype every `.str` method is a Python loop, one call per element. Arrow-backed strings run the same methods in C. The `na=` row is the one that bites in a filter: `contains` returns `NaN` for a missing input, and a `NaN` inside a boolean mask raises.",
+         "cols": ["Behaviour", "Note"],
+         "rows": ["object dtype", "string[pyarrow]", ".str.contains(na=)", ".str.extract", "named groups"],
+         "cells": [
+          [{"text": "a Python loop per element", "tone": "warn"}, "pointers to str objects"],
+          [{"text": "runs in C", "tone": "good"}, "missing is consistently pd.NA"],
+          [{"text": "NaN by default", "tone": "crit"}, "raises when used as a mask: set na=False"],
+          ["one column per group", "the regex defines the columns"],
+          [{"text": "(?P<name>...)", "tone": "accent"}, "the group name becomes the column name"]]}}
+ ],
+
+ "4.6": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "The chain's four verbs",
+         "caption": "Every step returns a new object, so nothing upstream is modified and the chain cannot contain a chained-indexing bug by construction. `assign` with a callable is the piece that makes it work: the function receives the frame **as it is at that point**, so a column added two lines up is available.",
+         "cols": ["Does", "Use it for"],
+         "rows": ["assign", "pipe", "query", "eval", "loc with a callable"],
+         "cells": [
+          [{"text": "a new frame, columns added", "tone": "good"}, "any derived column"],
+          [{"text": "calls f(df) and returns it", "tone": "accent"}, "folding in your own functions"],
+          [{"text": "filters from a string", "tone": "good"}, "bare column names; @ for variables"],
+          [{"text": "computes from a string", "tone": "warn"}, "arithmetic on big frames; fragile beyond"],
+          [{"text": "filters mid-chain", "tone": "violet"}, "a mask that needs the current frame"]]}}
+ ]
+}

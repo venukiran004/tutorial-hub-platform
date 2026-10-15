@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three steps, one object", id: "model" },
 
+    {"kind": "steps", "title": "Split, apply, combine — and the function decides the shape", "caption": "`.groupby()` computes nothing: it holds the instructions until an aggregation asks for a result. What comes back is decided entirely by what the applied function returns — one value per group, one value per row, or a frame — which is the distinction 4.2 is built on.", "items": [{"label": "Split", "desc": "partition the rows by the key's distinct values", "code": "lazy", "tone": "accent"}, {"label": "Apply", "desc": "run the function on each partition", "code": "per group", "tone": "good"}, {"label": "One value per group", "desc": "agg: the result is one row per group", "code": "agg", "tone": "good"}, {"label": "One value per row", "desc": "transform: the original index comes back", "code": "transform", "tone": "violet"}, {"label": "Combine", "desc": "stitched together, keys as the index unless as_index=False", "code": "result", "tone": "teal"}], "t": "diagram", "id": "dg-4_1-01-0"},
+
+
+
+
+
     { t: "p", text: "`df.groupby(\"key\")` does no computation. **It returns a lazy object that knows how to split the frame** — the actual work happens when you call an aggregation on it. Seeing it as three separate steps makes the output shape predictable." },
 
     { t: "dl", items: [
@@ -232,6 +238,12 @@ ts.groupby(bad_labels.to_numpy())["amount"].sum()   # x    210
     },
 
     { t: "h2", n: "03", text: "observed and dropna: the row-count arguments", id: "rows" },
+
+    {"kind": "matrix", "title": "The two arguments that change the row count", "caption": "Both default to a value that produces rows you did not expect. With categorical keys, `observed=False` emits a row for every category **combination**, which on two categoricals is their cartesian product — most of it empty.", "cols": ["Default", "What it does"], "rows": ["observed", "dropna", "as_index", "sort"], "cells": [[{"text": "False (older pandas)", "tone": "crit"}, "a row per unseen category combination"], [{"text": "True", "tone": "warn"}, "rows with a missing key disappear"], [{"text": "True", "tone": "accent"}, "keys become the index, not columns"], [{"text": "True", "tone": "accent"}, "groups sorted by key; costs time"]], "t": "diagram", "id": "dg-4_1-03-1"},
+
+
+
+
 
     { t: "p", text: "Two defaults decide how many rows a groupby returns, and both have changed or are changing between pandas versions. **`dropna=True` removes rows with a missing key; `observed=False` adds rows for categorical combinations that never occurred.** One silently loses data; the other silently invents rows." },
 

@@ -20,6 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Trees into tables", id: "trees" },
 
+    {"kind": "matrix", "title": "A nested object becomes columns; a nested array becomes rows", "caption": "The distinction decides the **grain** of your frame. An object has fixed keys, so it flattens sideways into dotted column names. An array has no fixed length, so it can only unroll downwards — one row per element, with the parent's fields repeated on each, which is a fan-out exactly like a join.", "cols": ["Becomes", "Grain after"], "rows": ["{'user': {...}}", "{'items': [...]}", "json_normalize", "record_path=", "meta=", "A relational split"], "cells": [[{"text": "user.id, user.name", "tone": "good"}, "unchanged: one row per record"], [{"text": "one row per element", "tone": "warn"}, "one row per item: a fan-out"], ["dotted names for objects", "one row per record"], [{"text": "unrolls one array", "tone": "warn"}, "one row per element of it"], ["carries parent fields down", "repeated on every element row"], [{"text": "its own table plus a key", "tone": "accent"}, "two grains, kept apart"]], "t": "diagram", "id": "dg-5_3-01-0"},
+
+
+
+
     { t: "p", text: "A JSON record can contain objects inside objects and arrays inside those. **A table has one level: rows and columns.** Getting from one to the other means choosing, for every nested thing, whether it becomes a dotted column, a set of rows, or a string you deal with later." },
 
     { t: "dl", items: [
@@ -156,6 +161,11 @@ pd.concat([lines.drop(columns="items").reset_index(drop=True),
     },
 
     { t: "h2", n: "02", text: "Records that do not match their neighbours", id: "drift" },
+
+    {"kind": "matrix", "title": "Every JSON feed drifts, and most drift is silent", "caption": "`json_normalize` fills a missing key with NaN, which is reasonable. Everything else it handles by handing you an `object` column and no warning — so a field that changed from a string to a number still parses, and only fails three steps later when something does arithmetic on it.", "cols": ["Result", "How you find out"], "rows": ["A field is added", "A field becomes optional", "A string becomes a number", "A scalar becomes an array", "The nesting deepens"], "cells": [[{"text": "a new column", "tone": "good"}, "a column-set assertion"], [{"text": "NaN where absent", "tone": "good"}, "the missing rate moves"], [{"text": "object dtype, no warning", "tone": "crit"}, "a dtype assertion per column"], [{"text": "object dtype, no warning", "tone": "crit"}, "a type check on a sample"], [{"text": "a dict inside a column", "tone": "crit"}, "nothing, until it is used"]], "t": "diagram", "id": "dg-5_3-02-1"},
+
+
+
 
     { t: "p", text: "**Every JSON feed drifts.** A field is added, a field becomes optional, a string becomes a number, a scalar becomes an array. `json_normalize` handles missing keys with NaN and handles everything else by giving you an object column and no warning." },
 

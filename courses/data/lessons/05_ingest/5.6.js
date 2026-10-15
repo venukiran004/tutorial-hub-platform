@@ -20,6 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "OVER: an aggregate that does not collapse", id: "over" },
 
+    {"kind": "compare", "title": "GROUP BY collapses; OVER does not", "caption": "They compute the same statistic. `OVER` leaves every row in place with its group's value attached, which is why it is the SQL equivalent of `groupby().transform()` — and the tool for every 'compared to its group' feature.", "columns": [{"title": "GROUP BY customer_id", "tone": "accent", "items": ["One row per customer", "The detail rows are gone", "pandas: groupby().agg()", "To compare a row with it, join back"]}, {"title": "OVER (PARTITION BY customer_id)", "tone": "good", "items": ["Every row kept", "The group value attached to each", "pandas: groupby().transform()", "The comparison is one more column"]}], "t": "diagram", "id": "dg-5_6-01-1"},
+
+
+
+
     { t: "p", text: "`SUM(amount)` with `GROUP BY customer` returns one row per customer. **`SUM(amount) OVER (PARTITION BY customer)` returns every original row, each carrying its customer's total.** Same computation, different output shape — and the shape is the whole point." },
 
     { t: "dl", items: [
@@ -163,6 +168,13 @@ GROUP BY region;
     { t: "h2", n: "02", text: "Ranking, and the latest row per key", id: "ranking" },
 
     {"kind": "matrix", "title": "Three ranking functions that are not interchangeable", "caption": "They differ only on ties, and that difference decides whether “the latest row per key” returns one row or several. `ROW_NUMBER` is the one that guarantees exactly one.", "cols": ["on a tie", "values for 10, 20, 20, 30"], "rows": ["ROW_NUMBER()", "RANK()", "DENSE_RANK()"], "cells": [[{"text": "picks arbitrarily — exactly one", "tone": "good"}, "1, 2, 3, 4"], ["same rank, then a gap", {"text": "1, 2, 2, 4", "tone": "warn"}], ["same rank, no gap", {"text": "1, 2, 2, 3", "tone": "accent"}]], "t": "diagram", "id": "dg-5_6-02-0"},
+
+
+
+
+
+
+
 
 
     { t: "code", lang: "sql", title: "ROW_NUMBER, RANK, DENSE_RANK, and the deduplication they enable", code: `

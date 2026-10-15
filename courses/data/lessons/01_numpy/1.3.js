@@ -20,6 +20,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Two families of indexing", id: "families" },
 
+    {"kind": "matrix", "title": "One question decides view or copy: is the selection evenly spaced", "caption": "If what you asked for can be described by a start, a stop and a step, you get a view over the existing bytes. If it cannot, a new array has to be built. The last row is the exception worth memorising: `a[mask] = 0` is `__setitem__`, not indexing-then-assigning, so it writes to the original even though reading `a[mask]` would have copied.", "cols": ["Gives you", "Because"], "rows": ["a[2], a[1:5], a[::2]", "a[:, 0]", "a[[0, 3, 7]]", "a[a > 5]", "a[mask] = 0"], "cells": [[{"text": "a view", "tone": "good"}, "a stride pattern over the same bytes"], [{"text": "a view", "tone": "good"}, "a column is a stride too"], [{"text": "a copy", "tone": "warn"}, "arbitrary positions are not a stride"], [{"text": "a copy", "tone": "warn"}, "length unknown until the mask runs"], [{"text": "writes the original", "tone": "accent"}, "assignment, not indexing"]], "t": "diagram", "id": "dg-1_3-01-1"},
+
+
+
+
+
+
+
     { t: "p", text: "NumPy has two indexing mechanisms that look almost identical in source and behave completely differently. **The rule is whether the elements you asked for are evenly spaced** — if they can be described by a start, a stop and a step, NumPy hands you a view over the existing bytes. If not, it has to build a new array." },
 
     { t: "dl", items: [
@@ -236,6 +244,13 @@ np.array([1.0, np.nan, 3.0]) > 2      # [False, False, True]
     { t: "h2", n: "03", text: "The aliasing bug", id: "aliasing" },
 
     {"kind": "matrix", "title": "View or copy, and how to tell", "caption": "The aliasing bug comes from not knowing which you have. The rule is mechanical: **basic** indexing can be expressed as a strided window, so it returns a view; **fancy** indexing cannot, so it copies. `arr.base` tells you after the fact.", "cols": ["view or copy?", "writing to it"], "rows": ["a[1:5]", "a[::2]", "a.T  /  a.reshape(...)", "a[[1, 3, 5]]", "a[a > 0]"], "cells": [[{"text": "VIEW", "tone": "warn"}, {"text": "changes the original", "tone": "crit"}], [{"text": "VIEW", "tone": "warn"}, {"text": "changes the original", "tone": "crit"}], [{"text": "VIEW when it can be", "tone": "warn"}, {"text": "changes the original", "tone": "crit"}], [{"text": "copy", "tone": "good"}, "independent"], [{"text": "copy", "tone": "good"}, "independent"]], "t": "diagram", "id": "dg-1_3-03-0"},
+
+
+
+
+
+
+
 
 
 

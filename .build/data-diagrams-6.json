@@ -1,0 +1,1244 @@
+{
+ "7.1": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "When cardinality climbs, each compact encoding gives something up",
+    "caption": "One-hot on a thousand categories is a thousand columns of mostly zeros, most with too few ones to learn anything from. Every alternative fits by discarding something, and the question is which loss the model can afford.",
+    "cols": [
+     "Gives up",
+     "Reach for it when"
+    ],
+    "rows": [
+     "One-hot",
+     "Frequency encoding",
+     "Hashing",
+     "Rare-label grouping",
+     "Target encoding"
+    ],
+    "cells": [
+     [
+      {
+       "text": "nothing, but n columns",
+       "tone": "good"
+      },
+      "cardinality is low"
+     ],
+     [
+      {
+       "text": "identity",
+       "tone": "warn"
+      },
+      "two categories may collide on count"
+     ],
+     [
+      {
+       "text": "reversibility",
+       "tone": "warn"
+      },
+      "a stream, or no fit step allowed"
+     ],
+     [
+      {
+       "text": "the tail",
+       "tone": "warn"
+      },
+      "the tail is genuinely uninformative"
+     ],
+     [
+      {
+       "text": "safety, without care",
+       "tone": "crit"
+      },
+      "high cardinality and a real signal"
+     ]
+    ]
+   }
+  }
+ ],
+ "7.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "Why the naive target encoding is the label in disguise",
+    "caption": "A category with one row encodes to that row's own target. The feature then *is* the label for that row, cross-validation reports an excellent score, and in production the column carries no information at all. The size of the leak is inversely proportional to the category's size, so it is worst exactly where high cardinality made you want the encoding.",
+    "items": [
+     {
+      "label": "Replace each category with its target mean",
+      "desc": "computed over all of the training rows",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "The row's own target is in that mean",
+      "desc": "the feature partly is the label",
+      "code": "2",
+      "tone": "warn"
+     },
+     {
+      "label": "A category with one row",
+      "desc": "encodes to exactly that row's target",
+      "code": "leak",
+      "tone": "crit"
+     },
+     {
+      "label": "The model learns to read the encoding",
+      "desc": "and the CV score looks excellent",
+      "code": "3",
+      "tone": "crit"
+     },
+     {
+      "label": "Out-of-fold: the other folds only",
+      "desc": "a row's own label never touches its own feature",
+      "code": "fix",
+      "tone": "good"
+     },
+     {
+      "label": "Smoothing towards the prior",
+      "desc": "3 rows is mostly prior; 3,000 rows is mostly itself",
+      "code": "fix",
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Three ways to compute it without the leak",
+    "caption": "All three ensure that the statistic a row sees was computed without that row. The test set is different: it is encoded with statistics from **all** of training, because at prediction time there is no fold structure and no label.",
+    "cols": [
+     "A row is encoded from",
+     "Cost"
+    ],
+    "rows": [
+     "Naive mean",
+     "Out-of-fold",
+     "Leave-one-out",
+     "Ordered statistics",
+     "Smoothing"
+    ],
+    "cells": [
+     [
+      {
+       "text": "every row, itself included",
+       "tone": "crit"
+      },
+      "the leak"
+     ],
+     [
+      {
+       "text": "the other folds only",
+       "tone": "good"
+      },
+      "k fits; the standard choice"
+     ],
+     [
+      {
+       "text": "every row but itself",
+       "tone": "warn"
+      },
+      "still leaks through the group size"
+     ],
+     [
+      {
+       "text": "rows before it in a permutation",
+       "tone": "good"
+      },
+      "CatBoost's variant"
+     ],
+     [
+      {
+       "text": "blended toward the prior",
+       "tone": "good"
+      },
+      "combine it with one of the above"
+     ]
+    ]
+   }
+  }
+ ],
+ "7.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Weight of evidence puts a category on the model's own scale",
+    "caption": "WoE is the category's log-odds minus the overall log-odds. A logistic regression is linear in log-odds, so a feature already on that scale enters the model as a straight line — which is why a scorecard can print a number of points per attribute and have it be exact rather than approximate.",
+    "cols": [
+     "Is",
+     "Means"
+    ],
+    "rows": [
+     "WoE = 0",
+     "WoE > 0",
+     "WoE < 0",
+     "Information Value",
+     "IV below 0.02",
+     "IV above 0.5"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the category is the prior",
+       "tone": "accent"
+      },
+      "it tells you nothing"
+     ],
+     [
+      "more positives than the prior",
+      "shifts the odds up"
+     ],
+     [
+      "more negatives than the prior",
+      "shifts the odds down"
+     ],
+     [
+      {
+       "text": "one number per feature",
+       "tone": "good"
+      },
+      "how much its categories separate"
+     ],
+     [
+      {
+       "text": "unpredictive",
+       "tone": "warn"
+      },
+      "drop it"
+     ],
+     [
+      {
+       "text": "suspiciously strong",
+       "tone": "crit"
+      },
+      "check for leakage first"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "compare",
+    "title": "Why the bins must be monotonic",
+    "caption": "A non-monotonic WoE says risk rises with income, then falls, then rises. That is usually noise in a thin bin, and it is never something a scorecard can print — so the bins are merged until the direction is consistent, trading a little fit for a statement the business can act on.",
+    "columns": [
+     {
+      "title": "Equal-frequency bins",
+      "tone": "warn",
+      "items": [
+       "Every bin is populated",
+       "WoE may zigzag across them",
+       "A thin bin's estimate is noisy",
+       "Fits better, explains worse"
+      ]
+     },
+     {
+      "title": "Monotonic merged bins",
+      "tone": "good",
+      "items": [
+       "Adjacent bins merged until WoE is ordered",
+       "One direction across the whole range",
+       "Each bin has enough rows to trust",
+       "Required for a scorecard"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "7.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Which models care about scale, and which cannot",
+    "caption": "A tree's split at `income > 40,000` is the identical split at `log(income) > 10.6` — the row order is unchanged, so the tree is unchanged. Anything that measures a distance, or takes a gradient step in a shared learning rate, is a different story.",
+    "cols": [
+     "Scale matters",
+     "Because"
+    ],
+    "rows": [
+     "KNN, SVM, k-means",
+     "PCA",
+     "Regularised linear",
+     "Neural networks",
+     "Decision trees",
+     "Gradient boosting"
+    ],
+    "cells": [
+     [
+      {
+       "text": "yes",
+       "tone": "crit"
+      },
+      "they measure distance"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "crit"
+      },
+      "it maximises variance, which has units"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "crit"
+      },
+      "the penalty is per-coefficient"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "crit"
+      },
+      "one learning rate for every input"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      "a split depends on order, not scale"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      "trees all the way down"
+     ]
+    ]
+   }
+  }
+ ],
+ "7.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "The transform family is one knob: the power of x",
+    "caption": "Log is the limit as the power goes to zero; square root is power ½; Box-Cox fits the power from the data. They differ in what input they accept and how hard they compress the tail — which is the whole basis for choosing between them.",
+    "cols": [
+     "Accepts",
+     "Compression"
+    ],
+    "rows": [
+     "log(x)",
+     "log1p(x)",
+     "sqrt(x)",
+     "Box-Cox",
+     "Yeo-Johnson"
+    ],
+    "cells": [
+     [
+      {
+       "text": "x > 0",
+       "tone": "warn"
+      },
+      "strongest: a 10x gap becomes a constant"
+     ],
+     [
+      {
+       "text": "x >= 0",
+       "tone": "good"
+      },
+      "the same, and zeros survive"
+     ],
+     [
+      {
+       "text": "x >= 0",
+       "tone": "good"
+      },
+      "mild"
+     ],
+     [
+      {
+       "text": "x > 0",
+       "tone": "warn"
+      },
+      "fitted: lambda chosen from the data"
+     ],
+     [
+      {
+       "text": "any sign",
+       "tone": "good"
+      },
+      "fitted; the default when sign varies"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "steps",
+    "title": "Retransformation bias: exp of the mean is not the mean",
+    "caption": "Model a log target, predict, exponentiate, and the answer is systematically **too low** — not sometimes, always. The prediction on the log scale is the mean of the logs, which back-transforms to roughly the median rather than the mean. On a revenue forecast that is a persistent shortfall nobody can explain.",
+    "items": [
+     {
+      "label": "Fit on log(y)",
+      "desc": "the model is unbiased on the log scale",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "Predict: E[log y]",
+      "desc": "the mean of the logs",
+      "code": "2",
+      "tone": "accent"
+     },
+     {
+      "label": "exp(E[log y])",
+      "desc": "back-transforms to around the median",
+      "code": "3",
+      "tone": "warn"
+     },
+     {
+      "label": "E[y] is larger, always",
+      "desc": "by Jensen's inequality, for any spread",
+      "code": "bias",
+      "tone": "crit"
+     },
+     {
+      "label": "Correct it, or model y directly",
+      "desc": "a smearing estimate, or a GLM with a log link",
+      "code": "fix",
+      "tone": "good"
+     }
+    ]
+   }
+  }
+ ],
+ "7.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Three ways to cut, and what each one assumes",
+    "caption": "The method chooses what the bins are *for*. Equal-width gives edges a person can read and, on skewed data, bins that are empty or hold almost everything. Equal-frequency guarantees population and produces edges at arbitrary-looking values. Supervised bins use the target, so they must be fitted on training data only.",
+    "cols": [
+     "Produces",
+     "Assumes"
+    ],
+    "rows": [
+     "pd.cut (equal width)",
+     "pd.qcut (equal frequency)",
+     "Supervised bins",
+     "Binarisation",
+     "Domain edges"
+    ],
+    "cells": [
+     [
+      {
+       "text": "readable edges",
+       "tone": "good"
+      },
+      "the range is roughly uniform"
+     ],
+     [
+      {
+       "text": "equal counts",
+       "tone": "good"
+      },
+      "nothing; edges look arbitrary"
+     ],
+     [
+      {
+       "text": "maximum separation",
+       "tone": "warn"
+      },
+      "a fit step: train only"
+     ],
+     [
+      {
+       "text": "one cut",
+       "tone": "accent"
+      },
+      "the threshold means something"
+     ],
+     [
+      {
+       "text": "edges someone can defend",
+       "tone": "good"
+      },
+      "someone knows the domain"
+     ]
+    ]
+   }
+  }
+ ],
+ "7.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "One field, several variables",
+    "caption": "`\"A21\"` is a letter-code and a number. `\"3 bed flat\"` is a count and a category. Splitting them is routine; the fourth step is the one people skip, and it is often the strongest feature — rows written `\"n/a\"` rather than `\"0\"` or blank frequently differ in outcome, and the format is the only evidence left of why.",
+    "items": [
+     {
+      "label": "Extract the numeric part",
+      "desc": "a regex group, cast to a number",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "Extract the categorical part",
+      "desc": "the letter, the unit, the suffix",
+      "code": "2",
+      "tone": "accent"
+     },
+     {
+      "label": "Normalise the units",
+      "desc": "1.2 GB and 800 MB into one base unit",
+      "code": "3",
+      "tone": "good"
+     },
+     {
+      "label": "Record which pattern matched",
+      "desc": "'n/a' against '0' against blank: a feature",
+      "code": "4",
+      "tone": "violet"
+     },
+     {
+      "label": "Report parse coverage",
+      "desc": "the fraction of rows the extraction handled",
+      "code": "5",
+      "tone": "warn"
+     }
+    ]
+   }
+  }
+ ],
+ "7.8": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "A duration usually beats any calendar component",
+    "caption": "Days since signup, hours since last purchase, days until the contract ends — each is continuous, each carries recency, and each must be computed against a reference that **was known at the row's own time**. Measuring 'days since last purchase' against the dataset's maximum date is a leak: that date is in the future for every row but one.",
+    "cols": [
+     "Carries",
+     "Reference must be"
+    ],
+    "rows": [
+     "Days since signup",
+     "Hours since last event",
+     "Days until renewal",
+     "Day of week",
+     "Days since max(date)"
+    ],
+    "cells": [
+     [
+      {
+       "text": "tenure",
+       "tone": "good"
+      },
+      "the row's own timestamp"
+     ],
+     [
+      {
+       "text": "recency",
+       "tone": "good"
+      },
+      "the previous event, shifted"
+     ],
+     [
+      {
+       "text": "anticipation",
+       "tone": "good"
+      },
+      "known in advance: safe"
+     ],
+     [
+      {
+       "text": "seasonality",
+       "tone": "accent"
+      },
+      "cyclical: encode it as sin and cos"
+     ],
+     [
+      {
+       "text": "the future",
+       "tone": "crit"
+      },
+      "a leak: max is later than the row"
+     ]
+    ]
+   }
+  }
+ ],
+ "7.9": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Four shapes of derived feature",
+    "caption": "A ratio is frequently the quantity the domain already reasons in — debt to income, clicks per impression — and it normalises for scale at the same time. Polynomial expansion is the mechanical version of all of this: complete, and combinatorially large.",
+    "cols": [
+     "Is",
+     "Signal"
+    ],
+    "rows": [
+     "Interaction",
+     "Ratio",
+     "Difference",
+     "Polynomial features",
+     "Group aggregate"
+    ],
+    "cells": [
+     [
+      "a product, or one given the other",
+      "two variables acting together"
+     ],
+     [
+      {
+       "text": "one per unit of another",
+       "tone": "good"
+      },
+      "what the domain reasons in"
+     ],
+     [
+      {
+       "text": "a gap between two levels",
+       "tone": "good"
+      },
+      "often the gap, not either level"
+     ],
+     [
+      {
+       "text": "every product up to a degree",
+       "tone": "warn"
+      },
+      "complete, and explodes in width"
+     ],
+     [
+      {
+       "text": "a statistic over the key's rows",
+       "tone": "warn"
+      },
+      "powerful, and leaks if unwindowed"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "timeline",
+    "title": "The group aggregate that uses orders from the future",
+    "caption": "For a row dated March, the mean over 'this customer's orders' includes June's. The windowed version — the mean over the 90 days **before** this order — is what a production system could actually compute, and it is a rolling window with a shift.",
+    "span": 12,
+    "tick": 3,
+    "lanes": [
+     {
+      "label": "The row",
+      "bars": [
+       [
+        5,
+        6,
+        "March",
+        "accent"
+       ]
+      ]
+     },
+     {
+      "label": "All-history mean",
+      "bars": [
+       [
+        0,
+        12,
+        "includes June: not knowable in March",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "90-day window",
+      "bars": [
+       [
+        2,
+        5,
+        "the 90 days before it",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "Production sees",
+      "bars": [
+       [
+        0,
+        5,
+        "everything up to the row's own date",
+        "good"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "7.10": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "From text to a sparse matrix",
+    "caption": "Three of these five steps are fitted on the training corpus, and each is a place a vocabulary can leak. IDF in particular is a statistic over documents: fit it on everything and the test set's word frequencies have influenced the training features.",
+    "items": [
+     {
+      "label": "Tokenise",
+      "desc": "the regex decides whether \"don't\" is one token or two",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "Build the vocabulary",
+      "desc": "fitted on train; anything else is invisible later",
+      "code": "fit",
+      "tone": "warn"
+     },
+     {
+      "label": "Term frequency",
+      "desc": "count, binary, log, or divided by length",
+      "code": "2",
+      "tone": "good"
+     },
+     {
+      "label": "Inverse document frequency",
+      "desc": "log(N / df), fitted on train: a statistic over documents",
+      "code": "fit",
+      "tone": "warn"
+     },
+     {
+      "label": "Multiply, then L2-normalise per row",
+      "desc": "documents of different lengths become comparable",
+      "code": "3",
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "compare",
+    "title": "A vocabulary, and no vocabulary at all",
+    "caption": "Hashing maps each token to a column by hashing it: nothing to fit, nothing to store, and nothing that can leak. The cost is collisions — two words sharing a column — and the loss of any way to name a column afterwards, which rules it out whenever the model has to be explained.",
+    "columns": [
+     {
+      "title": "TF-IDF with a vocabulary",
+      "tone": "good",
+      "items": [
+       "Columns have names",
+       "Coefficients are interpretable",
+       "Must be fitted and stored",
+       "An unseen word is invisible",
+       "Memory grows with the vocabulary"
+      ]
+     },
+     {
+      "title": "The hashing trick",
+      "tone": "accent",
+      "items": [
+       "Columns are hash buckets",
+       "No column can be named",
+       "No fit step, nothing to store",
+       "Every word maps somewhere",
+       "Fixed width; collisions are the cost"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "8.1": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "steps",
+    "title": "The selection leak",
+    "caption": "Choosing features by their correlation with the target, over the whole dataset, before splitting, is leakage — and a particularly convincing kind, because the selected features really do predict well on this data. With more columns than rows you can select pure noise and get a strong cross-validated score from it.",
+    "items": [
+     {
+      "label": "Score every feature against the target",
+      "desc": "on all the data, before splitting",
+      "code": "1",
+      "tone": "warn"
+     },
+     {
+      "label": "Keep the best k",
+      "desc": "the choice was informed by the test rows",
+      "code": "2",
+      "tone": "crit"
+     },
+     {
+      "label": "Then split and cross-validate",
+      "desc": "every fold's features were chosen using that fold",
+      "code": "3",
+      "tone": "crit"
+     },
+     {
+      "label": "The score is inflated",
+      "desc": "noise columns survive if they happen to fit",
+      "code": "bad",
+      "tone": "crit"
+     },
+     {
+      "label": "Selection inside the pipeline",
+      "desc": "refitted per fold, so each fold chooses from its own train",
+      "code": "fix",
+      "tone": "good"
+     }
+    ]
+   }
+  }
+ ],
+ "8.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "What PCA computes, and what each piece is called",
+    "caption": "Explained variance measures **spread, not usefulness**: a component can carry most of the variance and none of the signal, because nothing in the computation ever looked at the target. That is the single most important property of PCA to hold on to.",
+    "cols": [
+     "Is",
+     "Note"
+    ],
+    "rows": [
+     "Principal component",
+     "Loading",
+     "Score",
+     "Explained variance",
+     "Reconstruction error"
+    ],
+    "cells": [
+     [
+      "a unit-length direction",
+      "eigenvector of the covariance"
+     ],
+     [
+      "each column's weight in it",
+      "which columns, with what sign"
+     ],
+     [
+      {
+       "text": "a row's coordinate",
+       "tone": "good"
+      },
+      "the scores are the new features"
+     ],
+     [
+      {
+       "text": "the eigenvalue",
+       "tone": "warn"
+      },
+      "spread, not usefulness"
+     ],
+     [
+      "distance to the projection",
+      "the sum of the discarded eigenvalues"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Scaling decides the answer PCA gives",
+    "caption": "PCA maximises variance, and variance has units. Leave income in pounds beside age in years and the first component is almost entirely income — not because it matters more, but because its numbers are larger. Standardising first is what makes the question 'which directions co-vary' rather than 'which column has the biggest units'.",
+    "cols": [
+     "First component",
+     "Why"
+    ],
+    "rows": [
+     "Unscaled, mixed units",
+     "Standardised",
+     "After a log transform",
+     "On one-hot columns"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the largest-unit column",
+       "tone": "crit"
+      },
+      "pounds dwarf years"
+     ],
+     [
+      {
+       "text": "the real co-variation",
+       "tone": "good"
+      },
+      "every column contributes equally"
+     ],
+     [
+      {
+       "text": "changes again",
+       "tone": "warn"
+      },
+      "PCA is not scale-invariant"
+     ],
+     [
+      {
+       "text": "dominated by rare levels",
+       "tone": "warn"
+      },
+      "binary variance depends on the rate"
+     ]
+    ]
+   }
+  }
+ ],
+ "8.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "What separates a proxy from a leak is availability, not strength",
+    "caption": "A feature that predicts the label almost perfectly is suspicious but not thereby a leak. The question is whether it will be **populated, in that form, at prediction time** — support tickets correlate with dissatisfaction because they share a cause, and that correlation is the point.",
+    "cols": [
+     "Available at prediction",
+     "Verdict"
+    ],
+    "rows": [
+     "A closure code",
+     "A refund amount",
+     "Support ticket count",
+     "Days since signup",
+     "Filled after the label"
+    ],
+    "cells": [
+     [
+      {
+       "text": "no: written with the label",
+       "tone": "crit"
+      },
+      "target leakage"
+     ],
+     [
+      {
+       "text": "no: a consequence",
+       "tone": "crit"
+      },
+      "target leakage"
+     ],
+     [
+      {
+       "text": "yes, as of now",
+       "tone": "good"
+      },
+      "a proxy: legitimate"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "legitimate"
+     ],
+     [
+      {
+       "text": "empty in production",
+       "tone": "crit"
+      },
+      "leakage, however strong it looks"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "The checks, and which kind of leak each one catches",
+    "caption": "No single check finds all three kinds, which is why the list is a list. The first is the cheapest and finds the most: a single feature with a suspiciously high score, on its own, is almost always a leak rather than a discovery.",
+    "cols": [
+     "Catches",
+     "How"
+    ],
+    "rows": [
+     "Single-feature AUC",
+     "Drop it and refit",
+     "Duplicate row scan",
+     "Entity on both sides",
+     "Fit timing audit",
+     "Past train, future test"
+    ],
+    "cells": [
+     [
+      {
+       "text": "target leakage",
+       "tone": "crit"
+      },
+      "one feature that predicts alone"
+     ],
+     [
+      "target leakage",
+      "the score collapses: it carried it all"
+     ],
+     [
+      {
+       "text": "contamination",
+       "tone": "warn"
+      },
+      "exact duplicates across the split"
+     ],
+     [
+      {
+       "text": "contamination",
+       "tone": "warn"
+      },
+      "group the split by entity"
+     ],
+     [
+      {
+       "text": "contamination",
+       "tone": "warn"
+      },
+      "was anything fitted before the split"
+     ],
+     [
+      {
+       "text": "temporal leakage",
+       "tone": "crit"
+      },
+      "the only split production resembles"
+     ]
+    ]
+   }
+  }
+ ],
+ "8.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "What each split actually claims",
+    "caption": "A split is a claim about the population the estimate generalises to. A random split claims performance on rows like these; a group split claims performance on entities never seen; a time split claims performance on a later period — which is the only period a deployed model ever sees.",
+    "cols": [
+     "Estimates performance on",
+     "Use when"
+    ],
+    "rows": [
+     "Random holdout",
+     "Stratified split",
+     "Group split",
+     "Time-based split",
+     "Time split with a gap"
+    ],
+    "cells": [
+     [
+      "rows drawn like these",
+      "rows are independent"
+     ],
+     [
+      {
+       "text": "the same, class rates kept",
+       "tone": "good"
+      },
+      "a class is rare"
+     ],
+     [
+      {
+       "text": "unseen entities",
+       "tone": "good"
+      },
+      "many rows per customer or device"
+     ],
+     [
+      {
+       "text": "a later period",
+       "tone": "good"
+      },
+      "anything deployed forward in time"
+     ],
+     [
+      {
+       "text": "a later period, honestly",
+       "tone": "accent"
+      },
+      "labels span a window"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "steps",
+    "title": "Group splits: who, not what",
+    "caption": "With many rows per entity, a random split puts the same customer on both sides, and the model scores well by recognising the customer rather than the pattern. The fix is to split the **entities** and then take their rows.",
+    "items": [
+     {
+      "label": "Many rows share an entity",
+      "desc": "several orders per customer, several scans per patient",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "A random row split divides them",
+      "desc": "the same customer is in train and in test",
+      "code": "2",
+      "tone": "crit"
+     },
+     {
+      "label": "The model recognises the entity",
+      "desc": "not the pattern you wanted it to learn",
+      "code": "3",
+      "tone": "crit"
+     },
+     {
+      "label": "Split the entities instead",
+      "desc": "GroupKFold on customer_id, then take their rows",
+      "code": "fix",
+      "tone": "good"
+     },
+     {
+      "label": "Check it",
+      "desc": "the intersection of train and test ids must be empty",
+      "code": "assert",
+      "tone": "good"
+     }
+    ]
+   }
+  }
+ ],
+ "8.7": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Each mistake has a signature you can read without running anything",
+    "caption": "The point of a signature is that the review is cheap: a line, a pattern or an omission that is visible in the diff, with a one-line check that confirms or clears it. Reading in a fixed order matters because the earliest mistake invalidates everything measured after it.",
+    "cols": [
+     "Signature",
+     "One-line check"
+    ],
+    "rows": [
+     "Fit before split",
+     "No stratification",
+     "Unshifted window",
+     "Encoder fitted on all",
+     "Metric on the wrong class",
+     "Threshold at 0.5"
+    ],
+    "cells": [
+     [
+      {
+       "text": "scaler.fit(X) above the split",
+       "tone": "crit"
+      },
+      "where is the split, in line order"
+     ],
+     [
+      {
+       "text": "train_test_split with no stratify",
+       "tone": "warn"
+      },
+      "class rates in each part"
+     ],
+     [
+      {
+       "text": "rolling() with no shift()",
+       "tone": "crit"
+      },
+      "search the diff for shift"
+     ],
+     [
+      {
+       "text": "fit on the full frame",
+       "tone": "crit"
+      },
+      "is it inside the pipeline"
+     ],
+     [
+      {
+       "text": "pos_label left default",
+       "tone": "warn"
+      },
+      "which class is 1"
+     ],
+     [
+      {
+       "text": "predict() not predict_proba",
+       "tone": "warn"
+      },
+      "was a threshold ever chosen"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "Reproducibility: what must be pinned",
+    "caption": "A result nobody can reproduce is not a result. Each of these has silently changed an answer: a library minor version altering a default, an unordered groupby changing a float sum, a seed that was never set for one of three generators.",
+    "cols": [
+     "Pin",
+     "What moves if you do not"
+    ],
+    "rows": [
+     "Library versions",
+     "Random seeds",
+     "Row order",
+     "Data snapshot",
+     "Feature code",
+     "The environment"
+    ],
+    "cells": [
+     [
+      {
+       "text": "a lock file",
+       "tone": "good"
+      },
+      "a default changes under you"
+     ],
+     [
+      {
+       "text": "all of them",
+       "tone": "good"
+      },
+      "numpy, python, and the framework"
+     ],
+     [
+      {
+       "text": "sort before you reduce",
+       "tone": "warn"
+      },
+      "float sums differ by order"
+     ],
+     [
+      {
+       "text": "a date or a version",
+       "tone": "good"
+      },
+      "the table was updated since"
+     ],
+     [
+      {
+       "text": "one fitted object",
+       "tone": "good"
+      },
+      "training-serving skew"
+     ],
+     [
+      {
+       "text": "a container or a lock",
+       "tone": "accent"
+      },
+      "the BLAS library changes a result"
+     ]
+    ]
+   }
+  }
+ ]
+}

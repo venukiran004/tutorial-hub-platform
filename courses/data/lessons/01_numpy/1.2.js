@@ -20,6 +20,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What vectorisation removes", id: "vectorisation" },
 
+    {"kind": "timeline", "title": "Four ways to compute a * b + 1 on a million elements", "caption": "Measured. The gap is 200×, not 10%, because vectorising removes the work rather than reducing it: one dispatch instead of a million, no int or float object per element, and a contiguous C loop the compiler can unroll into SIMD registers. `np.vectorize` is in this list because its name promises otherwise — the documentation calls it a convenience, not a performance tool.", "span": 440, "tick": 100, "lanes": [{"label": "Python loop", "bars": [[0, 420, "420 ms", "crit"]]}, {"label": "Comprehension", "bars": [[0, 180, "180 ms", "warn"]]}, {"label": "np.vectorize", "bars": [[0, 250, "250 ms: a loop with extra steps", "crit"]]}, {"label": "a*b+1: 2 ms", "bars": [[0, 2, "", "good"]]}], "t": "diagram", "id": "dg-1_2-01-0"},
+
+
+
+
+
+
+
     { t: "p", text: "A Python `for` loop over a million numbers does a million bytecode dispatches, a million type checks and a million object allocations. **A vectorised call does one dispatch and then runs a compiled C loop over raw bytes** — which is why the speedup is 50× to 200×, not 10%." },
 
     { t: "dl", items: [
@@ -119,6 +127,14 @@ totals = np.bincount(groups, weights=a, minlength=1000)    # ~6 ms
     },
 
     { t: "h2", n: "02", text: "The broadcasting rules", id: "broadcasting" },
+
+    {"kind": "matrix", "title": "The shape mismatch that returns a plausible number", "caption": "Shapes align from the **right**, and two lengths are compatible when they are equal or when one is 1. The dangerous case is the last pair: `(4,)` against `(4,1)` broadcasts to a 4×4 matrix of every pairwise difference, and `.mean()` on it returns a small believable float. On 500 rows it misreports your RMSE for months; on 50,000 it is a 20 GB allocation. Assert shape equality inside every metric you write.", "cols": ["Result", "What happens"], "rows": ["(2,3) with (3,)", "(2,3) with (2,)", "(2,3) with (2,1)", "(4,) with (4,1)"], "cells": [[{"text": "(2, 3)", "tone": "good"}, "aligns from the right: fine"], [{"text": "ValueError", "tone": "warn"}, "2 against 3: neither is 1"], [{"text": "(2, 3)", "tone": "good"}, "the None makes it a column"], [{"text": "(4, 4)", "tone": "crit"}, "every pairwise difference, silently"]], "t": "diagram", "id": "dg-1_2-02-1"},
+
+
+
+
+
+
 
     { t: "p", text: "**Broadcasting lets NumPy combine arrays of different shapes by virtually stretching the smaller one** — without allocating the stretched copy. Two dimensions are compatible when they are equal, or when one of them is 1." },
 

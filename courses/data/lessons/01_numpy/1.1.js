@@ -20,6 +20,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "One block of memory, and a way to read it", id: "model" },
 
+    {"kind": "tree", "title": "An array is one buffer and three facts about how to read it", "caption": "A Python list of numbers is a list of **pointers** to separate integer objects scattered across the heap. An array is a single block of raw bytes with no per-element object at all — and `strides`, the number of bytes to step per axis, is the piece that makes a view possible.", "root": {"label": "ndarray", "sub": "one object, one buffer", "tone": "violet", "children": [{"label": "data buffer", "sub": "contiguous raw bytes, no per-element object", "tone": "accent"}, {"label": "dtype", "sub": "the type of every element, and its size", "tone": "good"}, {"label": "shape", "sub": "length along each dimension", "tone": "good"}, {"label": "strides", "sub": "bytes to step per axis: this is what views exploit", "tone": "teal"}]}, "t": "diagram", "id": "dg-1_1-01-1"},
+
+
+
+
+
+
+
     { t: "p", text: "A Python list of numbers is a list of **pointers** to separate integer objects scattered across the heap. A NumPy array is a single block of raw bytes with no per-element object at all — which is where both the speed and the memory saving come from." },
 
     { t: "dl", items: [
@@ -210,6 +218,13 @@ np.ascontiguousarray(d).flags['C_CONTIGUOUS']    # True, at the cost of a copy
     { t: "h2", n: "03", text: "Choosing a dtype on purpose", id: "dtype" },
 
     {"kind": "matrix", "title": "Choosing a dtype on purpose", "caption": "The default is `float64` and it is rarely what you need. Halving the width halves the memory **and** doubles how much fits in cache, which is usually the larger win — but `float16` has about three decimal digits, so it is a storage format rather than a compute one.", "cols": ["bytes", "range or precision", "use it for"], "rows": ["int8", "int32", "float32", "float64", "float16"], "cells": [[{"text": "1", "tone": "good"}, "−128 to 127", "categorical codes, flags"], [{"text": "4", "tone": "good"}, "±2.1 billion", "ids, counts"], [{"text": "4", "tone": "good"}, "~7 digits", {"text": "almost all ML features", "tone": "good"}], [{"text": "8", "tone": "warn"}, "~16 digits", "money, accumulations"], [{"text": "2", "tone": "accent"}, {"text": "~3 digits", "tone": "crit"}, "storage, not maths"]], "t": "diagram", "id": "dg-1_1-03-0"},
+
+
+
+
+
+
+
 
 
 

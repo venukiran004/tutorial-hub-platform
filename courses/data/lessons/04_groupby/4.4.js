@@ -109,6 +109,12 @@ pd.infer_freq(df.index)             # "D"
 
     { t: "h2", n: "02", text: "Resampling", id: "resample" },
 
+    {"kind": "matrix", "title": "Downsampling aggregates; upsampling invents", "caption": "`resample` is a `groupby` whose keys are time bins. Going from hourly to daily combines rows you have. Going from daily to hourly creates bins you have no data for, and every fill method is a decision about what to pretend — which is where data gets invented.", "cols": ["Does", "The decision"], "rows": ["Hourly to daily", "Daily to hourly", "ffill()", "interpolate()", "asfreq()"], "cells": [[{"text": "aggregates real rows", "tone": "good"}, "which aggregate: sum or mean"], [{"text": "creates empty bins", "tone": "warn"}, "how to fill them, or whether to"], [{"text": "repeats the last value", "tone": "accent"}, "assumes it held until it changed"], [{"text": "draws a line between", "tone": "warn"}, "assumes a smooth path"], [{"text": "leaves them NaN", "tone": "good"}, "honest: the gap stays visible"]], "t": "diagram", "id": "dg-4_4-02-1"},
+
+
+
+
+
     { t: "p", text: "**`resample` is a groupby whose keys are time bins.** Downsampling — hourly to daily — aggregates; upsampling — daily to hourly — creates empty bins that you must decide how to fill. The second is where data gets invented." },
 
     { t: "viz",
@@ -304,6 +310,13 @@ daily.reindex(target, method="nearest", tolerance=pd.Timedelta("12h"))
     { t: "h2", n: "03", text: "Timezones", id: "tz" },
 
     {"kind": "matrix", "title": "Timezones: the three states a timestamp can be in", "caption": "Naive, UTC-aware and local-aware are different types, and comparing across them raises or silently misleads. Store UTC, convert for display — and remember that a local time can be ambiguous twice a year.", "cols": ["what it means", "the hazard"], "rows": ["naive", "tz-aware, UTC", "tz-aware, local"], "cells": [[{"text": "no zone at all", "tone": "warn"}, {"text": "comparing with aware RAISES", "tone": "crit"}], [{"text": "an unambiguous instant", "tone": "good"}, {"text": "none — store this", "tone": "good"}], ["an instant plus a display rule", {"text": "DST makes one hour ambiguous and one absent", "tone": "crit"}]], "t": "diagram", "id": "dg-4_4-03-0"},
+
+
+
+
+
+
+
 
 
     { t: "p", text: "**A naive timestamp — one without a timezone — is not \"in UTC\". It is in whatever zone the writer assumed, and that assumption is gone.** Every daily total from timestamps in the wrong zone is a total for the wrong day, and the error is largest exactly at the day boundary where it moves the most revenue." },

@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Four ways to be missing", id: "four" },
 
+    {"kind": "matrix", "title": "Four ways to be missing, and only one test for all of them", "caption": "`np.nan` is a float, so a single missing value forces an integer column to float. `pd.NA` propagates through comparisons instead of returning `False`, which is the behaviour you want and the one that breaks code written for `NaN`. `isna()` is the only test that recognises all four.", "cols": ["Lives in", "Comparison gives"], "rows": ["np.nan", "None", "pd.NaT", "pd.NA", "isna()", "== np.nan"], "cells": [[{"text": "float columns", "tone": "warn"}, "NaN > 1 is False"], ["object columns only", "converted on entry elsewhere"], ["datetime, timedelta", "behaves like NaN, for dates"], [{"text": "Int64, boolean, string", "tone": "good"}, "pd.NA > 1 is pd.NA"], [{"text": "all four", "tone": "good"}, "the only reliable test"], [{"text": "nothing", "tone": "crit"}, "always False: NaN != NaN"]], "t": "diagram", "id": "dg-3_4-01-0"},
+
+
+
+
+
     { t: "p", text: "The representation a missing value takes depends on the column's dtype, not on what you wrote. **Put `None` in a float column and you get `NaN`; put it in an object column and it stays `None`; put it in a datetime column and it becomes `NaT`.**" },
 
     { t: "dl", items: [
@@ -161,6 +167,12 @@ pd.isna(np.nan), pd.isna(None), pd.isna(pd.NaT), pd.isna(pd.NA)
     ]},
 
     { t: "h2", n: "02", text: "How missing values move through operations", id: "propagation" },
+
+    {"kind": "matrix", "title": "How a missing value moves through an operation", "caption": "The inconsistency is deliberate and it is still a trap: arithmetic propagates, comparison returns `False`, and reductions skip. A `NaN` that vanishes from a `mean()` is the same `NaN` that silently shrinks the denominator.", "cols": ["Result", "Consequence"], "rows": ["NaN + 1", "NaN > 1", "s.sum()", "s.mean()", "s == NaN", "s.count()"], "cells": [[{"text": "NaN", "tone": "warn"}, "arithmetic propagates"], [{"text": "False", "tone": "crit"}, "not missing: a definite no"], [{"text": "skips them", "tone": "accent"}, "an empty column sums to 0"], [{"text": "skips them", "tone": "crit"}, "the denominator shrinks silently"], [{"text": "all False", "tone": "crit"}, "use isna()"], [{"text": "non-missing only", "tone": "good"}, "len minus count is the gap"]], "t": "diagram", "id": "dg-3_4-02-1"},
+
+
+
+
 
     { t: "p", text: "**The rule for arithmetic is simple — missing in, missing out. The rules for aggregation, comparison and groupby are each different**, and the differences are where the surprises live." },
 

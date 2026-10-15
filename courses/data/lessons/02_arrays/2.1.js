@@ -20,6 +20,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Two operations, many names", id: "two" },
 
+    {"kind": "matrix", "title": "Two operations wearing six names", "caption": "There are only two ideas here — lengthen an existing axis, or add a new one. The trouble is that three of the names change meaning between 1-D and 2-D input, so the same call does two different things depending on what you hand it.", "cols": ["On 2-D input", "On 1-D input"], "rows": ["concatenate", "stack", "vstack", "hstack", "column_stack", "split"], "cells": [[{"text": "lengthens an existing axis", "tone": "good"}, "same, along axis 0"], [{"text": "adds a new axis", "tone": "good"}, "same; shapes must match exactly"], ["concatenate(axis=0)", {"text": "promotes to 2-D first", "tone": "warn"}], ["concatenate(axis=1)", {"text": "concatenate(axis=0)", "tone": "crit"}], ["treats inputs as columns", {"text": "what hstack should have done", "tone": "accent"}], [{"text": "the inverse; needs even division", "tone": "violet"}, "array_split allows uneven"]], "t": "diagram", "id": "dg-2_1-01-1"},
+
+
+
+
+
+
+
     { t: "p", text: "NumPy has `concatenate`, `stack`, `vstack`, `hstack`, `dstack`, `column_stack`, `block` and `r_`. **They reduce to two behaviours**, and the confusion comes entirely from the convenience wrappers guessing an axis on your behalf." },
 
     { t: "dl", items: [
@@ -164,6 +172,13 @@ np.concatenate(parts)                         # one allocation, one pass
     { t: "h2", n: "02", text: "Splitting", id: "split" },
 
     {"kind": "matrix", "title": "Splitting, and what each one promises", "caption": "`split` insists the pieces come out equal and raises if they cannot; `array_split` quietly makes them uneven. Which you want depends on whether an uneven split is a bug or a fact of your data.", "cols": ["uneven input", "returns"], "rows": ["np.split(a, 3)", "np.array_split(a, 3)", "np.split(a, [2, 5])"], "cells": [[{"text": "RAISES", "tone": "crit"}, "equal pieces, or nothing"], [{"text": "silently uneven", "tone": "warn"}, "as equal as it can manage"], [{"text": "fine", "tone": "good"}, {"text": "cuts at the given indices", "tone": "good"}]], "t": "diagram", "id": "dg-2_1-02-0"},
+
+
+
+
+
+
+
 
 
 

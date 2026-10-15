@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Counting values", id: "counting" },
 
+    {"kind": "matrix", "title": "value_counts has three defaults, and each changes a number", "caption": "It is a `groupby`-size in disguise: sorted by count descending, with missing values dropped. `normalize=True` computes the share over the **non-missing** rows, so on a column that is 40% missing the proportions sum to 1 over the other 60%.", "cols": ["Default", "Turn it off with"], "rows": ["value_counts()", "normalize=True", "nunique()", "len(s.unique())", "rank()"], "cells": [[{"text": "drops missing, sorts desc", "tone": "warn"}, "dropna=False, sort=False"], [{"text": "share of non-missing", "tone": "crit"}, "dropna=False to include them"], [{"text": "excludes missing", "tone": "warn"}, "dropna=False"], [{"text": "includes it", "tone": "accent"}, "differs from nunique by one"], [{"text": "ties averaged: 2.5", "tone": "warn"}, "method='min' or 'dense'"]], "t": "diagram", "id": "dg-3_7-01-1"},
+
+
+
+
+
     { t: "p", text: "**`value_counts` is a groupby-size in disguise, sorted descending, with missing values excluded.** Each of those three defaults is worth knowing, because each one changes a number." },
 
     { t: "dl", items: [
@@ -124,6 +130,13 @@ pd.Series([1, 1, 2, 2, 3]).mode()[0]      # 1 -- take the first if one is needed
     { t: "h2", n: "02", text: "Duplicates", id: "duplicates" },
 
     {"kind": "matrix", "title": "Duplicates: which copy survives", "caption": "`keep` is the argument that decides, and `keep=False` does not mean “keep none of the extras” — it means **drop every row that has a duplicate**, including the first. That difference quietly removes data.", "cols": ["duplicated() marks", "drop_duplicates() keeps"], "rows": ["keep='first'", "keep='last'", "keep=False"], "cells": [["every copy after the first", {"text": "the first of each group", "tone": "good"}], ["every copy before the last", "the last of each group"], [{"text": "EVERY copy, including the first", "tone": "crit"}, {"text": "only rows that were never duplicated", "tone": "crit"}]], "t": "diagram", "id": "dg-3_7-02-0"},
+
+
+
+
+
+
+
 
 
 

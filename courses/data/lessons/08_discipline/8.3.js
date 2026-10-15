@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The one question", id: "question" },
 
+    {"kind": "matrix", "title": "What separates a proxy from a leak is availability, not strength", "caption": "A feature that predicts the label almost perfectly is suspicious but not thereby a leak. The question is whether it will be **populated, in that form, at prediction time** — support tickets correlate with dissatisfaction because they share a cause, and that correlation is the point.", "cols": ["Available at prediction", "Verdict"], "rows": ["A closure code", "A refund amount", "Support ticket count", "Days since signup", "Filled after the label"], "cells": [[{"text": "no: written with the label", "tone": "crit"}, "target leakage"], [{"text": "no: a consequence", "tone": "crit"}, "target leakage"], [{"text": "yes, as of now", "tone": "good"}, "a proxy: legitimate"], [{"text": "yes", "tone": "good"}, "legitimate"], [{"text": "empty in production", "tone": "crit"}, "leakage, however strong it looks"]], "t": "diagram", "id": "dg-8_3-01-0"},
+
+
+
     { t: "p", text: "Every leak fails the same test: **at the moment the prediction is made, does this value exist, with this content?** A feature that is populated afterwards, a row the model has already seen, a window that reaches past *t* — each puts information into training that scoring will never have. The score measures how well the model uses that information, which is why the score is the first symptom." },
 
     { t: "dl", items: [
@@ -246,6 +250,10 @@ print(changed.mean().round(2))     # spend_prev 0.00   spend_smooth 0.20   spend
     ]},
 
     { t: "h2", n: "05", text: "The checks, and which kind each one catches", id: "checks" },
+
+    {"kind": "matrix", "title": "The checks, and which kind of leak each one catches", "caption": "No single check finds all three kinds, which is why the list is a list. The first is the cheapest and finds the most: a single feature with a suspiciously high score, on its own, is almost always a leak rather than a discovery.", "cols": ["Catches", "How"], "rows": ["Single-feature AUC", "Drop it and refit", "Duplicate row scan", "Entity on both sides", "Fit timing audit", "Past train, future test"], "cells": [[{"text": "target leakage", "tone": "crit"}, "one feature that predicts alone"], ["target leakage", "the score collapses: it carried it all"], [{"text": "contamination", "tone": "warn"}, "exact duplicates across the split"], [{"text": "contamination", "tone": "warn"}, "group the split by entity"], [{"text": "contamination", "tone": "warn"}, "was anything fitted before the split"], [{"text": "temporal leakage", "tone": "crit"}, "the only split production resembles"]], "t": "diagram", "id": "dg-8_3-05-1"},
+
+
 
     { t: "p", text: "No single check finds all three. The single-feature scan finds a column that is the label; it says nothing about duplicates. The twin-share check finds duplicates; it says nothing about a centred window. The truncation test finds forward-looking features; it says nothing about a closure code, which does not change when the future is removed because it was never a function of other rows. **Run all four, and read the shuffled-label control for what it is: a test of fit-time contamination, not of the data.**" },
 

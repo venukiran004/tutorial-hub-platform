@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Skew, and what it does to a model", id: "skew" },
 
+    {"kind": "matrix", "title": "The transform family is one knob: the power of x", "caption": "Log is the limit as the power goes to zero; square root is power ½; Box-Cox fits the power from the data. They differ in what input they accept and how hard they compress the tail — which is the whole basis for choosing between them.", "cols": ["Accepts", "Compression"], "rows": ["log(x)", "log1p(x)", "sqrt(x)", "Box-Cox", "Yeo-Johnson"], "cells": [[{"text": "x > 0", "tone": "warn"}, "strongest: a 10x gap becomes a constant"], [{"text": "x >= 0", "tone": "good"}, "the same, and zeros survive"], [{"text": "x >= 0", "tone": "good"}, "mild"], [{"text": "x > 0", "tone": "warn"}, "fitted: lambda chosen from the data"], [{"text": "any sign", "tone": "good"}, "fitted; the default when sign varies"]], "t": "diagram", "id": "dg-7_5-01-0"},
+
+
+
     { t: "p", text: "Income, transaction amounts, page views, file sizes — **most quantities that cannot be negative and have no natural ceiling are right-skewed**: a dense cluster of small values and a long tail of large ones. The mean is not the typical value, the standard deviation is dominated by the tail, and a model that assumes symmetric errors is wrong at both ends." },
 
     { t: "dl", items: [
@@ -255,6 +259,10 @@ suggest(rng.normal(size=n))                 # "none -- roughly symmetric"
     },
 
     { t: "h2", n: "03", text: "Retransformation bias", id: "bias" },
+
+    {"kind": "steps", "title": "Retransformation bias: exp of the mean is not the mean", "caption": "Model a log target, predict, exponentiate, and the answer is systematically **too low** — not sometimes, always. The prediction on the log scale is the mean of the logs, which back-transforms to roughly the median rather than the mean. On a revenue forecast that is a persistent shortfall nobody can explain.", "items": [{"label": "Fit on log(y)", "desc": "the model is unbiased on the log scale", "code": "1", "tone": "accent"}, {"label": "Predict: E[log y]", "desc": "the mean of the logs", "code": "2", "tone": "accent"}, {"label": "exp(E[log y])", "desc": "back-transforms to around the median", "code": "3", "tone": "warn"}, {"label": "E[y] is larger, always", "desc": "by Jensen's inequality, for any spread", "code": "bias", "tone": "crit"}, {"label": "Correct it, or model y directly", "desc": "a smearing estimate, or a GLM with a log link", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-7_5-03-1"},
+
+
 
     { t: "p", text: "**A model fitted to `log(y)` predicts the mean of `log(y)`. Exponentiating that gives the geometric mean of `y`, which is always below the arithmetic mean.** Every prediction transformed back naively is too low, by a factor that depends on the residual variance — and a revenue forecast built this way underestimates revenue, every time, by a consistent and unnoticed margin." },
 

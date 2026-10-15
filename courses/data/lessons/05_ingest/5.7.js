@@ -116,6 +116,11 @@ df = pd.read_sql(text("SELECT ..."), engine,
 
     { t: "h2", n: "02", text: "Results that do not fit", id: "stream" },
 
+    {"kind": "matrix", "title": "Results that do not fit in memory", "caption": "The default `read_sql` builds the whole result as one frame, which is fine until the day the query returns ten million rows and the process dies. Each of these moves the boundary somewhere else; the last one moves the work instead of the rows.", "cols": ["Does", "Costs"], "rows": ["read_sql(...)", "chunksize=", "A server-side cursor", "LIMIT / OFFSET paging", "Aggregate in SQL"], "cells": [[{"text": "one frame, all rows", "tone": "warn"}, "memory proportional to the result"], [{"text": "an iterator of frames", "tone": "good"}, "you must handle the pieces"], [{"text": "streams from the server", "tone": "good"}, "the connection stays open"], [{"text": "a page at a time", "tone": "crit"}, "OFFSET rescans; rows can shift"], [{"text": "returns the few rows you need", "tone": "accent"}, "nothing: the right answer first"]], "t": "diagram", "id": "dg-5_7-02-1"},
+
+
+
+
     { t: "code", lang: "python", title: "chunksize, server-side cursors, and what the driver does without them", code: `
 # chunksize= RETURNS AN ITERATOR OF FRAMES:
 for chunk in pd.read_sql(text("SELECT * FROM events"), engine, chunksize=100_000):
@@ -191,6 +196,13 @@ while True:
     { t: "h2", n: "03", text: "Pushing work down, and reading the plan", id: "pushdown" },
 
     {"kind": "matrix", "title": "Push the work down, or pull the rows up", "caption": "The database is usually better at filtering and aggregating than your process is, and the wire is the bottleneck. The rule: send as little as possible over it, and read the plan to confirm the predicate actually reached the index.", "cols": ["rows over the wire", "verdict"], "rows": ["SELECT *, filter in pandas", "filter in SQL", "aggregate in SQL", "join in pandas", "join in SQL"], "cells": [[{"text": "all of them", "tone": "crit"}, {"text": "the default mistake", "tone": "crit"}], [{"text": "only the matches", "tone": "good"}, "check the plan uses an index"], [{"text": "one row per group", "tone": "good"}, {"text": "almost always right", "tone": "good"}], [{"text": "both tables in full", "tone": "crit"}, "only if the join is not expressible"], [{"text": "the result only", "tone": "good"}, {"text": "right, and let it use the index", "tone": "good"}]], "t": "diagram", "id": "dg-5_7-03-0"},
+
+
+
+
+
+
+
 
 
     { t: "p", text: "**The database has the data, the indexes, the statistics and often more cores than your laptop.** Every filter, join and aggregation it does is one that pandas does not have to — and one fewer row crossing the network. The way to see whether it is doing them well is the query plan." },

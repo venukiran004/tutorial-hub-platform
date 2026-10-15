@@ -23,6 +23,13 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "Three families of feature selection", "caption": "They differ in whether a model is involved and how often. Filters are cheap and ignore interactions; wrappers see interactions and cost a model fit per candidate set — and both leak if the selection happens outside the fold.", "cols": ["uses a model?", "sees interactions", "cost"], "rows": ["filter", "wrapper", "embedded"], "cells": [[{"text": "no", "tone": "good"}, {"text": "no", "tone": "crit"}, {"text": "cheap", "tone": "good"}], [{"text": "once per candidate set", "tone": "crit"}, {"text": "yes", "tone": "good"}, {"text": "expensive", "tone": "crit"}], [{"text": "once, as part of fitting", "tone": "good"}, {"text": "yes", "tone": "good"}, {"text": "nearly free", "tone": "good"}]], "t": "diagram", "id": "dg-8_1-01-0"},
 
 
+
+
+
+
+
+
+
     { t: "p", text: "Feature selection asks which columns to keep. **The three families differ in whether they consult a model at all, and if so, how.** Filters score each feature alone. Wrappers train models on subsets and compare. Embedded methods let the model's own fitting decide." },
 
     { t: "dl", items: [
@@ -266,6 +273,10 @@ pd.Series(pi.importances_mean, index=X.columns).sort_values(ascending=False).rou
     ]},
 
     { t: "h2", n: "03", text: "The selection leak", id: "leak" },
+
+    {"kind": "steps", "title": "The selection leak", "caption": "Choosing features by their correlation with the target, over the whole dataset, before splitting, is leakage — and a particularly convincing kind, because the selected features really do predict well on this data. With more columns than rows you can select pure noise and get a strong cross-validated score from it.", "items": [{"label": "Score every feature against the target", "desc": "on all the data, before splitting", "code": "1", "tone": "warn"}, {"label": "Keep the best k", "desc": "the choice was informed by the test rows", "code": "2", "tone": "crit"}, {"label": "Then split and cross-validate", "desc": "every fold's features were chosen using that fold", "code": "3", "tone": "crit"}, {"label": "The score is inflated", "desc": "noise columns survive if they happen to fit", "code": "bad", "tone": "crit"}, {"label": "Selection inside the pipeline", "desc": "refitted per fold, so each fold chooses from its own train", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-8_1-03-1"},
+
+
 
     { t: "p", text: "**Every selector uses the target. If it runs on all the data before cross-validation, the validation folds' labels helped choose the features the model is then validated on.** With enough candidate features, some noise columns will correlate with the target by chance — and a selector that sees all the labels will pick them, and the CV will confirm them." },
 

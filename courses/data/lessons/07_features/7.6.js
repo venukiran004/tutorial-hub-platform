@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three ways to cut, and what each assumes", id: "cuts" },
 
+    {"kind": "matrix", "title": "Three ways to cut, and what each one assumes", "caption": "The method chooses what the bins are *for*. Equal-width gives edges a person can read and, on skewed data, bins that are empty or hold almost everything. Equal-frequency guarantees population and produces edges at arbitrary-looking values. Supervised bins use the target, so they must be fitted on training data only.", "cols": ["Produces", "Assumes"], "rows": ["pd.cut (equal width)", "pd.qcut (equal frequency)", "Supervised bins", "Binarisation", "Domain edges"], "cells": [[{"text": "readable edges", "tone": "good"}, "the range is roughly uniform"], [{"text": "equal counts", "tone": "good"}, "nothing; edges look arbitrary"], [{"text": "maximum separation", "tone": "warn"}, "a fit step: train only"], [{"text": "one cut", "tone": "accent"}, "the threshold means something"], [{"text": "edges someone can defend", "tone": "good"}, "someone knows the domain"]], "t": "diagram", "id": "dg-7_6-01-0"},
+
+
+
     { t: "p", text: "A continuous column becomes a categorical one by choosing edges. **Equal-width edges assume the scale is meaningful; equal-frequency edges assume the ranks are; supervised edges assume the target knows best.** Each is right somewhere, and `pd.cut` versus `pd.qcut` is the whole difference between the first two." },
 
     { t: "dl", items: [
@@ -199,6 +203,8 @@ df.groupby("bin_s", observed=True)["y"].agg(["size", "mean"])
     ]},
 
     { t: "h2", n: "02", text: "What binning buys, and from whom", id: "buys" },
+
+    {"kind": "compare", "title": "Same operation, opposite effect", "caption": "For a linear model, binning turns one coefficient into one per bin — a step function that can follow any shape. For a tree, binning removes the ability to split anywhere inside an interval: it can now only cut at your edges. Which model is downstream decides whether this is a feature or a handicap.", "columns": [{"title": "Linear model", "tone": "good", "items": ["One coefficient becomes one per bin", "A step function, any shape", "Non-linearity without a transform", "Buys flexibility"]}, {"title": "Tree model", "tone": "crit", "items": ["It could already split anywhere", "Now it can only cut at your edges", "Resolution inside a bin is gone", "Costs flexibility"]}], "t": "diagram", "id": "dg-7_6-02-1"},
 
     { t: "p", text: "**For a linear model, binning turns one coefficient into one per bin — a step function that can follow any shape.** For a tree, binning removes the ability to split anywhere in the interval — it can only cut at your edges. Same operation, opposite effect, and which model is downstream decides whether it is a feature or a handicap." },
 

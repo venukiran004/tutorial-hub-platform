@@ -23,6 +23,13 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "What each fill removes from the data", "caption": "Every simple fill understates variance, because it puts mass at a single point. The indicator column is the cheap defence: it keeps the fact of the gap available to the model even after the gap is filled.", "cols": ["what it distorts", "when it is acceptable"], "rows": ["mean", "median", "mode", "forward fill", "a constant sentinel"], "cells": [[{"text": "variance down, shape pulled to centre", "tone": "crit"}, "roughly symmetric, few missing"], [{"text": "variance down, robust to skew", "tone": "warn"}, {"text": "skewed numeric — the usual choice", "tone": "good"}], ["invents a majority", "low-cardinality categorical"], [{"text": "fabricates persistence", "tone": "warn"}, {"text": "time series, and ONLY forwards", "tone": "good"}], [{"text": "creates a fake cluster", "tone": "warn"}, "tree models, with an indicator"]], "t": "diagram", "id": "dg-6_6-01-0"},
 
 
+
+
+
+
+
+
+
     { t: "p", text: "Replacing every missing value in a column with the column's mean is the most common imputation and the most damaging one that looks harmless. **It puts a spike at one point in the distribution, and every statistic that depends on spread — standard deviation, correlation, confidence interval — is now computed on a column that has less spread than the truth.**" },
 
     { t: "dl", items: [
@@ -272,6 +279,11 @@ test_f = imp.transform(test[["income"]])               # applies it to test
     },
 
     { t: "h2", n: "03", text: "The indicator, and keeping the gap visible", id: "indicator" },
+
+    {"kind": "compare", "title": "The indicator keeps the gap visible", "caption": "Any fill makes a value up. Adding a boolean column that records *where* the fill happened costs one column and lets the model use the fact of absence as a feature — which, under MNAR, is often the strongest signal in the dataset.", "columns": [{"title": "Fill only", "tone": "warn", "items": ["The column looks complete", "The model cannot tell filled from real", "Variance is understated", "MNAR information is destroyed"]}, {"title": "Fill, plus an indicator", "tone": "good", "items": ["One extra boolean column", "The model can learn from absence", "The fill's effect is separable", "The commonest fix, and the cheapest"]}], "t": "diagram", "id": "dg-6_6-03-1"},
+
+
+
 
     { t: "code", lang: "python", title: "fill and flag, and when the flag is the feature", code: `
 from sklearn.impute import MissingIndicator

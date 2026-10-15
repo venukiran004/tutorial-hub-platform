@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What a split claims", id: "claims" },
 
+    {"kind": "matrix", "title": "What each split actually claims", "caption": "A split is a claim about the population the estimate generalises to. A random split claims performance on rows like these; a group split claims performance on entities never seen; a time split claims performance on a later period — which is the only period a deployed model ever sees.", "cols": ["Estimates performance on", "Use when"], "rows": ["Random holdout", "Stratified split", "Group split", "Time-based split", "Time split with a gap"], "cells": [["rows drawn like these", "rows are independent"], [{"text": "the same, class rates kept", "tone": "good"}, "a class is rare"], [{"text": "unseen entities", "tone": "good"}, "many rows per customer or device"], [{"text": "a later period", "tone": "good"}, "anything deployed forward in time"], [{"text": "a later period, honestly", "tone": "accent"}, "labels span a window"]], "t": "diagram", "id": "dg-8_4-01-0"},
+
+
+
     { t: "p", text: "Held-out rows estimate performance on rows the model has not seen. **The estimate is only worth anything if the held-out rows resemble the rows the model will meet in production in every way that matters** — same entities or new ones, same period or a later one, same class balance or a different one. Each split type encodes one of those assumptions, and choosing is a question about the deployment, not about the data." },
 
     { t: "dl", items: [
@@ -145,6 +149,10 @@ print(np.round(scores, 2))          # [0.81 0.9  0.74 0.87 0.79 0.93 0.83 0.77]
     { t: "p", text: "The table is the reason 'model B is better, 0.83 versus 0.81' is a statement about the seed as often as about the model. **Cross-validation uses every row as a test row once and reports a mean with a spread; repeated cross-validation shrinks the spread further.** When the test set is small, report the interval, and if the interval covers both candidates, say so." },
 
     { t: "h2", n: "03", text: "Group splits: who, not what", id: "group" },
+
+    {"kind": "steps", "title": "Group splits: who, not what", "caption": "With many rows per entity, a random split puts the same customer on both sides, and the model scores well by recognising the customer rather than the pattern. The fix is to split the **entities** and then take their rows.", "items": [{"label": "Many rows share an entity", "desc": "several orders per customer, several scans per patient", "code": "1", "tone": "accent"}, {"label": "A random row split divides them", "desc": "the same customer is in train and in test", "code": "2", "tone": "crit"}, {"label": "The model recognises the entity", "desc": "not the pattern you wanted it to learn", "code": "3", "tone": "crit"}, {"label": "Split the entities instead", "desc": "GroupKFold on customer_id, then take their rows", "code": "fix", "tone": "good"}, {"label": "Check it", "desc": "the intersection of train and test ids must be empty", "code": "assert", "tone": "good"}], "t": "diagram", "id": "dg-8_4-03-1"},
+
+
 
     { t: "p", text: "Rows that share a customer, a patient, a machine or a session are not independent. A model with enough capacity learns the entity — from an ID column, or from the near-unique combination of age, region and plan that every row of that customer carries — and a random split then tests whether it remembers, not whether it generalises. **If the deployment will score entities the model has never seen, every row of an entity must be on one side.**" },
 
