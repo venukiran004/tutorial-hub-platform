@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Liu, Ting and Zhou (2008) turned the definition around. Instead of modelling what normal looks like and measuring departure from it, grow a random tree: pick a feature at random, pick a split value uniformly between that feature's minimum and maximum in the current node, recurse. A row far from the others is separated from them in a few splits; a row in a dense region needs many. The **path length** h(x) is the number of splits from the root to the leaf that holds x; averaged over many trees, each grown on a random subsample of 256 rows, it is the score's raw material. Two details make it work. Trees are cut at depth ⌈log₂ 256⌉ = 8 — beyond that the remaining rows are normal by construction and further splits are wasted — and a leaf reached at the depth limit with n rows still inside is credited an extra c(n), the average path length of an unsuccessful search in a binary search tree of n items, as an estimate of how much deeper those rows would have gone." },
 
     { t: "code", lang: "python", title: "The score computed from the trees, checked against score_samples (executed on the 9.4 correlated data)",
@@ -119,6 +122,9 @@ U_skew   = U_l where the feature's skewness < 0 else U_r
     { t: "h2", n: "05", text: "Thresholds, and evaluation when there are no labels", id: "evaluation" },
 
     {"kind": "matrix", "title": "Setting a threshold when there are no labels", "caption": "Without labels there is no optimum to find, so the threshold must come from somewhere outside the data — and review capacity is the honest answer in almost every production system. The random audit sample is the part that is usually missing: without it the base rate is unknown, and a supervised model trained on the queue learns only the queue's biases.", "cols": ["Threshold from", "Gives"], "rows": ["Review capacity", "An expected rate", "A score elbow", "Analyst verdicts", "A random audit sample"], "cells": [[{"text": "how many can be checked", "tone": "good"}, "precision at depth, measurable weekly"], [{"text": "the assumed contamination", "tone": "accent"}, "a rate, if the assumption holds"], [{"text": "the score distribution", "tone": "warn"}, "often no elbow exists"], [{"text": "the queue's outcomes", "tone": "good"}, "precision only — never recall"], [{"text": "rows nobody selected", "tone": "good"}, {"text": "the base rate, and recall", "tone": "good"}]], "t": "diagram", "id": "dg-9_5-05-1"},
+
+
+
 
 
 

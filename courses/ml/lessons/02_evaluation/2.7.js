@@ -19,6 +19,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The interval on a single number", id: "interval" },
 
+    {"kind": "trace", "title": "Five fold scores, and what they do and do not support", "caption": "Mean 0.848, sd 0.044, standard error 0.020, naive interval 0.848 ± 0.055. That supports 'the procedure scores about 0.85, plausibly 0.79 to 0.90'. It does **not** support 'better than a model scoring 0.83' — 0.83 is inside the interval, and the folds' training sets overlap, so the five numbers are correlated and the true standard error is larger than 0.020.", "left": "quantity", "codeW": 230, "vars": ["value", "what it licenses"], "steps": [{"code": "fold AUCs", "state": ["0.85 0.82 0.90 0.79 0.88", ""], "tone": "accent"}, {"code": "mean", "state": ["0.848", "the point estimate"], "tone": "good"}, {"code": "sd", "state": ["0.044", "fold-to-fold spread"]}, {"code": "standard error", "state": ["0.020", "sd / sqrt(5)"]}, {"code": "naive 95% interval", "state": ["0.848 +/- 0.055", "'about 0.85, 0.79 to 0.90'"], "tone": "good"}, {"code": "'better than 0.83'", "state": ["not supported", "0.83 is inside it"], "tone": "crit"}, {"code": "the real SE", "state": ["larger than 0.020", "folds share training rows"], "tone": "crit"}], "t": "diagram", "id": "dg-2_7-01-0"},
+
     { t: "code", lang: "text", title: "Five fold scores, and what can be said about them (executed)",
       code: `fold AUCs   0.85  0.82  0.90  0.79  0.88
 mean 0.848    sd 0.044    standard error of the mean 0.044 / sqrt(5) = 0.020    naive 95 % interval  0.848 ± 0.055
@@ -57,7 +59,11 @@ for _ in range(2000):
 
     { t: "h2", n: "02", text: "Paired comparison across folds, corrected", id: "paired" },
 
+    {"kind": "matrix", "title": "Why the naive paired t-test over folds is wrong", "caption": "Cross-validation folds share training rows, so the per-fold differences are **not independent** — and a t-test that assumes they are reports an interval far too narrow and a p-value far too small. The corrections exist because the dependence is structural, not a sampling accident.", "cols": ["Assumes", "Use"], "rows": ["Paired t over folds", "Corrected resampled t", "5x2cv paired t", "McNemar", "Bootstrap on the test set"], "cells": [[{"text": "folds are independent", "tone": "crit"}, "they share training rows"], [{"text": "accounts for the overlap", "tone": "good"}, "the default for repeated CV"], [{"text": "limits the reuse", "tone": "good"}, "when a stricter test is wanted"], [{"text": "per-row agreement", "tone": "good"}, "two models at one threshold"], [{"text": "one test set, resampled", "tone": "good"}, "an interval on a single number"]], "t": "diagram", "id": "dg-2_7-02-1"},
+
     {"kind": "matrix", "title": "Why the naive paired t-test over folds is wrong", "caption": "Cross-validation folds share training rows, so the per-fold differences are **not independent** — and a t-test that assumes they are reports an interval far too narrow and a p-value far too small. The corrections exist because the dependence is structural, not a sampling accident.", "cols": ["Assumes", "Use"], "rows": ["Paired t over folds", "Corrected resampled t", "5x2cv paired t", "McNemar", "Bootstrap on the test set"], "cells": [[{"text": "folds are independent", "tone": "crit"}, "they share training rows"], [{"text": "accounts for the overlap", "tone": "good"}, "the default for repeated CV"], [{"text": "limits the reuse", "tone": "good"}, "when a stricter test is wanted"], [{"text": "per-row agreement", "tone": "good"}, "two models at one threshold"], [{"text": "one test set, resampled", "tone": "good"}, "an interval on a single number"]], "t": "diagram", "id": "dg-2_7-02-0"},
+
+
 
 
 
@@ -134,6 +140,8 @@ mcnemar([[201, 11], [12, 73]], exact=True)      # p = 1.0
 
     { t: "h2", n: "03", text: "Slices, and the rows that are not there", id: "slices" },
 
+    {"kind": "trace", "title": "Two models, two intervals, and the only comparison that counts", "caption": "Logistic 0.789 and gbdt 0.772 look like a clear ordering until the intervals are drawn: they overlap almost entirely. The right object is the **paired** interval on the difference, computed on the same rows — 0.017 with a 95% interval of [−0.012, 0.049], which includes zero. 'Logistic is ahead' is the best guess; 'logistic is better' is not something 297 rows can support.", "left": "model", "codeW": 190, "vars": ["AUC", "95% interval", "verdict"], "steps": [{"code": "logistic", "state": ["0.789", "[0.717, 0.856]", ""], "tone": "accent"}, {"code": "gbdt", "state": ["0.772", "[0.698, 0.840]", ""], "tone": "accent"}, {"code": "the two intervals", "state": ["", "overlap almost fully", "tells you little"], "tone": "warn"}, {"code": "paired difference", "state": ["0.017", "[-0.012, 0.049]", "includes zero"], "changed": [1], "tone": "crit"}, {"code": "P(logistic worse)", "state": ["0.136", "", "not a conclusion"], "tone": "crit"}], "t": "diagram", "id": "dg-2_7-03-2"},
+
     { t: "code", lang: "python", title: "The logistic model's AUC by plan and by region, with bootstrap intervals (executed)",
       hl: [4, 8, 9],
       code: `#   slice           n    positives   AUC     95 % CI
@@ -165,7 +173,11 @@ the width scales with 1 / sqrt(positives), so at 1 % prevalence a ± 0.02 interv
 
     { t: "h2", n: "04", text: "Offline against online", id: "online" },
 
+    {"kind": "compare", "title": "Offline is necessary and never sufficient", "caption": "Offline evaluation reads logged rows whose labels exist because some **past policy** chose to show them — so it answers 'which candidate looks most promising', not 'will this move the business'. Only the second question is the one the deployment is for, and only a randomised test answers it.", "columns": [{"title": "Offline", "tone": "accent", "items": ["Logged rows, labels already known", "AUC, log loss, NDCG — proxies", "Paired on the same rows or folds", "Optimises the proxy, not the goal", "Necessary; never sufficient"]}, {"title": "Online", "tone": "good", "items": ["Live traffic, labels arrive later or never", "Conversion, revenue, retention — the thing itself", "Randomised, with a control", "Slow, expensive, can harm users while running", "Sufficient; the final word"]}], "t": "diagram", "id": "dg-2_7-04-3"},
+
     {"kind": "matrix", "title": "Offline is necessary and never sufficient", "caption": "Offline evaluation reads logged rows whose labels exist because some **past policy** chose to show them — so it answers 'which candidate looks most promising', not 'will this move the business'. Only the second question is the one the deployment is for, and only a randomised test answers it.", "cols": ["Offline", "Online"], "rows": ["Data", "Metric", "Comparison", "Failure mode", "Verdict"], "cells": [["logged rows, labels known", "live traffic, labels later"], [{"text": "AUC, log loss: proxies", "tone": "warn"}, {"text": "revenue, retention: the thing", "tone": "good"}], ["paired on the same rows", "randomised, with a control"], [{"text": "optimises the proxy", "tone": "crit"}, {"text": "slow; can harm users", "tone": "warn"}], [{"text": "necessary, not sufficient", "tone": "accent"}, {"text": "the final word", "tone": "good"}]], "t": "diagram", "id": "dg-2_7-04-1"},
+
+
 
 
 

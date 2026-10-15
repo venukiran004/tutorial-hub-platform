@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table", head: ["Decision", "Choice for the store case", "Reason"], rows: [
       ["Granularity", "daily, per store", "matches the replenishment decision"],
       ["Horizon", "28 days", "matches the ordering lead time"],
@@ -52,6 +55,9 @@ fitting panel: 911 days × 3 stores;  calendar known in advance: promo, Black Fr
     { t: "h2", n: "02", text: "The result table that ends the review", id: "results" },
 
     {"kind": "steps", "title": "What the forecast has to survive after it is accepted", "caption": "A forecast is a recurring obligation, not a result. Every item here is a way the pipeline silently stops being the thing that was validated — and the last one is the reason to keep the baseline running forever.", "items": [{"label": "The same feature code at scoring time", "desc": "a rolling mean that includes today is a leak in production too", "code": "1", "tone": "crit"}, {"label": "Refit on a schedule, versioned", "desc": "with the previous model kept and comparable", "code": "2", "tone": "good"}, {"label": "Bias watched, not just error", "desc": "a persistent sign is a correctable systematic miss", "code": "3", "tone": "good"}, {"label": "Revisions handled", "desc": "a restated history changes what the model was trained on", "code": "4", "tone": "warn"}, {"label": "New series handled", "desc": "a store with no history needs a fallback, not an error", "code": "5", "tone": "warn"}, {"label": "The baseline still running", "desc": "the day the model stops beating it, you want to know", "code": "6", "tone": "violet"}], "t": "diagram", "id": "dg-10_9-02-1"},
+
+
+
 
 
 

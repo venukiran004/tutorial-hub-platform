@@ -83,6 +83,9 @@ the same 11 voters at 60 %, simulated with a shared 'difficulty' component (20,0
 
 
 
+
+
+
     { t: "code", lang: "python", title: "Six base models and the correlation of their out-of-fold probabilities (executed, 989 rows, 5-fold)",
       hl: [2, 7, 10, 11, 12, 13, 14, 15],
       code: `#   model            AUC       log-loss
@@ -141,6 +144,9 @@ the same 11 voters at 60 %, simulated with a shared 'difficulty' component (20,0
     { t: "h2", n: "03", text: "The spend data: where stacking earns its keep", id: "spend" },
 
     {"kind": "matrix", "title": "Check the members' correlation before combining anything", "caption": "Above about 0.9 with one clearly best member, the combination lands at or below that member — the churn case, six ways, where the stack predicted 35× slower for −0.005 AUC. Below about 0.8 among comparably good members, averaging gains. The usual outcome on a well-specified problem is that the ensemble's gain is smaller than the gain from a better feature.", "cols": ["Combines", "Gain"], "rows": ["Bagging / forest", "Boosting", "Voting / averaging", "Stacking", "Members over 0.9 correlated", "One member much worse"], "cells": [["the same learner, deep", {"text": "large on high-variance learners", "tone": "good"}], ["the same learner, shallow", {"text": "largest on tabular data", "tone": "good"}], ["different families", {"text": "small unless diverse", "tone": "warn"}], ["families plus a meta-model", {"text": "small to moderate: 7.31 -> 7.12", "tone": "accent"}], [{"text": "nothing useful", "tone": "crit"}, {"text": "at or below the best member", "tone": "crit"}], ["harmful in an average", {"text": "8.70; harmless in a stack at -0.01", "tone": "warn"}]], "t": "diagram", "id": "dg-6_5-03-1"},
+
+
+
 
 
 

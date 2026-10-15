@@ -65,6 +65,70 @@
    }
   },
   {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Two constant predictors, and the metrics that see through them",
+    "caption": "At 16.2% prevalence, predicting 'stay' for everyone scores **0.838 accuracy** — seventeen points above the actual model — while learning nothing at all. The metrics that cannot be fooled are the ones that collapse to 0 or 0.5 for a constant: AUC, F1, MCC. That is the test to apply to any metric before trusting it on an imbalanced problem.",
+    "left": "predictor",
+    "codeW": 190,
+    "vars": [
+     "accuracy",
+     "AUC",
+     "F1",
+     "MCC"
+    ],
+    "steps": [
+     {
+      "code": "always 'stay'",
+      "state": [
+       "0.838",
+       "0.500",
+       "0.000",
+       "0.000"
+      ],
+      "tone": "crit",
+      "note": "+17 pts on accuracy"
+     },
+     {
+      "code": "always 'churn'",
+      "state": [
+       "0.162",
+       "0.500",
+       "0.278",
+       "0.000"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "the model @ 0.5",
+      "state": [
+       "0.670",
+       "0.728",
+       "0.443",
+       "0.272"
+      ],
+      "changed": [
+       1,
+       2,
+       3
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "sees through a constant?",
+      "state": [
+       "no",
+       "yes",
+       "yes",
+       "yes"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
    "after": "03",
    "d": {
     "kind": "matrix",
@@ -124,61 +188,189 @@
  ],
  "2.2": [
   {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "The ROC curve, one threshold at a time",
+    "caption": "Ten scored rows, five positive. Walk the threshold down the sorted scores and watch the path: a **positive** steps the curve up, a **negative** steps it right. That is all an ROC curve is — the staircase of those steps. The area by trapezoids is 0.72, which equals 18/25: the number of positive–negative pairs the model ranked correctly, out of all 5 × 5 pairs.",
+    "left": "threshold",
+    "codeW": 130,
+    "vars": [
+     "TP",
+     "FP",
+     "TPR",
+     "FPR"
+    ],
+    "steps": [
+     {
+      "code": "0.95",
+      "state": [
+       "1",
+       "0",
+       "0.20",
+       "0.00"
+      ],
+      "tone": "good",
+      "note": "up"
+     },
+     {
+      "code": "0.85",
+      "state": [
+       "2",
+       "0",
+       "0.40",
+       "0.00"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good",
+      "note": "up"
+     },
+     {
+      "code": "0.80",
+      "state": [
+       "2",
+       "1",
+       "0.40",
+       "0.20"
+      ],
+      "changed": [
+       3
+      ],
+      "tone": "warn",
+      "note": "right"
+     },
+     {
+      "code": "0.70",
+      "state": [
+       "3",
+       "1",
+       "0.60",
+       "0.20"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good",
+      "note": "up"
+     },
+     {
+      "code": "0.60",
+      "state": [
+       "3",
+       "2",
+       "0.60",
+       "0.40"
+      ],
+      "changed": [
+       3
+      ],
+      "tone": "warn",
+      "note": "right"
+     },
+     {
+      "code": "0.55",
+      "state": [
+       "4",
+       "2",
+       "0.80",
+       "0.40"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good",
+      "note": "up"
+     },
+     {
+      "code": "0.40",
+      "state": [
+       "4",
+       "3",
+       "0.80",
+       "0.60"
+      ],
+      "changed": [
+       3
+      ],
+      "tone": "warn",
+      "note": "right"
+     },
+     {
+      "code": "0.30",
+      "state": [
+       "4",
+       "4",
+       "0.80",
+       "0.80"
+      ],
+      "changed": [
+       3
+      ],
+      "tone": "warn",
+      "note": "right"
+     },
+     {
+      "code": "0.20",
+      "state": [
+       "5",
+       "4",
+       "1.00",
+       "0.80"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good",
+      "note": "up"
+     },
+     {
+      "code": "0.10",
+      "state": [
+       "5",
+       "5",
+       "1.00",
+       "1.00"
+      ],
+      "changed": [
+       3
+      ],
+      "tone": "accent",
+      "note": "area 0.72"
+     }
+    ]
+   }
+  },
+  {
    "after": "02",
    "d": {
-    "kind": "matrix",
+    "kind": "compare",
     "title": "ROC and PR answer different questions about the same ranking",
     "caption": "Both axes of ROC are within-class rates, so prevalence cannot move them — which makes ROC-AUC comparable across differently balanced datasets and blind to how rare the positives are. Precision mixes the classes, so PR tracks what acting on the flags will actually feel like.",
-    "cols": [
-     "ROC",
-     "Precision-recall"
-    ],
-    "rows": [
-     "Axes",
-     "No-skill level",
-     "Effect of prevalence",
-     "Blind to",
-     "Use it for"
-    ],
-    "cells": [
-     [
-      "TPR against FPR",
-      "precision against recall"
-     ],
-     [
-      {
-       "text": "the diagonal: 0.5",
-       "tone": "accent"
-      },
-      {
-       "text": "precision = prevalence",
-       "tone": "accent"
-      }
-     ],
-     [
-      {
-       "text": "none",
-       "tone": "good"
-      },
-      {
-       "text": "strong",
-       "tone": "warn"
-      }
-     ],
-     [
-      {
-       "text": "how rare positives are",
-       "tone": "warn"
-      },
-      {
-       "text": "the true negatives entirely",
-       "tone": "warn"
-      }
-     ],
-     [
-      "comparing rankers",
-      "a cost per flag"
-     ]
+    "columns": [
+     {
+      "title": "ROC",
+      "tone": "accent",
+      "items": [
+       "TPR against FPR: both within-class",
+       "No-skill line is the diagonal, AUC 0.5",
+       "Prevalence cannot move it",
+       "Blind to how rare positives are",
+       "Use it to compare rankers across datasets"
+      ]
+     },
+     {
+      "title": "Precision-recall",
+      "tone": "good",
+      "items": [
+       "Precision against recall: precision mixes classes",
+       "No-skill level is the prevalence itself",
+       "Rarer positives lower it everywhere",
+       "Ignores the true negatives entirely",
+       "Use it when each flag is an action with a cost"
+      ]
+     }
     ]
    }
   },
@@ -252,63 +444,215 @@
   {
    "after": "01",
    "d": {
-    "kind": "matrix",
-    "title": "One model, eleven thresholds, three different answers",
-    "caption": "The same fitted model throughout — only the cut moves. Note that the three rules disagree: **cost** is minimised at 0.15, **F1** peaks at 0.25, and the default 0.50 is near-worst on both while flagging only 13 customers. The default is not a neutral choice, it is an unexamined one.",
-    "cols": [
-     "precision / recall / F1",
-     "flagged, cost"
+    "kind": "trace",
+    "title": "One fitted model, eleven thresholds, three different answers",
+    "caption": "Nothing changes down this table except the cut. Watch the three rules disagree: **cost** is minimised at 0.15, **F1** peaks at 0.25, and the default 0.50 is near-worst on both while flagging only 13 of 297 customers. The default is not a neutral choice, it is an unexamined one — and the sweep costs one line of code.",
+    "left": "threshold",
+    "codeW": 110,
+    "vars": [
+     "precision",
+     "recall",
+     "F1",
+     "flagged",
+     "cost"
     ],
-    "rows": [
-     "0.05",
-     "0.15",
-     "0.25",
-     "0.35",
-     "0.50",
-     "0.70"
+    "steps": [
+     {
+      "code": "0.05",
+      "state": [
+       "0.183",
+       "0.938",
+       "0.306",
+       "246",
+       "4,230"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "0.10",
+      "state": [
+       "0.231",
+       "0.875",
+       "0.365",
+       "182",
+       "4,030"
+      ]
+     },
+     {
+      "code": "0.15",
+      "state": [
+       "0.288",
+       "0.833",
+       "0.428",
+       "139",
+       "3,895"
+      ],
+      "changed": [
+       4
+      ],
+      "tone": "good",
+      "note": "min cost"
+     },
+     {
+      "code": "0.20",
+      "state": [
+       "0.320",
+       "0.688",
+       "0.437",
+       "103",
+       "3,995"
+      ]
+     },
+     {
+      "code": "0.25",
+      "state": [
+       "0.412",
+       "0.583",
+       "0.483",
+       "68",
+       "4,020"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "accent",
+      "note": "max F1"
+     },
+     {
+      "code": "0.30",
+      "state": [
+       "0.449",
+       "0.458",
+       "0.454",
+       "49",
+       "4,165"
+      ]
+     },
+     {
+      "code": "0.35",
+      "state": [
+       "0.513",
+       "0.417",
+       "0.460",
+       "39",
+       "4,195"
+      ]
+     },
+     {
+      "code": "0.40",
+      "state": [
+       "0.533",
+       "0.333",
+       "0.410",
+       "30",
+       "4,310"
+      ]
+     },
+     {
+      "code": "0.50",
+      "state": [
+       "0.769",
+       "0.208",
+       "0.328",
+       "13",
+       "4,465"
+      ],
+      "tone": "crit",
+      "note": "the default"
+     },
+     {
+      "code": "0.70",
+      "state": [
+       "1.000",
+       "0.062",
+       "0.118",
+       "3",
+       "4,695"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "0.80+",
+      "state": [
+       "—",
+       "0.000",
+       "0.000",
+       "0",
+       "4,800"
+      ],
+      "tone": "crit",
+      "note": "flags nobody"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Four rules, four thresholds, from the same curve",
+    "caption": "The sweep produces one table; which row you take is a business decision with four common shapes. Only the third uses the probability as a number, which is why it is the only one that needs the model to be calibrated (2.5).",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "The sweep",
+      "sub": "precision, recall, cost at every cut",
+      "tone": "violet"
+     },
+     {
+      "id": "r",
+      "label": "Target recall",
+      "sub": "highest cut with recall >= 0.95",
+      "tone": "good"
+     },
+     {
+      "id": "p",
+      "label": "Target precision",
+      "sub": "lowest cut with precision >= 0.9",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Minimum expected cost",
+      "sub": "break-even at p = c / b",
+      "tone": "accent"
+     },
+     {
+      "id": "k",
+      "label": "Fixed capacity",
+      "sub": "top k by score; recall is the outcome",
+      "tone": "teal"
+     },
+     {
+      "id": "d",
+      "label": "Leave it at 0.5",
+      "sub": "13 flagged, near-worst on both",
+      "tone": "crit"
+     }
     ],
-    "cells": [
+    "edges": [
      [
-      "0.183 / 0.938 / 0.306",
-      "246 flagged, 4,230"
+      "s",
+      "r"
      ],
      [
-      {
-       "text": "0.288 / 0.833 / 0.428",
-       "tone": "good"
-      },
-      {
-       "text": "139 flagged, 3,895 min",
-       "tone": "good"
-      }
+      "s",
+      "p"
      ],
      [
-      {
-       "text": "0.412 / 0.583 / 0.483",
-       "tone": "accent"
-      },
-      "68 flagged, 4,020"
+      "s",
+      "c"
      ],
      [
-      "0.513 / 0.417 / 0.460",
-      "39 flagged, 4,195"
+      "s",
+      "k"
      ],
      [
-      {
-       "text": "0.769 / 0.208 / 0.328",
-       "tone": "crit"
-      },
-      {
-       "text": "13 flagged, 4,465",
-       "tone": "crit"
-      }
-     ],
-     [
-      {
-       "text": "1.000 / 0.062 / 0.118",
-       "tone": "crit"
-      },
-      "3 flagged, 4,695"
+      "s",
+      "d",
+      "",
+      "dashed"
      ]
     ]
    }
@@ -364,58 +708,155 @@
  ],
  "2.4": [
   {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Five errors of 10, 10, 5, 12, 10 — under every regression metric",
+    "caption": "One set of five errors, nine metrics. The **RMSE/MAE ratio of 1.03** is the diagnostic worth knowing: near 1 means the errors are all about the same size, and a ratio of 2 or more means a few large misses dominate the squared metric. R² is 0.981 here only because predicting the mean would have been catastrophic (SS_tot 25,000), which is why R² flatters a model on a high-variance target.",
+    "left": "metric",
+    "codeW": 190,
+    "vars": [
+     "value",
+     "what it is"
+    ],
+    "steps": [
+     {
+      "code": "MAE",
+      "state": [
+       "9.40",
+       "average size of a miss"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "MSE",
+      "state": [
+       "93.80",
+       "in squared units"
+      ]
+     },
+     {
+      "code": "RMSE",
+      "state": [
+       "9.69",
+       "back in the target's units"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "RMSE / MAE",
+      "state": [
+       "1.03",
+       "near 1: errors are even"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "median |e|",
+      "state": [
+       "10.00",
+       "blind to the tails"
+      ]
+     },
+     {
+      "code": "R²",
+      "state": [
+       "0.981",
+       "vs predicting the mean"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "MAPE",
+      "state": [
+       "5.46%",
+       "each error over its own target"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "RMSLE",
+      "state": [
+       "0.059",
+       "ratios, not differences"
+      ]
+     }
+    ]
+   }
+  },
+  {
    "after": "02",
    "d": {
-    "kind": "matrix",
-    "title": "Which regression metric, decided by one question each",
-    "caption": "The questions are about the **decision**, not the data. The loss a model trains on and the metric a business reads need not match — train on squared error because it is smooth, report MAE because operations understand it. What must match is the metric and the cost of being wrong.",
-    "cols": [
-     "If yes",
-     "If no"
+    "kind": "trace",
+    "title": "One outlier arrives, and the metrics part company",
+    "caption": "The same five errors, plus one miss of 100. MAE multiplies by 2.61 because the outlier is divided by n; RMSE multiplies by **4.31**, because the square arrives before the average — 100² is 10,000 against 469 for the other five squares combined. The median does not move at all. And one row took forty points off R². Whenever RMSE and MAE diverge, a few rows own the squared metric, and those rows are worth reading individually.",
+    "left": "metric",
+    "codeW": 170,
+    "vars": [
+     "five errors",
+     "plus one of 100",
+     "factor"
     ],
-    "rows": [
-     "Large errors cost more",
-     "Outliers you distrust",
-     "Target spans orders",
-     "Stakeholder wants %",
-     "Comparing across targets"
-    ],
-    "cells": [
-     [
-      {
-       "text": "RMSE",
-       "tone": "good"
-      },
-      "MAE, trained on Huber"
-     ],
-     [
-      {
-       "text": "MAE, median AE",
-       "tone": "good"
-      },
-      "RMSE is fine"
-     ],
-     [
-      {
-       "text": "log the target; RMSLE",
-       "tone": "good"
-      },
-      "plain units"
-     ],
-     [
-      {
-       "text": "WAPE, or MAPE if no zeros",
-       "tone": "warn"
-      },
-      "MAE in units"
-     ],
-     [
-      {
-       "text": "R² or MASE",
-       "tone": "accent"
-      },
-      "units"
-     ]
+    "steps": [
+     {
+      "code": "MAE",
+      "state": [
+       "9.40",
+       "24.50",
+       "x 2.61"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "RMSE",
+      "state": [
+       "9.69",
+       "41.77",
+       "x 4.31"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit",
+      "note": "100² = 10,000"
+     },
+     {
+      "code": "RMSE / MAE",
+      "state": [
+       "1.03",
+       "1.70",
+       "the diagnostic"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "median |e|",
+      "state": [
+       "10.00",
+       "10.00",
+       "unmoved"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "R²",
+      "state": [
+       "0.981",
+       "0.581",
+       "-40 points"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit",
+      "note": "from one row"
+     }
     ]
    }
   },
@@ -474,15 +915,160 @@
      ]
     ]
    }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Which regression metric, decided by one question each",
+    "caption": "The questions are about the **decision**, not the data. The loss a model trains on and the metric a business reads need not match — train on squared error because it is smooth, report MAE because operations understand it. What must match is the metric and the cost of being wrong.",
+    "cols": [
+     "If yes",
+     "If no"
+    ],
+    "rows": [
+     "Large errors cost more",
+     "Outliers you distrust",
+     "Target spans orders",
+     "Stakeholder wants %",
+     "Comparing across targets"
+    ],
+    "cells": [
+     [
+      {
+       "text": "RMSE",
+       "tone": "good"
+      },
+      "MAE, trained on Huber"
+     ],
+     [
+      {
+       "text": "MAE, median AE",
+       "tone": "good"
+      },
+      "RMSE is fine"
+     ],
+     [
+      {
+       "text": "log the target; RMSLE",
+       "tone": "good"
+      },
+      "plain units"
+     ],
+     [
+      {
+       "text": "WAPE, or MAPE if no zeros",
+       "tone": "warn"
+      },
+      "MAE in units"
+     ],
+     [
+      {
+       "text": "R² or MASE",
+       "tone": "accent"
+      },
+      "units"
+     ]
+    ]
+   }
   }
  ],
  "2.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "The random forest's reliability table: predicted against observed",
+    "caption": "Bin the predictions into tenths and compare the mean prediction in each bin with the **observed** positive rate. A calibrated model's two columns match. The forest's do not: it says 0.046 where the truth is 0.026, and 0.656 where the truth is 0.959 — under-confident at both ends, because averaging 0/1 votes pulls every prediction toward the middle and cannot reach the extremes unless every tree agrees.",
+    "left": "predicted bin",
+    "codeW": 150,
+    "vars": [
+     "rows",
+     "mean prediction",
+     "observed rate"
+    ],
+    "steps": [
+     {
+      "code": "0.0 - 0.1",
+      "state": [
+       "813",
+       "0.046",
+       "0.026"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "0.1 - 0.2",
+      "state": [
+       "469",
+       "0.143",
+       "0.066"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "0.2 - 0.3",
+      "state": [
+       "243",
+       "0.244",
+       "0.169"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "0.3 - 0.4",
+      "state": [
+       "107",
+       "0.349",
+       "0.299"
+      ]
+     },
+     {
+      "code": "0.4 - 0.5",
+      "state": [
+       "78",
+       "0.448",
+       "0.526"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "0.5 - 0.6",
+      "state": [
+       "69",
+       "0.554",
+       "0.855"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "0.6 - 0.7",
+      "state": [
+       "74",
+       "0.656",
+       "0.959"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "crit",
+      "note": "under-confident"
+     }
+    ]
+   }
+  },
   {
    "after": "02",
    "d": {
     "kind": "matrix",
     "title": "Each family is miscalibrated in its own characteristic direction",
-    "caption": "The shape follows from the training objective. A forest averages 0/1 votes, which pulls every prediction toward the middle and cannot reach 0 or 1 unless every tree agrees. Cross-entropy on a deep network pushes logits apart without bound, which is over-confidence by construction.",
+    "caption": "The shape follows from the training objective. A forest averages 0/1 votes, which pulls every prediction toward the middle. Cross-entropy on a deep network pushes logits apart without bound, which is over-confidence by construction. Note the measured tension: the forest was the **best ranker** at 0.916 AUC and the **worst calibrated** at 0.070 ECE.",
     "cols": [
      "Shape",
      "Fix"
@@ -616,6 +1202,157 @@
  ],
  "2.6": [
   {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Three queries, graded 0 to 3, under every ranking metric",
+    "caption": "q1 = [3,2,0,1,0], q2 = [0,0,3,0,1], q3 = [1,0,0,0,0]. Look at q3: a single weak result in the right place scores **NDCG 1.000**, because normalisation divides by the best possible ordering of what was available. And q2's perfect item sitting in slot 3 costs it half its NDCG. Position is the whole subject — the same set of results in a different order is a different prediction.",
+    "left": "query",
+    "codeW": 170,
+    "vars": [
+     "DCG@5",
+     "IDCG@5",
+     "NDCG@5",
+     "RR",
+     "P@3",
+     "AP"
+    ],
+    "steps": [
+     {
+      "code": "q1 [3,2,0,1,0]",
+      "state": [
+       "9.323",
+       "9.393",
+       "0.993",
+       "1.000",
+       "0.667",
+       "0.917"
+      ],
+      "tone": "good",
+      "note": "nearly ideal"
+     },
+     {
+      "code": "q2 [0,0,3,0,1]",
+      "state": [
+       "3.887",
+       "7.631",
+       "0.509",
+       "0.333",
+       "0.333",
+       "0.367"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "crit",
+      "note": "slot 3 costs half"
+     },
+     {
+      "code": "q3 [1,0,0,0,0]",
+      "state": [
+       "1.000",
+       "1.000",
+       "1.000",
+       "1.000",
+       "0.333",
+       "1.000"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "accent",
+      "note": "weak, but ideal"
+     },
+     {
+      "code": "mean",
+      "state": [
+       "—",
+       "—",
+       "0.834",
+       "0.778",
+       "0.444",
+       "0.761"
+      ],
+      "tone": "violet",
+      "note": "MRR and MAP"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Scoring a clustering, with labels and without",
+    "caption": "Internal indices measure the geometry a method produced, so they systematically prefer the kind of shape that method makes — on two moons, k-means scores a silhouette of 0.487 and the **true** labelling scores 0.328. External indices need labels and must be corrected for chance, which is why ARI and AMI exist and the raw Rand index does not belong in a report.",
+    "cols": [
+     "Needs labels",
+     "Watch out for"
+    ],
+    "rows": [
+     "Silhouette",
+     "Davies-Bouldin",
+     "Calinski-Harabasz",
+     "Rand index",
+     "ARI / AMI",
+     "Stability across halves"
+    ],
+    "cells": [
+     [
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      {
+       "text": "prefers round clusters: 0.487 > 0.328",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      "also assumes round clusters"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      "prefers small k on a continuum"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "warn"
+      },
+      {
+       "text": "not corrected for chance",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "0 is chance; can go negative"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "good"
+      },
+      {
+       "text": "reproducible mistakes score well",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  },
+  {
    "after": "03",
    "d": {
     "kind": "matrix",
@@ -666,61 +1403,102 @@
   {
    "after": "04",
    "d": {
-    "kind": "matrix",
-    "title": "The two charts a non-specialist will actually adopt",
-    "caption": "Gain and lift need no training to read: 'the top 20% of the list contains 54% of the churners' is a sentence anyone can act on. Both must be computed at the deployed threshold, on held-out data — a gain chart on training rows is a description of memorisation.",
-    "cols": [
-     "Says",
-     "Read by"
+    "kind": "cells",
+    "title": "The gain chart: cumulative share of churners captured, by decile",
+    "caption": "Rank all 297 customers by score and cut into deciles. The **top decile holds a third of all churners** — a lift of 3.30 over calling at random — and calling half the base reaches 85% of them. This is the chart a retention team adopts without training, because 'the top 10% contains a third of the churners' is a sentence anyone can act on. Note the last two deciles add nothing: the model has already found everyone by decile 9.",
+    "items": [
+     "33%",
+     "54%",
+     "63%",
+     "73%",
+     "85%",
+     "88%",
+     "94%",
+     "94%",
+     "100%",
+     "100%"
     ],
-    "rows": [
-     "Gain at top k",
-     "Lift at top k",
-     "The fairness table",
-     "The confusion matrix",
-     "AUC"
+    "highlight": [
+     0,
+     1
     ],
-    "cells": [
-     [
-      {
-       "text": "share of positives captured",
-       "tone": "good"
-      },
-      "the retention team"
-     ],
-     [
-      {
-       "text": "how many times better than random",
-       "tone": "good"
-      },
-      "the retention team"
-     ],
-     [
-      {
-       "text": "the same model, per group",
-       "tone": "accent"
-      },
-      "a reviewer or regulator"
-     ],
-     [
-      {
-       "text": "the operating point in units",
-       "tone": "good"
-      },
-      "the stakeholder"
-     ],
-     [
-      {
-       "text": "ranking quality overall",
-       "tone": "warn"
-      },
-      "you, alongside — never instead"
-     ]
-    ]
+    "tone": "good",
+    "negative": false,
+    "label": "decile 1 lift 3.30 · decile 5 lift 1.70 · decile 10 lift 1.00"
    }
   }
  ],
  "2.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Five fold scores, and what they do and do not support",
+    "caption": "Mean 0.848, sd 0.044, standard error 0.020, naive interval 0.848 ± 0.055. That supports 'the procedure scores about 0.85, plausibly 0.79 to 0.90'. It does **not** support 'better than a model scoring 0.83' — 0.83 is inside the interval, and the folds' training sets overlap, so the five numbers are correlated and the true standard error is larger than 0.020.",
+    "left": "quantity",
+    "codeW": 230,
+    "vars": [
+     "value",
+     "what it licenses"
+    ],
+    "steps": [
+     {
+      "code": "fold AUCs",
+      "state": [
+       "0.85 0.82 0.90 0.79 0.88",
+       ""
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "mean",
+      "state": [
+       "0.848",
+       "the point estimate"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "sd",
+      "state": [
+       "0.044",
+       "fold-to-fold spread"
+      ]
+     },
+     {
+      "code": "standard error",
+      "state": [
+       "0.020",
+       "sd / sqrt(5)"
+      ]
+     },
+     {
+      "code": "naive 95% interval",
+      "state": [
+       "0.848 +/- 0.055",
+       "'about 0.85, 0.79 to 0.90'"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "'better than 0.83'",
+      "state": [
+       "not supported",
+       "0.83 is inside it"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "the real SE",
+      "state": [
+       "larger than 0.020",
+       "folds share training rows"
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
   {
    "after": "02",
    "d": {
@@ -778,61 +1556,99 @@
    }
   },
   {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "Two models, two intervals, and the only comparison that counts",
+    "caption": "Logistic 0.789 and gbdt 0.772 look like a clear ordering until the intervals are drawn: they overlap almost entirely. The right object is the **paired** interval on the difference, computed on the same rows — 0.017 with a 95% interval of [−0.012, 0.049], which includes zero. 'Logistic is ahead' is the best guess; 'logistic is better' is not something 297 rows can support.",
+    "left": "model",
+    "codeW": 190,
+    "vars": [
+     "AUC",
+     "95% interval",
+     "verdict"
+    ],
+    "steps": [
+     {
+      "code": "logistic",
+      "state": [
+       "0.789",
+       "[0.717, 0.856]",
+       ""
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "gbdt",
+      "state": [
+       "0.772",
+       "[0.698, 0.840]",
+       ""
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "the two intervals",
+      "state": [
+       "",
+       "overlap almost fully",
+       "tells you little"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "paired difference",
+      "state": [
+       "0.017",
+       "[-0.012, 0.049]",
+       "includes zero"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "P(logistic worse)",
+      "state": [
+       "0.136",
+       "",
+       "not a conclusion"
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
    "after": "04",
    "d": {
-    "kind": "matrix",
+    "kind": "compare",
     "title": "Offline is necessary and never sufficient",
     "caption": "Offline evaluation reads logged rows whose labels exist because some **past policy** chose to show them — so it answers 'which candidate looks most promising', not 'will this move the business'. Only the second question is the one the deployment is for, and only a randomised test answers it.",
-    "cols": [
-     "Offline",
-     "Online"
-    ],
-    "rows": [
-     "Data",
-     "Metric",
-     "Comparison",
-     "Failure mode",
-     "Verdict"
-    ],
-    "cells": [
-     [
-      "logged rows, labels known",
-      "live traffic, labels later"
-     ],
-     [
-      {
-       "text": "AUC, log loss: proxies",
-       "tone": "warn"
-      },
-      {
-       "text": "revenue, retention: the thing",
-       "tone": "good"
-      }
-     ],
-     [
-      "paired on the same rows",
-      "randomised, with a control"
-     ],
-     [
-      {
-       "text": "optimises the proxy",
-       "tone": "crit"
-      },
-      {
-       "text": "slow; can harm users",
-       "tone": "warn"
-      }
-     ],
-     [
-      {
-       "text": "necessary, not sufficient",
-       "tone": "accent"
-      },
-      {
-       "text": "the final word",
-       "tone": "good"
-      }
-     ]
+    "columns": [
+     {
+      "title": "Offline",
+      "tone": "accent",
+      "items": [
+       "Logged rows, labels already known",
+       "AUC, log loss, NDCG — proxies",
+       "Paired on the same rows or folds",
+       "Optimises the proxy, not the goal",
+       "Necessary; never sufficient"
+      ]
+     },
+     {
+      "title": "Online",
+      "tone": "good",
+      "items": [
+       "Live traffic, labels arrive later or never",
+       "Conversion, revenue, retention — the thing itself",
+       "Randomised, with a control",
+       "Slow, expensive, can harm users while running",
+       "Sufficient; the final word"
+      ]
+     }
     ]
    }
   }

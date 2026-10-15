@@ -29,6 +29,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "Six rows — predict Play from Outlook and Wind (executed)",
       code: `#   Outlook   Wind     Play              parent: 3 Yes / 3 No
 1   Sunny     Weak     No                entropy  H = -0.5 log₂ 0.5 - 0.5 log₂ 0.5 = 1.000 bit
@@ -155,6 +158,9 @@ the leaves predict their means, 3 and 21. Any threshold between 3 and 10 gives t
     { t: "h2", n: "03", text: "The failure that defines trees: variance", id: "variance" },
 
     {"kind": "matrix", "title": "Two noise columns ranked with the best real feature", "caption": "A random integer id with 989 distinct values and a random normal, added to the churn features. Mean-decrease-in-impurity ranks the noise at the top: a column with many distinct values offers many candidate thresholds, and among many random thresholds one always looks good on the training rows. Permutation importance puts random_normal at 0.032, and the CV AUC was 0.674 with the noise columns against 0.662 without — the tree used them to memorise.", "cols": ["MDI says", "What it is"], "rows": ["tenure", "random_normal", "random_id", "fee", "logins"], "cells": [[{"text": "0.178", "tone": "good"}, "a real feature; permutation 0.164"], [{"text": "0.178", "tone": "crit"}, "pure noise; permutation 0.032"], [{"text": "0.175", "tone": "crit"}, "a random id, 989 distinct values"], [{"text": "0.162", "tone": "good"}, "a real feature"], [{"text": "0.159", "tone": "warn"}, "ranked last here, first by permutation"]], "t": "diagram", "id": "dg-6_1-03-1"},
+
+
+
 
 
 

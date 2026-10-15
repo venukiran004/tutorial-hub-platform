@@ -61,6 +61,9 @@ bias is untouched by averaging: E[mean of trees] = E[one tree]. Bagging is varia
 
 
 
+
+
+
     { t: "code", lang: "python", title: "Prediction variance across 30 bootstrap refits, and what it costs in AUC (executed; 989 rows, 30 % holdout)",
       hl: [2, 4, 5, 6],
       code: `#                                     variance of p̂ across refits    AUC of one fit    AUC of the 30-fit average    log-loss of one fit
@@ -116,6 +119,9 @@ bias is untouched by averaging: E[mean of trees] = E[one tree]. Bagging is varia
     { t: "h2", n: "03", text: "Importance: the one that lies and the one that shares", id: "importance" },
 
     {"kind": "matrix", "title": "What a forest fixes, and four things it does not", "caption": "It fixes variance and nothing else. On XOR, depth-2 trees went 0.710 to 0.908 because different bootstraps find different roots and the average recovers the interaction. But an average of staircases is a smoother staircase, still axis-aligned — 0.981 against logistic regression's 0.993 on a diagonal boundary — and every tree is flat beyond its last split, so their mean is too.", "cols": ["Fixed", "Evidence"], "rows": ["Variance", "An interaction it missed", "Diagonal geometry", "Extrapolation", "A smooth additive truth", "Probabilities"], "cells": [[{"text": "yes", "tone": "good"}, "churn 0.674 -> 0.724"], [{"text": "yes", "tone": "good"}, "XOR 0.710 -> 0.908"], [{"text": "no", "tone": "crit"}, "0.981 vs logistic 0.993"], [{"text": "no", "tone": "crit"}, "every tree is flat past its last split"], [{"text": "no", "tone": "crit"}, "never caught the logistic model"], [{"text": "no", "tone": "crit"}, "max p-hat 0.66; 0.356 vs 0.318 actual"]], "t": "diagram", "id": "dg-6_2-03-1"},
+
+
+
 
 
 

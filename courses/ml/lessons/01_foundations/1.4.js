@@ -35,6 +35,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "Gradient boosting on the churn table as depth increases — 300 rounds each (executed)",
       hl: [2, 3, 4, 5, 6],
       code: `# 693 training rows, 297 validation rows, same preprocessing pipeline as 1.2
@@ -73,7 +76,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Penalties: L2 shrinks, L1 selects", id: "penalties" },
 
-    {"kind": "matrix", "title": "Seven ways to reduce variance, and what each costs", "caption": "They are not interchangeable. Only the first adds information; the rest shrink the hypothesis space, which is why each of them can be taken far enough to turn a variance problem into a bias one.", "cols": ["Works by", "Costs"], "rows": ["More data", "Fewer features", "L2 or L1 penalty", "Smaller capacity", "Early stopping", "Bagging or dropout", "CV selection"], "cells": [[{"text": "training sets become alike", "tone": "good"}, "money and time; no help for bias"], ["a smaller space, less noise to fit", "can remove signal"], [{"text": "shrinks or zeroes weights", "tone": "good"}, "a hyperparameter to tune"], ["limits flexibility directly", {"text": "bias, if taken too far", "tone": "warn"}], ["stops before it reaches the noise", "needs a validation fold"], [{"text": "the mean varies less than one fit", "tone": "good"}, "compute; interpretability"], ["picks among all of the above", "compute"]], "t": "diagram", "id": "dg-1_4-02-1"},
+    {"kind": "compare", "title": "L2 shrinks every weight; L1 sets some to exactly zero", "caption": "The difference is the shape of the penalty at the origin. L2's gradient vanishes as a weight approaches zero, so it never quite arrives; L1's gradient is a constant ±λ that does not weaken, so it pushes a weight all the way to zero and holds it there.", "columns": [{"title": "L2 / ridge", "tone": "accent", "items": ["Penalty λ‖w‖²", "Gradient 2λw — vanishes near zero", "Shrinks smoothly; keeps every feature", "A closed form exists", "Shares weight between correlated features"]}, {"title": "L1 / lasso", "tone": "good", "items": ["Penalty λ‖w‖₁", "Gradient ±λ — constant, never weakens", "Sets weights to exactly zero: selection", "Coordinate descent, no closed form", "Picks one of a correlated group, arbitrarily"]}], "t": "diagram", "id": "dg-1_4-02-1"},
+
+
+
 
 
 
@@ -126,6 +132,10 @@ for C in [1000, 100, 10, 1, 0.1, 0.01, 0.001]:
 
     { t: "h2", n: "03", text: "Why L2 is a Gaussian prior and L1 a Laplace prior", id: "map" },
 
+    {"kind": "compare", "title": "A penalty is a prior, and the penalised loss is a negative log posterior", "caption": "Take the log of prior × likelihood and the penalty falls out: a Gaussian prior's log is −w² (ridge), a Laplace prior's is −|w| (lasso). So MAP estimation **is** penalised fitting, and λ is the prior's confidence — which is why a stronger penalty is the same statement as a tighter belief that the weights are small.", "columns": [{"title": "Gaussian prior → L2", "tone": "accent", "items": ["log density is proportional to -w²", "Smooth at zero: no spike", "Mass spread around zero", "MAP = ridge estimate", "λ is the inverse prior variance"]}, {"title": "Laplace prior → L1", "tone": "good", "items": ["log density is proportional to -|w|", "A spike at exactly zero", "Mass concentrated at zero plus heavy tails", "MAP = lasso estimate", "Believes most weights are truly zero"]}], "t": "diagram", "id": "dg-1_4-03-2"},
+
+
+
     { t: "code", lang: "text", title: "Penalised loss = negative log posterior",
       code: `Bayes:      p(w | data)  ∝  p(data | w) · p(w)                    posterior ∝ likelihood × prior
 MAP:        w_MAP = argmax_w  log p(data | w) + log p(w)             maximise the log posterior
@@ -171,6 +181,10 @@ The Gaussian is flat at zero — it says small, never exactly zero. That is the 
     },
 
     { t: "h2", n: "04", text: "Early stopping", id: "early" },
+
+    {"kind": "trace", "title": "Early stopping: the round where validation turns", "caption": "Six hundred boosting rounds on the same data. Training loss falls monotonically the whole way — it always will — while validation bottoms out at round 45 and then climbs. By round 600 the training loss is a **sixth** of its value at the minimum and the validation loss is 62% worse. The curve is the regulariser: stop where the second column turns.", "left": "boosting round", "codeW": 170, "vars": ["training log-loss", "validation log-loss"], "steps": [{"code": "round 1", "state": ["0.434", "0.434"]}, {"code": "round 10", "state": ["0.376", "0.394"]}, {"code": "round 25", "state": ["0.334", "0.375"]}, {"code": "round 45", "state": ["0.299", "0.373"], "changed": [1], "tone": "good", "note": "keep this model"}, {"code": "round 50", "state": ["0.291", "0.376"], "tone": "accent"}, {"code": "round 100", "state": ["0.225", "0.385"], "tone": "warn"}, {"code": "round 200", "state": ["0.142", "0.423"], "tone": "warn"}, {"code": "round 400", "state": ["0.069", "0.520"], "tone": "crit"}, {"code": "round 600", "state": ["0.036", "0.605"], "changed": [1], "tone": "crit", "note": "62% worse"}], "t": "diagram", "id": "dg-1_4-04-3"},
+
+
 
     { t: "code", lang: "python", title: "A 600-round booster, with validation log-loss recorded every round (executed)",
       hl: [2, 3, 4, 8, 9, 13, 14],

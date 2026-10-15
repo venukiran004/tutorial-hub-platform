@@ -23,6 +23,9 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "The classics, with the number this course measured", "caption": "The difference between a pass and an offer is usually whether you can say the number. Each of these answers is a measurement from an earlier lesson, not a definition — and a measurement is what ends the follow-up question.", "cols": ["The answer is", "From"], "rows": ["Does SMOTE help?", "Is accuracy ever enough?", "Is impurity importance ok?", "Does scaling matter?", "Use the default 0.5?", "Will more data help?"], "cells": [[{"text": "0.484 in-fold vs 0.493 without", "tone": "accent"}, "8.2: slightly worse than nothing"], [{"text": "no: 0.670 at 16% prevalence", "tone": "accent"}, "2.1: the matrix has a number each"], [{"text": "no: noise scored 0.178", "tone": "crit"}, "6.1: permutation gave it 0.032"], [{"text": "for distances and penalties", "tone": "accent"}, "3.1: never for trees"], [{"text": "no: cost minimised at 0.15", "tone": "crit"}, "2.3: F1 peaked at 0.25"], [{"text": "read the learning curve", "tone": "good"}, "8.3: 0.51 to 0.54 at 100x rows"]], "t": "diagram", "id": "dg-11_8-01-0"},
 
 
+
+
+
     { t: "dl", items: [
       ["Bias–variance", "Expected squared error = bias² + variance + noise. Bias is what the model cannot represent; variance is how much it changes with the sample; the noise floor is what no model can reach. The shape of the answer: a low-capacity model under-fits (high bias), a high-capacity one fitted to few points memorises (high variance), and regularisation, more data and ensembling move along the curve. The number: in 11.6 a 256 × 256 network on 200 points scored 1.000 train / 0.851 test; weight decay of 1.0 gave 0.930 / 0.874 with the weight norm falling from 54 to 5 — variance traded for bias, test error down. In 11.4 the matrix-factorisation rank curve had its minimum at the generating rank and the regulariser moved the error more than the rank did."],
       ["L1 against L2", "L2 (ridge) shrinks all weights toward zero and never to zero; L1 (lasso) shrinks and *selects*, driving some weights to exactly zero, because its penalty has a corner at zero. Bayesian reading (11.2): L2 is a Gaussian prior, L1 a Laplace prior, and the Bayesian linear regression's posterior mean equalled ridge with λ = σ²/τ² to four decimals. When to use which: L2 for correlated features and stability, L1 for sparsity and interpretability, elastic net for both; L1's selection is unstable among correlated features — it picks one arbitrarily."],
@@ -86,6 +89,9 @@ def auc_trapezoid(y, s):                                                        
     { t: "h2", n: "03", text: "The case structure", id: "structure" },
 
     {"kind": "steps", "title": "The case structure", "caption": "The order is the content. Candidates who start at the model lose the round regardless of which model they name, because every choice after step two depends on answers they skipped.", "items": [{"label": "Restate the business decision", "desc": "what acts on the output, and what it costs to be wrong", "code": "1", "tone": "accent"}, {"label": "Define the target and the unit", "desc": "one row per what, labelled how, observed when", "code": "2", "tone": "accent"}, {"label": "Name the metric and the baseline", "desc": "with a threshold rule from the costs", "code": "3", "tone": "good"}, {"label": "Describe the split", "desc": "by time, by entity, or both — and say why", "code": "4", "tone": "good"}, {"label": "Only now, the features and the model", "desc": "simplest first, with the leakage checks named", "code": "5", "tone": "violet"}, {"label": "Say how it is served and monitored", "desc": "latency, refit cadence, drift, rollback", "code": "6", "tone": "teal"}, {"label": "State what would make you abandon it", "desc": "the answer that separates senior from mid", "code": "7", "tone": "teal"}], "t": "diagram", "id": "dg-11_8-03-1"},
+
+
+
 
 
     { t: "code", lang: "text", title: "Six moves, in order",

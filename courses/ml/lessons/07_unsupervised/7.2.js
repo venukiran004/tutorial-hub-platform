@@ -86,6 +86,9 @@ ratios of successive heights:  1.13   1.01   1.00   1.32   2.48   1.47   1.53
 
 
 
+
+
+
     { t: "code", lang: "text", title: "Core, border, noise — seven points by hand, eps = 1.5, min_samples = 3 (executed; the point counts itself)",
       code: `core point     at least min_samples points within eps (itself included)
 border point   within eps of a core point, but not core itself
@@ -147,6 +150,9 @@ result: one cluster {1, 2, 2.5, 3}, three noise points, and k was never chosen. 
     { t: "h2", n: "03", text: "Mixtures: which Gaussians generated the data", id: "gmm" },
 
     {"kind": "matrix", "title": "The BIC that collapsed, and why it was not structure", "caption": "BIC fell off a cliff at five components — from 2,502 to −1,317 — and it means nothing. The discount column takes three values with 686 rows at zero, and two components had **variance 0.0000** on it: a Gaussian concentrated on a point mass has unbounded density there, so the likelihood is arbitrarily large. With a covariance floor of 0.1 the collapse disappears and leaves a shallow minimum at three.", "cols": ["BIC, as fitted", "With reg_covar=0.1"], "rows": ["1 component", "2 components", "3 components", "4 components", "5 components", "6 components"], "cells": [["11,730", "11,781"], [{"text": "2,498", "tone": "accent"}, "10,442"], [{"text": "2,524", "tone": "accent"}, {"text": "10,193: the minimum", "tone": "good"}], ["2,502", "10,386"], [{"text": "-1,317: a collapse", "tone": "crit"}, "10,481"], [{"text": "-185", "tone": "crit"}, "10,077"]], "t": "diagram", "id": "dg-7_2-03-1"},
+
+
+
 
 
 

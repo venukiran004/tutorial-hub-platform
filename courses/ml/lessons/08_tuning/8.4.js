@@ -79,6 +79,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["Question", "Answer that favours…", "…and why (from the course's own results)"],
       rows: [
@@ -100,6 +103,9 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "AutoML", id: "automl" },
 
     {"kind": "steps", "title": "The procedure, not the flow chart", "caption": "Order matters because each step makes the next one cheaper to judge. Fitting the dummy first is not a formality — it is the number every later result is reported against.", "items": [{"label": "Fit the dummy", "desc": "the majority class, or the mean: everything is measured from here", "code": "1", "tone": "accent"}, {"label": "Then a linear model with sensible features", "desc": "on identical repeated folds", "code": "2", "tone": "good"}, {"label": "Then a forest with a large leaf size", "desc": "a safe, barely-tuned variance baseline", "code": "3", "tone": "good"}, {"label": "Then early-stopped boosting", "desc": "the usual tabular ceiling, if it is going to win", "code": "4", "tone": "good"}, {"label": "If linear is within the fold spread, ship it", "desc": "Occam says simple beats equal, not simple beats better", "code": "5", "tone": "violet"}, {"label": "If trees win, find the non-linearity they found", "desc": "and ask whether a feature would give it to the linear model", "code": "6", "tone": "violet"}, {"label": "Tune only the family that leads", "desc": "then score the finalist on a slice the search never saw", "code": "7", "tone": "teal"}], "t": "diagram", "id": "dg-8_4-03-1"},
+
+
+
 
 
 

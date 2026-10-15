@@ -13,7 +13,7 @@
      "children": [
       {
        "label": "Hypothesis space",
-       "sub": "the functions it may choose from: lines, trees, kernels",
+       "sub": "the functions it may choose from",
        "tone": "accent"
       },
       {
@@ -23,7 +23,7 @@
       },
       {
        "label": "Data",
-       "sub": "the experience: rows, and for supervised learning a label",
+       "sub": "rows, and for supervised learning a label",
        "tone": "good"
       },
       {
@@ -33,11 +33,41 @@
       },
       {
        "label": "Performance measure",
-       "sub": "how it is judged on unseen data — usually not the loss",
+       "sub": "judged on unseen data — usually not the loss",
        "tone": "teal"
       }
      ]
     }
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "compare",
+    "title": "When to learn the rule, and when to write it",
+    "caption": "Machine learning is the answer when the rule cannot be articulated, changes under you, varies per context, or is needed a million times. It is the wrong answer when the logic is known and deterministic — nobody should learn a tax bracket from data.",
+    "columns": [
+     {
+      "title": "Learn it",
+      "tone": "good",
+      "items": [
+       "The rule cannot be articulated: which pixels make a cat",
+       "The rule changes: fraud adapts to whatever you block",
+       "The rule varies per context: what to recommend, now",
+       "The scale defeats manual rules: a billion events"
+      ]
+     },
+     {
+      "title": "Write it",
+      "tone": "accent",
+      "items": [
+       "The logic is deterministic and known: tax brackets",
+       "There is no data, or far too little",
+       "The decision must be auditable line by line",
+       "A wrong answer is catastrophic and irreversible"
+      ]
+     }
+    ]
    }
   },
   {
@@ -181,6 +211,75 @@
    }
   },
   {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "What the table says before a model is fitted",
+    "caption": "Each of these is cheap and each can end the project early — a target rate of 0.3% changes the metric, the threshold and the whole evaluation plan, and finding it on day one is worth more than any model. The leakage suspects found here are the ones 1.6 tests.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "The table",
+      "sub": "rows, columns, dtypes",
+      "tone": "violet"
+     },
+     {
+      "id": "r",
+      "label": "Target rate",
+      "sub": "16.2% here: not 50%",
+      "tone": "accent"
+     },
+     {
+      "id": "d",
+      "label": "Distributions",
+      "sub": "skew, zeros, sentinels",
+      "tone": "accent"
+     },
+     {
+      "id": "m",
+      "label": "Missingness pattern",
+      "sub": "which columns, together?",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Correlations",
+      "sub": "with y, and among themselves",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "Leakage suspects",
+      "sub": "anything recorded after y",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "r"
+     ],
+     [
+      "r",
+      "d"
+     ],
+     [
+      "d",
+      "m"
+     ],
+     [
+      "m",
+      "c"
+     ],
+     [
+      "c",
+      "l"
+     ]
+    ]
+   }
+  },
+  {
    "after": "03",
    "d": {
     "kind": "matrix",
@@ -235,6 +334,77 @@
      ]
     ]
    }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "The scale case: what listwise deletion does to a million rows",
+    "caption": "Two hundred columns, sixty of them missing 15% independently. The chance a row is complete is 0.85 to the power of 60, which is about one in seventeen thousand — so the 'safe' fix of dropping incomplete rows keeps **58** of the million. The naive fix destroys the dataset, and it does it silently.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "1,000,000 rows",
+      "sub": "200 columns",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": "60 columns, 15% missing",
+      "sub": "independently",
+      "tone": "warn"
+     },
+     {
+      "id": "c",
+      "label": "P(row complete)",
+      "sub": "0.85^60 = 0.000058",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "Listwise deletion",
+      "sub": "drop any row with a gap",
+      "tone": "crit"
+     },
+     {
+      "id": "e",
+      "label": "58 rows left",
+      "sub": "from a million",
+      "tone": "crit"
+     },
+     {
+      "id": "f",
+      "label": "Impute + indicator",
+      "sub": "every row survives",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "b"
+     ],
+     [
+      "b",
+      "c"
+     ],
+     [
+      "c",
+      "d"
+     ],
+     [
+      "d",
+      "e"
+     ],
+     [
+      "b",
+      "f",
+      "or",
+      "dashed"
+     ]
+    ]
+   }
   }
  ],
  "1.3": [
@@ -281,63 +451,186 @@
   {
    "after": "02",
    "d": {
-    "kind": "matrix",
+    "kind": "trace",
     "title": "Two thousand fits per degree, and the sum checks out",
-    "caption": "Bias-squared collapses at degree 3 — a cubic can bend like one arch of a sine — and stays at zero. Variance rises at every degree after it. The sum column matches the measured test MSE to three decimals in every row, which is the derivation verified rather than assumed. Meanwhile training MSE falls monotonically and passes below σ² = 0.09 from degree 3 on: the model is fitting noise, and the training error cannot tell you.",
-    "cols": [
-     "bias² / variance",
-     "sum vs measured MSE"
+    "caption": "Each row is two thousand polynomials of that degree, fitted to fresh samples of sin(πx) with σ = 0.3. Read down the columns: bias² collapses at degree 3 — a cubic can bend like one arch of a sine — and variance rises at every degree after. The **sum** column matches the measured test MSE to three decimals in every row, which is the derivation verified rather than assumed. And training MSE falls the whole way, passing below σ² = 0.09 from degree 3 on: the model is fitting noise, and the training error cannot tell you.",
+    "left": "polynomial degree",
+    "codeW": 140,
+    "vars": [
+     "bias²",
+     "variance",
+     "noise",
+     "sum",
+     "measured",
+     "train MSE"
     ],
-    "rows": [
-     "Degree 1",
-     "Degree 2",
-     "Degree 3",
-     "Degree 5",
-     "Degree 9",
-     "Degree 12"
+    "steps": [
+     {
+      "code": "degree 1",
+      "state": [
+       "0.1489",
+       "0.0119",
+       "0.0900",
+       "0.2508",
+       "0.2516",
+       "0.2738"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "degree 2",
+      "state": [
+       "0.1466",
+       "0.0184",
+       "0.0900",
+       "0.2551",
+       "0.2546",
+       "0.2659"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "degree 3",
+      "state": [
+       "0.0033",
+       "0.0067",
+       "0.0900",
+       "0.1000",
+       "0.1007",
+       "0.0866"
+      ],
+      "changed": [
+       0,
+       3
+      ],
+      "tone": "good",
+      "note": "bias collapses"
+     },
+     {
+      "code": "degree 5",
+      "state": [
+       "0.0000",
+       "0.0100",
+       "0.0900",
+       "0.1000",
+       "0.1007",
+       "0.0793"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "degree 7",
+      "state": [
+       "0.0000",
+       "0.0154",
+       "0.0900",
+       "0.1054",
+       "0.1049",
+       "0.0751"
+      ]
+     },
+     {
+      "code": "degree 9",
+      "state": [
+       "0.0000",
+       "0.0277",
+       "0.0900",
+       "0.1177",
+       "0.1160",
+       "0.0717"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "degree 12",
+      "state": [
+       "0.0000",
+       "0.4383",
+       "0.0900",
+       "0.5283",
+       "0.5304",
+       "0.0670"
+      ],
+      "changed": [
+       1,
+       3
+      ],
+      "tone": "crit",
+      "note": "variance explodes"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "From a symptom to the dial that fixes it",
+    "caption": "Two measurements separate every case: the training score, and the gap to validation. Reading them in this order means you never turn the wrong dial — and the commonest wasted month is spent collecting data for a bias problem, where more rows do nothing.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "Train and validation scores",
+      "sub": "measure both, every time",
+      "tone": "violet"
+     },
+     {
+      "id": "u",
+      "label": "Both low, close",
+      "sub": "high bias",
+      "tone": "warn"
+     },
+     {
+      "id": "o",
+      "label": "Train high, validation far below",
+      "sub": "high variance",
+      "tone": "warn"
+     },
+     {
+      "id": "b",
+      "label": "More capacity",
+      "sub": "features, interactions, a richer family",
+      "tone": "good"
+     },
+     {
+      "id": "v",
+      "label": "Less capacity, or more data",
+      "sub": "penalty, depth, leaf size, averaging",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "Train below the noise floor",
+      "sub": "it is fitting ε: stop",
+      "tone": "crit"
+     }
     ],
-    "cells": [
+    "edges": [
      [
-      {
-       "text": "0.1489 / 0.0119",
-       "tone": "warn"
-      },
-      "0.2508 vs 0.2516"
+      "s",
+      "u"
      ],
      [
-      {
-       "text": "0.1466 / 0.0184",
-       "tone": "warn"
-      },
-      "0.2551 vs 0.2546"
+      "s",
+      "o"
      ],
      [
-      {
-       "text": "0.0033 / 0.0067",
-       "tone": "good"
-      },
-      "0.1000 vs 0.1007"
+      "u",
+      "b"
      ],
      [
-      {
-       "text": "0.0000 / 0.0100",
-       "tone": "good"
-      },
-      "0.1000 vs 0.1007"
+      "o",
+      "v"
      ],
      [
-      {
-       "text": "0.0000 / 0.0277",
-       "tone": "accent"
-      },
-      "0.1177 vs 0.1160"
-     ],
-     [
-      {
-       "text": "0.0000 / 0.4383",
-       "tone": "crit"
-      },
-      "0.5283 vs 0.5304"
+      "o",
+      "n",
+      "",
+      "dashed"
      ]
     ]
    }
@@ -387,68 +680,232 @@
   {
    "after": "02",
    "d": {
-    "kind": "matrix",
-    "title": "Seven ways to reduce variance, and what each costs",
-    "caption": "They are not interchangeable. Only the first adds information; the rest shrink the hypothesis space, which is why each of them can be taken far enough to turn a variance problem into a bias one.",
-    "cols": [
-     "Works by",
-     "Costs"
+    "kind": "compare",
+    "title": "L2 shrinks every weight; L1 sets some to exactly zero",
+    "caption": "The difference is the shape of the penalty at the origin. L2's gradient vanishes as a weight approaches zero, so it never quite arrives; L1's gradient is a constant ±λ that does not weaken, so it pushes a weight all the way to zero and holds it there.",
+    "columns": [
+     {
+      "title": "L2 / ridge",
+      "tone": "accent",
+      "items": [
+       "Penalty λ‖w‖²",
+       "Gradient 2λw — vanishes near zero",
+       "Shrinks smoothly; keeps every feature",
+       "A closed form exists",
+       "Shares weight between correlated features"
+      ]
+     },
+     {
+      "title": "L1 / lasso",
+      "tone": "good",
+      "items": [
+       "Penalty λ‖w‖₁",
+       "Gradient ±λ — constant, never weakens",
+       "Sets weights to exactly zero: selection",
+       "Coordinate descent, no closed form",
+       "Picks one of a correlated group, arbitrarily"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "compare",
+    "title": "A penalty is a prior, and the penalised loss is a negative log posterior",
+    "caption": "Take the log of prior × likelihood and the penalty falls out: a Gaussian prior's log is −w² (ridge), a Laplace prior's is −|w| (lasso). So MAP estimation **is** penalised fitting, and λ is the prior's confidence — which is why a stronger penalty is the same statement as a tighter belief that the weights are small.",
+    "columns": [
+     {
+      "title": "Gaussian prior → L2",
+      "tone": "accent",
+      "items": [
+       "log density is proportional to -w²",
+       "Smooth at zero: no spike",
+       "Mass spread around zero",
+       "MAP = ridge estimate",
+       "λ is the inverse prior variance"
+      ]
+     },
+     {
+      "title": "Laplace prior → L1",
+      "tone": "good",
+      "items": [
+       "log density is proportional to -|w|",
+       "A spike at exactly zero",
+       "Mass concentrated at zero plus heavy tails",
+       "MAP = lasso estimate",
+       "Believes most weights are truly zero"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Early stopping: the round where validation turns",
+    "caption": "Six hundred boosting rounds on the same data. Training loss falls monotonically the whole way — it always will — while validation bottoms out at round 45 and then climbs. By round 600 the training loss is a **sixth** of its value at the minimum and the validation loss is 62% worse. The curve is the regulariser: stop where the second column turns.",
+    "left": "boosting round",
+    "codeW": 170,
+    "vars": [
+     "training log-loss",
+     "validation log-loss"
     ],
-    "rows": [
-     "More data",
-     "Fewer features",
-     "L2 or L1 penalty",
-     "Smaller capacity",
-     "Early stopping",
-     "Bagging or dropout",
-     "CV selection"
-    ],
-    "cells": [
-     [
-      {
-       "text": "training sets become alike",
-       "tone": "good"
-      },
-      "money and time; no help for bias"
-     ],
-     [
-      "a smaller space, less noise to fit",
-      "can remove signal"
-     ],
-     [
-      {
-       "text": "shrinks or zeroes weights",
-       "tone": "good"
-      },
-      "a hyperparameter to tune"
-     ],
-     [
-      "limits flexibility directly",
-      {
-       "text": "bias, if taken too far",
-       "tone": "warn"
-      }
-     ],
-     [
-      "stops before it reaches the noise",
-      "needs a validation fold"
-     ],
-     [
-      {
-       "text": "the mean varies less than one fit",
-       "tone": "good"
-      },
-      "compute; interpretability"
-     ],
-     [
-      "picks among all of the above",
-      "compute"
-     ]
+    "steps": [
+     {
+      "code": "round 1",
+      "state": [
+       "0.434",
+       "0.434"
+      ]
+     },
+     {
+      "code": "round 10",
+      "state": [
+       "0.376",
+       "0.394"
+      ]
+     },
+     {
+      "code": "round 25",
+      "state": [
+       "0.334",
+       "0.375"
+      ]
+     },
+     {
+      "code": "round 45",
+      "state": [
+       "0.299",
+       "0.373"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "good",
+      "note": "keep this model"
+     },
+     {
+      "code": "round 50",
+      "state": [
+       "0.291",
+       "0.376"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "round 100",
+      "state": [
+       "0.225",
+       "0.385"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "round 200",
+      "state": [
+       "0.142",
+       "0.423"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "round 400",
+      "state": [
+       "0.069",
+       "0.520"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "round 600",
+      "state": [
+       "0.036",
+       "0.605"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit",
+      "note": "62% worse"
+     }
     ]
    }
   }
  ],
  "1.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "One split is a lottery; the same data, the same model",
+    "caption": "Twenty 70/30 splits of one dataset, one model, nothing else changed. The worst split reports 0.695 and the best 0.813 — a spread wide enough to 'prove' almost any comparison you like. Cross-validation does not make the model better; it makes the **estimate** stable, and the sd falls from 0.028 to 0.004 as the folds increase.",
+    "left": "how it was evaluated",
+    "codeW": 190,
+    "vars": [
+     "mean AUC",
+     "sd across seeds",
+     "range"
+    ],
+    "steps": [
+     {
+      "code": "one 70/30 split",
+      "state": [
+       "0.756",
+       "0.028",
+       "0.695 to 0.813"
+      ],
+      "tone": "crit",
+      "note": "which would you report?"
+     },
+     {
+      "code": "2-fold CV",
+      "state": [
+       "0.748",
+       "0.012",
+       ""
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "5-fold CV",
+      "state": [
+       "0.754",
+       "0.005",
+       ""
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "10-fold CV",
+      "state": [
+       "0.757",
+       "0.004",
+       ""
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "leave-one-out",
+      "state": [
+       "0.757",
+       "",
+       ""
+      ],
+      "tone": "accent",
+      "note": "990 fits"
+     }
+    ]
+   }
+  },
   {
    "after": "02",
    "d": {
@@ -507,6 +964,75 @@
        "tone": "accent"
       },
       "one assignment's luck, reported"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Nested cross-validation: one loop chooses, the other measures",
+    "caption": "The inner loop picks the hyperparameters on the training part of each outer fold; the outer loop scores the **whole procedure**, including the picking, on rows it never saw. One loop cannot do both jobs, because the score that chose the winner is the maximum of many noisy numbers and is therefore optimistic by construction.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "o",
+      "label": "Outer fold k",
+      "sub": "train part / test part",
+      "tone": "violet"
+     },
+     {
+      "id": "i",
+      "label": "Inner CV on the train part",
+      "sub": "every candidate scored",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "Pick the best candidate",
+      "sub": "the inner loop's only job",
+      "tone": "accent"
+     },
+     {
+      "id": "f",
+      "label": "Refit on the whole train part",
+      "sub": "with those hyperparameters",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Score on the outer test part",
+      "sub": "rows no inner fit ever saw",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Average over outer folds",
+      "sub": "the procedure's score",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "o",
+      "i"
+     ],
+     [
+      "i",
+      "p"
+     ],
+     [
+      "p",
+      "f"
+     ],
+     [
+      "f",
+      "s"
+     ],
+     [
+      "s",
+      "r"
      ]
     ]
    }
@@ -637,6 +1163,131 @@
   {
    "after": "02",
    "d": {
+    "kind": "flow",
+    "title": "Where the fit happens decides whether the score is real",
+    "caption": "The two paths differ by **one line's position**. Fit the encoder above the split and it has seen every row's label, so a 200-level noise column carries the target into the model and scores 0.836. Move the same encoder inside the fold and it scores 0.468 — chance, which is the truth about a noise column.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "d",
+      "label": "All rows, with labels",
+      "sub": "the starting point",
+      "tone": "violet"
+     },
+     {
+      "id": "f1",
+      "label": "Fit the encoder here",
+      "sub": "it sees every label",
+      "tone": "crit"
+     },
+     {
+      "id": "s1",
+      "label": "Then split and score",
+      "sub": "AUC 0.836 from noise",
+      "tone": "crit"
+     },
+     {
+      "id": "s2",
+      "label": "Split first",
+      "sub": "train fold / test fold",
+      "tone": "good"
+     },
+     {
+      "id": "f2",
+      "label": "Fit the encoder in the fold",
+      "sub": "only the training labels",
+      "tone": "good"
+     },
+     {
+      "id": "r2",
+      "label": "Score",
+      "sub": "AUC 0.468: chance",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "d",
+      "f1"
+     ],
+     [
+      "f1",
+      "s1"
+     ],
+     [
+      "d",
+      "s2"
+     ],
+     [
+      "s2",
+      "f2"
+     ],
+     [
+      "f2",
+      "r2"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "timeline",
+    "title": "A centred window reads the future; a trailing one does not",
+    "caption": "A 7-day rolling mean **centred** on day t averages days t−3 to t+3 — so the feature for Wednesday contains Saturday. It scored 0.771 against 0.618 for the trailing version and 0.571 for the raw value, and that 0.15 of apparent skill is entirely the three days that had not happened yet.",
+    "span": 14,
+    "tick": 7,
+    "lanes": [
+     {
+      "label": "Forecast at t",
+      "bars": [
+       [
+        7,
+        8,
+        "t",
+        "violet"
+       ]
+      ]
+     },
+     {
+      "label": "Centred, 7 days",
+      "bars": [
+       [
+        4,
+        11,
+        "t-3 to t+3: reads the future",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "Trailing, 7 days",
+      "bars": [
+       [
+        1,
+        8,
+        "t-6 to t: legal",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "Knowable at t",
+      "bars": [
+       [
+        0,
+        8,
+        "everything up to and including t",
+        "good"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
     "kind": "matrix",
     "title": "What each transform leaks when it is fitted before the split",
     "caption": "The severity is set by what the transform saw. A scaler learns a mean; a target encoder learns the **label**, at group resolution, which is why it can turn a noise column into a 0.836. All of them have the same fix, and it is one line: make the transform a step in the Pipeline.",
@@ -718,6 +1369,75 @@
  ],
  "1.7": [
   {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Why restricting the hypothesis space is the whole trick",
+    "caption": "Empirical risk minimisation picks the candidate with the lowest training error. With an unrestricted space that is always a lookup table — zero training error, no generalisation. The bound says the gap between training and true error grows with the space's capacity and shrinks with n, so the only way to learn is to **search a space small enough that fitting it means something**.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "h",
+      "label": "Hypothesis space H",
+      "sub": "the functions you allow",
+      "tone": "violet"
+     },
+     {
+      "id": "e",
+      "label": "ERM",
+      "sub": "pick the lowest training error in H",
+      "tone": "accent"
+     },
+     {
+      "id": "u",
+      "label": "H unrestricted",
+      "sub": "a lookup table wins",
+      "tone": "crit"
+     },
+     {
+      "id": "g",
+      "label": "Gap grows with capacity",
+      "sub": "and shrinks with n",
+      "tone": "warn"
+     },
+     {
+      "id": "r",
+      "label": "H restricted",
+      "sub": "lines, shallow trees, small norms",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "Learning is possible",
+      "sub": "training error now predicts",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "h",
+      "e"
+     ],
+     [
+      "e",
+      "u"
+     ],
+     [
+      "e",
+      "g"
+     ],
+     [
+      "g",
+      "r"
+     ],
+     [
+      "r",
+      "l"
+     ]
+    ]
+   }
+  },
+  {
    "after": "02",
    "d": {
     "kind": "matrix",
@@ -782,77 +1502,244 @@
    }
   },
   {
-   "after": "04",
+   "after": "03",
    "d": {
     "kind": "matrix",
-    "title": "In 500 dimensions the nearest point is 86% as far as the farthest",
-    "caption": "Measured on 500 uniform points in the unit cube. The ratio of nearest to farthest climbs towards 1, which is the curse stated precisely: distance stops discriminating, so every method whose whole idea is 'nearby points are similar' loses its meaning. The second column is the same fact from the other side — by 100 dimensions, every point is on the surface.",
+    "title": "Three axes that place any model",
+    "caption": "These are independent choices, and each one predicts a specific behaviour. The third explains a cost that only appears in production: a lazy model has no training time and pays at every query instead — 382 ms per 5,000 rows against 0.5 ms for an eager one.",
     "cols": [
-     "nearest / farthest",
-     "Within 0.05 of the surface"
+     "One pole",
+     "The other"
     ],
     "rows": [
-     "d = 1",
-     "d = 2",
-     "d = 10",
-     "d = 20",
-     "d = 100",
-     "d = 500"
+     "Parameter count",
+     "What it models",
+     "When it computes"
     ],
     "cells": [
      [
       {
-       "text": "0.002",
-       "tone": "good"
-      },
-      "10%"
-     ],
-     [
-      {
-       "text": "0.012",
-       "tone": "good"
-      },
-      "19%"
-     ],
-     [
-      {
-       "text": "0.314",
+       "text": "parametric: fixed, whatever n",
        "tone": "accent"
       },
-      "65%"
+      {
+       "text": "non-parametric: grows with n",
+       "tone": "accent"
+      }
      ],
      [
       {
-       "text": "0.421",
+       "text": "generative: p(x, y)",
+       "tone": "good"
+      },
+      {
+       "text": "discriminative: p(y | x)",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "lazy: at query time, 382 ms",
        "tone": "warn"
       },
-      "88%"
-     ],
-     [
       {
-       "text": "0.741",
-       "tone": "crit"
-      },
-      {
-       "text": "100%",
-       "tone": "crit"
-      }
-     ],
-     [
-      {
-       "text": "0.860",
-       "tone": "crit"
-      },
-      {
-       "text": "100%",
-       "tone": "crit"
+       "text": "eager: at fit time, 0.5 ms to score",
+       "tone": "good"
       }
      ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "The curse of dimensionality, measured",
+    "caption": "Five hundred uniform points in the unit cube, and one query point. Read the ratio column: the nearest neighbour goes from 0.2% of the farthest distance at d = 1 to **86%** at d = 500, so distance stops discriminating and every method whose whole idea is 'nearby points are similar' loses its meaning. The last column is the same fact from the other side — by 100 dimensions every point is on the surface.",
+    "left": "dimensions",
+    "codeW": 130,
+    "vars": [
+     "nearest",
+     "farthest",
+     "nearest / farthest",
+     "within 0.05 of the surface"
+    ],
+    "steps": [
+     {
+      "code": "d = 1",
+      "state": [
+       "0.001",
+       "0.916",
+       "0.002",
+       "10%"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "d = 2",
+      "state": [
+       "0.014",
+       "1.155",
+       "0.012",
+       "19%"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "d = 10",
+      "state": [
+       "0.498",
+       "1.588",
+       "0.314",
+       "65%"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "d = 20",
+      "state": [
+       "0.996",
+       "2.364",
+       "0.421",
+       "88%"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "d = 100",
+      "state": [
+       "3.707",
+       "5.000",
+       "0.741",
+       "100%"
+      ],
+      "changed": [
+       2,
+       3
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "d = 500",
+      "state": [
+       "8.205",
+       "9.544",
+       "0.860",
+       "100%"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "crit",
+      "note": "86% as far"
+     }
     ]
    }
   }
  ],
  "1.8": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Gradient descent on five points, and the step size that breaks it",
+    "caption": "The Hessian here is constant with eigenvalues 0.338 and 23.66, so the stability limit is 2/23.66 = **0.0845**. At η = 0.02 the loss falls to 0.024 — but after two hundred steps b is still 0.17 against a true 0.05, because it crawls along the flat direction whose eigenvalue is 0.34. At η = 0.10, just above the limit, every step overshoots further than the last and the loss reaches 22,640 by iteration 10. The closed form is w = 1.99, b = 0.05.",
+    "left": "step size and iteration",
+    "codeW": 210,
+    "vars": [
+     "w",
+     "b",
+     "MSE"
+    ],
+    "steps": [
+     {
+      "code": "η = 0.02, it 1",
+      "state": [
+       "0.88",
+       "0.24",
+       "12.3"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "η = 0.02, it 3",
+      "state": [
+       "1.59",
+       "0.43",
+       "1.00"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "η = 0.02, it 10",
+      "state": [
+       "1.87",
+       "0.48",
+       "0.056"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "η = 0.02, it 200",
+      "state": [
+       "1.96",
+       "0.17",
+       "0.024"
+      ],
+      "tone": "good",
+      "note": "b still off"
+     },
+     {
+      "code": "closed form",
+      "state": [
+       "1.99",
+       "0.05",
+       "0.024"
+      ],
+      "tone": "violet",
+      "note": "the target"
+     },
+     {
+      "code": "η = 0.10, it 1",
+      "state": [
+       "",
+       "",
+       "82"
+      ],
+      "tone": "warn",
+      "note": "above 0.0845"
+     },
+     {
+      "code": "η = 0.10, it 3",
+      "state": [
+       "",
+       "",
+       "287"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "η = 0.10, it 10",
+      "state": [
+       "",
+       "",
+       "22,640"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "crit",
+      "note": "diverged"
+     }
+    ]
+   }
+  },
   {
    "after": "02",
    "d": {
@@ -951,6 +1838,94 @@
       },
       "early stopping, regularisation"
      ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Five residuals, four losses, and what the outlier does to each",
+    "caption": "The same five residuals throughout; the 8.0 is the outlier. Squared error charges it **32.0** of the 34.7 total, so the fit chases it — and its gradient pulls sixteen times harder than the 0.5's. Absolute error charges 8.0 and pulls on every row with identical force. Huber is squared inside |r| ≤ 1 and linear outside, which caps the outlier's gradient at 1.0. The last row is the point: squared error's optimum is the mean, absolute error's is the median, and the quantile loss's is the quantile.",
+    "left": "residual",
+    "codeW": 130,
+    "vars": [
+     "squared ½r²",
+     "absolute |r|",
+     "Huber δ=1",
+     "quantile τ=0.9"
+    ],
+    "steps": [
+     {
+      "code": "r = 0.5",
+      "state": [
+       "0.125",
+       "0.500",
+       "0.125",
+       "0.450"
+      ]
+     },
+     {
+      "code": "r = -1.0",
+      "state": [
+       "0.500",
+       "1.000",
+       "0.500",
+       "0.100"
+      ]
+     },
+     {
+      "code": "r = 2.0",
+      "state": [
+       "2.000",
+       "2.000",
+       "1.500",
+       "1.800"
+      ]
+     },
+     {
+      "code": "r = -0.3",
+      "state": [
+       "0.045",
+       "0.300",
+       "0.045",
+       "0.030"
+      ]
+     },
+     {
+      "code": "r = 8.0",
+      "state": [
+       "32.000",
+       "8.000",
+       "7.500",
+       "7.200"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit",
+      "note": "the outlier"
+     },
+     {
+      "code": "mean loss",
+      "state": [
+       "6.934",
+       "2.360",
+       "1.934",
+       "1.916"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "its optimum is",
+      "state": [
+       "the mean",
+       "the median",
+       "both",
+       "the 0.9 quantile"
+      ],
+      "tone": "violet"
+     }
     ]
    }
   }

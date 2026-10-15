@@ -35,6 +35,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Fix one input point x. The world produces y = f(x) + ε with E[ε] = 0 and Var(ε) = σ². A learner trained on a random training set D produces a prediction f̂(x) — random, because D is. **We want the expected squared error over both sources of randomness, E[(y − f̂)²].** Write f̄ = E_D[f̂(x)] for the average prediction across training sets." },
 
     { t: "code", lang: "text", title: "Six lines, with the two cross terms shown to vanish",
@@ -76,7 +79,10 @@ np.mean((preds - truth) ** 2)             # 1.247   = 0.160 + 1.087, exactly: th
 
     { t: "h2", n: "02", text: "Measured: two thousand fits per degree", id: "simulation" },
 
-    {"kind": "matrix", "title": "Two thousand fits per degree, and the sum checks out", "caption": "Bias-squared collapses at degree 3 — a cubic can bend like one arch of a sine — and stays at zero. Variance rises at every degree after it. The sum column matches the measured test MSE to three decimals in every row, which is the derivation verified rather than assumed. Meanwhile training MSE falls monotonically and passes below σ² = 0.09 from degree 3 on: the model is fitting noise, and the training error cannot tell you.", "cols": ["bias² / variance", "sum vs measured MSE"], "rows": ["Degree 1", "Degree 2", "Degree 3", "Degree 5", "Degree 9", "Degree 12"], "cells": [[{"text": "0.1489 / 0.0119", "tone": "warn"}, "0.2508 vs 0.2516"], [{"text": "0.1466 / 0.0184", "tone": "warn"}, "0.2551 vs 0.2546"], [{"text": "0.0033 / 0.0067", "tone": "good"}, "0.1000 vs 0.1007"], [{"text": "0.0000 / 0.0100", "tone": "good"}, "0.1000 vs 0.1007"], [{"text": "0.0000 / 0.0277", "tone": "accent"}, "0.1177 vs 0.1160"], [{"text": "0.0000 / 0.4383", "tone": "crit"}, "0.5283 vs 0.5304"]], "t": "diagram", "id": "dg-1_3-02-1"},
+    {"kind": "trace", "title": "Two thousand fits per degree, and the sum checks out", "caption": "Each row is two thousand polynomials of that degree, fitted to fresh samples of sin(πx) with σ = 0.3. Read down the columns: bias² collapses at degree 3 — a cubic can bend like one arch of a sine — and variance rises at every degree after. The **sum** column matches the measured test MSE to three decimals in every row, which is the derivation verified rather than assumed. And training MSE falls the whole way, passing below σ² = 0.09 from degree 3 on: the model is fitting noise, and the training error cannot tell you.", "left": "polynomial degree", "codeW": 140, "vars": ["bias²", "variance", "noise", "sum", "measured", "train MSE"], "steps": [{"code": "degree 1", "state": ["0.1489", "0.0119", "0.0900", "0.2508", "0.2516", "0.2738"], "tone": "warn"}, {"code": "degree 2", "state": ["0.1466", "0.0184", "0.0900", "0.2551", "0.2546", "0.2659"], "tone": "warn"}, {"code": "degree 3", "state": ["0.0033", "0.0067", "0.0900", "0.1000", "0.1007", "0.0866"], "changed": [0, 3], "tone": "good", "note": "bias collapses"}, {"code": "degree 5", "state": ["0.0000", "0.0100", "0.0900", "0.1000", "0.1007", "0.0793"], "tone": "good"}, {"code": "degree 7", "state": ["0.0000", "0.0154", "0.0900", "0.1054", "0.1049", "0.0751"]}, {"code": "degree 9", "state": ["0.0000", "0.0277", "0.0900", "0.1177", "0.1160", "0.0717"], "changed": [1], "tone": "accent"}, {"code": "degree 12", "state": ["0.0000", "0.4383", "0.0900", "0.5283", "0.5304", "0.0670"], "changed": [1, 3], "tone": "crit", "note": "variance explodes"}], "t": "diagram", "id": "dg-1_3-02-1"},
+
+
+
 
 
 
@@ -169,6 +175,10 @@ for d in [1, 2, 3, 5, 7, 9, 12]:
     },
 
     { t: "h2", n: "03", text: "Diagnosis and the dials", id: "diagnosis" },
+
+    {"kind": "flow", "title": "From a symptom to the dial that fixes it", "caption": "Two measurements separate every case: the training score, and the gap to validation. Reading them in this order means you never turn the wrong dial — and the commonest wasted month is spent collecting data for a bias problem, where more rows do nothing.", "cols": 3, "nodes": [{"id": "s", "label": "Train and validation scores", "sub": "measure both, every time", "tone": "violet"}, {"id": "u", "label": "Both low, close", "sub": "high bias", "tone": "warn"}, {"id": "o", "label": "Train high, validation far below", "sub": "high variance", "tone": "warn"}, {"id": "b", "label": "More capacity", "sub": "features, interactions, a richer family", "tone": "good"}, {"id": "v", "label": "Less capacity, or more data", "sub": "penalty, depth, leaf size, averaging", "tone": "good"}, {"id": "n", "label": "Train below the noise floor", "sub": "it is fitting ε: stop", "tone": "crit"}], "edges": [["s", "u"], ["s", "o"], ["u", "b"], ["o", "v"], ["o", "n", "", "dashed"]], "t": "diagram", "id": "dg-1_3-03-2"},
+
+
 
     { t: "table",
       head: ["Symptom", "Diagnosis", "What helps", "What does not"],

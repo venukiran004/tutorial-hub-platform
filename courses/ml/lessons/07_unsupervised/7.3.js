@@ -27,6 +27,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "Three indices computed by hand on {1, 2, 3} | {8, 9, 10} (executed; every value matches scikit-learn)",
       code: `SILHOUETTE   s(i) = (b(i) - a(i)) / max(a(i), b(i))       a = mean distance to own cluster,  b = mean distance to the nearest other cluster
    x = 1:  a = mean(1, 2) = 1.5      b = mean(7, 8, 9) = 8       s = 6.5/8 = 0.8125
@@ -66,6 +69,9 @@ CALINSKI-HARABASZ   CH = [B / (k - 1)] / [W / (n - k)]      B = Σ nᵢ ‖cᵢ 
     { t: "h2", n: "02", text: "External indices: agreement with labels, corrected for chance", id: "external" },
 
     {"kind": "matrix", "title": "Why agreement must be corrected for chance", "caption": "Two random partitions of the same rows agree substantially just by accident, and the raw Rand index reports that agreement as skill. ARI subtracts the expected value under random labelling, which is why it can go negative — and why a plain Rand index of 0.7 says almost nothing.", "cols": ["Corrects for chance", "Reads"], "rows": ["Rand index", "Adjusted Rand (ARI)", "Mutual information", "Adjusted MI (AMI)", "Homogeneity", "Completeness"], "cells": [[{"text": "no", "tone": "crit"}, "pair agreement, inflated"], [{"text": "yes", "tone": "good"}, "pair agreement; 0 is chance"], [{"text": "no", "tone": "warn"}, "shared information; grows with k"], [{"text": "yes", "tone": "good"}, "shared information, corrected"], [{"text": "n/a", "tone": "accent"}, "each cluster holds one class"], [{"text": "n/a", "tone": "accent"}, "each class sits in one cluster"]], "t": "diagram", "id": "dg-7_3-02-1"},
+
+
+
 
 
 

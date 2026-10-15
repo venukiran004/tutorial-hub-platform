@@ -35,6 +35,9 @@ a solving two-unit network: hidden weights [[4.27, 3.80], [−4.26, −4.04]], b
     {"kind": "steps", "title": "Backpropagation is the chain rule, applied in reverse order", "caption": "There is nothing in it beyond the chain rule — the insight is only that computing the derivatives from the output backwards reuses every partial result, so the whole gradient costs about one forward pass rather than one per parameter.", "items": [{"label": "Forward: compute and keep each layer's output", "desc": "these are needed again on the way back", "code": "1", "tone": "accent"}, {"label": "At the output, the loss derivative", "desc": "for cross-entropy with softmax it is simply p - y", "code": "2", "tone": "good"}, {"label": "Multiply back through the activation", "desc": "element-wise, by its derivative at the stored value", "code": "3", "tone": "good"}, {"label": "Multiply back through the weights", "desc": "the transpose of the layer's matrix", "code": "4", "tone": "good"}, {"label": "The weight gradient is that times the stored input", "desc": "which is why the forward values had to be kept", "code": "5", "tone": "violet"}, {"label": "Repeat to the first layer", "desc": "one pass back, every gradient: the whole trick", "code": "6", "tone": "teal"}], "t": "diagram", "id": "dg-11_6-02-0"},
 
 
+
+
+
     { t: "p", text: "The network is x → h = σ(w₁x) → ŷ = σ(w₂h) with sigmoid units and the loss L = ½(y − ŷ)². Backpropagation is the chain rule applied from the loss backward, reusing each layer's partial derivative for the layers behind it. With x = 1, y = 1, w₁ = 0.5, w₂ = −0.4:" },
 
     { t: "code", lang: "text", title: "One step, every number (executed)",
@@ -86,6 +89,9 @@ batch size (300 epochs max):   8: 0.937 (21,375 gradient steps, 2.9 s)   32: 0.9
     { t: "h2", n: "05", text: "When a network beats gradient boosting on a table", id: "tabular" },
 
     {"kind": "matrix", "title": "When a network beats gradient boosting on a table", "caption": "Rarely, and for specific reasons. On a small heterogeneous table boosting wins and a regularised linear model is the yardstick — as this course's churn data showed. A network earns its place when there is a representation to **learn** or to share, which a boosted tree cannot do at all.", "cols": ["Use", "Because"], "rows": ["Small mixed table", "Many numeric columns", "High-cardinality cats", "Text, images, audio", "Multi-task or transfer", "Interpretability required"], "cells": [[{"text": "boosting", "tone": "good"}, "thresholds and additive effects"], [{"text": "an MLP or CNN", "tone": "accent"}, "smooth interactions across inputs"], [{"text": "embeddings, or target encoding", "tone": "accent"}, "embeddings compress categories"], [{"text": "a network, pre-trained", "tone": "good"}, "representation learning is the task"], [{"text": "a network", "tone": "good"}, "boosting cannot share representations"], [{"text": "linear, or boosting + SHAP", "tone": "good"}, "a network's weights are not readable"]], "t": "diagram", "id": "dg-11_6-05-1"},
+
+
+
 
 
     { t: "code", lang: "python", title: "The churn table (989 rows, 8 columns) and the digits (1,797 rows, 64 pixel columns), 5-fold (executed)",

@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Three kinds of anomaly need three different questions. A **point anomaly** is a row that is improbable on its own: a monthly fee of £999 when every other fee is under £22. A **contextual anomaly** is improbable only given its context — a fee of £20 is ordinary for a Pro customer and strange for a Basic one; 35 °C is ordinary in July and an anomaly in January. A **collective anomaly** is a set of rows each of which is ordinary and whose combination is not: one login from a new device is nothing; forty logins from forty new devices in an hour is an account takeover. The statistical and distance methods in this lesson find point anomalies. Contextual anomalies are found by conditioning first (score within the group, or include the context as a feature and let a multivariate method see the combination); collective anomalies need a representation of the set — the window, the sequence, the graph — before any detector applies." },
 
     { t: "p", text: "The second distinction is what the training data contains. In **outlier detection** the data you fit on already holds the anomalies, at some unknown rate, and the detector must find them in the same data it learned from — so it must be robust to them, which is the theme of this lesson. In **novelty detection** the training data is clean by assumption, and the question is whether new rows look like it — the detector may be sensitive, since nothing in training will mislead it. scikit-learn's `LocalOutlierFactor` embodies the split: by default it scores the training rows and has no `predict` for new ones; with `novelty=True` it refuses to score training rows and only scores new ones. The third distinction is whether you have labels. Usually you have none, or a handful found by a fraud team last quarter — which makes every threshold a decision about capacity (how many rows can a human review?) rather than a decision about accuracy, and the lesson returns to that at the end." },
@@ -35,6 +38,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Univariate tests, worked on the fee column", id: "univariate" },
 
     {"kind": "matrix", "title": "Masking: the second outlier hides the first", "caption": "The series 10, 11, 12, 10, 11, 13, 12, 50, 52. Grubbs' test gives the 52 a G of 1.82 against a critical 2.22 — **not flagged**, because the 50 has pushed the standard deviation to 17.5. Remove the 52 by other means and the 50 is flagged immediately. The modified z-score flags both at once, because the median of 12 and the MAD of 1 never moved.", "cols": ["Flags the 52", "Why"], "rows": ["Grubbs, both present", "Grubbs, 52 removed", "Modified z (52)", "Modified z (50)", "Mean and sd"], "cells": [[{"text": "no: G 1.82 < 2.22", "tone": "crit"}, "the 50 inflated sd to 17.5"], [{"text": "yes: G 2.47 > 2.13", "tone": "good"}, "the masking is gone"], [{"text": "yes: 27.0", "tone": "good"}, "median 12, MAD 1: unmoved"], [{"text": "yes: 25.6", "tone": "good"}, "both found in one pass"], [{"text": "the wrong first move", "tone": "crit"}, "on any column you suspect"]], "t": "diagram", "id": "dg-9_4-02-1"},
+
+
+
 
 
 

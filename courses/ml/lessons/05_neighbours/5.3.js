@@ -106,6 +106,9 @@ solved numerically (SLSQP) on the six points:
 
 
 
+
+
+
     { t: "code", lang: "python", title: "One overlapping point added at (0.4, 0.4) with label +1; C swept (executed)",
       hl: [2, 3, 4, 5],
       code: `#   C        w             margin 2/‖w‖    support vectors    Σ slack    train accuracy
@@ -162,6 +165,9 @@ Mercer: K must be symmetric positive semi-definite for a φ to exist -- then the
     { t: "h2", n: "04", text: "Probabilities, scale, regression and the honest comparison", id: "practice-matters" },
 
     {"kind": "matrix", "title": "SVM and logistic regression, honestly compared", "caption": "The hinge is zero beyond the margin and the log-loss never is — nearly every row below follows from that one difference, including which rows the solution depends on and how each model behaves under imbalance.", "cols": ["SVM", "Logistic"], "rows": ["Loss", "Depends on", "Probabilities", "Non-linearity", "Imbalance", "Scale in n"], "cells": [[{"text": "zero beyond the margin", "tone": "accent"}, {"text": "never zero", "tone": "accent"}], [{"text": "support vectors only", "tone": "good"}, "every row"], [{"text": "none; Platt after", "tone": "warn"}, {"text": "native", "tone": "good"}], [{"text": "kernels: cheap", "tone": "good"}, "explicit features or splines"], [{"text": "can collapse to majority", "tone": "crit"}, {"text": "degrades gracefully", "tone": "good"}], [{"text": "O(n²-n³) kernel", "tone": "warn"}, {"text": "linear", "tone": "good"}]], "t": "diagram", "id": "dg-5_3-04-1"},
+
+
+
 
 
 

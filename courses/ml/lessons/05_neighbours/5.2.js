@@ -81,6 +81,9 @@ query "claim lunch" (one word seen only in each class):  posterior [0.5, 0.5] --
 
 
 
+
+
+
     { t: "table",
       head: ["Variant", "Feature type", "P(xⱼ | y)", "Parameters per class", "Use for"],
       rows: [
@@ -113,6 +116,9 @@ query "claim lunch" (one word seen only in each class):  posterior [0.5, 0.5] --
     { t: "h2", n: "03", text: "What the naive assumption costs, measured", id: "cost" },
 
     {"kind": "matrix", "title": "Why a false assumption still picks the right class", "caption": "Classification is an **argmax**. Double-counting correlated evidence scales every class's log-odds in similar proportion, so the posterior can be badly wrong in value and still be largest for the right class. What breaks it is *asymmetric* dependence — features correlated within one class but not the other.", "cols": ["Naive Bayes", "Logistic regression"], "rows": ["Models", "Boundary", "Fitting time here", "Probabilities", "Breaks on"], "cells": [[{"text": "P(x|y) and P(y): generative", "tone": "accent"}, "P(y|x): discriminative"], ["linear in the features", "linear"], [{"text": "counting: 4 ms", "tone": "good"}, {"text": "iterative: 435 ms", "tone": "warn"}], [{"text": "over-confident", "tone": "warn"}, {"text": "usually calibrated", "tone": "good"}], [{"text": "asymmetric dependence", "tone": "crit"}, "collinearity, for the coefficients"]], "t": "diagram", "id": "dg-5_2-03-1"},
+
+
+
 
 
 

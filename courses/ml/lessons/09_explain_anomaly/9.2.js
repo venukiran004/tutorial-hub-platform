@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "The axioms, the formula, and a three-feature computation over every coalition (executed)",
       code: `a prediction f(x) is a 'payout'; the features are 'players'; φⱼ is feature j's share. Four axioms determine it uniquely:
    efficiency   Σⱼ φⱼ = f(x) − E[f]           the shares add up to the prediction minus the baseline
@@ -112,6 +115,9 @@ likewise  φ₂ = 0.500,  φ₃ = 0.750.        Σφ = 3.000 = f(x) − baseline
     { t: "h2", n: "03", text: "LIME: a local surrogate, and its variance", id: "lime" },
 
     {"kind": "matrix", "title": "SHAP and LIME are not two implementations of one idea", "caption": "SHAP has a guarantee that its values sum to the prediction; LIME has local fidelity only, and only as measured. The determinism row is the practical one: LIME's top-three features **changed in two of five seeds** on the same row, so a single LIME explanation shown to a customer is not reproducible.", "cols": ["SHAP", "LIME"], "rows": ["Basis", "Guarantee", "Determinism", "Global from local", "Interactions"], "cells": [[{"text": "axioms: unique solution", "tone": "good"}, "a weighted local surrogate"], [{"text": "efficiency, consistency", "tone": "good"}, {"text": "local fidelity only", "tone": "warn"}], [{"text": "TreeSHAP is exact", "tone": "good"}, {"text": "top-3 changed in 2 of 5 seeds", "tone": "crit"}], [{"text": "yes: mean |phi|", "tone": "good"}, {"text": "no natural aggregation", "tone": "warn"}], [{"text": "interaction values", "tone": "good"}, {"text": "not represented", "tone": "warn"}]], "t": "diagram", "id": "dg-9_2-03-1"},
+
+
+
 
 
 

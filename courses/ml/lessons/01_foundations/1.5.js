@@ -19,6 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "One split is a lottery", id: "lottery" },
 
+    {"kind": "trace", "title": "One split is a lottery; the same data, the same model", "caption": "Twenty 70/30 splits of one dataset, one model, nothing else changed. The worst split reports 0.695 and the best 0.813 — a spread wide enough to 'prove' almost any comparison you like. Cross-validation does not make the model better; it makes the **estimate** stable, and the sd falls from 0.028 to 0.004 as the folds increase.", "left": "how it was evaluated", "codeW": 190, "vars": ["mean AUC", "sd across seeds", "range"], "steps": [{"code": "one 70/30 split", "state": ["0.756", "0.028", "0.695 to 0.813"], "tone": "crit", "note": "which would you report?"}, {"code": "2-fold CV", "state": ["0.748", "0.012", ""], "tone": "warn"}, {"code": "5-fold CV", "state": ["0.754", "0.005", ""], "changed": [1], "tone": "good"}, {"code": "10-fold CV", "state": ["0.757", "0.004", ""], "changed": [1], "tone": "good"}, {"code": "leave-one-out", "state": ["0.757", "", ""], "tone": "accent", "note": "990 fits"}], "t": "diagram", "id": "dg-1_5-01-0"},
+
+
+
     { t: "code", lang: "python", title: "The same logistic regression, thirty random 70/30 splits of the churn table (executed)",
       hl: [3, 4, 6],
       code: `aucs = []
@@ -59,6 +63,10 @@ np.min(aucs), np.max(aucs), np.mean(aucs), np.std(aucs)
     ]},
 
     { t: "h2", n: "02", text: "Folds that match deployment", id: "structure" },
+
+    {"kind": "matrix", "title": "The fold must match the deployment", "caption": "A fold strategy is a claim about what the model will meet. Get it wrong in the direction of ease and the score is not pessimistic or noisy — it is wrong: 0.995 for a model that had memorised entity ids.", "cols": ["Use", "Random folds instead give"], "rows": ["A rare class", "Several rows per entity", "A time order", "Entities and time", "Very few rows"], "cells": [[{"text": "StratifiedKFold", "tone": "good"}, "folds that are different problems"], [{"text": "GroupKFold", "tone": "good"}, {"text": "0.995: a lookup, not a model", "tone": "crit"}], [{"text": "TimeSeriesSplit, with a gap", "tone": "good"}, {"text": "training on the future", "tone": "crit"}], [{"text": "groups within a time split", "tone": "good"}, "either leak above"], [{"text": "repeated stratified k-fold", "tone": "accent"}, "one assignment's luck, reported"]], "t": "diagram", "id": "dg-1_5-02-1"},
+
+
 
     {"kind": "matrix", "title": "The fold must match the deployment", "caption": "A fold strategy is a claim about what the model will meet. Get it wrong in the direction of ease and the score is not pessimistic or noisy — it is wrong: 0.995 for a model that had memorised entity ids.", "cols": ["Use", "Random folds instead give"], "rows": ["A rare class", "Several rows per entity", "A time order", "Entities and time", "Very few rows"], "cells": [[{"text": "StratifiedKFold", "tone": "good"}, "folds that are different problems"], [{"text": "GroupKFold", "tone": "good"}, {"text": "0.995: a lookup, not a model", "tone": "crit"}], [{"text": "TimeSeriesSplit, with a gap", "tone": "good"}, {"text": "training on the future", "tone": "crit"}], [{"text": "groups within a time split", "tone": "good"}, "either leak above"], [{"text": "repeated stratified k-fold", "tone": "accent"}, "one assignment's luck, reported"]], "t": "diagram", "id": "dg-1_5-02-0"},
 
@@ -125,6 +133,10 @@ cross_val_score(forest, X_s, y_s, cv=GroupKFold(5), groups=snapshots.customer_id
 
     { t: "h2", n: "03", text: "Nested cross-validation", id: "nested" },
 
+    {"kind": "flow", "title": "Nested cross-validation: one loop chooses, the other measures", "caption": "The inner loop picks the hyperparameters on the training part of each outer fold; the outer loop scores the **whole procedure**, including the picking, on rows it never saw. One loop cannot do both jobs, because the score that chose the winner is the maximum of many noisy numbers and is therefore optimistic by construction.", "cols": 3, "nodes": [{"id": "o", "label": "Outer fold k", "sub": "train part / test part", "tone": "violet"}, {"id": "i", "label": "Inner CV on the train part", "sub": "every candidate scored", "tone": "accent"}, {"id": "p", "label": "Pick the best candidate", "sub": "the inner loop's only job", "tone": "accent"}, {"id": "f", "label": "Refit on the whole train part", "sub": "with those hyperparameters", "tone": "good"}, {"id": "s", "label": "Score on the outer test part", "sub": "rows no inner fit ever saw", "tone": "good"}, {"id": "r", "label": "Average over outer folds", "sub": "the procedure's score", "tone": "teal"}], "edges": [["o", "i"], ["i", "p"], ["p", "f"], ["f", "s"], ["s", "r"]], "t": "diagram", "id": "dg-1_5-03-2"},
+
+
+
     { t: "p", text: "Tuning a hyperparameter by cross-validation and then reporting the best cross-validated score is using the folds twice: once to choose, once to report. The best of eleven candidate scores is optimistic for the same reason the best of thirty splits is. **Nested CV puts the choice inside an inner loop and scores the chosen model on an outer fold that took no part in the choice.**" },
 
     { t: "code", lang: "python", title: "Grid search inside cross_validate (executed)",
@@ -185,6 +197,10 @@ result = cross_validate(search, X, y, cv=outer, scoring="roc_auc", return_estima
     },
 
     { t: "h2", n: "04", text: "The six mistakes", id: "mistakes" },
+
+    {"kind": "matrix", "title": "The six mistakes, and which direction each one bends the score", "caption": "Four of these inflate, and the last two only add noise — which is worse than it sounds, because a 0.03 difference inside a ±0.05 spread is the shape of most false conclusions about which model is better.", "cols": ["Effect", "Fix"], "rows": ["Preprocessing before folds", "Random folds, grouped data", "Random folds, time data", "No stratification", "Reporting the tuning score", "Mean without the spread"], "cells": [[{"text": "inflates", "tone": "crit"}, "put the transform in the Pipeline"], [{"text": "inflates, absurdly", "tone": "crit"}, "GroupKFold on the entity"], [{"text": "inflates, hides drift", "tone": "crit"}, "TimeSeriesSplit with a gap"], [{"text": "adds fold noise", "tone": "warn"}, "StratifiedKFold"], [{"text": "optimistic: best-of-n", "tone": "crit"}, "nested CV, or a held-out test set"], [{"text": "hides the uncertainty", "tone": "warn"}, "report mean ± sd, or the folds"]], "t": "diagram", "id": "dg-1_5-04-3"},
+
+
 
     {"kind": "matrix", "title": "The six mistakes, and which direction each one bends the score", "caption": "Four of these inflate, and the last two only add noise — which is worse than it sounds, because a 0.03 difference inside a ±0.05 spread is the shape of most false conclusions about which model is better.", "cols": ["Effect", "Fix"], "rows": ["Preprocessing before folds", "Random folds, grouped data", "Random folds, time data", "No stratification", "Reporting the tuning score", "Mean without the spread"], "cells": [[{"text": "inflates", "tone": "crit"}, "put the transform in the Pipeline"], [{"text": "inflates, absurdly", "tone": "crit"}, "GroupKFold on the entity"], [{"text": "inflates, hides drift", "tone": "crit"}, "TimeSeriesSplit with a gap"], [{"text": "adds fold noise", "tone": "warn"}, "StratifiedKFold"], [{"text": "optimistic: best-of-n", "tone": "crit"}, "nested CV, or a held-out test set"], [{"text": "hides the uncertainty", "tone": "warn"}, "report mean ± sd, or the folds"]], "t": "diagram", "id": "dg-1_5-04-1"},
 

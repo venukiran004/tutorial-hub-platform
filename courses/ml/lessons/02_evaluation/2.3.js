@@ -19,7 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The sweep", id: "sweep" },
 
-    {"kind": "matrix", "title": "One model, eleven thresholds, three different answers", "caption": "The same fitted model throughout — only the cut moves. Note that the three rules disagree: **cost** is minimised at 0.15, **F1** peaks at 0.25, and the default 0.50 is near-worst on both while flagging only 13 customers. The default is not a neutral choice, it is an unexamined one.", "cols": ["precision / recall / F1", "flagged, cost"], "rows": ["0.05", "0.15", "0.25", "0.35", "0.50", "0.70"], "cells": [["0.183 / 0.938 / 0.306", "246 flagged, 4,230"], [{"text": "0.288 / 0.833 / 0.428", "tone": "good"}, {"text": "139 flagged, 3,895 min", "tone": "good"}], [{"text": "0.412 / 0.583 / 0.483", "tone": "accent"}, "68 flagged, 4,020"], ["0.513 / 0.417 / 0.460", "39 flagged, 4,195"], [{"text": "0.769 / 0.208 / 0.328", "tone": "crit"}, {"text": "13 flagged, 4,465", "tone": "crit"}], [{"text": "1.000 / 0.062 / 0.118", "tone": "crit"}, "3 flagged, 4,695"]], "t": "diagram", "id": "dg-2_3-01-0"},
+    {"kind": "trace", "title": "One fitted model, eleven thresholds, three different answers", "caption": "Nothing changes down this table except the cut. Watch the three rules disagree: **cost** is minimised at 0.15, **F1** peaks at 0.25, and the default 0.50 is near-worst on both while flagging only 13 of 297 customers. The default is not a neutral choice, it is an unexamined one — and the sweep costs one line of code.", "left": "threshold", "codeW": 110, "vars": ["precision", "recall", "F1", "flagged", "cost"], "steps": [{"code": "0.05", "state": ["0.183", "0.938", "0.306", "246", "4,230"], "tone": "warn"}, {"code": "0.10", "state": ["0.231", "0.875", "0.365", "182", "4,030"]}, {"code": "0.15", "state": ["0.288", "0.833", "0.428", "139", "3,895"], "changed": [4], "tone": "good", "note": "min cost"}, {"code": "0.20", "state": ["0.320", "0.688", "0.437", "103", "3,995"]}, {"code": "0.25", "state": ["0.412", "0.583", "0.483", "68", "4,020"], "changed": [2], "tone": "accent", "note": "max F1"}, {"code": "0.30", "state": ["0.449", "0.458", "0.454", "49", "4,165"]}, {"code": "0.35", "state": ["0.513", "0.417", "0.460", "39", "4,195"]}, {"code": "0.40", "state": ["0.533", "0.333", "0.410", "30", "4,310"]}, {"code": "0.50", "state": ["0.769", "0.208", "0.328", "13", "4,465"], "tone": "crit", "note": "the default"}, {"code": "0.70", "state": ["1.000", "0.062", "0.118", "3", "4,695"], "tone": "crit"}, {"code": "0.80+", "state": ["—", "0.000", "0.000", "0", "4,800"], "tone": "crit", "note": "flags nobody"}], "t": "diagram", "id": "dg-2_3-01-0"},
+
+
+
 
 
 
@@ -79,6 +82,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Four rules, four thresholds", id: "rules" },
 
+    {"kind": "flow", "title": "Four rules, four thresholds, from the same curve", "caption": "The sweep produces one table; which row you take is a business decision with four common shapes. Only the third uses the probability as a number, which is why it is the only one that needs the model to be calibrated (2.5).", "cols": 3, "nodes": [{"id": "s", "label": "The sweep", "sub": "precision, recall, cost at every cut", "tone": "violet"}, {"id": "r", "label": "Target recall", "sub": "highest cut with recall >= 0.95", "tone": "good"}, {"id": "p", "label": "Target precision", "sub": "lowest cut with precision >= 0.9", "tone": "good"}, {"id": "c", "label": "Minimum expected cost", "sub": "break-even at p = c / b", "tone": "accent"}, {"id": "k", "label": "Fixed capacity", "sub": "top k by score; recall is the outcome", "tone": "teal"}, {"id": "d", "label": "Leave it at 0.5", "sub": "13 flagged, near-worst on both", "tone": "crit"}], "edges": [["s", "r"], ["s", "p"], ["s", "c"], ["s", "k"], ["s", "d", "", "dashed"]], "t": "diagram", "id": "dg-2_3-02-1"},
+
     { t: "code", lang: "python", title: "The same model, four ways to choose the threshold (executed)",
       hl: [2, 5, 8, 11, 14],
       code: `# minimum expected cost (£5 call, £100 loss, 40 % save rate)
@@ -136,7 +141,11 @@ top 29 by score    16 churners caught of 48    recall 0.333   precision 0.552   
 
     { t: "h2", n: "03", text: "When precision matters, when recall matters, and when F1 lies", id: "when" },
 
+    {"kind": "matrix", "title": "The decision picks the metric, and the metric picks the threshold", "caption": "Each row is a different thing going wrong when you are wrong, and therefore a different rule. The last one is the case people model incorrectly most often: when capacity is fixed, neither precision nor recall is the objective — the top k is, and recall is the outcome you report.", "cols": ["Optimise", "Rule"], "rows": ["Screening a condition", "Auto-declining a card", "Retention calls", "A fixed review queue"], "cells": [[{"text": "recall", "tone": "good"}, "highest cut with recall >= 0.95"], [{"text": "precision", "tone": "good"}, "lowest cut with precision >= 0.9"], [{"text": "expected cost", "tone": "accent"}, "break-even at p = c / b"], [{"text": "precision at top k", "tone": "violet"}, "take k by score; report recall"]], "t": "diagram", "id": "dg-2_3-03-2"},
+
     {"kind": "matrix", "title": "The decision picks the metric, and the metric picks the threshold", "caption": "Each row is a different thing going wrong when you are wrong, and therefore a different rule. The last one is the case people model incorrectly most often: when capacity is fixed, neither precision nor recall is the objective — the top k is, and recall is the outcome you report.", "cols": ["Optimise", "Rule"], "rows": ["Screening a condition", "Auto-declining a card", "Retention calls", "A fixed review queue"], "cells": [[{"text": "recall", "tone": "good"}, "highest cut with recall >= 0.95"], [{"text": "precision", "tone": "good"}, "lowest cut with precision >= 0.9"], [{"text": "expected cost", "tone": "accent"}, "break-even at p = c / b"], [{"text": "precision at top k", "tone": "violet"}, "take k by score; report recall"]], "t": "diagram", "id": "dg-2_3-03-1"},
+
+
 
 
 

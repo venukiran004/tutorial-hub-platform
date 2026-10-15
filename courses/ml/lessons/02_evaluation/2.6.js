@@ -19,6 +19,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Ranking: the list is the prediction", id: "ranking" },
 
+    {"kind": "trace", "title": "Three queries, graded 0 to 3, under every ranking metric", "caption": "q1 = [3,2,0,1,0], q2 = [0,0,3,0,1], q3 = [1,0,0,0,0]. Look at q3: a single weak result in the right place scores **NDCG 1.000**, because normalisation divides by the best possible ordering of what was available. And q2's perfect item sitting in slot 3 costs it half its NDCG. Position is the whole subject — the same set of results in a different order is a different prediction.", "left": "query", "codeW": 170, "vars": ["DCG@5", "IDCG@5", "NDCG@5", "RR", "P@3", "AP"], "steps": [{"code": "q1 [3,2,0,1,0]", "state": ["9.323", "9.393", "0.993", "1.000", "0.667", "0.917"], "tone": "good", "note": "nearly ideal"}, {"code": "q2 [0,0,3,0,1]", "state": ["3.887", "7.631", "0.509", "0.333", "0.333", "0.367"], "changed": [2], "tone": "crit", "note": "slot 3 costs half"}, {"code": "q3 [1,0,0,0,0]", "state": ["1.000", "1.000", "1.000", "1.000", "0.333", "1.000"], "changed": [2], "tone": "accent", "note": "weak, but ideal"}, {"code": "mean", "state": ["—", "—", "0.834", "0.778", "0.444", "0.761"], "tone": "violet", "note": "MRR and MAP"}], "t": "diagram", "id": "dg-2_6-01-0"},
+
     { t: "p", text: "A recommender or search engine is judged on the order it returns. Three queries, each with five results graded 0 (irrelevant) to 3 (perfect): **q1 = [3, 2, 0, 1, 0], q2 = [0, 0, 3, 0, 1], q3 = [1, 0, 0, 0, 0]**. Every metric below rewards putting relevant items early; they differ in whether they use grades or just relevant/not, and in how steeply they discount position." },
 
     { t: "code", lang: "text", title: "Every ranking metric on the three lists (executed)",
@@ -53,6 +55,8 @@ MRR  = mean reciprocal rank = (1 + 0.333 + 1) / 3 = 0.778          MAP = mean of
 
     { t: "h2", n: "02", text: "Clustering: scoring without labels, and with them", id: "clustering" },
 
+    {"kind": "matrix", "title": "Scoring a clustering, with labels and without", "caption": "Internal indices measure the geometry a method produced, so they systematically prefer the kind of shape that method makes — on two moons, k-means scores a silhouette of 0.487 and the **true** labelling scores 0.328. External indices need labels and must be corrected for chance, which is why ARI and AMI exist and the raw Rand index does not belong in a report.", "cols": ["Needs labels", "Watch out for"], "rows": ["Silhouette", "Davies-Bouldin", "Calinski-Harabasz", "Rand index", "ARI / AMI", "Stability across halves"], "cells": [[{"text": "no", "tone": "good"}, {"text": "prefers round clusters: 0.487 > 0.328", "tone": "crit"}], [{"text": "no", "tone": "good"}, "also assumes round clusters"], [{"text": "no", "tone": "good"}, "prefers small k on a continuum"], [{"text": "yes", "tone": "warn"}, {"text": "not corrected for chance", "tone": "crit"}], [{"text": "yes", "tone": "good"}, "0 is chance; can go negative"], [{"text": "no", "tone": "good"}, {"text": "reproducible mistakes score well", "tone": "warn"}]], "t": "diagram", "id": "dg-2_6-02-1"},
+
     { t: "code", lang: "text", title: "Three blobs (one wide), k-means at four values of k (executed)",
       code: `k     silhouette   Davies-Bouldin   Calinski-Harabasz     ARI      NMI          (ARI and NMI use the true blob labels)
 2       0.554          0.645              805              0.538    0.648
@@ -70,7 +74,11 @@ the plan recovery from 1.1 (k-means on fee and logins):   ARI 0.847   NMI 0.793 
 
     { t: "h2", n: "03", text: "Fairness: the same model, four regions", id: "fairness" },
 
+    {"kind": "matrix", "title": "One model, four regions, four fairness criteria that disagree", "caption": "The same fitted model at the same threshold. Flag rate runs 0.30 to 0.39, TPR 0.62 to 0.73, FPR 0.22 to 0.33, and precision 0.23 to 0.44 — so a flag **means** nearly twice as much in east as in west. These criteria are mathematically incompatible when base rates differ, so the team must choose which one it is claiming, and say so.", "cols": ["Compares", "Spread here"], "rows": ["Demographic parity", "Equal opportunity", "Equalised odds", "Predictive parity"], "cells": [["flag rate across groups", {"text": "0.30 - 0.39", "tone": "warn"}], ["TPR across groups", {"text": "0.62 - 0.73", "tone": "warn"}], ["TPR and FPR", {"text": "FPR 0.22 - 0.33", "tone": "warn"}], ["precision across groups", {"text": "0.23 - 0.44", "tone": "crit"}]], "t": "diagram", "id": "dg-2_6-03-2"},
+
     {"kind": "matrix", "title": "One model, four regions, four fairness criteria that disagree", "caption": "The same fitted model at the same threshold. Flag rate runs 0.30 to 0.39, TPR 0.62 to 0.73, FPR 0.22 to 0.33, and precision 0.23 to 0.44 — so a flag **means** nearly twice as much in east as in west. These criteria are mathematically incompatible when base rates differ, so the team must choose which one it is claiming, and say so.", "cols": ["Compares", "Spread here"], "rows": ["Demographic parity", "Equal opportunity", "Equalised odds", "Predictive parity"], "cells": [["flag rate across groups", {"text": "0.30 - 0.39", "tone": "warn"}], ["TPR across groups", {"text": "0.62 - 0.73", "tone": "warn"}], ["TPR and FPR", {"text": "FPR 0.22 - 0.33", "tone": "warn"}], ["precision across groups", {"text": "0.23 - 0.44", "tone": "crit"}]], "t": "diagram", "id": "dg-2_6-03-0"},
+
+
 
 
 
@@ -121,7 +129,11 @@ choosing which one to satisfy, and saying so.`,
 
     { t: "h2", n: "04", text: "Gain, lift and the C-index", id: "gain" },
 
+    {"kind": "cells", "title": "The gain chart: cumulative share of churners captured, by decile", "caption": "Rank all 297 customers by score and cut into deciles. The **top decile holds a third of all churners** — a lift of 3.30 over calling at random — and calling half the base reaches 85% of them. This is the chart a retention team adopts without training, because 'the top 10% contains a third of the churners' is a sentence anyone can act on. Note the last two deciles add nothing: the model has already found everyone by decile 9.", "items": ["33%", "54%", "63%", "73%", "85%", "88%", "94%", "94%", "100%", "100%"], "highlight": [0, 1], "tone": "good", "negative": false, "label": "decile 1 lift 3.30 · decile 5 lift 1.70 · decile 10 lift 1.00", "t": "diagram", "id": "dg-2_6-04-3"},
+
     {"kind": "matrix", "title": "The two charts a non-specialist will actually adopt", "caption": "Gain and lift need no training to read: 'the top 20% of the list contains 54% of the churners' is a sentence anyone can act on. Both must be computed at the deployed threshold, on held-out data — a gain chart on training rows is a description of memorisation.", "cols": ["Says", "Read by"], "rows": ["Gain at top k", "Lift at top k", "The fairness table", "The confusion matrix", "AUC"], "cells": [[{"text": "share of positives captured", "tone": "good"}, "the retention team"], [{"text": "how many times better than random", "tone": "good"}, "the retention team"], [{"text": "the same model, per group", "tone": "accent"}, "a reviewer or regulator"], [{"text": "the operating point in units", "tone": "good"}, "the stakeholder"], [{"text": "ranking quality overall", "tone": "warn"}, "you, alongside — never instead"]], "t": "diagram", "id": "dg-2_6-04-1"},
+
+
 
 
 

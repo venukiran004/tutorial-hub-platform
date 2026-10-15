@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Every lesson in this module uses the same series. Three stores — A, B and C — report daily sales from 1 January 2023 to 30 June 2025. The generator gave each store a base level (200, 120 and 80), a slow trend, a weekly pattern with factors 0.85, 0.90, 0.95, 1.00, 1.15, 1.30 and 0.85 from Monday to Sunday, a yearly pattern peaking in early July with an amplitude of 15 %, promotions on a random 10 % of days at +20 %, a +80 % Black Friday, a +25 % week before Christmas, closures on 25 December and 1 January, a permanent +30 lift for store C from 1 September 2024 after a refurbishment, and 8 % multiplicative noise. The raw file `sales_raw.csv` contains those numbers with faults you will meet in any warehouse: rows arrive unsorted with string dates, three days in March 2024 were loaded twice, store B's feed dropped for five days in June 2024 so the rows are absent rather than zero, one day at store A was recorded as £3.10 by a failed till, and the extract for the last day ran mid-afternoon. `store_sales.csv` is the clean version with the promo and holiday flags, which the later lessons use once the hygiene has been done here." },
 
     { t: "table", head: ["", "Ordinary tabular learning", "A time series"], rows: [
@@ -54,6 +57,9 @@ cross_val_score(gb, X, y, cv=KFold(5, shuffle=True))      # MAE 22.25
     { t: "h2", n: "02", text: "Getting the data right: seven checks, in order", id: "hygiene" },
 
     {"kind": "steps", "title": "Seven checks, and the order is the point", "caption": "Each check depends on the one above it being true. A lag feature is meaningless before the index is sorted, and `shift(1)` stops meaning 'yesterday' the moment the frequency is irregular — so a gap in the calendar silently changes what every later feature computes.", "items": [{"label": "The index is a real timestamp, sorted", "desc": "otherwise lags point at the wrong row", "code": "1", "tone": "crit"}, {"label": "The frequency is regular", "desc": "or shift(1) no longer means yesterday", "code": "2", "tone": "crit"}, {"label": "Gaps are explicit", "desc": "a missing day is a NaN, not an absent row", "code": "3", "tone": "warn"}, {"label": "Duplicated timestamps resolved", "desc": "two rows for one day is a grain error", "code": "4", "tone": "warn"}, {"label": "The series is one grain", "desc": "one store, one product, or an explicit key", "code": "5", "tone": "good"}, {"label": "Units and revisions understood", "desc": "a restated history changes the past under you", "code": "6", "tone": "good"}, {"label": "Only then: plot it", "desc": "level, trend, season, breaks, outliers", "code": "7", "tone": "violet"}], "t": "diagram", "id": "dg-10_1-02-1"},
+
+
+
 
 
 

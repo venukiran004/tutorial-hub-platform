@@ -33,6 +33,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "A balanced-class-weight logistic regression on the churn table, scored on the 297 held-out customers of whom 48 churned, thresholded at 0.5. **The mnemonic: the second word is what the model said; the first word is whether it was right.** A false positive is a customer the model called a churner who stayed; a false negative is a churner the model missed." },
 
     { t: "table",
@@ -81,6 +84,8 @@ MCC                (TP·TN - FP·FN) / sqrt((TP+FP)(TP+FN)(TN+FP)(TN+FN)) = (624
     ]},
 
     { t: "h2", n: "02", text: "What the base rate does", id: "baserate" },
+
+    {"kind": "trace", "title": "Two constant predictors, and the metrics that see through them", "caption": "At 16.2% prevalence, predicting 'stay' for everyone scores **0.838 accuracy** — seventeen points above the actual model — while learning nothing at all. The metrics that cannot be fooled are the ones that collapse to 0 or 0.5 for a constant: AUC, F1, MCC. That is the test to apply to any metric before trusting it on an imbalanced problem.", "left": "predictor", "codeW": 190, "vars": ["accuracy", "AUC", "F1", "MCC"], "steps": [{"code": "always 'stay'", "state": ["0.838", "0.500", "0.000", "0.000"], "tone": "crit", "note": "+17 pts on accuracy"}, {"code": "always 'churn'", "state": ["0.162", "0.500", "0.278", "0.000"], "tone": "crit"}, {"code": "the model @ 0.5", "state": ["0.670", "0.728", "0.443", "0.272"], "changed": [1, 2, 3], "tone": "good"}, {"code": "sees through a constant?", "state": ["no", "yes", "yes", "yes"], "tone": "violet"}], "t": "diagram", "id": "dg-2_1-02-1"},
 
     { t: "code", lang: "text", title: "Two constant predictors and the model, side by side (executed)",
       code: `                    accuracy   balanced acc   F1      kappa    MCC
@@ -146,7 +151,11 @@ a model that flags one customer, correctly, has precision 1.0 and recall 0.02: F
 
     { t: "h2", n: "03", text: "Three classes, three averages", id: "multiclass" },
 
+    {"kind": "matrix", "title": "Three averages over three classes", "caption": "The averaging choice decides whose errors count. Micro weights every **row** equally, so a small class failing badly disappears into it; macro weights every **class** equally, so the rare class's noisy metric gets a full third of the score. Neither replaces the per-class table.", "cols": ["Weights", "Hides"], "rows": ["Micro", "Macro", "Weighted", "Per class"], "cells": [[{"text": "each row equally", "tone": "accent"}, {"text": "a small class doing badly", "tone": "crit"}], [{"text": "each class equally", "tone": "accent"}, {"text": "that the rare class is noisy", "tone": "warn"}], [{"text": "each class by its size", "tone": "accent"}, "the same as micro, slightly less"], [{"text": "nothing is averaged", "tone": "good"}, {"text": "nothing: it is a table", "tone": "good"}]], "t": "diagram", "id": "dg-2_1-03-2"},
+
     {"kind": "matrix", "title": "Three averages over three classes", "caption": "The averaging choice decides whose errors count. Micro weights every **row** equally, so a small class failing badly disappears into it; macro weights every **class** equally, so the rare class's noisy metric gets a full third of the score. Neither replaces the per-class table.", "cols": ["Weights", "Hides"], "rows": ["Micro", "Macro", "Weighted", "Per class"], "cells": [[{"text": "each row equally", "tone": "accent"}, {"text": "a small class doing badly", "tone": "crit"}], [{"text": "each class equally", "tone": "accent"}, {"text": "that the rare class is noisy", "tone": "warn"}], [{"text": "each class by its size", "tone": "accent"}, "the same as micro, slightly less"], [{"text": "nothing is averaged", "tone": "good"}, {"text": "nothing: it is a table", "tone": "good"}]], "t": "diagram", "id": "dg-2_1-03-1"},
+
+
 
 
 

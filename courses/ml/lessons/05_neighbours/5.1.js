@@ -29,6 +29,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "The Minkowski family and two that are not in it",
       code: `Minkowski   d_q(x, x') = ( Σⱼ |xⱼ - x'ⱼ|^q )^{1/q}
    q = 1   Manhattan   Σ|Δ|            grid distance; robust to one large coordinate difference
@@ -157,6 +160,9 @@ KNeighborsClassifier(metric="mahalanobis", metric_params={"VI": np.linalg.inv(np
     { t: "h2", n: "03", text: "The curse, and what does and does not cure it", id: "curse" },
 
     {"kind": "compare", "title": "On the churn data KNN matched logistic regression and cost 400x more per query", "caption": "0.754 at k = 401 against logistic regression's 0.757 — statistically the same answer. But k = 401 means the model needed almost half the training set as neighbours to be stable, which is a signal that the truth here is near-linear and smooth, and every query pays a scan to rediscover it.", "columns": [{"title": "Reach for KNN when", "tone": "good", "items": ["Under ~20 meaningful scaled features", "The boundary is local and curved", "A quick assumption-free baseline is wanted", "New rows must count with no retraining", "You need a similarity lookup or an anomaly score"]}, {"title": "Do not when", "tone": "crit", "items": ["Dozens of features, many irrelevant", "The truth is near-linear: 0.754 vs 0.757", "There is a latency budget: every query scans", "Interpretability is required: no coefficients", "Imbalance, with no weighting or threshold work"]}], "t": "diagram", "id": "dg-5_1-03-1"},
+
+
+
 
 
 

@@ -66,6 +66,9 @@ scikit-learn AdaBoostClassifier(3 stumps): errors [0.300, 0.214, 0.182], weights
 
 
 
+
+
+
     { t: "code", lang: "text", title: "From residual fitting to the general algorithm",
       code: `goal:  F(x) = Σₘ ν hₘ(x)  minimising  Σᵢ L(yᵢ, F(xᵢ))       (forward stagewise: add one hₘ at a time, never revisit earlier ones)
 
@@ -113,6 +116,9 @@ GradientBoostingClassifier(learning_rate=0.1, max_depth=2).estimators_[0, 0]
     { t: "h2", n: "03", text: "The dials, executed", id: "dials" },
 
     {"kind": "matrix", "title": "Bagging and boosting are opposite machines", "caption": "Bagging reduces variance and leaves bias alone, so more trees never hurt. Boosting reduces bias by construction, so more trees eventually overfit — 0.719 down to 0.596 at a learning rate of 1. That single asymmetry explains the tuning burden: a forest's defaults are safe and a booster's can be the worst model in the room.", "cols": ["Bagging / forest", "Boosting"], "rows": ["Trees are", "Reduces", "More trees", "Tuning burden", "Label noise", "Parallel"], "cells": [["independent, deep", "sequential, shallow"], [{"text": "variance", "tone": "accent"}, {"text": "bias, mostly", "tone": "accent"}], [{"text": "never hurt", "tone": "good"}, {"text": "0.719 -> 0.596 at nu = 1", "tone": "crit"}], [{"text": "low", "tone": "good"}, {"text": "high", "tone": "warn"}], [{"text": "robust: 0.922", "tone": "good"}, {"text": "sensitive: 0.895", "tone": "warn"}], [{"text": "trivially", "tone": "good"}, {"text": "within a tree only", "tone": "warn"}]], "t": "diagram", "id": "dg-6_3-03-1"},
+
+
+
 
 
 

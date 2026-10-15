@@ -35,6 +35,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["Kind", "Mechanism", "Example on the churn table", "Signature", "Executed score"],
       rows: [
@@ -72,7 +75,10 @@ permutation_importance(pipe_with_refund, X_test, y_test, scoring="roc_auc", n_re
 
     { t: "h2", n: "02", text: "Preprocessing leakage: the noise column that scored 0.836", id: "preprocessing" },
 
-    {"kind": "matrix", "title": "What each transform leaks when it is fitted before the split", "caption": "The severity is set by what the transform saw. A scaler learns a mean; a target encoder learns the **label**, at group resolution, which is why it can turn a noise column into a 0.836. All of them have the same fix, and it is one line: make the transform a step in the Pipeline.", "cols": ["It learns", "Severity"], "rows": ["StandardScaler", "SimpleImputer", "KNNImputer", "TargetEncoder", "SelectKBest", "SMOTE", "PCA"], "cells": [["the test rows' mean and range", {"text": "low but non-zero", "tone": "warn"}], ["the test rows' median", {"text": "low", "tone": "warn"}], ["test values into train imputations", {"text": "medium", "tone": "warn"}], [{"text": "the label itself", "tone": "crit"}, {"text": "severe: 0.836 from noise", "tone": "crit"}], [{"text": "which features fit the test labels", "tone": "crit"}, {"text": "severe with many features", "tone": "crit"}], [{"text": "synthetic test positives", "tone": "crit"}, {"text": "severe; also fakes the base rate", "tone": "crit"}], ["the test rows' directions", {"text": "low", "tone": "warn"}]], "t": "diagram", "id": "dg-1_6-02-1"},
+    {"kind": "flow", "title": "Where the fit happens decides whether the score is real", "caption": "The two paths differ by **one line's position**. Fit the encoder above the split and it has seen every row's label, so a 200-level noise column carries the target into the model and scores 0.836. Move the same encoder inside the fold and it scores 0.468 — chance, which is the truth about a noise column.", "cols": 3, "nodes": [{"id": "d", "label": "All rows, with labels", "sub": "the starting point", "tone": "violet"}, {"id": "f1", "label": "Fit the encoder here", "sub": "it sees every label", "tone": "crit"}, {"id": "s1", "label": "Then split and score", "sub": "AUC 0.836 from noise", "tone": "crit"}, {"id": "s2", "label": "Split first", "sub": "train fold / test fold", "tone": "good"}, {"id": "f2", "label": "Fit the encoder in the fold", "sub": "only the training labels", "tone": "good"}, {"id": "r2", "label": "Score", "sub": "AUC 0.468: chance", "tone": "good"}], "edges": [["d", "f1"], ["f1", "s1"], ["d", "s2"], ["s2", "f2"], ["f2", "r2"]], "t": "diagram", "id": "dg-1_6-02-1"},
+
+
+
 
 
 
@@ -118,6 +124,10 @@ cross_val_score(pipe, df[["city"]], y, cv=cv, scoring="roc_auc").mean()         
     },
 
     { t: "h2", n: "03", text: "Temporal leakage: the window that looked ahead", id: "temporal" },
+
+    {"kind": "timeline", "title": "A centred window reads the future; a trailing one does not", "caption": "A 7-day rolling mean **centred** on day t averages days t−3 to t+3 — so the feature for Wednesday contains Saturday. It scored 0.771 against 0.618 for the trailing version and 0.571 for the raw value, and that 0.15 of apparent skill is entirely the three days that had not happened yet.", "span": 14, "tick": 7, "lanes": [{"label": "Forecast at t", "bars": [[7, 8, "t", "violet"]]}, {"label": "Centred, 7 days", "bars": [[4, 11, "t-3 to t+3: reads the future", "crit"]]}, {"label": "Trailing, 7 days", "bars": [[1, 8, "t-6 to t: legal", "good"]]}, {"label": "Knowable at t", "bars": [[0, 8, "everything up to and including t", "good"]]}], "t": "diagram", "id": "dg-1_6-03-2"},
+
+
 
     { t: "code", lang: "python", title: "A centred rolling mean predicts tomorrow because it contains tomorrow (executed)",
       hl: [3, 4, 8, 9, 10],
@@ -178,6 +188,10 @@ centred  = s.rolling(7, center=True).mean()       # days t-3 .. t+3        : use
     },
 
     { t: "h2", n: "04", text: "Detection and prevention", id: "detection" },
+
+    {"kind": "matrix", "title": "What each transform leaks when it is fitted before the split", "caption": "The severity is set by what the transform saw. A scaler learns a mean; a target encoder learns the **label**, at group resolution, which is why it can turn a noise column into a 0.836. All of them have the same fix, and it is one line: make the transform a step in the Pipeline.", "cols": ["It learns", "Severity"], "rows": ["StandardScaler", "SimpleImputer", "KNNImputer", "TargetEncoder", "SelectKBest", "SMOTE", "PCA"], "cells": [["the test rows' mean and range", {"text": "low but non-zero", "tone": "warn"}], ["the test rows' median", {"text": "low", "tone": "warn"}], ["test values into train imputations", {"text": "medium", "tone": "warn"}], [{"text": "the label itself", "tone": "crit"}, {"text": "severe: 0.836 from noise", "tone": "crit"}], [{"text": "which features fit the test labels", "tone": "crit"}, {"text": "severe with many features", "tone": "crit"}], [{"text": "synthetic test positives", "tone": "crit"}, {"text": "severe; also fakes the base rate", "tone": "crit"}], ["the test rows' directions", {"text": "low", "tone": "warn"}]], "t": "diagram", "id": "dg-1_6-04-3"},
+
+
 
     { t: "table",
       head: ["Test", "What it asks", "Finds", "Executed result"],

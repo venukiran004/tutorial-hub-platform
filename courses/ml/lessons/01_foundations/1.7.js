@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "ERM, PAC, and why restricting the space is the whole trick", id: "theory" },
 
+    {"kind": "flow", "title": "Why restricting the hypothesis space is the whole trick", "caption": "Empirical risk minimisation picks the candidate with the lowest training error. With an unrestricted space that is always a lookup table — zero training error, no generalisation. The bound says the gap between training and true error grows with the space's capacity and shrinks with n, so the only way to learn is to **search a space small enough that fitting it means something**.", "cols": 3, "nodes": [{"id": "h", "label": "Hypothesis space H", "sub": "the functions you allow", "tone": "violet"}, {"id": "e", "label": "ERM", "sub": "pick the lowest training error in H", "tone": "accent"}, {"id": "u", "label": "H unrestricted", "sub": "a lookup table wins", "tone": "crit"}, {"id": "g", "label": "Gap grows with capacity", "sub": "and shrinks with n", "tone": "warn"}, {"id": "r", "label": "H restricted", "sub": "lines, shallow trees, small norms", "tone": "good"}, {"id": "l", "label": "Learning is possible", "sub": "training error now predicts", "tone": "good"}], "edges": [["h", "e"], ["e", "u"], ["e", "g"], ["g", "r"], ["r", "l"]], "t": "diagram", "id": "dg-1_7-01-0"},
+
+
+
     { t: "p", text: "We want the function with the lowest **true risk** R(f) = E[L(y, f(x))] over the whole population, but we only have n rows. **Empirical risk minimisation** picks the f in the hypothesis space H that minimises the training loss, and asks: how far is the training loss from the true risk? For a single fixed f, the training loss is an average of n independent draws and concentrates around R(f). The trouble is that we chose f *because* its training loss was low — among |H| candidates, some will look good by luck. The bound has to account for every f we might have picked." },
 
     { t: "code", lang: "text", title: "PAC learning: the sample complexity for a finite hypothesis space, and three worked numbers",
@@ -63,6 +67,10 @@ shatters(four)     # 14 of 16                        -> the two XOR labellings (
     ]},
 
     { t: "h2", n: "02", text: "Inductive bias, no free lunch, Occam", id: "bias" },
+
+    {"kind": "matrix", "title": "Every family is an assumption about the world", "caption": "There is no assumption-free learner — that is the no-free-lunch theorem stated usefully. Choosing a model is choosing which bias you believe, so the column that matters is the last one: what the family cannot see however much data you give it.", "cols": ["Assumes", "Fails on"], "rows": ["Linear / logistic", "Decision trees", "KNN / kernels", "Naive Bayes", "SVM (RBF)", "Neural networks"], "cells": [["the target is a weighted sum", {"text": "interactions, thresholds, XOR", "tone": "warn"}], ["axis-aligned rectangles", {"text": "smooth diagonals; extrapolation", "tone": "warn"}], ["nearby points share labels", {"text": "high dimension; junk features", "tone": "warn"}], ["features independent given y", {"text": "correlated features", "tone": "warn"}], ["the widest margin generalises", {"text": "heavy noise; large n", "tone": "warn"}], ["complex functions are stacks", {"text": "small tabular data", "tone": "warn"}]], "t": "diagram", "id": "dg-1_7-02-1"},
+
+
 
     {"kind": "matrix", "title": "Every family is an assumption about the world", "caption": "There is no assumption-free learner — that is the no-free-lunch theorem stated usefully. Choosing a model is choosing which bias you believe, so the column that matters is the last one: what the family cannot see however much data you give it.", "cols": ["Assumes", "Fails on"], "rows": ["Linear / logistic", "Decision trees", "KNN / kernels", "Naive Bayes", "SVM (RBF)", "Neural networks"], "cells": [["the target is a weighted sum", {"text": "interactions, thresholds, XOR", "tone": "warn"}], ["axis-aligned rectangles", {"text": "smooth diagonals; extrapolation", "tone": "warn"}], ["nearby points share labels", {"text": "high dimension; junk features", "tone": "warn"}], ["features independent given y", {"text": "correlated features", "tone": "warn"}], ["the widest margin generalises", {"text": "heavy noise; large n", "tone": "warn"}], ["complex functions are stacks", {"text": "small tabular data", "tone": "warn"}]], "t": "diagram", "id": "dg-1_7-02-0"},
 
@@ -115,6 +123,10 @@ shatters(four)     # 14 of 16                        -> the two XOR labellings (
 
     { t: "h2", n: "03", text: "The shape of a model: three axes", id: "axes" },
 
+    {"kind": "matrix", "title": "Three axes that place any model", "caption": "These are independent choices, and each one predicts a specific behaviour. The third explains a cost that only appears in production: a lazy model has no training time and pays at every query instead — 382 ms per 5,000 rows against 0.5 ms for an eager one.", "cols": ["One pole", "The other"], "rows": ["Parameter count", "What it models", "When it computes"], "cells": [[{"text": "parametric: fixed, whatever n", "tone": "accent"}, {"text": "non-parametric: grows with n", "tone": "accent"}], [{"text": "generative: p(x, y)", "tone": "good"}, {"text": "discriminative: p(y | x)", "tone": "good"}], [{"text": "lazy: at query time, 382 ms", "tone": "warn"}, {"text": "eager: at fit time, 0.5 ms to score", "tone": "good"}]], "t": "diagram", "id": "dg-1_7-03-2"},
+
+
+
     { t: "table",
       head: ["Axis", "One side", "Other side", "What the choice costs"],
       rows: [
@@ -132,6 +144,10 @@ shatters(four)     # 14 of 16                        -> the two XOR labellings (
     },
 
     { t: "h2", n: "04", text: "The curse of dimensionality, in numbers", id: "curse" },
+
+    {"kind": "trace", "title": "The curse of dimensionality, measured", "caption": "Five hundred uniform points in the unit cube, and one query point. Read the ratio column: the nearest neighbour goes from 0.2% of the farthest distance at d = 1 to **86%** at d = 500, so distance stops discriminating and every method whose whole idea is 'nearby points are similar' loses its meaning. The last column is the same fact from the other side — by 100 dimensions every point is on the surface.", "left": "dimensions", "codeW": 130, "vars": ["nearest", "farthest", "nearest / farthest", "within 0.05 of the surface"], "steps": [{"code": "d = 1", "state": ["0.001", "0.916", "0.002", "10%"], "tone": "good"}, {"code": "d = 2", "state": ["0.014", "1.155", "0.012", "19%"], "tone": "good"}, {"code": "d = 10", "state": ["0.498", "1.588", "0.314", "65%"], "tone": "accent"}, {"code": "d = 20", "state": ["0.996", "2.364", "0.421", "88%"], "tone": "accent"}, {"code": "d = 100", "state": ["3.707", "5.000", "0.741", "100%"], "changed": [2, 3], "tone": "warn"}, {"code": "d = 500", "state": ["8.205", "9.544", "0.860", "100%"], "changed": [2], "tone": "crit", "note": "86% as far"}], "t": "diagram", "id": "dg-1_7-04-3"},
+
+
 
     {"kind": "matrix", "title": "In 500 dimensions the nearest point is 86% as far as the farthest", "caption": "Measured on 500 uniform points in the unit cube. The ratio of nearest to farthest climbs towards 1, which is the curse stated precisely: distance stops discriminating, so every method whose whole idea is 'nearby points are similar' loses its meaning. The second column is the same fact from the other side — by 100 dimensions, every point is on the surface.", "cols": ["nearest / farthest", "Within 0.05 of the surface"], "rows": ["d = 1", "d = 2", "d = 10", "d = 20", "d = 100", "d = 500"], "cells": [[{"text": "0.002", "tone": "good"}, "10%"], [{"text": "0.012", "tone": "good"}, "19%"], [{"text": "0.314", "tone": "accent"}, "65%"], [{"text": "0.421", "tone": "warn"}, "88%"], [{"text": "0.741", "tone": "crit"}, {"text": "100%", "tone": "crit"}], [{"text": "0.860", "tone": "crit"}, {"text": "100%", "tone": "crit"}]], "t": "diagram", "id": "dg-1_7-04-1"},
 

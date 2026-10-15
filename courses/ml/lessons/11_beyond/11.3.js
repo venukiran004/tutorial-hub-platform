@@ -23,6 +23,9 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "Prequential evaluation: test on each row before training on it", "caption": "There is no held-out set on a stream, so the honest protocol is to predict each arriving row, record the error, and *then* learn from it. Every row is therefore a test row exactly once, and the running error is an unbiased picture of how the model behaved as the data arrived.", "cols": ["Online learning", "Batch"], "rows": ["Sees each row", "Evaluation", "Adapts to drift", "Memory", "Revisiting a mistake"], "cells": [[{"text": "once, as it arrives", "tone": "accent"}, "many times, per epoch"], [{"text": "prequential: predict, then fit", "tone": "good"}, "a held-out split"], [{"text": "by construction", "tone": "good"}, {"text": "only when retrained", "tone": "warn"}], [{"text": "constant", "tone": "good"}, "the dataset"], [{"text": "it is gone", "tone": "warn"}, "another epoch will revisit it"]], "t": "diagram", "id": "dg-11_3-01-0"},
 
 
+
+
+
     { t: "p", text: "A batch learner sees all its data at once and fits; an online learner sees one row (or a mini-batch), updates, discards it and waits for the next. The reasons to learn online are memory — the data do not fit — latency — the model must reflect the last minute — and drift — the world moves, and a model fitted last month is wrong this month. Evaluation is prequential (predict, then train): each row is scored by the model before the model sees its label, so the running accuracy is an honest out-of-sample number with no split at all." },
 
     { t: "code", lang: "python", title: "A 20,000-row logistic stream, three ways (executed)",
@@ -122,6 +125,9 @@ centralised logistic regression on the pooled 1,000 rows:  w = (1.52, −1.04, 0
     { t: "h2", n: "04", text: "Non-IID data: which kind", id: "noniid" },
 
     {"kind": "matrix", "title": "Non-IID is not one problem", "caption": "Federated averaging degrades for different reasons depending on **how** the clients differ, and the fix differs with it. Label skew is the one that breaks naive averaging hardest: each client's update points at its own label distribution, and the average of those directions need not help anyone.", "cols": ["Clients differ in", "Mitigation"], "rows": ["Label skew", "Feature skew", "Quantity skew", "Concept skew"], "cells": [[{"text": "which classes they hold", "tone": "crit"}, "proximal terms, server momentum"], ["the same classes, different inputs", "normalisation that is not batch-wise"], [{"text": "how many rows", "tone": "warn"}, "weight the average by n"], [{"text": "P(y|x) itself", "tone": "crit"}, "personalisation: one model cannot fit all"]], "t": "diagram", "id": "dg-11_3-04-1"},
+
+
+
 
 
     { t: "p", text: "Clients are never IID: a phone's keyboard data is one person's vocabulary, a hospital's patients are one region's. 'Non-IID' covers three different situations, and they do very different things to FedAvg. **Label skew** — clients have different class proportions. **Feature skew** — clients see different regions of the input space. **Concept skew** — the relationship P(y | x) itself differs between clients. The executed experiments separate them." },

@@ -19,7 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The definition, and the three ingredients", id: "definition" },
 
-    {"kind": "tree", "title": "What a learner is made of", "caption": "Five pieces, and every algorithm in this course is a different choice of the first two. The last one is the piece people forget is separate: the loss is what the optimiser minimises, and the performance measure is what the business reads — and they are usually not the same function.", "root": {"label": "A learner", "sub": "a family, a loss, and a way to search", "tone": "violet", "children": [{"label": "Hypothesis space", "sub": "the functions it may choose from: lines, trees, kernels", "tone": "accent"}, {"label": "Loss", "sub": "how wrong one candidate is on the data", "tone": "accent"}, {"label": "Data", "sub": "the experience: rows, and for supervised learning a label", "tone": "good"}, {"label": "Optimiser", "sub": "closed form, gradient descent, greedy search", "tone": "good"}, {"label": "Performance measure", "sub": "how it is judged on unseen data — usually not the loss", "tone": "teal"}]}, "t": "diagram", "id": "dg-1_1-01-0"},
+    {"kind": "tree", "title": "What a learner is made of", "caption": "Five pieces, and every algorithm in this course is a different choice of the first two. The last one is the piece people forget is separate: the loss is what the optimiser minimises, and the performance measure is what the business reads — and they are usually not the same function.", "root": {"label": "A learner", "sub": "a family, a loss, and a way to search", "tone": "violet", "children": [{"label": "Hypothesis space", "sub": "the functions it may choose from", "tone": "accent"}, {"label": "Loss", "sub": "how wrong one candidate is on the data", "tone": "accent"}, {"label": "Data", "sub": "rows, and for supervised learning a label", "tone": "good"}, {"label": "Optimiser", "sub": "closed form, gradient descent, greedy search", "tone": "good"}, {"label": "Performance measure", "sub": "judged on unseen data — usually not the loss", "tone": "teal"}]}, "t": "diagram", "id": "dg-1_1-01-0"},
+
+
+
 
 
 
@@ -75,6 +78,10 @@ print(w_star.round(4), np.mean((w_star * x - t) ** 2).round(4))   # 2.0036   0.0
 
     { t: "h2", n: "02", text: "Rules versus learning", id: "rules" },
 
+    {"kind": "compare", "title": "When to learn the rule, and when to write it", "caption": "Machine learning is the answer when the rule cannot be articulated, changes under you, varies per context, or is needed a million times. It is the wrong answer when the logic is known and deterministic — nobody should learn a tax bracket from data.", "columns": [{"title": "Learn it", "tone": "good", "items": ["The rule cannot be articulated: which pixels make a cat", "The rule changes: fraud adapts to whatever you block", "The rule varies per context: what to recommend, now", "The scale defeats manual rules: a billion events"]}, {"title": "Write it", "tone": "accent", "items": ["The logic is deterministic and known: tax brackets", "There is no data, or far too little", "The decision must be auditable line by line", "A wrong answer is catastrophic and irreversible"]}], "t": "diagram", "id": "dg-1_1-02-1"},
+
+
+
     { t: "p", text: "Traditional programming takes data and rules and produces answers; learning takes data and answers and produces rules. **The case for learning is not that rules are bad — it is that some rules cannot be written down, change under you, or vary per customer.** A churn analyst's best hand-written rule, against a logistic regression fitted to the same seven columns, on the 300 customers held out:" },
 
     { t: "code", lang: "python", title: "A hand-written rule against a fitted model on the held-out 300 (executed)",
@@ -120,6 +127,10 @@ model.coef_.round(3)   # tenure -0.039  logins -0.178  tickets +0.349  discount 
     ]},
 
     { t: "h2", n: "03", text: "The kinds of learning, by their signal", id: "kinds" },
+
+    {"kind": "matrix", "title": "The kinds of learning, by what signal they get", "caption": "The signal decides the whole shape of the problem. Self-supervised is the one worth looking at twice: the label is manufactured from the input itself — the masked word, the next token — which is how a model trains on text nobody annotated.", "cols": ["The signal is", "It learns"], "rows": ["Supervised", "Unsupervised", "Semi-supervised", "Self-supervised", "Reinforcement"], "cells": [[{"text": "a label per row", "tone": "good"}, "features to label"], [{"text": "nothing but features", "tone": "accent"}, "groups, directions, density"], [{"text": "labels for a few rows", "tone": "accent"}, "a mapping, helped by the rest"], [{"text": "a label made from the input", "tone": "violet"}, "a representation to fine-tune"], [{"text": "a reward, often delayed", "tone": "teal"}, "a policy: what to do when"]], "t": "diagram", "id": "dg-1_1-03-2"},
+
+
 
     {"kind": "matrix", "title": "The kinds of learning, by what signal they get", "caption": "The signal decides the whole shape of the problem. Self-supervised is the one worth looking at twice: the label is manufactured from the input itself — the masked word, the next token — which is how a model trains on text nobody annotated.", "cols": ["The signal is", "It learns"], "rows": ["Supervised", "Unsupervised", "Semi-supervised", "Self-supervised", "Reinforcement"], "cells": [[{"text": "a label per row", "tone": "good"}, "features to label"], [{"text": "nothing but features", "tone": "accent"}, "groups, directions, density"], [{"text": "labels for a few rows", "tone": "accent"}, "a mapping, helped by the rest"], [{"text": "a label made from the input", "tone": "violet"}, "a representation to fine-tune"], [{"text": "a reward, often delayed", "tone": "teal"}, "a policy: what to do when"]], "t": "diagram", "id": "dg-1_1-03-1"},
 

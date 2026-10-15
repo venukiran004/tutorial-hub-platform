@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "A series is weakly stationary when its mean is constant, its variance is constant, and the covariance between y_t and y_{t−k} depends only on k. A trend breaks the first condition, a level that multiplies its noise breaks the second, a season breaks the third in a structured way. The models of 10.4 and 10.5 are built for stationary input, so the series is transformed until the conditions hold and the forecast is transformed back. The order of transformations matters, because each is chosen for a symptom and undone in reverse." },
 
     { t: "table", head: ["Symptom", "Transform", "Notation", "Undo"], rows: [
@@ -49,6 +52,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Unit-root tests: the ADF regression as OLS, and KPSS beside it", id: "adf" },
 
     {"kind": "matrix", "title": "Over-differencing is a failure, not a safe default", "caption": "Each unnecessary difference injects a negative MA(1) the model must then estimate, and inflates the forecast variance by 2(1 − ρ₁). Differencing white noise gives a lag-1 autocorrelation of −0.5 — measured at −0.496 on 20,000 points — and the store series shows it at the second step: sd rises from 0.146 to 0.200.", "cols": ["Lag-1 ACF after", "Meaning"], "rows": ["White noise, differenced", "AR(1) phi=0.7, differenced", "Store, first difference", "Store, second difference"], "cells": [[{"text": "-0.496 (theory -0.5)", "tone": "crit"}, "an MA(1) that was not there"], [{"text": "-0.158 (theory -0.15)", "tone": "crit"}, "the same, from a stationary start"], [{"text": "sd 0.146", "tone": "good"}, "appropriate"], [{"text": "sd 0.200, ACF -0.476", "tone": "crit"}, "over-differenced: variance up"]], "t": "diagram", "id": "dg-10_2-02-1"},
+
+
+
 
 
 

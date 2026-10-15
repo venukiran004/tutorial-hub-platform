@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["Axis", "One side", "Other side", "Trade"],
       rows: [
@@ -82,6 +85,9 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Partial dependence, ICE, and the case for ALE", id: "pdp" },
 
     {"kind": "matrix", "title": "Why PDP lies when features are correlated, and ALE does not", "caption": "A PDP varies one feature across its whole range while holding the others at their observed values — which constructs rows that cannot exist, and asks the model to extrapolate into them. On a correlated pair the PDP slope came out **1.58 against a true 2.0**. ALE averages local differences within a bin instead, so it never leaves the data.", "cols": ["Assumes", "Failure"], "rows": ["Permutation importance", "PDP", "ICE", "ALE"], "cells": [["shuffling breaks only this link", {"text": "correlated features share credit", "tone": "warn"}], [{"text": "the feature can vary alone", "tone": "crit"}, {"text": "slope 1.58 vs a true 2.0", "tone": "crit"}], ["the same, per row", "the average hides the spread; ICE shows it"], [{"text": "only local differences", "tone": "good"}, "bin choice; no extrapolation"]], "t": "diagram", "id": "dg-9_1-03-1"},
+
+
+
 
 
 

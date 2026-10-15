@@ -56,6 +56,9 @@ ATTENTION WEIGHTS                what a transformer 'looks at' when forming a re
 
 
 
+
+
+
     { t: "code", lang: "python", title: "A CNN on 8 × 8 digits, with a 2 × 2 corner patch on every training '3' (executed)",
       hl: [3, 4, 5, 9, 10, 11, 14, 15, 16],
       code: `# conv(1->16) -> ReLU -> conv(16->32) -> ReLU -> global average pool -> linear(32->10);  40 epochs of Adam on 1,257 images
@@ -92,6 +95,9 @@ ATTENTION WEIGHTS                what a transformer 'looks at' when forming a re
     { t: "h2", n: "03", text: "Attention is not attribution", id: "attention" },
 
     {"kind": "matrix", "title": "Attention is not attribution", "caption": "Attention weights say where a representation was **gathered from**, not what moved the output — and the two can disagree completely: a token receiving 85% of the attention had a *negative* contribution to the prediction. The other methods differ mainly in whether they come with a completeness guarantee.", "cols": ["Guarantee", "Cost"], "rows": ["Gradient x input", "Integrated gradients", "Grad-CAM", "LRP", "Attention"], "cells": [[{"text": "none", "tone": "warn"}, "1 backward pass"], [{"text": "completeness", "tone": "good"}, "50-300 backward passes"], [{"text": "none", "tone": "warn"}, "1 backward pass; coarse"], [{"text": "conservation per layer", "tone": "good"}, "1 modified pass; rule-dependent"], [{"text": "none: not an attribution", "tone": "crit"}, "free — and misleading"]], "t": "diagram", "id": "dg-9_3-03-1"},
+
+
+
 
 
 
