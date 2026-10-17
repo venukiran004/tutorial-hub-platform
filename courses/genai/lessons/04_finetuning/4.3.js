@@ -75,6 +75,9 @@ for r in (1, 2, 4, 8, 16, 32, 64):
     { t: "h2", n: "02", id: "measured", text: "Is the update actually low-rank?",
       sub: "The premise, tested on the update from 4.1" },
 
+    {"kind": "matrix", "title": "Checking the low-rank claim against a real fine-tune", "caption": "The low-rank story is an empirical claim about what fine-tuning does, so it can be checked — and 4.1's full fine-tune left 36 weight deltas to decompose. The honest answer is that it is **not very low rank**: rank 8 captures 45.2% of the attention update, and reaching 84% needs rank 64. So LoRA is not reproducing ΔW faithfully at the ranks people use, and §03 is about why it works anyway.", "cols": ["r=1", "r=8", "r=16", "r=64"], "rows": ["attn.c_attn", "attn.c_proj", "mlp.c_fc"], "cells": [[{"text": "12.8%", "tone": "crit"}, {"text": "45.2%", "tone": "warn"}, "57.9%", {"text": "84.0%", "tone": "good"}], [{"text": "24.4%", "tone": "warn"}, "56.7%", "67.7%", {"text": "88.0%", "tone": "good"}], [{"text": "17.6%", "tone": "crit"}, {"text": "43.8%", "tone": "warn"}, "56.6%", {"text": "82.6%", "tone": "good"}]], "t": "diagram", "id": "dg-4_3-02-0"},
+
+
     { t: "p", text: "The low-rank story is an empirical claim about what fine-tuning does, so it can be checked. In 4.1 I fine-tuned every parameter of GPT-2 and saved the difference between the trained and original weights for 36 matrices. The singular values of those differences say how much of each update lives in how few directions." },
 
     { t: "code", lang: "python", title: "g43.py \u2014 the spectrum of a real \u0394W", code: `deltas = torch.load("g43_deltas.pt")          # W_after - W_before, from 4.1
@@ -124,6 +127,9 @@ r99 = int((cum < 0.99).sum()) + 1`,
     { t: "h2", n: "03", id: "noise", text: "What makes it work anyway",
       sub: "The comparison that rescues the idea" },
 
+    {"kind": "trace", "title": "What makes 45% enough: the comparison against noise", "caption": "If capturing 45% of an update were enough on its own, you could approximate anything — so the question is whether ΔW is **special**. Run the same decomposition on a random matrix of identical shape and standard deviation: rank 8 captures **2.5% against the real delta's 45.2%**, and reaching 90% takes rank 559 against 103. So ΔW really is concentrated in a small number of directions; it is just not concentrated in *eight* of them, and 45% of the right directions turns out to be enough to carry the behaviour.", "left": "matrix", "codeW": 170, "vars": ["r=1", "r=8", "r=16", "rank for 90%"], "steps": [{"code": "real delta-W", "state": ["12.8%", "45.2%", "57.9%", "103"], "tone": "good"}, {"code": "random, same std", "state": ["0.3%", "2.5%", "4.9%", "559"], "changed": [1, 3], "tone": "crit", "note": "18x less at r=8"}], "t": "diagram", "id": "dg-4_3-03-1"},
+
+
     { t: "p", text: "If capturing 45% of an update were enough on its own, you could approximate anything. The question is whether `\u0394W` is special, so I ran the same decomposition on a random matrix of identical shape and standard deviation." },
 
     { t: "code", lang: "python", title: "g43.py \u2014 real update against random noise", code: `rnd = torch.randn(shape) * float(deltas[n0].std())    # same shape, same spread
@@ -149,6 +155,9 @@ sr = torch.linalg.svdvals(rnd)`,
 
     { t: "h2", n: "04", id: "practical", text: "What LoRA gives you besides cheap training",
       sub: "Three properties that follow from freezing the base" },
+
+    {"kind": "matrix", "title": "Three things LoRA buys that have nothing to do with training cost", "caption": "The cheap-training argument is the famous one and arguably the least important of the four. **The base cannot be damaged** — 4.1 measured a full fine-tune taking general perplexity from 5.386 to 6.748, permanently, and a LoRA run cannot do that because W₀ is never written to. Remove the adapter and the original model is back byte for byte. And an adapter is tens of megabytes rather than tens of gigabytes, so you can keep dozens and serve several from one base.", "cols": ["What it buys"], "rows": ["The base is untouched", "Adapters are small", "They can be merged away"], "cells": [[{"text": "4.1's forgetting is impossible - W0 is never written", "tone": "good"}], [{"text": "24,576 numbers against 1.77 million; dozens, served from one base", "tone": "good"}], [{"text": "W0 + BA is just a matrix - fold it in and ship a normal model", "tone": "violet"}]], "t": "diagram", "id": "dg-4_3-04-2"},
+
 
     { t: "dl", items: [
       { k: "The base cannot be damaged", v: "4.1 measured a full fine-tune taking general perplexity from 5.386 to 6.748 \u2014 catastrophic forgetting, in the weights, permanent. A LoRA run cannot do that, because `W\u2080` is never written to. Remove the adapter and you have the original model back, byte for byte." },

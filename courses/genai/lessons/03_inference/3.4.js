@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "The score matrix nobody wants to store", "caption": "Attention's inner `QKᵀ` is an n×n matrix of scores, and the standard implementation writes it to memory, reads it back for the softmax, writes the result, and reads it again for the final multiply. **The arithmetic is modest; the traffic is not.** At 16,384 tokens the scores across 32 layers come to 549.76 GB of round trips — which no accelerator has, so the matrix is streamed in and out of HBM four times over.", "left": "sequence length", "codeW": 160, "vars": ["scores per head", "all heads, 32 layers"], "steps": [{"code": "512", "state": ["0.52 MB", "0.54 GB"], "tone": "good"}, {"code": "2,048", "state": ["8.39 MB", "8.59 GB"], "changed": [1], "tone": "accent"}, {"code": "4,096", "state": ["33.55 MB", "34.36 GB"], "tone": "warn"}, {"code": "8,192", "state": ["134.22 MB", "137.44 GB"], "changed": [1], "tone": "crit"}, {"code": "16,384", "state": ["536.87 MB", "549.76 GB"], "changed": [1], "tone": "crit", "note": "quadratic, in bytes"}], "t": "diagram", "id": "dg-3_4-01-0"},
 
+
+
     { t: "p", text: "Attention computes `softmax(QKᵀ/√d)V`. The inner `QKᵀ` is an n×n matrix of scores — every token's affinity for every other token — and the standard implementation writes it to memory, reads it back for the softmax, writes the result, and reads it again for the final multiply. The arithmetic is modest; the traffic is not." },
 
     { t: "code", lang: "python", title: "g34.py — the intermediate, in bytes", code: `for n in (512, 1024, 2048, 4096, 8192, 16384):
@@ -47,6 +49,8 @@ EC.receiveLesson({
       sub: "Tile, fuse, and never write the matrix down" },
 
     {"kind": "trace", "title": "The fused kernel, measured — including the row that goes backwards", "caption": "FlashAttention is **exact**, not an approximation: tiling, kernel fusion, an online softmax and an IO-aware design that does *more* arithmetic to move fewer bytes. The measurement mostly agrees with the 2–4× claim at the lengths where it matters, and the 256-token row is worth leaving in: **0.67×, slower than naive**, because at short sequences the fusion overhead exceeds the traffic it saves. The gain is a function of length, not a constant.", "left": "sequence length", "codeW": 160, "vars": ["naive ms", "fused ms", "speedup"], "steps": [{"code": "128", "state": ["0.42", "0.24", "1.74x"], "tone": "good"}, {"code": "256", "state": ["0.76", "1.14", "0.67x"], "changed": [2], "tone": "crit", "note": "slower than naive"}, {"code": "512", "state": ["5.54", "4.41", "1.26x"], "tone": "accent"}, {"code": "1,024", "state": ["18.77", "10.98", "1.71x"], "changed": [2], "tone": "good"}, {"code": "2,048", "state": ["83.87", "56.30", "1.49x"], "tone": "good"}], "t": "diagram", "id": "dg-3_4-02-1"},
+
+
 
     { t: "dl", items: [
       ["**Tiling**", "Process the computation in blocks small enough to fit in SRAM. A block of Q against a block of K produces a block of scores that is consumed immediately, never reaching HBM."],
@@ -85,6 +89,8 @@ F.scaled_dot_product_attention(q, k, v)`,
 
     {"kind": "trace", "title": "Where 'decode is weight-bound' stops being true", "caption": "3.1 established that decode is dominated by loading weights, and that is true at the context lengths most deployments run — and stops being true as context grows, because **the feed-forward work per token is constant while attention grows with the context**. At 128 tokens attention is 7.7% of the FLOPs; at 32,768 it is **95.5%**. Which is why the optimisations in this lesson matter at long context and are nearly irrelevant at short.", "left": "sequence length", "codeW": 160, "vars": ["attention FLOPs", "ffn FLOPs", "attention share"], "steps": [{"code": "128", "state": ["4.719e+06", "5.662e+07", "7.7%"], "tone": "good"}, {"code": "512", "state": ["1.887e+07", "5.662e+07", "25.0%"], "tone": "accent"}, {"code": "2,048", "state": ["7.550e+07", "5.662e+07", "57.1%"], "changed": [2], "tone": "warn", "note": "attention takes over"}, {"code": "8,192", "state": ["3.020e+08", "5.662e+07", "84.2%"], "tone": "crit"}, {"code": "32,768", "state": ["1.208e+09", "5.662e+07", "95.5%"], "changed": [2], "tone": "crit"}], "t": "diagram", "id": "dg-3_4-03-2"},
 
+
+
     { t: "p", text: "3.1 established that decode is dominated by loading weights. That is true at the context lengths most deployments run at, and stops being true as context grows — because the feed-forward work per token is constant while the attention work grows with the context." },
 
     { t: "code", lang: "python", title: "g34.py — attention's share of a decode step", code: `d_model, d_ff, layers = 768, 3072, 12
@@ -112,6 +118,8 @@ for n in (128, 512, 2048, 8192, 32768):
       sub: "Bounded cost, at the price of a guarantee" },
 
     {"kind": "trace", "title": "A sliding window bounds the cost instead of reducing it", "caption": "FlashAttention makes exact attention cheaper; a window makes it **less**. Each token attends only to the W nearest, so cost per token is capped at W rather than growing with n — and the saving is nothing at 2,048 and **97% at 131,072**. The trade is explicit and unlike FlashAttention's: information outside the window is unreachable in one layer, recoverable only through stacking, so this is an approximation with a quality question attached.", "left": "sequence length", "codeW": 160, "vars": ["full attention", "window of 4,096", "saved"], "steps": [{"code": "2,048", "state": ["2048", "2048", "0%"], "tone": "accent", "note": "window not reached"}, {"code": "8,192", "state": ["8192", "4096", "50%"], "changed": [2], "tone": "good"}, {"code": "32,768", "state": ["32768", "4096", "88%"], "changed": [2], "tone": "good"}, {"code": "131,072", "state": ["131072", "4096", "97%"], "changed": [2], "tone": "good", "note": "cost is now flat"}], "t": "diagram", "id": "dg-3_4-04-3"},
+
+
 
     { t: "p", text: "FlashAttention makes exact attention cheaper. A sliding window makes it *less*: each token attends only to the W nearest tokens, so cost per token is bounded by W rather than growing with n. Mistral and Mixtral use this." },
 

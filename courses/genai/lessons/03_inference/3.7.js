@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "The framework overhead everyone argues about is 0.01%", "caption": "Comparisons often open with request-handling overhead — Python against Rust, async against threads — so it is worth knowing the size of that term before weighing it. Measured across every non-model stage of a short request: tokenizing is 0.090 ms, detokenizing 0.029 ms, and the model is **99.99% of a 922.5 ms answer**. Which does not make frameworks equivalent; it means the differences between them are in scheduling, batching and cache management, not in the server's language.", "left": "stage", "codeW": 180, "vars": ["median ms", "share of a 20-token answer"], "steps": [{"code": "tokenize the prompt", "state": ["0.090", ""], "tone": "good"}, {"code": "prefill, 9 tokens", "state": ["75.698", ""], "tone": "accent"}, {"code": "one decode step", "state": ["42.334", ""], "tone": "accent"}, {"code": "detokenize", "state": ["0.029", ""], "tone": "good"}, {"code": "model work", "state": ["922.4", "99.99%"], "changed": [1], "tone": "violet"}, {"code": "tokenizer work", "state": ["0.118", "0.01%"], "changed": [1], "tone": "crit", "note": "the argued-about term"}], "t": "diagram", "id": "dg-3_7-01-0"},
 
+
+
     { t: "p", text: "Framework comparisons often open with request-handling overhead — Python versus Rust, async versus threads. It is worth knowing how small that term is before weighing it, so I measured every non-model stage of a short request." },
 
     { t: "code", lang: "python", title: "g37.py — where the time goes on a 20-token answer", code: `tok_ms = med(lambda: tok(prompt, return_tensors="pt"))
@@ -113,6 +115,8 @@ print(n_shared, tot, n_shared + uniq, 100 * (tot - n_shared - uniq) / tot)`,
       sub: "Pick from the constraint, not from the throughput chart" },
 
     {"kind": "matrix", "title": "Four frameworks, chosen by the constraint rather than a benchmark", "caption": "Each row names the constraint that makes one framework the answer. The second is the clearest trade: engine compilation buys the last 20–40%, and it is worth it **only** when the model is fixed, because otherwise you pay a rebuild every time you change models. The third is specific and easy to miss — on agent and multi-branch workloads the saving is in sharing cache across forks, which is a different win from throughput.", "cols": ["Choose", "Why that one"], "rows": ["GPU, ships often", "GPU, fixed model", "Agent or multi-branch", "No GPU at all"], "cells": [[{"text": "vLLM", "tone": "good"}, "no build step between a model and serving it"], [{"text": "TensorRT-LLM", "tone": "accent"}, "compilation buys the last 20-40%"], [{"text": "SGLang", "tone": "accent"}, "shares cache across forks"], [{"text": "llama.cpp", "tone": "violet"}, "designed for CPU, not tolerating it"]], "t": "diagram", "id": "dg-3_7-03-1"},
+
+
 
     { t: "dl", items: [
       { k: "vLLM", v: "The default for GPU serving. It originated PagedAttention (3.2) and continuous batching (3.5), has prefix caching, tensor parallelism and an OpenAI-compatible API, and supports the common quantization formats. Choose it unless you have a specific reason not to." },

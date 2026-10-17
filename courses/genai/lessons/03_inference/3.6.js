@@ -74,6 +74,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Acceptance rate is a property of your traffic, not the model pair", "caption": "Acceptance rate is the fraction of drafted tokens the target agrees with, and everything else follows from it — so it is the number to measure first. The spread is the point: **0.625 on technical text and 0.208 on creative**, a factor of three on the same model pair. Creative text is where the draft model's distribution diverges most, which is exactly where speculation stops paying. An aggregate of 0.417 would hide both ends.", "left": "domain", "codeW": 150, "vars": ["drafted", "accepted", "rate"], "steps": [{"code": "technical", "state": ["24", "15", "0.625"], "tone": "good"}, {"code": "factual", "state": ["24", "13", "0.542"], "tone": "good"}, {"code": "medical", "state": ["24", "9", "0.375"], "tone": "warn"}, {"code": "code", "state": ["24", "8", "0.333"], "tone": "warn"}, {"code": "creative", "state": ["24", "5", "0.208"], "changed": [2], "tone": "crit", "note": "3x below technical"}, {"code": "all, aggregated", "state": ["120", "50", "0.417"], "tone": "violet", "note": "hides both ends"}], "t": "diagram", "id": "dg-3_6-02-0"},
 
+
+
     { t: "p", text: "Acceptance rate is the fraction of drafted tokens the target agrees with. Everything else follows from it, so it is the number to measure first — and it is a property of your *traffic*, not of the model pair alone." },
 
     { t: "code", lang: "python", title: "g36.py — acceptance by domain, K = 4", code: `def spec_round(seq, K):
@@ -139,6 +141,8 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "K cancels, and the condition is r > c", "caption": "Let `c` be a draft pass as a fraction of a target pass, `r` the acceptance rate, `K` the tokens drafted per round. A round costs `Kc + 1` target-pass-equivalents and yields `1 + rK` tokens, so the speedup is `(1 + rK) / (Kc + 1)`. Set that above 1 and **K cancels entirely**, leaving `r > c`: speculation pays if and only if the acceptance rate exceeds the draft's relative cost. K does not decide *whether* it pays — only how much.", "cols": 3, "nodes": [{"id": "r", "label": "A round costs Kc + 1", "sub": "target-pass-equivalents", "tone": "accent"}, {"id": "y", "label": "And yields 1 + rK tokens", "sub": "accepted, plus the free one", "tone": "accent"}, {"id": "s", "label": "speedup = (1 + rK) / (Kc + 1)", "sub": "the whole model", "tone": "violet"}, {"id": "k", "label": "Set it above 1: K cancels", "sub": "algebraically, completely", "tone": "violet"}, {"id": "c", "label": "r > c", "sub": "acceptance beats relative draft cost", "tone": "good"}, {"id": "t", "label": "K sets the size of the win", "sub": "never whether there is one", "tone": "teal"}], "edges": [["r", "s"], ["y", "s"], ["s", "k"], ["k", "c"], ["c", "t"]], "t": "diagram", "id": "dg-3_6-03-1"},
 
+
+
     { t: "p", text: "Let `c` be the cost of a draft pass as a fraction of a target pass, `r` the acceptance rate, and `K` the number of tokens drafted per round. One round costs `K·c + 1` target-pass-equivalents and yields `1 + r·K` tokens. Plain decoding yields exactly 1 token per target pass, so the speedup is the ratio:" },
 
     { t: "math", tex: "\\text{speedup} \\;=\\; \\frac{1 + rK}{Kc + 1}" },
@@ -157,6 +161,8 @@ EC.receiveLesson({
       sub: "1.13× best case, where it is commonly said 2–3×" },
 
     {"kind": "trace", "title": "1.13x at best, and slower at K=8", "caption": "The advertised figure for speculative decoding is 2–3×. Measured on this pair — gpt2 drafting for gpt2-medium, a size ratio of 2.85× — the best result is **1.13× at K=4**, and **K=8 is 0.71×, slower than not speculating at all**. The reason is §02's table: acceptance falls as K rises (0.650 at K=1 down to 0.231 at K=8), so the drafts get cheaper per token and far likelier to be thrown away. A 2.85× size ratio is simply not enough; the published numbers assume a much smaller draft.", "left": "variant", "codeW": 170, "vars": ["total for 24 tokens", "vs plain"], "steps": [{"code": "plain greedy", "state": ["6960.6 ms", "1.00x"], "tone": "accent", "note": "290 ms/token"}, {"code": "speculative K=2", "state": ["6305.1 ms", "1.10x"], "tone": "good"}, {"code": "speculative K=4", "state": ["6172.9 ms", "1.13x"], "changed": [1], "tone": "good", "note": "the best here"}, {"code": "speculative K=8", "state": ["9737.7 ms", "0.71x"], "changed": [1], "tone": "crit", "note": "slower than plain"}], "t": "diagram", "id": "dg-3_6-04-2"},
+
+
 
     { t: "code", lang: "python", title: "g36.py — wall clock, 24 tokens", code: `def plain():
     seq = tok(text, return_tensors="pt").input_ids

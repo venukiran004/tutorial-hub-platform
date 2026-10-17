@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "Quantization is a decode optimisation, and only a decode optimisation", "caption": "From 3.1: decode throughput is bounded by model size / memory bandwidth, because every token requires loading every weight. **Halving the bytes per weight halves the bytes loaded, which halves that bound** — and nothing about the arithmetic changes, because the arithmetic was never the constraint. Prefill benefits far less: it is already compute-bound and amortises one weight load across hundreds of tokens, so the dequantisation work can cost more than it saves. So quantization helps throughput and TPOT and does almost nothing for TTFT.", "cols": 3, "nodes": [{"id": "b", "label": "Decode is bound by bytes loaded", "sub": "3.1's arithmetic intensity", "tone": "violet"}, {"id": "h", "label": "Halve the bytes per weight", "sub": "fp16 to int8", "tone": "good"}, {"id": "t", "label": "Halve the bound", "sub": "TPOT and throughput improve", "tone": "good"}, {"id": "p", "label": "Prefill is compute-bound", "sub": "weights already amortised", "tone": "warn"}, {"id": "d", "label": "Dequantisation can cost more", "sub": "than the load it saved", "tone": "crit"}, {"id": "f", "label": "So TTFT barely moves", "sub": "which is the thing to expect", "tone": "teal"}], "edges": [["b", "h"], ["h", "t"], ["p", "d"], ["d", "f"], ["t", "f"]], "t": "diagram", "id": "dg-3_3-01-0"},
 
+
+
     { t: "p", text: "From 3.1: decode throughput is bounded by `model size / memory bandwidth`, because every token requires loading every weight. Halving the bytes per weight halves the bytes loaded, which halves that bound. Nothing about the arithmetic changes — the arithmetic was never the constraint." },
 
     { t: "p", text: "Prefill benefits far less, because prefill is compute-bound: it already amortises one weight load across hundreds of tokens, so reducing the load helps little and the dequantisation work can even cost more than it saves. **Quantization is a decode optimisation**, which means it helps throughput and TPOT and does almost nothing for TTFT." },
@@ -50,6 +52,8 @@ EC.receiveLesson({
 
     {"kind": "matrix", "title": "Six methods, and the insight worth carrying", "caption": "**AWQ's idea is the one to remember.** Not all weights matter equally: a small fraction correspond to large activations and dominate the output, and protecting those channels — scaling them before quantizing — costs almost nothing in size while recovering most of the quality uniform quantization loses. That is why AWQ generally beats GPTQ at the same bit width, and why \"4-bit\" is not one thing.", "cols": ["Bits", "How", "Quality"], "rows": ["FP16 / BF16", "INT8 (W8A8)", "GPTQ", "AWQ", "GGUF", "FP8"], "cells": [["16", "standard half precision", "baseline"], ["8", "weights and activations", "minimal"], ["4", "calibration-based", "small"], [{"text": "4", "tone": "good"}, {"text": "protects salient channels", "tone": "good"}, {"text": "better than GPTQ", "tone": "good"}], ["2-8", "mixed per tensor, for CPU", "varies"], ["8", "mixed E4M3/E5M2", "minimal"]], "t": "diagram", "id": "dg-3_3-02-1"},
 
+
+
     { t: "table",
       head: ["Method", "Bits", "How", "Reference's quality note"],
       rows: [
@@ -68,6 +72,8 @@ EC.receiveLesson({
       sub: "The measurement that makes the case for calibration" },
 
     {"kind": "trace", "title": "The one-line quantization, and what it did", "caption": "PyTorch's dynamic quantization needs no calibration data and is the first thing anyone tries. On GPT-2 it delivers the promised speedup — 1.69× — and takes perplexity from **2.0707 to 1136.9664**, a factor of 549. The model is not degraded; it is destroyed, and it will still return fluent-looking text. Which is the argument for the check: perplexity on held-out text from your own domain is cheap and catches catastrophes like this one, and a task metric from 2.12's set catches the subtler degradation perplexity misses.", "left": "precision", "codeW": 150, "vars": ["perplexity", "forward pass"], "steps": [{"code": "fp32", "state": ["2.0707", "378.7 ms"], "tone": "good"}, {"code": "int8 dynamic", "state": ["1136.9664", "224.4 ms"], "changed": [0, 1], "tone": "crit", "note": "1.69x faster, 549x worse"}, {"code": "so measure both", "state": ["perplexity", "and a task metric"], "tone": "violet"}], "t": "diagram", "id": "dg-3_3-03-2"},
+
+
 
     { t: "p", text: "PyTorch's dynamic quantization is one line and requires no calibration data. It is also the first thing anyone tries. Here is what it does to GPT-2." },
 
@@ -101,6 +107,8 @@ print("int8 perplexity : %.4f" % perplexity(qmodel))`,
       sub: "The deployment target decides, not the bit count" },
 
     {"kind": "matrix", "title": "Which method, decided by where it will run", "caption": "The method follows the hardware rather than a quality ranking. Note the fourth row, which is the honest option people skip past: **BF16 — no quantization at all — when the memory is there.** And the last row is a warning rather than a recommendation: 2-bit is usually treated as about 40% of the original quality, which is rarely the right trade for the memory it returns.", "cols": ["Method", "Why"], "rows": ["Data-centre GPU", "Consumer GPU", "CPU or laptop", "Maximum quality", "Extreme constraint"], "cells": [[{"text": "FP8, or AWQ 4-bit", "tone": "good"}, "hardware FP8 on recent accelerators"], [{"text": "AWQ or GPTQ 4-bit", "tone": "good"}, "fits 6-8 GB; mature kernels"], [{"text": "GGUF Q4_K_M", "tone": "good"}, "the quality-size balance; llama.cpp"], [{"text": "BF16 - none at all", "tone": "violet"}, "the honest option when it fits"], [{"text": "GGUF Q2_K", "tone": "crit"}, "about 40% of quality - rarely worth it"]], "t": "diagram", "id": "dg-3_3-04-3"},
+
+
 
     { t: "table",
       head: ["Target", "Method", "Why"],

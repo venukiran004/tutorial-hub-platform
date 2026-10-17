@@ -75,6 +75,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "nf4", text: "What NF4 is",
       sub: "Sixteen levels, placed where the weights actually are" },
 
+    {"kind": "trace", "title": "NF4 against uniform int4, on real weights", "caption": "Four bits give sixteen values and the question is **which sixteen**. A uniform grid spaces them evenly from −1 to 1; NF4 places them at the quantiles of a normal distribution, so each level is used about equally often by normally distributed weights. Measured across six matrices NF4 wins every time, with mean relative error **0.10161 against 0.14296 — 1.41× better**. The reason is visible in the weight distribution: kurtosis 7.55, so the mass is piled near zero where uniform spacing wastes most of its levels.", "left": "layer", "codeW": 170, "vars": ["NF4 error", "int4 error", "NF4 better"], "steps": [{"code": "L0.attn.c_attn", "state": ["0.09234", "0.10155", "yes"], "tone": "accent"}, {"code": "L0.attn.c_proj", "state": ["0.11872", "0.21943", "yes"], "changed": [1], "tone": "good", "note": "1.85x here"}, {"code": "L0.mlp.c_fc", "state": ["0.09739", "0.11814", "yes"], "tone": "accent"}, {"code": "L1.attn.c_proj", "state": ["0.12487", "0.21257", "yes"], "tone": "good"}, {"code": "mean of all", "state": ["0.10161", "0.14296", "1.41x"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-4_5-02-0"},
+
+
     { t: "p", text: "Four bits give you sixteen values. The question is which sixteen. A uniform grid spaces them evenly from \u22121 to 1; NF4 \u2014 \u201c4-bit NormalFloat\u201d \u2014 places them at the quantiles of a normal distribution, so that each level is used about equally often by normally distributed weights. Both then scale per block by the block\u2019s absolute maximum." },
 
     { t: "code", lang: "python", title: "g45.py \u2014 the implementation, since bitsandbytes needs CUDA", code: `NF4 = torch.tensor([                      # 16 levels, normal quantiles, normalised
@@ -131,6 +134,9 @@ print(w.std(), ((w - w.mean()) ** 4).mean() / w.var() ** 2)     # std, kurtosis`
     { t: "h2", n: "03", id: "quality", text: "What four-bit storage actually costs",
       sub: "The reconstruction error is not the interesting number" },
 
+    {"kind": "trace", "title": "A 1.41x error difference becomes an 8.4x perplexity difference", "caption": "A relative reconstruction error of 0.10 sounds tolerable and 0.14 sounds nearly as tolerable. **Perplexity disagrees emphatically**: NF4 costs 1.069× and uniform int4 costs **9.006×** on the same block size. The second lesson is in the block size — NF4 at block 1024 is 3.012×, which is worse than int8 by a wide margin, so the scheme is only as good as the granularity of its scaling.", "left": "scheme", "codeW": 180, "vars": ["block", "perplexity", "vs baseline"], "steps": [{"code": "fp32 baseline", "state": ["-", "6.5232", "1.000x"], "tone": "good"}, {"code": "int8 uniform", "state": ["64", "6.6191", "1.015x"], "tone": "good"}, {"code": "NF4", "state": ["64", "6.9702", "1.069x"], "tone": "good"}, {"code": "uniform int4", "state": ["64", "58.7451", "9.006x"], "changed": [1, 2], "tone": "crit", "note": "same bits, 8.4x worse"}, {"code": "NF4", "state": ["256", "7.8654", "1.206x"], "tone": "accent"}, {"code": "NF4", "state": ["1024", "19.6502", "3.012x"], "changed": [2], "tone": "crit", "note": "granularity matters"}], "t": "diagram", "id": "dg-4_5-03-1"},
+
+
     { t: "p", text: "A relative reconstruction error of 0.10 sounds tolerable and 0.14 sounds nearly as tolerable. Perplexity disagrees emphatically." },
 
     { t: "code", lang: "python", title: "g45_ex.py \u2014 quantize every weight matrix, then measure the model", code: `def quantized_model(codebook, block=64):
@@ -170,6 +176,9 @@ print(w.std(), ((w - w.mean()) ** 4).mean() / w.var() ** 2)     # std, kurtosis`
     { t: "h2", n: "04", id: "doublequant", text: "Double quantization",
       sub: "Quantizing the quantization constants" },
 
+    {"kind": "trace", "title": "The scales are not free, which is what double quantization is for", "caption": "Per-block absmax scaling needs one fp32 scale per block, and at block 64 on a 7B model that is **109 million scales — 0.438 GB**, which is not nothing when the whole point was to fit in less memory. Quantizing the scales themselves to int8 recovers 0.328 GB. The trade runs the other way from §03: a bigger block means fewer scales to store and worse reconstruction, so double quantization is what lets you keep the small block.", "left": "block size", "codeW": 150, "vars": ["scales", "fp32", "int8", "saved"], "steps": [{"code": "64", "state": ["109,375,000", "0.438 GB", "0.109 GB", "0.328 GB"], "tone": "good", "note": "the best quality"}, {"code": "128", "state": ["54,687,500", "0.219 GB", "0.055 GB", "0.164 GB"], "tone": "accent"}, {"code": "256", "state": ["27,343,750", "0.109 GB", "0.027 GB", "0.082 GB"], "tone": "warn", "note": "1.206x perplexity"}], "t": "diagram", "id": "dg-4_5-04-2"},
+
+
     { t: "p", text: "Per-block absmax scaling needs one fp32 scale per block. At block 64 on a 7B model that is 109 million scales, and four bytes each is not nothing." },
 
     { t: "code", lang: "python", title: "g45.py \u2014 what the scales cost", code: `for block in (64, 128, 256):
@@ -189,6 +198,9 @@ print(w.std(), ((w - w.mean()) ** 4).mean() / w.var() ** 2)     # std, kurtosis`
 
     { t: "h2", n: "05", id: "practice", text: "Using it",
       sub: "What changes in the training script, and what does not" },
+
+    {"kind": "matrix", "title": "Four options, priced in memory and in quality", "caption": "QLoRA is for the case where the model **does not fit otherwise** — 4.0 GB against 14.5 GB for a 7B, which turns a 16–24 GB card from useless into viable, at a measured 1.069× perplexity. If the VRAM is there, plain LoRA is both faster and exact, because four-bit storage **dequantizes on every forward pass**. And the fourth row is the middle nobody considers: int8 at 1.015× is half NF4's memory saving for a fifth of its quality cost.", "cols": ["When", "Why"], "rows": ["QLoRA", "LoRA on a bf16 base", "Full fine-tune", "int8 base"], "cells": [[{"text": "it does not fit otherwise", "tone": "good"}, "4.0 GB against 14.5; 1.069x perplexity"], [{"text": "there is VRAM to spare", "tone": "good"}, "no dequantization per pass, and exact"], [{"text": "rarely", "tone": "crit"}, "84 GB, plus 4.1's forgetting"], [{"text": "you want a middle point", "tone": "accent"}, "1.015x at 7 GB - a fifth of the cost"]], "t": "diagram", "id": "dg-4_5-05-3"},
+
 
     { t: "code", lang: "python", title: "the configuration, annotated", code: `bnb = BitsAndBytesConfig(
     load_in_4bit=True,                      # store the frozen base in 4 bits

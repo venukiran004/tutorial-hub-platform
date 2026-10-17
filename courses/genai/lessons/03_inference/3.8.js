@@ -68,6 +68,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "2.62 MB per token on the wire, and what the link does to it", "caption": "Tensor parallelism all-reduces a vector of `hidden_size` after the attention block and again after the feed-forward one — on Llama-2 70B that is **2 × 80 × 8192 × 2 bytes = 2.62 MB per token**. The ceiling that imposes is the right-hand column, and the spread is the architectural decision: NVLink 4 puts the ceiling far above anything a model can produce, while **100 GbE caps you at 4,768 tokens/sec** before the model does any work.", "left": "interconnect", "codeW": 170, "vars": ["GB/s", "ms per token", "tok/s ceiling"], "steps": [{"code": "NVLink 4", "state": ["900.0", "0.0029", "343,323"], "tone": "good", "note": "not the constraint"}, {"code": "NVLink 3", "state": ["600.0", "0.0044", "228,882"], "tone": "good"}, {"code": "PCIe 5 x16", "state": ["64.0", "0.0410", "24,414"], "changed": [2], "tone": "accent"}, {"code": "PCIe 4 x16", "state": ["32.0", "0.0819", "12,207"], "tone": "warn"}, {"code": "100 GbE", "state": ["12.5", "0.2097", "4,768"], "changed": [2], "tone": "crit", "note": "now it is the constraint"}], "t": "diagram", "id": "dg-3_8-02-0"},
 
+
+
     { t: "p", text: "After the attention block each device holds a partial sum over its own heads, and the layer's output is the sum across devices — so they all-reduce a vector of `hidden_size` per token. The same happens after the feed-forward block. On Llama-2 70B that is hidden 8192, fp16, 80 layers:" },
 
     { t: "code", lang: "python", title: "g38_run.py — bytes per token under TP", code: `H_DIM, LAYERS, BYTES = 8192, 80, 2            # Llama-2 70B, fp16
@@ -143,6 +145,8 @@ ts = [timed(once) for _ in range(21)]`,
 
     {"kind": "matrix", "title": "Decode is latency-bound on the wire; prefill is bandwidth-bound", "caption": "The payload is `hidden_size` per **token**, and decode has one token per request — so the message is a few kilobytes, firmly in the latency-dominated regime. At batch 1 the fixed per-message cost is **251× the bandwidth term on NVLink 4**, which means a faster link buys nothing for decode and a lower-latency one buys everything. Prefill sends hundreds of tokens at once and inverts it. This is why a serving cluster and a training cluster want different interconnects.", "cols": ["Message", "Dominant term"], "rows": ["Decode, batch 1", "Decode, batch 32", "Prefill, 256 tokens", "Prefill, 2048 tokens", "Training, large batch"], "cells": [["16 KB", {"text": "latency - 251x the bandwidth term", "tone": "crit"}], ["512 KB", {"text": "still latency, by about 8x", "tone": "warn"}], ["4 MB", {"text": "roughly balanced - the crossover", "tone": "accent"}], ["32 MB", {"text": "bandwidth - 8x the latency term", "tone": "good"}], ["hundreds of MB", {"text": "bandwidth, overwhelmingly", "tone": "good"}]], "t": "diagram", "id": "dg-3_8-03-1"},
 
+
+
     { t: "p", text: "The all-reduce payload is `hidden_size` per *token*. During decode there is one token per request, so the message is a few kilobytes — firmly in the latency-dominated regime found above. During prefill there are hundreds or thousands of tokens at once, so the message is megabytes and bandwidth starts to matter." },
 
     { t: "math", tex: "t_{\\text{comm}} \\;=\\; \\underbrace{160 \\cdot \\ell}_{\\text{fixed, per token}} \\;+\\; \\underbrace{160 \\cdot \\frac{n \\cdot h \\cdot 2 \\cdot \\frac{2(N-1)}{N}}{B}}_{\\text{scales with } n \\text{ tokens}}" },
@@ -167,6 +171,8 @@ ts = [timed(once) for _ in range(21)]`,
       sub: "Cheap communication, expensive idleness" },
 
     {"kind": "matrix", "title": "The pipeline bubble, and why decode is the worst case for it", "caption": "A P-stage pipeline idles for `(P−1)/(M+P−1)` of its device-time, where M is the work in flight. In training M is the micro-batch count and can be large, so the bubble shrinks to 1.5% at 2 stages. **In decode there is one token in flight per step, so M = 1** — and the bubble is (P−1)/P: 50% at two stages, **87.5% at eight**. Which is the whole reason pipeline parallelism is a training technique that serving uses only when the model will not fit any other way.", "cols": ["M=1 (decode)", "M=4", "M=16", "M=64"], "rows": ["2 stages", "4 stages", "8 stages", "16 stages"], "cells": [[{"text": "50.0%", "tone": "crit"}, "20.0%", "5.9%", {"text": "1.5%", "tone": "good"}], [{"text": "75.0%", "tone": "crit"}, "42.9%", "15.8%", {"text": "4.5%", "tone": "good"}], [{"text": "87.5%", "tone": "crit"}, "63.6%", "30.4%", "9.9%"], [{"text": "93.8%", "tone": "crit"}, "78.9%", "48.4%", "19.0%"]], "t": "diagram", "id": "dg-3_8-04-2"},
+
+
 
     { t: "p", text: "A pipeline with P stages needs P steps to fill and P−1 to drain. With M units of work in flight the fraction of device-time spent idle is `(P−1)/(M+P−1)`. In training M is the number of micro-batches and can be large, so the bubble is small. In decode there is **one token in flight per step**, so M = 1." },
 
@@ -196,6 +202,8 @@ for Pn in (2, 4, 8, 16):
       sub: "Routing is dynamic, so the load is not yours to choose" },
 
     {"kind": "flow", "title": "The all-to-all nobody can size in advance", "caption": "An MoE layer with 8 experts activating 2 per token cuts compute per token by 4× against a dense layer of the same width — that is the point of the architecture. Putting experts on different devices introduces an **all-to-all**: every token must reach the devices holding its chosen experts and the results must come back. Unlike tensor parallelism's all-reduce, **the volume is not fixed in advance** — it depends on how the router assigned this particular batch, so a skewed batch produces a hot device and the whole step waits for it.", "cols": 3, "nodes": [{"id": "m", "label": "8 experts, 2 active per token", "sub": "4x less compute per token", "tone": "good"}, {"id": "s", "label": "Experts split across devices", "sub": "a quarter of the weights each", "tone": "accent"}, {"id": "a", "label": "An all-to-all per layer", "sub": "tokens out, results back", "tone": "violet"}, {"id": "v", "label": "Volume is not fixed", "sub": "the router decides it, per batch", "tone": "crit"}, {"id": "h", "label": "A skewed batch makes a hot device", "sub": "and the step waits for it", "tone": "crit"}, {"id": "l", "label": "So balance is an operational concern", "sub": "not just an architectural one", "tone": "teal"}], "edges": [["m", "s"], ["s", "a"], ["a", "v"], ["v", "h"], ["h", "l"]], "t": "diagram", "id": "dg-3_8-05-3"},
+
+
 
     { t: "p", text: "A mixture-of-experts layer has, say, 8 experts and activates 2 per token. Compute per token falls by 4× relative to a dense layer of the same total width — that is the point of the architecture. Put the experts on different devices and each device holds a quarter of the weights." },
 

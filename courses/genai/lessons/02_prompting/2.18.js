@@ -22,6 +22,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "The templates cover summarisation, entity extraction, classification, code review, data analysis and a few others. Laid side by side, the structure is identical and the emphasis moves." },
 
     { t: "table",
@@ -91,6 +93,8 @@ not involved.
 
 
 
+
+
     { t: "p", text: "The entity-extraction and classification templates ask in prose for something a schema can guarantee. The ranking (1.8) puts a prompt-described format bottom of four approaches, so a template that describes a JSON shape in words is a starting point to be migrated rather than a destination." },
 
     { t: "code", lang: "python", title: "replace.py — the extraction template, properly", code: `# The template version (reference section 18): asks, in prose, for JSON.
@@ -129,6 +133,8 @@ Base the sentiment only on the document, not on the subject matter.
       sub: "Four questions that pick the template" },
 
     {"kind": "steps", "title": "Four questions that produce the template", "caption": "These generate a prompt rather than requiring you to find one that fits, which is why they are more useful than the six worked examples — **a template's generic parts are exactly the parts you have to replace**. The fourth is the one most often skipped, and it is mandatory rather than optional whenever the input might simply not contain the answer.", "items": [{"label": "Is the output consumed by code, or read by a person?", "desc": "code means a schema, and the template becomes semantics only", "code": "1", "tone": "accent"}, {"label": "Is there one right answer?", "desc": "yes means temperature 0 and exact match; no means a judge and a rubric", "code": "2", "tone": "accent"}, {"label": "Does the task select, or transform?", "desc": "selection needs a stated rule; transformation needs the invariant to preserve", "code": "3", "tone": "good"}, {"label": "Is the input reliable?", "desc": "if the answer may be absent, the null clause is mandatory", "code": "4", "tone": "violet"}], "t": "diagram", "id": "dg-2_18-04-2"},
+
+
 
 
 

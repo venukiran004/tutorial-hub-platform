@@ -92,6 +92,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "stream.py", code: `stream = client.chat.completions.create(
     model="gpt-4o",
     messages=[{"role": "user", "content": "Tell me a story"}],
@@ -129,6 +131,8 @@ if finish == "length":                         # 1.5 -- still applies to streams
       sub: "HTTP 200, and then something goes wrong at token 400" },
 
     {"kind": "flow", "title": "HTTP 200 arrives before the answer does", "caption": "A non-streaming request either succeeds or fails, and you find out before you have anything. A stream returns **200 as soon as the first chunk is ready** — so an error at token 400 arrives *after* you have already shown the user 399 tokens. There is no status code left to send, which means the handling cannot be an exception path: the UI has to be able to retract or mark a partial answer, and that is a design decision rather than a `try` block.", "cols": 3, "nodes": [{"id": "n", "label": "Non-streaming", "sub": "succeeds or fails, before anything", "tone": "good"}, {"id": "s", "label": "Streaming returns 200 early", "sub": "on the first chunk", "tone": "accent"}, {"id": "e", "label": "An error at token 400", "sub": "399 already on screen", "tone": "crit"}, {"id": "h", "label": "No status code left to send", "sub": "the header is long gone", "tone": "crit"}, {"id": "u", "label": "The UI must retract or mark it", "sub": "a design decision", "tone": "good"}, {"id": "t", "label": "Not something a try block fixes", "sub": "which is why it gets missed", "tone": "teal"}], "edges": [["n", "s"], ["s", "e"], ["e", "h"], ["h", "u"], ["u", "t"]], "t": "diagram", "id": "dg-1_12-03-1"},
+
+
 
 
 
@@ -171,6 +175,8 @@ if finish in ("interrupted", "length"):
       sub: "Aborting, and only aborting" },
 
     {"kind": "matrix", "title": "Streaming costs the same, unless you abandon it", "caption": "Same tokens, same price — streaming is not a discount. The exception is that a stream can be **abandoned**: stop reading, close the connection, and the server stops generating, so tokens never produced are never billed. Three situations make that worth building, and the first is simply common: in a chat UI people navigate away from long answers all the time, and closing the stream on unmount is a small change with a real saving.", "cols": ["The saving"], "rows": ["A user navigates away", "An output guardrail fires", "A repetition detector fires", "Everything else"], "cells": [[{"text": "close on unmount - common in chat, and a small change", "tone": "good"}], [{"text": "act on the partial response and stop it before completion (11.14)", "tone": "good"}], [{"text": "catch a loop early rather than paying for 400 tokens of it (1.4)", "tone": "good"}], [{"text": "no saving at all - identical tokens, identical price", "tone": "accent"}]], "t": "diagram", "id": "dg-1_12-04-2"},
+
+
 
 
 
