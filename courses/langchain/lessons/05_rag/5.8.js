@@ -21,6 +21,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "14 natural queries, k=5",
       code: "Recall@5 = 1.000   P@5 = 0.214   MRR = 0.964   NDCG@5 = 0.974",
       caption: "Three of these are genuinely good. One is at ceiling." },

@@ -24,6 +24,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Surviving terms, per query",
       code: "query                                  max     docs>0  surviving terms\n'Idempotency-Key header'               5.1527  4       ['idempotency-key', 'header']\n'mTLS'                                 3.3009  1       ['mtls']\n'Retry-After'                          2.9871  1       ['retry-after']\n'stop my plan renewing'                2.8963  2       ['plan']\n'how long do you keep my information'  3.8583  5       ['do', 'you']\n'I forgot my password'                 0.0000  0       []",
       caption: "Two rows deserve attention, and both are fatal to weighted fusion." },

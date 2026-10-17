@@ -28,6 +28,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "callout", kind: "trap", title: "The sequence is a chain, and so is each step", body: [
       { t: "p", text: "1.6 found a two-step chain emitting three `on_chain_start` events. The same nesting applies here: a prompt-model-parser chain fires chain events for the sequence and for the non-model steps, and exactly one `on_llm_start`." },
       { t: "p", text: "So if you are counting model calls \u2014 for cost, for rate limiting, for an alert \u2014 count `on_llm_start`. Counting chain events gives you a number that tracks chain *structure* rather than provider usage, and it changes when someone refactors a chain into sub-chains without changing what it does." }

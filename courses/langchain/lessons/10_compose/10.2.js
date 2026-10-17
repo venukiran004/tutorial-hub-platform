@@ -21,6 +21,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "A router returning Sends",
       code: 'def fan(state):\n    return [Send("write", {"section": s}) for s in state["sections"]]\n\ng.add_conditional_edges("plan", fan, ["write"])',
       out: "  topic='ab'        -> 2 sections, 2 drafts\n     ['draft of section-0', 'draft of section-1']\n  topic='abcdefg'   -> 5 sections, 5 drafts\n     ['draft of section-0', ..., 'draft of section-4']",

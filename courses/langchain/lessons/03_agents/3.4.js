@@ -21,6 +21,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["Feature", "Note"], rows: [
       ["the loop itself", "identical in shape to 3.3"],
       ["an iteration cap", "a recursion limit, so it terminates"],
@@ -33,17 +34,23 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "Seven of those eight are things 3.3 did not have, and the last three are not small \u2014 persistence, step streaming and a pause point are the difference between a demo and something a person can supervise." },
     { t: "h2", n: "02", id: "run", text: "Running one", sub: "Two lines, four messages" },
+
+    {"kind": "flow", "title": "A dict with a messages key is the first visible sign of the graph", "caption": "The prebuilt agent produces the same four messages the hand-written loop did, and takes its input as **a dict with a `messages` key rather than a bare list.** That is not cosmetic: **the key is a piece of graph state**, and module 8 explains why it is shaped that way — so the shape you have to type here is the first evidence that `create_agent` is a graph with a prebuilt topology rather than a function with a loop in it.", "cols": 3, "nodes": [{"id": "i", "label": "Input: {'messages': [...]}", "sub": "a dict, not a list", "tone": "violet"}, {"id": "f", "label": "Four messages out", "sub": "the same as the hand loop", "tone": "good"}, {"id": "k", "label": "'messages' is graph state", "sub": "not an argument name", "tone": "violet"}, {"id": "g", "label": "So this is a graph underneath", "sub": "with a prebuilt topology", "tone": "accent"}, {"id": "m", "label": "Module 8 explains the shape", "sub": "and why it is a reducer", "tone": "teal"}], "edges": [["i", "f"], ["i", "k"], ["k", "g"], ["g", "m"]], "t": "diagram", "id": "dg-3_4-02-1"},
     { t: "code", lang: "python", title: "The prebuilt agent",
       code: 'from langgraph.prebuilt import create_react_agent\n\nagent = create_react_agent(model, [calculate, lookup_order])\nout = agent.invoke({"messages": [HumanMessage(content="where is order A-1?")]})',
       out: "messages returned: 4\n   Human:    where is order A-1?\n   AI:                     tool_calls=[('lookup_order', {'order_id': 'A-1'})]\n   Tool:     {\"id\": \"A-1\", \"status\": \"shipped\", \"eta\": \"2026-10-12\"}\n   AI:       Order A-1 has shipped and arrives on the 12th.",
       caption: "The same four messages the hand-written loop produced." },
     { t: "p", text: "The input and output are a dict with a `messages` key rather than a bare list, which is the first visible sign that this is a graph underneath \u2014 the key is a piece of graph state, and module 8 explains why it is shaped that way." },
     { t: "h2", n: "03", id: "naming", text: "Two names in circulation", sub: "And the tutorials use the old one" },
+
+    {"kind": "flow", "title": "Two names, and the overwhelming majority of material online uses the deprecated one", "caption": "`create_react_agent` from `langgraph.prebuilt` emits a deprecation notice pointing at `from langchain.agents import create_agent`, **deprecated in LangGraph V1.0 and due for removal in V2.0.** So you will encounter both names — and the thing worth knowing is the proportion: **almost everything you find online uses the deprecated one**, which is why a tutorial often will not match your imports, and why new code should use the new name even though search results argue otherwise.", "cols": 3, "nodes": [{"id": "o", "label": "create_react_agent", "sub": "langgraph.prebuilt", "tone": "warn"}, {"id": "d", "label": "Deprecated in V1.0", "sub": "removal in V2.0", "tone": "crit"}, {"id": "n", "label": "create_agent", "sub": "langchain.agents", "tone": "good"}, {"id": "m", "label": "But most material online uses the old one", "sub": "overwhelmingly", "tone": "crit"}, {"id": "t", "label": "So a tutorial will not match your imports", "sub": "and that is the explanation", "tone": "teal"}], "edges": [["o", "d"], ["d", "n"], ["o", "m"], ["m", "t"]], "t": "diagram", "id": "dg-3_4-03-2"},
     { t: "callout", kind: "warn", title: "The deprecation warning this emits", body: [
       { t: "p", text: "Running `create_react_agent` from `langgraph.prebuilt` produces: *\u201ccreate_react_agent has been moved to `langchain.agents`. Please update your import to `from langchain.agents import create_agent`. Deprecated in LangGraph V1.0 to be removed in V2.0.\u201d*" },
       { t: "p", text: "So you will encounter both names, and the overwhelming majority of material you find online uses the deprecated one \u2014 which is worth knowing when a tutorial does not match your imports, and when deciding what to write in new code." }
     ] },
     { t: "h2", n: "04", id: "middleware", text: "Middleware", sub: "Hooks around every model and tool call" },
+
+    {"kind": "matrix", "title": "Five middleware, all of them cross-cutting concerns the loop body would otherwise carry", "caption": "Middleware runs **around each model call and each tool call inside the loop**, which is the only place several of these can work at all. Summarisation has to happen *before* each model call, not once at the start. Human-in-the-loop has to interrupt *between* a decision and its execution. And tool gating has to filter the tool list *per user* at the moment the model is asked, which no static construction can do.", "cols": ["What it does", "Why it must be there"], "rows": ["summarization", "human-in-the-loop", "PII redaction", "tool gating", "fallbacks"], "cells": [["trim or summarise before each model call", {"text": "before EACH call, not once", "tone": "violet"}], ["pause for approval before a tool runs", {"text": "between decision and execution", "tone": "violet"}], ["strip identifiers in and out", "on every boundary crossing"], ["hide tools this user may not call", {"text": "per user, at ask time", "tone": "violet"}], ["swap the model mid-loop on failure", "inside the loop, not around it"]], "t": "diagram", "id": "dg-3_4-04-3"},
     { t: "p", text: "The LangChain 1.0 `create_agent` adds middleware: functions that run around each model call and each tool call inside the loop. They exist for cross-cutting concerns that would otherwise be written into the loop body." },
     { t: "table", head: ["Middleware", "What it does"], rows: [
       ["summarization", "trim or summarise history before each model call (3.6, 13.3)"],

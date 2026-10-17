@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "That worked because both schemas declare `text` and `steps`. The parent passes the whole state in and merges the whole state out, matching on **key names** \u2014 there is no mapping layer." },
     { t: "code", lang: "text", title: "No shared data key",
       code: "inner declares 'content'; outer declares 'text'.\n  -> {'text': 'hi', 'steps': ['innerb']}",

@@ -21,6 +21,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "11.4's reflection critiques within one attempt. Reflexion writes the lesson down and carries it into the **next** attempt at a similar task \u2014 which means 9.6's store, because 9.5 showed the whole graph state is scoped to one `thread_id`. If the lesson lives in thread state there is nothing new here." },
     { t: "h2", n: "02", id: "loop", text: "The attempt loop", sub: "Recall, solve, judge, reflect" },
     { t: "code", lang: "text", title: "The first task",

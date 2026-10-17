@@ -59,6 +59,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["requirement", "why the prebuilt cannot"], rows: [
       ["a step budget in the router", "`tools_condition` has no notion of a budget"],
       ["per-tool approval (9.7)", "`interrupt()` goes inside the tool node, per call"],

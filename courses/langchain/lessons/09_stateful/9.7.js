@@ -21,6 +21,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "A node that asks",
       code: 'def ask(state):\n    answer = interrupt({"question": "approve %r?" % state["value"]})\n    return {"value": answer, "trace": ["ask ran"]}',
       out: "  first invoke returns WITHOUT finishing:\n    {'value': 'draft', 'trace': [],\n     '__interrupt__': [Interrupt(value={'question': \"approve 'draft'?\"}, ...)]}\n\n  state says what it is waiting at:\n    next      : ('ask',)\n    interrupts: [{'question': \"approve 'draft'?\"}]",

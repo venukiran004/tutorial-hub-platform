@@ -11,6 +11,8 @@ EC.receiveLesson({
   prerequisites: ["3.7", "2.5"],
   blocks: [
     { t: "h2", n: "01", id: "four", text: "Four approaches", sub: "And the column that decides" },
+
+    {"kind": "trace", "title": "The p50 is not the problem; the gap between p50 and p95 is", "caption": "A single call and a fixed chain have **identical p50 and p95** — they do the same work every time, so there is no tail. A router adds one decision and a small spread. **An agent's p95 is more than twice its p50**, which is the property that matters operationally: you provision for the tail, you are billed for the tail on the requests that hit it, and the tail is where the timeout policy has to be set.", "left": "approach", "codeW": 190, "vars": ["p50 calls", "p95 calls", "spread"], "steps": [{"code": "a single call", "state": ["1", "1", "none"], "tone": "good"}, {"code": "a fixed chain", "state": ["3", "3", "none"], "tone": "good"}, {"code": "a router plus chains", "state": ["2", "4", "2x"], "tone": "accent"}, {"code": "an agent", "state": ["4", "9", "2.25x"], "changed": [1, 2], "tone": "crit", "note": "provision for 9"}], "t": "diagram", "id": "dg-3_8-01-1"},
     { t: "table", head: ["Approach", "Calls (p50)", "Calls (p95)", "Character"], rows: [
       ["a single call", "1", "1", "cheapest, no decisions, fails on anything unexpected"],
       ["a fixed chain", "3", "3", "deterministic path, every step runs every time"],
@@ -22,6 +24,8 @@ EC.receiveLesson({
       { t: "p", text: "So an agent's cost and latency are **distributions, not numbers**. Budgeting from the median underestimates systematically, and the user experience is set by the tail, which is 13.1's argument for voice arriving in a different form." }
     ] },
     { t: "h2", n: "02", id: "giveup", text: "What you give up", sub: "Five properties, all of them real" },
+
+    {"kind": "matrix", "title": "Five properties given up, and the one that compounds", "caption": "**Testability deserves the emphasis because it compounds.** With a fixed chain you can assert that step two ran with a particular input; with an agent you can only assert on the final answer — which means **every test is an end-to-end test, and a change anywhere can break any of them** for reasons that take a while to locate. The others are costs you can budget for; this one changes how the whole test suite behaves.", "cols": ["What happens instead"], "rows": ["Determinism", "Predictable cost", "Predictable latency", "Testability", "Debuggability"], "cells": [["the same input can take a different path"], ["p50 and p95 differ by several model calls"], ["the same reason"], [{"text": "every test becomes end-to-end, and compounds", "tone": "crit"}], [{"text": "a failure is somewhere in a variable-length trace", "tone": "warn"}]], "t": "diagram", "id": "dg-3_8-02-2"},
     { t: "table", head: ["Property", "What happens instead"], rows: [
       ["determinism", "the same input can take a different path"],
       ["predictable cost", "p50 and p95 differ by several model calls"],
@@ -31,6 +35,8 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "The testability one deserves emphasis because it compounds. With a fixed chain you can assert that step two ran with a particular input; with an agent you can only assert on the final answer, which means every test is an end-to-end test and a change anywhere can break any of them for reasons that take a while to locate." },
     { t: "h2", n: "03", id: "test", text: "The test", sub: "Four questions about the actual task" },
+
+    {"kind": "matrix", "title": "One question, three answers, and the first one is a reminder", "caption": "**If the steps are known in advance, you do not need a model to choose what you already know** — which is the sentence worth carrying out of this module, because the agent is the default people reach for and it is the right answer to only the third row. One decision then a fixed path is a router: cheaper, testable, and with the p50/p95 spread of §01's third row rather than its fourth.", "cols": ["Build"], "rows": ["Steps known in advance", "One decision, then fixed", "Must react, repeatedly"], "cells": [[{"text": "a chain - no model needed to choose what you know", "tone": "good"}], [{"text": "a router (2.5) - cheaper and testable", "tone": "good"}], [{"text": "an agent, accepting the tail cost and the non-determinism", "tone": "violet"}]], "t": "diagram", "id": "dg-3_8-03-3"},
     { t: "ol", items: [
       "Can you write down the steps in advance?",
       "Is the set of tools small and the choice usually obvious?",
@@ -49,6 +55,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "honest", text: "The honest version", sub: "What the module adds up to" },
 
     {"kind": "compare", "title": "The honest summary of the module", "caption": "An agent is a more expensive way to be less reliable, bought for the cases where you genuinely cannot write the steps down. That is a real set of cases, and it is much smaller than the number of systems using one.", "columns": [{"title": "a chain — the default", "tone": "good", "items": ["the steps are known before the request arrives", "one model call per unit of work", "the control flow is in your code, so it is readable and testable", "a failure has one place to be"]}, {"title": "an agent — when earned", "tone": "warn", "items": ["the next step genuinely depends on what the last one returned", "3+ model calls, and a variable number", "the control flow is a model's decision, so a trace is the only record", "needs a cap, a budget and a guard before it ships"]}], "t": "diagram", "id": "dg-3_8-04-0"},
+
 
 
 

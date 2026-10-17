@@ -21,6 +21,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Ten acquisitions at five per second",
       code: 'elapsed: 2.01 s\n\nI predicted ~1.0 s: five instant from a full bucket, then five more\nat 0.2 s each. the measurement says 2.01 s, which is 10 / 5 -- so\nEVERY acquisition waited for a token.',
       caption: "10 / 5 exactly. No request was free." },

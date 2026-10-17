@@ -21,6 +21,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "math", tex: "\\mathrm{score}(q,d) = \\sum_{t \\in q} \\mathrm{IDF}(t) \\cdot \\frac{f(t,d)\\,(k_1+1)}{f(t,d) + k_1\\left(1 - b + b\\,\\frac{|d|}{\\mathrm{avgdl}}\\right)}" },
     { t: "code", lang: "python", title: "The implementation",
       code: 'def idf(self, t):\n    n = self.df.get(t, 0)\n    return math.log((self.N - n + 0.5) / (n + 0.5) + 1.0)\n\ndef score(self, query, i):\n    d = self.docs[i]\n    total = 0.0\n    for t in tok(query):\n        f = d.count(t)\n        if f == 0:\n            continue\n        num = f * (self.k1 + 1)\n        den = f + self.k1 * (1 - self.b + self.b * self.dl[i] / self.avgdl)\n        total += self.idf(t) * num / den\n    return total',

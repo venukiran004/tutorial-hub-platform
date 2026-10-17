@@ -21,12 +21,15 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "What comes back",
       code: 'bound = model.bind_tools([calculate, lookup_order])\nr = bound.invoke([HumanMessage(content="what is 42 times 17?")])\n\nprint(type(r).__name__)\nprint(repr(r.content))\nprint(r.tool_calls)',
       out: "type        : AIMessage\ncontent     : ''\ntool_calls  : [{'name': 'calculate', 'args': {'expression': '42*17'}, 'id': 'c1', 'type': 'tool_call'}]",
       caption: "Empty content, a populated tool_calls list. Not a special message type." },
     { t: "p", text: "1.2 made this point and it is worth repeating here because everything else depends on it: there is no `ToolCallMessage`. A request to call a tool is an assistant turn, exactly like a prose answer, whose content happens to be structured." },
     { t: "h2", n: "02", id: "answer", text: "Executing and answering", sub: "The id ties the two together" },
+
+    {"kind": "trace", "title": "The transcript shape a tool call produces", "caption": "Three messages for one tool round, and the middle one is the shape worth memorising: **an `AIMessage` whose content is empty and whose `tool_calls` carries the request.** The `ToolMessage` answering it is tied back by `tool_call_id`, not by position — which is what §03 is about, because the ids are the only thing connecting a request to its answer when there are several.", "left": "message", "codeW": 130, "vars": ["content", "the mechanism"], "steps": [{"code": "Human", "state": ["what is 42 times 17?", ""], "tone": "accent"}, {"code": "AI", "state": ["(empty)", "tool_calls=[('calculate', ...)]"], "changed": [1], "tone": "violet"}, {"code": "Tool", "state": ["714", "id=c1, tying it back"], "tone": "good"}], "t": "diagram", "id": "dg-3_2-02-1"},
     { t: "code", lang: "python", title: "One round trip",
       code: 'call = r.tool_calls[0]\nresult = tool_map[call["name"]].invoke(call["args"])\ntm = ToolMessage(content=str(result), tool_call_id=call["id"])\n\nmessages = [HumanMessage(content="what is 42 times 17?"), r, tm]',
       out: "executed    : 714\nToolMessage : '714' id= c1\n\n   Human:    what is 42 times 17?\n   AI:                     tool_calls=[('calculate', {'expression': '42*17'})]\n   Tool:     714",
@@ -36,6 +39,8 @@ EC.receiveLesson({
       { t: "p", text: "It also explains why tool output counts against the context window exactly like everything else. A tool that returns a 40 KB JSON blob has put 40 KB into every subsequent turn of the conversation, which 13.1 prices." }
     ] },
     { t: "h2", n: "03", id: "parallel", text: "Several calls in one turn", sub: "Where the id stops being decoration" },
+
+    {"kind": "flow", "title": "The error arrives one step after the mistake", "caption": "If an `AIMessage` contains two tool calls and you append only one `ToolMessage`, the conversation is malformed — and **the failure does not happen when you build the list.** It happens on the **next** model call, when the provider rejects a transcript containing an unanswered call id. That displacement is what makes it hard to debug: **the error names the unanswered id rather than the code path that skipped it**, and the usual cause is a loop that `break`s or `continue`s on the first failure. The rule is mechanical: **one ToolMessage per call, including the ones that failed.**", "cols": 3, "nodes": [{"id": "t", "label": "Two tool calls in one AIMessage", "sub": "ids a and b", "tone": "accent"}, {"id": "o", "label": "A loop breaks on the first failure", "sub": "one ToolMessage appended", "tone": "crit"}, {"id": "n", "label": "Nothing fails here", "sub": "the list builds fine", "tone": "crit"}, {"id": "x", "label": "The NEXT model call rejects it", "sub": "naming the unanswered id", "tone": "crit"}, {"id": "r", "label": "One ToolMessage per call", "sub": "failures answered with an error string", "tone": "good"}], "edges": [["t", "o"], ["o", "n"], ["n", "x"], ["x", "r"]], "t": "diagram", "id": "dg-3_2-03-2"},
     { t: "code", lang: "text", title: "Two calls, two answers",
       code: 'one AIMessage, 2 tool_calls\n  ToolMessage id=a   714\n  ToolMessage id=b   {"id": "A-1", "status": "shipped", "eta": "2026-10-12"}',
       caption: "One ToolMessage per call, each carrying the id it answers." },
@@ -45,6 +50,8 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "The rule is mechanical and worth enforcing in code: **iterate over every call, and append exactly one ToolMessage for each, including the ones that failed.** A failure is answered with an error string, not with silence \u2014 which is the same point 3.1 made about `ToolException`." },
     { t: "h2", n: "04", id: "choice", text: "tool_choice", sub: "Forcing, forbidding and letting it decide" },
+
+    {"kind": "matrix", "title": "Four settings, and the one that is about side effects rather than choice", "caption": "The first three constrain **which** tool; the fourth constrains **how many at once**. `parallel_tool_calls=False` is the one to reach for when calls have side effects or order matters — two concurrent writes to the same record is a correctness problem that no amount of tool-choice tuning addresses. And `\"any\"` is the setting for when **answering from memory is never acceptable**, which is 3.7's failure 4 made impossible by construction.", "cols": ["Meaning", "When"], "rows": ["auto", "any", "a named tool", "parallel_tool_calls=False"], "cells": [["the model decides", "a real agent - the default"], [{"text": "it must call some tool", "tone": "violet"}, {"text": "answering from memory is never acceptable", "tone": "good"}], ["it must call this one", "argument extraction"], [{"text": "at most one call per turn", "tone": "violet"}, {"text": "order matters, or calls have side effects", "tone": "crit"}]], "t": "diagram", "id": "dg-3_2-04-3"},
     { t: "table", head: ["Setting", "Meaning", "When"], rows: [
       ["`\"auto\"`", "the model decides (default)", "a real agent"],
       ["`\"any\"`", "the model must call *some* tool", "when answering from memory is never acceptable"],

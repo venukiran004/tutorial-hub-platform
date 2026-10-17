@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Tokens against characters",
       code: 'a short question         7 tokens     27 chars  (3.86 chars/token)\na system prompt         23 tokens     97 chars  (4.22 chars/token)\na retrieved chunk       61 tokens    309 chars  (5.07 chars/token)\na JSON tool result      31 tokens     69 chars  (2.23 chars/token)',
       caption: "Prose is around 4 to 5. JSON is 2.23." },

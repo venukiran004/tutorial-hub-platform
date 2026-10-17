@@ -21,6 +21,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "The order that works",
       code: 'cached(\n  rate_limited(\n    fallback(\n      retry(\n        model))))',
       caption: "Reading outward: the retry is closest to the thing that is flaky." },

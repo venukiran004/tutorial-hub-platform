@@ -36,6 +36,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "One query, with and without a filter",
       code: "the corpus contains 3 restricted documents:\n  int-salary     Internal only. Engineering salary bands for the\n  int-incident   Internal only. Post-incident review for the Apri\n  int-roadmap    Internal only. Unannounced roadmap items for the\n\nquery: 'what are the engineering salary bands'\n  unfiltered search returns : ['int-salary', 'ops-sla', 'data-export']\n  filtered to public        : ['ops-sla', 'data-export', 'auth-mfa']",
       caption: "`int-salary` is the top unfiltered result \u2014 because it is genuinely the best answer." },

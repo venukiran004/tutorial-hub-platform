@@ -28,6 +28,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "The shape",
       code: 'from langchain_core.documents import Document\n\nd = Document(\n    page_content="LangChain is a composition framework for LLM applications.",\n    metadata={"source": "docs/intro.md", "page": 1, "team": "platform",\n              "updated": "2026-02-14"})',
       caption: "`page_content` is embedded and reaches the model. `metadata` is what you filter on." },
@@ -54,6 +55,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "The interface",
       code: 'class Embeddings(ABC):\n    def embed_documents(self, texts: list[str]) -> list[list[float]]: ...\n    def embed_query(self, text: str) -> list[float]: ...',
       out: 'embed_documents([\'a\', \'b\'])  -> 2 vectors of dim 8\nembed_query(\'a\')             -> 1 vector  of dim 8',
@@ -73,6 +75,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "A retriever in six lines",
       code: 'class KeywordRetriever(BaseRetriever):\n    """The smallest honest retriever: substring match."""\n    docs: List[Document] = []\n    k: int = 2\n\n    def _get_relevant_documents(self, query, *, run_manager=None):\n        hits = [d for d in self.docs if query.lower() in d.page_content.lower()]\n        return hits[:self.k]',
       out: 'invoke(\'revenue\') -> [\'Quarterly revenue rose 12 percent.\', \'Revenue guidance for the year was\']\nis a Runnable     -> True',
@@ -88,6 +91,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "What a tool carries",
       code: '@tool\ndef lookup_order(order_id: str) -> str:\n    """Look up an order by its id. Use for questions about a specific order."""\n    return "order %s: shipped" % order_id',
       out: 'name        : lookup_order\ndescription : Look up an order by its id. Use for questions about a specific order.\nargs schema : {\'order_id\': {\'title\': \'Order Id\', \'type\': \'string\'}}\ninvoke      : order A-1: shipped',
@@ -99,6 +103,7 @@ EC.receiveLesson({
       sub: "And the event count that does not match your code" },
 
     {"kind": "trace", "title": "Three chain starts, three chain ends — the tree is observable", "caption": "A callback handler sees every start and end in the chain, not just the outer one: a three-step chain fires **three starts and three ends**, nested. That symmetry is the useful invariant — **starts without matching ends mean something raised inside a step** — and it is the mechanism every tracing backend in this course is built on. 10.4's span tree in the GenAI course is the same idea with a wire protocol attached.", "left": "observed", "codeW": 190, "vars": ["count"], "steps": [{"code": "chain starts seen", "state": ["3"], "tone": "accent"}, {"code": "chain ends seen", "state": ["3"], "tone": "good", "note": "symmetric, so nothing raised"}, {"code": "result", "state": ["20"], "tone": "good"}, {"code": "if starts > ends", "state": ["something raised inside"], "tone": "violet"}], "t": "diagram", "id": "dg-1_6-05-4"},
+
 
 
 
@@ -119,6 +124,7 @@ EC.receiveLesson({
       sub: "The whole retrieval half of the course, in seven lines" },
 
     {"kind": "flow", "title": "Five components, one pipeline, and Document is the type that joins them", "caption": "The pieces connect through a single carrier: **`Document(page_content, metadata)`**. A loader produces them; a splitter produces more of them with the **same metadata and smaller content**; embeddings turn the content into vectors; the store holds the pair; and a retriever hands the Documents back. Which is why metadata filtering works at all — the metadata survives every stage untouched, so a filter written at retrieval time can reference a field the loader set.", "cols": 3, "nodes": [{"id": "l", "label": "loader", "sub": "-> Document(content, metadata)", "tone": "accent"}, {"id": "s", "label": "splitter", "sub": "more Documents, same metadata", "tone": "accent"}, {"id": "e", "label": "Embeddings.embed_documents", "sub": "-> vectors", "tone": "violet"}, {"id": "v", "label": "the store holds (vector, Document)", "sub": "the pair, together", "tone": "violet"}, {"id": "r", "label": "retriever hands Documents back", "sub": "and it is a Runnable", "tone": "good"}, {"id": "m", "label": "So metadata survives end to end", "sub": "which is why filtering works", "tone": "teal"}], "edges": [["l", "s"], ["s", "e"], ["e", "v"], ["v", "r"], ["r", "m"]], "t": "diagram", "id": "dg-1_6-06-5"},
+
 
 
 

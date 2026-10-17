@@ -21,6 +21,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Pairwise similarity among the top 5",
       code: "query: 'stop my plan renewing'\nplain top 5: ['bill-cancel-sub', 'bill-cancel-trial', 'bill-overage',\n              'ops-cancel-report', 'bill-cancel-order']\n\n  bill-cancel-sub      1.00 0.59 0.32 0.43 0.53\n  bill-cancel-trial    0.59 1.00 0.32 0.32 0.47\n  bill-overage         0.32 0.32 1.00 0.11 0.10\n  ops-cancel-report    0.43 0.32 0.11 1.00 0.48\n  bill-cancel-order    0.53 0.47 0.10 0.48 1.00",
       caption: "The slots are filled with documents similar to **each other**, not just to the query." },

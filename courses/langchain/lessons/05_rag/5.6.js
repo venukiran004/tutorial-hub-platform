@@ -21,6 +21,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "The whole interface",
       code: 'r = store.as_retriever(search_kwargs={"k": 3})\ndocs = r.invoke("how do I stop duplicate charges")',
       out: "  invoke() ->\n    api-idempotency    Supply an Idempotency-Key header on write requ\n    auth-signin-fail   Authentication failures. Repeated invalid cred\n    data-deletion      Erasure requests complete within 30 days in pr",
