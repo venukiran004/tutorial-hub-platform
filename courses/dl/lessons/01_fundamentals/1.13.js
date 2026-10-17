@@ -25,6 +25,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "A one-hot target tells the network the correct class has probability exactly 1 and every other class exactly 0. Since softmax never reaches 1, the only way to keep reducing the loss is to keep pushing the logits further apart — forever. Label smoothing replaces the target with a slightly softened one, which gives the model a finite target to reach." },
 
     { t: "code", lang: "python", title: "One argument",
@@ -51,6 +53,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "What a teacher knows that a label does not", id: "dark-knowledge" },
 
     {"kind": "flow", "title": "What a teacher knows that a label does not", "caption": "A hard label says 'this is a 7'. A teacher's softened output says 'this is a 7, and it looks somewhat like a 1, and nothing like an 8' — the **relative** probabilities over the wrong classes carry real information about the input's shape. That is the dark knowledge distillation transfers, and it is why a student trained on teacher outputs can beat the same student trained on labels.", "cols": 3, "nodes": [{"id": "l", "label": "A hard label", "sub": "'this is a 7'", "tone": "accent"}, {"id": "t", "label": "A teacher's softmax", "sub": "7: 0.9, 1: 0.08, 8: 0.001", "tone": "good"}, {"id": "r", "label": "The ratios carry shape", "sub": "a 7 resembles a 1, not an 8", "tone": "good"}, {"id": "s", "label": "Soften with temperature T", "sub": "to make those ratios visible", "tone": "accent"}, {"id": "k", "label": "Student learns both", "sub": "the label and the teacher", "tone": "violet"}, {"id": "b", "label": "Can beat label-only training", "sub": "at a fraction of the size", "tone": "teal"}], "edges": [["l", "k"], ["t", "r"], ["r", "s"], ["s", "k"], ["k", "b"]], "t": "diagram", "id": "dg-1_13-02-1"},
+
+
 
 
 
@@ -95,6 +99,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Dividing logits by `T` shrinks the gradients by `1/T` — and it happens on both sides of the KL, so the soft term's gradient falls by `1/T²`. Without correction, raising the temperature would quietly turn the teacher off. The `T²` puts it back." },
 
     { t: "out", text: `    T=1.0: soft(raw KL)=0.31586  soft(xT^2)=0.31586  hard=0.5542  |grad|=0.4350
@@ -110,6 +116,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Mixed precision, and the range problem", id: "fp16" },
 
     {"kind": "flow", "title": "Mixed precision, and the range problem that loss scaling solves", "caption": "fp16 has plenty of precision for activations and far too little **range**: gradients below about 6e−8 become exactly zero, and in a deep network many are. Multiplying the loss by a large constant lifts every gradient into representable territory; unscaling before the step removes the factor again. bf16 has fp32's exponent range and so needs none of this — which is why it is preferred where the hardware supports it.", "cols": 3, "nodes": [{"id": "f", "label": "fp16: 10-bit mantissa", "sub": "precision is fine", "tone": "accent"}, {"id": "r", "label": "5-bit exponent", "sub": "underflows below ~6e-8", "tone": "crit"}, {"id": "z", "label": "Small gradients become 0", "sub": "silently, and many are small", "tone": "crit"}, {"id": "s", "label": "Scale the loss up", "sub": "every gradient scales with it", "tone": "good"}, {"id": "u", "label": "Unscale before step()", "sub": "and skip the step on an inf", "tone": "good"}, {"id": "b", "label": "bf16 needs none of it", "sub": "fp32's exponent range", "tone": "teal"}], "edges": [["f", "r"], ["r", "z"], ["z", "s"], ["s", "u"], ["u", "b"]], "t": "diagram", "id": "dg-1_13-04-3"},
+
+
 
 
 
@@ -143,6 +151,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "The loop", id: "loop" },
 
     {"kind": "flow", "title": "The mixed-precision loop, in order", "caption": "Five lines in a fixed order. The scaler's job across them is bookkeeping: it multiplies the loss, it unscales before the optimiser sees the gradients, it **skips the step entirely** if any gradient overflowed, and it adjusts the scale factor based on how often that happens.", "cols": 3, "nodes": [{"id": "a", "label": "with autocast():", "sub": "forward in fp16 or bf16", "tone": "accent"}, {"id": "s", "label": "scaler.scale(loss).backward()", "sub": "gradients come back scaled", "tone": "accent"}, {"id": "u", "label": "scaler.unscale_(opt)", "sub": "only if you need to clip", "tone": "good"}, {"id": "p", "label": "scaler.step(opt)", "sub": "unscales, then steps - or skips", "tone": "good"}, {"id": "d", "label": "scaler.update()", "sub": "adapts the scale factor", "tone": "good"}, {"id": "o", "label": "An overflowed step is dropped", "sub": "which is correct, and normal", "tone": "teal"}], "edges": [["a", "s"], ["s", "u"], ["u", "p"], ["p", "d"], ["p", "o"]], "t": "diagram", "id": "dg-1_13-05-4"},
+
+
 
 
 

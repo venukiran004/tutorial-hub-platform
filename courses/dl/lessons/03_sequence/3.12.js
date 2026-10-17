@@ -22,6 +22,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The RNN forward pass", id: "rnn-forward" },
 
+    {"kind": "flow", "title": "The RNN forward pass from scratch, as a loop over time", "caption": "One matrix per input, one per state, one bias — and a Python loop over timesteps. Writing it makes two things concrete that the module hides: the hidden state must be **initialised** before the loop, and every timestep's output has to be kept if the loss uses more than the final one.", "cols": 3, "nodes": [{"id": "h", "label": "h = zeros(batch, hidden)", "sub": "before the loop", "tone": "violet"}, {"id": "l", "label": "for t in range(T):", "sub": "the recurrence", "tone": "accent"}, {"id": "c", "label": "h = tanh(x_t W_xh + h W_hh + b)", "sub": "the same weights every step", "tone": "accent"}, {"id": "s", "label": "Append h to the outputs", "sub": "if the loss needs them all", "tone": "good"}, {"id": "o", "label": "Stack to (T, batch, hidden)", "sub": "or (batch, T, hidden)", "tone": "good"}, {"id": "f", "label": "h is also the final state", "sub": "which is what h_n returns", "tone": "teal"}], "edges": [["h", "l"], ["l", "c"], ["c", "s"], ["s", "o"], ["o", "f"]], "t": "diagram", "id": "dg-3_12-01-0"},
+
+
     { t: "code", lang: "python", title: "Forward, caching every hidden state",
       code: `class RNNScratch:
     def __init__(self, d, h):
@@ -46,6 +49,9 @@ EC.receiveLesson({
   max abs diff vs nn.RNN : 3.053e-16` },
 
     { t: "h2", n: "02", text: "BPTT", id: "bptt" },
+
+    {"kind": "flow", "title": "BPTT: the gradient accumulates across time, it does not reset", "caption": "Because the same W is used at every timestep, its gradient is the **sum** of contributions from all T steps — which is the detail people get wrong when writing it by hand. And the gradient flowing into step t−1 is the gradient from step t multiplied by W, which is precisely the repeated multiplication that 3.2 measured decaying to zero.", "cols": 3, "nodes": [{"id": "l", "label": "Loss at each step", "sub": "or only at the last", "tone": "violet"}, {"id": "b", "label": "Walk backwards through time", "sub": "t = T down to 1", "tone": "accent"}, {"id": "a", "label": "dL/dW accumulates", "sub": "a sum over all T steps", "tone": "good"}, {"id": "p", "label": "dL/dh_prev = dL/dh x W", "sub": "the repeated multiplication", "tone": "warn"}, {"id": "v", "label": "Which is 3.2's decay", "sub": "W to the power T", "tone": "crit"}, {"id": "m", "label": "Memory is O(T)", "sub": "every step's activations kept", "tone": "warn"}], "edges": [["l", "b"], ["b", "a"], ["b", "p"], ["p", "v"], ["a", "m"]], "t": "diagram", "id": "dg-3_12-02-1"},
+
 
     { t: "code", lang: "python", title: "Backward through time",
       code: `def backward(self, dH):                     # dH: (T, h)
@@ -81,6 +87,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "The LSTM", id: "lstm" },
 
+    {"kind": "flow", "title": "Writing the LSTM cell: one matrix multiply, then a split", "caption": "The efficient implementation does not compute four gates separately — it concatenates the four weight matrices into one, does a **single** matrix multiply, and slices the result into four chunks before applying the activations. That is why the weight tensors in PyTorch's LSTM have a leading dimension of 4h, and why the gate order in that tensor is a convention you must match when loading weights by hand.", "cols": 3, "nodes": [{"id": "c", "label": "Concatenate the four weight sets", "sub": "into one (4h x (h+d)) matrix", "tone": "accent"}, {"id": "m", "label": "One matrix multiply", "sub": "instead of four", "tone": "good"}, {"id": "s", "label": "Split into four chunks", "sub": "i, f, g, o - in that order", "tone": "good"}, {"id": "a", "label": "sigmoid, sigmoid, tanh, sigmoid", "sub": "applied per chunk", "tone": "accent"}, {"id": "u", "label": "c = f*c + i*g; h = o*tanh(c)", "sub": "the two state updates", "tone": "violet"}, {"id": "o", "label": "The order is a convention", "sub": "match it when loading weights", "tone": "warn"}], "edges": [["c", "m"], ["m", "s"], ["s", "a"], ["a", "u"], ["u", "o"]], "t": "diagram", "id": "dg-3_12-03-2"},
+
+
     { t: "code", lang: "python", title: "All four gates, with the forget bias set",
       code: `class LSTMScratch:
     def __init__(self, d, h):
@@ -112,6 +121,9 @@ EC.receiveLesson({
   forget gate at t=0, mean value: 0.6775  (bias=1 -> sigmoid near 0.73)` },
 
     { t: "h2", n: "04", text: "What the two cells deliver", id: "comparison" },
+
+    {"kind": "trace", "title": "What the two cells deliver, measured at the first position", "caption": "The same measurement as 3.3, from the hand-written cells. The LSTM delivers more gradient to step 0 at **every** length, and the ratio widens with depth in time: 2.7× at ten steps, 254× at thirty, and about a hundred thousand times at sixty. Both are still tiny at sixty, which is the honest conclusion — gating moves the ceiling, attention removes it.", "left": "length and cell", "codeW": 150, "vars": ["gradient at step 0", "at the last step", "LSTM advantage"], "steps": [{"code": "T = 10, RNN", "state": ["1.384e-03", "9.534e-01", ""], "tone": "accent"}, {"code": "T = 10, LSTM", "state": ["3.695e-03", "2.625e-01", "2.7x"], "tone": "good"}, {"code": "T = 30, RNN", "state": ["1.234e-09", "8.932e-01", ""], "tone": "warn"}, {"code": "T = 30, LSTM", "state": ["3.131e-07", "2.741e-01", "254x"], "changed": [2], "tone": "good"}, {"code": "T = 60, RNN", "state": ["1.776e-17", "8.683e-01", ""], "tone": "crit"}, {"code": "T = 60, LSTM", "state": ["1.738e-12", "2.819e-01", "about 98,000x"], "changed": [2], "tone": "good", "note": "still tiny"}], "t": "diagram", "id": "dg-3_12-04-3"},
+
 
     { t: "out", text: `  T=10 rnn : grad at step 0 = 1.384e-03, at step 9 = 9.534e-01
   T=10 lstm: grad at step 0 = 3.695e-03, at step 9 = 2.625e-01

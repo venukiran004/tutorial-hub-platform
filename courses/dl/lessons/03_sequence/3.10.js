@@ -38,6 +38,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Collapsing, and the blank", id: "collapsing" },
 
+    {"kind": "flow", "title": "Collapsing, and what the blank is for", "caption": "CTC's output is collapsed by removing repeats and then removing blanks — which creates an ambiguity the blank exists to resolve. Without it, 'hello' could never be produced, because the two l's would collapse into one; a blank placed between them keeps them separate. So the blank is not 'silence', it is a **separator**.", "cols": 3, "nodes": [{"id": "f", "label": "One label per input frame", "sub": "h h e - l l - l l o", "tone": "violet"}, {"id": "r", "label": "Remove repeats", "sub": "h e - l - l o", "tone": "accent"}, {"id": "b", "label": "Remove blanks", "sub": "h e l l o", "tone": "good"}, {"id": "w", "label": "Without the blank", "sub": "'hello' is unreachable", "tone": "crit"}, {"id": "s", "label": "The blank separates", "sub": "it is not silence", "tone": "good"}, {"id": "m", "label": "Many frame-paths, one output", "sub": "which is what gets marginalised", "tone": "teal"}], "edges": [["f", "r"], ["r", "b"], ["b", "w"], ["w", "s"], ["s", "m"]], "t": "diagram", "id": "dg-3_10-02-0"},
+
+
     { t: "p", text: "The rule is: merge runs of the same symbol, then delete blanks. Applied to five inputs:" },
 
     { t: "out", text: `  h-eel-lll-o  -> 'hello'
@@ -51,6 +54,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Marginalising over alignments", id: "marginalising" },
 
+    {"kind": "flow", "title": "Marginalising over alignments, without enumerating them", "caption": "The number of frame-level paths that collapse to a given transcript is exponential in the number of frames, so summing over them directly is impossible. CTC's loss is that sum computed by **dynamic programming** — the forward-backward algorithm — in time linear in frames and labels. That is the whole contribution: it makes an exponential sum tractable, which is why no alignment is needed.", "cols": 3, "nodes": [{"id": "a", "label": "Exponentially many alignments", "sub": "all collapsing to one transcript", "tone": "violet"}, {"id": "s", "label": "The loss is their total probability", "sub": "a sum, not a maximum", "tone": "accent"}, {"id": "e", "label": "Enumerating is impossible", "sub": "exponential in frames", "tone": "crit"}, {"id": "d", "label": "Forward-backward instead", "sub": "dynamic programming", "tone": "good"}, {"id": "l", "label": "Linear in frames x labels", "sub": "tractable", "tone": "good"}, {"id": "n", "label": "So no alignment is needed", "sub": "which was the point", "tone": "teal"}], "edges": [["a", "s"], ["s", "e"], ["e", "d"], ["d", "l"], ["l", "n"]], "t": "diagram", "id": "dg-3_10-03-1"},
+
+
     { t: "math", tex: "P(\\text{target} \\mid x) = \\sum_{\\pi \\,\\in\\, \\mathcal{B}^{-1}(\\text{target})} \\prod_{t=1}^{T} P(\\pi_t \\mid x_t)" },
 
     { t: "p", text: "`B⁻¹(target)` is the set of all frame-level sequences that collapse to the target. CTC's loss is the negative log of that sum — so instead of committing to one alignment, it credits every valid one in proportion to its probability. The number of alignments is combinatorial, which is why this is computed with a forward-backward dynamic program rather than enumerated." },
@@ -59,6 +65,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "If you have met hidden Markov models, CTC's dynamic program is the forward algorithm over a lattice whose states are the target string interleaved with blanks. The key insight in both cases is that you never enumerate the exponentially many paths — you accumulate probability column by column, reusing the sum over all prefixes that reach each state. That is what turns an intractable marginalisation into an `O(T · L)` computation, and it is why CTC was practical in 2006 on the hardware of the time." }] },
 
     { t: "h2", n: "04", text: "Running it", id: "pytorch" },
+
+    {"kind": "flow", "title": "Running it, and the four arguments that go wrong", "caption": "Every one of these is a shape or convention detail rather than a concept, and every one produces a loss that trains to nonsense rather than an error. `log_probs` must be log-softmaxed, must be **time-first**, the blank index must match what the model was trained with, and both length tensors must be the true lengths rather than the padded ones.", "cols": 3, "nodes": [{"id": "l", "label": "log_probs, not probs", "sub": "log_softmax first", "tone": "warn"}, {"id": "t", "label": "Shape (T, N, C)", "sub": "time first, not batch first", "tone": "warn"}, {"id": "b", "label": "blank index", "sub": "must match the training convention", "tone": "warn"}, {"id": "i", "label": "input_lengths", "sub": "true frames, not padded", "tone": "warn"}, {"id": "g", "label": "target_lengths", "sub": "true labels, not padded", "tone": "warn"}, {"id": "s", "label": "Each trains to nonsense", "sub": "rather than raising", "tone": "crit"}], "edges": [["l", "t"], ["t", "b"], ["b", "i"], ["i", "g"], ["g", "s"]], "t": "diagram", "id": "dg-3_10-04-2"},
+
 
     { t: "code", lang: "python", title: "torch.nn.CTCLoss",
       code: `logits = model(audio)                     # (T, B, C) — TIME FIRST
@@ -78,6 +87,9 @@ loss = nn.CTCLoss(blank=0, zero_infinity=True)(
       body: [{ t: "p", text: "Almost every other PyTorch module accepts `batch_first=True` and most codebases use it throughout. `CTCLoss` requires `(T, B, C)` with **time as the first dimension** and offers no option. Passing `(B, T, C)` does not raise an error when B and T happen to be compatible sizes — it silently interprets your batch dimension as time, computes a meaningless loss, and trains. The other layout trap is that `targets` is a single concatenated 1-D tensor with a separate lengths vector, not a padded 2-D tensor. Both mistakes produce a model that trains to convergence and transcribes nothing." }] },
 
     { t: "h2", n: "05", text: "Where it fits", id: "applications" },
+
+    {"kind": "matrix", "title": "Where CTC fits, and where it does not", "caption": "CTC assumes outputs are **monotonic** in the input and conditionally independent given the encoder — so it fits speech and handwriting, where the transcript follows the signal in order, and it does not fit translation, where words reorder. The independence assumption is also why a CTC model benefits so much from an external language model at decode time.", "cols": ["Fits", "Because"], "rows": ["Speech recognition", "Handwriting / OCR", "Keyword spotting", "Translation", "Needs an external LM"], "cells": [[{"text": "yes", "tone": "good"}, "monotonic; no alignment available"], [{"text": "yes", "tone": "good"}, "same structure"], [{"text": "yes", "tone": "good"}, "streaming, frame-synchronous"], [{"text": "no", "tone": "crit"}, "words reorder: not monotonic"], [{"text": "usually", "tone": "warn"}, "outputs are conditionally independent"]], "t": "diagram", "id": "dg-3_10-05-3"},
+
 
     { t: "dl", items: [
       ["Speech recognition", "Audio frames to characters or subwords. DeepSpeech, wav2letter, and the CTC head in wav2vec 2.0."],

@@ -49,6 +49,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "How much invariance pooling actually gives", "caption": "A 2×2 max-pool is invariant to a shift of **one pixel within its own window**, and that is all. Shift the input by three pixels and the pooled map shifts too. The invariance people attribute to pooling is mostly accumulated over many layers, and a modern network gets most of it from augmentation and from global pooling at the end rather than from the pooling layers themselves.", "cols": 3, "nodes": [{"id": "p", "label": "2x2 max-pool", "sub": "takes the largest of four", "tone": "accent"}, {"id": "o", "label": "Shift by 1 within the window", "sub": "same output", "tone": "good"}, {"id": "t", "label": "Shift past the window", "sub": "the output shifts with it", "tone": "warn"}, {"id": "s", "label": "Stacked layers accumulate it", "sub": "a little per layer", "tone": "accent"}, {"id": "g", "label": "Global pooling: full invariance", "sub": "position is discarded entirely", "tone": "good"}, {"id": "a", "label": "Augmentation does the rest", "sub": "and does it better", "tone": "teal"}], "edges": [["p", "o"], ["p", "t"], ["t", "s"], ["s", "g"], ["g", "a"]], "t": "diagram", "id": "dg-2_2-02-0"},
 
 
+
+
     { t: "p", text: "Pooling is usually described as providing translation invariance. It does, but only within a window — and that limit is easy to measure by shifting a single activation and checking whether the pooled output changes." },
 
     { t: "out", text: `  shift (0,0): pooled output identical = True
@@ -84,6 +86,8 @@ EC.receiveLesson({
     {"kind": "layers", "title": "The shape of a CNN: spatial size falls, channels rise", "caption": "Read it bottom-up. Every stage roughly halves the height and width and doubles the channels, which keeps the activation volume approximately constant while the representation becomes less about *where* and more about *what*. The head at the top is where VGG put 89% of its parameters and where global average pooling now sits instead.", "items": [{"label": "Classifier", "sub": "one unit per class", "tone": "teal", "side": "10 units"}, {"label": "Global average pool", "sub": "H x W x C -> C; no parameters", "tone": "good", "side": "512"}, {"label": "Stage 4", "sub": "4 x 4 x 512", "tone": "accent", "side": "deep, small"}, {"label": "Stage 3", "sub": "8 x 8 x 256", "tone": "accent", "side": ""}, {"label": "Stage 2", "sub": "16 x 16 x 128", "tone": "accent", "side": ""}, {"label": "Stage 1", "sub": "32 x 32 x 64", "tone": "good", "side": "wide, shallow"}, {"label": "Input", "sub": "32 x 32 x 3", "tone": "violet", "side": "the image"}], "t": "diagram", "id": "dg-2_2-04-1"},
 
 
+
+
     { t: "p", text: "The design rule is one sentence: **as spatial dimensions fall, channel count rises.** Each halving of height and width is matched by a doubling of channels, so the amount of information per layer stays roughly constant while what it represents becomes more abstract." },
 
     { t: "out", text: `  input                (3, 224, 224)
@@ -106,6 +110,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "The receptive field", id: "receptive-field" },
 
     {"kind": "trace", "title": "The receptive field, and why it has to be computed", "caption": "The receptive field grows by (k−1)×(product of all previous strides) per layer — so **stride compounds multiplicatively** and is what actually buys coverage. Three 3×3 layers at stride 1 see 7 pixels; add one stride-2 layer and the next 3×3 sees 15. If a network's final receptive field is smaller than the object you are trying to detect, no amount of training will fix it.", "left": "layer", "codeW": 190, "vars": ["kernel", "stride so far", "receptive field"], "steps": [{"code": "input", "state": ["—", "1", "1"], "tone": "violet"}, {"code": "conv 3x3, s 1", "state": ["3", "1", "3"], "tone": "good"}, {"code": "conv 3x3, s 1", "state": ["3", "1", "5"], "tone": "good"}, {"code": "conv 3x3, s 1", "state": ["3", "1", "7"], "tone": "good", "note": "= one 7x7, cheaper"}, {"code": "maxpool 2x2, s 2", "state": ["2", "2", "8"], "tone": "accent"}, {"code": "conv 3x3, s 1", "state": ["3", "2", "12"], "changed": [2], "tone": "accent"}, {"code": "conv 3x3, s 1", "state": ["3", "2", "16"], "changed": [2], "tone": "good", "note": "stride compounds"}], "t": "diagram", "id": "dg-2_2-05-2"},
+
+
 
 
     { t: "p", text: "The receptive field is how much of the original image influences one output value. It grows with depth, and the rate is what the architecture is really choosing." },

@@ -37,6 +37,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The bottleneck", id: "bottleneck" },
 
+    {"kind": "flow", "title": "The bottleneck, measured by what it has to fit", "caption": "The encoder's final state is a fixed vector — say 512 floats — and it must hold everything the decoder will need about an input of any length. For a short sentence that is ample; for a fifty-word one it is a lossy summary, and the loss falls on the **earliest** tokens, because they were overwritten first. Attention (3.8) is the response, and it works by deleting the bottleneck rather than widening it.", "cols": 3, "nodes": [{"id": "s", "label": "A 50-word input", "sub": "any length, in fact", "tone": "violet"}, {"id": "e", "label": "Encoder", "sub": "reads it one step at a time", "tone": "accent"}, {"id": "v", "label": "512 floats", "sub": "fixed, whatever the length", "tone": "warn"}, {"id": "d", "label": "Decoder reads only that", "sub": "nothing else is available", "tone": "crit"}, {"id": "f", "label": "The start is lost first", "sub": "it was overwritten earliest", "tone": "crit"}, {"id": "a", "label": "Attention deletes the bottleneck", "sub": "rather than widening it", "tone": "good"}], "edges": [["s", "e"], ["e", "v"], ["v", "d"], ["d", "f"], ["f", "a"]], "t": "diagram", "id": "dg-3_7-02-0"},
+
+
     { t: "out", text: `  source of   5 tokens -> context vector of 256 floats (5 states collapsed into 1)
   source of  30 tokens -> context vector of 256 floats (30 states collapsed into 1)
   source of 100 tokens -> context vector of 256 floats (100 states collapsed into 1)
@@ -76,6 +79,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "The model has only ever conditioned on correct prefixes, so it has never learned what to do after its own mistake. At inference a single early error puts it in a state it has no training for, and errors compound — the characteristic symptom is output that starts well and degenerates, sometimes into repetition loops. The gap between a good validation loss (computed with teacher forcing) and disappointing generated output is this bias, and it is why you should always evaluate generation by *generating*, not by measuring teacher-forced loss." }] },
 
     { t: "h2", n: "04", text: "Scheduled sampling", id: "scheduled" },
+
+    {"kind": "flow", "title": "Scheduled sampling, and the exposure bias it treats", "caption": "Teacher forcing trains the decoder on **ground-truth** previous tokens, but at inference it must consume its own predictions — so a single early mistake puts the model in a state it never saw in training, and errors compound. Scheduled sampling anneals from ground truth toward the model's own output during training, which narrows the gap and makes the training objective slightly inconsistent in exchange.", "cols": 3, "nodes": [{"id": "t", "label": "Train on ground-truth prefixes", "sub": "teacher forcing: fast, stable", "tone": "accent"}, {"id": "i", "label": "Infer on its own predictions", "sub": "a different distribution", "tone": "warn"}, {"id": "e", "label": "One early error compounds", "sub": "into states never seen in training", "tone": "crit"}, {"id": "s", "label": "Anneal toward self-predictions", "sub": "a probability that rises per epoch", "tone": "good"}, {"id": "g", "label": "The gap narrows", "sub": "train and test look more alike", "tone": "good"}, {"id": "c", "label": "At a cost", "sub": "the objective is no longer exact", "tone": "warn"}], "edges": [["t", "i"], ["i", "e"], ["e", "s"], ["s", "g"], ["g", "c"]], "t": "diagram", "id": "dg-3_7-04-1"},
+
 
     { t: "code", lang: "python", title: "Mixing the two",
       code: `for t in range(max_len):

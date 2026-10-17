@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Lesson 1.4 ended with one step of gradient descent: θ ← θ − α∇L. That is stochastic gradient descent when ∇L is computed on a mini-batch rather than the whole dataset, and every optimiser below is a modification of that one line. The modifications answer two questions: *should the step remember previous gradients?* (momentum) and *should every parameter take the same size of step?* (adaptive methods)." },
 
     { t: "h3", text: "SGD with momentum" },
@@ -86,6 +88,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "One parameter, starting at θ = 1.0, receiving the gradients 2.0, 1.5 and −0.5 on three successive steps. Every rule is written out from its formula and the Adam result is compared against `torch.optim.Adam` given the same three gradients:" },
 
     { t: "code", lang: "python", title: "Three steps of each optimiser on one parameter",
@@ -136,6 +140,8 @@ print(f" torch.optim.Adam after the same three gradients: θ = {p.item():.6f}")`
 
 
 
+
+
     { t: "p", text: "L2 regularisation adds λθ to the gradient; weight decay subtracts αλθ from the parameter. With plain SGD these are the same thing. With Adam they are not, because the gradient — now including the λθ term — is divided by √v̂ before it is applied. A parameter with large gradients has a large √v̂ and its decay term is divided down to almost nothing; a parameter with tiny gradients has its decay term amplified. The regularisation strength becomes a function of the gradient scale, which is not what anyone asked for." },
 
     { t: "code", lang: "python", title: "Two parameters, one large gradient and one small, decayed both ways",
@@ -168,6 +174,8 @@ for cls, kw in [(torch.optim.Adam, dict(weight_decay=0.1)), (torch.optim.AdamW, 
     { t: "h2", n: "04", text: "Choosing an optimiser", id: "choose" },
 
     {"kind": "matrix", "title": "Choosing an optimiser, and the one dial that matters more", "caption": "The honest summary is that the learning rate matters more than the choice between these, and a schedule matters more than either. AdamW with a warmup-and-decay schedule is the default for transformers; SGD with momentum still wins on large vision models given the budget to tune it.", "cols": ["Use", "Note"], "rows": ["SGD + momentum", "Adam", "AdamW", "RMSprop", "LAMB / LARS", "A schedule"], "cells": [[{"text": "large vision models", "tone": "good"}, "often the best final accuracy; needs tuning"], [{"text": "a fast first result", "tone": "accent"}, "forgiving; L2 behaves wrongly in it"], [{"text": "transformers", "tone": "good"}, "the default; decay is decoupled"], ["recurrent nets, historically", "largely superseded by Adam"], ["very large batches", "layer-wise scaling"], [{"text": "always", "tone": "violet"}, "warmup then cosine beats any fixed rate"]], "t": "diagram", "id": "dg-1_5-04-3"},
+
+
 
 
 

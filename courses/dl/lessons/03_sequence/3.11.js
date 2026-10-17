@@ -36,6 +36,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Packing", id: "packing" },
 
+    {"kind": "flow", "title": "Packing is how the padding stops costing anything", "caption": "A packed sequence stores only the real timesteps plus the batch size at each step, so cuDNN simply stops computing a sequence once it ends — no wasted arithmetic and, crucially, **no spurious state updates**. The ordering requirement is the catch: pack wants the batch sorted by descending length unless `enforce_sorted=False`, and the returned `h_n` is already the correct final state per sequence, which is what makes it worth the ceremony.", "cols": 3, "nodes": [{"id": "p", "label": "A padded batch", "sub": "a third of it fake, here", "tone": "warn"}, {"id": "k", "label": "pack_padded_sequence", "sub": "real steps only, plus batch sizes", "tone": "accent"}, {"id": "r", "label": "The RNN stops per sequence", "sub": "no state update past the end", "tone": "good"}, {"id": "h", "label": "h_n is already correct", "sub": "the true final state, per sequence", "tone": "good"}, {"id": "u", "label": "pad_packed_sequence to go back", "sub": "if you need the padded shape", "tone": "accent"}, {"id": "s", "label": "Sort, or enforce_sorted=False", "sub": "the one piece of ceremony", "tone": "teal"}], "edges": [["p", "k"], ["k", "r"], ["r", "h"], ["h", "u"], ["u", "s"]], "t": "diagram", "id": "dg-3_11-02-0"},
+
+
     { t: "code", lang: "python", title: "pack, run, unpack",
       code: `from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
@@ -57,6 +60,9 @@ output, output_lengths = pad_packed_sequence(packed_output, batch_first=True)`,
 
     { t: "h2", n: "03", text: "Masking attention", id: "attention-mask" },
 
+    {"kind": "flow", "title": "Masking attention: where the mask has to be applied", "caption": "The mask must be applied to the **scores, before the softmax**, by setting padded positions to −∞. Zeroing the weights afterwards does not work: softmax has already given the padding a positive share, so zeroing leaves the remaining weights summing to less than one and silently scales the context vector down. Two different masks are needed and are often confused — padding masks what does not exist, causal masks what has not happened yet.", "cols": 3, "nodes": [{"id": "s", "label": "Scores, before softmax", "sub": "set pad positions to -inf", "tone": "good"}, {"id": "e", "label": "exp(-inf) = 0", "sub": "and the rest still sum to 1", "tone": "good"}, {"id": "a", "label": "Zeroing after softmax", "sub": "the weights no longer sum to 1", "tone": "crit"}, {"id": "d", "label": "Context silently scaled down", "sub": "no error, wrong answer", "tone": "crit"}, {"id": "p", "label": "Padding mask", "sub": "what does not exist", "tone": "accent"}, {"id": "c", "label": "Causal mask", "sub": "what has not happened yet", "tone": "accent"}], "edges": [["s", "e"], ["a", "d"], ["e", "p"], ["p", "c"]], "t": "diagram", "id": "dg-3_11-03-1"},
+
+
     { t: "code", lang: "python", title: "Mask before the softmax, not after",
       code: `mask = torch.arange(max_len).expand(batch, max_len) < lengths.unsqueeze(1)
 scores = scores.masked_fill(~mask.unsqueeze(1), float('-inf'))
@@ -76,6 +82,9 @@ weights = torch.softmax(scores, dim=-1)     # padded positions get exactly 0`,
       body: [{ t: "p", text: "For a sequence of true length 2 in a batch padded to 5, the unmasked attention put **0.803 of its total weight on the three padding positions** — the context vector is over three-quarters noise. It is worse than it looks: padding embeddings are typically a single learned `<pad>` vector, so it is not even random noise but a consistent signal the model will learn to exploit, producing a model that appears to work and depends on an artefact of your batching. Masking after the softmax and renormalising is also wrong, incidentally — the padded positions have already absorbed probability mass that the real positions should have competed for." }] },
 
     { t: "h2", n: "04", text: "Masking the loss", id: "loss-mask" },
+
+    {"kind": "flow", "title": "Masking the loss, and the reduction that quietly undoes it", "caption": "Even with a correct mask, `reduction='mean'` divides by the number of **elements** rather than the number of real tokens — so a batch that is one-third padding has its loss diluted by a third, and the dilution changes from batch to batch depending on composition. Use `ignore_index`, or sum and divide by the real token count yourself.", "cols": 3, "nodes": [{"id": "l", "label": "Per-token loss", "sub": "including the padding", "tone": "accent"}, {"id": "m", "label": "ignore_index=pad_id", "sub": "the clean fix", "tone": "good"}, {"id": "r", "label": "Or reduction='none'", "sub": "then mask it yourself", "tone": "good"}, {"id": "s", "label": "Sum, divide by real tokens", "sub": "not by the element count", "tone": "good"}, {"id": "d", "label": "reduction='mean' as-is", "sub": "divides by elements", "tone": "crit"}, {"id": "v", "label": "Loss varies with padding", "sub": "batch composition changes it", "tone": "crit"}], "edges": [["l", "m"], ["l", "r"], ["r", "s"], ["d", "v"]], "t": "diagram", "id": "dg-3_11-04-2"},
+
 
     { t: "out", text: `  loss over all 15 positions      : 2.2107
   loss over the 10 real positions: 2.1076

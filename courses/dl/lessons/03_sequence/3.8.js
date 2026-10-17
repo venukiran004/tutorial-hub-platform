@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The mechanism", id: "mechanism" },
 
+    {"kind": "flow", "title": "Attention in three steps, and what each one is", "caption": "Score every encoder state against the decoder's current state, normalise those scores to weights that sum to one, and take the **weighted average** of the encoder states. That is all of it. The output is a vector built freshly for every decoding step, which is why the fixed bottleneck disappears: nothing has to be summarised in advance.", "cols": 3, "nodes": [{"id": "q", "label": "Query: the decoder's state", "sub": "what am I looking for", "tone": "violet"}, {"id": "k", "label": "Score against every key", "sub": "one number per encoder position", "tone": "accent"}, {"id": "s", "label": "Softmax the scores", "sub": "weights that sum to 1", "tone": "accent"}, {"id": "v", "label": "Weighted average of the values", "sub": "the context vector", "tone": "good"}, {"id": "r", "label": "Rebuilt at every step", "sub": "nothing summarised in advance", "tone": "good"}, {"id": "n", "label": "No bottleneck", "sub": "every input position stays readable", "tone": "teal"}], "edges": [["q", "k"], ["k", "s"], ["s", "v"], ["v", "r"], ["r", "n"]], "t": "diagram", "id": "dg-3_8-01-0"},
+
+
     { t: "math", tex: "e_{ij} = \\text{score}(s_{i-1}, h_j) \\qquad \\alpha_{ij} = \\frac{\\exp(e_{ij})}{\\sum_k \\exp(e_{ik})} \\qquad c_i = \\sum_{j=1}^{T} \\alpha_{ij} h_j" },
 
     { t: "code", lang: "python", title: "The whole thing",
@@ -43,6 +46,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Bahdanau and Luong", id: "variants" },
 
+    {"kind": "compare", "title": "Bahdanau and Luong: additive against multiplicative", "caption": "Two scoring functions with the same job. Bahdanau's concatenates the query and key and passes them through a small network with its own learned weights; Luong's takes a dot product, optionally through one matrix. The dot product has no parameters and maps onto a matrix multiply, which is why it is the one that scaled — the transformer's attention is Luong's, scaled.", "columns": [{"title": "Bahdanau (additive)", "tone": "accent", "items": ["score = v' tanh(W[q; k])", "Its own learned weights", "Computed before the decoder's step", "More expressive per score", "Does not reduce to a matmul"]}, {"title": "Luong (multiplicative)", "tone": "good", "items": ["score = q' k, or q' W k", "No parameters in the dot form", "Computed after the decoder's step", "Cheaper, and batches as one matmul", "What the transformer uses, scaled"]}], "t": "diagram", "id": "dg-3_8-02-1"},
+
+
     { t: "math", tex: "\\underbrace{e_{ij} = v^{T}\\tanh(W_a s_{i-1} + U_a h_j)}_{\\text{Bahdanau, additive}} \\qquad\\qquad \\underbrace{e_{ij} = s_i^{T} W_a h_j}_{\\text{Luong, multiplicative}}" },
 
     { t: "table", head: ["", "Bahdanau (2014)", "Luong (2015)"],
@@ -57,6 +63,9 @@ EC.receiveLesson({
     { t: "p", text: "Luong's dot product won, for the reason that decides most such questions: it is one matrix multiplication for every query-key pair at once, which maps directly onto hardware built for matrix multiplication. Bahdanau's additive form requires a tanh per pair and cannot be batched as cleanly. The transformer uses the multiplicative form with one addition — scaling." },
 
     { t: "h2", n: "03", text: "Why divide by √d_k", id: "scaling" },
+
+    {"kind": "trace", "title": "Why divide by the square root of d_k", "caption": "A dot product of two random d-dimensional vectors with unit-variance components has variance **d** — so as d grows the scores spread out, the softmax saturates, and its gradient goes to zero. Dividing by √d_k restores unit variance, which keeps the softmax in its responsive range. At d = 512 the unscaled standard deviation is 22.6, which is more than enough to make the softmax effectively a hard maximum.", "left": "d_k", "codeW": 130, "vars": ["sd of unscaled scores", "after / sqrt(d_k)", "softmax behaviour"], "steps": [{"code": "8", "state": ["2.83", "1.00", "responsive"], "tone": "good"}, {"code": "64", "state": ["8.00", "1.00", "already peaky unscaled"], "tone": "warn"}, {"code": "512", "state": ["22.63", "1.00", "effectively a hard max"], "changed": [0], "tone": "crit"}, {"code": "consequence", "state": ["gradient -> 0", "gradient preserved", ""], "tone": "violet"}], "t": "diagram", "id": "dg-3_8-03-2"},
+
 
     { t: "math", tex: "\\text{Attention}(Q, K, V) = \\text{softmax}\\!\\left(\\frac{QK^{T}}{\\sqrt{d_k}}\\right)V" },
 
@@ -77,6 +86,9 @@ EC.receiveLesson({
     { t: "out", text: `  my implementation vs F.scaled_dot_product_attention: max abs diff 2.384e-07` },
 
     { t: "h2", n: "04", text: "Self-attention and position", id: "self-attention" },
+
+    {"kind": "flow", "title": "Self-attention has no idea what order the tokens were in", "caption": "Attention is a weighted average over a **set**: permute the inputs and the outputs permute identically, with no other change. That is a genuine problem for language, where word order is meaning, and it is why position has to be injected explicitly rather than inferred — a sinusoidal encoding, a learned embedding, or a rotation applied inside the attention itself.", "cols": 3, "nodes": [{"id": "a", "label": "Attention over a set", "sub": "a weighted average", "tone": "violet"}, {"id": "p", "label": "Permute the inputs", "sub": "outputs permute identically", "tone": "accent"}, {"id": "n", "label": "No notion of order at all", "sub": "which is fatal for language", "tone": "crit"}, {"id": "s", "label": "Sinusoidal encoding", "sub": "added; extrapolates in principle", "tone": "good"}, {"id": "l", "label": "Learned positional embedding", "sub": "simple; fixed maximum length", "tone": "good"}, {"id": "r", "label": "RoPE", "sub": "a rotation inside attention; relative", "tone": "good"}], "edges": [["a", "p"], ["p", "n"], ["n", "s"], ["n", "l"], ["n", "r"]], "t": "diagram", "id": "dg-3_8-04-3"},
+
 
     { t: "p", text: "In self-attention, `Q`, `K` and `V` are all projections of the *same* sequence — every position attends to every other, including itself. That gives a path of length 1 between any two positions, whatever the distance, which is the property lesson 3.3 identified as the key to long-range learning. It also creates a problem:" },
 
@@ -107,6 +119,9 @@ EC.receiveLesson({
     ] },
 
     { t: "h2", n: "05", text: "Multi-head attention", id: "multihead" },
+
+    {"kind": "flow", "title": "Multi-head attention, and why it is not just a wider one", "caption": "A single attention head produces one weighted average, so it can attend to one thing per position. Splitting d into h heads lets the layer attend to several relationships **at once** — syntax in one head, coreference in another — and costs nothing extra, because each head works in d/h dimensions and the total arithmetic is unchanged.", "cols": 3, "nodes": [{"id": "o", "label": "One head", "sub": "one weighted average per position", "tone": "accent"}, {"id": "l", "label": "Can attend to one thing", "sub": "a single relationship", "tone": "warn"}, {"id": "s", "label": "Split d into h heads", "sub": "each of d/h dimensions", "tone": "good"}, {"id": "p", "label": "Several relationships at once", "sub": "in parallel", "tone": "good"}, {"id": "c", "label": "Concatenate, then project", "sub": "W_O mixes them back", "tone": "good"}, {"id": "f", "label": "Same total arithmetic", "sub": "the width is divided, not added", "tone": "teal"}], "edges": [["o", "l"], ["l", "s"], ["s", "p"], ["p", "c"], ["c", "f"]], "t": "diagram", "id": "dg-3_8-05-4"},
+
 
     { t: "math", tex: "\\text{MultiHead}(Q,K,V) = \\text{Concat}(\\text{head}_1, \\dots, \\text{head}_h)W^{O}, \\quad \\text{head}_i = \\text{Attention}(QW_i^{Q}, KW_i^{K}, VW_i^{V})" },
 

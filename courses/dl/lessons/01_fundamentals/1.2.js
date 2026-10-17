@@ -26,6 +26,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Take two layers with no activation between them: **a** = W₂(W₁**x** + **b**₁) + **b**₂ = (W₂W₁)**x** + (W₂**b**₁ + **b**₂). That is one matrix and one bias — a single linear layer wearing two layers' worth of parameters. Stack a hundred and the same thing happens. A linear model cannot draw XOR's two lines (lesson 1.1), so the non-linearity between layers is not a detail: it is the only reason depth does anything." },
 
     { t: "p", text: "The activation is applied element-wise to the pre-activation **z** = W**a** + **b**, so its derivative is also element-wise, and that derivative multiplies into every gradient that passes through the layer during backpropagation (lesson 1.4). Which is why the table below has a derivative column and why that column decides more than the formula does." },
@@ -33,6 +35,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "The comparison table, computed", id: "table" },
 
     {"kind": "trace", "title": "The activations and their derivatives, on the same seven inputs", "caption": "The derivative row is the one that matters. Sigmoid's peaks at **0.25** and falls to 0.045 by z = ±3 — multiply a dozen of those together in a backward pass and the gradient is gone, which is the vanishing-gradient problem in one number. ReLU's derivative is exactly 1 wherever it is on, which is why it fixed the problem, and exactly 0 where it is off, which is how a unit dies (§04).", "left": "z", "codeW": 100, "vars": ["sigmoid", "its derivative", "tanh", "ReLU", "its derivative"], "steps": [{"code": "-3.0", "state": ["0.0474", "0.0452", "-0.9951", "0.0", "0"], "tone": "crit", "note": "saturated"}, {"code": "-1.0", "state": ["0.2689", "0.1966", "-0.7616", "0.0", "0"], "tone": "warn"}, {"code": "-0.5", "state": ["0.3775", "0.2350", "-0.4621", "0.0", "0"], "tone": "warn"}, {"code": "0.0", "state": ["0.5000", "0.2500", "0.0000", "0.0", "0 or 1"], "changed": [1], "tone": "accent", "note": "the maximum"}, {"code": "0.5", "state": ["0.6225", "0.2350", "0.4621", "0.5", "1"], "tone": "good"}, {"code": "1.0", "state": ["0.7311", "0.1966", "0.7616", "1.0", "1"], "tone": "good"}, {"code": "3.0", "state": ["0.9526", "0.0452", "0.9951", "3.0", "1"], "changed": [1], "tone": "crit", "note": "saturated again"}], "t": "diagram", "id": "dg-1_2-02-1"},
+
+
 
 
 
@@ -144,6 +148,8 @@ mish             -0.1456  -0.3034  -0.2207   0.0000   0.3752   0.8651   2.9865
 
 
 
+
+
     { t: "p", text: "The rule fits in a short table, and it is the rule almost every working architecture follows:" },
 
     { t: "table", head: ["Place", "Situation", "Use"],
@@ -164,6 +170,8 @@ mish             -0.1456  -0.3034  -0.2207   0.0000   0.3752   0.8651   2.9865
     { t: "h2", n: "04", text: "The dead-neuron problem", id: "dead" },
 
     {"kind": "flow", "title": "How a ReLU unit dies, and why it cannot recover", "caption": "A large gradient step can push a unit's bias far enough negative that its pre-activation is below zero for **every** row in the dataset. The output is then always 0, so the derivative is always 0, so no gradient ever reaches its weights again — the unit is not merely unhelpful, it is permanently frozen. Leaky ReLU's small negative slope exists precisely to keep that path open.", "cols": 3, "nodes": [{"id": "s", "label": "A large update", "sub": "high learning rate, or a big gradient", "tone": "warn"}, {"id": "b", "label": "Bias pushed very negative", "sub": "z < 0 for every input", "tone": "crit"}, {"id": "o", "label": "Output always 0", "sub": "the unit contributes nothing", "tone": "crit"}, {"id": "g", "label": "Derivative always 0", "sub": "so no gradient reaches its weights", "tone": "crit"}, {"id": "f", "label": "Frozen for good", "sub": "it cannot climb back out", "tone": "crit"}, {"id": "l", "label": "Leaky ReLU: slope 0.01", "sub": "a small gradient always survives", "tone": "good"}], "edges": [["s", "b"], ["b", "o"], ["o", "g"], ["g", "f"], ["f", "l"]], "t": "diagram", "id": "dg-1_2-04-3"},
+
+
 
 
 

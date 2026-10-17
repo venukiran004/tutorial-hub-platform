@@ -23,6 +23,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "A convolution from scratch: the forward pass as a loop nest", "caption": "Six nested loops — batch, output channel, output row, output column, input channel, kernel position — and the innermost line is a multiply-accumulate. Writing it once makes the shapes concrete; it is also roughly a thousand times slower than the library, which is the next section's subject.", "cols": 3, "nodes": [{"id": "b", "label": "for each image in the batch", "sub": "N", "tone": "accent"}, {"id": "o", "label": "for each output channel", "sub": "C_out", "tone": "accent"}, {"id": "p", "label": "for each output position", "sub": "H_out x W_out", "tone": "accent"}, {"id": "i", "label": "for each input channel", "sub": "C_in", "tone": "good"}, {"id": "k", "label": "for each kernel position", "sub": "k x k", "tone": "good"}, {"id": "m", "label": "out += in * weight", "sub": "the whole computation", "tone": "violet"}], "edges": [["b", "o"], ["o", "p"], ["p", "i"], ["i", "k"], ["k", "m"]], "t": "diagram", "id": "dg-2_10-01-0"},
 
 
+
+
     { t: "code", lang: "python", title: "Conv2D.forward",
       code: `class Conv2D:
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0):
@@ -66,6 +68,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "The backward pass the usual treatment omits", "caption": "A convolution's backward pass is **three** computations, not one, and the third is the one that is usually skipped. The gradient with respect to the input is a convolution with the flipped kernel; the gradient with respect to the weights is a convolution of the input with the output gradient; and the bias gradient is a sum over everything but the channel axis.", "cols": 3, "nodes": [{"id": "g", "label": "dL/d(output)", "sub": "arrives from above", "tone": "violet"}, {"id": "i", "label": "dL/d(input)", "sub": "convolve with the flipped kernel", "tone": "accent"}, {"id": "w", "label": "dL/d(weights)", "sub": "convolve input with dL/d(output)", "tone": "accent"}, {"id": "b", "label": "dL/d(bias)", "sub": "sum over batch, height, width", "tone": "accent"}, {"id": "p", "label": "Pass dL/d(input) down", "sub": "to the previous layer", "tone": "good"}, {"id": "u", "label": "Use the other two to update", "sub": "this layer's parameters", "tone": "good"}], "edges": [["g", "i"], ["g", "w"], ["g", "b"], ["i", "p"], ["w", "u"], ["b", "u"]], "t": "diagram", "id": "dg-2_10-02-1"},
 
 
+
+
     { t: "p", text: "The reference declares `self.dW = None` and `self.db = None` and never assigns them, so its layer cannot learn. Three gradients are needed: one for the weights, one for the bias, and one to pass back to the previous layer." },
 
     { t: "dl", items: [
@@ -105,6 +109,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Pooling's backward pass routes rather than spreads", "caption": "Max-pooling's backward pass sends the whole gradient to the **one** input that was the maximum and zero to the rest — which means it must have remembered which that was during the forward pass. Average pooling divides the gradient evenly, and so needs to remember nothing. That asymmetry is why max-pool layers hold an index buffer and average-pool layers do not.", "cols": 3, "nodes": [{"id": "m", "label": "Max-pool forward", "sub": "takes the largest of the window", "tone": "accent"}, {"id": "r", "label": "Remembers which it was", "sub": "an index buffer", "tone": "warn"}, {"id": "g", "label": "Backward: all to that one", "sub": "zero to the others", "tone": "good"}, {"id": "a", "label": "Average-pool forward", "sub": "the mean of the window", "tone": "accent"}, {"id": "n", "label": "Remembers nothing", "sub": "no buffer needed", "tone": "good"}, {"id": "e", "label": "Backward: divided evenly", "sub": "1/n to each", "tone": "good"}], "edges": [["m", "r"], ["r", "g"], ["a", "n"], ["n", "e"]], "t": "diagram", "id": "dg-2_10-03-2"},
 
 
+
+
     { t: "out", text: `  shapes (2, 3, 4, 4) vs (2, 3, 4, 4), identical: True` },
 
     { t: "p", text: "The max pool needs no parameters and no initialisation — but it does need to remember *which* element was the max if you want its backward pass, since the gradient flows only to that element and all others receive zero. The common form gives forward only." },
@@ -118,6 +124,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "What the framework actually buys", id: "speed" },
 
     {"kind": "matrix", "title": "What the framework actually buys over the loop nest", "caption": "Not autograd — you can write that. The gap is in the four rows below, and it is a factor of hundreds to thousands. im2col turns the convolution into one large matrix multiply so it can reach a tuned GEMM kernel; cuDNN then picks among several algorithms per shape; and fusion removes the memory traffic between the convolution, the bias and the activation.", "cols": ["What it does", "Why the loop cannot"], "rows": ["im2col + GEMM", "cuDNN algorithm choice", "Kernel fusion", "Autograd", "Mixed precision"], "cells": [[{"text": "one big matrix multiply", "tone": "good"}, "a tuned GEMM is decades of work"], [{"text": "picks per shape", "tone": "good"}, "FFT, Winograd or direct, measured"], [{"text": "conv + bias + ReLU in one pass", "tone": "good"}, "it avoids three round trips to memory"], [{"text": "the easy part", "tone": "accent"}, "a few hundred lines; you can write it"], [{"text": "tensor cores", "tone": "good"}, "the hardware path is not reachable"]], "t": "diagram", "id": "dg-2_10-04-3"},
+
+
 
 
     { t: "out", text: `  input (8,64,32,32), 3x3 64->64  [0.30 GMAC]

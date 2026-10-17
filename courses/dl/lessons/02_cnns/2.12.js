@@ -95,6 +95,8 @@ traced = torch.jit.trace(model, dummy)        # records ONE execution path`,
     {"kind": "matrix", "title": "Making it smaller: three techniques, three different costs", "caption": "Quantisation is almost free and almost always worth doing — int8 is a 4× size reduction for typically under a point of accuracy. Pruning needs **structured** sparsity to actually speed anything up, because unstructured zeros still occupy a dense matrix multiply. Distillation is the only one that changes the architecture rather than the weights.", "cols": ["Buys", "Costs"], "rows": ["Post-training quantisation", "Quantisation-aware training", "Unstructured pruning", "Structured pruning", "Distillation"], "cells": [[{"text": "4x smaller, faster", "tone": "good"}, "under a point, usually; minutes of work"], [{"text": "4x, with less loss", "tone": "good"}, "a full retraining run"], [{"text": "size on disk", "tone": "warn"}, {"text": "no speedup: the matrix is still dense", "tone": "crit"}], [{"text": "real speedup", "tone": "good"}, "whole channels go: more accuracy lost"], [{"text": "a genuinely smaller model", "tone": "good"}, "a teacher, and a training run"]], "t": "diagram", "id": "dg-2_12-03-0"},
 
 
+
+
     { t: "out", text: `  resnet18 state_dict on disk : 46.83 MB  (11,689,512 parameters)
 
   fp32 46.83 MB -> fp16 23.43 MB = 2.00x smaller
@@ -115,6 +117,8 @@ traced = torch.jit.trace(model, dummy)        # records ONE execution path`,
     {"kind": "compare", "title": "Latency and throughput pull in opposite directions", "caption": "They are optimised by opposite choices, which is why one number cannot describe a deployment. Batching improves throughput by amortising fixed costs and **worsens** latency, because the first request in a batch waits for the last to arrive — so a service with a p99 target and a service with a cost-per-million target want different configurations of the same model.", "columns": [{"title": "Optimising latency", "tone": "accent", "items": ["Batch size 1", "No queueing delay", "Lower GPU utilisation", "Quantise, fuse, compile", "The request path"]}, {"title": "Optimising throughput", "tone": "good", "items": ["The largest batch that fits", "Requests wait to be batched", "High GPU utilisation", "The same optimisations, plus batching", "Nightly or offline work"]}], "t": "diagram", "id": "dg-2_12-04-1"},
 
 
+
+
     { t: "out", text: `  batch  1:    25.3 ms total,   25.3 ms/image,   39.6 img/s
   batch  8:   151.1 ms total,   18.9 ms/image,   52.9 img/s
   batch 32:   687.2 ms total,   21.5 ms/image,   46.6 img/s` },
@@ -127,6 +131,8 @@ traced = torch.jit.trace(model, dummy)        # records ONE execution path`,
     { t: "h2", n: "05", text: "The runtime landscape", id: "runtimes" },
 
     {"kind": "matrix", "title": "The runtime landscape, and what each is for", "caption": "The choice is usually decided by the deployment target rather than by speed. ONNX Runtime is the portable default; TensorRT is the fastest on NVIDIA and is NVIDIA-only; Core ML and TFLite exist because a phone is the target. `torch.compile` is the one that requires no export step at all, which makes it the cheapest thing to try first.", "cols": ["Target", "Note"], "rows": ["torch.compile", "ONNX Runtime", "TensorRT", "OpenVINO", "Core ML / TFLite", "TorchScript"], "cells": [[{"text": "the same Python process", "tone": "good"}, "no export; try this first"], [{"text": "anywhere, any language", "tone": "good"}, "the portable default"], [{"text": "NVIDIA GPUs", "tone": "accent"}, "fastest, and vendor-locked"], [{"text": "Intel CPUs", "tone": "accent"}, "the same role on Intel hardware"], [{"text": "iOS / Android", "tone": "accent"}, "on-device, with hardware accelerators"], [{"text": "a C++ process", "tone": "warn"}, "largely superseded by compile and ONNX"]], "t": "diagram", "id": "dg-2_12-05-2"},
+
+
 
 
     { t: "dl", items: [

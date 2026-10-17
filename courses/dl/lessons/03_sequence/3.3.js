@@ -22,6 +22,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "A task with a dial on it", id: "task" },
 
+    {"kind": "flow", "title": "A task with a dial on it", "caption": "The copy task exists to make memory length the **only** variable. The model sees a token, then T steps of noise, then must reproduce the token — so the required dependency is exactly T, set by you, and any failure is a memory failure rather than a modelling one. That is what makes it the right instrument for measuring where an architecture's ceiling actually is.", "cols": 3, "nodes": [{"id": "t", "label": "Show a token", "sub": "the thing to remember", "tone": "violet"}, {"id": "n", "label": "T steps of noise", "sub": "T is the dial", "tone": "accent"}, {"id": "q", "label": "Ask for the token back", "sub": "dependency length is exactly T", "tone": "accent"}, {"id": "o", "label": "Only memory is tested", "sub": "no features, no pattern to find", "tone": "good"}, {"id": "f", "label": "So a failure is a memory failure", "sub": "not a modelling one", "tone": "good"}, {"id": "m", "label": "Turn the dial, find the ceiling", "sub": "which is the measurement", "tone": "teal"}], "edges": [["t", "n"], ["n", "q"], ["q", "o"], ["o", "f"], ["f", "m"]], "t": "diagram", "id": "dg-3_3-01-0"},
+
+
     { t: "p", text: "To measure long-range learning you need a task where the dependency length is a parameter you control. Put the answer at position 0, fill the next `T−1` positions with noise, and ask for a prediction at the end. Nothing else varies." },
 
     { t: "code", lang: "python", title: "The task",
@@ -33,6 +36,9 @@ EC.receiveLesson({
       caption: "A model must carry one bit from step 0 to step T−1 through T−1 steps of pure noise. Chance is 50 %." },
 
     { t: "h2", n: "02", text: "The gradient each position receives", id: "gradients" },
+
+    {"kind": "trace", "title": "The gradient each position receives, RNN against LSTM", "caption": "At sixty steps the LSTM delivers 1.7e−12 to the first position where the RNN delivers 1.8e−17 — **five orders of magnitude more**. Both are tiny in absolute terms, and that is the honest reading: gating shifts the practical ceiling from around twenty steps to around a hundred, and does not remove it. Removing it is what attention does.", "left": "length and cell", "codeW": 150, "vars": ["gradient at step 0", "at the last step"], "steps": [{"code": "T = 10, RNN", "state": ["1.384e-03", "9.534e-01"], "tone": "accent"}, {"code": "T = 10, LSTM", "state": ["3.695e-03", "2.625e-01"], "tone": "good"}, {"code": "T = 30, RNN", "state": ["1.234e-09", "8.932e-01"], "tone": "warn"}, {"code": "T = 30, LSTM", "state": ["3.131e-07", "2.741e-01"], "changed": [0], "tone": "good"}, {"code": "T = 60, RNN", "state": ["1.776e-17", "8.683e-01"], "tone": "crit"}, {"code": "T = 60, LSTM", "state": ["1.738e-12", "2.819e-01"], "changed": [0], "tone": "good", "note": "5 orders more"}], "t": "diagram", "id": "dg-3_3-02-1"},
+
 
     { t: "out", text: `  T=  5 rnn  : grad at step 0 = 1.497e-02, at step 4 = 2.641e-01, ratio 1.76e+01
   T=  5 lstm : grad at step 0 = 6.549e-03, at step 4 = 7.840e-02, ratio 1.20e+01
@@ -47,6 +53,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "The result that did not fit", id: "surprise" },
 
+    {"kind": "trace", "title": "The result that did not fit, and the honest response to it", "caption": "The LSTM sat at **chance** from T = 20 while the vanilla RNN was perfect to T = 30 — the opposite of what the theory predicts. The right first response is that the setup is wrong rather than that LSTMs do not work, and the gradient measurements above rule out the obvious explanation: the LSTM's gradient at step 0 is *larger* at every length. So the architecture delivers what it promises and something else prevents the model using it — which §04 identifies as one line of initialisation.", "left": "task length", "codeW": 140, "vars": ["RNN accuracy", "LSTM accuracy"], "steps": [{"code": "T = 10", "state": ["100.0%", "100.0%"], "tone": "good"}, {"code": "T = 20", "state": ["100.0%", "50.0%"], "changed": [1], "tone": "crit", "note": "at chance"}, {"code": "T = 30", "state": ["100.0%", "48.7%"], "tone": "crit"}, {"code": "T = 50", "state": ["50.2%", "49.6%"], "tone": "crit", "note": "both gone"}, {"code": "the gradient said", "state": ["smaller", "larger, at every T"], "tone": "violet", "note": "so not the cause"}], "t": "diagram", "id": "dg-3_3-03-2"},
+
+
     { t: "p", text: "Training both for 3,000 steps with matched hidden size, optimiser and clipping:" },
 
     { t: "out", text: `   lag T   vanilla RNN    LSTM
@@ -59,6 +68,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "This is the opposite of what the theory predicts, and the honest first response is that something in the setup is wrong rather than that LSTMs do not work. The gradient measurements above rule out the obvious explanation — the LSTM's gradient at step 0 is *larger* than the RNN's at every length tested. So the architecture is delivering what it promises and something else is preventing the model from using it. Lesson 3.4 supplies a candidate: PyTorch initialises the forget-gate bias near zero." }] },
 
     { t: "h2", n: "04", text: "One line of initialisation", id: "diagnosis" },
+
+    {"kind": "flow", "title": "One line of initialisation", "caption": "PyTorch initialises every LSTM bias near zero, so the forget gate starts at σ(0) = 0.5 — the cell state is **halved at every timestep** before training has learned otherwise, which is a decay of 0.5 to the power T and destroys exactly the long memory the architecture exists to provide. Setting that bias to 1 or 2 starts the gate open, and the task becomes learnable.", "cols": 3, "nodes": [{"id": "i", "label": "Bias initialised near 0", "sub": "PyTorch's default", "tone": "accent"}, {"id": "s", "label": "Forget gate = sigma(0) = 0.5", "sub": "before any learning", "tone": "warn"}, {"id": "d", "label": "Cell halved every step", "sub": "0.5^T", "tone": "crit"}, {"id": "l", "label": "Long memory destroyed", "sub": "by the initialisation, not the design", "tone": "crit"}, {"id": "b", "label": "Set the forget bias to 1-2", "sub": "sigma(2) = 0.88: starts open", "tone": "good"}, {"id": "w", "label": "The task becomes learnable", "sub": "same architecture, one line", "tone": "teal"}], "edges": [["i", "s"], ["s", "d"], ["d", "l"], ["l", "b"], ["b", "w"]], "t": "diagram", "id": "dg-3_3-04-3"},
+
 
     { t: "out", text: `  PyTorch default : mean f at init = 0.4991   f^20 = 9.188e-07   f^50 = 8.092e-16
   bias set to 1.0 : mean f at init = 0.7311   f^20 = 1.901e-03   f^50 = 1.576e-07` },

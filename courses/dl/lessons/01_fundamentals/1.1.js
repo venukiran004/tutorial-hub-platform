@@ -47,6 +47,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "A neural network is a computational model, loosely inspired by the brain, made of layers of connected nodes that learn a mapping from inputs to outputs by adjusting the strengths of their connections. The node is the perceptron. It takes a vector of inputs **x**, weights each one, adds a bias and applies an activation σ:" },
 
     { t: "math", tex: "y = \\sigma\\!\\left(\\sum_{i=1}^{n} w_i x_i + b\\right) = \\sigma(\\mathbf{w}^{\\mathsf T}\\mathbf{x} + b)" },
@@ -146,6 +148,8 @@ output:         y  = h₁ − 2·h₂
 
 
 
+
+
     { t: "p", text: "Put the units in layers. The input layer holds the features; one or more hidden layers hold learned intermediate representations; the output layer holds the predictions. **Fully connected** means every unit in a layer receives every unit of the previous layer as input. Layer l computes a linear transformation followed by an element-wise non-linearity:" },
 
     { t: "math", tex: "\\mathbf{z}^{(l)} = \\mathbf{W}^{(l)}\\mathbf{a}^{(l-1)} + \\mathbf{b}^{(l)}, \\qquad \\mathbf{a}^{(l)} = \\sigma\\!\\left(\\mathbf{z}^{(l)}\\right)" },
@@ -191,6 +195,8 @@ output:         y  = h₁ − 2·h₂
 
 
 
+
+
     { t: "quote", text: "A feed-forward network with a single hidden layer containing a finite number of neurons can approximate any continuous function on compact subsets of ℝⁿ, given sufficient neurons." },
 
     { t: "p", text: "That is the theorem people quote to say networks are general, and it is true. It is worth being precise about what it does *not* say. It does not say how many neurons *sufficient* is — the number can be astronomically large. It does not say that gradient descent will find those neurons' weights; it is an existence result. And it says nothing about behaviour outside the training inputs, which is the generalisation question the rest of the course lives on." },
@@ -208,6 +214,8 @@ output:         y  = h₁ − 2·h₂
     { t: "h2", n: "05", text: "Counting parameters", id: "params" },
 
     {"kind": "trace", "title": "Counting parameters, layer by layer", "caption": "Each layer holds a weight matrix of (inputs × outputs) plus one bias per output. The arithmetic is worth doing by hand once, because it is what tells you a 784→128 first layer is **three quarters of the whole network** — and therefore where the memory and most of the overfitting risk live.", "left": "layer", "codeW": 170, "vars": ["weights", "biases", "total"], "steps": [{"code": "input 784 -> hidden 128", "state": ["784 x 128 = 100,352", "128", "100,480"], "tone": "crit", "note": "92% of the model"}, {"code": "hidden 128 -> hidden 64", "state": ["128 x 64 = 8,192", "64", "8,256"], "tone": "accent"}, {"code": "hidden 64 -> output 10", "state": ["64 x 10 = 640", "10", "650"], "tone": "good"}, {"code": "whole network", "state": ["109,184", "202", "109,386"], "tone": "violet"}], "t": "diagram", "id": "dg-1_1-05-3"},
+
+
 
 
 

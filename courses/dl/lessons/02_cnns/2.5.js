@@ -26,6 +26,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "The transfer-learning experiment, and what it is comparing", "caption": "Four regimes on the same small dataset, differing only in **which weights move**. The result that matters is the ordering: with a few thousand images, fine-tuning a pretrained network beats training the same architecture from scratch by a margin that no amount of augmentation closes — the pretrained features are the data you do not have.", "cols": 3, "nodes": [{"id": "s", "label": "From scratch", "sub": "random init, all layers train", "tone": "crit"}, {"id": "f", "label": "Frozen features + new head", "sub": "only the head trains", "tone": "accent"}, {"id": "t", "label": "Fine-tune the top blocks", "sub": "head plus the last stage", "tone": "good"}, {"id": "a", "label": "Fine-tune everything", "sub": "at a small learning rate", "tone": "good"}, {"id": "r", "label": "Same architecture throughout", "sub": "only what moves differs", "tone": "violet"}, {"id": "o", "label": "Pretrained features are the data", "sub": "you do not have", "tone": "teal"}], "edges": [["s", "r"], ["f", "r"], ["t", "r"], ["a", "r"], ["r", "o"]], "t": "diagram", "id": "dg-2_5-01-0"},
 
 
+
+
     { t: "p", text: "Same architecture, same data, same optimiser, same number of epochs. The only difference is whether the backbone starts from ImageNet weights or from random ones." },
 
     { t: "out", text: `=== 2,000 CIFAR-10 images, 2 epochs, identical everything but the weights ===
@@ -56,6 +58,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Freezing, and what it costs", id: "freezing" },
 
     {"kind": "matrix", "title": "Freezing, and what it costs", "caption": "Freezing is cheap in two senses and expensive in a third. It saves the backward pass through the frozen part and lets you cache those activations once; it costs the ability to adapt the features themselves, which matters exactly when your domain is far from the pretraining data — a chest X-ray is not an ImageNet photograph.", "cols": ["Buys", "Costs"], "rows": ["Freeze all but the head", "Freeze the early stages", "Freeze nothing", "Cache frozen activations"], "cells": [[{"text": "fastest; least overfitting", "tone": "good"}, {"text": "features cannot adapt", "tone": "warn"}], [{"text": "early filters are generic anyway", "tone": "good"}, "the usual compromise"], [{"text": "full adaptation", "tone": "accent"}, {"text": "needs a small lr and more data", "tone": "warn"}], [{"text": "one forward pass, then reuse", "tone": "good"}, {"text": "rules out augmentation", "tone": "crit"}]], "t": "diagram", "id": "dg-2_5-03-1"},
+
+
 
 
     { t: "code", lang: "python", title: "The two strategies in code",
@@ -95,6 +99,8 @@ for param in model.layer4.parameters():
     {"kind": "trace", "title": "Discriminative learning rates: earlier layers move less", "caption": "Early filters are edges and colours and are already correct for almost any image task; late layers are task-specific and need to change. Giving each stage its own learning rate — typically a constant factor apart — expresses that directly, and is one `param_groups` list rather than a new idea.", "left": "stage", "codeW": 170, "vars": ["learning rate", "why"], "steps": [{"code": "stem and stage 1", "state": ["lr / 100", "edges and colours: already right"], "tone": "good"}, {"code": "stage 2", "state": ["lr / 30", "simple textures"], "tone": "good"}, {"code": "stage 3", "state": ["lr / 10", "parts"], "tone": "accent"}, {"code": "stage 4", "state": ["lr / 3", "object-level, task-specific"], "tone": "accent"}, {"code": "the new head", "state": ["lr", "random init: must move"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-2_5-04-2"},
 
 
+
+
     { t: "p", text: "The pretrained layers already hold something valuable; the new head holds noise. They should not move at the same speed." },
 
     { t: "code", lang: "python", title: "Parameter groups",
@@ -112,6 +118,8 @@ for param in model.layer4.parameters():
     {"kind": "flow", "title": "Catastrophic forgetting, and why fine-tuning risks it", "caption": "Fine-tuning at a normal learning rate overwrites the pretrained weights before the new task's gradient has said anything useful — the network forgets what it knew and relearns from what is effectively a bad initialisation. A small learning rate, a warmup, and freezing early layers for the first epochs are three ways of saying the same thing: do not destroy the features while the head is still random.", "cols": 3, "nodes": [{"id": "h", "label": "A randomly-initialised head", "sub": "produces large, meaningless gradients", "tone": "warn"}, {"id": "b", "label": "Those flow into the backbone", "sub": "at the full learning rate", "tone": "crit"}, {"id": "f", "label": "Pretrained features overwritten", "sub": "before the task is learned", "tone": "crit"}, {"id": "w", "label": "Warm up the head first", "sub": "backbone frozen for an epoch or two", "tone": "good"}, {"id": "l", "label": "Then unfreeze at a small lr", "sub": "and discriminative rates", "tone": "good"}, {"id": "k", "label": "The features survive", "sub": "which was the point of transferring", "tone": "teal"}], "edges": [["h", "b"], ["b", "f"], ["f", "w"], ["w", "l"], ["l", "k"]], "t": "diagram", "id": "dg-2_5-05-3"},
 
 
+
+
     { t: "p", text: "What a single optimiser step does to a pretrained layer, measured as a fraction of the weight tensor's norm:" },
 
     { t: "out", text: `  lr=1e-05 -> weights moved   0.05% of their norm in ONE step
@@ -126,6 +134,8 @@ for param in model.layer4.parameters():
     { t: "h2", n: "06", text: "The normalisation trap", id: "normalisation" },
 
     {"kind": "flow", "title": "The normalisation trap in a frozen backbone", "caption": "`requires_grad = False` stops the **weights** changing; it does not stop batch norm updating its running mean and variance, because those are buffers rather than parameters. So a 'frozen' backbone silently drifts to your new data's statistics during training and then uses those statistics at inference — a mismatch that looks like a mysterious train/test gap. `model.eval()` on the backbone is the fix.", "cols": 3, "nodes": [{"id": "r", "label": "requires_grad = False", "sub": "weights are frozen", "tone": "accent"}, {"id": "b", "label": "But BN buffers still update", "sub": "they are not parameters", "tone": "crit"}, {"id": "d", "label": "Running stats drift", "sub": "toward the new data", "tone": "crit"}, {"id": "g", "label": "A train/test gap appears", "sub": "with no obvious cause", "tone": "crit"}, {"id": "e", "label": "backbone.eval()", "sub": "freezes the buffers too", "tone": "good"}, {"id": "o", "label": "Or swap BN for GroupNorm", "sub": "no running statistics at all", "tone": "good"}], "edges": [["r", "b"], ["b", "d"], ["d", "g"], ["g", "e"], ["e", "o"]], "t": "diagram", "id": "dg-2_5-06-4"},
+
+
 
 
     { t: "out", text: `  raw  [0,1] image : mean 0.500, std 0.289

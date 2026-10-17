@@ -41,6 +41,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "An untrained classifier has no preference, so it spreads probability evenly and the loss is the entropy of a uniform guess. That gives you a number to check against **before a single step**, and it is the cheapest bug detector in deep learning." },
 
     { t: "code", lang: "python", title: "d112.py — measured against the formula",
@@ -61,6 +63,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "The overfit-one-batch test", id: "overfit" },
 
     {"kind": "flow", "title": "The overfit-one-batch test, and what each failure means", "caption": "Take eight examples and train until the loss is essentially zero. If it cannot, the bug is in the model, the loss or the optimiser — not in the data or the regularisation, because neither is involved. It is the single highest-value five minutes in debugging a network, and it rules out most of the search space at once.", "cols": 3, "nodes": [{"id": "b", "label": "Take 8 examples", "sub": "no augmentation, no dropout", "tone": "violet"}, {"id": "t", "label": "Train to near-zero loss", "sub": "it should memorise them easily", "tone": "accent"}, {"id": "p", "label": "It does", "sub": "the machinery works; now generalise", "tone": "good"}, {"id": "f", "label": "It cannot", "sub": "the bug is upstream of the data", "tone": "crit"}, {"id": "c", "label": "Check: loss, labels, lr", "sub": "wrong reduction, shifted labels, lr too low", "tone": "warn"}, {"id": "g", "label": "Check: gradients reach the layer", "sub": "a detach, a frozen parameter, no requires_grad", "tone": "warn"}], "edges": [["b", "t"], ["t", "p"], ["t", "f"], ["f", "c"], ["c", "g"]], "t": "diagram", "id": "dg-1_12-03-1"},
+
+
 
 
 
@@ -88,6 +92,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "The bugs that let the model train anyway", id: "silent" },
 
     {"kind": "matrix", "title": "Bugs that let the model train anyway", "caption": "These are the dangerous ones: the loss goes down, the run looks healthy, and the result is quietly wrong. Each has a specific cheap check, and all of them are invisible in a loss curve — which is why 'the loss is decreasing' is not evidence that the code is correct.", "cols": ["Symptom", "The check"], "rows": ["No optimizer.zero_grad()", "model.train() never called", "Shuffling the labels too", "Normalising with test stats", "Softmax over the wrong axis", "Augmenting validation"], "cells": [[{"text": "gradients accumulate; trains, badly", "tone": "crit"}, "print a gradient norm across two steps"], [{"text": "dropout and BN stay in eval", "tone": "crit"}, "assert model.training inside the loop"], [{"text": "it learns nothing, slowly", "tone": "crit"}, "shuffle indices, not the arrays separately"], [{"text": "validation looks better than it is", "tone": "crit"}, "fit the scaler on train only"], [{"text": "probabilities sum along the batch", "tone": "crit"}, "assert the sum over classes is 1"], [{"text": "validation is harder than reality", "tone": "warn"}, "augment in the train transform only"]], "t": "diagram", "id": "dg-1_12-04-2"},
+
+
 
 
 
@@ -121,6 +127,8 @@ m.eval();  c = m(inp); d = m(inp)` },
     { t: "h2", n: "05", text: "Gradient clipping", id: "clipping" },
 
     {"kind": "flow", "title": "Gradient clipping, and where it goes in the loop", "caption": "The order is the part that gets wrong: clip **after** `backward()` and **before** `step()`, because clipping needs the gradients to exist and must happen before they are applied. With mixed precision there is one more requirement — unscale first, or you are clipping numbers that have been multiplied by the loss scale.", "cols": 3, "nodes": [{"id": "f", "label": "forward, loss", "sub": "", "tone": "accent"}, {"id": "b", "label": "backward()", "sub": "gradients now exist", "tone": "accent"}, {"id": "u", "label": "unscale, if using AMP", "sub": "or you clip scaled values", "tone": "warn"}, {"id": "c", "label": "clip_grad_norm_", "sub": "here, and nowhere else", "tone": "good"}, {"id": "s", "label": "optimizer.step()", "sub": "applies the clipped gradients", "tone": "good"}, {"id": "z", "label": "zero_grad()", "sub": "before the next forward", "tone": "teal"}], "edges": [["f", "b"], ["b", "u"], ["u", "c"], ["c", "s"], ["s", "z"]], "t": "diagram", "id": "dg-1_12-05-3"},
+
+
 
 
 

@@ -1,0 +1,3077 @@
+{
+ "3.1": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Weight sharing across time is what makes it recurrent",
+    "caption": "There is **one** weight matrix, applied at every timestep — not one per position. That is why an RNN handles a sequence of any length with a fixed parameter count, and also why its gradient is a product of T identical factors, which is the whole of 3.2's problem.",
+    "cols": 4,
+    "nodes": [
+     {
+      "id": "h0",
+      "label": "h₀",
+      "sub": "usually zeros",
+      "tone": "violet"
+     },
+     {
+      "id": "t1",
+      "label": "W at t=1",
+      "sub": "the same W",
+      "tone": "accent"
+     },
+     {
+      "id": "t2",
+      "label": "W at t=2",
+      "sub": "the same W",
+      "tone": "accent"
+     },
+     {
+      "id": "t3",
+      "label": "W at t=T",
+      "sub": "still the same W",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "Any length, fixed parameters",
+      "sub": "that is the gain",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "Gradient is W to the power T",
+      "sub": "that is the cost (3.2)",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "h0",
+      "t1"
+     ],
+     [
+      "t1",
+      "t2"
+     ],
+     [
+      "t2",
+      "t3"
+     ],
+     [
+      "t3",
+      "p"
+     ],
+     [
+      "p",
+      "g"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "The bottleneck: one vector has to carry the whole sequence",
+    "caption": "Whatever the input's length, the final hidden state is a fixed-size vector — so a fifty-word sentence and a five-word one are both compressed into the same number of dimensions. Everything the decoder knows comes through that one vector, which is precisely the constraint attention (3.8) removes.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "A sequence of any length",
+      "sub": "5 tokens, or 500",
+      "tone": "violet"
+     },
+     {
+      "id": "r",
+      "label": "Read one step at a time",
+      "sub": "h updated at each",
+      "tone": "accent"
+     },
+     {
+      "id": "h",
+      "label": "One final vector",
+      "sub": "fixed size, whatever the length",
+      "tone": "warn"
+     },
+     {
+      "id": "d",
+      "label": "The decoder sees only this",
+      "sub": "nothing else survives",
+      "tone": "crit"
+     },
+     {
+      "id": "l",
+      "label": "Long inputs lose the start",
+      "sub": "it was overwritten",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "Attention removes the constraint",
+      "sub": "every step stays readable (3.8)",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "r"
+     ],
+     [
+      "r",
+      "h"
+     ],
+     [
+      "h",
+      "d"
+     ],
+     [
+      "d",
+      "l"
+     ],
+     [
+      "l",
+      "a"
+     ]
+    ]
+   }
+  }
+ ],
+ "3.2": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Measured: at a hundred steps the gradient is exactly zero",
+    "caption": "Not small — **zero**. It underflowed float32 entirely, so the first hundred timesteps receive no gradient at all and the network is structurally unable to learn anything about them. And the column that explains why nobody notices: the gradient at the **last** step stays near 0.52 whatever the length, so the loss falls and the training curve looks healthy while the model has simply not read the beginning of its input. This measurement is where 'RNNs handle about 10–20 steps' comes from.",
+    "left": "sequence length",
+    "codeW": 160,
+    "vars": [
+     "gradient at the last step",
+     "at the first step",
+     "ratio"
+    ],
+    "steps": [
+     {
+      "code": "T = 5",
+      "state": [
+       "5.279e-01",
+       "2.735e-02",
+       "1.93e+01"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "T = 10",
+      "state": [
+       "5.305e-01",
+       "1.531e-03",
+       "3.47e+02"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "T = 20",
+      "state": [
+       "4.965e-01",
+       "1.347e-07",
+       "3.69e+06"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "T = 50",
+      "state": [
+       "5.347e-01",
+       "1.525e-16",
+       "3.51e+15"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "T = 100",
+      "state": [
+       "5.158e-01",
+       "0.000e+00",
+       "inf"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit",
+      "note": "underflowed"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Why the decay is one-sided",
+    "caption": "The gradient through T steps is a product of T factors, and a product's behaviour is asymmetric: anything below one shrinks **geometrically** toward zero, while anything above one grows geometrically toward overflow. The first failure is silent — small numbers just become smaller — and the second is loud, producing a NaN that stops the run. That is why vanishing is the harder problem: nothing tells you it happened.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "p",
+      "label": "Gradient = product of T factors",
+      "sub": "the same W, every step",
+      "tone": "violet"
+     },
+     {
+      "id": "l",
+      "label": "Factor < 1",
+      "sub": "shrinks geometrically",
+      "tone": "warn"
+     },
+     {
+      "id": "z",
+      "label": "Vanishes, silently",
+      "sub": "the loss still falls",
+      "tone": "crit"
+     },
+     {
+      "id": "g",
+      "label": "Factor > 1",
+      "sub": "grows geometrically",
+      "tone": "warn"
+     },
+     {
+      "id": "n",
+      "label": "Explodes into a NaN",
+      "sub": "loud, and easy to fix",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "So clipping solves one",
+      "sub": "and gates are needed for the other",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "p",
+      "l"
+     ],
+     [
+      "l",
+      "z"
+     ],
+     [
+      "p",
+      "g"
+     ],
+     [
+      "g",
+      "n"
+     ],
+     [
+      "n",
+      "c"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Clipping fixes the explosion and cannot touch the vanishing",
+    "caption": "Clipping rescales the gradient when its norm exceeds a threshold, which preserves the **direction** and bounds the step. That stops a NaN dead. It does nothing whatsoever for a vanished gradient, because scaling zero up still gives zero — which is why clipping is a universally recommended safety measure and never the answer to a long-dependency problem.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "n",
+      "label": "Gradient norm exceeds a threshold",
+      "sub": "an exploding step",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "Rescale to the threshold",
+      "sub": "direction kept, length bounded",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "No more NaN",
+      "sub": "the run survives",
+      "tone": "good"
+     },
+     {
+      "id": "v",
+      "label": "A vanished gradient",
+      "sub": "0.000e+00",
+      "tone": "crit"
+     },
+     {
+      "id": "x",
+      "label": "Scaling it up gives zero",
+      "sub": "clipping cannot help",
+      "tone": "crit"
+     },
+     {
+      "id": "g",
+      "label": "That needs gates, or attention",
+      "sub": "a different mechanism (3.4, 3.8)",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "n",
+      "s"
+     ],
+     [
+      "s",
+      "o"
+     ],
+     [
+      "v",
+      "x"
+     ],
+     [
+      "x",
+      "g"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "Truncated BPTT, and the dependency it gives up",
+    "caption": "Backpropagating through a ten-thousand-step sequence is impossible in memory, so the gradient is cut after k steps while the hidden state is **carried forward**. The consequence is precise: the model can still represent a dependency longer than k, because the state crosses the boundary, but it can never learn one — no gradient ever connects the two ends.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "l",
+      "label": "A 10,000-step sequence",
+      "sub": "memory makes full BPTT impossible",
+      "tone": "violet"
+     },
+     {
+      "id": "k",
+      "label": "Backprop only k steps",
+      "sub": "typically 32 to 200",
+      "tone": "accent"
+     },
+     {
+      "id": "h",
+      "label": "Carry h across the boundary",
+      "sub": "detached, so no gradient crosses",
+      "tone": "accent"
+     },
+     {
+      "id": "r",
+      "label": "State can represent longer",
+      "sub": "it survives the cut",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "But cannot learn longer",
+      "sub": "no gradient connects the ends",
+      "tone": "crit"
+     },
+     {
+      "id": "m",
+      "label": "Memory is now O(k)",
+      "sub": "which is why it is used anyway",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "l",
+      "k"
+     ],
+     [
+      "k",
+      "h"
+     ],
+     [
+      "h",
+      "r"
+     ],
+     [
+      "r",
+      "c"
+     ],
+     [
+      "c",
+      "m"
+     ]
+    ]
+   }
+  }
+ ],
+ "3.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "A task with a dial on it",
+    "caption": "The copy task exists to make memory length the **only** variable. The model sees a token, then T steps of noise, then must reproduce the token — so the required dependency is exactly T, set by you, and any failure is a memory failure rather than a modelling one. That is what makes it the right instrument for measuring where an architecture's ceiling actually is.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "Show a token",
+      "sub": "the thing to remember",
+      "tone": "violet"
+     },
+     {
+      "id": "n",
+      "label": "T steps of noise",
+      "sub": "T is the dial",
+      "tone": "accent"
+     },
+     {
+      "id": "q",
+      "label": "Ask for the token back",
+      "sub": "dependency length is exactly T",
+      "tone": "accent"
+     },
+     {
+      "id": "o",
+      "label": "Only memory is tested",
+      "sub": "no features, no pattern to find",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "So a failure is a memory failure",
+      "sub": "not a modelling one",
+      "tone": "good"
+     },
+     {
+      "id": "m",
+      "label": "Turn the dial, find the ceiling",
+      "sub": "which is the measurement",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "n"
+     ],
+     [
+      "n",
+      "q"
+     ],
+     [
+      "q",
+      "o"
+     ],
+     [
+      "o",
+      "f"
+     ],
+     [
+      "f",
+      "m"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "The gradient each position receives, RNN against LSTM",
+    "caption": "At sixty steps the LSTM delivers 1.7e−12 to the first position where the RNN delivers 1.8e−17 — **five orders of magnitude more**. Both are tiny in absolute terms, and that is the honest reading: gating shifts the practical ceiling from around twenty steps to around a hundred, and does not remove it. Removing it is what attention does.",
+    "left": "length and cell",
+    "codeW": 150,
+    "vars": [
+     "gradient at step 0",
+     "at the last step"
+    ],
+    "steps": [
+     {
+      "code": "T = 10, RNN",
+      "state": [
+       "1.384e-03",
+       "9.534e-01"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "T = 10, LSTM",
+      "state": [
+       "3.695e-03",
+       "2.625e-01"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "T = 30, RNN",
+      "state": [
+       "1.234e-09",
+       "8.932e-01"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "T = 30, LSTM",
+      "state": [
+       "3.131e-07",
+       "2.741e-01"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "T = 60, RNN",
+      "state": [
+       "1.776e-17",
+       "8.683e-01"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "T = 60, LSTM",
+      "state": [
+       "1.738e-12",
+       "2.819e-01"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "5 orders more"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "The result that did not fit, and the honest response to it",
+    "caption": "The LSTM sat at **chance** from T = 20 while the vanilla RNN was perfect to T = 30 — the opposite of what the theory predicts. The right first response is that the setup is wrong rather than that LSTMs do not work, and the gradient measurements above rule out the obvious explanation: the LSTM's gradient at step 0 is *larger* at every length. So the architecture delivers what it promises and something else prevents the model using it — which §04 identifies as one line of initialisation.",
+    "left": "task length",
+    "codeW": 140,
+    "vars": [
+     "RNN accuracy",
+     "LSTM accuracy"
+    ],
+    "steps": [
+     {
+      "code": "T = 10",
+      "state": [
+       "100.0%",
+       "100.0%"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "T = 20",
+      "state": [
+       "100.0%",
+       "50.0%"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit",
+      "note": "at chance"
+     },
+     {
+      "code": "T = 30",
+      "state": [
+       "100.0%",
+       "48.7%"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "T = 50",
+      "state": [
+       "50.2%",
+       "49.6%"
+      ],
+      "tone": "crit",
+      "note": "both gone"
+     },
+     {
+      "code": "the gradient said",
+      "state": [
+       "smaller",
+       "larger, at every T"
+      ],
+      "tone": "violet",
+      "note": "so not the cause"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "One line of initialisation",
+    "caption": "PyTorch initialises every LSTM bias near zero, so the forget gate starts at σ(0) = 0.5 — the cell state is **halved at every timestep** before training has learned otherwise, which is a decay of 0.5 to the power T and destroys exactly the long memory the architecture exists to provide. Setting that bias to 1 or 2 starts the gate open, and the task becomes learnable.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "i",
+      "label": "Bias initialised near 0",
+      "sub": "PyTorch's default",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Forget gate = sigma(0) = 0.5",
+      "sub": "before any learning",
+      "tone": "warn"
+     },
+     {
+      "id": "d",
+      "label": "Cell halved every step",
+      "sub": "0.5^T",
+      "tone": "crit"
+     },
+     {
+      "id": "l",
+      "label": "Long memory destroyed",
+      "sub": "by the initialisation, not the design",
+      "tone": "crit"
+     },
+     {
+      "id": "b",
+      "label": "Set the forget bias to 1-2",
+      "sub": "sigma(2) = 0.88: starts open",
+      "tone": "good"
+     },
+     {
+      "id": "w",
+      "label": "The task becomes learnable",
+      "sub": "same architecture, one line",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "i",
+      "s"
+     ],
+     [
+      "s",
+      "d"
+     ],
+     [
+      "d",
+      "l"
+     ],
+     [
+      "l",
+      "b"
+     ],
+     [
+      "b",
+      "w"
+     ]
+    ]
+   }
+  }
+ ],
+ "3.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "The six equations, grouped by what they are for",
+    "caption": "Three gates, a candidate, and two state updates. The grouping is the point: the three gates are each a sigmoid producing a number in (0, 1) that **multiplies** something, and the cell update is the only line that is additive — which is where the gradient highway of §03 comes from.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "f",
+      "label": "Forget gate f",
+      "sub": "sigmoid: how much of c to keep",
+      "tone": "accent"
+     },
+     {
+      "id": "i",
+      "label": "Input gate i",
+      "sub": "sigmoid: how much new to admit",
+      "tone": "accent"
+     },
+     {
+      "id": "g",
+      "label": "Candidate g",
+      "sub": "tanh: what the new content is",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "c = f*c + i*g",
+      "sub": "the only additive line",
+      "tone": "violet"
+     },
+     {
+      "id": "o",
+      "label": "Output gate o",
+      "sub": "sigmoid: how much of c to expose",
+      "tone": "accent"
+     },
+     {
+      "id": "h",
+      "label": "h = o * tanh(c)",
+      "sub": "what the next layer sees",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "f",
+      "c"
+     ],
+     [
+      "i",
+      "c"
+     ],
+     [
+      "g",
+      "c"
+     ],
+     [
+      "c",
+      "h"
+     ],
+     [
+      "o",
+      "h"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "The gradient highway, and why it is the forget gate",
+    "caption": "Differentiating cₜ = f⊙cₜ₋₁ + i⊙g gives ∂cₜ/∂cₜ₋₁ = **f** — so the gradient through the cell is a product of forget gates rather than a product of weight matrices. If f stays near 1 that product stays near 1 and the gradient survives hundreds of steps; if f is 0.5 it decays as 0.5ᵀ, which is exactly the failure 3.3 measured. The architecture gives you the highway; the initialisation decides whether it is open.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "e",
+      "label": "c = f*c_prev + i*g",
+      "sub": "additive, not multiplicative by W",
+      "tone": "violet"
+     },
+     {
+      "id": "d",
+      "label": "dc/dc_prev = f",
+      "sub": "the forget gate itself",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "Gradient = product of f's",
+      "sub": "not a product of weight matrices",
+      "tone": "accent"
+     },
+     {
+      "id": "o",
+      "label": "f near 1: survives",
+      "sub": "hundreds of steps",
+      "tone": "good"
+     },
+     {
+      "id": "h",
+      "label": "f = 0.5: decays as 0.5^T",
+      "sub": "what 3.3 measured",
+      "tone": "crit"
+     },
+     {
+      "id": "b",
+      "label": "So the bias decides",
+      "sub": "whether the highway is open",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "e",
+      "d"
+     ],
+     [
+      "d",
+      "p"
+     ],
+     [
+      "p",
+      "o"
+     ],
+     [
+      "p",
+      "h"
+     ],
+     [
+      "h",
+      "b"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "What the forget-gate bias does before training starts",
+    "caption": "The gate's initial value is σ(bias), and the cell's retention over T steps is that value to the power T. Read the last column: at the default bias of 0, **three per cent** of the signal survives 5 steps and nothing survives 50. At a bias of 2 the gate opens to 0.88 and 53% of the signal still survives 5 steps. This is the one-line change of 3.3, with its arithmetic.",
+    "left": "forget-gate bias",
+    "codeW": 170,
+    "vars": [
+     "sigma(bias)",
+     "after 5 steps",
+     "after 50 steps"
+    ],
+    "steps": [
+     {
+      "code": "0 (the default)",
+      "state": [
+       "0.500",
+       "3.1%",
+       "8.9e-16"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "1",
+      "state": [
+       "0.731",
+       "20.9%",
+       "1.6e-07"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "2",
+      "state": [
+       "0.881",
+       "53.0%",
+       "1.8e-03"
+      ],
+      "changed": [
+       1,
+       2
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "3",
+      "state": [
+       "0.953",
+       "78.4%",
+       "8.8e-02"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "and it is learnable",
+      "state": [
+       "the bias trains",
+       "this is only the start",
+       ""
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "trace",
+    "title": "The cost: exactly four times a vanilla RNN",
+    "caption": "Four gates means four sets of weights, so the ratio is **exactly 4.00** at every size — not approximately. The textbook formula 4h(h+d) gives 364,544 for the first row against PyTorch's 366,592; the 2,048 difference is the two separate bias vectors PyTorch keeps for cuDNN compatibility, which are mathematically redundant with one another.",
+    "left": "d and h",
+    "codeW": 150,
+    "vars": [
+     "RNN",
+     "LSTM",
+     "ratio"
+    ],
+    "steps": [
+     {
+      "code": "d=100, h=256",
+      "state": [
+       "91,648",
+       "366,592",
+       "4.00x"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "d=32, h=64",
+      "state": [
+       "6,272",
+       "25,088",
+       "4.00x"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "formula 4h(h+d)",
+      "state": [
+       "",
+       "364,544",
+       "the textbook figure"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "PyTorch, actual",
+      "state": [
+       "",
+       "366,592",
+       "+2,048"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "the difference",
+      "state": [
+       "",
+       "two bias vectors",
+       "redundant, for cuDNN"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  }
+ ],
+ "3.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "compare",
+    "title": "Four equations instead of six",
+    "caption": "The GRU reaches the same goal with two gates rather than three, and — the structural difference — **no separate cell state**. One vector carries everything, which is why it has fewer parameters and why its gating is slightly less expressive: it cannot hold something in memory while hiding it from the next layer, because there is no hidden cell to hide it in.",
+    "columns": [
+     {
+      "title": "LSTM: six equations",
+      "tone": "accent",
+      "items": [
+       "Forget, input and output gates",
+       "A separate cell state c",
+       "h = o * tanh(c): exposure is gated",
+       "Can remember without exposing",
+       "4h(h+d) parameters"
+      ]
+     },
+     {
+      "title": "GRU: four equations",
+      "tone": "good",
+      "items": [
+       "Reset and update gates only",
+       "One state vector, no cell",
+       "h is the state: nothing to hide",
+       "Remembering and exposing are coupled",
+       "3h(h+d): 25% fewer"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "The same gradient trick, in a different shape",
+    "caption": "The GRU's update is h = (1−z)⊙hₜ₋₁ + z⊙h̃, which is a **convex combination** rather than the LSTM's independent keep-and-add. Differentiating gives (1−z), so the highway is still there and still gated — but the single z means admitting new content necessarily displaces old content in the same proportion, where the LSTM can do both independently.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "e",
+      "label": "h = (1-z)*h_prev + z*h_cand",
+      "sub": "a convex combination",
+      "tone": "violet"
+     },
+     {
+      "id": "d",
+      "label": "dh/dh_prev = (1 - z)",
+      "sub": "the highway, gated",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "One gate does both jobs",
+      "sub": "keep and admit are coupled",
+      "tone": "warn"
+     },
+     {
+      "id": "l",
+      "label": "LSTM uses f and i separately",
+      "sub": "keep 90% and admit 90%",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "GRU cannot",
+      "sub": "admitting displaces, in proportion",
+      "tone": "warn"
+     },
+     {
+      "id": "p",
+      "label": "Rarely matters in practice",
+      "sub": "which is why both survive",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "e",
+      "d"
+     ],
+     [
+      "d",
+      "s"
+     ],
+     [
+      "s",
+      "l"
+     ],
+     [
+      "l",
+      "g"
+     ],
+     [
+      "g",
+      "p"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Twenty-five per cent fewer parameters, and slower anyway",
+    "caption": "The parameter ratio is exactly 0.750 at every size — arithmetic, not approximation. But on this CPU with torch 2.10 the GRU is **slower than the LSTM** at all three shapes, by 2.0×, 3.1× and 1.6×, because PyTorch's LSTM has a well-optimised fused CPU kernel and the GRU does not. The claim 'GRUs train faster' is correct about arithmetic and wrong about wall-clock here. Parameter and FLOP counts are a poor predictor of latency — the same lesson as the depthwise convolutions of 2.4.",
+    "left": "d and h",
+    "codeW": 140,
+    "vars": [
+     "RNN",
+     "GRU",
+     "LSTM",
+     "GRU / LSTM params"
+    ],
+    "steps": [
+     {
+      "code": "100, 256 params",
+      "state": [
+       "91,648",
+       "274,944",
+       "366,592",
+       "0.750"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "300, 512 params",
+      "state": [
+       "416,768",
+       "1,250,304",
+       "1,667,072",
+       "0.750"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "32, 64 params",
+      "state": [
+       "6,272",
+       "18,816",
+       "25,088",
+       "0.750"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "shape 1, median ms",
+      "state": [
+       "42.8",
+       "133.6",
+       "67.4",
+       "2.0x slower"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "shape 2, median ms",
+      "state": [
+       "12.3",
+       "29.4",
+       "9.5",
+       "3.1x slower"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "shape 3, median ms",
+      "state": [
+       "13.2",
+       "43.3",
+       "26.4",
+       "1.6x slower"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "Choosing between them",
+    "caption": "The honest summary is that the choice rarely decides a project. Benchmark both on your own hardware if speed is the reason — §04 shows why the received wisdom is unreliable — and if long memory is the reason, set the LSTM's forget bias before concluding anything (3.3).",
+    "cols": [
+     "Prefer",
+     "Because"
+    ],
+    "rows": [
+     "Long dependencies",
+     "A small dataset",
+     "Latency on CPU",
+     "Latency on CUDA",
+     "Nothing decisive"
+    ],
+    "cells": [
+     [
+      {
+       "text": "LSTM",
+       "tone": "good"
+      },
+      "separate cell; set the forget bias"
+     ],
+     [
+      {
+       "text": "GRU",
+       "tone": "good"
+      },
+      "25% fewer parameters to overfit with"
+     ],
+     [
+      {
+       "text": "benchmark it",
+       "tone": "crit"
+      },
+      "the LSTM was faster here, by up to 3x"
+     ],
+     [
+      {
+       "text": "benchmark it",
+       "tone": "warn"
+      },
+      "both are fused by cuDNN; the picture differs"
+     ],
+     [
+      {
+       "text": "either",
+       "tone": "accent"
+      },
+      "and spend the time on the data instead"
+     ]
+    ]
+   }
+  }
+ ],
+ "3.6": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "The cost of bidirectionality is causality",
+    "caption": "A bidirectional layer reads the sequence forwards and backwards and concatenates both states, so every position sees the **whole** sequence — which is why it helps so much on classification and tagging. It is unusable for anything that must run as the data arrives, because the backward pass cannot start until the sequence ends: no streaming, no generation, no real-time.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "f",
+      "label": "Forward pass",
+      "sub": "h from the left",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "Backward pass",
+      "sub": "h from the right",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "Concatenate: 2h per position",
+      "sub": "every position sees everything",
+      "tone": "good"
+     },
+     {
+      "id": "t",
+      "label": "Great for tagging, classification",
+      "sub": "the whole input is available",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "The backward pass needs the end",
+      "sub": "before it can start",
+      "tone": "crit"
+     },
+     {
+      "id": "n",
+      "label": "So: no streaming, no generation",
+      "sub": "and no real-time use at all",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "f",
+      "c"
+     ],
+     [
+      "b",
+      "c"
+     ],
+     [
+      "c",
+      "t"
+     ],
+     [
+      "c",
+      "s"
+     ],
+     [
+      "s",
+      "n"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Indexing the final state, which is where the bugs are",
+    "caption": "Three traps in one line of code. With a **packed** batch the last valid step differs per sequence, so `output[:, -1]` reads padding for every sequence but the longest. With a **bidirectional** layer the forward and backward final states are at different ends. And `h_n` is shaped (layers × directions, batch, hidden), so taking `h_n[-1]` gives the last **direction** of the last layer rather than the concatenation.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "o",
+      "label": "output[:, -1]",
+      "sub": "the obvious thing to write",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "With padding: wrong",
+      "sub": "reads pad for all but the longest",
+      "tone": "crit"
+     },
+     {
+      "id": "l",
+      "label": "Gather at lengths - 1",
+      "sub": "per sequence",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": "Bidirectional: two ends",
+      "sub": "forward's last, backward's first",
+      "tone": "warn"
+     },
+     {
+      "id": "h",
+      "label": "h_n is (L x D, B, H)",
+      "sub": "not (L, B, D*H)",
+      "tone": "warn"
+     },
+     {
+      "id": "r",
+      "label": "Reshape, then concatenate",
+      "sub": "h_n.view(L, D, B, H)",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "o",
+      "p"
+     ],
+     [
+      "p",
+      "l"
+     ],
+     [
+      "b",
+      "h"
+     ],
+     [
+      "h",
+      "r"
+     ],
+     [
+      "l",
+      "r"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Stacking, and what the second layer actually receives",
+    "caption": "A stacked RNN feeds the **full sequence of hidden states** from layer one into layer two, not just the final state — so the second layer is reading a sequence of representations rather than a summary. Depth here buys abstraction in the same way it does in a CNN, and it is the reason two layers is usually a real improvement over one while five rarely is.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "i",
+      "label": "Input sequence",
+      "sub": "T x d",
+      "tone": "violet"
+     },
+     {
+      "id": "l1",
+      "label": "Layer 1",
+      "sub": "outputs T x h, not just h_T",
+      "tone": "accent"
+     },
+     {
+      "id": "l2",
+      "label": "Layer 2",
+      "sub": "reads that whole sequence",
+      "tone": "accent"
+     },
+     {
+      "id": "a",
+      "label": "Abstraction, as in a CNN",
+      "sub": "features of features",
+      "tone": "good"
+     },
+     {
+      "id": "t",
+      "label": "Two layers usually helps",
+      "sub": "five rarely does",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "And gradients must cross both",
+      "sub": "depth x time, now",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "i",
+      "l1"
+     ],
+     [
+      "l1",
+      "l2"
+     ],
+     [
+      "l2",
+      "a"
+     ],
+     [
+      "a",
+      "t"
+     ],
+     [
+      "t",
+      "g"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "Dropout in the right place",
+    "caption": "Standard dropout applied **across time** samples a different mask at every timestep, which injects fresh noise into the recurrence and prevents the state carrying information — it damages exactly what the RNN is for. Variational dropout fixes it by using the same mask at every step of a sequence. PyTorch's `dropout=` argument sidesteps the question by only dropping **between** layers, never within the recurrence.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "A new mask each timestep",
+      "sub": "standard dropout, naively applied",
+      "tone": "crit"
+     },
+     {
+      "id": "n",
+      "label": "Noise in the recurrence",
+      "sub": "the state cannot carry anything",
+      "tone": "crit"
+     },
+     {
+      "id": "v",
+      "label": "Variational dropout",
+      "sub": "the same mask all along the sequence",
+      "tone": "good"
+     },
+     {
+      "id": "p",
+      "label": "PyTorch's dropout= argument",
+      "sub": "between layers only",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "Safe, and limited",
+      "sub": "does nothing for a single layer",
+      "tone": "accent"
+     },
+     {
+      "id": "e",
+      "label": "Also: embedding dropout",
+      "sub": "drop whole words, not dimensions",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "n"
+     ],
+     [
+      "n",
+      "v"
+     ],
+     [
+      "v",
+      "p"
+     ],
+     [
+      "p",
+      "o"
+     ],
+     [
+      "o",
+      "e"
+     ]
+    ]
+   }
+  }
+ ],
+ "3.7": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "The bottleneck, measured by what it has to fit",
+    "caption": "The encoder's final state is a fixed vector — say 512 floats — and it must hold everything the decoder will need about an input of any length. For a short sentence that is ample; for a fifty-word one it is a lossy summary, and the loss falls on the **earliest** tokens, because they were overwritten first. Attention (3.8) is the response, and it works by deleting the bottleneck rather than widening it.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "A 50-word input",
+      "sub": "any length, in fact",
+      "tone": "violet"
+     },
+     {
+      "id": "e",
+      "label": "Encoder",
+      "sub": "reads it one step at a time",
+      "tone": "accent"
+     },
+     {
+      "id": "v",
+      "label": "512 floats",
+      "sub": "fixed, whatever the length",
+      "tone": "warn"
+     },
+     {
+      "id": "d",
+      "label": "Decoder reads only that",
+      "sub": "nothing else is available",
+      "tone": "crit"
+     },
+     {
+      "id": "f",
+      "label": "The start is lost first",
+      "sub": "it was overwritten earliest",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "Attention deletes the bottleneck",
+      "sub": "rather than widening it",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "e"
+     ],
+     [
+      "e",
+      "v"
+     ],
+     [
+      "v",
+      "d"
+     ],
+     [
+      "d",
+      "f"
+     ],
+     [
+      "f",
+      "a"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Scheduled sampling, and the exposure bias it treats",
+    "caption": "Teacher forcing trains the decoder on **ground-truth** previous tokens, but at inference it must consume its own predictions — so a single early mistake puts the model in a state it never saw in training, and errors compound. Scheduled sampling anneals from ground truth toward the model's own output during training, which narrows the gap and makes the training objective slightly inconsistent in exchange.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "Train on ground-truth prefixes",
+      "sub": "teacher forcing: fast, stable",
+      "tone": "accent"
+     },
+     {
+      "id": "i",
+      "label": "Infer on its own predictions",
+      "sub": "a different distribution",
+      "tone": "warn"
+     },
+     {
+      "id": "e",
+      "label": "One early error compounds",
+      "sub": "into states never seen in training",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "Anneal toward self-predictions",
+      "sub": "a probability that rises per epoch",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "The gap narrows",
+      "sub": "train and test look more alike",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "At a cost",
+      "sub": "the objective is no longer exact",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "i"
+     ],
+     [
+      "i",
+      "e"
+     ],
+     [
+      "e",
+      "s"
+     ],
+     [
+      "s",
+      "g"
+     ],
+     [
+      "g",
+      "c"
+     ]
+    ]
+   }
+  }
+ ],
+ "3.8": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Attention in three steps, and what each one is",
+    "caption": "Score every encoder state against the decoder's current state, normalise those scores to weights that sum to one, and take the **weighted average** of the encoder states. That is all of it. The output is a vector built freshly for every decoding step, which is why the fixed bottleneck disappears: nothing has to be summarised in advance.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "q",
+      "label": "Query: the decoder's state",
+      "sub": "what am I looking for",
+      "tone": "violet"
+     },
+     {
+      "id": "k",
+      "label": "Score against every key",
+      "sub": "one number per encoder position",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Softmax the scores",
+      "sub": "weights that sum to 1",
+      "tone": "accent"
+     },
+     {
+      "id": "v",
+      "label": "Weighted average of the values",
+      "sub": "the context vector",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Rebuilt at every step",
+      "sub": "nothing summarised in advance",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "No bottleneck",
+      "sub": "every input position stays readable",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "q",
+      "k"
+     ],
+     [
+      "k",
+      "s"
+     ],
+     [
+      "s",
+      "v"
+     ],
+     [
+      "v",
+      "r"
+     ],
+     [
+      "r",
+      "n"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "compare",
+    "title": "Bahdanau and Luong: additive against multiplicative",
+    "caption": "Two scoring functions with the same job. Bahdanau's concatenates the query and key and passes them through a small network with its own learned weights; Luong's takes a dot product, optionally through one matrix. The dot product has no parameters and maps onto a matrix multiply, which is why it is the one that scaled — the transformer's attention is Luong's, scaled.",
+    "columns": [
+     {
+      "title": "Bahdanau (additive)",
+      "tone": "accent",
+      "items": [
+       "score = v' tanh(W[q; k])",
+       "Its own learned weights",
+       "Computed before the decoder's step",
+       "More expressive per score",
+       "Does not reduce to a matmul"
+      ]
+     },
+     {
+      "title": "Luong (multiplicative)",
+      "tone": "good",
+      "items": [
+       "score = q' k, or q' W k",
+       "No parameters in the dot form",
+       "Computed after the decoder's step",
+       "Cheaper, and batches as one matmul",
+       "What the transformer uses, scaled"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "Why divide by the square root of d_k",
+    "caption": "A dot product of two random d-dimensional vectors with unit-variance components has variance **d** — so as d grows the scores spread out, the softmax saturates, and its gradient goes to zero. Dividing by √d_k restores unit variance, which keeps the softmax in its responsive range. At d = 512 the unscaled standard deviation is 22.6, which is more than enough to make the softmax effectively a hard maximum.",
+    "left": "d_k",
+    "codeW": 130,
+    "vars": [
+     "sd of unscaled scores",
+     "after / sqrt(d_k)",
+     "softmax behaviour"
+    ],
+    "steps": [
+     {
+      "code": "8",
+      "state": [
+       "2.83",
+       "1.00",
+       "responsive"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "64",
+      "state": [
+       "8.00",
+       "1.00",
+       "already peaky unscaled"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "512",
+      "state": [
+       "22.63",
+       "1.00",
+       "effectively a hard max"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "consequence",
+      "state": [
+       "gradient -> 0",
+       "gradient preserved",
+       ""
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Self-attention has no idea what order the tokens were in",
+    "caption": "Attention is a weighted average over a **set**: permute the inputs and the outputs permute identically, with no other change. That is a genuine problem for language, where word order is meaning, and it is why position has to be injected explicitly rather than inferred — a sinusoidal encoding, a learned embedding, or a rotation applied inside the attention itself.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "Attention over a set",
+      "sub": "a weighted average",
+      "tone": "violet"
+     },
+     {
+      "id": "p",
+      "label": "Permute the inputs",
+      "sub": "outputs permute identically",
+      "tone": "accent"
+     },
+     {
+      "id": "n",
+      "label": "No notion of order at all",
+      "sub": "which is fatal for language",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "Sinusoidal encoding",
+      "sub": "added; extrapolates in principle",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "Learned positional embedding",
+      "sub": "simple; fixed maximum length",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "RoPE",
+      "sub": "a rotation inside attention; relative",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "p"
+     ],
+     [
+      "p",
+      "n"
+     ],
+     [
+      "n",
+      "s"
+     ],
+     [
+      "n",
+      "l"
+     ],
+     [
+      "n",
+      "r"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "Multi-head attention, and why it is not just a wider one",
+    "caption": "A single attention head produces one weighted average, so it can attend to one thing per position. Splitting d into h heads lets the layer attend to several relationships **at once** — syntax in one head, coreference in another — and costs nothing extra, because each head works in d/h dimensions and the total arithmetic is unchanged.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "o",
+      "label": "One head",
+      "sub": "one weighted average per position",
+      "tone": "accent"
+     },
+     {
+      "id": "l",
+      "label": "Can attend to one thing",
+      "sub": "a single relationship",
+      "tone": "warn"
+     },
+     {
+      "id": "s",
+      "label": "Split d into h heads",
+      "sub": "each of d/h dimensions",
+      "tone": "good"
+     },
+     {
+      "id": "p",
+      "label": "Several relationships at once",
+      "sub": "in parallel",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Concatenate, then project",
+      "sub": "W_O mixes them back",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "Same total arithmetic",
+      "sub": "the width is divided, not added",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "o",
+      "l"
+     ],
+     [
+      "l",
+      "s"
+     ],
+     [
+      "s",
+      "p"
+     ],
+     [
+      "p",
+      "c"
+     ],
+     [
+      "c",
+      "f"
+     ]
+    ]
+   }
+  }
+ ],
+ "3.9": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Why greedy decoding is not the most likely sequence",
+    "caption": "Greedy takes the highest-probability **token** at every step, which is not the same as the highest-probability **sequence** — a slightly worse first token can open a far better continuation, and greedy has already thrown it away. The search is over an exponentially large space and greedy explores exactly one path through it.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "g",
+      "label": "Take the best token now",
+      "sub": "argmax at each step",
+      "tone": "accent"
+     },
+     {
+      "id": "o",
+      "label": "One path explored",
+      "sub": "of exponentially many",
+      "tone": "warn"
+     },
+     {
+      "id": "l",
+      "label": "A worse token now",
+      "sub": "can lead somewhere better",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "Already discarded",
+      "sub": "greedy cannot reconsider",
+      "tone": "crit"
+     },
+     {
+      "id": "b",
+      "label": "Keep k candidates instead",
+      "sub": "beam search",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Still not optimal",
+      "sub": "just a wider search",
+      "tone": "accent"
+     }
+    ],
+    "edges": [
+     [
+      "g",
+      "o"
+     ],
+     [
+      "o",
+      "l"
+     ],
+     [
+      "l",
+      "d"
+     ],
+     [
+      "d",
+      "b"
+     ],
+     [
+      "b",
+      "s"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "The length bias, and the normalisation that corrects it",
+    "caption": "A sequence's score is a **sum of log probabilities**, and every token adds a negative number — so a longer sequence scores worse automatically, whatever its quality. Beam search therefore prefers short outputs, sometimes absurdly so. Dividing by the length removes the bias; dividing by length to a power α lets you tune how much, and α ≈ 0.6 to 0.7 is the usual setting in translation.",
+    "left": "candidate",
+    "codeW": 190,
+    "vars": [
+     "sum of log p",
+     "/ length",
+     "/ length^0.7"
+    ],
+    "steps": [
+     {
+      "code": "3 tokens at -0.5 each",
+      "state": [
+       "-1.50",
+       "-0.500",
+       "-0.695"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "10 tokens at -0.5 each",
+      "state": [
+       "-5.00",
+       "-0.500",
+       "-0.998"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "raw score prefers",
+      "state": [
+       "the short one",
+       "",
+       ""
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "length-normalised prefers",
+      "state": [
+       "",
+       "neither: equal",
+       ""
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "alpha = 0.7 prefers",
+      "state": [
+       "",
+       "",
+       "the short one, mildly"
+      ],
+      "tone": "violet",
+      "note": "tunable"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "When not to use beam search",
+    "caption": "Beam search optimises likelihood, and likelihood is the wrong objective whenever **diversity** is the point — which is why open-ended generation uses sampling instead. The failure is characteristic and well documented: large beams on open-ended text produce bland, repetitive output, because the most likely continuation of almost anything is a cliche.",
+    "cols": [
+     "Use",
+     "Because"
+    ],
+    "rows": [
+     "Translation",
+     "Summarisation",
+     "Speech recognition",
+     "Open-ended generation",
+     "Creative writing",
+     "Very large beams"
+    ],
+    "cells": [
+     [
+      {
+       "text": "beam, 4-5",
+       "tone": "good"
+      },
+      "one right answer; likelihood is the goal"
+     ],
+     [
+      {
+       "text": "beam, with length norm",
+       "tone": "good"
+      },
+      "same, plus the length bias to fix"
+     ],
+     [
+      {
+       "text": "beam, with an LM",
+       "tone": "good"
+      },
+      "constrained output space"
+     ],
+     [
+      {
+       "text": "sampling: top-p",
+       "tone": "crit"
+      },
+      "likelihood rewards blandness"
+     ],
+     [
+      {
+       "text": "sampling, with temperature",
+       "tone": "crit"
+      },
+      "diversity is the objective"
+     ],
+     [
+      {
+       "text": "avoid",
+       "tone": "warn"
+      },
+      "quality falls past about 10"
+     ]
+    ]
+   }
+  }
+ ],
+ "3.10": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Collapsing, and what the blank is for",
+    "caption": "CTC's output is collapsed by removing repeats and then removing blanks — which creates an ambiguity the blank exists to resolve. Without it, 'hello' could never be produced, because the two l's would collapse into one; a blank placed between them keeps them separate. So the blank is not 'silence', it is a **separator**.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "f",
+      "label": "One label per input frame",
+      "sub": "h h e - l l - l l o",
+      "tone": "violet"
+     },
+     {
+      "id": "r",
+      "label": "Remove repeats",
+      "sub": "h e - l - l o",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "Remove blanks",
+      "sub": "h e l l o",
+      "tone": "good"
+     },
+     {
+      "id": "w",
+      "label": "Without the blank",
+      "sub": "'hello' is unreachable",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "The blank separates",
+      "sub": "it is not silence",
+      "tone": "good"
+     },
+     {
+      "id": "m",
+      "label": "Many frame-paths, one output",
+      "sub": "which is what gets marginalised",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "f",
+      "r"
+     ],
+     [
+      "r",
+      "b"
+     ],
+     [
+      "b",
+      "w"
+     ],
+     [
+      "w",
+      "s"
+     ],
+     [
+      "s",
+      "m"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Marginalising over alignments, without enumerating them",
+    "caption": "The number of frame-level paths that collapse to a given transcript is exponential in the number of frames, so summing over them directly is impossible. CTC's loss is that sum computed by **dynamic programming** — the forward-backward algorithm — in time linear in frames and labels. That is the whole contribution: it makes an exponential sum tractable, which is why no alignment is needed.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "Exponentially many alignments",
+      "sub": "all collapsing to one transcript",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "The loss is their total probability",
+      "sub": "a sum, not a maximum",
+      "tone": "accent"
+     },
+     {
+      "id": "e",
+      "label": "Enumerating is impossible",
+      "sub": "exponential in frames",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "Forward-backward instead",
+      "sub": "dynamic programming",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "Linear in frames x labels",
+      "sub": "tractable",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "So no alignment is needed",
+      "sub": "which was the point",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "s"
+     ],
+     [
+      "s",
+      "e"
+     ],
+     [
+      "e",
+      "d"
+     ],
+     [
+      "d",
+      "l"
+     ],
+     [
+      "l",
+      "n"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Running it, and the four arguments that go wrong",
+    "caption": "Every one of these is a shape or convention detail rather than a concept, and every one produces a loss that trains to nonsense rather than an error. `log_probs` must be log-softmaxed, must be **time-first**, the blank index must match what the model was trained with, and both length tensors must be the true lengths rather than the padded ones.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "l",
+      "label": "log_probs, not probs",
+      "sub": "log_softmax first",
+      "tone": "warn"
+     },
+     {
+      "id": "t",
+      "label": "Shape (T, N, C)",
+      "sub": "time first, not batch first",
+      "tone": "warn"
+     },
+     {
+      "id": "b",
+      "label": "blank index",
+      "sub": "must match the training convention",
+      "tone": "warn"
+     },
+     {
+      "id": "i",
+      "label": "input_lengths",
+      "sub": "true frames, not padded",
+      "tone": "warn"
+     },
+     {
+      "id": "g",
+      "label": "target_lengths",
+      "sub": "true labels, not padded",
+      "tone": "warn"
+     },
+     {
+      "id": "s",
+      "label": "Each trains to nonsense",
+      "sub": "rather than raising",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "l",
+      "t"
+     ],
+     [
+      "t",
+      "b"
+     ],
+     [
+      "b",
+      "i"
+     ],
+     [
+      "i",
+      "g"
+     ],
+     [
+      "g",
+      "s"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "Where CTC fits, and where it does not",
+    "caption": "CTC assumes outputs are **monotonic** in the input and conditionally independent given the encoder — so it fits speech and handwriting, where the transcript follows the signal in order, and it does not fit translation, where words reorder. The independence assumption is also why a CTC model benefits so much from an external language model at decode time.",
+    "cols": [
+     "Fits",
+     "Because"
+    ],
+    "rows": [
+     "Speech recognition",
+     "Handwriting / OCR",
+     "Keyword spotting",
+     "Translation",
+     "Needs an external LM"
+    ],
+    "cells": [
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "monotonic; no alignment available"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "same structure"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "streaming, frame-synchronous"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "words reorder: not monotonic"
+     ],
+     [
+      {
+       "text": "usually",
+       "tone": "warn"
+      },
+      "outputs are conditionally independent"
+     ]
+    ]
+   }
+  }
+ ],
+ "3.11": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Packing is how the padding stops costing anything",
+    "caption": "A packed sequence stores only the real timesteps plus the batch size at each step, so cuDNN simply stops computing a sequence once it ends — no wasted arithmetic and, crucially, **no spurious state updates**. The ordering requirement is the catch: pack wants the batch sorted by descending length unless `enforce_sorted=False`, and the returned `h_n` is already the correct final state per sequence, which is what makes it worth the ceremony.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "p",
+      "label": "A padded batch",
+      "sub": "a third of it fake, here",
+      "tone": "warn"
+     },
+     {
+      "id": "k",
+      "label": "pack_padded_sequence",
+      "sub": "real steps only, plus batch sizes",
+      "tone": "accent"
+     },
+     {
+      "id": "r",
+      "label": "The RNN stops per sequence",
+      "sub": "no state update past the end",
+      "tone": "good"
+     },
+     {
+      "id": "h",
+      "label": "h_n is already correct",
+      "sub": "the true final state, per sequence",
+      "tone": "good"
+     },
+     {
+      "id": "u",
+      "label": "pad_packed_sequence to go back",
+      "sub": "if you need the padded shape",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Sort, or enforce_sorted=False",
+      "sub": "the one piece of ceremony",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "p",
+      "k"
+     ],
+     [
+      "k",
+      "r"
+     ],
+     [
+      "r",
+      "h"
+     ],
+     [
+      "h",
+      "u"
+     ],
+     [
+      "u",
+      "s"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Masking attention: where the mask has to be applied",
+    "caption": "The mask must be applied to the **scores, before the softmax**, by setting padded positions to −∞. Zeroing the weights afterwards does not work: softmax has already given the padding a positive share, so zeroing leaves the remaining weights summing to less than one and silently scales the context vector down. Two different masks are needed and are often confused — padding masks what does not exist, causal masks what has not happened yet.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "Scores, before softmax",
+      "sub": "set pad positions to -inf",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "exp(-inf) = 0",
+      "sub": "and the rest still sum to 1",
+      "tone": "good"
+     },
+     {
+      "id": "a",
+      "label": "Zeroing after softmax",
+      "sub": "the weights no longer sum to 1",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "Context silently scaled down",
+      "sub": "no error, wrong answer",
+      "tone": "crit"
+     },
+     {
+      "id": "p",
+      "label": "Padding mask",
+      "sub": "what does not exist",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "Causal mask",
+      "sub": "what has not happened yet",
+      "tone": "accent"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "e"
+     ],
+     [
+      "a",
+      "d"
+     ],
+     [
+      "e",
+      "p"
+     ],
+     [
+      "p",
+      "c"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Masking the loss, and the reduction that quietly undoes it",
+    "caption": "Even with a correct mask, `reduction='mean'` divides by the number of **elements** rather than the number of real tokens — so a batch that is one-third padding has its loss diluted by a third, and the dilution changes from batch to batch depending on composition. Use `ignore_index`, or sum and divide by the real token count yourself.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "l",
+      "label": "Per-token loss",
+      "sub": "including the padding",
+      "tone": "accent"
+     },
+     {
+      "id": "m",
+      "label": "ignore_index=pad_id",
+      "sub": "the clean fix",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Or reduction='none'",
+      "sub": "then mask it yourself",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Sum, divide by real tokens",
+      "sub": "not by the element count",
+      "tone": "good"
+     },
+     {
+      "id": "d",
+      "label": "reduction='mean' as-is",
+      "sub": "divides by elements",
+      "tone": "crit"
+     },
+     {
+      "id": "v",
+      "label": "Loss varies with padding",
+      "sub": "batch composition changes it",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "l",
+      "m"
+     ],
+     [
+      "l",
+      "r"
+     ],
+     [
+      "r",
+      "s"
+     ],
+     [
+      "d",
+      "v"
+     ]
+    ]
+   }
+  }
+ ],
+ "3.12": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "The RNN forward pass from scratch, as a loop over time",
+    "caption": "One matrix per input, one per state, one bias — and a Python loop over timesteps. Writing it makes two things concrete that the module hides: the hidden state must be **initialised** before the loop, and every timestep's output has to be kept if the loss uses more than the final one.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "h",
+      "label": "h = zeros(batch, hidden)",
+      "sub": "before the loop",
+      "tone": "violet"
+     },
+     {
+      "id": "l",
+      "label": "for t in range(T):",
+      "sub": "the recurrence",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "h = tanh(x_t W_xh + h W_hh + b)",
+      "sub": "the same weights every step",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Append h to the outputs",
+      "sub": "if the loss needs them all",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "Stack to (T, batch, hidden)",
+      "sub": "or (batch, T, hidden)",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "h is also the final state",
+      "sub": "which is what h_n returns",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "h",
+      "l"
+     ],
+     [
+      "l",
+      "c"
+     ],
+     [
+      "c",
+      "s"
+     ],
+     [
+      "s",
+      "o"
+     ],
+     [
+      "o",
+      "f"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "BPTT: the gradient accumulates across time, it does not reset",
+    "caption": "Because the same W is used at every timestep, its gradient is the **sum** of contributions from all T steps — which is the detail people get wrong when writing it by hand. And the gradient flowing into step t−1 is the gradient from step t multiplied by W, which is precisely the repeated multiplication that 3.2 measured decaying to zero.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "l",
+      "label": "Loss at each step",
+      "sub": "or only at the last",
+      "tone": "violet"
+     },
+     {
+      "id": "b",
+      "label": "Walk backwards through time",
+      "sub": "t = T down to 1",
+      "tone": "accent"
+     },
+     {
+      "id": "a",
+      "label": "dL/dW accumulates",
+      "sub": "a sum over all T steps",
+      "tone": "good"
+     },
+     {
+      "id": "p",
+      "label": "dL/dh_prev = dL/dh x W",
+      "sub": "the repeated multiplication",
+      "tone": "warn"
+     },
+     {
+      "id": "v",
+      "label": "Which is 3.2's decay",
+      "sub": "W to the power T",
+      "tone": "crit"
+     },
+     {
+      "id": "m",
+      "label": "Memory is O(T)",
+      "sub": "every step's activations kept",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "l",
+      "b"
+     ],
+     [
+      "b",
+      "a"
+     ],
+     [
+      "b",
+      "p"
+     ],
+     [
+      "p",
+      "v"
+     ],
+     [
+      "a",
+      "m"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Writing the LSTM cell: one matrix multiply, then a split",
+    "caption": "The efficient implementation does not compute four gates separately — it concatenates the four weight matrices into one, does a **single** matrix multiply, and slices the result into four chunks before applying the activations. That is why the weight tensors in PyTorch's LSTM have a leading dimension of 4h, and why the gate order in that tensor is a convention you must match when loading weights by hand.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "c",
+      "label": "Concatenate the four weight sets",
+      "sub": "into one (4h x (h+d)) matrix",
+      "tone": "accent"
+     },
+     {
+      "id": "m",
+      "label": "One matrix multiply",
+      "sub": "instead of four",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Split into four chunks",
+      "sub": "i, f, g, o - in that order",
+      "tone": "good"
+     },
+     {
+      "id": "a",
+      "label": "sigmoid, sigmoid, tanh, sigmoid",
+      "sub": "applied per chunk",
+      "tone": "accent"
+     },
+     {
+      "id": "u",
+      "label": "c = f*c + i*g; h = o*tanh(c)",
+      "sub": "the two state updates",
+      "tone": "violet"
+     },
+     {
+      "id": "o",
+      "label": "The order is a convention",
+      "sub": "match it when loading weights",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "c",
+      "m"
+     ],
+     [
+      "m",
+      "s"
+     ],
+     [
+      "s",
+      "a"
+     ],
+     [
+      "a",
+      "u"
+     ],
+     [
+      "u",
+      "o"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "What the two cells deliver, measured at the first position",
+    "caption": "The same measurement as 3.3, from the hand-written cells. The LSTM delivers more gradient to step 0 at **every** length, and the ratio widens with depth in time: 2.7× at ten steps, 254× at thirty, and about a hundred thousand times at sixty. Both are still tiny at sixty, which is the honest conclusion — gating moves the ceiling, attention removes it.",
+    "left": "length and cell",
+    "codeW": 150,
+    "vars": [
+     "gradient at step 0",
+     "at the last step",
+     "LSTM advantage"
+    ],
+    "steps": [
+     {
+      "code": "T = 10, RNN",
+      "state": [
+       "1.384e-03",
+       "9.534e-01",
+       ""
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "T = 10, LSTM",
+      "state": [
+       "3.695e-03",
+       "2.625e-01",
+       "2.7x"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "T = 30, RNN",
+      "state": [
+       "1.234e-09",
+       "8.932e-01",
+       ""
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "T = 30, LSTM",
+      "state": [
+       "3.131e-07",
+       "2.741e-01",
+       "254x"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "T = 60, RNN",
+      "state": [
+       "1.776e-17",
+       "8.683e-01",
+       ""
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "T = 60, LSTM",
+      "state": [
+       "1.738e-12",
+       "2.819e-01",
+       "about 98,000x"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good",
+      "note": "still tiny"
+     }
+    ]
+   }
+  }
+ ],
+ "3.13": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "An embedding is a lookup table that happens to be a matrix multiply",
+    "caption": "One-hot encoding a vocabulary of 50,000 and multiplying by a weight matrix selects **one row** of that matrix — so the multiplication is pure waste, and an embedding layer is the same operation implemented as an indexed read. That equivalence is why an embedding's gradient is sparse: only the rows for tokens actually present in the batch receive one.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "o",
+      "label": "One-hot, 50,000 wide",
+      "sub": "a single 1, the rest zeros",
+      "tone": "warn"
+     },
+     {
+      "id": "m",
+      "label": "Times a (50,000 x d) matrix",
+      "sub": "selects one row",
+      "tone": "warn"
+     },
+     {
+      "id": "w",
+      "label": "Almost all of it is waste",
+      "sub": "multiplying by zero",
+      "tone": "crit"
+     },
+     {
+      "id": "e",
+      "label": "nn.Embedding: an indexed read",
+      "sub": "the same result, directly",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "Gradient is sparse",
+      "sub": "only the rows that appeared",
+      "tone": "good"
+     },
+     {
+      "id": "p",
+      "label": "And it is learned",
+      "sub": "or loaded, and frozen",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "o",
+      "m"
+     ],
+     [
+      "m",
+      "w"
+     ],
+     [
+      "w",
+      "e"
+     ],
+     [
+      "e",
+      "g"
+     ],
+     [
+      "g",
+      "p"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "The analogy, geometrically, and what it does not prove",
+    "caption": "king − man + woman landing near queen means the **difference vector** between those pairs is roughly shared, which is a real and useful property of the space. It is also routinely over-claimed: the nearest neighbour is often one of the three input words and must be excluded, the result depends on the normalisation, and the analogies that work are the ones the corpus made frequent.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "v",
+      "label": "king - man + woman",
+      "sub": "vector arithmetic",
+      "tone": "accent"
+     },
+     {
+      "id": "n",
+      "label": "Nearest neighbour: queen",
+      "sub": "after excluding the inputs",
+      "tone": "good"
+     },
+     {
+      "id": "d",
+      "label": "The difference is shared",
+      "sub": "a direction meaning 'gender'",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "The inputs must be excluded",
+      "sub": "or one of them wins",
+      "tone": "warn"
+     },
+     {
+      "id": "s",
+      "label": "Depends on normalisation",
+      "sub": "and on the corpus",
+      "tone": "warn"
+     },
+     {
+      "id": "b",
+      "label": "It also encodes bias",
+      "sub": "the same mechanism, same corpus",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "v",
+      "n"
+     ],
+     [
+      "n",
+      "d"
+     ],
+     [
+      "d",
+      "e"
+     ],
+     [
+      "e",
+      "s"
+     ],
+     [
+      "s",
+      "b"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Where embeddings come from",
+    "caption": "The division that matters is **static against contextual**. Word2Vec and GloVe give one vector per word for all time, so 'bank' has a single compromise representation; a transformer gives a different vector per occurrence, which is why contextual embeddings replaced static ones for almost everything except where a fixed lookup table is itself the requirement.",
+    "cols": [
+     "Gives",
+     "Trained by"
+    ],
+    "rows": [
+     "Word2Vec",
+     "GloVe",
+     "fastText",
+     "A task-trained embedding",
+     "BERT and after"
+    ],
+    "cells": [
+     [
+      {
+       "text": "one vector per word",
+       "tone": "accent"
+      },
+      "predicting context from a word, or back"
+     ],
+     [
+      {
+       "text": "one vector per word",
+       "tone": "accent"
+      },
+      "factorising a co-occurrence matrix"
+     ],
+     [
+      {
+       "text": "one per word, from n-grams",
+       "tone": "good"
+      },
+      "the same, with subwords: handles unseen words"
+     ],
+     [
+      {
+       "text": "one per word, task-specific",
+       "tone": "accent"
+      },
+      "your own loss; needs enough data"
+     ],
+     [
+      {
+       "text": "one per occurrence",
+       "tone": "good"
+      },
+      "masked language modelling: contextual"
+     ]
+    ]
+   }
+  }
+ ]
+}

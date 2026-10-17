@@ -45,6 +45,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The cost: causality", id: "causality" },
 
+    {"kind": "flow", "title": "The cost of bidirectionality is causality", "caption": "A bidirectional layer reads the sequence forwards and backwards and concatenates both states, so every position sees the **whole** sequence — which is why it helps so much on classification and tagging. It is unusable for anything that must run as the data arrives, because the backward pass cannot start until the sequence ends: no streaming, no generation, no real-time.", "cols": 3, "nodes": [{"id": "f", "label": "Forward pass", "sub": "h from the left", "tone": "accent"}, {"id": "b", "label": "Backward pass", "sub": "h from the right", "tone": "accent"}, {"id": "c", "label": "Concatenate: 2h per position", "sub": "every position sees everything", "tone": "good"}, {"id": "t", "label": "Great for tagging, classification", "sub": "the whole input is available", "tone": "good"}, {"id": "s", "label": "The backward pass needs the end", "sub": "before it can start", "tone": "crit"}, {"id": "n", "label": "So: no streaming, no generation", "sub": "and no real-time use at all", "tone": "crit"}], "edges": [["f", "c"], ["b", "c"], ["c", "t"], ["c", "s"], ["s", "n"]], "t": "diagram", "id": "dg-3_6-02-0"},
+
+
     { t: "p", text: "Change **only the final input** and look at what happens to the output at position 0:" },
 
     { t: "out", text: `  unidirectional : changed by 0.000e+00  (causal - the future cannot reach the past)
@@ -65,6 +68,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Indexing the final state", id: "hn" },
 
+    {"kind": "flow", "title": "Indexing the final state, which is where the bugs are", "caption": "Three traps in one line of code. With a **packed** batch the last valid step differs per sequence, so `output[:, -1]` reads padding for every sequence but the longest. With a **bidirectional** layer the forward and backward final states are at different ends. And `h_n` is shaped (layers × directions, batch, hidden), so taking `h_n[-1]` gives the last **direction** of the last layer rather than the concatenation.", "cols": 3, "nodes": [{"id": "o", "label": "output[:, -1]", "sub": "the obvious thing to write", "tone": "accent"}, {"id": "p", "label": "With padding: wrong", "sub": "reads pad for all but the longest", "tone": "crit"}, {"id": "l", "label": "Gather at lengths - 1", "sub": "per sequence", "tone": "good"}, {"id": "b", "label": "Bidirectional: two ends", "sub": "forward's last, backward's first", "tone": "warn"}, {"id": "h", "label": "h_n is (L x D, B, H)", "sub": "not (L, B, D*H)", "tone": "warn"}, {"id": "r", "label": "Reshape, then concatenate", "sub": "h_n.view(L, D, B, H)", "tone": "good"}], "edges": [["o", "p"], ["p", "l"], ["b", "h"], ["h", "r"], ["l", "r"]], "t": "diagram", "id": "dg-3_6-03-1"},
+
+
     { t: "out", text: `  h_n (2, 2, 16): shape is (num_layers * num_directions, B, H)
   h_n[0] == output[:, -1, :H] : True
   h_n[1] == output[:,  0, H:] : True` },
@@ -73,6 +79,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "For a many-to-one bidirectional model you want the summary of the whole sequence, which is the forward pass at the *last* step concatenated with the backward pass at the *first* step. Reaching for `output[:, -1, :]` gives you the forward pass's genuine final state alongside the backward pass's state after it has seen only one token — half your representation is nearly empty. The correct summary is `torch.cat([h_n[-2], h_n[-1]], dim=1)`, or equivalently `torch.cat([output[:, -1, :H], output[:, 0, H:]], dim=1)`. This is one of the most common bugs in bidirectional code, and it degrades accuracy without ever failing." }] },
 
     { t: "h2", n: "04", text: "Stacking", id: "stacked" },
+
+    {"kind": "flow", "title": "Stacking, and what the second layer actually receives", "caption": "A stacked RNN feeds the **full sequence of hidden states** from layer one into layer two, not just the final state — so the second layer is reading a sequence of representations rather than a summary. Depth here buys abstraction in the same way it does in a CNN, and it is the reason two layers is usually a real improvement over one while five rarely is.", "cols": 3, "nodes": [{"id": "i", "label": "Input sequence", "sub": "T x d", "tone": "violet"}, {"id": "l1", "label": "Layer 1", "sub": "outputs T x h, not just h_T", "tone": "accent"}, {"id": "l2", "label": "Layer 2", "sub": "reads that whole sequence", "tone": "accent"}, {"id": "a", "label": "Abstraction, as in a CNN", "sub": "features of features", "tone": "good"}, {"id": "t", "label": "Two layers usually helps", "sub": "five rarely does", "tone": "good"}, {"id": "g", "label": "And gradients must cross both", "sub": "depth x time, now", "tone": "warn"}], "edges": [["i", "l1"], ["l1", "l2"], ["l2", "a"], ["a", "t"], ["t", "g"]], "t": "diagram", "id": "dg-3_6-04-2"},
+
 
     { t: "out", text: `  1 layer(s): output (2, 6, 16), h_n (1, 2, 16),   1,792 params
   2 layer(s): output (2, 6, 16), h_n (2, 2, 16),   3,968 params
@@ -88,6 +97,9 @@ EC.receiveLesson({
     ] },
 
     { t: "h2", n: "05", text: "Dropout in the right place", id: "dropout" },
+
+    {"kind": "flow", "title": "Dropout in the right place", "caption": "Standard dropout applied **across time** samples a different mask at every timestep, which injects fresh noise into the recurrence and prevents the state carrying information — it damages exactly what the RNN is for. Variational dropout fixes it by using the same mask at every step of a sequence. PyTorch's `dropout=` argument sidesteps the question by only dropping **between** layers, never within the recurrence.", "cols": 3, "nodes": [{"id": "s", "label": "A new mask each timestep", "sub": "standard dropout, naively applied", "tone": "crit"}, {"id": "n", "label": "Noise in the recurrence", "sub": "the state cannot carry anything", "tone": "crit"}, {"id": "v", "label": "Variational dropout", "sub": "the same mask all along the sequence", "tone": "good"}, {"id": "p", "label": "PyTorch's dropout= argument", "sub": "between layers only", "tone": "good"}, {"id": "o", "label": "Safe, and limited", "sub": "does nothing for a single layer", "tone": "accent"}, {"id": "e", "label": "Also: embedding dropout", "sub": "drop whole words, not dimensions", "tone": "teal"}], "edges": [["s", "n"], ["n", "v"], ["v", "p"], ["p", "o"], ["o", "e"]], "t": "diagram", "id": "dg-3_6-05-3"},
+
 
     { t: "out", text: `  num_layers=3, dropout=0.5, train mode: two passes differ by 4.212e-02
   same model in eval mode                : 0.000e+00` },

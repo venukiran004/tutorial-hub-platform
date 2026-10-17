@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Before the first gradient step the weights have to be something, and that something is not neutral. Three failure modes, worth stating plainly:" },
 
     { t: "dl", items: [
@@ -58,6 +60,8 @@ print(net[0].weight.grad)`,
 
 
 
+
+
     { t: "p", text: "Take one unit with n inputs, z = Σ wᵢaᵢ. If the inputs are independent with variance Var(a) and the weights are drawn independently with mean 0 and variance Var(w), then Var(z) = n · Var(w) · Var(a). To keep Var(z) equal to Var(a) — the same scale in as out — you need n · Var(w) = 1, that is **Var(w) = 1/n**. That is LeCun initialisation, and it is right for a linear layer or one followed by an activation that is roughly the identity near zero, like tanh." },
 
     { t: "p", text: "ReLU changes the arithmetic: it sets half the pre-activations to zero, and the half that survive carry, on average, half the variance. To compensate, the weights need twice the variance: **Var(w) = 2/n**. That is He (Kaiming) initialisation. Xavier (Glorot) uses 2/(n_in + n_out), which balances the forward pass (which cares about n_in) against the backward pass (which cares about n_out) for tanh and sigmoid." },
@@ -74,6 +78,8 @@ print(net[0].weight.grad)`,
     { t: "h2", n: "03", text: "Measured through twenty layers", id: "measured" },
 
     {"kind": "flow", "title": "Measured through twenty layers", "caption": "The failure is geometric, which is why depth makes it dramatic: a per-layer factor slightly below one becomes vanishingly small after twenty layers, and slightly above one becomes enormous. The right initialiser keeps that factor at one, so the activation scale at layer twenty looks like the scale at layer one.", "cols": 3, "nodes": [{"id": "s", "label": "Too small a scale", "sub": "each layer shrinks the signal", "tone": "warn"}, {"id": "v", "label": "Vanishes by layer 20", "sub": "geometric decay", "tone": "crit"}, {"id": "b", "label": "Too large a scale", "sub": "each layer grows it", "tone": "warn"}, {"id": "e", "label": "Explodes by layer 20", "sub": "geometric growth, then NaN", "tone": "crit"}, {"id": "h", "label": "He init with ReLU", "sub": "factor stays at one", "tone": "good"}, {"id": "c", "label": "Scale is stable at depth", "sub": "layer 20 looks like layer 1", "tone": "teal"}], "edges": [["s", "v"], ["b", "e"], ["h", "c"], ["v", "h"], ["e", "h"]], "t": "diagram", "id": "dg-1_6-03-2"},
+
+
 
 
 
@@ -138,6 +144,8 @@ ReLU, He 2/n_in                std at layers 1, 5, 10, 20: 0.8241 0.8410 0.8945 
     { t: "h2", n: "04", text: "In PyTorch and Keras", id: "code" },
 
     {"kind": "matrix", "title": "The initialiser each framework gives you by default", "caption": "Neither default is He, which is the point worth knowing: PyTorch's `Linear` uses a Kaiming-uniform variant with `a=√5` for historical reasons, and Keras's `Dense` uses Glorot uniform. With a ReLU stack both are a little small, so setting the initialiser explicitly is one line that occasionally matters a great deal.", "cols": ["Default", "With ReLU, prefer"], "rows": ["torch.nn.Linear", "torch.nn.Conv2d", "keras Dense", "keras Conv2D", "Bias terms"], "cells": [[{"text": "kaiming_uniform, a=sqrt(5)", "tone": "warn"}, "kaiming_normal_(nonlinearity='relu')"], [{"text": "kaiming_uniform, a=sqrt(5)", "tone": "warn"}, "the same"], [{"text": "glorot_uniform", "tone": "warn"}, "he_normal"], [{"text": "glorot_uniform", "tone": "warn"}, "he_normal"], [{"text": "zeros (both)", "tone": "good"}, "zeros is correct; symmetry is broken by W"]], "t": "diagram", "id": "dg-1_6-04-3"},
+
+
 
 
 
