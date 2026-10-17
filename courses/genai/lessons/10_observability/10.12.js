@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "The threshold is one line of arithmetic per alert", "caption": "**At N = 200 the 2σ band is ±3.08 points**, so a 2-point move is well inside the noise and will happen regularly with nothing wrong — an alert on it pages somebody every week for no reason, and then people stop reading alerts. The fix: take the baseline rate, take the daily sample size, compute two sigma, set the threshold there. Then add the second condition — **two days running** — because a single day at 2σ happens about one day in twenty by chance and two consecutive days is far rarer.", "cols": 3, "nodes": [{"id": "n", "label": "N = 200 per day", "sub": "a realistic eval volume", "tone": "accent"}, {"id": "b", "label": "2 sigma band: +-3.08 points", "sub": "from p and N alone", "tone": "violet"}, {"id": "m", "label": "A 2-point move is noise", "sub": "and will recur weekly", "tone": "crit"}, {"id": "i", "label": "Alert on it and people stop reading", "sub": "the real cost", "tone": "crit"}, {"id": "s", "label": "Set the threshold at 2 sigma", "sub": "computed, not chosen", "tone": "good"}, {"id": "d", "label": "Plus: two days running", "sub": "1 in 20 becomes far rarer", "tone": "good"}], "edges": [["n", "b"], ["b", "m"], ["m", "i"], ["i", "s"], ["s", "d"]], "t": "diagram", "id": "dg-10_12-01-0"},
 
 
+
+
     { t: "math", tex: "\\text{SE} = \\sqrt{\\frac{p(1-p)}{N}}, \\qquad \\text{2}\\sigma\\text{ band} = 2 \\times \\text{SE}" },
 
     { t: "code", lang: "text", title: "Verified \u2014 smallest drop a 2-sigma alert can see, at p = 0.95", code: `  N=50   /day  smallest drop a 2-sigma alert can see: 6.2 pts
@@ -47,6 +49,8 @@ EC.receiveLesson({
       sub: "And the reason for each" },
 
     {"kind": "matrix", "title": "Seven alerts, and the two that need no judge", "caption": "**Empty retrieval is the earliest RAG signal there is and it needs no judge** — a counter on the retriever span. Top-1 score collapse catches an index or embedding change **within an hour**, which no quality metric does. And the response-model mismatch catches a provider alias roll immediately, which is 10.8's one-comparison alert. Three of these seven cost nothing to run and catch the failures that take longest to find by any other route.", "cols": ["Condition", "Why this one"], "rows": ["Quality regression", "Empty retrieval", "Top-1 score collapse", "Response model mismatch", "Refusal spike", "p95 latency", "Cost per request"], "cells": [["2 sigma below the 7-day mean, twice", "drift without paging on noise"], [{"text": "above 2% over 30 min", "tone": "good"}, {"text": "the earliest RAG signal, and free", "tone": "good"}], [{"text": "falls more than 0.10 day over day", "tone": "good"}, {"text": "an index change within the hour", "tone": "good"}], [{"text": "not the pinned version", "tone": "good"}, {"text": "an alias roll, immediately", "tone": "good"}], ["doubles day over day", "guardrail and prompt regressions"], ["above the SLO for 10 min", "classical, still necessary"], ["1.5x the 7-day mean", "prompt bloat and retry storms"]], "t": "diagram", "id": "dg-10_12-02-1"},
+
+
 
 
     { t: "table",

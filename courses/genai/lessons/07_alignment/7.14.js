@@ -26,6 +26,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "the top of the tree", code: `Do you need the model to know NEW FACTS?
   -> No fine-tuning. Use RAG.
      (Fine-tuning teaches behaviour, not facts. This is the #1 interview filter.)`,
@@ -43,6 +45,8 @@ EC.receiveLesson({
       sub: "Each branch is a data question" },
 
     {"kind": "matrix", "title": "The decision tree, keyed on what data you actually have", "caption": "Every row is decided by the **shape of your data** rather than by a quality ranking, which is what makes this usable. The third row is the one people miss: **KTO is the only method that needs no pairs**, so production thumbs-up/thumbs-down is directly usable without constructing comparisons. And the last two rows are where the memory column stops being an aside — 234.7 GB against 117.3 GB is a different class of hardware.", "cols": ["Method", "Memory at 7B"], "rows": ["Instruction-answer pairs", "Pairs + an SFT model", "Thumbs up/down", "Pairs, no SFT, tight memory", "Pairs, drifting long", "Noisy contradictory labels", "A programmatic verifier", "Budget, RM and a team"], "cells": [["SFT, with LoRA", "one trained model"], [{"text": "DPO - the default", "tone": "good"}, "117.3 GB"], [{"text": "KTO", "tone": "violet"}, "same as DPO"], [{"text": "ORPO", "tone": "good"}, {"text": "less - no reference model", "tone": "good"}], [{"text": "SimPO", "tone": "good"}, "same as ORPO"], [{"text": "IPO", "tone": "accent"}, "same as DPO"], [{"text": "GRPO + RLVR", "tone": "violet"}, "117.3 GB"], ["PPO / RLHF", {"text": "234.7 GB", "tone": "crit"}]], "t": "diagram", "id": "dg-7_14-02-1"},
+
+
 
 
 

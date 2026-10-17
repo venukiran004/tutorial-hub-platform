@@ -22,6 +22,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Metric", "Definition", "Why it matters"],
       rows: [
@@ -37,6 +39,8 @@ EC.receiveLesson({
       sub: "Four numbers, one multiplication" },
 
     {"kind": "trace", "title": "Identical numbers, completely different experience", "caption": "Same TTFT, same TPOT, same total — and streaming changes the product. **With streaming** the user sees text at 400 ms and reads along as it arrives at 40 tokens per second, comfortably above the ~25 they can read. **Without streaming** they stare at a spinner for 5.4 seconds and then receive everything at once. The measurable quantities are equal; what differs is that in the first case the waiting is **filled**, which is why total latency is the wrong headline metric for a chat product.", "left": "configuration", "codeW": 180, "vars": ["TTFT", "TPOT", "total", "experience"], "steps": [{"code": "with streaming", "state": ["400 ms", "25 ms", "5.4 s", "reads along"], "tone": "good"}, {"code": "without streaming", "state": ["400 ms", "25 ms", "5.4 s", "5.4 s of spinner"], "changed": [3], "tone": "crit", "note": "identical numbers"}], "t": "diagram", "id": "dg-9_15-02-1"},
+
+
 
 
 
@@ -66,6 +70,8 @@ total = 400 + (25 x 200) = 400 + 5,000 = 5,400 ms`,
       sub: "Because the distribution has a long tail" },
 
     {"kind": "flow", "title": "A mean of 2 s is consistent with almost anything", "caption": "LLM latency distributions have **long tails** — variable output length, queueing, cache misses, retries — and the mean hides them completely. A mean of 2 seconds is consistent with every request taking 2 seconds and with most taking 1 while one in twenty takes 20. **One in twenty is not an edge case at volume**: at a thousand requests an hour it is fifty people an hour having a bad time, and they are disproportionately the ones who complain and the ones who leave.", "cols": 3, "nodes": [{"id": "m", "label": "Mean latency: 2 s", "sub": "a single number", "tone": "warn"}, {"id": "a", "label": "Every request takes 2 s", "sub": "consistent with the mean", "tone": "accent"}, {"id": "b", "label": "Or most take 1 s and 1 in 20 takes 20", "sub": "also consistent", "tone": "crit"}, {"id": "v", "label": "At 1,000/hour that is 50 people", "sub": "every hour", "tone": "crit"}, {"id": "p", "label": "So p50 and p95, never the mean", "sub": "and p99 if you have the volume", "tone": "good"}], "edges": [["m", "a"], ["m", "b"], ["b", "v"], ["v", "p"]], "t": "diagram", "id": "dg-9_15-03-2"},
+
+
 
 
 

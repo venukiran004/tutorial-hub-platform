@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Metric", "Measures", "Task", "Gotcha"],
       rows: [
@@ -127,6 +129,8 @@ r = rs.score(REF, c)      # rouge_score, with stemming`,
 
 
 
+
+
     { t: "math", tex: "\\text{pass@}k = 1 - \\frac{\\binom{n-c}{k}}{\\binom{n}{k}}" },
 
     { t: "p", text: "For code, correctness is checkable, so the metric can be exact \u2014 which puts it on the bottom rung of 8.1\u2019s ladder where it belongs. The estimator answers: from n samples of which c were correct, what is the chance that a draw of k contains at least one correct?" },
@@ -163,6 +167,8 @@ r = rs.score(REF, c)      # rouge_score, with stemming`,
       sub: "Which is narrower than their usage" },
 
     {"kind": "flow", "title": "Where overlap metrics are still exactly right", "caption": "The failure measured above is about **open-ended** output, where many phrasings are correct and overlap says nothing about which. For translation and summarisation **regression** — same inputs, same references, version N against N+1 — the metric is used as a *relative* signal on a fixed comparison, and that is what it is good at. The sin is reading an absolute ROUGE score as a quality claim; the legitimate use is reading a change in it as a regression alarm.", "cols": 3, "nodes": [{"id": "o", "label": "Open-ended output", "sub": "many phrasings are correct", "tone": "crit"}, {"id": "a", "label": "Absolute score as quality", "sub": "the sin", "tone": "crit"}, {"id": "r", "label": "Same inputs, same references", "sub": "version N against N+1", "tone": "good"}, {"id": "s", "label": "A change in the score", "sub": "a relative signal", "tone": "good"}, {"id": "l", "label": "That is a regression alarm", "sub": "and it is what they are for", "tone": "teal"}], "edges": [["o", "a"], ["r", "s"], ["s", "l"]], "t": "diagram", "id": "dg-8_3-04-2"},
+
+
 
 
 

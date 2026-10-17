@@ -31,6 +31,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "BM25 scores a document by how many query terms it contains, weighting each term by how rare it is across the corpus and dampening the effect of repetition and document length. There is no model and no training \u2014 it is a formula over term counts, and it indexes 1,187 chunks in **0.18 seconds** against 26.9 seconds to embed them." },
 
     { t: "p", text: "Its strength is the dense retriever\u2019s blind spot. An embedding is a lossy summary of meaning, so a rare identifier \u2014 a function name, an error code, a symbol like `alpha` \u2014 contributes a little to the vector and may be swamped. BM25 treats a rare term as the most informative thing in the query." },
@@ -73,6 +75,8 @@ SPARSE = np.array([np.argsort(-bm25.get_scores(tokenize(q))) for q, _, _ in QS])
 
 
 
+
+
     { t: "code", lang: "python", title: "g59.py \u2014 rank of the first correct chunk under each", code: `for i, (q, doc, must) in enumerate(QS):
     d = first_correct(DENSE, i)
     s = first_correct(SPARSE, i)`,
@@ -101,6 +105,8 @@ SPARSE = np.array([np.argsort(-bm25.get_scores(tokenize(q))) for q, _, _ in QS])
       sub: "Combine the rankings, not the scores" },
 
     {"kind": "trace", "title": "RRF, which works because it throws the scores away", "caption": "Averaging the scores does not work: a cosine similarity of 0.58 and a BM25 score of 14.2 are not on the same scale, not bounded the same way, and move differently across queries — so any weighting is a guess that needs recalibrating whenever either side changes. RRF uses **only the ranks**, summing 1/(k + rank). The result beats both inputs at every cutoff: **100% at r@5 against 95% and 90% alone**, and the k parameter barely matters, which is what makes it safe to deploy without tuning.", "left": "retriever", "codeW": 160, "vars": ["r@1", "r@3", "r@5", "r@10"], "steps": [{"code": "dense alone", "state": ["75%", "90%", "95%", "95%"], "tone": "accent"}, {"code": "BM25 alone", "state": ["80%", "85%", "90%", "100%"], "tone": "accent"}, {"code": "RRF k=10", "state": ["75%", "95%", "95%", "100%"], "tone": "good"}, {"code": "RRF k=60", "state": ["80%", "95%", "100%", "100%"], "changed": [2], "tone": "good", "note": "beats both inputs"}, {"code": "RRF k=200", "state": ["80%", "95%", "100%", "100%"], "tone": "good", "note": "k barely matters"}], "t": "diagram", "id": "dg-5_9-03-2"},
+
+
 
 
 

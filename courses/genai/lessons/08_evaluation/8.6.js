@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "dl", items: [
       { k: "Pointwise / rubric", v: "Score one answer 1\u20135 on a criterion \u2014 helpfulness, correctness. Gives an absolute number, which is convenient and is the harder task." },
       { k: "Pairwise", v: "\u201cIs A or B better?\u201d More reliable than absolute scores, and what powers MT-Bench and Arena-Hard." }
@@ -57,6 +59,8 @@ Output: {"winner": "A"|"B"|"tie", "reason": "..."}`,
       sub: "Each with a mitigation that costs something" },
 
     {"kind": "matrix", "title": "Four biases, each with a mechanical mitigation", "caption": "None of these is a reason not to use a judge; each has a fix that costs a second call or a preprocessing step. **Position bias is the one that is free to fix and most often skipped** — run both orders and either average or require agreement, and an uncontrolled judge is measuring position plus quality with no way to separate them. Self-preference is the one that needs a *different* judge family rather than a better prompt.", "cols": ["What happens", "Mitigation"], "rows": ["Position bias", "Verbosity bias", "Self-preference", "Formatting bias"], "cells": [[{"text": "it favours the first answer", "tone": "crit"}, {"text": "run both orders; require agreement", "tone": "good"}], [{"text": "longer answers score higher", "tone": "crit"}, "normalise for length, and say to ignore it"], [{"text": "it prefers its own style", "tone": "warn"}, {"text": "a different judge family", "tone": "good"}], ["markdown inflates scores", "strip formatting; score content only"]], "t": "diagram", "id": "dg-8_6-02-1"},
+
+
 
 
 

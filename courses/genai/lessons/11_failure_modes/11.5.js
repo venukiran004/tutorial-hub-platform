@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "layer1", text: "Layer 1 \u2014 Ground the prompt, and allow abstention",
       sub: "Free, and the largest single win" },
 
+    {"kind": "flow", "title": "Four of six causes, in seven lines of prompt, at zero cost", "caption": "Each line targets a specific cause from 11.2. *\"ONLY the provided context\"* fixes the ungrounded prompt; rule 1 supplies the abstention path; rule 2 addresses the parametric conflict. **That is four of the six causes addressed in seven lines, at zero latency and zero marginal cost** — the remaining two are a retrieval miss and a stale index, which no prompt can reach. Note the exact-wording requirement in rule 1: **specifying the precise abstention string is what makes abstention measurable**, because 11.6 counts it with a string match.", "cols": 3, "nodes": [{"id": "o", "label": "\"ONLY the provided context\"", "sub": "fixes the ungrounded prompt", "tone": "good"}, {"id": "a", "label": "An explicit abstention string", "sub": "supplies the missing path", "tone": "good"}, {"id": "p", "label": "\"Prefer the context\"", "sub": "the parametric conflict", "tone": "good"}, {"id": "f", "label": "Four of six causes, seven lines", "sub": "zero latency, zero cost", "tone": "violet"}, {"id": "e", "label": "Exact wording, so it is countable", "sub": "11.6 matches the string", "tone": "violet"}, {"id": "r", "label": "The other two need retrieval work", "sub": "no prompt reaches them", "tone": "warn"}], "edges": [["o", "f"], ["a", "f"], ["p", "f"], ["a", "e"], ["f", "r"]], "t": "diagram", "id": "dg-11_5-01-0"},
+
+
     { t: "code", lang: "text", title: "The grounded system prompt", code: `Answer the question using ONLY the provided context.
 Rules:
 1. If the answer is not in the context, reply exactly:
@@ -38,6 +41,9 @@ Rules:
     { t: "h2", n: "02", id: "layer2", text: "Layer 2 \u2014 Require and verify citations",
       sub: "Free, and it only proves half of what you want" },
 
+    {"kind": "flow", "title": "A citation that resolves is not a citation that supports", "caption": "11.3 measured this directly: **an answer citing a real, retrieved chunk while claiming the opposite of what the chunk says passes the subset check cleanly.** So citation accuracy needs two checks — validate the cited ids, which is free and structural, **and** run entailment, which is not. One practical trap from the same measurement: a validator written for opaque ids like `c12` finds **zero citations** in `[refund-policy]`, so it reports perfect compliance on an answer it never parsed.", "cols": 3, "nodes": [{"id": "c", "label": "The cited id is real and retrieved", "sub": "the subset check passes", "tone": "good"}, {"id": "o", "label": "And the claim says the opposite", "sub": "of what that chunk says", "tone": "crit"}, {"id": "t", "label": "So: ids AND entailment", "sub": "the first free, the second not", "tone": "violet"}, {"id": "v", "label": "A validator for 'c12' ids", "sub": "finds zero in [refund-policy]", "tone": "crit"}, {"id": "p", "label": "And reports perfect compliance", "sub": "on an answer it never parsed", "tone": "crit"}], "edges": [["c", "o"], ["o", "t"], ["v", "p"], ["t", "v"]], "t": "diagram", "id": "dg-11_5-02-1"},
+
+
     { t: "code", lang: "python", title: "Citation validation", code: `def validate_citations(answer: str, retrieved_ids: set[str]) -> bool:
     import re
     cited = set(re.findall(r"\\[(\\w+)\\]", answer))
@@ -55,6 +61,9 @@ Rules:
     { t: "h2", n: "03", id: "layer3", text: "Layer 3 \u2014 Decode for faithfulness, not creativity",
       sub: "Free, and it bounds two failures at once" },
 
+    {"kind": "matrix", "title": "Three decoding choices for faithfulness rather than creativity", "caption": "These are the cheapest interventions in the layer and the easiest to forget, because they are parameters rather than prose. **Capping `max_tokens` is the direct structural bound on confabulation** — the model cannot run past the supported content if it cannot keep generating. And structured output with a **nullable** field is an abstention path expressed in a schema, which is 1.8's strict-mode rule put to a safety use.", "cols": ["Why it works"], "rows": ["Temperature 0 to 0.3", "Cap max_tokens", "Structured output"], "cells": [[{"text": "less random invention, and it addresses the parametric conflict", "tone": "good"}], [{"text": "it cannot run past supported content and confabulate", "tone": "good"}], [{"text": "a nullable field is an abstention path in the schema", "tone": "violet"}]], "t": "diagram", "id": "dg-11_5-03-2"},
+
+
     { t: "dl", items: [
       { k: "Lower temperature (0\u20130.3) for factual tasks", v: "Less random invention, and it addresses the context-versus-parametric conflict \u2014 1.1 measured how much the sampling distribution widens with temperature, and a factual task wants none of that width." },
       { k: "Cap `max_tokens`", v: "So the model cannot run past supported content and confabulate. This is the direct fix for 11.3\u2019s third scenario, and 11.8 shows it is also the second-largest cost lever \u2014 the same setting serves both goals." },
@@ -70,6 +79,9 @@ Rules:
 
     { t: "h2", n: "04", id: "layer4", text: "Layer 4 \u2014 The faithfulness gate",
       sub: "The first layer with a bill" },
+
+    {"kind": "trace", "title": "Verify-then-serve is not deployable as written", "caption": "11.4 timed the NLI model at 739 ms per claim, so a four-claim answer is **2,957 ms against a 3,134 ms request — a 94% latency overhead**. The honest options are a small NLI model, a GPU, or gating only the sampled share. The **0.9 threshold also deserves a look**: with a four-sentence answer, claims are scored in quarters — 0.75 or 1.0, nothing between — so a 0.9 threshold is really \"all four claims must pass\", and saying that is clearer than quoting a decimal.", "left": "quantity", "codeW": 190, "vars": ["value"], "steps": [{"code": "NLI per claim", "state": ["739 ms"], "tone": "crit"}, {"code": "four-claim answer", "state": ["2,957 ms"], "tone": "crit"}, {"code": "the request itself", "state": ["3,134 ms"], "tone": "accent"}, {"code": "overhead", "state": ["94%"], "changed": [0], "tone": "crit"}, {"code": "possible scores on 4 claims", "state": ["0, 0.25, 0.5, 0.75, 1.0"], "tone": "violet"}, {"code": "so a 0.9 threshold means", "state": ["all four must pass"], "tone": "good"}], "t": "diagram", "id": "dg-11_5-04-3"},
+
 
     { t: "code", lang: "python", title: "Verify-then-serve", code: `def answer_with_gate(question, retrieve, generate, entails, threshold=0.9):
     chunks = retrieve(question)

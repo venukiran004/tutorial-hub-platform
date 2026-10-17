@@ -37,6 +37,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "The procedure is three lines. Run the same chain-of-thought prompt N times at a temperature above zero so the samples differ (1.2). Extract the final answer from each. Return whichever answer appeared most often." },
 
     { t: "code", lang: "python", title: "self_consistency.py", code: `from collections import Counter
@@ -144,6 +146,8 @@ for p in (0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9):
 
 
 
+
+
     { t: "code", lang: "python", title: "g21.py — marginal return per extra call", code: `for p in (0.6, 0.8):
     for n in (3, 5, 9, 21):
         lift = majority_correct(p, n) - p
@@ -173,6 +177,8 @@ for p in (0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9):
       sub: "Several approaches, scored, and the best one followed" },
 
     {"kind": "matrix", "title": "A poll and a search are not the same technique", "caption": "Self-consistency samples **one** approach repeatedly and votes; tree-of-thought generates *different* approaches, scores them and continues from the best. The row that decides whether you can use the second one is the requirement: you need a way to **evaluate a partial solution**, and if your evaluator is no better than your generator the search is noise. Both are the prompt-level form of test-time compute, which is why layering either on a reasoning model is usually redundant and always expensive.", "cols": ["Self-consistency", "Tree-of-thought"], "rows": ["Mechanism", "Requires", "Works when", "Cost", "Fails when"], "cells": [["sample N times, vote", "generate, score, select"], [{"text": "an extractable answer", "tone": "good"}, {"text": "a partial-solution scorer", "tone": "warn"}], ["answers are discrete", "approaches genuinely differ"], [{"text": "N x base, all parallel", "tone": "good"}, {"text": "N gen + N eval, partly serial", "tone": "warn"}], [{"text": "per-sample p below 0.5", "tone": "crit"}, {"text": "the evaluator is no better", "tone": "crit"}]], "t": "diagram", "id": "dg-2_4-04-2"},
+
+
 
 
 

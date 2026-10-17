@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "Eight tools, and one category error to avoid", "caption": "The last two rows are not competitors to the others. **Ragas and DeepEval compute metrics: they do not store traces, have no UI, and do not alert** — they are the thing a backend calls. Treating them as a platform choice leads to the wrong question (*Ragas or Langfuse?*) instead of the right one (*which backend, and which metric library inside it?*). And 9.17 applies here too: the metric **implementation** determines the number.", "cols": ["Shape", "Strongest at"], "rows": ["LangSmith", "Langfuse", "Arize Phoenix", "W&B Weave", "Braintrust", "TruLens", "Ragas / DeepEval", "OTel + Grafana"], "cells": [["hosted, LangChain-native", "zero-effort tracing inside that ecosystem"], ["open source, self-hostable", "traces, prompts and cost; agnostic"], ["open source, OTel", "retrieval debugging and embedding drift"], ["hosted", "lineage from training to production"], ["hosted", "eval-first, comparing prompt versions"], ["open source", "feedback functions, the RAG triad"], [{"text": "libraries, not backends", "tone": "crit"}, {"text": "the metric implementations themselves", "tone": "crit"}], ["infrastructure", "one pane with your other services"]], "t": "diagram", "id": "dg-10_9-01-0"},
 
 
+
+
     { t: "table",
       head: ["Tool", "Shape", "Strongest at", "Watch out for"],
       rows: [

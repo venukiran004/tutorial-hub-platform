@@ -26,6 +26,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "7.5 established why PPO needs a value network: the reward arrives once on the final token, so something has to estimate how good each completion was *expected* to be in order to compute an advantage. That estimator is a second trainable LLM costing 104.3 GB at 7B." },
 
     { t: "code", lang: "text", title: "the substitution, in one line", code: `PPO :   advantage = actual reward - critic's prediction        (learned baseline, extra model)
@@ -48,6 +50,8 @@ GRPO:   advantage = actual reward - mean reward of G siblings  (empirical baseli
       sub: "The usual computation is this twice and gets two answers" },
 
     {"kind": "trace", "title": "A discrepancy worth tracking down: n or n-1", "caption": "Six binary rewards, three correct. Standardising them gives advantages of **±0.9129 with torch's default (unbiased, n−1)** and **±1.0 with the population standard deviation**, which is what a hand calculation produces. The ratio is exactly √(5/6) = 0.9129. Neither is wrong — but the two differ by 8.7% on every advantage in the batch, which is a systematic scaling of the gradient, and it is the kind of difference that gets attributed to a hyperparameter.", "left": "quantity", "codeW": 190, "vars": ["value"], "steps": [{"code": "rewards", "state": ["[1,0,1,0,0,1]"], "tone": "accent"}, {"code": "mean", "state": ["0.5000"], "tone": "accent"}, {"code": "std, n-1 (torch default)", "state": ["0.5477"], "tone": "good"}, {"code": "std, n (population)", "state": ["0.5000"], "tone": "warn"}, {"code": "advantage, torch", "state": ["+-0.9129"], "changed": [0], "tone": "good"}, {"code": "advantage, population std", "state": ["+-1.0"], "changed": [0], "tone": "warn", "note": "ratio = sqrt(5/6)"}], "t": "diagram", "id": "dg-7_8-02-1"},
+
+
 
 
 
@@ -195,6 +199,8 @@ r = torch.tensor([[1., 0., 1., 0., 0., 1.]])`,
 
 
 
+
+
     { t: "code", lang: "python", title: "g78.py \u00a7D \u2014 four configurations, 7B policy, bf16 + Adam", code: `trained = N * 16 / GB      # weights + grads + fp32 master + Adam m,v
 frozen  = N * 2  / GB      # bf16 weights only`,
       out: `  PPO  (policy+critic trained, ref+RM frozen)       234.7 GB   1.00x vs PPO
@@ -224,6 +230,8 @@ frozen  = N * 2  / GB      # bf16 weights only`,
       sub: "Binary rewards are the hardest case for a critic" },
 
     {"kind": "flow", "title": "The thing GRPO deletes is hardest to do well exactly where it deletes it", "caption": "This is the cleanest answer to *why GRPO for reasoning*, and it is not just that it is cheaper. A critic predicts expected future reward from a **partial** sequence; with a continuous reward model that regression is tractable, and **with a binary verifier it is not** — predicting a 0/1 outcome from half a proof is close to hopeless. Meanwhile the group mean gets *easier* in that regime: the mean of six binary outcomes is an unbiased estimate of the pass rate, which is exactly the baseline you want.", "cols": 3, "nodes": [{"id": "c", "label": "A critic predicts from a partial sequence", "sub": "expected future reward", "tone": "accent"}, {"id": "s", "label": "Tractable with a smooth reward", "sub": "a continuous target", "tone": "good"}, {"id": "b", "label": "Near hopeless with a 0/1 verifier", "sub": "predict pass/fail from half a proof", "tone": "crit"}, {"id": "g", "label": "The group mean gets easier", "sub": "mean of six binaries = pass rate", "tone": "good"}, {"id": "u", "label": "An unbiased estimate, for free", "sub": "exactly the baseline wanted", "tone": "good"}, {"id": "a", "label": "So the deletion is best where it is made", "sub": "not merely cheaper", "tone": "teal"}], "edges": [["c", "s"], ["c", "b"], ["b", "g"], ["g", "u"], ["u", "a"]], "t": "diagram", "id": "dg-7_8-05-3"},
+
+
 
 
 

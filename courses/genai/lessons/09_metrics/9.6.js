@@ -22,6 +22,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Metric", "Definition", "Use for"],
       rows: [
@@ -41,6 +43,8 @@ EC.receiveLesson({
       sub: "And it must be written once" },
 
     {"kind": "flow", "title": "Without normalisation the metric is measuring formatting", "caption": "Lowercase, strip punctuation, strip articles, collapse whitespace — four operations, and without them **`\"The Answer.\"` and `\"answer\"` are different strings**. A model that is right every time then scores zero, and what you have built is a formatting checker wearing a correctness metric's name. Which is why every serious QA benchmark publishes its normaliser alongside its data: the normaliser *is* part of the metric.", "cols": 4, "nodes": [{"id": "l", "label": "Lowercase", "sub": "", "tone": "good"}, {"id": "p", "label": "Strip punctuation", "sub": "", "tone": "good"}, {"id": "a", "label": "Strip articles", "sub": "a, an, the", "tone": "good"}, {"id": "w", "label": "Collapse whitespace", "sub": "", "tone": "good"}, {"id": "n", "label": "Skip them and \"The Answer.\" != \"answer\"", "sub": "you built a formatting checker", "tone": "crit"}], "edges": [["l", "p"], ["p", "a"], ["a", "w"], ["w", "n"]], "t": "diagram", "id": "dg-9_6-02-1"},
+
+
 
 
 
@@ -77,6 +81,8 @@ def exact_match(pred, gold):
       sub: "For when wording varies slightly" },
 
     {"kind": "trace", "title": "Three predictions, exact match 0.0 every time", "caption": "All three say the right thing and **all three score exact match 0.0**. Token F1 separates them usefully: adding a harmless word costs little (0.8889), spelling the number differently costs more (0.7500), and **reordering costs nothing at all — 1.0000**, because F1 treats both strings as bags of tokens. That last row is the limitation to keep in mind: token F1 cannot see word order, so `\"per year 18 days\"` is a perfect answer by this metric.", "left": "prediction", "codeW": 210, "vars": ["exact match", "token F1"], "steps": [{"code": "'18 vacation days per year'", "state": ["0.0", "0.8889"], "tone": "accent"}, {"code": "'eighteen days per year'", "state": ["0.0", "0.7500"], "changed": [1], "tone": "warn"}, {"code": "'per year 18 days'", "state": ["0.0", "1.0000"], "changed": [1], "tone": "crit", "note": "order is invisible"}], "t": "diagram", "id": "dg-9_6-03-2"},
+
+
 
 
 

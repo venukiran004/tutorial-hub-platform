@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Ten terms, and the one that makes a trace a tree", "caption": "A **trace** is everything that happened for one request. A **span** is one unit of work inside it. **The parent link is what makes a trace a tree** — without it you have a flat list of timed events and none of §03's analysis is available. The **root span's duration is the user-visible latency**, which is the one number a user could have measured themselves. And **context propagation** is what keeps the tree intact across threads, processes and HTTP calls — the thing that breaks first in practice.", "cols": 3, "nodes": [{"id": "t", "label": "Trace", "sub": "one request, end to end", "tone": "violet"}, {"id": "s", "label": "Span", "sub": "one unit of work inside it", "tone": "accent"}, {"id": "p", "label": "Parent link", "sub": "what makes it a tree", "tone": "violet"}, {"id": "r", "label": "Root span", "sub": "its duration is the user's latency", "tone": "good"}, {"id": "a", "label": "Attributes and events", "sub": "the searchable dimensions", "tone": "good"}, {"id": "c", "label": "Context propagation", "sub": "keeps the tree across boundaries", "tone": "warn"}], "edges": [["t", "s"], ["s", "p"], ["p", "r"], ["r", "a"], ["a", "c"]], "t": "diagram", "id": "dg-10_4-01-0"},
 
 
+
+
     { t: "table",
       head: ["Term", "What it is"],
       rows: [
@@ -64,6 +66,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Span kind looks like metadata and is load-bearing", "caption": "**`SERVER` on the root marks where the user's clock starts; `CLIENT` marks every call out of your process.** That split answers the first question of any latency investigation — *how much of this is ours?* In 10.5's worked trace the `CLIENT` spans total 2,900 of 3,834 ms. It also drives aggregations: 10.7 rolls token counts up by filtering on `kind == CLIENT`, which is correct and **fragile in a way worth seeing**, because one mis-kinded span silently changes a cost figure.", "cols": 3, "nodes": [{"id": "s", "label": "SERVER on the root", "sub": "where the user's clock starts", "tone": "violet"}, {"id": "c", "label": "CLIENT on every call out", "sub": "model, retriever, tool", "tone": "violet"}, {"id": "q", "label": "How much of this is ours?", "sub": "answered by the split", "tone": "good"}, {"id": "a", "label": "And it drives aggregations", "sub": "tokens rolled up by kind", "tone": "accent"}, {"id": "f", "label": "So one mis-kinded span moves a cost figure", "sub": "silently - see 10.8", "tone": "crit"}], "edges": [["s", "q"], ["c", "q"], ["q", "a"], ["a", "f"]], "t": "diagram", "id": "dg-10_4-02-1"},
 
 
+
+
     { t: "callout", kind: "insight", title: "`CLIENT` means you are waiting on somebody else, and that is the latency you do not own",
       body: [
         { t: "p", text: "The kinds look like metadata and they are load-bearing. `SERVER` on the root marks the boundary where the user\u2019s clock starts. `CLIENT` marks every call out of the process \u2014 the embedder, the vector store, the reranker, the model \u2014 which is exactly the set of spans whose duration is somebody else\u2019s SLA rather than your code." },
@@ -75,6 +79,8 @@ EC.receiveLesson({
       sub: "Three things a flat log cannot do" },
 
     {"kind": "matrix", "title": "Three analyses that only exist because the trace is a tree", "caption": "A flat list of timed events supports none of these. **Self time** is a span's own work with its children subtracted — in 10.5's trace `retrieve` is 624 ms with 617 ms of children, so its self time is 7 ms and the wrapper is doing nothing but coordinating. **The critical path** matters because with concurrency the sum of span durations exceeds the total. And **blame by stage** — \"76% was the model, 20% retrieval\" — falls straight out of the structure.", "cols": ["What it gives you"], "rows": ["Self time", "The critical path", "Blame by stage"], "cells": [[{"text": "a span's own work: retrieve is 624 ms with 7 ms of its own", "tone": "good"}], [{"text": "with concurrency the span durations sum to more than the total", "tone": "warn"}], [{"text": "'76% model, 20% retrieval' - straight out of the structure", "tone": "good"}]], "t": "diagram", "id": "dg-10_4-03-2"},
+
+
 
 
     { t: "dl", items: [

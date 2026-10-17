@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "meter", text: "The meter",
       sub: "Per request, per user, per feature" },
 
+    {"kind": "flow", "title": "Meter in the smallest unit the price can express", "caption": "At $5 per million input tokens a **single token costs $0.000005**, so six decimal places is the smallest unit that can represent one token at all. That matters because the metered value accumulates: a per-call rounding error of $0.000005 over a million calls a month is $5 — noise — but the same reasoning applied to a cent-rounded meter loses far more. **Meter in the smallest unit the price can express, and round only at display time.**", "cols": 3, "nodes": [{"id": "p", "label": "$5 per million input tokens", "sub": "a realistic rate", "tone": "accent"}, {"id": "t", "label": "One token is $0.000005", "sub": "six decimal places", "tone": "violet"}, {"id": "r", "label": "Round per call and it accumulates", "sub": "a million calls a month", "tone": "warn"}, {"id": "m", "label": "Meter in the smallest unit", "sub": "the price can express", "tone": "good"}, {"id": "d", "label": "Round only at display time", "sub": "the general rule", "tone": "good"}], "edges": [["p", "t"], ["t", "r"], ["r", "m"], ["m", "d"]], "t": "diagram", "id": "dg-11_11-01-0"},
+
+
     { t: "code", lang: "python", title: "The cost meter", code: `def estimate_cost(usage, price):
     """usage: {'input': n, 'output': m}; price per-1M tokens."""
     return round(usage["input"] / 1e6 * price["input"]
@@ -44,6 +47,9 @@ class CostMeter:
     { t: "h2", n: "02", id: "caps", text: "What a per-user cap actually stops",
       sub: "Measured against four scenarios" },
 
+    {"kind": "trace", "title": "The scenario a per-user cap cannot see", "caption": "Four scenarios, and **a per-user cap fires on exactly one of them.** The buggy client looping is caught, correctly, at $1,100 for one user. Traffic growing tenfold is not caught and should not be — per-user spend is unchanged. And the last row is the one that matters: **prompt bloat takes the bill from $396 to $972 with nothing about the request pattern changed** — same users, same call counts, same latency, same per-user figure at $0.97. No per-user cap can see it, which is why 10.3 lists **cost per request** as an alert.", "left": "scenario", "codeW": 200, "vars": ["users", "calls each", "total", "cap fires?"], "steps": [{"code": "baseline", "state": ["1,000", "18", "$396", "no"], "tone": "good"}, {"code": "one buggy client looping", "state": ["1", "50,000", "$1,100", "YES"], "changed": [3], "tone": "good", "note": "the cap works"}, {"code": "traffic grows 10x", "state": ["10,000", "18", "$3,960", "no"], "tone": "accent", "note": "and should not"}, {"code": "prompt bloat, same volume", "state": ["1,000", "18", "$972", "no"], "changed": [2], "tone": "crit", "note": "invisible to a cap"}], "t": "diagram", "id": "dg-11_11-02-1"},
+
+
     { t: "code", lang: "text", title: "Measured: a $1.00 per-user daily cap", code: `scenario                       users  calls ea     $/call     total $   per user  cap fires?
 baseline                        1000        18    0.02200      396.00       0.40  no
 one buggy client looping           1     50000    0.02200     1100.00    1100.00  YES
@@ -68,6 +74,9 @@ prompt bloat, same volume       1000        18    0.05400      972.00       0.97
 
     { t: "h2", n: "03", id: "scopes", text: "The scope hierarchy",
       sub: "Six levels, each catching something the others cannot" },
+
+    {"kind": "matrix", "title": "Six scopes, and what only each one catches", "caption": "The scopes are not redundant — each catches something the others cannot. **A per-run cap is the only thing that stops an agent loop**, because 11.10's per-call limit cannot see twenty calls that are each within budget. **A per-feature cost-per-request alert is the only thing that sees prompt bloat**, which §02 measured as invisible to every other control. And the global kill switch catches everything you did not predict, which is its whole purpose.", "cols": ["Control", "What only this catches"], "rows": ["per call", "per run", "per user / day", "per feature", "per tenant", "global / day"], "cells": [["max_tokens", "one runaway response"], [{"text": "cumulative tokens + a step cap", "tone": "violet"}, {"text": "an agent loop", "tone": "crit"}], ["the cost meter plus a cap", "one abusive or buggy client"], [{"text": "a cost-per-request alert", "tone": "violet"}, {"text": "prompt bloat - nothing else sees it", "tone": "crit"}], ["a quota and a rate limit", "a customer, and it makes spend billable"], [{"text": "a hard kill switch", "tone": "good"}, "everything you did not predict"]], "t": "diagram", "id": "dg-11_11-03-2"},
+
 
     { t: "table",
       head: ["Scope", "Control", "What only this catches"],

@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "moderation", text: "Check 1 \u2014 Content moderation",
       sub: "Use a dedicated model, not regex" },
 
+    {"kind": "flow", "title": "Toxicity is harder than injection for a pattern list, not easier", "caption": "The recommendation is a dedicated moderation model rather than hand-rolled regex, and 11.13's measurement is why — with the direction people get backwards. **Toxicity has even more open-ended surface forms than injection and far more benign collisions**, so a regex both misses more and over-blocks more. The **per-category structure** matters too: a single *unsafe* score cannot support different thresholds for self-harm and illegal-activity content, and those thresholds are genuinely different policy decisions.", "cols": 3, "nodes": [{"id": "r", "label": "A regex for toxicity", "sub": "the instinct", "tone": "crit"}, {"id": "s", "label": "More open-ended than injection", "sub": "not less", "tone": "crit"}, {"id": "b", "label": "And more benign collisions", "sub": "so it over-blocks too", "tone": "crit"}, {"id": "m", "label": "A moderation model, per category", "sub": "not one 'unsafe' score", "tone": "good"}, {"id": "t", "label": "Different thresholds per category", "sub": "self-harm is not illegal-activity", "tone": "violet"}], "edges": [["r", "s"], ["s", "b"], ["b", "m"], ["m", "t"]], "t": "diagram", "id": "dg-11_14-01-0"},
+
+
     { t: "code", lang: "python", title: "Moderation against categories", code: `SAFETY_CATEGORIES = ["hate", "harassment", "violence", "self_harm", "sexual", "illegal"]
 
 def moderate(text: str, classify) -> dict:
@@ -37,6 +40,9 @@ def moderate(text: str, classify) -> dict:
 
     { t: "h2", n: "02", id: "canary", text: "Check 2 \u2014 PII, secrets and the canary",
       sub: "The one near-certain detector in the module" },
+
+    {"kind": "matrix", "title": "The canary is the only check here with no threshold", "caption": "Plant a unique secret string in the system prompt; **if it appears in the output, the model reproduced part of its system prompt — there is no other way for that string to exist.** Compare the others: moderation has a threshold and a precision/recall trade-off, and PII regexes have the false positives 11.13 measured. The canary's limitation is the mirror image of theirs: **near-zero false positives and a high false-negative rate**, because a model that paraphrases its instructions rather than quoting them leaves no trace.", "cols": ["False positives", "False negatives"], "rows": ["Content moderation", "PII regex", "Secrets scan", "Canary token"], "cells": [[{"text": "a threshold decides", "tone": "warn"}, "a threshold decides"], [{"text": "measured, and real", "tone": "crit"}, {"text": "names and addresses", "tone": "crit"}], ["low - keys have shape", "a novel secret format"], [{"text": "near zero - no other source", "tone": "good"}, {"text": "high - paraphrase leaves no trace", "tone": "warn"}]], "t": "diagram", "id": "dg-11_14-02-1"},
+
 
     { t: "code", lang: "python", title: "The output scan", code: `SECRETS = [r"(?:api[_-]?key|secret|password|token)\\s*[:=]\\s*\\S+",
            r"sk-[A-Za-z0-9]{20,}", r"AKIA[0-9A-Z]{16}"]  # AWS key pattern

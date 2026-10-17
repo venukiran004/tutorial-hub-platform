@@ -22,6 +22,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Variant", "Unit", "Use"],
       rows: [
@@ -44,6 +46,8 @@ EC.receiveLesson({
       sub: "So the two metrics are directly comparable" },
 
     {"kind": "trace", "title": "The same pair, scored by ROUGE instead of BLEU", "caption": "The identical candidate-reference pair that gave BLEU-4 of 0.578930 gives **ROUGE-1 F1 of 0.9091**. Both numbers are correct and they are measuring different things: BLEU's geometric mean punishes the weak 4-gram precision, and ROUGE-1 rewards the perfect unigram precision. Which is the practical reason to report both or neither — quoting whichever is higher is a choice, not a measurement. Note ROUGE-L matches ROUGE-1 exactly here, because the LCS happens to be all five candidate tokens in order.", "left": "metric", "codeW": 150, "vars": ["overlap", "recall", "precision", "F1"], "steps": [{"code": "ROUGE-1", "state": ["5", "0.8333", "1.0000", "0.9091"], "tone": "good"}, {"code": "ROUGE-2", "state": ["3", "0.6000", "0.7500", "0.6667"], "changed": [3], "tone": "accent"}, {"code": "ROUGE-L (LCS 5)", "state": ["5", "0.8333", "1.0000", "0.9091"], "tone": "good"}, {"code": "BLEU-4, same pair", "state": ["", "", "", "0.5789"], "changed": [3], "tone": "warn", "note": "different, both correct"}], "t": "diagram", "id": "dg-9_4-02-1"},
+
+
 
 
 

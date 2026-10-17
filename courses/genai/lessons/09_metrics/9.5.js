@@ -22,6 +22,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Metric", "How it improves on n-gram overlap", "Cost"],
       rows: [
@@ -48,6 +50,8 @@ EC.receiveLesson({
       sub: "Greedy matching on contextual embeddings" },
 
     {"kind": "flow", "title": "BERTScore's greedy matching is not one-to-one, and that matters", "caption": "Each candidate token independently takes its **best** reference match, so two candidate tokens may claim the same reference token. An optimal one-to-one assignment — the Hungarian algorithm — would forbid that, and BERTScore does not use one. The practical consequence: **a repetitive candidate is not penalised the way BLEU's clipping penalises it.** Repeating a well-matching token raises precision because each copy finds the same good match again.", "cols": 3, "nodes": [{"id": "g", "label": "Each candidate token takes its best match", "sub": "independently, greedily", "tone": "accent"}, {"id": "t", "label": "Two tokens may claim the same one", "sub": "no one-to-one constraint", "tone": "warn"}, {"id": "h", "label": "An optimal assignment would forbid it", "sub": "Hungarian algorithm", "tone": "accent"}, {"id": "r", "label": "So repetition is not penalised", "sub": "unlike BLEU's clipping", "tone": "crit"}, {"id": "p", "label": "Each copy finds the same good match", "sub": "and raises precision", "tone": "crit"}], "edges": [["g", "t"], ["t", "h"], ["t", "r"], ["r", "p"]], "t": "diagram", "id": "dg-9_5-02-1"},
+
+
 
 
 

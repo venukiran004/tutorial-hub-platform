@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "scan", text: "Check 1 \u2014 Injection and jailbreak detection",
       sub: "And what it actually catches" },
 
+    {"kind": "flow", "title": "A pattern list is a tripwire for the laziest attempts", "caption": "The paraphrases that got through include *\"Forget everything you were told before this message\"* and *\"The instructions above no longer apply\"*. **None of those requires a sophisticated attacker** — they are the ordinary ways a person phrases the same intent, which is the structural problem with a pattern list: the intent has unbounded surface forms and the list has a finite number of entries. So *first layer, not a solution* understates it. It is worth having because **it costs 0.2 ms**, not because it works.", "cols": 3, "nodes": [{"id": "p", "label": "A pattern list", "sub": "0.2 ms, free", "tone": "good"}, {"id": "o", "label": "'Forget everything you were told'", "sub": "an ordinary paraphrase", "tone": "crit"}, {"id": "u", "label": "Unbounded surface forms", "sub": "against a finite list", "tone": "crit"}, {"id": "n", "label": "No sophistication required", "sub": "to get through", "tone": "crit"}, {"id": "k", "label": "Keep it for the cost, not the coverage", "sub": "a tripwire, not a defence", "tone": "violet"}], "edges": [["p", "o"], ["o", "u"], ["u", "n"], ["n", "k"]], "t": "diagram", "id": "dg-11_13-01-0"},
+
+
     { t: "code", lang: "python", title: "The pattern list", code: `import re
 
 JAILBREAK_PATTERNS = [
@@ -61,6 +64,9 @@ over all 21 attacks and 10 benign:
 
     { t: "h2", n: "02", id: "pii", text: "Check 2 \u2014 PII redaction before the prompt",
       sub: "Also a privacy control" },
+
+    {"kind": "trace", "title": "PII regexes fail in both directions, measured", "caption": "**Names and addresses pass straight through** — *\"My name is Venu Kiran and I live at 14 Mill Lane, Bristol\"* is unredacted, because no regex describes a name. And in the other direction, **an internal ticket number of SSN shape is redacted anyway**: *\"Reference 123-45-6789 is our internal ticket number\"* becomes *\"Reference [SSN]\"*, destroying the thing the user was asking about. One expectation also failed: the phone pattern does **not** shadow the SSN pattern, because it needs three digits after the separator.", "left": "input", "codeW": 230, "vars": ["what happened"], "steps": [{"code": "a name and a street address", "state": ["passes through unredacted"], "tone": "crit"}, {"code": "an SSN-shaped ticket number", "state": ["redacted to [SSN]"], "changed": [0], "tone": "crit", "note": "the user's own reference"}, {"code": "phone pattern shadowing SSN", "state": ["it does not"], "tone": "good", "note": "expectation failed"}], "t": "diagram", "id": "dg-11_13-02-1"},
+
 
     { t: "code", lang: "python", title: "The redactor", code: `PII = {
     "email": r"\\b[\\w.%+-]+@[\\w.-]+\\.\\w{2,}\\b",

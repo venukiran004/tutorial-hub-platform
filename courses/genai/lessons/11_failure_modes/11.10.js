@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "batch", text: "Batching and streaming",
       sub: "One is a price cut; the other is not" },
 
+    {"kind": "matrix", "title": "One of these halves the bill and the other changes none of it", "caption": "The batch API is roughly **50% off for non-real-time work** — overnight summarisation, backfills, evaluation runs — and it is the largest single discount available for changing nothing but the deadline. **Streaming reduces no tokens and no cost whatsoever.** It slashes *perceived* latency, which 9.15 measured as the difference between reading along at 400 ms and staring at a spinner for 5.4 seconds — a real product win and not a line on the invoice.", "cols": ["Cost effect", "What it actually buys"], "rows": ["Batch / async API", "Streaming"], "cells": [[{"text": "about 50% off", "tone": "good"}, "for work nobody is waiting on"], [{"text": "zero", "tone": "crit"}, {"text": "perceived latency - 400 ms against 5.4 s", "tone": "good"}]], "t": "diagram", "id": "dg-11_10-01-0"},
+
+
     { t: "dl", items: [
       { k: "Batch / async API", v: "Many providers offer roughly a **50% discount** for non-real-time work \u2014 overnight classification, backfills, re-indexing evaluations. This is a genuine price cut and it is the largest single discount available, for the price of giving up latency." },
       { k: "Streaming", v: "Does **not** reduce tokens and does not reduce cost. It slashes *perceived* latency \u2014 first token in about a second \u2014 which often lets you avoid escalating to a bigger model purely for speed. That is an indirect saving and a better experience." }

@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "A fine-tune needs three measurements and most runs have one. **Training loss** says how well the model fits the examples it is being shown, which 4.1 demonstrated is compatible with the model getting worse. **Validation loss** on held-out examples of the same task says whether the behaviour generalises. And a **general-ability metric** \u2014 perplexity on text that has nothing to do with the task \u2014 says what the run is costing everywhere else." },
 
     { t: "p", text: "The sweep below uses 32 training pairs, 8 held out, and a fixed passage of ordinary English for the third. Everything is LoRA at the settings named, run with `peft`, with the base model frozen." },
@@ -47,6 +49,8 @@ EC.receiveLesson({
       sub: "And the first one arrives immediately" },
 
     {"kind": "trace", "title": "Two turning points, and they are nowhere near each other", "caption": "Validation loss bottoms out at **epoch 9** — so that is where you would stop on a conventional early-stopping rule. Generic perplexity has by then gone from 5.282 to **10.777, more than doubled**. It started degrading at epoch 1 and never recovered. So the two turning points are not the same epoch and there is no setting that satisfies both: epoch 9 is the best task model and roughly the worst general one, and choosing between them is a product decision rather than a training one.", "left": "epoch", "codeW": 120, "vars": ["train loss", "val loss", "generic ppl"], "steps": [{"code": "0 - baseline", "state": ["-", "-", "5.282"], "tone": "good"}, {"code": "1", "state": ["5.0483", "4.1252", "5.343"], "tone": "good"}, {"code": "4", "state": ["2.7860", "2.3342", "6.413"], "changed": [2], "tone": "accent"}, {"code": "7", "state": ["2.0306", "2.0678", "9.508"], "tone": "warn"}, {"code": "9 - best val", "state": ["1.6268", "2.0260", "10.777"], "changed": [1, 2], "tone": "crit", "note": "2x worse generally"}, {"code": "11", "state": ["1.3201", "2.0983", "15.097"], "changed": [1], "tone": "crit", "note": "val now rising too"}], "t": "diagram", "id": "dg-4_8-02-1"},
+
+
 
 
 
@@ -181,6 +185,8 @@ for ep in range(epochs):
 
 
 
+
+
     { t: "code", lang: "python", title: "g48.py \u2014 five ranks at \u03b1 = 2r", code: `for r in (4, 8, 16, 32, 64):
     m = build(r, 2 * r, ["c_attn", "c_proj", "c_fc"])
     train(m, 6, 2e-4)
@@ -205,6 +211,8 @@ for ep in range(epochs):
       sub: "And the one with the most surprising result" },
 
     {"kind": "trace", "title": "Where you put the adapter matters more than how big it is", "caption": "Four placements at the same rank. **MLP input only is the standout**: 737,280 parameters, validation loss 2.6041, and generic perplexity **5.400 — better than the 5.282 baseline is bad, this is within noise of it**. Compare attention-plus-output at 1.6 million parameters for a generic perplexity of 8.840. So placement buys quality-per-damage in a way rank does not, and it is free to change.", "left": "target modules", "codeW": 190, "vars": ["trainable", "val loss", "generic ppl"], "steps": [{"code": "attention qkv only", "state": ["589,824", "2.8277", "5.703"], "tone": "good"}, {"code": "MLP input only", "state": ["737,280", "2.6041", "5.400"], "changed": [2], "tone": "good", "note": "least damage, best of the two"}, {"code": "attention qkv + output", "state": ["1,622,016", "2.2270", "8.840"], "changed": [2], "tone": "crit"}, {"code": "attention + MLP, all three", "state": ["2,359,296", "2.1094", "8.739"], "tone": "warn", "note": "best task, heavy cost"}], "t": "diagram", "id": "dg-4_8-05-3"},
+
+
 
 
 
@@ -274,6 +282,8 @@ for ep in range(epochs):
       sub: "Four questions, four measurements" },
 
     {"kind": "matrix", "title": "Four questions, answered from the measurements rather than the folklore", "caption": "The last row is the one worth being precise about. Fine-tuning does **not reliably add facts**, and the reason is specific: the tokens are learned and the relation is not — which is how 4.1's model came to produce the right entity inside the sentence *\"Morrowbridge is Morrowbridge's capital\"*. And the data answer includes the failure at the bottom of the recommended range: 32 examples transfer a behaviour and cannot separate it from the specific examples.", "cols": ["Answer", "The evidence"], "rows": ["Fine-tuning or RAG?", "LoRA or QLoRA?", "How much data?", "Does it add facts?"], "cells": [[{"text": "behaviour to one, facts to the other", "tone": "good"}, "4.1 and 4.2 measured both directions"], [{"text": "QLoRA only when it would not fit", "tone": "good"}, "14.5 GB vs 4.0, at 1.069x"], ["1K-10K clean, 10-20% held back", {"text": "32 examples shows the bottom failing", "tone": "warn"}], [{"text": "not reliably", "tone": "crit"}, "the tokens are learned, the relation is not"]], "t": "diagram", "id": "dg-4_8-07-4"},
+
+
 
 
 

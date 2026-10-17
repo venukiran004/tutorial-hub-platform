@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "bill", text: "Where the bill actually comes from",
       sub: "Per request" },
 
+    {"kind": "trace", "title": "A $46,000 bill is not actionable; 250 tokens per example is", "caption": "The whole method is to break the input down until each line is a decision. **\"Few-shot examples are 2,500 tokens a call, which is $12,500 a month\"** is something you can act on. The per-unit figures fall straight out and are what make the levers computable: 2,500 tokens over ten examples is **250 tokens per example**, so trimming to three is a calculable saving rather than a hope. And 10.6 already argued for logging the pieces: `prompt_tokens` alone tells you a spike happened and not which component caused it.", "left": "component", "codeW": 200, "vars": ["tokens", "the question"], "steps": [{"code": "system prompt + instructions", "state": ["600", ""], "tone": "accent"}, {"code": "10 few-shot examples", "state": ["2,500", "do you need all 10?"], "tone": "crit", "note": "250 each"}, {"code": "retrieved context, 8 chunks", "state": ["3,200", "do you need all 8?"], "tone": "crit", "note": "400 each"}, {"code": "conversation history, full", "state": ["1,500", "growing every turn"], "tone": "warn"}, {"code": "user message", "state": ["200", ""], "tone": "good"}, {"code": "input total", "state": ["8,000", "$46,000 a month"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-11_7-01-0"},
+
+
     { t: "code", lang: "text", title: "A support assistant, decomposed", code: `A support assistant. Per request:
   System prompt + instructions ........  600 tokens
   10 few-shot examples ................ 2,500 tokens   <- do you need all 10?
@@ -43,6 +46,9 @@ At $5 / 1M input and $15 / 1M output:
 
     { t: "h2", n: "02", id: "levers", text: "The levers, with the arithmetic",
       sub: "No model change, no quality loss" },
+
+    {"kind": "trace", "title": "Four changes, 71% off, and none of them is a model change", "caption": "Each step is one of §01's lines reduced. **Reranking 8 chunks to 3 is the single largest lever at 41% cumulative**, because context was the largest component. Summarising history reaches 52%, and caching 40% of calls takes it to **71% — $46,000 down to $13,200** — without changing the model, the prompt's quality or the product. Which is the module's argument: the bill is mostly input tokens nobody audited.", "left": "change", "codeW": 190, "vars": ["new input", "monthly", "saving"], "steps": [{"code": "baseline", "state": ["8,000", "$46,000", "-"], "tone": "crit"}, {"code": "trim few-shot 10 to 3", "state": ["6,250", "$37,250", "19%"], "tone": "warn"}, {"code": "rerank chunks 8 to 3", "state": ["4,250", "$27,250", "41%"], "changed": [2], "tone": "accent", "note": "the largest single lever"}, {"code": "summarise history", "state": ["3,200", "$22,000", "52%"], "tone": "good"}, {"code": "+ cache 40% of calls", "state": ["-", "$13,200", "71%"], "changed": [1, 2], "tone": "good"}], "t": "diagram", "id": "dg-11_7-02-1"},
+
 
     { t: "table",
       head: ["Change", "New input", "Cost/call", "Monthly", "Saving"],

@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "metrics", text: "The six metrics",
       sub: "And what each confounds" },
 
+    {"kind": "matrix", "title": "Six metrics, and the two where any value above zero is an incident", "caption": "**Block rate cannot tell you what a spike means** — an attack and a broken guardrail look identical — which is why §02 pairs it with precision. Two rows have no threshold at all: **a PII leak event and a canary hit are each an incident**, because there is no acceptable rate. And the last row is 11.15's measurement: the free checks cost 0.1% of a request, so moderation latency is a conversation about model-based checks only.", "cols": ["Meaning", "Watch for"], "rows": ["Block rate", "Jailbreak success rate", "Over-refusal rate", "PII / secret leaks", "Canary hits", "Moderation latency"], "cells": [["share blocked", {"text": "an attack, or a broken guardrail", "tone": "crit"}], ["red-team attacks that bypass", "should trend to zero"], [{"text": "legitimate requests blocked", "tone": "warn"}, "high means guardrails are hurting the product"], ["output scan catches", {"text": "any is an incident", "tone": "crit"}], ["system-prompt leaks", {"text": "any is an incident", "tone": "crit"}], ["overhead added", "the free checks were 0.1%"]], "t": "diagram", "id": "dg-11_17-01-0"},
+
+
     { t: "table",
       head: ["Metric", "Meaning", "Watch for"],
       rows: [
@@ -46,6 +49,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "pairs", text: "Every useful metric here is a pair",
       sub: "The module's recurring structure" },
 
+    {"kind": "matrix", "title": "Every useful metric here is a pair", "caption": "A single number in this module is always ambiguous, and the pairing resolves it. **Jailbreak success against over-refusal** move in opposite directions at roughly a ten-to-one exchange rate — 11.16's curve. **Block rate against precision** separates an attack from a broken guardrail, which block rate alone confounds. And **abstention rate against context recall** is 11.6's finding: a 0.30 abstention rate means something completely different with weak recall than with good recall.", "cols": ["What the pair resolves"], "rows": ["Jailbreak / over-refusal", "Block rate / precision", "Abstention / context recall", "Faithfulness / answered", "Per call / per request"], "cells": [[{"text": "which error you chose - they trade at about ten to one", "tone": "violet"}], [{"text": "an attack from a broken guardrail", "tone": "violet"}], [{"text": "11.6: the same rate means opposite things", "tone": "violet"}], [{"text": "abstentions scoring 1.0 by construction", "tone": "crit"}], [{"text": "prompt bloat, which per-user spend hides", "tone": "crit"}]], "t": "diagram", "id": "dg-11_17-02-1"},
+
+
     { t: "dl", items: [
       { k: "Jailbreak success \u2194 over-refusal", v: "11.16 measured these moving in opposite directions at a ten-to-one exchange rate. Either alone makes a threshold change look like a free win." },
       { k: "Block rate \u2194 precision", v: "Separates an attack from a broken guardrail, which block rate alone confounds." },
@@ -63,6 +69,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", id: "flow", text: "The decision flow",
       sub: "Untrusted input to logged event" },
+
+    {"kind": "flow", "title": "Assume yes, fail closed, and tune both directions", "caption": "**\"Assume YES for any user-facing LLM\"** — there is no version of a user-facing application where untrusted text does not reach the model, so the first question is not really a question. The *retrieved content* clause in the fourth input step is the one 11.15 found missing from the implementation. Output guardrails **fail closed**: any failure routes to a safe response rather than passing through. And the last line is the module's thesis compressed: **tune for harmful false negatives AND over-refusal false positives.**", "cols": 4, "nodes": [{"id": "a", "label": "Untrusted text reaching the model?", "sub": "assume yes, always", "tone": "violet"}, {"id": "i", "label": "Input: scan, redact, scope, wrap", "sub": "user AND retrieved content", "tone": "good"}, {"id": "m", "label": "Model, with a canary in the prompt", "sub": "so a leak is detectable", "tone": "good"}, {"id": "o", "label": "Output: fail closed", "sub": "any failure goes to a safe response", "tone": "good"}, {"id": "t", "label": "Tune both directions", "sub": "harmful misses and over-refusals", "tone": "teal"}], "edges": [["a", "i"], ["i", "m"], ["m", "o"], ["o", "t"]], "t": "diagram", "id": "dg-11_17-03-2"},
+
 
     { t: "code", lang: "text", title: "The full path", code: `Untrusted text reaching or leaving the model?  (assume YES for any user-facing LLM)
    |

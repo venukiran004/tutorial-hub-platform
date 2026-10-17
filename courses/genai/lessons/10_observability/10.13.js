@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "Two metrics, four verdicts, and no theorising required", "caption": "This is the cheapest diagnostic in the module: **context recall and faithfulness read together name the broken layer.** Low recall with high faithfulness is a **retrieval** failure — the model was scrupulously faithful to context that did not contain the answer. High recall with low faithfulness is a **generation** failure. High on both means neither moved and the **ground truth or the judge** did, which is the case people never consider. Low on both is systemic: an empty index, the wrong tenant, a truncated prompt.", "cols": ["Faithfulness", "Verdict"], "rows": ["Context recall low", "Context recall high", "Both high", "Both low"], "cells": [[{"text": "high", "tone": "good"}, {"text": "retrieval - faithful to wrong context", "tone": "crit"}], [{"text": "low", "tone": "crit"}, {"text": "generation - it was there, ignored", "tone": "crit"}], [{"text": "high", "tone": "good"}, {"text": "the ground truth or the judge moved", "tone": "warn"}], [{"text": "low", "tone": "crit"}, "systemic - index, tenant, truncation"]], "t": "diagram", "id": "dg-10_13-01-0"},
 
 
+
+
     { t: "code", lang: "text", title: "Two layers, and the numbers pick a branch", code: `                        +--- RETRIEVAL failure: the right chunk never reached the prompt
       95% -> 60%  ------+
                         +--- GENERATION failure: the right chunk was there and was ignored`,
@@ -60,6 +62,8 @@ EC.receiveLesson({
     {"kind": "trace", "title": "The incident, metric by metric", "caption": "Answer accuracy fell from 0.95 to 0.60 — the symptom. **Context recall collapsed from 0.93 to 0.48 and faithfulness did not move at all**, staying at 0.95, which is exactly §01's retrieval-failure signature. The mechanism is two rows lower: mean top-1 similarity went from 0.78 to 0.41. And the last row is the one that would have caught it weeks earlier: **empty-retrieval rate from 0.4% to 11.2%, an alarm nobody had set**, costing nothing to compute.", "left": "metric", "codeW": 190, "vars": ["four weeks ago", "today", "read"], "steps": [{"code": "Answer accuracy", "state": ["0.95", "0.60", "the symptom"], "tone": "warn"}, {"code": "Context recall", "state": ["0.93", "0.48", "collapsed"], "changed": [1], "tone": "crit"}, {"code": "Context precision", "state": ["0.71", "0.44", "fell with it"], "tone": "crit"}, {"code": "Faithfulness", "state": ["0.96", "0.95", "unchanged"], "changed": [2], "tone": "good", "note": "the diagnosis"}, {"code": "Mean top-1 similarity", "state": ["0.78", "0.41", "the mechanism"], "changed": [1], "tone": "crit"}, {"code": "Empty-retrieval rate", "state": ["0.4%", "11.2%", "nobody had set it"], "changed": [1], "tone": "crit"}], "t": "diagram", "id": "dg-10_13-02-1"},
 
 
+
+
     { t: "table",
       head: ["Cohort", "Share of traffic", "Accuracy", "Was"],
       rows: [
@@ -78,6 +82,8 @@ EC.receiveLesson({
       sub: "The finding this module contributes" },
 
     {"kind": "trace", "title": "Slice before you theorise: a 21% cohort inside a 60% headline", "caption": "The headline fell from 0.95 to 0.60 and the average is a **mix of two populations behaving completely differently.** Questions about existing docs are 60% of traffic and fell from 0.96 to 0.86 — unwelcome and unremarkable. Questions about the new product line are 40% of traffic and fell from 0.86 to **0.21**. One slice turns \"quality regressed\" into \"the new product line has no usable documents in the index\", which is a different investigation and a different fix.", "left": "cohort", "codeW": 200, "vars": ["share", "was", "now"], "steps": [{"code": "existing product docs (A)", "state": ["60%", "0.96", "0.86"], "tone": "warn"}, {"code": "the new product line (B)", "state": ["40%", "0.86", "0.21"], "changed": [2], "tone": "crit", "note": "the real failure"}, {"code": "the headline average", "state": ["100%", "0.95", "0.60"], "tone": "violet", "note": "hides both"}], "t": "diagram", "id": "dg-10_13-03-2"},
+
+
 
 
     { t: "code", lang: "text", title: "Verified \u2014 the decomposition, one order", code: `baseline 95.0%   today 60.0%   drop 35.0 points
@@ -113,6 +119,8 @@ EC.receiveLesson({
       sub: "Every layer's input is the layer below's output" },
 
     {"kind": "trace", "title": "Walking the stack bottom-up, attribute by attribute", "caption": "Comparing a healthy trace against a failing one, **most attributes are identical** — same index, same 20 results returned, same pinned model, no truncation. Three differ and they tell the whole story: **`above_threshold` is 0 against 6**, so nothing cleared the cut-off; `rerank.top_score` is **0.31 against 0.78**, so the best available chunk was weakly related; and the chunk IDs are all from the **old** product manual. The search worked perfectly and there was nothing right to find.", "left": "span attribute", "codeW": 200, "vars": ["healthy", "failing"], "steps": [{"code": "retrieve.index", "state": ["support-docs-v4", "the same"], "tone": "good"}, {"code": "retrieve.returned", "state": ["20", "20"], "tone": "good", "note": "the search worked"}, {"code": "retrieve.above_threshold", "state": ["6", "0"], "changed": [1], "tone": "crit"}, {"code": "rerank.top_score", "state": ["0.78", "0.31"], "changed": [1], "tone": "crit"}, {"code": "retrieve.chunk_ids", "state": ["mixed docs", "all the OLD manual"], "changed": [1], "tone": "crit"}, {"code": "llm.generate.model", "state": ["pinned", "the same pin"], "tone": "good"}, {"code": "prompt_tokens", "state": ["1842", "1799"], "tone": "good", "note": "no truncation"}], "t": "diagram", "id": "dg-10_13-04-3"},
+
+
 
 
     { t: "code", lang: "text", title: "The order to search in", code: `  Stage 1  DATA         did the right content get in, intact and current?

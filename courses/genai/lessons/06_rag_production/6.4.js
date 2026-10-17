@@ -28,6 +28,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Every retrieval improvement so far has been a matter of degree. Better chunking moved recall@5 a few points, hybrid search took it from 95% to 100%, HyDE moved one stubborn query from rank 15 to rank 1. All of those are dials. The multi-hop case is not a dial, and it is worth proving rather than asserting." },
 
     { t: "code", lang: "python", title: "g64.py \u00a7A \u2014 the corpus, one sentence per chunk", code: `CORPUS = {
@@ -94,6 +96,8 @@ for doc, s in CHUNKS:
       sub: "Extraction is a model call, and it is where the quality is decided" },
 
     {"kind": "flow", "title": "Three question shapes with the same property", "caption": "They share it for one reason: **the answer is not written down in any passage.** A multi-hop answer is a path. An aggregation answer is a union over fifty documents. A relationship answer is an edge sequence, recorded only if somebody happened to write that particular sentence. A graph stores the edges explicitly, which is what makes the traversal possible at all — and the cost is an extraction step that has to get the entities right.", "cols": 3, "nodes": [{"id": "m", "label": "Multi-hop", "sub": "the answer is a path", "tone": "crit"}, {"id": "a", "label": "Aggregation", "sub": "a union over fifty documents", "tone": "crit"}, {"id": "r", "label": "Relationship", "sub": "an edge sequence", "tone": "crit"}, {"id": "n", "label": "None is written in a passage", "sub": "so none can be retrieved", "tone": "violet"}, {"id": "g", "label": "A graph stores the edges", "sub": "so traversal becomes possible", "tone": "good"}, {"id": "e", "label": "At the cost of extraction", "sub": "entities have to resolve", "tone": "warn"}], "edges": [["m", "n"], ["a", "n"], ["r", "n"], ["n", "g"], ["g", "e"]], "t": "diagram", "id": "dg-6_4-02-1"},
+
+
 
 
 
@@ -237,6 +241,8 @@ result = chain.invoke({"query": "Who founded Apple?"})
 
 
 
+
+
     { t: "p", text: "Microsoft\u2019s GraphRAG adds a step that answers the aggregation case: detect communities of related entities with the Leiden algorithm, summarise each with a model, and route broad questions to the summaries rather than to chunks. \u201cWhat are the main themes in this corpus?\u201d then has something to retrieve, which standard RAG never does because no chunk states a theme." },
 
     { t: "p", text: "I implemented the cheap version \u2014 label propagation, where every node repeatedly adopts its neighbours\u2019 most common label \u2014 over a graph with an obvious two-company structure." },
@@ -284,6 +290,8 @@ for it in range(20):
       sub: "Usually: both, or neither" },
 
     {"kind": "matrix", "title": "Seven scenarios, and two where the answer is neither", "caption": "GraphRAG is the answer for four of these and **overkill for three**. The two rows worth dwelling on are the ones where both options are wrong: aggregation over a table is exactly and cheaply answered by 5.12's text-to-SQL, and under about fifty documents **you should put all of it in the context** — retrieval is the wrong tool too, not merely the weaker one.", "cols": ["Standard", "Graph", "Why"], "rows": ["Simple factual Q and A", "Multi-hop", "Relationship queries", "Corpus-level summary", "Aggregation over 50 docs", "Fewer than ~50 docs", "Large interconnected corpus"], "cells": [[{"text": "yes", "tone": "good"}, "overkill", "95% recall@5 finds it"], [{"text": "no", "tone": "crit"}, {"text": "yes", "tone": "good"}, "0 of 6 chunks hold both ends"], [{"text": "no", "tone": "crit"}, {"text": "yes", "tone": "good"}, "the answer is an edge sequence"], [{"text": "no", "tone": "crit"}, {"text": "yes", "tone": "good"}, "no chunk states a theme"], [{"text": "no", "tone": "crit"}, "sometimes", {"text": "SQL is exact and cheaper", "tone": "violet"}], [{"text": "yes", "tone": "good"}, "overkill", {"text": "put it all in context", "tone": "violet"}], ["struggles", {"text": "yes", "tone": "good"}, "the case it was built for"]], "t": "diagram", "id": "dg-6_4-05-3"},
+
+
 
 
 

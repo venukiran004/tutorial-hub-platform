@@ -34,6 +34,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Framework comparisons often open with request-handling overhead — Python versus Rust, async versus threads. It is worth knowing how small that term is before weighing it, so I measured every non-model stage of a short request." },
 
     { t: "code", lang: "python", title: "g37.py — where the time goes on a 20-token answer", code: `tok_ms = med(lambda: tok(prompt, return_tensors="pt"))
@@ -127,6 +129,8 @@ print(n_shared, tot, n_shared + uniq, 100 * (tot - n_shared - uniq) / tot)`,
       sub: "Pick from the constraint, not from the throughput chart" },
 
     {"kind": "matrix", "title": "Four frameworks, chosen by the constraint rather than a benchmark", "caption": "Each row names the constraint that makes one framework the answer. The second is the clearest trade: engine compilation buys the last 20–40%, and it is worth it **only** when the model is fixed, because otherwise you pay a rebuild every time you change models. The third is specific and easy to miss — on agent and multi-branch workloads the saving is in sharing cache across forks, which is a different win from throughput.", "cols": ["Choose", "Why that one"], "rows": ["GPU, ships often", "GPU, fixed model", "Agent or multi-branch", "No GPU at all"], "cells": [[{"text": "vLLM", "tone": "good"}, "no build step between a model and serving it"], [{"text": "TensorRT-LLM", "tone": "accent"}, "compilation buys the last 20-40%"], [{"text": "SGLang", "tone": "accent"}, "shares cache across forks"], [{"text": "llama.cpp", "tone": "violet"}, "designed for CPU, not tolerating it"]], "t": "diagram", "id": "dg-3_7-03-1"},
+
+
 
 
 

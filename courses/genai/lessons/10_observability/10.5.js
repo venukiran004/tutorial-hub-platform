@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "trace", "title": "The waterfall, and three things it settles", "caption": "**`llm.generate` owns 75.7% of total latency**, which means work that does not start with streaming, a shorter prompt or a smaller model is work on the wrong 24%. `retrieve` is 624 ms with 617 ms of children, so **its self time is 7 ms** — the wrapper coordinates and nothing else. And `rerank` at 259 ms is **nearly as expensive as the search it reranks** (274 ms): that is the price of a cross-encoder, and 6.1 measured that it can also make results worse.", "left": "span", "codeW": 180, "vars": ["duration", "share", "reading"], "steps": [{"code": "llm.generate", "state": ["2,900 ms", "75.7%", "the only real lever"], "tone": "crit"}, {"code": "retrieve (total)", "state": ["624 ms", "16.3%", "children: 617 ms"], "tone": "accent"}, {"code": "retrieve (self)", "state": ["7 ms", "0.2%", "pure coordination"], "changed": [0], "tone": "good"}, {"code": "search", "state": ["274 ms", "7.1%", ""], "tone": "accent"}, {"code": "rerank", "state": ["259 ms", "6.8%", "as dear as the search"], "changed": [2], "tone": "warn"}, {"code": "root total", "state": ["3,834 ms", "100%", "the user's latency"], "tone": "violet"}], "t": "diagram", "id": "dg-10_5-01-0"},
 
 
+
+
     { t: "code", lang: "text", title: "TRACE 4f1c9a \u2014 one RAG request", code: `TRACE 4f1c9a  duration 3134 ms
 SPAN                                   ms     %  WHEN
 chat_request                         3134 100.0%  ##############################################

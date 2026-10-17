@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "LMSYS Chatbot Arena collects blind pairwise human votes \u2014 \u201cwhich answer is better?\u201d \u2014 and converts them to Elo ratings." },
 
     { t: "math", tex: "E_A = \\frac{1}{1 + 10^{(R_B - R_A)/400}}, \\qquad R_A \\leftarrow R_A + K\\,(S_A - E_A)" },
@@ -60,6 +62,8 @@ EC.receiveLesson({
       sub: "The number that decides whether a rank is real" },
 
     {"kind": "trace", "title": "A 20-Elo gap needs about 1,163 comparisons", "caption": "20 Elo sounds meaningful and corresponds to winning **52.88%** of comparisons — which is close enough to a coin flip that distinguishing it takes real sample size. At 100 comparisons the 95% interval is **±68.2 Elo**, so the whole leaderboard's middle is inside one interval. At 1,000 it is ±21.6, which is just about enough. **Resolving a 20-Elo gap needs about 1,163 comparisons**, and that is per pair of models.", "left": "comparisons", "codeW": 140, "vars": ["se of win rate", "95% halfwidth", "Elo halfwidth"], "steps": [{"code": "100", "state": ["0.04992", "0.09784", "68.2"], "tone": "crit"}, {"code": "500", "state": ["0.02232", "0.04375", "30.5"], "changed": [2], "tone": "warn"}, {"code": "1,000", "state": ["0.01579", "0.03094", "21.6"], "tone": "accent", "note": "about enough for 20 Elo"}, {"code": "10,000", "state": ["0.00499", "0.00978", "6.8"], "changed": [2], "tone": "good"}, {"code": "50,000", "state": ["0.00223", "0.00438", "3.1"], "tone": "good"}], "t": "diagram", "id": "dg-8_5-02-1"},
+
+
 
 
 

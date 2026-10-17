@@ -26,6 +26,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "You want a function that says this answer is worth 7.2 and that one 3.1. Humans cannot supply that: ask ten people to rate an answer out of ten and you get ten different scales. They *can* reliably say A is better than B." },
 
     { t: "p", text: "So you collect comparisons and fit a scalar-scoring model whose **differences** explain them. The scores are a latent construct invented to be consistent with the clicks \u2014 which is exactly why \u00a704\u2019s result about the scale follows." },
@@ -54,6 +56,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "g74.py \u00a7A \u2014 the worked examples", code: `sig  = lambda z: 1.0 / (1.0 + np.exp(-z))
 loss = lambda gap: -np.log(sig(gap))`,
       out: `  case                              gap      sigma       loss
@@ -69,6 +73,8 @@ loss = lambda gap: -np.log(sig(gap))`,
       sub: "Not a heuristic, not a trick" },
 
     {"kind": "trace", "title": "Saturation: the gradient is 1 - sigma(gap)", "caption": "The gradient has an unusually clean closed form, and reading it down the table is the whole of 7.11 in advance. At a gap of 0 the gradient is at **50% of maximum**; at a gap of 4 it is **1.8%**; at 8 it is zero to four decimal places. So once the model has a comfortable margin on a pair, **nothing constrains how much larger that margin becomes** — there is no force pulling it back, which is precisely the room reward hacking exploits.", "left": "gap", "codeW": 110, "vars": ["loss", "|gradient|", "% of max"], "steps": [{"code": "-4.0", "state": ["4.0181", "0.9820", "98.2%"], "tone": "crit"}, {"code": "-1.0", "state": ["1.3133", "0.7311", "73.1%"], "tone": "warn"}, {"code": "0.0", "state": ["0.6931", "0.5000", "50.0%"], "tone": "accent"}, {"code": "1.0", "state": ["0.3133", "0.2689", "26.9%"], "tone": "good"}, {"code": "4.0", "state": ["0.0181", "0.0180", "1.8%"], "changed": [2], "tone": "violet"}, {"code": "8.0", "state": ["0.0003", "0.0003", "0.0%"], "changed": [2], "tone": "crit", "note": "nothing constrains it"}], "t": "diagram", "id": "dg-7_4-03-2"},
+
+
 
 
 
@@ -213,6 +219,8 @@ def fit(pairs, n_items, iters=4000, lr=0.25, init=None):
 
 
 
+
+
     { t: "p", text: "The metric is the right one: held-out preference accuracy, meaning how often \\(r(y_w) > r(y_l)\\). It also gives a floor \u2014 below about 65% and downstream RL chases noise. What it does not mention is that the ceiling is not 100%." },
 
     { t: "code", lang: "python", title: "g74.py \u00a7D \u2014 fitted accuracy against the best possible", code: `def accuracy(r, pairs):
@@ -240,6 +248,8 @@ def fit(pairs, n_items, iters=4000, lr=0.25, init=None):
       sub: "A backbone, a scalar head, and four practical rules" },
 
     {"kind": "flow", "title": "A reward model is the SFT model with its head replaced", "caption": "The construction is simpler than it sounds: take the SFT model, replace the language-modelling head with **a single scalar output**, and train it on the pairwise loss. It starts from a model that already understands the domain, so it is learning a ranking rather than learning language. The practical consequences follow: it costs an extra model in memory during PPO, and it inherits whatever the SFT model was good and bad at.", "cols": 3, "nodes": [{"id": "s", "label": "Start from the SFT model", "sub": "it already knows the domain", "tone": "accent"}, {"id": "h", "label": "Replace the LM head", "sub": "with a single scalar output", "tone": "violet"}, {"id": "t", "label": "Train on the pairwise loss", "sub": "comparisons, not scores", "tone": "good"}, {"id": "m", "label": "An extra model in memory", "sub": "during PPO", "tone": "warn"}, {"id": "i", "label": "And it inherits the SFT model's gaps", "sub": "good and bad alike", "tone": "teal"}], "edges": [["s", "h"], ["h", "t"], ["t", "m"], ["m", "i"]], "t": "diagram", "id": "dg-7_4-06-4"},
+
+
 
 
 

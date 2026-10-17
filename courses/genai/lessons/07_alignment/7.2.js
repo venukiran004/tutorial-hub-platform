@@ -26,6 +26,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "7.1 gave the objective: cross-entropy on the next token, no labels, no humans. Once that is fixed, the only remaining decisions are how big the model is and how much text it sees \u2014 and those trade against each other under a compute budget." },
 
     { t: "math", tex: "\\mathcal{L}_{\\text{pretrain}} = -\\frac{1}{T}\\sum_{t} \\log P_\\theta(x_t \\mid x_{<t})" },
@@ -61,6 +63,8 @@ flops = 6 * N * D`,
       sub: "It optimises the wrong cost" },
 
     {"kind": "trace", "title": "Llama-3 8B is 93.8x past compute-optimal, deliberately", "caption": "Chinchilla answers: given a fixed **training** budget, what size and token count minimise loss? That is the right question for a lab publishing a result and the wrong one for a product, because **a served model runs billions of times after training ends**. So Llama-3 8B saw ~15T tokens — **1,875 tokens per parameter against the optimal 20** — spending 93.8× the training compute to get a smaller model that is cheaper to serve forever.", "left": "quantity", "codeW": 210, "vars": ["value"], "steps": [{"code": "tokens seen", "state": ["~15T"], "tone": "accent"}, {"code": "tokens per parameter", "state": ["1,875"], "tone": "crit"}, {"code": "Chinchilla-optimal would be", "state": ["20"], "changed": [0], "tone": "good"}, {"code": "ratio", "state": ["93.8x"], "tone": "crit"}, {"code": "training FLOPs, optimal", "state": ["7.68e+21"], "tone": "accent"}, {"code": "training FLOPs, as trained", "state": ["7.2e+23"], "changed": [0], "tone": "crit", "note": "to make serving cheap"}], "t": "diagram", "id": "dg-7_2-02-1"},
+
+
 
 
 
@@ -174,6 +178,8 @@ saving = 2 * N_big - 2 * N_small           # inference FLOPs saved per token`,
       sub: "Not the architecture" },
 
     {"kind": "flow", "title": "Where the remaining variance actually lives", "caption": "The claim practitioners confirm most consistently is that **data mix and deduplication beat almost every architectural tweak**. That is not a claim that transformers are perfect — it is a claim about where the variance is left: the architecture has been optimised by thousands of people against public benchmarks, and your corpus has not. Which is also why this is the stage a product team can affect and the rest of it is not.", "cols": 3, "nodes": [{"id": "a", "label": "Architecture tweaks", "sub": "optimised by thousands already", "tone": "warn"}, {"id": "d", "label": "Data mix and deduplication", "sub": "optimised by nobody, for you", "tone": "good"}, {"id": "v", "label": "That is where the variance is", "sub": "not a claim about transformers", "tone": "violet"}, {"id": "c", "label": "And it is what you control", "sub": "the rest you do not", "tone": "good"}], "edges": [["a", "v"], ["d", "v"], ["v", "c"]], "t": "diagram", "id": "dg-7_2-04-2"},
+
+
 
 
 

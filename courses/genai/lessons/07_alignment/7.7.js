@@ -26,6 +26,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Method", "Removes", "Loss idea", "Use when"],
       rows: [
@@ -47,6 +49,8 @@ EC.receiveLesson({
       sub: "Two stages collapse into one" },
 
     {"kind": "flow", "title": "ORPO learns the good answer and pushes away from the bad one in one step", "caption": "Two terms: ordinary SFT loss on the chosen response, plus λ times an **odds-ratio** penalty on the rejected one. The first is why there is no separate SFT stage — the SFT is happening here — and the second is why there is no reference model, because an odds ratio is computed within the policy rather than against a frozen copy. Which makes it the cheapest member of the family in memory and the one with the fewest moving parts.", "cols": 3, "nodes": [{"id": "s", "label": "Term 1: SFT loss on the chosen", "sub": "so the SFT stage is here", "tone": "good"}, {"id": "o", "label": "Term 2: odds-ratio penalty on the rejected", "sub": "weighted by lambda", "tone": "good"}, {"id": "r", "label": "Computed within the policy", "sub": "no frozen reference needed", "tone": "violet"}, {"id": "m", "label": "Cheapest in memory", "sub": "one model, one stage", "tone": "good"}, {"id": "b", "label": "Base straight to aligned", "sub": "in a single pass", "tone": "teal"}], "edges": [["s", "r"], ["o", "r"], ["r", "m"], ["m", "b"]], "t": "diagram", "id": "dg-7_7-02-1"},
+
+
 
 
 
@@ -83,6 +87,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "callout", kind: "insight", title: "Production feedback is not pair-shaped, and that is the whole point",
       body: [
         { t: "p", text: "Every method so far needs \\((prompt, chosen, rejected)\\) \u2014 two responses to the same prompt with a human judgement between them. That data has to be commissioned: you generate two candidates and pay someone to compare them." },
@@ -103,6 +109,8 @@ EC.receiveLesson({
       sub: "The length bias, fixed at the loss" },
 
     {"kind": "flow", "title": "SimPO fixes length bias at the loss rather than in the data", "caption": "7.6 measured where DPO's length bias comes from: the implicit reward is a **sum over response tokens**, so for a per-token gain of d nats it equals β·d·n — **a long mediocre response collects the same reward as a short excellent one.** SimPO divides by length, turning the sum into an average, and adds a target margin γ. Which is the right place to fix it: filtering long responses out of the data treats the symptom, and normalising removes the incentive.", "cols": 3, "nodes": [{"id": "s", "label": "DPO's implicit reward is a sum", "sub": "beta x d x n", "tone": "crit"}, {"id": "l", "label": "So length pays, linearly", "sub": "long mediocre = short excellent", "tone": "crit"}, {"id": "n", "label": "Normalise by length", "sub": "a sum becomes an average", "tone": "good"}, {"id": "g", "label": "Plus a target margin gamma", "sub": "so separation has a goal", "tone": "good"}, {"id": "f", "label": "The incentive is gone, not filtered", "sub": "which is the right place to fix it", "tone": "teal"}], "edges": [["s", "l"], ["l", "n"], ["n", "g"], ["g", "f"]], "t": "diagram", "id": "dg-7_7-04-3"},
+
+
 
 
 

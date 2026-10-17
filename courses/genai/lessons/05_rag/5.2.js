@@ -31,6 +31,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "The common form gives a decision matrix and a set of rules of thumb, and the short version is sound: *RAG for what the model knows, fine-tuning for how it behaves, prompting first*. 4.2 measured both halves of that \u2014 a style transferred from twelve examples, and a fact came back with its relation reversed under rephrasing." },
 
     { t: "p", text: "What is worth adding from the retrieval side is that the decision is usually made by two properties of the thing you are trying to change, not by a comparison of capabilities:" },
@@ -64,6 +66,8 @@ EC.receiveLesson({
       sub: "An update path, and a source you can point at" },
 
     {"kind": "flow", "title": "Two properties that are unique rather than merely better", "caption": "Most of the comparison is a trade. These two are not available at all from the alternatives. **The update path**: 4.2 measured a fact changed in a document taking effect instantly, while the fine-tuned model kept reciting the old value with no prompt able to override it. **The citation**: the system knows which chunk produced the answer, so it can show its work — and nothing in a set of weights can.", "cols": 3, "nodes": [{"id": "u", "label": "Change a document", "sub": "and the answer changes now", "tone": "violet"}, {"id": "f", "label": "A fine-tune keeps the old value", "sub": "no prompt overrides it (4.2)", "tone": "crit"}, {"id": "c", "label": "The system knows which chunk", "sub": "so it can cite", "tone": "violet"}, {"id": "w", "label": "Weights cannot be cited", "sub": "there is no 'which part'", "tone": "crit"}, {"id": "n", "label": "Neither is a trade", "sub": "they are simply absent elsewhere", "tone": "teal"}], "edges": [["u", "f"], ["c", "w"], ["f", "n"], ["w", "n"]], "t": "diagram", "id": "dg-5_2-02-1"},
+
+
 
 
 
@@ -149,6 +153,8 @@ EC.receiveLesson({
       sub: "And the usual production system is all three" },
 
     {"kind": "flow", "title": "A mature system uses all three, each for its own job", "caption": "\"Complementary\" is right and vague. The useful version assigns each mechanism the thing it is actually good at: **fine-tune the behaviour** — the answer format, the citation discipline, saying *that is not in the documentation* instead of guessing, which 4.1 measured transferring from a dozen examples. **Retrieve the content**, because it changes and needs to be citable. **Prompt the specifics** — the user's tier, the conversation so far, anything genuinely per-request.", "cols": 3, "nodes": [{"id": "f", "label": "Fine-tune the behaviour", "sub": "format, citation discipline, abstaining", "tone": "good"}, {"id": "r", "label": "Retrieve the content", "sub": "it changes, and must be citable", "tone": "good"}, {"id": "p", "label": "Prompt the specifics", "sub": "tier, history, this request", "tone": "good"}, {"id": "a", "label": "Saying 'not in the documentation'", "sub": "is a behaviour, not a fact", "tone": "violet"}, {"id": "n", "label": "Which is why it is fine-tuned", "sub": "and not retrieved", "tone": "teal"}], "edges": [["f", "a"], ["a", "n"], ["r", "n"], ["p", "n"]], "t": "diagram", "id": "dg-5_2-04-2"},
+
+
 
 
 

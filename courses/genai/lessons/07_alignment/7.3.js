@@ -26,6 +26,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "SFT trains on `(prompt, response)` pairs with ordinary cross-entropy \u2014 the identical objective from 7.2. There is no new mathematics. What changes is that the data now has *structure*: part of each sequence is input the model should condition on, and part is output it should learn to produce." },
 
     { t: "p", text: "Cross-entropy does not know the difference. If you hand it the concatenated sequence it supervises every position, which means it trains the model to generate the prompt as well as the response \u2014 and generating prompts is not the job." },
@@ -160,6 +162,8 @@ print("mean unmasked loss (everything)   :", sum(fs) / len(fs))`,
 
 
 
+
+
     { t: "p", text: "7.1 measured a base model putting 33.84% of its next-token mass on a newline after a question \u2014 it had no representation of a turn ending. A chat template is what supplies that representation, which makes it structural rather than cosmetic." },
 
     { t: "code", lang: "python", title: "always derive the template, never hand-format", code: `messages = [{"role": "user", "content": "Summarise this email."},
@@ -179,6 +183,8 @@ text = tokenizer.apply_chat_template(messages, tokenize=False)`,
       sub: "The one place quantity has a known ceiling" },
 
     {"kind": "matrix", "title": "Three orders of magnitude, and what each is actually buying", "caption": "The reason the numbers differ by so much is in the right-hand column rather than in the task's difficulty. **100–1,000 teaches a surface pattern the model can already produce** — you are selecting among behaviours it has, not installing one. Behaviour across varied inputs needs coverage of the variation, which is why the middle row is ten times the first. And the last row is what a lab builds, not a product team.", "cols": ["Examples", "Why this order of magnitude"], "rows": ["Output format, JSON shape", "Domain tone and behaviour", "Instruction-following"], "cells": [[{"text": "100 - 1,000", "tone": "good"}, "a surface pattern it can already produce"], [{"text": "1,000 - 10,000", "tone": "accent"}, "behaviour needs coverage of the variation"], [{"text": "10,000 - 100,000+", "tone": "crit"}, "the whole repertoire - what a lab builds"]], "t": "diagram", "id": "dg-7_3-04-2"},
+
+
 
 
 

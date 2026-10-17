@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "metrics", text: "The six metrics",
       sub: "And where each comes from" },
 
+    {"kind": "matrix", "title": "Six metrics, and the one that has to be read in both directions", "caption": "Five of these have a direction: higher faithfulness is better, lower hallucination rate is better. **Abstention rate does not** — too low means the model is overconfident and too high means retrieval is weak, so the number is uninterpretable without context recall beside it. And citation accuracy is the one that needs two mechanisms rather than one: **validate the ids and run entailment**, because 11.5 showed the first alone passes a contradiction.", "cols": ["How", "Direction"], "rows": ["Faithfulness", "Answer relevance", "Context precision / recall", "Hallucination rate", "Abstention rate", "Citation accuracy"], "cells": [["NLI, a judge, or RAGAS - sampled", "higher is better"], ["a judge or embedding similarity", "higher is better"], ["a labelled set, Recall@k", "higher is better"], ["faithfulness below a threshold", "lower is better"], [{"text": "count the exact abstention string", "tone": "violet"}, {"text": "neither - read with recall", "tone": "crit"}], [{"text": "validate ids AND entailment", "tone": "warn"}, "higher is better"]], "t": "diagram", "id": "dg-11_6-01-0"},
+
+
     { t: "table",
       head: ["Metric", "What it measures", "How"],
       rows: [
@@ -38,6 +41,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "denominator", text: "The trap: an abstention is trivially faithful",
       sub: "So the metric moves the wrong way" },
+
+    {"kind": "trace", "title": "The same system, the same metric, opposite conclusions", "caption": "**An abstention makes no claims, and the fraction of an empty set is 1.0 by construction** — so every refusal is a perfect faithfulness score. The consequence is worse than a bias: as context recall degrades from 0.93 to 0.20, **overall faithfulness barely moves**, because the system increasingly abstains and each abstention scores 1.0. Computed over **answered requests only**, the same system falls 0.920 to 0.750 monotonically. Same data, same metric name, opposite reading — and the first version would never have paged anyone.", "left": "context recall", "codeW": 170, "vars": ["faithfulness, all", "faithfulness, answered"], "steps": [{"code": "0.93", "state": ["high", "0.920"], "tone": "good"}, {"code": "degrading", "state": ["barely moves", "falling"], "changed": [1], "tone": "warn"}, {"code": "0.20", "state": ["still high", "0.750"], "changed": [0, 1], "tone": "crit", "note": "abstentions score 1.0"}], "t": "diagram", "id": "dg-11_6-02-1"},
+
 
     { t: "callout", kind: "trap", title: "A retrieval collapse improves mean faithfulness",
       body: [
@@ -62,6 +68,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", id: "golden", text: "The golden set",
       sub: "Regression-test prompts like code" },
+
+    {"kind": "flow", "title": "The golden set needs cases whose right answer is an abstention", "caption": "**A golden case whose correct answer is an abstention is the only way to test the abstention path**, and without such cases a system that never abstains scores perfectly. Run the set on every prompt change *and* every model change, because both can silently regress grounding — 12.4 is about the version that changes without you. And size it honestly: 9.16's arithmetic applies unchanged, so **a ten-case set measuring a 0.20 hallucination rate carries ±24.8 points**, which is not a measurement.", "cols": 3, "nodes": [{"id": "a", "label": "Cases whose answer is an abstention", "sub": "the only test of that path", "tone": "violet"}, {"id": "w", "label": "Without them, never abstaining scores 100%", "sub": "a silent gap", "tone": "crit"}, {"id": "p", "label": "Run on every prompt change", "sub": "and every model change", "tone": "good"}, {"id": "m", "label": "Both regress grounding silently", "sub": "12.4 is the second one", "tone": "warn"}, {"id": "s", "label": "Ten cases carries +-24.8 points", "sub": "which is not a measurement", "tone": "crit"}], "edges": [["a", "w"], ["w", "p"], ["p", "m"], ["m", "s"]], "t": "diagram", "id": "dg-11_6-03-2"},
+
 
     { t: "callout", kind: "insight", title: "Keep (question, context, acceptable answer *or* abstention) triples",
       body: [
