@@ -177,6 +177,10 @@ gc.freeze()
 # 2. Raising the gen-0 threshold, for a process allocating heavily
 gc.set_threshold(50_000, 20, 20)      # default: (700, 10, 10)
 
+# 3. Finding out what the collector is actually doing, before changing anything
+gc.set_debug(gc.DEBUG_STATS)       # per-collection timings and counts, to stderr
+gc.set_debug(gc.DEBUG_SAVEALL)     # unreachable objects go to gc.garbage instead of being freed
+
 # The nuclear option, and rarely correct:
 gc.disable()      # cycles now leak for the life of the process`},
       { t: "p", text: "**`gc.freeze()` before forking is the one with a clear, measurable win.** A pre-fork server's workers share memory copy-on-write until something writes — and the collector writing GC header bits to every object is exactly such a write, so each worker ends up with a private copy of pages it never modified." },

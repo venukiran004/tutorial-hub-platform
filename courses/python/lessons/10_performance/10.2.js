@@ -80,7 +80,8 @@ def summarise_deploys(path: Path) -> dict[str, int]:
         ["`cProfile` / `profile`", "*Which function gets the time?* — every call counted", "1.3–3×, and worse for many tiny calls", "A script or request you can run locally and reproduce"],
         ["`line_profiler`", "*Which line inside this function?*", "very high — 10× or more", "You already know the function and need the line"],
         ["`py-spy` / `austin` (sampling)", "*What is this process doing right now?*", "1–3%, safe in production", "A live service, a hung process, or anything you cannot restart"],
-        ["`tracemalloc`", "*Where did the memory go?*", "moderate, and it distorts timing", "Memory, not time — Lesson 10.3"]
+        ["`tracemalloc`", "*Where did the memory go?*", "moderate, and it distorts timing", "Memory, not time — Lesson 10.3"],
+        ["`sys.setprofile` / `sys.settrace`", "*Nothing, directly* — they are the hooks `cProfile` and coverage tools are built on", "whatever your callback costs, per call or per line", "Writing an instrument, not using one — and never both at once, since each replaces the other"]
       ],
       caption: "The mistake is not picking the wrong tool. It is picking a tool before deciding what question you are asking — which is how people end up micro-benchmarking a function that turns out to be 3% of the runtime."
     },

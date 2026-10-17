@@ -382,7 +382,12 @@ from collections.abc import Sequence
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="mylib")
+    parser = argparse.ArgumentParser(
+        prog="mylib",
+        # prints each option's default in --help, so the help text cannot
+        # drift away from the code the way a hand-written "(default: 30)" does
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
     parser.add_argument("--version", action="version", version=__version__)
     parser.add_argument("path")
     parser.add_argument("--base-url", required=True)

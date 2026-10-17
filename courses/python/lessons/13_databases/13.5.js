@@ -200,6 +200,10 @@ def get_order(oid: UUID, db: DB) -> Order:
       ]
     },
 
+    { t: "callout", kind: "note", title: "`declarative_base()` is the 1.x spelling", body: [
+      { t: "p", text: "Older code builds the base with `Base = declarative_base()` and declares columns as class attributes — `id = Column(Integer, primary_key=True)`. The 2.0 style above subclasses `DeclarativeBase` and uses `Mapped[...]` with `mapped_column(...)`, which is what makes the models typed and `mypy`-checkable. Both work in 2.x; only the second gives you the annotations." }
+    ]},
+
     { t: "h2", n: "04", text: "Relationships", id: "relationships" },
 
     { t: "code", lang: "python", title: "declaring them, and controlling loads", code: `

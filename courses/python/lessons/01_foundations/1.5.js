@@ -178,7 +178,10 @@ print(math.isclose(a, 0.3))              # True
 
 # Near zero, relative tolerance is useless -- supply an absolute one.
 print(math.isclose(1e-18, 0.0))                    # False
-print(math.isclose(1e-18, 0.0, abs_tol=1e-9))      # True`},
+print(math.isclose(1e-18, 0.0, abs_tol=1e-9))      # True
+
+# The module's constants are exact to the float, not typed-in approximations
+print(math.pi, math.tau, math.e, math.inf, math.nan)   # tau is 2*pi, for turns`},
       { t: "p", text: "`math.isclose` uses a relative tolerance by default, which is the right choice for most magnitudes and the wrong one near zero — where every value is relatively far from every other. Passing `abs_tol` is not optional when zero is in range. NumPy's equivalent is `np.isclose` / `np.allclose`." }
     ]},
 

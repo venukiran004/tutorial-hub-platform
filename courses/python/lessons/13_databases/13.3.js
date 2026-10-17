@@ -83,6 +83,12 @@ with psycopg.connect(settings.database_url) as conn:
         cur.execute("UPDATE orders SET status = %s WHERE id = %s",
                     ("paid", order_id))
         assert cur.rowcount == 1        # 0 means it did not exist
+
+        # And an INSERT can report the key it generated. sqlite3 and
+        # MySQL expose cur.lastrowid; PostgreSQL has no such attribute,
+        # so ask for the value back instead.
+        cur.execute("INSERT INTO orders (total) VALUES (%s) RETURNING id", (12.5,))
+        new_id = cur.fetchone()[0]      # psycopg: RETURNING, not lastrowid
 `,
       hl: [6, 15, 17, 30],
       caption: "**`cur.rowcount` after an `UPDATE` is the check people skip.** Zero rows updated is not an error to the database — it is the normal result of a `WHERE` matching nothing, and silently doing nothing is the bug."

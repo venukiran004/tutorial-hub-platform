@@ -103,6 +103,7 @@ def delete_doc(doc_id: int, user: User = Depends(require("delete_doc")), db=Depe
         ["TLS", "Everything over HTTPS; HSTS so browsers never downgrade", "`Strict-Transport-Security: max-age=31536000; includeSubDomains`"],
         ["Cookies", "Session cookies unreadable by scripts and unsent cross-site", "`Secure; HttpOnly; SameSite=Lax` (Strict for the most sensitive)"],
         ["CORS", "Allow exactly the origins that need the API — never `*` with credentials", "`CORSMiddleware(allow_origins=[...], allow_credentials=True)`"],
+        ["Host header", "Reject requests whose Host is not one you serve, so a poisoned absolute URL cannot be built from it", "`TrustedHostMiddleware(allowed_hosts=[...])`; and `HTTPSRedirectMiddleware` to refuse plain HTTP outright"],
         ["CSRF", "For cookie-authenticated state changes: SameSite plus a synchroniser token compared with `compare_digest`", "Bearer tokens in a header are immune — the browser does not attach them automatically"],
         ["Injection", "Parameterised SQL, no `shell=True`, path joins checked against a base directory, outbound URLs allow-listed against SSRF", "Lessons 13.3 and 7.3; `pickle` never on untrusted input"]
       ] },

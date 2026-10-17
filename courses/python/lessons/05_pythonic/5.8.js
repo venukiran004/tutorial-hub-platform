@@ -310,7 +310,7 @@ def make_client() -> tuple[Client, ExitStack]:
         ["patch / unpatch", "`unittest.mock.patch` (Lesson 9.5)"],
         ["start / stop", "A timer, a span, a profiler"],
         ["create / delete", "`tempfile.TemporaryDirectory`"],
-        ["suppress output / restore", "`contextlib.redirect_stdout`"]
+        ["suppress output / restore", "`contextlib.redirect_stdout`, `redirect_stderr`"]
       ],
       caption: "The signal is a pair of operations where the second **must** happen. If you find yourself writing `try/finally` twice with the same cleanup, that cleanup wants to be a context manager."
     },

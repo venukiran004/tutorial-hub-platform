@@ -250,6 +250,9 @@ product = reduce(operator.mul, [2, 3, 4], 1)
 # NOT fine -- sum() exists and says more
 total = reduce(operator.add, values)
 
+# NOT fine -- quadratic: every step copies the whole string so far
+joined = reduce(operator.concat, ["a", "b", "c"])     # "".join(...) is linear
+
 # NOT fine -- quadratic, and unreadable
 merged = reduce(lambda a, b: {**a, **b}, dicts, {})`,
           out: `24`},
