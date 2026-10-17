@@ -18,6 +18,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "The same context, three answers",
       code: "context: ['data-retention', 'data-deletion', 'auth-session']\n\n'Retention defaults to 90 days, configurable 30 to 730. [data-retention]'\n  -> cited id was retrieved, and supports the claim            CORRECT\n\n'Retention is 180 days by default. [data-policy]'\n  -> cited id was NEVER retrieved                             CAUGHT by a regex\n\n'Retention defaults to 90 days. [auth-session]'\n  -> cited id WAS retrieved, and does not support the claim    NOT caught",
       caption: "The second and third answers are both wrong and only one is detectable cheaply." },
@@ -28,6 +30,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "entailment", text: "Does the document support the claim?", sub: "And why the obvious proxy fails" },
 
     {"kind": "flow", "title": "The proxy does not work, which is more useful than if it had", "caption": "The proper check is natural-language inference — does the document **entail** the sentence. No NLI model was available, so the lesson uses the cross-encoder as a relevance proxy **and labels it as such.** The result is that **the proxy does not work**, and that is a more useful outcome than a success would have been: it establishes that **relevance and entailment are different questions**, so the component you would reach for does not do the job. A real check needs an entailment model or a model prompted to judge support with the document in front of it — **either way a model call.**", "cols": 3, "nodes": [{"id": "p", "label": "Use the cross-encoder as a proxy", "sub": "labelled as a proxy", "tone": "accent"}, {"id": "f", "label": "It does not work", "sub": "measured", "tone": "crit"}, {"id": "d", "label": "Relevance is not entailment", "sub": "which is the finding", "tone": "violet"}, {"id": "n", "label": "So: an NLI model, or a prompted judge", "sub": "with the document present", "tone": "good"}, {"id": "c", "label": "Either way, a model call", "sub": "which brings the cost question", "tone": "teal"}], "edges": [["p", "f"], ["f", "d"], ["d", "n"], ["n", "c"]], "t": "diagram", "id": "dg-7_4-02-2"},
+
+
 
 
 
@@ -65,6 +69,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "A four-sentence answer",
       code: "- Retention defaults to 90 days\n- Enterprise tenants can configure between 30 and 730 days\n- Deletion requests complete within 30 days\n- Backups are retained separately for 35 days\n\nclaims to verify : 4\nat 1 call each   : 4x the generation cost of the answer itself",
       caption: "Checking at the answer level passes if **any** part is grounded." },
@@ -76,6 +82,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "layer", text: "The layering", sub: "By cost against coverage" },
 
     {"kind": "matrix", "title": "Four checks, three of them free or cheap", "caption": "The layering is the practical answer to §02's cost problem: **run the free checks on every answer and the expensive one on a sample or on the ones the free checks flagged.** The first two cost a regex. The third — every sentence making a factual claim carries a citation — is cheap and catches the common case of a grounded first paragraph followed by three ungrounded ones. Only per-claim entailment needs a model, and it is the only one that catches §01's third row.", "cols": ["Cost", "Coverage"], "rows": ["Cited ids were retrieved", "At least one citation", "Every claim carries one", "Per-claim entailment"], "cells": [[{"text": "free", "tone": "good"}, "every answer"], [{"text": "free", "tone": "good"}, "every answer"], [{"text": "cheap", "tone": "good"}, "every answer"], [{"text": "expensive", "tone": "crit"}, {"text": "sampled or flagged", "tone": "warn"}]], "t": "diagram", "id": "dg-7_4-04-3"},
+
+
 
 
 

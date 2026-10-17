@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Three steps, one sequence",
       code: 'chain = prompt | model | StrOutputParser()\n\nprint(type(chain).__name__)\nprint([type(s).__name__ for s in chain.steps])\nprint(len(chain.steps))',
       out: 'type        : RunnableSequence\nsteps       : [\'ChatPromptTemplate\', \'FakeChatModel\', \'StrOutputParser\']\nlen(steps)  : 3',
@@ -48,6 +50,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "coercion", text: "Two quiet coercions", sub: "Which explain most LCEL you will read" },
 
     {"kind": "flow", "title": "Two coercions account for most of what looks like magic", "caption": "The pipe accepts things that are not Runnables and converts them, and **there are only two cases.** A `dict` literal becomes a `RunnableParallel` — that is the `{context, question}` RAG idiom. A bare function becomes a `RunnableLambda` — that is `| format_docs` after a retriever, and also `itemgetter('k')`, which is a callable. Knowing those two is enough to read almost any LCEL expression you will meet.", "cols": 3, "nodes": [{"id": "d", "label": "A dict literal", "sub": "{'context': ..., 'question': ...}", "tone": "violet"}, {"id": "p", "label": "becomes RunnableParallel", "sub": "the RAG idiom (5.7)", "tone": "good"}, {"id": "f", "label": "A bare function", "sub": "| format_docs", "tone": "violet"}, {"id": "l", "label": "becomes RunnableLambda", "sub": "and so does itemgetter", "tone": "good"}, {"id": "t", "label": "Those two read most LCEL you will meet", "sub": "and the rest is composition", "tone": "teal"}], "edges": [["d", "p"], ["f", "l"], ["p", "t"], ["l", "t"]], "t": "diagram", "id": "dg-2_2-02-1"},
+
+
 
 
 
@@ -80,6 +84,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "value", text: "A chain is a value", sub: "Inspectable before it runs" },
 
     {"kind": "flow", "title": "The expression builds a data structure, so the chain can be examined", "caption": "Because the pipe builds a value rather than deferring a call, **a chain is something you can interrogate before you run it.** `input_schema` reports what it expects, **derived from the prompt's variables** rather than declared separately. `get_graph()` returns nodes and edges you can render. And `with_config(run_name=...)` gives it a name that appears in traces — which 2.9 argues is worth doing while you build, because the moment you need it is during an incident.", "cols": 3, "nodes": [{"id": "e", "label": "The expression builds a value", "sub": "not a deferred call", "tone": "violet"}, {"id": "i", "label": "input_schema", "sub": "derived from the prompt's variables", "tone": "good"}, {"id": "g", "label": "get_graph()", "sub": "nodes and edges, renderable", "tone": "good"}, {"id": "n", "label": "run_name in traces", "sub": "2.9's argument for doing it early", "tone": "good"}, {"id": "b", "label": "All available before you run it", "sub": "which a deferred call is not", "tone": "teal"}], "edges": [["e", "i"], ["e", "g"], ["e", "n"], ["i", "b"], ["g", "b"], ["n", "b"]], "t": "diagram", "id": "dg-2_2-03-2"},
+
+
 
 
 

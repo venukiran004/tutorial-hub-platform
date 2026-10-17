@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "A node taking a RunnableConfig",
       code: 'def old_node(state, config: RunnableConfig):\n    c = config["configurable"]\n    return {"out": ["model=%s tone=%s" % (c.get("model", "<default>"),\n                                          c.get("tone", "<default>"))]}',
       out: "    {}                        -> ['model=<default> tone=<default>']\n    {'model': 'fast', ...}    -> ['model=fast tone=brief']",
@@ -41,6 +43,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "new", text: "The V1 form", sub: "A typed context and a Runtime" },
 
     {"kind": "flow", "title": "The third change is the one that fixes a real bug", "caption": "Its own argument and typed attributes are both readability. **The defaults living once on the dataclass is the quiet win: with the dict form, a default spelled differently in two nodes is two behaviours and no error** — one node's `.get(\"tone\", \"brief\")` against another's `.get(\"tone\", \"neutral\")` is a bug that nothing reports and that no test catches unless it asserts on tone in both nodes.", "cols": 3, "nodes": [{"id": "a", "label": "Its own invoke() argument", "sub": "not inside the config dict", "tone": "good"}, {"id": "t", "label": "Typed attributes: c.model", "sub": "not c.get('model')", "tone": "good"}, {"id": "d", "label": "Defaults live once, on the dataclass", "sub": "the quiet win", "tone": "violet"}, {"id": "b", "label": "The dict form repeats them per call site", "sub": "every .get()", "tone": "warn"}, {"id": "f", "label": "Two spellings = two behaviours, no error", "sub": "and no test catches it", "tone": "crit"}], "edges": [["a", "t"], ["t", "d"], ["d", "b"], ["b", "f"]], "t": "diagram", "id": "dg-10_7-02-1"},
+
+
 
     { t: "code", lang: "python", title: "A dataclass and runtime.context",
       code: '@dataclass\nclass Ctx:\n    model: str = "<default>"\n    tone: str = "<default>"\n\ndef node(state, runtime: Runtime[Ctx]):\n    c = runtime.context\n    return {"out": [... c.model ... c.tone ...]}\n\ng = StateGraph(S, context_schema=Ctx)',
@@ -55,6 +59,8 @@ EC.receiveLesson({
 
     {"kind": "layers", "title": "Four ambient things, previously reached for by different means", "caption": "The store was a closure or a global, the stream writer was passed in, and the previous return had no equivalent. **Runtime unifies them into one accessor — which also makes the node testable with a constructed `Runtime` rather than a fully wired graph**, because a node that asks the runtime for its store has no hidden dependency to stand up.", "items": [{"label": "runtime.context", "sub": "the typed per-invocation dials", "tone": "violet", "side": "typed"}, {"label": "runtime.store", "sub": "long-term memory (9.6)", "tone": "good", "side": "was a global"}, {"label": "runtime.stream_writer", "sub": "custom stream output (10.3)", "tone": "good", "side": "was passed in"}, {"label": "runtime.previous", "sub": "the previous return (10.8)", "tone": "accent", "side": "new"}, {"label": "So: one accessor, no hidden deps", "sub": "construct a Runtime and test the node", "tone": "teal", "side": "testable"}], "t": "diagram", "id": "dg-10_7-03-2"},
 
+
+
     { t: "dl", items: [
       ["`runtime.context`", "the typed per-invocation configuration"],
       ["`runtime.store`", "the long-term memory store (9.6)"],
@@ -65,6 +71,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "line", text: "Context against state", sub: "The line" },
 
     {"kind": "flow", "title": "One question decides it, and 9.4 agrees with the answer", "caption": "**\"Would a node ever want to change this?\"** — yes means state, no means context. And 9.4's cost argument points the same way: **anything in state is serialised every superstep, so a feature flag kept there is written to storage once per step, forever, for no reason.** Secrets belong in neither; a per-request object ends up in logs and traces.", "cols": 3, "nodes": [{"id": "q", "label": "Would a node ever change this?", "sub": "the whole test", "tone": "violet"}, {"id": "y", "label": "Yes: it is state", "sub": "nodes read and write it", "tone": "accent"}, {"id": "n", "label": "No: it is context", "sub": "the caller sets it", "tone": "good"}, {"id": "c", "label": "9.4: state is serialised per superstep", "sub": "a flag, written forever", "tone": "warn"}, {"id": "s", "label": "Secrets: neither", "sub": "they end up in logs and traces", "tone": "crit"}], "edges": [["q", "y"], ["q", "n"], ["y", "c"], ["n", "s"]], "t": "diagram", "id": "dg-10_7-04-3"},
+
+
 
     { t: "table", head: ["context", "state"], rows: [
       ["the **caller** sets it", "**nodes** write it"],
@@ -81,6 +89,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Omitted is not the same as empty, and the difference is an exception", "caption": "Three cases rather than two. **Omitting `context` leaves `runtime.context` as `None`, so a node reading an attribute raises rather than quietly getting defaults** — which, for once in this course, is the loud failure. It matters because context is **per-invocation**: a caller that sets it at the start of a conversation and omits it afterwards gets an error from turn two, not silently different behaviour.", "left": "how it was passed", "codeW": 200, "vars": ["runtime.context"], "steps": [{"code": "omitted entirely", "state": ["None  (NoneType)"], "tone": "crit"}, {"code": "context={}", "state": ["Ctx('<default>', '<default>')"], "changed": [0], "tone": "good"}, {"code": "context={'model':'x'}", "state": ["Ctx('x', '<default>')"], "changed": [0], "tone": "good"}, {"code": "then reading c.model", "state": ["AttributeError on case 1"], "changed": [0], "tone": "violet", "note": "loud, not silent"}], "t": "diagram", "id": "dg-10_7-05-4"},
 
+
+
     { t: "code", lang: "text", title: "Omitted, empty, and populated",
       code: "omitted entirely         -> context=None type=NoneType\ncontext={}               -> Ctx(model='<default>', tone='<default>')\ncontext={'model':'x'}    -> Ctx(model='x', tone='<default>')",
       caption: "Omitting it is **not** the same as passing an empty dict." },
@@ -95,6 +105,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "filters", text: "And it still filters rather than validates", sub: "8.4's pattern again" },
 
     {"kind": "flow", "title": "An undeclared key is accepted, so the schema documents rather than guards", "caption": "8.4's pattern at context scope: **the declaration shapes and documents, it does not reject.** So the value is discoverability and types **at the read site**, not enforcement at the boundary — and a caller that misspells a key gets the default rather than an error. If you want the boundary enforced, that is a Pydantic context schema or a check in the caller, written deliberately.", "cols": 3, "nodes": [{"id": "u", "label": "An undeclared context key", "sub": "passed by the caller", "tone": "accent"}, {"id": "a", "label": "Accepted, not rejected", "sub": "8.4's pattern again", "tone": "warn"}, {"id": "m", "label": "So a misspelled key gets the default", "sub": "with no error", "tone": "crit"}, {"id": "v", "label": "The value is at the read site", "sub": "types and discoverability", "tone": "good"}, {"id": "e", "label": "Enforcement is a separate decision", "sub": "Pydantic, or check in the caller", "tone": "good"}], "edges": [["u", "a"], ["a", "m"], ["m", "v"], ["v", "e"]], "t": "diagram", "id": "dg-10_7-06-5"},
+
+
 
     { t: "code", lang: "text", title: "An undeclared context key",
       code: "accepted -> ['model=x tone=<default>']",

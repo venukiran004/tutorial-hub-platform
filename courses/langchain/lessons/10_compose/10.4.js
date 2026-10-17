@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "A node that fails twice then succeeds",
       code: 'g.add_node("flaky", flaky, retry_policy=RetryPolicy(max_attempts=3,\n                                                    initial_interval=0.01))',
       out: "  the node raises RuntimeError twice, then succeeds:\n    RAISED RuntimeError: transient failure 1\n    the node body ran 1 time(s)",
@@ -41,6 +43,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "default", text: "What the default actually retries", sub: "Read the source" },
 
     {"kind": "flow", "title": "The default retries connection errors and 5xx, and it is a function you can read", "caption": "`default_retry_on` is ordinary code: **`ConnectionError` yes, an HTTP status error only when 500 ≤ status < 600**, and so on. Which is worth reading rather than assuming, because it settles the question 2.6 raised from the other side: **the default does not retry a 400, a 401 or a validation error** — so the dangerous case is not the default being too broad, it is **a custom `retry_on` written more broadly than the default.**", "cols": 3, "nodes": [{"id": "d", "label": "default_retry_on is readable code", "sub": "not a hidden policy", "tone": "violet"}, {"id": "c", "label": "ConnectionError: yes", "sub": "transient by nature", "tone": "good"}, {"id": "h", "label": "HTTP 5xx only", "sub": "500 <= status < 600", "tone": "good"}, {"id": "n", "label": "So not 400, 401 or a validation error", "sub": "2.6's list, respected", "tone": "good"}, {"id": "w", "label": "The risk is a broader custom policy", "sub": "not the default", "tone": "warn"}], "edges": [["d", "c"], ["d", "h"], ["h", "n"], ["n", "w"]], "t": "diagram", "id": "dg-10_4-02-1"},
+
+
 
     { t: "code", lang: "python", title: "default_retry_on",
       code: 'def default_retry_on(exc):\n    if isinstance(exc, ConnectionError):          return True\n    if isinstance(exc, httpx.HTTPStatusError):\n        return 500 <= exc.response.status_code < 600\n    if isinstance(exc, requests.HTTPError):\n        return 500 <= ... < 600 if exc.response else True\n    if isinstance(exc, (ValueError, TypeError, ArithmeticError,\n                        ImportError, LookupError, NameError,\n                        SyntaxError, RuntimeError, ReferenceError,\n                        StopIteration, StopAsyncIteration, OSError)):\n        return False\n    return True',
@@ -51,6 +55,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "edges", text: "The two edges that matter", sub: "And they point opposite ways" },
 
     {"kind": "trace", "title": "Writing the retryable set down makes the decision reviewable", "caption": "`retry_on=(RuntimeError,)` and the node succeeds on **attempt 3**, having run its body **three times.** Which is usually what you want — **the set of retryable errors for your dependencies is knowable and short, and writing it down makes the decision reviewable instead of inherited.** An inherited default is a decision nobody made; a tuple in the source is one somebody can disagree with in a pull request.", "left": "observation", "codeW": 190, "vars": ["value"], "steps": [{"code": "result", "state": ["succeeded on attempt 3"], "tone": "good"}, {"code": "the node body ran", "state": ["3 times"], "changed": [0], "tone": "violet", "note": "which section 05 is about"}, {"code": "retry_on, written down", "state": ["reviewable, not inherited"], "tone": "good"}], "t": "diagram", "id": "dg-10_4-03-2"},
+
+
 
     { t: "callout", kind: "trap", title: "TimeoutError is not retried", body: [
       { t: "p", text: "In Python 3 `TimeoutError` is a subclass of `OSError`, and `OSError` is in the deny-list. So the single most retryable thing a network call does is excluded by default." },
@@ -69,6 +75,8 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "A retry policy is not an error-handling strategy on its own", "caption": "**It only buys you another chance at the same thing.** Something still has to decide **what exhaustion means** — route to a fallback, hand the failure to the model to react to (which 9.2's `ToolNode` does), or fail the request. A graph with retries and no answer to that question **has moved the failure later rather than handled it**, and the symptom is a request that takes three times as long before failing identically.", "cols": 3, "nodes": [{"id": "r", "label": "A retry policy", "sub": "another chance at the same thing", "tone": "accent"}, {"id": "e", "label": "Attempts exhausted", "sub": "and then what?", "tone": "crit"}, {"id": "f", "label": "Route to a fallback", "sub": "one answer", "tone": "good"}, {"id": "m", "label": "Or hand it to the model", "sub": "9.2's ToolNode does this", "tone": "good"}, {"id": "n", "label": "Or fail, deliberately", "sub": "also an answer", "tone": "good"}, {"id": "l", "label": "No answer: 3x the latency, same failure", "sub": "postponed, not handled", "tone": "crit"}], "edges": [["r", "e"], ["e", "f"], ["e", "m"], ["e", "n"], ["e", "l"]], "t": "diagram", "id": "dg-10_4-04-3"},
 
+
+
     { t: "code", lang: "text", title: "A node that always fails",
       code: "RAISED RuntimeError: permanent\n  ran 3 times, then the exception propagated",
       caption: "After the attempts are exhausted, the graph raises." },
@@ -76,6 +84,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "reexec", text: "The retried node re-runs from the top", sub: "The third time this rule appears" },
 
     {"kind": "trace", "title": "Two side effects for one successful run", "caption": "**The retried node re-runs from the top**, so a node whose first statement has a side effect performs it on every attempt: **the run succeeded once and recorded two side effects.** Which is 9.7's re-execution constraint arriving for the third time in this course — interrupt, fork, and now retry — and the same remedy applies: **put the effect after whatever can fail, or make it idempotent.**", "left": "observation", "codeW": 190, "vars": ["value"], "steps": [{"code": "result", "state": ["{'trace': ['done']}"], "tone": "good"}, {"code": "side effects recorded", "state": ["2"], "changed": [0], "tone": "crit", "note": "for one success"}, {"code": "the third time in this course", "state": ["interrupt, fork, retry"], "tone": "violet"}], "t": "diagram", "id": "dg-10_4-05-4"},
+
+
 
     { t: "code", lang: "text", title: "A node that records a side effect, then fails once",
       code: "-> {'trace': ['done']}\n  side effects recorded: 2",
@@ -87,6 +97,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "timeout", text: "Timeouts are not a node setting", sub: "And the worst case is a product" },
 
     {"kind": "flow", "title": "There is no timeout= on add_node", "caption": "So the options are **the client's own timeout inside the node**, a wrapper around the node body, or **the caller's timeout around `invoke()`** — and they are not equivalent. A client timeout fails one call and lets the retry policy see it. A caller timeout around `invoke()` kills the whole run, **including the checkpoint write**, so a graph that times out at the top may leave no record of how far it got.", "cols": 3, "nodes": [{"id": "n", "label": "No timeout= on add_node", "sub": "it does not exist", "tone": "accent"}, {"id": "c", "label": "The client's own timeout", "sub": "inside the node", "tone": "good"}, {"id": "r", "label": "Fails one call; retry sees it", "sub": "composable", "tone": "good"}, {"id": "i", "label": "A timeout around invoke()", "sub": "the caller's", "tone": "warn"}, {"id": "k", "label": "Kills the run, checkpoint write included", "sub": "no record of progress", "tone": "crit"}], "edges": [["n", "c"], ["c", "r"], ["n", "i"], ["i", "k"]], "t": "diagram", "id": "dg-10_4-06-5"},
+
+
 
     { t: "p", text: "There is no `timeout=` on `add_node`. The options are the client's own timeout inside the node, a wrapper around the node body, or the caller's timeout around `invoke()`." },
     { t: "callout", kind: "warn", title: "The caller's timeout is the weakest", body: [

@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["pattern", "model calls", "paths", "loops?", "predictable?"], rows: [
       ["single call", "1", "1", "no", "**yes**"],
       ["call + tools", "1", "1", "no", "**yes**"],
@@ -45,10 +47,16 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "The last column decides a design, because it is what lets you say something about cost and latency **before** shipping (9.3). Everything else in the table is a consequence of it." },
     { t: "h2", n: "02", id: "tree", text: "The decision tree", sub: "Two questions" },
+
+    {"kind": "tree", "title": "Two questions, four answers", "caption": "The first question eliminates most systems: **if the model does not need to decide anything, it is a chain, and most RAG pipelines are here** (8.1). The second is 11.1's test — sequence or choice — and only the last branch produces an agent loop. Note what the tree does **not** have: a branch that arrives at ReAct because the task is important, or because an agent was asked for.", "root": {"label": "Does the model decide anything?", "sub": "the first question", "tone": "accent", "children": [{"label": "A chain", "sub": "most RAG pipelines (8.1)", "tone": "good", "edge": "no"}, {"label": "Sequence, or only choice?", "sub": "11.1's test", "tone": "violet", "edge": "yes", "children": [{"label": "Router", "sub": "one classification", "tone": "good", "edge": "choice"}, {"label": "Can you plan it up front?", "sub": "the last question", "tone": "violet", "edge": "sequence", "children": [{"label": "Plan-and-execute", "sub": "1 + len(plan)", "tone": "good", "edge": "yes"}, {"label": "ReAct", "sub": "2..N, the model's control", "tone": "warn", "edge": "no"}]}]}]}, "t": "diagram", "id": "dg-11_8-02-1"},
+
     { t: "code", lang: "text", title: "Where the control sits",
       code: "does the model need to decide ANYTHING?\n  no  -> a chain. most RAG pipelines are here (8.1).\n  yes -> does the SEQUENCE vary, or only the CHOICE?\n         only the choice -> ROUTER\n         the sequence too -> can you plan it up front?\n                             yes -> PLAN-AND-EXECUTE\n                             no  -> REACT",
       caption: "Two questions, four answers." },
     { t: "h2", n: "03", id: "modifiers", text: "Three modifiers, not alternatives", sub: "Which is the part the table hides" },
+
+    {"kind": "flow", "title": "Three modifiers, each answering a different question from the tree", "caption": "**This is the part the decision table hides: reflection, reflexion and agentic RAG are not rungs on the ladder, they are modifiers you add to whichever rung you landed on.** A router can have agentic RAG behind one branch; a plan-and-execute worker can reflect on its output. So the tree picks the control structure, and these three answer a separate question about **which part is unreliable.**", "cols": 3, "nodes": [{"id": "q", "label": "Is output QUALITY the problem?", "sub": "-> reflection (11.4)", "tone": "good"}, {"id": "r", "label": "Does it fail the SAME way repeatedly?", "sub": "-> reflexion (11.5)", "tone": "good"}, {"id": "g", "label": "Is RETRIEVAL the unreliable part?", "sub": "-> agentic RAG (11.7)", "tone": "good"}, {"id": "m", "label": "Modifiers, not alternatives", "sub": "added to whichever rung you chose", "tone": "violet"}, {"id": "e", "label": "e.g. agentic RAG behind one router branch", "sub": "the tree still picked the structure", "tone": "teal"}], "edges": [["q", "m"], ["r", "m"], ["g", "m"], ["m", "e"]], "t": "diagram", "id": "dg-11_8-03-2"},
+
     { t: "dl", items: [
       ["is the output **quality** the problem?", "add **reflection** (11.4)"],
       ["does it fail the **same way** repeatedly?", "add **reflexion** (11.5)"],
@@ -59,6 +67,9 @@ EC.receiveLesson({
       { t: "p", text: "Which matters because a catalogue presented as eight alternatives invites choosing one. The useful framing is a base pattern decided by where the control sits, plus modifiers decided by which failure you are seeing." }
     ] },
     { t: "h2", n: "04", id: "guards", text: "The guards every pattern needs", sub: "Identical across all of them" },
+
+    {"kind": "layers", "title": "Six guards, and five of them live in two places", "caption": "Read the right-hand column: **four of the six are the router's job, because the router is the only place that can make a decision rather than raise.** The give-up node is the exception and the one most often missing — **it is what turns “the agent failed” into a response you can show a user.** And `recursion_limit` is last on purpose: a backstop for what the other five did not anticipate.", "items": [{"label": "An iteration budget", "sub": "10.5, 8.9", "tone": "good", "side": "the router"}, {"label": "A progress check", "sub": "10.5 - a loop achieving nothing", "tone": "good", "side": "the router"}, {"label": "A default branch", "sub": "11.2 - model output is not enumerable", "tone": "good", "side": "the router"}, {"label": "Record which exit fired", "sub": "10.5 - or a dead loop hides", "tone": "good", "side": "the router"}, {"label": "A give-up node", "sub": "11.3 - failure as a response", "tone": "violet", "side": "the graph"}, {"label": "recursion_limit", "sub": "8.9 - for what you did not predict", "tone": "accent", "side": "a backstop"}], "t": "diagram", "id": "dg-11_8-04-3"},
+
     { t: "table", head: ["guard", "where", "from"], rows: [
       ["an iteration budget", "the router", "10.5, 8.9"],
       ["a progress check", "the router", "10.5"],
@@ -72,6 +83,9 @@ EC.receiveLesson({
       { t: "p", text: "This is the part most pattern descriptions omit, and it is identical regardless of which pattern you chose. So a pattern catalogue without the guards is a catalogue of half-built systems." }
     ] },
     { t: "h2", n: "05", id: "costs", text: "The same task, six ways", sub: "Measured" },
+
+    {"kind": "trace", "title": "Six patterns on one task, and the cheapest one got the answer", "caption": "**Call + tools got the answer in one call, because the tool output was the answer** — and every row below it spends more to arrive at the same place, with reflection at **6**. Two caveats keep this honest: the single call answered **from memory**, so it is ungrounded (5.7), and the router's answer depended on the category being right (11.2). The ordering is the argument of the whole module.", "left": "pattern", "codeW": 160, "vars": ["model calls", "got the answer?"], "steps": [{"code": "a single call", "state": ["1", "from memory - ungrounded"], "tone": "crit"}, {"code": "call + tools", "state": ["1", "yes - the tool output IS it"], "changed": [1], "tone": "good"}, {"code": "router + handler", "state": ["1", "yes, if the category was right"], "changed": [1], "tone": "good"}, {"code": "ReAct", "state": ["2", "yes - a call to phrase it"], "changed": [0], "tone": "warn"}, {"code": "reflection", "state": ["6", "yes, polished"], "changed": [0], "tone": "crit", "note": "3 rounds x 2"}, {"code": "agentic RAG", "state": ["2 + grading", "yes, plus a retry path"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-11_8-05-4"},
+
     { t: "table", head: ["pattern", "model calls", "got the answer?", "notes"], rows: [
       ["single call", "1", "from memory", "**ungrounded** (5.7)"],
       ["call + tools", "**1**", "yes", "the tool output **is** the answer"],
@@ -85,6 +99,9 @@ EC.receiveLesson({
       { t: "p", text: "Above that you are buying phrasing, robustness, or the ability to handle a question **this one did not need**. All three are legitimate purchases; none of them is the answer, and knowing which one you are buying is the point of the comparison." }
     ] },
     { t: "h2", n: "06", id: "rule", text: "The rule, stated once", sub: "And the asymmetry behind it" },
+
+    {"kind": "flow", "title": "Twenty real examples usually resolve to a router", "caption": "Read the table **upward** rather than downward — start at the cheapest row and stop at the first one that works. And the practical corollary is a conversation rather than a technique: **when a stakeholder asks for an agent, ask for twenty real examples of what it must handle. Most of the time they resolve to a handful of intents with one operation each, which is a router — and saying so early is worth more than any individual pattern in this module.**", "cols": 3, "nodes": [{"id": "a", "label": "'We need an agent'", "sub": "the usual starting point", "tone": "accent"}, {"id": "t", "label": "Ask for twenty real examples", "sub": "of what it must handle", "tone": "violet"}, {"id": "h", "label": "A handful of intents", "sub": "one operation each", "tone": "good"}, {"id": "r", "label": "Which is a router", "sub": "1 call, no loop", "tone": "good"}, {"id": "w", "label": "Saying so early is the value", "sub": "more than any pattern here", "tone": "teal"}], "edges": [["a", "t"], ["t", "h"], ["h", "r"], ["r", "w"]], "t": "diagram", "id": "dg-11_8-06-5"},
+
     { t: "p", text: "Use the least agentic pattern that solves the problem, and read the table **upward** rather than downward." },
     { t: "callout", kind: "insight", title: "Because the two mistakes are not symmetric", body: [
       { t: "p", text: "A bounded pattern that nearly works is one branch or one tool away from working \u2014 the gap is visible and the fix is local. An agent that works unpredictably is a measurement problem, a cost problem and a debugging problem simultaneously, and none of those is one change from fixed." },

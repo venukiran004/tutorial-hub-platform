@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "One cycle",
       code: "HumanMessage('refund policy?')\nAIMessage(tool_calls=['lookup_policy'])        <- content: 'I should look up\n                                                  the refund policy first.'\nToolMessage('Refunds are available within 30 days of purchase.')\nAIMessage('The policy says 30 days, which answers the question.')",
       caption: "The first `AIMessage` has **both** content and a tool call." },
@@ -44,6 +46,9 @@ EC.receiveLesson({
       code: "call 1 received 1 message(s)\ncall 2 received 3 message(s):\n  HumanMessage('refund policy?')\n  AIMessage(tool_calls=['lookup_policy'])\n  ToolMessage('Refunds are available within 30 days of purchase.')",
       caption: "9.1's growing list, now carrying reasoning as well as results." },
     { t: "h2", n: "02", id: "schema", text: "The state schema", sub: "And what does not belong in it" },
+
+    {"kind": "flow", "title": "Two keys, and the counter is the one that is not a duplicate", "caption": "**A `current_tool` or `last_result` key is a duplicate: the message list already holds both, so you get two sources of truth that can disagree — and the message list is the one the model actually reads.** 8.8's tell applies as well: a key existing only so a router can read back what a node already knew is a `Command` waiting to happen. **The step counter is different** — it is a property of the run that no single node knows.", "cols": 3, "nodes": [{"id": "m", "label": "messages, with add_messages", "sub": "the loop IS the list", "tone": "good"}, {"id": "s", "label": "steps, with operator.add", "sub": "the router needs it", "tone": "good"}, {"id": "d", "label": "current_tool / last_result", "sub": "already in the list", "tone": "crit"}, {"id": "t", "label": "Two sources of truth that disagree", "sub": "and the model reads the list", "tone": "crit"}, {"id": "c", "label": "The counter is not a duplicate", "sub": "no single node knows it", "tone": "violet"}], "edges": [["m", "d"], ["d", "t"], ["s", "c"]], "t": "diagram", "id": "dg-11_3-02-1"},
+
     { t: "code", lang: "python", title: "Two keys",
       code: 'class ReActState(TypedDict):\n    messages: Annotated[List[BaseMessage], add_messages]\n    steps: Annotated[int, operator.add]',
       caption: "Messages because the loop is the list; a counter because the router needs it." },
@@ -52,6 +57,9 @@ EC.receiveLesson({
       { t: "p", text: "8.8's tell applies too: a key that exists only so a router can read back what a node already knew is a `Command` waiting to happen. The step counter is different \u2014 it is genuinely a property of the run that no single node knows." }
     ] },
     { t: "h2", n: "03", id: "guards", text: "The loop guards", sub: "And the give-up node" },
+
+    {"kind": "trace", "title": "A model that never stops asking, and the graph returned anyway", "caption": "Three steps taken, then an `AIMessage` a caller can show a user — **the graph returned rather than raising.** Two things earn their place here. **The budget is in the router, so the graph exits instead of hitting the recursion limit** (8.9, 10.5). And `guarded` **wraps** `tools_condition` rather than replacing it — 9.2's unrolling done minimally: keep the prebuilt's logic, add the one thing it has no notion of.", "left": "step", "codeW": 170, "vars": ["router returns", "steps"], "steps": [{"code": "1", "state": ["tools_condition -> tools", "1"], "tone": "good"}, {"code": "2", "state": ["tools_condition -> tools", "2"], "changed": [1], "tone": "good"}, {"code": "3", "state": ["give_up", "3"], "changed": [0], "tone": "warn", "note": "budget spent"}, {"code": "result", "state": ["'I could not... in 3 steps.'", "3"], "tone": "violet", "note": "returned, not raised"}], "t": "diagram", "id": "dg-11_3-03-2"},
+
     { t: "code", lang: "python", title: "A budget in the router",
       code: 'def guarded(state):\n    if state["steps"] >= 3:\n        return "give_up"\n    return tools_condition(state)',
       out: "  a model that never stops asking, with a 3-step budget:\n    steps taken: 3\n    last message: AIMessage('I could not complete this in 3 steps.')",
@@ -62,6 +70,9 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "Note also that `guarded` wraps `tools_condition` rather than replacing it \u2014 which is 9.2's unrolling done minimally. You keep the prebuilt's logic and add exactly the one thing it has no notion of." },
     { t: "h2", n: "04", id: "goodat", text: "What ReAct is good at", sub: "And bad at" },
+
+    {"kind": "flow", "title": "Good at exploration, bad at commitment", "caption": "It fits when **the next action genuinely depends on the last result** — searching, diagnosing, following a trail, recovering from a tool failure by trying something else. It fits badly where a router already works, and badly on **long plans, because the model re-decides from scratch every turn and so has no commitment to a strategy.** And the cost is unpredictable for a plain reason: **the step count is model output.**", "cols": 3, "nodes": [{"id": "e", "label": "Exploration: search, diagnose, trail", "sub": "the next step depends on the last", "tone": "good"}, {"id": "f", "label": "Recovering from a tool failure", "sub": "by trying something else", "tone": "good"}, {"id": "r", "label": "Anything a router does", "sub": "one classification is cheaper", "tone": "warn"}, {"id": "p", "label": "Long plans", "sub": "it re-decides every turn", "tone": "crit"}, {"id": "c", "label": "Predictable cost", "sub": "the step count is model output", "tone": "crit"}], "edges": [["e", "f"], ["r", "p"], ["p", "c"]], "t": "diagram", "id": "dg-11_3-04-3"},
+
     { t: "table", head: ["good at", "bad at"], rows: [
       ["the next action genuinely depends on the last result", "anything a router does \u2014 one classification is cheaper and cannot loop"],
       ["exploration: searching, diagnosing, following a trail", "long plans \u2014 the model re-decides from scratch every turn, so it has no commitment to a strategy"],

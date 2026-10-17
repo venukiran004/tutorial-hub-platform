@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Two nodes, one key, no reducer",
       code: 'class S(TypedDict):\n    messages: List[str]        # NO reducer\n\ndef a(state: S):\n    return {"messages": ["from a"]}\n\ndef b(state: S):\n    return {"messages": ["from b"]}\n\n# START -> a -> b -> END',
       out: "  result: {'messages': ['from b']}",
@@ -47,6 +49,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Annotated metadata is the reducer",
       code: 'import operator\n\nclass S2(TypedDict):\n    messages: Annotated[List[str], operator.add]',
       out: "  result: {'messages': ['from a', 'from b']}",
@@ -55,6 +59,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "parallel", text: "Where it actually matters", sub: "And the failure changes character" },
 
     {"kind": "trace", "title": "Without a reducer, a concurrent write is an error", "caption": "Two nodes writing the same key in one superstep **raises `InvalidUpdateError: can receive only one value per step`** — it does not pick one, and it does not silently drop one. Which **reframes what a reducer is for: it is not an optimisation for accumulating history, it is what makes concurrent writes to a key possible at all.** A key that two nodes can **ever** write needs one, and the fan-in is what forces you to notice.", "left": "configuration", "codeW": 170, "vars": ["result of a fan-in"], "steps": [{"code": "no reducer", "state": ["InvalidUpdateError"], "tone": "crit", "note": "one value per step"}, {"code": "operator.add", "state": ["{'found': ['left', 'right']}"], "changed": [0], "tone": "good"}, {"code": "so a reducer", "state": ["makes the write possible at all"], "tone": "violet"}], "t": "diagram", "id": "dg-8_3-03-2"},
+
+
 
 
 
@@ -69,6 +75,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "order", text: "Reducers and ordering", sub: "The runtime chooses the order, not you" },
 
     {"kind": "matrix", "title": "Updates within a superstep arrive in an order you do not control", "caption": "So **a reducer whose result depends on order produces nondeterministic state.** The distinction that matters is not associativity: **`operator.add` on lists is associative and *not* commutative** — `[a] + [b]` is not `[b] + [a]` — so list concatenation at a fan-in records the **scheduling order**, not a meaningful one. Numbers, set union, max and min are all safe; \"last write wins\" is the worst case, because **which write is last is not a question with an answer.**", "cols": ["Safe under reordering", "Not safe"], "rows": ["Arithmetic", "Sets", "Extremes", "Lists", "Overwrite"], "cells": [[{"text": "operator.add on numbers", "tone": "good"}, "-"], [{"text": "set union", "tone": "good"}, "-"], [{"text": "max / min", "tone": "good"}, "-"], ["-", {"text": "list concatenation - order is scheduling", "tone": "crit"}], ["-", {"text": "'last write wins' - which write is last?", "tone": "crit"}]], "t": "diagram", "id": "dg-8_3-04-3"},
+
+
 
 
 
@@ -88,6 +96,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Deduplicating a fan-in",
       code: 'def merge_unique(current, update):\n    out = list(current)\n    for x in update:\n        if x not in out:\n            out.append(x)\n    return out\n\nclass S4(TypedDict):\n    docs: Annotated[List[str], merge_unique]',
       out: "  two parallel fetchers returning overlapping docs:\n    {'docs': ['doc1', 'doc2', 'doc3']}",
@@ -96,6 +106,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "addmessages", text: "add_messages is not operator.add", sub: "And the difference is load-bearing" },
 
     {"kind": "matrix", "title": "Three things add_messages does that operator.add does not", "caption": "It is not a convenience alias. **It coerces dicts and strings into `Message` objects**, so a node can return a plain string. **It assigns an id to messages that lack one.** And **it replaces a message whose id matches an existing one** — which is the behaviour that makes an edit-in-place possible at all, and the one that will surprise you if you assumed append-only semantics.", "cols": ["What it does"], "rows": ["Coercion", "Identity", "Replacement"], "cells": [["turns dicts and strings into Message objects"], ["assigns an id to messages that lack one"], [{"text": "REPLACES a message whose id already exists - not append-only", "tone": "violet"}]], "t": "diagram", "id": "dg-8_3-06-5"},
+
+
 
 
 

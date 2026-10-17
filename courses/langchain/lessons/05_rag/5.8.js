@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "14 natural queries, k=5",
       code: "Recall@5 = 1.000   P@5 = 0.214   MRR = 0.964   NDCG@5 = 0.974",
       caption: "Three of these are genuinely good. One is at ceiling." },
@@ -43,6 +45,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "collapse", text: "The same retriever, different query style", sub: "And it does not hold up" },
 
     {"kind": "trace", "title": "A dense embedding has no notion of an exact match", "caption": "Recall@5 is 0.875 and MRR 0.781 — respectable, and the per-query column shows where it comes apart. `mTLS` and `SAML 2.0` land at reciprocal rank 1.00. **`WebAuthn` lands at 0.25**, with the top hit an unrelated webhook document. The reason is structural: **`Retry-After` is semantically close to a great deal of API documentation**, so the relevant document has no particular advantage — and the one signal that would settle it, *this document literally contains that string*, **is not available to a similarity score.**", "left": "query", "codeW": 150, "vars": ["reciprocal rank", "top hit"], "steps": [{"code": "mTLS", "state": ["1.00", "api-mtls"], "tone": "good"}, {"code": "SAML 2.0", "state": ["1.00", "auth-sso"], "tone": "good"}, {"code": "WebAuthn", "state": ["0.25", "intg-webhook-..."], "changed": [0, 1], "tone": "crit", "note": "no exact-match signal"}, {"code": "overall", "state": ["MRR 0.781", "recall@5 0.875"], "tone": "accent"}], "t": "diagram", "id": "dg-5_8-02-1"},
+
+
 
 
 
@@ -66,6 +70,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Four documents about cancelling things",
       code: "'I ordered the wrong thing and want to stop it'\n  top 4: ['bill-cancel-order', 'bill-cancel-sub', 'ops-cancel-report', 'bill-cancel-trial']\n'stop my plan renewing'\n  top 4: ['bill-cancel-sub', 'bill-cancel-trial', 'bill-overage', 'ops-cancel-report']",
       caption: "The right document ranks first both times, and the rest of the slots are near-duplicates." },
@@ -76,6 +82,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "list", text: "The problem list for module 6", sub: "Every item measured, not assumed" },
 
     {"kind": "matrix", "title": "Six problems, each from a measurement rather than a syllabus", "caption": "**Each row came from a measurement in this module rather than from a list of techniques to cover**, and that ordering matters: **module 6 is not a tour of retrieval methods, it is six specific repairs to a baseline whose failures you have now seen.** The last row is the one that shapes how you will read the next module — P@5 is already at ceiling, so a metric that cannot show improvement is itself one of the six problems.", "cols": ["Why the baseline has it", "Fixed in"], "rows": ["Rare exact terms missed", "Scales cannot be mixed", "Near-duplicates fill slots", "The cheap ranker is rough", "Nothing abstains", "P@5 is at ceiling"], "cells": [[{"text": "dense similarity has no exact match", "tone": "crit"}, "BM25 (6.3)"], ["dense and sparse scores are incomparable", "RRF (6.5)"], [{"text": "no diversity in the ranking", "tone": "crit"}, "MMR (6.6)"], ["order within the candidates is unreliable", "reranking (6.7)"], [{"text": "nothing abstains", "tone": "crit"}, "a score threshold (7.1)"], [{"text": "the metric cannot show improvement", "tone": "violet"}, "metric choice (6.9)"]], "t": "diagram", "id": "dg-5_8-04-3"},
+
+
 
 
 

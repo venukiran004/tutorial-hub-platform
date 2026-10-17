@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["Approach", "Calls (p50)", "Calls (p95)", "Character"], rows: [
       ["a single call", "1", "1", "cheapest, no decisions, fails on anything unexpected"],
       ["a fixed chain", "3", "3", "deterministic path, every step runs every time"],
@@ -37,6 +39,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "giveup", text: "What you give up", sub: "Five properties, all of them real" },
 
     {"kind": "matrix", "title": "Five properties given up, and the one that compounds", "caption": "**Testability deserves the emphasis because it compounds.** With a fixed chain you can assert that step two ran with a particular input; with an agent you can only assert on the final answer — which means **every test is an end-to-end test, and a change anywhere can break any of them** for reasons that take a while to locate. The others are costs you can budget for; this one changes how the whole test suite behaves.", "cols": ["What happens instead"], "rows": ["Determinism", "Predictable cost", "Predictable latency", "Testability", "Debuggability"], "cells": [["the same input can take a different path"], ["p50 and p95 differ by several model calls"], ["the same reason"], [{"text": "every test becomes end-to-end, and compounds", "tone": "crit"}], [{"text": "a failure is somewhere in a variable-length trace", "tone": "warn"}]], "t": "diagram", "id": "dg-3_8-02-2"},
+
+
 
 
 
@@ -70,6 +74,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "ol", items: [
       "Can you write down the steps in advance?",
       "Is the set of tools small and the choice usually obvious?",
@@ -88,6 +94,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "honest", text: "The honest version", sub: "What the module adds up to" },
 
     {"kind": "compare", "title": "The honest summary of the module", "caption": "An agent is a more expensive way to be less reliable, bought for the cases where you genuinely cannot write the steps down. That is a real set of cases, and it is much smaller than the number of systems using one.", "columns": [{"title": "a chain — the default", "tone": "good", "items": ["the steps are known before the request arrives", "one model call per unit of work", "the control flow is in your code, so it is readable and testable", "a failure has one place to be"]}, {"title": "an agent — when earned", "tone": "warn", "items": ["the next step genuinely depends on what the last one returned", "3+ model calls, and a variable number", "the control flow is a model's decision, so a trace is the only record", "needs a cap, a budget and a guard before it ships"]}], "t": "diagram", "id": "dg-3_8-04-0"},
+
+
 
 
 

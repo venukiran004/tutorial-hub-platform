@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Four malformed graphs",
       code: "a node with no edge from START         RAISED ValueError: Graph must have an\n                                       entrypoint: add at least one edge\n                                       from START to another node\na node with no edge to END             compiled\nan edge to a node that does not exist  RAISED ValueError: Found edge ending\n                                       at unknown node `nonexistent`\na graph with no nodes at all           compiled",
       caption: "Two structural facts it can see; two it does not care about." },
@@ -43,6 +45,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "limit", text: "The recursion limit", sub: "Measure it; do not remember it" },
 
     {"kind": "trace", "title": "The default limit is tuned for not interrupting legitimate work", "caption": "An unbounded cycle ran **10,007 supersteps** before `GraphRecursionError` — and the limit this version reports is the same 10,007, so the default is **high enough that a bug burns ten thousand steps before anything stops it.** Setting it explicitly is one line of config, and **for any graph with a cycle, setting it deliberately and low is the cheap protection** — because the default is tuned for not interrupting legitimate work rather than for catching your bug quickly.", "left": "measurement", "codeW": 200, "vars": ["value"], "steps": [{"code": "supersteps executed", "state": ["10,007"], "tone": "crit"}, {"code": "the limit reported", "state": ["10,007"], "tone": "crit"}, {"code": "recursion_limit=5", "state": ["one line of config"], "changed": [0], "tone": "good", "note": "for any cyclic graph"}], "t": "diagram", "id": "dg-8_9-02-1"},
+
+
 
 
 
@@ -64,6 +68,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "The same two-node graph, three ways",
       code: "invoke -> the final state only:\n  {'n': 20, 'trace': ['s1', 's2']}\n\nstream(mode='updates') -> what each node returned:\n  {'s1': {'n': 2, 'trace': ['s1']}}\n  {'s2': {'n': 20, 'trace': ['s2']}}\n\nstream(mode='values') -> the full state after each superstep:\n  {'n': 1, 'trace': []}\n  {'n': 2, 'trace': ['s1']}\n  {'n': 20, 'trace': ['s1', 's2']}",
       caption: "`values` emits the **input** state first, so a two-node graph yields three chunks." },
@@ -74,6 +80,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "draw", text: "The graph can draw itself", sub: "And it is a review tool" },
 
     {"kind": "flow", "title": "The graph can draw itself, which is the cheapest review artefact available", "caption": "`get_graph().draw_ascii()` prints the topology with no dependencies and nothing to configure — `__start__`, then each node, then the edges. **Worth running on every graph you write**, because it is the only artefact that catches 8.6's dead end (a node with no path to `END` compiles fine) and it is the thing 8.8 warned `Command` makes incomplete. **One line, and it is the only diagram anyone looks at.**", "cols": 3, "nodes": [{"id": "d", "label": "get_graph().draw_ascii()", "sub": "no dependencies", "tone": "violet"}, {"id": "t", "label": "The topology, printed", "sub": "start, nodes, edges", "tone": "good"}, {"id": "e", "label": "Catches 8.6's dead end", "sub": "which compiles fine", "tone": "good"}, {"id": "c", "label": "And shows what Command hides", "sub": "by its absence", "tone": "warn"}, {"id": "o", "label": "Run it on every graph", "sub": "it is the only diagram anyone reads", "tone": "teal"}], "edges": [["d", "t"], ["t", "e"], ["t", "c"], ["e", "o"]], "t": "diagram", "id": "dg-8_9-04-3"},
+
+
 
 
 

@@ -40,6 +40,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["pattern", "what it needs", "wrong strategy"], rows: [
       ["ReAct", "reasoning + results", "**an aggressive window**, or a vague summary"],
       ["plan-and-execute", "the current step", "any \u2014 **it has no history to manage**"],

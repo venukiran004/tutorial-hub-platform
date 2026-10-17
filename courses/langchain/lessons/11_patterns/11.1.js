@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["rung", "model calls", "control", "can it loop?"], rows: [
       ["1 one call", "1", "yours", "no"],
       ["2 one call + tools", "2+", "yours", "no"],
@@ -42,15 +44,24 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "The rungs differ in capability and in what you can **predict** (9.3). A workflow's cost and latency are countable by reading the graph; an agent's are not, which is why 8.9's recursion limit exists at all." },
     { t: "h2", n: "02", id: "rung2", text: "Rung 2 is not an agent", sub: "And it covers a real class of task" },
+
+    {"kind": "flow", "title": "One call, and the tool output is the answer", "caption": "Worth naming as a rung because **“look this up” is a real and common requirement, and people reach for an agent loop to serve it.** The measurement is the argument: the model asked for `lookup_policy`, the tool returned the policy sentence, and that sentence **is** what the user wanted — so **returning it is the whole system**, and anything after it is a formatting decision rather than a capability.", "cols": 3, "nodes": [{"id": "m", "label": "The model asks for one tool", "sub": "lookup_policy", "tone": "accent"}, {"id": "t", "label": "The tool returns the policy", "sub": "a complete sentence", "tone": "good"}, {"id": "a", "label": "That IS the answer", "sub": "1 model call", "tone": "good"}, {"id": "w", "label": "So returning it is the whole system", "sub": "no loop to add", "tone": "violet"}, {"id": "f", "label": "Anything after is formatting", "sub": "not capability", "tone": "teal"}], "edges": [["m", "t"], ["t", "a"], ["a", "w"], ["w", "f"]], "t": "diagram", "id": "dg-11_1-02-1"},
+
     { t: "code", lang: "text", title: "A single tool-calling turn",
       code: "model asked for: lookup_policy\ntool returned  : 'Refunds are available within 30 days of purchase.'\nmodel calls    : 1",
       caption: "One call, and the tool output **is** the answer." },
     { t: "p", text: "Worth naming as a rung because *\u201clook this up\u201d* is a real and common requirement, and people reach for an agent loop to serve it. If the tool's output is what the user wants, returning it is the whole system." },
     { t: "h2", n: "03", id: "rung3", text: "Rung 3: the cheapest useful agency", sub: "One classification" },
+
+    {"kind": "flow", "title": "The branch does no model work, which is where the cheapness comes from", "caption": "`['classified as billing', 'billing handled it']` at **1 model call** — one classification, and the branch itself costs nothing. Which is what buys the two properties the rungs above give up: **the paths are enumerable because they are edges you wrote, and looping is not merely unlikely but structurally impossible**, because there is no edge back.", "cols": 3, "nodes": [{"id": "c", "label": "One classification", "sub": "1 model call", "tone": "good"}, {"id": "b", "label": "The branch does no model work", "sub": "it is an edge", "tone": "good"}, {"id": "p", "label": "Paths are enumerable", "sub": "you wrote them", "tone": "violet"}, {"id": "l", "label": "Looping is structurally impossible", "sub": "there is no edge back", "tone": "violet"}, {"id": "r", "label": "The cheapest useful agency", "sub": "the model still decides something", "tone": "teal"}], "edges": [["c", "b"], ["b", "p"], ["b", "l"], ["p", "r"], ["l", "r"]], "t": "diagram", "id": "dg-11_1-03-2"},
+
     { t: "code", lang: "text", title: "A router",
       code: "['classified as billing', 'billing handled it']\nmodel calls: 1  (one classification; the branch did no model work)",
       caption: "Paths enumerable, looping structurally impossible." },
     { t: "h2", n: "04", id: "rung4", text: "Rung 4: the agent, and what it costs", sub: "Two calls for a one-call answer" },
+
+    {"kind": "trace", "title": "Two model calls for an answer the first tool call already had", "caption": "The list grows to four messages and the counter reads **2** — and **the second call exists only to turn the tool result into prose.** Sometimes that is exactly what you want, because structured data does need turning into a sentence. So the question at rung 4 is **whether you are buying the loop or the phrasing**: if it is the phrasing, you are at rung 2 with a formatting step, and formatting does not need to be a loop.", "left": "the message list", "codeW": 230, "vars": ["last message", "model calls"], "steps": [{"code": "HumanMessage", "state": ["'refund policy?'", "0"], "tone": "accent"}, {"code": "AIMessage(tool_calls)", "state": ["lookup_policy", "1"], "changed": [1], "tone": "good"}, {"code": "ToolMessage", "state": ["'...within 30 days...'", "1"], "changed": [0], "tone": "good", "note": "the answer is here"}, {"code": "AIMessage", "state": ["'Refunds...30 days.'", "2"], "changed": [1], "tone": "warn", "note": "phrasing, not answering"}], "t": "diagram", "id": "dg-11_1-04-3"},
+
     { t: "code", lang: "text", title: "The same question through an agent loop",
       code: "HumanMessage('refund policy?')\nAIMessage(tool_calls=['lookup_policy'])\nToolMessage('Refunds are available within 30 days of purchase.')\nAIMessage('Refunds are available within 30 days.')\nmodel calls: 2",
       caption: "The second call turns the tool result into prose." },
@@ -59,11 +70,17 @@ EC.receiveLesson({
       { t: "p", text: "So the question at rung 4 is whether you are buying the **loop** or the **phrasing**. If it is the phrasing, you are at rung 2 with a formatting step, and formatting does not need to be a loop." }
     ] },
     { t: "h2", n: "05", id: "rule", text: "The rule, and the test", sub: "Sequence or choice" },
+
+    {"kind": "flow", "title": "Does the sequence vary, or only the choice?", "caption": "If only the **choice** varies — the request is one of five kinds and each needs one known operation — **a conditional edge expresses it exactly**, and you are on rung 3. If the **sequence** genuinely varies, because the next action depends on what the last one returned in a way you cannot enumerate, you need rung 4. **That is the only honest justification for the loop**, and it is a claim about the task rather than about the framework.", "cols": 3, "nodes": [{"id": "q", "label": "Sequence, or only choice?", "sub": "the whole test", "tone": "violet"}, {"id": "c", "label": "Choice: one of five kinds", "sub": "each needs one operation", "tone": "good"}, {"id": "e", "label": "A conditional edge says it exactly", "sub": "rung 3", "tone": "good"}, {"id": "s", "label": "Sequence: not enumerable", "sub": "next depends on the last result", "tone": "warn"}, {"id": "r", "label": "Rung 4, honestly justified", "sub": "a claim about the task", "tone": "accent"}], "edges": [["q", "c"], ["c", "e"], ["q", "s"], ["s", "r"]], "t": "diagram", "id": "dg-11_1-05-4"},
+
     { t: "callout", kind: "mental", title: "Does the sequence vary, or only the choice?", body: [
       { t: "p", text: "If only the **choice** varies \u2014 the request is one of five kinds and each needs one known operation \u2014 you are on rung 3, and a conditional edge expresses it exactly." },
       { t: "p", text: "If the **sequence** genuinely varies, because the next action depends on what the last one returned in a way you cannot enumerate, you need rung 4. That is the only honest justification for the loop." }
     ] },
     { t: "h2", n: "06", id: "asymmetry", text: "Why the mistake is asymmetric", sub: "Which is the real argument" },
+
+    {"kind": "flow", "title": "Guessing low costs a branch; guessing high costs you the ability to say anything", "caption": "**A bounded pattern that nearly works is one branch away from working — the gap is visible and the fix is local.** An agent that works unpredictably is a measurement problem, a cost problem and a debugging problem **at once**, and none of those is one change away from fixed. Which is why the rule is *stop at the lowest rung that works* rather than *choose the appropriate rung*: the two errors are not the same size.", "cols": 3, "nodes": [{"id": "l", "label": "Guessed too low", "sub": "a bounded pattern, nearly working", "tone": "good"}, {"id": "b", "label": "One branch away", "sub": "visible gap, local fix", "tone": "good"}, {"id": "h", "label": "Guessed too high", "sub": "an agent that works unpredictably", "tone": "crit"}, {"id": "t", "label": "Three problems at once", "sub": "measurement, cost, debugging", "tone": "crit"}, {"id": "r", "label": "So: stop at the lowest rung that works", "sub": "not 'choose the appropriate rung'", "tone": "violet"}], "edges": [["l", "b"], ["h", "t"], ["b", "r"], ["t", "r"]], "t": "diagram", "id": "dg-11_1-06-5"},
+
     { t: "p", text: "A bounded pattern that nearly works is **one branch away** from working \u2014 the gap is visible and the fix is local. An agent that works unpredictably is a measurement problem, a cost problem and a debugging problem at once, and none of those is one change away from fixed." },
     { t: "p", text: "That asymmetry is why the rule is *stop at the lowest rung that works* rather than *choose the appropriate rung*. Guessing low costs you a branch; guessing high costs you the ability to say anything about the system's behaviour." },
     { t: "exercise", kind: "analysis", title: "Measure the ladder",

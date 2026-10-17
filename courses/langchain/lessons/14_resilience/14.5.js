@@ -41,6 +41,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "The same five sources, guarded",
       code: "succeeded : ['docs', 'tickets', 'wiki']\nfailed    : ['crm: crm is down', 'billing: billing is down']\nratio     : 3 of 5",
       caption: "The run **completed**." },

@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "interrupt_before",
       code: 'app = g.compile(checkpointer=saver, interrupt_before=["execute"])',
       out: "  invoke stops before 'execute':\n    trace: ['prepared']\n    next : ('execute',)\n\n  resuming with invoke(None) runs the rest:\n    ['prepared', 'EXECUTED refund of 50.00']",
@@ -44,6 +46,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "edit", text: "Editing state while paused", sub: "Which is what makes it a gate" },
 
     {"kind": "trace", "title": "update_state is an update like any other, so every reducer applies", "caption": "Paused before a refund of 9999.00, `update_state` corrected the amount to 50.00 and the resumed run executed the corrected one. **Notice `'amount corrected'` was appended to the trace rather than replacing it** — `update_state()` is **an update like any other**, so 8.3's reducers apply in full. Which means editing state while paused cannot *remove* anything from a reduced key: to replace rather than append you need 8.3's id-based replacement, not a state edit.", "left": "step", "codeW": 200, "vars": ["state"], "steps": [{"code": "paused before executing", "state": ["amount = 9999.00"], "tone": "crit"}, {"code": "after update_state", "state": ["amount = 50.00"], "changed": [0], "tone": "good"}, {"code": "the trace key", "state": ["appended, not replaced"], "tone": "violet", "note": "every reducer applies"}, {"code": "resumed", "state": ["EXECUTED refund of 50.00"], "tone": "good"}], "t": "diagram", "id": "dg-9_8-02-1"},
+
+
 
 
     { t: "code", lang: "text", title: "Correcting a refund before it runs",
@@ -58,6 +62,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "They differ only when a node has several successors", "caption": "For a two-node graph `interrupt_after=[\"prepare\"]` and `interrupt_before=[\"execute\"]` are **the same pause.** They diverge when a node has several successors: **after prepare is one pause; before each successor is several.** And for approval, **`interrupt_before` on the acting node is the right choice, because what you are gating is the action** — which also **stays correct when someone later adds another path into that node**, where the `after` version would not gate the new path at all.", "cols": 3, "nodes": [{"id": "t", "label": "Two nodes: identical", "sub": "after A = before B", "tone": "good"}, {"id": "s", "label": "Several successors: they diverge", "sub": "one pause against several", "tone": "accent"}, {"id": "b", "label": "Gate the ACTION, so interrupt_before", "sub": "on the acting node", "tone": "good"}, {"id": "n", "label": "And a new path into it is still gated", "sub": "which 'after' would miss", "tone": "violet"}], "edges": [["t", "s"], ["s", "b"], ["b", "n"]], "t": "diagram", "id": "dg-9_8-03-2"},
 
 
+
+
     { t: "p", text: "For a two-node graph `interrupt_after=[\"prepare\"]` and `interrupt_before=[\"execute\"]` are the same pause. They differ when a node has several successors: *after prepare* is one pause, *before each successor* is several." },
     { t: "callout", kind: "good", title: "Gate the action, not the preparation", body: [
       { t: "p", text: "For approval, `interrupt_before` on the **acting** node is the right choice, because what you are gating is the action. That also stays correct when someone later adds another path into that node \u2014 the gate covers the new path automatically." },
@@ -66,6 +72,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "dynamic", text: "The dynamic gate", sub: "Which decides for itself whether to ask" },
 
     {"kind": "trace", "title": "Most approvals should depend on the request", "caption": "**A static breakpoint pauses every time.** The dynamic gate asks only when the condition says to: **a 50.00 refund is auto-approved and a 500.00 one waits for a human**, who can approve or deny. Which is the shape production approval actually needs — refunds over a threshold, writes to production, anything irreversible — because **approving everything is a workflow nobody sustains and approving nothing is not a gate.**", "left": "request", "codeW": 190, "vars": ["what happened"], "steps": [{"code": "amount=50", "state": ["auto-approved (50 <= 100), executed"], "tone": "good"}, {"code": "amount=500, resume='approve'", "state": ["approved by human, executed"], "changed": [0], "tone": "accent"}, {"code": "amount=500, resume='deny'", "state": ["refused by human"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-9_8-04-3"},
+
+
 
 
     { t: "p", text: "A static breakpoint pauses **every** time. Most approvals should depend on the request: refunds over a threshold, writes to production, anything irreversible." },
@@ -80,6 +88,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "choose", text: "Static or dynamic?", sub: "Five differences" },
 
     {"kind": "matrix", "title": "Static for debugging, dynamic for anything where asking is itself logic", "caption": "Five differences, and the last is the one that decides it in a codebase: **a static breakpoint breaks on a node rename** — it is configuration referring to a name, which 8.5 established is public structure — while a dynamic gate breaks only if you change the node it lives in. **Use static for debugging and for a blanket *never act unattended* policy. Use dynamic for anything where the decision to ask is itself logic**, which is most production approval.", "cols": ["Static", "Dynamic"], "rows": ["What it is", "When it pauses", "Payload", "Resuming", "Fragility"], "cells": [[{"text": "configuration, no code", "tone": "good"}, "a node you write"], [{"text": "every time", "tone": "warn"}, {"text": "on a condition", "tone": "good"}], [{"text": "no question, no answer", "tone": "warn"}, {"text": "carries a payload and a response", "tone": "good"}], ["invoke(None)", "Command(resume=...)"], [{"text": "breaks on a node rename", "tone": "crit"}, {"text": "breaks only if you change the node", "tone": "good"}]], "t": "diagram", "id": "dg-9_8-05-4"},
+
+
 
 
     { t: "table", head: ["", "static (`interrupt_before`)", "dynamic (`interrupt()` in a node)"], rows: [

@@ -33,10 +33,15 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "The trace",
       code: "planned 3 steps\nstep 1: 'look up the refund window'\nstep 2: 'look up the payment destination'\nstep 3: 'write the answer'\n\nplanner calls: 1\nworker calls : 3\ntotal        : 4",
       caption: "One planning call, then one call per step." },
     { t: "h2", n: "02", id: "workers", text: "What the workers saw", sub: "One step, and nothing else" },
+
+    {"kind": "trace", "title": "One step per worker, and no history at all", "caption": "Each worker's input is a **single** `HumanMessage`. So the prompt does not grow with the task's length — against 11.3's ReAct, where every turn carries every previous thought and result. **And it cuts both ways: a worker cannot adapt, because it does the step it was given whether or not that step still makes sense after the previous one returned something unexpected.** The commitment that makes cost predictable is the commitment that makes it rigid.", "left": "worker call", "codeW": 130, "vars": ["what it received", "messages"], "steps": [{"code": "1", "state": ["'look up the refund window'", "1"], "tone": "good"}, {"code": "2", "state": ["'look up the payment destination'", "1"], "changed": [0], "tone": "good"}, {"code": "3", "state": ["'write the answer'", "1"], "changed": [0], "tone": "good", "note": "constant, not growing"}, {"code": "so it cannot adapt", "state": ["it never saw step 1's result", "1"], "tone": "warn"}], "t": "diagram", "id": "dg-11_6-02-1"},
+
     { t: "code", lang: "text", title: "Each worker's input",
       code: "worker call 1: [HumanMessage('look up the refund window')]\nworker call 2: [HumanMessage('look up the payment destination')]\nworker call 3: [HumanMessage('write the answer')]",
       caption: "No history. The prompt is small and constant." },
@@ -45,6 +50,9 @@ EC.receiveLesson({
       { t: "p", text: "And it cuts both ways: a worker **cannot adapt**. It does the step it was given, whether or not that step still makes sense after the previous one returned something unexpected. The commitment that makes the cost predictable is the same commitment that makes it rigid." }
     ] },
     { t: "h2", n: "03", id: "trade", text: "The trade against ReAct", sub: "Predictability decides" },
+
+    {"kind": "compare", "title": "The same trade, read from both ends", "caption": "**If the steps are knowable before starting, planning once is cheaper and more reliable. If the next step depends on what the last one returned, a plan is a guess that will be wrong** — which is 11.1's sequence-against-choice test applied one level up. Note the row that matters for budgeting: `1 + len(plan)` is a number you can put in a design document, and `2..N` is not.", "columns": [{"title": "ReAct", "tone": "warn", "items": ["decides the sequence every turn", "the prompt grows every turn", "no commitment — it re-decides from scratch", "adapts to results immediately", "2..N model calls, unbounded", "cost not predictable"]}, {"title": "plan-and-execute", "tone": "good", "items": ["decides the sequence once, up front", "the prompt is constant per worker", "high commitment — it follows the plan", "adapts only on a replan", "1 + len(plan) model calls", "cost predictable after planning"]}], "t": "diagram", "id": "dg-11_6-03-2"},
+
     { t: "table", head: ["", "ReAct", "plan-and-execute"], rows: [
       ["decides the sequence", "every turn", "once, up front"],
       ["prompt size", "grows every turn", "**constant per worker**"],
@@ -55,6 +63,9 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "So if the steps are knowable before starting, planning once is cheaper and more reliable. If the next step depends on what the last one returned, a plan is a guess that will be wrong \u2014 which is 11.1's sequence-against-choice test applied one level up." },
     { t: "h2", n: "04", id: "replan", text: "Replanning", sub: "Which is what makes it usable" },
+
+    {"kind": "trace", "title": "Two replans, and a bug that only exists on this path", "caption": "A plan made before seeing any results will sometimes be wrong, so the replan path is what makes the pattern usable — **and it needs a budget, because a task the planner cannot solve replans forever, now with a planning call per iteration on top of the wasted worker calls.** The trap: **on replan `done` already holds the failed step's output, so the new plan's indices no longer line up with `len(done)`** and the executor picks the wrong step.", "left": "event", "codeW": 160, "vars": ["plan", "len(done)", "index lines up?"], "steps": [{"code": "plan #1", "state": ["['step one', 'step two']", "0", "yes"], "tone": "accent"}, {"code": "exec", "state": ["same", "1", "yes"], "changed": [1], "tone": "crit", "note": "FAILED: cannot do step one"}, {"code": "plan #2", "state": ["['revised step', 'step two']", "1", "NO"], "changed": [0, 2], "tone": "crit", "note": "unless you clear done"}, {"code": "so", "state": ["passes every happy-path test", "-", "-"], "tone": "warn"}], "t": "diagram", "id": "dg-11_6-04-3"},
+
     { t: "code", lang: "text", title: "A failed step triggers a new plan",
       code: "plan #1: ['step one', 'step two']\nexec -> 'FAILED: cannot do step one'\nplan #2: ['revised step', 'step two']\nexec -> 'ok'\nexec -> 'ok'\n\nreplans: 2",
       caption: "A plan made before seeing any results will sometimes be wrong." },
@@ -67,6 +78,9 @@ EC.receiveLesson({
       { t: "p", text: "That is the kind of bug that passes every happy-path test, because the happy path never replans. It is also an argument for keeping the plan and the results in a single structure rather than two parallel lists whose alignment is implicit." }
     ] },
     { t: "h2", n: "05", id: "when", text: "When it is wrong", sub: "And where it genuinely wins" },
+
+    {"kind": "flow", "title": "Predictable decomposition on one side, a short or dependent task on the other", "caption": "It wins where the task decomposes predictably — a report with known sections — where the **steps are independent so they can run in parallel** via 10.2's `Send`, and where **you want a plan a human can approve before execution** (9.8), which only a declared plan makes possible. It is wrong when the first step's result changes the second, when **planning two steps is a model call spent to avoid a model call**, and when every run replans anyway.", "cols": 3, "nodes": [{"id": "p", "label": "Predictable decomposition", "sub": "a report with known sections", "tone": "good"}, {"id": "i", "label": "Independent steps run in parallel", "sub": "10.2's Send", "tone": "good"}, {"id": "h", "label": "A human can approve the plan", "sub": "9.8 - only if it is declared", "tone": "good"}, {"id": "d", "label": "Step 1 changes what step 2 should be", "sub": "the plan is a guess", "tone": "crit"}, {"id": "s", "label": "A two-step task", "sub": "a call spent to avoid a call", "tone": "crit"}, {"id": "r", "label": "Every run replans", "sub": "the planner cannot know the tools", "tone": "crit"}], "edges": [["p", "i"], ["i", "h"], ["d", "s"], ["s", "r"]], "t": "diagram", "id": "dg-11_6-05-4"},
+
     { t: "table", head: ["wrong when", "right when"], rows: [
       ["the first step's result changes what the second should be", "the task decomposes predictably \u2014 a report with known sections"],
       ["the task is short \u2014 planning two steps is a model call to avoid a model call", "the steps are **independent**, so they can run in parallel (10.2's `Send`)"],

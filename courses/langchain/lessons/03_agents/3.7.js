@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "What the guards look like",
       code: 'for i in range(max_iters):                       # 1. a cap\n    ai = bound.invoke(messages)\n    messages.append(ai)\n    if not ai.tool_calls:\n        return messages\n    for c in ai.tool_calls:\n        if c["name"] not in tool_map:                # 2. unknown tool\n            messages.append(ToolMessage(\n                content="error: no tool named %r. available: %s"\n                        % (c["name"], list(tool_map)),\n                tool_call_id=c["id"]))\n            continue\n        try:\n            out = tool_map[c["name"]].invoke(c["args"])\n        except Exception as e:                       # 3. tool errors\n            out = "error: %s" % e\n        messages.append(ToolMessage(content=str(out), tool_call_id=c["id"]))',
       hl: [1, 7, 15],
@@ -40,6 +42,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "f1", text: "Failure 1: the loop that never ends", sub: "Because the model decides when to stop" },
 
     {"kind": "flow", "title": "A runaway loop is a quadratic bill terminating in a misleading error", "caption": "An uncapped loop **does not hang forever in a recognisable way.** It runs until the transcript exceeds the context window and then fails with an error about **length** — so the symptom points at token limits rather than at looping, and the obvious response is to raise a limit that was never the problem. It is expensive on the way there too, because each iteration re-sends a transcript that grew by two messages: **a quadratic bill, ending in a misleading error.** The cap stopped it at 6 calls and 14 messages.", "cols": 3, "nodes": [{"id": "l", "label": "The model always asks for a tool", "sub": "so the loop never exits", "tone": "crit"}, {"id": "g", "label": "The transcript grows by two a round", "sub": "and is re-sent each time", "tone": "crit"}, {"id": "q", "label": "A quadratic bill", "sub": "on the way to the failure", "tone": "crit"}, {"id": "e", "label": "It fails on LENGTH", "sub": "not on looping", "tone": "crit"}, {"id": "r", "label": "So you raise a limit that was fine", "sub": "the misleading response", "tone": "crit"}, {"id": "c", "label": "A cap stops it at 6 calls", "sub": "with the real reason named", "tone": "good"}], "edges": [["l", "g"], ["g", "q"], ["q", "e"], ["e", "r"], ["r", "c"]], "t": "diagram", "id": "dg-3_7-02-1"},
+
+
 
 
 
@@ -72,6 +76,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "With and without the guard",
       code: "with the guard:\n  ('unknown tool', 'check_inventory')\n  ('answered', 'I could not check inventory.')\n\nwithout it:\n  KeyError: 'check_inventory'   <- the run dies",
       caption: "Told the tool does not exist, the model adapted and answered." },
@@ -90,6 +96,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Dividing by zero",
       code: "('tool raised', 'ZeroDivisionError')\n('answered', 'That division is undefined.')",
       caption: "The error went back as a ToolMessage and the model recovered in one step." },
@@ -97,6 +105,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "f4", text: "Failure 4: the one no guard catches", sub: "The model answers instead of acting" },
 
     {"kind": "flow", "title": "Every guard in this lesson passes", "caption": "**No exception, no unknown tool, no loop, no malformed transcript.** The model simply answered rather than acting, and the loop did exactly what it was told — a reply with no tool calls means done. It is also **the hardest failure to notice, because the answer claims the tool was used**: *\"I looked up order A-1\"* reads as evidence of a lookup, so a human reviewing the transcript sees a successful tool-using run unless they check the message list. Two defences apply and neither is a guard: **evaluate the trajectory rather than the answer** (14.7), and **design tools whose output the model cannot plausibly guess.**", "cols": 3, "nodes": [{"id": "a", "label": "The model answers without calling", "sub": "no tool_calls in the reply", "tone": "crit"}, {"id": "g", "label": "Every guard passes", "sub": "there is nothing wrong to catch", "tone": "crit"}, {"id": "c", "label": "And the answer claims it looked it up", "sub": "'I looked up order A-1'", "tone": "crit"}, {"id": "t", "label": "Score the trajectory, not the answer", "sub": "14.7", "tone": "good"}, {"id": "d", "label": "Or design a tool it cannot guess", "sub": "a live balance, an unseen id", "tone": "good"}], "edges": [["a", "g"], ["g", "c"], ["c", "t"], ["c", "d"]], "t": "diagram", "id": "dg-3_7-05-4"},
+
+
 
 
 

@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "A node that asks",
       code: 'def ask(state):\n    answer = interrupt({"question": "approve %r?" % state["value"]})\n    return {"value": answer, "trace": ["ask ran"]}',
       out: "  first invoke returns WITHOUT finishing:\n    {'value': 'draft', 'trace': [],\n     '__interrupt__': [Interrupt(value={'question': \"approve 'draft'?\"}, ...)]}\n\n  state says what it is waiting at:\n    next      : ('ask',)\n    interrupts: [{'question': \"approve 'draft'?\"}]",
@@ -41,6 +43,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "resume", text: "Command(resume=\u2026) sends the answer back", sub: "To the interrupt() call itself" },
 
     {"kind": "flow", "title": "It is written like a blocking call, and the process ended in between", "caption": "`interrupt()` **behaves like a blocking call from the node's point of view** — it returns the human's answer. **What happens in between is that the process ended, the state was written to a checkpoint, and a later invocation resumed from it.** So the illusion is complete at the level of the source and the mechanism underneath is suspend-and-restore, which is why §03's re-execution behaviour is surprising: the code reads as if nothing was interrupted.", "cols": 3, "nodes": [{"id": "i", "label": "answer = interrupt(question)", "sub": "reads like a blocking call", "tone": "accent"}, {"id": "w", "label": "The state is checkpointed", "sub": "and the process ends", "tone": "violet"}, {"id": "r", "label": "Command(resume=...) later", "sub": "a new invocation", "tone": "violet"}, {"id": "v", "label": "interrupt() returns the value", "sub": "as if it had blocked", "tone": "good"}, {"id": "s", "label": "Which is why section 03 surprises", "sub": "the source hides the restart", "tone": "teal"}], "edges": [["i", "w"], ["w", "r"], ["r", "v"], ["v", "s"]], "t": "diagram", "id": "dg-9_7-02-1"},
+
+
 
 
     { t: "code", lang: "text", title: "Resuming",
@@ -53,6 +57,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "reexec", text: "The node runs twice", sub: "Measured, and it is the detail that matters" },
 
     {"kind": "trace", "title": "The node body ran twice for one logical execution", "caption": "**The node is re-executed from its first statement**, and this time `interrupt()` returns the resume value instead of pausing. So **anything before the interrupt runs twice** — the measurement shows `side effect 1` on the first pass and `side effect 2` on the resume. **The pattern is to make the interrupt the first thing the node does and put the action in a separate node after it.** A genuinely non-obvious constraint, and the whole reason approval gates are their own node rather than a check inside the acting node.", "left": "pass", "codeW": 160, "vars": ["what ran", "interrupt() does"], "steps": [{"code": "1 (pausing)", "state": ["side effect 1", "pauses"], "tone": "crit"}, {"code": "2 (resuming)", "state": ["side effect 2", "returns the value"], "changed": [0], "tone": "crit", "note": "the body ran twice"}, {"code": "the fix", "state": ["interrupt FIRST", "action in a later node"], "tone": "good"}], "t": "diagram", "id": "dg-9_7-03-2"},
+
+
 
 
     { t: "code", lang: "text", title: "A counter incremented at the top of the node",
@@ -68,6 +74,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "This one refuses, and 9.4's accepted — which is the better behaviour", "caption": "`interrupt()` **without a checkpointer raises**: pausing with nowhere to store the paused state cannot mean anything, **so refusing is correct.** Worth noticing because **9.4's `thread_id` with no checkpointer is accepted and ignored** — the same missing dependency, one failure loud and one silent. The loud one is the better design, and the comparison is the clearest argument in the module for why the silent one is a trap rather than a convenience.", "cols": 3, "nodes": [{"id": "i", "label": "interrupt(), no checkpointer", "sub": "nowhere to store the pause", "tone": "accent"}, {"id": "r", "label": "RAISES", "sub": "the framework refuses", "tone": "good"}, {"id": "t", "label": "thread_id, no checkpointer", "sub": "the same missing dependency", "tone": "accent"}, {"id": "a", "label": "Accepted and ignored", "sub": "9.4", "tone": "crit"}, {"id": "b", "label": "The loud one is the better design", "sub": "and the comparison proves it", "tone": "violet"}], "edges": [["i", "r"], ["t", "a"], ["r", "b"], ["a", "b"]], "t": "diagram", "id": "dg-9_7-04-3"},
 
 
+
+
     { t: "code", lang: "text", title: "interrupt() with no checkpointer",
       code: "RAISED (the framework refuses -- there is nowhere to store the paused state)",
       caption: "Compare 9.4's `thread_id`, which is accepted and ignored." },
@@ -78,6 +86,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "shapes", text: "The resume value is data", sub: "So one interrupt covers three decisions" },
 
     {"kind": "trace", "title": "Approve, reject and edit are three values, not three features", "caption": "**The node inspects whatever it was handed and branches on it**, so the gate needs no knowledge of which outcomes exist — which is why **9.8's approval gate is a single reusable node.** And it is the argument for **designing the resume payload as a small schema rather than a bare string**: `{'action': 'edit', 'value': ...}` carries a correction, and `'approve'` carries nothing, and a gate written for the second cannot be extended to the first without changing both ends.", "left": "resume value", "codeW": 220, "vars": ["the node does"], "steps": [{"code": "'approve'", "state": ["proceeds"], "tone": "good"}, {"code": "'reject'", "state": ["refuses"], "tone": "good"}, {"code": "{'action':'edit','value':'corrected'}", "state": ["edits, then proceeds"], "changed": [0], "tone": "violet", "note": "a schema, not a string"}], "t": "diagram", "id": "dg-9_7-05-4"},
+
+
 
 
     { t: "code", lang: "text", title: "Approve, reject and edit",

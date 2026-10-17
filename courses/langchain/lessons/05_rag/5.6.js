@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "The whole interface",
       code: 'r = store.as_retriever(search_kwargs={"k": 3})\ndocs = r.invoke("how do I stop duplicate charges")',
       out: "  invoke() ->\n    api-idempotency    Supply an Idempotency-Key header on write requ\n    auth-signin-fail   Authentication failures. Repeated invalid cred\n    data-deletion      Erasure requests complete within 30 days in pr",
@@ -41,6 +43,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "runnable", text: "And it is a Runnable", sub: "So it composes" },
 
     {"kind": "flow", "title": "A retriever pipes, so RAG is an expression rather than a function", "caption": "`has invoke/batch/stream: True`, so `r | format_docs` is a valid chain and the retrieved documents flow into a formatter the way any value flows into any step. **That single fact is what lets 5.7 write the whole pipeline as one LCEL expression** instead of as a function that calls a retriever, formats the result and then calls a model. The uniformity from 1.1 arriving where it pays most.", "cols": 3, "nodes": [{"id": "r", "label": "The retriever has invoke", "sub": "and batch, and stream", "tone": "accent"}, {"id": "p", "label": "r | format_docs", "sub": "a valid chain", "tone": "good"}, {"id": "e", "label": "So RAG is an expression", "sub": "5.7, not a function", "tone": "violet"}, {"id": "u", "label": "1.1's uniformity, where it pays most", "sub": "nothing special was added for retrieval", "tone": "teal"}], "edges": [["r", "p"], ["p", "e"], ["e", "u"]], "t": "diagram", "id": "dg-5_6-02-1"},
+
+
 
 
 
@@ -60,6 +64,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "where", text: "Retriever or store?", sub: "And the rule that decides" },
 
     {"kind": "matrix", "title": "Store or retriever, decided by what varies per request", "caption": "The dividing line is **what varies per call**. `k`, a metadata filter and a score threshold all vary by caller, so they belong to the retriever. The index type and the embedding model are **properties of the data at rest** — changing the embedding model means reindexing everything. And the practical consequence is sharp: **a store built per request to carry a tenant filter rebuilds or re-wraps the index on every call**, which is the structural mistake behind a surprising number of slow RAG systems.", "cols": ["Belongs to", "Why"], "rows": ["k", "a metadata filter", "a score threshold", "the index type", "the embedding model"], "cells": [[{"text": "retriever", "tone": "good"}, "a per-query decision"], [{"text": "retriever", "tone": "good"}, {"text": "it varies by caller", "tone": "violet"}], [{"text": "retriever", "tone": "good"}, "7.1 makes it a guard"], [{"text": "store", "tone": "accent"}, "a property of the data at rest"], [{"text": "store", "tone": "accent"}, "changing it means reindexing everything"]], "t": "diagram", "id": "dg-5_6-03-2"},
+
+
 
 
 

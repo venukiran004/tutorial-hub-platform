@@ -33,8 +33,13 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "11.4's reflection critiques within one attempt. Reflexion writes the lesson down and carries it into the **next** attempt at a similar task \u2014 which means 9.6's store, because 9.5 showed the whole graph state is scoped to one `thread_id`. If the lesson lives in thread state there is nothing new here." },
     { t: "h2", n: "02", id: "loop", text: "The attempt loop", sub: "Recall, solve, judge, reflect" },
+
+    {"kind": "trace", "title": "Two attempts, and the second one had a sentence the first did not", "caption": "The judge's complaint — *“did not say where the money goes”* — became a lesson in the store, and the retry solved with **1 lesson** in its prompt and passed. **Nothing in the loop changed except the number of lessons available to it**, which is what makes the pattern cheap to try: no fine-tuning, no gradient, no new node — one `store.put` on the failure path and one read before solving.", "left": "attempt", "codeW": 140, "vars": ["lessons in prompt", "answer", "judge"], "steps": [{"code": "1", "state": ["0", "'30 days'", "FAIL"], "tone": "crit", "note": "where the money goes?"}, {"code": "reflect", "state": ["written to the store", "-", "-"], "changed": [0], "tone": "violet"}, {"code": "2", "state": ["1", "'30 days, to the original payment method'", "PASS"], "changed": [0, 1, 2], "tone": "good"}], "t": "diagram", "id": "dg-11_5-02-1"},
+
     { t: "code", lang: "text", title: "The first task",
       code: "no lessons yet\nsolve (with 0 lesson(s)) -> '30 days'\njudge: FAIL: did not say where the money goes\nwrote lesson: 'When asked about refunds, always state th'\nsolve (with 1 lesson(s)) -> '30 days, to the original payment method'\njudge: PASS\n\nattempts: 2\nverdict : 'PASS'",
       caption: "The lesson was written to the store, then injected into the retry." },
@@ -42,6 +47,9 @@ EC.receiveLesson({
       code: 'def reflect(state):\n    out = reflector.invoke([HumanMessage(content="Why did this fail? %s"\n                                        % state["verdict"])])\n    store.put(("lessons", "refunds"), "lesson-%d" % state["attempt"],\n              {"text": out.content})\n    return {"trace": ["wrote lesson: %r" % out.content[:44]]}',
       caption: "A namespace tuple (9.6), keyed by attempt." },
     { t: "h2", n: "03", id: "store", text: "What is in the store afterwards", sub: "A sentence" },
+
+    {"kind": "flow", "title": "No weights change; the improvement is a sentence in the context", "caption": "That is the whole idea, and it is why the pattern is **cheap to try and hard to evaluate**. The lesson is text, written by the model, stored outside the run, prepended to the next attempt. **Nothing about the mechanism distinguishes a generalisable lesson from a wrong one, because both are sentences that get prepended** — and the store has no notion of which kind it is holding.", "cols": 3, "nodes": [{"id": "t", "label": "The lesson is text", "sub": "written by the model", "tone": "violet"}, {"id": "s", "label": "Stored outside the run", "sub": "a namespace tuple (9.6)", "tone": "accent"}, {"id": "n", "label": "No weights change", "sub": "'verbal reinforcement'", "tone": "good"}, {"id": "c", "label": "So: cheap to try", "sub": "one put, one read", "tone": "good"}, {"id": "h", "label": "And hard to evaluate", "sub": "a wrong lesson is also a sentence", "tone": "crit"}], "edges": [["t", "s"], ["s", "n"], ["n", "c"], ["n", "h"]], "t": "diagram", "id": "dg-11_5-03-2"},
+
     { t: "code", lang: "text", title: "The lesson",
       code: "lesson-1   'When asked about refunds, always state the destination of the money.'",
       caption: "Written by the model, stored outside the run." },
@@ -50,17 +58,26 @@ EC.receiveLesson({
       { t: "p", text: "Which is why it is cheap to try and hard to evaluate. Nothing about the mechanism distinguishes a generalisable lesson from a wrong one, because both are sentences that get prepended." }
     ] },
     { t: "h2", n: "04", id: "transfer", text: "The second task", sub: "A different question, first time" },
+
+    {"kind": "flow", "title": "The payoff and the measurement problem are the same event", "caption": "A **different** question passed on the first attempt with the lesson in its prompt — which is transfer, and it is the point of the pattern. It is also where the evaluation gap is: **the judge confirmed the answer, not the lesson. Nothing in the loop checks that the lesson generalises**, so a lesson that happens to help on question two and misleads on question seven produces one visible success and one invisible failure.", "cols": 3, "nodes": [{"id": "q", "label": "A different question", "sub": "with 1 lesson in the prompt", "tone": "accent"}, {"id": "p", "label": "Passed first time", "sub": "transfer - the payoff", "tone": "good"}, {"id": "j", "label": "The judge confirmed the answer", "sub": "not the lesson", "tone": "warn"}, {"id": "n", "label": "Nothing checks generalisation", "sub": "there is no such test", "tone": "crit"}, {"id": "i", "label": "So a misleading lesson is invisible", "sub": "one success, one silent failure", "tone": "crit"}], "edges": [["q", "p"], ["p", "j"], ["j", "n"], ["n", "i"]], "t": "diagram", "id": "dg-11_5-04-3"},
+
     { t: "code", lang: "text", title: "With the lesson in the prompt",
       code: "solve (with 1 lesson(s)) -> 'Within 30 days, refunded to the original card.'\njudge: PASS",
       caption: "A **different** question, passed on the first attempt." },
     { t: "p", text: "That is the payoff, and it is also the measurement problem: this only works if the lesson **generalises**, and nothing checks that it does. The judge confirmed the answer, not the lesson." },
     { t: "h2", n: "05", id: "failures", text: "The failure modes", sub: "9.6's, and the worst one applies hardest" },
+
+    {"kind": "flow", "title": "A conclusion from one example, phrased as a general rule", "caption": "9.6 listed *remember wrong* as the worst memory failure — a mistaken fact persisting across every future conversation with nobody looking, because the system is doing exactly what it was told. **Reflexion hits it hardest, because the lesson was written by the model from a single failure: it is overfitted by construction**, and then applied to everything. Hence the three requirements — and **nothing else removes a bad lesson.**", "cols": 3, "nodes": [{"id": "o", "label": "One failure -> one general rule", "sub": "a sample of size one", "tone": "crit"}, {"id": "e", "label": "Overfitted by construction", "sub": "then applied to everything", "tone": "crit"}, {"id": "n", "label": "Scope the namespace narrowly", "sub": "9.6", "tone": "good"}, {"id": "c", "label": "Cap how many are injected", "sub": "or the prompt fills with them", "tone": "good"}, {"id": "x", "label": "An expiry or review path", "sub": "nothing else removes a bad one", "tone": "good"}], "edges": [["o", "e"], ["e", "n"], ["e", "c"], ["e", "x"]], "t": "diagram", "id": "dg-11_5-05-4"},
+
     { t: "callout", kind: "trap", title: "A lesson from one failure is a sample of size one", body: [
       { t: "p", text: "9.6 listed *remember wrong* as the worst memory failure: a mistaken fact persists across every future conversation and nobody is looking, because the system is doing exactly what it was told." },
       { t: "p", text: "Reflexion hits it hardest, because the lesson was written **by the model, from a single failure**. It is overfitted by construction \u2014 a conclusion drawn from one example, phrased as a general rule, and then applied to everything." }
     ] },
     { t: "p", text: "So reflexion wants lessons scoped narrowly in the namespace (9.6), a **cap** on how many are injected or the prompt fills with them, and an expiry or review path \u2014 because nothing else removes a bad lesson." },
     { t: "h2", n: "06", id: "honest", text: "The honest note", sub: "What it requires" },
+
+    {"kind": "flow", "title": "The judge is the requirement, and self-judging is measurably unsafe here", "caption": "Without a reliable pass/fail signal there is nothing to reflect on — and 7.4 measured exactly where self-judging breaks: **a model scored a claim its own document contradicted at +5.293, strongly positive.** So **a self-judged reflexion loop can write lessons from failures it misdiagnosed, which is worse than not reflecting at all**, because the bad lesson then persists. Where it works: tests, schemas, status codes.", "cols": 3, "nodes": [{"id": "s", "label": "The signal is the difficulty", "sub": "no judge, nothing to reflect on", "tone": "accent"}, {"id": "f", "label": "7.4: a contradiction scored +5.293", "sub": "strongly positive", "tone": "crit"}, {"id": "w", "label": "Lessons from misdiagnosed failures", "sub": "worse than not reflecting", "tone": "crit"}, {"id": "e", "label": "So: an external, cheap judge", "sub": "tests, a schema, 200 or 400", "tone": "good"}, {"id": "b", "label": "Which is where the benchmarks come from", "sub": "not a fuzzy quality bar", "tone": "violet"}], "edges": [["s", "f"], ["f", "w"], ["w", "e"], ["e", "b"]], "t": "diagram", "id": "dg-11_5-06-5"},
+
     { t: "callout", kind: "warn", title: "It needs a reliable judge, and that is the hard part", body: [
       { t: "p", text: "This is a research pattern. It works in benchmarks with a clear pass/fail signal, and the **signal** is the difficulty: without a reliable judge there is nothing to reflect on." },
       { t: "p", text: "And 7.4 measured exactly where self-judging fails \u2014 a model scoring a claim its own document contradicts gave it **+5.293**, strongly positive. So a self-judged reflexion loop can write lessons from failures it misdiagnosed, which is worse than not reflecting at all." }

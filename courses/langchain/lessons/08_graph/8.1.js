@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "A loop in Python around the chain",
       code: 'draft = RunnableLambda(lambda s: dict(s, draft=s["draft"] + "."))\ncheck = RunnableLambda(lambda s: dict(s, ok=len(s["draft"]) >= 3))\nchain = draft | check\n\nst = {"draft": "", "ok": False}\nturns = 0\nwhile not st["ok"] and turns < 10:\n    st = chain.invoke(st)\n    turns += 1',
       out: "    ran 3 times, final: {'draft': '...', 'ok': True}",
@@ -47,6 +49,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "`RunnableBranch` exists and branches on the **input of that step**. What it cannot do is send execution to a different *later* step and skip the ones in between, because the pipe operator fixes the sequence at construction time." },
     { t: "callout", kind: "insight", title: "\u201cGo back\u201d has no referent in a pipeline", body: [
       { t: "p", text: "*\u201cIf the draft is good go to publish, otherwise go back to draft\u201d* is not expressible. *Go back* has nothing to refer to \u2014 a pipeline has no addressable positions \u2014 and *skip to publish* means the pipeline was not really a pipeline." },
@@ -58,6 +62,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "A chain's `invoke()` returns when it is done. To pause for human approval you must end the chain, serialise whatever state you need, store it keyed by something, start a **different** chain when approval arrives, and reconstruct the state." },
     { t: "callout", kind: "warn", title: "Steps two, three and five are the actual work", body: [
       { t: "p", text: "Serialising the state, storing it, and reconstructing it is the entire difficulty of human-in-the-loop, and none of it is in the chain. You have hand-written a checkpointer \u2014 usually a worse one, because it has to be written per workflow rather than once." },
@@ -66,6 +72,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "difference", text: "The structural difference", sub: "One sentence, and everything follows from it" },
 
     {"kind": "matrix", "title": "Three requirements, and what each costs in each model", "caption": "The table is the whole decision. A cycle is **a Python `while` loop** in a chain — which works, and puts the control flow outside the thing being traced. A state-dependent branch is **fixed at construction**. And a pause is **five pieces of machinery you write** against a checkpointer and an interrupt. **None of the chain column is impossible; all of it is yours to maintain.**", "cols": ["Chain", "Graph"], "rows": ["Cycle", "Branch on state", "Pause"], "cells": [[{"text": "a Python while loop", "tone": "warn"}, {"text": "an edge back to a node", "tone": "good"}], [{"text": "fixed at construction", "tone": "crit"}, {"text": "a routing function", "tone": "good"}], [{"text": "serialise it yourself", "tone": "crit"}, {"text": "a checkpointer and an interrupt", "tone": "good"}]], "t": "diagram", "id": "dg-8_1-04-3"},
+
+
 
 
 
@@ -81,6 +89,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "when", text: "When a chain is still right", sub: "Which is more often than the tooling suggests" },
 
     {"kind": "flow", "title": "Most RAG pipelines are chains, and a graph there is ceremony", "caption": "Module 5's baseline is retrieve → format → prompt → model → parse: **no cycle, no state-dependent branch, no pause.** A graph there is **more code, a schema to maintain, and nothing bought** — which is the rule this module rests on: **pay for the graph only when you need at least one of §04's three rows.** And it is worth re-reading 8.6's closing comparison, where four `add_edge` calls replace one expression for a sequence that had no branches in it.", "cols": 3, "nodes": [{"id": "r", "label": "retrieve -> format -> prompt -> model", "sub": "module 5's baseline", "tone": "accent"}, {"id": "n", "label": "No cycle, no branch, no pause", "sub": "none of the three", "tone": "good"}, {"id": "g", "label": "A graph adds a schema and edges", "sub": "and buys nothing", "tone": "crit"}, {"id": "p", "label": "Pay only for one of the three", "sub": "the rule for the module", "tone": "violet"}], "edges": [["r", "n"], ["n", "g"], ["g", "p"]], "t": "diagram", "id": "dg-8_1-05-4"},
+
+
 
 
 
