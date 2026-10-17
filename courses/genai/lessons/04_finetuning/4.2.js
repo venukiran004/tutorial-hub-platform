@@ -28,6 +28,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Approach", "Where the change lives", "Cost per call", "Changing it later"],
       rows: [
@@ -42,6 +44,8 @@ EC.receiveLesson({
       sub: "Answer in the form [ANS] x, every time" },
 
     {"kind": "trace", "title": "A format task: zero-shot fails completely, both alternatives work", "caption": "Every answer must begin with the literal tag `[ANS]` — deliberately trivial so success is unambiguous. Zero-shot gets it **0 of 4 times**: the instruction is in the prompt and the model simply does not comply. Few-shot gets it, at 147 prompt tokens carried on every call. Fine-tuning gets it at **11**. For a pure behaviour with no facts in it, this is the case where fine-tuning is straightforwardly the right answer.", "left": "approach", "codeW": 190, "vars": ["format followed", "prompt tokens"], "steps": [{"code": "zero-shot prompt", "state": ["0 of 4", "24"], "tone": "crit", "note": "instruction ignored"}, {"code": "few-shot, 8 examples", "state": ["4 of 4", "147"], "changed": [0, 1], "tone": "accent"}, {"code": "fine-tuned", "state": ["4 of 4", "11"], "changed": [1], "tone": "good", "note": "13x less context"}], "t": "diagram", "id": "dg-4_2-02-1"},
+
+
 
 
 
@@ -105,6 +109,8 @@ for q in BEHAVIOUR_TEST:
       sub: "And a result I had to go back and check" },
 
     {"kind": "trace", "title": "A fact task, where the ranking inverts", "caption": "The fact is invented — the capital of a country that does not exist — so the base model cannot already know it, and zero-shot confirms that by answering *\"The capital of Zanthia is Zanthia\"*. **Retrieval gets 2 of 4**, failing on phrasings it should handle. Fine-tuning on four phrasings gets all four and answers cleanly: *\"The capital of Zanthia is Morrowbridge.\"* Which looks like a win for fine-tuning until you ask what happens when the capital changes — one is a document edit and the other is a training run.", "left": "approach", "codeW": 190, "vars": ["correct", "per-call cost"], "steps": [{"code": "zero-shot", "state": ["0 of 4", "cannot know it"], "tone": "crit"}, {"code": "retrieval", "state": ["2 of 4", "35 tokens, every call"], "changed": [0], "tone": "warn"}, {"code": "fine-tuned, 10 epochs", "state": ["4 of 4", "11 tokens"], "changed": [0, 1], "tone": "good"}, {"code": "when the fact changes", "state": ["edit a document", "vs retrain"], "tone": "violet", "note": "the real comparison"}], "t": "diagram", "id": "dg-4_2-03-2"},
+
+
 
 
 
@@ -234,6 +240,8 @@ gen(fm, "Q: %s\nA:" % q)`,
       sub: "Which is what makes the decision at volume" },
 
     {"kind": "trace", "title": "136 tokens per call, forever, against 27 seconds once", "caption": "The arithmetic that decides this at volume. Few-shot carries 147 prompt tokens on **every** call; the fine-tuned model carries 11. Over a thousand calls that is **136,000 tokens saved** against a one-off cost of 27 seconds of training. Which is why the fine-tuning case gets stronger with volume and weaker with change — the saving is per call and the cost is per *version*, so a prompt you will revise next week never repays it.", "left": "approach", "codeW": 190, "vars": ["prompt tokens", "x 1,000 calls", "one-off"], "steps": [{"code": "zero-shot", "state": ["24", "24,000", "none"], "tone": "accent", "note": "but it failed"}, {"code": "retrieval", "state": ["35", "35,000", "index build"], "tone": "accent"}, {"code": "few-shot, 8 examples", "state": ["147", "147,000", "none"], "changed": [1], "tone": "warn"}, {"code": "fine-tuned", "state": ["11", "11,000", "27 s training"], "changed": [1, 2], "tone": "good", "note": "136k tokens saved"}], "t": "diagram", "id": "dg-4_2-05-3"},
+
+
 
 
 

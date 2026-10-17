@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "retrieval", text: "Stage one \u2014 is the right context fetched?",
       sub: "Five metrics, each answering a different question" },
 
+    {"kind": "matrix", "title": "Five retrieval metrics, each answering a different question", "caption": "Stated as questions they stop being interchangeable. **Recall@k asks did we get them; Precision@k asks how much noise; MRR asks how high.** Hit rate asks only whether anything relevant arrived, which is the weakest and the one module 5 used throughout. nDCG weights by rank and normalises against the ideal ordering, which makes it the only one that grades the *whole* ordering rather than a cut of it.", "cols": ["Meaning", "The question"], "rows": ["Recall@k", "Precision@k", "Hit rate@k", "MRR", "nDCG@k"], "cells": [["relevant retrieved / all relevant", {"text": "did we get them?", "tone": "good"}], ["relevant in top-k / k", {"text": "how much noise?", "tone": "good"}], ["fraction with at least one relevant", "did we get anything?"], ["mean of 1/rank of the first hit", {"text": "how high?", "tone": "good"}], ["rank-weighted, normalised by the ideal", {"text": "the whole ordering", "tone": "violet"}]], "t": "diagram", "id": "dg-8_8-01-0"},
+
+
     { t: "table",
       head: ["Metric", "Meaning", "The question it answers"],
       rows: [
@@ -57,6 +60,9 @@ def mrr(retrieved_ids, relevant_ids):
 
     { t: "h2", n: "02", id: "generation", text: "Stage two \u2014 is the answer good, given the context?",
       sub: "The RAGAS quartet" },
+
+    {"kind": "matrix", "title": "Three of these need no gold answer, which is what lifts the ceiling", "caption": "8.1 argued that reference-free evaluation is what removes the cap on eval-set size, because a gold answer per case bounds you by annotation effort. Here is where that pays: **faithfulness, answer relevancy and context precision all need no reference**, so they can run on every production request. Context recall and answer correctness need gold answers and therefore stay on a curated set — which is the natural division between what you measure continuously and what you measure in CI.", "cols": ["Question", "Reference needed?"], "rows": ["Faithfulness", "Answer Relevancy", "Context Precision", "Context Recall", "Answer Correctness"], "cells": [["are the claims supported by the context?", {"text": "no - runs on live traffic", "tone": "good"}], ["does it address the question?", {"text": "no", "tone": "good"}], ["are the chunks relevant and well ranked?", {"text": "no", "tone": "good"}], ["did retrieval get everything needed?", {"text": "yes - a gold answer", "tone": "warn"}], ["is the answer factually right?", {"text": "yes", "tone": "warn"}]], "t": "diagram", "id": "dg-8_8-02-1"},
+
 
     { t: "table",
       head: ["Metric", "Question it answers", "Reference needed?"],

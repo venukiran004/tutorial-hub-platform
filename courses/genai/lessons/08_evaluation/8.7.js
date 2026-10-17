@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "hallucination", text: "Hallucination rate",
       sub: "The denominator is the whole question" },
 
+    {"kind": "flow", "title": "Hallucination rate has two definitions, and one of them is measurable", "caption": "The percentage of factual claims unsupported by **ground truth** needs somebody to establish what is true, which is as expensive as it sounds and bounds the eval set by annotation effort. The percentage unsupported by **the retrieved context** needs nothing external — the context is right there — which is why groundedness is the version that gets measured and 8.8 develops it. They are different quantities: a grounded answer can be wrong if the context was wrong.", "cols": 3, "nodes": [{"id": "g", "label": "Unsupported by ground truth", "sub": "the real definition", "tone": "accent"}, {"id": "c", "label": "Needs someone to establish truth", "sub": "expensive, and it caps the set", "tone": "crit"}, {"id": "r", "label": "Unsupported by the retrieved context", "sub": "groundedness", "tone": "good"}, {"id": "n", "label": "Needs nothing external", "sub": "the context is right there", "tone": "good"}, {"id": "d", "label": "But they are different quantities", "sub": "grounded can still be wrong", "tone": "warn"}, {"id": "w", "label": "If the context was wrong", "sub": "which retrieval decides, not generation", "tone": "teal"}], "edges": [["g", "c"], ["r", "n"], ["n", "d"], ["d", "w"]], "t": "diagram", "id": "dg-8_7-01-0"},
+
+
     { t: "p", text: "The percentage of factual claims unsupported by ground truth \u2014 or, for a RAG system, unsupported by the retrieved context, which it is commonly called groundedness and 8.8 develops." },
 
     { t: "callout", kind: "insight", title: "\u201cUnsupported by what\u201d changes the metric entirely",
@@ -37,6 +40,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "toxicity", text: "Toxicity and bias",
       sub: "Disaggregated, or the aggregate hides it" },
 
+    {"kind": "flow", "title": "The operative instruction is 'disaggregated by group'", "caption": "Perspective API, ToxiGen, BBQ and BOLD are the standard suites, and the part that does the work is not the suite — it is reporting **disaggregated by group**. An aggregate toxicity or bias score averages over exactly the dimension the measurement exists to examine, so a model that is fine on most groups and poor on one reports as fine. Which is the same structural error as 6.5's modality aggregate: the average hides the only thing worth knowing.", "cols": 3, "nodes": [{"id": "s", "label": "Standard suites", "sub": "Perspective, ToxiGen, BBQ, BOLD", "tone": "accent"}, {"id": "a", "label": "An aggregate score", "sub": "one number", "tone": "crit"}, {"id": "h", "label": "Averages over the dimension of interest", "sub": "which is the whole point", "tone": "crit"}, {"id": "d", "label": "Report per group", "sub": "the operative instruction", "tone": "good"}, {"id": "m", "label": "Same error as 6.5's modality average", "sub": "the mean hides the failure", "tone": "teal"}], "edges": [["s", "a"], ["a", "h"], ["h", "d"], ["d", "m"]], "t": "diagram", "id": "dg-8_7-02-1"},
+
+
     { t: "p", text: "Perspective API, ToxiGen, BBQ and BOLD are the standard suites, and the instruction is the operative part: **report disaggregated by group**." },
 
     { t: "callout", kind: "insight", title: "This is 6.5's zero row in a different costume",
@@ -49,6 +55,9 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "jailbreak", text: "Jailbreak and injection resistance",
       sub: "And the other direction, which has a degenerate optimum" },
 
+    {"kind": "flow", "title": "The corpus is the one input a RAG pipeline trusts by construction", "caption": "Attack suites measure the percentage of refusals that **hold under attack**, which is the right framing: a refusal rate on benign input tells you nothing about robustness. 6.7 covered the RAG-specific case and it is the harder one — injection arriving through a retrieved document, where **the corpus is the input the pipeline was designed to trust**. So the measurement has to include adversarial documents in the index, not just adversarial queries at the boundary.", "cols": 3, "nodes": [{"id": "r", "label": "Refusals that hold under attack", "sub": "not a refusal rate on benign input", "tone": "good"}, {"id": "q", "label": "Adversarial queries at the boundary", "sub": "the usual test", "tone": "accent"}, {"id": "d", "label": "Adversarial documents in the index", "sub": "the harder half", "tone": "crit"}, {"id": "t", "label": "The corpus is trusted by construction", "sub": "that is what RAG is", "tone": "crit"}, {"id": "m", "label": "So the suite must include poisoned docs", "sub": "or it measures the easy half", "tone": "violet"}], "edges": [["r", "q"], ["q", "d"], ["d", "t"], ["t", "m"]], "t": "diagram", "id": "dg-8_7-03-2"},
+
+
     { t: "p", text: "Attack suites measure the percentage of refusals that hold under attack. 6.7 covered the RAG-specific case \u2014 injection arriving through a retrieved document, where the corpus is the one input the pipeline trusts by construction." },
 
     { t: "callout", kind: "warn", title: "Measure over-refusal too, or the optimum is useless",
@@ -60,6 +69,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", id: "calibration", text: "Calibration",
       sub: "The regression invisible to every other metric" },
+
+    {"kind": "trace", "title": "Calibration, and what a 0.20 overconfidence shift does to ECE", "caption": "Bin by stated confidence, take the absolute gap between mean confidence and actual accuracy in each bin, and average weighted by bin size. A well-calibrated model reads **ECE 0.0136** with accuracy 0.758 against mean confidence 0.749 — essentially tracking. Shift confidence up by 0.20 and ECE becomes **0.2075**, and the per-bin table shows the damage is uniform: every bin is between 0.175 and 0.245 overconfident, so this is a systematic offset rather than a failure at the extremes.", "left": "confidence bin", "codeW": 150, "vars": ["n", "confidence", "accuracy", "gap"], "steps": [{"code": "0.5-0.6", "state": ["778", "0.549", "0.305", "-0.245"], "tone": "crit"}, {"code": "0.6-0.7", "state": ["770", "0.651", "0.457", "-0.194"], "tone": "crit"}, {"code": "0.7-0.8", "state": ["814", "0.748", "0.523", "-0.225"], "tone": "crit"}, {"code": "0.8-0.9", "state": ["863", "0.849", "0.674", "-0.175"], "tone": "crit"}, {"code": "0.9-1.0", "state": ["775", "0.949", "0.748", "-0.201"], "tone": "crit"}, {"code": "ECE overall", "state": ["", "0.752", "0.544", "0.2075"], "tone": "violet", "note": "well calibrated: 0.0136"}], "t": "diagram", "id": "dg-8_7-04-3"},
+
 
     { t: "math", tex: "\\text{ECE} = \\sum_{b=1}^{B} \\frac{n_b}{N}\\,\\big|\\,\\text{conf}(b) - \\text{acc}(b)\\,\\big|" },
 

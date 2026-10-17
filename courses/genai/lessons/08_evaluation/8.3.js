@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "catalogue", text: "The catalogue",
       sub: "Each metric was built for one task" },
 
+    {"kind": "matrix", "title": "Eight metrics, and what each one is blind to", "caption": "Read the gotcha column as the real content. **BLEU is n-gram precision and ROUGE is recall**, so neither sees meaning: ROUGE rewards overlap rather than faithfulness, which is why a summary that reverses a claim can score perfectly. BERTScore is semantic and therefore **model-dependent**, so it inherits whatever its embedding model is bad at. Only the last row is checkable rather than correlated, and it needs executable tests.", "cols": ["Measures", "Gotcha"], "rows": ["Accuracy / F1", "Exact Match", "BLEU", "ROUGE", "METEOR", "BERTScore", "chrF", "pass@k"], "cells": [["exact correctness", "needs clean labels"], ["string equality with gold", {"text": "brittle to formatting", "tone": "warn"}], ["n-gram precision", {"text": "ignores meaning; penalises paraphrase", "tone": "crit"}], ["n-gram or subsequence recall", {"text": "rewards overlap, not faithfulness", "tone": "crit"}], ["unigrams with synonyms and stems", "better recall of meaning than BLEU"], ["cosine of contextual embeddings", {"text": "semantic, and model-dependent", "tone": "warn"}], ["character n-gram F-score", "robust to morphology"], [{"text": "% with at least one correct of k", "tone": "good"}, "needs executable tests"]], "t": "diagram", "id": "dg-8_3-01-0"},
+
+
     { t: "table",
       head: ["Metric", "Measures", "Task", "Gotcha"],
       rows: [
@@ -115,6 +118,9 @@ r = rs.score(REF, c)      # rouge_score, with stemming`,
     { t: "h2", n: "03", id: "passatk", text: "pass@k",
       sub: "Exact, executable, and a statement about a sampling budget" },
 
+    {"kind": "trace", "title": "pass@k, and the boundary that makes it read 1.0000", "caption": "The estimator answers: from n samples of which c were correct, what is the chance a draw of k contains at least one correct? It is exact, which puts it on the bottom rung of 8.1's ladder where it belongs. The trap is in the boundary: **at n=10 and c=1, pass@10 is 1.0000** — because drawing 10 of 10 samples must include the one that passed. The last row shows the fix: with n=100 and c=5, pass@10 is 0.4162 and genuinely informative. **n must substantially exceed k.**", "left": "n and c", "codeW": 140, "vars": ["pass@1", "pass@5", "pass@10"], "steps": [{"code": "n=10, c=0", "state": ["0.0000", "0.0000", "0.0000"], "tone": "accent"}, {"code": "n=10, c=1", "state": ["0.1000", "0.5000", "1.0000"], "changed": [2], "tone": "crit", "note": "a boundary, not a result"}, {"code": "n=10, c=3", "state": ["0.3000", "0.9167", "1.0000"], "tone": "crit"}, {"code": "n=10, c=5", "state": ["0.5000", "0.9960", "1.0000"], "tone": "crit"}, {"code": "n=100, c=5", "state": ["0.0500", "0.2304", "0.4162"], "changed": [2], "tone": "good", "note": "n >> k, so informative"}], "t": "diagram", "id": "dg-8_3-03-1"},
+
+
     { t: "math", tex: "\\text{pass@}k = 1 - \\frac{\\binom{n-c}{k}}{\\binom{n}{k}}" },
 
     { t: "p", text: "For code, correctness is checkable, so the metric can be exact \u2014 which puts it on the bottom rung of 8.1\u2019s ladder where it belongs. The estimator answers: from n samples of which c were correct, what is the chance that a draw of k contains at least one correct?" },
@@ -149,6 +155,9 @@ r = rs.score(REF, c)      # rouge_score, with stemming`,
 
     { t: "h2", n: "04", id: "where", text: "Where these metrics are still right",
       sub: "Which is narrower than their usage" },
+
+    {"kind": "flow", "title": "Where overlap metrics are still exactly right", "caption": "The failure measured above is about **open-ended** output, where many phrasings are correct and overlap says nothing about which. For translation and summarisation **regression** — same inputs, same references, version N against N+1 — the metric is used as a *relative* signal on a fixed comparison, and that is what it is good at. The sin is reading an absolute ROUGE score as a quality claim; the legitimate use is reading a change in it as a regression alarm.", "cols": 3, "nodes": [{"id": "o", "label": "Open-ended output", "sub": "many phrasings are correct", "tone": "crit"}, {"id": "a", "label": "Absolute score as quality", "sub": "the sin", "tone": "crit"}, {"id": "r", "label": "Same inputs, same references", "sub": "version N against N+1", "tone": "good"}, {"id": "s", "label": "A change in the score", "sub": "a relative signal", "tone": "good"}, {"id": "l", "label": "That is a regression alarm", "sub": "and it is what they are for", "tone": "teal"}], "edges": [["o", "a"], ["r", "s"], ["s", "l"]], "t": "diagram", "id": "dg-8_3-04-2"},
+
 
     { t: "callout", kind: "good", title: "Regression testing on a fixed task with stable phrasing",
       body: [

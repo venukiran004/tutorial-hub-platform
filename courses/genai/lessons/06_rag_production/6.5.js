@@ -23,6 +23,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "6.3 covered parsing as a quality problem \u2014 a table flattened into a column of orphaned numbers. This lesson is about the cases where there is no text layer to parse badly in the first place: a chart in a scientific paper, a diagram in a technical manual, a scanned filing. Standard text RAG does not degrade on these, it is simply blind to them." },
 
     { t: "ul", items: [
@@ -142,6 +144,8 @@ TV = T @ V.T                                  # text against image`,
 
 
 
+
+
     { t: "p", text: "Option B sends each image or table to a vision model, gets a text description, and embeds *that* with the same text model as everything else. It is usually presented it as a pragmatic choice. The measurement shows it is the structurally correct one: once every stored vector comes from one text model, every comparison is text-to-text and a single ranked list means something again." },
 
     { t: "code", lang: "python", title: "describe at ingestion, embed the description", code: `def describe_image(image_path: str) -> str:
@@ -179,6 +183,8 @@ TV = T @ V.T                                  # text against image`,
 
 
 
+
+
     { t: "p", text: "ColPali takes a different line: stop extracting anything. Treat each page as an image, embed it with a vision-language model into *many* vectors rather than one, and at query time compute late interaction between query token embeddings and page patch embeddings \u2014 MaxSim, the mechanism 5.9 introduced for ColBERT." },
 
     { t: "dl", items: [
@@ -206,6 +212,8 @@ TV = T @ V.T                                  # text against image`,
       sub: "An aggregate number hides the modality that does not work" },
 
     {"kind": "trace", "title": "Why an aggregate score is actively misleading here", "caption": "Measure each modality independently, because the aggregate hides a total failure. **Images are retrieved 0.00 of the time** and the overall Hit@5 is still a respectable-looking 0.76 — because most queries are text queries, and text works. A dashboard reporting the overall number would show a healthy system with an entire modality missing from the index, and nothing in the trend would ever reveal it.", "left": "query modality", "codeW": 150, "vars": ["n", "Hit@5", "MRR", "nDCG@5"], "steps": [{"code": "text", "state": ["40", "0.95", "0.84", "0.63"], "tone": "good"}, {"code": "table", "state": ["15", "0.73", "0.61", "0.48"], "changed": [1], "tone": "warn"}, {"code": "image", "state": ["12", "0.00", "0.00", "0.00"], "changed": [1, 2, 3], "tone": "crit", "note": "a total failure"}, {"code": "overall", "state": ["67", "0.76", "0.67", "0.52"], "tone": "violet", "note": "looks healthy"}], "t": "diagram", "id": "dg-6_5-05-3"},
+
+
 
 
 

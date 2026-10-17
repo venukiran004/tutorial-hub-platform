@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "two-jobs", text: "Two jobs, two units",
       sub: "The distinction that organises the whole module" },
 
+    {"kind": "matrix", "title": "Two jobs, and the giveaway is the unit", "caption": "\"Is this good?\" means something different depending on what *this* is, and the unit of measurement gives it away. Evaluating a **model** asks whether these weights are good, measured on a token or a fixed question. Evaluating an **application** asks whether the system serves users, measured on a RAG answer, an agent trajectory or a guardrail decision. The row that matters most is the ground truth: for an application **nothing but live traffic is ground truth**.", "cols": ["The model", "The application"], "rows": ["The question", "The unit", "Typical metrics", "Who it is for", "Ground truth"], "cells": [["are these weights good?", "does this system serve users?"], ["a token, or a fixed answer", "an answer, a trajectory, a decision"], ["perplexity, benchmarks, Elo", "faithfulness, recall, task success, cost"], ["choosing or training a model", "shipping a change"], ["a benchmark label or a preference", {"text": "live traffic - nothing else", "tone": "violet"}]], "t": "diagram", "id": "dg-8_1-01-0"},
+
+
     { t: "p", text: "The question \u201cis this good?\u201d means something different depending on what \u201cthis\u201d is, and the giveaway is the unit of measurement." },
 
     { t: "table",
@@ -41,6 +44,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "ladder", text: "The ladder",
       sub: "Cheap and narrow to expensive and gold" },
 
+    {"kind": "matrix", "title": "Four rungs, from free and narrow to expensive and true", "caption": "The ladder's shape is the trade between **applicability and trustworthiness**. Exact metrics are deterministic and free and apply only where correctness is checkable. Reference-based metrics are cheap and automatic, and 8.3 measures them scoring an **inverted sentence at ROUGE-1 of exactly 1.0000**. Model-graded scales to any task and is noisy in ways you have to measure. Human judgement is the only real ground truth, at a cost that bounds how much of it you can have.", "cols": ["Applies to", "Costs"], "rows": ["Exact metrics", "Reference-based", "Model-graded", "Human judgement"], "cells": [[{"text": "only checkable correctness", "tone": "warn"}, {"text": "nothing, and deterministic", "tone": "good"}], ["anything with a gold answer", {"text": "cheap - and scored an inversion 1.0", "tone": "crit"}], [{"text": "any task at all", "tone": "good"}, "a model call, and its own biases"], [{"text": "anything", "tone": "good"}, {"text": "money - which bounds the set size", "tone": "crit"}]], "t": "diagram", "id": "dg-8_1-02-1"},
+
+
     { t: "code", lang: "text", title: "the four classes, in order", code: `exact metrics  ->  reference-based  ->  model-graded (LLM-as-judge)  ->  human judgment
 (cheap, narrow)    (BLEU/ROUGE/F1)     (scalable, noisy)                (gold, expensive)`,
       hl: [1, 2],
@@ -62,6 +68,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", id: "terms", text: "Four terms worth being precise about",
       sub: "Two axes, not one scale" },
+
+    {"kind": "matrix", "title": "Four terms, and the one that decides how large your eval set can be", "caption": "Offline against online is a question of *when*; reference-based against reference-free is a question of **what bounds you**. A gold answer per case means somebody has to write it, so annotation effort caps the set size — and that is why reference-free metrics matter structurally rather than conveniently: faithfulness, answer relevancy and context precision all need **no gold answer**, so the set can be as large as your traffic.", "cols": ["What it means", "The consequence"], "rows": ["Offline evaluation", "Online evaluation", "Reference-based", "Reference-free"], "cells": [["a fixed dataset, before deploy", "regression testing; 8.10 makes it a gate"], ["live traffic: A/B, feedback, drift", {"text": "the only ground truth (8.11)", "tone": "violet"}], ["compare against a gold answer", {"text": "annotation effort caps the set size", "tone": "crit"}], ["score on its own terms", {"text": "so the set can be as large as traffic", "tone": "good"}]], "t": "diagram", "id": "dg-8_1-03-2"},
+
 
     { t: "dl", items: [
       { k: "Offline evaluation", v: "Against a fixed dataset before deploy. This is regression testing, and 8.10 is about making it a deploy gate." },

@@ -23,6 +23,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "dl", items: [
       { k: "Structure is hierarchical and strict", v: "Files contain classes contain methods. Unlike a paragraph break, a function boundary is not a hint \u2014 it is the unit of meaning, and half a function is not a shorter answer, it is a wrong one." },
       { k: "Dependencies cross files", v: "Understanding a function needs its imports, type definitions and sometimes its callers. 6.4\u2019s multi-hop argument applies directly: the answer is a neighbourhood, not a chunk." },
@@ -166,6 +168,8 @@ for node in ast.walk(tree):
 
 
 
+
+
     { t: "p", text: "Code is the one domain where 6.4\u2019s knowledge graph needs no extraction model at all. The relations \u2014 calls, inherits, imports \u2014 are in the syntax, so a parser recovers them exactly. That removes the entity-resolution problem that made graph building hard, and replaces it with a different one." },
 
     { t: "code", lang: "python", title: "g66.py \u00a7C \u2014 the graph the usual treatment builds", code: `class CodeGraph:
@@ -206,6 +210,8 @@ for node in ast.walk(tree):
       sub: "Semantic misses symbols; symbol search misses intent" },
 
     {"kind": "matrix", "title": "Five code embedding models, and the dimension cost nobody prices", "caption": "The first row is a good all-rounder and **3,072 dimensions is 8× the storage of 384** — 6.2's memory arithmetic applies directly, so at a million chunks that is the difference between 1.5 GB and 12 GB of RAM. The last row's 8K context is the one specification that matters structurally rather than marginally: a whole-class chunk does not fit in 512 tokens, and 5.3 measured what silent truncation does.", "cols": ["Dims", "Note"], "rows": ["text-embedding-3-large", "Voyage Code 2", "CodeBERT", "StarEncoder", "Jina Code v2"], "cells": [["3072", {"text": "good all-rounder; 8x the storage of 384", "tone": "warn"}], ["1536", {"text": "trained on code; called best-in-class", "tone": "good"}], ["768", "open-source, strongest on classification"], ["1024", "trained on The Stack, multilingual"], ["768", {"text": "8K context - whole-class chunks fit", "tone": "good"}]], "t": "diagram", "id": "dg-6_6-04-2"},
+
+
 
 
 
@@ -255,6 +261,8 @@ for node in ast.walk(tree):
       sub: "Every commit is an ingest" },
 
     {"kind": "flow", "title": "A stale code index is worse than a stale prose index", "caption": "6.2 made incremental indexing by content hash the sensible default. For code it is **the only workable design**, because the slow clock is not nightly — it is every commit. And the failure is nastier than in prose: a stale code index tells you about **a function signature that no longer exists**, and the answer looks exactly as authoritative as a correct one, with a file path and a line number attached.", "cols": 3, "nodes": [{"id": "c", "label": "The repository changes per commit", "sub": "not nightly", "tone": "accent"}, {"id": "h", "label": "So: hash-based incremental, always", "sub": "the only workable design", "tone": "good"}, {"id": "s", "label": "A stale entry names a dead signature", "sub": "removed last week", "tone": "crit"}, {"id": "a", "label": "And it looks authoritative", "sub": "path and line number attached", "tone": "crit"}, {"id": "g", "label": "Index on the commit hook", "sub": "or accept answers about dead code", "tone": "violet"}], "edges": [["c", "h"], ["h", "s"], ["s", "a"], ["a", "g"]], "t": "diagram", "id": "dg-6_6-05-3"},
+
+
 
 
 

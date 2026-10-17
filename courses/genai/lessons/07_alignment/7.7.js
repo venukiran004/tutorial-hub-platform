@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "The DPO family, organised by what each one deletes", "caption": "Reading the family as a sequence of **deletions** makes it memorable. DPO removed the reward model and the RL loop; ORPO additionally removes the **reference model and the separate SFT stage**, so a base model goes straight to aligned in one pass; KTO removes the need for **pairs**, which is the only one that matters if your data is thumbs-up/thumbs-down; SimPO removes the reference model and length-normalises; IPO removes Bradley-Terry's assumption that preferences are transitive and deterministic.", "cols": ["Removes", "Use when"], "rows": ["DPO", "ORPO", "KTO", "SimPO", "IPO"], "cells": [[{"text": "the reward model and the RL loop", "tone": "good"}, "the default: pairs and an SFT model"], [{"text": "the reference model AND the SFT stage", "tone": "violet"}, "one stage, tight memory"], [{"text": "the need for pairs", "tone": "violet"}, {"text": "your data is thumbs up/down", "tone": "good"}], [{"text": "the reference model", "tone": "accent"}, "output is drifting long"], [{"text": "BT's transitivity assumption", "tone": "accent"}, "noisy, contradictory labels"]], "t": "diagram", "id": "dg-7_7-01-0"},
 
 
+
+
     { t: "table",
       head: ["Method", "Removes", "Loss idea", "Use when"],
       rows: [
@@ -42,6 +44,8 @@ EC.receiveLesson({
       sub: "Two stages collapse into one" },
 
     {"kind": "flow", "title": "ORPO learns the good answer and pushes away from the bad one in one step", "caption": "Two terms: ordinary SFT loss on the chosen response, plus λ times an **odds-ratio** penalty on the rejected one. The first is why there is no separate SFT stage — the SFT is happening here — and the second is why there is no reference model, because an odds ratio is computed within the policy rather than against a frozen copy. Which makes it the cheapest member of the family in memory and the one with the fewest moving parts.", "cols": 3, "nodes": [{"id": "s", "label": "Term 1: SFT loss on the chosen", "sub": "so the SFT stage is here", "tone": "good"}, {"id": "o", "label": "Term 2: odds-ratio penalty on the rejected", "sub": "weighted by lambda", "tone": "good"}, {"id": "r", "label": "Computed within the policy", "sub": "no frozen reference needed", "tone": "violet"}, {"id": "m", "label": "Cheapest in memory", "sub": "one model, one stage", "tone": "good"}, {"id": "b", "label": "Base straight to aligned", "sub": "in a single pass", "tone": "teal"}], "edges": [["s", "r"], ["o", "r"], ["r", "m"], ["m", "b"]], "t": "diagram", "id": "dg-7_7-02-1"},
+
+
 
 
     { t: "math", tex: "\\mathcal{L}_{\\text{ORPO}} = \\mathcal{L}_{\\text{SFT}} + \\lambda \\cdot \\mathcal{L}_{\\text{OR}}, \\qquad \\mathcal{L}_{\\text{OR}} = -\\log\\sigma\\big(\\log\\text{odds}(y_w) - \\log\\text{odds}(y_l)\\big)" },
@@ -68,6 +72,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "KTO borrows its loss from prospect theory, deliberately", "caption": "The value function is over **gains and losses relative to a reference point, with losses weighted more heavily than equivalent gains** — and that asymmetry is a deliberate model of human judgement rather than a mathematical convenience. What it buys practically is that the data can be **individual labels**: a thumbs-down needs no matching thumbs-up on the same prompt, which is what production feedback actually looks like.", "cols": 3, "nodes": [{"id": "p", "label": "A prospect-theory value function", "sub": "gains and losses, asymmetric", "tone": "violet"}, {"id": "l", "label": "Losses weigh more than gains", "sub": "a model of judgement, not convenience", "tone": "accent"}, {"id": "i", "label": "So labels can be individual", "sub": "good or bad, not A-versus-B", "tone": "good"}, {"id": "t", "label": "Which is what production gives you", "sub": "thumbs up, thumbs down", "tone": "good"}, {"id": "n", "label": "No pair construction needed", "sub": "the only method with that property", "tone": "teal"}], "edges": [["p", "l"], ["l", "i"], ["i", "t"], ["t", "n"]], "t": "diagram", "id": "dg-7_7-03-2"},
 
 
+
+
     { t: "callout", kind: "insight", title: "Production feedback is not pair-shaped, and that is the whole point",
       body: [
         { t: "p", text: "Every method so far needs \\((prompt, chosen, rejected)\\) \u2014 two responses to the same prompt with a human judgement between them. That data has to be commissioned: you generate two candidates and pay someone to compare them." },
@@ -88,6 +94,8 @@ EC.receiveLesson({
       sub: "The length bias, fixed at the loss" },
 
     {"kind": "flow", "title": "SimPO fixes length bias at the loss rather than in the data", "caption": "7.6 measured where DPO's length bias comes from: the implicit reward is a **sum over response tokens**, so for a per-token gain of d nats it equals β·d·n — **a long mediocre response collects the same reward as a short excellent one.** SimPO divides by length, turning the sum into an average, and adds a target margin γ. Which is the right place to fix it: filtering long responses out of the data treats the symptom, and normalising removes the incentive.", "cols": 3, "nodes": [{"id": "s", "label": "DPO's implicit reward is a sum", "sub": "beta x d x n", "tone": "crit"}, {"id": "l", "label": "So length pays, linearly", "sub": "long mediocre = short excellent", "tone": "crit"}, {"id": "n", "label": "Normalise by length", "sub": "a sum becomes an average", "tone": "good"}, {"id": "g", "label": "Plus a target margin gamma", "sub": "so separation has a goal", "tone": "good"}, {"id": "f", "label": "The incentive is gone, not filtered", "sub": "which is the right place to fix it", "tone": "teal"}], "edges": [["s", "l"], ["l", "n"], ["n", "g"], ["g", "f"]], "t": "diagram", "id": "dg-7_7-04-3"},
+
+
 
 
     { t: "p", text: "7.6 measured where DPO\u2019s length bias comes from: the implicit reward is a sum over response tokens, so for a per-token gain of d nats it equals \\(\\beta \\cdot d \\cdot n\\). A long mediocre response collects the same reward as a short excellent one." },

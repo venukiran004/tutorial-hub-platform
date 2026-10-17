@@ -93,6 +93,8 @@ E = enc.encode(docs, normalize_embeddings=True, batch_size=256)`,
 
 
 
+
+
     { t: "table",
       head: ["Question", "Sample sufficient?", "Why"],
       rows: [
@@ -115,6 +117,8 @@ E = enc.encode(docs, normalize_embeddings=True, batch_size=256)`,
       sub: "Finding the right columns, not the right rows" },
 
     {"kind": "flow", "title": "The retrieval problem is upstream of the query", "caption": "There **is** a real retrieval problem in text-to-SQL and it is not over the rows. A production schema may have two hundred tables and thousands of columns, which does not fit in a prompt — and even where it fits, it buries the relevant few in noise. So the vector search runs over **column and table descriptions**, and the measurement shows it working: every question matched the column that answers it, with *How many orders are from EMEA?* landing on `orders.region`.", "cols": 3, "nodes": [{"id": "s", "label": "200 tables, thousands of columns", "sub": "it does not fit in a prompt", "tone": "crit"}, {"id": "n", "label": "And where it fits, it is noise", "sub": "the relevant few are buried", "tone": "warn"}, {"id": "e", "label": "Embed the schema descriptions", "sub": "columns and tables, not rows", "tone": "violet"}, {"id": "r", "label": "Retrieve ten columns, not two thousand", "sub": "'EMEA' -> orders.region", "tone": "good"}, {"id": "g", "label": "Then generate SQL against those", "sub": "a small, relevant schema", "tone": "good"}], "edges": [["s", "n"], ["n", "e"], ["e", "r"], ["r", "g"]], "t": "diagram", "id": "dg-5_12-03-1"},
+
+
 
 
 
@@ -154,6 +158,8 @@ SV = enc.encode(SCHEMA_DOCS, normalize_embeddings=True)`,
       sub: "Retrieve the schema, generate SQL, execute it" },
 
     {"kind": "steps", "title": "The architecture that works, and why its failures are loud", "caption": "The model never sees two thousand rows and never does arithmetic. What it produces is **a query**, and the database does the counting, summing and grouping — exactly, over every row, which is the thing retrieval cannot do. The property that makes this safe is the failure mode: **a wrong query usually fails loudly** with a syntax error, a missing column or an empty result, all of which are catchable and retryable. A wrong retrieval returns plausible rows.", "items": [{"label": "Retrieve the relevant schema", "desc": "vector search over column and table descriptions", "code": "1", "tone": "accent"}, {"label": "Generate SQL against that schema", "desc": "one call; a SQL grammar makes invalid output impossible (3.13)", "code": "2", "tone": "accent"}, {"label": "Execute it", "desc": "the database counts, sums and groups over every row", "code": "3", "tone": "good"}, {"label": "Return the result, and the query alongside it", "desc": "so the answer is checkable", "code": "4", "tone": "good"}, {"label": "Wrong queries fail loudly", "desc": "syntax error, missing column, empty result - all retryable", "code": "5", "tone": "violet"}], "t": "diagram", "id": "dg-5_12-04-2"},
+
+
 
 
 

@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "table", text: "The benchmarks",
       sub: "Capability and format together" },
 
+    {"kind": "matrix", "title": "Ten benchmarks, read by their format column", "caption": "The format decides how gameable a number is. **Multiple-choice can be answered by elimination and by memorisation**, and seven of these ten are multiple-choice or mixed. The three that are execution-scored — HumanEval/MBPP on unit tests, SWE-bench on whether a patch passes — resist most forms of gaming, because a memorised answer still has to run. And the two judge-scored rows inherit every bias from 8.6.", "cols": ["Tests", "Format"], "rows": ["MMLU / MMLU-Pro", "GSM8K", "MATH", "HumanEval / MBPP", "HellaSwag / ARC", "TruthfulQA", "GPQA", "BBH", "MT-Bench / Arena-Hard", "SWE-bench"], "cells": [["broad knowledge, 57 subjects", "multiple-choice"], ["grade-school maths reasoning", "numeric answer"], ["hard competition maths", "numeric or expression"], ["Python code generation", {"text": "pass@k with unit tests", "tone": "good"}], ["commonsense reasoning", "multiple-choice"], ["resistance to common falsehoods", "multiple-choice and generation"], ["graduate science, Google-proof", "multiple-choice"], ["a hard reasoning subset", "mixed"], ["multi-turn chat quality", {"text": "LLM judge - see 8.6", "tone": "warn"}], ["real GitHub issue fixes", {"text": "a patch that passes tests", "tone": "good"}]], "t": "diagram", "id": "dg-8_4-01-0"},
+
+
     { t: "table",
       head: ["Benchmark", "Tests", "Format"],
       rows: [
@@ -43,6 +46,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "contamination", text: "Contamination",
       sub: "A high score can be memorisation" },
 
+    {"kind": "flow", "title": "Memorisation and competence produce the same number", "caption": "The mechanism is unglamorous: these datasets are **public**, discussed in papers, reproduced in blog posts and GitHub repositories — and pretraining corpora are scraped from the web. So a model can have seen the test, and **nothing in the score distinguishes having learned the skill from having learned the answers**. Which makes a benchmark number an *upper bound* on capability rather than an estimate of it, and makes a suspiciously high score on an old benchmark the signature to look for.", "cols": 3, "nodes": [{"id": "p", "label": "The datasets are public", "sub": "papers, blogs, repositories", "tone": "accent"}, {"id": "s", "label": "Pretraining scrapes the web", "sub": "no deliberate act required", "tone": "accent"}, {"id": "m", "label": "The model may have seen the test", "sub": "nobody can prove otherwise", "tone": "crit"}, {"id": "n", "label": "Memorisation scores like competence", "sub": "identical number", "tone": "crit"}, {"id": "u", "label": "So a score is an upper bound", "sub": "not an estimate", "tone": "violet"}, {"id": "f", "label": "And a fresh held-out set is the check", "sub": "which is 8.10's golden set", "tone": "good"}], "edges": [["p", "s"], ["s", "m"], ["m", "n"], ["n", "u"], ["u", "f"]], "t": "diagram", "id": "dg-8_4-02-1"},
+
+
     { t: "p", text: "Benchmark data leaks into training sets. The mechanism is unglamorous \u2014 these datasets are public, discussed in papers, reproduced in blog posts and GitHub repositories, and pretraining corpora are scraped from the web. A model can have seen the test." },
 
     { t: "callout", kind: "warn", title: "Which makes a benchmark score an upper bound on capability",
@@ -54,6 +60,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", id: "sensitivity", text: "Prompt sensitivity",
       sub: "The score is a property of the harness too" },
+
+    {"kind": "flow", "title": "A benchmark number without its harness is not reproducible", "caption": "Scores shift with formatting, few-shot count and answer-parsing — and that is not a minor caveat, it means **the number is a property of the harness as much as of the model.** Two papers reporting MMLU for the same model can legitimately differ by several points without either being wrong. Which is why the instruction is always to report the harness and its settings, and why `lm-evaluation-harness` exists at all: it is a fixed harness so the remaining difference is the model.", "cols": 3, "nodes": [{"id": "f", "label": "Formatting", "sub": "prompt template, answer markers", "tone": "accent"}, {"id": "s", "label": "Few-shot count", "sub": "0, 5, 25 shots", "tone": "accent"}, {"id": "p", "label": "Answer parsing", "sub": "how a choice is extracted", "tone": "accent"}, {"id": "n", "label": "The number moves several points", "sub": "with the model unchanged", "tone": "crit"}, {"id": "r", "label": "So report the harness and settings", "sub": "or it is not reproducible", "tone": "good"}, {"id": "h", "label": "Which is why a fixed harness exists", "sub": "lm-evaluation-harness", "tone": "teal"}], "edges": [["f", "n"], ["s", "n"], ["p", "n"], ["n", "r"], ["r", "h"]], "t": "diagram", "id": "dg-8_4-03-2"},
+
 
     { t: "p", text: "Scores shift with formatting, few-shot count and answer-parsing. That is not a minor caveat \u2014 it means a benchmark number without its harness is not reproducible, which is why it is commonly said to always report the harness and settings." },
 

@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "A 3,000x cost advantage that is constant in dataset size", "caption": "Both human and AI labelling cost scale linearly with the dataset, so **the advantage never changes relatively** — there is no scale at which AI labelling becomes comparatively better. What changes is the absolute figure crossing a threshold. At a thousand pairs, $3,000 of human labelling is trivially affordable and you should probably just do it: the quality is higher and the cost is noise. At a million pairs, $3,000,000 means **the dataset does not get built at all**. Which reframes RLAIF: it is not a cost optimisation applied to an existing plan, it is what makes a particular size of dataset possible.", "cols": 3, "nodes": [{"id": "l", "label": "Both costs are linear in size", "sub": "so the ratio is constant", "tone": "violet"}, {"id": "t", "label": "1,000 pairs: $3,000 human", "sub": "affordable; just do it", "tone": "good"}, {"id": "m", "label": "1,000,000 pairs: $3,000,000", "sub": "it does not get built", "tone": "crit"}, {"id": "r", "label": "RLAIF makes that size possible", "sub": "not merely cheaper", "tone": "violet"}, {"id": "q", "label": "Which is why its quality cost is acceptable", "sub": "the alternative is no dataset", "tone": "teal"}], "edges": [["l", "t"], ["l", "m"], ["m", "r"], ["r", "q"]], "t": "diagram", "id": "dg-7_12-01-0"},
 
 
+
+
     { t: "code", lang: "text", title: "g713.py \u00a7A \u2014 dataset cost, human against AI", code: `dataset size                  human @$3     AI @$0.001            ratio
 1,000 pairs                      $3,000             $1            3000x
 10,000 pairs                    $30,000            $10            3000x
@@ -59,6 +61,8 @@ EC.receiveLesson({
       sub: "Two phases, and an explicit document" },
 
     {"kind": "flow", "title": "Constitutional AI replaces the criterion, not just the labeller", "caption": "RLAIF swaps a human labeller for a model and keeps the criterion implicit — whatever the judge model happens to prefer. Constitutional AI additionally replaces the criterion with **something written down**: the model critiques its own output against an explicit set of principles, then revises. Which changes what can be audited. A disagreement about behaviour becomes a disagreement about a **text you can read and edit**, rather than about an annotator pool's tacit preferences.", "cols": 3, "nodes": [{"id": "h", "label": "RLHF: a human labeller", "sub": "criterion implicit, in their heads", "tone": "accent"}, {"id": "a", "label": "RLAIF: a model labeller", "sub": "criterion implicit, in its weights", "tone": "accent"}, {"id": "c", "label": "Constitutional: written principles", "sub": "critique, then revise", "tone": "violet"}, {"id": "r", "label": "The criterion becomes a document", "sub": "readable, editable, versioned", "tone": "good"}, {"id": "d", "label": "So disagreements are about the text", "sub": "not about tacit preferences", "tone": "teal"}], "edges": [["h", "a"], ["a", "c"], ["c", "r"], ["r", "d"]], "t": "diagram", "id": "dg-7_12-02-1"},
+
+
 
 
     { t: "p", text: "RLAIF replaces the labeller. Constitutional AI additionally replaces the *criterion* with something written down \u2014 the model critiques its own output against an explicit set of principles." },

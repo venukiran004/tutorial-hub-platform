@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "A verifier has no region where the gradient vanishes", "caption": "7.4 measured why a learned reward model is exploitable: the Bradley-Terry gradient is 1−σ(g), so it **vanishes once a gap is large and nothing constrains how big a correct gap becomes**. A verifier has no such region. `extract_boxed(completion) == gold` is either true or not, and **no amount of length, confidence, flattery or formatting changes the answer** — so you can optimise against it much harder, and the KL leash becomes a mild regulariser against degeneration rather than the load-bearing defence it is in RLHF.", "cols": 3, "nodes": [{"id": "r", "label": "A learned RM saturates", "sub": "gradient 1 - sigma(g) -> 0", "tone": "crit"}, {"id": "e", "label": "So large gaps are unconstrained", "sub": "room to exploit", "tone": "crit"}, {"id": "v", "label": "A verifier is true or false", "sub": "no saturating region", "tone": "good"}, {"id": "f", "label": "Length and flattery change nothing", "sub": "there is nothing to flatter", "tone": "good"}, {"id": "o", "label": "So optimise much harder", "sub": "the proxy gap does not open", "tone": "good"}, {"id": "k", "label": "And the KL leash becomes mild", "sub": "a regulariser, not the defence", "tone": "teal"}], "edges": [["r", "e"], ["v", "f"], ["f", "o"], ["o", "k"]], "t": "diagram", "id": "dg-7_9-01-0"},
 
 
+
+
     { t: "code", lang: "python", title: "the whole idea", code: `def reward(problem, completion):
     if problem.type == "math":
         return 1.0 if extract_boxed(completion) == problem.gold else 0.0
@@ -58,6 +60,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Binary rewards make the zero-advantage case the common one", "caption": "7.8's degenerate case is that GRPO produces **exactly zero advantage when all G samples get the same reward** — the group standard deviation is zero and there is nothing to standardise against. With a learned reward model, continuous scores make exact ties rare. **With a 0/1 verifier they are the common case**: an easy problem gives six passes, a hard one gives six failures, and both batches contribute no gradient at all. So the curriculum has to be chosen to keep problems near the pass-rate middle.", "cols": 3, "nodes": [{"id": "a", "label": "All G rewards equal", "sub": "std = 0, advantage = 0", "tone": "crit"}, {"id": "c", "label": "Rare with continuous scores", "sub": "exact ties are unlikely", "tone": "good"}, {"id": "b", "label": "Common with 0/1", "sub": "six passes, or six failures", "tone": "crit"}, {"id": "e", "label": "Too easy: no gradient", "sub": "all correct", "tone": "warn"}, {"id": "h", "label": "Too hard: no gradient", "sub": "all wrong", "tone": "warn"}, {"id": "m", "label": "So curate for the middle", "sub": "problems near a 50% pass rate", "tone": "good"}], "edges": [["a", "c"], ["a", "b"], ["b", "e"], ["b", "h"], ["e", "m"], ["h", "m"]], "t": "diagram", "id": "dg-7_9-02-1"},
 
 
+
+
     { t: "p", text: "7.8 measured that GRPO produces exactly zero advantage when all G samples in a group receive the same reward. With a learned reward model, continuous scores make exact ties rare. With a 0/1 verifier they are the common case." },
 
     { t: "code", lang: "text", title: "7.8's measurement, re-read for RLVR", code: `rewards                        std        advantages
@@ -80,6 +84,8 @@ mean |advantage|: 0.000 at 0/6, 0.6802 at 1/6, 0.9127 at 3/6, 0.000 at 6/6`,
       sub: "The DeepSeek-R1 shape, in four stages" },
 
     {"kind": "steps", "title": "Four stages, and why stage 3 is not circular", "caption": "Re-training on the model's own correct outputs sounds circular and is not, because **RL and SFT move weights differently**: RL gives a noisy, high-variance signal, and SFT gives dense imitation. So stage 3 **consolidates** — it takes the behaviour RL discovered stochastically and makes it the default, which is cheaper and more stable than continuing to run RL. It is the same mechanism as 7.13's finding that distilling a reasoning model's traces beats training the smaller model with RL directly.", "items": [{"label": "Cold-start SFT (optional)", "desc": "a few thousand long chain-of-thought examples, for a readable format", "code": "1", "tone": "accent"}, {"label": "GRPO with verifiable rewards", "desc": "maths and code - this is where it learns to think longer", "code": "2", "tone": "violet"}, {"label": "Rejection sampling", "desc": "keep the RL model's correct traces and use them as new SFT data", "code": "3", "tone": "good"}, {"label": "A final preference or safety pass", "desc": "DPO or RLHF for what no verifier can supply", "code": "4", "tone": "good"}], "t": "diagram", "id": "dg-7_9-03-2"},
+
+
 
 
     { t: "ol", items: [
@@ -107,6 +113,8 @@ mean |advantage|: 0.000 at 0/6, 0.6802 at 1/6, 0.9127 at 3/6, 0.000 at 6/6`,
       sub: "The result that made this approach famous" },
 
     {"kind": "flow", "title": "Nobody told it to think longer", "caption": "Given only *correct answer = 1* as a signal, **response length grew on its own** over training. No part of the reward mentions length, reasoning steps, backtracking or verification — and behaviours like *\"Wait, let me reconsider…\"* appeared **without ever being demonstrated**. The mechanism is unglamorous and worth stating: longer reasoning raises the pass rate, the pass rate is the only thing rewarded, so length rises as a side effect of the thing that was optimised.", "cols": 3, "nodes": [{"id": "r", "label": "The reward: correct = 1", "sub": "nothing else at all", "tone": "violet"}, {"id": "l", "label": "Longer reasoning passes more often", "sub": "on these problems", "tone": "accent"}, {"id": "g", "label": "So length grows on its own", "sub": "never mentioned in the reward", "tone": "good"}, {"id": "b", "label": "And backtracking appears", "sub": "'Wait, let me reconsider...'", "tone": "good"}, {"id": "n", "label": "Never demonstrated to it", "sub": "no example contained it", "tone": "violet"}, {"id": "s", "label": "A side effect of what was optimised", "sub": "which is the whole mechanism", "tone": "teal"}], "edges": [["r", "l"], ["l", "g"], ["g", "b"], ["b", "n"], ["n", "s"]], "t": "diagram", "id": "dg-7_9-04-3"},
+
+
 
 
     { t: "p", text: "Given only \u201ccorrect answer = 1\u201d as a signal, response length **grew on its own** over training. No part of the reward mentions length, reasoning steps, backtracking or verification \u2014 and behaviours like \u201cWait, let me reconsider\u2026\u201d appeared without ever being demonstrated." },

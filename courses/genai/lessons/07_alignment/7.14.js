@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "The first branch: is the fact in the weights at all?", "caption": "Scored **as statements**, gpt2 ranks *\"The capital of France is Paris\"* above the Berlin, Madrid and London variants — so the fact is in the weights. Asked the question directly it gives `' Paris'` **0.54%**. So fine-tuning changes **which continuations are likely, not what is true**: if a fact is absent from the weights, changing the distribution over continuations will not put it there — it will make the model confidently produce something in the right shape. Which is why the answer for facts is retrieval.", "cols": 3, "nodes": [{"id": "s", "label": "Scored as statements: Paris wins", "sub": "the fact is in the weights", "tone": "good"}, {"id": "a", "label": "Asked as a question: 0.54%", "sub": "the format is the problem", "tone": "warn"}, {"id": "f", "label": "Fine-tuning fixes the format", "sub": "which continuations are likely", "tone": "good"}, {"id": "n", "label": "If the fact is absent", "sub": "it cannot put it there", "tone": "crit"}, {"id": "c", "label": "It produces the right shape, confidently", "sub": "which is worse than failing", "tone": "crit"}, {"id": "r", "label": "So: retrieval, for facts", "sub": "M5 and M6", "tone": "violet"}], "edges": [["s", "a"], ["a", "f"], ["f", "n"], ["n", "c"], ["c", "r"]], "t": "diagram", "id": "dg-7_14-01-0"},
 
 
+
+
     { t: "code", lang: "text", title: "the top of the tree", code: `Do you need the model to know NEW FACTS?
   -> No fine-tuning. Use RAG.
      (Fine-tuning teaches behaviour, not facts. This is the #1 interview filter.)`,
@@ -38,6 +40,8 @@ EC.receiveLesson({
       sub: "Each branch is a data question" },
 
     {"kind": "matrix", "title": "The decision tree, keyed on what data you actually have", "caption": "Every row is decided by the **shape of your data** rather than by a quality ranking, which is what makes this usable. The third row is the one people miss: **KTO is the only method that needs no pairs**, so production thumbs-up/thumbs-down is directly usable without constructing comparisons. And the last two rows are where the memory column stops being an aside — 234.7 GB against 117.3 GB is a different class of hardware.", "cols": ["Method", "Memory at 7B"], "rows": ["Instruction-answer pairs", "Pairs + an SFT model", "Thumbs up/down", "Pairs, no SFT, tight memory", "Pairs, drifting long", "Noisy contradictory labels", "A programmatic verifier", "Budget, RM and a team"], "cells": [["SFT, with LoRA", "one trained model"], [{"text": "DPO - the default", "tone": "good"}, "117.3 GB"], [{"text": "KTO", "tone": "violet"}, "same as DPO"], [{"text": "ORPO", "tone": "good"}, {"text": "less - no reference model", "tone": "good"}], [{"text": "SimPO", "tone": "good"}, "same as ORPO"], [{"text": "IPO", "tone": "accent"}, "same as DPO"], [{"text": "GRPO + RLVR", "tone": "violet"}, "117.3 GB"], ["PPO / RLHF", {"text": "234.7 GB", "tone": "crit"}]], "t": "diagram", "id": "dg-7_14-02-1"},
+
+
 
 
     { t: "code", lang: "text", title: "the decision guide", code: `Do you need a specific FORMAT / TONE / TASK behaviour?

@@ -70,6 +70,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "g46.py \u2014 counting what has requires_grad", code: `def build(r, alpha):
     m = GPT2LMHeadModel.from_pretrained("gpt2")
     for p in m.parameters():
@@ -100,6 +102,8 @@ tr = sum(p.numel() for p in m.parameters() if p.requires_grad)`,
       sub: "Verified against the base model's logits" },
 
     {"kind": "trace", "title": "'Identical to the base' checked rather than asserted", "caption": "4.4 argued that `B = 0` makes a freshly wrapped model identical to the base. That is a checkable claim, and it checks out exactly: **max logit difference 0.000e+00 across the whole vocabulary**, not merely small. B's maximum absolute value at init is 0.0 and A's standard deviation is 0.03615 — so A is random and harmless, because anything multiplied into a zero B contributes nothing.", "left": "measurement", "codeW": 220, "vars": ["value"], "steps": [{"code": "max |logit difference|", "state": ["0.000e+00"], "tone": "good", "note": "not small - zero"}, {"code": "all logits identical", "state": ["True"], "tone": "good"}, {"code": "max |B| at init", "state": ["0.0"], "tone": "violet"}, {"code": "std of A at init", "state": ["0.03615"], "tone": "accent", "note": "random, and harmless"}], "t": "diagram", "id": "dg-4_6-03-1"},
+
+
 
 
 
@@ -142,6 +146,8 @@ print((lo_base - lo_lora).abs().max(), torch.equal(lo_base, lo_lora))`,
 
 
 
+
+
     { t: "code", lang: "python", title: "g46.py \u2014 the very first backward pass, before any step", code: `out = m2(x, attention_mask=mask, labels=labels, use_cache=False)
 out.loss.backward()
 lay = m2.transformer.h[0].attn.c_attn
@@ -165,6 +171,8 @@ print(lay.A.grad.norm(), lay.B.grad.norm())`,
       sub: "The claim everything else depends on" },
 
     {"kind": "trace", "title": "'Frozen' verified, because it is easy to get wrong", "caption": "A frozen base is what makes 4.1's forgetting reversible rather than permanent — and *frozen* only means what it says if nothing has quietly re-enabled gradients: a stray `requires_grad`, an optimizer built over `model.parameters()` instead of the trainable subset, a library that helpfully turns them back on. Verified after 24 steps: loss fell 4.834 to 3.439, A's gradient grew from zero as predicted, and **0 of 12 base matrices changed, with max difference 0.000e+00**. The embedding matrix did not move either.", "left": "step", "codeW": 120, "vars": ["loss", "|grad A|", "max |B|"], "steps": [{"code": "0", "state": ["4.8339", "0.000000", "0.000000"], "tone": "accent"}, {"code": "1", "state": ["4.7168", "0.014908", "0.000200"], "changed": [1], "tone": "good", "note": "A starts moving"}, {"code": "8", "state": ["4.4918", "0.130279", "0.001614"], "tone": "good"}, {"code": "16", "state": ["4.1082", "0.121425", "0.003299"], "tone": "good"}, {"code": "23", "state": ["3.4390", "", ""], "tone": "good"}, {"code": "base matrices changed", "state": ["0 of 12", "0.000e+00", "frozen"], "tone": "violet"}], "t": "diagram", "id": "dg-4_6-05-3"},
+
+
 
 
 
@@ -216,6 +224,8 @@ for i, blk in enumerate(m.transformer.h):
       sub: "The adapter is the artefact" },
 
     {"kind": "trace", "title": "422x smaller is what makes adapters practical", "caption": "The artefact you ship is 24 tensors and 294,912 parameters — **0.59 MB against a 248.9 MB model, 422× smaller**. Scaled up to a real configuration (rank 8 on seven projection types across 32 layers of a 7B) that is **29.4 MB against 14,000 MB**. Which is the number behind every claim about serving many fine-tunes from one base: the adapters fit in the memory you would otherwise spend on a second copy of the model.", "left": "artefact", "codeW": 190, "vars": ["parameters", "size at fp16"], "steps": [{"code": "gpt2 adapter, r=8", "state": ["294,912", "0.59 MB"], "tone": "good"}, {"code": "gpt2 base", "state": ["124,439,808", "248.9 MB"], "changed": [1], "tone": "accent", "note": "422x"}, {"code": "7B adapter, 7 types x 32L", "state": ["14,680,064", "29.4 MB"], "tone": "good"}, {"code": "7B base", "state": ["7,000,000,000", "14,000 MB"], "changed": [1], "tone": "accent", "note": "476x"}], "t": "diagram", "id": "dg-4_6-06-4"},
+
+
 
 
 

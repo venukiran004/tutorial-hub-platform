@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "The mental model most people carry is that a stop sequence interrupts generation the moment the model produces it. What actually happens is that the server generates tokens, decodes them, checks the accumulated text against each stop string, and cuts the response at the first match. The model is not consulted and does not know the parameter exists." },
 
     { t: "code", lang: "python", title: "g13b.py — a stop sequence, implemented", code: `ids = tok("Three colours: red, green,", return_tensors="pt").input_ids
@@ -101,6 +103,8 @@ for stop in (",", " purple", "\\n"):
 
 
 
+
+
     { t: "p", text: "`logit_bias` takes a map from token id to a number in the range −100 to +100, and adds that number to the corresponding logit. It happens before temperature, before truncation, before the penalties — it is a modification of the model's raw output, so everything downstream sees the biased vector as if the model had produced it." },
 
     { t: "code", lang: "python", title: "g13.py — logit_bias, implemented", code: `ids = tok("My favourite colour is", return_tensors="pt").input_ids
@@ -153,6 +157,8 @@ for bias in (-100.0, -5.0, 0.0, 5.0, 10.0, 100.0):
       sub: "You are not banning a word, you are banning a token" },
 
     {"kind": "trace", "title": "The id is not the word, and that is the whole disappointment", "caption": "`logit_bias` maps **ids to numbers**, and biasing `' blue'` leaves every other spelling of blue untouched. Seven forms of one word, six distinct ids, and one — `' bluish'` — that is not a single token at all, so no bias can reach it: you would have to bias `' blu'`, which also suppresses every other word starting that way. The one place the parameter is unbeatable is a single-token classifier: bias everything but your labels to −100, set `max_tokens=1`, and the answer is guaranteed to be a label, with its logprob as a free confidence score.", "left": "spelling", "codeW": 130, "vars": ["token ids", "pieces"], "steps": [{"code": "'blue'", "state": ["[18789]", "1"], "tone": "accent"}, {"code": "' blue'", "state": ["[9861]", "1"], "changed": [0], "tone": "good", "note": "the one you biased"}, {"code": "'Blue'", "state": ["[15957]", "1"], "tone": "warn"}, {"code": "' Blue'", "state": ["[11942]", "1"], "tone": "warn"}, {"code": "' BLUE'", "state": ["[110151]", "1"], "tone": "warn"}, {"code": "' blues'", "state": ["[51764]", "1"], "tone": "warn"}, {"code": "' bluish'", "state": ["[55577, 1109]", "2"], "changed": [1], "tone": "crit", "note": "unreachable by bias"}], "t": "diagram", "id": "dg-1_6-03-2"},
+
+
 
 
 

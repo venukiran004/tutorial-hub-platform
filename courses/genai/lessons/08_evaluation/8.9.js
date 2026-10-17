@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "dimensions", text: "Seven dimensions",
       sub: "Because there are seven ways for a trajectory to go wrong" },
 
+    {"kind": "matrix", "title": "Seven dimensions, because task success catches everything non-specifically", "caption": "The first row is what everyone measures and it tells you nothing about *why*. The rest decompose it. **Tool-argument correctness catches a valid call that asks the wrong question** — schema-valid and semantically wrong, which 1.8's banana at 3,000 calories is the archetype of. Trajectory quality catches the right answer reached by luck. And the last row is the one with a trap: measure cost per **resolved** task, because cost per *attempt* rewards giving up early.", "cols": ["What it catches"], "rows": ["Task success", "Tool selection", "Tool-argument correctness", "Trajectory quality", "Efficiency", "Recovery", "Cost and latency"], "cells": [[{"text": "everything, non-specifically", "tone": "warn"}], ["routing errors - which 5.11 measured as the costly kind"], [{"text": "a valid call that asks the wrong question", "tone": "crit"}], [{"text": "the right answer reached by luck", "tone": "accent"}], ["runaway loops"], [{"text": "giving up, and silent failure", "tone": "accent"}], [{"text": "per RESOLVED task - per attempt rewards giving up", "tone": "crit"}]], "t": "diagram", "id": "dg-8_9-01-0"},
+
+
     { t: "table",
       head: ["Dimension", "Metric", "What it catches"],
       rows: [
@@ -46,6 +49,9 @@ assert steps <= 6                                 # efficiency / no runaway loop
 
     { t: "h2", n: "02", id: "modes", text: "Three ways to score a trajectory",
       sub: "And the path does not always matter" },
+
+    {"kind": "matrix", "title": "Three ways to score a path, and what each one punishes", "caption": "Gold-trace matching is deterministic and cheap and **punishes valid alternative routes** — which matters because most tasks have several. Judging the trajectory handles that and imports every bias from 8.6, position and verbosity included. Outcome-only is correct when the path genuinely does not matter, and 7.9's reasoning models are the case where it does not: the model was rewarded on the answer alone and discovered its own path.", "cols": ["Cost", "What it punishes"], "rows": ["Gold-trace matching", "Judge the trajectory", "Outcome only"], "cells": [[{"text": "deterministic and cheap", "tone": "good"}, {"text": "valid alternative routes", "tone": "crit"}], ["a model call per trace", {"text": "imports 8.6's biases", "tone": "warn"}], [{"text": "a final-state check", "tone": "good"}, "nothing - and sees nothing either"]], "t": "diagram", "id": "dg-8_9-02-1"},
+
 
     { t: "dl", items: [
       { k: "Gold-trace matching", v: "Exact or soft comparison against a known-good action sequence. Deterministic and cheap, and it penalises a *different* correct path, so it suits tasks with one sensible route." },

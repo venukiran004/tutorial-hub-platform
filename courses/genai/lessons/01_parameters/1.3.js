@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Top-k is the simpler of the two and the easier to reason about. Sort the logits, keep the k largest, set the rest to negative infinity so that softmax gives them exactly zero, and renormalise over what is left. Four lines:" },
 
     { t: "code", lang: "python", title: "g11.py — top-k", code: `def top_k_filter(lg, k):
@@ -49,6 +51,8 @@ EC.receiveLesson({
       sub: "The smallest set whose cumulative probability reaches p" },
 
     {"kind": "trace", "title": "Top-p, worked through five tokens", "caption": "Sort by probability, accumulate from the top, and keep the smallest set whose cumulative mass reaches `p`. The boundary is the part worth being precise about: C's cumulative is **0.90 exactly**, which reaches the threshold, so C is kept and D is the first to go. The set is whatever it takes to cover the mass — three tokens here, two at a sharper temperature, thousands at a flatter one.", "left": "token", "codeW": 110, "vars": ["p", "mass before", "cumulative", "top_p=0.9"], "steps": [{"code": "A", "state": ["0.50", "0.00", "0.50", "keep"], "tone": "good"}, {"code": "B", "state": ["0.25", "0.50", "0.75", "keep"], "tone": "good"}, {"code": "C", "state": ["0.15", "0.75", "0.90", "keep"], "changed": [2], "tone": "good", "note": "reaches 0.90 exactly"}, {"code": "D", "state": ["0.05", "0.90", "0.95", "drop"], "changed": [3], "tone": "crit"}, {"code": "E", "state": ["0.05", "0.95", "1.00", "drop"], "tone": "crit"}], "t": "diagram", "id": "dg-1_3-02-1"},
+
+
 
 
 
@@ -192,6 +196,8 @@ top_p=0.9 keeps A, B, C -- cumulative 0.90 exactly at C.`,
       sub: "top_p=1.0 does not keep everything, and top_p=0 does not keep nothing" },
 
     {"kind": "matrix", "title": "The edge values, and the three that secretly mean greedy", "caption": "Measured on GPT-2's 50,257 tokens, `top_p=0.90` keeps 1,503, `0.95` keeps 3,119, `0.99` keeps 9,144 and `1.00` keeps 38,597 — so even \"no truncation\" quietly drops the 11,660 tokens with no representable mass. The rows to watch are the three different ways of accidentally asking for greedy decoding when you thought you were sampling.", "cols": ["What it means", "Equivalent to"], "rows": ["top_k=0", "top_k=1", "top_p=1.0", "top_p below top-1 prob", "top_p=0"], "cells": [["no top-k filtering - the 'unset' convention", "not filtering"], [{"text": "keep the single highest score", "tone": "crit"}, {"text": "temperature=0", "tone": "crit"}], ["keep everything with representable mass", "38,597 of 50,257"], [{"text": "keep exactly one token", "tone": "crit"}, {"text": "greedy, on this step", "tone": "crit"}], [{"text": "keep one - the first has 0 mass before it", "tone": "crit"}, {"text": "greedy, every step", "tone": "crit"}]], "t": "diagram", "id": "dg-1_3-04-2"},
+
+
 
 
 

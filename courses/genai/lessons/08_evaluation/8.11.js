@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "signals", text: "Six classes of signal",
       sub: "In rough order of how much they cost you to get" },
 
+    {"kind": "matrix", "title": "Six classes of signal, and the free one people skip", "caption": "Explicit feedback is what teams build first and it is **rare and self-selecting** — the people who click a thumb are not a sample of your users. **Implicit feedback is free, abundant and unbiased by who bothers to click**: copy rate, follow-up edits, abandonment, regenerate clicks. A/B is the only causal measurement on the list. And drift is invisible offline **by construction**, because an offline set cannot contain a distribution it was not drawn from.", "cols": ["Examples", "Note"], "rows": ["Explicit feedback", "Implicit feedback", "A/B and canary", "Guardrail hits", "Drift", "Business KPIs"], "cells": [["thumbs, stars, was-this-helpful", {"text": "rare, and self-selecting", "tone": "warn"}], [{"text": "copy rate, edits, abandonment", "tone": "good"}, {"text": "free, abundant, unbiased by who clicks", "tone": "good"}], ["5% of traffic to prompt v2", {"text": "the only causal measurement here", "tone": "violet"}], ["blocked or flagged rate", "a rising rate is a signal, not just a shield"], ["no-results rate, fallback usage", {"text": "invisible offline by construction", "tone": "crit"}], ["deflection, resolution time", {"text": "what you are actually paid for", "tone": "violet"}]], "t": "diagram", "id": "dg-8_11-01-0"},
+
+
     { t: "table",
       head: ["Signal", "Examples", "Note"],
       rows: [
@@ -46,6 +49,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "ab", text: "A/B and canary",
       sub: "The only causal measurement in the stack" },
 
+    {"kind": "flow", "title": "Measure all three axes, because a quality win usually loses two of them", "caption": "A change that improves answers by adding a re-ranking pass and a longer prompt **will win on quality and lose on both latency and cost** — and 6.2 measured the magnitude: 11 ms of retrieval against 2,405 ms of re-ranking. An A/B that reports only the quality metric therefore recommends shipping something that triples the per-request bill, and nothing in the result says so. Three axes, every time.", "cols": 3, "nodes": [{"id": "c", "label": "Add a re-ranker and a longer prompt", "sub": "a real quality change", "tone": "accent"}, {"id": "q", "label": "Quality: up", "sub": "the metric you watched", "tone": "good"}, {"id": "l", "label": "Latency: 11 ms becomes 2,405", "sub": "6.2's measurement", "tone": "crit"}, {"id": "o", "label": "Cost: up with the context", "sub": "every request", "tone": "crit"}, {"id": "r", "label": "Report all three, or recommend wrongly", "sub": "every A/B", "tone": "violet"}], "edges": [["c", "q"], ["c", "l"], ["c", "o"], ["q", "r"], ["l", "r"], ["o", "r"]], "t": "diagram", "id": "dg-8_11-02-1"},
+
+
     { t: "callout", kind: "good", title: "Compare success, cost and latency together or the result is misleading",
       body: [
         { t: "p", text: "A change that improves answers by adding a re-ranking pass and a longer prompt will win on quality and lose on both other axes. 6.2 measured the magnitude \u2014 11 ms of retrieval against 2,405 ms for a cross-encoder \u2014 so a quality-only A/B readout hides a 200\u00d7 latency change in one stage." },
@@ -62,6 +68,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", id: "drift", text: "Drift",
       sub: "What an offline set cannot show by construction" },
+
+    {"kind": "flow", "title": "The no-results rate is the cheapest leading indicator in a RAG system", "caption": "It rises when queries move away from the corpus, and crucially **it rises before answer quality visibly degrades** — because the system is still producing fluent answers from whatever it did retrieve. Which makes it a leading indicator rather than a lagging one, and it costs a counter. The same logic applies to rising fallback usage: both measure *the gap between what users ask and what you indexed*, which is the thing that actually drifts.", "cols": 3, "nodes": [{"id": "q", "label": "Queries move away from the corpus", "sub": "new products, new vocabulary", "tone": "accent"}, {"id": "n", "label": "The no-results rate rises", "sub": "a counter, essentially free", "tone": "good"}, {"id": "f", "label": "Answers stay fluent", "sub": "from whatever was retrieved", "tone": "crit"}, {"id": "l", "label": "So quality degrades later", "sub": "making this a leading indicator", "tone": "violet"}, {"id": "g", "label": "It measures the ask-index gap", "sub": "which is what drifts", "tone": "teal"}], "edges": [["q", "n"], ["q", "f"], ["f", "l"], ["n", "l"], ["l", "g"]], "t": "diagram", "id": "dg-8_11-03-2"},
+
 
     { t: "callout", kind: "insight", title: "Three drift signals, and two are nearly free",
       body: [
