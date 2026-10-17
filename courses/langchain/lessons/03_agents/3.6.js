@@ -127,6 +127,10 @@ EC.receiveLesson({
       ["retrieve from history", "nothing, but adds a lookup and can retrieve the wrong turn"]
     ] },
     { t: "p", text: "`strategy=\"first\"` is listed for completeness and is almost never right for a conversation \u2014 it keeps the opening and discards everything the user has said since, which inverts the usual relevance ordering. It exists for cases where the beginning is the specification and the rest is working." },
+    { t: "code", lang: "python", title: "The history backends, and the one function they all fit behind",
+      code: 'from langchain_community.chat_message_histories import (\n    RedisChatMessageHistory, SQLChatMessageHistory,\n    MongoDBChatMessageHistory)\nfrom langchain_core.chat_history import BaseChatMessageHistory\n\ndef get_session_history(session_id: str) -> BaseChatMessageHistory:\n    return RedisChatMessageHistory(session_id, url=REDIS_URL, ttl=86400)\n\nRunnableWithMessageHistory(chain, get_session_history,\n                           input_messages_key="question",\n                           history_messages_key="history")',
+      caption: "One factory function, and the storage is the only line that changes." },
+    { t: "p", text: "The `ttl` is the argument worth noticing, because the graph equivalent does not have one: a checkpointer keeps a thread until something deletes it (9.4), while these backends can expire a session on their own. Which is the one thing the deprecated API does more cheaply than its replacement — and it is also the shape of what you lose, since a history that expires takes the audit trail with it." },
     { t: "exercise", kind: "build", title: "Wire history, then trim it",
       difficulty: "core", minutes: 26,
       body: "Wire a message store into a chain with RunnableWithMessageHistory and run three turns against one session, then inspect what was stored. Note the deprecation warning and what it points at. Then build a long history and trim it four ways, reporting which messages survive each strategy. Explain which parameter matters most and what each strategy loses.",

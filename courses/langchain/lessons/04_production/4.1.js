@@ -122,6 +122,10 @@ EC.receiveLesson({
       { t: "p", text: "Build a fresh `Recorder` per request. A module-level handler shared between concurrent invocations interleaves their events, and the `run_id` pairing will still match starts to ends correctly while every aggregate \u2014 total calls, total characters \u2014 is the sum across requests that happened to overlap." },
       { t: "p", text: "That bug is invisible in testing, where requests are sequential, and produces inflated per-request metrics in production. Same shape as the session-id mistake in 3.6." }
     ] },
+    { t: "code", lang: "python", title: "The two usage collectors, and why the scope differs",
+      code: 'from langchain_community.callbacks import get_openai_callback\nfrom langchain_core.callbacks import UsageMetadataCallbackHandler\n\nwith get_openai_callback() as cb:\n    chain.invoke({"q": "refund policy?"})\nprint(cb.total_tokens, cb.total_cost)      # OpenAI only\n\nhandler = UsageMetadataCallbackHandler()\nchain.invoke({"q": "..."}, config={"callbacks": [handler]})\nprint(handler.usage_metadata)              # per model, any provider',
+      caption: "A context manager against a handler — and the difference is §04’s point." },
+    { t: "p", text: "`get_openai_callback` is a context manager, so it collects whatever runs inside the `with` block on this thread — convenient, provider-specific, and awkward the moment anything is concurrent. The handler form is passed in `config`, so it is scoped to the call you attached it to, which is the scoping rule this section measured. For cost specifically that matters: 13.1’s cumulative number is per **conversation**, and only the per-call form can be attributed to one." },
     { t: "exercise", kind: "build", title: "Build a recorder",
       difficulty: "core", minutes: 24,
       body: "Implement a callback handler that records every event in order, counts model calls, and measures the characters in and out plus the time of each model call. Run it on a three-step chain and print the event sequence. Explain why the chain-event count differs from the model-call count, and tabulate what a callback can and cannot see.",

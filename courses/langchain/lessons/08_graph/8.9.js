@@ -108,6 +108,10 @@ EC.receiveLesson({
       { t: "p", text: "The drawing shows a node you wired up and forgot to connect to `END`, and a branch that is unreachable because a router never returns its key \u2014 both of which compile cleanly. It is the fastest way into an unfamiliar graph." },
       { t: "p", text: "8.8's caveat applies: destinations set by `Command` do not appear unless the node is annotated with its possible targets. So a graph that draws as disconnected nodes is usually not broken \u2014 it is routing through `Command` without annotations." }
     ] },
+    { t: "code", lang: "python", title: "The three drawing methods, and what each is for",
+      code: 'print(graph.get_graph().draw_ascii())        # a terminal, a PR comment\nprint(graph.get_graph().draw_mermaid())      # markdown that renders in a README\ngraph.get_graph().draw_mermaid_png()         # a PNG, via a renderer\n\n# and with the nested graphs expanded:\nprint(graph.get_graph(xray=True).draw_mermaid())',
+      caption: "All four read the same structure — the one 8.6 established is data." },
+    { t: "p", text: "`draw_mermaid()` is the one worth wiring into a repository, because its output is text that a README renders and a diff shows — so a topology change arrives in a pull request as a changed picture rather than as a changed list of `add_edge` calls. And `xray=True` is what makes it honest about a nested graph (10.1): without it, a subgraph is one box, which is exactly the opacity that lesson measures." },
     { t: "exercise", kind: "build", title: "Find out what compile checks, and what the limit really is",
       difficulty: "core", minutes: 28,
       body: "Try to compile four malformed graphs and record which ones are rejected. Then build an unconditional cycle and measure the recursion limit rather than assuming it, including how many supersteps actually executed. Explain why the limit is a backstop rather than a loop condition. Compare invoke against both stream modes on the same graph and say what each is for. Finally draw a graph and say what the drawing catches that compile does not.",

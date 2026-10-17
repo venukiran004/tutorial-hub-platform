@@ -228,6 +228,10 @@ EC.receiveLesson({
 
     { t: "p", text: "The rule of thumb: **if a tutorial imports a `*Chain` class, reach for the LCEL or LangGraph equivalent.** You get streaming, async, batching and tracing for free, none of which the legacy classes support." },
 
+    { t: "code", lang: "python", title: "And the provider classes the fake model stands in for",
+      code: 'from langchain_openai import ChatOpenAI\nfrom langchain_anthropic import ChatAnthropic\n\nmodel = ChatOpenAI(model="gpt-4o-mini", temperature=0, max_retries=2)\nmodel = ChatAnthropic(model="claude-sonnet-4-5", max_retries=2)\n\n# or without naming the provider in your code at all:\nfrom langchain.chat_models import init_chat_model\nmodel = init_chat_model("gpt-4o-mini", model_provider="openai", temperature=0)',
+      caption: "Different constructors, the same `BaseChatModel` interface below them." },
+    { t: "p", text: "Which is this lesson’s point from the other end: every example in this course uses a fake model because the **interface** is what the course is about, and swapping `FakeChatModel` for either line above changes nothing downstream. Note `max_retries` on the constructor — provider clients retry internally, so a `with_retry` wrapper is a **second** retry policy stacked on one you may not know is there (4.6, 14.2)." },
     { t: "exercise", kind: "build", title: "Implement a chat model and measure the protocol",
       difficulty: "core", minutes: 28,
       body: "Build a scripted chat model by implementing the one required method, and confirm which protocol methods the base class then provides. Show the four message types including a tool-call pair. Then demonstrate that three different chain constructions produce an identical message list, and measure what invoke, batch and batch-with-concurrency-limit actually cost on the same six inputs.",

@@ -132,6 +132,10 @@ EC.receiveLesson({
       { t: "p", text: "A rate limiter bounds requests per second, not spend. A single request with a 100,000-token context costs far more than fifty short ones and consumes one token from the bucket. If the problem is cost, the controls are 4.4's token budget and 4.3's cache \u2014 not the limiter." },
       { t: "p", text: "The two get conflated because both are described as \u201climiting\u201d, and a team that adds a rate limiter to control spend will find spend roughly unchanged and latency worse." }
     ] },
+    { t: "code", lang: "python", title: "And the provider errors the predicate is actually about",
+      code: 'import httpx\nfrom openai import RateLimitError, APITimeoutError\nfrom tenacity import wait_exponential_jitter\n\nRETRYABLE = (RateLimitError, APITimeoutError,\n             httpx.TimeoutException, httpx.ConnectError)\n\nmodel.with_retry(retry_if_exception_type=RETRYABLE,\n                 stop_after_attempt=3,\n                 wait_exponential_jitter=True)',
+      caption: "`wait_exponential_jitter=True` is the one argument you should never leave off." },
+    { t: "p", text: "A `RateLimitError` is the retryable case the whole mechanism exists for, and it is also the one where retrying badly makes things worse: every client that hit the limit gets the same backoff schedule, so they all come back together. 14.2 measures what jitter is worth — **60 of 60 clients in one 50 ms window without it, 9 of 60 with it** — which is why the argument is not a refinement. And `httpx` exceptions have to be named explicitly, because a timeout raised by the transport is not the provider’s own error class." },
     { t: "exercise", kind: "build", title: "Compose the stack and find the silent ordering bug",
       difficulty: "advanced", minutes: 26,
       body: "Write out the resilience stack in the correct nesting order and justify each placement. Then enumerate the wrong orderings and say what each one does, identifying the one that degrades silently. Verify that a correctly composed retry absorbs transient failures without the fallback firing. Finally, state what each mechanism is not for.",

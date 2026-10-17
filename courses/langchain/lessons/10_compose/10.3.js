@@ -116,6 +116,10 @@ EC.receiveLesson({
       ["understanding the runtime", "`debug` \u2014 rarely what an application wants"]
     ] },
     { t: "p", text: "The one to internalise is `updates`. When a key has the wrong value it names the node that wrote it in one step, and when a key is missing it shows the absence directly \u2014 which between them cover the two commonest graph bugs in this course." },
+    { t: "code", lang: "python", title: "The writer, as a node argument rather than a lookup",
+      code: 'from langgraph.types import StreamWriter\nfrom langgraph.config import get_stream_writer\n\n# injected, if the node declares it:\ndef slow(state, writer: StreamWriter):\n    for i in range(3):\n        writer({"progress": "step %d of 3" % (i + 1)})\n    return {"done": True}\n\n# or fetched, which also works inside a tool or a plain function:\ndef inner():\n    get_stream_writer()({"progress": "halfway"})',
+      caption: "Both reach the same `custom` channel; `runtime.stream_writer` (10.7) is the third spelling." },
+    { t: "p", text: "The fetched form is the one that matters for §04’s argument, because the slow thing is often not the node — it is a function three frames down that the node called. `get_stream_writer()` works there without threading a parameter through every layer, which is the difference between reporting progress from inside a long operation and reporting it from around one." },
     { t: "exercise", kind: "build", title: "Stream a graph five ways",
       difficulty: "core", minutes: 30,
       body: "Stream the same two-node graph in values, updates and debug modes and compare the chunks, noting how many each produces. Explain the off-by-one in values mode. Say what each of the five modes is for. Then stream with several modes at once and show how the chunks are tagged. Finally write a node that emits progress from inside itself and stream it in custom mode.",

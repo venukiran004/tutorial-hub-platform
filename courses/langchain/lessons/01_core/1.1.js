@@ -216,6 +216,10 @@ EC.receiveLesson({
         { t: "p", text: "Nothing else is faked. The prompt templating, the parsing, the composition, the streaming, the state machine and the tool protocol are all the real library doing real work \u2014 only the token generation is scripted. 1.2 builds the model and says exactly where the boundary is." }
       ] },
 
+    { t: "code", lang: "python", title: "And a message is not only text",
+      code: 'HumanMessage(content=[\n    {"type": "text", "text": "What is the charge on this receipt?"},\n    {"type": "image_url",\n     "image_url": {"url": "data:image/png;base64," + b64}},\n])\n\n# audio, the same shape:\nHumanMessage(content=[\n    {"type": "input_audio",\n     "input_audio": {"data": b64, "format": "wav"}},\n])',
+      caption: "`content` is a string **or** a list of typed blocks — same message class." },
+    { t: "p", text: "Which is the interface argument holding up under a load it was not designed for: adding images did not add a message type, a model class or a method — `content` simply became a list of blocks, and everything downstream that treats a message as opaque kept working. What does **not** survive is anything that assumed `content` was a string: a prompt template that formats it, a trimmer that measures its length, a logger that prints it. So the cost of the generalisation is paid by the code that looked inside." },
     { t: "exercise", kind: "build", title: "Build the protocol, then break it",
       difficulty: "core", minutes: 24,
       body: "Count the adapters a five-component, four-provider system needs with and without a common interface. Then implement the protocol from scratch: a base class with one method and a pipe operator, a sequence, and a lambda wrapper. Compose three components. Then add a fourth component type the original code did not anticipate, and confirm how much existing code had to change. Finally, build the same chain with the real library and compare the structure.",
