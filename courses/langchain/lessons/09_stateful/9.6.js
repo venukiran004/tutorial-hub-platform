@@ -31,6 +31,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "put, get, search",
       code: 'store.put(("users", "alice"), "prefs", {"tone": "brief", "lang": "en"})\nstore.put(("users", "alice"), "facts", {"team": "platform"})\nstore.put(("users", "bob"),   "prefs", {"tone": "detailed"})\n\nstore.get(("users", "alice"), "prefs").value\nstore.search(("users", "alice"))',
       out: "  alice prefs : {'tone': 'brief', 'lang': 'en'}\n  bob   prefs : {'tone': 'detailed'}\n\n  everything under ('users','alice'):\n    prefs    {'tone': 'brief', 'lang': 'en'}\n    facts    {'team': 'platform'}",
@@ -38,6 +40,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "why", text: "Why not just use graph state?", sub: "Five properties differ" },
 
     {"kind": "matrix", "title": "Five properties, and the written row is the one with a cost", "caption": "The store is not a nicer state — **it is state with a different lifetime and a different write cost.** The row that matters operationally is the fourth: **graph state is written every superstep and a store is written when you call `put`**, so 9.4's 8 KB blob costs 8 KB per step in state and 8 KB once in a store. And the read row is the trade going the other way: state arrives automatically and a store has to be read **explicitly, by key**, which means you have to know what you are looking for.", "cols": ["Graph state", "Store"], "rows": ["Scope", "Lifetime", "Written", "Read", "Size cost"], "cells": [["one thread", {"text": "any namespace you choose", "tone": "good"}], ["the thread", {"text": "independent of threads", "tone": "good"}], [{"text": "EVERY superstep", "tone": "crit"}, {"text": "when you call put", "tone": "good"}], [{"text": "automatically", "tone": "good"}, {"text": "explicitly, by key", "tone": "warn"}], [{"text": "serialised per step", "tone": "crit"}, {"text": "paid once", "tone": "good"}]], "t": "diagram", "id": "dg-9_6-02-1"},
+
+
     { t: "table", head: ["property", "graph state", "store"], rows: [
       ["scope", "one thread", "any namespace you choose"],
       ["lifetime", "the thread", "independent of threads"],
@@ -52,6 +56,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "kinds", text: "Three kinds of memory", sub: "Distinguished by retrieval pattern" },
 
     {"kind": "matrix", "title": "Three kinds of memory, distinguished by how they are retrieved", "caption": "The useful distinction is not what they contain but **how you get them back.** Semantic facts are retrieved **by key, or by embedding search over the values**. Episodic records are retrieved **by recency, or by similarity to the current situation** — which is module 5's machinery pointed at your own history. And procedural instructions are **always loaded and injected into the system prompt**, so they are not retrieved at all — which also makes them the only kind with an unbounded prompt cost.", "cols": ["Example", "Retrieved by"], "rows": ["Semantic - facts", "Episodic - what happened", "Procedural - how to behave"], "cells": [["('users','alice'), 'facts'", "key, or embedding search over values"], ["('users','alice','episodes'), a date", {"text": "recency, or similarity to now", "tone": "accent"}], ["('agent','instructions'), 'tone'", {"text": "always loaded - so it costs prompt tokens", "tone": "warn"}]], "t": "diagram", "id": "dg-9_6-03-2"},
+
+
     { t: "dl", items: [
       ["semantic \u2014 facts", "`(\"users\",\"alice\"), \"facts\" \u2192 {\"team\": \"platform\"}`. Retrieved by key, or by embedding search over the values."],
       ["episodic \u2014 what happened", "`(\"users\",\"alice\",\"episodes\"), \"2024-03-11\" \u2192 {\u2026}`. Retrieved by recency, or by similarity to the current situation."],
@@ -64,6 +70,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "namespace", text: "Namespace design decides retrievability", sub: "And deletability" },
 
     {"kind": "trace", "title": "Namespace design decides what you can retrieve without a scan", "caption": "Layout A puts everything in one namespace with the user encoded in the key: **`search(('memories',))` returns all three items — every user's — and getting just alice's means filtering in your own code.** Layout B puts the user in the namespace, so the same question is a namespace read. **The retrieval pattern is fixed at write time by a decision that looks like naming**, and changing it later means rewriting every key.", "left": "layout", "codeW": 190, "vars": ["namespace and key", "getting one user's"], "steps": [{"code": "A: everything in one namespace", "state": ["('memories',), 'alice:pref:tone'", "filter in your code"], "tone": "crit"}, {"code": "B: user in the namespace", "state": ["('users','alice','prefs'), 'tone'", "a namespace read"], "changed": [1], "tone": "good"}, {"code": "and it is fixed at write time", "state": ["by a naming decision", "rewrite every key to change"], "tone": "violet"}], "t": "diagram", "id": "dg-9_6-04-3"},
+
+
     { t: "code", lang: "text", title: "The same data, two layouts",
       code: "A: ('memories',)              key='alice:pref:tone'\nB: ('users','alice','prefs')  key='tone'\n\nlayout A, everything in one namespace:\n  search(('memories',)) returns 3 items -- all users\n  getting just alice's means filtering keys by prefix in Python\n\nlayout B, hierarchical:\n  search(('users','alice','prefs')) returns 2 items -- just alice",
       caption: "A tuple namespace is a path, so B gets prefix search for free." },
@@ -74,6 +82,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "writing", text: "The hard part is writing", sub: "And nothing in the API helps" },
 
     {"kind": "matrix", "title": "The API is four methods; deciding what is worth remembering is the problem", "caption": "**No part of the interface addresses what to remember — it is a product and prompt-design problem that happens to have a storage layer.** And the three failures are not symmetrical. **Remember everything** fills the store with noise and **retrieval returns irrelevant memories — 6.6's near-duplicate problem, with no relevance labels to tune against.** Remember nothing is a feature nobody notices. And **remember wrong persists a mistaken fact across every future conversation**, which is the only one of the three that gets worse with time.", "cols": ["What happens"], "rows": ["Remember everything", "Remember nothing", "Remember wrong"], "cells": [[{"text": "noise, and 6.6's problem with no labels to tune against", "tone": "crit"}], ["a memory feature nobody notices"], [{"text": "a mistaken fact in every future conversation - and it compounds", "tone": "crit"}]], "t": "diagram", "id": "dg-9_6-05-4"},
+
+
     { t: "p", text: "The store API is four methods. What makes long-term memory hard is deciding **what is worth remembering**, and no part of the interface addresses that \u2014 it is a product and prompt-design problem that happens to have a storage layer." },
     { t: "table", head: ["failure", "what happens"], rows: [
       ["remember everything", "the store fills with noise and retrieval returns irrelevant memories \u2014 6.6's near-duplicate problem, with no relevance labels to tune against"],

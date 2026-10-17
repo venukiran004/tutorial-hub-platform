@@ -31,12 +31,17 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "A router returning Sends",
       code: 'def fan(state):\n    return [Send("write", {"section": s}) for s in state["sections"]]\n\ng.add_conditional_edges("plan", fan, ["write"])',
       out: "  topic='ab'        -> 2 sections, 2 drafts\n     ['draft of section-0', 'draft of section-1']\n  topic='abcdefg'   -> 5 sections, 5 drafts\n     ['draft of section-0', ..., 'draft of section-4']",
       caption: "The worker count came from the state." },
     { t: "p", text: "8.6's parallel edges have a count fixed when you write the graph, and no configuration changes it. This is the mechanism behind 9.3's orchestrator-worker pattern \u2014 and the reason that pattern's execution graph cannot be enumerated by reading the code." },
     { t: "h2", n: "02", id: "isolation", text: "A worker gets its own state", sub: "Not the parent's" },
+
+    {"kind": "flow", "title": "The isolation is one-directional: constrained going in, normal coming out", "caption": "A `Send` gives the worker **its own state**, so it cannot see the parent's other keys or its siblings' work — which is what makes the fan-out safe to reason about. **The worker's return value is merged into the parent state through the parent's reducers**, so the isolation stops at the boundary: **constrained going in, normal coming out.** Which is why §03's reducer requirement is the parent's problem rather than the worker's.", "cols": 3, "nodes": [{"id": "s", "label": "Send(node, its own state)", "sub": "one per item", "tone": "violet"}, {"id": "i", "label": "The worker sees only that", "sub": "not siblings, not the parent", "tone": "good"}, {"id": "r", "label": "Its return merges normally", "sub": "through the parent's reducers", "tone": "accent"}, {"id": "o", "label": "Constrained in, normal out", "sub": "one-directional isolation", "tone": "violet"}, {"id": "p", "label": "So the reducer is the parent's problem", "sub": "section 03", "tone": "teal"}], "edges": [["s", "i"], ["i", "r"], ["r", "o"], ["o", "p"]], "t": "diagram", "id": "dg-10_2-02-1"},
+
     { t: "code", lang: "text", title: "Fanning out from a state containing a secret",
       code: "worker saw keys=['item']\nworker saw keys=['item']",
       caption: "The worker did **not** receive `secret`." },
@@ -46,11 +51,17 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "The worker's **return** value is merged into the parent state through the parent's reducers, so the isolation is one-directional: constrained going in, normal coming out." },
     { t: "h2", n: "03", id: "reducer", text: "The gathered key needs a reducer", sub: "Unavoidably" },
+
+    {"kind": "flow", "title": "The one pattern where 8.3's commonest bug announces itself immediately", "caption": "**Map-reduce *is* N concurrent writes to one key**, so **there is no sequential version of this graph where a missing reducer stays silent.** Everywhere else a missing reducer is latent until a fan-in happens; here the first run raises. Which makes map-reduce the pattern worth building early if you want to understand reducers, because **the framework will not let you misunderstand them.**", "cols": 3, "nodes": [{"id": "m", "label": "Map-reduce is N writes to one key", "sub": "by construction", "tone": "violet"}, {"id": "n", "label": "No sequential version exists", "sub": "so nothing hides it", "tone": "violet"}, {"id": "r", "label": "The first run raises", "sub": "InvalidUpdateError", "tone": "good"}, {"id": "e", "label": "Elsewhere it is latent", "sub": "until a fan-in happens", "tone": "warn"}, {"id": "l", "label": "So it is the pattern to learn on", "sub": "you cannot misunderstand it", "tone": "teal"}], "edges": [["m", "n"], ["n", "r"], ["r", "e"], ["e", "l"]], "t": "diagram", "id": "dg-10_2-03-2"},
+
     { t: "code", lang: "text", title: "Three workers, one key, no reducer",
       code: "RAISED InvalidUpdateError: At key 'results': Can receive only one value\nper step. Use an Annotated key to handle multiple values.",
       caption: "8.3's rule, in the place it cannot be avoided." },
     { t: "p", text: "Map-reduce **is** N concurrent writes to one key, so there is no sequential version of this graph where a missing reducer stays silent. Which makes it the one pattern where 8.3's commonest bug announces itself immediately." },
     { t: "h2", n: "04", id: "order", text: "The order is not meaningful", sub: "Even when it looks right" },
+
+    {"kind": "trace", "title": "The order came out right, and it is not guaranteed", "caption": "The gathered list reads `0:a, 1:b, 2:c, 3:d` — **in order, this time.** 8.3 established why that is luck rather than a property: **updates within a superstep are applied in an order you do not control**, and `operator.add` on lists is not commutative. So **if the order matters, put the index in the value** — which this example does, and which is the only reason the output is readable rather than merely correct.", "left": "observation", "codeW": 190, "vars": ["value"], "steps": [{"code": "gathered", "state": ["['0:a', '1:b', '2:c', '3:d']"], "tone": "good"}, {"code": "guaranteed?", "state": ["no - 8.3's ordering"], "changed": [0], "tone": "crit"}, {"code": "so", "state": ["put the index in the value"], "tone": "good", "note": "which this example does"}], "t": "diagram", "id": "dg-10_2-04-3"},
+
     { t: "code", lang: "text", title: "Four workers with indices",
       code: "['0:a', '1:b', '2:c', '3:d']",
       caption: "In order \u2014 and relying on that is the mistake." },
@@ -59,6 +70,9 @@ EC.receiveLesson({
       { t: "p", text: "Pass an index with each `Send` and sort on the way out if the order matters. That costs nothing and removes a dependency on behaviour that is not guaranteed \u2014 and the alternative is a bug that appears under load, when scheduling differs." }
     ] },
     { t: "h2", n: "05", id: "bound", text: "The bound that is missing", sub: "And where it belongs" },
+
+    {"kind": "flow", "title": "The worker has no idea how many siblings it has", "caption": "Nothing bounds the fan-out: a plan with four hundred items produces four hundred workers. **9.3 made the same point from the pattern side — the cap belongs in the orchestrator rather than in the worker, because the worker has no idea how many siblings it has.** Truncating the plan is the crude version; **the considered version rejects the plan and asks for a shorter one, which costs a model call and keeps the failure visible** rather than silently dropping work.", "cols": 3, "nodes": [{"id": "p", "label": "A plan with 400 items", "sub": "from the model", "tone": "crit"}, {"id": "w", "label": "400 workers", "sub": "nothing bounds it", "tone": "crit"}, {"id": "n", "label": "The worker cannot cap it", "sub": "it has no sibling count", "tone": "warn"}, {"id": "t", "label": "Truncate: crude, and silent", "sub": "work disappears", "tone": "warn"}, {"id": "r", "label": "Reject and ask for fewer", "sub": "a model call, and visible", "tone": "good"}], "edges": [["p", "w"], ["w", "n"], ["n", "t"], ["n", "r"]], "t": "diagram", "id": "dg-10_2-05-4"},
+
     { t: "code", lang: "text", title: "A longer plan",
       code: "a plan of 5 sections produced 5 workers in one superstep.",
       caption: "Nothing caps this." },

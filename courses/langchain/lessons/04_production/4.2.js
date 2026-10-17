@@ -31,6 +31,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "The span tree for a nested chain",
       code: 'chain  chain          59.9 ms\n  chain  chain           0.9 ms\n  chain  chain          54.3 ms\n    chain  ChatPromptTemplate    0.4 ms\n    llm    model          51.5 ms\n    chain  chain           0.4 ms\n  chain  chain           2.4 ms',
       caption: "The model call is the deepest row and the slowest. That is the usual shape." },
@@ -38,6 +40,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "self", text: "Self time against total time", sub: "Only one of them tells you what to do" },
 
     {"kind": "trace", "title": "86% of the run is one model call, which decides where optimisation goes", "caption": "Total 59.9 ms, model call 51.5 ms, **everything else 8.4 ms.** Which is the same finding the GenAI observability module reached from the other direction: the framework overhead everyone argues about is the small term, and **work that does not change the model call, the prompt or the number of calls is work on 14% of the request.** Self time is what makes that visible — a span's own cost with its children subtracted.", "left": "component", "codeW": 180, "vars": ["time", "share"], "steps": [{"code": "total run", "state": ["59.9 ms", "100%"], "tone": "violet"}, {"code": "the model call", "state": ["51.5 ms", "86%"], "changed": [1], "tone": "crit"}, {"code": "everything else", "state": ["8.4 ms", "14%"], "tone": "good", "note": "all the framework"}], "t": "diagram", "id": "dg-4_2-02-1"},
+
+
 
 
 
@@ -64,6 +68,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["Attach", "Buys"], rows: [
       ["`run_name`", "a readable span name instead of `RunnableSequence`"],
       ["`tags`", "queryable: `[\"prod\", \"v2\", \"experiment-a\"]`"],
@@ -78,6 +84,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "readable", text: "Readable against queryable", sub: "Two different problems" },
 
     {"kind": "flow", "title": "Readable helps one person; queryable answers the first question", "caption": "A `run_name` makes a span **readable** — you are not staring at forty rows called `RunnableSequence` matching step indices by hand. Tags and metadata make a trace **queryable**: *show me the failures for this tenant, this version, this experiment arm.* **Readable helps one person debugging one run. Queryable is what lets you ask whether a problem is general**, which is almost always the first question — and only the second degrades as traffic grows.", "cols": 3, "nodes": [{"id": "r", "label": "run_name: readable", "sub": "a name instead of an index", "tone": "good"}, {"id": "o", "label": "Helps one person, one run", "sub": "at 3am", "tone": "accent"}, {"id": "q", "label": "tags and metadata: queryable", "sub": "filterable at volume", "tone": "good"}, {"id": "g", "label": "Answers 'is this general?'", "sub": "almost always the first question", "tone": "violet"}, {"id": "d", "label": "And only readable degrades with traffic", "sub": "forty rows becomes four thousand", "tone": "teal"}], "edges": [["r", "o"], ["q", "g"], ["o", "d"], ["g", "d"]], "t": "diagram", "id": "dg-4_2-04-3"},
+
+
 
 
 

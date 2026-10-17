@@ -31,6 +31,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "12.3 measured it: two agents each handing to the other, bounded only by the recursion limit \u2014 and **neither agent is broken**, since each correctly declines a request outside its area." },
     { t: "p", text: "**Guard**: a hop budget in the **shared** state, plus an escalation node. It has to be shared because no single agent can see the other's handoffs." },
     { t: "h2", n: "02", id: "context", text: "Failure 2: context loss at a boundary", sub: "Which is a choice" },

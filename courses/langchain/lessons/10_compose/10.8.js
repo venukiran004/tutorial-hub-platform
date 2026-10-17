@@ -11,11 +11,17 @@ EC.receiveLesson({
   prerequisites: ["9.7", "9.9"],
   blocks: [
     { t: "h2", n: "01", id: "same", text: "The same work, as functions", sub: "No schema, no nodes, no edges" },
+
+    {"kind": "trace", "title": "The control flow is the Python", "caption": "`double(5).result()` then `add_ten(10).result()` gives **20** — and there is no schema, no node and no edge anywhere in it. **`.result()` is doing real work: a task call returns a future, so the control flow is sequential only because you awaited it there.** Two tasks called before either `.result()` run concurrently, which is how the functional API expresses 8.3's fan-out without declaring one.", "left": "the entrypoint body", "codeW": 210, "vars": ["a", "b"], "steps": [{"code": "pipeline.invoke(5, cfg)", "state": ["-", "-"], "tone": "accent"}, {"code": "a = double(n).result()", "state": ["10", "-"], "changed": [0], "tone": "good"}, {"code": "b = add_ten(a).result()", "state": ["10", "20"], "changed": [1], "tone": "good"}, {"code": "schema, nodes, edges", "state": ["none", "none"], "tone": "violet", "note": ".result() awaits a future"}], "t": "diagram", "id": "dg-10_8-01-1"},
+
     { t: "code", lang: "python", title: "@task and @entrypoint",
       code: '@task\ndef double(n: int) -> int:\n    return n * 2\n\n@task\ndef add_ten(n: int) -> int:\n    return n + 10\n\n@entrypoint(checkpointer=InMemorySaver())\ndef pipeline(n: int) -> int:\n    a = double(n).result()\n    b = add_ten(a).result()\n    return b',
       out: "    pipeline.invoke(5, cfg) -> 20",
       caption: "The control flow is the Python." },
     { t: "h2", n: "02", id: "replay", text: "A completed task is replayed", sub: "On resume" },
+
+    {"kind": "trace", "title": "step_a ran once across both calls", "caption": "The first call fails inside `step_b`; resuming with `invoke(None, cfg)` returns **20** with **`step_a` still at one execution.** Its result was replayed from the checkpoint rather than recomputed, and **only the failed task re-ran** — which is a sharper guarantee than the graph API offers, where 9.7, 9.9 and 10.4 each measured a resumed, forked or retried node re-executing **from the top.**", "left": "call", "codeW": 200, "vars": ["step_a ran", "step_b ran"], "steps": [{"code": "first invoke", "state": ["1", "1"], "tone": "crit", "note": "RuntimeError: fail once"}, {"code": "invoke(None, cfg)", "state": ["1", "2"], "changed": [1], "tone": "good", "note": "-> 20"}, {"code": "so step_a", "state": ["replayed from cache", "re-ran"], "tone": "violet"}], "t": "diagram", "id": "dg-10_8-02-2"},
+
     { t: "code", lang: "text", title: "step_b fails, then the thread is resumed",
       code: "first invoke, step_b fails: RAISED RuntimeError: fail once\n  step_a ran 1 time(s), step_b ran 1 time(s)\n\nRESUMING with invoke(None, cfg): -> 20\n  step_a ran 1 time(s), step_b ran 2 time(s)",
       caption: "`step_a` ran **once** across both calls." },
@@ -23,6 +29,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "callform", text: "And the call form decides it", sub: "invoke(None) against invoke(input)" },
 
     {"kind": "matrix", "title": "The call form decides whether you replay", "caption": "My own expectation was wrong here. `invoke(input, cfg)` starts a **new run** on the same thread — the step counter reached 2. Only `invoke(None, cfg)` replays from the checkpoint, where completed tasks are returned from cache rather than re-executed.", "cols": ["what it does", "step_a ran"], "rows": ["invoke(input, cfg)", "invoke(None, cfg)"], "cells": [[{"text": "starts a NEW run", "tone": "crit"}, {"text": "twice", "tone": "crit"}], [{"text": "replays from the checkpoint", "tone": "good"}, {"text": "once — cached", "tone": "good"}]], "t": "diagram", "id": "dg-10_8-03-0"},
+
+
 
 
 
@@ -49,6 +57,9 @@ EC.receiveLesson({
       { t: "p", text: "And it is an easy mistake because **both calls succeed**. Only the second quietly does the work twice, so if a task has a side effect the two forms differ by whether it happens again \u2014 with no error either way." }
     ] },
     { t: "h2", n: "04", id: "sideeffects", text: "So the side-effect rule is different", sub: "And this is the reason to reach for it" },
+
+    {"kind": "flow", "title": "Exactly-once per task, under two conditions", "caption": "Wrapping the effectful call in a `@task` means a resume will not repeat it — **9.9's replayed payment is the failure this prevents**, and it is the reason to reach for the functional API at all. **Two conditions**: the resume has to be `invoke(None)` per §03, and **the result must be serialisable, because that is what gets checkpointed** — a task returning a database connection or an open file handle is not a task.", "cols": 3, "nodes": [{"id": "t", "label": "Wrap the effect in a @task", "sub": "the unit of replay", "tone": "violet"}, {"id": "o", "label": "A resume will not repeat it", "sub": "9.9's replayed payment", "tone": "good"}, {"id": "c1", "label": "Condition: resume with invoke(None)", "sub": "section 03", "tone": "warn"}, {"id": "c2", "label": "Condition: the result serialises", "sub": "it is what gets checkpointed", "tone": "warn"}, {"id": "n", "label": "So a live connection is not a task result", "sub": "nor an open file handle", "tone": "crit"}], "edges": [["t", "o"], ["o", "c1"], ["o", "c2"], ["c2", "n"]], "t": "diagram", "id": "dg-10_8-04-3"},
+
     { t: "table", head: ["", "unit of replay", "side effects on resume"], rows: [
       ["graph API", "the **node**, from the top", "happen again (9.7, 9.9, 10.4)"],
       ["functional", "the **task**, from its checkpoint", "do **not** happen again"]
@@ -58,6 +69,9 @@ EC.receiveLesson({
       { t: "p", text: "Two conditions. The resume has to be `invoke(None)`, per the section above. And the result must be **serialisable**, because that is what gets checkpointed \u2014 a task returning a database connection or an open file handle is not a task." }
     ] },
     { t: "h2", n: "05", id: "giveup", text: "What you give up", sub: "The structure was the tooling" },
+
+    {"kind": "flow", "title": "Four tools go, and interrupt() stays — for a reason", "caption": "8.6 established that a graph's structure is **data**, and the tooling reads that data. With no structure there is nothing to draw, no node name to break on, and no node to attribute an update to; **a conditional edge becomes an `if`, so routing is no longer inspectable without reading the code.** `interrupt()` survives because it is a **function call rather than a structural feature** — 9.7's framing of it as a call that spans a restart.", "cols": 3, "nodes": [{"id": "s", "label": "No structure to read", "sub": "8.6: the structure was data", "tone": "accent"}, {"id": "d", "label": "No graph to draw (8.9)", "sub": "gone", "tone": "crit"}, {"id": "b", "label": "No node name to break on (9.8)", "sub": "gone", "tone": "crit"}, {"id": "u", "label": "updates mode becomes a call stack", "sub": "gone (10.3)", "tone": "crit"}, {"id": "r", "label": "Routing is an if statement", "sub": "not inspectable", "tone": "crit"}, {"id": "i", "label": "interrupt() still works", "sub": "a call, not a structure", "tone": "good"}], "edges": [["s", "d"], ["s", "b"], ["s", "u"], ["s", "r"], ["i", "s"]], "t": "diagram", "id": "dg-10_8-05-4"},
+
     { t: "p", text: "8.6 established that a graph's structure is **data**, and that is what the tooling reads. With the functional API there is no structure to read:" },
     { t: "ul", items: [
       "**draw the graph** (8.9) \u2014 there is no graph to draw",
@@ -67,6 +81,9 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "`interrupt()` still works, because that is a function call rather than a structural feature \u2014 which is consistent with 9.7's framing of it as a call that spans a restart." },
     { t: "h2", n: "06", id: "choose", text: "Choosing", sub: "A legibility decision, not a capability one" },
+
+    {"kind": "flow", "title": "Two front ends over one runtime, so this is a legibility decision", "caption": "Both compile to the same Pregel runtime, which means **nothing here is a capability argument — the question is whether the structure is worth declaring.** For an agent loop it plainly is: the two-nodes-and-a-cycle shape **is** the design, and 9.1 showed every production requirement attaching to a specific node or edge. For a five-step sequence with one retryable call, a schema and four edges restate what `a(); b(); c()` already says.", "cols": 3, "nodes": [{"id": "o", "label": "One Pregel runtime, two front ends", "sub": "not a capability question", "tone": "violet"}, {"id": "q", "label": "Is the structure worth declaring?", "sub": "the actual question", "tone": "violet"}, {"id": "a", "label": "An agent loop: yes", "sub": "the shape is the design", "tone": "good"}, {"id": "r", "label": "9.1: requirements attach to nodes", "sub": "and to edges", "tone": "good"}, {"id": "p", "label": "A 5-step sequence: ceremony", "sub": "a(); b(); c() already says it", "tone": "accent"}], "edges": [["o", "q"], ["q", "a"], ["a", "r"], ["q", "p"]], "t": "diagram", "id": "dg-10_8-06-5"},
+
     { t: "table", head: ["functional when", "graph when"], rows: [
       ["the control flow is sequential or simply branching", "the topology matters and should be inspectable"],
       ["you want exactly-once semantics per step", "you need static breakpoints on named nodes"],

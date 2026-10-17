@@ -31,6 +31,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "No runtime required",
       code: 'def double(state):\n    return {"n": state["n"] * 2,\n            "log": ["doubled to %d" % (state["n"] * 2)]}\n\ndouble({"n": 5, "log": []})',
       out: "    {'n': 10, 'log': ['doubled to 10']}",
@@ -39,6 +41,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "whole", text: "Mistake 1: returning the whole state", sub: "And the reducer applies it again" },
 
     {"kind": "trace", "title": "Returning the whole state doubles every reduced key", "caption": "The node copied the state, set one key, and returned the lot. **Every key with a reducer is then merged with its own current value** — so `log: ['existing']` comes back as **`['existing', 'existing']`**. Nothing raised; the state is simply wrong in a way that compounds with each node that does it. Which is the direct consequence of 8.2's rule: **return the keys you changed, because everything you return is treated as a change.**", "left": "what the node returned", "codeW": 200, "vars": ["resulting state"], "steps": [{"code": "the whole state, one key edited", "state": ["log: ['existing', 'existing']"], "tone": "crit", "note": "doubled"}, {"code": "just the changed key", "state": ["log: ['existing']"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-8_5-02-1"},
+
+
 
     { t: "code", lang: "python", title: "Looks harmless",
       code: 'def whole(state):\n    s = dict(state)\n    s["n"] = s["n"] * 2\n    return s',
@@ -52,6 +56,8 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "Mutating in place works, until something depends on it not working", "caption": "The node mutated the state dict directly and the result came out **as if it had returned the update** — so the mistake is invisible in a single-node test. It breaks against **checkpointing**, where the persisted value is the one the runtime merged rather than the one you mutated, and against **concurrency**, where two nodes mutating the same object in one superstep race. Which makes this the worst kind of bug: correct in development and wrong under exactly the conditions the graph exists to handle.", "cols": 3, "nodes": [{"id": "m", "label": "Mutate state in place", "sub": "state['log'].append(...)", "tone": "crit"}, {"id": "w", "label": "It appears to work", "sub": "in a single-node test", "tone": "crit"}, {"id": "c", "label": "Breaks against checkpointing", "sub": "the merged value is persisted", "tone": "crit"}, {"id": "p", "label": "And against concurrency", "sub": "two nodes, one object, a race", "tone": "crit"}, {"id": "e", "label": "Correct in development", "sub": "wrong where it matters", "tone": "violet"}], "edges": [["m", "w"], ["w", "c"], ["w", "p"], ["c", "e"], ["p", "e"]], "t": "diagram", "id": "dg-8_5-03-2"},
 
+
+
     { t: "code", lang: "python", title: "Writing instead of returning",
       code: 'def mutate(state):\n    state["log"].append("mutated")\n    return {}',
       out: "     -> {'n': 1, 'log': ['mutated']}",
@@ -64,6 +70,8 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "Returning None is accepted, which is the problem rather than a relief", "caption": "A node that returns nothing produces no update and **does not raise.** Which sounds forgiving and is not: **a node that falls off the end of a branch without returning is indistinguishable from one that deliberately had nothing to say.** So return `{}` explicitly when you mean no update, and **treat a bare `return` as a smell** — it is what an unfinished branch looks like, and the runtime will not tell you which one you wrote.", "cols": 3, "nodes": [{"id": "n", "label": "A node returns None", "sub": "or falls off the end", "tone": "crit"}, {"id": "a", "label": "Accepted, no update", "sub": "no exception", "tone": "crit"}, {"id": "i", "label": "Indistinguishable from intent", "sub": "unfinished, or deliberate", "tone": "crit"}, {"id": "e", "label": "Return {} when you mean it", "sub": "explicitly", "tone": "good"}, {"id": "s", "label": "And treat a bare return as a smell", "sub": "it is what a bug looks like", "tone": "good"}], "edges": [["n", "a"], ["a", "i"], ["i", "e"], ["e", "s"]], "t": "diagram", "id": "dg-8_5-04-3"},
 
+
+
     { t: "code", lang: "python", title: "A node that falls off the end",
       code: 'def nothing(state):\n    pass',
       out: "     -> {'n': 1, 'log': []}",
@@ -73,6 +81,8 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "Coupling is invisible, because there is no way to declare what a node reads", "caption": "**There is no way to say that a node only reads two keys.** It receives everything — which means **a node can read a key it has no business reading and nothing in the signature says so**, and a node's real dependencies are discoverable **only by reading its body.** Which is the cost of 8.2's single-contract property: the schema tells you what is available to every node and nothing about which nodes actually depend on what.", "cols": 3, "nodes": [{"id": "n", "label": "A node receives the whole state", "sub": "no way to narrow it", "tone": "accent"}, {"id": "r", "label": "It can read anything", "sub": "including what it should not", "tone": "crit"}, {"id": "s", "label": "The signature says nothing", "sub": "every node has the same one", "tone": "crit"}, {"id": "b", "label": "Dependencies live in the body", "sub": "discoverable by reading", "tone": "crit"}, {"id": "c", "label": "The cost of one shared contract", "sub": "available, not used", "tone": "teal"}], "edges": [["n", "r"], ["r", "s"], ["s", "b"], ["b", "c"]], "t": "diagram", "id": "dg-8_5-05-4"},
 
+
+
     { t: "p", text: "There is no way to declare that a node only reads two keys. It receives everything, which means coupling is invisible \u2014 a node can read a key it has no business reading and nothing in the signature says so \u2014 and a node's real dependencies are discoverable only by reading its body." },
     { t: "callout", kind: "good", title: "Destructure what you use on the first line", body: [
       { t: "p", text: "The discipline that helps costs nothing: pull out the keys the node uses at the top of the function." },
@@ -81,6 +91,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "names", text: "The name is the identity", sub: "And it is public structure" },
 
     {"kind": "flow", "title": "A node's name is part of the graph's public structure", "caption": "**It is what edges refer to, what a trace shows, and what `interrupt_before` takes in 9.x.** So **renaming a node changes the interrupt configuration and any persisted checkpoint's node references** — it is part of the graph's public structure rather than a local label. Which puts it alongside 8.4's internal keys as the second thing in this module that looks private and is not.", "cols": 3, "nodes": [{"id": "n", "label": "A node's name", "sub": "looks like a local label", "tone": "accent"}, {"id": "e", "label": "Edges refer to it", "sub": "by string", "tone": "violet"}, {"id": "t", "label": "Traces show it", "sub": "and are filtered on it", "tone": "violet"}, {"id": "i", "label": "interrupt_before takes it", "sub": "9.x's configuration", "tone": "violet"}, {"id": "c", "label": "And checkpoints reference it", "sub": "persisted ones", "tone": "crit"}, {"id": "p", "label": "So it is public structure", "sub": "like 8.4's keys", "tone": "teal"}], "edges": [["n", "e"], ["n", "t"], ["n", "i"], ["n", "c"], ["c", "p"]], "t": "diagram", "id": "dg-8_5-06-5"},
+
+
 
     { t: "p", text: "A node's name is what edges refer to, what a trace shows, and what `interrupt_before` takes in 9.x. So renaming a node changes the interrupt configuration and any persisted checkpoint's node references \u2014 it is part of the graph's public structure rather than a local label." },
     { t: "exercise", kind: "build", title: "Make the three node mistakes on purpose",

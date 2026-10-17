@@ -18,6 +18,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["", "Bi-encoder", "Cross-encoder"], rows: [
       ["computes", "`embed(doc)`, `embed(query)` separately", "`score(query, doc)` jointly"],
       ["precomputable", "yes \u2014 documents embedded once", "**no** \u2014 nothing to cache"],
@@ -28,6 +30,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "cost", text: "Three costs, not one", sub: "Separating them is the whole measurement" },
 
     {"kind": "matrix", "title": "Separate the one-off, the per-query and the per-document cost", "caption": "End-to-end timing gave only 29×, because the dense query is dominated by **104 ms of query encoding** — a fixed cost paid once per query. Separating the three kinds of cost gives the honest number: **37,088× per document**.", "cols": ["bi-encoder", "cross-encoder"], "rows": ["cost per document, once", "cost per query", "cost per candidate document", "so it can run over"], "cells": [[{"text": "embed once, reuse forever", "tone": "good"}, {"text": "nothing to precompute", "tone": "crit"}], [{"text": "~104 ms encoding — fixed", "tone": "warn"}, {"text": "none", "tone": "good"}], [{"text": "a dot product", "tone": "good"}, {"text": "37,088x more", "tone": "crit"}], [{"text": "the whole corpus", "tone": "good"}, {"text": "a shortlist only", "tone": "warn"}]], "t": "diagram", "id": "dg-6_1-02-0"},
+
+
 
 
 
@@ -62,6 +66,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "One query, scored against the whole corpus",
       code: "query: 'how do I make retrying a write safe'\n  dense top 5        : ['api-idempotency', 'auth-signin-fail', 'data-deletion', ...]\n  cross-encoder top 5: ['api-idempotency', 'api-limits', 'user-remove', ...]\n\n  api-idempotency        +5.905\n  api-limits             -8.875\n  user-remove           -11.034\n  ops-backup            -11.165\n  ...\n  auth-mfa              -11.457",
       caption: "A cliff of **14.8 points** between rank 1 and rank 2." },
@@ -73,6 +79,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "notconf", text: "Logits, not probabilities", sub: "And not comparable across queries" },
 
     {"kind": "trace", "title": "Logits, not probabilities — so a score is not comparable across queries", "caption": "The scores range from **−11.457 to +5.905** across the corpus: unbounded, signed, uncalibrated. Which has a consequence people trip on: **a top score of +5.905 on one query and −1.782 on another does not mean the second query failed.** It means the cross-encoder found nothing it liked, and whether that is a failure depends on whether anything relevant exists — so the number is usable for *ordering within a query* and not for thresholding across queries without calibration.", "left": "query", "codeW": 230, "vars": ["top score"], "steps": [{"code": "corpus range", "state": ["-11.457 to +5.905"], "tone": "violet"}, {"code": "'how do I make retrying a write safe'", "state": ["+5.905"], "tone": "good"}, {"code": "'how long do you keep my information'", "state": ["-1.782"], "changed": [0], "tone": "warn", "note": "not a failure - uncalibrated"}], "t": "diagram", "id": "dg-6_1-04-3"},
+
+
 
 
 

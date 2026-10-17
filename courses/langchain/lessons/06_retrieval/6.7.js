@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Reranking 20 candidates",
       code: "query   : 'Retry-After'\nrelevant: api-limits\n\ndense top 5 of its 20 candidates : ['api-idempotency', 'api-webhooks', 'bill-refund',\n                                    'bill-cancel-order', 'auth-reset']\nafter cross-encoder rerank       : ['api-limits', 'api-idempotency', 'api-webhooks',\n                                    'auth-signin-fail', 'ops-backup']",
       caption: "The relevant document was at candidate rank **11** and is now first." },
@@ -24,6 +26,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "measured", text: "Measured on both classes", sub: "And it is not an improvement" },
 
     {"kind": "trace", "title": "Reranking makes one class perfect and the other worse", "caption": "**Exact-term queries go from 0.781 MRR to a perfect 1.000, and natural-language queries go from 0.964 down to 0.845.** So reranking is not an improvement — it is **a trade between query classes**, exactly like 6.5's weight sweep, and reported as a single average it would read as a small gain and hide both effects. Which is the reason 6.9 insists on reporting per class: an aggregate here would be the least informative number available.", "left": "config", "codeW": 190, "vars": ["nat MRR", "nat R@5", "exact MRR", "exact R@5"], "steps": [{"code": "dense k=5", "state": ["0.964", "1.000", "0.781", "0.875"], "tone": "good"}, {"code": "dense 20 -> rerank 5", "state": ["0.845", "0.929", "1.000", "1.000"], "changed": [0, 2], "tone": "violet", "note": "a trade, not a gain"}], "t": "diagram", "id": "dg-6_7-02-2"},
+
+
 
 
 
@@ -39,6 +43,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "demote", text: "Where it goes wrong", sub: "Per query, which is the only way to see it" },
 
     {"kind": "trace", "title": "Where it goes wrong: the reranker demotes correct answers", "caption": "Three natural-language queries where dense had the right document at rank 1 and **the reranker pushed it down** — one to rank 3, one to **rank 11**. The cross-encoder is more accurate on average and **its errors are not the same errors**, so swapping it in trades dense's failures for its own. Which is why §05's candidate-count dial matters: more candidates gives the reranker more room to be right **and more room to be wrong.**", "left": "query", "codeW": 210, "vars": ["dense rank", "reranked rank"], "steps": [{"code": "'I forgot my password'", "state": ["1", "3"], "changed": [1], "tone": "crit", "note": "demoted"}, {"code": "'how long before I get signed out'", "state": ["1", "11"], "changed": [1], "tone": "crit", "note": "demoted hard"}, {"code": "'how long do you keep my information'", "state": ["1", "demoted"], "tone": "crit"}], "t": "diagram", "id": "dg-6_7-03-3"},
+
+
 
 
 
@@ -74,6 +80,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "dl", items: [
       ["it can **promote** a document stage one misranked", "`Retry-After`: candidate rank 11 \u2192 1. This is why you buy it."],
       ["it can **demote** a document stage one got right", "`auth-reset`: rank 1 \u2192 3, at every depth. This is why you measure it per query class."],
@@ -82,6 +90,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "dial", text: "The candidate count is the dial", sub: "Accuracy and latency both scale with it" },
 
     {"kind": "trace", "title": "Accuracy stops at 20 and latency does not", "caption": "**Exact-term MRR reaches 1.000 at `fetch=20` and stays there at 41, while latency goes from 1.479 s to 2.308 s** — so the last 21 candidates are pure cost. Latency grows roughly linearly, because **the cross-encoder scores every pair** — 6.1's per-document cost, now with a knob on it. And natural-language MRR is flat at 0.845 from 10 onward, so nothing in this sweep argues for going past 20.", "left": "fetch", "codeW": 120, "vars": ["exact MRR", "nat MRR", "latency/query"], "steps": [{"code": "5", "state": ["0.875", "0.857", "0.421 s"], "tone": "good"}, {"code": "10", "state": ["0.875", "0.845", "0.727 s"], "tone": "accent"}, {"code": "20", "state": ["1.000", "0.845", "1.479 s"], "changed": [0], "tone": "good", "note": "the last gain"}, {"code": "41", "state": ["1.000", "0.845", "2.308 s"], "changed": [2], "tone": "crit", "note": "pure cost"}], "t": "diagram", "id": "dg-6_7-05-4"},
+
+
 
 
 

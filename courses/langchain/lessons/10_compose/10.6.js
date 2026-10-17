@@ -11,10 +11,16 @@ EC.receiveLesson({
   prerequisites: ["8.5", "8.3", "9.2"],
   blocks: [
     { t: "h2", n: "01", id: "nodes", text: "Level 1: nodes are functions", sub: "The cheapest, highest-coverage test" },
+
+    {"kind": "flow", "title": "A node is a function, so the first level of testing needs no graph", "caption": "A node takes a dict and returns a dict. **So testing one is calling it with a dict and asserting on the dict that comes back** — no graph, no compile, no checkpointer, no model. Which makes the cheapest tests in this module the ones people skip, because the function looks too simple to be worth a test. It is also the level that catches 8.2's silent drop and 8.5's whole-state return, both of which are visible in the returned dict alone.", "cols": 3, "nodes": [{"id": "n", "label": "A node is dict -> dict", "sub": "nothing more", "tone": "accent"}, {"id": "t", "label": "So call it with a dict", "sub": "no graph, no model", "tone": "good"}, {"id": "d", "label": "Catches 8.2's silent drop", "sub": "visible in the return", "tone": "good"}, {"id": "w", "label": "And 8.5's whole-state return", "sub": "also visible", "tone": "good"}, {"id": "s", "label": "Skipped because it looks too simple", "sub": "which is why these bugs ship", "tone": "teal"}], "edges": [["n", "t"], ["t", "d"], ["t", "w"], ["d", "s"]], "t": "diagram", "id": "dg-10_6-01-1"},
+
     { t: "code", lang: "text", title: "No graph required",
       code: "double({'n': 5, 'trace': []}) -> {'n': 10, 'trace': ['double']}",
       caption: "8.5's rule: state in, partial update out." },
     { t: "h2", n: "02", id: "routers", text: "Level 2: routers are functions too", sub: "And this is the test people skip" },
+
+    {"kind": "flow", "title": "The router is a pure function, and covering every outcome costs almost nothing", "caption": "**The failure it prevents is 8.7's**: a router returning a key the path map lacks **compiles fine and fails at runtime on one branch only.** Since the router is a pure function of state, **covering every outcome costs almost nothing — and it is skipped precisely because it looks too trivial to write.** Which pairs with §01: the two cheapest test levels in the module are the two most often absent.", "cols": 3, "nodes": [{"id": "r", "label": "The router: state -> a key", "sub": "a pure function", "tone": "accent"}, {"id": "m", "label": "A missing map entry compiles", "sub": "8.7 measured it", "tone": "crit"}, {"id": "o", "label": "And fails on one branch only", "sub": "possibly months later", "tone": "crit"}, {"id": "c", "label": "Covering every outcome is trivial", "sub": "no graph needed", "tone": "good"}, {"id": "s", "label": "And skipped for looking trivial", "sub": "the same reason as section 01", "tone": "teal"}], "edges": [["r", "m"], ["m", "o"], ["o", "c"], ["c", "s"]], "t": "diagram", "id": "dg-10_6-02-2"},
+
     { t: "code", lang: "text", title: "Every outcome, in three lines",
       code: "route({'n': 5})  -> 'small'\nroute({'n': 50}) -> 'big'",
       caption: "A parametrised test over every outcome." },
@@ -22,6 +28,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "graph", text: "Level 3: the graph, for what only the runtime does", sub: "Three failures a node test cannot see" },
 
     {"kind": "layers", "title": "Three layers, divided by what only the runtime does", "caption": "Nodes and routers are plain functions, so they test as a dict in and a dict out — cheap, and covering most of the logic. Reserve the expensive layers for what **only** the runtime can show you: reducers merging, and interrupts resuming.", "items": [{"label": "nodes and routers", "sub": "a dict in, a dict out — no runtime, nothing to mock", "tone": "good", "side": "most tests"}, {"label": "a compiled graph", "sub": "reducers, supersteps, routing — what only the runtime does", "tone": "warn", "side": "some"}, {"label": "with a checkpointer", "sub": "interrupts, resume, time travel", "tone": "crit", "side": "a few"}], "t": "diagram", "id": "dg-10_6-03-0"},
+
+
 
 
 
@@ -58,6 +66,9 @@ EC.receiveLesson({
       code: "n=3   -> ['double', 'small']\nn=30  -> ['double', 'big']",
       caption: "Which confirms the path map as well as the router." },
     { t: "h2", n: "04", id: "stateful", text: "Testing something stateful", sub: "And the leak between tests" },
+
+    {"kind": "trace", "title": "Two tests passed and re-invoking one thread shows why that was luck", "caption": "`test_a` and `test_b` both produce `['double', 'small']` — and **re-invoking test_a's thread gives `['double', 'small', 'double', 'small']`**, because 9.4's checkpointer continued from the persisted state. Which is the trap in testing anything stateful: **a per-test `thread_id` is not optional.** Two tests sharing one thread pass individually and interfere when the suite order changes, which is the hardest class of flaky test to diagnose.", "left": "run", "codeW": 190, "vars": ["trace"], "steps": [{"code": "test_a", "state": ["double, small"], "tone": "good"}, {"code": "test_b", "state": ["double, small"], "tone": "good"}, {"code": "re-invoking test_a's thread", "state": ["double, small, double, small"], "changed": [0], "tone": "crit", "note": "a per-test thread_id is not optional"}], "t": "diagram", "id": "dg-10_6-04-3"},
+
     { t: "code", lang: "text", title: "Two tests, then re-running the first",
       code: "test_a -> ['double', 'small']\ntest_b -> ['double', 'small']\n\nre-invoking test_a's thread: ['double', 'small', 'double', 'small']",
       caption: "The second run **appended** to the first." },
@@ -66,11 +77,17 @@ EC.receiveLesson({
       { t: "p", text: "The rules are mechanical: a **fresh** `InMemorySaver` per test rather than a module-level one, a unique `thread_id` per test \u2014 ideally the test's own name \u2014 and assertions on `get_state()` rather than only on the `invoke()` return." }
     ] },
     { t: "h2", n: "05", id: "scripted", text: "The scripted model", sub: "What makes agent tests possible" },
+
+    {"kind": "flow", "title": "Mocking the graph tests the mock", "caption": "Script the model and **everything else stays real — the graph, the reducers, the tool node, the checkpointer.** The alternative is the point: **mocking the graph or patching node functions tests the mock. It would have passed in every one of the three failures above, because the mock has no schema to drop a key against and no reducer to be missing.** Which is 4.8's argument in a graph setting: replace the one non-deterministic component and the rest becomes assertable.", "cols": 3, "nodes": [{"id": "s", "label": "Script the model only", "sub": "FakeChatModel", "tone": "violet"}, {"id": "r", "label": "Graph, reducers, tool node, checkpointer", "sub": "all real", "tone": "good"}, {"id": "m", "label": "Mock the graph instead", "sub": "or patch the nodes", "tone": "crit"}, {"id": "n", "label": "No schema to drop a key against", "sub": "and no reducer to be missing", "tone": "crit"}, {"id": "p", "label": "So it passes all three failures", "sub": "it tests the mock", "tone": "crit"}], "edges": [["s", "r"], ["m", "n"], ["n", "p"]], "t": "diagram", "id": "dg-10_6-05-4"},
+
     { t: "code", lang: "python", title: "Deterministic output, real machinery",
       code: 'script = [AIMessage(content="", tool_calls=[...]),\n          AIMessage(content="the answer")]',
       caption: "Only token generation is faked." },
     { t: "p", text: "Everything else stays real \u2014 the graph, the reducers, the tool node, the checkpointer. The alternative, mocking the graph or patching node functions, tests the mock: it would have passed in every one of the three failures above, because the mock has no schema to drop a key against and no reducer to be missing." },
     { t: "h2", n: "06", id: "assert", text: "What to assert", sub: "Including the underused one" },
+
+    {"kind": "matrix", "title": "Five assertions, and the one that catches prompt bugs", "caption": "**`model.seen` — asserting on what the model actually received — is the one that catches prompt and history bugs**, which is 4.8's finding that testing the input is where the cheap bugs are. The other four cover the graph's own failure modes: dropped keys and bad reducers in the final state, routing bugs in the visited sequence, loops in the call count, and the pause itself in `get_state().next`.", "cols": ["Catches"], "rows": ["Final state keys and values", "The visited-node sequence", "The number of model calls", "What the model received", "get_state().next on pause"], "cells": [["dropped keys, bad reducers"], ["routing bugs"], ["loops, redundant calls"], [{"text": "prompt and history bugs - testing the input", "tone": "violet"}], ["that the pause actually happened"]], "t": "diagram", "id": "dg-10_6-06-5"},
+
     { t: "table", head: ["assertion", "catches"], rows: [
       ["the final state's keys and values", "dropped keys, bad reducers"],
       ["the sequence of visited nodes", "routing bugs"],

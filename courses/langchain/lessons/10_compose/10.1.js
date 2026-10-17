@@ -11,6 +11,9 @@ EC.receiveLesson({
   prerequisites: ["8.6", "8.4"],
   blocks: [
     { t: "h2", n: "01", id: "node", text: "A compiled graph is a node", sub: "That is all composition is" },
+
+    {"kind": "flow", "title": "A compiled graph satisfies the node contract, so it is a node", "caption": "A node is **a callable taking state and returning a partial update** — and a compiled graph is exactly that. So `builder.add_node(\"clean\", inner_graph)` works with no adapter, no wrapper and nothing new to learn, and the inner graph's steps appear in the outer trace. **The same closure property as 1.1's Runnable, one level up**: the composition unit and the composed thing are the same kind of object.", "cols": 3, "nodes": [{"id": "n", "label": "A node: state in, partial update out", "sub": "the contract", "tone": "accent"}, {"id": "g", "label": "A compiled graph does that", "sub": "exactly", "tone": "violet"}, {"id": "a", "label": "So add_node(name, graph) works", "sub": "no adapter", "tone": "good"}, {"id": "t", "label": "And its steps join the outer trace", "sub": "prepare, clean, upper, finish", "tone": "good"}, {"id": "c", "label": "1.1's closure property, one level up", "sub": "unit and composite are one kind", "tone": "teal"}], "edges": [["n", "g"], ["g", "a"], ["a", "t"], ["t", "c"]], "t": "diagram", "id": "dg-10_1-01-1"},
+
     { t: "code", lang: "python", title: "Nesting",
       code: 'inner = ig.compile()\n\nog.add_node("prepare", ...)\nog.add_node("inner", inner)        # <- the compiled graph IS the node\nog.add_node("finish", ...)',
       out: "    {'text': 'HELLO', 'steps': ['prepare', 'clean', 'upper', 'finish']}",
@@ -18,6 +21,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "keys", text: "The shared-key rule", sub: "And it is a real coupling" },
 
     {"kind": "steps", "title": "State crosses a subgraph boundary by key NAME", "caption": "`add_node(“inner”, compiled_graph)` is the whole of composition, because a compiled graph satisfies the node interface. The catch is the boundary: matching keys merge, and a key the parent does not declare is **discarded without a word** (8.2).", "items": [{"label": "the parent passes the whole state in", "desc": "not a selection — the subgraph sees everything the parent has", "tone": "accent", "code": "in"}, {"label": "the subgraph runs its own supersteps", "desc": "its internal steps are ONE superstep of the parent", "tone": "violet", "code": "opaque"}, {"label": "matching keys merge upward", "desc": "through the parent's reducer for that key, not the child's", "tone": "good", "code": "out"}, {"label": "unmatched keys are discarded", "desc": "silently — which looks exactly like a worker producing nothing", "tone": "crit", "code": "the trap"}], "t": "diagram", "id": "dg-10_1-02-0"},
+
+
 
 
 
@@ -45,12 +50,18 @@ EC.receiveLesson({
       { t: "p", text: "So that is the real cost of subgraphs: two graphs that look independent share a vocabulary. Renaming a key in the inner graph silently stops data reaching the outer one, and the failure appears as a key that is mysteriously unchanged." }
     ] },
     { t: "h2", n: "03", id: "wrap", text: "The explicit alternative", sub: "A function that calls the subgraph" },
+
+    {"kind": "flow", "title": "The explicit wrapper makes the mapping a declared interface", "caption": "Wrapping the inner graph in a function that maps keys in and out is **more code, and the two schemas can now evolve separately** — which is 8.4's input-and-output-schema argument applied to graph composition. **If the inner graph belongs to another team, this is the form you want, because the mapping is a declared interface rather than a coincidence of naming.** Direct nesting couples the two schemas through shared key names that nobody wrote down.", "cols": 3, "nodes": [{"id": "d", "label": "Direct nesting", "sub": "shared key names", "tone": "accent"}, {"id": "c", "label": "Coupled by a naming coincidence", "sub": "nothing declared it", "tone": "warn"}, {"id": "w", "label": "A wrapper that maps keys", "sub": "more code", "tone": "good"}, {"id": "s", "label": "The schemas evolve separately", "sub": "8.4, at graph scope", "tone": "good"}, {"id": "t", "label": "Which is what a team boundary needs", "sub": "a declared interface", "tone": "teal"}], "edges": [["d", "c"], ["c", "w"], ["w", "s"], ["s", "t"]], "t": "diagram", "id": "dg-10_1-03-2"},
+
     { t: "code", lang: "python", title: "When the schemas should not be coupled",
       code: 'def call_inner(state: Outer):\n    result = inner.invoke({"content": state["text"], "steps": []})\n    return {"text": result["content"], "steps": ["translated"]}\n\nog.add_node("inner", call_inner)',
       out: "    {'text': 'x', 'steps': ['innerb', 'translated']}",
       caption: "The mapping is explicit and in one place." },
     { t: "p", text: "More code, and the two schemas can now evolve separately \u2014 which is 8.4's input-and-output schema argument applied to graph composition. If the inner graph belongs to another team, this is the form you want, because the mapping is a declared interface rather than a coincidence of naming." },
     { t: "h2", n: "04", id: "history", text: "Across the checkpoint boundary", sub: "A subgraph is one superstep" },
+
+    {"kind": "trace", "title": "Five outer checkpoints, and the inner graph's steps are inside one of them", "caption": "The outer run leaves **five checkpoints** and the nested graph's work appears as **one superstep of the parent** — so the inner steps are in the parent's state rather than in their own checkpoint history. Which has a consequence for 9.9's time travel: **you can replay the outer graph from before the nested node, and you cannot resume from the middle of the inner one**, because the parent never recorded a boundary there.", "left": "outer checkpoint", "codeW": 160, "vars": ["next", "steps so far"], "steps": [{"code": "step=1", "state": ["('clean',)", "prepare"], "tone": "accent"}, {"code": "step=2", "state": ["('finish',)", "prepare, clean, upper"], "changed": [1], "tone": "violet", "note": "the inner graph, in one step"}, {"code": "step=3", "state": ["()", "all four"], "tone": "good"}, {"code": "so time travel", "state": ["before the node, yes", "into it, no"], "tone": "warn"}], "t": "diagram", "id": "dg-10_1-04-3"},
+
     { t: "code", lang: "text", title: "The parent's history",
       code: "outer graph checkpoints for one run: 5\n  step=3   next=()               steps=['prepare', 'clean', 'upper', 'finish']\n  step=2   next=('finish',)       steps=['prepare', 'clean', 'upper']\n  step=1   next=('inner',)        steps=['prepare']\n  step=0   next=('prepare',)      steps=[]",
       caption: "The inner nodes do not appear \u2014 `clean` and `upper` arrived together in one step." },
@@ -59,6 +70,9 @@ EC.receiveLesson({
       { t: "p", text: "That is the debugging cost of nesting, and it compounds with 8.9's drawing: the parent's drawn graph has a box you cannot see into. So a subgraph trades a flatter diagram for a less inspectable one, which is the opposite of what \u201ctidying up a long graph\u201d is trying to achieve." }
     ] },
     { t: "h2", n: "05", id: "when", text: "When nesting is worth it", sub: "And when it is just moving code" },
+
+    {"kind": "matrix", "title": "Three reasons to nest, and two reasons that are not reasons", "caption": "The right-hand column is where the value is. **\"This graph is getting long\" — a long graph is not a bug**, and nesting to shorten a file buys you a schema boundary you then have to maintain. And **grouping nodes that always run together is already said by a sequence of edges**, so the nesting adds a name and nothing else. Reuse, independent testing and a team boundary are the three that pay.", "cols": ["Worth it", "Not worth it"], "rows": ["Reuse", "Testing", "Ownership"], "cells": [[{"text": "genuinely reused by more than one parent", "tone": "good"}, {"text": "'this graph is getting long'", "tone": "crit"}], [{"text": "independently testable AND tested", "tone": "good"}, {"text": "grouping nodes that always run together", "tone": "crit"}], [{"text": "someone else owns the inner graph", "tone": "good"}, "-"]], "t": "diagram", "id": "dg-10_1-05-4"},
+
     { t: "table", head: ["worth it", "not worth it"], rows: [
       ["the inner graph is genuinely reused by more than one parent", "\u201cthis graph is getting long\u201d \u2014 a long graph is not a bug"],
       ["the inner graph is independently testable **and tested**", "grouping nodes that always run together \u2014 a sequence of edges already says that"],

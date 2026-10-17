@@ -31,6 +31,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "The contract is small: three ways to call a Runnable, each with an async twin." },
     { t: "table", head: ["Method", "What it does", "Returns"], rows: [
       ["`invoke(input)`", "run once, synchronously", "one output"],
@@ -50,6 +52,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "helpers", text: "The composition helpers", sub: "Defined once, inherited by everything" },
 
     {"kind": "flow", "title": "Seven helpers, defined once, working on anything", "caption": "Each of these is defined **once on the base class** and works on a prompt, a model, a parser, a retriever or a whole chain. That is the closure property from 1.1 cashed out: 2.6 uses two of them on a chain, 2.9 uses the last two, and **none of those lessons needs a component-specific variant.** The grouping is worth seeing — three change behaviour on failure or configuration, two change what the call looks like, and `.map()` changes the shape of the input.", "cols": 3, "nodes": [{"id": "p", "label": "r1 | r2", "sub": "builds a RunnableSequence", "tone": "violet"}, {"id": "c", "label": "with_config, with_retry, with_fallbacks", "sub": "behaviour on failure and in traces", "tone": "accent"}, {"id": "b", "label": "bind, configurable_fields", "sub": "what the call looks like", "tone": "accent"}, {"id": "m", "label": "map", "sub": "changes the input's shape to a list", "tone": "good"}, {"id": "o", "label": "All defined once, on the base class", "sub": "so all seven work on all of it", "tone": "teal"}], "edges": [["p", "o"], ["c", "o"], ["b", "o"], ["m", "o"]], "t": "diagram", "id": "dg-2_1-02-1"},
+
+
 
 
 
@@ -85,6 +89,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "A Runnable in four lines",
       code: 'class Shout(Runnable):\n    def invoke(self, input, config=None, **kw):\n        return str(input).upper() + "!"\n\ns = Shout()\nprint(s.invoke("hi"))\nprint(s.batch(["a", "b"]))\nprint([c for c in s.stream("hi")])\nprint((s | RunnableLambda(lambda t: t[::-1])).invoke("hi"))',
       out: 'invoke : \'HI!\'\nbatch  : [\'A!\', \'B!\']\nstream : [\'HI!\']\npiped  : !IH',
@@ -93,6 +99,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "map", text: "map is not batch", sub: "A common and quiet confusion" },
 
     {"kind": "flow", "title": "map is a step you compose; batch is a method you call", "caption": "The distinction is easy to blur and decides where each one can appear. **`.map()` returns a Runnable whose input is a list**, so it composes: `retriever | summarise.map() | join` is a valid pipeline. **`.batch()` is a method you call** — there is nowhere in a pipe expression to put it. So: **map when the list is flowing through the chain, batch when you have many separate inputs to run.**", "cols": 3, "nodes": [{"id": "m", "label": ".map()", "sub": "returns a Runnable", "tone": "violet"}, {"id": "c", "label": "So it composes", "sub": "retriever | summarise.map() | join", "tone": "good"}, {"id": "b", "label": ".batch()", "sub": "is a method you call", "tone": "accent"}, {"id": "n", "label": "Nowhere to put it in a pipe", "sub": "it is not a step", "tone": "warn"}, {"id": "r", "label": "map: the list is flowing through", "sub": "batch: you have many inputs", "tone": "teal"}], "edges": [["m", "c"], ["b", "n"], ["c", "r"], ["n", "r"]], "t": "diagram", "id": "dg-2_1-04-3"},
+
+
 
 
 

@@ -31,17 +31,25 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "An unconditional cycle, recursion_limit=20",
       code: "RAISED GraphRecursionError: Recursion limit of 20 reached without\nhitting a stop condition.\n  took 0.004 s",
       caption: "Fast here, because the node does nothing." },
     { t: "p", text: "8.9's point with the cost attached: every one of those supersteps ran the node body. At the measured default of 10007, with a node that calls a model, that is thousands of paid calls before anything stops it \u2014 and the 0.004 s here is only because this node is arithmetic." },
     { t: "h2", n: "02", id: "budget", text: "The budget belongs in the router", sub: "So the graph returns" },
+
+    {"kind": "flow", "title": "Budget exhausted is a state you can route on", "caption": "Counting in state and checking in the router gives the loop a bound **you own** — and that is 8.9's whole argument: **success and runaway become distinguishable, and \"budget exhausted\" is a state you can route on, record and return to the caller** rather than an exception that looks identical to an infinite loop. The `recursion_limit` raises the same error for a working graph that needed one more step and for a graph that will never stop.", "cols": 3, "nodes": [{"id": "c", "label": "A counter in state", "sub": "incremented per iteration", "tone": "accent"}, {"id": "r", "label": "Checked in the router", "sub": "where routing decisions live", "tone": "violet"}, {"id": "s", "label": "'Budget exhausted' is a state", "sub": "routable, recordable", "tone": "good"}, {"id": "d", "label": "Distinguishable from success", "sub": "and from a runaway", "tone": "good"}, {"id": "l", "label": "recursion_limit cannot tell them apart", "sub": "the same error either way", "tone": "crit"}], "edges": [["c", "r"], ["r", "s"], ["s", "d"], ["d", "l"]], "t": "diagram", "id": "dg-10_5-02-1"},
+
     { t: "code", lang: "python", title: "A counter and an exit condition",
       code: 'def guarded(state):\n    if state["n"] >= 3:\n        return END\n    return "tick"',
       out: "    ['tick', 'tick', 'tick']  (n=3)",
       caption: "The graph now **returns** rather than raising." },
     { t: "p", text: "Which is 8.9's whole argument: success and runaway become distinguishable, and \u201cbudget exhausted\u201d is a state you can route on, record and return to the caller rather than an exception that looks identical to an infinite loop." },
     { t: "h2", n: "03", id: "progress", text: "The progress guard", sub: "The one people miss" },
+
+    {"kind": "flow", "title": "A counter bounds iterations; it does not notice a loop making no progress", "caption": "The two guards catch different things. **A budget stops a loop that never exits. A progress check stops a loop that exits and achieves nothing** — iterating five times and producing the same value each time passes the budget and wastes all of it. Keeping the previous value **needs a state key, which is a legitimate use of state rather than the smell 8.8 warned about**: the comparison is genuinely a property of the run rather than something a node already knew.", "cols": 3, "nodes": [{"id": "b", "label": "A budget", "sub": "bounds the iterations", "tone": "good"}, {"id": "n", "label": "Says nothing about progress", "sub": "five identical iterations pass", "tone": "crit"}, {"id": "p", "label": "A progress check", "sub": "compare to the previous value", "tone": "good"}, {"id": "k", "label": "Needs a state key", "sub": "to hold the previous one", "tone": "accent"}, {"id": "l", "label": "A legitimate use of state", "sub": "a property of the run", "tone": "good"}], "edges": [["b", "n"], ["n", "p"], ["p", "k"], ["k", "l"]], "t": "diagram", "id": "dg-10_5-03-2"},
+
     { t: "p", text: "A counter bounds the **iterations**. It does not notice that the loop is making no progress." },
     { t: "code", lang: "text", title: "A refiner that never changes the draft, bounded at 4",
       code: "refine (len=4)\nrefine (len=4)\nrefine (len=4)\nrefine (len=4)",
@@ -52,6 +60,9 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "Keeping the previous value needs a state key, which is a legitimate use of state rather than the smell 8.8 warned about \u2014 the comparison is genuinely a property of the run rather than something a node already knew." },
     { t: "h2", n: "04", id: "fanin", text: "The fan-in that is not a deadlock", sub: "8.7's measurement, reconfirmed" },
+
+    {"kind": "flow", "title": "The fan-in that is not a deadlock", "caption": "A conditional edge that takes one of two branches leaves the join node with **one incoming path satisfied and one never taken** — and the graph does **not** hang. 8.6's rule is about **paths the runtime will execute**, not edges drawn on the diagram, so a skipped branch is not a pending dependency. Which is why the guard here is a **partial-input check in the fan-in node**: the node runs, and it has to cope with a key no branch wrote.", "cols": 3, "nodes": [{"id": "c", "label": "A conditional picks one branch", "sub": "the other never runs", "tone": "accent"}, {"id": "j", "label": "The join has two incoming edges", "sub": "one satisfied", "tone": "accent"}, {"id": "n", "label": "It does NOT hang", "sub": "a skipped branch is not pending", "tone": "good"}, {"id": "r", "label": "The node runs anyway", "sub": "with a key nobody wrote", "tone": "warn"}, {"id": "g", "label": "So: a partial-input check", "sub": "in the fan-in node", "tone": "good"}], "edges": [["c", "j"], ["j", "n"], ["n", "r"], ["r", "g"]], "t": "diagram", "id": "dg-10_5-04-3"},
+
     { t: "code", lang: "text", title: "Router always picks \u201ca\u201d; \u201cjoin\u201d has edges from a and b",
       code: "['start', 'a', \"join saw '<unset>'\"]",
       caption: "No hang. The join ran, and read the skipped branch's key as its initial value." },
@@ -60,6 +71,9 @@ EC.receiveLesson({
       { t: "p", text: "Which means a fan-in after a conditional branch has to check which keys are set rather than assume every declared path ran. That is a node-level concern the topology does not express, so reviewing the diagram will not catch it." }
     ] },
     { t: "h2", n: "05", id: "guards", text: "The guards, collected", sub: "And only one is a framework setting" },
+
+    {"kind": "matrix", "title": "Five guards, and each belongs somewhere specific", "caption": "The *where* column is the content. **Both loop guards belong in the router**, because that is where a routing decision can be made; a check inside a node can only raise. The **partial-input check belongs in the fan-in node**, because that is the only place that knows a branch was skipped. And `recursion_limit` is **a backstop rather than a guard** — it catches everything the other four missed, including what you did not predict.", "cols": ["Where it goes", "Catches"], "rows": ["Iteration budget", "Progress check", "recursion_limit", "Partial-input check", "Retry attempts"], "cells": [[{"text": "the router", "tone": "good"}, "a loop that never exits"], [{"text": "the router", "tone": "good"}, "a loop that exits achieving nothing"], ["compile or invoke", {"text": "everything else, as a backstop", "tone": "violet"}], [{"text": "the fan-in node", "tone": "good"}, "a skipped branch"], ["the node", "a flaky dependency"]], "t": "diagram", "id": "dg-10_5-05-4"},
+
     { t: "table", head: ["guard", "where it goes", "catches"], rows: [
       ["iteration budget", "the router", "a loop that never exits"],
       ["progress check", "the router", "a loop that exits and achieves nothing"],

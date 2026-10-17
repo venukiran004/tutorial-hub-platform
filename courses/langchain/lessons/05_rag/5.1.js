@@ -31,6 +31,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["Stage", "Goal", "Cost"], rows: [
       ["recall", "cast wide; miss nothing you need", "cheap, over everything"],
       ["precision", "narrow and order what you kept", "expensive, over few"]
@@ -48,6 +50,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Fetching more candidates",
       code: 'fetch k    recall@k     can rerank to\n1          0.571        top-1 of 1      <- no room to rerank at all\n3          0.929        top-3 of 3\n5          1.000        top-5 of 5\n10         1.000        top-5 of 10\n20         1.000        top-5 of 20\n41         1.000        top-5 of 41     <- the whole corpus',
       caption: "Recall rises with k and then stops. Everything after that point is candidates for stage two." },
@@ -59,6 +63,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "cost", text: "The cost ratio", sub: "Which is what forces the split" },
 
     {"kind": "flow", "title": "The ratio is the whole argument for two stages", "caption": "Dense retrieval over the whole corpus is a few milliseconds a query, because documents are embedded **once**. A cross-encoder scores **a query-document pair**, so it costs roughly **a hundred times more per document scored** — 6.1 measures it. Which settles the architecture without any further argument: **you cannot afford the expensive model over everything, and you cannot trust the cheap model's ordering.** So: cheap over everything to build a candidate set, expensive over the candidates to order them.", "cols": 3, "nodes": [{"id": "d", "label": "Dense: documents embedded once", "sub": "a few ms per query", "tone": "good"}, {"id": "c", "label": "Cross-encoder: scores a pair", "sub": "about 100x per document", "tone": "crit"}, {"id": "a", "label": "Cannot afford it over everything", "sub": "so not one stage", "tone": "crit"}, {"id": "t", "label": "Cannot trust the cheap ordering", "sub": "so not one stage either", "tone": "crit"}, {"id": "s", "label": "Cheap for the candidates, dear for the order", "sub": "which is the only option left", "tone": "good"}], "edges": [["d", "a"], ["c", "a"], ["c", "t"], ["a", "s"], ["t", "s"]], "t": "diagram", "id": "dg-5_1-03-2"},
+
+
 
 
 

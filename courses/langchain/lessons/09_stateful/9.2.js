@@ -13,6 +13,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "standalone", text: "ToolNode cannot be called on its own", sub: "Which costs you a test" },
 
     {"kind": "flow", "title": "ToolNode reads the last message, so it cannot be called on its own", "caption": "It takes **state**, not arguments: it looks at the last `AIMessage`, finds its `tool_calls`, runs each one and appends a `ToolMessage` per call **with the `tool_call_id` preserved.** Which is why there is no way to invoke it directly with a tool name — **its input is the conversation, not a request** — and that is the property that makes it a graph node rather than a function.", "cols": 3, "nodes": [{"id": "s", "label": "It takes state", "sub": "not arguments", "tone": "violet"}, {"id": "l", "label": "Reads the last AIMessage", "sub": "and its tool_calls", "tone": "accent"}, {"id": "r", "label": "Runs each, appends a ToolMessage", "sub": "id preserved", "tone": "good"}, {"id": "n", "label": "So it cannot be called directly", "sub": "there is no request to pass", "tone": "warn"}, {"id": "g", "label": "Which makes it a node, not a function", "sub": "its input is the conversation", "tone": "teal"}], "edges": [["s", "l"], ["l", "r"], ["r", "n"], ["n", "g"]], "t": "diagram", "id": "dg-9_2-01-1"},
+
+
     { t: "code", lang: "text", title: "Three ways of invoking it directly",
       code: "no config            RAISED ValueError: Missing required config key 'N/A' for 'tools'.\nempty configurable   RAISED ValueError: Missing required config key 'N/A' for 'tools'.\nwith a thread_id     RAISED ValueError: Missing required config key 'N/A' for 'tools'.",
       caption: "No config you construct by hand satisfies it." },
@@ -27,6 +29,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "adds", text: "What it adds", sub: "Over the hand-written loop" },
 
     {"kind": "flow", "title": "Order does not matter and a lost id does", "caption": "The ids are **the bookkeeping that is easy to get wrong by hand.** A provider matches each result to its request by `tool_call_id`, so **returning them in a different order is fine and losing an id is not** — the model then has a result it cannot attribute, which is 3.2's malformed-transcript failure arriving on the *next* call rather than this one. **That alone is a decent argument for the prebuilt.**", "cols": 3, "nodes": [{"id": "i", "label": "Each result carries a tool_call_id", "sub": "matched by id, not position", "tone": "violet"}, {"id": "o", "label": "Out of order: fine", "sub": "the id resolves it", "tone": "good"}, {"id": "l", "label": "A lost id: not fine", "sub": "unattributable result", "tone": "crit"}, {"id": "n", "label": "And it fails on the NEXT call", "sub": "3.2's displacement", "tone": "crit"}, {"id": "p", "label": "An argument for the prebuilt", "sub": "on its own", "tone": "teal"}], "edges": [["i", "o"], ["i", "l"], ["l", "n"], ["n", "p"]], "t": "diagram", "id": "dg-9_2-02-2"},
+
+
     { t: "code", lang: "text", title: "Two tool calls in one message",
       code: "two tool calls in one AIMessage -> 2 ToolMessages\n  id=c1   'Refunds are available within 30 days of purchase.'\n  id=c2   'Refunds are available within 30 days of purchase.'",
       caption: "Each result carries the id of the request it answers." },
@@ -34,6 +38,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "errors", text: "When a tool raises", sub: "And when the model invents one" },
 
     {"kind": "flow", "title": "A raising tool becomes a ToolMessage, which is 3.7's one-try-block fix built in", "caption": "`ToolNode` catches the exception and returns its message as the `ToolMessage` content, so **the model reads what went wrong and can fix its argument or explain the problem** — which is exactly the behaviour 3.7 argued for and implemented by hand. The consequence worth noting: **a tool failure does not stop the graph.** The cycle continues, the model gets another turn, and a tool that always raises becomes a loop that the recursion limit terminates.", "cols": 3, "nodes": [{"id": "r", "label": "The tool raises", "sub": "a bad argument, a timeout", "tone": "accent"}, {"id": "c", "label": "Caught, returned as content", "sub": "3.7's fix, built in", "tone": "good"}, {"id": "m", "label": "The model reads it and retries", "sub": "or explains", "tone": "good"}, {"id": "n", "label": "The graph does not stop", "sub": "the cycle continues", "tone": "warn"}, {"id": "l", "label": "So an always-raising tool is a loop", "sub": "ended by the recursion limit", "tone": "crit"}], "edges": [["r", "c"], ["c", "m"], ["m", "n"], ["n", "l"]], "t": "diagram", "id": "dg-9_2-03-3"},
+
+
     { t: "code", lang: "text", title: "A tool that always fails",
       code: "the tool raised, and ToolNode returned:\n  ToolMessage('Error: RuntimeError(\\'upstream is down\\')\\n Please fix...')\n    status: 'error'",
       caption: "The exception became a message the model can read." },
@@ -44,6 +50,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "condition", text: "tools_condition, and its hidden coupling", sub: "It is directly callable" },
 
     {"kind": "flow", "title": "The router is testable on its own and the tool node is not", "caption": "`tools_condition` is a pure function of state — read the last message, return `\"tools\"` or `END` — so **it is testable without a graph, a model or a fixture.** `ToolNode` is not: it executes real tools. **Which is worth knowing when deciding what to cover with tests: the routing logic is the cheap, high-value test and the tool node's behaviour needs a fixture.** The hidden coupling is that `tools_condition` assumes the node is *named* `\"tools\"`.", "cols": 3, "nodes": [{"id": "r", "label": "tools_condition", "sub": "a pure function of state", "tone": "good"}, {"id": "t", "label": "Testable with no graph", "sub": "cheap, high value", "tone": "good"}, {"id": "n", "label": "ToolNode executes real tools", "sub": "needs a fixture", "tone": "warn"}, {"id": "c", "label": "And it assumes the name 'tools'", "sub": "the hidden coupling", "tone": "crit"}, {"id": "f", "label": "So rename the node and routing breaks", "sub": "8.5's name-as-identity, again", "tone": "crit"}], "edges": [["r", "t"], ["n", "c"], ["c", "f"]], "t": "diagram", "id": "dg-9_2-04-4"},
+
+
     { t: "code", lang: "text", title: "Unlike ToolNode, this one works standalone",
       code: "with tool calls       -> 'tools'\nwithout tool calls    -> '__end__'",
       caption: "A plain function of state." },
@@ -55,12 +63,16 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "whole", text: "The whole agent", sub: "Four lines of wiring" },
 
     {"kind": "flow", "title": "The whole agent, in four lines of wiring", "caption": "Two prebuilts and three edges. **What was 9.1's forty lines is now four** — and the reason 9.1 wrote it out first is visible here: **this version has no place to put a step budget, a system prompt or an approval gate**, because the nodes it would attach to are inside the prebuilts. Which is the honest summary of prebuilts throughout this course: **right as a default, and the first thing a real requirement makes you unroll.**", "cols": 4, "nodes": [{"id": "a", "label": "create_agent, or the agent node", "sub": "the model call", "tone": "accent"}, {"id": "t", "label": "ToolNode(tools)", "sub": "the execution", "tone": "accent"}, {"id": "c", "label": "tools_condition", "sub": "the routing", "tone": "accent"}, {"id": "e", "label": "Three edges and a compile", "sub": "four lines total", "tone": "good"}, {"id": "n", "label": "And nowhere to put a budget or a gate", "sub": "which is why 9.1 exists", "tone": "warn"}], "edges": [["a", "c"], ["c", "t"], ["t", "e"], ["e", "n"]], "t": "diagram", "id": "dg-9_2-05-5"},
+
+
     { t: "code", lang: "python", title: "9.1's behaviour, collapsed",
       code: 'g.add_node("agent", agent)\ng.add_node("tools", ToolNode(tools))\ng.add_edge(START, "agent")\ng.add_conditional_edges("agent", tools_condition)\ng.add_edge("tools", "agent")',
       caption: "Same run, same messages." },
     { t: "h2", n: "06", id: "unroll", text: "When to write them out", sub: "Six requirements that force it" },
 
     {"kind": "matrix", "title": "An asymmetry worth knowing before you rely on them", "caption": "`ToolNode` **cannot be invoked on its own** — no config, an empty `configurable` and a `thread_id` all raise. It has to run inside a compiled graph. `tools_condition` is directly callable, which is why one is easy to unit test and the other is not.", "cols": ["callable on its own?", "how you test it"], "rows": ["ToolNode", "tools_condition"], "cells": [[{"text": "NO — raises under every config", "tone": "crit"}, {"text": "a 3-line throwaway graph", "tone": "warn"}], [{"text": "yes", "tone": "good"}, {"text": "call it with a state dict", "tone": "good"}]], "t": "diagram", "id": "dg-9_2-06-0"},
+
+
 
 
 
