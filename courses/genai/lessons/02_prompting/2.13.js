@@ -21,6 +21,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Layout is a cost decision, and the only one in this module", "caption": "A prompt cache matches a **prefix**, which turns the order of your sections into a pricing choice — the one place in this module where where a section sits matters more than what it says. Everything static goes in front, in an order that never changes, and everything that varies per request goes behind it. One variable token in front of a 3,000-token static block costs you the whole block.", "cols": 3, "nodes": [{"id": "c", "label": "The cache matches a prefix", "sub": "byte-identical, from the front", "tone": "violet"}, {"id": "s", "label": "Static first", "sub": "system, tools, fixed examples", "tone": "good"}, {"id": "o", "label": "In an order that never changes", "sub": "including dict iteration order", "tone": "good"}, {"id": "v", "label": "Variable last", "sub": "the query, the retrieved chunks", "tone": "accent"}, {"id": "b", "label": "One variable token in front", "sub": "invalidates everything behind", "tone": "crit"}, {"id": "l", "label": "So layout, not wording", "sub": "is what this lesson is about", "tone": "teal"}], "edges": [["c", "s"], ["s", "o"], ["o", "v"], ["v", "b"], ["b", "l"]], "t": "diagram", "id": "dg-2_13-01-0"},
 
 
+
     { t: "p", text: "A prompt cache matches a prefix. That turns prompt *layout* into a cost decision, and it is the only place in this module where the order of your sections matters more than their content." },
 
     { t: "code", lang: "python", title: "layout.py — the cacheable shape", code: `messages = [
@@ -50,6 +51,7 @@ EC.receiveLesson({
       sub: "A designed cache and a working cache are different things" },
 
     {"kind": "flow", "title": "A zero hit rate is invisible unless you log the field", "caption": "1.13's incident was a carefully ordered 3,000-token prompt with a hit rate of **zero for months**, because of one timestamp near the front. The reason it lasted months is not that the bug was subtle — it is that nobody logged the one field that would have said so. `cached_tokens` arrives on every response, costs nothing to record, and turns a silent overspend into a graph.", "cols": 3, "nodes": [{"id": "p", "label": "A carefully ordered prompt", "sub": "3,000 static tokens", "tone": "good"}, {"id": "t", "label": "One timestamp near the front", "sub": "changing every request", "tone": "crit"}, {"id": "z", "label": "Hit rate: zero", "sub": "for months", "tone": "crit"}, {"id": "n", "label": "Nothing in the response changed", "sub": "it still worked, just dearer", "tone": "warn"}, {"id": "l", "label": "Log usage.cached_tokens", "sub": "free, on every response", "tone": "good"}, {"id": "g", "label": "Now it is a graph, not a surprise", "sub": "and alertable", "tone": "teal"}], "edges": [["p", "t"], ["t", "z"], ["z", "n"], ["n", "l"], ["l", "g"]], "t": "diagram", "id": "dg-2_13-02-1"},
+
 
 
     { t: "p", text: "1.13's incident was a carefully-ordered 3,000-token prompt with a hit rate of zero for months, because of one timestamp. The reason it lasted months is that nobody logged the one field that would have said so." },
@@ -85,6 +87,7 @@ def test_prefix_is_stable():
     {"kind": "matrix", "title": "Dynamic examples against a cacheable prefix, and the resolution", "caption": "2.2 argued for retrieving examples per query; 1.13 argued for a byte-identical prefix. These conflict directly and **the resolution is not to pick one** — it is the last row. A cached core example set carries most of the budget, and a few retrieved examples adapt the tail, so you keep most of the discount and most of the adaptation. The first row is worth naming because it is almost always an accident rather than a decision.", "cols": ["What caches", "When"], "rows": ["Dynamic examples first", "Static, dynamic, query", "Static, static, query", "Cached core plus a few"], "cells": [[{"text": "nothing", "tone": "crit"}, "never - this is the accident"], [{"text": "the system prompt only", "tone": "accent"}, "the default; examples at full price"], [{"text": "everything but the query", "tone": "good"}, "if a fixed set is nearly as good"], [{"text": "the core set", "tone": "violet"}, "the middle - and usually the answer"]], "t": "diagram", "id": "dg-2_13-03-2"},
 
 
+
     { t: "p", text: "2.2 argued for retrieving examples per query where a task has many sub-cases. 1.13 argued for a byte-identical prefix. These conflict directly, and the resolution is not to pick one." },
 
     { t: "table",
@@ -101,6 +104,7 @@ def test_prefix_is_stable():
       sub: "The common list has eight; they are not equal" },
 
     {"kind": "matrix", "title": "Eight cost levers, ordered by what they actually move", "caption": "The ordering is the point. Effort spent on row six — trimming words from a prompt — is effort not spent on rows one and two, which are **an order of magnitude larger**. A 20% shorter system prompt on a workload that should have been batched is a rounding error on a bill that could have been halved. And the last row moves nothing at all: streaming changes perceived latency and not one token of cost.", "cols": ["Typical effect"], "rows": ["A smaller model", "Batch non-urgent work", "Prompt caching", "Compress the context", "Semantic response caching", "Shorter prompts", "Lower max_tokens", "Streaming"], "cells": [[{"text": "up to 16.7x - 1.14's measured ratio", "tone": "good"}], [{"text": "50%, on input and output both", "tone": "good"}], [{"text": "50-90% of the cached input portion", "tone": "good"}], ["varies; large on RAG workloads"], ["large where queries repeat"], [{"text": "proportional, and usually small", "tone": "warn"}], [{"text": "bounds the worst case only", "tone": "warn"}], [{"text": "zero - same cost, better perceived latency", "tone": "crit"}]], "t": "diagram", "id": "dg-2_13-04-3"},
+
 
 
     { t: "table",

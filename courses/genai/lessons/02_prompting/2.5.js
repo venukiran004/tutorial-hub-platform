@@ -22,6 +22,7 @@ EC.receiveLesson({
     {"kind": "cycle", "title": "The ReAct loop", "caption": "Chain-of-thought lets a model *compute* intermediate values; ReAct lets it **obtain** them, because the intermediate step is a tool call whose result comes back from outside the model. Mechanically this is 1.9's function-calling loop with the reasoning made explicit: the `Thought` lines are chain-of-thought and buy the same thing, and the `Action` lines are 1.9's step 2 — the model emitting arguments for your code to run.", "centre": "until an answer", "nodes": [{"label": "Thought", "sub": "reason about what is needed", "tone": "violet", "edge": "then"}, {"label": "Action", "sub": "a tool call, with arguments", "tone": "accent", "edge": "your code runs it"}, {"label": "Observation", "sub": "the result, from outside", "tone": "good", "edge": "back into context"}], "t": "diagram", "id": "dg-2_5-01-0"},
 
 
+
     { t: "p", text: "Chain-of-thought (2.3) lets a model compute intermediate values. ReAct lets it *obtain* them — the intermediate step is a tool call whose result comes back from outside the model. The pattern is three token types repeated until an answer is produced." },
 
     { t: "code", lang: "text", title: "The ReAct trace", code: `Thought: I need to find the population of Tokyo.
@@ -133,6 +134,7 @@ for i, (kind, text) in enumerate(TRACE, 1):
     {"kind": "flow", "title": "Three details that decide whether the loop works", "caption": "The assistant message goes back **verbatim** — the same rule as 1.9, and dropping it leaves the Observation replying to nothing. Tool errors are returned **as data**, not raised, so the model can retry with different arguments or explain the failure instead of the loop dying. And both limits raise rather than returning, so an exhausted budget is a visible failure rather than a quietly truncated answer.", "cols": 3, "nodes": [{"id": "v", "label": "Append the assistant message verbatim", "sub": "including the tool call", "tone": "good"}, {"id": "d", "label": "Drop it and the Observation replies to nothing", "sub": "the loop drifts", "tone": "crit"}, {"id": "e", "label": "Return tool errors as data", "sub": "not as exceptions", "tone": "good"}, {"id": "r", "label": "So the model can recover", "sub": "retry, or explain", "tone": "good"}, {"id": "l", "label": "Step and token caps raise", "sub": "rather than returning", "tone": "violet"}, {"id": "f", "label": "An exhausted budget is visible", "sub": "not a short answer", "tone": "teal"}], "edges": [["v", "d"], ["v", "e"], ["e", "r"], ["l", "f"], ["r", "l"]], "t": "diagram", "id": "dg-2_5-03-1"},
 
 
+
     { t: "code", lang: "python", title: "react.py", code: `def react(question, tools, *, max_steps=10, budget_tokens=50_000):
     messages = [{"role": "system", "content": SYSTEM},
                 {"role": "user", "content": question}]
@@ -171,6 +173,7 @@ for i, (kind, text) in enumerate(TRACE, 1):
     {"kind": "matrix", "title": "Six ways a loop fails, and the guard for each", "caption": "None of these is a model-quality problem; they are all **control-flow** problems, which is why the guards are code rather than prompt wording. The first two are the ones that burn a budget silently — a loop repeating the same call, or alternating between two approaches, looks like work from the outside. The last one is the reason 1.9's trust boundary exists.", "cols": ["It looks like", "The guard"], "rows": ["Looping", "Thrashing", "Premature answer", "Tool obsession", "Context overflow", "Injected instruction"], "cells": [[{"text": "the same call, repeatedly", "tone": "crit"}, "detect repeats; say so as an Observation"], [{"text": "two approaches, alternating", "tone": "crit"}, "a step cap; a progress check"], [{"text": "answers from memory", "tone": "warn"}, "a search-first rule (2.15); read the trace"], [{"text": "calls after it could answer", "tone": "warn"}, "cap steps; state the stop condition"], [{"text": "early steps truncated away", "tone": "warn"}, "budget in tokens, not steps (1.5)"], [{"text": "a tool result that instructs", "tone": "crit"}, "never act on the model alone (1.9, 2.16)"]], "t": "diagram", "id": "dg-2_5-04-2"},
 
 
+
     { t: "table",
       head: ["Failure", "What it looks like", "Guard"],
       rows: [
@@ -195,6 +198,7 @@ for i, (kind, text) in enumerate(TRACE, 1):
       sub: "And when a fixed chain is better" },
 
     {"kind": "flow", "title": "The honest test: can you draw the flowchart?", "caption": "If you can draw it, **write it as code** — the control flow belongs in your program, where it is deterministic, testable and cheap. A loop is for the case where you genuinely cannot, because the path depends on data you will not have until runtime. The most common over-engineering in this area is the third branch: a question answerable from the prompt does not need a loop around it, and a loop will sometimes take two steps to reach the same answer.", "cols": 3, "nodes": [{"id": "q", "label": "Can you draw the flowchart?", "sub": "the honest test", "tone": "violet"}, {"id": "y", "label": "Yes, with branches", "sub": "extract, classify, summarise", "tone": "accent"}, {"id": "c", "label": "Write it as code", "sub": "deterministic, testable, cheap", "tone": "good"}, {"id": "o", "label": "Yes, with no branches", "sub": "one question, one answer", "tone": "accent"}, {"id": "s", "label": "One call is enough", "sub": "the commonest over-engineering", "tone": "good"}, {"id": "n", "label": "No - the path depends on runtime data", "sub": "one lookup, or six", "tone": "warn"}, {"id": "a", "label": "That is what an agent is for", "sub": "and only that", "tone": "teal"}], "edges": [["q", "y"], ["y", "c"], ["q", "o"], ["o", "s"], ["q", "n"], ["n", "a"]], "t": "diagram", "id": "dg-2_5-05-3"},
+
 
 
     { t: "dl", items: [

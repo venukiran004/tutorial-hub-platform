@@ -22,6 +22,7 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "A majority vote is a binomial, so it can be read off exactly", "caption": "\"More expensive but significantly more accurate\" is quantifiable, and the table says something sharper than the slogan. **Below p = 0.5 voting makes it worse** — at 0.40 it falls from 0.4000 to 0.1744 by n=21, because the majority is reliably wrong. At exactly 0.50 it does nothing at any n. The gains are real only above the halfway line, and they are largest where the model was already good: 0.70 reaches 0.9736 at n=21.", "cols": ["n=1", "n=3", "n=5", "n=9", "n=21"], "rows": ["p = 0.40", "p = 0.50", "p = 0.55", "p = 0.60", "p = 0.70", "p = 0.90"], "cells": [["0.4000", "0.3520", "0.3174", "0.2666", {"text": "0.1744", "tone": "crit"}], ["0.5000", "0.5000", "0.5000", "0.5000", {"text": "0.5000", "tone": "warn"}], ["0.5500", "0.5748", "0.5931", "0.6214", {"text": "0.6790", "tone": "good"}], ["0.6000", "0.6480", "0.6826", "0.7334", {"text": "0.8256", "tone": "good"}], ["0.7000", "0.7840", "0.8369", "0.9012", {"text": "0.9736", "tone": "good"}], ["0.9000", "0.9720", "0.9914", "0.9991", {"text": "1.0000", "tone": "good"}]], "t": "diagram", "id": "dg-2_4-01-0"},
 
 
+
     { t: "p", text: "The procedure is three lines. Run the same chain-of-thought prompt N times at a temperature above zero so the samples differ (1.2). Extract the final answer from each. Return whichever answer appeared most often." },
 
     { t: "code", lang: "python", title: "self_consistency.py", code: `from collections import Counter
@@ -114,6 +115,7 @@ for p in (0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9):
     {"kind": "trace", "title": "n=3 is the efficient point, and the shape depends on where you started", "caption": "Divide the accuracy gain by the number of extra calls and the answer is unambiguous: **n=3 returns the most per call** and n=5 is defensible, while beyond that you pay linearly for a sub-linear return. The second reading is the useful one for choosing: at p=0.8 the curve is nearly exhausted by n=9 (0.1804 of a possible 0.1990), while at p=0.6 it is still climbing at n=21. A weak model has more left to gain, and needs more calls to get it.", "left": "setting", "codeW": 150, "vars": ["accuracy gain", "cost", "gain per extra call"], "steps": [{"code": "p=0.6, n=3", "state": ["+0.0480", "3x", "+0.0240"], "tone": "good", "note": "the efficient point"}, {"code": "p=0.6, n=5", "state": ["+0.0826", "5x", "+0.0206"], "tone": "accent"}, {"code": "p=0.6, n=9", "state": ["+0.1334", "9x", "+0.0167"], "tone": "warn"}, {"code": "p=0.6, n=21", "state": ["+0.2256", "21x", "+0.0113"], "changed": [2], "tone": "crit", "note": "still climbing"}, {"code": "p=0.8, n=3", "state": ["+0.0960", "3x", "+0.0480"], "tone": "good"}, {"code": "p=0.8, n=9", "state": ["+0.1804", "9x", "+0.0226"], "tone": "accent", "note": "0.1804 of 0.1990"}, {"code": "p=0.8, n=21", "state": ["+0.1990", "21x", "+0.0100"], "tone": "crit", "note": "exhausted"}], "t": "diagram", "id": "dg-2_4-03-1"},
 
 
+
     { t: "code", lang: "python", title: "g21.py — marginal return per extra call", code: `for p in (0.6, 0.8):
     for n in (3, 5, 9, 21):
         lift = majority_correct(p, n) - p
@@ -143,6 +145,7 @@ for p in (0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9):
       sub: "Several approaches, scored, and the best one followed" },
 
     {"kind": "matrix", "title": "A poll and a search are not the same technique", "caption": "Self-consistency samples **one** approach repeatedly and votes; tree-of-thought generates *different* approaches, scores them and continues from the best. The row that decides whether you can use the second one is the requirement: you need a way to **evaluate a partial solution**, and if your evaluator is no better than your generator the search is noise. Both are the prompt-level form of test-time compute, which is why layering either on a reasoning model is usually redundant and always expensive.", "cols": ["Self-consistency", "Tree-of-thought"], "rows": ["Mechanism", "Requires", "Works when", "Cost", "Fails when"], "cells": [["sample N times, vote", "generate, score, select"], [{"text": "an extractable answer", "tone": "good"}, {"text": "a partial-solution scorer", "tone": "warn"}], ["answers are discrete", "approaches genuinely differ"], [{"text": "N x base, all parallel", "tone": "good"}, {"text": "N gen + N eval, partly serial", "tone": "warn"}], [{"text": "per-sample p below 0.5", "tone": "crit"}, {"text": "the evaluator is no better", "tone": "crit"}]], "t": "diagram", "id": "dg-2_4-04-2"},
+
 
 
     { t: "p", text: "Self-consistency samples the same approach repeatedly and votes. Tree-of-thought generates *different* approaches, evaluates each, and continues from the best — a search rather than a poll." },

@@ -83,6 +83,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Writing `response_format=FruitList` is convenient enough that it is easy to forget a JSON Schema is being generated and sent. It is worth looking at once, because every decision in the class shows up in it, and the size of it is on your bill." },
 
     { t: "code", lang: "python", title: "g18.py — the schema behind the class", code: `from pydantic import BaseModel
@@ -168,6 +169,7 @@ that schema costs 137 tokens on every request it is sent with.`,
 
 
 
+
     { t: "p", text: "OpenAI's structured outputs will only accept a subset of JSON Schema, and two of the restrictions catch people immediately." },
 
     { t: "code", lang: "python", title: "g18.py — strict-ready or not", code: `cases = [
@@ -222,6 +224,7 @@ class Strict(BaseModel):
 
 
 
+
     { t: "p", text: "Anthropic has no `response_format`. The documented approach is to define a tool whose input schema is the shape you want, and force the model to call it — at which point the arguments the model produces *are* your structured response, and they conform to the schema for the same reason function-calling arguments always do." },
 
     { t: "code", lang: "python", title: "anthropic_structured.py", code: `response = anthropic_client.messages.create(
@@ -254,6 +257,7 @@ data = next(b.input for b in response.content if b.type == "tool_use")`,
       sub: "The schema constrains the shape, not the truth" },
 
     {"kind": "flow", "title": "The schema removes the shape failures, not the wrong answers", "caption": "Structured output guarantees `calories` is an integer. It does not guarantee the integer is right — **a banana at 3,000 calories satisfies the schema perfectly**, and so does a `confidence` of 1.0 on an answer the model invented. The point of the schema is that it clears away the failures that are about *shape*, so your validation code can be about *meaning*. Code doing both jobs usually does the second one badly.", "cols": 3, "nodes": [{"id": "s", "label": "The schema guarantees types", "sub": "calories is an integer", "tone": "good"}, {"id": "w", "label": "Not that the value is right", "sub": "a banana at 3,000 calories", "tone": "crit"}, {"id": "c", "label": "Nor that confidence means anything", "sub": "1.0 on an invented answer", "tone": "crit"}, {"id": "r", "label": "Shape failures: gone", "sub": "no defensive parsing needed", "tone": "good"}, {"id": "v", "label": "So validate meaning instead", "sub": "ranges, cross-field consistency", "tone": "violet"}, {"id": "b", "label": "Code doing both does the second badly", "sub": "which is why separating helps", "tone": "teal"}], "edges": [["s", "w"], ["s", "c"], ["s", "r"], ["r", "v"], ["v", "b"]], "t": "diagram", "id": "dg-1_8-05-3"},
+
 
 
 

@@ -18,6 +18,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "metrics", text: "The four numbers, and what each one hides",
       sub: "Two latencies, one rate, one queue" },
 
+    {"kind": "matrix", "title": "Four numbers, and what each one hides", "caption": "Measured with a real scheduling loop rather than a formula — 24 Poisson arrivals, fixed slots, a real prefill per admission and a real decode step per active row. The hiding is the point: **TTFT at low load is mostly prefill and under load is mostly queueing**, which is the single most misread thing about it. TPOT is a *distribution*, not a number — mean 124.0 ms against a p99 of 432.5 and a max of 678.5. And queue depth is the only one of the four that is a leading indicator.", "cols": ["Contains", "What it hides"], "rows": ["TTFT", "TPOT", "Throughput", "Queue depth"], "cells": [["queue wait, prefill, scheduling", {"text": "which of those it is - usually queue", "tone": "crit"}], ["every inter-token gap", {"text": "its own spread: p50 107, p99 432", "tone": "crit"}], ["tokens per second", {"text": "whose second - see section 02", "tone": "warn"}], ["admitted but not running", {"text": "nothing - it leads the others", "tone": "good"}]], "t": "diagram", "id": "dg-3_11-01-0"},
+
     { t: "dl", items: [
       { k: "TTFT — time to first token", v: "From the request arriving to the first token reaching the client. It contains the queue wait, the prefill, and any scheduling delay. At low load it is mostly prefill; under load it is mostly queueing, which is the single most misread thing about it." },
       { k: "TPOT — time per output token", v: "The gap between consecutive tokens, after the first. It is what makes a stream feel smooth or stuttery, and it rises as the batch fills (3.5 measured 6.4× from batch 1 to 32). A *distribution*, not a number — one request's gaps vary enormously." },
@@ -70,6 +72,8 @@ for name, xs in (("TTFT ms", ttft), ("TPOT ms", tpot)):
     { t: "h2", n: "02", id: "throughput", text: "Throughput, three ways, differing by 3.4×",
       sub: "Capacity and experience are both called tokens per second" },
 
+    {"kind": "trace", "title": "Three definitions of throughput, differing by 3.4x", "caption": "Total tokens over wall clock tells you what the system can **produce**; the rate a single stream experiences tells you what a user **feels**. On the same run those are 12.6 and 3.7 tokens per second, because four streams shared the device so each received roughly a quarter of the output. Both get called throughput. **A capacity plan built on the per-user figure under-provisions by 3.4×**, and a user-experience claim built on the capacity figure is off by the same factor in the other direction.", "left": "definition", "codeW": 230, "vars": ["tok/s", "what it is"], "steps": [{"code": "total tokens / wall clock", "state": ["12.6", "capacity"], "tone": "good"}, {"code": "mean of per-request rates", "state": ["3.7", "experience"], "changed": [0], "tone": "warn"}, {"code": "median of per-request rates", "state": ["3.8", "experience"], "tone": "warn"}, {"code": "the ratio", "state": ["3.4x", "the planning error"], "tone": "crit"}], "t": "diagram", "id": "dg-3_11-02-1"},
+
     { t: "p", text: "Total tokens divided by wall clock tells you what the system can produce. The rate a single stream experiences tells you what a user feels. On the same run these were 12.6 and 3.7 tokens per second — because four streams were sharing the device, so each received roughly a quarter of the output." },
 
     { t: "code", lang: "python", title: "g311_ex.py — three definitions on identical records", code: `all_gaps = [g for r in reqs for g in r["gaps_ms"]]
@@ -100,6 +104,8 @@ print(statistics.median(per_req))           # median experience`,
 
     { t: "h2", n: "03", id: "percentiles", text: "The same p99, three times, differing by 2.8×",
       sub: "Aggregation order changes the answer more than the system does" },
+
+    {"kind": "trace", "title": "The same p99, aggregated three ways, differing by 2.8x", "caption": "TPOT is a distribution over gaps, and gaps are **grouped inside requests** — so \"the p99 TPOT\" is ambiguous. Pooling every gap gives 1120.9 ms; taking each request's p99 and averaging gives 702.9; taking each request's *mean* and then percentiles gives 404.8. All three get called p99 TPOT and the spread is **2.8×**. The tail explains why: the worst 1% of gaps belong to just 3 of 24 requests, so pooling counts one bad request many times and per-request averaging counts it once.", "left": "how it is aggregated", "codeW": 230, "vars": ["p50", "p90", "p99"], "steps": [{"code": "pool every gap", "state": ["227.6", "357.2", "1120.9"], "tone": "crit"}, {"code": "per-request p99, then mean", "state": ["227.5", "390.9", "702.9"], "changed": [2], "tone": "warn"}, {"code": "per-request mean, then p99", "state": ["263.2", "327.4", "404.8"], "changed": [2], "tone": "accent"}, {"code": "worst 1% of gaps", "state": ["3 requests", "of 24", "2.8x spread"], "tone": "violet"}], "t": "diagram", "id": "dg-3_11-03-2"},
 
     { t: "p", text: "TPOT is a distribution over gaps, and gaps are grouped inside requests. So \"the p99 TPOT\" is ambiguous: you can pool every gap in the run and take the 99th percentile, take each request's p99 and average those, or take each request's *mean* and take the p99 of those. All three get called p99 TPOT." },
 
@@ -189,6 +195,8 @@ owners = {rid for _, rid, _ in worst[:int(0.01 * len(all_gaps)) + 1]}`,
     { t: "h2", n: "05", id: "sweep", text: "The concurrency sweep",
       sub: "What the curve looks like, including when it goes the wrong way" },
 
+    {"kind": "trace", "title": "The sweep, including the result that goes the wrong way", "caption": "A load test should produce a curve, not a number: hold the arrival pattern fixed, vary the concurrency limit, read throughput and the percentiles **together**. On this 4-thread CPU more slots made everything worse — throughput falls from 31.3 to 12.1 tok/s while p50 TPOT rises 18× — because the arithmetic saturates immediately and extra concurrency only adds contention. On a GPU the first few rows would climb. The transferable part is the method: the optimum is where throughput stops rising **before** the percentiles break, and that point is a property of your hardware, not a recommended setting.", "left": "slots", "codeW": 120, "vars": ["tok/s", "p50 TTFT", "p99 TTFT", "p50 TPOT"], "steps": [{"code": "1", "state": ["31.3", "4403", "9367", "26.6"], "tone": "good"}, {"code": "2", "state": ["29.5", "5049", "9015", "53.5"], "changed": [3], "tone": "accent"}, {"code": "4", "state": ["23.5", "4897", "12440", "110.9"], "changed": [0, 3], "tone": "warn"}, {"code": "8", "state": ["12.1", "9897", "20888", "483.4"], "changed": [0, 3], "tone": "crit", "note": "worse on every axis"}], "t": "diagram", "id": "dg-3_11-05-3"},
+
     { t: "p", text: "The point of a load test is a curve, not a number: hold the arrival pattern fixed and vary the concurrency limit, then read throughput and the latency percentiles together. Here is mine, and it has a result I have to be careful about." },
 
     { t: "code", lang: "python", title: "g311.py — the same load at 1, 2, 4 and 8 slots", code: `for slots in (1, 2, 4, 8):
@@ -215,6 +223,8 @@ owners = {rid for _, rid, _ in worst[:int(0.01 * len(all_gaps)) + 1]}`,
 
     { t: "h2", n: "06", id: "monitoring", text: "What to put on the dashboard",
       sub: "And what the thresholds get wrong" },
+
+    {"kind": "matrix", "title": "Four signals, and why these four", "caption": "Queue depth is first because it is **the only leading indicator** — it rises before any latency does, which makes it the right thing to autoscale on. TTFT p99 should be read as queueing rather than as model speed: **64–99% of it was queue** in this measurement. And KV cache utilisation is the one nobody watches: preemption and recompute start around 90% and are invisible in the latency right up until they are not.", "cols": ["Alert on", "Why this one"], "rows": ["Queue depth", "TPOT p99", "TTFT p99", "KV cache utilisation"], "cells": [[{"text": "a few seconds of work", "tone": "good"}, "the only leading indicator"], ["the smoothness budget", "what a reading user feels; p50 hides stalls"], ["the SLA", {"text": "read it as queue - 64-99% was", "tone": "warn"}], [{"text": "above about 90%", "tone": "crit"}, "preemption starts, invisibly"]], "t": "diagram", "id": "dg-3_11-06-4"},
 
     { t: "table",
       head: ["Signal", "Alert on", "Why this one"],

@@ -22,6 +22,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "\"What's in this image?\" asks for the wrong thing", "caption": "A description is almost never what a system wants, and that question invites one. 2.1's four-component check applies to vision exactly as it does to text: **the image is the input**, and the instruction, the context and the output format all still have to be supplied. An image in the request does not answer any of the other three.", "cols": 4, "nodes": [{"id": "i", "label": "The image", "sub": "the input component", "tone": "accent"}, {"id": "n", "label": "Instruction", "sub": "which question, exactly", "tone": "good"}, {"id": "c", "label": "Context", "sub": "what kind of document, what for", "tone": "good"}, {"id": "f", "label": "Output format", "sub": "fields, not prose", "tone": "good"}, {"id": "d", "label": "Supply none and you get a description", "sub": "which nothing can consume", "tone": "crit"}], "edges": [["i", "n"], ["n", "c"], ["c", "f"], ["i", "d", "", "dashed"]], "t": "diagram", "id": "dg-2_9-01-0"},
 
 
+
     { t: "p", text: "\"What's in this image?\" invites a description, and a description is almost never what a system wants. The four-component check from 2.1 applies exactly as it does to text: the image is the **input**, and the instruction, context and output format still have to be supplied." },
 
     { t: "code", lang: "python", title: "vision.py — the call shape", code: `response = client.chat.completions.create(
@@ -74,6 +75,7 @@ If a value is not legible, use null -- do not infer it from other figures."""
     {"kind": "matrix", "title": "Order inside the content array, and what each one is for", "caption": "The array is a sequence of tokens like everything else, so instructions placed *before* the image condition the model as it reads the image, and instructions after are read afterwards. Both have a use. The last row is the one that silently corrupts comparisons: **without labels between images the model conflates them**. And prompt caching applies here too — a fixed instruction and reference image first, varying image last, keeps a cacheable prefix worth hundreds of image tokens.", "cols": ["Effect", "Use when"], "rows": ["Instruction, then image", "Image, then question", "Instruction, image, restate", "Images with labels between"], "cells": [[{"text": "it knows what to look for while reading", "tone": "good"}, "a specific extraction - the usual case"], ["it reads, then is asked", "several questions of one image"], ["both", "long instructions, risk of drift"], [{"text": "each image is identified", "tone": "violet"}, "comparison - or it conflates them"]], "t": "diagram", "id": "dg-2_9-02-1"},
 
 
+
     { t: "p", text: "The `content` array is a sequence of tokens like everything else. Instructions placed *after* the image are read after it; instructions placed before are conditioning the model as it processes the image. Both orders have a use." },
 
     { t: "table",
@@ -107,6 +109,7 @@ If a value is not legible, use null -- do not infer it from other figures."""
     {"kind": "trace", "title": "The tile arithmetic, and the cliff at 513 pixels", "caption": "`detail=\"low\"` is a **flat 85 tokens** at any size, which is the cheapest useful thing in the vision API. `detail=\"high\"` is 85 plus 170 per 512-pixel tile, so a square image is 255 tokens up to 512×512 and **765 from 513×513 upward, forever** — the step is a cliff, not a slope, and resizing to 512 before upload is a 3× saving that costs one line.", "left": "image", "codeW": 170, "vars": ["tiles", "tokens"], "steps": [{"code": "any size, detail=low", "state": ["-", "85"], "tone": "good", "note": "flat, always"}, {"code": "512x512, detail=high", "state": ["1", "255"], "tone": "accent"}, {"code": "513x513, detail=high", "state": ["4", "765"], "changed": [0, 1], "tone": "crit", "note": "one pixel, 3x the cost"}, {"code": "2048x2048, detail=high", "state": ["4", "765"], "tone": "warn", "note": "and no more above that"}], "t": "diagram", "id": "dg-2_9-03-2"},
 
 
+
     { t: "p", text: "1.11 measured the arithmetic: `detail=\"low\"` is a flat 85 tokens; `detail=\"high\"` is 85 + 170 per 512-pixel tile, which for a square image is 255 up to 512×512 and 765 from 513×513 upward, forever." },
 
     { t: "code", lang: "python", title: "budget.py", code: `# A comparison prompt with two high-detail images and a 300-token instruction:
@@ -137,6 +140,7 @@ If a value is not legible, use null -- do not infer it from other figures."""
       sub: "Some prompting problems are image problems" },
 
     {"kind": "matrix", "title": "Four things to do to the image before it costs anything", "caption": "A vision model is **expensive per pixel and cheap to reason with**, so anything you can do to the image beforehand is work done once, in code, rather than work the model repeats on every request. The last row is the combination that wins on forms and invoices: the OCR text gives exact strings the model would otherwise read from pixels, and the image gives the layout OCR threw away.", "cols": ["What it buys"], "rows": ["Crop to the region", "Rotate and deskew", "Split multi-page documents", "Run OCR alongside"], "cells": [[{"text": "removes distractors, and often drops you a size tier", "tone": "good"}], ["an angled photo is as hard for the model as for a person"], [{"text": "one call per page beats eight images - and failures get a location", "tone": "good"}], [{"text": "exact strings plus the layout - together they beat either alone", "tone": "violet"}]], "t": "diagram", "id": "dg-2_9-04-3"},
+
 
 
     { t: "ul", items: [

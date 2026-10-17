@@ -21,6 +21,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "One checklist item is a precondition for the other six", "caption": "Knowing **which prompt produced which output** is not one item among seven — it is the one the rest depend on. Without it a quality change cannot be attributed, a rollback cannot be verified, and an A/B test has no data at all. It costs one field on the response and one column in the log, and it is routinely the thing missing when a team cannot explain why last month was better.", "cols": 3, "nodes": [{"id": "v", "label": "Record the prompt version", "sub": "on every response", "tone": "violet"}, {"id": "a", "label": "Attribution becomes possible", "sub": "which change moved the metric", "tone": "good"}, {"id": "r", "label": "Rollback becomes verifiable", "sub": "you can see it took effect", "tone": "good"}, {"id": "b", "label": "A/B tests have data", "sub": "2.12's comparison needs the label", "tone": "good"}, {"id": "n", "label": "Without it, none of the three", "sub": "and no way to notice", "tone": "crit"}], "edges": [["v", "a"], ["v", "r"], ["v", "b"], ["n", "v", "", "dashed"]], "t": "diagram", "id": "dg-2_17-01-0"},
 
 
+
     { t: "p", text: "Of the seven-item production checklist, one item is a precondition for the other six: knowing which prompt produced which output. Without it, a quality change cannot be attributed, a rollback cannot be verified, and an A/B test has no data (2.12)." },
 
     { t: "code", lang: "python", title: "record.py", code: `@dataclass(frozen=True)
@@ -62,6 +63,7 @@ def answer(question, *, prompt_name="summarise"):
     {"kind": "matrix", "title": "Git gives you five of these for free; the registry trades one away", "caption": "Files in git give review, history, rollback and atomicity with the code for nothing and with no new system. The row that is the **real** trade is the fifth: in git the prompt and the parser that reads its output move together, and in a registry they do not — so a prompt change can land without the code change that handles it. The case for a registry arrives when people who cannot deploy need to change prompts, which is a genuine situation and not a tooling preference.", "cols": ["Files in git", "A registry"], "rows": ["Review", "Rollback", "Who can change it", "Change speed", "Tied to code version", "Audit trail"], "cells": [[{"text": "a pull request, with a diff", "tone": "good"}, "a UI, usually without one"], ["revert and deploy", {"text": "a click", "tone": "good"}], ["people who can ship code", {"text": "anyone with access", "tone": "warn"}], ["a deploy cycle", {"text": "immediate", "tone": "good"}], [{"text": "yes - prompt and parser move together", "tone": "good"}, {"text": "no - the real trade", "tone": "crit"}], [{"text": "git history, free", "tone": "good"}, "whatever the tool records"]], "t": "diagram", "id": "dg-2_17-02-1"},
 
 
+
     { t: "table",
       head: ["", "Prompts as files in git", "A prompt registry"],
       rows: [
@@ -87,6 +89,7 @@ def answer(question, *, prompt_name="summarise"):
       sub: "Percentage, a metric, and an automatic halt" },
 
     {"kind": "flow", "title": "Halt on error rate and latency, not on quality", "caption": "Note what the automatic halt condition uses. **Quality takes longer to measure than an hour** — 2.12 measured how much longer — so wiring a rollout's kill switch to a quality metric means it either never fires or fires on noise. Error rate and latency move within minutes and are unambiguous, so they catch the catastrophic cases; the quality decision is made deliberately, later, once there is enough data to support it.", "cols": 3, "nodes": [{"id": "r", "label": "A staged rollout", "sub": "1%, 10%, 50%, 100%", "tone": "accent"}, {"id": "e", "label": "Halt on error rate", "sub": "moves within minutes", "tone": "good"}, {"id": "l", "label": "Halt on latency", "sub": "also immediate, also unambiguous", "tone": "good"}, {"id": "q", "label": "Not on quality", "sub": "it needs far more than an hour", "tone": "crit"}, {"id": "n", "label": "Or it fires on noise", "sub": "or never fires at all", "tone": "crit"}, {"id": "d", "label": "Quality is a later, deliberate call", "sub": "with enough data (2.12)", "tone": "teal"}], "edges": [["r", "e"], ["r", "l"], ["r", "q"], ["q", "n"], ["n", "d"]], "t": "diagram", "id": "dg-2_17-03-2"},
+
 
 
     { t: "code", lang: "python", title: "rollout.py", code: `ROLLOUT = {"summarise": {"v_new": "a3f91c2b8e40", "percent": 10}}
@@ -115,6 +118,7 @@ def check_rollout(name):
       sub: "Which items are load-bearing" },
 
     {"kind": "matrix", "title": "The checklist, rated rather than recited", "caption": "Five are essential, and two are not prompt management at all. The second row carries the only real condition — an A/B framework is essential **at volume** and overkill below it, because 2.12's sample sizes say a low-traffic A/B cannot resolve the differences you would be running it to find. The last two rows belong to other lessons, and saying so keeps the checklist honest rather than long.", "cols": ["Verdict"], "rows": ["Version-controlled prompts", "An A/B framework", "An evaluation suite", "Quality per prompt version", "Rollback capability", "Cost tracking per prompt", "Injection defence", "Rate limiting"], "cells": [[{"text": "essential - everything else depends on it", "tone": "good"}], [{"text": "essential at volume; overkill below it (2.12)", "tone": "accent"}], [{"text": "essential, with 2.12's caveat about size", "tone": "good"}], [{"text": "essential - and impossible without row one", "tone": "good"}], [{"text": "essential, and free if prompts are in git", "tone": "good"}], ["useful - it is how you find the prompt that doubled"], [{"text": "essential, and not here - it is 2.16, at the action boundary", "tone": "warn"}], [{"text": "ordinary API hygiene (1.16), not prompt management", "tone": "warn"}]], "t": "diagram", "id": "dg-2_17-04-3"},
+
 
 
     { t: "table",
