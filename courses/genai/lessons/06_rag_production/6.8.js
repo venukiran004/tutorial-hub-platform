@@ -18,12 +18,18 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "shape", text: "The on-call shape",
       sub: "Symptom, causes, immediate, permanent" },
 
+    {"kind": "steps", "title": "The four-part shape, and why the order is the point", "caption": "An answer that jumps to the permanent fix skips the part being tested: **whether you can stop the bleeding before you understand the cause.** Each incident in this lesson is reproduced on the corpus used throughout modules 5 and 6 — 1,187 chunks, 20 golden queries, 95% recall@5 at baseline — so every failure arrives with a measured signature rather than a description.", "items": [{"label": "Symptom", "desc": "what the user or the dashboard actually reports", "code": "1", "tone": "accent"}, {"label": "Immediate", "desc": "stop the bleeding, before the cause is understood", "code": "2", "tone": "violet"}, {"label": "Root cause", "desc": "the measured signature, not the plausible story", "code": "3", "tone": "good"}, {"label": "Permanent", "desc": "and the check that would have caught it", "code": "4", "tone": "good"}], "t": "diagram", "id": "dg-6_8-01-0"},
+
+
     { t: "p", text: "It is usually framed these as interview questions to answer like on-call, and the four-part shape is the point. An answer that jumps to the permanent fix skips the part the interviewer is testing: whether you can stop the bleeding before you understand the cause." },
 
     { t: "p", text: "What follows reproduces each incident on the corpus used throughout M5 and M6 \u2014 1,187 chunks, 20 golden queries, 95% recall@5 at baseline \u2014 so each failure comes with a measured signature rather than a description." },
 
     { t: "h2", n: "02", id: "stale", text: "21.1 Stale answers after the source changed",
       sub: "The cheapest incident to prevent in this lesson" },
+
+    {"kind": "trace", "title": "Stale answers, and the 1.3 ms check that prevents them", "caption": "The symptom is a policy or price that changed yesterday and an answer still giving the old value. The cause is that the index is behind the source of truth — re-indexing is batch or manual, or the document was edited and never re-embedded. The arithmetic makes the fix obvious: **hashing twelve documents takes 1.3 ms**, re-embedding the one that changed takes 1.3 s, and rebuilding everything takes 13.2 s. The check costs a thousandth of the action it saves.", "left": "operation", "codeW": 220, "vars": ["cost"], "steps": [{"code": "hash 12 documents (359,549 chars)", "state": ["1.3 ms"], "tone": "good"}, {"code": "documents reported changed", "state": ["0"], "tone": "good"}, {"code": "after editing one", "state": ["1 changed"], "tone": "accent"}, {"code": "re-embed the changed document", "state": ["1.3 s, 116 chunks"], "tone": "good"}, {"code": "rebuild everything", "state": ["13.2 s"], "changed": [0], "tone": "warn", "note": "the hash saves 90%"}], "t": "diagram", "id": "dg-6_8-02-1"},
+
 
     { t: "dl", items: [
       { k: "Symptom", v: "A policy or price changed yesterday; the system still answers with the old value." },
@@ -144,6 +150,9 @@ for n_extra in (1000, 5000, 20000):
     { t: "h2", n: "04", id: "oom", text: "21.3 Latency spikes or OOM under load",
       sub: "The incident 6.2 predicted" },
 
+    {"kind": "flow", "title": "The one incident in this lesson that actually errors", "caption": "Latency spikes and OOM are the odd case: **the process dies**, so unlike every other failure here it is not silent. The causes are the index growing past memory — HNSW graphs are RAM-hungry — or `ef_search`/`nprobe` tuned up for accuracy at the cost of memory and time. The immediate move trades recall for survival; the permanent one is a **memory projection at target corpus size**, which is the check nobody runs because latency looks fine right up to the moment it does not exist.", "cols": 3, "nodes": [{"id": "g", "label": "The index grew past memory", "sub": "HNSW graphs are RAM-hungry", "tone": "crit"}, {"id": "t", "label": "Or ef_search / nprobe tuned up", "sub": "accuracy bought with memory", "tone": "crit"}, {"id": "d", "label": "The process dies", "sub": "the one loud failure here", "tone": "crit"}, {"id": "i", "label": "Immediate: lower ef, cap top_k", "sub": "trade recall for survival", "tone": "warn"}, {"id": "p", "label": "Permanent: project memory at target size", "sub": "1.5 GB per million vectors", "tone": "good"}, {"id": "l", "label": "Latency looked fine throughout", "sub": "which is why nobody projected", "tone": "teal"}], "edges": [["g", "d"], ["t", "d"], ["d", "i"], ["i", "p"], ["p", "l"]], "t": "diagram", "id": "dg-6_8-04-2"},
+
+
     { t: "dl", items: [
       { k: "Causes", v: "The index grew past memory \u2014 HNSW graphs are RAM-hungry; `ef_search` or `nprobe` tuned up for accuracy at the cost of latency; no replicas, so all QPS lands on one node; metadata filtering scanning too much." },
       { k: "Immediate", v: "Lower `ef_search` or `nprobe` to trade recall for latency; add read replicas; cap `top_k`." },
@@ -197,6 +206,9 @@ print("gold chunk rank:", rank)   # None -> retrieval failure`,
     { t: "h2", n: "06", id: "model", text: "21.5 You changed the embedding model",
       sub: "The most dangerous failure here, because nothing errors" },
 
+    {"kind": "trace", "title": "Matching dimensions, mismatched models, and nothing errors", "caption": "Both models output 384 dimensions, so **the call succeeds and returns results** — ranked, scored and plausible. Recall halves from 95% to 50%, and the only signal is in the scores: mean top-1 similarity falls from **0.5698 to 0.2356**. That is why the permanent fix is a score-distribution monitor rather than a dimension check: a dimension mismatch raises, and this does not.", "left": "configuration", "codeW": 220, "vars": ["recall@5", "mean top-1 similarity"], "steps": [{"code": "matched - both all-MiniLM-L6-v2", "state": ["95%", "0.5698"], "tone": "good"}, {"code": "mismatched query model", "state": ["50%", "0.2356"], "changed": [0, 1], "tone": "crit", "note": "no error raised"}, {"code": "so monitor", "state": ["the score distribution", "not the dimensions"], "tone": "violet"}], "t": "diagram", "id": "dg-6_8-06-3"},
+
+
     { t: "code", lang: "python", title: "g68.py \u00a721.5 \u2014 query and index embedded by different models", code: `other = SentenceTransformer("sentence-transformers/paraphrase-MiniLM-L3-v2")
 QV_other = other.encode([q for q, _, _ in QS], normalize_embeddings=True)
 MIS = np.argsort(-(QV_other @ E.T), axis=1)     # against the OLD index`,
@@ -229,6 +241,9 @@ MIS = np.argsort(-(QV_other @ E.T), axis=1)     # against the OLD index`,
 
     { t: "h2", n: "07", id: "leak", text: "21.6 A user saw a document they were not entitled to",
       sub: "A security incident, and the ordering is the whole fix" },
+
+    {"kind": "trace", "title": "Identical recall, 19 leaked rows", "caption": "The two approaches score **the same on retrieval quality** — 95% recall@5 either way — and differ entirely in whether they read data the user may not see. Post-filtering searches everything and drops afterwards: 19 foreign rows entered the top 5 and were discarded *after being read*. Pre-filtering restricts the search space first and leaks nothing, **by construction rather than by diligence**. Which is the whole argument: a correctness property you get from the architecture does not depend on anyone remembering it.", "left": "approach", "codeW": 230, "vars": ["recall@5", "leaked rows"], "steps": [{"code": "post-filter: search all, drop after", "state": ["95%", "19"], "tone": "crit"}, {"code": "pre-filter: restrict, then search", "state": ["95%", "0"], "changed": [1], "tone": "good", "note": "same recall, no leak"}], "t": "diagram", "id": "dg-6_8-07-4"},
+
 
     { t: "dl", items: [
       { k: "Immediate", v: "Disable the affected retrieval path or force the ACL gate on; assess blast radius from logs \u2014 which users, which documents." },

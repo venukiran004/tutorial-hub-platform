@@ -81,6 +81,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Four bits give you sixteen values. The question is which sixteen. A uniform grid spaces them evenly from \u22121 to 1; NF4 \u2014 \u201c4-bit NormalFloat\u201d \u2014 places them at the quantiles of a normal distribution, so that each level is used about equally often by normally distributed weights. Both then scale per block by the block\u2019s absolute maximum." },
 
     { t: "code", lang: "python", title: "g45.py \u2014 the implementation, since bitsandbytes needs CUDA", code: `NF4 = torch.tensor([                      # 16 levels, normal quantiles, normalised
@@ -143,6 +145,8 @@ print(w.std(), ((w - w.mean()) ** 4).mean() / w.var() ** 2)     # std, kurtosis`
 
 
 
+
+
     { t: "p", text: "A relative reconstruction error of 0.10 sounds tolerable and 0.14 sounds nearly as tolerable. Perplexity disagrees emphatically." },
 
     { t: "code", lang: "python", title: "g45_ex.py \u2014 quantize every weight matrix, then measure the model", code: `def quantized_model(codebook, block=64):
@@ -188,6 +192,8 @@ print(w.std(), ((w - w.mean()) ** 4).mean() / w.var() ** 2)     # std, kurtosis`
 
 
 
+
+
     { t: "p", text: "Per-block absmax scaling needs one fp32 scale per block. At block 64 on a 7B model that is 109 million scales, and four bytes each is not nothing." },
 
     { t: "code", lang: "python", title: "g45.py \u2014 what the scales cost", code: `for block in (64, 128, 256):
@@ -209,6 +215,8 @@ print(w.std(), ((w - w.mean()) ** 4).mean() / w.var() ** 2)     # std, kurtosis`
       sub: "What changes in the training script, and what does not" },
 
     {"kind": "matrix", "title": "Four options, priced in memory and in quality", "caption": "QLoRA is for the case where the model **does not fit otherwise** — 4.0 GB against 14.5 GB for a 7B, which turns a 16–24 GB card from useless into viable, at a measured 1.069× perplexity. If the VRAM is there, plain LoRA is both faster and exact, because four-bit storage **dequantizes on every forward pass**. And the fourth row is the middle nobody considers: int8 at 1.015× is half NF4's memory saving for a fifth of its quality cost.", "cols": ["When", "Why"], "rows": ["QLoRA", "LoRA on a bf16 base", "Full fine-tune", "int8 base"], "cells": [[{"text": "it does not fit otherwise", "tone": "good"}, "4.0 GB against 14.5; 1.069x perplexity"], [{"text": "there is VRAM to spare", "tone": "good"}, "no dequantization per pass, and exact"], [{"text": "rarely", "tone": "crit"}, "84 GB, plus 4.1's forgetting"], [{"text": "you want a middle point", "tone": "accent"}, "1.015x at 7 GB - a fifth of the cost"]], "t": "diagram", "id": "dg-4_5-05-3"},
+
+
 
 
 

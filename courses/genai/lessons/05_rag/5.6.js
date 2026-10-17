@@ -22,6 +22,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "If every vector has length 1, the relationships collapse. Cosine similarity is defined as the dot product divided by the two magnitudes, and both magnitudes are 1:" },
 
     { t: "math", tex: "\\cos(a,b) = \\frac{a \\cdot b}{\\|a\\|\\,\\|b\\|} = a \\cdot b" },
@@ -58,6 +60,8 @@ R_l2  = np.argsort(d2, axis=1)`,
 
 
 
+
+
     { t: "callout", kind: "warn", title: "\u201cUnnormalised\u201d vectors that were normalised anyway",
       body: [
         { t: "p", text: "To show where the metrics diverge I encoded the corpus with `normalize_embeddings=False` and compared again. All three metrics agreed perfectly, which is not what should happen." },
@@ -88,6 +92,8 @@ def encode_raw(texts, bs=64):
       sub: "And it is not what you want to rank by" },
 
     {"kind": "trace", "title": "Magnitude encodes length, at a correlation of -0.85", "caption": "The norms are not noise. **Chunk length against vector norm correlates at −0.8524** — short chunks get long vectors. Which means an unnormalised dot product systematically favours short chunks, and that is a ranking bias nobody chose: it has nothing to do with relevance and everything to do with how many characters happened to fall between two boundaries.", "left": "length band", "codeW": 170, "vars": ["chunks", "median norm"], "steps": [{"code": "0-150 chars", "state": ["195", "3.9468"], "tone": "crit"}, {"code": "150-300 chars", "state": ["229", "2.5975"], "changed": [1], "tone": "warn"}, {"code": "300-450 chars", "state": ["343", "2.1124"], "tone": "accent"}, {"code": "450-700 chars", "state": ["420", "1.9508"], "changed": [1], "tone": "good"}, {"code": "correlation", "state": ["-0.8524", "length vs norm"], "tone": "violet"}], "t": "diagram", "id": "dg-5_6-03-2"},
+
+
 
 
 
@@ -178,6 +184,8 @@ R_l2  = np.argsort(d2, axis=1)`,
       sub: "Three rules, and a check" },
 
     {"kind": "steps", "title": "Four lines, and the exception", "caption": "Normalise at index time so nothing downstream has to remember; normalise the query **the same way**, because doing one side and not the other produces a ranking that is neither cosine nor dot product; then use inner product, now the cheapest and equivalent to all three. The exception is real: some models encode confidence or specificity in magnitude **on purpose** and are trained with an unnormalised objective, and for those, normalising discards information the model intended you to use.", "items": [{"label": "Normalise at index time", "desc": "so the stored vectors are unit length", "code": "1", "tone": "good"}, {"label": "Normalise the query the same way", "desc": "one side only is a real bug, and a silent one", "code": "2", "tone": "crit"}, {"label": "Then use inner product", "desc": "cheapest, and now equivalent to the other two", "code": "3", "tone": "good"}, {"label": "Verify once: print min, median, max norm", "desc": "if they are not 1.0, something is not doing what you think", "code": "4", "tone": "violet"}, {"label": "Unless the model was trained unnormalised", "desc": "then magnitude is signal, and the model's own metric is right", "code": "5", "tone": "teal"}], "t": "diagram", "id": "dg-5_6-05-3"},
+
+
 
 
 

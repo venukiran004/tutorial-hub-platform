@@ -65,6 +65,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "I wrote the grammar for `{\"name\": \"<letters and spaces>\", \"age\": <digits>}` as a ten-state machine and asked, at each state, how many of GPT-2's 50,257 tokens are a legal continuation." },
 
     { t: "code", lang: "python", title: "g313.py — the allowed set per state", code: `def allowed_ids(state, emitted):
@@ -111,6 +113,8 @@ EC.receiveLesson({
       sub: "The guarantee is about the shape" },
 
     {"kind": "trace", "title": "0 of 5 unconstrained, 5 of 5 constrained — and one of them is wrong", "caption": "Unconstrained, **none** of the five prompts produced valid JSON: one emitted forty-six zeros, another looped `JSON: \"Sam is 7\"` repeatedly. Constrained, all five are schema-valid. But read the fifth output: the input said *Priya, 29* and the model emitted **`{\"name\":\"John Doe\",\"age\":34}`** — perfectly valid and entirely invented. And the third gives Sam an age of 0. Constrained decoding guarantees the shape and says nothing about the content, which is 2.7's point arriving with a worked example.", "left": "input", "codeW": 150, "vars": ["unconstrained", "constrained"], "steps": [{"code": "John is 30", "state": ["46 zeros", "name John, age 30"], "tone": "good"}, {"code": "Maria is 42", "state": ["prose about JSON", "name Maria, age 42"], "tone": "good"}, {"code": "Sam is 7", "state": ["a repeating loop", "name Sam, age 0"], "changed": [1], "tone": "warn", "note": "valid, wrong"}, {"code": "Priya, 29", "state": ["'I'm a bit of a nerd'", "name John Doe, age 34"], "changed": [1], "tone": "crit", "note": "valid, invented"}, {"code": "totals", "state": ["0 of 5 valid", "5 of 5 valid"], "tone": "violet"}], "t": "diagram", "id": "dg-3_13-03-1"},
+
+
 
 
 
@@ -169,6 +173,8 @@ tid = int(mask.argmax())`,
       sub: "7.30× or 0.98×, from the same algorithm" },
 
     {"kind": "trace", "title": "Why the published overhead is 'slight', and how to make it 7.3x", "caption": "Building the mask per step costs **7.30× the forward pass** — 1076 ms against 147 — which is nowhere near 'slight'. Precomputing the mask per grammar state brings it to **0.98×, inside the noise**. So the published figure is right about the technique and silent about the implementation: the cost is entirely in whether the automaton's masks are built once or rebuilt on every token, and a naive implementation is seven times slower than no constraint at all.", "left": "implementation", "codeW": 220, "vars": ["time", "vs plain"], "steps": [{"code": "forward pass only", "state": ["147.38 ms", "1.00x"], "tone": "accent"}, {"code": "forward + mask + argmax", "state": ["1076.00 ms", "7.30x"], "changed": [0, 1], "tone": "crit", "note": "mask built per step"}, {"code": "forward + precomputed mask", "state": ["145.01 ms", "0.98x"], "changed": [0, 1], "tone": "good", "note": "inside the noise"}], "t": "diagram", "id": "dg-3_13-04-2"},
+
+
 
 
 

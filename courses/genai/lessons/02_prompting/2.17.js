@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Of the seven-item production checklist, one item is a precondition for the other six: knowing which prompt produced which output. Without it, a quality change cannot be attributed, a rollback cannot be verified, and an A/B test has no data (2.12)." },
 
     { t: "code", lang: "python", title: "record.py", code: `@dataclass(frozen=True)
@@ -74,6 +76,8 @@ def answer(question, *, prompt_name="summarise"):
 
 
 
+
+
     { t: "table",
       head: ["", "Prompts as files in git", "A prompt registry"],
       rows: [
@@ -99,6 +103,8 @@ def answer(question, *, prompt_name="summarise"):
       sub: "Percentage, a metric, and an automatic halt" },
 
     {"kind": "flow", "title": "Halt on error rate and latency, not on quality", "caption": "Note what the automatic halt condition uses. **Quality takes longer to measure than an hour** — 2.12 measured how much longer — so wiring a rollout's kill switch to a quality metric means it either never fires or fires on noise. Error rate and latency move within minutes and are unambiguous, so they catch the catastrophic cases; the quality decision is made deliberately, later, once there is enough data to support it.", "cols": 3, "nodes": [{"id": "r", "label": "A staged rollout", "sub": "1%, 10%, 50%, 100%", "tone": "accent"}, {"id": "e", "label": "Halt on error rate", "sub": "moves within minutes", "tone": "good"}, {"id": "l", "label": "Halt on latency", "sub": "also immediate, also unambiguous", "tone": "good"}, {"id": "q", "label": "Not on quality", "sub": "it needs far more than an hour", "tone": "crit"}, {"id": "n", "label": "Or it fires on noise", "sub": "or never fires at all", "tone": "crit"}, {"id": "d", "label": "Quality is a later, deliberate call", "sub": "with enough data (2.12)", "tone": "teal"}], "edges": [["r", "e"], ["r", "l"], ["r", "q"], ["q", "n"], ["n", "d"]], "t": "diagram", "id": "dg-2_17-03-2"},
+
+
 
 
 
@@ -133,6 +139,8 @@ def check_rollout(name):
       sub: "Which items are load-bearing" },
 
     {"kind": "matrix", "title": "The checklist, rated rather than recited", "caption": "Five are essential, and two are not prompt management at all. The second row carries the only real condition — an A/B framework is essential **at volume** and overkill below it, because 2.12's sample sizes say a low-traffic A/B cannot resolve the differences you would be running it to find. The last two rows belong to other lessons, and saying so keeps the checklist honest rather than long.", "cols": ["Verdict"], "rows": ["Version-controlled prompts", "An A/B framework", "An evaluation suite", "Quality per prompt version", "Rollback capability", "Cost tracking per prompt", "Injection defence", "Rate limiting"], "cells": [[{"text": "essential - everything else depends on it", "tone": "good"}], [{"text": "essential at volume; overkill below it (2.12)", "tone": "accent"}], [{"text": "essential, with 2.12's caveat about size", "tone": "good"}], [{"text": "essential - and impossible without row one", "tone": "good"}], [{"text": "essential, and free if prompts are in git", "tone": "good"}], ["useful - it is how you find the prompt that doubled"], [{"text": "essential, and not here - it is 2.16, at the action boundary", "tone": "warn"}], [{"text": "ordinary API hygiene (1.16), not prompt management", "tone": "warn"}]], "t": "diagram", "id": "dg-2_17-04-3"},
+
+
 
 
 

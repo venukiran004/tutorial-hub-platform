@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "structural", text: "A failure that is structural, not a tuning problem",
       sub: "The strongest claim in this module, and the easiest to check" },
 
+    {"kind": "trace", "title": "Proof that multi-hop is structural, not a tuning problem", "caption": "Every improvement so far has been a dial — better chunking moved recall a few points, hybrid search took 95% to 100%, HyDE moved one query from rank 15 to rank 1. This is not a dial. The question *\"What companies did the CEO of the acquirer of Instagram work for?\"* needs four hops, and the check is simple: **does any chunk contain both endpoints?** Across all six chunks the answer is no, every time. There is no k, no re-ranker and no embedding model that retrieves a passage which does not exist.", "left": "chunk", "codeW": 170, "vars": ["has both 'Instagram' and 'Synapse'?"], "steps": [{"code": "instagram.md, founding", "state": ["no"], "tone": "crit"}, {"code": "instagram.md, acquisition", "state": ["no"], "tone": "crit"}, {"code": "meta.md, rename", "state": ["no"], "tone": "crit"}, {"code": "meta.md, leadership", "state": ["no"], "tone": "crit"}, {"code": "zuckerberg.md, founding", "state": ["no"], "tone": "crit"}, {"code": "zuckerberg.md, before", "state": ["no"], "tone": "crit", "note": "0 of 6 - the answer is a path"}], "t": "diagram", "id": "dg-6_4-01-0"},
+
+
     { t: "p", text: "Every retrieval improvement so far has been a matter of degree. Better chunking moved recall@5 a few points, hybrid search took it from 95% to 100%, HyDE moved one stubborn query from rank 15 to rank 1. All of those are dials. The multi-hop case is not a dial, and it is worth proving rather than asserting." },
 
     { t: "code", lang: "python", title: "g64.py \u00a7A \u2014 the corpus, one sentence per chunk", code: `CORPUS = {
@@ -82,6 +85,9 @@ for doc, s in CHUNKS:
 
     { t: "h2", n: "02", id: "build", text: "Building the graph",
       sub: "Extraction is a model call, and it is where the quality is decided" },
+
+    {"kind": "flow", "title": "Three question shapes with the same property", "caption": "They share it for one reason: **the answer is not written down in any passage.** A multi-hop answer is a path. An aggregation answer is a union over fifty documents. A relationship answer is an edge sequence, recorded only if somebody happened to write that particular sentence. A graph stores the edges explicitly, which is what makes the traversal possible at all — and the cost is an extraction step that has to get the entities right.", "cols": 3, "nodes": [{"id": "m", "label": "Multi-hop", "sub": "the answer is a path", "tone": "crit"}, {"id": "a", "label": "Aggregation", "sub": "a union over fifty documents", "tone": "crit"}, {"id": "r", "label": "Relationship", "sub": "an edge sequence", "tone": "crit"}, {"id": "n", "label": "None is written in a passage", "sub": "so none can be retrieved", "tone": "violet"}, {"id": "g", "label": "A graph stores the edges", "sub": "so traversal becomes possible", "tone": "good"}, {"id": "e", "label": "At the cost of extraction", "sub": "entities have to resolve", "tone": "warn"}], "edges": [["m", "n"], ["a", "n"], ["r", "n"], ["n", "g"], ["g", "e"]], "t": "diagram", "id": "dg-6_4-02-1"},
+
 
     { t: "code", lang: "python", title: "extraction, then storage", code: `from langchain_experimental.graph_transformers import LLMGraphTransformer
 
@@ -207,6 +213,9 @@ result = chain.invoke({"query": "Who founded Apple?"})
     { t: "h2", n: "04", id: "communities", text: "Communities, and why Leiden rather than the obvious algorithm",
       sub: "Where my own demonstration misbehaved usefully" },
 
+    {"kind": "flow", "title": "Community summaries give corpus-level questions something to retrieve", "caption": "GraphRAG's extra step answers the aggregation case: detect communities of related entities, **summarise each with a model**, and route broad questions to those summaries rather than to chunks. *\"What are the main themes in this corpus?\"* then has a target, which standard RAG never does. The cheap version — label propagation, where each node repeatedly adopts its neighbours' commonest label — **converged in 2 passes** and recovered the obvious structure: Apple and its people, Meta and its people, and Zuckerberg's pre-Facebook projects as a third group.", "cols": 3, "nodes": [{"id": "g", "label": "The entity graph", "sub": "nodes and edges", "tone": "accent"}, {"id": "c", "label": "Detect communities", "sub": "label propagation: 2 passes", "tone": "violet"}, {"id": "s", "label": "Summarise each with a model", "sub": "once, at index time", "tone": "good"}, {"id": "r", "label": "Route broad questions there", "sub": "not to chunks", "tone": "good"}, {"id": "t", "label": "\"Main themes?\" now has a target", "sub": "which no chunk ever was", "tone": "teal"}], "edges": [["g", "c"], ["c", "s"], ["s", "r"], ["r", "t"]], "t": "diagram", "id": "dg-6_4-04-2"},
+
+
     { t: "p", text: "Microsoft\u2019s GraphRAG adds a step that answers the aggregation case: detect communities of related entities with the Leiden algorithm, summarise each with a model, and route broad questions to the summaries rather than to chunks. \u201cWhat are the main themes in this corpus?\u201d then has something to retrieve, which standard RAG never does because no chunk states a theme." },
 
     { t: "p", text: "I implemented the cheap version \u2014 label propagation, where every node repeatedly adopts its neighbours\u2019 most common label \u2014 over a graph with an obvious two-company structure." },
@@ -252,6 +261,9 @@ for it in range(20):
 
     { t: "h2", n: "05", id: "decide", text: "When it is worth it",
       sub: "Usually: both, or neither" },
+
+    {"kind": "matrix", "title": "Seven scenarios, and two where the answer is neither", "caption": "GraphRAG is the answer for four of these and **overkill for three**. The two rows worth dwelling on are the ones where both options are wrong: aggregation over a table is exactly and cheaply answered by 5.12's text-to-SQL, and under about fifty documents **you should put all of it in the context** — retrieval is the wrong tool too, not merely the weaker one.", "cols": ["Standard", "Graph", "Why"], "rows": ["Simple factual Q and A", "Multi-hop", "Relationship queries", "Corpus-level summary", "Aggregation over 50 docs", "Fewer than ~50 docs", "Large interconnected corpus"], "cells": [[{"text": "yes", "tone": "good"}, "overkill", "95% recall@5 finds it"], [{"text": "no", "tone": "crit"}, {"text": "yes", "tone": "good"}, "0 of 6 chunks hold both ends"], [{"text": "no", "tone": "crit"}, {"text": "yes", "tone": "good"}, "the answer is an edge sequence"], [{"text": "no", "tone": "crit"}, {"text": "yes", "tone": "good"}, "no chunk states a theme"], [{"text": "no", "tone": "crit"}, "sometimes", {"text": "SQL is exact and cheaper", "tone": "violet"}], [{"text": "yes", "tone": "good"}, "overkill", {"text": "put it all in context", "tone": "violet"}], ["struggles", {"text": "yes", "tone": "good"}, "the case it was built for"]], "t": "diagram", "id": "dg-6_4-05-3"},
+
 
     { t: "table",
       head: ["Scenario", "Standard RAG", "GraphRAG", "Why"],

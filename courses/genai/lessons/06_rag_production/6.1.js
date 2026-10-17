@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "golden", text: "The golden set gets harder",
       sub: "M5 asked whether any chunk qualified; these metrics ask how many and how high" },
 
+    {"kind": "trace", "title": "Hit@K was one metric; the others need the whole relevant set", "caption": "Every measurement in module 5 asked a binary question: did *any* chunk in the top k come from the right document and contain the answer. That is Hit@K, and the five other standard metrics need **the full set of relevant chunks**, which has to be labelled. Building it changes the character of the golden set: across these twenty queries the relevant set runs from **1 chunk to 39**, with a median of 6 — so a single query's precision ceiling at k=5 varies from 0.20 to 1.00 before the retriever does anything.", "left": "relevant chunks per query", "codeW": 220, "vars": ["value"], "steps": [{"code": "minimum", "state": ["1"], "tone": "accent"}, {"code": "median", "state": ["6"], "tone": "good"}, {"code": "mean", "state": ["9.9"], "tone": "accent"}, {"code": "maximum", "state": ["39"], "changed": [0], "tone": "crit", "note": "P@5 caps at 1.00 or 0.20"}], "t": "diagram", "id": "dg-6_1-01-0"},
+
+
     { t: "p", text: "Every measurement in M5 used a binary rule: did *any* chunk in the top k come from the right document and contain the answer. That is **Hit@K**, and it is one of six metrics the common list has. The others need the full set of relevant chunks, not just the first one." },
 
     { t: "code", lang: "python", title: "g61.py \u2014 the relevant set for each query", code: `RELEVANT = []
@@ -125,6 +128,9 @@ def ndcg_at_k(ranked, rel, k):
     { t: "h2", n: "03", id: "rerank", text: "Testing the claim about re-ranking",
       sub: "\u201cThis is exactly what reranking moves\u201d" },
 
+    {"kind": "trace", "title": "The re-ranking claim: true on a weak first stage, false on a strong one", "caption": "The claim is falsifiable — a cross-encoder is supposed to move MRR and nDCG once the right chunk is already in the set. On the dense retriever it does, and more: **every metric improves**, with Hit@5 reaching 1.00. On RRF fusion, which was already at Hit@5 = 1.00, the same re-ranker **takes Hit@5 down to 0.90** and moves MRR and R@5 slightly backwards. So a cross-encoder is not a free improvement; it is a second opinion that can overrule a better first one.", "left": "configuration", "codeW": 190, "vars": ["Hit@5", "P@5", "MRR", "nDCG@5"], "steps": [{"code": "dense, before", "state": ["0.95", "0.53", "0.84", "0.63"], "tone": "accent"}, {"code": "dense + cross-encoder", "state": ["1.00", "0.63", "0.88", "0.74"], "changed": [0, 3], "tone": "good", "note": "every metric up"}, {"code": "RRF fusion, before", "state": ["1.00", "0.59", "0.88", "0.71"], "tone": "accent"}, {"code": "RRF + cross-encoder", "state": ["0.90", "0.63", "0.87", "0.73"], "changed": [0, 2], "tone": "crit", "note": "Hit@5 goes backwards"}], "t": "diagram", "id": "dg-6_1-03-1"},
+
+
     { t: "p", text: "The reference is specific: optimise recall first, then *\u201cMRR / nDCG next \u2014 once it\u2019s in the set, are you ranking it to the top? This is exactly what **reranking** moves.\u201d* That is a falsifiable claim about which metrics a cross-encoder improves." },
 
     { t: "code", lang: "python", title: "g61.py \u2014 the same re-ranker on two first stages", code: `ce = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2", max_length=512)
@@ -165,6 +171,9 @@ def rerank(BASE, depth=20):
     { t: "h2", n: "04", id: "k", text: "Precision and recall move in opposite directions",
       sub: "Which makes precision@k a poor headline" },
 
+    {"kind": "trace", "title": "Precision and recall move in opposite directions, so k is a choice of metric", "caption": "As k rises, Hit@k and R@k climb and **P@k collapses, 0.75 to 0.26**. nDCG@k is nearly flat across the whole range, which makes it the one number that does not simply restate your choice of k. The practical consequence: \"optimise recall first\" is good advice precisely because recall is the only one of these that cannot be bought by changing k, and the others can.", "left": "k", "codeW": 110, "vars": ["Hit@k", "P@k", "R@k", "nDCG@k"], "steps": [{"code": "1", "state": ["0.75", "0.75", "0.14", "0.75"], "tone": "accent"}, {"code": "3", "state": ["0.90", "0.62", "0.30", "0.65"], "tone": "accent"}, {"code": "5", "state": ["0.95", "0.53", "0.39", "0.63"], "tone": "good"}, {"code": "10", "state": ["0.95", "0.39", "0.52", "0.63"], "changed": [1], "tone": "warn"}, {"code": "20", "state": ["1.00", "0.26", "0.63", "0.62"], "changed": [1, 2], "tone": "crit", "note": "nDCG barely moved"}], "t": "diagram", "id": "dg-6_1-04-2"},
+
+
     { t: "code", lang: "python", title: "g61.py \u2014 the same retriever at five cut-offs", code: `for k in (1, 3, 5, 10, 20):
     print(k, evaluate(DENSE, k))`,
       out: `  k             Hit@k        P@k        R@k     nDCG@k
@@ -185,6 +194,9 @@ def rerank(BASE, depth=20):
 
     { t: "h2", n: "05", id: "ragas", text: "Where RAGAS fits",
       sub: "Two layers that fail for different reasons" },
+
+    {"kind": "matrix", "title": "Two RAGAS scores restate the IR metrics; two see something new", "caption": "The metrics above grade **retrieval** and need no model, so they are free, deterministic and CI-able. RAGAS grades the **generation** on top, and its scores are LLM-judged — more expensive, non-deterministic, and measuring things no IR metric can reach. Which is the useful split: context precision and recall overlap with P@K and R@K and should probably be taken from those instead, and **faithfulness and answer relevancy have no cheaper substitute**.", "cols": ["Question", "Layer"], "rows": ["Context precision", "Context recall", "Faithfulness", "Answer relevancy"], "cells": [["are the chunks relevant, and well ranked?", {"text": "retrieval - overlaps P@K", "tone": "warn"}], ["did retrieval find everything?", {"text": "retrieval - overlaps R@K", "tone": "warn"}], ["is every claim supported by the context?", {"text": "generation - nothing else sees it", "tone": "good"}], ["does the answer address the question?", {"text": "generation - nothing else sees it", "tone": "good"}]], "t": "diagram", "id": "dg-6_1-05-3"},
+
 
     { t: "p", text: "The metrics above grade *retrieval* and need no model. RAGAS grades the *generation* on top of it, and its four scores are LLM-judged \u2014 which makes them more expensive, non-deterministic, and measuring something the IR metrics cannot see." },
 

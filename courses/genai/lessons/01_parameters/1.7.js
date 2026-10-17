@@ -29,6 +29,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "From 1.1: the last stage of the pipeline draws a token from the surviving distribution. That draw uses a pseudo-random number generator, and a seed fixes its starting state. Same distribution plus same generator state gives the same draw, every time." },
 
     { t: "code", lang: "python", title: "g13.py — the seed, doing its job", code: `prompt = "In the year 2050, cities will"
@@ -116,6 +118,8 @@ for trial in range(3):                                    # no seed set
 
 
 
+
+
     { t: "p", text: "The third item is the one that sounds like folklore, so it is worth measuring. Take one prompt, run it alone, then run the identical prompt padded into a batch, and compare the logits." },
 
     { t: "code", lang: "python", title: "g13.py — batch composition against the logits", code: `tok.pad_token   = tok.eos_token
@@ -164,6 +168,8 @@ for bs in (1, 4, 16):
       sub: "The only signal a provider gives you that the backend moved" },
 
     {"kind": "flow", "title": "If correctness needs the same bytes twice, stop asking twice", "caption": "`system_fingerprint` identifies the backend configuration, and the contract is simple: **if it changes, do not expect the same output even with the same seed**. Which points at the real fix. A system whose correctness depends on an LLM returning identical bytes should store the output the first time, key it on everything that could change it, and serve the stored copy. Everything else is an attempt to make a hosted, batched, floating-point system behave like a pure function.", "cols": 3, "nodes": [{"id": "f", "label": "system_fingerprint changes", "sub": "weights, or the serving stack", "tone": "warn"}, {"id": "c", "label": "The contract: expect different output", "sub": "same seed or not", "tone": "crit"}, {"id": "s", "label": "So do not ask twice", "sub": "cache the first answer", "tone": "good"}, {"id": "k", "label": "Key it on everything that matters", "sub": "prompt, params, model version", "tone": "good"}, {"id": "r", "label": "Serve the stored copy", "sub": "now it is a pure function", "tone": "teal"}], "edges": [["f", "c"], ["c", "s"], ["s", "k"], ["k", "r"]], "t": "diagram", "id": "dg-1_7-04-2"},
+
+
 
 
 

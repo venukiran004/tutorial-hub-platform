@@ -28,6 +28,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "\"What's in this image?\" invites a description, and a description is almost never what a system wants. The four-component check from 2.1 applies exactly as it does to text: the image is the **input**, and the instruction, context and output format still have to be supplied." },
 
     { t: "code", lang: "python", title: "vision.py — the call shape", code: `response = client.chat.completions.create(
@@ -86,6 +88,8 @@ If a value is not legible, use null -- do not infer it from other figures."""
 
 
 
+
+
     { t: "p", text: "The `content` array is a sequence of tokens like everything else. Instructions placed *after* the image are read after it; instructions placed before are conditioning the model as it processes the image. Both orders have a use." },
 
     { t: "table",
@@ -125,6 +129,8 @@ If a value is not legible, use null -- do not infer it from other figures."""
 
 
 
+
+
     { t: "p", text: "1.11 measured the arithmetic: `detail=\"low\"` is a flat 85 tokens; `detail=\"high\"` is 85 + 170 per 512-pixel tile, which for a square image is 255 up to 512×512 and 765 from 513×513 upward, forever." },
 
     { t: "code", lang: "python", title: "budget.py", code: `# A comparison prompt with two high-detail images and a 300-token instruction:
@@ -155,6 +161,8 @@ If a value is not legible, use null -- do not infer it from other figures."""
       sub: "Some prompting problems are image problems" },
 
     {"kind": "matrix", "title": "Four things to do to the image before it costs anything", "caption": "A vision model is **expensive per pixel and cheap to reason with**, so anything you can do to the image beforehand is work done once, in code, rather than work the model repeats on every request. The last row is the combination that wins on forms and invoices: the OCR text gives exact strings the model would otherwise read from pixels, and the image gives the layout OCR threw away.", "cols": ["What it buys"], "rows": ["Crop to the region", "Rotate and deskew", "Split multi-page documents", "Run OCR alongside"], "cells": [[{"text": "removes distractors, and often drops you a size tier", "tone": "good"}], ["an angled photo is as hard for the model as for a person"], [{"text": "one call per page beats eight images - and failures get a location", "tone": "good"}], [{"text": "exact strings plus the layout - together they beat either alone", "tone": "violet"}]], "t": "diagram", "id": "dg-2_9-04-3"},
+
+
 
 
 
