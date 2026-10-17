@@ -22,6 +22,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The three formats", id: "formats" },
 
+    {"kind": "trace", "title": "Both 16-bit formats, and where the bits went", "caption": "Same 16 bits, allocated differently. Float16 spends more on the mantissa — better precision, and a range topping out at 65,504. Bfloat16 spends more on the exponent, giving **float32's full range** at worse precision. For training, range is the binding constraint: gradients span many orders of magnitude while precision requirements are modest, because the gradient is a noisy estimate anyway. That is the whole reason bf16 needs no loss scaling and fp16 does.", "left": "format", "codeW": 140, "vars": ["max", "min normal", "eps"], "steps": [{"code": "float16", "state": ["6.550e+04", "6.104e-05", "9.766e-04"], "tone": "warn", "note": "narrow range"}, {"code": "bfloat16", "state": ["3.390e+38", "1.175e-38", "7.812e-03"], "changed": [0], "tone": "good", "note": "float32's range"}, {"code": "float32", "state": ["3.403e+38", "1.175e-38", "1.192e-07"], "tone": "accent"}, {"code": "which matters?", "state": ["range", "range", "not precision"], "tone": "violet"}], "t": "diagram", "id": "dg-7_3-01-0"},
+
+
+
     { t: "out", text: `                     max    min normal         eps
   float16      6.550e+04     6.104e-05   9.766e-04
   bfloat16     3.390e+38     1.175e-38   7.812e-03
@@ -38,6 +42,10 @@ EC.receiveLesson({
     { t: "p", text: "Both failure directions in four lines. The underflow is the insidious one: a gradient that becomes exactly zero does not raise anything, it simply means that parameter receives no update this step — so the model trains, slowly and incorrectly, with no symptom beyond disappointing results." },
 
     { t: "h2", n: "02", text: "Loss scaling", id: "scaling" },
+
+    {"kind": "flow", "title": "The scaler is a feedback controller, and its state is a diagnostic", "caption": "It multiplies the loss, checks the gradients for infinities, and on finding any it **skips the step and halves the scale**; after enough clean steps it doubles. So it hunts for the largest scale that does not overflow — which makes its behaviour informative. A scale that stabilises high means fp16 is comfortable; one that keeps halving means the overflow is structural and the problem is upstream. Log the scale, and log the fraction of steps skipped, because silently discarding a large share of your updates looks exactly like slow convergence.", "cols": 3, "nodes": [{"id": "s", "label": "Scale the loss up", "sub": "so small gradients survive", "tone": "accent"}, {"id": "c", "label": "Any inf in the gradients?", "sub": "checked every step", "tone": "violet"}, {"id": "h", "label": "Yes: skip the step, halve the scale", "sub": "the update is lost", "tone": "warn"}, {"id": "d", "label": "No, for many steps: double it", "sub": "hunt upward", "tone": "good"}, {"id": "t", "label": "Stabilises high: fp16 is comfortable", "sub": "healthy", "tone": "good"}, {"id": "k", "label": "Keeps halving: look upstream", "sub": "activations, LR, normalisation", "tone": "crit"}], "edges": [["s", "c"], ["c", "h"], ["c", "d"], ["d", "t"], ["h", "k"]], "t": "diagram", "id": "dg-7_3-02-1"},
+
+
 
     { t: "code", lang: "python", title: "The AMP loop, with the ordering that matters",
       code: `from torch.amp import autocast, GradScaler      # NOT torch.cuda.amp — deprecated
@@ -66,6 +74,10 @@ for batch in loader:
       ] },
 
     { t: "h2", n: "03", text: "Distributed: the hang", id: "nccl" },
+
+    {"kind": "flow", "title": "The hang, which produces no error at all", "caption": "Training simply stops making progress. No exception, no log line, no crash — the job sits there consuming GPUs until someone notices. The cause is almost always that the ranks **disagree about which collectives to run**, so one waits forever for a partner that never arrives. The discipline is absolute: every rank executes the same collectives in the same order, which makes a `dist.barrier()` inside an `if rank == 0:` branch an instant deadlock.", "cols": 3, "nodes": [{"id": "h", "label": "The job hangs", "sub": "no error, no log, no crash", "tone": "crit"}, {"id": "r", "label": "Ranks disagree on collectives", "sub": "one waits for a partner", "tone": "crit"}, {"id": "u", "label": "Uneven batch counts", "sub": "one rank exits the loop early", "tone": "warn"}, {"id": "b", "label": "A collective inside if rank == 0", "sub": "an instant deadlock", "tone": "warn"}, {"id": "m", "label": "A mismatched collective shape", "sub": "hangs rather than errors", "tone": "warn"}, {"id": "f", "label": "Same collectives, same order, every rank", "sub": "plus a timeout, so it fails loudly", "tone": "good"}], "edges": [["h", "r"], ["r", "u"], ["r", "b"], ["r", "m"], ["r", "f"]], "t": "diagram", "id": "dg-7_3-03-2"},
+
+
 
     { t: "callout", kind: "crit", title: "The most dreaded distributed bug produces no error at all",
       body: [{ t: "p", text: "Training simply **hangs**. No exception, no log line, no crash — the job sits there consuming GPUs until someone notices. The cause is almost always that the ranks disagree about which collectives to run: one GPU calls all-reduce and another does not, so the first waits forever for a partner that never arrives. The usual culprit is a `if rank == 0:` branch that skips a synchronising operation, or ranks receiving different numbers of batches so one finishes its epoch early. The fix is a discipline — **every rank must execute the same collectives in the same order** — plus a collective timeout so a hang fails loudly instead of silently, and `NCCL_DEBUG=INFO` when you need to see what each rank was waiting for." }] },
@@ -108,6 +120,10 @@ for batch in loader:
       caption: "If that is not enough, the next steps are moving augmentation to the GPU, caching decoded data, or a sharded format like WebDataset that avoids per-file overhead." },
 
     { t: "h2", n: "05", text: "Sharded checkpoints", id: "checkpoints" },
+
+    {"kind": "flow", "title": "A checkpoint that looks fine and cannot be loaded", "caption": "With FSDP or ZeRO each rank holds only part of the parameters, so a naive `state_dict()` on rank 0 saves that rank's fragment — **a file of plausible size that cannot reconstruct the model**. The write also has to be atomic, to a temporary path then renamed, or a crash mid-save overwrites a good checkpoint with a corrupt one. On a multi-week run, discovering this is the worst possible moment to find out, which is why the last step is the one that matters.", "cols": 3, "nodes": [{"id": "s", "label": "Parameters sharded across ranks", "sub": "FSDP, DeepSpeed ZeRO", "tone": "accent"}, {"id": "n", "label": "state_dict() on rank 0", "sub": "saves one fragment", "tone": "crit"}, {"id": "p", "label": "Plausible size, unloadable", "sub": "and nothing warns you", "tone": "crit"}, {"id": "a", "label": "Use the sharded-checkpoint API", "sub": "every rank writes its part", "tone": "good"}, {"id": "t", "label": "Write atomically", "sub": "temp path, then rename", "tone": "good"}, {"id": "l", "label": "Then load one back, and train a step", "sub": "the only test that counts", "tone": "teal"}], "edges": [["s", "n"], ["n", "p"], ["p", "a"], ["a", "t"], ["t", "l"]], "t": "diagram", "id": "dg-7_3-05-3"},
+
+
 
     { t: "callout", kind: "trap", title: "Saving only rank 0's shard produces an unloadable checkpoint",
       body: [{ t: "p", text: "A model too large for one GPU is sharded across many with FSDP or DeepSpeed ZeRO, and each rank holds only part of the parameters. Calling `state_dict()` naively on rank 0 saves that rank's fragment, which looks like a checkpoint, has a plausible file size, and cannot reconstruct the model. Use the framework's sharded-checkpoint API, write atomically — to a temporary path, then rename — so a crash mid-save cannot leave a corrupt file that overwrote a good one, and **test that a checkpoint actually reloads** before trusting it. On a multi-week training run, discovering your checkpoints are unloadable is the worst possible time to find out." }] },

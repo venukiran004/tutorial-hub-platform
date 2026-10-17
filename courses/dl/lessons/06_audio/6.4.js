@@ -54,6 +54,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Three ways to produce text", id: "architectures" },
 
+    {"kind": "matrix", "title": "Three ways to turn audio into text", "caption": "The row that decides most real choices is the first. CTC's conditional independence per frame is what lets it stream cheaply and also what leaves it with no internal language model — it cannot represent that `u` follows `q`. RNN-T fixes that structurally and still streams, which is why it is the on-device standard; an attention decoder is the most accurate and cannot stream at all, because its encoder is bidirectional over the whole utterance.", "cols": ["CTC", "RNN-T", "Attention"], "rows": ["Streams", "Output dependency", "Internal LM", "Alignment", "Fails by"], "cells": [[{"text": "yes", "tone": "good"}, {"text": "yes", "tone": "good"}, {"text": "no", "tone": "crit"}], [{"text": "none", "tone": "crit"}, {"text": "over labels", "tone": "good"}, {"text": "full", "tone": "good"}], [{"text": "none", "tone": "crit"}, {"text": "pred. net", "tone": "good"}, {"text": "decoder", "tone": "good"}], ["monotonic", "2-D lattice", "free"], [{"text": "no LM", "tone": "warn"}, {"text": "heavy", "tone": "warn"}, {"text": "halluc.", "tone": "crit"}]], "t": "diagram", "id": "dg-6_4-02-0"},
+
+
+
     { t: "table", head: ["", "**CTC**", "**RNN-T**", "**Attention enc-dec**"],
       rows: [
         ["Streams?", "Yes", "**Yes — the on-device standard**", "No, without hacks"],
@@ -68,6 +72,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "That one sentence covers most of what the choice involves. CTC's conditional independence between frames — the assumption lesson 3.10 identified — means it has no idea that `the` is likely after `of`, so it needs an external language model at decode time. An attention decoder has a language model built in and reorders freely, which is why Whisper is so fluent and also why it can hallucinate whole sentences that were never spoken. RNN-T adds a prediction network that conditions on previous *labels* while keeping the alignment monotonic and streamable, which is precisely the combination on-device dictation needs. It is the reason your phone can transcribe as you speak." }] },
 
     { t: "h2", n: "03", text: "The streaming constraint", id: "streaming" },
+
+    {"kind": "flow", "title": "The streaming question eliminates options before anything else does", "caption": "Ask whether text must appear before the utterance finishes, and most of the design space closes immediately — which is why this is the first question rather than an accuracy comparison. The fourth branch is the one people forget: forced alignment wants CTC specifically, because its monotonic lattice hands you frame timings directly, and that is how subtitle timings and phoneme boundaries get produced.", "cols": 3, "nodes": [{"id": "q", "label": "Must text appear mid-utterance?", "sub": "the binding question", "tone": "violet"}, {"id": "y", "label": "Yes: captions, dictation, assistants", "sub": "RNN-T, or causal CTC", "tone": "good"}, {"id": "n", "label": "No: batch transcription", "sub": "the most accurate option: Whisper", "tone": "good"}, {"id": "a", "label": "Need timings?", "sub": "forced alignment", "tone": "accent"}, {"id": "c", "label": "CTC, for its monotonic lattice", "sub": "subtitles, phoneme boundaries", "tone": "accent"}, {"id": "k", "label": "Keyword spotting: none of these", "sub": "a small always-on classifier", "tone": "teal"}], "edges": [["q", "y"], ["q", "n"], ["q", "a"], ["a", "c"], ["q", "k"]], "t": "diagram", "id": "dg-6_4-03-1"},
+
+
 
     { t: "p", text: "Whether a system can emit text before the utterance finishes is usually the binding requirement, and it eliminates options immediately." },
 

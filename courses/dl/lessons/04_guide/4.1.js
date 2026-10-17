@@ -19,6 +19,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What recurrence costs", id: "problems" },
 
+    {"kind": "flow", "title": "What recurrence costs, stated as two numbers", "caption": "An RNN's two costs are the same fact from different directions. Information from position 1 reaches position T through **T sequential steps**, so the path length is O(T) and the signal decays along it (3.2). And because step t needs step t−1's output, nothing can be computed in parallel — training time scales with sequence length regardless of how much hardware you own.", "cols": 3, "nodes": [{"id": "r", "label": "h_t depends on h_{t-1}", "sub": "the recurrence", "tone": "violet"}, {"id": "p", "label": "Path length O(T)", "sub": "position 1 to position T", "tone": "warn"}, {"id": "d", "label": "The signal decays along it", "sub": "3.2's measurement", "tone": "crit"}, {"id": "s", "label": "Steps must be sequential", "sub": "t needs t-1", "tone": "warn"}, {"id": "n", "label": "No parallelism over time", "sub": "more GPUs do not help", "tone": "crit"}, {"id": "a", "label": "Attention fixes both at once", "sub": "O(1) path, fully parallel", "tone": "good"}], "edges": [["r", "p"], ["p", "d"], ["r", "s"], ["s", "n"], ["d", "a"], ["n", "a"]], "t": "diagram", "id": "dg-4_1-01-0"},
+
+
+
+
+
     { t: "dl", items: [
       ["Sequential computation", "`h_t` requires `h_{t−1}`, so a sequence of length T takes T steps that cannot overlap. Length, not size, bounds training throughput."],
       ["Path length", "Information from step 1 reaches step T through T transformations. Module 3 measured the gradient at 1.8e-17 over 60 steps for an RNN and 1.7e-12 for an LSTM."],

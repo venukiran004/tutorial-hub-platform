@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The problem", id: "problem" },
 
+    {"kind": "flow", "title": "The collapse rule, in the order that matters", "caption": "Squeeze repeated symbols **first**, then remove blanks — and the order is the whole trick. Doing it the other way round would make `a a` and `a` indistinguishable, so there would be no way to spell a doubled letter. The blank is therefore not silence; it is a separator that lets `a - a` survive as `aa` while `a a` becomes `a`.", "cols": 3, "nodes": [{"id": "f", "label": "Frame-level symbols", "sub": "one per frame, blank allowed", "tone": "accent"}, {"id": "s", "label": "Squeeze repeats", "sub": "first", "tone": "violet"}, {"id": "r", "label": "Remove blanks", "sub": "second", "tone": "violet"}, {"id": "a", "label": "a a - b b  ->  a b", "sub": "repeats collapse", "tone": "good"}, {"id": "b", "label": "a - a b  ->  a a b", "sub": "the blank separates them", "tone": "good"}, {"id": "n", "label": "So blank is a separator", "sub": "not silence", "tone": "teal"}], "edges": [["f", "s"], ["s", "r"], ["r", "a"], ["r", "b"], ["b", "n"]], "t": "diagram", "id": "dg-6_5-01-0"},
+
+
+
     { t: "p", text: "The audio is 300 frames, the transcript is 8 characters, and nobody labelled which frame belongs to which character. CTC's answer: introduce a **blank** symbol, define a collapse rule, and sum the probability of every frame-to-label alignment that collapses to the target." },
 
     { t: "out", text: `  collapse rule:  squeeze repeated symbols, THEN remove blanks
@@ -36,6 +40,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Brute force", id: "brute" },
 
+    {"kind": "trace", "title": "All five paths that collapse to `ab`, enumerated", "caption": "Three frames over `{a, b, blank}` give 27 possible paths and exactly five of them collapse to the target. CTC sums **all five** rather than picking the best — which is the whole difference between it and a forced alignment, and the reason it needs no frame-level labels. The total, 0.5100, is the number the lattice must reproduce.", "left": "path", "codeW": 150, "vars": ["arithmetic", "probability"], "steps": [{"code": "a a b", "state": ["0.7 x 0.2 x 0.5", "0.0700"], "tone": "accent"}, {"code": "a b b", "state": ["0.7 x 0.5 x 0.5", "0.1750"], "tone": "accent"}, {"code": "a b -", "state": ["0.7 x 0.5 x 0.4", "0.1400"], "tone": "accent"}, {"code": "a - b", "state": ["0.7 x 0.3 x 0.5", "0.1050"], "tone": "accent"}, {"code": "- a b", "state": ["0.2 x 0.2 x 0.5", "0.0200"], "tone": "accent"}, {"code": "sum of all five", "state": ["not the best one", "0.5100"], "changed": [1], "tone": "violet"}, {"code": "loss = -ln(0.5100)", "state": ["", "0.6733"], "tone": "good"}], "t": "diagram", "id": "dg-6_5-02-1"},
+
+
+
     { t: "out", text: `   - a b   0.2 x 0.2 x 0.5 = 0.0200
    a - b   0.7 x 0.3 x 0.5 = 0.1050
    a a b   0.7 x 0.2 x 0.5 = 0.0700
@@ -48,6 +56,10 @@ EC.receiveLesson({
     { t: "p", text: "Of the 27 possible three-frame paths, exactly five collapse to `ab`. Their probabilities sum to 0.5100, matching the reference. Note that all five are counted — CTC does not pick the best alignment, it credits every valid one in proportion to its probability." },
 
     { t: "h2", n: "03", text: "The forward lattice", id: "lattice" },
+
+    {"kind": "matrix", "title": "The forward lattice, every cell", "caption": "The target is padded with blanks to `- a - b -`, and each cell holds the summed probability of every path reaching that state at that frame. The answer is the last two cells added: 0.1400 + 0.3700 = **0.5100**, identical to the enumeration. The lattice is not an approximation — it is the same sum, computed column by column because reaching a state depends only on the previous frame.", "cols": ["blank", "a", "blank", "b", "blank"], "rows": ["frame 1", "frame 2", "frame 3"], "cells": [["0.2000", {"text": "0.7000", "tone": "good"}, "0.0000", "0.0000", "0.0000"], ["0.0600", "0.1800", "0.2100", {"text": "0.3500", "tone": "good"}, "0.0000"], ["0.0240", "0.0240", "0.1560", {"text": "0.3700", "tone": "violet"}, {"text": "0.1400", "tone": "violet"}]], "t": "diagram", "id": "dg-6_5-03-2"},
+
+
 
     { t: "p", text: "Brute force is `3^T` and useless past a handful of frames. The real implementation runs a forward algorithm over the target padded with blanks — `- a - b -`:" },
 
@@ -83,6 +95,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "05", text: "Against PyTorch", id: "pytorch" },
 
+    {"kind": "flow", "title": "What matching PyTorch actually confirms", "caption": "Agreement to float64 round-off is a stronger check than it looks, because it tests four separate things at once — and three of them are conventions rather than arithmetic. A hand-written lattice that is mathematically perfect still disagrees if the blank index or the tensor layout is wrong, so this is the test to run before trusting your own implementation on anything real.", "cols": 4, "nodes": [{"id": "m", "label": "Matches to 1e-16", "sub": "float64 round-off", "tone": "good"}, {"id": "a", "label": "The arithmetic", "sub": "the lattice itself", "tone": "accent"}, {"id": "b", "label": "The blank index", "sub": "blank=0 here", "tone": "accent"}, {"id": "l", "label": "The tensor layout", "sub": "(T, B, C), not batch-first", "tone": "accent"}, {"id": "r", "label": "The reduction", "sub": "'none' vs 'mean'", "tone": "accent"}], "edges": [["m", "a"], ["m", "b"], ["m", "l"], ["m", "r"]], "t": "diagram", "id": "dg-6_5-05-3"},
+
+
+
     { t: "out", text: `  torch CTCLoss = 0.6733
   hand lattice  = 0.6733
   agree to 1.11e-16` },
@@ -90,6 +106,10 @@ EC.receiveLesson({
     { t: "p", text: "`nn.CTCLoss(blank=0, reduction='none')` on the same log-probabilities gives the identical value to float64 round-off. If you implement the lattice yourself, this is the check to run — it confirms not only your arithmetic but also your blank index, your tensor layout, and your understanding of what the loss returns." },
 
     { t: "h2", n: "05b", text: "The backward pass, and where gradients go", id: "backward" },
+
+    {"kind": "flow", "title": "Forward times backward is where the gradient comes from", "caption": "The forward variable is the probability of **reaching** a state; a symmetric backward pass gives the probability of **completing** the target from it. Their product at a state and frame is the total probability of all valid paths passing through that cell — so dividing by the sequence's total probability gives the posterior that this frame emitted this symbol, and that posterior is the gradient. Which is why CTC produces the characteristic spiky alignment: the posterior concentrates on a few frames per symbol.", "cols": 3, "nodes": [{"id": "f", "label": "Forward alpha", "sub": "probability of reaching the state", "tone": "accent"}, {"id": "b", "label": "Backward beta", "sub": "probability of completing from it", "tone": "accent"}, {"id": "p", "label": "alpha x beta", "sub": "all paths through that cell", "tone": "violet"}, {"id": "d", "label": "Divide by the total", "sub": "a posterior per frame and symbol", "tone": "good"}, {"id": "g", "label": "That posterior is the gradient", "sub": "no alignment labels needed", "tone": "good"}, {"id": "s", "label": "Hence the spiky alignment", "sub": "a few frames carry each symbol", "tone": "teal"}], "edges": [["f", "p"], ["b", "p"], ["p", "d"], ["d", "g"], ["g", "s"]], "t": "diagram", "id": "dg-6_5-05b-4"},
+
+
 
     { t: "p", text: "The forward variables give the probability of reaching each state; a symmetric **backward** pass gives the probability of completing the target from each state. Their product at a given state and frame is the total probability of all paths through that state." },
 
@@ -99,6 +119,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "That expression says the gradient pushing frame `t` towards symbol `k` is proportional to how much of the total path probability flows through states emitting `k` at that frame. In other words, CTC does not commit to an alignment and then train against it — it computes a *distribution* over alignments and trains against the expected one, updating itself each step as the model's own probabilities shift. This is why CTC training has its characteristic trajectory: early on the distribution is diffuse and the model learns to emit blanks everywhere, which is the safest high-probability behaviour, and only once some frames become confident does the alignment sharpen and real symbols appear. A loss that falls steadily while greedy decoding produces nothing is the expected shape, not a failure." }] },
 
     { t: "h2", n: "06", text: "Why the dynamic program is necessary", id: "complexity" },
+
+    {"kind": "trace", "title": "Why the dynamic program was a contribution and not a formulation", "caption": "At three frames the enumeration is 27 paths and the lattice is 15 cells — no reason to prefer either. At a realistic 300 frames the enumeration is **1.4 × 10¹⁴³ paths**, vastly more than the atoms in the observable universe, while the lattice still needs 1,500 cells. And the alphabet here is three symbols; a real character set makes the exponential base far larger while leaving the lattice linear.", "left": "frames T", "codeW": 160, "vars": ["brute force 3^T", "lattice T x S"], "steps": [{"code": "3", "state": ["2.700e+01", "15"], "tone": "accent"}, {"code": "10", "state": ["5.905e+04", "50"], "tone": "accent"}, {"code": "300 - realistic", "state": ["1.369e+143", "1500"], "changed": [0], "tone": "crit"}, {"code": "and the alphabet", "state": ["is the base", "does not change T x S"], "tone": "violet"}], "t": "diagram", "id": "dg-6_5-06-5"},
+
+
 
     { t: "out", text: `  T=  3: brute force 3^T = 2.700e+01   lattice O(T x S) = 15
   T= 10: brute force 3^T = 5.905e+04   lattice O(T x S) = 50

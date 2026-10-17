@@ -26,6 +26,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "dl", items: [
       ["Semantic", "Every pixel gets a class. All cars share one label — there is no notion of individual objects. FCN, U-Net, DeepLab."],
       ["Instance", "Detect objects, then produce a binary mask for each. Car 1 and car 2 are distinct. Mask R-CNN = Faster R-CNN plus a mask branch."],
@@ -35,6 +40,11 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "From a classifier head to a dense head", id: "fcn" },
 
     {"kind": "flow", "title": "From a classifier head to a dense head", "caption": "A classifier ends by throwing position away — that is what the flatten or the global pool is for. Segmentation needs it back, so the head is replaced: every fully connected layer becomes a 1×1 convolution, which computes the same function at **every position** instead of once. That is the fully-convolutional insight, and it is why any classifier backbone can become a segmenter.", "cols": 3, "nodes": [{"id": "c", "label": "Classifier backbone", "sub": "spatial size reduced, channels rich", "tone": "violet"}, {"id": "f", "label": "Flatten + Dense", "sub": "position discarded", "tone": "crit"}, {"id": "o", "label": "Replace with 1x1 conv", "sub": "the same weights, every position", "tone": "good"}, {"id": "m", "label": "A coarse class map", "sub": "H/32 x W/32 x classes", "tone": "accent"}, {"id": "u", "label": "Upsample back", "sub": "to the input resolution", "tone": "accent"}, {"id": "b", "label": "Blurry boundaries", "sub": "which is what the skips fix", "tone": "warn"}], "edges": [["c", "f"], ["c", "o"], ["o", "m"], ["m", "u"], ["u", "b"]], "t": "diagram", "id": "dg-2_8-02-1"},
+
+
+
+
+
 
 
 
@@ -85,6 +95,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "p", text: "Thin one-pixel lines through four rounds of max pooling and back up:" },
 
     { t: "out", text: `  original 64x64 thin lines: 512 lit pixels
@@ -97,6 +112,11 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "Transposed convolution", id: "transposed" },
 
     {"kind": "flow", "title": "Transposed convolution, and the checkerboard it produces", "caption": "It is not a 'deconvolution' — it is a convolution whose stride is applied to the **output**, so each input pixel contributes to several outputs. When the kernel size is not divisible by the stride those contributions overlap unevenly, and the result is a regular checkerboard artefact. Resize-then-convolve avoids it entirely, which is why most modern decoders do that instead.", "cols": 3, "nodes": [{"id": "t", "label": "Transposed conv, stride 2", "sub": "each input hits several outputs", "tone": "accent"}, {"id": "u", "label": "k not divisible by s", "sub": "overlaps are uneven", "tone": "crit"}, {"id": "c", "label": "Checkerboard artefacts", "sub": "a regular grid of brighter pixels", "tone": "crit"}, {"id": "k", "label": "Use k = 4, s = 2", "sub": "even overlap: mitigates it", "tone": "good"}, {"id": "r", "label": "Or upsample, then convolve", "sub": "nearest or bilinear, then 3x3", "tone": "good"}, {"id": "m", "label": "The modern default", "sub": "no artefact by construction", "tone": "teal"}], "edges": [["t", "u"], ["u", "c"], ["c", "k"], ["c", "r"], ["r", "m"]], "t": "diagram", "id": "dg-2_8-05-3"},
+
+
+
+
+
 
 
 

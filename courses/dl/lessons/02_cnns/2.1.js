@@ -25,6 +25,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "p", text: "At every position, line the kernel up with a patch of the input, multiply element by element, and add the results into a single output number. Slide by the stride and repeat. The output is a **feature map**: one number per position, saying how strongly that patch matched the pattern the kernel encodes." },
 
     { t: "math", tex: "\\text{Output}(i, j) = \\sum_{m}\\sum_{n} \\text{Input}(i+m,\\, j+n) \\cdot \\text{Kernel}(m, n) + b" },
@@ -67,6 +72,11 @@ for i in range(3):
 
 
 
+
+
+
+
+
     { t: "p", text: "Mathematical convolution flips the kernel 180° before sliding it. Deep learning does not, and calls the result convolution anyway. Since the kernel is **learned**, a network that would benefit from the flipped version simply learns the flipped version — so the distinction has no consequence for training, and every framework implements the unflipped operation under the name `Conv2d`." },
 
     { t: "out", text: `cross-correlation (what Conv2d does):
@@ -85,6 +95,11 @@ differ: True` },
     { t: "h2", n: "04", text: "Output size", id: "output-size" },
 
     {"kind": "trace", "title": "The output-size formula, against what Conv2d returns", "caption": "floor((in + 2p − k)/s) + 1, checked against the framework on four real configurations. The third row is the standard way modern CNNs downsample, and the fourth is ResNet's stem taking 224 to 112 in one layer. The trap is the **floor**: an input of 33 with k=3, p=1, s=2 gives 17, and the last row and column contribute to nothing at all — nothing warns you, and it surfaces later as a skip connection whose shapes differ by one.", "left": "configuration", "codeW": 210, "vars": ["formula", "Conv2d", "what it is for"], "steps": [{"code": "in 32, k 3, p 1, s 1", "state": ["32", "32", "same size: stackable"], "tone": "good"}, {"code": "in 32, k 3, p 0, s 1", "state": ["30", "30", "valid: loses a border"], "tone": "accent"}, {"code": "in 32, k 3, p 1, s 2", "state": ["16", "16", "halve it: the modern way"], "tone": "good"}, {"code": "in 224, k 7, p 3, s 2", "state": ["112", "112", "ResNet's stem"], "tone": "good"}, {"code": "in 33, k 3, p 1, s 2", "state": ["17", "17", "the floor discards a row and column"], "changed": [2], "tone": "crit"}], "t": "diagram", "id": "dg-2_1-04-2"},
+
+
+
+
+
 
 
 
@@ -110,6 +125,11 @@ differ: True` },
     { t: "h2", n: "05", text: "Why the parameter count is the point", id: "parameters" },
 
     {"kind": "trace", "title": "Why the parameter count is the point", "caption": "The same transformation, 32×32×3 to 32×32×64, done two ways. A fully connected layer needs a weight for every input–output pair: **two hundred million**. A 3×3 convolution needs one kernel per output channel, reused at every position: 1,792. That ratio of about 110,000 to one is why convolution exists, and the saving is not an approximation — it is the weight-sharing assumption being true of images.", "left": "layer", "codeW": 230, "vars": ["parameters", "ratio"], "steps": [{"code": "fully connected, 3072 -> 65536", "state": ["201,392,128", "1x"], "tone": "crit"}, {"code": "Conv2d(3, 64, 3, padding=1)", "state": ["1,792", "about 1/112,000", ""], "changed": [0], "tone": "good"}, {"code": "of which weights", "state": ["3 x 64 x 3 x 3 = 1,728", ""], "tone": "accent"}, {"code": "and biases", "state": ["64", "one per output channel"], "tone": "accent"}, {"code": "and it is independent of", "state": ["the input's height and width", "the same kernel everywhere"], "tone": "violet"}], "t": "diagram", "id": "dg-2_1-05-3"},
+
+
+
+
+
 
 
 

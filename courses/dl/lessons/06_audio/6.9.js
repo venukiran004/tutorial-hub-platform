@@ -21,6 +21,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Augmentation", id: "augmentation" },
 
+    {"kind": "matrix", "title": "Augmentation, and what each technique stands in for", "caption": "Every row is a cheap way to buy a recording condition you cannot collect. SpecAugment is first because it is both the most effective ASR augmentation and **free** — it masks bands of frequency and spans of time in the log-mel, with no audio processing at all. The rest are worth the cost in proportion to how closely they match your deployment: a car wants reverberation and road noise, a phone line wants codec simulation.", "cols": ["Simulates"], "rows": ["SpecAugment", "Noise mixing", "Room impulse responses", "Speed / tempo perturbation", "Codec simulation", "Gain and clipping"], "cells": [[{"text": "masking in the log-mel - the most effective, and free", "tone": "good"}], ["babble, road and fan noise at sampled signal-to-noise ratios"], ["far-field reverberation, so a speaker across the room survives"], [{"text": "0.9x / 1.0x / 1.1x - cheap speaker variety, and it shifts pitch", "tone": "accent"}], ["the codecs your product actually runs through"], ["microphone distance, and an overdriven input"]], "t": "diagram", "id": "dg-6_9-01-0"},
+
+
+
     { t: "table", head: ["Technique", "What it simulates"],
       rows: [
         ["**SpecAugment**", "Masks bands of frequency and spans of time in the log-mel — the most effective ASR augmentation, and it is free"],
@@ -69,6 +73,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "At an RTF of exactly 1.0 the system processes one second of audio per second — which sounds adequate and is in fact the point at which the input buffer grows without bound. Any momentary slowdown, any other process taking the core, any longer-than-usual utterance, and the backlog never clears. You need real headroom, and 0.3 is the figure that leaves room for feature extraction, the wake word, endpointing and whatever else shares the CPU. Quantisation to int8 typically costs a few tenths of a point of WER and buys two to four times on both size and speed, which on-device is almost always a trade worth taking." }] },
 
     { t: "h2", n: "03", text: "The pitfalls", id: "pitfalls" },
+
+    {"kind": "matrix", "title": "The pitfalls, in rough order of how much they cost", "caption": "The first can **double WER** and is entirely a train/deploy mismatch: a model trained at 16 kHz has never seen a band-limited telephony signal. The second is silent, which is worse — a frame-count off-by-two misaligns features against labels and the model simply learns less well, with no error anywhere. The last row is the one that quietly invalidates evaluations: read-speech WER flatters a model by about a factor of two.", "cols": ["Why it hurts"], "rows": ["Train 16 kHz, deploy 8 kHz", "Frame-count off-by-two", "Comparing normalisers", "No VAD in front of Whisper", "CTC beam, no prefix merge", "Ignoring echo cancellation", "MOS from five raters", "Read speech only"], "cells": [[{"text": "WER can double - train on both, or fine-tune", "tone": "crit"}], [{"text": "silently misaligns features and labels", "tone": "crit"}], ["the points come from punctuation, not the model"], [{"text": "it hallucinates fluent text on silence", "tone": "crit"}], ["paths with the same text score separately, wasting width"], ["the assistant hears its own TTS and barges in on itself"], ["the confidence interval exceeds the difference you want to show"], [{"text": "spontaneous speech is harder by about 2x", "tone": "warn"}]], "t": "diagram", "id": "dg-6_9-03-1"},
+
+
 
     { t: "table", head: ["Pitfall", "Why it hurts"],
       rows: [

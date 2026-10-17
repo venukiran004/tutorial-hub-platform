@@ -25,6 +25,11 @@ EC.receiveLesson({
     {"kind": "flow", "title": "The six equations, grouped by what they are for", "caption": "Three gates, a candidate, and two state updates. The grouping is the point: the three gates are each a sigmoid producing a number in (0, 1) that **multiplies** something, and the cell update is the only line that is additive — which is where the gradient highway of §03 comes from.", "cols": 3, "nodes": [{"id": "f", "label": "Forget gate f", "sub": "sigmoid: how much of c to keep", "tone": "accent"}, {"id": "i", "label": "Input gate i", "sub": "sigmoid: how much new to admit", "tone": "accent"}, {"id": "g", "label": "Candidate g", "sub": "tanh: what the new content is", "tone": "good"}, {"id": "c", "label": "c = f*c + i*g", "sub": "the only additive line", "tone": "violet"}, {"id": "o", "label": "Output gate o", "sub": "sigmoid: how much of c to expose", "tone": "accent"}, {"id": "h", "label": "h = o * tanh(c)", "sub": "what the next layer sees", "tone": "good"}], "edges": [["f", "c"], ["i", "c"], ["g", "c"], ["c", "h"], ["o", "h"]], "t": "diagram", "id": "dg-3_4-01-0"},
 
 
+
+
+
+
+
     { t: "math", tex: "\\begin{aligned} f_t &= \\sigma(W_f[h_{t-1}, x_t] + b_f) & &\\text{forget} \\\\ i_t &= \\sigma(W_i[h_{t-1}, x_t] + b_i) & &\\text{input} \\\\ \\tilde{C}_t &= \\tanh(W_C[h_{t-1}, x_t] + b_C) & &\\text{candidate} \\\\ C_t &= f_t \\odot C_{t-1} + i_t \\odot \\tilde{C}_t & &\\text{cell update} \\\\ o_t &= \\sigma(W_o[h_{t-1}, x_t] + b_o) & &\\text{output} \\\\ h_t &= o_t \\odot \\tanh(C_t) & &\\text{hidden} \\end{aligned}" },
 
     { t: "code", lang: "python", title: "All six, implemented directly",
@@ -79,6 +84,11 @@ for t in range(T):
     {"kind": "flow", "title": "The gradient highway, and why it is the forget gate", "caption": "Differentiating cₜ = f⊙cₜ₋₁ + i⊙g gives ∂cₜ/∂cₜ₋₁ = **f** — so the gradient through the cell is a product of forget gates rather than a product of weight matrices. If f stays near 1 that product stays near 1 and the gradient survives hundreds of steps; if f is 0.5 it decays as 0.5ᵀ, which is exactly the failure 3.3 measured. The architecture gives you the highway; the initialisation decides whether it is open.", "cols": 3, "nodes": [{"id": "e", "label": "c = f*c_prev + i*g", "sub": "additive, not multiplicative by W", "tone": "violet"}, {"id": "d", "label": "dc/dc_prev = f", "sub": "the forget gate itself", "tone": "accent"}, {"id": "p", "label": "Gradient = product of f's", "sub": "not a product of weight matrices", "tone": "accent"}, {"id": "o", "label": "f near 1: survives", "sub": "hundreds of steps", "tone": "good"}, {"id": "h", "label": "f = 0.5: decays as 0.5^T", "sub": "what 3.3 measured", "tone": "crit"}, {"id": "b", "label": "So the bias decides", "sub": "whether the highway is open", "tone": "teal"}], "edges": [["e", "d"], ["d", "p"], ["p", "o"], ["p", "h"], ["h", "b"]], "t": "diagram", "id": "dg-3_4-03-1"},
 
 
+
+
+
+
+
     { t: "math", tex: "C_t = f_t \\odot C_{t-1} + i_t \\odot \\tilde{C}_t \\qquad\\Longrightarrow\\qquad \\frac{\\partial C_t}{\\partial C_{t-1}} = f_t" },
 
     { t: "out", text: `  forget gate f_t : [0.6593821048736572, 0.7684034109115601, 0.569654643535614, 0.1654583215713501]
@@ -99,6 +109,11 @@ for t in range(T):
     {"kind": "trace", "title": "What the forget-gate bias does before training starts", "caption": "The gate's initial value is σ(bias), and the cell's retention over T steps is that value to the power T. Read the last column: at the default bias of 0, **three per cent** of the signal survives 5 steps and nothing survives 50. At a bias of 2 the gate opens to 0.88 and 53% of the signal still survives 5 steps. This is the one-line change of 3.3, with its arithmetic.", "left": "forget-gate bias", "codeW": 170, "vars": ["sigma(bias)", "after 5 steps", "after 50 steps"], "steps": [{"code": "0 (the default)", "state": ["0.500", "3.1%", "8.9e-16"], "tone": "crit"}, {"code": "1", "state": ["0.731", "20.9%", "1.6e-07"], "tone": "warn"}, {"code": "2", "state": ["0.881", "53.0%", "1.8e-03"], "changed": [1, 2], "tone": "good"}, {"code": "3", "state": ["0.953", "78.4%", "8.8e-02"], "changed": [2], "tone": "good"}, {"code": "and it is learnable", "state": ["the bias trains", "this is only the start", ""], "tone": "violet"}], "t": "diagram", "id": "dg-3_4-04-2"},
 
 
+
+
+
+
+
     { t: "out", text: `  PyTorch default: forget-gate bias chunk mean -0.0623
   after setting the forget chunk to 1.0: sigmoid(1.0) = 0.7311
   so f_t starts near 0.73 rather than 0.5
@@ -115,6 +130,11 @@ with torch.no_grad():
     { t: "h2", n: "05", text: "The cost", id: "cost" },
 
     {"kind": "trace", "title": "The cost: exactly four times a vanilla RNN", "caption": "Four gates means four sets of weights, so the ratio is **exactly 4.00** at every size — not approximately. The textbook formula 4h(h+d) gives 364,544 for the first row against PyTorch's 366,592; the 2,048 difference is the two separate bias vectors PyTorch keeps for cuDNN compatibility, which are mathematically redundant with one another.", "left": "d and h", "codeW": 150, "vars": ["RNN", "LSTM", "ratio"], "steps": [{"code": "d=100, h=256", "state": ["91,648", "366,592", "4.00x"], "tone": "accent"}, {"code": "d=32, h=64", "state": ["6,272", "25,088", "4.00x"], "tone": "accent"}, {"code": "formula 4h(h+d)", "state": ["", "364,544", "the textbook figure"], "tone": "good"}, {"code": "PyTorch, actual", "state": ["", "366,592", "+2,048"], "changed": [1], "tone": "warn"}, {"code": "the difference", "state": ["", "two bias vectors", "redundant, for cuDNN"], "tone": "violet"}], "t": "diagram", "id": "dg-3_4-05-3"},
+
+
+
+
+
 
 
     { t: "out", text: `  d=100, h=256: RNN    91,648   LSTM   366,592   ratio 4.00x

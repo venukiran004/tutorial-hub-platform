@@ -21,6 +21,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The card", id: "tldr" },
 
+    {"kind": "tree", "title": "The CNN card, at a glance", "caption": "Two assumptions, stated: features are **local**, and a feature worth detecting in one place is worth detecting everywhere. Both are true of images and neither is true of a tabular row, which is why a CNN on shuffled columns performs worse than an MLP.", "root": {"label": "CNN", "sub": "convolution, then pooling, repeated", "tone": "violet", "children": [{"label": "Input", "sub": "a grid: image, spectrogram, 1-D signal", "tone": "accent"}, {"label": "Assumes", "sub": "locality and translation invariance", "tone": "good"}, {"label": "Shares", "sub": "one kernel across every position", "tone": "good"}, {"label": "Wrong for", "sub": "tabular data, where column order is arbitrary", "tone": "warn"}]}, "t": "diagram", "id": "dg-5_2-01-0"},
+
+
+
     { t: "table", head: ["", ""],
       rows: [
         ["**Core operation**", "slide a learned kernel over a grid, sharing weights at every position"],
@@ -32,6 +36,10 @@ EC.receiveLesson({
       ] },
 
     { t: "h2", n: "02", text: "Parameter count", id: "complexity" },
+
+    {"kind": "trace", "title": "The parameter count is independent of the input's size", "caption": "This is the property that makes a CNN scale. A kernel's cost is in_channels × out_channels × k², with **no term for height or width** — so the same layer costs the same on a 32×32 image and a 4K one, and only the activation memory grows. Compare the dense equivalent from 2.1: 201 million against 1,792.", "left": "layer", "codeW": 200, "vars": ["formula", "parameters"], "steps": [{"code": "Conv2d(3, 32, 3)", "state": ["3 x 32 x 9 + 32", "896"], "tone": "good"}, {"code": "Conv2d(32, 64, 3)", "state": ["32 x 64 x 9 + 64", "18,496"], "tone": "good"}, {"code": "Conv2d(64, 128, 3)", "state": ["64 x 128 x 9 + 128", "73,856"], "tone": "accent"}, {"code": "on a 32x32 input", "state": ["", "the same"], "tone": "violet"}, {"code": "on a 4096x4096 input", "state": ["", "still the same"], "changed": [1], "tone": "violet", "note": "only memory grows"}], "t": "diagram", "id": "dg-5_2-02-1"},
+
+
 
     { t: "math", tex: "\\text{params} = (K \\cdot K \\cdot C_{in} + 1) \\cdot C_{out}, \\qquad \\text{compute} = O(O_H \\cdot O_W \\cdot K^2 \\cdot C_{in} \\cdot C_{out})" },
 
@@ -46,6 +54,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "The two halves of the formula behave completely differently. Parameters depend only on the kernel and channel counts, so they are fixed. **Compute** includes `O_H · O_W`, so it scales with the image area — a 1024×1024 input costs about a thousand times the arithmetic of a 32×32 one through the same 1,792 weights. This is why downsampling early matters so much for throughput, and why people are often surprised that a model with few parameters can be slow. Parameter count tells you about memory and overfitting risk; it tells you almost nothing about speed." }] },
 
     { t: "h2", n: "03", text: "Diagnosis", id: "failures" },
+
+    {"kind": "matrix", "title": "Diagnosing a CNN", "caption": "The third row is the one specific to convolutions and the one most often missed: if the final receptive field is smaller than the object, the network **cannot** see it whatever it learns, and 2.2's recursion is how you find out.", "cols": ["Symptom", "First check"], "rows": ["Overfits immediately", "Shapes do not match", "Misses large objects", "Gap after transfer", "Slower than expected"], "cells": [[{"text": "no augmentation", "tone": "warn"}, "2.6's pipeline, train only"], [{"text": "the floor in the size formula", "tone": "crit"}, "2.1: in=33, k=3, s=2 gives 17"], [{"text": "receptive field too small", "tone": "crit"}, "compute it (2.2); add stride or dilation"], [{"text": "frozen BN still updating", "tone": "crit"}, "2.5: backbone.eval()"], [{"text": "depthwise is not always faster", "tone": "warn"}, "2.4: FLOPs mispredict latency"]], "t": "diagram", "id": "dg-5_2-03-2"},
+
+
 
     { t: "table", head: ["Symptom", "Likely cause", "Fix"],
       rows: [
@@ -63,6 +75,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "The knobs", id: "hyperparameters" },
 
+    {"kind": "matrix", "title": "The knobs, and what each one actually moves", "caption": "Four dials and one rule: change the one whose symptom you have. Padding controls whether the map survives the stack, stride controls how fast it shrinks, and channel width controls capacity — and they interact, which is why changing two at once makes a result uninterpretable.", "cols": ["Moves", "Watch"], "rows": ["Kernel size", "Stride", "Padding", "Channel width", "Depth"], "cells": [[{"text": "receptive field per layer", "tone": "accent"}, "3x3 stacked beats 7x7 (2.3)"], [{"text": "how fast the map shrinks", "tone": "accent"}, "the floor; off-by-ones"], [{"text": "whether size is preserved", "tone": "good"}, "k // 2 keeps it the same"], [{"text": "capacity, quadratically", "tone": "warn"}, "parameters grow as in x out"], [{"text": "receptive field, and abstraction", "tone": "good"}, "needs skips past ~20 layers (2.3)"]], "t": "diagram", "id": "dg-5_2-04-3"},
+
+
+
     { t: "table", head: ["Parameter", "Effect", "Standard value"],
       rows: [
         ["Kernel size `K`", "Receptive field per layer", "3×3 — two stacked 3×3 beat one 5×5 at 28 % fewer weights"],
@@ -74,6 +90,10 @@ EC.receiveLesson({
       ] },
 
     { t: "h2", n: "04b", text: "The shape arithmetic", id: "shapes" },
+
+    {"kind": "trace", "title": "The shape arithmetic, done once", "caption": "Every CNN bug that is not a leak is this table. Work it out for your own stack before training — the cost is two minutes and it catches the mismatch that otherwise appears as a runtime error twelve layers in, or worse, as a silently dropped row and column.", "left": "operation", "codeW": 200, "vars": ["in", "out", "why"], "steps": [{"code": "Conv2d(k=3, p=1, s=1)", "state": ["32", "32", "p = k//2 preserves"], "tone": "good"}, {"code": "MaxPool2d(2)", "state": ["32", "16", "halves it"], "tone": "accent"}, {"code": "Conv2d(k=3, p=1, s=2)", "state": ["16", "8", "stride halves instead"], "tone": "accent"}, {"code": "Conv2d(k=3, p=0, s=1)", "state": ["8", "6", "valid: loses k-1"], "tone": "warn"}, {"code": "AdaptiveAvgPool2d(1)", "state": ["6", "1", "any input, fixed output"], "tone": "good"}, {"code": "flatten", "state": ["1 x 1 x C", "C", "ready for the head"], "tone": "violet"}], "t": "diagram", "id": "dg-5_2-04b-4"},
+
+
 
     { t: "math", tex: "O = \\left\\lfloor \\frac{I + 2P - K}{S} \\right\\rfloor + 1" },
 

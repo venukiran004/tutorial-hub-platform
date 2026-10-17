@@ -36,6 +36,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The redundancy the DCT removes", id: "decorrelation" },
 
+    {"kind": "trace", "title": "The redundancy, measured on real speech", "caption": "The filterbank's triangles overlap by construction, so neighbouring bands measure overlapping slices of the same spectrum — and on 3.4 seconds of real speech adjacent bands correlate at **0.9524**. The DCT is an orthogonal rotation into a basis where that structure is largely gone, cutting the mean absolute correlation by 62%. Nothing is lost in the rotation itself; it is invertible. What loses information is the truncation that follows.", "left": "measurement", "codeW": 220, "vars": ["correlation", "verdict"], "steps": [{"code": "adjacent mel bands", "state": ["+0.9524", "enormous redundancy"], "tone": "crit"}, {"code": "all mel pairs, |r|", "state": ["0.7348", "across the whole bank"], "tone": "crit"}, {"code": "adjacent MFCCs", "state": ["+0.2622", "after the rotation"], "changed": [0], "tone": "good"}, {"code": "all MFCC pairs, |r|", "state": ["0.2807", "largely decorrelated"], "changed": [0], "tone": "good"}, {"code": "the DCT cut it by", "state": ["62%", "and is invertible"], "tone": "violet"}], "t": "diagram", "id": "dg-6_3-02-0"},
+
+
+
     { t: "out", text: `  REAL SPEECH: 54,400 samples @ 16000 Hz = 3.40 s
   log-mel (40, 341)
 
@@ -53,6 +57,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Energy compaction", id: "compaction" },
 
+    {"kind": "trace", "title": "Energy compaction, and why thirteen", "caption": "The energy piles into the first few coefficients, so truncation is cheap. **The first coefficient alone holds 71% of it** — essentially overall loudness, which is why it is often discarded for speaker-independent work. Thirteen reach 98.22%, and reconstructing the log-mel from them costs a mean absolute error of 2.76% of the feature's range. The classic choice of 13 is well judged rather than arbitrary.", "left": "coefficients kept", "codeW": 190, "vars": ["energy retained"], "steps": [{"code": "1", "state": ["71.00%"], "tone": "accent", "note": "essentially loudness"}, {"code": "2", "state": ["88.61%"], "tone": "accent"}, {"code": "5", "state": ["94.35%"], "tone": "good"}, {"code": "13", "state": ["98.22%"], "changed": [0], "tone": "good", "note": "the classic choice"}, {"code": "20", "state": ["99.20%"], "tone": "good"}, {"code": "40 - all of them", "state": ["100.00%"], "tone": "violet"}, {"code": "cost of keeping 13", "state": ["2.76% error"], "tone": "accent", "note": "on an 18.80 range"}], "t": "diagram", "id": "dg-6_3-03-1"},
+
+
+
     { t: "out", text: `  first  1 coefficients:  71.00% of energy
   first  2 coefficients:  88.61% of energy
   first  5 coefficients:  94.35% of energy
@@ -69,6 +77,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03b", text: "What the DCT is doing geometrically", id: "geometry" },
 
+    {"kind": "flow", "title": "Low coefficients are the envelope, high ones are the pitch", "caption": "The cepstrum is a spectrum of a log spectrum, so its low coefficients describe slow variation *across frequency* — the broad shape of the vocal tract's response, which is what determines the phoneme. High coefficients describe rapid variation, which is the harmonic comb of the glottal pulse train: pitch. Truncating to 13 therefore keeps **what was said** and discards **who said it and at what pitch** — exactly right for speaker-independent recognition and exactly wrong for speaker identification.", "cols": 3, "nodes": [{"id": "c", "label": "A spectrum of a log spectrum", "sub": "the cepstrum", "tone": "violet"}, {"id": "l", "label": "Low coefficients", "sub": "slow variation across frequency", "tone": "good"}, {"id": "h", "label": "High coefficients", "sub": "the harmonic comb", "tone": "accent"}, {"id": "e", "label": "The vocal tract's envelope", "sub": "what was said", "tone": "good"}, {"id": "p", "label": "Pitch, and speaker identity", "sub": "who said it", "tone": "accent"}, {"id": "t", "label": "Keep 13: right for ASR", "sub": "wrong for speaker ID", "tone": "teal"}], "edges": [["c", "l"], ["c", "h"], ["l", "e"], ["h", "p"], ["e", "t"], ["p", "t", "discarded", "dashed"]], "t": "diagram", "id": "dg-6_3-03b-2"},
+
+
+
     { t: "p", text: "The DCT is an orthogonal change of basis. Instead of describing the log spectrum by its value in each of 40 mel bands, it describes it as a weighted sum of 40 cosine shapes of increasing frequency *across the frequency axis*." },
 
     { t: "dl", items: [
@@ -81,6 +93,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "The names are deliberate anagrams — cepstrum from spectrum, quefrency from frequency — and they mark a genuine conceptual inversion. The cepstrum is a spectrum *of a log spectrum*, so its axis is not frequency but a rate of variation across frequency, measured in seconds. A high quefrency component corresponds to a rapid ripple across the spectrum, which in speech is caused by a harmonic series, whose spacing is the pitch period. That is why pitch detection is classically done by finding a peak in the cepstrum: a periodic excitation produces a spike at the quefrency equal to its period. The inverted vocabulary is a warning that you are working in a domain where the usual intuitions about the axes do not transfer." }] },
 
     { t: "h2", n: "04", text: "Why it no longer matters", id: "obsolete" },
+
+    {"kind": "trace", "title": "Size is the only argument the DCT has left", "caption": "Decorrelation mattered when the acoustic model was a Gaussian mixture with diagonal covariance, because a diagonal matrix assumes the features are independent and correlated log-mel bands violate that. A neural network has no such assumption, so the rotation buys nothing — and the truncation now **costs** information the network could have used. What remains is the byte count, and it matters on a microcontroller running a wake word in a few kilobytes of RAM.", "left": "feature", "codeW": 200, "vars": ["per frame", "per second"], "steps": [{"code": "MFCC 13", "state": ["13 numbers", "5 KB"], "tone": "good", "note": "embedded budget"}, {"code": "MFCC 13 + d + dd", "state": ["39 numbers", "15 KB"], "tone": "accent"}, {"code": "log-mel 40", "state": ["40 numbers", "16 KB"], "changed": [0], "tone": "accent", "note": "same size as MFCC+deltas"}, {"code": "log-mel 80", "state": ["80 numbers", "31 KB"], "tone": "violet", "note": "Whisper, Conformer"}], "t": "diagram", "id": "dg-6_3-04-3"},
+
+
 
     { t: "p", text: "Decorrelation was essential when the acoustic model was a **Gaussian mixture with diagonal covariance**. A diagonal covariance matrix assumes features are independent given the state, and log-mel bands correlating at 0.95 violate that outright — the model would be badly mis-specified. The DCT made the assumption approximately true." },
 

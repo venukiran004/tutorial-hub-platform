@@ -21,6 +21,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The card", id: "tldr" },
 
+    {"kind": "tree", "title": "The LSTM card, at a glance", "caption": "The addition to the RNN is a **separate cell state** updated additively and guarded by three gates. That additive path is the gradient highway of 3.4, and it is why the LSTM's learnable range is around a hundred steps rather than twenty.", "root": {"label": "LSTM", "sub": "a gated cell beside the hidden state", "tone": "violet", "children": [{"label": "Adds", "sub": "cell state c, and forget / input / output gates", "tone": "accent"}, {"label": "Key equation", "sub": "c = f*c + i*g: additive, so dc/dc = f", "tone": "good"}, {"label": "Buys", "sub": "about 100 steps of learnable dependency", "tone": "good"}, {"label": "Costs", "sub": "exactly 4x an RNN's parameters", "tone": "warn"}]}, "t": "diagram", "id": "dg-5_4-01-0"},
+
+
+
     { t: "table", head: ["", ""],
       rows: [
         ["**Core idea**", "an additive cell state, gated — `C_t = f⊙C_{t−1} + i⊙g`"],
@@ -34,6 +38,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Parameter count", id: "complexity" },
 
+    {"kind": "trace", "title": "The parameter count, and the formula that is slightly wrong", "caption": "Four gates, four weight sets, so exactly 4× an RNN. The textbook 4h(h+d) under-counts PyTorch's actual total by **2h** — the two separate bias vectors it keeps for cuDNN compatibility, which are mathematically redundant with one another and worth knowing about when you load weights by hand.", "left": "d and h", "codeW": 160, "vars": ["4h(h+d)", "PyTorch actual", "difference"], "steps": [{"code": "d=100, h=256", "state": ["364,544", "366,592", "+2,048 = 8h"], "tone": "warn"}, {"code": "d=32, h=64", "state": ["24,576", "25,088", "+512 = 8h"], "tone": "warn"}, {"code": "the difference is", "state": ["two bias vectors", "redundant", "for cuDNN"], "tone": "violet"}, {"code": "ratio to an RNN", "state": ["4.00x", "4.00x", "exactly"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-5_4-02-1"},
+
+
+
     { t: "math", tex: "\\text{params} = 4H(H + D + 1), \\qquad \\text{compute} = O(T \\cdot H^2) \\; \\text{— not parallel over } T" },
 
     { t: "out", text: `  lstm  H=128 D=64 : formula 98,816  pytorch 99,328  (+512)` },
@@ -41,6 +49,10 @@ EC.receiveLesson({
     { t: "p", text: "The worked example checks out exactly: `4·128·193 = 98,816`. PyTorch's extra 512 is `4H` — the second bias vector, one chunk per gate. Four gate transforms means exactly 4× a vanilla RNN and 4/3× a GRU, ratios that hold at every size." },
 
     { t: "h2", n: "03", text: "The one that bites", id: "forget-bias" },
+
+    {"kind": "flow", "title": "The one that bites: the forget-gate bias", "caption": "PyTorch initialises it near zero, so the gate opens at σ(0) = 0.5 and the cell state is **halved every timestep** before training has learned otherwise — which destroys exactly the long memory the architecture exists to provide, and produced 3.3's LSTM-at-chance result. Setting it to 1 or 2 is one line and it is the first thing to try when an LSTM underperforms an RNN.", "cols": 3, "nodes": [{"id": "i", "label": "Bias initialised near 0", "sub": "the default", "tone": "accent"}, {"id": "g", "label": "Gate opens at 0.5", "sub": "before any learning", "tone": "warn"}, {"id": "h", "label": "Cell halved per step", "sub": "0.5^T decay", "tone": "crit"}, {"id": "r", "label": "3.3's LSTM sat at chance", "sub": "while the RNN was perfect", "tone": "crit"}, {"id": "s", "label": "Set the forget bias to 1-2", "sub": "one line", "tone": "good"}, {"id": "f", "label": "First thing to try", "sub": "when an LSTM loses to an RNN", "tone": "teal"}], "edges": [["i", "g"], ["g", "h"], ["h", "r"], ["r", "s"], ["s", "f"]], "t": "diagram", "id": "dg-5_4-03-2"},
+
+
 
     { t: "code", lang: "python", title: "Set both bias vectors",
       code: `H = lstm.hidden_size
@@ -62,6 +74,10 @@ with torch.no_grad():
 
     { t: "h2", n: "04", text: "Diagnosis", id: "failures" },
 
+    {"kind": "matrix", "title": "Diagnosing an LSTM", "caption": "Every RNN symptom applies, plus one that is specific: an LSTM that is **worse** than a plain RNN on a long-dependency task is almost always the forget-gate bias rather than anything about the data or the architecture.", "cols": ["Symptom", "First check"], "rows": ["Worse than a plain RNN", "No long-range learning", "4x slower than expected", "Results vary with batching", "Final state wrong"], "cells": [[{"text": "the forget-gate bias", "tone": "crit"}, "section 03; set it to 1-2"], [{"text": "still the bias, probably", "tone": "crit"}, "then the truncation length"], [{"text": "that is correct", "tone": "accent"}, "4x the parameters, by design"], [{"text": "padding not packed", "tone": "crit"}, "3.11"], [{"text": "h_n's shape convention", "tone": "warn"}, "5.3's shape table"]], "t": "diagram", "id": "dg-5_4-04-3"},
+
+
+
     { t: "table", head: ["Symptom", "Likely cause", "Fix"],
       rows: [
         ["At chance on a moderate-range task", "Forget-gate bias at PyTorch's default", "Set it to 1.0 — measured 48.2 % → 100 %"],
@@ -77,6 +93,10 @@ with torch.no_grad():
       body: [{ t: "p", text: "PyTorch packs the four gates as **i, f, g, o** in a single `(4H, d)` matrix. Other frameworks and the original paper's presentation order them differently. Get it wrong when porting weights or setting the forget bias and the model still trains — the shapes are identical and gradients flow — it simply learns badly, because the sigmoid gates and the tanh candidate have been swapped around. It is a silent failure of the same family as applying softmax twice." }] },
 
     { t: "h2", n: "04b", text: "Reading the gates", id: "gates" },
+
+    {"kind": "matrix", "title": "Reading the gates, when you need to", "caption": "The gates are interpretable in a way most internals are not, because each is a number in (0, 1) with a stated job. A forget gate pinned near 1 across a sequence means the cell is holding something; pinned near 0 means it is being cleared every step, which is the failure of section 03 visible directly.", "cols": ["Near 1 means", "Near 0 means"], "rows": ["Forget gate f", "Input gate i", "Output gate o"], "cells": [[{"text": "holding the cell state", "tone": "good"}, {"text": "clearing it every step", "tone": "crit"}], [{"text": "admitting new content", "tone": "accent"}, "ignoring the input"], [{"text": "exposing the cell to h", "tone": "accent"}, "holding it hidden"]], "t": "diagram", "id": "dg-5_4-04b-4"},
+
+
 
     { t: "p", text: "When an LSTM misbehaves, gate statistics are the most informative thing available, and a forward hook extracts them in one line." },
 

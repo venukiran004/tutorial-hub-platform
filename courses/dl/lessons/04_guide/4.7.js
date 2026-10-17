@@ -19,6 +19,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What each one assumes", id: "assumptions" },
 
+    {"kind": "matrix", "title": "What each architecture assumes about its input", "caption": "This is the honest basis for choosing, and it is about **structure** rather than power. A CNN assumes locality and translation invariance; an RNN assumes order and that recent context matters most; a transformer assumes nothing about structure and so must be told position explicitly and shown far more data.", "cols": ["Assumes", "Pays for it with"], "rows": ["MLP", "CNN", "RNN / LSTM", "Transformer"], "cells": [[{"text": "nothing; fixed-size input", "tone": "warn"}, "no weight sharing at all"], [{"text": "locality, translation invariance", "tone": "good"}, "cannot relate distant positions cheaply"], [{"text": "order; recency", "tone": "good"}, "O(T) path, no parallelism"], [{"text": "nothing structural", "tone": "accent"}, "quadratic memory, and needs more data"]], "t": "diagram", "id": "dg-4_7-01-0"},
+
+
+
+
+
     { t: "dl", items: [
       ["ANN (dense)", "Inputs are a fixed-size unordered feature vector. Shuffle the columns consistently and nothing changes. Tabular data."],
       ["CNN", "Nearby inputs relate, and a pattern is worth detecting wherever it occurs. Images, spectrograms, local time series."],
@@ -30,6 +36,12 @@ EC.receiveLesson({
       body: [{ t: "p", text: "A strong assumption baked into the architecture is knowledge the model does not have to learn from examples. A CNN is given translation equivariance for free, so it can learn from thousands of images rather than millions. A transformer assumes nothing about structure, so it must *discover* that adjacent words relate and that order matters — which it can do, given enough data, and often better than the assumption you would have imposed. That is the whole trade: **weaker assumptions need more data and reward it with a higher ceiling.** It is why ViT loses to a ResNet on small datasets and wins on very large ones, and why nobody trains a transformer from scratch on 2,000 examples." }] },
 
     { t: "h2", n: "02", text: "Parameter cost", id: "parameters" },
+
+    {"kind": "trace", "title": "Parameter cost, at comparable widths", "caption": "The comparison that matters is per-layer at the same hidden width. The LSTM's 4× and the GRU's 3× come from their gate counts (3.4, 3.5); the transformer block's 12d² comes from four attention matrices of d² and an FFN of 8d² — so a transformer layer is **three times** an LSTM layer at the same width, and most of that difference is the feed-forward network.", "left": "one layer, h = d = 512", "codeW": 210, "vars": ["formula", "parameters"], "steps": [{"code": "RNN", "state": ["h(h + d)", "524,288"], "tone": "good"}, {"code": "GRU", "state": ["3h(h + d)", "1,572,864"], "tone": "accent"}, {"code": "LSTM", "state": ["4h(h + d)", "2,097,152"], "tone": "accent"}, {"code": "Transformer block", "state": ["12d²", "3,145,728"], "changed": [1], "tone": "warn"}, {"code": "of which the FFN", "state": ["8d²", "2,097,152 (67%)"], "tone": "violet"}], "t": "diagram", "id": "dg-4_7-02-1"},
+
+
+
+
 
     { t: "out", text: `  RNN :    98,816
   GRU :   296,448
@@ -83,6 +95,12 @@ EC.receiveLesson({
       ] },
 
     { t: "h2", n: "04", text: "The honest summary", id: "summary" },
+
+    {"kind": "matrix", "title": "The honest summary", "caption": "Transformers won on text and are not automatically right elsewhere. On a small tabular problem or a short univariate series, a simpler model is usually better and always cheaper — and on images a modernised CNN matches a vision transformer (2.3), which suggests much of the advantage was the training recipe rather than attention.", "cols": ["Use", "Because"], "rows": ["Text, any length", "Images", "Short series, little data", "Streaming / real-time", "Very long sequences", "Small tabular"], "cells": [[{"text": "transformer", "tone": "good"}, "it won decisively; pretrained weights exist"], [{"text": "either", "tone": "accent"}, "ConvNeXt matches a ViT (2.3)"], [{"text": "an RNN, or classical", "tone": "good"}, "transformers need data"], [{"text": "causal RNN, or RNN-T", "tone": "good"}, "a transformer must see the window"], [{"text": "efficient attention, or SSM", "tone": "accent"}, "quadratic memory bites first"], [{"text": "gradient boosting", "tone": "crit"}, "not a neural network at all (ML 11.6)"]], "t": "diagram", "id": "dg-4_7-04-2"},
+
+
+
+
 
     { t: "callout", kind: "insight", title: "The architecture choice matters less than it used to",
       body: [{ t: "p", text: "For most applied problems in 2026 the decision is not *which architecture* but *which pretrained model, and how do I adapt it*. Lesson 2.5 measured this for vision: a frozen ImageNet backbone reached 67.1 % where the same architecture from scratch reached 34.3 %, and the architecture was identical in both cases. The same holds more strongly for text. Understanding these four architectures is still worth the effort — it is what lets you read a paper, debug a model that is not learning, and recognise when your problem genuinely falls outside the pretrained mainstream. But treating the choice as the main lever is a good way to spend three weeks matching a baseline you could have had on day one." }] },

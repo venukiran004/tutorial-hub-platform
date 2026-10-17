@@ -48,6 +48,11 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Measured: at a hundred steps the gradient is exactly zero", "caption": "Not small — **zero**. It underflowed float32 entirely, so the first hundred timesteps receive no gradient at all and the network is structurally unable to learn anything about them. And the column that explains why nobody notices: the gradient at the **last** step stays near 0.52 whatever the length, so the loss falls and the training curve looks healthy while the model has simply not read the beginning of its input. This measurement is where 'RNNs handle about 10–20 steps' comes from.", "left": "sequence length", "codeW": 160, "vars": ["gradient at the last step", "at the first step", "ratio"], "steps": [{"code": "T = 5", "state": ["5.279e-01", "2.735e-02", "1.93e+01"], "tone": "good"}, {"code": "T = 10", "state": ["5.305e-01", "1.531e-03", "3.47e+02"], "tone": "accent"}, {"code": "T = 20", "state": ["4.965e-01", "1.347e-07", "3.69e+06"], "changed": [1], "tone": "warn"}, {"code": "T = 50", "state": ["5.347e-01", "1.525e-16", "3.51e+15"], "changed": [1], "tone": "crit"}, {"code": "T = 100", "state": ["5.158e-01", "0.000e+00", "inf"], "changed": [1], "tone": "crit", "note": "underflowed"}], "t": "diagram", "id": "dg-3_2-02-0"},
 
 
+
+
+
+
+
     { t: "p", text: "The gradient of the last output with respect to the input at each step, across sequence lengths:" },
 
     { t: "out", text: `  T=  5: grad at last step 5.279e-01, at first step 2.735e-02, ratio 1.93e+01
@@ -62,6 +67,11 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Why the decay is one-sided", id: "tanh" },
 
     {"kind": "flow", "title": "Why the decay is one-sided", "caption": "The gradient through T steps is a product of T factors, and a product's behaviour is asymmetric: anything below one shrinks **geometrically** toward zero, while anything above one grows geometrically toward overflow. The first failure is silent — small numbers just become smaller — and the second is loud, producing a NaN that stops the run. That is why vanishing is the harder problem: nothing tells you it happened.", "cols": 3, "nodes": [{"id": "p", "label": "Gradient = product of T factors", "sub": "the same W, every step", "tone": "violet"}, {"id": "l", "label": "Factor < 1", "sub": "shrinks geometrically", "tone": "warn"}, {"id": "z", "label": "Vanishes, silently", "sub": "the loss still falls", "tone": "crit"}, {"id": "g", "label": "Factor > 1", "sub": "grows geometrically", "tone": "warn"}, {"id": "n", "label": "Explodes into a NaN", "sub": "loud, and easy to fix", "tone": "accent"}, {"id": "c", "label": "So clipping solves one", "sub": "and gates are needed for the other", "tone": "good"}], "edges": [["p", "l"], ["l", "z"], ["p", "g"], ["g", "n"], ["n", "c"]], "t": "diagram", "id": "dg-3_2-03-1"},
+
+
+
+
+
 
 
     { t: "out", text: `  tanh'(0.0) = 1.0000   <- maximum
@@ -83,6 +93,11 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Clipping fixes the explosion and cannot touch the vanishing", "caption": "Clipping rescales the gradient when its norm exceeds a threshold, which preserves the **direction** and bounds the step. That stops a NaN dead. It does nothing whatsoever for a vanished gradient, because scaling zero up still gives zero — which is why clipping is a universally recommended safety measure and never the answer to a long-dependency problem.", "cols": 3, "nodes": [{"id": "n", "label": "Gradient norm exceeds a threshold", "sub": "an exploding step", "tone": "crit"}, {"id": "s", "label": "Rescale to the threshold", "sub": "direction kept, length bounded", "tone": "good"}, {"id": "o", "label": "No more NaN", "sub": "the run survives", "tone": "good"}, {"id": "v", "label": "A vanished gradient", "sub": "0.000e+00", "tone": "crit"}, {"id": "x", "label": "Scaling it up gives zero", "sub": "clipping cannot help", "tone": "crit"}, {"id": "g", "label": "That needs gates, or attention", "sub": "a different mechanism (3.4, 3.8)", "tone": "teal"}], "edges": [["n", "s"], ["s", "o"], ["v", "x"], ["x", "g"]], "t": "diagram", "id": "dg-3_2-04-2"},
 
 
+
+
+
+
+
     { t: "out", text: `  gradient norm before clipping: 7.532e+02
   after clip_grad_norm_(1.0)   : 1.000` },
 
@@ -92,6 +107,11 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "Truncated BPTT", id: "truncated" },
 
     {"kind": "flow", "title": "Truncated BPTT, and the dependency it gives up", "caption": "Backpropagating through a ten-thousand-step sequence is impossible in memory, so the gradient is cut after k steps while the hidden state is **carried forward**. The consequence is precise: the model can still represent a dependency longer than k, because the state crosses the boundary, but it can never learn one — no gradient ever connects the two ends.", "cols": 3, "nodes": [{"id": "l", "label": "A 10,000-step sequence", "sub": "memory makes full BPTT impossible", "tone": "violet"}, {"id": "k", "label": "Backprop only k steps", "sub": "typically 32 to 200", "tone": "accent"}, {"id": "h", "label": "Carry h across the boundary", "sub": "detached, so no gradient crosses", "tone": "accent"}, {"id": "r", "label": "State can represent longer", "sub": "it survives the cut", "tone": "good"}, {"id": "c", "label": "But cannot learn longer", "sub": "no gradient connects the ends", "tone": "crit"}, {"id": "m", "label": "Memory is now O(k)", "sub": "which is why it is used anyway", "tone": "teal"}], "edges": [["l", "k"], ["k", "h"], ["h", "r"], ["r", "c"], ["c", "m"]], "t": "diagram", "id": "dg-3_2-05-3"},
+
+
+
+
+
 
 
     { t: "out", text: `  full BPTT over T=1000: stores 1000 activations, gradient path 1000 steps

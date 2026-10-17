@@ -27,6 +27,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "code", lang: "python", title: "CustomCNN",
       code: `class CustomCNN(nn.Module):
     def __init__(self, num_classes=10, in_channels=3):
@@ -72,6 +77,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "out", text: `  features    1,147,200  (97.1%)
   classifier     34,186  (2.9%)
   total       1,181,386` },
@@ -90,6 +100,11 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "The training loop", id: "loop" },
 
     {"kind": "flow", "title": "The training loop, and the five lines whose order is fixed", "caption": "This is the loop every PyTorch model is trained by, and the order is not negotiable. `zero_grad` must come before `backward` or gradients accumulate across batches; `step` must come after `backward` or it applies nothing. The `model.train()` and `model.eval()` pair is outside the inner loop and is the line most often forgotten (1.12).", "cols": 3, "nodes": [{"id": "t", "label": "model.train()", "sub": "once per epoch, before the batches", "tone": "violet"}, {"id": "z", "label": "optimizer.zero_grad()", "sub": "or gradients accumulate", "tone": "accent"}, {"id": "f", "label": "out = model(x); loss = crit(out, y)", "sub": "the forward pass", "tone": "accent"}, {"id": "b", "label": "loss.backward()", "sub": "gradients now exist", "tone": "good"}, {"id": "s", "label": "optimizer.step()", "sub": "applies them", "tone": "good"}, {"id": "e", "label": "model.eval() + no_grad()", "sub": "for validation, every epoch", "tone": "teal"}], "edges": [["t", "z"], ["z", "f"], ["f", "b"], ["b", "s"], ["s", "e"]], "t": "diagram", "id": "dg-2_11-03-2"},
+
+
+
+
+
 
 
 
@@ -143,6 +158,11 @@ for epoch in range(epochs):
     { t: "h2", n: "04", text: "The same model in Keras", id: "keras" },
 
     {"kind": "compare", "title": "The same model in PyTorch and in Keras", "caption": "The architectures are identical; the difference is where the loop lives. Keras owns it — you declare the model, compile it with a loss and an optimiser, and call `fit`. PyTorch hands it to you, which is more code for the common case and the only workable option when the loop itself is the thing you are changing.", "columns": [{"title": "PyTorch", "tone": "accent", "items": ["You write the loop", "Explicit zero_grad / backward / step", "model.train() and eval() are yours to call", "Any loop shape: GANs, multi-task, RL", "More code for the ordinary case"]}, {"title": "Keras", "tone": "good", "items": ["The loop is compile() + fit()", "Gradients handled for you", "Modes switched automatically", "Callbacks for the common needs", "A custom train_step when you need one"]}], "t": "diagram", "id": "dg-2_11-04-3"},
+
+
+
+
+
 
 
 

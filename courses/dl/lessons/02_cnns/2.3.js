@@ -28,6 +28,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "table", head: ["Year", "Architecture", "The idea", "Top-5 error", "Params"],
       rows: [
         ["1998", "LeNet-5", "That a CNN works at all", "—", "60 K"],
@@ -62,6 +67,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "out", text: `  convolutional features :   14,714,688  (10.6%)
   fully connected head   :  123,642,856  (89.4%)` },
 
@@ -91,6 +101,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "p", text: "The claim is that `∂H/∂x = 1 + ∂F/∂x` gives every layer a direct path to the loss, so gradients do not decay with depth. Twenty blocks, identical except for the addition, with the gradient norm read at the first and last:" },
 
     { t: "out", text: `  plain     20 blocks: grad norm at block 1 = 3.294e+00, at block 20 = 2.628e-01, ratio 1.25e+01
@@ -110,6 +125,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "p", text: "At 256 channels, two 3×3 convolutions are expensive. The bottleneck squeezes with a 1×1, does the spatial work cheaply, and expands back." },
 
     { t: "out", text: `  basic      3x3 256->256, 3x3 256->256 : 1,180,160 parameters
@@ -121,6 +141,11 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Compound scaling and ConvNeXt", id: "modern" },
 
     {"kind": "flow", "title": "Compound scaling, and what ConvNeXt showed afterwards", "caption": "EfficientNet's finding was that scaling depth, width and resolution **together** in a fixed ratio beats scaling any one of them — because a deeper network needs more channels to use and more pixels to look at. ConvNeXt's finding was later and more awkward: most of the transformer's advantage over CNNs was training recipe and design details, not attention, and a modernised CNN recovers it.", "cols": 3, "nodes": [{"id": "d", "label": "Scale depth alone", "sub": "diminishing returns", "tone": "warn"}, {"id": "w", "label": "Scale width alone", "sub": "diminishing returns", "tone": "warn"}, {"id": "r", "label": "Scale resolution alone", "sub": "diminishing returns", "tone": "warn"}, {"id": "c", "label": "Scale all three, in ratio", "sub": "EfficientNet's compound rule", "tone": "good"}, {"id": "n", "label": "ConvNeXt", "sub": "a modernised CNN matches a ViT", "tone": "accent"}, {"id": "l", "label": "So it was the recipe", "sub": "not attention, mostly", "tone": "teal"}], "edges": [["d", "c"], ["w", "c"], ["r", "c"], ["c", "n"], ["n", "l"]], "t": "diagram", "id": "dg-2_3-06-4"},
+
+
+
+
+
 
 
 

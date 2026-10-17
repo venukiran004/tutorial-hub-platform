@@ -19,9 +19,15 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why the step size should change", id: "why" },
 
+    {"kind": "flow", "title": "Why one rate cannot be right for a whole run", "caption": "The two halves of training want opposite things. Early on the weights are nowhere near a minimum, so a large rate covers ground and the noise of a mini-batch gradient does no harm. Later the same rate makes the optimiser **bounce around the bottom of the valley** without settling, and a smaller one lets it descend. A schedule is the compromise: decide in advance how the rate falls, or let the validation loss decide for you.", "cols": 3, "nodes": [{"id": "e", "label": "Early: far from any minimum", "sub": "gradient noise is harmless", "tone": "accent"}, {"id": "b", "label": "A large rate covers ground", "sub": "and should be large", "tone": "good"}, {"id": "l", "label": "Late: inside the valley", "sub": "noise now dominates the signal", "tone": "accent"}, {"id": "o", "label": "The same rate bounces", "sub": "never settles", "tone": "crit"}, {"id": "s", "label": "So the rate must fall", "sub": "on a plan, or on a metric", "tone": "violet"}, {"id": "d", "label": "That is the schedule", "sub": "and it is not optional", "tone": "teal"}], "edges": [["e", "b"], ["b", "s"], ["l", "o"], ["o", "s"], ["s", "d"]], "t": "diagram", "id": "dg-1_9-01-0"},
+
+
     { t: "p", text: "The learning rate is the single most important hyperparameter, and no single value is right for a whole run. Early on, a large rate covers ground quickly and the noise of mini-batch gradients does no harm — the weights are nowhere near a minimum anyway. Later, the same rate makes the optimiser bounce around the bottom of the valley without settling; a smaller one lets it descend into the minimum. A schedule is the compromise: decide in advance how the rate will fall, or let the validation loss decide for you." },
 
     { t: "h2", n: "02", text: "The five schedulers, run", id: "five" },
+
+    {"kind": "matrix", "title": "Four schedulers, the rate they actually produce", "caption": "Run over a hundred epochs from the same starting rate, the four behave nothing alike. StepLR holds flat and then drops by a factor of ten at a cliff; cosine falls smoothly throughout; OneCycle **starts twenty-five times below the peak**, climbs to it, and then anneals four orders of magnitude below the start. Warm restarts is the odd one — it decays to 6.16e-06 by epoch 29 and jumps straight back to the full rate at epoch 30.", "cols": ["epoch 0", "epoch 29", "epoch 30", "epoch 99"], "rows": ["StepLR", "CosineAnnealingLR", "OneCycleLR", "WarmRestarts"], "cells": [["1.00e-03", "1.00e-03", {"text": "1.00e-04", "tone": "warn"}, "1.00e-06"], ["1.00e-03", "8.07e-04", "7.94e-04", "1.25e-06"], [{"text": "4.00e-05", "tone": "accent"}, "1.00e-03", "9.99e-04", {"text": "4.00e-09", "tone": "warn"}], ["1.00e-03", {"text": "6.16e-06", "tone": "warn"}, {"text": "1.00e-03", "tone": "crit"}, "-"]], "t": "diagram", "id": "dg-1_9-02-1"},
+
 
     { t: "code", lang: "python", title: "The schedulers",
       code: `import torch.optim as optim
@@ -104,6 +110,9 @@ ReduceLROnPlateau(factor=0.5, patience=5), loss stalls at epoch 40
 
     { t: "h2", n: "03", text: "Warm-up", id: "warmup" },
 
+    {"kind": "flow", "title": "What warm-up is protecting you from", "caption": "Two things are unreliable at step zero and both feed the same update. Fresh random weights produce large, uninformative gradients, and Adam's second-moment estimate needs a few dozen steps before it means anything — so a full-size rate applied to both can throw the weights somewhere they never recover from, inside the first hundred updates. The fix is to **rise from 0 to the peak over the first 5–10% of steps** and let the statistics settle first.", "cols": 3, "nodes": [{"id": "w", "label": "Random weights at step 0", "sub": "large, uninformative gradients", "tone": "warn"}, {"id": "a", "label": "Adam's v is unreliable", "sub": "for the first few dozen steps", "tone": "warn"}, {"id": "u", "label": "A full-size step on both", "sub": "within the first hundred updates", "tone": "crit"}, {"id": "b", "label": "The weights land somewhere bad", "sub": "and the run never recovers", "tone": "crit"}, {"id": "r", "label": "Ramp 0 -> peak over 5-10%", "sub": "of total steps", "tone": "good"}, {"id": "t", "label": "Transformers need it most", "sub": "hence 'warm-up then cosine'", "tone": "teal"}], "edges": [["w", "u"], ["a", "u"], ["u", "b"], ["b", "r"], ["r", "t"]], "t": "diagram", "id": "dg-1_9-03-2"},
+
+
     { t: "p", text: "The recommendation: **start from 0 and rise to the peak rate over the first 5–10 % of steps.** Fresh random weights produce large, uninformative gradients, and Adam's second-moment estimate is unreliable for the first few dozen steps; a full-size learning rate applied to both can throw the weights somewhere bad in the first hundred updates, and the run never recovers. Warm-up keeps the early steps small until the statistics settle. Transformers are especially sensitive, which is why 'linear warm-up then cosine (or linear) decay' is the default schedule for training and fine-tuning them." },
 
     { t: "code", lang: "python", title: "Linear warm-up then cosine decay, as a LambdaLR",
@@ -119,6 +128,9 @@ scheduler = LambdaLR(optimizer, lr_factor)   # multiplies the optimiser's base l
       caption: "LambdaLR scales the base learning rate by whatever the function returns; any shape can be built this way. This is the 'linear warm-up 10 epochs + cosine' row in the table." },
 
     { t: "h2", n: "04", text: "Which schedule when", id: "choose" },
+
+    {"kind": "matrix", "title": "Which schedule, decided by what you know in advance", "caption": "The choice falls out of one question: do you know how long the run is? A known length lets a schedule be planned, and cosine is then the default because it has no hyperparameter beyond that length. An unknown length leaves only the scheduler that reacts to the training itself. The last row applies **whatever** you picked above it.", "cols": ["Use"], "rows": ["Fixed epochs, known runtime", "Unknown training length", "Fine-tuning a transformer", "Fastest possible training", "Any run from random weights"], "cells": [[{"text": "CosineAnnealingLR - no hyperparameters beyond the length", "tone": "good"}], [{"text": "ReduceLROnPlateau - the only one that reacts to training", "tone": "good"}], ["linear warm-up, then cosine or linear decay"], ["OneCycleLR - super-convergence, if you can tune it"], [{"text": "warm-up over the first 5-10% of steps, regardless", "tone": "violet"}]], "t": "diagram", "id": "dg-1_9-04-3"},
+
 
     { t: "table", head: ["Situation", "The recommendation"],
       rows: [

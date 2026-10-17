@@ -19,6 +19,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three projections", id: "qkv" },
 
+    {"kind": "flow", "title": "Three projections of the same input", "caption": "Q, K and V are three different linear views of the identical input sequence — which is what 'self' attention means. The division of labour is worth stating: the **query** asks what this position is looking for, the **key** advertises what each position offers, and the **value** is what actually gets copied once a match is scored.", "cols": 3, "nodes": [{"id": "x", "label": "One input sequence X", "sub": "T x d", "tone": "violet"}, {"id": "q", "label": "Q = X W_Q", "sub": "what this position seeks", "tone": "accent"}, {"id": "k", "label": "K = X W_K", "sub": "what each position offers", "tone": "accent"}, {"id": "v", "label": "V = X W_V", "sub": "what gets copied", "tone": "accent"}, {"id": "s", "label": "Scores = QK' / sqrt(d_k)", "sub": "T x T comparisons", "tone": "good"}, {"id": "o", "label": "Output = softmax(scores) V", "sub": "a weighted average of values", "tone": "good"}], "edges": [["x", "q"], ["x", "k"], ["x", "v"], ["q", "s"], ["k", "s"], ["s", "o"], ["v", "o"]], "t": "diagram", "id": "dg-4_2-01-0"},
+
+
+
+
+
     { t: "dl", items: [
       ["Query — `Q = X W_Q`", "What this token is looking for. *it* queries for a singular noun it could refer to."],
       ["Key — `K = X W_K`", "What this token offers for matching. *animal* advertises itself as a singular animate noun."],
@@ -31,6 +37,12 @@ EC.receiveLesson({
     { t: "math", tex: "\\text{Attention}(Q, K, V) = \\text{softmax}\\!\\left(\\frac{QK^{T}}{\\sqrt{d_k}}\\right)V" },
 
     { t: "h2", n: "02", text: "Running it", id: "worked" },
+
+    {"kind": "flow", "title": "Running it: the four shapes that have to line up", "caption": "Almost every self-attention bug is a shape or a transpose. The scores matrix is T×T and **must** be square — if it is not, Q and K have been multiplied the wrong way round. And the softmax goes over the **last** axis, the keys: over the wrong axis it still runs, still returns the right shape, and produces a weighted average over the queries instead, which is meaningless.", "cols": 3, "nodes": [{"id": "q", "label": "Q: (B, T, d_k)", "sub": "", "tone": "accent"}, {"id": "k", "label": "K transposed: (B, d_k, T)", "sub": "the transpose that gets forgotten", "tone": "warn"}, {"id": "s", "label": "Scores: (B, T, T)", "sub": "square, or something is wrong", "tone": "good"}, {"id": "m", "label": "softmax over the last axis", "sub": "the keys, not the queries", "tone": "crit"}, {"id": "v", "label": "x V: (B, T, d_v)", "sub": "back to a sequence", "tone": "good"}, {"id": "o", "label": "Out: (B, T, d)", "sub": "same shape as the input", "tone": "teal"}], "edges": [["q", "s"], ["k", "s"], ["s", "m"], ["m", "v"], ["v", "o"]], "t": "diagram", "id": "dg-4_2-02-1"},
+
+
+
+
 
     { t: "code", lang: "python", title: "Self-attention in four lines",
       code: `Q, K, V = x @ Wq, x @ Wk, x @ Wv        # (T, d) each
@@ -53,6 +65,12 @@ out = A @ V                              # (T, d) — contextualised`,
 
     { t: "h2", n: "03", text: "A property of the output", id: "convex" },
 
+    {"kind": "flow", "title": "A property of the output: every position is a convex combination", "caption": "Each output row is a weighted average of value vectors with weights summing to one, so it lies inside the **convex hull** of the values — attention can only interpolate what is already there, never extrapolate beyond it. That is why the feed-forward network matters so much (4.4): it is the part of the block that can produce something new.", "cols": 3, "nodes": [{"id": "w", "label": "Weights sum to 1", "sub": "softmax guarantees it", "tone": "violet"}, {"id": "c", "label": "Output is a convex combination", "sub": "of the value vectors", "tone": "accent"}, {"id": "h", "label": "It lies inside their hull", "sub": "interpolation only", "tone": "accent"}, {"id": "e", "label": "It cannot extrapolate", "sub": "nothing new is created here", "tone": "warn"}, {"id": "f", "label": "The FFN can", "sub": "a non-linearity per position", "tone": "good"}, {"id": "b", "label": "So the block needs both", "sub": "routing, then transformation", "tone": "teal"}], "edges": [["w", "c"], ["c", "h"], ["h", "e"], ["e", "f"], ["f", "b"]], "t": "diagram", "id": "dg-4_2-03-2"},
+
+
+
+
+
     { t: "out", text: `  V rows min/max per dim: [0.397, -0.370, 0.203, -0.603] / [1.601, -0.028, 0.629, -0.203]
   output min/max per dim: [0.807, -0.161, 0.338, -0.370] / [0.833, -0.154, 0.347, -0.361]
   every output inside the range of V: True` },
@@ -61,6 +79,12 @@ out = A @ V                              # (T, d) — contextualised`,
       body: [{ t: "p", text: "The attention weights are non-negative and sum to 1, so the output is a **convex combination** of the value vectors — it must lie within their hull, which the measurement confirms on every dimension. That means self-attention is a purely *selective* operation: it chooses and blends information that is already present, and it cannot produce anything outside the span of what it was given. This is exactly why an attention layer is never used alone. The feed-forward network that follows it applies a non-linearity per position, which can move representations outside that hull, and the residual connection adds the original input back in. Attention routes; the FFN transforms. Seeing the constraint measured makes the block's structure feel inevitable rather than arbitrary." }] },
 
     { t: "h2", n: "04", text: "What the T × T matrix costs", id: "cost" },
+
+    {"kind": "trace", "title": "What the T x T matrix costs, in memory", "caption": "The scores matrix is quadratic in sequence length, and the arithmetic becomes hostile quickly: at 32,768 tokens with 8 heads in fp32 it is **34.36 GB** for a single sequence — more than most GPUs hold, for one example. O(1) path length and quadratic memory are the same fact, and every efficient-attention paper is an attempt to keep the first while escaping the second.", "left": "sequence length", "codeW": 170, "vars": ["T x T entries", "x 8 heads, fp32", "verdict"], "steps": [{"code": "512", "state": ["262,144", "8.4 MB", "free"], "tone": "good"}, {"code": "2,048", "state": ["4,194,304", "134 MB", "fine"], "tone": "good"}, {"code": "8,192", "state": ["67,108,864", "2.15 GB", "noticeable"], "tone": "warn"}, {"code": "32,768", "state": ["1,073,741,824", "34.36 GB", "one sequence, more than a GPU"], "changed": [1, 2], "tone": "crit"}, {"code": "so: flash attention", "state": ["never materialise it", "tiled, recomputed", "the standard answer"], "tone": "violet"}], "t": "diagram", "id": "dg-4_2-04-3"},
+
+
+
+
 
     { t: "diagram", kind: "matrix", title: "Every position scores every position",
       caption: "For T tokens this is T² scores per head. It is both the source of attention's power and its memory wall.",

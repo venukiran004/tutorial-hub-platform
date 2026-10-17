@@ -21,6 +21,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Key definitions, read first", id: "definitions" },
 
+    {"kind": "flow", "title": "Every term in that table is a stage in one loop", "caption": "The glossary reads as fourteen separate ideas and it is really one cycle with named parts. Push an input through the layers, measure how wrong the answer is, send that measurement back through the same layers with the chain rule, and step every weight against its gradient. Everything else in the list — initialisation, normalisation, regularisation, the optimiser, the schedule — is a modification to one of those four stages, which is why each gets its own lesson rather than its own chapter.", "cols": 4, "nodes": [{"id": "f", "label": "Forward", "sub": "weighted sums and activations", "tone": "accent"}, {"id": "l", "label": "Loss", "sub": "one number: how wrong", "tone": "violet"}, {"id": "b", "label": "Backward", "sub": "the chain rule, layer by layer", "tone": "violet"}, {"id": "u", "label": "Update", "sub": "a step against the gradient", "tone": "good"}, {"id": "i", "label": "Initialisation", "sub": "sets where forward starts", "tone": "teal"}, {"id": "n", "label": "Normalisation", "sub": "keeps forward well scaled", "tone": "teal"}, {"id": "r", "label": "Regularisation", "sub": "changes what the loss rewards", "tone": "teal"}, {"id": "o", "label": "Optimiser and schedule", "sub": "changes the step", "tone": "teal"}], "edges": [["f", "l"], ["l", "b"], ["b", "u"], ["u", "f", "next batch", "dashed"], ["i", "f", "", "dashed"], ["n", "f", "", "dashed"], ["r", "l", "", "dashed"], ["o", "u", "", "dashed"]], "t": "diagram", "id": "dg-1_1-01-4"},
+
+
     { t: "p", text: "This course opens with a table of terms and so does this course, because every later lesson assumes them. Read them once now; each gets its own lesson in this module." },
 
     { t: "dl", items: [
@@ -43,6 +46,11 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "The perceptron", id: "perceptron" },
 
     {"kind": "flow", "title": "A perceptron is a weighted sum and a threshold", "caption": "Four operations, and the last one is the only non-linear step. Without it the whole thing is a linear function of the inputs — which is the limitation §03 exists to remove, and the reason stacking two linear layers buys nothing at all.", "cols": 4, "nodes": [{"id": "x", "label": "Inputs x", "sub": "one value per feature", "tone": "violet"}, {"id": "w", "label": "Weighted sum", "sub": "w·x + b: one number", "tone": "accent"}, {"id": "a", "label": "Activation", "sub": "the only non-linear step", "tone": "good"}, {"id": "y", "label": "Output", "sub": "a class, or a value", "tone": "teal"}], "edges": [["x", "w"], ["w", "a"], ["a", "y"]], "t": "diagram", "id": "dg-1_1-02-0"},
+
+
+
+
+
 
 
 
@@ -150,6 +158,11 @@ output:         y  = h₁ − 2·h₂
 
 
 
+
+
+
+
+
     { t: "p", text: "Put the units in layers. The input layer holds the features; one or more hidden layers hold learned intermediate representations; the output layer holds the predictions. **Fully connected** means every unit in a layer receives every unit of the previous layer as input. Layer l computes a linear transformation followed by an element-wise non-linearity:" },
 
     { t: "math", tex: "\\mathbf{z}^{(l)} = \\mathbf{W}^{(l)}\\mathbf{a}^{(l-1)} + \\mathbf{b}^{(l)}, \\qquad \\mathbf{a}^{(l)} = \\sigma\\!\\left(\\mathbf{z}^{(l)}\\right)" },
@@ -197,6 +210,11 @@ output:         y  = h₁ − 2·h₂
 
 
 
+
+
+
+
+
     { t: "quote", text: "A feed-forward network with a single hidden layer containing a finite number of neurons can approximate any continuous function on compact subsets of ℝⁿ, given sufficient neurons." },
 
     { t: "p", text: "That is the theorem people quote to say networks are general, and it is true. It is worth being precise about what it does *not* say. It does not say how many neurons *sufficient* is — the number can be astronomically large. It does not say that gradient descent will find those neurons' weights; it is an existence result. And it says nothing about behaviour outside the training inputs, which is the generalisation question the rest of the course lives on." },
@@ -214,6 +232,11 @@ output:         y  = h₁ − 2·h₂
     { t: "h2", n: "05", text: "Counting parameters", id: "params" },
 
     {"kind": "trace", "title": "Counting parameters, layer by layer", "caption": "Each layer holds a weight matrix of (inputs × outputs) plus one bias per output. The arithmetic is worth doing by hand once, because it is what tells you a 784→128 first layer is **three quarters of the whole network** — and therefore where the memory and most of the overfitting risk live.", "left": "layer", "codeW": 170, "vars": ["weights", "biases", "total"], "steps": [{"code": "input 784 -> hidden 128", "state": ["784 x 128 = 100,352", "128", "100,480"], "tone": "crit", "note": "92% of the model"}, {"code": "hidden 128 -> hidden 64", "state": ["128 x 64 = 8,192", "64", "8,256"], "tone": "accent"}, {"code": "hidden 64 -> output 10", "state": ["64 x 10 = 640", "10", "650"], "tone": "good"}, {"code": "whole network", "state": ["109,184", "202", "109,386"], "tone": "violet"}], "t": "diagram", "id": "dg-1_1-05-3"},
+
+
+
+
+
 
 
 

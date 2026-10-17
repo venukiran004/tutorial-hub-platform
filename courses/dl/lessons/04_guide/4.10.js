@@ -22,6 +22,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The series and the split", id: "setup" },
 
+    {"kind": "flow", "title": "The series and the split, where the order is the data", "caption": "A forecasting split has to be chronological, which rules out the shuffle every other task begins with. The window construction is the part that goes wrong: each training example is a window of past values and a target **after** it, and the windows must be built so that no example's inputs overlap a later example's target period.", "cols": 3, "nodes": [{"id": "s", "label": "One ordered series", "sub": "the order is the signal", "tone": "violet"}, {"id": "w", "label": "Slide a window", "sub": "L past steps -> H future steps", "tone": "accent"}, {"id": "c", "label": "Split chronologically", "sub": "never shuffle", "tone": "good"}, {"id": "g", "label": "A gap at the boundary", "sub": "so windows do not straddle it", "tone": "good"}, {"id": "n", "label": "Normalise on train only", "sub": "and watch section 02", "tone": "warn"}, {"id": "b", "label": "Baseline: last value", "sub": "before any model", "tone": "teal"}], "edges": [["s", "w"], ["w", "c"], ["c", "g"], ["g", "n"], ["n", "b"]], "t": "diagram", "id": "dg-4_10-01-0"},
+
+
+
+
+
     { t: "out", text: `  synthetic series: 1000 days, trend + 250-day seasonality + noise
   range [94.9, 157.7], std of the noise term = 3.0
 
@@ -35,6 +41,12 @@ EC.receiveLesson({
       body: [{ t: "p", text: "This series is `trend + seasonality + N(0, 3)`. The trend and seasonality are learnable; **the noise is not**, by construction. So no model can do better than RMSE 3.0, and anything claiming to has either leaked or is being evaluated wrong. Knowing this number transforms how you read results: a model at 3.1 is essentially perfect and further tuning is wasted, while a model at 3.9 has real headroom. On real data you cannot compute the floor exactly, but you can usually bound it — and asking 'how much of this series is even predictable?' before modelling prevents a lot of futile effort." }] },
 
     { t: "h2", n: "02", text: "Results", id: "results" },
+
+    {"kind": "flow", "title": "Reading the results against the baseline that matters", "caption": "For a series, the only reference point that means anything is the **naive forecast** — repeat the last value. A model that cannot beat it has learned nothing, and on many real series it is a genuinely hard target. Reporting MAE without that comparison is the single most common way a forecasting result overstates itself.", "cols": 3, "nodes": [{"id": "m", "label": "The model's MAE", "sub": "the number in hand", "tone": "accent"}, {"id": "n", "label": "Naive: repeat the last value", "sub": "the real target", "tone": "violet"}, {"id": "s", "label": "Seasonal naive", "sub": "if there is a season", "tone": "violet"}, {"id": "r", "label": "Ratio: MASE", "sub": "below 1 means it beat naive", "tone": "good"}, {"id": "h", "label": "Per-horizon, not averaged", "sub": "h=1 and h=H differ greatly", "tone": "good"}, {"id": "o", "label": "Without it, the number is unreadable", "sub": "the commonest overstatement", "tone": "crit"}], "edges": [["m", "r"], ["n", "r"], ["s", "r"], ["r", "h"], ["h", "o"]], "t": "diagram", "id": "dg-4_10-02-1"},
+
+
+
+
 
     { t: "out", text: `  model          RMSE      MAE
   rnn           3.423    2.717
@@ -55,6 +67,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "The leakage test, honestly", id: "leakage" },
 
+    {"kind": "flow", "title": "The leakage test, honestly", "caption": "The test that actually works is **truncation**: rebuild every feature from a history cut short at the forecast time, and compare against the features the pipeline produced. If any value differs, something read forward. It is mechanical, it needs no judgement, and it catches the leaks that reading the code does not.", "cols": 3, "nodes": [{"id": "f", "label": "Features as the pipeline built them", "sub": "from the full history", "tone": "violet"}, {"id": "t", "label": "Rebuild from a truncated history", "sub": "cut at the forecast time", "tone": "accent"}, {"id": "c", "label": "Compare, value by value", "sub": "mechanical, no judgement", "tone": "good"}, {"id": "d", "label": "Any difference is a leak", "sub": "something read forward", "tone": "crit"}, {"id": "r", "label": "Reading the code misses these", "sub": "a centred window looks innocent", "tone": "warn"}, {"id": "a", "label": "Automate it as a test", "sub": "not a one-off check", "tone": "teal"}], "edges": [["f", "c"], ["t", "c"], ["c", "d"], ["d", "r"], ["r", "a"]], "t": "diagram", "id": "dg-4_10-03-2"},
+
+
+
+
+
     { t: "out", text: `  RANDOM split test RMSE (normalised): 0.2532
   TEMPORAL split test RMSE (normalised): 0.2406` },
 
@@ -62,6 +80,12 @@ EC.receiveLesson({
       body: [{ t: "p", text: "The standard warning is that randomly splitting overlapping windows puts near-identical examples in both sets, inflating the test metric. I ran it expecting the random split to look better, and it came out slightly **worse** — 0.2532 against 0.2406. The reason is that this synthetic series is stationary in structure: trend plus a fixed-period cycle plus constant-variance noise, so the test period is statistically identical to the training period and the temporal split poses no extra difficulty. There is nothing for the leak to hide. On real data with regime changes, shifting volatility or structural breaks, a temporal split is genuinely harder and a random split does inflate the metric substantially. So the rule stands — always split temporally — but the *demonstration* of why needs non-stationary data, and I am reporting what I measured rather than the result I expected." }] },
 
     { t: "h2", n: "03b", text: "Forecasting-specific leakage", id: "feature-leakage" },
+
+    {"kind": "matrix", "title": "Forecasting-specific leakage, the five that recur", "caption": "Each of these is invisible in a loss curve and each inflates the backtest. The first is the most common by a wide margin, and the last is the most insidious: a scaler fitted over the whole series has folded the test period's **level** into the training data, so even a perfectly windowed model is reading the future.", "cols": ["The leak", "The fix"], "rows": ["Unshifted rolling feature", "Centred window", "Random split", "Target scaled over all time", "Unknowable covariate"], "cells": [[{"text": "the feature contains today", "tone": "crit"}, "shift by at least one step"], [{"text": "reads t+1 onward", "tone": "crit"}, "trailing windows only"], [{"text": "trains on later data", "tone": "crit"}, "chronological split, with a gap"], [{"text": "the test level is in the scaler", "tone": "crit"}, "fit the scaler per origin"], [{"text": "weather you will not have", "tone": "warn"}, "use only what is set in advance"]], "t": "diagram", "id": "dg-4_10-03b-3"},
+
+
+
+
 
     { t: "p", text: "The split is only the most visible way the future gets into a forecasting model. Features are the subtler one, and the failures are quiet." },
 
@@ -78,6 +102,12 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Pandas will happily centre a rolling window, and a centred 7-day mean at day t averages days t−3 through t+3. The feature then contains three days of future information at every row, the model learns to rely on it, and offline results are excellent. In production those future values do not exist. Nothing errors, the column looks reasonable, and the only symptom is a model that performs far worse live than it did in backtesting — which is usually attributed to market conditions rather than to the feature. Grep for `center=True` in any forecasting codebase you inherit." }] },
 
     { t: "h2", n: "04", text: "What this generalises to", id: "generalises" },
+
+    {"kind": "matrix", "title": "What this generalises to", "caption": "The window-and-truncation discipline is not about time series specifically — it is about any setting where the data has an **ordering the model must respect**. Each row below has the same structure: a boundary, a temptation to cross it, and a mechanical test that catches the crossing.", "cols": ["The ordering", "The same test"], "rows": ["Time series", "User event streams", "Medical records", "Financial backtests", "Any as-of feature"], "cells": [["calendar time", "truncate the history, rebuild, compare"], ["a session's order", "features from events before this one"], ["admission and discharge", "nothing recorded after the prediction time"], [{"text": "trade time, not settlement", "tone": "warn"}, "the data's own vintage, as of then"], [{"text": "the as-of timestamp", "tone": "good"}, "pass it in; make the builder refuse later rows"]], "t": "diagram", "id": "dg-4_10-04-4"},
+
+
+
+
 
     { t: "dl", items: [
       ["Always split temporally", "Even when a random split appears not to hurt, it cannot be trusted, and on non-stationary data it inflates results badly."],

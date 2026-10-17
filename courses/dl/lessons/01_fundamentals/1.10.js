@@ -19,6 +19,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The class, method by method", id: "class" },
 
+    {"kind": "layers", "title": "The network, with the shape convention stated", "caption": "Two layers — ReLU hidden, sigmoid output — with the data laid out as the maths has it: **X is (n_features × m_samples)**, one example per column. That convention is why every weight matrix multiplies from the left and why a transpose shows up at the usage line. It is the opposite of the (batch, features) layout PyTorch uses, and mixing the two is the single most common source of a shape error in a hand-written network.", "items": [{"label": "X - input, one example per column", "sub": "2 features", "side": "(2, m)", "tone": "accent"}, {"label": "Z1 = W1 @ X + b1", "sub": "W1 is (8, 2)", "side": "(8, m)", "tone": "violet"}, {"label": "A1 = ReLU(Z1)", "sub": "the non-linearity", "side": "(8, m)", "tone": "good"}, {"label": "Z2 = W2 @ A1 + b2", "sub": "W2 is (1, 8)", "side": "(1, m)", "tone": "violet"}, {"label": "A2 = sigmoid(Z2)", "sub": "a probability per example", "side": "(1, m)", "tone": "good"}, {"label": "Binary cross-entropy, averaged", "sub": "one number", "side": "scalar", "tone": "teal"}], "t": "diagram", "id": "dg-1_10-01-0"},
+
+
     { t: "p", text: "The network is two layers — ReLU hidden, sigmoid output — with the data laid out as the maths of lesson 1.3 has it: **X is (n_features × m_samples)**, one example per column, and every weight matrix is (units × inputs). Here is the class as the common form gives it, with each method annotated against the lesson that derived it." },
 
     { t: "code", lang: "python", title: "Initialisation — lesson 1.6",
@@ -125,6 +128,9 @@ class NeuralNetwork:
 
     { t: "h2", n: "02", text: "Run on XOR", id: "xor" },
 
+    {"kind": "trace", "title": "XOR, from chance to certainty", "caption": "Epoch 0's loss of 0.7992 is **above** ln 2 = 0.6931 — the loss of predicting 0.5 everywhere — because the random initial weights are confidently wrong on some of the four examples, which costs more than having no opinion. Accuracy is 100% by epoch 500 and everything after that is the loss sharpening predictions it already gets right, from 0.0485 down to 0.0015.", "left": "epoch", "codeW": 130, "vars": ["loss", "accuracy"], "steps": [{"code": "0", "state": ["0.7992", "50.0%"], "tone": "crit", "note": "worse than ln 2 = 0.6931"}, {"code": "500", "state": ["0.0485", "100.0%"], "changed": [0, 1], "tone": "good"}, {"code": "1500", "state": ["0.0070", "100.0%"], "tone": "good"}, {"code": "3000", "state": ["0.0026", "100.0%"], "tone": "good"}, {"code": "4500", "state": ["0.0015", "100.0%"], "tone": "accent", "note": "sharpening, not learning"}, {"code": "predictions", "state": ["0.002, 0.999, 0.999, 0.001", ""], "tone": "violet"}], "t": "diagram", "id": "dg-1_10-02-1"},
+
+
     { t: "p", text: "The usual usage line — `nn.train(X_train.T, y_train.reshape(1, -1), epochs=5000)` with `input_dim=2, hidden_dim=8, lr=0.1` — asks for a two-feature binary problem. XOR is the two-feature binary problem this module opened with, and the one a single unit cannot learn:" },
 
     { t: "code", lang: "python", title: "The usual usage, on XOR",
@@ -152,6 +158,9 @@ final predictions: [0.002 0.999 0.999 0.001]` },
 
     { t: "h2", n: "03", text: "Run on two moons", id: "moons" },
 
+    {"kind": "trace", "title": "Two moons, and a plateau worth recognising", "caption": "Accuracy sits at 86.3% from epoch 1,000 to 3,000 while the loss creeps down — the network has found the roughly linear boundary that separates most of each crescent and is refining its confidence in it rather than its shape. Then between 3,000 and 4,000 something breaks: the loss drops from 0.2862 to 0.1768 and accuracy jumps to 93.3%. **That is the moment the boundary becomes curved.** A flat accuracy curve with a falling loss is not a stalled run; it is a run about to move.", "left": "epoch", "codeW": 130, "vars": ["loss", "accuracy"], "steps": [{"code": "0", "state": ["0.6240", "71.3%"], "tone": "accent"}, {"code": "1000", "state": ["0.3064", "86.3%"], "tone": "warn", "note": "a linear boundary"}, {"code": "2000", "state": ["0.2967", "86.3%"], "tone": "warn", "note": "accuracy flat"}, {"code": "3000", "state": ["0.2862", "86.7%"], "tone": "warn", "note": "loss still falling"}, {"code": "4000", "state": ["0.1768", "93.3%"], "changed": [0, 1], "tone": "good", "note": "the boundary curves"}, {"code": "held-out test", "state": ["", "97.0%"], "tone": "violet"}], "t": "diagram", "id": "dg-1_10-03-2"},
+
+
     { t: "p", text: "Four points is a demonstration, not a dataset. `make_moons` gives two interleaved crescents in two dimensions — the standard small non-linear binary problem — with noise, and a held-out set to score on:" },
 
     { t: "code", lang: "python", title: "300 training points, 100 held out",
@@ -175,6 +184,9 @@ test accuracy: 97.0%` },
     { t: "p", text: "The trace has a shape worth recognising. Accuracy sits at 86 % from epoch 1,000 to 3,000 while the loss creeps down — the network has found the roughly linear boundary that separates most of each crescent and is slowly bending it around the tips. Between 3,000 and 4,000 the bend completes and accuracy jumps to 93 %. Plain full-batch gradient descent at a fixed rate does eventually get there; lesson 1.5's momentum and Adam exist to get there in a fraction of the epochs. The 97 % on held-out points, higher than the final training accuracy, is a reminder that a hundred test points carry a few percent of noise either way." },
 
     { t: "h2", n: "04", text: "Is backward() right?", id: "check" },
+
+    {"kind": "flow", "title": "The gradient check, and why the curves do not replace it", "caption": "Training curves say the gradients point downhill; they do not say the gradients are *right*. A backward pass with a transposed matrix or a missing 1/m can still train — badly, and in a way nothing reports. Comparing against autograd gives agreement to **2.98e-09 and 9.06e-09** in float64, and the residual is the 1e-08 clamp inside the logs that the NumPy loss has and the `dZ2 = A2 − Y` shortcut ignores. That is the definitive check, and it takes one run.", "cols": 3, "nodes": [{"id": "c", "label": "The loss is falling", "sub": "so the gradient points downhill", "tone": "accent"}, {"id": "n", "label": "But not that it is correct", "sub": "a bad transpose still trains", "tone": "warn"}, {"id": "a", "label": "Compare against autograd", "sub": "the same forward, in float64", "tone": "good"}, {"id": "r", "label": "dW1: 2.98e-09   dW2: 9.06e-09", "sub": "agreement", "tone": "good"}, {"id": "e", "label": "The residual is the 1e-08 clamp", "sub": "which the shortcut ignores", "tone": "violet"}, {"id": "o", "label": "Run it once, before trusting anything", "sub": "it costs one script", "tone": "teal"}], "edges": [["c", "n"], ["n", "a"], ["a", "r"], ["r", "e"], ["e", "o"]], "t": "diagram", "id": "dg-1_10-04-3"},
+
 
     { t: "p", text: "The training curves say the gradients point downhill; they do not say they are exactly right, and a backward pass with a wrong transpose or a missing 1/m can still train — badly. The definitive check is against an independent gradient. With `lr = 1.0` the update is `new = old − grad`, so the gradient can be recovered as `old − new` and compared with autograd on the same weights and the same 16 examples:" },
 

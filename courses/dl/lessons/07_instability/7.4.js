@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What to log", id: "monitoring" },
 
+    {"kind": "matrix", "title": "What to log, and what each line buys", "caption": "Six scalars per step, and together they distinguish nearly every failure in this module from the others. The gradient norm is the highest-value single line (7.1); the learning rate is the one people assume they know and are most often wrong about, because a scheduler bug is invisible in the loss.", "cols": ["Log", "It distinguishes"], "rows": ["Loss, train and validation", "Gradient norm", "Learning rate, actual", "Activation statistics", "Dead-unit fraction", "Time per step"], "cells": [["overfitting from underfitting", "the first split to make"], [{"text": "explosion, collapse, disconnection", "tone": "good"}, "the highest-value line"], [{"text": "scheduler bugs", "tone": "accent"}, "invisible in the loss"], ["saturation, drift", "per layer, occasionally"], [{"text": "a rate that was too high", "tone": "accent"}, "7.2"], ["a data-loading stall", "a flat GPU with a busy CPU"]], "t": "diagram", "id": "dg-7_4-01-0"},
+
+
+
     { t: "table", head: ["Signal", "Healthy", "Trouble"],
       rows: [
         ["**Loss**", "Smooth decrease", "Spikes, NaN, flat"],
@@ -73,6 +77,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "The pre-flight checklist", id: "checklist" },
 
+    {"kind": "steps", "title": "The pre-flight checklist, in the order that fails fastest", "caption": "Each step is cheap and each rules out a class of problem, so the order is by cost: the first four take under a minute together and catch most of what goes wrong. Running them in order means never debugging a distributed job for a bug that a single batch would have exposed.", "items": [{"label": "The initial loss matches the prior", "desc": "ln k for k balanced classes (1.12)", "code": "1", "tone": "accent"}, {"label": "One batch overfits to near-zero", "desc": "the machinery works", "code": "2", "tone": "accent"}, {"label": "The gradient reaches every layer", "desc": "no detach, no frozen parameter", "code": "3", "tone": "good"}, {"label": "Shapes and masks asserted", "desc": "causal, padding, and the loss reduction", "code": "4", "tone": "good"}, {"label": "One epoch on a tenth of the data", "desc": "the loss falls; nothing NaNs", "code": "5", "tone": "violet"}, {"label": "Then the full run, logging the six scalars", "desc": "and a checkpoint you can resume from", "code": "6", "tone": "teal"}], "t": "diagram", "id": "dg-7_4-03-1"},
+
+
+
     { t: "p", text: "Before committing a long job to expensive hardware, confirm each of these. Most are one line and every one of them has cost somebody a week." },
 
     { t: "table", head: ["", "Check"],
@@ -96,6 +104,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Of everything on that list, this is the one that fails most expensively. A checkpoint that saves without error but cannot be loaded — the wrong shard, a partial write, a missing optimiser state, a version mismatch — is indistinguishable from a good one until the moment you need it, which is by definition after something has already gone wrong. Save a checkpoint in the first few minutes of a run, load it into a fresh process, and confirm the model produces identical outputs. It takes two minutes and it converts your entire checkpointing strategy from an assumption into a fact." }] },
 
     { t: "h2", n: "04", text: "Closing the track", id: "closing" },
+
+    {"kind": "flow", "title": "Closing the track: what this module leaves you with", "caption": "Three habits rather than three facts. Depth makes everything multiplicative, so the per-layer factor is the quantity to control; a surprising result is a bug report against your own setup until a **discriminating measurement** says otherwise (4.9); and the cheap checks run first, because the expensive ones only make sense once the cheap ones pass.", "cols": 3, "nodes": [{"id": "d", "label": "Depth multiplies", "sub": "control the per-layer factor", "tone": "violet"}, {"id": "i", "label": "Init, norm, residuals", "sub": "all serve that one goal", "tone": "accent"}, {"id": "s", "label": "A surprise is a bug report", "sub": "against your setup, first", "tone": "accent"}, {"id": "m", "label": "Find a discriminating measurement", "sub": "not the easiest one (4.9)", "tone": "good"}, {"id": "c", "label": "Cheap checks first", "sub": "initial loss, one batch, gradients", "tone": "good"}, {"id": "l", "label": "Then log, and keep logging", "sub": "the six scalars of section 01", "tone": "teal"}], "edges": [["d", "i"], ["i", "s"], ["s", "m"], ["m", "c"], ["c", "l"]], "t": "diagram", "id": "dg-7_4-04-2"},
+
+
 
     { t: "p", text: "That completes the deep learning learn track: foundations, convolutional networks, sequence models, transformers, the reference cards, audio and speech, and training stability. A few threads ran through all of it and are worth naming once more." },
 

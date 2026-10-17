@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The data", id: "data" },
 
+    {"kind": "flow", "title": "The sentiment data, and the one decision that shapes everything after", "caption": "Vocabulary and sequence length are chosen before any model exists, and both are irreversible in effect: a 10,000-word vocabulary maps everything rarer to `<unk>`, and truncating at 200 tokens discards the end of every longer review — which matters because sentiment is often concluded at the end. Both choices should be made from the data's own length distribution rather than from habit.", "cols": 3, "nodes": [{"id": "r", "label": "Raw reviews", "sub": "variable length", "tone": "violet"}, {"id": "t", "label": "Tokenise, build a vocabulary", "sub": "10,000 words, say", "tone": "accent"}, {"id": "u", "label": "Everything rarer becomes <unk>", "sub": "irreversibly", "tone": "warn"}, {"id": "l", "label": "Truncate or pad to a fixed length", "sub": "200 tokens, say", "tone": "accent"}, {"id": "d", "label": "The end of long reviews is lost", "sub": "where the verdict often is", "tone": "crit"}, {"id": "p", "label": "Choose both from the length histogram", "sub": "not from habit", "tone": "good"}], "edges": [["r", "t"], ["t", "u"], ["t", "l"], ["l", "d"], ["d", "p"]], "t": "diagram", "id": "dg-4_8-01-0"},
+
+
+
+
+
     { t: "out", text: `  dataset: 20,640 samples, 8 features
   features: ['MedInc', 'HouseAge', 'AveRooms', 'AveBedrms', 'Population',
              'AveOccup', 'Latitude', 'Longitude']
@@ -28,6 +34,12 @@ EC.receiveLesson({
     { t: "p", text: "Real data — 20,640 California census blocks. The target is capped at 5.0, which is worth noticing before modelling: every block worth more than $500,000 is recorded as exactly 5.0, so the model cannot distinguish them and the error at the top of the range is a property of the data rather than the model." },
 
     { t: "h2", n: "02", text: "Scaling, and the leak next to it", id: "scaling" },
+
+    {"kind": "flow", "title": "Scaling, and the leak next to it", "caption": "The leak here is a specific and common one: fitting the tokeniser's **vocabulary** on the whole dataset before splitting. The vocabulary is a fitted object like a scaler — it encodes which words exist, which is information from the test set — and the effect is small but real, and entirely avoidable by building it from the training split alone.", "cols": 3, "nodes": [{"id": "a", "label": "Build the vocabulary on everything", "sub": "the tempting order", "tone": "crit"}, {"id": "l", "label": "It encodes which words exist", "sub": "including the test set's", "tone": "crit"}, {"id": "s", "label": "Split first", "sub": "then build from train only", "tone": "good"}, {"id": "u", "label": "Test-only words become <unk>", "sub": "which is the honest situation", "tone": "good"}, {"id": "n", "label": "Same rule as any scaler", "sub": "a fitted object belongs in the fold", "tone": "good"}, {"id": "e", "label": "The effect is small but real", "sub": "and free to avoid", "tone": "teal"}], "edges": [["a", "l"], ["l", "s"], ["s", "u"], ["u", "n"], ["n", "e"]], "t": "diagram", "id": "dg-4_8-02-1"},
+
+
+
+
 
     { t: "code", lang: "python", title: "Fit on train, transform both",
       code: `X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2,
@@ -46,6 +58,12 @@ X_test  = scaler.transform(X_test)          # transform only on TEST`,
       body: [{ t: "p", text: "Correctly scaled test data has mean −0.0047 and standard deviation 1.0177 — close to standardised but not exactly, because it was transformed using statistics computed from *other* data. If your test set comes out at exactly mean 0 and standard deviation 1, the scaler saw it. The information leaked here is small and the metric inflation is mild, which is exactly why it survives: nothing fails, and the result is only slightly too good. The same pattern applies to imputation, target encoding and feature selection — any step that learns from data must be fitted inside the training fold." }] },
 
     { t: "h2", n: "03", text: "The model", id: "model" },
+
+    {"kind": "layers", "title": "The sentiment model, layer by layer", "caption": "Four layers and one shape question. The embedding holds most of the parameters — 10,000 × 128 is 1.28 million against the LSTM's 200 thousand — so this model is mostly a lookup table, and its regularisation should be aimed there first.", "items": [{"label": "Linear -> 1, sigmoid", "sub": "the verdict", "tone": "teal", "side": "129 params"}, {"label": "Dropout", "sub": "on the pooled representation", "tone": "good", "side": ""}, {"label": "LSTM, hidden 128", "sub": "take the true final state (3.6)", "tone": "accent", "side": "~132k"}, {"label": "Embedding 10,000 x 128", "sub": "most of the model", "tone": "violet", "side": "1.28M"}, {"label": "Token ids, padded to 200", "sub": "with a padding mask", "tone": "good", "side": ""}], "t": "diagram", "id": "dg-4_8-03-2"},
+
+
+
+
 
     { t: "code", lang: "python", title: "The architecture",
       code: `class HousePriceANN(nn.Module):
@@ -69,6 +87,12 @@ X_test  = scaler.transform(X_test)          # transform only on TEST`,
 
     { t: "h2", n: "04", text: "Results", id: "results" },
 
+    {"kind": "flow", "title": "Reading the results, and what to compare against", "caption": "A sentiment accuracy means nothing without the two reference points below it. The majority-class baseline is the floor; a TF-IDF plus logistic regression is the **real** competitor, and on short-text binary sentiment it is frequently within a point or two of an LSTM at a fraction of the cost — which is the ML 11.5 finding, and the reason that comparison belongs in the table.", "cols": 3, "nodes": [{"id": "m", "label": "The LSTM's accuracy", "sub": "the number in hand", "tone": "accent"}, {"id": "b", "label": "Majority class", "sub": "the floor", "tone": "violet"}, {"id": "t", "label": "TF-IDF + logistic regression", "sub": "the real competitor", "tone": "good"}, {"id": "c", "label": "Often within a point or two", "sub": "at a fraction of the cost", "tone": "good"}, {"id": "s", "label": "And it trains in seconds", "sub": "ML 11.5 measured this", "tone": "good"}, {"id": "j", "label": "So justify the LSTM, or do not use it", "sub": "which is the honest conclusion", "tone": "teal"}], "edges": [["m", "b"], ["m", "t"], ["t", "c"], ["c", "s"], ["s", "j"]], "t": "diagram", "id": "dg-4_8-04-3"},
+
+
+
+
+
     { t: "out", text: `    epoch  0: test RMSE 0.8003  R2 0.5112
     epoch 20: test RMSE 0.7026  R2 0.6233
     epoch 40: test RMSE 0.6846  R2 0.6423
@@ -86,6 +110,12 @@ X_test  = scaler.transform(X_test)          # transform only on TEST`,
       body: [{ t: "p", text: "The ANN improves on linear regression — 0.629 against 0.576 — which is the comparison the usual treatment makes, and on its own it reads as a success. Adding `HistGradientBoostingRegressor` with **default settings and no tuning** gives R² 0.837 and an RMSE of $46,179 against the network's $69,726. It cut the error by a third and trained in a couple of seconds. This is the general result on tabular data, not a quirk of this dataset: trees handle the axis-aligned splits, threshold effects and feature interactions that dominate tabular problems, and they do it without scaling, without architecture choices and without a learning rate. Always run this baseline. A neural network that beats linear regression has cleared a bar that was not the relevant one." }] },
 
     { t: "h2", n: "05", text: "Does scaling matter?", id: "scaling-matters" },
+
+    {"kind": "flow", "title": "Does scaling matter here?", "caption": "No — and the reason is worth stating, because it is the one case in this course where the answer is a flat no. The input is **token indices**, which are looked up in an embedding table rather than multiplied by a weight; index 9,999 is not 'larger' than index 1 in any sense the model can see. Scaling them would be meaningless, and scaling the embeddings themselves is what LayerNorm is for.", "cols": 3, "nodes": [{"id": "i", "label": "The input is token indices", "sub": "not magnitudes", "tone": "violet"}, {"id": "l", "label": "They index a lookup table", "sub": "never multiplied", "tone": "accent"}, {"id": "n", "label": "9,999 is not larger than 1", "sub": "not to the model", "tone": "accent"}, {"id": "s", "label": "So scaling is meaningless", "sub": "unlike every tabular case", "tone": "good"}, {"id": "e", "label": "The embeddings do need control", "sub": "they are learned, and unbounded", "tone": "warn"}, {"id": "o", "label": "Which is LayerNorm's job", "sub": "not a scaler's", "tone": "teal"}], "edges": [["i", "l"], ["l", "n"], ["n", "s"], ["s", "e"], ["e", "o"]], "t": "diagram", "id": "dg-4_8-05-4"},
+
+
+
+
 
     { t: "out", text: `  unscaled features: RMSE 0.7999  R2 0.5117
   scaled features  : RMSE 0.6973  R2 0.6290` },

@@ -51,7 +51,7 @@ scripted = torch.jit.script(model)            # follows control flow
 scripted.save("model_scripted.pt")
 
 traced = torch.jit.trace(model, dummy)        # records ONE execution path`,
-      caption: "The reference passes `opset_version=13`; torch 2.10 silently upgrades it to 18 with a warning, because its exporter has no implementation for versions below that." },
+      caption: "A fourth route skips ONNX entirely: `torch_tensorrt.compile(model, inputs=[torch.randn(1, 3, 224, 224)])` compiles straight from TorchScript to a TensorRT engine, keeping PyTorch semantics and giving up format neutrality. On the arguments above, `opset_version=13`; torch 2.10 silently upgrades it to 18 with a warning, because its exporter has no implementation for versions below that." },
 
     { t: "out", text: `  script  -> m_script.pt  46.89 MB  max diff 0.00e+00
   trace   -> m_trace.pt   46.93 MB  max diff 0.00e+00
@@ -97,6 +97,11 @@ traced = torch.jit.trace(model, dummy)        # records ONE execution path`,
 
 
 
+
+
+
+
+
     { t: "out", text: `  resnet18 state_dict on disk : 46.83 MB  (11,689,512 parameters)
 
   fp32 46.83 MB -> fp16 23.43 MB = 2.00x smaller
@@ -119,6 +124,11 @@ traced = torch.jit.trace(model, dummy)        # records ONE execution path`,
 
 
 
+
+
+
+
+
     { t: "out", text: `  batch  1:    25.3 ms total,   25.3 ms/image,   39.6 img/s
   batch  8:   151.1 ms total,   18.9 ms/image,   52.9 img/s
   batch 32:   687.2 ms total,   21.5 ms/image,   46.6 img/s` },
@@ -131,6 +141,11 @@ traced = torch.jit.trace(model, dummy)        # records ONE execution path`,
     { t: "h2", n: "05", text: "The runtime landscape", id: "runtimes" },
 
     {"kind": "matrix", "title": "The runtime landscape, and what each is for", "caption": "The choice is usually decided by the deployment target rather than by speed. ONNX Runtime is the portable default; TensorRT is the fastest on NVIDIA and is NVIDIA-only; Core ML and TFLite exist because a phone is the target. `torch.compile` is the one that requires no export step at all, which makes it the cheapest thing to try first.", "cols": ["Target", "Note"], "rows": ["torch.compile", "ONNX Runtime", "TensorRT", "OpenVINO", "Core ML / TFLite", "TorchScript"], "cells": [[{"text": "the same Python process", "tone": "good"}, "no export; try this first"], [{"text": "anywhere, any language", "tone": "good"}, "the portable default"], [{"text": "NVIDIA GPUs", "tone": "accent"}, "fastest, and vendor-locked"], [{"text": "Intel CPUs", "tone": "accent"}, "the same role on Intel hardware"], [{"text": "iOS / Android", "tone": "accent"}, "on-device, with hardware accelerators"], [{"text": "a C++ process", "tone": "warn"}, "largely superseded by compile and ONNX"]], "t": "diagram", "id": "dg-2_12-05-2"},
+
+
+
+
+
 
 
 

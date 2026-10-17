@@ -23,6 +23,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The setup", id: "setup" },
 
+    {"kind": "flow", "title": "The setup: four architectures, one task, everything else held", "caption": "The comparison is only meaningful if the differences are the architectures. Same split, same vocabulary, same sequence length, same optimiser and schedule, same number of epochs and the same early-stopping rule — and the embedding dimension matched, because an architecture given a wider embedding is being given more parameters rather than more ability.", "cols": 3, "nodes": [{"id": "d", "label": "One dataset, one split", "sub": "fixed seed", "tone": "violet"}, {"id": "v", "label": "One vocabulary and length", "sub": "built on train only", "tone": "accent"}, {"id": "e", "label": "One embedding width", "sub": "or it is a parameter comparison", "tone": "accent"}, {"id": "o", "label": "One optimiser and schedule", "sub": "and the same epoch budget", "tone": "accent"}, {"id": "s", "label": "One early-stopping rule", "sub": "applied identically", "tone": "good"}, {"id": "a", "label": "Only the architecture differs", "sub": "which is the whole point", "tone": "teal"}], "edges": [["d", "v"], ["v", "e"], ["e", "o"], ["o", "s"], ["s", "a"]], "t": "diagram", "id": "dg-4_9-01-0"},
+
+
+
+
+
     { t: "p", text: "The usual choice is a dozen hand-written sample sentences, which cannot separate four architectures. This uses **20 newsgroups** — real posts, two classes, with headers, footers and quoted text removed so the task is about content rather than metadata." },
 
     { t: "out", text: `  real dataset: ['rec.sport.hockey', 'sci.space']
@@ -33,6 +39,12 @@ EC.receiveLesson({
     { t: "p", text: "Four models at matched hidden size: an RNN, LSTM and GRU reading the final hidden state from a packed sequence, and a two-layer transformer encoder with masked mean pooling. Same embeddings, same optimiser, same eight epochs." },
 
     { t: "h2", n: "02", text: "The first result", id: "first" },
+
+    {"kind": "flow", "title": "The first result, and why it was not believed", "caption": "The first run produced an ordering that contradicted the theory, and the course's response is the one worth imitating: **treat a surprising result as a bug report against your own setup** before treating it as a finding. 3.3 had already shown exactly this pattern — an LSTM at chance because of a forget-gate bias — so the prior on 'my setup is wrong' was correctly high.", "cols": 3, "nodes": [{"id": "r", "label": "An unexpected ordering", "sub": "the simpler model led", "tone": "warn"}, {"id": "p", "label": "Theory predicts otherwise", "sub": "so one of them is wrong", "tone": "warn"}, {"id": "b", "label": "Assume the setup first", "sub": "not the theory", "tone": "good"}, {"id": "h", "label": "3.3 was exactly this", "sub": "a bias, not an architecture", "tone": "accent"}, {"id": "e", "label": "List the explanations", "sub": "and find one that discriminates", "tone": "good"}, {"id": "m", "label": "Then measure it", "sub": "which is section 04", "tone": "teal"}], "edges": [["r", "p"], ["p", "b"], ["b", "h"], ["h", "e"], ["e", "m"]], "t": "diagram", "id": "dg-4_9-02-1"},
+
+
+
+
 
     { t: "out", text: `  model         test acc     params   train s
   rnn              63.3%    520,578       14
@@ -45,6 +57,12 @@ EC.receiveLesson({
       body: [{ t: "p", text: "The three recurrent models behave sensibly: the RNN is weakest, gating helps a lot, and the GRU edges the LSTM. The transformer scores **50.3 %**, which is precisely the majority-class rate. A model that is merely undertrained scores somewhere above chance and below good; a model that lands on the baseline to the decimal is not learning at all — it is emitting a constant. That distinction is worth internalising, because 'data-hungry transformer' is a plausible story that fits the number, and it was wrong." }] },
 
     { t: "h2", n: "03", text: "Ruling out the obvious", id: "sweep" },
+
+    {"kind": "matrix", "title": "Ruling out the obvious, one candidate at a time", "caption": "Each row is a hypothesis with a cheap test attached, and the discipline is to find the test that **distinguishes** rather than the one that is easiest to run. Confirming that the data is fine tells you little; finding a measurement whose outcome differs between two live hypotheses is what ends the argument.", "cols": ["Hypothesis", "The test"], "rows": ["The data is wrong", "The labels are shuffled", "It cannot overfit a batch", "No gradient arrives", "The initialisation", "The learning rate"], "cells": [["a shared split would differ", "same split for every model: ruled out"], ["every model would be at chance", {"text": "one was not: ruled out", "tone": "good"}], [{"text": "overfit-one-batch (1.12)", "tone": "good"}, "it could: machinery is fine"], [{"text": "measure it at step 0", "tone": "good"}, "the discriminating one"], [{"text": "the forget-gate bias", "tone": "accent"}, "3.3's culprit; check it directly"], ["a sweep would show it", "cheap, and it did not"]], "t": "diagram", "id": "dg-4_9-03-2"},
+
+
+
+
 
     { t: "p", text: "The tempting explanation was hyperparameters — transformers are known to be sensitive, and lesson 4.4 established they need warmup. So: five configurations spanning learning rate, epochs and warmup." },
 
@@ -68,6 +86,12 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Five hyperparameter configurations and four architectural variants — nine training runs, well over an hour of compute — all returning 50.3 %. Every one of those hypotheses was plausible and each was tested by training again, which is the slow way to learn nothing. The measurement that actually solved it inspected the pooled tensor at initialisation and took under a second. **When a result is completely insensitive to changes, stop changing things and look inside the model instead.**" }] },
 
     { t: "h2", n: "04", text: "The discriminating measurement", id: "diagnosis" },
+
+    {"kind": "flow", "title": "The discriminating measurement", "caption": "A measurement is discriminating when the two hypotheses predict **different** outcomes for it. Here the gradient at the first position separates 'the architecture cannot carry the dependency' from 'the architecture can and something else prevents it' — and the answer was the second, which is what pointed at the initialisation rather than at the design.", "cols": 3, "nodes": [{"id": "h1", "label": "Hypothesis A", "sub": "the architecture cannot carry it", "tone": "warn"}, {"id": "h2", "label": "Hypothesis B", "sub": "it can; something blocks it", "tone": "warn"}, {"id": "m", "label": "Measure the gradient at step 0", "sub": "A predicts small, B predicts not", "tone": "accent"}, {"id": "r", "label": "It was not small", "sub": "larger than the simpler model's", "tone": "good"}, {"id": "c", "label": "So B", "sub": "the design delivers", "tone": "good"}, {"id": "f", "label": "Which pointed at the bias", "sub": "not at the architecture", "tone": "teal"}], "edges": [["h1", "m"], ["h2", "m"], ["m", "r"], ["r", "c"], ["c", "f"]], "t": "diagram", "id": "dg-4_9-04-3"},
+
+
+
+
 
     { t: "p", text: "Rather than train again, inspect the pooled representation directly at initialisation — does it vary between documents at all?" },
 
@@ -129,6 +153,12 @@ return self.fc((h * mask).sum(1) / mask.sum(1).clamp(min=1.0))`,
       body: [{ t: "p", text: "Here the GRU trains in 50 s against the LSTM's 79 s — the reverse of the microbenchmark in lesson 5.5, where the GRU was 1.6–3.1× slower. Both are correct measurements of different things: the microbenchmark ran fixed-length unpacked tensors, while this uses `pack_padded_sequence`, which dispatches to a different kernel path entirely. That is worth noticing rather than explaining away, and it reinforces the point from 5.5 — timing depends on the exact code path and must be measured in the configuration you will actually run." }] },
 
     { t: "h2", n: "06", text: "What to take from this", id: "lessons" },
+
+    {"kind": "matrix", "title": "What to take from this", "caption": "The transferable content is the procedure, not the ordering of four models on one dataset. Each row below is a habit that turns a confusing result into a finding — and the last is the one that most often gets skipped, because a corrected result is less exciting than a surprising one.", "cols": ["Habit", "Why"], "rows": ["Hold all but one factor", "Distrust a surprise", "Find a discriminating test", "Check the known culprits", "Report the corrected run", "Say what you held fixed"], "cells": [[{"text": "or it is not a comparison", "tone": "good"}, "width, schedule, split, epochs"], [{"text": "assume your setup", "tone": "good"}, "it is far more often the cause"], [{"text": "not the easiest test", "tone": "accent"}, "one whose outcome separates them"], [{"text": "forget-gate bias, masks, shifts", "tone": "accent"}, "this course has met each before"], [{"text": "and the first one, labelled", "tone": "violet"}, "the correction is the content"], [{"text": "so it can be reproduced", "tone": "teal"}, "or disputed"]], "t": "diagram", "id": "dg-4_9-06-4"},
+
+
+
+
 
     { t: "dl", items: [
       ["A round number is a red flag", "Exactly the majority-class rate, exactly zero loss, exactly 100 % of predictions in one class — none of these is how a merely imperfect model behaves."],

@@ -28,6 +28,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "p", text: "Same architecture, same data, same optimiser, same number of epochs. The only difference is whether the backbone starts from ImageNet weights or from random ones." },
 
     { t: "out", text: `=== 2,000 CIFAR-10 images, 2 epochs, identical everything but the weights ===
@@ -58,6 +63,11 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Freezing, and what it costs", id: "freezing" },
 
     {"kind": "matrix", "title": "Freezing, and what it costs", "caption": "Freezing is cheap in two senses and expensive in a third. It saves the backward pass through the frozen part and lets you cache those activations once; it costs the ability to adapt the features themselves, which matters exactly when your domain is far from the pretraining data — a chest X-ray is not an ImageNet photograph.", "cols": ["Buys", "Costs"], "rows": ["Freeze all but the head", "Freeze the early stages", "Freeze nothing", "Cache frozen activations"], "cells": [[{"text": "fastest; least overfitting", "tone": "good"}, {"text": "features cannot adapt", "tone": "warn"}], [{"text": "early filters are generic anyway", "tone": "good"}, "the usual compromise"], [{"text": "full adaptation", "tone": "accent"}, {"text": "needs a small lr and more data", "tone": "warn"}], [{"text": "one forward pass, then reuse", "tone": "good"}, {"text": "rules out augmentation", "tone": "crit"}]], "t": "diagram", "id": "dg-2_5-03-1"},
+
+
+
+
+
 
 
 
@@ -101,6 +111,11 @@ for param in model.layer4.parameters():
 
 
 
+
+
+
+
+
     { t: "p", text: "The pretrained layers already hold something valuable; the new head holds noise. They should not move at the same speed." },
 
     { t: "code", lang: "python", title: "Parameter groups",
@@ -120,6 +135,11 @@ for param in model.layer4.parameters():
 
 
 
+
+
+
+
+
     { t: "p", text: "What a single optimiser step does to a pretrained layer, measured as a fraction of the weight tensor's norm:" },
 
     { t: "out", text: `  lr=1e-05 -> weights moved   0.05% of their norm in ONE step
@@ -134,6 +154,11 @@ for param in model.layer4.parameters():
     { t: "h2", n: "06", text: "The normalisation trap", id: "normalisation" },
 
     {"kind": "flow", "title": "The normalisation trap in a frozen backbone", "caption": "`requires_grad = False` stops the **weights** changing; it does not stop batch norm updating its running mean and variance, because those are buffers rather than parameters. So a 'frozen' backbone silently drifts to your new data's statistics during training and then uses those statistics at inference — a mismatch that looks like a mysterious train/test gap. `model.eval()` on the backbone is the fix.", "cols": 3, "nodes": [{"id": "r", "label": "requires_grad = False", "sub": "weights are frozen", "tone": "accent"}, {"id": "b", "label": "But BN buffers still update", "sub": "they are not parameters", "tone": "crit"}, {"id": "d", "label": "Running stats drift", "sub": "toward the new data", "tone": "crit"}, {"id": "g", "label": "A train/test gap appears", "sub": "with no obvious cause", "tone": "crit"}, {"id": "e", "label": "backbone.eval()", "sub": "freezes the buffers too", "tone": "good"}, {"id": "o", "label": "Or swap BN for GroupNorm", "sub": "no running statistics at all", "tone": "good"}], "edges": [["r", "b"], ["b", "d"], ["d", "g"], ["g", "e"], ["e", "o"]], "t": "diagram", "id": "dg-2_5-06-4"},
+
+
+
+
+
 
 
 

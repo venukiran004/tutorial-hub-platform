@@ -51,6 +51,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "code", lang: "python", title: "Hooks, and the one that silently breaks",
       code: `def grad_cam(model, image, target_class, target_layer):
     acts, grads = {}, {}
@@ -86,6 +91,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "p", text: "A photograph of a dog, through ResNet-18 with genuine ImageNet weights:" },
 
     { t: "out", text: `  88.46%  class 258  Samoyed
@@ -104,6 +114,11 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Why the ReLU", id: "relu" },
 
     {"kind": "flow", "title": "Why the ReLU is there", "caption": "The weighted sum contains both positive and negative contributions: regions that support the class and regions that **argue against** it. Keeping only the positive part answers 'what made the model say this class', which is the question being asked. Drop the ReLU and the map mixes evidence for and against into one ambiguous picture.", "cols": 3, "nodes": [{"id": "w", "label": "The weighted sum", "sub": "positive and negative regions", "tone": "accent"}, {"id": "p", "label": "Positive: supports the class", "sub": "the question being asked", "tone": "good"}, {"id": "n", "label": "Negative: argues against it", "sub": "a different question", "tone": "warn"}, {"id": "r", "label": "ReLU keeps the positive", "sub": "evidence for, only", "tone": "good"}, {"id": "d", "label": "Without it", "sub": "the map mixes both", "tone": "crit"}, {"id": "i", "label": "Interpretable, in one direction", "sub": "which is the honest claim", "tone": "teal"}], "edges": [["w", "p"], ["w", "n"], ["p", "r"], ["r", "d"], ["r", "i"]], "t": "diagram", "id": "dg-2_9-04-2"},
+
+
+
+
+
 
 
 

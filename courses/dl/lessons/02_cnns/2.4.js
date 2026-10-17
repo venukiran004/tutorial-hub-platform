@@ -135,6 +135,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "table", head: ["Innovation", "Costs", "Use it when"],
       rows: [
         ["1×1 convolution", "`C_in · C_out`, ~9× under a 3×3", "Almost always — changing channel count is what it is for"],

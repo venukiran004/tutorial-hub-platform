@@ -23,6 +23,11 @@ EC.receiveLesson({
     {"kind": "compare", "title": "Four equations instead of six", "caption": "The GRU reaches the same goal with two gates rather than three, and — the structural difference — **no separate cell state**. One vector carries everything, which is why it has fewer parameters and why its gating is slightly less expressive: it cannot hold something in memory while hiding it from the next layer, because there is no hidden cell to hide it in.", "columns": [{"title": "LSTM: six equations", "tone": "accent", "items": ["Forget, input and output gates", "A separate cell state c", "h = o * tanh(c): exposure is gated", "Can remember without exposing", "4h(h+d) parameters"]}, {"title": "GRU: four equations", "tone": "good", "items": ["Reset and update gates only", "One state vector, no cell", "h is the state: nothing to hide", "Remembering and exposing are coupled", "3h(h+d): 25% fewer"]}], "t": "diagram", "id": "dg-3_5-01-0"},
 
 
+
+
+
+
+
     { t: "math", tex: "\\begin{aligned} z_t &= \\sigma(W_z[h_{t-1}, x_t] + b_z) & &\\text{update} \\\\ r_t &= \\sigma(W_r[h_{t-1}, x_t] + b_r) & &\\text{reset} \\\\ \\tilde{h}_t &= \\tanh(W_h[r_t \\odot h_{t-1}, x_t] + b_h) & &\\text{candidate} \\\\ h_t &= (1-z_t)\\odot h_{t-1} + z_t \\odot \\tilde{h}_t & &\\text{final state} \\end{aligned}" },
 
     { t: "out", text: `  my loop vs nn.GRU : max abs diff 2.980e-08
@@ -65,6 +70,11 @@ EC.receiveLesson({
     {"kind": "flow", "title": "The same gradient trick, in a different shape", "caption": "The GRU's update is h = (1−z)⊙hₜ₋₁ + z⊙h̃, which is a **convex combination** rather than the LSTM's independent keep-and-add. Differentiating gives (1−z), so the highway is still there and still gated — but the single z means admitting new content necessarily displaces old content in the same proportion, where the LSTM can do both independently.", "cols": 3, "nodes": [{"id": "e", "label": "h = (1-z)*h_prev + z*h_cand", "sub": "a convex combination", "tone": "violet"}, {"id": "d", "label": "dh/dh_prev = (1 - z)", "sub": "the highway, gated", "tone": "accent"}, {"id": "s", "label": "One gate does both jobs", "sub": "keep and admit are coupled", "tone": "warn"}, {"id": "l", "label": "LSTM uses f and i separately", "sub": "keep 90% and admit 90%", "tone": "good"}, {"id": "g", "label": "GRU cannot", "sub": "admitting displaces, in proportion", "tone": "warn"}, {"id": "p", "label": "Rarely matters in practice", "sub": "which is why both survive", "tone": "teal"}], "edges": [["e", "d"], ["d", "s"], ["s", "l"], ["l", "g"], ["g", "p"]], "t": "diagram", "id": "dg-3_5-03-1"},
 
 
+
+
+
+
+
     { t: "out", text: `  update gate z   : [0.9005606174468994, 0.05347728729248047, 0.15878444910049438, 0.41920870542526245]
   measured dh/dh  : [0.9005606174468994, 0.05347728729248047, 0.15878444910049438, 0.41920870542526245]
   identical: True` },
@@ -74,6 +84,11 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Parameters and speed", id: "cost" },
 
     {"kind": "trace", "title": "Twenty-five per cent fewer parameters, and slower anyway", "caption": "The parameter ratio is exactly 0.750 at every size — arithmetic, not approximation. But on this CPU with torch 2.10 the GRU is **slower than the LSTM** at all three shapes, by 2.0×, 3.1× and 1.6×, because PyTorch's LSTM has a well-optimised fused CPU kernel and the GRU does not. The claim 'GRUs train faster' is correct about arithmetic and wrong about wall-clock here. Parameter and FLOP counts are a poor predictor of latency — the same lesson as the depthwise convolutions of 2.4.", "left": "d and h", "codeW": 140, "vars": ["RNN", "GRU", "LSTM", "GRU / LSTM params"], "steps": [{"code": "100, 256 params", "state": ["91,648", "274,944", "366,592", "0.750"], "tone": "accent"}, {"code": "300, 512 params", "state": ["416,768", "1,250,304", "1,667,072", "0.750"], "tone": "accent"}, {"code": "32, 64 params", "state": ["6,272", "18,816", "25,088", "0.750"], "tone": "accent"}, {"code": "shape 1, median ms", "state": ["42.8", "133.6", "67.4", "2.0x slower"], "changed": [1], "tone": "crit"}, {"code": "shape 2, median ms", "state": ["12.3", "29.4", "9.5", "3.1x slower"], "changed": [1], "tone": "crit"}, {"code": "shape 3, median ms", "state": ["13.2", "43.3", "26.4", "1.6x slower"], "changed": [1], "tone": "crit"}], "t": "diagram", "id": "dg-3_5-04-2"},
+
+
+
+
+
 
 
     { t: "out", text: `      d     h        RNN        GRU       LSTM   GRU/LSTM
@@ -96,6 +111,11 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "Choosing", id: "choosing" },
 
     {"kind": "matrix", "title": "Choosing between them", "caption": "The honest summary is that the choice rarely decides a project. Benchmark both on your own hardware if speed is the reason — §04 shows why the received wisdom is unreliable — and if long memory is the reason, set the LSTM's forget bias before concluding anything (3.3).", "cols": ["Prefer", "Because"], "rows": ["Long dependencies", "A small dataset", "Latency on CPU", "Latency on CUDA", "Nothing decisive"], "cells": [[{"text": "LSTM", "tone": "good"}, "separate cell; set the forget bias"], [{"text": "GRU", "tone": "good"}, "25% fewer parameters to overfit with"], [{"text": "benchmark it", "tone": "crit"}, "the LSTM was faster here, by up to 3x"], [{"text": "benchmark it", "tone": "warn"}, "both are fused by cuDNN; the picture differs"], [{"text": "either", "tone": "accent"}, "and spend the time on the data instead"]], "t": "diagram", "id": "dg-3_5-05-3"},
+
+
+
+
+
 
 
     { t: "table", head: ["Aspect", "LSTM", "GRU"],

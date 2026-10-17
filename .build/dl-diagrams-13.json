@@ -1,0 +1,2107 @@
+{
+ "4.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "What recurrence costs, stated as two numbers",
+    "caption": "An RNN's two costs are the same fact from different directions. Information from position 1 reaches position T through **T sequential steps**, so the path length is O(T) and the signal decays along it (3.2). And because step t needs step t−1's output, nothing can be computed in parallel — training time scales with sequence length regardless of how much hardware you own.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "r",
+      "label": "h_t depends on h_{t-1}",
+      "sub": "the recurrence",
+      "tone": "violet"
+     },
+     {
+      "id": "p",
+      "label": "Path length O(T)",
+      "sub": "position 1 to position T",
+      "tone": "warn"
+     },
+     {
+      "id": "d",
+      "label": "The signal decays along it",
+      "sub": "3.2's measurement",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "Steps must be sequential",
+      "sub": "t needs t-1",
+      "tone": "warn"
+     },
+     {
+      "id": "n",
+      "label": "No parallelism over time",
+      "sub": "more GPUs do not help",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "Attention fixes both at once",
+      "sub": "O(1) path, fully parallel",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "r",
+      "p"
+     ],
+     [
+      "p",
+      "d"
+     ],
+     [
+      "r",
+      "s"
+     ],
+     [
+      "s",
+      "n"
+     ],
+     [
+      "d",
+      "a"
+     ],
+     [
+      "n",
+      "a"
+     ]
+    ]
+   }
+  }
+ ],
+ "4.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Three projections of the same input",
+    "caption": "Q, K and V are three different linear views of the identical input sequence — which is what 'self' attention means. The division of labour is worth stating: the **query** asks what this position is looking for, the **key** advertises what each position offers, and the **value** is what actually gets copied once a match is scored.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "x",
+      "label": "One input sequence X",
+      "sub": "T x d",
+      "tone": "violet"
+     },
+     {
+      "id": "q",
+      "label": "Q = X W_Q",
+      "sub": "what this position seeks",
+      "tone": "accent"
+     },
+     {
+      "id": "k",
+      "label": "K = X W_K",
+      "sub": "what each position offers",
+      "tone": "accent"
+     },
+     {
+      "id": "v",
+      "label": "V = X W_V",
+      "sub": "what gets copied",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Scores = QK' / sqrt(d_k)",
+      "sub": "T x T comparisons",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "Output = softmax(scores) V",
+      "sub": "a weighted average of values",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "x",
+      "q"
+     ],
+     [
+      "x",
+      "k"
+     ],
+     [
+      "x",
+      "v"
+     ],
+     [
+      "q",
+      "s"
+     ],
+     [
+      "k",
+      "s"
+     ],
+     [
+      "s",
+      "o"
+     ],
+     [
+      "v",
+      "o"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Running it: the four shapes that have to line up",
+    "caption": "Almost every self-attention bug is a shape or a transpose. The scores matrix is T×T and **must** be square — if it is not, Q and K have been multiplied the wrong way round. And the softmax goes over the **last** axis, the keys: over the wrong axis it still runs, still returns the right shape, and produces a weighted average over the queries instead, which is meaningless.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "q",
+      "label": "Q: (B, T, d_k)",
+      "sub": "",
+      "tone": "accent"
+     },
+     {
+      "id": "k",
+      "label": "K transposed: (B, d_k, T)",
+      "sub": "the transpose that gets forgotten",
+      "tone": "warn"
+     },
+     {
+      "id": "s",
+      "label": "Scores: (B, T, T)",
+      "sub": "square, or something is wrong",
+      "tone": "good"
+     },
+     {
+      "id": "m",
+      "label": "softmax over the last axis",
+      "sub": "the keys, not the queries",
+      "tone": "crit"
+     },
+     {
+      "id": "v",
+      "label": "x V: (B, T, d_v)",
+      "sub": "back to a sequence",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "Out: (B, T, d)",
+      "sub": "same shape as the input",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "q",
+      "s"
+     ],
+     [
+      "k",
+      "s"
+     ],
+     [
+      "s",
+      "m"
+     ],
+     [
+      "m",
+      "v"
+     ],
+     [
+      "v",
+      "o"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "A property of the output: every position is a convex combination",
+    "caption": "Each output row is a weighted average of value vectors with weights summing to one, so it lies inside the **convex hull** of the values — attention can only interpolate what is already there, never extrapolate beyond it. That is why the feed-forward network matters so much (4.4): it is the part of the block that can produce something new.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "w",
+      "label": "Weights sum to 1",
+      "sub": "softmax guarantees it",
+      "tone": "violet"
+     },
+     {
+      "id": "c",
+      "label": "Output is a convex combination",
+      "sub": "of the value vectors",
+      "tone": "accent"
+     },
+     {
+      "id": "h",
+      "label": "It lies inside their hull",
+      "sub": "interpolation only",
+      "tone": "accent"
+     },
+     {
+      "id": "e",
+      "label": "It cannot extrapolate",
+      "sub": "nothing new is created here",
+      "tone": "warn"
+     },
+     {
+      "id": "f",
+      "label": "The FFN can",
+      "sub": "a non-linearity per position",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": "So the block needs both",
+      "sub": "routing, then transformation",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "w",
+      "c"
+     ],
+     [
+      "c",
+      "h"
+     ],
+     [
+      "h",
+      "e"
+     ],
+     [
+      "e",
+      "f"
+     ],
+     [
+      "f",
+      "b"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "What the T x T matrix costs, in memory",
+    "caption": "The scores matrix is quadratic in sequence length, and the arithmetic becomes hostile quickly: at 32,768 tokens with 8 heads in fp32 it is **34.36 GB** for a single sequence — more than most GPUs hold, for one example. O(1) path length and quadratic memory are the same fact, and every efficient-attention paper is an attempt to keep the first while escaping the second.",
+    "left": "sequence length",
+    "codeW": 170,
+    "vars": [
+     "T x T entries",
+     "x 8 heads, fp32",
+     "verdict"
+    ],
+    "steps": [
+     {
+      "code": "512",
+      "state": [
+       "262,144",
+       "8.4 MB",
+       "free"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "2,048",
+      "state": [
+       "4,194,304",
+       "134 MB",
+       "fine"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "8,192",
+      "state": [
+       "67,108,864",
+       "2.15 GB",
+       "noticeable"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "32,768",
+      "state": [
+       "1,073,741,824",
+       "34.36 GB",
+       "one sequence, more than a GPU"
+      ],
+      "changed": [
+       1,
+       2
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "so: flash attention",
+      "state": [
+       "never materialise it",
+       "tiled, recomputed",
+       "the standard answer"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  }
+ ],
+ "4.3": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Three ways to tell a transformer where it is",
+    "caption": "Self-attention is permutation-equivariant (3.8), so position must be supplied. The three approaches differ in what they encode and how far they extrapolate: sinusoidal and learned encodings give each position an **absolute** identity, while RoPE rotates Q and K so that only the **relative** offset survives the dot product — which is why it generalises past the training length far better.",
+    "cols": [
+     "Encodes",
+     "Beyond the training length"
+    ],
+    "rows": [
+     "Sinusoidal, added",
+     "Learned embedding",
+     "RoPE",
+     "ALiBi",
+     "None"
+    ],
+    "cells": [
+     [
+      {
+       "text": "absolute position",
+       "tone": "accent"
+      },
+      "defined, but degrades"
+     ],
+     [
+      {
+       "text": "absolute position",
+       "tone": "accent"
+      },
+      {
+       "text": "undefined: a fixed table",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "relative offset",
+       "tone": "good"
+      },
+      {
+       "text": "extrapolates well",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "a distance penalty on scores",
+       "tone": "good"
+      },
+      {
+       "text": "extrapolates by design",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "nothing",
+       "tone": "crit"
+      },
+      "a bag of tokens, at any length"
+     ]
+    ]
+   }
+  }
+ ],
+ "4.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Two thirds of a transformer block is the feed-forward network",
+    "caption": "At the standard d_model = 512, d_ff = 2048 configuration, the two linear layers hold **67%** of the block's parameters against attention's 33%. That reframes what a transformer is: a stack of per-token MLPs with an attention mechanism routing information between them. It also explains where efficiency work goes — mixture-of-experts replaces the FFN, not the attention, because that is where the parameters are.",
+    "left": "part of the block",
+    "codeW": 160,
+    "vars": [
+     "parameters",
+     "share"
+    ],
+    "steps": [
+     {
+      "code": "self_attn",
+      "state": [
+       "1,050,624",
+       "33.3%"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "linear1 (d -> 4d)",
+      "state": [
+       "1,050,624",
+       "33.3%"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "linear2 (4d -> d)",
+      "state": [
+       "1,049,088",
+       "33.3%"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "norm1 + norm2",
+      "state": [
+       "2,048",
+       "0.1%"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "total",
+      "state": [
+       "3,152,384",
+       "FFN is 67%"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "teal"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "The feed-forward network is where a position is transformed",
+    "caption": "It is applied **independently at every position** with the same weights — so it is a 1×1 convolution over the sequence, and it is the only part of the block that can produce a value outside the convex hull of its inputs (4.2). The 4× expansion gives the non-linearity room to work: squeeze it to 1× and the block loses most of its capacity.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "i",
+      "label": "One position's vector",
+      "sub": "d dimensions",
+      "tone": "violet"
+     },
+     {
+      "id": "u",
+      "label": "Up-project to 4d",
+      "sub": "room for the non-linearity",
+      "tone": "accent"
+     },
+     {
+      "id": "a",
+      "label": "GELU",
+      "sub": "the only non-linearity in the block",
+      "tone": "good"
+     },
+     {
+      "id": "d",
+      "label": "Down-project to d",
+      "sub": "back to the residual width",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Same weights, every position",
+      "sub": "a 1x1 convolution over the sequence",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "The only part that creates",
+      "sub": "attention can only interpolate",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "i",
+      "u"
+     ],
+     [
+      "u",
+      "a"
+     ],
+     [
+      "a",
+      "d"
+     ],
+     [
+      "d",
+      "s"
+     ],
+     [
+      "s",
+      "n"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "compare",
+    "title": "Pre-norm and post-norm put the LayerNorm on different sides",
+    "caption": "The original paper put the norm **after** the residual addition; every large model since puts it **before** the sublayer. The reason is the gradient path: with pre-norm the residual stream is an unnormalised identity from the loss to the embedding, so deep stacks train without a warmup crutch. Post-norm needs careful warmup and still destabilises past a few dozen layers.",
+    "columns": [
+     {
+      "title": "Post-norm (the 2017 paper)",
+      "tone": "warn",
+      "items": [
+       "x = LayerNorm(x + Sublayer(x))",
+       "The norm is on the residual path",
+       "Needs a careful warmup",
+       "Destabilises past a few dozen layers",
+       "Slightly better when it does work"
+      ]
+     },
+     {
+      "title": "Pre-norm (everything since)",
+      "tone": "good",
+      "items": [
+       "x = x + Sublayer(LayerNorm(x))",
+       "The residual path is a clean identity",
+       "Trains without warmup tricks",
+       "Scales to hundreds of layers",
+       "The default in every modern LLM"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "4.5": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "The KV cache, and why generation is memory-bound",
+    "caption": "Without a cache, generating token n re-attends over all n−1 previous tokens from scratch — quadratic work for a linear output. The cache stores each position's K and V once, so each new token costs one step. The consequence is the defining fact of LLM serving: generation reads a large cache per token and does almost no arithmetic, so it is **memory-bandwidth-bound**, not compute-bound.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "n",
+      "label": "No cache",
+      "sub": "recompute all K, V each token",
+      "tone": "crit"
+     },
+     {
+      "id": "q",
+      "label": "Quadratic work",
+      "sub": "for a linear amount of output",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "Cache K and V per position",
+      "sub": "computed once, reused",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "One step per new token",
+      "sub": "linear again",
+      "tone": "good"
+     },
+     {
+      "id": "m",
+      "label": "But the cache grows per token",
+      "sub": "2 x layers x heads x d_head",
+      "tone": "warn"
+     },
+     {
+      "id": "b",
+      "label": "So generation is bandwidth-bound",
+      "sub": "reading it, not computing",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "n",
+      "q"
+     ],
+     [
+      "q",
+      "c"
+     ],
+     [
+      "c",
+      "o"
+     ],
+     [
+      "o",
+      "m"
+     ],
+     [
+      "m",
+      "b"
+     ]
+    ]
+   }
+  }
+ ],
+ "4.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "layers",
+    "title": "The translation model, as it is assembled",
+    "caption": "Read it bottom-up. The encoder stack sees the whole source at once; the decoder stack is causal over the target and additionally **cross-attends** to the encoder's output, which is the one connection between the two halves and the thing to inspect when a translation is fluent but wrong (§04).",
+    "items": [
+     {
+      "label": "Output projection to the vocabulary",
+      "sub": "often tied to the embedding",
+      "tone": "teal",
+      "side": "logits"
+     },
+     {
+      "label": "Decoder stack, N blocks",
+      "sub": "causal self-attn, cross-attn, FFN",
+      "tone": "accent",
+      "side": "target"
+     },
+     {
+      "label": "Cross-attention",
+      "sub": "queries from the target, keys from the source",
+      "tone": "violet",
+      "side": "the bridge"
+     },
+     {
+      "label": "Encoder stack, N blocks",
+      "sub": "bidirectional self-attn, FFN",
+      "tone": "good",
+      "side": "source"
+     },
+     {
+      "label": "Embedding + positional encoding",
+      "sub": "both sides",
+      "tone": "good",
+      "side": ""
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Training it: one forward pass for the whole target",
+    "caption": "This is the transformer's decisive advantage over an RNN decoder. Because the causal mask prevents any position seeing the future, the **entire** target sequence can be processed in one parallel pass — every position predicting its own next token simultaneously. The same model at inference must go one token at a time, which is why training is fast and generation is not.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "The whole target, shifted right",
+      "sub": "one tensor",
+      "tone": "violet"
+     },
+     {
+      "id": "m",
+      "label": "Causal mask",
+      "sub": "no position sees the future",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "One parallel forward pass",
+      "sub": "every position at once",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "Loss at every position",
+      "sub": "T predictions from one pass",
+      "tone": "good"
+     },
+     {
+      "id": "i",
+      "label": "Inference is sequential",
+      "sub": "one token at a time",
+      "tone": "warn"
+     },
+     {
+      "id": "a",
+      "label": "Fast to train, slow to generate",
+      "sub": "the asymmetry that defines it",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "m"
+     ],
+     [
+      "m",
+      "p"
+     ],
+     [
+      "p",
+      "l"
+     ],
+     [
+      "l",
+      "i"
+     ],
+     [
+      "i",
+      "a"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Generation, and the three things that must match training",
+    "caption": "Generation re-enters the model with its own output, so any mismatch with training shows up as fluent nonsense. The three to check are the **special tokens** (start the decoder with the same BOS it was trained with), the **shift** (the input is the target shifted right by one), and the **stop** condition (generate until EOS or a length cap, or it runs forever).",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "b",
+      "label": "Start with BOS",
+      "sub": "the same one training used",
+      "tone": "accent"
+     },
+     {
+      "id": "f",
+      "label": "Forward, take the last position",
+      "sub": "its logits are the next token",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Sample or argmax",
+      "sub": "greedy, beam, or top-p",
+      "tone": "good"
+     },
+     {
+      "id": "a",
+      "label": "Append, repeat",
+      "sub": "with the KV cache",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "Stop at EOS, or a cap",
+      "sub": "or it generates forever",
+      "tone": "warn"
+     },
+     {
+      "id": "m",
+      "label": "Any mismatch: fluent nonsense",
+      "sub": "not an error",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "b",
+      "f"
+     ],
+     [
+      "f",
+      "s"
+     ],
+     [
+      "s",
+      "a"
+     ],
+     [
+      "a",
+      "e"
+     ],
+     [
+      "e",
+      "m"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Reading the cross-attention as a diagnostic",
+    "caption": "Cross-attention is the only place the target looks at the source, so its weights are a soft alignment and are genuinely informative here — unlike the attention-is-not-attribution caution of ML 9.3, because this attention **is** the information path. A diagonal band means the model is translating in order; a column that attracts every target position usually means a source token the model cannot handle.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "c",
+      "label": "Cross-attention weights",
+      "sub": "target positions x source positions",
+      "tone": "violet"
+     },
+     {
+      "id": "d",
+      "label": "A diagonal band",
+      "sub": "translating roughly in order",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Off-diagonal blocks",
+      "sub": "reordering: expected between languages",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "One source column attracts everything",
+      "sub": "a token it cannot handle",
+      "tone": "crit"
+     },
+     {
+      "id": "u",
+      "label": "Uniform weights",
+      "sub": "it is ignoring the source",
+      "tone": "crit"
+     },
+     {
+      "id": "i",
+      "label": "Here attention IS the path",
+      "sub": "unlike ML 9.3's caution",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "c",
+      "d"
+     ],
+     [
+      "c",
+      "r"
+     ],
+     [
+      "c",
+      "o"
+     ],
+     [
+      "c",
+      "u"
+     ],
+     [
+      "d",
+      "i"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "What to check when it will not train",
+    "caption": "Every row produces a model that runs and learns nothing, so none of them raises. The order is by how often it is the cause — and the first two account for most of it, because both are silent and both are about the mask.",
+    "cols": [
+     "Symptom",
+     "Check"
+    ],
+    "rows": [
+     "Causal mask missing",
+     "Padding not masked",
+     "Loss over pad tokens",
+     "No positional encoding",
+     "Learning rate, no warmup",
+     "Decoder input not shifted"
+    ],
+    "cells": [
+     [
+      {
+       "text": "trains fast, generates nonsense",
+       "tone": "crit"
+      },
+      "it was copying the answer"
+     ],
+     [
+      {
+       "text": "attends to padding",
+       "tone": "crit"
+      },
+      "the mask before the softmax (3.11)"
+     ],
+     [
+      {
+       "text": "loss varies with batch padding",
+       "tone": "crit"
+      },
+      "ignore_index"
+     ],
+     [
+      {
+       "text": "word order ignored",
+       "tone": "crit"
+      },
+      "a bag of tokens"
+     ],
+     [
+      {
+       "text": "diverges in the first steps",
+       "tone": "warn"
+      },
+      "post-norm needs warmup (4.4)"
+     ],
+     [
+      {
+       "text": "learns the identity",
+       "tone": "crit"
+      },
+      "input is target[:-1], label target[1:]"
+     ]
+    ]
+   }
+  }
+ ],
+ "4.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "What each architecture assumes about its input",
+    "caption": "This is the honest basis for choosing, and it is about **structure** rather than power. A CNN assumes locality and translation invariance; an RNN assumes order and that recent context matters most; a transformer assumes nothing about structure and so must be told position explicitly and shown far more data.",
+    "cols": [
+     "Assumes",
+     "Pays for it with"
+    ],
+    "rows": [
+     "MLP",
+     "CNN",
+     "RNN / LSTM",
+     "Transformer"
+    ],
+    "cells": [
+     [
+      {
+       "text": "nothing; fixed-size input",
+       "tone": "warn"
+      },
+      "no weight sharing at all"
+     ],
+     [
+      {
+       "text": "locality, translation invariance",
+       "tone": "good"
+      },
+      "cannot relate distant positions cheaply"
+     ],
+     [
+      {
+       "text": "order; recency",
+       "tone": "good"
+      },
+      "O(T) path, no parallelism"
+     ],
+     [
+      {
+       "text": "nothing structural",
+       "tone": "accent"
+      },
+      "quadratic memory, and needs more data"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Parameter cost, at comparable widths",
+    "caption": "The comparison that matters is per-layer at the same hidden width. The LSTM's 4× and the GRU's 3× come from their gate counts (3.4, 3.5); the transformer block's 12d² comes from four attention matrices of d² and an FFN of 8d² — so a transformer layer is **three times** an LSTM layer at the same width, and most of that difference is the feed-forward network.",
+    "left": "one layer, h = d = 512",
+    "codeW": 210,
+    "vars": [
+     "formula",
+     "parameters"
+    ],
+    "steps": [
+     {
+      "code": "RNN",
+      "state": [
+       "h(h + d)",
+       "524,288"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "GRU",
+      "state": [
+       "3h(h + d)",
+       "1,572,864"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "LSTM",
+      "state": [
+       "4h(h + d)",
+       "2,097,152"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "Transformer block",
+      "state": [
+       "12d²",
+       "3,145,728"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "of which the FFN",
+      "state": [
+       "8d²",
+       "2,097,152 (67%)"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "The honest summary",
+    "caption": "Transformers won on text and are not automatically right elsewhere. On a small tabular problem or a short univariate series, a simpler model is usually better and always cheaper — and on images a modernised CNN matches a vision transformer (2.3), which suggests much of the advantage was the training recipe rather than attention.",
+    "cols": [
+     "Use",
+     "Because"
+    ],
+    "rows": [
+     "Text, any length",
+     "Images",
+     "Short series, little data",
+     "Streaming / real-time",
+     "Very long sequences",
+     "Small tabular"
+    ],
+    "cells": [
+     [
+      {
+       "text": "transformer",
+       "tone": "good"
+      },
+      "it won decisively; pretrained weights exist"
+     ],
+     [
+      {
+       "text": "either",
+       "tone": "accent"
+      },
+      "ConvNeXt matches a ViT (2.3)"
+     ],
+     [
+      {
+       "text": "an RNN, or classical",
+       "tone": "good"
+      },
+      "transformers need data"
+     ],
+     [
+      {
+       "text": "causal RNN, or RNN-T",
+       "tone": "good"
+      },
+      "a transformer must see the window"
+     ],
+     [
+      {
+       "text": "efficient attention, or SSM",
+       "tone": "accent"
+      },
+      "quadratic memory bites first"
+     ],
+     [
+      {
+       "text": "gradient boosting",
+       "tone": "crit"
+      },
+      "not a neural network at all (ML 11.6)"
+     ]
+    ]
+   }
+  }
+ ],
+ "4.8": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "The sentiment data, and the one decision that shapes everything after",
+    "caption": "Vocabulary and sequence length are chosen before any model exists, and both are irreversible in effect: a 10,000-word vocabulary maps everything rarer to `<unk>`, and truncating at 200 tokens discards the end of every longer review — which matters because sentiment is often concluded at the end. Both choices should be made from the data's own length distribution rather than from habit.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "r",
+      "label": "Raw reviews",
+      "sub": "variable length",
+      "tone": "violet"
+     },
+     {
+      "id": "t",
+      "label": "Tokenise, build a vocabulary",
+      "sub": "10,000 words, say",
+      "tone": "accent"
+     },
+     {
+      "id": "u",
+      "label": "Everything rarer becomes <unk>",
+      "sub": "irreversibly",
+      "tone": "warn"
+     },
+     {
+      "id": "l",
+      "label": "Truncate or pad to a fixed length",
+      "sub": "200 tokens, say",
+      "tone": "accent"
+     },
+     {
+      "id": "d",
+      "label": "The end of long reviews is lost",
+      "sub": "where the verdict often is",
+      "tone": "crit"
+     },
+     {
+      "id": "p",
+      "label": "Choose both from the length histogram",
+      "sub": "not from habit",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "r",
+      "t"
+     ],
+     [
+      "t",
+      "u"
+     ],
+     [
+      "t",
+      "l"
+     ],
+     [
+      "l",
+      "d"
+     ],
+     [
+      "d",
+      "p"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Scaling, and the leak next to it",
+    "caption": "The leak here is a specific and common one: fitting the tokeniser's **vocabulary** on the whole dataset before splitting. The vocabulary is a fitted object like a scaler — it encodes which words exist, which is information from the test set — and the effect is small but real, and entirely avoidable by building it from the training split alone.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "Build the vocabulary on everything",
+      "sub": "the tempting order",
+      "tone": "crit"
+     },
+     {
+      "id": "l",
+      "label": "It encodes which words exist",
+      "sub": "including the test set's",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "Split first",
+      "sub": "then build from train only",
+      "tone": "good"
+     },
+     {
+      "id": "u",
+      "label": "Test-only words become <unk>",
+      "sub": "which is the honest situation",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "Same rule as any scaler",
+      "sub": "a fitted object belongs in the fold",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "The effect is small but real",
+      "sub": "and free to avoid",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "l"
+     ],
+     [
+      "l",
+      "s"
+     ],
+     [
+      "s",
+      "u"
+     ],
+     [
+      "u",
+      "n"
+     ],
+     [
+      "n",
+      "e"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "layers",
+    "title": "The sentiment model, layer by layer",
+    "caption": "Four layers and one shape question. The embedding holds most of the parameters — 10,000 × 128 is 1.28 million against the LSTM's 200 thousand — so this model is mostly a lookup table, and its regularisation should be aimed there first.",
+    "items": [
+     {
+      "label": "Linear -> 1, sigmoid",
+      "sub": "the verdict",
+      "tone": "teal",
+      "side": "129 params"
+     },
+     {
+      "label": "Dropout",
+      "sub": "on the pooled representation",
+      "tone": "good",
+      "side": ""
+     },
+     {
+      "label": "LSTM, hidden 128",
+      "sub": "take the true final state (3.6)",
+      "tone": "accent",
+      "side": "~132k"
+     },
+     {
+      "label": "Embedding 10,000 x 128",
+      "sub": "most of the model",
+      "tone": "violet",
+      "side": "1.28M"
+     },
+     {
+      "label": "Token ids, padded to 200",
+      "sub": "with a padding mask",
+      "tone": "good",
+      "side": ""
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Reading the results, and what to compare against",
+    "caption": "A sentiment accuracy means nothing without the two reference points below it. The majority-class baseline is the floor; a TF-IDF plus logistic regression is the **real** competitor, and on short-text binary sentiment it is frequently within a point or two of an LSTM at a fraction of the cost — which is the ML 11.5 finding, and the reason that comparison belongs in the table.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "m",
+      "label": "The LSTM's accuracy",
+      "sub": "the number in hand",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "Majority class",
+      "sub": "the floor",
+      "tone": "violet"
+     },
+     {
+      "id": "t",
+      "label": "TF-IDF + logistic regression",
+      "sub": "the real competitor",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Often within a point or two",
+      "sub": "at a fraction of the cost",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "And it trains in seconds",
+      "sub": "ML 11.5 measured this",
+      "tone": "good"
+     },
+     {
+      "id": "j",
+      "label": "So justify the LSTM, or do not use it",
+      "sub": "which is the honest conclusion",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "m",
+      "b"
+     ],
+     [
+      "m",
+      "t"
+     ],
+     [
+      "t",
+      "c"
+     ],
+     [
+      "c",
+      "s"
+     ],
+     [
+      "s",
+      "j"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "Does scaling matter here?",
+    "caption": "No — and the reason is worth stating, because it is the one case in this course where the answer is a flat no. The input is **token indices**, which are looked up in an embedding table rather than multiplied by a weight; index 9,999 is not 'larger' than index 1 in any sense the model can see. Scaling them would be meaningless, and scaling the embeddings themselves is what LayerNorm is for.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "i",
+      "label": "The input is token indices",
+      "sub": "not magnitudes",
+      "tone": "violet"
+     },
+     {
+      "id": "l",
+      "label": "They index a lookup table",
+      "sub": "never multiplied",
+      "tone": "accent"
+     },
+     {
+      "id": "n",
+      "label": "9,999 is not larger than 1",
+      "sub": "not to the model",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "So scaling is meaningless",
+      "sub": "unlike every tabular case",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "The embeddings do need control",
+      "sub": "they are learned, and unbounded",
+      "tone": "warn"
+     },
+     {
+      "id": "o",
+      "label": "Which is LayerNorm's job",
+      "sub": "not a scaler's",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "i",
+      "l"
+     ],
+     [
+      "l",
+      "n"
+     ],
+     [
+      "n",
+      "s"
+     ],
+     [
+      "s",
+      "e"
+     ],
+     [
+      "e",
+      "o"
+     ]
+    ]
+   }
+  }
+ ],
+ "4.9": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "The setup: four architectures, one task, everything else held",
+    "caption": "The comparison is only meaningful if the differences are the architectures. Same split, same vocabulary, same sequence length, same optimiser and schedule, same number of epochs and the same early-stopping rule — and the embedding dimension matched, because an architecture given a wider embedding is being given more parameters rather than more ability.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "d",
+      "label": "One dataset, one split",
+      "sub": "fixed seed",
+      "tone": "violet"
+     },
+     {
+      "id": "v",
+      "label": "One vocabulary and length",
+      "sub": "built on train only",
+      "tone": "accent"
+     },
+     {
+      "id": "e",
+      "label": "One embedding width",
+      "sub": "or it is a parameter comparison",
+      "tone": "accent"
+     },
+     {
+      "id": "o",
+      "label": "One optimiser and schedule",
+      "sub": "and the same epoch budget",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "One early-stopping rule",
+      "sub": "applied identically",
+      "tone": "good"
+     },
+     {
+      "id": "a",
+      "label": "Only the architecture differs",
+      "sub": "which is the whole point",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "d",
+      "v"
+     ],
+     [
+      "v",
+      "e"
+     ],
+     [
+      "e",
+      "o"
+     ],
+     [
+      "o",
+      "s"
+     ],
+     [
+      "s",
+      "a"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "The first result, and why it was not believed",
+    "caption": "The first run produced an ordering that contradicted the theory, and the course's response is the one worth imitating: **treat a surprising result as a bug report against your own setup** before treating it as a finding. 3.3 had already shown exactly this pattern — an LSTM at chance because of a forget-gate bias — so the prior on 'my setup is wrong' was correctly high.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "r",
+      "label": "An unexpected ordering",
+      "sub": "the simpler model led",
+      "tone": "warn"
+     },
+     {
+      "id": "p",
+      "label": "Theory predicts otherwise",
+      "sub": "so one of them is wrong",
+      "tone": "warn"
+     },
+     {
+      "id": "b",
+      "label": "Assume the setup first",
+      "sub": "not the theory",
+      "tone": "good"
+     },
+     {
+      "id": "h",
+      "label": "3.3 was exactly this",
+      "sub": "a bias, not an architecture",
+      "tone": "accent"
+     },
+     {
+      "id": "e",
+      "label": "List the explanations",
+      "sub": "and find one that discriminates",
+      "tone": "good"
+     },
+     {
+      "id": "m",
+      "label": "Then measure it",
+      "sub": "which is section 04",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "r",
+      "p"
+     ],
+     [
+      "p",
+      "b"
+     ],
+     [
+      "b",
+      "h"
+     ],
+     [
+      "h",
+      "e"
+     ],
+     [
+      "e",
+      "m"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Ruling out the obvious, one candidate at a time",
+    "caption": "Each row is a hypothesis with a cheap test attached, and the discipline is to find the test that **distinguishes** rather than the one that is easiest to run. Confirming that the data is fine tells you little; finding a measurement whose outcome differs between two live hypotheses is what ends the argument.",
+    "cols": [
+     "Hypothesis",
+     "The test"
+    ],
+    "rows": [
+     "The data is wrong",
+     "The labels are shuffled",
+     "It cannot overfit a batch",
+     "No gradient arrives",
+     "The initialisation",
+     "The learning rate"
+    ],
+    "cells": [
+     [
+      "a shared split would differ",
+      "same split for every model: ruled out"
+     ],
+     [
+      "every model would be at chance",
+      {
+       "text": "one was not: ruled out",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "overfit-one-batch (1.12)",
+       "tone": "good"
+      },
+      "it could: machinery is fine"
+     ],
+     [
+      {
+       "text": "measure it at step 0",
+       "tone": "good"
+      },
+      "the discriminating one"
+     ],
+     [
+      {
+       "text": "the forget-gate bias",
+       "tone": "accent"
+      },
+      "3.3's culprit; check it directly"
+     ],
+     [
+      "a sweep would show it",
+      "cheap, and it did not"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "The discriminating measurement",
+    "caption": "A measurement is discriminating when the two hypotheses predict **different** outcomes for it. Here the gradient at the first position separates 'the architecture cannot carry the dependency' from 'the architecture can and something else prevents it' — and the answer was the second, which is what pointed at the initialisation rather than at the design.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "h1",
+      "label": "Hypothesis A",
+      "sub": "the architecture cannot carry it",
+      "tone": "warn"
+     },
+     {
+      "id": "h2",
+      "label": "Hypothesis B",
+      "sub": "it can; something blocks it",
+      "tone": "warn"
+     },
+     {
+      "id": "m",
+      "label": "Measure the gradient at step 0",
+      "sub": "A predicts small, B predicts not",
+      "tone": "accent"
+     },
+     {
+      "id": "r",
+      "label": "It was not small",
+      "sub": "larger than the simpler model's",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "So B",
+      "sub": "the design delivers",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "Which pointed at the bias",
+      "sub": "not at the architecture",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "h1",
+      "m"
+     ],
+     [
+      "h2",
+      "m"
+     ],
+     [
+      "m",
+      "r"
+     ],
+     [
+      "r",
+      "c"
+     ],
+     [
+      "c",
+      "f"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "06",
+   "d": {
+    "kind": "matrix",
+    "title": "What to take from this",
+    "caption": "The transferable content is the procedure, not the ordering of four models on one dataset. Each row below is a habit that turns a confusing result into a finding — and the last is the one that most often gets skipped, because a corrected result is less exciting than a surprising one.",
+    "cols": [
+     "Habit",
+     "Why"
+    ],
+    "rows": [
+     "Hold all but one factor",
+     "Distrust a surprise",
+     "Find a discriminating test",
+     "Check the known culprits",
+     "Report the corrected run",
+     "Say what you held fixed"
+    ],
+    "cells": [
+     [
+      {
+       "text": "or it is not a comparison",
+       "tone": "good"
+      },
+      "width, schedule, split, epochs"
+     ],
+     [
+      {
+       "text": "assume your setup",
+       "tone": "good"
+      },
+      "it is far more often the cause"
+     ],
+     [
+      {
+       "text": "not the easiest test",
+       "tone": "accent"
+      },
+      "one whose outcome separates them"
+     ],
+     [
+      {
+       "text": "forget-gate bias, masks, shifts",
+       "tone": "accent"
+      },
+      "this course has met each before"
+     ],
+     [
+      {
+       "text": "and the first one, labelled",
+       "tone": "violet"
+      },
+      "the correction is the content"
+     ],
+     [
+      {
+       "text": "so it can be reproduced",
+       "tone": "teal"
+      },
+      "or disputed"
+     ]
+    ]
+   }
+  }
+ ],
+ "4.10": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "The series and the split, where the order is the data",
+    "caption": "A forecasting split has to be chronological, which rules out the shuffle every other task begins with. The window construction is the part that goes wrong: each training example is a window of past values and a target **after** it, and the windows must be built so that no example's inputs overlap a later example's target period.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "One ordered series",
+      "sub": "the order is the signal",
+      "tone": "violet"
+     },
+     {
+      "id": "w",
+      "label": "Slide a window",
+      "sub": "L past steps -> H future steps",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "Split chronologically",
+      "sub": "never shuffle",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "A gap at the boundary",
+      "sub": "so windows do not straddle it",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "Normalise on train only",
+      "sub": "and watch section 02",
+      "tone": "warn"
+     },
+     {
+      "id": "b",
+      "label": "Baseline: last value",
+      "sub": "before any model",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "w"
+     ],
+     [
+      "w",
+      "c"
+     ],
+     [
+      "c",
+      "g"
+     ],
+     [
+      "g",
+      "n"
+     ],
+     [
+      "n",
+      "b"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Reading the results against the baseline that matters",
+    "caption": "For a series, the only reference point that means anything is the **naive forecast** — repeat the last value. A model that cannot beat it has learned nothing, and on many real series it is a genuinely hard target. Reporting MAE without that comparison is the single most common way a forecasting result overstates itself.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "m",
+      "label": "The model's MAE",
+      "sub": "the number in hand",
+      "tone": "accent"
+     },
+     {
+      "id": "n",
+      "label": "Naive: repeat the last value",
+      "sub": "the real target",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "Seasonal naive",
+      "sub": "if there is a season",
+      "tone": "violet"
+     },
+     {
+      "id": "r",
+      "label": "Ratio: MASE",
+      "sub": "below 1 means it beat naive",
+      "tone": "good"
+     },
+     {
+      "id": "h",
+      "label": "Per-horizon, not averaged",
+      "sub": "h=1 and h=H differ greatly",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "Without it, the number is unreadable",
+      "sub": "the commonest overstatement",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "m",
+      "r"
+     ],
+     [
+      "n",
+      "r"
+     ],
+     [
+      "s",
+      "r"
+     ],
+     [
+      "r",
+      "h"
+     ],
+     [
+      "h",
+      "o"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "The leakage test, honestly",
+    "caption": "The test that actually works is **truncation**: rebuild every feature from a history cut short at the forecast time, and compare against the features the pipeline produced. If any value differs, something read forward. It is mechanical, it needs no judgement, and it catches the leaks that reading the code does not.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "f",
+      "label": "Features as the pipeline built them",
+      "sub": "from the full history",
+      "tone": "violet"
+     },
+     {
+      "id": "t",
+      "label": "Rebuild from a truncated history",
+      "sub": "cut at the forecast time",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "Compare, value by value",
+      "sub": "mechanical, no judgement",
+      "tone": "good"
+     },
+     {
+      "id": "d",
+      "label": "Any difference is a leak",
+      "sub": "something read forward",
+      "tone": "crit"
+     },
+     {
+      "id": "r",
+      "label": "Reading the code misses these",
+      "sub": "a centred window looks innocent",
+      "tone": "warn"
+     },
+     {
+      "id": "a",
+      "label": "Automate it as a test",
+      "sub": "not a one-off check",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "f",
+      "c"
+     ],
+     [
+      "t",
+      "c"
+     ],
+     [
+      "c",
+      "d"
+     ],
+     [
+      "d",
+      "r"
+     ],
+     [
+      "r",
+      "a"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03b",
+   "d": {
+    "kind": "matrix",
+    "title": "Forecasting-specific leakage, the five that recur",
+    "caption": "Each of these is invisible in a loss curve and each inflates the backtest. The first is the most common by a wide margin, and the last is the most insidious: a scaler fitted over the whole series has folded the test period's **level** into the training data, so even a perfectly windowed model is reading the future.",
+    "cols": [
+     "The leak",
+     "The fix"
+    ],
+    "rows": [
+     "Unshifted rolling feature",
+     "Centred window",
+     "Random split",
+     "Target scaled over all time",
+     "Unknowable covariate"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the feature contains today",
+       "tone": "crit"
+      },
+      "shift by at least one step"
+     ],
+     [
+      {
+       "text": "reads t+1 onward",
+       "tone": "crit"
+      },
+      "trailing windows only"
+     ],
+     [
+      {
+       "text": "trains on later data",
+       "tone": "crit"
+      },
+      "chronological split, with a gap"
+     ],
+     [
+      {
+       "text": "the test level is in the scaler",
+       "tone": "crit"
+      },
+      "fit the scaler per origin"
+     ],
+     [
+      {
+       "text": "weather you will not have",
+       "tone": "warn"
+      },
+      "use only what is set in advance"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "What this generalises to",
+    "caption": "The window-and-truncation discipline is not about time series specifically — it is about any setting where the data has an **ordering the model must respect**. Each row below has the same structure: a boundary, a temptation to cross it, and a mechanical test that catches the crossing.",
+    "cols": [
+     "The ordering",
+     "The same test"
+    ],
+    "rows": [
+     "Time series",
+     "User event streams",
+     "Medical records",
+     "Financial backtests",
+     "Any as-of feature"
+    ],
+    "cells": [
+     [
+      "calendar time",
+      "truncate the history, rebuild, compare"
+     ],
+     [
+      "a session's order",
+      "features from events before this one"
+     ],
+     [
+      "admission and discharge",
+      "nothing recorded after the prediction time"
+     ],
+     [
+      {
+       "text": "trade time, not settlement",
+       "tone": "warn"
+      },
+      "the data's own vintage, as of then"
+     ],
+     [
+      {
+       "text": "the as-of timestamp",
+       "tone": "good"
+      },
+      "pass it in; make the builder refuse later rows"
+     ]
+    ]
+   }
+  }
+ ]
+}

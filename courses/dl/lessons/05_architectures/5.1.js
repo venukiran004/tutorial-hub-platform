@@ -22,6 +22,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The card", id: "tldr" },
 
+    {"kind": "tree", "title": "The ANN card, at a glance", "caption": "A fully connected stack: every unit in a layer sees every unit in the one below. That is maximum flexibility and the **weakest possible prior** — nothing about locality, order or sharing — which is why it is the right model for a fixed-size feature vector and the wrong one for an image, a sequence or anything with structure to exploit.", "root": {"label": "MLP / ANN", "sub": "fully connected layers", "tone": "violet", "children": [{"label": "Input", "sub": "a fixed-size feature vector", "tone": "accent"}, {"label": "Assumes", "sub": "nothing structural at all", "tone": "warn"}, {"label": "Shares", "sub": "no weights; every connection is its own", "tone": "warn"}, {"label": "Right for", "sub": "tabular features, a final classifier head", "tone": "good"}]}, "t": "diagram", "id": "dg-5_1-01-0"},
+
+
+
     { t: "table", head: ["", ""],
       rows: [
         ["**Unit**", "`a = φ(wᵀx + b)`"],
@@ -38,6 +42,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Parameter count", id: "complexity" },
 
+    {"kind": "trace", "title": "The parameter count, and where it goes", "caption": "A dense layer costs inputs × outputs plus one bias per output, so the count is driven by the **widest adjacent pair** — and a flatten in front of it is what makes the number explode. That is the VGG lesson of 2.3 in its simplest form: the layer that touches the flattened image is almost the whole model.", "left": "layer", "codeW": 190, "vars": ["weights", "biases", "total"], "steps": [{"code": "784 -> 256", "state": ["200,704", "256", "200,960"], "tone": "crit", "note": "the flatten's cost"}, {"code": "256 -> 128", "state": ["32,768", "128", "32,896"], "tone": "accent"}, {"code": "128 -> 10", "state": ["1,280", "10", "1,290"], "tone": "good"}, {"code": "total", "state": ["234,752", "394", "235,146"], "tone": "violet", "note": "85% in layer 1"}], "t": "diagram", "id": "dg-5_1-02-1"},
+
+
+
     { t: "math", tex: "\\text{params} = (n_{in} + 1) \\times n_{out} \\qquad \\text{per layer}" },
 
     { t: "p", text: "The worked example: `784 → 256 → 10` gives `(784+1)·256 + (256+1)·10 = 200,960 + 2,570 = 203,530`. Lesson 4.8's network checked out the same way — 11,521 from this formula plus 384 of BatchNorm scale and shift, totalling the 11,905 PyTorch reported. Forward and backward cost is roughly `O(params)` per sample." },
@@ -46,6 +54,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "In `784 → 256 → 10`, the first layer holds 98.7 % of the parameters. This is the same phenomenon lesson 2.3 measured in VGG16, where 89.4 % of 138 million parameters sat in the classifier head. Whenever you want to know where a model's capacity — and its overfitting risk — actually lives, compute the per-layer split rather than counting layers. It is usually more lopsided than it looks." }] },
 
     { t: "h2", n: "03", text: "Diagnosis", id: "failures" },
+
+    {"kind": "matrix", "title": "Diagnosing an MLP", "caption": "Four symptoms with four distinct causes. The first is the one to check before anything else, because an unscaled input makes the loss ill-conditioned and no amount of architecture work will compensate — 1.8's condition-number argument applies directly.", "cols": ["Symptom", "First check"], "rows": ["Will not converge", "Train good, validation poor", "Both poor and flat", "Loss is NaN"], "cells": [[{"text": "inputs not standardised", "tone": "crit"}, "the condition number (1.8)"], [{"text": "too much capacity", "tone": "warn"}, "dropout, weight decay, fewer units"], [{"text": "too little, or bad features", "tone": "warn"}, "an MLP cannot invent structure"], [{"text": "learning rate, or a log(0)", "tone": "crit"}, "clip, and check the loss's domain"]], "t": "diagram", "id": "dg-5_1-03-2"},
+
+
 
     { t: "table", head: ["Symptom", "Likely cause", "Fix"],
       rows: [

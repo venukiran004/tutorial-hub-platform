@@ -54,6 +54,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Position", id: "position" },
 
+    {"kind": "matrix", "title": "Three ways to tell a transformer where it is", "caption": "Self-attention is permutation-equivariant (3.8), so position must be supplied. The three approaches differ in what they encode and how far they extrapolate: sinusoidal and learned encodings give each position an **absolute** identity, while RoPE rotates Q and K so that only the **relative** offset survives the dot product — which is why it generalises past the training length far better.", "cols": ["Encodes", "Beyond the training length"], "rows": ["Sinusoidal, added", "Learned embedding", "RoPE", "ALiBi", "None"], "cells": [[{"text": "absolute position", "tone": "accent"}, "defined, but degrades"], [{"text": "absolute position", "tone": "accent"}, {"text": "undefined: a fixed table", "tone": "crit"}], [{"text": "relative offset", "tone": "good"}, {"text": "extrapolates well", "tone": "good"}], [{"text": "a distance penalty on scores", "tone": "good"}, {"text": "extrapolates by design", "tone": "good"}], [{"text": "nothing", "tone": "crit"}, "a bag of tokens, at any length"]], "t": "diagram", "id": "dg-4_3-02-0"},
+
+
+
+
+
     { t: "p", text: "Lesson 3.8 verified that self-attention is permutation-equivariant to 4.8e-07 — shuffle the input and the output shuffles identically. Without position information a transformer reads a sentence as a bag of tokens. Something must be added." },
 
     { t: "math", tex: "PE_{(pos,\\,2i)} = \\sin\\!\\left(\\frac{pos}{10000^{2i/d_{model}}}\\right) \\qquad PE_{(pos,\\,2i+1)} = \\cos\\!\\left(\\frac{pos}{10000^{2i/d_{model}}}\\right)" },

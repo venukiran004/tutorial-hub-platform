@@ -19,6 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The card", id: "tldr" },
 
+    {"kind": "tree", "title": "The GRU card, at a glance", "caption": "Two gates instead of three and **no separate cell state** — one vector carries everything. That is 25% fewer parameters and slightly less expressive gating: it cannot hold something in memory while hiding it from the next layer, because there is no hidden cell to hide it in.", "root": {"label": "GRU", "sub": "reset and update gates, one state", "tone": "violet", "children": [{"label": "Drops", "sub": "the separate cell state entirely", "tone": "accent"}, {"label": "Key equation", "sub": "h = (1-z)*h + z*h_cand: a convex mix", "tone": "good"}, {"label": "Costs", "sub": "3h(h+d): 25% less than an LSTM", "tone": "good"}, {"label": "Gives up", "sub": "remembering without exposing", "tone": "warn"}]}, "t": "diagram", "id": "dg-5_5-01-0"},
+
+
+
     { t: "table", head: ["", ""],
       rows: [
         ["**Core idea**", "one state, two gates — `h_t = (1−z)⊙h̃ + z⊙h_{t−1}`"],
@@ -31,6 +35,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Parameter count", id: "complexity" },
 
+    {"kind": "trace", "title": "Exactly three quarters of an LSTM, at every size", "caption": "Three gate-sized weight sets against the LSTM's four, so the ratio is **exactly 0.750** — arithmetic, not an empirical observation. Which makes section 03's measurement all the more worth reading, because fewer parameters did not translate into less time.", "left": "d and h", "codeW": 150, "vars": ["RNN", "GRU", "LSTM", "GRU / LSTM"], "steps": [{"code": "100, 256", "state": ["91,648", "274,944", "366,592", "0.750"], "tone": "accent"}, {"code": "300, 512", "state": ["416,768", "1,250,304", "1,667,072", "0.750"], "tone": "accent"}, {"code": "32, 64", "state": ["6,272", "18,816", "25,088", "0.750"], "tone": "accent"}, {"code": "the ratio is", "state": ["", "3 gate sets", "4 gate sets", "exact"], "tone": "violet"}], "t": "diagram", "id": "dg-5_5-02-1"},
+
+
+
     { t: "out", text: `  gru   H=128 D=64 : formula 74,112  pytorch 74,496  (+384)
 
       d     h        RNN        GRU       LSTM   GRU/LSTM
@@ -41,6 +49,10 @@ EC.receiveLesson({
     { t: "p", text: "Exactly 0.750 at every size, as `3H(H+D)` against `4H(H+D)` requires. PyTorch's extra 384 is `3H`, one bias chunk per gate." },
 
     { t: "h2", n: "03", text: "The speed claim", id: "speed" },
+
+    {"kind": "trace", "title": "The speed claim, measured and contradicted", "caption": "'GRUs train faster' is correct about arithmetic and **wrong about wall-clock here**: at all three shapes on CPU with torch 2.10 the GRU is slower than the LSTM, by 2.0×, 3.1× and 1.6×. The cause is implementation, not FLOPs — PyTorch's LSTM has a well-optimised fused CPU kernel and the GRU does not. If speed is your reason for choosing an architecture, benchmark it on your own hardware.", "left": "shape", "codeW": 140, "vars": ["RNN ms", "GRU ms", "LSTM ms", "GRU vs LSTM"], "steps": [{"code": "shape 1", "state": ["42.8", "133.6", "67.4", "2.0x slower"], "changed": [1], "tone": "crit"}, {"code": "shape 2", "state": ["12.3", "29.4", "9.5", "3.1x slower"], "changed": [1], "tone": "crit"}, {"code": "shape 3", "state": ["13.2", "43.3", "26.4", "1.6x slower"], "changed": [1], "tone": "crit"}, {"code": "and yet", "state": ["", "25% fewer params", "", "FLOPs mispredict"], "tone": "violet"}], "t": "diagram", "id": "dg-5_5-03-2"},
+
+
 
     { t: "out", text: `  batch=32 T=100 d=128 h=256
     RNN : median    42.8 ms   GRU : median   133.6 ms   LSTM: median    67.4 ms
@@ -54,12 +66,20 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "What the coupled gate costs", id: "coupling" },
 
+    {"kind": "flow", "title": "What the coupled gate costs", "caption": "The GRU's single update gate z does two jobs at once: (1−z) decides how much old state to keep and z decides how much new content to admit, so they are **forced to sum to one**. An LSTM's f and i are independent, so it can keep 90% of the cell and admit 90% of the candidate in the same step. In practice this rarely decides a result, which is why both architectures survive.", "cols": 3, "nodes": [{"id": "g", "label": "GRU: h = (1-z)*h + z*h_cand", "sub": "one gate, two jobs", "tone": "accent"}, {"id": "c", "label": "Keep and admit sum to 1", "sub": "forced", "tone": "warn"}, {"id": "l", "label": "LSTM: c = f*c + i*g", "sub": "two independent gates", "tone": "good"}, {"id": "i", "label": "Can keep 90% and admit 90%", "sub": "they do not trade off", "tone": "good"}, {"id": "e", "label": "Slightly more expressive", "sub": "in principle", "tone": "accent"}, {"id": "p", "label": "Rarely decisive", "sub": "which is why both survive", "tone": "teal"}], "edges": [["g", "c"], ["c", "l"], ["l", "i"], ["i", "e"], ["e", "p"]], "t": "diagram", "id": "dg-5_5-04-3"},
+
+
+
     { t: "p", text: "The LSTM's forget and input gates are independent, so it can keep all of its existing memory *and* write new content in the same step. The GRU's update gate ties them: keeping fraction `z` necessarily means taking `1 − z` of the candidate. The memory budget is zero-sum at every step." },
 
     { t: "callout", kind: "trap", title: "PyTorch's update gate means the opposite of the",
       body: [{ t: "p", text: "It is commonly written `h_t = (1−z)h_{t−1} + z·h̃`, so `z` near 1 means *take the new candidate*. PyTorch computes `h_t = (1−z)·h̃ + z·h_{t−1}`, so `z` near 1 means *keep the old state* — exactly reversed. Both train identically, since the network learns whichever sign it needs. But if you implement from a paper and validate against `nn.GRU`, or inspect gate statistics from a trained model expecting one convention, every number will read backwards. Check which convention your source uses before concluding anything from a gate value." }] },
 
     { t: "h2", n: "04b", text: "The reset gate", id: "reset" },
+
+    {"kind": "flow", "title": "The reset gate, which is the part people forget", "caption": "The update gate z gets all the attention; the reset gate r is what lets the candidate **ignore the previous state**. With r near zero the candidate is computed from the input alone, which is how a GRU starts a fresh representation at a sequence boundary — a sentence break, a new session — without needing anything to clear the state for it.", "cols": 3, "nodes": [{"id": "r", "label": "Reset gate r", "sub": "applied to h before the candidate", "tone": "accent"}, {"id": "o", "label": "r near 1", "sub": "candidate uses the past", "tone": "good"}, {"id": "z", "label": "r near 0", "sub": "candidate ignores it entirely", "tone": "good"}, {"id": "f", "label": "A fresh start, learned", "sub": "at a sentence or session boundary", "tone": "violet"}, {"id": "u", "label": "z then decides how much to take", "sub": "the two gates are sequential", "tone": "accent"}, {"id": "n", "label": "No explicit reset needed", "sub": "the network learns when", "tone": "teal"}], "edges": [["r", "o"], ["r", "z"], ["z", "f"], ["f", "u"], ["u", "n"]], "t": "diagram", "id": "dg-5_5-04b-4"},
+
+
 
     { t: "math", tex: "\\tilde{h}_t = \\tanh\\big(W_x x_t + r_t \\odot (W_h h_{t-1})\\big)" },
 
@@ -72,6 +92,10 @@ EC.receiveLesson({
     ] },
 
     { t: "h2", n: "05", text: "Diagnosis", id: "failures" },
+
+    {"kind": "matrix", "title": "Diagnosing a GRU", "caption": "Mostly the RNN list, with one GRU-specific entry: there is no forget-gate bias to set, so the 3.3 fix does not apply — which cuts both ways, since it also means a GRU cannot be broken in that particular way.", "cols": ["Symptom", "First check"], "rows": ["Slower than the LSTM", "No long-range learning", "Results vary with batching", "Worse than an LSTM", "Final state wrong"], "cells": [[{"text": "expected on CPU", "tone": "accent"}, "section 03: it is the kernel"], [{"text": "truncation, or the task", "tone": "warn"}, "no forget bias to fix here"], [{"text": "padding not packed", "tone": "crit"}, "3.11"], [{"text": "the coupled gate, perhaps", "tone": "accent"}, "try the LSTM with its bias set"], [{"text": "h_n's shape", "tone": "warn"}, "5.3's table; no c_n here"]], "t": "diagram", "id": "dg-5_5-05-5"},
+
+
 
     { t: "table", head: ["Symptom", "Likely cause", "Fix"],
       rows: [

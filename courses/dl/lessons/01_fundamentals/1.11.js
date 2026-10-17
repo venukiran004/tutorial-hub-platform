@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The data", id: "data" },
 
+    {"kind": "flow", "title": "The problem both frameworks are given", "caption": "A binary classifier on a table: 569 tumours, 30 measured features, malignant or benign. Splitting it three ways — 400 to train, 69 to validate, 100 held back — is what makes the comparison honest, because the validation set is what the callbacks and the schedule react to and the test set is therefore the only clean number. The 62.7% positive rate also sets the baseline: an accuracy below that is worse than answering 'benign' every time.", "cols": 4, "nodes": [{"id": "d", "label": "569 tumours, 30 features", "sub": "malignant or benign", "tone": "accent"}, {"id": "t", "label": "400 train", "sub": "what the weights see", "tone": "good"}, {"id": "v", "label": "69 validation", "sub": "what the callbacks react to", "tone": "violet"}, {"id": "s", "label": "100 test", "sub": "the only clean number", "tone": "teal"}, {"id": "b", "label": "62.7% positive", "sub": "the baseline to beat", "tone": "warn"}], "edges": [["d", "t"], ["d", "v"], ["d", "s"], ["t", "b", "", "dashed"]], "t": "diagram", "id": "dg-1_11-01-0"},
+
+
     { t: "p", text: "Both reference programs take `n_features` inputs and produce one sigmoid output — a binary classifier on a table. The scikit-learn breast-cancer dataset is that: 569 tumours, 30 measured features, malignant or benign. Split into 400 for training, 69 for validation (the callbacks and the scheduler watch it) and 100 held out, and standardised with statistics from the training split only." },
 
     { t: "code", lang: "python", title: "One split and one scaler for both frameworks",
@@ -37,6 +40,9 @@ n_features = X_train.shape[1]` },
     { t: "out", text: `breast cancer: 30 features, train 400, val 69, test 100, positives 0.627` },
 
     { t: "h2", n: "02", text: "Keras", id: "keras" },
+
+    {"kind": "trace", "title": "Keras: every callback did its job in nineteen epochs", "caption": "The run stops itself. Validation loss bottoms out around epoch 9 at 0.1261; `ReduceLROnPlateau` halves the rate to 5.00e-04 after five epochs without improvement; `EarlyStopping` ends the run at 19 and restores the best weights. Note the shape of it — training loss keeps falling to 0.0344 while validation loss **rises** to 0.1611. That divergence is overfitting, and the callbacks are what stop it costing anything.", "left": "epoch", "codeW": 120, "vars": ["train loss", "val loss", "val AUC", "lr"], "steps": [{"code": "1", "state": ["0.4330", "0.3951", "0.9553", "1.00e-03"], "tone": "accent"}, {"code": "5", "state": ["0.0733", "0.1253", "0.9767", "1.00e-03"], "tone": "good"}, {"code": "10", "state": ["0.0603", "0.1261", "0.9736", "1.00e-03"], "changed": [1], "tone": "good", "note": "val loss bottoms out"}, {"code": "19 - stopped", "state": ["0.0344", "0.1611", "0.9767", "5.00e-04"], "changed": [0, 1, 3], "tone": "warn", "note": "train down, val up"}, {"code": "test", "state": ["", "0.1073", "0.9936", ""], "tone": "violet", "note": "acc 0.9600"}], "t": "diagram", "id": "dg-1_11-02-1"},
+
 
     { t: "code", lang: "python", title: "The Keras program",
       code: `import tensorflow as tf
@@ -101,6 +107,9 @@ dense_3 (Dense)                 (None, 1)                65      64·1 + 1
       caption: "The dense counts are lesson 1.1's formula. Batch norm carries four numbers per unit, two of them trained (γ, β) and two running statistics (lesson 1.8); the 768 non-trainable are the running means and variances of the two norm layers. The 99,844 optimiser parameters are Adam's m and v — two per trainable weight — which is why Adam needs three times a model's memory." },
 
     { t: "h2", n: "03", text: "PyTorch", id: "pytorch" },
+
+    {"kind": "trace", "title": "PyTorch: the same model, and the cost of no early stopping", "caption": "The loop runs the full hundred epochs on the cosine schedule, and the validation loss shows what that costs: it bottoms near epoch 9 at 0.1512 and then drifts up to 0.2203 by epoch 49 before the decaying rate pulls it back to 0.1846. **Eighty of the hundred epochs were spent getting back to where epoch 9 already was.** The test accuracy matches Keras at 0.9600 — the difference is not the framework, it is that one run stopped itself and the other did not.", "left": "epoch", "codeW": 120, "vars": ["train loss", "val loss", "lr"], "steps": [{"code": "0", "state": ["0.4942", "0.4204", "1.00e-03"], "tone": "accent"}, {"code": "9", "state": ["0.0754", "0.1512", "9.76e-04"], "changed": [1], "tone": "good", "note": "the best it gets"}, {"code": "19", "state": ["0.0596", "0.1910", "9.05e-04"], "tone": "warn"}, {"code": "49", "state": ["0.0770", "0.2203", "5.00e-04"], "changed": [1], "tone": "crit", "note": "drifting away"}, {"code": "99", "state": ["0.0516", "0.1846", "0.00e+00"], "tone": "warn", "note": "back near epoch 9"}, {"code": "test", "state": ["acc 0.9600", "auc 0.9961", ""], "tone": "violet"}], "t": "diagram", "id": "dg-1_11-03-2"},
+
 
     { t: "code", lang: "python", title: "The MLPClassifier",
       code: `import torch, torch.nn as nn, torch.optim as optim
@@ -170,6 +179,9 @@ for epoch in range(100):
       body: [{ t: "p", text: "The Keras model ends in Dense(1, activation='sigmoid') and uses loss='binary_crossentropy'. The PyTorch model ends in nn.Linear(prev_dim, 1) with no activation and uses BCEWithLogitsLoss, which applies the sigmoid inside the loss using the log-sum-exp trick so that a logit of −100 does not produce log(0). To get probabilities from the PyTorch model at inference you apply torch.sigmoid yourself; to get them from Keras you do not. Mixing the conventions — a sigmoid in the model *and* a with-logits loss — trains, badly, and is silent." }] },
 
     { t: "h2", n: "04", text: "Side by side", id: "compare" },
+
+    {"kind": "matrix", "title": "The same eight decisions, made in two places", "caption": "Every row is one thing Keras decides for you and PyTorch hands back. None of them is hidden in Keras in a way you cannot override, and none is hard in PyTorch — but the two middle rows are where the bugs live, because `model.eval()` and the with-logits convention are silent when you get them wrong: dropout stays on during validation, or a sigmoid gets applied twice.", "cols": ["Keras", "PyTorch"], "rows": ["Model", "Loss and optimiser", "Training loop", "Callbacks", "Train / eval mode", "Output activation", "Device", "Where it is used"], "cells": [["a Sequential list", "an nn.Module with forward()"], ["compile(...)", "objects you call yourself"], [{"text": "fit() - hidden", "tone": "accent"}, "written out, step by step"], ["built in", "code in the loop (1.7, 1.9)"], [{"text": "handled for you", "tone": "good"}, {"text": "train() / eval(): yours", "tone": "crit"}], ["in the model", {"text": "in the loss, with-logits", "tone": "crit"}], ["automatic", "explicit .to(device), everywhere"], ["prototypes, TF pipelines", "research, and production"]], "t": "diagram", "id": "dg-1_11-04-3"},
+
 
     { t: "table", head: ["", "Keras", "PyTorch"],
       rows: [

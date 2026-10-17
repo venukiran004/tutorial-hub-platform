@@ -21,6 +21,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The card", id: "tldr" },
 
+    {"kind": "tree", "title": "The RNN card, at a glance", "caption": "One hidden state, updated once per timestep by the same weights. The assumption is that **order matters and recency matters most** — which is true of a signal and false of a set, and the decay that makes recency structural is 3.2's measurement.", "root": {"label": "RNN", "sub": "one recurrence, shared weights", "tone": "violet", "children": [{"label": "Input", "sub": "a sequence, any length", "tone": "accent"}, {"label": "Assumes", "sub": "order; and that recent context dominates", "tone": "good"}, {"label": "Shares", "sub": "one weight matrix across all time", "tone": "good"}, {"label": "Limit", "sub": "about 10-20 steps of learnable dependency", "tone": "crit"}]}, "t": "diagram", "id": "dg-5_3-01-0"},
+
+
+
     { t: "table", head: ["", ""],
       rows: [
         ["**Recurrence**", "`h_t = tanh(W_hh h_{t−1} + W_xh x_t + b)`"],
@@ -33,6 +37,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Parameter count", id: "complexity" },
 
+    {"kind": "trace", "title": "The parameter count, and what is not in it", "caption": "Two matrices and a bias, and — the point — **no term for sequence length**. A ten-step and a ten-thousand-step sequence are processed by the same parameters, which is the weight sharing of 3.1. What does grow with length is the activation memory that BPTT must keep.", "left": "part", "codeW": 190, "vars": ["formula", "at d=128, h=256"], "steps": [{"code": "input-to-hidden W_xh", "state": ["h x d", "32,768"], "tone": "accent"}, {"code": "hidden-to-hidden W_hh", "state": ["h x h", "65,536"], "tone": "accent"}, {"code": "bias", "state": ["h (PyTorch keeps 2)", "512"], "tone": "good"}, {"code": "total", "state": ["h(h + d) + 2h", "98,816"], "tone": "violet"}, {"code": "term for sequence length", "state": ["none", "none"], "changed": [0], "tone": "good", "note": "but memory is O(T)"}], "t": "diagram", "id": "dg-5_3-02-1"},
+
+
+
     { t: "math", tex: "\\text{params} \\approx H(H + D + 1), \\qquad \\text{compute} = O(T \\cdot H^2) \\; \\text{— not parallel over } T" },
 
     { t: "out", text: `  rnn   H=128 D=64 : formula 24,704  pytorch 24,832  (pytorch has 2 bias vectors: +128)` },
@@ -43,6 +51,10 @@ EC.receiveLesson({
     { t: "p", text: "Compute is `O(T·H²)` and **cannot be parallelised across T**, because each step needs the previous state. That is the architectural limitation lesson 4.1 identified as decisive: no amount of hardware removes it, which is why transformers scaled and RNNs did not." },
 
     { t: "h2", n: "03", text: "Diagnosis", id: "failures" },
+
+    {"kind": "matrix", "title": "Diagnosing an RNN", "caption": "The first two rows are the course's most-repeated RNN bugs, and both are silent. Padding that is not packed keeps updating the hidden state across fake timesteps (3.11), and `output[:, -1]` then reads those updates rather than the sequence's true end.", "cols": ["Symptom", "First check"], "rows": ["Results vary with batching", "Final state looks wrong", "Learns nothing long-range", "Loss is NaN", "Validation much worse"], "cells": [[{"text": "padding is not packed", "tone": "crit"}, "3.11: pack, or mask"], [{"text": "output[:, -1] reads padding", "tone": "crit"}, "gather at lengths - 1 (3.6)"], [{"text": "the gradient vanished", "tone": "crit"}, "3.2 measured it; use an LSTM"], [{"text": "exploding gradient", "tone": "crit"}, "clip the norm (3.2)"], [{"text": "dropout inside the recurrence", "tone": "warn"}, "3.6: the same mask per sequence"]], "t": "diagram", "id": "dg-5_3-03-2"},
+
+
 
     { t: "table", head: ["Symptom", "Likely cause", "Fix"],
       rows: [
@@ -60,6 +72,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03b", text: "Why the gradient decays, in one line", id: "why" },
 
+    {"kind": "flow", "title": "Why the gradient decays, in one line", "caption": "∂hₜ/∂hₜ₋₁ is Wₕₕ multiplied by the activation's derivative, and tanh's derivative is at most 1 — so the per-step factor is bounded by the largest singular value of Wₕₕ, and the gradient over T steps is that factor to the power T. Below one it vanishes, above one it explodes, and there is no setting that holds it at exactly one for a learned matrix.", "cols": 3, "nodes": [{"id": "d", "label": "dh_t/dh_{t-1} = W_hh x tanh'", "sub": "per step", "tone": "violet"}, {"id": "t", "label": "tanh' <= 1", "sub": "so W_hh's scale decides", "tone": "accent"}, {"id": "p", "label": "Over T steps: factor^T", "sub": "geometric", "tone": "accent"}, {"id": "v", "label": "Below 1: vanishes", "sub": "3.2's zero at T=100", "tone": "crit"}, {"id": "e", "label": "Above 1: explodes", "sub": "clip it", "tone": "warn"}, {"id": "n", "label": "No stable setting", "sub": "which is why gates exist", "tone": "teal"}], "edges": [["d", "t"], ["t", "p"], ["p", "v"], ["p", "e"], ["v", "n"]], "t": "diagram", "id": "dg-5_3-03b-3"},
+
+
+
     { t: "math", tex: "\\frac{\\partial h_t}{\\partial h_k} = \\prod_{j=k+1}^{t} W_{hh}^{T} \\, \\mathrm{diag}(\\tanh'(z_j))" },
 
     { t: "p", text: "Two factors, both working against you. `tanh'` is at most 1 and falls away fast — 0.42 at `z=1`, 0.07 at `z=2` — so the activation alone shrinks the gradient at every step, and it shrinks *more* as the network becomes confident and its states saturate. And because the weights are shared, `W_hh` appears `t − k` times, so the product behaves like its largest eigenvalue raised to that power: below 1 it vanishes, above 1 it explodes, with no stable middle over long sequences." },
@@ -72,6 +88,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "That is the argument against trying to fix this with initialisation. At an eigenvalue of essentially 1 — 0.957 — the gradient over fifty steps still falls to 3.2e-03, because the tanh derivative is pulling it down independently. There is no setting of `W_hh` that keeps gradients healthy across long sequences while remaining stable, which is precisely why the solution had to be architectural. Gated cells replace this product with a multiply by a learned gate, removing both the fixed matrix and the activation derivative from the path." }] },
 
     { t: "h2", n: "04", text: "The knobs", id: "hyperparameters" },
+
+    {"kind": "matrix", "title": "The knobs", "caption": "Hidden size is the capacity dial and the only one with a simple effect. The rest carry caveats that earlier lessons measured — bidirectionality costs causality (3.6), depth multiplies the gradient path, and truncation length bounds what can be **learned** rather than what can be represented (3.2).", "cols": ["Moves", "Caveat"], "rows": ["Hidden size", "Layers", "Bidirectional", "Truncation length", "Cell type"], "cells": [[{"text": "capacity", "tone": "good"}, "parameters grow as h(h+d)"], [{"text": "abstraction", "tone": "accent"}, "two usually helps; five rarely"], [{"text": "context from both sides", "tone": "good"}, {"text": "no streaming at all (3.6)", "tone": "crit"}], [{"text": "memory, and learnable range", "tone": "accent"}, "state crosses it; gradient does not"], [{"text": "the gradient path", "tone": "good"}, "LSTM: set the forget bias (3.3)"]], "t": "diagram", "id": "dg-5_3-04-4"},
+
+
 
     { t: "table", head: ["Parameter", "Effect"],
       rows: [
@@ -88,6 +108,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "04b", text: "The shapes PyTorch returns", id: "shapes" },
 
+    {"kind": "trace", "title": "The shapes PyTorch returns, which are not the obvious ones", "caption": "Three conventions that cause most of the indexing bugs. `output` is every timestep's hidden state and `h_n` is only the last; with `batch_first=False` — **the default** — time comes first; and `h_n` is shaped (layers × directions, batch, hidden), so a bidirectional two-layer model returns four slices that must be reshaped before they mean anything.", "left": "returned value", "codeW": 160, "vars": ["shape", "what it is"], "steps": [{"code": "output, batch_first=False", "state": ["(T, B, H x D)", "every timestep"], "tone": "warn", "note": "the default"}, {"code": "output, batch_first=True", "state": ["(B, T, H x D)", "the same, reordered"], "tone": "good"}, {"code": "h_n", "state": ["(L x D, B, H)", "the last step only"], "tone": "accent"}, {"code": "h_n for L=2, D=2", "state": ["(4, B, H)", "reshape to (2, 2, B, H)"], "changed": [0], "tone": "crit"}, {"code": "c_n (LSTM only)", "state": ["(L x D, B, H)", "the cell state"], "tone": "accent"}], "t": "diagram", "id": "dg-5_3-04b-5"},
+
+
+
     { t: "table", head: ["Tensor", "Shape", "What it is"],
       rows: [
         ["`output`", "`(B, T, H x directions)`", "The **top layer's** hidden state at every timestep"],
@@ -99,6 +123,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Two confusions that cost people hours. `output` contains only the top layer regardless of depth — its shape does not change when you go from one layer to four, so a model that silently ignores your extra layers looks identical to one that uses them. And for a bidirectional model the sequence summary is `torch.cat([h_n[-2], h_n[-1]], dim=1)`, not `h_n[-1]` and not `output[:, -1, :]`, because the backward direction's final state corresponds to timestep 0. Both mistakes degrade accuracy without raising anything, which is exactly why they survive review." }] },
 
     { t: "h2", n: "05", text: "When it is still the right choice", id: "when" },
+
+    {"kind": "matrix", "title": "When an RNN is still the right choice", "caption": "Transformers displaced RNNs for text and did not displace them everywhere. The cases below are real and recurring, and the first is the strongest: a causal RNN processes one timestep in constant time and memory, which a transformer cannot do without a growing cache.", "cols": ["Still right", "Because"], "rows": ["Streaming / real-time", "Very long signals", "Small data", "Embedded, tight memory", "Online adaptation"], "cells": [[{"text": "yes", "tone": "good"}, "constant time and memory per step"], [{"text": "often", "tone": "good"}, "no quadratic term (4.2)"], [{"text": "yes", "tone": "good"}, "a transformer's prior is too weak"], [{"text": "yes", "tone": "good"}, "no KV cache to hold"], [{"text": "yes", "tone": "accent"}, "the state is the summary; update it"]], "t": "diagram", "id": "dg-5_3-05-6"},
+
+
 
     { t: "p", text: "Rarely, and specifically. A vanilla RNN is appropriate when dependencies are genuinely short — a handful of steps — and you want the smallest possible model, as on a microcontroller. Beyond that, a GRU costs three times the parameters and removes the dominant failure mode, which is nearly always worth it. The RNN's real value now is pedagogical and diagnostic: it is the baseline that tells you whether your problem needs gating at all." },
 

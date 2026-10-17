@@ -58,6 +58,11 @@ for t in range(T):
     {"kind": "flow", "title": "Weight sharing across time is what makes it recurrent", "caption": "There is **one** weight matrix, applied at every timestep — not one per position. That is why an RNN handles a sequence of any length with a fixed parameter count, and also why its gradient is a product of T identical factors, which is the whole of 3.2's problem.", "cols": 4, "nodes": [{"id": "h0", "label": "h₀", "sub": "usually zeros", "tone": "violet"}, {"id": "t1", "label": "W at t=1", "sub": "the same W", "tone": "accent"}, {"id": "t2", "label": "W at t=2", "sub": "the same W", "tone": "accent"}, {"id": "t3", "label": "W at t=T", "sub": "still the same W", "tone": "accent"}, {"id": "p", "label": "Any length, fixed parameters", "sub": "that is the gain", "tone": "good"}, {"id": "g", "label": "Gradient is W to the power T", "sub": "that is the cost (3.2)", "tone": "crit"}], "edges": [["h0", "t1"], ["t1", "t2"], ["t2", "t3"], ["t3", "p"], ["p", "g"]], "t": "diagram", "id": "dg-3_1-02-0"},
 
 
+
+
+
+
+
     { t: "out", text: `  T=  5: output (1, 5, 6), parameters 72 (unchanged)
   T= 50: output (1, 50, 6), parameters 72 (unchanged)
   T=500: output (1, 500, 6), parameters 72 (unchanged)` },
@@ -68,6 +73,11 @@ for t in range(T):
     { t: "h2", n: "03", text: "The bottleneck", id: "bottleneck" },
 
     {"kind": "flow", "title": "The bottleneck: one vector has to carry the whole sequence", "caption": "Whatever the input's length, the final hidden state is a fixed-size vector — so a fifty-word sentence and a five-word one are both compressed into the same number of dimensions. Everything the decoder knows comes through that one vector, which is precisely the constraint attention (3.8) removes.", "cols": 3, "nodes": [{"id": "s", "label": "A sequence of any length", "sub": "5 tokens, or 500", "tone": "violet"}, {"id": "r", "label": "Read one step at a time", "sub": "h updated at each", "tone": "accent"}, {"id": "h", "label": "One final vector", "sub": "fixed size, whatever the length", "tone": "warn"}, {"id": "d", "label": "The decoder sees only this", "sub": "nothing else survives", "tone": "crit"}, {"id": "l", "label": "Long inputs lose the start", "sub": "it was overwritten", "tone": "crit"}, {"id": "a", "label": "Attention removes the constraint", "sub": "every step stays readable (3.8)", "tone": "good"}], "edges": [["s", "r"], ["r", "h"], ["h", "d"], ["d", "l"], ["l", "a"]], "t": "diagram", "id": "dg-3_1-03-1"},
+
+
+
+
+
 
 
     { t: "out", text: `  T=  10:    40 input values -> 6 hidden values (7:1 compression)

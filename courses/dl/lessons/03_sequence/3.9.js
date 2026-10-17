@@ -25,6 +25,11 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Why greedy decoding is not the most likely sequence", "caption": "Greedy takes the highest-probability **token** at every step, which is not the same as the highest-probability **sequence** — a slightly worse first token can open a far better continuation, and greedy has already thrown it away. The search is over an exponentially large space and greedy explores exactly one path through it.", "cols": 3, "nodes": [{"id": "g", "label": "Take the best token now", "sub": "argmax at each step", "tone": "accent"}, {"id": "o", "label": "One path explored", "sub": "of exponentially many", "tone": "warn"}, {"id": "l", "label": "A worse token now", "sub": "can lead somewhere better", "tone": "crit"}, {"id": "d", "label": "Already discarded", "sub": "greedy cannot reconsider", "tone": "crit"}, {"id": "b", "label": "Keep k candidates instead", "sub": "beam search", "tone": "good"}, {"id": "s", "label": "Still not optimal", "sub": "just a wider search", "tone": "accent"}], "edges": [["g", "o"], ["o", "l"], ["l", "d"], ["d", "b"], ["b", "s"]], "t": "diagram", "id": "dg-3_9-01-0"},
 
 
+
+
+
+
+
     { t: "out", text: `  'The cat sat' : 0.9 * 0.1 = 0.09
   'The dog ran' : 0.7 * 0.8 = 0.56   <- greedy picks 'cat' and loses` },
 
@@ -83,6 +88,11 @@ EC.receiveLesson({
     {"kind": "trace", "title": "The length bias, and the normalisation that corrects it", "caption": "A sequence's score is a **sum of log probabilities**, and every token adds a negative number — so a longer sequence scores worse automatically, whatever its quality. Beam search therefore prefers short outputs, sometimes absurdly so. Dividing by the length removes the bias; dividing by length to a power α lets you tune how much, and α ≈ 0.6 to 0.7 is the usual setting in translation.", "left": "candidate", "codeW": 190, "vars": ["sum of log p", "/ length", "/ length^0.7"], "steps": [{"code": "3 tokens at -0.5 each", "state": ["-1.50", "-0.500", "-0.695"], "tone": "accent"}, {"code": "10 tokens at -0.5 each", "state": ["-5.00", "-0.500", "-0.998"], "tone": "accent"}, {"code": "raw score prefers", "state": ["the short one", "", ""], "tone": "crit"}, {"code": "length-normalised prefers", "state": ["", "neither: equal", ""], "changed": [1], "tone": "good"}, {"code": "alpha = 0.7 prefers", "state": ["", "", "the short one, mildly"], "tone": "violet", "note": "tunable"}], "t": "diagram", "id": "dg-3_9-03-1"},
 
 
+
+
+
+
+
     { t: "callout", kind: "trap", title: "Look at what widths 3 and 5 actually chose",
       body: [{ t: "p", text: "They picked `['the', '<eos>']` — a two-token sequence that terminates immediately. That is not a coincidence, it is the length bias in action. Every additional token adds a negative log-probability, so a longer sequence's score is *always* worse than its own prefix. Beam search, asked to maximise total log-probability, will therefore prefer to stop as early as the model permits. In translation this produces truncated output that drops the end of the sentence; in summarisation it produces summaries of one clause. It is the single most important practical fact about beam search, and it is entirely an artefact of the scoring function rather than of the model." }] },
 
@@ -98,6 +108,11 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "When not to use it", id: "limits" },
 
     {"kind": "matrix", "title": "When not to use beam search", "caption": "Beam search optimises likelihood, and likelihood is the wrong objective whenever **diversity** is the point — which is why open-ended generation uses sampling instead. The failure is characteristic and well documented: large beams on open-ended text produce bland, repetitive output, because the most likely continuation of almost anything is a cliche.", "cols": ["Use", "Because"], "rows": ["Translation", "Summarisation", "Speech recognition", "Open-ended generation", "Creative writing", "Very large beams"], "cells": [[{"text": "beam, 4-5", "tone": "good"}, "one right answer; likelihood is the goal"], [{"text": "beam, with length norm", "tone": "good"}, "same, plus the length bias to fix"], [{"text": "beam, with an LM", "tone": "good"}, "constrained output space"], [{"text": "sampling: top-p", "tone": "crit"}, "likelihood rewards blandness"], [{"text": "sampling, with temperature", "tone": "crit"}, "diversity is the objective"], [{"text": "avoid", "tone": "warn"}, "quality falls past about 10"]], "t": "diagram", "id": "dg-3_9-04-2"},
+
+
+
+
+
 
 
     { t: "callout", kind: "tradeoff", title: "For open-ended generation, beam search produces bland text",

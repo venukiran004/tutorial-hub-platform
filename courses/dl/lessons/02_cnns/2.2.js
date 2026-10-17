@@ -51,6 +51,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "p", text: "Pooling is usually described as providing translation invariance. It does, but only within a window — and that limit is easy to measure by shifting a single activation and checking whether the pooled output changes." },
 
     { t: "out", text: `  shift (0,0): pooled output identical = True
@@ -88,6 +93,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "p", text: "The design rule is one sentence: **as spatial dimensions fall, channel count rises.** Each halving of height and width is matched by a doubling of channels, so the amount of information per layer stays roughly constant while what it represents becomes more abstract." },
 
     { t: "out", text: `  input                (3, 224, 224)
@@ -110,6 +120,11 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "The receptive field", id: "receptive-field" },
 
     {"kind": "trace", "title": "The receptive field, and why it has to be computed", "caption": "The receptive field grows by (k−1)×(product of all previous strides) per layer — so **stride compounds multiplicatively** and is what actually buys coverage. Three 3×3 layers at stride 1 see 7 pixels; add one stride-2 layer and the next 3×3 sees 15. If a network's final receptive field is smaller than the object you are trying to detect, no amount of training will fix it.", "left": "layer", "codeW": 190, "vars": ["kernel", "stride so far", "receptive field"], "steps": [{"code": "input", "state": ["—", "1", "1"], "tone": "violet"}, {"code": "conv 3x3, s 1", "state": ["3", "1", "3"], "tone": "good"}, {"code": "conv 3x3, s 1", "state": ["3", "1", "5"], "tone": "good"}, {"code": "conv 3x3, s 1", "state": ["3", "1", "7"], "tone": "good", "note": "= one 7x7, cheaper"}, {"code": "maxpool 2x2, s 2", "state": ["2", "2", "8"], "tone": "accent"}, {"code": "conv 3x3, s 1", "state": ["3", "2", "12"], "changed": [2], "tone": "accent"}, {"code": "conv 3x3, s 1", "state": ["3", "2", "16"], "changed": [2], "tone": "good", "note": "stride compounds"}], "t": "diagram", "id": "dg-2_2-05-2"},
+
+
+
+
+
 
 
 

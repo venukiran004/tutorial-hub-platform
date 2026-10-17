@@ -21,6 +21,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The parameters", id: "parameters" },
 
+    {"kind": "flow", "title": "Four numbers describe any digital audio", "caption": "Sample rate, bit depth, channels and duration — and every later decision in this module follows from the first two. The sample rate caps the frequencies that can be represented (§02), and the bit depth sets the noise floor (§05).", "cols": 4, "nodes": [{"id": "s", "label": "Sample rate", "sub": "16 kHz for speech", "tone": "accent"}, {"id": "b", "label": "Bit depth", "sub": "16-bit integer, usually", "tone": "accent"}, {"id": "c", "label": "Channels", "sub": "mono for ASR", "tone": "good"}, {"id": "d", "label": "Duration", "sub": "and so the array's length", "tone": "good"}], "edges": [["s", "b"], ["b", "c"], ["c", "d"]], "t": "diagram", "id": "dg-6_1-01-0"},
+
+
+
     { t: "table", head: ["Term", "What it is", "Speech default"],
       rows: [
         ["Sample rate", "Measurements per second", "**16,000 Hz**"],
@@ -53,10 +57,18 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Aliasing", id: "aliasing" },
 
+    {"kind": "flow", "title": "Aliasing: the frequency that comes back as a different one", "caption": "Nyquist says a sample rate of f can represent frequencies up to f/2. Anything above that does not disappear — it **folds back** and appears as a lower frequency that was never in the signal, indistinguishable from real content. Which is why resampling without a low-pass filter first corrupts the data rather than merely losing the top end.", "cols": 3, "nodes": [{"id": "n", "label": "Nyquist limit: f / 2", "sub": "8 kHz at a 16 kHz rate", "tone": "violet"}, {"id": "a", "label": "A 9 kHz tone, sampled at 16 kHz", "sub": "above the limit", "tone": "warn"}, {"id": "f", "label": "Folds back to 7 kHz", "sub": "a frequency that was never there", "tone": "crit"}, {"id": "i", "label": "Indistinguishable from real content", "sub": "and unrecoverable", "tone": "crit"}, {"id": "l", "label": "Low-pass filter first", "sub": "then downsample", "tone": "good"}, {"id": "r", "label": "Which is what resample() does", "sub": "and naive slicing does not", "tone": "teal"}], "edges": [["n", "a"], ["a", "f"], ["f", "i"], ["i", "l"], ["l", "r"]], "t": "diagram", "id": "dg-6_1-03-1"},
+
+
+
     { t: "callout", kind: "trap", title: "Frequencies above Nyquist do not vanish — they fold back",
       body: [{ t: "p", text: "A 9 kHz tone sampled at 16 kHz does not disappear; it reappears as a 7 kHz tone that was never in the original signal. The sampling process cannot distinguish them, and once the samples exist the false frequency is indistinguishable from a real one. This is why **every resampler low-pass filters before it downsamples** — if you naively drop every other sample to halve a rate, everything above the new Nyquist folds into your audible band as noise that no later processing can remove. If you are writing resampling code yourself rather than using `torchaudio.transforms.Resample` or `soxr`, this is the mistake you will make." }] },
 
     { t: "h2", n: "04", text: "What it costs to store", id: "storage" },
+
+    {"kind": "trace", "title": "Log-mel is not a compression scheme", "caption": "The arithmetic comes out **exactly equal**: one minute of 16 kHz 16-bit mono is 1.92 MB, and the same minute as an 80-band log-mel spectrogram at 100 frames per second is also 1.92 MB. Log-mel is a perceptually weighted re-representation — the same quantity of numbers, arranged so the axes correspond to what matters for recognition. The learnability improves enormously; the storage does not change at all.", "left": "representation", "codeW": 210, "vars": ["arithmetic", "per minute"], "steps": [{"code": "raw PCM", "state": ["16,000 x 16 bits x 1 ch", "32 KB/s"], "tone": "accent"}, {"code": "one minute of it", "state": ["60 x 32 KB", "1.92 MB"], "tone": "accent"}, {"code": "80-band log-mel, 100 fps", "state": ["6,000 x 80 x 4 bytes", "1.92 MB"], "changed": [1], "tone": "good"}, {"code": "so the saving is", "state": ["zero", "exactly none"], "tone": "crit"}, {"code": "the gain is", "state": ["learnability", "not storage"], "tone": "violet"}], "t": "diagram", "id": "dg-6_1-04-2"},
+
+
 
     { t: "out", text: `  16,000 samples/s x 16 bits x 1 ch = 256,000 bit/s = 32 KB/s
   one minute of raw PCM: 1.92 MB
@@ -66,6 +78,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Both come to 1.92 MB per minute — the arithmetic checks out exactly. Log-mel is not a compression scheme, and anyone who introduces it as one has the wrong idea. It is a **perceptually weighted re-representation**: the same quantity of numbers, arranged so that the axes correspond to what matters for recognition rather than to raw physics. The learnability improves enormously; the storage does not change at all. Lesson 6.2 covers why that rearrangement helps." }] },
 
     { t: "h2", n: "04b", text: "What lives where in the spectrum", id: "spectrum" },
+
+    {"kind": "matrix", "title": "What lives where in the spectrum", "caption": "This is why 16 kHz is the speech standard rather than a compromise. Almost all phonetic information sits below 8 kHz, so a 16 kHz rate captures it under Nyquist — and the content above that is mostly fricative energy and air, which helps a listener's sense of quality far more than a recogniser's accuracy.", "cols": ["Band", "What is there"], "rows": ["80 - 250 Hz", "250 - 2,000 Hz", "2 - 4 kHz", "4 - 8 kHz", "Above 8 kHz"], "cells": [[{"text": "pitch, voicing", "tone": "accent"}, "speaker identity; prosody"], [{"text": "the first two formants", "tone": "good"}, "most vowel identity"], [{"text": "higher formants", "tone": "good"}, "consonant place of articulation"], [{"text": "fricatives, bursts", "tone": "accent"}, "s, sh, t release"], [{"text": "air, brightness", "tone": "warn"}, "perceived quality, little phonetics"]], "t": "diagram", "id": "dg-6_1-04b-3"},
+
+
 
     { t: "table", head: ["Band", "What is there", "Lost at 8 kHz sampling?"],
       rows: [
@@ -80,6 +96,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Early telephony engineers measured which band carried the most intelligibility per unit of bandwidth and settled on roughly 300 to 3,400 Hz — enough for vowels and most consonant transitions, and cheap to transmit. It was a good engineering compromise and it is why phone calls are intelligible at all. What it sacrificed is the fricative band, which is why spelling a name over the phone is genuinely hard rather than merely annoying, and why the NATO alphabet exists. Understanding that the constraint is a hundred-year-old bandwidth decision, not a codec artefact, makes it clear why no amount of modern processing fixes it." }] },
 
     { t: "h2", n: "05", text: "Bit depth", id: "bit-depth" },
+
+    {"kind": "flow", "title": "Bit depth sets the noise floor", "caption": "Each bit buys about 6 dB of dynamic range, so 16-bit gives roughly 96 dB — far below the quietest sound the quantisation error can hide. That is why 16-bit integer is enough for speech and why the **float conversion matters**: dividing by 32768 to reach [−1, 1] is the convention every model expects, and forgetting it leaves inputs four orders of magnitude too large.", "cols": 3, "nodes": [{"id": "b", "label": "Each bit is about 6 dB", "sub": "of dynamic range", "tone": "violet"}, {"id": "s", "label": "16-bit: about 96 dB", "sub": "ample for speech", "tone": "good"}, {"id": "q", "label": "Quantisation error is the floor", "sub": "below it, nothing survives", "tone": "accent"}, {"id": "i", "label": "Stored as int16", "sub": "-32768 to 32767", "tone": "accent"}, {"id": "f", "label": "Divide by 32768", "sub": "to reach [-1, 1]", "tone": "good"}, {"id": "w", "label": "Forget it and inputs are 10^4 too big", "sub": "and nothing trains", "tone": "crit"}], "edges": [["b", "s"], ["s", "q"], ["q", "i"], ["i", "f"], ["f", "w"]], "t": "diagram", "id": "dg-6_1-05-4"},
+
+
 
     { t: "p", text: "16-bit signed gives 65,536 levels and a dynamic range of about 96 dB, which comfortably exceeds the roughly 60 dB range of ordinary speech. The practical consequences are about handling rather than resolution:" },
 

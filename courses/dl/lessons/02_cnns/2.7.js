@@ -112,6 +112,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "p", text: "A detection counts as correct if its IoU with a ground-truth box clears a threshold. Which threshold you pick changes the answer a great deal. One prediction at IoU 0.89:" },
 
     { t: "out", text: `  a prediction with IoU 0.8908 against ground truth
@@ -125,6 +130,11 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "Average precision from a ranked list", id: "ap" },
 
     {"kind": "steps", "title": "Average precision from a ranked list, step by step", "caption": "AP is not an average of precisions at fixed recalls — it is the area under the precision–recall curve traced by walking the **ranked detections**. Each true positive moves recall right and lifts precision; each false positive lowers precision without moving recall. That is why ranking quality, not just counting, is what AP measures.", "items": [{"label": "Sort every detection by confidence", "desc": "across the whole dataset, not per image", "code": "1", "tone": "accent"}, {"label": "Match each to a ground-truth box by IoU", "desc": "one ground truth can be matched once", "code": "2", "tone": "accent"}, {"label": "Walk the list, recomputing precision and recall", "desc": "a TP moves recall; an FP only hurts precision", "code": "3", "tone": "good"}, {"label": "Take the running maximum of precision", "desc": "the interpolation step, so the curve is monotone", "code": "4", "tone": "good"}, {"label": "Integrate: that area is AP", "desc": "per class", "code": "5", "tone": "violet"}, {"label": "Average over classes, then over IoUs", "desc": "mAP; COCO does both", "code": "6", "tone": "teal"}], "t": "diagram", "id": "dg-2_7-05-1"},
+
+
+
+
+
 
 
 

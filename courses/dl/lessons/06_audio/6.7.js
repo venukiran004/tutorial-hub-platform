@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Decoding", id: "decoding" },
 
+    {"kind": "matrix", "title": "Five decoding choices, from cheapest to most product-specific", "caption": "The third row is the correction most CTC implementations need: plain beam search scores different frame alignments of the same text as separate hypotheses, so an apparent width of ten may carry only three or four distinct candidates. **Prefix** beam search merges them and uses the full width on genuinely different text — it is the correct algorithm, not merely a faster one.", "cols": ["What it does", "When"], "rows": ["Greedy / best path", "Beam search", "Prefix beam search", "Shallow fusion", "Contextual biasing"], "cells": [["argmax per frame, then collapse", {"text": "CTC, latency-critical", "tone": "good"}], ["keep the best k prefixes", "the default elsewhere"], [{"text": "merges paths with the same text", "tone": "good"}, "the correct beam for CTC"], ["adds a language-model score", "a domain LM, no retraining"], [{"text": "boosts a session word list", "tone": "violet"}, "the highest-value trick in ASR"]], "t": "diagram", "id": "dg-6_7-01-0"},
+
+
+
     { t: "table", head: ["Method", "What it does", "When"],
       rows: [
         ["**Greedy / best path**", "Argmax per frame, then collapse", "CTC, latency-critical — surprisingly close to beam for strong models"],
@@ -34,6 +38,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Biasing", id: "biasing" },
 
+    {"kind": "flow", "title": "Biasing is information you already have at request time", "caption": "A generic model has never seen your contacts, your playlist names or your part numbers — and those are precisely the words a user most wants recognised. *\"Call Aoife\"* fails against a general model and succeeds when the beam is boosted toward the contact list injected at session start. No amount of general model improvement substitutes for it, because the information is not in the training data and **is** available at request time.", "cols": 3, "nodes": [{"id": "r", "label": "Rare proper nouns", "sub": "contacts, playlists, part numbers", "tone": "accent"}, {"id": "g", "label": "A general model has not seen them", "sub": "and the acoustics are ambiguous", "tone": "crit"}, {"id": "s", "label": "But you have the list at session start", "sub": "it costs nothing to supply", "tone": "good"}, {"id": "b", "label": "Boost those prefixes in the beam", "sub": "a trie, a WFST, or a prompt", "tone": "good"}, {"id": "w", "label": "Weight it too hard", "sub": "and names hallucinate in", "tone": "warn"}, {"id": "d", "label": "A precision-recall dial", "sub": "tune against clean utterances too", "tone": "teal"}], "edges": [["r", "g"], ["g", "s"], ["s", "b"], ["b", "w"], ["w", "d"]], "t": "diagram", "id": "dg-6_7-02-1"},
+
+
+
     { t: "p", text: "A generic model has never seen your contacts, your playlist names, or your company's part numbers, and those are precisely the words a user most wants recognised. Contextual biasing boosts a per-session word list during decoding." },
 
     { t: "callout", kind: "insight", title: "Biasing is what makes an assistant feel personal",
@@ -42,6 +50,10 @@ EC.receiveLesson({
     { t: "p", text: "**Shallow fusion** is the general form: add `λ · log P_LM(y)` to the beam score during search. It is cheap, requires no retraining, and matters most for CTC, whose conditional independence assumption means it has no internal language model at all. For an attention model or RNN-T the gain is smaller, since they already carry one." },
 
     { t: "h2", n: "03", text: "Text to speech", id: "tts" },
+
+    {"kind": "steps", "title": "The TTS pipeline, stage by stage", "caption": "Four stages, and the first is the one that is pure engineering and gets skipped: `$3.50` has to become *three dollars fifty* before anything acoustic happens, and a model asked to pronounce the raw string will do something arbitrary. The vocoder choice is where the practical trade sits — Griffin-Lim is fast and robotic, WaveNet is excellent and slow, and HiFi-GAN is why neither is the default any more.", "items": [{"label": "Text normalisation", "desc": "numbers, dates, currency, abbreviations into spoken words", "code": "1", "tone": "accent"}, {"label": "Grapheme to phoneme", "desc": "a lexicon for exceptions, a neural fallback for the rest", "code": "2", "tone": "accent"}, {"label": "Acoustic model", "desc": "phonemes to a mel spectrogram, with duration and pitch", "code": "3", "tone": "good"}, {"label": "Vocoder", "desc": "mel to waveform; HiFi-GAN is the practical default", "code": "4", "tone": "good"}, {"label": "Chunk on clause boundaries, never token counts", "desc": "prosody is computed per chunk, so a mid-phrase cut is audible", "code": "5", "tone": "violet"}], "t": "diagram", "id": "dg-6_7-03-2"},
+
+
 
     { t: "out", text: `  text -> TEXT NORMALISATION -> PHONEMES -> ACOUSTIC MODEL -> VOCODER -> waveform
           "$3.50" -> "three     grapheme     mel spectrogram   mel -> audio
@@ -80,6 +92,10 @@ EC.receiveLesson({
     { t: "p", text: "For a real-time agent that robustness is worth more than the last sliver of naturalness. A TTS system that occasionally babbles is not shippable at any quality level, and *cannot lose alignment* is a much stronger guarantee than *rarely loses alignment*." },
 
     { t: "h2", n: "05", text: "Where it has gone since", id: "modern" },
+
+    {"kind": "flow", "title": "Where it went: audio as tokens", "caption": "A neural codec turns audio into discrete tokens, and a language model over those tokens does TTS. That reframing is what makes **voice cloning from a few seconds of reference audio** fall out for free — the reference is simply a prompt prefix in the token sequence, with no speaker embedding or fine-tuning involved. The same trick underlies speech-to-speech models, where audio tokens go in and audio tokens come out with no text in between.", "cols": 3, "nodes": [{"id": "c", "label": "A neural codec", "sub": "EnCodec, SoundStream", "tone": "accent"}, {"id": "t", "label": "Audio becomes discrete tokens", "sub": "like text, but acoustic", "tone": "violet"}, {"id": "l", "label": "A language model over them", "sub": "the VALL-E approach", "tone": "violet"}, {"id": "p", "label": "A reference clip is a prompt prefix", "sub": "voice cloning, for free", "tone": "good"}, {"id": "s", "label": "Audio in, audio out", "sub": "no text in between", "tone": "good"}, {"id": "f", "label": "And TTS becomes a decoding problem", "sub": "with all of 4.7's machinery", "tone": "teal"}], "edges": [["c", "t"], ["t", "l"], ["l", "p"], ["l", "s"], ["s", "f"]], "t": "diagram", "id": "dg-6_7-05-3"},
+
+
 
     { t: "p", text: "Neural audio codecs — EnCodec, SoundStream — turn audio into discrete tokens, and a language model over those tokens does TTS. That is the VALL-E approach, and it is what enables **voice cloning from a few seconds of reference audio**: the reference is simply a prompt prefix in the token sequence. The same trick underlies speech-to-speech models, where audio tokens go in and audio tokens come out with no text in between." },
 

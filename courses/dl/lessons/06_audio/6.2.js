@@ -39,6 +39,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Windowing", id: "windowing" },
 
+    {"kind": "flow", "title": "Windowing, and the discontinuity it removes", "caption": "Cutting a frame out of a continuous signal creates a step at each edge, and the FFT reads that step as **broadband energy that is not in the signal** — spectral leakage. Multiplying by a window that tapers to zero at both ends removes the discontinuity, at the cost of attenuating the frame's edges, which is why consecutive frames overlap.", "cols": 3, "nodes": [{"id": "c", "label": "Cut a frame out", "sub": "a step at each edge", "tone": "warn"}, {"id": "l", "label": "The FFT sees broadband energy", "sub": "spectral leakage", "tone": "crit"}, {"id": "w", "label": "Multiply by a Hann window", "sub": "tapers to zero at both ends", "tone": "good"}, {"id": "a", "label": "The edges are attenuated", "sub": "real signal, lost", "tone": "warn"}, {"id": "o", "label": "So overlap the frames", "sub": "hop = window / 2 or / 4", "tone": "good"}, {"id": "r", "label": "Every sample is covered", "sub": "by at least one full-weight frame", "tone": "teal"}], "edges": [["c", "l"], ["l", "w"], ["w", "a"], ["a", "o"], ["o", "r"]], "t": "diagram", "id": "dg-6_2-02-0"},
+
+
+
     { t: "p", text: "Each frame is multiplied by a taper (Hann or Hamming) before the FFT. Without it, the frame's abrupt edges act like a rectangular pulse and smear energy across every frequency. Measured on a 1000.7 Hz tone — deliberately off a bin centre, so the frame does not contain whole cycles:" },
 
     { t: "out", text: `  rectangular : peak bin 32, energy >10 bins away =  1.231% of total
@@ -49,6 +53,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "The resolution trade-off", id: "uncertainty" },
 
+    {"kind": "trace", "title": "The resolution trade-off, which is the uncertainty principle", "caption": "A longer window resolves frequency better and time worse, **exactly in proportion** — the product is fixed and you cannot improve both. 25 ms is the compromise the field settled on for speech, because it is long enough to resolve pitch and formant structure and short enough that a phone does not change much within it.", "left": "window", "codeW": 170, "vars": ["samples at 16 kHz", "frequency resolution", "time resolution"], "steps": [{"code": "10 ms", "state": ["160", "100.00 Hz", "10 ms"], "tone": "accent"}, {"code": "25 ms", "state": ["400", "40.00 Hz", "25 ms"], "changed": [1], "tone": "good", "note": "the speech standard"}, {"code": "50 ms", "state": ["800", "20.00 Hz", "50 ms"], "tone": "accent"}, {"code": "100 ms", "state": ["1600", "10.00 Hz", "100 ms"], "tone": "warn"}, {"code": "the product", "state": ["", "is fixed", "both cannot improve"], "tone": "violet"}], "t": "diagram", "id": "dg-6_2-03-1"},
+
+
+
     { t: "out", text: `   10 ms window =  160 samples -> frequency resolution 100.00 Hz, time resolution  10 ms
    25 ms window =  400 samples -> frequency resolution  40.00 Hz, time resolution  25 ms
    50 ms window =  800 samples -> frequency resolution  20.00 Hz, time resolution  50 ms
@@ -57,6 +65,10 @@ EC.receiveLesson({
     { t: "p", text: "A longer window resolves frequency better and time worse, exactly in proportion — you cannot improve both, which is the uncertainty principle. **25 ms is the compromise the field settled on for speech**, because it is long enough to resolve the pitch and formant structure and short enough that a phone does not change much within it." },
 
     { t: "h2", n: "04", text: "The mel scale", id: "mel" },
+
+    {"kind": "flow", "title": "The mel scale, and why a linear axis is the wrong one", "caption": "Human pitch perception is roughly **logarithmic**: the step from 100 to 200 Hz sounds like the step from 1,000 to 2,000 Hz, not like the step from 1,000 to 1,100. A linear frequency axis therefore spends most of its resolution where the ear is least sensitive, and the mel scale re-spaces it so equal distances sound equally far apart.", "cols": 3, "nodes": [{"id": "l", "label": "A linear frequency axis", "sub": "equal Hz per bin", "tone": "accent"}, {"id": "p", "label": "Perception is logarithmic", "sub": "100->200 Hz = 1k->2k Hz", "tone": "violet"}, {"id": "w", "label": "So resolution is wasted high up", "sub": "where the ear cannot use it", "tone": "warn"}, {"id": "m", "label": "Mel: roughly linear to 1 kHz", "sub": "logarithmic above", "tone": "good"}, {"id": "e", "label": "Equal distance, equal perception", "sub": "which is the point", "tone": "good"}, {"id": "b", "label": "80 mel bands replace ~200 bins", "sub": "a better axis, not fewer numbers", "tone": "teal"}], "edges": [["l", "p"], ["p", "w"], ["w", "m"], ["m", "e"], ["e", "b"]], "t": "diagram", "id": "dg-6_2-04-2"},
+
+
 
     { t: "math", tex: "\\text{mel}(f) = 2595 \\log_{10}\\!\\left(1 + \\frac{f}{700}\\right)" },
 
@@ -79,6 +91,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "05", text: "The filterbank", id: "filterbank" },
 
+    {"kind": "flow", "title": "The filterbank is a matrix multiply", "caption": "Each mel band is a triangular weighting over the FFT bins, so the whole filterbank is one **(n_mels × n_fft/2) matrix** applied to the power spectrum. That is why it costs nothing and why it is differentiable — which is what let later work replace the fixed triangles with learned filters.", "cols": 3, "nodes": [{"id": "p", "label": "Power spectrum", "sub": "n_fft/2 + 1 bins per frame", "tone": "violet"}, {"id": "t", "label": "Triangular weights per band", "sub": "overlapping, mel-spaced", "tone": "accent"}, {"id": "m", "label": "One matrix, (n_mels x bins)", "sub": "fixed, precomputed", "tone": "accent"}, {"id": "x", "label": "A matrix multiply", "sub": "and it is differentiable", "tone": "good"}, {"id": "o", "label": "n_mels values per frame", "sub": "80, typically", "tone": "good"}, {"id": "l", "label": "Which later work made learnable", "sub": "the triangles were only a prior", "tone": "teal"}], "edges": [["p", "t"], ["t", "m"], ["m", "x"], ["x", "o"], ["o", "l"]], "t": "diagram", "id": "dg-6_2-05-3"},
+
+
+
     { t: "out", text: `  filterbank shape (257, 40) (freq bins x mel filters)
     filter  0:    31.2 -    62.5 Hz  (width    31.2 Hz)
     filter  1:    62.5 -   125.0 Hz  (width    62.5 Hz)
@@ -89,6 +105,10 @@ EC.receiveLesson({
     { t: "p", text: "Triangular filters spaced equally **on the mel axis**, which makes them narrow at the bottom and wide at the top — filter 0 spans 31 Hz, filter 39 spans 969 Hz, a factor of 31. Multiplying the 257-bin power spectrum by 40 triangles collapses it to 40 numbers that follow perception rather than physics. (These edges differ slightly from the, which used different filterbank normalisation and edge conventions; the shape of the progression is the point.)" },
 
     { t: "h2", n: "06", text: "Why the log", id: "log" },
+
+    {"kind": "flow", "title": "Why the log, and it is two reasons rather than one", "caption": "Loudness perception is logarithmic, so the log axis matches the ear — that is the usual answer and it is only half. The other half is numerical: raw mel energies span many orders of magnitude, which is a terrible input distribution for a network, and the log compresses them into a range a normaliser can work with. And it turns the multiplicative source–filter relationship into an additive one, which is what makes the DCT of 6.3 meaningful.", "cols": 3, "nodes": [{"id": "p", "label": "Loudness is logarithmic", "sub": "the usual answer", "tone": "accent"}, {"id": "r", "label": "Energies span many decades", "sub": "a bad input distribution", "tone": "warn"}, {"id": "c", "label": "log compresses the range", "sub": "now normalisable", "tone": "good"}, {"id": "m", "label": "And source x filter becomes", "sub": "source + filter", "tone": "good"}, {"id": "d", "label": "Which is what lets the DCT separate them", "sub": "6.3", "tone": "teal"}, {"id": "f", "label": "Add a floor first", "sub": "log(0) is -inf", "tone": "crit"}], "edges": [["p", "c"], ["r", "c"], ["c", "m"], ["m", "d"], ["c", "f"]], "t": "diagram", "id": "dg-6_2-06-4"},
+
+
 
     { t: "out", text: `  gain  2.0: power x    4, mean log shift 1.3863, std 1.10e-07, ln(4)=1.3863
   gain  4.0: power x   16, mean log shift 2.7726, std 1.55e-07, ln(16)=2.7726

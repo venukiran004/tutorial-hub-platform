@@ -22,6 +22,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why depth destabilises", id: "why" },
 
+    {"kind": "flow", "title": "Why depth destabilises, in one sentence", "caption": "Every layer multiplies, so the network's end-to-end behaviour is a **product of per-layer factors** — and a product of thirty numbers is exquisitely sensitive to whether each is above or below one. At depth 3 a factor of 1.5 is harmless; at depth 30 it is 191,000×. Nothing about this is specific to a given architecture, which is why normalisation, initialisation and residuals all exist to hold that factor at one.", "cols": 3, "nodes": [{"id": "l", "label": "Each layer multiplies", "sub": "activations, and gradients", "tone": "violet"}, {"id": "p", "label": "End to end: a product", "sub": "of 30 factors", "tone": "accent"}, {"id": "s", "label": "At depth 3, 1.5x is harmless", "sub": "3.4x overall", "tone": "good"}, {"id": "d", "label": "At depth 30 it is 191,000x", "sub": "the same factor", "tone": "crit"}, {"id": "f", "label": "So hold the factor at one", "sub": "init, norm, residuals", "tone": "good"}, {"id": "a", "label": "Architecture-independent", "sub": "it is arithmetic", "tone": "teal"}], "edges": [["l", "p"], ["p", "s"], ["p", "d"], ["d", "f"], ["f", "a"]], "t": "diagram", "id": "dg-7_1-01-0"},
+
+
+
     { t: "out", text: `  each layer x1.5: 1.5^50 = 6.376e+08   EXPLODES
   each layer x1.0: 1.0^50 = 1.000e+00   stable
   each layer x0.7: 0.7^50 = 1.798e-08   VANISHES` },
@@ -29,6 +33,10 @@ EC.receiveLesson({
     { t: "p", text: "The figures check out. A forward pass is a chain of multiplications and backprop runs the same chain in reverse, so any systematic deviation from unity compounds. **Only signals near ×1.0 per layer stay stable across depth** — and 1.5 and 0.7 are not extreme values, they are what you get from a slightly wrong initialisation." },
 
     { t: "h2", n: "02", text: "Measured across 30 layers", id: "init" },
+
+    {"kind": "trace", "title": "Sixteen orders of magnitude, from the initialisation alone", "caption": "Same architecture, same input, same depth — only the initialisation **scale** differs, and the output activation norm runs from 1.5e−09 to 5.6e+07. He initialisation, gain √2 for ReLU, lands at 1.935: the near-unity regime where training works. At thirty layers a factor of 1.8 either way is the difference between a model that trains and one that produces `inf` on the first forward pass.", "left": "initialisation gain", "codeW": 200, "vars": ["activation norm at output", "gradient at layer 1"], "steps": [{"code": "2.5 - too large", "state": ["5.601e+07", "5.051e+08"], "tone": "crit"}, {"code": "sqrt(2) - He init", "state": ["1.935e+00", "3.094e+01"], "changed": [0], "tone": "good", "note": "near unity"}, {"code": "0.7 - too small", "state": ["1.456e-09", "4.688e-08"], "changed": [0], "tone": "crit"}, {"code": "the span", "state": ["16 orders of magnitude", "from one hyperparameter"], "tone": "violet"}], "t": "diagram", "id": "dg-7_1-02-1"},
+
+
 
     { t: "out", text: `  gain 2.5 - too large  : activation norm at output 5.601e+07, grad at layer 1 5.051e+08
   gain sqrt(2) - He init: activation norm at output 1.935e+00, grad at layer 1 3.094e+01
@@ -38,6 +46,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Same architecture, same input, same depth — only the initialisation scale differs, and the output activation norm runs from **1.5e-09 to 5.6e+07**. He initialisation, with gain `√2` for ReLU, lands at 1.935, which is the near-unity regime where training works. This is why initialisation is not a minor detail: it sets the per-layer multiplier, and at thirty layers a factor of 1.8 either way is the difference between a model that trains and one that produces `inf` on the first forward pass. Lesson 1.7 derived the formula; this is what happens when you get it wrong." }] },
 
     { t: "h2", n: "03", text: "NaN", id: "nan" },
+
+    {"kind": "flow", "title": "NaN, and the four places it is actually born", "caption": "A NaN propagates through everything it touches, so by the time the loss shows one the origin is already hidden — which is why the useful move is to find the **first** operation that produced it rather than to inspect the loss. Three of the four sources below are domain errors rather than overflows, and all three are avoidable by construction.", "cols": 3, "nodes": [{"id": "o", "label": "Overflow in fp16", "sub": "a large activation or gradient", "tone": "crit"}, {"id": "l", "label": "log(0)", "sub": "a probability that reached exactly 0", "tone": "crit"}, {"id": "d", "label": "Division by a zero norm", "sub": "a normalisation with no epsilon", "tone": "crit"}, {"id": "s", "label": "sqrt of a negative", "sub": "a variance that went slightly negative", "tone": "crit"}, {"id": "f", "label": "Find the first one", "sub": "anomaly detection, or a hook", "tone": "good"}, {"id": "p", "label": "Prevent by construction", "sub": "epsilon, clamping, logsumexp", "tone": "teal"}], "edges": [["o", "f"], ["l", "f"], ["d", "f"], ["s", "f"], ["f", "p"]], "t": "diagram", "id": "dg-7_1-03-2"},
+
+
 
     { t: "out", text: `  x                = [1.0, 2.0, nan, 4.0]
   x.sum()          = nan      <- one NaN ruins the reduction
@@ -82,12 +94,20 @@ def train_step(model, batch, optimizer, clip=1.0):
 
     { t: "h2", n: "04", text: "Unnormalised inputs", id: "inputs" },
 
+    {"kind": "flow", "title": "Unnormalised inputs are an optimisation problem before a modelling one", "caption": "A feature in the tens of thousands beside one in units gives the Hessian eigenvalues differing by the **square** of that ratio — a condition number in the millions. The stable learning rate is set by the largest eigenvalue and progress along the smallest is nil, so the model 'does not converge' and the cause is the units. This is 1.8's argument arriving as a production incident.", "cols": 3, "nodes": [{"id": "f", "label": "One feature in tens of thousands", "sub": "beside one in units", "tone": "warn"}, {"id": "h", "label": "Hessian eigenvalues differ", "sub": "by the square of the ratio", "tone": "crit"}, {"id": "c", "label": "Condition number in the millions", "sub": "", "tone": "crit"}, {"id": "l", "label": "Stable lr set by the largest", "sub": "progress along the smallest is nil", "tone": "crit"}, {"id": "s", "label": "'It does not converge'", "sub": "and the cause is the units", "tone": "crit"}, {"id": "n", "label": "Standardise the inputs", "sub": "one line; it collapses the ratio", "tone": "good"}], "edges": [["f", "h"], ["h", "c"], ["c", "l"], ["l", "s"], ["s", "n"]], "t": "diagram", "id": "dg-7_1-04-3"},
+
+
+
     { t: "out", text: `  normalised [0,1]  : loss 1.221e+00 -> 1.168e+00  (stable)
   raw [0,255]       : loss 8.516e+02 -> 3.046e+14  (x3.6e+11 GROWING - diverging)` },
 
     { t: "p", text: "Identical model, identical learning rate — the only difference is that pixel values were left at 0–255 instead of scaled to 0–1. The loss grew by **eleven orders of magnitude in eight steps**. This is the most common cause of a run that dies immediately, and it is entirely a data-pipeline problem rather than a modelling one. Lesson 4.8 measured the milder version, where unscaled tabular features cost R² without diverging." },
 
     { t: "h2", n: "05", text: "The gradient norm", id: "grad-norm" },
+
+    {"kind": "matrix", "title": "The gradient norm is the one number to log", "caption": "It is a single scalar per step that distinguishes most failures from one another, which no other single quantity does. A loss curve tells you that something is wrong; the gradient norm usually tells you **which** thing — and it costs one line.", "cols": ["The norm does this", "It means"], "rows": ["Spikes, then NaN", "Grows steadily", "Collapses to ~0", "Flat and tiny from step 0", "Steady, loss flat"], "cells": [[{"text": "exploding gradient", "tone": "crit"}, "clip it; lower the learning rate"], [{"text": "instability building", "tone": "warn"}, "warmup, or a smaller rate"], [{"text": "dead units, or saturation", "tone": "crit"}, "check activations; ReLU is off"], [{"text": "nothing is connected", "tone": "crit"}, "a detach, or requires_grad=False"], [{"text": "optimisation is fine", "tone": "accent"}, "the problem is the model or the data"]], "t": "diagram", "id": "dg-7_1-05-4"},
+
+
 
     { t: "code", lang: "python", title: "Log it every step",
       code: `def global_grad_norm(model):

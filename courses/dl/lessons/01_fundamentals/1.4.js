@@ -27,6 +27,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "p", text: "Backpropagation computes the gradient of the loss with respect to every weight in the network. The loss depends on a weight only through a chain of intermediate quantities — the pre-activation the weight feeds, the activation that follows, the layers above, the prediction — and the derivative of a chain is the product of the derivatives of its links:" },
 
     { t: "math", tex: "\\frac{\\partial \\mathcal{L}}{\\partial w} = \\frac{\\partial \\mathcal{L}}{\\partial \\hat{y}} \\cdot \\frac{\\partial \\hat{y}}{\\partial z} \\cdot \\frac{\\partial z}{\\partial w}" },
@@ -36,6 +41,11 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "The two-layer derivation", id: "derivation" },
 
     {"kind": "steps", "title": "The two-layer derivation, in the order it is actually done", "caption": "The forward pass must store its intermediate values, because every backward step needs them — that is the memory cost of training, and the reason activation checkpointing exists as a trade. Note that step 3 produces the quantity step 5 reuses: compute it once.", "items": [{"label": "Forward, storing a1 and z2", "desc": "they are needed on the way back", "code": "1", "tone": "accent"}, {"label": "dL/dy-hat at the output", "desc": "for cross-entropy with sigmoid this is (y-hat - y)", "code": "2", "tone": "good"}, {"label": "delta2 = dL/dz2", "desc": "the output layer's error signal", "code": "3", "tone": "violet"}, {"label": "dL/dW2 = delta2 x a1 transpose", "desc": "error times the input that produced it", "code": "4", "tone": "good"}, {"label": "delta1 = (W2 transpose delta2) * f'(z1)", "desc": "reuses delta2; the element-wise product is the activation's derivative", "code": "5", "tone": "violet"}, {"label": "dL/dW1 = delta1 x x transpose", "desc": "the same shape of rule, one layer down", "code": "6", "tone": "good"}], "t": "diagram", "id": "dg-1_4-02-1"},
+
+
+
+
+
 
 
 
@@ -116,6 +126,11 @@ weight matrix at each layer and gated by the activation's derivative.`,
 
 
 
+
+
+
+
+
     { t: "p", text: "Take the weights and input from lesson 1.3 with label y = 1. The forward pass gave z¹ = [0, 1.8], a¹ = [0, 1.8], z² = −0.96, ŷ = 0.2769, and the loss is −log 0.2769 = 1.2842. Now the four steps with numbers, in float32 as PyTorch would do it:" },
 
     { t: "code", lang: "python", title: "Backpropagation by hand, then checked by autograd and a finite difference",
@@ -180,6 +195,11 @@ finite difference dL/dW2[0,1] = -1.3016  analytic -1.3016192` },
     { t: "h2", n: "04", text: "The computational-graph view", id: "graph" },
 
     {"kind": "flow", "title": "The computational graph is what the framework actually builds", "caption": "Every operation records its inputs and how to differentiate itself. `backward()` then walks that recorded graph in reverse topological order — which is why a tensor detached from the graph gets no gradient, why `.item()` breaks the chain, and why the graph is freed after one backward call unless you ask for it to be kept.", "cols": 3, "nodes": [{"id": "f", "label": "Each op records its inputs", "sub": "and its local derivative", "tone": "accent"}, {"id": "g", "label": "A DAG is built as you go", "sub": "define-by-run", "tone": "accent"}, {"id": "b", "label": "backward() walks it in reverse", "sub": "reverse topological order", "tone": "good"}, {"id": "d", "label": "detach() cuts the edge", "sub": "no gradient flows past it", "tone": "warn"}, {"id": "i", "label": ".item() leaves the graph", "sub": "a Python float has no history", "tone": "warn"}, {"id": "r", "label": "Freed after one backward", "sub": "retain_graph=True to reuse it", "tone": "teal"}], "edges": [["f", "g"], ["g", "b"], ["b", "d"], ["d", "i"], ["b", "r"]], "t": "diagram", "id": "dg-1_4-04-3"},
+
+
+
+
+
 
 
 

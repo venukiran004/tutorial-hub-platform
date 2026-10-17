@@ -44,6 +44,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "code", lang: "python", title: "DCGAN generator",
       code: `class Generator(nn.Module):
     def __init__(self, latent_dim=100):
@@ -75,6 +80,11 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Training it", id: "training" },
 
     {"kind": "cycle", "title": "Training it: two optimisers, alternating", "caption": "Each step updates one network while the other is held fixed, and the detail that matters in code is `detach()`: when training the discriminator on fake images, the generator must not receive that gradient. Forget it and the generator is updated to make the discriminator's job **easier**, which is the opposite of the game.", "centre": "alternate", "nodes": [{"label": "Real batch -> D", "sub": "label 1; D learns 'real'", "tone": "good"}, {"label": "Fake batch -> D, detached", "sub": "label 0; G gets no gradient", "tone": "warn"}, {"label": "Step D", "sub": "its own optimiser", "tone": "accent"}, {"label": "Fake -> D, not detached; step G", "sub": "G learns to fool the current D", "tone": "accent"}], "t": "diagram", "id": "dg-2_13-03-1"},
+
+
+
+
+
 
 
 
@@ -114,6 +124,11 @@ lossG.backward(); optG.step()`,
 
 
 
+
+
+
+
+
     { t: "out", text: `  at a perfect Nash equilibrium D(x) = 0.5 for everything
   measured: D(real) = 0.861, D(fake) = 0.037` },
 
@@ -123,6 +138,11 @@ lossG.backward(); optG.step()`,
     { t: "h2", n: "05", text: "Mode collapse", id: "collapse" },
 
     {"kind": "flow", "title": "Mode collapse, and why the game permits it", "caption": "The generator's objective is to fool the discriminator, and producing one perfect image forever does exactly that — nothing in the loss rewards **diversity**. So collapse is not a bug in the optimiser, it is a correct solution to the stated problem, and every fix works by changing the problem: letting the critic see a batch, penalising its gradient, or scoring the distribution rather than the sample.", "cols": 3, "nodes": [{"id": "o", "label": "G's objective: fool D", "sub": "nothing about diversity", "tone": "violet"}, {"id": "c", "label": "One convincing image does that", "sub": "repeatedly", "tone": "crit"}, {"id": "m", "label": "Mode collapse", "sub": "a correct solution, badly specified", "tone": "crit"}, {"id": "b", "label": "Minibatch discrimination", "sub": "D sees the batch, not one sample", "tone": "good"}, {"id": "w", "label": "WGAN-GP", "sub": "a smoother critic, penalised gradient", "tone": "good"}, {"id": "f", "label": "Measure with FID", "sub": "which scores the distribution", "tone": "teal"}], "edges": [["o", "c"], ["c", "m"], ["m", "b"], ["m", "w"], ["w", "f"]], "t": "diagram", "id": "dg-2_13-05-3"},
+
+
+
+
+
 
 
 

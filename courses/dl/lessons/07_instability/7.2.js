@@ -21,6 +21,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The spike", id: "spike" },
 
+    {"kind": "flow", "title": "The loss spike, and what it usually is", "caption": "A sudden spike after stable training is almost never the model and almost always one of three things: a **batch of outliers**, a learning-rate schedule that stepped up, or numerical overflow in reduced precision. The diagnostic that separates them is cheap — log the batch indices, and a spike that recurs at the same data is a data problem.", "cols": 3, "nodes": [{"id": "s", "label": "A sudden loss spike", "sub": "after stable training", "tone": "warn"}, {"id": "b", "label": "A bad batch", "sub": "outliers, or corrupt labels", "tone": "accent"}, {"id": "l", "label": "The schedule stepped up", "sub": "a warm restart, or a bug", "tone": "accent"}, {"id": "o", "label": "fp16 overflow", "sub": "the scaler should have skipped it", "tone": "accent"}, {"id": "d", "label": "Log the batch indices", "sub": "recurs at the same data?", "tone": "good"}, {"id": "c", "label": "Then clip, or fix the data", "sub": "according to which it was", "tone": "teal"}], "edges": [["s", "b"], ["s", "l"], ["s", "o"], ["b", "d"], ["d", "c"]], "t": "diagram", "id": "dg-7_2-01-0"},
+
+
+
     { t: "out", text: `  step 1000: loss 2.1
   step 1100: loss 1.8
   step 1150: loss 1.7
@@ -42,6 +46,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Warmup and decay", id: "warmup" },
 
+    {"kind": "flow", "title": "Warmup and decay, and what each half is for", "caption": "They solve different problems. **Warmup** protects the first few hundred steps, when the parameters are random and Adam's second-moment estimate is still unreliable, so a full-size step can move the model somewhere it cannot recover from. **Decay** is for the end, when large steps bounce around the minimum instead of settling into it.", "cols": 3, "nodes": [{"id": "s", "label": "Step 0: parameters are random", "sub": "and Adam's v is unreliable", "tone": "warn"}, {"id": "w", "label": "Warmup: ramp the rate up", "sub": "a few hundred to a few thousand steps", "tone": "good"}, {"id": "m", "label": "Mid-training: full rate", "sub": "make progress", "tone": "accent"}, {"id": "d", "label": "Decay: cosine, or step", "sub": "toward the end", "tone": "good"}, {"id": "e", "label": "Large steps bounce at the minimum", "sub": "which decay fixes", "tone": "accent"}, {"id": "b", "label": "Post-norm transformers need both", "sub": "pre-norm tolerates less warmup (4.4)", "tone": "teal"}], "edges": [["s", "w"], ["w", "m"], ["m", "d"], ["d", "e"], ["e", "b"]], "t": "diagram", "id": "dg-7_2-02-1"},
+
+
+
     { t: "code", lang: "python", title: "The standard recipe",
       code: `import math
 
@@ -58,6 +66,10 @@ def lr_at(step, base_lr, warmup, total):
     { t: "p", text: "Large batches make this worse, not better. A larger batch gives a less noisy gradient estimate, which invites a larger learning rate — and a larger step on a still-uninformed model. That is why large-batch training and warmup arrived together." },
 
     { t: "h2", n: "03", text: "Dead ReLUs", id: "dead" },
+
+    {"kind": "flow", "title": "Dead ReLUs, found by measurement rather than suspicion", "caption": "A dead unit outputs zero for every input in the dataset and therefore receives no gradient ever again (1.2). The way to find them is to **count**: hook the activations and report the fraction of units that are zero across a whole epoch. A few per cent is normal sparsity; forty per cent is a learning rate that was too high earlier in training.", "cols": 3, "nodes": [{"id": "h", "label": "Hook the activations", "sub": "post-ReLU, for one epoch", "tone": "accent"}, {"id": "c", "label": "Count units always zero", "sub": "across every batch", "tone": "accent"}, {"id": "f", "label": "A few per cent: normal", "sub": "that is ReLU's sparsity", "tone": "good"}, {"id": "d", "label": "Forty per cent: a problem", "sub": "the rate was too high earlier", "tone": "crit"}, {"id": "l", "label": "Lower the rate, or warm up", "sub": "prevention, not repair", "tone": "good"}, {"id": "a", "label": "Or leaky / GELU", "sub": "a gradient always survives", "tone": "teal"}], "edges": [["h", "c"], ["c", "f"], ["c", "d"], ["d", "l"], ["l", "a"]], "t": "diagram", "id": "dg-7_2-03-2"},
+
+
 
     { t: "out", text: `  with bias = -5.0: 64 of 64 units output 0 for EVERY input
   gradient to those units' weights: 0.0  <- exactly zero, forever

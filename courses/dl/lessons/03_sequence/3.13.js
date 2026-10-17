@@ -25,6 +25,11 @@ EC.receiveLesson({
     {"kind": "flow", "title": "An embedding is a lookup table that happens to be a matrix multiply", "caption": "One-hot encoding a vocabulary of 50,000 and multiplying by a weight matrix selects **one row** of that matrix — so the multiplication is pure waste, and an embedding layer is the same operation implemented as an indexed read. That equivalence is why an embedding's gradient is sparse: only the rows for tokens actually present in the batch receive one.", "cols": 3, "nodes": [{"id": "o", "label": "One-hot, 50,000 wide", "sub": "a single 1, the rest zeros", "tone": "warn"}, {"id": "m", "label": "Times a (50,000 x d) matrix", "sub": "selects one row", "tone": "warn"}, {"id": "w", "label": "Almost all of it is waste", "sub": "multiplying by zero", "tone": "crit"}, {"id": "e", "label": "nn.Embedding: an indexed read", "sub": "the same result, directly", "tone": "good"}, {"id": "g", "label": "Gradient is sparse", "sub": "only the rows that appeared", "tone": "good"}, {"id": "p", "label": "And it is learned", "sub": "or loaded, and frozen", "tone": "teal"}], "edges": [["o", "m"], ["m", "w"], ["w", "e"], ["e", "g"], ["g", "p"]], "t": "diagram", "id": "dg-3_13-01-0"},
 
 
+
+
+
+
+
     { t: "out", text: `  embedding lookup  : (3, 64)  (64,000 params = V x E)
   one-hot @ weight  : identical? True
   same index gives same vector: True` },
@@ -43,6 +48,11 @@ EC.receiveLesson({
     {"kind": "flow", "title": "The analogy, geometrically, and what it does not prove", "caption": "king − man + woman landing near queen means the **difference vector** between those pairs is roughly shared, which is a real and useful property of the space. It is also routinely over-claimed: the nearest neighbour is often one of the three input words and must be excluded, the result depends on the normalisation, and the analogies that work are the ones the corpus made frequent.", "cols": 3, "nodes": [{"id": "v", "label": "king - man + woman", "sub": "vector arithmetic", "tone": "accent"}, {"id": "n", "label": "Nearest neighbour: queen", "sub": "after excluding the inputs", "tone": "good"}, {"id": "d", "label": "The difference is shared", "sub": "a direction meaning 'gender'", "tone": "good"}, {"id": "e", "label": "The inputs must be excluded", "sub": "or one of them wins", "tone": "warn"}, {"id": "s", "label": "Depends on normalisation", "sub": "and on the corpus", "tone": "warn"}, {"id": "b", "label": "It also encodes bias", "sub": "the same mechanism, same corpus", "tone": "crit"}], "edges": [["v", "n"], ["n", "d"], ["d", "e"], ["e", "s"], ["s", "b"]], "t": "diagram", "id": "dg-3_13-02-1"},
 
 
+
+
+
+
+
     { t: "p", text: "In a space deliberately constructed so that *gender* is a consistent offset vector, `king − man + woman` should land on `queen`:" },
 
     { t: "out", text: `    cos(king - man + woman, king  ) = +0.6758
@@ -59,6 +69,11 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "Where embeddings come from", "caption": "The division that matters is **static against contextual**. Word2Vec and GloVe give one vector per word for all time, so 'bank' has a single compromise representation; a transformer gives a different vector per occurrence, which is why contextual embeddings replaced static ones for almost everything except where a fixed lookup table is itself the requirement.", "cols": ["Gives", "Trained by"], "rows": ["Word2Vec", "GloVe", "fastText", "A task-trained embedding", "BERT and after"], "cells": [[{"text": "one vector per word", "tone": "accent"}, "predicting context from a word, or back"], [{"text": "one vector per word", "tone": "accent"}, "factorising a co-occurrence matrix"], [{"text": "one per word, from n-grams", "tone": "good"}, "the same, with subwords: handles unseen words"], [{"text": "one per word, task-specific", "tone": "accent"}, "your own loss; needs enough data"], [{"text": "one per occurrence", "tone": "good"}, "masked language modelling: contextual"]], "t": "diagram", "id": "dg-3_13-03-2"},
 
 
+
+
+
+
+
     { t: "table", head: ["Method", "Idea", "Handles OOV?"],
       rows: [
         ["Word2Vec skip-gram", "Predict context words from the centre word; negative sampling", "No"],
@@ -73,8 +88,15 @@ EC.receiveLesson({
 
     { t: "p", text: "Out-of-vocabulary handling is the practical difference. A word not in the training vocabulary maps to `<unk>` and every word so mapped becomes indistinguishable — including morphological variants of words you *do* know. FastText represents a word as the sum of its character n-grams, so `dogs` shares most of its n-grams with `dog` and an entirely unseen word still gets a meaningful vector. This is the same motivation behind subword tokenisation (BPE, WordPiece) in modern transformers." },
 
-    { t: "code", lang: "python", title: "Loading pretrained vectors",
-      code: `embedding = nn.Embedding(vocab_size, 100)
+    { t: "code", lang: "python", title: "Training your own, and loading pretrained vectors",
+      code: `from gensim.models import Word2Vec            # pip install gensim
+
+w2v = Word2Vec(tokenised_sentences, vector_size=100, window=5,
+               min_count=5, sg=1, workers=4)      # sg=1 is skip-gram
+w2v.wv.most_similar("king", topn=5)                # the nearest neighbours
+w2v.wv.save_word2vec_format("vectors.txt")         # or load GloVe this way
+
+embedding = nn.Embedding(vocab_size, 100)
 embedding.weight.data.copy_(pretrained_glove_tensor)
 embedding.weight.requires_grad = False     # freeze, or True to fine-tune`,
       caption: "Freeze on a small dataset — the embedding matrix is often the largest parameter block in the model and will overfit. Fine-tune when you have enough data or a domain far from the pretraining corpus." },

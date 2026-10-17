@@ -39,6 +39,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Where the parameters are", id: "parameters" },
 
+    {"kind": "trace", "title": "Two thirds of a transformer block is the feed-forward network", "caption": "At the standard d_model = 512, d_ff = 2048 configuration, the two linear layers hold **67%** of the block's parameters against attention's 33%. That reframes what a transformer is: a stack of per-token MLPs with an attention mechanism routing information between them. It also explains where efficiency work goes — mixture-of-experts replaces the FFN, not the attention, because that is where the parameters are.", "left": "part of the block", "codeW": 160, "vars": ["parameters", "share"], "steps": [{"code": "self_attn", "state": ["1,050,624", "33.3%"], "tone": "accent"}, {"code": "linear1 (d -> 4d)", "state": ["1,050,624", "33.3%"], "tone": "good"}, {"code": "linear2 (4d -> d)", "state": ["1,049,088", "33.3%"], "tone": "good"}, {"code": "norm1 + norm2", "state": ["2,048", "0.1%"], "tone": "violet"}, {"code": "total", "state": ["3,152,384", "FFN is 67%"], "changed": [1], "tone": "teal"}], "t": "diagram", "id": "dg-4_4-02-0"},
+
+
+
+
+
     { t: "out", text: `  self_attn  1,050,624  ( 33.3%)
   linear1    1,050,624  ( 33.3%)
   linear2    1,049,088  ( 33.3%)
@@ -50,6 +56,12 @@ EC.receiveLesson({
       body: [{ t: "p", text: "At the standard configuration — `d_model = 512`, `d_ff = 2048` — the FFN's two linear layers hold **67 %** of the block's parameters against attention's 33 %. Scaled up to a large language model, the same ratio means most of the weights in the model are in position-wise MLPs, not in attention. This is worth internalising for two reasons. It reframes what a transformer is: a stack of per-token MLPs with an attention mechanism routing information between them. And it explains where efficiency work goes — mixture-of-experts replaces the FFN, not the attention, because that is where the parameters are." }] },
 
     { t: "h2", n: "03", text: "The feed-forward network", id: "ffn" },
+
+    {"kind": "flow", "title": "The feed-forward network is where a position is transformed", "caption": "It is applied **independently at every position** with the same weights — so it is a 1×1 convolution over the sequence, and it is the only part of the block that can produce a value outside the convex hull of its inputs (4.2). The 4× expansion gives the non-linearity room to work: squeeze it to 1× and the block loses most of its capacity.", "cols": 3, "nodes": [{"id": "i", "label": "One position's vector", "sub": "d dimensions", "tone": "violet"}, {"id": "u", "label": "Up-project to 4d", "sub": "room for the non-linearity", "tone": "accent"}, {"id": "a", "label": "GELU", "sub": "the only non-linearity in the block", "tone": "good"}, {"id": "d", "label": "Down-project to d", "sub": "back to the residual width", "tone": "accent"}, {"id": "s", "label": "Same weights, every position", "sub": "a 1x1 convolution over the sequence", "tone": "good"}, {"id": "n", "label": "The only part that creates", "sub": "attention can only interpolate", "tone": "teal"}], "edges": [["i", "u"], ["u", "a"], ["a", "d"], ["d", "s"], ["s", "n"]], "t": "diagram", "id": "dg-4_4-03-1"},
+
+
+
+
 
     { t: "math", tex: "\\text{FFN}(x) = \\max(0,\\, xW_1 + b_1)W_2 + b_2, \\qquad d_{ff} = 4 \\times d_{model}" },
 
@@ -64,6 +76,12 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Lesson 4.2 measured that attention's output is always a convex combination of its values — it can select and blend but never produce anything outside their hull. The FFN is the only part of the block that applies a non-linearity, so it is the only part that can move a representation somewhere new. Reading the block as *gather what is relevant, then process it* makes the division of labour clear, and it explains why interpretability work often finds factual knowledge stored in FFN weights rather than in attention." }] },
 
     { t: "h2", n: "04", text: "Residuals and LayerNorm", id: "norm" },
+
+    {"kind": "compare", "title": "Pre-norm and post-norm put the LayerNorm on different sides", "caption": "The original paper put the norm **after** the residual addition; every large model since puts it **before** the sublayer. The reason is the gradient path: with pre-norm the residual stream is an unnormalised identity from the loss to the embedding, so deep stacks train without a warmup crutch. Post-norm needs careful warmup and still destabilises past a few dozen layers.", "columns": [{"title": "Post-norm (the 2017 paper)", "tone": "warn", "items": ["x = LayerNorm(x + Sublayer(x))", "The norm is on the residual path", "Needs a careful warmup", "Destabilises past a few dozen layers", "Slightly better when it does work"]}, {"title": "Pre-norm (everything since)", "tone": "good", "items": ["x = x + Sublayer(LayerNorm(x))", "The residual path is a clean identity", "Trains without warmup tricks", "Scales to hundreds of layers", "The default in every modern LLM"]}], "t": "diagram", "id": "dg-4_4-04-2"},
+
+
+
+
 
     { t: "out", text: `  after block 1: mean -0.0000, std 1.0000, max|x| 4.32
   after block 3: mean -0.0000, std 1.0000, max|x| 4.42

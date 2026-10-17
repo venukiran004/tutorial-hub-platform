@@ -80,6 +80,12 @@ weights = scores.softmax(-1)          # positions after i get exactly 0`,
 
     { t: "h2", n: "03", text: "Generation and the KV cache", id: "kv-cache" },
 
+    {"kind": "flow", "title": "The KV cache, and why generation is memory-bound", "caption": "Without a cache, generating token n re-attends over all n−1 previous tokens from scratch — quadratic work for a linear output. The cache stores each position's K and V once, so each new token costs one step. The consequence is the defining fact of LLM serving: generation reads a large cache per token and does almost no arithmetic, so it is **memory-bandwidth-bound**, not compute-bound.", "cols": 3, "nodes": [{"id": "n", "label": "No cache", "sub": "recompute all K, V each token", "tone": "crit"}, {"id": "q", "label": "Quadratic work", "sub": "for a linear amount of output", "tone": "crit"}, {"id": "c", "label": "Cache K and V per position", "sub": "computed once, reused", "tone": "good"}, {"id": "o", "label": "One step per new token", "sub": "linear again", "tone": "good"}, {"id": "m", "label": "But the cache grows per token", "sub": "2 x layers x heads x d_head", "tone": "warn"}, {"id": "b", "label": "So generation is bandwidth-bound", "sub": "reading it, not computing", "tone": "teal"}], "edges": [["n", "q"], ["q", "c"], ["c", "o"], ["o", "m"], ["m", "b"]], "t": "diagram", "id": "dg-4_5-03-0"},
+
+
+
+
+
     { t: "p", text: "Training runs all positions at once. Generation cannot: token `t+1` depends on token `t`, so it is inherently sequential. Recomputing all previous keys and values at every step would be quadratic work per token, so they are cached." },
 
     { t: "out", text: `  T=  100: KV cache ~      3.7 MB   (12 layers, d=768, fp16)

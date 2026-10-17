@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The small models", id: "small" },
 
+    {"kind": "matrix", "title": "The five small models that sit around the recogniser", "caption": "None of these is the ASR model and all of them decide whether the product works. The third row is the one that is routinely confused with the first: VAD asks whether anyone is speaking *now*, endpointing asks whether they have **finished** — a much harder question, because a pause mid-sentence and a pause at the end look identical for the first few hundred milliseconds.", "cols": ["Question", "Constraint"], "rows": ["VAD", "Wake word", "Endpointing", "Diarisation", "Speaker verification"], "cells": [["is anyone speaking now?", {"text": "runs constantly; must be tiny", "tone": "accent"}], ["did they say the trigger?", "a few hundred KB, always on"], [{"text": "have they finished?", "tone": "crit"}, "the hardest of the three"], ["who spoke when?", "overlap is where it fails"], ["is this the enrolled user?", "a threshold from a false-accept budget"]], "t": "diagram", "id": "dg-6_8-01-0"},
+
+
+
     { t: "table", head: ["Task", "Question", "Notes"],
       rows: [
         ["**VAD**", "Is anyone speaking right now?", "Runs constantly, must be tiny. WebRTC (GMM) or Silero (small neural). Gates everything downstream."],
@@ -36,6 +40,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "VAD asks whether sound is speech right now. Endpointing asks whether the user has *finished their thought*, which is a different and much harder question — people pause mid-sentence to think, and the pause before *\"...to my mother\"* looks identical to the pause after a completed command. Cut too early and you interrupt them; wait too long and the assistant feels sluggish. It is usually the largest and least examined component of a voice agent's perceived latency, and the best systems use the language model's own expectation of whether the utterance is complete rather than silence duration alone." }] },
 
     { t: "h2", n: "02", text: "Word error rate", id: "wer" },
+
+    {"kind": "trace", "title": "Five rows that show what WER cannot see", "caption": "Rows 1 and 2 score **identically** — yet dropping `two` from a temperature command changes what the thermostat does, while `degree` for `degrees` changes nothing at all. `mum` to `mom` costs 0.1667 and is completely harmless. And the last row is 3.0000, because insertions divide by the *reference* length, so WER is unbounded above: anyone quoting \"97% accurate\" from a WER of 0.03 is inverting a quantity that has no complement.", "left": "what changed", "codeW": 220, "vars": ["S D I", "WER"], "steps": [{"code": "dropped 'two' - changes the action", "state": ["0 1 0", "0.1429"], "tone": "crit"}, {"code": "'degrees' -> 'degree' - harmless", "state": ["1 0 0", "0.1429"], "changed": [1], "tone": "warn", "note": "the same score"}, {"code": "'mum' -> 'mom' - harmless", "state": ["1 0 0", "0.1667"], "tone": "warn"}, {"code": "added 'station now'", "state": ["0 0 2", "0.5000"], "tone": "accent"}, {"code": "'yes' -> 'yes yes yes yes'", "state": ["0 0 3", "3.0000"], "changed": [1], "tone": "crit", "note": "unbounded above"}], "t": "diagram", "id": "dg-6_8-02-1"},
+
+
 
     { t: "math", tex: "\\text{WER} = \\frac{S + D + I}{N_{\\text{reference}}}" },
 
@@ -62,6 +70,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Normalisation decides the number", id: "normalisation" },
 
+    {"kind": "trace", "title": "Four identical meanings, four different numbers", "caption": "Nothing about the recognition changed across these four — only how numbers, punctuation and casing are rendered — and the score moves from 0.0000 to 0.1667. Two systems on the same audio can differ by several points on this alone, which is more than separates many competing models. **Fix one normaliser, publish it, and compare only within it**: a WER quoted without its normalisation scheme is not a comparable number.", "left": "rendering", "codeW": 200, "vars": ["S D I", "WER"], "steps": [{"code": "exact match", "state": ["0 0 0", "0.0000"], "tone": "good"}, {"code": "number spelled out", "state": ["1 0 0", "0.1667"], "changed": [1], "tone": "crit"}, {"code": "a comma added", "state": ["1 0 0", "0.1667"], "tone": "crit"}, {"code": "capitalised", "state": ["1 0 0", "0.1667"], "tone": "crit"}, {"code": "meaning, in all four", "state": ["identical", "unchanged"], "tone": "violet"}], "t": "diagram", "id": "dg-6_8-03-2"},
+
+
+
     { t: "out", text: `  exact       : WER 0.0000   (S0 D0 I0)
   spelled out : WER 0.1667   (S1 D0 I0)
   with comma  : WER 0.1667   (S1 D0 I0)
@@ -70,6 +82,10 @@ EC.receiveLesson({
     { t: "p", text: "Four hypotheses with **identical meaning** scoring anywhere from 0.0000 to 0.1667, purely from how numbers, punctuation and casing are rendered. Two systems on the same audio can differ by several points on this alone. **Fix one normaliser, publish it, and compare only within it** — a WER quoted without its normalisation scheme is not a comparable number." },
 
     { t: "h2", n: "04", text: "The other metrics", id: "metrics" },
+
+    {"kind": "matrix", "title": "The other metrics, and which one your product cares about", "caption": "Entity error rate is usually the one that matters: a user does not care that the model wrote `mom` for `mum`, and cares enormously whether the phone number survived. It frequently disagrees with WER — a system with worse WER can be clearly better in use because its errors fall on filler words — and RTF against latency disagree the same way, since a buffer leaves RTF flat while time-to-first-token rises.", "cols": ["Measures", "Watch"], "rows": ["WER", "CER", "Entity error rate", "MOS / CMOS", "RTF", "Latency"], "cells": [["word-level errors", {"text": "the normaliser decides it", "tone": "crit"}], ["character-level", "right for Chinese, Japanese"], [{"text": "did the name or number survive", "tone": "good"}, "what the product cares about"], ["human 1-5 naturalness", "five raters is not enough"], ["processing time / duration", "must be well under 1.0"], ["time to first token, and final", {"text": "great RTF, terrible latency", "tone": "warn"}]], "t": "diagram", "id": "dg-6_8-04-3"},
+
+
 
     { t: "out", text: `  WER 0.1429  CER 0.0976   'set the temperature to twenty degrees'
   WER 0.1429  CER 0.0244   'set the temperature to twenty two degree'

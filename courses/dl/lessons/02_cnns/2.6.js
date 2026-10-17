@@ -27,6 +27,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "code", lang: "python", title: "What almost every vision project starts with",
       code: `import torchvision.transforms as T
 
@@ -65,6 +70,11 @@ eval_transform = T.Compose([
 
 
 
+
+
+
+
+
     { t: "out", text: `  three eval passes identical: True
   three train passes identical: False` },
 
@@ -74,6 +84,11 @@ eval_transform = T.Compose([
     { t: "h2", n: "03", text: "Which transforms preserve your label", id: "domain" },
 
     {"kind": "matrix", "title": "Which transforms preserve your label", "caption": "This is a question about the task, not about images in general — and getting it wrong teaches the model something false. A horizontal flip is free on a cat and destroys a digit; a rotation is free on satellite imagery and wrong on a chest X-ray, where left and right are anatomy.", "cols": ["Safe on", "Wrong on"], "rows": ["Horizontal flip", "Vertical flip", "Rotation", "Colour jitter", "Crop", "Elastic distortion"], "cells": [[{"text": "natural photographs", "tone": "good"}, {"text": "digits, text, chest X-rays", "tone": "crit"}], [{"text": "satellite, microscopy", "tone": "good"}, {"text": "anything with a ground plane", "tone": "crit"}], [{"text": "satellite, cells", "tone": "good"}, {"text": "6 and 9; anatomical sides", "tone": "crit"}], [{"text": "most object recognition", "tone": "good"}, {"text": "when colour is the label", "tone": "crit"}], [{"text": "almost everything", "tone": "good"}, {"text": "when the object can be cropped out", "tone": "warn"}], [{"text": "handwriting, medical", "tone": "good"}, {"text": "rigid objects", "tone": "warn"}]], "t": "diagram", "id": "dg-2_6-03-2"},
+
+
+
+
+
 
 
 
@@ -140,6 +155,11 @@ eval_transform = T.Compose([
     { t: "h2", n: "05", text: "Test-time augmentation", id: "tta" },
 
     {"kind": "flow", "title": "Test-time augmentation: the one place augmenting evaluation is right", "caption": "Run each test image through several deterministic transforms and average the predictions. It reliably buys a small amount of accuracy for a multiple of the inference cost — so it is a decision about latency budget, not about modelling, and it must be applied identically to any baseline you compare against.", "cols": 3, "nodes": [{"id": "i", "label": "One test image", "sub": "", "tone": "violet"}, {"id": "v", "label": "n deterministic views", "sub": "original, flip, a few crops", "tone": "accent"}, {"id": "p", "label": "Predict each", "sub": "n forward passes", "tone": "accent"}, {"id": "a", "label": "Average the probabilities", "sub": "not the labels", "tone": "good"}, {"id": "g", "label": "A small, reliable gain", "sub": "often a few tenths of a point", "tone": "good"}, {"id": "c", "label": "At n times the latency", "sub": "a budget decision", "tone": "warn"}], "edges": [["i", "v"], ["v", "p"], ["p", "a"], ["a", "g"], ["g", "c"]], "t": "diagram", "id": "dg-2_6-05-3"},
+
+
+
+
+
 
 
 

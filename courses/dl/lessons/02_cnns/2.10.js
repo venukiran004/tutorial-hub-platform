@@ -25,6 +25,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "code", lang: "python", title: "Conv2D.forward",
       code: `class Conv2D:
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0):
@@ -70,6 +75,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "p", text: "The reference declares `self.dW = None` and `self.db = None` and never assigns them, so its layer cannot learn. Three gradients are needed: one for the weights, one for the bias, and one to pass back to the previous layer." },
 
     { t: "dl", items: [
@@ -111,6 +121,11 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
     { t: "out", text: `  shapes (2, 3, 4, 4) vs (2, 3, 4, 4), identical: True` },
 
     { t: "p", text: "The max pool needs no parameters and no initialisation — but it does need to remember *which* element was the max if you want its backward pass, since the gradient flows only to that element and all others receive zero. The common form gives forward only." },
@@ -124,6 +139,11 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "What the framework actually buys", id: "speed" },
 
     {"kind": "matrix", "title": "What the framework actually buys over the loop nest", "caption": "Not autograd — you can write that. The gap is in the four rows below, and it is a factor of hundreds to thousands. im2col turns the convolution into one large matrix multiply so it can reach a tuned GEMM kernel; cuDNN then picks among several algorithms per shape; and fusion removes the memory traffic between the convolution, the bias and the activation.", "cols": ["What it does", "Why the loop cannot"], "rows": ["im2col + GEMM", "cuDNN algorithm choice", "Kernel fusion", "Autograd", "Mixed precision"], "cells": [[{"text": "one big matrix multiply", "tone": "good"}, "a tuned GEMM is decades of work"], [{"text": "picks per shape", "tone": "good"}, "FFT, Winograd or direct, measured"], [{"text": "conv + bias + ReLU in one pass", "tone": "good"}, "it avoids three round trips to memory"], [{"text": "the easy part", "tone": "accent"}, "a few hundred lines; you can write it"], [{"text": "tensor cores", "tone": "good"}, "the hardware path is not reachable"]], "t": "diagram", "id": "dg-2_10-04-3"},
+
+
+
+
+
 
 
 

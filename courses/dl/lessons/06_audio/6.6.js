@@ -49,6 +49,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "What streaming costs", id: "context" },
 
+    {"kind": "matrix", "title": "What streaming costs, as a right-context dial", "caption": "A streaming encoder must commit before hearing what follows, and speech is full of cases where a later word disambiguates an earlier one. Right context is therefore the direct trade: 320–640 ms buys most of the accuracy back for a latency most users do not notice, and the two-pass arrangement — stream a fast answer, then rescore the whole utterance — is what phones actually ship.", "cols": ["Right context", "Effect"], "rows": ["Full attention", "Chunked attention", "Look-ahead convolutions", "Two-pass"], "cells": [[{"text": "the whole utterance", "tone": "crit"}, "best WER; cannot stream"], [{"text": "320 - 640 ms", "tone": "good"}, "the usual compromise"], [{"text": "100 - 200 ms", "tone": "accent"}, "cheap, small gain"], [{"text": "stream, then rescore", "tone": "good"}, "what phones actually do"]], "t": "diagram", "id": "dg-6_6-02-0"},
+
+
+
     { t: "table", head: ["Approach", "Right context", "Effect"],
       rows: [
         ["Full attention", "The whole utterance", "Best WER, cannot stream"],
@@ -64,6 +68,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Whisper", id: "whisper" },
 
+    {"kind": "flow", "title": "Whisper's thesis, which is about data rather than architecture", "caption": "Architecturally it is a plain encoder-decoder transformer — unremarkable, and deliberately so. The claim is that **scale and diversity beat clever objectives**: 680,000 hours of weakly-labelled multilingual web audio, with no pretext task at all, produces robustness that the self-supervised approaches of 6.4 were designed to buy. The cost is in the failure modes of §04, which are data artefacts rather than architectural limits.", "cols": 3, "nodes": [{"id": "a", "label": "A plain encoder-decoder", "sub": "architecturally unremarkable", "tone": "accent"}, {"id": "d", "label": "680,000 hours", "sub": "weakly labelled, multilingual web audio", "tone": "violet"}, {"id": "n", "label": "No pretext task", "sub": "plain supervised training", "tone": "violet"}, {"id": "r", "label": "Robustness across accents, noise, languages", "sub": "the result", "tone": "good"}, {"id": "t", "label": "Scale and diversity beat clever objectives", "sub": "the thesis", "tone": "good"}, {"id": "f", "label": "And it inherits the data's artefacts", "sub": "see section 04", "tone": "warn"}], "edges": [["a", "d"], ["d", "n"], ["n", "r"], ["r", "t"], ["t", "f"]], "t": "diagram", "id": "dg-6_6-03-1"},
+
+
+
     { t: "out", text: `  audio -> pad or trim to EXACTLY 30 s -> 80-band log-mel, 100 fps -> 3000 x 80
         -> 2 conv layers (stride 2 on time) -> 1500 encoder positions
         -> encoder -> decoder, prompted with special tokens` },
@@ -77,6 +85,10 @@ EC.receiveLesson({
       caption: "One model does transcription, translation, language identification and timestamping, selected entirely by the prompt tokens — the same conditioning idea as instruction-tuned language models." },
 
     { t: "h2", n: "04", text: "Its three failure modes", id: "failures" },
+
+    {"kind": "matrix", "title": "Three failure modes, and the fix for each", "caption": "All three are consequences of how it was trained rather than bugs. The first is the one that reaches production most often: given a window with no speech, the decoder still produces fluent text — frequently a sign-off phrase learned from YouTube subtitles — and it does so confidently, so nothing downstream can tell.", "cols": ["Failure", "Fix"], "rows": ["Hallucinates on silence", "Repetition loops", "Timestamps are approximate"], "cells": [[{"text": "fluent text from no speech", "tone": "crit"}, "run VAD first; skip empty windows"], [{"text": "greedy decoding locks in", "tone": "warn"}, "temperature fallback + compression check"], [{"text": "predicted tokens, not alignment", "tone": "warn"}, "force-align with a CTC model"]], "t": "diagram", "id": "dg-6_6-04-2"},
+
+
 
     { t: "dl", items: [
       ["Hallucination on silence or noise", "With no speech in the window the decoder still produces fluent text — often a sign-off phrase learned from YouTube subtitles. Fix: run voice activity detection first and skip windows with no speech."],

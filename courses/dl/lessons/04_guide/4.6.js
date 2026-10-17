@@ -22,6 +22,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The model", id: "model" },
 
+    {"kind": "layers", "title": "The translation model, as it is assembled", "caption": "Read it bottom-up. The encoder stack sees the whole source at once; the decoder stack is causal over the target and additionally **cross-attends** to the encoder's output, which is the one connection between the two halves and the thing to inspect when a translation is fluent but wrong (§04).", "items": [{"label": "Output projection to the vocabulary", "sub": "often tied to the embedding", "tone": "teal", "side": "logits"}, {"label": "Decoder stack, N blocks", "sub": "causal self-attn, cross-attn, FFN", "tone": "accent", "side": "target"}, {"label": "Cross-attention", "sub": "queries from the target, keys from the source", "tone": "violet", "side": "the bridge"}, {"label": "Encoder stack, N blocks", "sub": "bidirectional self-attn, FFN", "tone": "good", "side": "source"}, {"label": "Embedding + positional encoding", "sub": "both sides", "tone": "good", "side": ""}], "t": "diagram", "id": "dg-4_6-01-0"},
+
+
+
+
+
     { t: "code", lang: "python", title: "The whole thing",
       code: `class Model(nn.Module):
     def __init__(self, d=128, h=4, ff=512, L=2):
@@ -55,6 +61,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Training", id: "training" },
 
+    {"kind": "flow", "title": "Training it: one forward pass for the whole target", "caption": "This is the transformer's decisive advantage over an RNN decoder. Because the causal mask prevents any position seeing the future, the **entire** target sequence can be processed in one parallel pass — every position predicting its own next token simultaneously. The same model at inference must go one token at a time, which is why training is fast and generation is not.", "cols": 3, "nodes": [{"id": "t", "label": "The whole target, shifted right", "sub": "one tensor", "tone": "violet"}, {"id": "m", "label": "Causal mask", "sub": "no position sees the future", "tone": "accent"}, {"id": "p", "label": "One parallel forward pass", "sub": "every position at once", "tone": "good"}, {"id": "l", "label": "Loss at every position", "sub": "T predictions from one pass", "tone": "good"}, {"id": "i", "label": "Inference is sequential", "sub": "one token at a time", "tone": "warn"}, {"id": "a", "label": "Fast to train, slow to generate", "sub": "the asymmetry that defines it", "tone": "teal"}], "edges": [["t", "m"], ["m", "p"], ["p", "l"], ["l", "i"], ["i", "a"]], "t": "diagram", "id": "dg-4_6-02-1"},
+
+
+
+
+
     { t: "code", lang: "python", title: "Shift the target, mask the loss",
       code: `tgt_in, tgt_out = tgt[:, :-1], tgt[:, 1:]        # shift right
 loss = F.cross_entropy(model(src, tgt_in).reshape(-1, V),
@@ -74,6 +86,12 @@ loss = F.cross_entropy(model(src, tgt_in).reshape(-1, V),
     { t: "p", text: "Loss falls from 3.13 — roughly `ln(20)`, the uniform-distribution value over the vocabulary, so the model starts knowing nothing — to 0.069. Note the shape: slow for the first few hundred steps while the model learns the output format, then rapid once it discovers the reversal structure." },
 
     { t: "h2", n: "03", text: "Generation", id: "generation" },
+
+    {"kind": "flow", "title": "Generation, and the three things that must match training", "caption": "Generation re-enters the model with its own output, so any mismatch with training shows up as fluent nonsense. The three to check are the **special tokens** (start the decoder with the same BOS it was trained with), the **shift** (the input is the target shifted right by one), and the **stop** condition (generate until EOS or a length cap, or it runs forever).", "cols": 3, "nodes": [{"id": "b", "label": "Start with BOS", "sub": "the same one training used", "tone": "accent"}, {"id": "f", "label": "Forward, take the last position", "sub": "its logits are the next token", "tone": "accent"}, {"id": "s", "label": "Sample or argmax", "sub": "greedy, beam, or top-p", "tone": "good"}, {"id": "a", "label": "Append, repeat", "sub": "with the KV cache", "tone": "good"}, {"id": "e", "label": "Stop at EOS, or a cap", "sub": "or it generates forever", "tone": "warn"}, {"id": "m", "label": "Any mismatch: fluent nonsense", "sub": "not an error", "tone": "crit"}], "edges": [["b", "f"], ["f", "s"], ["s", "a"], ["a", "e"], ["e", "m"]], "t": "diagram", "id": "dg-4_6-03-2"},
+
+
+
+
 
     { t: "code", lang: "python", title: "Greedy decoding",
       code: `@torch.no_grad()
@@ -97,6 +115,12 @@ def greedy(src, max_len=12):
 
     { t: "h2", n: "04", text: "Reading the cross-attention", id: "attention" },
 
+    {"kind": "flow", "title": "Reading the cross-attention as a diagnostic", "caption": "Cross-attention is the only place the target looks at the source, so its weights are a soft alignment and are genuinely informative here — unlike the attention-is-not-attribution caution of ML 9.3, because this attention **is** the information path. A diagonal band means the model is translating in order; a column that attracts every target position usually means a source token the model cannot handle.", "cols": 3, "nodes": [{"id": "c", "label": "Cross-attention weights", "sub": "target positions x source positions", "tone": "violet"}, {"id": "d", "label": "A diagonal band", "sub": "translating roughly in order", "tone": "good"}, {"id": "r", "label": "Off-diagonal blocks", "sub": "reordering: expected between languages", "tone": "good"}, {"id": "o", "label": "One source column attracts everything", "sub": "a token it cannot handle", "tone": "crit"}, {"id": "u", "label": "Uniform weights", "sub": "it is ignoring the source", "tone": "crit"}, {"id": "i", "label": "Here attention IS the path", "sub": "unlike ML 9.3's caution", "tone": "teal"}], "edges": [["c", "d"], ["c", "r"], ["c", "o"], ["c", "u"], ["d", "i"]], "t": "diagram", "id": "dg-4_6-04-3"},
+
+
+
+
+
     { t: "out", text: `  cross-attention (7, 7) (target positions x source positions)
   argmax source position for each target position:
     [5, 4, 3, 2, 1, 0, 0]` },
@@ -105,6 +129,12 @@ def greedy(src, max_len=12):
       body: [{ t: "p", text: "For a six-token source, target position 0 attends most strongly to source position 5, position 1 to position 4, and so on down to position 5 attending to position 0 — exactly the alignment the reversal task requires, `i → 5−i`. The model was never told this; it discovered it from examples, and cross-attention makes the discovery legible. This is why attention was such a significant development for interpretability as well as for accuracy: the alignment between input and output is an explicit, inspectable matrix rather than something buried in a hidden state. The seventh position mapping to 0 again is the model handling the end-of-sequence token, which has no source counterpart." }] },
 
     { t: "h2", n: "05", text: "What to check when it will not train", id: "debugging" },
+
+    {"kind": "matrix", "title": "What to check when it will not train", "caption": "Every row produces a model that runs and learns nothing, so none of them raises. The order is by how often it is the cause — and the first two account for most of it, because both are silent and both are about the mask.", "cols": ["Symptom", "Check"], "rows": ["Causal mask missing", "Padding not masked", "Loss over pad tokens", "No positional encoding", "Learning rate, no warmup", "Decoder input not shifted"], "cells": [[{"text": "trains fast, generates nonsense", "tone": "crit"}, "it was copying the answer"], [{"text": "attends to padding", "tone": "crit"}, "the mask before the softmax (3.11)"], [{"text": "loss varies with batch padding", "tone": "crit"}, "ignore_index"], [{"text": "word order ignored", "tone": "crit"}, "a bag of tokens"], [{"text": "diverges in the first steps", "tone": "warn"}, "post-norm needs warmup (4.4)"], [{"text": "learns the identity", "tone": "crit"}, "input is target[:-1], label target[1:]"]], "t": "diagram", "id": "dg-4_6-05-4"},
+
+
+
+
 
     { t: "table", head: ["Symptom", "Likely cause"],
       rows: [
