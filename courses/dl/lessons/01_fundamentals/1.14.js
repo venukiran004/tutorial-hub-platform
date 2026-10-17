@@ -23,6 +23,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "A residual block and an ODE solver are the same identity", "caption": "A residual block computes h + f(h), which is Euler's method with a step of one. Taking the step size to zero turns the stack of blocks into a differential equation, and the **depth** becomes the integration interval — so a neural ODE is a residual network with infinitely many infinitesimally small layers, sharing one set of weights.", "cols": 3, "nodes": [{"id": "r", "label": "Residual block", "sub": "h -> h + f(h)", "tone": "accent"}, {"id": "e", "label": "= Euler step, size 1", "sub": "h + dt f(h) with dt = 1", "tone": "accent"}, {"id": "s", "label": "Let the step shrink", "sub": "many small layers", "tone": "good"}, {"id": "o", "label": "dh/dt = f(h, t)", "sub": "an ODE", "tone": "violet"}, {"id": "d", "label": "Depth = time integrated", "sub": "a continuous parameter", "tone": "violet"}, {"id": "w", "label": "One set of weights", "sub": "shared across all of it", "tone": "teal"}], "edges": [["r", "e"], ["e", "s"], ["s", "o"], ["o", "d"], ["d", "w"]], "t": "diagram", "id": "dg-1_14-01-0"},
 
 
+
+
     { t: "p", text: "A residual block adds a learned correction to its input. Written out, that is a forward Euler step on a differential equation whose right-hand side is the block's function — with `Δt = 1` because nothing in the architecture says otherwise." },
 
     { t: "math", tex: "h_{t+1} = h_t + f(h_t, \\theta) \\qquad\\Longleftrightarrow\\qquad \\frac{dh}{dt} = f(h(t), \\theta), \\quad \\Delta t = 1" },
@@ -53,6 +55,8 @@ euler_out = odeint(f, h0, torch.linspace(0, 8, 9), method="euler")[-1]` },
     {"kind": "flow", "title": "The solver decides how much work to do", "caption": "This is the property that has no analogue in a fixed network: an adaptive solver takes more steps where the dynamics are stiff and fewer where they are smooth, so **compute adapts to the input**. The cost is that the number of function evaluations is not known in advance, which makes latency hard to bound — the usual reason it does not ship.", "cols": 3, "nodes": [{"id": "a", "label": "An adaptive solver", "sub": "dopri5, and friends", "tone": "accent"}, {"id": "e", "label": "Error tolerance, not depth", "sub": "the hyperparameter changes", "tone": "accent"}, {"id": "s", "label": "Stiff region: more steps", "sub": "compute follows the input", "tone": "good"}, {"id": "m", "label": "Smooth region: fewer", "sub": "cheaper, automatically", "tone": "good"}, {"id": "n", "label": "NFE is not fixed", "sub": "function evaluations vary per input", "tone": "warn"}, {"id": "l", "label": "Latency is unbounded", "sub": "the usual reason it stays in papers", "tone": "crit"}], "edges": [["a", "e"], ["e", "s"], ["e", "m"], ["s", "n"], ["n", "l"]], "t": "diagram", "id": "dg-1_14-02-1"},
 
 
+
+
     { t: "p", text: "Depth becomes **NFE** — the number of times the dynamics network is evaluated. A fixed-step solver takes what you tell it; an adaptive one takes what it needs to hit your error tolerance." },
 
     { t: "out", text: `  euler   fixed step 0.125 NFE=8    h(1)=[0.48789, -0.67711, -0.17954, -1.3982]
@@ -71,6 +75,8 @@ euler_out = odeint(f, h0, torch.linspace(0, 8, 9), method="euler")[-1]` },
     { t: "h2", n: "03", text: "The adjoint method", id: "adjoint" },
 
     {"kind": "flow", "title": "The adjoint method: constant memory, at a price", "caption": "Ordinary backpropagation stores every intermediate activation, and an adaptive solver may take hundreds of steps — so storing them all is prohibitive. The adjoint solves a second ODE **backwards** to recover what it needs, which makes memory independent of depth. The price is a second solve and some numerical error from reconstructing rather than remembering.", "cols": 3, "nodes": [{"id": "b", "label": "Ordinary backprop", "sub": "store every step's activation", "tone": "warn"}, {"id": "m", "label": "Memory grows with NFE", "sub": "hundreds of steps", "tone": "crit"}, {"id": "a", "label": "Adjoint: solve backwards", "sub": "a second ODE", "tone": "good"}, {"id": "c", "label": "Memory is O(1) in depth", "sub": "nothing stored", "tone": "good"}, {"id": "t", "label": "Costs a second solve", "sub": "roughly double the time", "tone": "warn"}, {"id": "e", "label": "And reconstruction error", "sub": "recovered, not remembered", "tone": "warn"}], "edges": [["b", "m"], ["m", "a"], ["a", "c"], ["c", "t"], ["t", "e"]], "t": "diagram", "id": "dg-1_14-03-2"},
+
+
 
 
     { t: "p", text: "Backpropagating through a solver means storing every intermediate state — `O(L)` memory in the number of steps, and the solver chooses `L`. The adjoint method avoids that by solving a second ODE **backwards in time** for the gradient, recomputing the forward states as it goes." },
@@ -102,6 +108,8 @@ euler_out = odeint(f, h0, torch.linspace(0, 8, 9), method="euler")[-1]` },
     {"kind": "flow", "title": "Invertibility, and what it buys", "caption": "An ODE's trajectories cannot cross, so the map from input to output is a **homeomorphism** — invertible and continuous. That is exactly the property a normalising flow needs to track densities exactly, and it is also a real limitation: a continuous invertible map cannot tear a space apart, so some topologies simply cannot be separated without augmenting the dimension.", "cols": 3, "nodes": [{"id": "t", "label": "Trajectories cannot cross", "sub": "a property of ODEs", "tone": "violet"}, {"id": "i", "label": "So the map is invertible", "sub": "a homeomorphism", "tone": "accent"}, {"id": "f", "label": "Exact density tracking", "sub": "what a normalising flow needs", "tone": "good"}, {"id": "l", "label": "But it cannot tear", "sub": "topology is preserved", "tone": "warn"}, {"id": "r", "label": "Some classes stay inseparable", "sub": "nested rings, for instance", "tone": "crit"}, {"id": "a", "label": "Augment the dimension", "sub": "ANODE: add room to move", "tone": "good"}], "edges": [["t", "i"], ["i", "f"], ["i", "l"], ["l", "r"], ["r", "a"]], "t": "diagram", "id": "dg-1_14-04-3"},
 
 
+
+
     { t: "p", text: "An ODE flow can be run backwards by integrating from `T` to `0`. No discrete architecture gives you that for free, and it is what makes continuous normalising flows possible." },
 
     { t: "out", text: `  h(0)            : [0.620497, -0.738007, -0.593054, -1.718811]
@@ -115,6 +123,8 @@ euler_out = odeint(f, h0, torch.linspace(0, 8, 9), method="euler")[-1]` },
     { t: "h2", n: "05", text: "Where they actually fit", id: "applications" },
 
     {"kind": "matrix", "title": "Where they actually fit", "caption": "The honest assessment: neural ODEs are the right tool for a small set of problems and an expensive curiosity for the rest. Irregularly-sampled time series is the case where they genuinely win, because a continuous-time model handles 'observed at 3.7 hours' natively instead of binning it.", "cols": ["Verdict", "Why"], "rows": ["Irregular time series", "Continuous normalising flow", "Physics with known dynamics", "Image classification", "A latency budget"], "cells": [[{"text": "the real win", "tone": "good"}, "no binning; observe at any t"], [{"text": "a natural fit", "tone": "good"}, "invertibility comes free"], [{"text": "strong", "tone": "good"}, "the prior is the differential equation"], [{"text": "not competitive", "tone": "crit"}, "a ResNet is faster and better"], [{"text": "rules them out", "tone": "crit"}, "NFE varies per input"]], "t": "diagram", "id": "dg-1_14-05-4"},
+
+
 
 
     { t: "table", head: ["Use", "Why the continuous view helps"],

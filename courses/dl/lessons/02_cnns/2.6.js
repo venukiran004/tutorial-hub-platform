@@ -22,6 +22,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The standard pipeline", id: "pipeline" },
 
+    {"kind": "flow", "title": "The standard augmentation pipeline, in order", "caption": "Order matters for two reasons. Geometric transforms come first because they are defined on the image; normalisation comes **last** because it must see the final pixel values; and the tensor conversion sits between them. Random erasing is applied after normalisation on purpose — it erases to the normalised mean, which is zero.", "cols": 3, "nodes": [{"id": "c", "label": "RandomResizedCrop", "sub": "scale and aspect jitter", "tone": "accent"}, {"id": "f", "label": "RandomHorizontalFlip", "sub": "if the label survives it", "tone": "accent"}, {"id": "j", "label": "ColorJitter", "sub": "brightness, contrast, saturation", "tone": "accent"}, {"id": "t", "label": "ToTensor", "sub": "HWC uint8 -> CHW float in [0,1]", "tone": "good"}, {"id": "n", "label": "Normalize", "sub": "the dataset's mean and sd: last", "tone": "good"}, {"id": "e", "label": "RandomErasing", "sub": "after normalising, so it erases to 0", "tone": "teal"}], "edges": [["c", "f"], ["f", "j"], ["j", "t"], ["t", "n"], ["n", "e"]], "t": "diagram", "id": "dg-2_6-01-0"},
+
+
     { t: "code", lang: "python", title: "What almost every vision project starts with",
       code: `import torchvision.transforms as T
 
@@ -55,6 +58,9 @@ eval_transform = T.Compose([
 
     { t: "h2", n: "02", text: "Training only — and why", id: "train-only" },
 
+    {"kind": "flow", "title": "Augment training only, and why that is not arbitrary", "caption": "Augmentation exists to make the training distribution wider than the data. Applying it to validation makes the validation set **harder than reality**, so the number you read is not the number production will give you — and worse, it is noisy, because a different random crop each epoch means the metric moves for reasons unrelated to the model.", "cols": 3, "nodes": [{"id": "t", "label": "Train: augment", "sub": "a wider distribution than the data", "tone": "good"}, {"id": "v", "label": "Validate: deterministic", "sub": "resize and centre-crop only", "tone": "good"}, {"id": "a", "label": "Augmenting validation", "sub": "makes it harder than reality", "tone": "crit"}, {"id": "n", "label": "And noisy", "sub": "a different crop every epoch", "tone": "crit"}, {"id": "e", "label": "Early stopping then misfires", "sub": "it is reading augmentation noise", "tone": "crit"}, {"id": "s", "label": "One exception: TTA", "sub": "deliberate, averaged, at the end", "tone": "accent"}], "edges": [["t", "v"], ["a", "n"], ["n", "e"], ["v", "s"]], "t": "diagram", "id": "dg-2_6-02-1"},
+
+
     { t: "out", text: `  three eval passes identical: True
   three train passes identical: False` },
 
@@ -62,6 +68,9 @@ eval_transform = T.Compose([
       body: [{ t: "p", text: "If validation images are randomly transformed, the same model scores differently on every run and you can no longer tell a real improvement from a lucky draw. Worse, a random crop can cut the object out of the frame entirely, so your validation accuracy understates the model and you tune against a corrupted signal. Evaluation must be deterministic: resize, centre crop, normalise. The one legitimate exception is test-time augmentation, covered below, where you average over several views *deliberately* and apply the same procedure every time." }] },
 
     { t: "h2", n: "03", text: "Which transforms preserve your label", id: "domain" },
+
+    {"kind": "matrix", "title": "Which transforms preserve your label", "caption": "This is a question about the task, not about images in general — and getting it wrong teaches the model something false. A horizontal flip is free on a cat and destroys a digit; a rotation is free on satellite imagery and wrong on a chest X-ray, where left and right are anatomy.", "cols": ["Safe on", "Wrong on"], "rows": ["Horizontal flip", "Vertical flip", "Rotation", "Colour jitter", "Crop", "Elastic distortion"], "cells": [[{"text": "natural photographs", "tone": "good"}, {"text": "digits, text, chest X-rays", "tone": "crit"}], [{"text": "satellite, microscopy", "tone": "good"}, {"text": "anything with a ground plane", "tone": "crit"}], [{"text": "satellite, cells", "tone": "good"}, {"text": "6 and 9; anatomical sides", "tone": "crit"}], [{"text": "most object recognition", "tone": "good"}, {"text": "when colour is the label", "tone": "crit"}], [{"text": "almost everything", "tone": "good"}, {"text": "when the object can be cropped out", "tone": "warn"}], [{"text": "handwriting, medical", "tone": "good"}, {"text": "rigid objects", "tone": "warn"}]], "t": "diagram", "id": "dg-2_6-03-2"},
+
 
     { t: "p", text: "Every augmentation is an assertion about invariance. A horizontal flip says *left-right orientation carries no class information*, and that assertion is sometimes false:" },
 
@@ -123,6 +132,9 @@ eval_transform = T.Compose([
     { t: "p", text: "CutMix recomputes `λ` from the *actual* pasted area rather than using the drawn value, because integer patch dimensions never land exactly on the target. Skipping that recomputation is a real bug — it puts the label mix slightly out of step with the image mix on every batch." },
 
     { t: "h2", n: "05", text: "Test-time augmentation", id: "tta" },
+
+    {"kind": "flow", "title": "Test-time augmentation: the one place augmenting evaluation is right", "caption": "Run each test image through several deterministic transforms and average the predictions. It reliably buys a small amount of accuracy for a multiple of the inference cost — so it is a decision about latency budget, not about modelling, and it must be applied identically to any baseline you compare against.", "cols": 3, "nodes": [{"id": "i", "label": "One test image", "sub": "", "tone": "violet"}, {"id": "v", "label": "n deterministic views", "sub": "original, flip, a few crops", "tone": "accent"}, {"id": "p", "label": "Predict each", "sub": "n forward passes", "tone": "accent"}, {"id": "a", "label": "Average the probabilities", "sub": "not the labels", "tone": "good"}, {"id": "g", "label": "A small, reliable gain", "sub": "often a few tenths of a point", "tone": "good"}, {"id": "c", "label": "At n times the latency", "sub": "a budget decision", "tone": "warn"}], "edges": [["i", "v"], ["v", "p"], ["p", "a"], ["a", "g"], ["g", "c"]], "t": "diagram", "id": "dg-2_6-05-3"},
+
 
     { t: "p", text: "Predict on several augmented copies of a test image and average. Five views, where one view goes wrong:" },
 

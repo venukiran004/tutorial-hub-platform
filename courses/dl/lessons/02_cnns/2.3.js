@@ -23,6 +23,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The line of descent", id: "evolution" },
 
+    {"kind": "timeline", "title": "The line of descent, and what each one changed", "caption": "Each architecture is remembered for one idea. **AlexNet** showed that depth plus GPUs plus ReLU and dropout worked at all; **VGG** showed that three stacked 3×3s beat one 7×7 for fewer parameters and more non-linearity; **ResNet's** skip connection made depth beyond about twenty layers trainable, which is the single most consequential change in the list; and everything after 2015 is efficiency — depthwise separable convolutions, squeeze-and-excitation, compound scaling, ConvNeXt.", "span": 10, "tick": 2, "lanes": [{"label": "AlexNet 2012", "bars": [[0, 2, "depth + GPUs", "accent"]]}, {"label": "VGG 2014", "bars": [[2, 4, "stacked 3x3", "accent"]]}, {"label": "ResNet 2015", "bars": [[4, 7, "skip connections", "good"]]}, {"label": "After 2015", "bars": [[7, 10, "efficiency era", "teal"]]}], "t": "diagram", "id": "dg-2_3-01-0"},
+
+
     { t: "table", head: ["Year", "Architecture", "The idea", "Top-5 error", "Params"],
       rows: [
         ["1998", "LeNet-5", "That a CNN works at all", "—", "60 K"],
@@ -52,6 +55,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Where VGG's parameters went", id: "vgg" },
 
+    {"kind": "trace", "title": "Eighty-nine per cent of VGG16 is the part that does no vision", "caption": "Three fully connected layers on a flattened 7×7×512 map cost **124 million parameters** against 14.7 million for every convolution in the network. That is where VGG's overfitting lived and why it needed such heavy regularisation — and global average pooling (2.2) is precisely the fix, which is why no architecture after 2015 ends this way.", "left": "part of VGG16", "codeW": 210, "vars": ["parameters", "share", "what it does"], "steps": [{"code": "all convolutional layers", "state": ["14,714,688", "10.6%", "the actual vision"], "tone": "good"}, {"code": "fully connected head", "state": ["123,642,856", "89.4%", "classification"], "changed": [0, 1], "tone": "crit"}, {"code": "the fix: global average pool", "state": ["0", "0%", "H x W x C -> C"], "changed": [0], "tone": "good"}, {"code": "which is why", "state": ["no architecture since 2015", "ends with a flatten", ""], "tone": "violet"}], "t": "diagram", "id": "dg-2_3-02-1"},
+
+
     { t: "out", text: `  convolutional features :   14,714,688  (10.6%)
   fully connected head   :  123,642,856  (89.4%)` },
 
@@ -76,6 +82,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "The gradient highway, measured", id: "gradient" },
 
+    {"kind": "flow", "title": "The gradient highway, and why it is exactly a highway", "caption": "A residual block computes y = x + f(x), so the gradient of y with respect to x is **1 + f'(x)** — the one is an unconditional path from the loss to every earlier layer, unaffected by what f did. That additive one is why fifty layers train as easily as ten: the product of per-layer factors that 1.8 warned about can no longer vanish, because one of its terms is exactly 1.", "cols": 3, "nodes": [{"id": "x", "label": "x", "sub": "the block's input", "tone": "violet"}, {"id": "f", "label": "f(x)", "sub": "two convolutions, say", "tone": "accent"}, {"id": "a", "label": "y = x + f(x)", "sub": "the addition is the whole trick", "tone": "good"}, {"id": "g", "label": "dy/dx = 1 + f'(x)", "sub": "the 1 cannot be removed", "tone": "good"}, {"id": "p", "label": "So the product has a term of 1", "sub": "at every depth", "tone": "teal"}, {"id": "d", "label": "50 layers train like 10", "sub": "which was not true before 2015", "tone": "teal"}], "edges": [["x", "a"], ["f", "a"], ["a", "g"], ["g", "p"], ["p", "d"]], "t": "diagram", "id": "dg-2_3-04-2"},
+
+
     { t: "p", text: "The claim is that `∂H/∂x = 1 + ∂F/∂x` gives every layer a direct path to the loss, so gradients do not decay with depth. Twenty blocks, identical except for the addition, with the gradient norm read at the first and last:" },
 
     { t: "out", text: `  plain     20 blocks: grad norm at block 1 = 3.294e+00, at block 20 = 2.628e-01, ratio 1.25e+01
@@ -90,6 +99,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "05", text: "The bottleneck", id: "bottleneck" },
 
+    {"kind": "trace", "title": "The bottleneck block: three convolutions cheaper than two", "caption": "Squeeze the channels with a 1×1, do the spatial work in the narrow space, expand back with another 1×1. Compare the totals: two 3×3s on 256 channels cost 1.18 million parameters; the bottleneck doing the same channel transformation costs **70 thousand**. That is how ResNet-50 is deeper than ResNet-34 and no more expensive.", "left": "block on 256 channels", "codeW": 200, "vars": ["parameters", "note"], "steps": [{"code": "basic: 3x3, 256 -> 256", "state": ["589,824", "one of two"], "tone": "warn"}, {"code": "basic: 3x3, 256 -> 256", "state": ["589,824", "total 1,179,648"], "tone": "crit"}, {"code": "bottleneck: 1x1, 256 -> 64", "state": ["16,384", "squeeze"], "tone": "good"}, {"code": "bottleneck: 3x3, 64 -> 64", "state": ["36,864", "spatial work, narrow"], "tone": "good"}, {"code": "bottleneck: 1x1, 64 -> 256", "state": ["16,384", "expand"], "tone": "good"}, {"code": "bottleneck total", "state": ["69,632", "about 6% of the basic block"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-2_3-05-3"},
+
+
     { t: "p", text: "At 256 channels, two 3×3 convolutions are expensive. The bottleneck squeezes with a 1×1, does the spatial work cheaply, and expands back." },
 
     { t: "out", text: `  basic      3x3 256->256, 3x3 256->256 : 1,180,160 parameters
@@ -99,6 +111,9 @@ EC.receiveLesson({
     { t: "p", text: "**Nearly seventeen times fewer parameters for the same input and output shape.** The quoted figure is 4× on FLOPs, which is the more commonly cited figure; on parameters the saving is larger still because the expensive 3×3 now operates on 64 channels rather than 256, and its cost goes as the square of the channel count. This is what lets ResNet-50 and above be deep without being enormous — ResNet-50 is 25.6 M against VGG's 138 M." },
 
     { t: "h2", n: "06", text: "Compound scaling and ConvNeXt", id: "modern" },
+
+    {"kind": "flow", "title": "Compound scaling, and what ConvNeXt showed afterwards", "caption": "EfficientNet's finding was that scaling depth, width and resolution **together** in a fixed ratio beats scaling any one of them — because a deeper network needs more channels to use and more pixels to look at. ConvNeXt's finding was later and more awkward: most of the transformer's advantage over CNNs was training recipe and design details, not attention, and a modernised CNN recovers it.", "cols": 3, "nodes": [{"id": "d", "label": "Scale depth alone", "sub": "diminishing returns", "tone": "warn"}, {"id": "w", "label": "Scale width alone", "sub": "diminishing returns", "tone": "warn"}, {"id": "r", "label": "Scale resolution alone", "sub": "diminishing returns", "tone": "warn"}, {"id": "c", "label": "Scale all three, in ratio", "sub": "EfficientNet's compound rule", "tone": "good"}, {"id": "n", "label": "ConvNeXt", "sub": "a modernised CNN matches a ViT", "tone": "accent"}, {"id": "l", "label": "So it was the recipe", "sub": "not attention, mostly", "tone": "teal"}], "edges": [["d", "c"], ["w", "c"], ["r", "c"], ["c", "n"], ["n", "l"]], "t": "diagram", "id": "dg-2_3-06-4"},
+
 
     { t: "p", text: "EfficientNet's observation is that there are three ways to make a network bigger — more channels, more layers, larger input — and that scaling one alone hits diminishing returns quickly. Scaling all three in a fixed ratio does better for the same budget." },
 

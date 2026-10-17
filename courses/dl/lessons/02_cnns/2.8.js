@@ -21,6 +21,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three kinds of segmentation", id: "kinds" },
 
+    {"kind": "matrix", "title": "Three kinds of segmentation, and what each output looks like", "caption": "The difference is entirely in what counts as a distinct answer. Semantic segmentation labels pixels by class and cannot separate two adjacent cars; instance segmentation separates them and ignores the background; panoptic does both, which is why its evaluation needed a new metric rather than a reused one.", "cols": ["Output per pixel", "Cannot"], "rows": ["Semantic", "Instance", "Panoptic"], "cells": [[{"text": "a class label", "tone": "accent"}, {"text": "tell two adjacent cars apart", "tone": "warn"}], [{"text": "a class plus an instance id", "tone": "good"}, {"text": "label sky, road, background", "tone": "warn"}], [{"text": "both, for everything", "tone": "good"}, {"text": "reuse either metric: needs PQ", "tone": "accent"}]], "t": "diagram", "id": "dg-2_8-01-0"},
+
+
     { t: "dl", items: [
       ["Semantic", "Every pixel gets a class. All cars share one label — there is no notion of individual objects. FCN, U-Net, DeepLab."],
       ["Instance", "Detect objects, then produce a binary mask for each. Car 1 and car 2 are distinct. Mask R-CNN = Faster R-CNN plus a mask branch."],
@@ -28,6 +31,9 @@ EC.receiveLesson({
     ] },
 
     { t: "h2", n: "02", text: "From a classifier head to a dense head", id: "fcn" },
+
+    {"kind": "flow", "title": "From a classifier head to a dense head", "caption": "A classifier ends by throwing position away — that is what the flatten or the global pool is for. Segmentation needs it back, so the head is replaced: every fully connected layer becomes a 1×1 convolution, which computes the same function at **every position** instead of once. That is the fully-convolutional insight, and it is why any classifier backbone can become a segmenter.", "cols": 3, "nodes": [{"id": "c", "label": "Classifier backbone", "sub": "spatial size reduced, channels rich", "tone": "violet"}, {"id": "f", "label": "Flatten + Dense", "sub": "position discarded", "tone": "crit"}, {"id": "o", "label": "Replace with 1x1 conv", "sub": "the same weights, every position", "tone": "good"}, {"id": "m", "label": "A coarse class map", "sub": "H/32 x W/32 x classes", "tone": "accent"}, {"id": "u", "label": "Upsample back", "sub": "to the input resolution", "tone": "accent"}, {"id": "b", "label": "Blurry boundaries", "sub": "which is what the skips fix", "tone": "warn"}], "edges": [["c", "f"], ["c", "o"], ["o", "m"], ["m", "u"], ["u", "b"]], "t": "diagram", "id": "dg-2_8-02-1"},
+
 
     { t: "p", text: "The fully convolutional network's insight is that the classifier's final linear layer is a 1×1 convolution — exactly the operation from lesson 2.4. Apply it at every position instead of after pooling, and you get a prediction per location." },
 
@@ -70,6 +76,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "What the skips actually recover", id: "skips" },
 
+    {"kind": "flow", "title": "What the skip connections actually recover", "caption": "Downsampling destroys **location** while building semantics: by the bottleneck the network knows there is a cell and no longer knows precisely where its edge is. The skips carry the high-resolution early feature maps across, so the decoder has both — semantics from below, boundaries from the side. Remove them and U-Net's masks lose their edges while keeping their classes.", "cols": 3, "nodes": [{"id": "e", "label": "Encoder: semantics up", "sub": "resolution down", "tone": "accent"}, {"id": "b", "label": "Bottleneck", "sub": "knows what, not exactly where", "tone": "warn"}, {"id": "d", "label": "Decoder: resolution up", "sub": "but the detail is gone", "tone": "warn"}, {"id": "s", "label": "Skip from the same scale", "sub": "high-resolution features", "tone": "good"}, {"id": "c", "label": "Concatenated, not added", "sub": "the decoder chooses how to use them", "tone": "good"}, {"id": "o", "label": "Sharp boundaries", "sub": "and correct classes", "tone": "teal"}], "edges": [["e", "b"], ["b", "d"], ["e", "s"], ["s", "c"], ["d", "c"], ["c", "o"]], "t": "diagram", "id": "dg-2_8-04-2"},
+
+
     { t: "p", text: "Thin one-pixel lines through four rounds of max pooling and back up:" },
 
     { t: "out", text: `  original 64x64 thin lines: 512 lit pixels
@@ -80,6 +89,9 @@ EC.receiveLesson({
     { t: "p", text: "**Only 12.5 % of the image survives the round trip.** Fine structure — cell boundaries, thin vessels, object edges — is simply gone by the bottleneck, and no decoder can invent it back. The skip connection is not an optimisation trick here; it is the only path by which that information reaches the output at all. That is why U-Net came out of biomedical imaging, where the thing you are segmenting is frequently one or two pixels wide." },
 
     { t: "h2", n: "05", text: "Transposed convolution", id: "transposed" },
+
+    {"kind": "flow", "title": "Transposed convolution, and the checkerboard it produces", "caption": "It is not a 'deconvolution' — it is a convolution whose stride is applied to the **output**, so each input pixel contributes to several outputs. When the kernel size is not divisible by the stride those contributions overlap unevenly, and the result is a regular checkerboard artefact. Resize-then-convolve avoids it entirely, which is why most modern decoders do that instead.", "cols": 3, "nodes": [{"id": "t", "label": "Transposed conv, stride 2", "sub": "each input hits several outputs", "tone": "accent"}, {"id": "u", "label": "k not divisible by s", "sub": "overlaps are uneven", "tone": "crit"}, {"id": "c", "label": "Checkerboard artefacts", "sub": "a regular grid of brighter pixels", "tone": "crit"}, {"id": "k", "label": "Use k = 4, s = 2", "sub": "even overlap: mitigates it", "tone": "good"}, {"id": "r", "label": "Or upsample, then convolve", "sub": "nearest or bilinear, then 3x3", "tone": "good"}, {"id": "m", "label": "The modern default", "sub": "no artefact by construction", "tone": "teal"}], "edges": [["t", "u"], ["u", "c"], ["c", "k"], ["c", "r"], ["r", "m"]], "t": "diagram", "id": "dg-2_8-05-3"},
+
 
     { t: "p", text: "Upsampling with learned weights rather than fixed interpolation. A 2×2 input with a stride-2, kernel-2 transposed convolution:" },
 

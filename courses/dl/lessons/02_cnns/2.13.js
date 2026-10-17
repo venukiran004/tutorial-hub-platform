@@ -39,6 +39,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The generator", id: "generator" },
 
+    {"kind": "flow", "title": "The generator never sees a real image", "caption": "This is the fact that makes a GAN unlike anything else in the course. The generator's only signal is the **discriminator's gradient** — it is told 'that looked fake' and nothing more, never shown a target to match. So there is no reconstruction loss, no per-pixel error, and the quality of the generator is entirely bounded by how good a critic the discriminator is.", "cols": 3, "nodes": [{"id": "z", "label": "Noise z", "sub": "sampled from a prior", "tone": "violet"}, {"id": "g", "label": "Generator", "sub": "upsamples to an image", "tone": "accent"}, {"id": "d", "label": "Discriminator", "sub": "real or fake?", "tone": "accent"}, {"id": "s", "label": "Its gradient is the only signal", "sub": "no target image, ever", "tone": "good"}, {"id": "n", "label": "No reconstruction loss", "sub": "nothing per-pixel to match", "tone": "warn"}, {"id": "b", "label": "Bounded by the critic", "sub": "a weak discriminator teaches nothing", "tone": "crit"}], "edges": [["z", "g"], ["g", "d"], ["d", "s"], ["s", "n"], ["n", "b"]], "t": "diagram", "id": "dg-2_13-02-0"},
+
+
     { t: "code", lang: "python", title: "DCGAN generator",
       code: `class Generator(nn.Module):
     def __init__(self, latent_dim=100):
@@ -68,6 +71,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "The generator's final `Tanh` emits values in `[−1, 1]`, so the real images must be normalised to that same range — `T.Normalize([0.5], [0.5])` after `ToTensor()`. Leave the real data in `[0, 1]` and the discriminator gets a free win: it can separate real from fake on value range alone, without learning anything about image content. The generator then receives gradients pushing it towards a range it structurally cannot reach, and training collapses immediately. Note also `k=4, s=2` throughout, which satisfies lesson 2.8's divisibility rule and avoids checkerboard artefacts." }] },
 
     { t: "h2", n: "03", text: "Training it", id: "training" },
+
+    {"kind": "cycle", "title": "Training it: two optimisers, alternating", "caption": "Each step updates one network while the other is held fixed, and the detail that matters in code is `detach()`: when training the discriminator on fake images, the generator must not receive that gradient. Forget it and the generator is updated to make the discriminator's job **easier**, which is the opposite of the game.", "centre": "alternate", "nodes": [{"label": "Real batch -> D", "sub": "label 1; D learns 'real'", "tone": "good"}, {"label": "Fake batch -> D, detached", "sub": "label 0; G gets no gradient", "tone": "warn"}, {"label": "Step D", "sub": "its own optimiser", "tone": "accent"}, {"label": "Fake -> D, not detached; step G", "sub": "G learns to fool the current D", "tone": "accent"}], "t": "diagram", "id": "dg-2_13-03-1"},
+
 
     { t: "code", lang: "python", title: "One step of the alternating update",
       code: `REAL, FAKE = 0.9, 0.0                       # label smoothing
@@ -99,6 +105,9 @@ lossG.backward(); optG.step()`,
 
     { t: "h2", n: "04", text: "The equilibrium that does not arrive", id: "equilibrium" },
 
+    {"kind": "flow", "title": "The equilibrium that does not arrive", "caption": "A GAN's loss curves are **not** progress indicators, which is the single most confusing thing about training one. At the theoretical equilibrium the discriminator is at chance and both losses sit flat — so a falling generator loss can mean the discriminator is losing rather than the samples improving. Judgement has to come from samples and from FID, not from the loss.", "cols": 3, "nodes": [{"id": "m", "label": "A minimax game", "sub": "not a loss being minimised", "tone": "violet"}, {"id": "e", "label": "At equilibrium D is at chance", "sub": "both losses flat", "tone": "accent"}, {"id": "f", "label": "G's loss falls", "sub": "could be better samples", "tone": "warn"}, {"id": "o", "label": "Or D is simply losing", "sub": "the same curve either way", "tone": "crit"}, {"id": "s", "label": "So judge by samples", "sub": "and by FID", "tone": "good"}, {"id": "l", "label": "The loss is not the metric", "sub": "unlike everywhere else in this course", "tone": "teal"}], "edges": [["m", "e"], ["e", "f"], ["f", "o"], ["o", "s"], ["s", "l"]], "t": "diagram", "id": "dg-2_13-04-2"},
+
+
     { t: "out", text: `  at a perfect Nash equilibrium D(x) = 0.5 for everything
   measured: D(real) = 0.861, D(fake) = 0.037` },
 
@@ -106,6 +115,9 @@ lossG.backward(); optG.step()`,
       body: [{ t: "p", text: "Theory predicts D converges to 0.5 on everything. The measured run has the discriminator confidently correct — 0.86 on real, 0.04 on fake — after six epochs, and it is not drifting towards 0.5. This is the normal state of affairs, not a failed run. Because each network's loss is computed against the *other's current weights*, a falling generator loss can mean the generator improved or merely that the discriminator got worse. `lossG` here rose from 4.78 to 6.19 and then fell back to 4.13 while the samples were steadily improving. You cannot read progress off these curves, which is why GAN work relies on looking at samples and on metrics like FID computed against real data." }] },
 
     { t: "h2", n: "05", text: "Mode collapse", id: "collapse" },
+
+    {"kind": "flow", "title": "Mode collapse, and why the game permits it", "caption": "The generator's objective is to fool the discriminator, and producing one perfect image forever does exactly that — nothing in the loss rewards **diversity**. So collapse is not a bug in the optimiser, it is a correct solution to the stated problem, and every fix works by changing the problem: letting the critic see a batch, penalising its gradient, or scoring the distribution rather than the sample.", "cols": 3, "nodes": [{"id": "o", "label": "G's objective: fool D", "sub": "nothing about diversity", "tone": "violet"}, {"id": "c", "label": "One convincing image does that", "sub": "repeatedly", "tone": "crit"}, {"id": "m", "label": "Mode collapse", "sub": "a correct solution, badly specified", "tone": "crit"}, {"id": "b", "label": "Minibatch discrimination", "sub": "D sees the batch, not one sample", "tone": "good"}, {"id": "w", "label": "WGAN-GP", "sub": "a smoother critic, penalised gradient", "tone": "good"}, {"id": "f", "label": "Measure with FID", "sub": "which scores the distribution", "tone": "teal"}], "edges": [["o", "c"], ["c", "m"], ["m", "b"], ["m", "w"], ["w", "f"]], "t": "diagram", "id": "dg-2_13-05-3"},
+
 
     { t: "p", text: "The characteristic GAN failure: the generator finds one output that reliably fools the discriminator and produces variations of only that, ignoring most of the data distribution. It is detectable by measuring diversity directly." },
 

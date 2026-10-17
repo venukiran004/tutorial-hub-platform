@@ -130,6 +130,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "Choosing among them", id: "choosing" },
 
+    {"kind": "matrix", "title": "Choosing among the efficiency blocks", "caption": "Three different savings. The 1×1 changes channels at a per-pixel cost; **depthwise separable** factorises a convolution into a spatial part and a channel part for roughly a ninth of the parameters; squeeze-and-excitation adds almost nothing and reweights channels by global context. They compose, which is what MobileNet and EfficientNet do.", "cols": ["Saves", "Costs"], "rows": ["1x1 convolution", "Depthwise separable", "Squeeze-and-excitation", "Grouped convolution", "All three together"], "cells": [[{"text": "channel change, per pixel", "tone": "good"}, "no spatial mixing at all"], [{"text": "about 8-9x the parameters", "tone": "good"}, "slightly worse accuracy per layer"], [{"text": "nothing — it adds ~1%", "tone": "accent"}, "a global pool breaks full streaming"], [{"text": "parameters, by g", "tone": "good"}, "channels stop talking across groups"], [{"text": "MobileNet, EfficientNet", "tone": "violet"}, "more hyperparameters to set"]], "t": "diagram", "id": "dg-2_4-04-0"},
+
+
     { t: "table", head: ["Innovation", "Costs", "Use it when"],
       rows: [
         ["1×1 convolution", "`C_in · C_out`, ~9× under a 3×3", "Almost always — changing channel count is what it is for"],

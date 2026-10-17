@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The operation", id: "operation" },
 
+    {"kind": "flow", "title": "One convolution, as four facts", "caption": "A kernel slides over the input, and at each position computes a dot product with the patch under it. Two properties follow and they are the whole reason CNNs work on images: the **same** weights are used at every position (so a feature detected in one corner is detected in all of them), and each output depends only on a small neighbourhood (so the layer learns local structure rather than a global mapping).", "cols": 3, "nodes": [{"id": "i", "label": "Input patch", "sub": "k x k, at one position", "tone": "violet"}, {"id": "k", "label": "Kernel", "sub": "the same weights everywhere", "tone": "accent"}, {"id": "d", "label": "Dot product", "sub": "one output number", "tone": "good"}, {"id": "s", "label": "Slide, repeat", "sub": "across the whole input", "tone": "good"}, {"id": "w", "label": "Weight sharing", "sub": "one detector, every position", "tone": "teal"}, {"id": "l", "label": "Local connectivity", "sub": "each output sees k x k inputs", "tone": "teal"}], "edges": [["i", "d"], ["k", "d"], ["d", "s"], ["s", "w"], ["s", "l"]], "t": "diagram", "id": "dg-2_1-01-0"},
+
+
     { t: "p", text: "At every position, line the kernel up with a patch of the input, multiply element by element, and add the results into a single output number. Slide by the stride and repeat. The output is a **feature map**: one number per position, saying how strongly that patch matched the pattern the kernel encodes." },
 
     { t: "math", tex: "\\text{Output}(i, j) = \\sum_{m}\\sum_{n} \\text{Input}(i+m,\\, j+n) \\cdot \\text{Kernel}(m, n) + b" },
@@ -57,6 +60,9 @@ for i in range(3):
 
     { t: "h2", n: "03", text: "It is cross-correlation, not convolution", id: "cross-correlation" },
 
+    {"kind": "compare", "title": "Every framework computes cross-correlation and calls it convolution", "caption": "True convolution flips the kernel before the dot product; cross-correlation does not. For a **learned** kernel the distinction is irrelevant — the network simply learns the flipped weights instead, and reaches the same function. It matters only when you bring a kernel in from signal processing, or compare against a textbook formula.", "columns": [{"title": "Convolution, strictly", "tone": "accent", "items": ["Flips the kernel in both axes first", "Commutative and associative", "What the maths literature means", "Matters for a hand-designed kernel"]}, {"title": "Cross-correlation", "tone": "good", "items": ["No flip: dot product with the patch as-is", "What Conv2d and Conv1D actually do", "Identical once the kernel is learned", "The network learns the flip if it needs it"]}], "t": "diagram", "id": "dg-2_1-03-1"},
+
+
     { t: "p", text: "Mathematical convolution flips the kernel 180° before sliding it. Deep learning does not, and calls the result convolution anyway. Since the kernel is **learned**, a network that would benefit from the flipped version simply learns the flipped version — so the distinction has no consequence for training, and every framework implements the unflipped operation under the name `Conv2d`." },
 
     { t: "out", text: `cross-correlation (what Conv2d does):
@@ -73,6 +79,9 @@ differ: True` },
       body: [{ t: "p", text: "The 5×5 input is unchanged by a 180° rotation, and so is its kernel — so flipping changes nothing and the difference is invisible. Demonstrating it needs an input that is not symmetric, which is why the numbers above run 0 to 24 rather than reusing the grid. Worth knowing when you try to reproduce this: a symmetric test case will convince you the two operations are the same." }] },
 
     { t: "h2", n: "04", text: "Output size", id: "output-size" },
+
+    {"kind": "trace", "title": "The output-size formula, against what Conv2d returns", "caption": "floor((in + 2p − k)/s) + 1, checked against the framework on four real configurations. The third row is the standard way modern CNNs downsample, and the fourth is ResNet's stem taking 224 to 112 in one layer. The trap is the **floor**: an input of 33 with k=3, p=1, s=2 gives 17, and the last row and column contribute to nothing at all — nothing warns you, and it surfaces later as a skip connection whose shapes differ by one.", "left": "configuration", "codeW": 210, "vars": ["formula", "Conv2d", "what it is for"], "steps": [{"code": "in 32, k 3, p 1, s 1", "state": ["32", "32", "same size: stackable"], "tone": "good"}, {"code": "in 32, k 3, p 0, s 1", "state": ["30", "30", "valid: loses a border"], "tone": "accent"}, {"code": "in 32, k 3, p 1, s 2", "state": ["16", "16", "halve it: the modern way"], "tone": "good"}, {"code": "in 224, k 7, p 3, s 2", "state": ["112", "112", "ResNet's stem"], "tone": "good"}, {"code": "in 33, k 3, p 1, s 2", "state": ["17", "17", "the floor discards a row and column"], "changed": [2], "tone": "crit"}], "t": "diagram", "id": "dg-2_1-04-2"},
+
 
     { t: "math", tex: "n_{out} = \\left\\lfloor \\frac{n_{in} + 2p - k}{s} \\right\\rfloor + 1" },
 
@@ -93,6 +102,9 @@ differ: True` },
       body: [{ t: "p", text: "With a stride above 1 the division rarely comes out exactly, and the floor silently discards the remainder — an input of 33 with `k=3, p=1, s=2` gives 17, and the last row and column of the input contribute to nothing. Nothing warns you. If your feature map is one smaller than you expected, or a skip connection will not add because the shapes differ by one, this is almost always why." }] },
 
     { t: "h2", n: "05", text: "Why the parameter count is the point", id: "parameters" },
+
+    {"kind": "trace", "title": "Why the parameter count is the point", "caption": "The same transformation, 32×32×3 to 32×32×64, done two ways. A fully connected layer needs a weight for every input–output pair: **two hundred million**. A 3×3 convolution needs one kernel per output channel, reused at every position: 1,792. That ratio of about 110,000 to one is why convolution exists, and the saving is not an approximation — it is the weight-sharing assumption being true of images.", "left": "layer", "codeW": 230, "vars": ["parameters", "ratio"], "steps": [{"code": "fully connected, 3072 -> 65536", "state": ["201,392,128", "1x"], "tone": "crit"}, {"code": "Conv2d(3, 64, 3, padding=1)", "state": ["1,792", "about 1/112,000", ""], "changed": [0], "tone": "good"}, {"code": "of which weights", "state": ["3 x 64 x 3 x 3 = 1,728", ""], "tone": "accent"}, {"code": "and biases", "state": ["64", "one per output channel"], "tone": "accent"}, {"code": "and it is independent of", "state": ["the input's height and width", "the same kernel everywhere"], "tone": "violet"}], "t": "diagram", "id": "dg-2_1-05-3"},
+
 
     { t: "math", tex: "\\text{Params} = (k \\times k \\times C_{in} + 1) \\times C_{out}" },
 

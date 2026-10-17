@@ -107,6 +107,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "mAP, and why COCO is strict", id: "map" },
 
+    {"kind": "trace", "title": "Why COCO's mAP is stricter than Pascal's", "caption": "Pascal VOC declares a detection correct at IoU ≥ 0.5 and averages over classes. COCO averages over **ten IoU thresholds** from 0.50 to 0.95, so a box that is roughly right scores at the loose end and nothing at the strict end — which is why the same detector's COCO mAP is far below its Pascal number, and why the two are not comparable.", "left": "metric", "codeW": 200, "vars": ["IoU thresholds", "what it rewards"], "steps": [{"code": "Pascal VOC mAP", "state": ["0.50 only", "finding the object"], "tone": "accent"}, {"code": "COCO mAP (the headline)", "state": ["0.50:0.05:0.95, averaged", "finding it and locating it precisely"], "changed": [0], "tone": "good"}, {"code": "COCO AP50", "state": ["0.50", "comparable to Pascal"], "tone": "accent"}, {"code": "COCO AP75", "state": ["0.75", "tight localisation"], "tone": "warn"}, {"code": "so the same detector", "state": ["scores far lower on COCO", "the numbers are not comparable"], "tone": "crit"}], "t": "diagram", "id": "dg-2_7-04-0"},
+
+
     { t: "p", text: "A detection counts as correct if its IoU with a ground-truth box clears a threshold. Which threshold you pick changes the answer a great deal. One prediction at IoU 0.89:" },
 
     { t: "out", text: `  a prediction with IoU 0.8908 against ground truth
@@ -118,6 +121,9 @@ EC.receiveLesson({
     { t: "p", text: "**The same prediction scores 1.00 under PASCAL VOC's metric and 0.80 under COCO's.** Averaging over ten thresholds rewards tight localisation, which mAP@0.5 is indifferent to — under the lenient metric a sloppy box and a perfect one are worth exactly the same. Always check which metric a reported number uses before comparing two detectors." },
 
     { t: "h2", n: "05", text: "Average precision from a ranked list", id: "ap" },
+
+    {"kind": "steps", "title": "Average precision from a ranked list, step by step", "caption": "AP is not an average of precisions at fixed recalls — it is the area under the precision–recall curve traced by walking the **ranked detections**. Each true positive moves recall right and lifts precision; each false positive lowers precision without moving recall. That is why ranking quality, not just counting, is what AP measures.", "items": [{"label": "Sort every detection by confidence", "desc": "across the whole dataset, not per image", "code": "1", "tone": "accent"}, {"label": "Match each to a ground-truth box by IoU", "desc": "one ground truth can be matched once", "code": "2", "tone": "accent"}, {"label": "Walk the list, recomputing precision and recall", "desc": "a TP moves recall; an FP only hurts precision", "code": "3", "tone": "good"}, {"label": "Take the running maximum of precision", "desc": "the interpolation step, so the curve is monotone", "code": "4", "tone": "good"}, {"label": "Integrate: that area is AP", "desc": "per class", "code": "5", "tone": "violet"}, {"label": "Average over classes, then over IoUs", "desc": "mAP; COCO does both", "code": "6", "tone": "teal"}], "t": "diagram", "id": "dg-2_7-05-1"},
+
 
     { t: "p", text: "Sort detections by confidence, walk down the list accumulating true and false positives, and read off precision and recall at each step. Five predictions against three ground truths:" },
 

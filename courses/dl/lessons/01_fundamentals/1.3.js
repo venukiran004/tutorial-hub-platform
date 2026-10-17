@@ -22,6 +22,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "A forward pass, in matrix form", "caption": "Two operations per layer, repeated. Writing it as matrices rather than loops is not only notation: it is what lets one GEMM call handle a whole batch, which is the difference between a network that trains in minutes and one that trains in days.", "cols": 3, "nodes": [{"id": "x", "label": "x, shape (features,)", "sub": "or (batch, features)", "tone": "violet"}, {"id": "z1", "label": "z1 = W1 x + b1", "sub": "one matrix multiply", "tone": "accent"}, {"id": "a1", "label": "a1 = f(z1)", "sub": "element-wise", "tone": "good"}, {"id": "z2", "label": "z2 = W2 a1 + b2", "sub": "the next layer", "tone": "accent"}, {"id": "y", "label": "y-hat = g(z2)", "sub": "sigmoid, or softmax", "tone": "good"}, {"id": "b", "label": "A batch is free", "sub": "the same call, one more dimension", "tone": "teal"}], "edges": [["x", "z1"], ["z1", "a1"], ["a1", "z2"], ["z2", "y"], ["y", "b"]], "t": "diagram", "id": "dg-1_3-01-0"},
 
 
+
+
     { t: "p", text: "Forward propagation is the process of passing an input through the network, layer by layer, to produce a prediction: at each layer multiply by the weight matrix, add the bias, apply the activation. It is deterministic — the same weights and the same input always give the same output — and vectorised, so a whole batch goes through at once. With one example per column:" },
 
     { t: "math", tex: "\\mathbf{Z}^{[l]} = \\mathbf{W}^{[l]}\\mathbf{A}^{[l-1]} + \\mathbf{b}^{[l]}, \\qquad \\mathbf{A}^{[l]} = g^{[l]}\\!\\left(\\mathbf{Z}^{[l]}\\right), \\qquad \\mathbf{A}^{[0]} = \\mathbf{X}" },
@@ -60,6 +62,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "The numerical example, worked and checked", id: "example" },
 
     {"kind": "trace", "title": "One forward pass, every number", "caption": "W¹ = [[0.5, −0.3], [0.8, 0.6]], b¹ = [0.1, −0.2], x = [1.0, 2.0]. The first hidden unit's pre-activation comes out at exactly **0.0**, so ReLU zeroes it and that unit contributes nothing to this prediction — a concrete instance of the sparsity ReLU creates. The output 0.277 is below 0.5, so the prediction is class 0.", "left": "step", "codeW": 160, "vars": ["computation", "result"], "steps": [{"code": "z1, unit 1", "state": ["0.5(1.0) + (-0.3)(2.0) + 0.1", "0.0"], "tone": "warn", "note": "exactly zero"}, {"code": "z1, unit 2", "state": ["0.8(1.0) + 0.6(2.0) - 0.2", "1.8"], "tone": "accent"}, {"code": "a1 = ReLU(z1)", "state": ["max(0, z)", "[0.0, 1.8]"], "changed": [1], "tone": "good", "note": "unit 1 is off"}, {"code": "z2", "state": ["0.4(0.0) + (-0.7)(1.8) + 0.3", "-0.96"], "tone": "accent"}, {"code": "y-hat = sigma(z2)", "state": ["1 / (1 + e^0.96)", "0.277"], "changed": [1], "tone": "violet"}, {"code": "decision", "state": ["0.277 < 0.5", "class 0"], "tone": "teal"}], "t": "diagram", "id": "dg-1_3-02-1"},
+
+
 
 
     { t: "p", text: "The network has 2 inputs, 2 hidden ReLU units and 1 sigmoid output, with these weights and this input:" },
@@ -117,6 +121,8 @@ torch: [0.2769 0.505  0.5744]` },
     { t: "h2", n: "03", text: "Loss functions", id: "loss" },
 
     {"kind": "matrix", "title": "The loss is a choice about what the output means", "caption": "Each loss is the negative log-likelihood of a different output distribution, which is why it comes paired with a specific final activation. Mixing them is the commonest beginner error: a softmax output with MSE trains, slowly and badly, because the gradient no longer simplifies to (p − y).", "cols": ["Final activation", "Use for"], "rows": ["Binary cross-entropy", "Categorical cross-entropy", "Sparse categorical CE", "MSE", "MAE / Huber", "CTC"], "cells": [[{"text": "sigmoid, one unit", "tone": "good"}, "two classes, or multi-label"], [{"text": "softmax, k units", "tone": "good"}, "one of k classes, one-hot labels"], [{"text": "softmax, k units", "tone": "good"}, "the same, with integer labels"], [{"text": "none (linear)", "tone": "good"}, "regression; penalises large misses"], [{"text": "none (linear)", "tone": "good"}, "regression with outliers"], [{"text": "softmax per frame", "tone": "accent"}, "unaligned sequences: speech, OCR"]], "t": "diagram", "id": "dg-1_3-03-2"},
+
+
 
 
     { t: "p", text: "A loss function measures how far predictions are from the truth as a single number, and its gradient with respect to the parameters is what backpropagation delivers to the optimiser. The choice is set by the task: cross-entropy for classification, where the prediction is a probability distribution, and mean squared error for regression, where it is a value." },
@@ -187,6 +193,8 @@ y=-1 score=+0.5: hinge 1.50` },
     { t: "h2", n: "04", text: "Choosing the loss", id: "choose" },
 
     {"kind": "flow", "title": "Why cross-entropy and not squared error for a classifier", "caption": "With a sigmoid output and squared error, the gradient carries a factor of σ'(z) — which is at most 0.25 and near zero when the model is confidently **wrong**, so the worst predictions produce the smallest updates. Cross-entropy cancels that factor exactly, leaving a gradient of (p − y): confidently wrong means a large gradient, which is what you want.", "cols": 3, "nodes": [{"id": "m", "label": "MSE + sigmoid", "sub": "gradient includes sigma'(z)", "tone": "warn"}, {"id": "s", "label": "Confidently wrong", "sub": "sigma'(z) is near zero", "tone": "crit"}, {"id": "t", "label": "Tiny gradient", "sub": "the worst case learns slowest", "tone": "crit"}, {"id": "c", "label": "Cross-entropy + sigmoid", "sub": "the sigma' factor cancels", "tone": "good"}, {"id": "g", "label": "Gradient is (p - y)", "sub": "proportional to the error", "tone": "good"}, {"id": "f", "label": "Confidently wrong = big step", "sub": "which is the behaviour wanted", "tone": "teal"}], "edges": [["m", "s"], ["s", "t"], ["c", "g"], ["g", "f"]], "t": "diagram", "id": "dg-1_3-04-3"},
+
+
 
 
     { t: "table", head: ["Task", "Output activation", "Loss"],

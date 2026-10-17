@@ -22,6 +22,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The model", id: "model" },
 
+    {"kind": "layers", "title": "The CIFAR-10 model, bottom to top", "caption": "Three stages of convolution and a pooled head — the shape of 2.2 made concrete. Note the two numbers that matter: the spatial size falls 32 → 16 → 8 → 4 while channels rise 3 → 32 → 64 → 128, and the classifier at the top is a single linear layer because global pooling has already removed position.", "items": [{"label": "Linear 128 -> 10", "sub": "1,290 parameters", "tone": "teal", "side": "the head"}, {"label": "Global average pool", "sub": "4 x 4 x 128 -> 128", "tone": "good", "side": "no params"}, {"label": "Conv 64 -> 128, BN, ReLU, pool", "sub": "8 x 8 -> 4 x 4", "tone": "accent", "side": "stage 3"}, {"label": "Conv 32 -> 64, BN, ReLU, pool", "sub": "16 x 16 -> 8 x 8", "tone": "accent", "side": "stage 2"}, {"label": "Conv 3 -> 32, BN, ReLU, pool", "sub": "32 x 32 -> 16 x 16", "tone": "good", "side": "stage 1"}, {"label": "Input 3 x 32 x 32", "sub": "CIFAR-10", "tone": "violet", "side": ""}], "t": "diagram", "id": "dg-2_11-01-0"},
+
+
     { t: "code", lang: "python", title: "CustomCNN",
       code: `class CustomCNN(nn.Module):
     def __init__(self, num_classes=10, in_channels=3):
@@ -62,6 +65,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Where the parameters are", id: "params" },
 
+    {"kind": "trace", "title": "Where the parameters are, and why that is the right shape", "caption": "The parameter count **rises** with depth here, which is the opposite of VGG. Each stage doubles its channels, so each convolution's weight tensor roughly quadruples — and yet the head is 1,290 parameters rather than VGG's 124 million, because global average pooling replaced the flatten. The model is 98% convolution by parameter count, and that is the post-2015 shape.", "left": "layer", "codeW": 200, "vars": ["parameters", "share"], "steps": [{"code": "conv 3 -> 32, 3x3", "state": ["896", "1%"], "tone": "good"}, {"code": "conv 32 -> 64, 3x3", "state": ["18,496", "20%"], "tone": "accent"}, {"code": "conv 64 -> 128, 3x3", "state": ["73,856", "77%"], "changed": [0], "tone": "accent"}, {"code": "batch norm layers", "state": ["448", "<1%"], "tone": "good"}, {"code": "linear 128 -> 10", "state": ["1,290", "1%"], "changed": [1], "tone": "violet", "note": "VGG's was 89%"}, {"code": "total", "state": ["94,986", "98% convolutional"], "tone": "teal"}], "t": "diagram", "id": "dg-2_11-02-1"},
+
+
     { t: "out", text: `  features    1,147,200  (97.1%)
   classifier     34,186  (2.9%)
   total       1,181,386` },
@@ -78,6 +84,9 @@ EC.receiveLesson({
     { t: "p", text: "A flatten-then-linear head would raise a shape error on anything but 224, because the flattened dimension would change. `AdaptiveAvgPool2d(1)` produces `256 × 1 × 1` whatever comes in, so the same weights serve any resolution — useful for multi-scale inference and test-time augmentation." },
 
     { t: "h2", n: "03", text: "The training loop", id: "loop" },
+
+    {"kind": "flow", "title": "The training loop, and the five lines whose order is fixed", "caption": "This is the loop every PyTorch model is trained by, and the order is not negotiable. `zero_grad` must come before `backward` or gradients accumulate across batches; `step` must come after `backward` or it applies nothing. The `model.train()` and `model.eval()` pair is outside the inner loop and is the line most often forgotten (1.12).", "cols": 3, "nodes": [{"id": "t", "label": "model.train()", "sub": "once per epoch, before the batches", "tone": "violet"}, {"id": "z", "label": "optimizer.zero_grad()", "sub": "or gradients accumulate", "tone": "accent"}, {"id": "f", "label": "out = model(x); loss = crit(out, y)", "sub": "the forward pass", "tone": "accent"}, {"id": "b", "label": "loss.backward()", "sub": "gradients now exist", "tone": "good"}, {"id": "s", "label": "optimizer.step()", "sub": "applies them", "tone": "good"}, {"id": "e", "label": "model.eval() + no_grad()", "sub": "for validation, every epoch", "tone": "teal"}], "edges": [["t", "z"], ["z", "f"], ["f", "b"], ["b", "s"], ["s", "e"]], "t": "diagram", "id": "dg-2_11-03-2"},
+
 
     { t: "code", lang: "python", title: "Mixed precision, clipping and a schedule",
       code: `from torch.amp import autocast, GradScaler      # NOT torch.cuda.amp
@@ -126,6 +135,9 @@ for epoch in range(epochs):
     { t: "p", text: "OneCycleLR starts at `max_lr/25`, warms up over the first 30 % of steps, then anneals to `max_lr/1e4`. The warmup protects the early steps when gradients are largest and least informed — the same argument as lesson 2.5's advice to warm up a new head before unfreezing a backbone." },
 
     { t: "h2", n: "04", text: "The same model in Keras", id: "keras" },
+
+    {"kind": "compare", "title": "The same model in PyTorch and in Keras", "caption": "The architectures are identical; the difference is where the loop lives. Keras owns it — you declare the model, compile it with a loss and an optimiser, and call `fit`. PyTorch hands it to you, which is more code for the common case and the only workable option when the loop itself is the thing you are changing.", "columns": [{"title": "PyTorch", "tone": "accent", "items": ["You write the loop", "Explicit zero_grad / backward / step", "model.train() and eval() are yours to call", "Any loop shape: GANs, multi-task, RL", "More code for the ordinary case"]}, {"title": "Keras", "tone": "good", "items": ["The loop is compile() + fit()", "Gradients handled for you", "Modes switched automatically", "Callbacks for the common needs", "A custom train_step when you need one"]}], "t": "diagram", "id": "dg-2_11-04-3"},
+
 
     { t: "code", lang: "python", title: "Keras Sequential",
       code: `from tensorflow.keras import layers, models
