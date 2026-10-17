@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "A loop in Python around the chain",
       code: 'draft = RunnableLambda(lambda s: dict(s, draft=s["draft"] + "."))\ncheck = RunnableLambda(lambda s: dict(s, ok=len(s["draft"]) >= 3))\nchain = draft | check\n\nst = {"draft": "", "ok": False}\nturns = 0\nwhile not st["ok"] and turns < 10:\n    st = chain.invoke(st)\n    turns += 1',
       out: "    ran 3 times, final: {'draft': '...', 'ok': True}",

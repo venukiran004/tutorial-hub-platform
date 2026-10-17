@@ -31,6 +31,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "A tool server in a separate process, JSON over stdio",
       code: "request  {'tool': 'add', 'args': {'a': 2, 'b': 3}}\nresponse {\"result\": 5}\n\n50 round trips: 0.228 ms each\nthe same addition in-process: 0.000256 ms\nratio: 890x",
       caption: "Measured on this machine; the **ratio** is the durable part." },

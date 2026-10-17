@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "The same question, four trajectories",
       code: "run    outcome  traj(exact)  traj(subset)  trajectory\nrun 1    1.0      1.0          1.0         get_order -> get_policy\nrun 2    1.0      0.0          0.0         search_web\nrun 3    1.0      0.0          1.0         get_order -> get_order ->\n                                           get_order -> get_policy\nrun 4    0.0      1.0          1.0         get_order -> get_policy",
       caption: "Only run 1 is unambiguous." },

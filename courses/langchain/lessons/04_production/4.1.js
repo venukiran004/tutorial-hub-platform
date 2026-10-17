@@ -14,6 +14,8 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "A handler captures the one piece of evidence 1.2 argued for", "caption": "The `prompts` argument of `on_llm_start` is **the resolved prompt as it was actually sent** — which is the evidence 1.2 argued is the only thing that tells you what a chain really did. Templates, partials and placeholders are all gone by that point; what arrives is the flat message list. A handler is how you capture it in production, where you cannot put a `print` between two steps of a pipe.", "cols": 3, "nodes": [{"id": "c", "label": "The chain runs", "sub": "templates, partials, placeholders", "tone": "accent"}, {"id": "r", "label": "on_llm_start receives prompts", "sub": "the resolved message list", "tone": "violet"}, {"id": "e", "label": "The only real evidence", "sub": "1.2's argument", "tone": "good"}, {"id": "p", "label": "And you cannot print inside a pipe", "sub": "which is why a handler exists", "tone": "teal"}], "edges": [["c", "r"], ["r", "e"], ["e", "p"]], "t": "diagram", "id": "dg-4_1-01-1"},
 
+
+
     { t: "code", lang: "python", title: "Recording calls, sizes and timings",
       code: 'class Recorder(BaseCallbackHandler):\n    def on_llm_start(self, serialized, prompts, *, run_id=None, **kw):\n        self.llm_calls += 1\n        self.chars_in += sum(len(p) for p in prompts)\n        self.t0[run_id] = time.perf_counter()\n\n    def on_llm_end(self, response, *, run_id=None, **kw):\n        took = (time.perf_counter() - self.t0.pop(run_id)) * 1000\n        self.chars_out += len(response.generations[0][0].text)\n\nchain.invoke({"q": "explain"}, config={"callbacks": [rec]})',
       out: "llm calls : 1\nchars in  : 41\nchars out : 14",
@@ -34,6 +36,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "callout", kind: "trap", title: "The sequence is a chain, and so is each step", body: [
       { t: "p", text: "1.6 found a two-step chain emitting three `on_chain_start` events. The same nesting applies here: a prompt-model-parser chain fires chain events for the sequence and for the non-model steps, and exactly one `on_llm_start`." },
       { t: "p", text: "So if you are counting model calls \u2014 for cost, for rate limiting, for an alert \u2014 count `on_llm_start`. Counting chain events gives you a number that tracks chain *structure* rather than provider usage, and it changes when someone refactors a chain into sub-chains without changing what it does." }
@@ -41,6 +45,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "visible", text: "What is visible", sub: "And the one thing that is not" },
 
     {"kind": "matrix", "title": "Seven things a callback sees, one it sees conditionally, one nothing can", "caption": "The token row is the one that shapes 4.4: **a callback sees characters for free and tokens only if the provider returns them — and only after the call.** Which is useless for control, so 4.4 counts locally instead. And the last row is worth stating rather than leaving implied: **no instrumentation anywhere answers why the model chose what it chose**, so every lesson in this module is about observing behaviour rather than explaining it.", "cols": ["Visible", "Via"], "rows": ["Every call, exact prompt", "Time per model call", "The returned text", "Tool calls and results", "Retriever queries and hits", "Which step was slowest", "Provider token counts", "Why the model chose it"], "cells": [[{"text": "yes", "tone": "good"}, "on_llm_start"], [{"text": "yes", "tone": "good"}, "the start/end pair"], [{"text": "yes", "tone": "good"}, "on_llm_end"], [{"text": "yes", "tone": "good"}, "on_tool_start / on_tool_end"], [{"text": "yes", "tone": "good"}, "on_retriever_*"], [{"text": "yes", "tone": "good"}, "nesting plus timings"], [{"text": "only if reported, and only after", "tone": "warn"}, "usage_metadata"], [{"text": "no", "tone": "crit"}, {"text": "nothing can", "tone": "crit"}]], "t": "diagram", "id": "dg-4_1-03-2"},
+
+
 
     { t: "table", head: ["", "Visible", "Via"], rows: [
       ["every model call, with its exact prompt", "yes", "`on_llm_start`"],
@@ -56,6 +62,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "scope", text: "Per call, not globally", sub: "Which is 2.9's config rule again" },
 
     {"kind": "flow", "title": "Per-invocation, which is correct and is also the bug people write", "caption": "Handlers go in `config={\"callbacks\": [...]}`, so **they are per-invocation.** That is the right design — two concurrent requests should be recorded separately. It is also exactly where the mistake lives: **a handler that accumulates state across invocations is a bug that only appears under load**, because a single-request test cannot distinguish a per-call counter from a shared one.", "cols": 3, "nodes": [{"id": "c", "label": "callbacks go in config", "sub": "per invocation", "tone": "violet"}, {"id": "r", "label": "Two requests, two records", "sub": "which is correct", "tone": "good"}, {"id": "s", "label": "A handler with shared state", "sub": "accumulating across calls", "tone": "crit"}, {"id": "t", "label": "Passes every single-request test", "sub": "indistinguishable from correct", "tone": "crit"}, {"id": "l", "label": "And is wrong only under load", "sub": "which is when you find it", "tone": "crit"}], "edges": [["c", "r"], ["c", "s"], ["s", "t"], ["t", "l"]], "t": "diagram", "id": "dg-4_1-04-3"},
+
+
 
     { t: "p", text: "Handlers go in `config={\"callbacks\": [...]}`, which means they are per-invocation. That is correct: two concurrent requests should be recorded separately, and a handler accumulating state across both is a bug that only appears under load." },
     { t: "callout", kind: "good", title: "A handler is request-scoped state", body: [

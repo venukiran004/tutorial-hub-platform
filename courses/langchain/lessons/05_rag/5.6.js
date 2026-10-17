@@ -24,12 +24,17 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "The whole interface",
       code: 'r = store.as_retriever(search_kwargs={"k": 3})\ndocs = r.invoke("how do I stop duplicate charges")',
       out: "  invoke() ->\n    api-idempotency    Supply an Idempotency-Key header on write requ\n    auth-signin-fail   Authentication failures. Repeated invalid cred\n    data-deletion      Erasure requests complete within 30 days in pr",
       caption: "A string goes in; documents come out. Nothing about vectors appears in the signature." },
     { t: "p", text: "That signature is what makes a retriever substitutable. A BM25 retriever (6.3), a hybrid retriever (6.5), a reranking retriever (6.7) and a web search all satisfy it, so the pipeline that consumes them does not change when you swap one for another \u2014 which is the whole reason module 6 can iterate on retrieval without touching module 7's generation code." },
     { t: "h2", n: "02", id: "runnable", text: "And it is a Runnable", sub: "So it composes" },
+
+    {"kind": "flow", "title": "A retriever pipes, so RAG is an expression rather than a function", "caption": "`has invoke/batch/stream: True`, so `r | format_docs` is a valid chain and the retrieved documents flow into a formatter the way any value flows into any step. **That single fact is what lets 5.7 write the whole pipeline as one LCEL expression** instead of as a function that calls a retriever, formats the result and then calls a model. The uniformity from 1.1 arriving where it pays most.", "cols": 3, "nodes": [{"id": "r", "label": "The retriever has invoke", "sub": "and batch, and stream", "tone": "accent"}, {"id": "p", "label": "r | format_docs", "sub": "a valid chain", "tone": "good"}, {"id": "e", "label": "So RAG is an expression", "sub": "5.7, not a function", "tone": "violet"}, {"id": "u", "label": "1.1's uniformity, where it pays most", "sub": "nothing special was added for retrieval", "tone": "teal"}], "edges": [["r", "p"], ["p", "e"], ["e", "u"]], "t": "diagram", "id": "dg-5_6-02-1"},
+
     { t: "code", lang: "python", title: "A retriever in a pipe",
       code: 'def format_docs(docs):\n    return "\\n\\n".join("[%s] %s" % (d.metadata["id"], d.page_content) for d in docs)\n\n(r | format_docs).invoke("what happens if I exceed the rate limit")',
       out: "  has invoke/batch/stream: True\n\n  r | format_docs ->\n    [api-limits] Throughput is capped at 600 requests per minute per key. Exceeding the cap returns HTTP 429 together with a",
@@ -39,6 +44,9 @@ EC.receiveLesson({
       { t: "p", text: "The alternative is a function that calls the retriever, formats the result, builds a prompt and calls the model. It works identically and loses what module 2 built: streaming, batching, per-step configuration and a trace that names each stage. The composability is not an aesthetic preference." }
     ] },
     { t: "h2", n: "03", id: "where", text: "Retriever or store?", sub: "And the rule that decides" },
+
+    {"kind": "matrix", "title": "Store or retriever, decided by what varies per request", "caption": "The dividing line is **what varies per call**. `k`, a metadata filter and a score threshold all vary by caller, so they belong to the retriever. The index type and the embedding model are **properties of the data at rest** — changing the embedding model means reindexing everything. And the practical consequence is sharp: **a store built per request to carry a tenant filter rebuilds or re-wraps the index on every call**, which is the structural mistake behind a surprising number of slow RAG systems.", "cols": ["Belongs to", "Why"], "rows": ["k", "a metadata filter", "a score threshold", "the index type", "the embedding model"], "cells": [[{"text": "retriever", "tone": "good"}, "a per-query decision"], [{"text": "retriever", "tone": "good"}, {"text": "it varies by caller", "tone": "violet"}], [{"text": "retriever", "tone": "good"}, "7.1 makes it a guard"], [{"text": "store", "tone": "accent"}, "a property of the data at rest"], [{"text": "store", "tone": "accent"}, "changing it means reindexing everything"]], "t": "diagram", "id": "dg-5_6-03-2"},
+
     { t: "table", head: ["Setting", "Belongs to", "Why"], rows: [
       ["`k`", "retriever", "a per-query decision \u2014 5.1's `fetch_k` against `k`"],
       ["a metadata filter", "retriever", "it varies by caller (5.5)"],

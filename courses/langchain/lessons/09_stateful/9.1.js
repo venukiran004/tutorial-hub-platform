@@ -29,6 +29,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "What the model received",
       code: "call 1 received 1 message(s):\n  HumanMessage('what is the refund policy')\n\ncall 2 received 3 message(s):\n  HumanMessage('what is the refund policy')\n  AIMessage(tool_calls=['lookup_policy'])\n  ToolMessage('Refunds are available within 30 days of purchase.')",
       caption: "The tool result arrived as a message in the history." },

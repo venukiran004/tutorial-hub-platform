@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "14 natural queries, k=5",
       code: "Recall@5 = 1.000   P@5 = 0.214   MRR = 0.964   NDCG@5 = 0.974",
       caption: "Three of these are genuinely good. One is at ceiling." },
@@ -32,11 +34,17 @@ EC.receiveLesson({
       { t: "p", text: "Reporting it as a weak spot would send you optimising a number that physically cannot improve. The general lesson is that a metric's range depends on the labelled data, not just on the system, and a metric that cannot move is worse than no metric \u2014 it generates work. 6.9 is about choosing metrics that can." }
     ] },
     { t: "h2", n: "02", id: "collapse", text: "The same retriever, different query style", sub: "And it does not hold up" },
+
+    {"kind": "trace", "title": "A dense embedding has no notion of an exact match", "caption": "Recall@5 is 0.875 and MRR 0.781 — respectable, and the per-query column shows where it comes apart. `mTLS` and `SAML 2.0` land at reciprocal rank 1.00. **`WebAuthn` lands at 0.25**, with the top hit an unrelated webhook document. The reason is structural: **`Retry-After` is semantically close to a great deal of API documentation**, so the relevant document has no particular advantage — and the one signal that would settle it, *this document literally contains that string*, **is not available to a similarity score.**", "left": "query", "codeW": 150, "vars": ["reciprocal rank", "top hit"], "steps": [{"code": "mTLS", "state": ["1.00", "api-mtls"], "tone": "good"}, {"code": "SAML 2.0", "state": ["1.00", "auth-sso"], "tone": "good"}, {"code": "WebAuthn", "state": ["0.25", "intg-webhook-..."], "changed": [0, 1], "tone": "crit", "note": "no exact-match signal"}, {"code": "overall", "state": ["MRR 0.781", "recall@5 0.875"], "tone": "accent"}], "t": "diagram", "id": "dg-5_8-02-1"},
+
     { t: "code", lang: "text", title: "8 rare exact terms, each in exactly one document",
       code: "Recall@5 = 0.875   MRR = 0.781\n\nquery                rr     top 3\nmTLS                 1.00   ['api-mtls', 'user-groups', 'api-limits']\nSAML 2.0             1.00   ['auth-sso', 'auth-mfa', 'api-mtls']\nWebAuthn             0.25   ['intg-webhook-out', 'api-auth', 'intg-oauth']\nRetry-After          0.00   ['api-idempotency', 'api-webhooks', 'bill-refund']\ndead-letter queue    1.00   ['api-webhooks', 'api-idempotency', 'ops-maintenance']\nIdempotency-Key      1.00   ['api-idempotency', 'auth-sso', 'intg-webhook-out']\nreverse charge       1.00   ['bill-tax', 'bill-seats', 'bill-cancel-trial']\nAPI-Version          1.00   ['api-versioning', 'api-auth', 'intg-oauth']",
       caption: "`Retry-After` scores 0.00 \u2014 the document containing it is nowhere in the top five." },
     { t: "p", text: "A dense embedding has **no notion of an exact match**. `Retry-After` is semantically close to a great deal of API documentation, so the relevant document has no particular advantage over its neighbours, and the one signal that would settle it \u2014 *this document literally contains that string* \u2014 is not available to a similarity score. That is the argument for BM25 in 6.3, derived rather than asserted." },
     { t: "h2", n: "03", id: "dupes", text: "Near-duplicates fill the slots", sub: "A precision problem, not a recall one" },
+
+    {"kind": "trace", "title": "Four slots, three of them the same document with a different id", "caption": "*\"I ordered the wrong thing and want to stop it\"* retrieves `bill-cancel-order`, `bill-cancel-sub`, `ops-cancel-report` and `bill-cancel-trial`. **The right answer is first — and three of the four slots are spent on documents about cancelling something else.** So the precision metric looks fine, the answer is probably fine, and **the context budget is three-quarters wasted on near-duplicates**, which is what 6.6's MMR exists to fix.", "left": "query", "codeW": 190, "vars": ["top 4"], "steps": [{"code": "'...want to stop it'", "state": ["cancel-order, cancel-sub, cancel-report, cancel-trial"], "tone": "crit"}, {"code": "'stop my plan renewing'", "state": ["cancel-sub, cancel-trial, overage, cancel-report"], "tone": "crit"}, {"code": "right answer first", "state": ["both times"], "tone": "good"}, {"code": "slots wasted on near-duplicates", "state": ["3 of 4"], "changed": [0], "tone": "crit", "note": "6.6 fixes this"}], "t": "diagram", "id": "dg-5_8-03-2"},
+
     { t: "code", lang: "text", title: "Four documents about cancelling things",
       code: "'I ordered the wrong thing and want to stop it'\n  top 4: ['bill-cancel-order', 'bill-cancel-sub', 'ops-cancel-report', 'bill-cancel-trial']\n'stop my plan renewing'\n  top 4: ['bill-cancel-sub', 'bill-cancel-trial', 'bill-overage', 'ops-cancel-report']",
       caption: "The right document ranks first both times, and the rest of the slots are near-duplicates." },
@@ -45,6 +53,9 @@ EC.receiveLesson({
       { t: "p", text: "That is a precision problem \u2014 specifically a diversity problem, which is what MMR (6.6) and reranking (6.7) address. It is also a reminder that retrieval metrics score the ranking, not the context: a perfect MRR is compatible with a context window full of near-identical distractors." }
     ] },
     { t: "h2", n: "04", id: "list", text: "The problem list for module 6", sub: "Every item measured, not assumed" },
+
+    {"kind": "matrix", "title": "Six problems, each from a measurement rather than a syllabus", "caption": "**Each row came from a measurement in this module rather than from a list of techniques to cover**, and that ordering matters: **module 6 is not a tour of retrieval methods, it is six specific repairs to a baseline whose failures you have now seen.** The last row is the one that shapes how you will read the next module — P@5 is already at ceiling, so a metric that cannot show improvement is itself one of the six problems.", "cols": ["Why the baseline has it", "Fixed in"], "rows": ["Rare exact terms missed", "Scales cannot be mixed", "Near-duplicates fill slots", "The cheap ranker is rough", "Nothing abstains", "P@5 is at ceiling"], "cells": [[{"text": "dense similarity has no exact match", "tone": "crit"}, "BM25 (6.3)"], ["dense and sparse scores are incomparable", "RRF (6.5)"], [{"text": "no diversity in the ranking", "tone": "crit"}, "MMR (6.6)"], ["order within the candidates is unreliable", "reranking (6.7)"], [{"text": "nothing abstains", "tone": "crit"}, "a score threshold (7.1)"], [{"text": "the metric cannot show improvement", "tone": "violet"}, "metric choice (6.9)"]], "t": "diagram", "id": "dg-5_8-04-3"},
+
     { t: "table", head: ["Problem", "Why the baseline has it", "Where it is addressed"], rows: [
       ["rare exact terms are missed", "dense similarity has no notion of an exact match", "BM25 (6.3)"],
       ["different scales cannot be mixed", "dense and sparse scores are incomparable", "RRF (6.5)"],

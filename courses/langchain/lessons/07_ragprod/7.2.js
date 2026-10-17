@@ -49,6 +49,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Union of five variants",
       code: "'I want out'\n   best single variant : rr=1.00\n   union of 5 variants : 7 docs, rr=0.50\n   recall of the union : 1.00",
       caption: "The union is **worse** than one of its own members." },

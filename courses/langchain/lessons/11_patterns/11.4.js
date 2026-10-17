@@ -44,6 +44,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "It cannot catch what the model does not know. A factual error the model believes produces a critique that **confirms** it \u2014 which is 7.4's measurement in a new setting: a model checking its own output shares the error it is checking for." },
     { t: "table", head: ["reflection improves", "reflection does not reliably improve"], rows: [
       ["completeness \u2014 it noticed the payment method was missing", "factual accuracy against the world"],

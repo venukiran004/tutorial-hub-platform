@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Five words, five chunks",
       code: 'chain = prompt | model | StrOutputParser()\nchunks = list(chain.stream({"q": "x"}))',
       out: "chunks : ['one ', 'two ', 'three ', 'four ', 'five', '']\ncount  : 6\njoined : 'one two three four five'",
@@ -25,6 +27,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "collapse", text: "The step that collapses it", sub: "One lambda is enough" },
 
     {"kind": "matrix", "title": "One ordinary step ends the stream", "caption": "A chain streams only if **every** step after the model is a streaming transform, and most are not. `StrOutputParser` passes chunks through; a plain `RunnableLambda` buffers the whole thing and yields once — a latency change that reads as a one-line addition in a diff.", "cols": ["chunks yielded", "streams?"], "rows": ["prompt | model", "… | StrOutputParser", "… | RunnableLambda(…)"], "cells": [[{"text": "5 for a 5-word answer", "tone": "good"}, true], [{"text": "5 — passes through", "tone": "good"}, true], [{"text": "1 — buffered", "tone": "crit"}, false]], "t": "diagram", "id": "dg-2_7-02-0"},
+
+
 
 
 
@@ -52,6 +56,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Partial objects, growing",
       code: "with JsonOutputParser: [{}, {'a': 1}, {'a': 1, 'b': 2}]\ncount: 3",
       caption: "Each chunk is a more complete dict, not a fragment of text." },
@@ -67,6 +73,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["Chain", "Chunks", "Why"], rows: [
       ["`prompt | model | StrOutputParser`", "6", "parser forwards chunks; one trailing empty"],
       ["`... | RunnableLambda(upper)`", "1", "the lambda waits for the whole input"],
@@ -75,6 +83,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "events", text: "stream against astream_events", sub: "Two different questions" },
 
     {"kind": "flow", "title": "stream renders an answer; astream_events renders progress", "caption": "`stream` gives you the **final output** incrementally. `astream_events` gives you **every internal step** — model tokens, tool calls, retriever hits, each sub-chain starting and ending — as a structured event stream. Which settles when to use which: **use `stream` when rendering an answer, and `astream_events` when rendering progress.** Showing that a retrieval happened, that a tool is running, that the agent is on its third step is what a user staring at an eight-second run actually wants, and **`stream` cannot show them because they are not in the output.**", "cols": 3, "nodes": [{"id": "s", "label": "stream", "sub": "the final output, incrementally", "tone": "accent"}, {"id": "a", "label": "astream_events", "sub": "every internal step, structured", "tone": "violet"}, {"id": "r", "label": "Rendering an answer", "sub": "use stream", "tone": "good"}, {"id": "p", "label": "Rendering progress", "sub": "use astream_events", "tone": "good"}, {"id": "e", "label": "'retrieving...', 'step 3 of n'", "sub": "not in the output at all", "tone": "teal"}], "edges": [["s", "r"], ["a", "p"], ["p", "e"]], "t": "diagram", "id": "dg-2_7-05-4"},
+
+
 
 
 

@@ -47,6 +47,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["", "supervisor", "swarm"], rows: [
       ["who decides", "one central agent", "each agent, for itself"],
       ["model calls per turn", "2 (supervisor + worker)", "**1** (the agent)"],

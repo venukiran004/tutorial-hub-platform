@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["stage", "cost", "scales with"], rows: [
       ["embed the query", "~104 ms", "**nothing** (fixed)"],
       ["vector search (41 docs)", "~0.08 ms", "corpus size"],

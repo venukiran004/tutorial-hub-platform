@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "The span tree for a nested chain",
       code: 'chain  chain          59.9 ms\n  chain  chain           0.9 ms\n  chain  chain          54.3 ms\n    chain  ChatPromptTemplate    0.4 ms\n    llm    model          51.5 ms\n    chain  chain           0.4 ms\n  chain  chain           2.4 ms',
       caption: "The model call is the deepest row and the slowest. That is the usual shape." },
@@ -31,6 +33,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "self", text: "Self time against total time", sub: "Only one of them tells you what to do" },
 
     {"kind": "trace", "title": "86% of the run is one model call, which decides where optimisation goes", "caption": "Total 59.9 ms, model call 51.5 ms, **everything else 8.4 ms.** Which is the same finding the GenAI observability module reached from the other direction: the framework overhead everyone argues about is the small term, and **work that does not change the model call, the prompt or the number of calls is work on 14% of the request.** Self time is what makes that visible — a span's own cost with its children subtracted.", "left": "component", "codeW": 180, "vars": ["time", "share"], "steps": [{"code": "total run", "state": ["59.9 ms", "100%"], "tone": "violet"}, {"code": "the model call", "state": ["51.5 ms", "86%"], "changed": [1], "tone": "crit"}, {"code": "everything else", "state": ["8.4 ms", "14%"], "tone": "good", "note": "all the framework"}], "t": "diagram", "id": "dg-4_2-02-1"},
+
+
 
     { t: "code", lang: "text", title: "Where the time went",
       code: 'total run        :   59.9 ms\nmodel call       :   51.5 ms  (86% of the run)\neverything else  :    8.4 ms',
@@ -42,6 +46,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "attach", text: "What to attach", sub: "And why it must be done early" },
 
     {"kind": "matrix", "title": "Four things to attach, and the one teams miss", "caption": "**The request-id row is the one teams miss most often.** A trace store and an application log are two separate systems, and without a shared identifier, correlating *\"the user who complained at 14:32\"* with a specific run is manual and **usually impossible at volume**. It costs one entry in metadata, and it is only cheap before you need it.", "cols": ["Buys"], "rows": ["run_name", "tags", "metadata", "a request id in metadata"], "cells": [["a readable span name instead of RunnableSequence"], ["queryable: ['prod', 'v2', 'experiment-a']"], ["queryable: {'tenant': 'acme', 'user_tier': 'free'}"], [{"text": "ties a trace to your own logs - the row teams miss", "tone": "violet"}]], "t": "diagram", "id": "dg-4_2-03-2"},
+
+
 
     { t: "table", head: ["Attach", "Buys"], rows: [
       ["`run_name`", "a readable span name instead of `RunnableSequence`"],
@@ -57,6 +63,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "readable", text: "Readable against queryable", sub: "Two different problems" },
 
     {"kind": "flow", "title": "Readable helps one person; queryable answers the first question", "caption": "A `run_name` makes a span **readable** — you are not staring at forty rows called `RunnableSequence` matching step indices by hand. Tags and metadata make a trace **queryable**: *show me the failures for this tenant, this version, this experiment arm.* **Readable helps one person debugging one run. Queryable is what lets you ask whether a problem is general**, which is almost always the first question — and only the second degrades as traffic grows.", "cols": 3, "nodes": [{"id": "r", "label": "run_name: readable", "sub": "a name instead of an index", "tone": "good"}, {"id": "o", "label": "Helps one person, one run", "sub": "at 3am", "tone": "accent"}, {"id": "q", "label": "tags and metadata: queryable", "sub": "filterable at volume", "tone": "good"}, {"id": "g", "label": "Answers 'is this general?'", "sub": "almost always the first question", "tone": "violet"}, {"id": "d", "label": "And only readable degrades with traffic", "sub": "forty rows becomes four thousand", "tone": "teal"}], "edges": [["r", "o"], ["q", "g"], ["o", "d"], ["g", "d"]], "t": "diagram", "id": "dg-4_2-04-3"},
+
+
 
     { t: "p", text: "A `run_name` makes a span **readable** \u2014 you are not staring at forty rows called `RunnableSequence` trying to match step indices. Tags and metadata make a trace **queryable**, which is the thing that matters once there is volume: show me the failures for this tenant, this version, this experiment arm." },
     { t: "p", text: "Readable helps one person debugging one run. Queryable is what lets you ask whether a problem is general, which is almost always the first question. Both are one method call, and only the second degrades as traffic grows." },

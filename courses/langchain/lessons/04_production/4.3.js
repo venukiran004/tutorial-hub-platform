@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Setting a cache and hitting it",
       code: 'set_llm_cache(InMemoryCache())\nchain.invoke({"q": "what is LCEL?"})      # model called\nchain.invoke({"q": "what is LCEL?"})      # cache hit, no model call\nchain.invoke({"q": "what is LCEL? "})     # trailing space -> model called',
       out: "first  invoke -> 'cached answer'   (model calls: 1)\nsecond invoke -> 'cached answer'   (model calls: 1)\nthe second call hit the cache: True\na trailing space is a different key -> model calls: 1",
@@ -33,12 +35,16 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Hit rate is free to compute and points the wrong way", "caption": "Ten queries about the same thing: **exact match gets 2 hits and a 0.5 similarity threshold gets 8.** So lowering the threshold quadruples the hit rate, which looks like a straightforward win and is the number every dashboard carries. It is also **the number that rewards exactly the behaviour §03 shows is dangerous** — because a looser threshold increases hits by joining queries that are not the same question.", "left": "matching", "codeW": 190, "vars": ["hits", "rate"], "steps": [{"code": "exact match", "state": ["2", "20%"], "tone": "good"}, {"code": "semantic, threshold 0.9", "state": ["5", "50%"], "tone": "accent"}, {"code": "semantic, threshold 0.7", "state": ["6", "60%"], "tone": "warn"}, {"code": "semantic, threshold 0.5", "state": ["8", "80%"], "changed": [0, 1], "tone": "crit", "note": "and see section 03"}], "t": "diagram", "id": "dg-4_3-02-1"},
 
+
+
     { t: "code", lang: "text", title: "The same question, ten ways",
       code: '10 queries, all about the same thing.\nexact-match hits: 2 (20%)\n\nsemantic-ish, threshold 0.9: 5 hits (50%)\nsemantic-ish, threshold 0.7: 6 hits (60%)\nsemantic-ish, threshold 0.5: 8 hits (80%)',
       caption: "Looser matching buys hits, monotonically. That is the attractive half." },
     { t: "h2", n: "03", id: "wrong", text: "What the hits cost", sub: "Demonstrated, not asserted" },
 
     {"kind": "trace", "title": "Three pairs that are different questions with high word overlap", "caption": "**\"reset my password\" and \"reset my username\" score 0.50.** So does *cancel my order* against *cancel my account* — a pair where serving one answer for the other is a support incident. The measurement that actually matters is therefore **wrong-hit rate**, which needs a labelled sample of query pairs and a judgement about which differences change the answer. **That is real work, which is why hit rate is what most teams track.**", "left": "query A vs query B", "codeW": 230, "vars": ["similarity", "same answer?"], "steps": [{"code": "reset my password / username", "state": ["0.50", "no"], "tone": "crit"}, {"code": "cancel my order / account", "state": ["0.50", "no - an incident"], "tone": "crit"}, {"code": "add a user / a payment method", "state": ["0.62", "no"], "changed": [0], "tone": "crit"}, {"code": "so measure wrong-hit rate", "state": ["needs labels", "and judgement"], "tone": "violet"}], "t": "diagram", "id": "dg-4_3-03-2"},
+
+
 
     { t: "p", text: "At those thresholds nothing in that particular query set joined wrongly, so the risk was real and undemonstrated. Here it is demonstrated \u2014 three pairs that are **different questions** with high word overlap." },
     { t: "table", head: ["Query A", "Query B", "Similarity"], rows: [
@@ -54,6 +60,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "never", text: "What must never be cached", sub: "Four categories" },
 
     {"kind": "matrix", "title": "Four things that must never be cached", "caption": "The first row is the one with a security consequence rather than a quality one: **a cached answer for user A served to user B.** The third is the one that is easy to forget because the cache key looks right — the question is identical and **the index may have changed underneath it**, so a RAG answer cached yesterday is an answer about yesterday's corpus with today's confidence.", "cols": ["Because"], "rows": ["Anything personalised", "Anything time-sensitive", "Anything retrieved", "Anything meant to vary"], "cells": [[{"text": "a cached answer for user A served to user B", "tone": "crit"}], ["balances, stock, status, prices"], [{"text": "the index may have changed (7.5)", "tone": "crit"}], ["a creative task should vary"]], "t": "diagram", "id": "dg-4_3-04-3"},
+
+
 
     { t: "table", head: ["Never cache", "Because"], rows: [
       ["anything personalised", "a cached answer for user A served to user B"],

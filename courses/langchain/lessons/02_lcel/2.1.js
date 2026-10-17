@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "The contract is small: three ways to call a Runnable, each with an async twin." },
     { t: "table", head: ["Method", "What it does", "Returns"], rows: [
       ["`invoke(input)`", "run once, synchronously", "one output"],
@@ -47,6 +49,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["Helper", "Purpose"], rows: [
       ["`r1 | r2`", "pipe \u2014 feed the output of one into the next, building a RunnableSequence"],
       ["`.with_config(...)`", "attach tags, metadata, callbacks or a run name"],
@@ -64,6 +68,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "A Runnable in four lines",
       code: 'class Shout(Runnable):\n    def invoke(self, input, config=None, **kw):\n        return str(input).upper() + "!"\n\ns = Shout()\nprint(s.invoke("hi"))\nprint(s.batch(["a", "b"]))\nprint([c for c in s.stream("hi")])\nprint((s | RunnableLambda(lambda t: t[::-1])).invoke("hi"))',
       out: 'invoke : \'HI!\'\nbatch  : [\'A!\', \'B!\']\nstream : [\'HI!\']\npiped  : !IH',
@@ -72,6 +78,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "map", text: "map is not batch", sub: "A common and quiet confusion" },
 
     {"kind": "flow", "title": "map is a step you compose; batch is a method you call", "caption": "The distinction is easy to blur and decides where each one can appear. **`.map()` returns a Runnable whose input is a list**, so it composes: `retriever | summarise.map() | join` is a valid pipeline. **`.batch()` is a method you call** — there is nowhere in a pipe expression to put it. So: **map when the list is flowing through the chain, batch when you have many separate inputs to run.**", "cols": 3, "nodes": [{"id": "m", "label": ".map()", "sub": "returns a Runnable", "tone": "violet"}, {"id": "c", "label": "So it composes", "sub": "retriever | summarise.map() | join", "tone": "good"}, {"id": "b", "label": ".batch()", "sub": "is a method you call", "tone": "accent"}, {"id": "n", "label": "Nowhere to put it in a pipe", "sub": "it is not a step", "tone": "warn"}, {"id": "r", "label": "map: the list is flowing through", "sub": "batch: you have many inputs", "tone": "teal"}], "edges": [["m", "c"], ["b", "n"], ["c", "r"], ["n", "r"]], "t": "diagram", "id": "dg-2_1-04-3"},
+
+
 
 
 

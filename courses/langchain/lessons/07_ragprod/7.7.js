@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Different questions that score high",
       code: "0.8762   is retention 30 days               | is retention 90 days\n0.8703   how do I cancel my annual plan     | how do I cancel my monthly plan\n0.8304   can I store data in the EU region  | can I store data in the US region",
       caption: "Each differs in a single token that decides the whole answer." },

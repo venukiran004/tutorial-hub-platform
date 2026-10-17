@@ -11,6 +11,9 @@ EC.receiveLesson({
   prerequisites: ["5.6", "2.4", "4.7"],
   blocks: [
     { t: "h2", n: "01", id: "chain", text: "The whole pipeline", sub: "One expression" },
+
+    {"kind": "flow", "title": "The two-branch pattern from 2.4, with retrieval finally in it", "caption": "**The retriever branch turns the question into formatted context; the passthrough carries the same question forward unchanged.** Both arrive at the prompt as named variables — which is **exactly the two-branch pattern 2.4 built before there was any retrieval to put in it.** Which is worth noticing as a design observation rather than a coincidence: the RAG chain needed no new construct, because the construct it needs was the general one for keeping an input alongside a derived value.", "cols": 4, "nodes": [{"id": "q", "label": "The question", "sub": "one input", "tone": "accent"}, {"id": "r", "label": "retriever | format_docs", "sub": "-> context", "tone": "violet"}, {"id": "p", "label": "RunnablePassthrough", "sub": "-> the question, unchanged", "tone": "violet"}, {"id": "t", "label": "prompt | model | parser", "sub": "two named variables", "tone": "good"}, {"id": "n", "label": "And 2.4 built this before RAG existed", "sub": "no new construct needed", "tone": "teal"}], "edges": [["q", "r"], ["q", "p"], ["r", "t"], ["p", "t"], ["t", "n"]], "t": "diagram", "id": "dg-5_7-01-1"},
+
     { t: "code", lang: "python", title: "Baseline RAG in LCEL",
       code: 'def format_docs(docs):\n    return "\\n\\n".join("[%s] %s" % (d.metadata["id"], d.page_content) for d in docs)\n\nchain = ({"context": retriever | format_docs,\n          "question": RunnablePassthrough()}\n         | prompt | model | StrOutputParser())',
       caption: "The dict literal is a `RunnableParallel` \u2014 2.2's shape, with retrieval on one branch." },
@@ -19,6 +22,9 @@ EC.receiveLesson({
       code: "question : how long do you keep my information\nanswer   : Retention defaults to 90 days, and enterprise tenants can configure\n           between 30 and 730 days. [data-retention]",
       caption: "The citation at the end is what makes this answer checkable." },
     { t: "h2", n: "02", id: "received", text: "What the model actually received", sub: "And which channel the documents arrived on" },
+
+    {"kind": "trace", "title": "Two messages, and the three clauses doing the work", "caption": "The whole pipeline collapses to **two messages**, which is 1.2's point arriving in a real system. And the system message carries three clauses, each preventing a specific failure: **\"ONLY the context\"** stops the model answering from memory indistinguishably; **\"say you do not know\"** supplies the abstention path that 7.1 turns into a guard; and **\"cite the [id]\"** is what makes an answer checkable at all.", "left": "message", "codeW": 130, "vars": ["content", "what it prevents"], "steps": [{"code": "System", "state": ["'ONLY the context below'", "answering from memory"], "tone": "violet"}, {"code": "System", "state": ["'say you do not know'", "a confident non-answer"], "tone": "violet"}, {"code": "System", "state": ["'cite the [id]'", "an unverifiable answer"], "tone": "violet"}, {"code": "System", "state": ["+ the formatted context", ""], "tone": "accent"}, {"code": "Human", "state": ["the question", ""], "tone": "accent", "note": "two messages, total"}], "t": "diagram", "id": "dg-5_7-02-2"},
+
     { t: "code", lang: "text", title: "Inspecting the message list",
       code: "2 messages\n  System: Answer using ONLY the context below. If the context does not contain\n          the answer, say you do not know. Cite the [id] of each document you\n          use.  [data-retention] Retention defaults to 90 days...\n  Human:  how long do you keep my information",
       caption: "The retrieved context is inside the **system** message, with the instructions." },
@@ -29,6 +35,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "prompt", text: "The prompt is doing the grounding", sub: "Three instructions, all of them requests" },
 
     {"kind": "steps", "title": "Everything load-bearing is in the prompt, not the plumbing", "caption": "The pipeline is one LCEL expression. Three instructions do the actual work, and the third is the only one that produces something you can **check** — which is what 7.4 collects on.", "items": [{"label": "“answer using only the context”", "desc": "bounds the answer to retrieved text — a request, not a guarantee", "tone": "accent", "code": "grounding"}, {"label": "“say you do not know”", "desc": "gives the model an exit, because the retriever has none (7.1)", "tone": "warn", "code": "abstention"}, {"label": "“cite the id of each source”", "desc": "the one VERIFIABLE part — a cited id either was retrieved or was not", "tone": "good", "code": "checkable"}, {"label": "and the context goes in the SYSTEM message", "desc": "next to the instruction it could contradict — which is 7.6's whole problem", "tone": "crit", "code": "placement"}], "t": "diagram", "id": "dg-5_7-03-0"},
+
+
 
 
 
