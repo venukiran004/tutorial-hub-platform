@@ -28,6 +28,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "the index \u2014 run when the documents change", code: `from sentence_transformers import SentenceTransformer
 import numpy as np
 
@@ -66,6 +67,7 @@ def answer(question, k=5):
       sub: "Four jobs, and most templates do two" },
 
     {"kind": "matrix", "title": "Four clauses, each preventing a different failure", "caption": "**\"Using only the sources\"** is the clause that makes this RAG rather than a model answering from memory with some documents nearby — without it, retrieved text competes with parametric knowledge and you cannot tell which produced the answer. The second has to match the numbering in the context exactly, or you get citation-shaped text that refers to nothing. And the question goes **last**, because 1.13's caching rule makes everything before it a cacheable prefix.", "cols": ["Prevents"], "rows": ["Scope to the context", "Define the citation format", "Say what to do on failure", "Put the question last"], "cells": [[{"text": "answering from memory, indistinguishably", "tone": "crit"}], [{"text": "citation-shaped text that resolves to nothing", "tone": "crit"}], [{"text": "a confident answer to the 5% with no answer present", "tone": "crit"}], [{"text": "breaking the cacheable prefix (1.13)", "tone": "warn"}]], "t": "diagram", "id": "dg-5_7-02-1"},
+
 
 
 
@@ -185,6 +187,7 @@ Answer:"""`,
 
 
 
+
     { t: "p", text: "5.2 made the structural point: a retriever knows which chunk it used, so it can produce a citation that resolves. Making that work requires three things to line up, and most implementations get two." },
 
     { t: "ol", items: [
@@ -204,6 +207,7 @@ Answer:"""`,
       sub: "The list that motivates the rest of the module" },
 
     {"kind": "matrix", "title": "Six things this pipeline cannot do, and where each is fixed", "caption": "A working pipeline is the start of the module rather than the end of it, and this is the map of the rest. The fourth row is the one with **no mechanism at all**: k chunks are ranked independently, so a question needing facts from several documents has nothing in this design that composes them. The fifth is the one people try hardest to fix with better retrieval, and 5.12 shows retrieval is the wrong instrument entirely.", "cols": ["Measured here", "Fixed in"], "rows": ["No shared vocabulary", "Exact identifiers", "Right doc, wrong passage", "Facts across documents", "Needs aggregation", "The same question again"], "cells": [[{"text": "'Why divide alpha by r?' at rank 15", "tone": "crit"}, "5.8, 5.9"], ["dense search has no exact match", "5.9 BM25 and fusion"], ["doc recall 100%, chunk recall 95%", "5.4, 5.10"], [{"text": "no mechanism - k chunks ranked alone", "tone": "crit"}, "5.11 agentic"], [{"text": "retrieval returns a sample", "tone": "crit"}, "5.12 query the data"], ["full cost paid every time", "5.13 caching"]], "t": "diagram", "id": "dg-5_7-05-3"},
+
 
 
 

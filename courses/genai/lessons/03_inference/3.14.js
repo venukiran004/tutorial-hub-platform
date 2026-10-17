@@ -31,6 +31,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "A user sends a prompt, receives two responses from anonymous models, and votes for one. That vote is a comparison, not a score \u2014 nobody ever rates a model in isolation. The Bradley\u2013Terry model turns a pile of such comparisons into one strength parameter per model, by assuming the probability that A beats B depends only on the difference of their strengths." },
 
     { t: "math", tex: "P(A \\text{ beats } B) \\;=\\; \\frac{1}{1 + 10^{(R_B - R_A)/400}}" },
@@ -75,6 +76,7 @@ EC.receiveLesson({
       sub: "A 10-Elo difference is a 51.44% win rate" },
 
     {"kind": "trace", "title": "A 5-point gap needs 18,548 votes to establish", "caption": "Leaderboards are read as rankings, so invert the formula and ask what a small gap is worth. A **5-Elo gap is a 50.72% win rate** — and seeing that at 95% confidence takes 18,548 votes. A 10-point gap takes 4,636. Which means that for most of a leaderboard's middle, the ordering is **not resolved by the data behind it**, and the confidence intervals confirm it: at 1,000 votes the interval width is about 46 Elo, so any gap smaller than that is indistinguishable from zero.", "left": "Elo gap", "codeW": 120, "vars": ["win probability", "votes to see it at 95%"], "steps": [{"code": "5", "state": ["0.5072", "18,548"], "tone": "crit"}, {"code": "10", "state": ["0.5144", "4,636"], "changed": [1], "tone": "crit"}, {"code": "25", "state": ["0.5359", "741"], "tone": "warn"}, {"code": "50", "state": ["0.5715", "184"], "changed": [1], "tone": "accent"}, {"code": "100", "state": ["0.6401", "45"], "tone": "good"}, {"code": "400", "state": ["0.9091", "2"], "tone": "good"}], "t": "diagram", "id": "dg-3_14-02-1"},
+
 
 
 
@@ -205,6 +207,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Bradley\u2013Terry assumes a single strength per model, which forces transitivity: if A is stronger than B and B than C, the model cannot represent C beating A. Real preferences need not cooperate \u2014 one model may be better at code, another at prose, a third at brevity, and a voter population that mixes those tasks can produce a genuine cycle." },
 
     { t: "code", lang: "python", title: "g314.py \u2014 fit a rock-paper-scissors preference", code: `# A beats B 60%, B beats C 60%, C beats A 60%
@@ -230,6 +233,7 @@ print(to_elo(fit_bt(cyc)))`,
       sub: "Each benchmark is blind to something specific" },
 
     {"kind": "matrix", "title": "Five benchmarks, and what each is blind to", "caption": "The Arena's blindness is the important one: **voters reward fluency and format, and cannot check facts they do not know** — so a confidently wrong answer in a clean format beats a hedged correct one. Every automated alternative inherits its judge's biases instead, especially toward verbosity and the judge's own model family. None of these measures correctness on your task, which is what 2.12's test set is for.", "cols": ["Measures", "Blind to"], "rows": ["Chatbot Arena", "Arena Hard", "MMLU", "HumanEval / MBPP", "MT-Bench"], "cells": [["human preference at scale", {"text": "correctness - voters reward fluency", "tone": "crit"}], ["an automated proxy on hard prompts", {"text": "whatever the judge is bad at", "tone": "warn"}], ["breadth of knowledge, multiple choice", {"text": "generation quality entirely", "tone": "warn"}], ["code that passes tests", "everything outside code; style and security"], ["multi-turn quality, model-judged", {"text": "judge bias toward verbosity", "tone": "warn"}]], "t": "diagram", "id": "dg-3_14-05-3"},
+
 
 
 

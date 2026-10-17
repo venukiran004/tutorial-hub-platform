@@ -23,6 +23,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "math", tex: "\\max_\\theta\\; \\mathbb{E}_{x \\sim \\mathcal{D},\\; y \\sim \\pi_\\theta}\\big[r_\\phi(x, y)\\big] \\;-\\; \\beta \\cdot \\mathrm{KL}\\big(\\pi_\\theta(\\cdot|x)\\,\\|\\,\\pi_{\\text{ref}}(\\cdot|x)\\big)" },
 
     { t: "p", text: "The first term says get a high score from the reward model. The second says do not drift far from the frozen SFT model. \u03c0_ref is that frozen model and \u03b2, typically 0.01 to 0.1, sets the leash length." },
@@ -56,6 +57,7 @@ EC.receiveLesson({
       sub: "And which direction it actually limits" },
 
     {"kind": "trace", "title": "The clipping gloss is right for positive advantages and wrong in general", "caption": "\"If this update would move a token's probability more than ±20%, stop giving credit for going further\" is the usual explanation, and the arithmetic shows it is only half the story. With a **negative** advantage the `min` picks the *unclipped* term — so at ρ = 2.0 and A = −1 the objective is −2.000, not the clipped −1.200. **Clipping limits how much you reward a move and does not limit how much you punish one.** That asymmetry is deliberate: a bad action should be discouraged however far the policy has already drifted.", "left": "rho and A", "codeW": 140, "vars": ["rho*A", "clipped*A", "min picks", "effect"], "steps": [{"code": "0.5, A=+1", "state": ["0.500", "0.800", "0.500", "raw"], "tone": "accent"}, {"code": "0.5, A=-1", "state": ["-0.500", "-0.800", "-0.800", "CLIPPED"], "changed": [2], "tone": "warn"}, {"code": "1.5, A=+1", "state": ["1.500", "1.200", "1.200", "CLIPPED"], "changed": [2], "tone": "good", "note": "credit is capped"}, {"code": "1.5, A=-1", "state": ["-1.500", "-1.200", "-1.500", "raw"], "changed": [2], "tone": "crit"}, {"code": "2.0, A=+1", "state": ["2.000", "1.200", "1.200", "CLIPPED"], "tone": "good"}, {"code": "2.0, A=-1", "state": ["-2.000", "-1.200", "-2.000", "raw"], "changed": [2], "tone": "crit", "note": "punishment is not capped"}], "t": "diagram", "id": "dg-7_5-02-1"},
+
 
 
 
@@ -179,6 +181,7 @@ frozen  = N * 2 / 1024**3                        # bf16 weights only`,
       sub: "Five steps, one of which dominates the wall clock" },
 
     {"kind": "flow", "title": "One step in the loop is not a forward pass", "caption": "Every stage of PPO is a forward or backward pass over a batch — **except step 1, which is autoregressive generation**, one token at a time, and module 3 established that is memory-bandwidth-bound rather than compute-bound. So it dominates the wall clock and attracts all the engineering: a separate inference-optimised copy of the policy, continuous batching, KV caching. **DPO has no generation in its loop at all**, which is the second reason it displaced PPO for most teams.", "cols": 3, "nodes": [{"id": "g", "label": "Step 1: generate completions", "sub": "autoregressive, one token at a time", "tone": "crit"}, {"id": "b", "label": "Memory-bandwidth-bound", "sub": "module 3's finding", "tone": "crit"}, {"id": "w", "label": "It dominates the wall clock", "sub": "the rest are batch passes", "tone": "warn"}, {"id": "e", "label": "So: a second serving copy, batching, KV cache", "sub": "all to contain step 1", "tone": "accent"}, {"id": "d", "label": "DPO has no generation at all", "sub": "offline pairs", "tone": "good"}, {"id": "r", "label": "Which is why it displaced PPO", "sub": "that, and the memory", "tone": "teal"}], "edges": [["g", "b"], ["b", "w"], ["w", "e"], ["e", "d"], ["d", "r"]], "t": "diagram", "id": "dg-7_5-04-2"},
+
 
 
 

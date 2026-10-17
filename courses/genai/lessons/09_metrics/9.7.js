@@ -18,6 +18,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "estimator", text: "The estimator",
       sub: "One minus the probability that every pick fails" },
 
+    {"kind": "trace", "title": "pass@k read in words", "caption": "**1 minus the probability that all k chosen samples come from the failing pile.** The numerator counts ways to choose k failures from the n − c failures; the denominator counts ways to choose k from all n. On n=10 with c=7 the four figures reproduce the published ones exactly — and note pass@5 already reads 1.0000, which §02 explains is a boundary effect rather than a result.", "left": "k", "codeW": 130, "vars": ["pass@k"], "steps": [{"code": "1", "state": ["0.7000"], "tone": "good"}, {"code": "2", "state": ["0.9333"], "tone": "good"}, {"code": "5", "state": ["1.0000"], "changed": [0], "tone": "warn", "note": "a boundary"}, {"code": "10", "state": ["1.0000"], "tone": "warn"}], "t": "diagram", "id": "dg-9_7-01-0"},
+
     { t: "math", tex: "\\text{pass@}k = 1 - \\frac{\\binom{n-c}{k}}{\\binom{n}{k}}" },
 
     { t: "p", text: "Read it in words: **1 minus the probability that all k chosen samples come from the failing pile.** The numerator counts ways to choose k failures from the n \u2212 c failures; the denominator counts ways to choose k from all n." },
@@ -42,6 +44,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "boundary", text: "Why n must exceed k",
       sub: "The branch that returns 1.0 without estimating anything" },
+
+    {"kind": "trace", "title": "Why n must exceed k, and by how much", "caption": "At **n=10 and k=10 the estimator must return 1.0000 whenever c ≥ 1** — drawing all ten samples necessarily includes the one that passed, so the number carries no information. Raise n to 100 at the same 5% pass rate and pass@10 reads **0.4162**, which is a real estimate. The last row confirms it is the *ratio* that matters rather than the absolute n: doubling both n and c leaves the estimates essentially unchanged.", "left": "n and c", "codeW": 150, "vars": ["pass@1", "pass@5", "pass@10"], "steps": [{"code": "n=10, c=1", "state": ["0.1000", "0.5000", "1.0000"], "tone": "crit", "note": "boundary at k=n"}, {"code": "n=100, c=5", "state": ["0.0500", "0.2304", "0.4162"], "changed": [2], "tone": "good", "note": "a real estimate"}, {"code": "n=200, c=10", "state": ["0.0500", "0.2300", "0.4150"], "tone": "good", "note": "the ratio is what matters"}], "t": "diagram", "id": "dg-9_7-02-1"},
 
     { t: "callout", kind: "trap", title: "C(3,5) = 0, and that is a boundary rather than a measurement",
       body: [

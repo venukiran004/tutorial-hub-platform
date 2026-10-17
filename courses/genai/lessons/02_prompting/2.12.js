@@ -34,6 +34,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "The usual suggestion is 30–50 representative inputs with expected outputs. Representative is the word doing the work, and it is usually interpreted as \"typical\" — which produces a set every candidate passes, and therefore a measurement that cannot discriminate." },
 
     { t: "table",
@@ -59,6 +60,7 @@ EC.receiveLesson({
       sub: "And knowing what it cannot see" },
 
     {"kind": "matrix", "title": "Every metric is blind to something; know which thing", "caption": "The practical rule is to **prefer a cheap deterministic metric wherever one exists** — an exact-match check on an extracted field costs nothing, is perfectly reproducible and cannot drift. Reach for a judge only when the output is genuinely open-ended, and then treat the judge as a component that needs its own evaluation, because it is one. Note the third row: schema validity is usually the only half collected, and it is the half that tells you least.", "cols": ["Metric", "Blind to"], "rows": ["Classification", "Extraction", "Structured output", "Summarisation", "Open-ended"], "cells": [["accuracy, macro-F1", "which class is failing, unless sliced"], [{"text": "field-level exact match", "tone": "good"}, "whether the value is in the source"], ["validity and correctness", {"text": "only validity is usually collected", "tone": "crit"}], ["ROUGE, or a judge", {"text": "faithfulness - overlap is not truth", "tone": "crit"}], [{"text": "a judge against a rubric", "tone": "warn"}, "its own biases, until calibrated"]], "t": "diagram", "id": "dg-2_12-02-1"},
+
 
 
 
@@ -102,6 +104,7 @@ Provide ratings as JSON: {"accuracy": X, "completeness": X, "clarity": X}"""`,
       sub: "The arithmetic that contradicts the usual advice" },
 
     {"kind": "matrix", "title": "What a test set of that size can actually detect", "caption": "At 95% confidence and 80% power, detecting a **2-point** lift from a 0.85 baseline needs 4,724 cases. 30 to 50 is nowhere near that, and the honest reading is at the bottom: n=30 detects a lift of roughly 50 points, n=50 about 15, n=100 about 11.5. So a 30-case set is not a measurement of small improvements — it is a smoke test, which is a useful thing to own as long as you do not read percentages off it.", "cols": ["+2%", "+5%", "+10%", "+20%"], "rows": ["baseline 0.50", "baseline 0.70", "baseline 0.85", "baseline 0.95"], "cells": [[{"text": "9806", "tone": "crit"}, "1565", "388", "93"], [{"text": "8080", "tone": "crit"}, "1251", "294", "62"], [{"text": "4724", "tone": "crit"}, "686", {"text": "141", "tone": "warn"}, {"text": "49", "tone": "good"}], ["1506", "162", "162", "162"]], "t": "diagram", "id": "dg-2_12-03-2"},
+
 
 
 
@@ -175,6 +178,7 @@ def n_needed(p1, p2, alpha=0.05, power=0.80):
 
 
 
+
     { t: "code", lang: "python", title: "g29.py — a 3-point improvement at three sizes", code: `for n in (50, 200, 1000):
     a, b = 0.82, 0.85
     ka, kb = round(a * n), round(b * n)
@@ -201,6 +205,7 @@ def n_needed(p1, p2, alpha=0.05, power=0.80):
       sub: "Where the sample size arrives on its own" },
 
     {"kind": "flow", "title": "Offline rejects; production chooses", "caption": "What production adds is **real inputs and real outcomes**. An offline set measures whether the output matched what you expected; production measures whether users accepted it, edited it, retried or escalated — and no offline metric substitutes for those. What production costs is time and exposure: half your users get the worse variant until you stop. Which is the argument for both, in that order: offline to reject what is clearly worse, an A/B to choose between the survivors.", "cols": 3, "nodes": [{"id": "o", "label": "The offline set", "sub": "did it match what you expected", "tone": "accent"}, {"id": "r", "label": "Rejects the clearly worse", "sub": "cheaply, before exposure", "tone": "good"}, {"id": "p", "label": "Production", "sub": "accepted, edited, retried, escalated", "tone": "violet"}, {"id": "s", "label": "The signals that actually matter", "sub": "and no offline proxy for them", "tone": "good"}, {"id": "c", "label": "But half your users get the worse one", "sub": "until you stop", "tone": "crit"}, {"id": "b", "label": "So: offline, then A/B", "sub": "in that order", "tone": "teal"}], "edges": [["o", "r"], ["r", "b"], ["p", "s"], ["p", "c"], ["s", "b"], ["c", "b"]], "t": "diagram", "id": "dg-2_12-05-4"},
+
 
 
 

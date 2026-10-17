@@ -23,6 +23,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "A reward accuracy of 0.82 and a doubled RM score are statements about the loss, not about the model. 7.11\u2019s simulation makes this concrete: the training reward rose monotonically through every checkpoint *including the ones where true quality was collapsing*. Someone watching only that number sees a successful run." },
 
     { t: "code", lang: "text", title: "7.11's checkpoint trace, as the argument", code: `ckpt  KL    r_train   r_gold    held-out   mean len
@@ -44,6 +45,7 @@ EC.receiveLesson({
       sub: "Two controls, and both are load-bearing" },
 
     {"kind": "matrix", "title": "Six controls, and the two that are not optional", "caption": "The headline is a pairwise win rate against the **pre-alignment** model on held-out prompts. Two controls are mandatory rather than advisable: **randomise order**, because judges favour position A and without it you are measuring position bias plus quality and cannot separate them — and **control for length**, because 7.11 showed length is the canonical hack and 7.6 showed the implicit reward is linear in it. An uncontrolled win rate rewards verbosity and reports it as improvement.", "cols": ["Why"], "rows": ["Randomise order", "Control for length", "Monitor KL as a metric", "Hold out a gold RM", "Track mean output length", "A never-trained human set"], "cells": [[{"text": "judges favour position A - otherwise you measure bias plus quality", "tone": "crit"}], [{"text": "length is the canonical hack, and the reward is linear in it", "tone": "crit"}], [{"text": "rising KL + rising reward + flat human eval is the signature", "tone": "good"}], [{"text": "the cheapest automatic warning available", "tone": "good"}], [{"text": "if it creeps up 40%, you bought length not quality", "tone": "accent"}], [{"text": "the only ground truth - and still noisy (7.4)", "tone": "violet"}]], "t": "diagram", "id": "dg-7_15-02-1"},
+
 
 
 

@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "It is usually framed these as interview questions to answer like on-call, and the four-part shape is the point. An answer that jumps to the permanent fix skips the part the interviewer is testing: whether you can stop the bleeding before you understand the cause." },
 
     { t: "p", text: "What follows reproduces each incident on the corpus used throughout M5 and M6 \u2014 1,187 chunks, 20 golden queries, 95% recall@5 at baseline \u2014 so each failure comes with a measured signature rather than a description." },
@@ -33,6 +34,7 @@ EC.receiveLesson({
       sub: "The cheapest incident to prevent in this lesson" },
 
     {"kind": "trace", "title": "Stale answers, and the 1.3 ms check that prevents them", "caption": "The symptom is a policy or price that changed yesterday and an answer still giving the old value. The cause is that the index is behind the source of truth — re-indexing is batch or manual, or the document was edited and never re-embedded. The arithmetic makes the fix obvious: **hashing twelve documents takes 1.3 ms**, re-embedding the one that changed takes 1.3 s, and rebuilding everything takes 13.2 s. The check costs a thousandth of the action it saves.", "left": "operation", "codeW": 220, "vars": ["cost"], "steps": [{"code": "hash 12 documents (359,549 chars)", "state": ["1.3 ms"], "tone": "good"}, {"code": "documents reported changed", "state": ["0"], "tone": "good"}, {"code": "after editing one", "state": ["1 changed"], "tone": "accent"}, {"code": "re-embed the changed document", "state": ["1.3 s, 116 chunks"], "tone": "good"}, {"code": "rebuild everything", "state": ["13.2 s"], "changed": [0], "tone": "warn", "note": "the hash saves 90%"}], "t": "diagram", "id": "dg-6_8-02-1"},
+
 
 
 
@@ -165,6 +167,7 @@ for n_extra in (1000, 5000, 20000):
 
 
 
+
     { t: "dl", items: [
       { k: "Causes", v: "The index grew past memory \u2014 HNSW graphs are RAM-hungry; `ef_search` or `nprobe` tuned up for accuracy at the cost of latency; no replicas, so all QPS lands on one node; metadata filtering scanning too much." },
       { k: "Immediate", v: "Lower `ef_search` or `nprobe` to trade recall for latency; add read replicas; cap `top_k`." },
@@ -225,6 +228,7 @@ print("gold chunk rank:", rank)   # None -> retrieval failure`,
 
 
 
+
     { t: "code", lang: "python", title: "g68.py \u00a721.5 \u2014 query and index embedded by different models", code: `other = SentenceTransformer("sentence-transformers/paraphrase-MiniLM-L3-v2")
 QV_other = other.encode([q for q, _, _ in QS], normalize_embeddings=True)
 MIS = np.argsort(-(QV_other @ E.T), axis=1)     # against the OLD index`,
@@ -259,6 +263,7 @@ MIS = np.argsort(-(QV_other @ E.T), axis=1)     # against the OLD index`,
       sub: "A security incident, and the ordering is the whole fix" },
 
     {"kind": "trace", "title": "Identical recall, 19 leaked rows", "caption": "The two approaches score **the same on retrieval quality** — 95% recall@5 either way — and differ entirely in whether they read data the user may not see. Post-filtering searches everything and drops afterwards: 19 foreign rows entered the top 5 and were discarded *after being read*. Pre-filtering restricts the search space first and leaks nothing, **by construction rather than by diligence**. Which is the whole argument: a correctness property you get from the architecture does not depend on anyone remembering it.", "left": "approach", "codeW": 230, "vars": ["recall@5", "leaked rows"], "steps": [{"code": "post-filter: search all, drop after", "state": ["95%", "19"], "tone": "crit"}, {"code": "pre-filter: restrict, then search", "state": ["95%", "0"], "changed": [1], "tone": "good", "note": "same recall, no leak"}], "t": "diagram", "id": "dg-6_8-07-4"},
+
 
 
 

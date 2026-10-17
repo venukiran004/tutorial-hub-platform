@@ -23,6 +23,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "**Step 1.** The KL-constrained objective from 7.5 has a known optimum, and it is a reweighted reference policy \u2014 exponentially tilted toward high reward." },
 
     { t: "math", tex: "\\pi^*(y|x) = \\frac{1}{Z(x)}\\,\\pi_{\\text{ref}}(y|x)\\,\\exp\\!\\big(r(x,y)/\\beta\\big)" },
@@ -57,6 +58,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "g76.py \u00a7A \u2014 the worked pair, \u03b2 = 0.1", code: `rw = beta * (log_pi_w - log_ref_w)      # implicit reward, chosen
 rl = beta * (log_pi_l - log_ref_l)      # implicit reward, rejected
 margin = rw - rl`,
@@ -81,6 +83,7 @@ margin = rw - rl`,
       sub: "The same leash, acting through the sigmoid" },
 
     {"kind": "trace", "title": "Beta scales the margin, so it scales the effective learning rate", "caption": "β multiplies the log-ratio, so it multiplies the margin and therefore moves where you sit on §02's sigmoid. At **β = 0.01 the margin is 0.0050 and the gradient is 0.4988 — essentially the maximum**, so every pair is treated as unseparated and the model is pushed hard on all of them. At β = 1.0 the margin is 0.5 and the gradient has fallen to 0.3775. Which reframes β: it is described as the KL leash, and mechanically it is also a gain on the gradient.", "left": "beta", "codeW": 110, "vars": ["margin", "loss", "|gradient|"], "steps": [{"code": "0.01", "state": ["0.0050", "0.6907", "0.4988"], "tone": "crit", "note": "gradient at maximum"}, {"code": "0.05", "state": ["0.0250", "0.6807", "0.4938"], "tone": "warn"}, {"code": "0.10", "state": ["0.0500", "0.6685", "0.4875"], "tone": "accent"}, {"code": "0.30", "state": ["0.1500", "0.6210", "0.4626"], "tone": "good"}, {"code": "1.00", "state": ["0.5000", "0.4741", "0.3775"], "changed": [2], "tone": "good"}], "t": "diagram", "id": "dg-7_6-03-2"},
+
 
 
 
@@ -184,6 +187,7 @@ margin = rw - rl`,
       sub: "Four log-probabilities and one line of arithmetic" },
 
     {"kind": "matrix", "title": "Four models or two, and the row that is not about memory", "caption": "PPO holds four models — **234.7 GB at 7B** — against DPO's two at 117.3 GB, or one with LoRA. But the row that decides architecture rather than hardware is the second-to-last: **PPO can exceed its data**, because it samples and explores beyond the preference set, and DPO cannot. That is the real reason frontier labs still run PPO for reasoning work while everyone else uses DPO. Note also the learning rate: **~5e-7, much lower than SFT**, and getting that wrong is a common first failure.", "cols": ["PPO (RLHF)", "DPO"], "rows": ["Models in memory", "Needs a reward model", "Needs online sampling", "Learning rate", "Can exceed its data", "Typical use"], "cells": [[{"text": "4 - 234.7 GB at 7B", "tone": "crit"}, {"text": "2, or 1 with LoRA", "tone": "good"}], [{"text": "yes", "tone": "warn"}, {"text": "no", "tone": "good"}], [{"text": "yes, and it dominates", "tone": "crit"}, {"text": "no - offline pairs", "tone": "good"}], ["~1e-6", {"text": "~5e-7 - lower than SFT", "tone": "violet"}], [{"text": "yes - it explores", "tone": "good"}, {"text": "no - bounded by the pairs", "tone": "warn"}], ["frontier labs, reasoning RL", {"text": "the default for everyone else", "tone": "good"}]], "t": "diagram", "id": "dg-7_6-05-3"},
+
 
 
 

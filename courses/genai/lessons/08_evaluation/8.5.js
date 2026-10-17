@@ -21,6 +21,7 @@ EC.receiveLesson({
     {"kind": "trace", "title": "The update rule, and why a win against a weaker model is worth so little", "caption": "Elo's expected score is a logistic in the rating gap, and the update is K times the surprise. Read the right-hand column: beating an **equal** opponent moves you 16.00 points, and beating one you were already **400 Elo above** moves you 2.91 — because you were expected to win 90.91% of the time and did. Which is the self-correcting property that makes the scale stable, and also why a new model needs many games against *comparable* opponents to find its level.", "left": "rating gap", "codeW": 130, "vars": ["P(A wins)", "Elo move on a win"], "steps": [{"code": "+0", "state": ["0.5000", "16.00"], "tone": "good"}, {"code": "+50", "state": ["0.5715", "13.71"], "tone": "accent"}, {"code": "+100", "state": ["0.6401", "11.52"], "tone": "accent"}, {"code": "+200", "state": ["0.7597", "7.69"], "changed": [1], "tone": "warn"}, {"code": "+400", "state": ["0.9091", "2.91"], "changed": [1], "tone": "crit", "note": "expected, so worth little"}], "t": "diagram", "id": "dg-8_5-01-0"},
 
 
+
     { t: "p", text: "LMSYS Chatbot Arena collects blind pairwise human votes \u2014 \u201cwhich answer is better?\u201d \u2014 and converts them to Elo ratings." },
 
     { t: "math", tex: "E_A = \\frac{1}{1 + 10^{(R_B - R_A)/400}}, \\qquad R_A \\leftarrow R_A + K\\,(S_A - E_A)" },
@@ -57,6 +58,7 @@ EC.receiveLesson({
       sub: "The number that decides whether a rank is real" },
 
     {"kind": "trace", "title": "A 20-Elo gap needs about 1,163 comparisons", "caption": "20 Elo sounds meaningful and corresponds to winning **52.88%** of comparisons — which is close enough to a coin flip that distinguishing it takes real sample size. At 100 comparisons the 95% interval is **±68.2 Elo**, so the whole leaderboard's middle is inside one interval. At 1,000 it is ±21.6, which is just about enough. **Resolving a 20-Elo gap needs about 1,163 comparisons**, and that is per pair of models.", "left": "comparisons", "codeW": 140, "vars": ["se of win rate", "95% halfwidth", "Elo halfwidth"], "steps": [{"code": "100", "state": ["0.04992", "0.09784", "68.2"], "tone": "crit"}, {"code": "500", "state": ["0.02232", "0.04375", "30.5"], "changed": [2], "tone": "warn"}, {"code": "1,000", "state": ["0.01579", "0.03094", "21.6"], "tone": "accent", "note": "about enough for 20 Elo"}, {"code": "10,000", "state": ["0.00499", "0.00978", "6.8"], "changed": [2], "tone": "good"}, {"code": "50,000", "state": ["0.00223", "0.00438", "3.1"], "tone": "good"}], "t": "diagram", "id": "dg-8_5-02-1"},
+
 
 
     { t: "p", text: "A rating gap of 20 Elo sounds meaningful and corresponds to winning 52.88% of comparisons. The question is how many comparisons are needed before that is distinguishable from a coin flip." },

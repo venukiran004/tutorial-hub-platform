@@ -18,6 +18,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "dataset", text: "The dataset",
       sub: "Five labelled queries over twelve chunks" },
 
+    {"kind": "flow", "title": "Five queries with graded relevance, which is what the order-aware metrics need", "caption": "Binary relevance supports precision, recall and MRR. **Graded relevance — a 0 to 3 scale — is what NDCG needs**, because a rank-weighted gain has to know how much each document is worth. The dataset here deliberately varies the number of relevant documents per query, from 1 to 4, which is what makes §05's scoreboard instructive: the per-query metrics behave very differently depending on how many relevant documents there were to find.", "cols": 3, "nodes": [{"id": "b", "label": "Binary relevance", "sub": "relevant or not", "tone": "accent"}, {"id": "s", "label": "Supports P@k, R@k, MRR, MAP", "sub": "all of the classic set", "tone": "good"}, {"id": "g", "label": "Graded relevance, 0 to 3", "sub": "how much each is worth", "tone": "violet"}, {"id": "n", "label": "Which is what NDCG needs", "sub": "a rank-weighted gain", "tone": "violet"}, {"id": "v", "label": "1 to 4 relevant per query", "sub": "deliberately varied", "tone": "good"}, {"id": "d", "label": "So the metrics diverge per query", "sub": "which section 05 shows", "tone": "teal"}], "edges": [["b", "s"], ["g", "n"], ["v", "d"], ["n", "d"]], "t": "diagram", "id": "dg-9_8-01-0"},
+
     { t: "code", lang: "text", title: "ground truth and what the retriever returned, rank 1 to 10", code: `Q1  relevant D03 D07 D09   ->  D05 [D03] D11 [D07] D02 D08 [D09] D01 D12 D04
 Q2  relevant D02 D06       ->  [D02] [D06] D04 D10 D01 D03 D05 D08 D11 D12
 Q3  relevant D12           ->  D04 D01 D08 D02 D06 D10 D03 D05 [D12] D11
@@ -28,6 +30,8 @@ Q5  relevant D05 D11       ->  D03 [D11] D02 D08 [D05] D01 D06 D10 D12 D04`,
 
     { t: "h2", n: "02", id: "pk-rk", text: "Precision@k and recall@k, rank by rank",
       sub: "The shapes are the lesson" },
+
+    {"kind": "trace", "title": "Precision is not monotonic; recall only ever climbs", "caption": "Walking down the ranking, **precision jumps at every hit and decays at every miss** — 0.5000, 0.3333, 0.5000, 0.4000, 0.3333, 0.4286 — so precision@5 and precision@10 can disagree about which retriever is better. **Recall only ever climbs**, and flattens permanently once the last relevant chunk is found: it is 1.0000 from k=7 onwards and still 1.0000 at k=50. That makes recall a hard bound rather than a curve, and makes the choice of k a precision decision.", "left": "k", "codeW": 110, "vars": ["precision@k", "direction"], "steps": [{"code": "1", "state": ["0.5000", "hit"], "tone": "good"}, {"code": "2", "state": ["0.3333", "miss - falls"], "changed": [0], "tone": "warn"}, {"code": "3", "state": ["0.5000", "hit - rises"], "changed": [0], "tone": "good"}, {"code": "4", "state": ["0.4000", "miss"], "tone": "warn"}, {"code": "5", "state": ["0.3333", "miss"], "tone": "warn"}, {"code": "6", "state": ["0.4286", "hit"], "changed": [0], "tone": "good", "note": "not monotonic"}, {"code": "recall from k=7", "state": ["1.0000", "flat to k=50"], "tone": "violet"}], "t": "diagram", "id": "dg-9_8-02-1"},
 
     { t: "code", lang: "text", title: "Q1 walked down the ranking \u2014 recall denominator fixed at 3", code: `rank  chunk  rel?  hits  precision@k      recall@k
  1    D05    no     0    0/1 = 0.0000     0/3 = 0.0000
@@ -69,6 +73,8 @@ F1@5 = 2 x 0.4000 x 0.6667 / (0.4000 + 0.6667) = 0.5333 / 1.0667 = 0.5000`,
     { t: "h2", n: "03", id: "order", text: "The order-aware metrics",
       sub: "MRR, AP, MAP and R-precision, all verified" },
 
+    {"kind": "matrix", "title": "Four order-aware metrics, and what each one is really asking", "caption": "These exist because precision and recall at a cutoff are blind to **where** inside the cutoff a document landed. Reciprocal rank asks only about the **first** hit, which makes it the right metric when one good answer is enough and the wrong one when coverage matters. Average precision averages precision at every hit, so it rewards getting *all* of them early. R-precision uses the number of relevant documents as the cutoff, which removes the arbitrary k.", "cols": ["Asks", "Right when"], "rows": ["Reciprocal rank", "Average precision", "MAP", "R-precision"], "cells": [[{"text": "how high is the FIRST hit?", "tone": "good"}, "one good answer is enough"], ["precision at every hit, averaged", {"text": "coverage matters", "tone": "good"}], ["mean AP across queries", "a single ranking number"], [{"text": "precision at k = number relevant", "tone": "violet"}, "you want k removed from the question"]], "t": "diagram", "id": "dg-9_8-03-2"},
+
     { t: "code", lang: "text", title: "g91.py \u00a7E \u2014 MRR: first hits at ranks 2, 1, 9, 1, 2", code: `Q1 1/2 = 0.5000   Q2 1/1 = 1.0000   Q3 1/9 = 0.1111
 Q4 1/1 = 1.0000   Q5 1/2 = 0.5000
 
@@ -99,6 +105,8 @@ MAP = (0.4762 + 1.0000 + 0.1111 + 0.5417 + 0.4500) / 5 = 0.5158`,
     { t: "h2", n: "04", id: "ndcg", text: "NDCG, and the convention nobody states",
       sub: "The one genuinely new finding in this module" },
 
+    {"kind": "flow", "title": "Two standard gain functions, and NDCG figures that are not comparable", "caption": "This module uses **linear** gain and module 5 uses **exponential** gain. Neither is wrong — both are standard — and **their NDCG figures are not comparable with each other**. Exponential gain weights a grade-3 document seven times a grade-1 one; linear weights it three times. At binary relevance the two coincide, since 2¹−1 = 1 and 2⁰−1 = 0; on a 0–3 scale they differ by 1.5 points here, and the gap widens with the scale. So \"NDCG@6 = 0.96\" is not a comparable figure across two teams unless both state the gain function.", "cols": 3, "nodes": [{"id": "l", "label": "Linear gain", "sub": "grade 3 is worth 3x grade 1", "tone": "accent"}, {"id": "e", "label": "Exponential gain: 2^rel - 1", "sub": "grade 3 is worth 7x grade 1", "tone": "accent"}, {"id": "b", "label": "At binary relevance they coincide", "sub": "2^1-1 = 1, 2^0-1 = 0", "tone": "good"}, {"id": "g", "label": "On 0-3 they differ by 1.5 points", "sub": "and the gap widens with the scale", "tone": "crit"}, {"id": "n", "label": "So NDCG@6 = 0.96 is not comparable", "sub": "without the gain function stated", "tone": "crit"}, {"id": "s", "label": "State it, every time", "sub": "and the ideal-ranking convention too", "tone": "violet"}], "edges": [["l", "b"], ["e", "b"], ["b", "g"], ["g", "n"], ["n", "s"]], "t": "diagram", "id": "dg-9_8-04-3"},
+
     { t: "code", lang: "text", title: "g91.py \u00a7F \u2014 graded relevance [3, 2, 3, 0, 1]", code: `LINEAR gain  rel / log2(rank+1)
   3/1.0000 + 2/1.5850 + 3/2.0000 + 0/2.3219 + 1/2.5850
   = 3.0000 + 1.2619 + 1.5000 + 0 + 0.3869      DCG  = 6.1487
@@ -125,6 +133,8 @@ SAME ranking, SAME labels, two standard conventions: 0.9724 vs 0.9575`,
 
     { t: "h2", n: "05", id: "scoreboard", text: "The scoreboard, and the diagnosis",
       sub: "What a retrieval eval report should look like" },
+
+    {"kind": "matrix", "title": "The scoreboard, and the two queries that diagnose themselves", "caption": "Read across the rows rather than down the columns. **Q2 has AP 1.0000 and RR 1.0000** — both relevant documents at the top, a perfect retrieval. **Q3 has RR 0.1111**, meaning its single relevant document sat at rank 9, so P@5 is 0.0000 and R@5 is 0.0000 while R@10 is 1.0000: a complete failure at k=5 and a complete success at k=10, from one document's position. The means at the bottom average all of that away.", "cols": ["P@5", "R@5", "AP", "RR"], "rows": ["Q1", "Q2", "Q3", "Q4", "Q5", "Mean"], "cells": [["0.4000", "0.6667", "0.4762", "0.5000"], ["0.4000", "1.0000", {"text": "1.0000", "tone": "good"}, {"text": "1.0000", "tone": "good"}], [{"text": "0.0000", "tone": "crit"}, {"text": "0.0000", "tone": "crit"}, "0.1111", {"text": "0.1111", "tone": "crit"}], ["0.4000", "0.5000", "0.5417", "1.0000"], ["0.4000", "1.0000", "0.4500", "0.5000"], [{"text": "0.3200", "tone": "violet"}, {"text": "0.6333", "tone": "violet"}, {"text": "MAP 0.5158", "tone": "violet"}, {"text": "MRR 0.6222", "tone": "violet"}]], "t": "diagram", "id": "dg-9_8-05-4"},
 
     { t: "table",
       head: ["Query", "Rel", "P@5", "R@5", "P@10", "R@10", "AP", "RR", "R-prec"],

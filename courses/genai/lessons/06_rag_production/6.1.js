@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Every measurement in M5 used a binary rule: did *any* chunk in the top k come from the right document and contain the answer. That is **Hit@K**, and it is one of six metrics the common list has. The others need the full set of relevant chunks, not just the first one." },
 
     { t: "code", lang: "python", title: "g61.py \u2014 the relevant set for each query", code: `RELEVANT = []
@@ -139,6 +140,7 @@ def ndcg_at_k(ranked, rel, k):
 
 
 
+
     { t: "p", text: "The reference is specific: optimise recall first, then *\u201cMRR / nDCG next \u2014 once it\u2019s in the set, are you ranking it to the top? This is exactly what **reranking** moves.\u201d* That is a falsifiable claim about which metrics a cross-encoder improves." },
 
     { t: "code", lang: "python", title: "g61.py \u2014 the same re-ranker on two first stages", code: `ce = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2", max_length=512)
@@ -186,6 +188,7 @@ def rerank(BASE, depth=20):
 
 
 
+
     { t: "code", lang: "python", title: "g61.py \u2014 the same retriever at five cut-offs", code: `for k in (1, 3, 5, 10, 20):
     print(k, evaluate(DENSE, k))`,
       out: `  k             Hit@k        P@k        R@k     nDCG@k
@@ -208,6 +211,7 @@ def rerank(BASE, depth=20):
       sub: "Two layers that fail for different reasons" },
 
     {"kind": "matrix", "title": "Two RAGAS scores restate the IR metrics; two see something new", "caption": "The metrics above grade **retrieval** and need no model, so they are free, deterministic and CI-able. RAGAS grades the **generation** on top, and its scores are LLM-judged — more expensive, non-deterministic, and measuring things no IR metric can reach. Which is the useful split: context precision and recall overlap with P@K and R@K and should probably be taken from those instead, and **faithfulness and answer relevancy have no cheaper substitute**.", "cols": ["Question", "Layer"], "rows": ["Context precision", "Context recall", "Faithfulness", "Answer relevancy"], "cells": [["are the chunks relevant, and well ranked?", {"text": "retrieval - overlaps P@K", "tone": "warn"}], ["did retrieval find everything?", {"text": "retrieval - overlaps R@K", "tone": "warn"}], ["is every claim supported by the context?", {"text": "generation - nothing else sees it", "tone": "good"}], ["does the answer address the question?", {"text": "generation - nothing else sees it", "tone": "good"}]], "t": "diagram", "id": "dg-6_1-05-3"},
+
 
 
 

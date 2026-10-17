@@ -21,6 +21,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "One case, scored by every metric in the module", "caption": "The point of running every metric on a single example is that **they disagree in instructive ways**. Two chunks retrieved, one relevant; an answer that is correct and well-grounded. Recall@2 is a perfect 1.0 and Precision@2 is 0.5, from the same retrieval. Faithfulness reads 1.0 — and §03 shows that score depends on an **unwritten policy** about whether derived claims count as supported. A dashboard showing one of these numbers tells a different story from a dashboard showing another.", "cols": 3, "nodes": [{"id": "r", "label": "Two chunks retrieved", "sub": "KB-1 relevant, KB-2 noise", "tone": "accent"}, {"id": "a", "label": "The answer is correct", "sub": "and grounded in KB-1", "tone": "good"}, {"id": "p", "label": "Recall@2 = 1.0", "sub": "we got the one that mattered", "tone": "good"}, {"id": "n", "label": "Precision@2 = 0.5", "sub": "same retrieval, half noise", "tone": "warn"}, {"id": "f", "label": "Faithfulness = 1.0", "sub": "under one claim policy", "tone": "violet"}, {"id": "d", "label": "And a different policy changes it", "sub": "which section 03 is about", "tone": "crit"}], "edges": [["r", "p"], ["r", "n"], ["a", "f"], ["f", "d"]], "t": "diagram", "id": "dg-8_12-01-0"},
 
 
+
     { t: "code", lang: "text", title: "the worked example", code: `Question:    "How many vacation days do employees get per year?"
 Gold answer: "18 days per year (1.5/month)."
 Retrieved:   [KB-1] "Employees accrue 1.5 vacation days per month..."   (relevant)
@@ -33,6 +34,7 @@ Answer:      "Employees get 18 vacation days per year, accrued at 1.5/month [KB-
       sub: "And one of them is not what it looks like" },
 
     {"kind": "matrix", "title": "Six metrics on one answer, and the pair that disagree", "caption": "Every number here is defensible and they do not say the same thing. **Recall@2 is 1.0 and Precision@2 is 0.5 on the identical retrieval** — so \"retrieval was good\" and \"retrieval was half noise\" are both true, and which one you put on a dashboard is a choice about what you want to be alarmed by. Context precision is low-ish because the noise sits at rank 2, which is the metric that notices *ordering* rather than membership.", "cols": ["Value", "How"], "rows": ["Recall@2", "Precision@2", "Context Precision", "Faithfulness", "Answer Relevancy", "Answer Correctness"], "cells": [[{"text": "1.0", "tone": "good"}, "the one relevant chunk was retrieved"], [{"text": "0.5", "tone": "warn"}, "1 of 2 retrieved was relevant"], [{"text": "low-ish", "tone": "warn"}, "the noise sits at rank 2"], [{"text": "1.0", "tone": "violet"}, "both claims supported - under one policy"], ["high", "it answers the question asked"], [{"text": "1.0", "tone": "good"}, "matches the gold answer"]], "t": "diagram", "id": "dg-8_12-02-1"},
+
 
 
     { t: "table",

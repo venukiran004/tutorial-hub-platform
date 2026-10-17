@@ -18,6 +18,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "formula", text: "Two forms of one formula",
       sub: "And the base is the only difference" },
 
+    {"kind": "trace", "title": "Two forms of one formula, and the commonest implementation bug", "caption": "Perplexity is the **exponential of the cross-entropy** — that is the whole definition. Natural log with `exp`, or log base 2 with a power of 2: the same number either way, and **mixing them is the commonest implementation bug**, producing a figure that is wrong by a factor of ln 2 in the exponent. Worked on four tokens: the mean log₂ p is −1.75, so perplexity is 2^1.75 = 3.3636.", "left": "token", "codeW": 130, "vars": ["p", "log2 p"], "steps": [{"code": "1", "state": ["0.5", "-1"], "tone": "accent"}, {"code": "2", "state": ["0.25", "-2"], "tone": "accent"}, {"code": "3", "state": ["0.5", "-1"], "tone": "accent"}, {"code": "4", "state": ["0.125", "-3"], "tone": "accent"}, {"code": "mean log2 p", "state": ["", "-1.7500"], "changed": [1], "tone": "violet"}, {"code": "PPL = 2^1.75", "state": ["3.3636", ""], "tone": "good"}], "t": "diagram", "id": "dg-9_2-01-0"},
+
     { t: "math", tex: "\\text{PPL} = \\exp\\!\\left(-\\frac{1}{N}\\sum_{i=1}^{N}\\ln p(x_i \\mid x_{<i})\\right) = 2^{-\\frac{1}{N}\\sum_{i=1}^{N}\\log_2 p(x_i \\mid x_{<i})}" },
 
     { t: "p", text: "Perplexity is the **exponential of the cross-entropy**. That is the whole definition. Use natural log with `exp`, or log base 2 with a power of 2 \u2014 they give the same number, and mixing them is the commonest implementation bug." },
@@ -51,6 +53,8 @@ ppl = 2 ** -mean`,
 
     { t: "h2", n: "02", id: "lies", text: "The three ways it lies",
       sub: "All three are about comparability" },
+
+    {"kind": "matrix", "title": "Three ways perplexity lies", "caption": "All three are the same structural problem: perplexity is a statement about **a model, a tokenizer and a corpus together**, and it gets quoted as a statement about the model alone. A bigger vocabulary splits text into fewer tokens and changes the number without changing quality. Perplexity on Wikipedia and on legal contracts are different numbers about different things. And a low figure on an instruction-tuned model says nothing about helpfulness.", "cols": ["Why"], "rows": ["Not across tokenizers", "Not across datasets", "Not a quality measure"], "cells": [[{"text": "a bigger vocabulary gives fewer tokens - the number moves, the model does not", "tone": "crit"}], [{"text": "Wikipedia and legal contracts are different numbers about different things", "tone": "crit"}], [{"text": "low perplexity is not helpfulness, safety or correctness", "tone": "crit"}]], "t": "diagram", "id": "dg-9_2-02-1"},
 
     { t: "dl", items: [
       { k: "Not comparable across tokenizers", v: "A bigger vocabulary splits text into fewer tokens, changing perplexity without changing quality. 8.2 measured the magnitude: one model, one text and one measured total of 245.05 nats reads as PPL **86.10** under T5\u2019s tokenisation and **183.80** under BERT\u2019s." },

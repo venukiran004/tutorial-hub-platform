@@ -18,6 +18,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "four", text: "Four biases",
       sub: "Each with a mitigation that costs something" },
 
+    {"kind": "matrix", "title": "Four biases, each with a mechanical fix", "caption": "None is a reason not to use a judge; each has a fix costing a second call or a preprocessing step. **Position is the one that is free to fix and most often skipped**, and §02 measures what skipping it costs on this judge. Self-preference is the only one that needs a *different judge family* rather than a better prompt — you cannot instruct a model out of preferring its own style.", "cols": ["What happens", "Mitigation"], "rows": ["Position", "Verbosity", "Self-preference", "Formatting"], "cells": [[{"text": "it favours the first answer", "tone": "crit"}, {"text": "run both orders; require agreement", "tone": "good"}], [{"text": "longer answers score higher", "tone": "crit"}, "normalise for length; say to ignore it"], [{"text": "it prefers its own style", "tone": "warn"}, {"text": "a different judge family", "tone": "good"}], ["markdown inflates scores", "strip formatting; score content only"]], "t": "diagram", "id": "dg-9_11-01-0"},
+
     { t: "table",
       head: ["Bias", "What happens", "Mitigation"],
       rows: [
@@ -29,6 +31,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "position", text: "Position bias, worked",
       sub: "The number that changes a shipping decision" },
+
+    {"kind": "trace", "title": "62% or 53.5%, depending on whether you ran both orders", "caption": "Run only the first ordering and you report **62% — a comfortable win, well clear of a tie, and a defensible basis for shipping.** The order-averaged truth is **53.5%**, close enough to a coin flip that the decision has no support. The **17-point gap is the bias measured on your own judge** rather than assumed from a paper, which is what makes running both orders the highest-value single change available to a pairwise judge: it costs one extra call and it is the difference between a result and an artefact.", "left": "how it was run", "codeW": 200, "vars": ["A wins", "verdict"], "steps": [{"code": "first ordering only", "state": ["62%", "ship it"], "tone": "crit"}, {"code": "second ordering only", "state": ["45%", "do not ship"], "changed": [0, 1], "tone": "crit"}, {"code": "order-averaged", "state": ["53.5%", "a coin flip"], "changed": [0, 1], "tone": "violet", "note": "a 17-point bias"}], "t": "diagram", "id": "dg-9_11-02-1"},
 
     { t: "code", lang: "text", title: "the same 100 comparisons, run twice with the order swapped", code: `A shown first :  A wins 62% of the time
 B shown first :  A wins 45% of the time
@@ -54,6 +58,8 @@ position bias magnitude   = 62 - 45        = 17 points`,
 
     { t: "h2", n: "03", id: "others", text: "The other three",
       sub: "Each measured elsewhere in the course" },
+
+    {"kind": "flow", "title": "Length is the hack that appears at every layer of the stack", "caption": "7.11 measured why length is the canonical reward hack: a DPO-style implicit reward is **linear in response length**, so a tiny per-token quality weight is worth as much as the entire quality signal on a long enough answer. 8.3 measured the metric-side version, where a recall-oriented overlap metric gave a perfect score to a longer answer containing the usual phrasing. **Every layer of this stack rewards length for a different reason**, which is why controlling for it has to be done at every layer rather than once.", "cols": 3, "nodes": [{"id": "t", "label": "Training: the reward is linear in length", "sub": "7.11", "tone": "crit"}, {"id": "m", "label": "Metrics: recall rises with length", "sub": "8.3", "tone": "crit"}, {"id": "j", "label": "Judges: longer scores higher", "sub": "this lesson", "tone": "crit"}, {"id": "d", "label": "Three different reasons", "sub": "not one bias in three places", "tone": "violet"}, {"id": "c", "label": "So control for it at each layer", "sub": "once is not enough", "tone": "good"}], "edges": [["t", "d"], ["m", "d"], ["j", "d"], ["d", "c"]], "t": "diagram", "id": "dg-9_11-03-2"},
 
     { t: "callout", kind: "warn", title: "Verbosity bias compounds with everything",
       body: [

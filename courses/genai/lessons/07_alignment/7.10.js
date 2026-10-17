@@ -23,6 +23,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "math", tex: "\\text{Quality} \\approx f(\\text{training compute}) \\times g(\\text{inference compute})" },
 
     { t: "p", text: "7.2 was entirely about the first factor and its awkward arithmetic \u2014 over-training an 8B past Chinchilla cost more than training a 70B optimally. The second factor needs no retraining at all, which makes it the cheapest quality lever available to someone who did not train the model." },
@@ -48,6 +49,7 @@ EC.receiveLesson({
       sub: "The number is right for one narrow case" },
 
     {"kind": "trace", "title": "The self-consistency claim turns on something nobody states", "caption": "\"A 60%-accurate model voting over 8 samples reaches about 78%\" is simulatable, and the thing it depends on is **whether the wrong answers agree**. If every error is the same wrong answer, voting reaches only **71.9%** — below the claim — because the majority is reliably wrong. If errors are diverse the same vote reaches **98.6%**. The published figure sits between the two, so it is quietly an assumption about error structure rather than about accuracy.", "left": "error structure", "codeW": 220, "vars": ["accuracy@8", "vs the 78% claim"], "steps": [{"code": "all wrong answers AGREE", "state": ["71.9%", "-6.1"], "tone": "crit", "note": "below the claim"}, {"code": "2 distinct wrong answers", "state": ["85.3%", "+7.3"], "changed": [0], "tone": "accent"}, {"code": "3 distinct", "state": ["90.0%", "+12.0"], "tone": "good"}, {"code": "5 distinct", "state": ["93.4%", "+15.4"], "tone": "good"}, {"code": "every error unique", "state": ["98.6%", "+20.6"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-7_10-02-1"},
+
 
 
 
@@ -103,6 +105,7 @@ EC.receiveLesson({
       sub: "Where the conclusion is stronger than the" },
 
     {"kind": "trace", "title": "Accuracy per unit cost falls monotonically, and the big model is last", "caption": "The sampling ladder buys real accuracy — 60.0% to **99.3% at 16 samples** — and the right-hand column is the one that decides anything: accuracy per unit cost falls at every step, from 0.6000 to 0.0621. And the big model is **worse still at 0.0425**, which is the actual argument for test-time compute: not that it is efficient, but that it is **less inefficient than a 20× model** while needing no retraining and no new deployment.", "left": "option", "codeW": 210, "vars": ["accuracy", "cost", "accuracy per cost"], "steps": [{"code": "small, single sample", "state": ["60.0%", "1", "0.6000"], "tone": "good"}, {"code": "small + self-consistency@4", "state": ["80.7%", "4", "0.2017"], "changed": [2], "tone": "accent"}, {"code": "small + self-consistency@8", "state": ["93.8%", "8", "0.1173"], "tone": "accent"}, {"code": "small + self-consistency@16", "state": ["99.3%", "16", "0.0621"], "changed": [0], "tone": "warn"}, {"code": "big model, single sample", "state": ["85.0%", "20", "0.0425"], "changed": [2], "tone": "crit", "note": "worst per unit cost"}], "t": "diagram", "id": "dg-7_10-03-2"},
+
 
 
 
@@ -205,6 +208,7 @@ rows.append(("big model, single sample", 0.85, 20))`,
       sub: "The soundbite, and why it is correct" },
 
     {"kind": "flow", "title": "Route it to the hard tail, do not enable it everywhere", "caption": "Test-time compute is the cheapest quality lever because it needs no retraining, and **it trades latency for accuracy** — so it belongs on the hard tail of traffic rather than on every request. Enabling it globally pays the 8× on the majority of queries that were already correct at one sample, which is where the per-unit-cost column of §03 becomes a bill. The routing decision is 3.10's, applied to a different axis.", "cols": 3, "nodes": [{"id": "e", "label": "Enable it everywhere", "sub": "8x on every request", "tone": "crit"}, {"id": "m", "label": "Most queries were already right", "sub": "at one sample", "tone": "warn"}, {"id": "r", "label": "Route by difficulty instead", "sub": "3.10's machinery", "tone": "good"}, {"id": "t", "label": "Pay 8x on the hard tail only", "sub": "where it changes the answer", "tone": "good"}, {"id": "l", "label": "And latency is the other cost", "sub": "seconds of silence", "tone": "teal"}], "edges": [["e", "m"], ["m", "r"], ["r", "t"], ["t", "l"]], "t": "diagram", "id": "dg-7_10-05-3"},
+
 
 
 

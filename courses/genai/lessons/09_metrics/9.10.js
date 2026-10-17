@@ -18,6 +18,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "modes", text: "Three modes",
       sub: "Ordered by how hard the judge's task is" },
 
+    {"kind": "matrix", "title": "Three modes, and why pairwise is more reliable", "caption": "Pointwise gives an absolute number, which is convenient and **requires the judge to hold a stable internal scale across every case** — the thing 9.4 of module 7 showed humans cannot do either. Pairwise asks only which of two is better, the comparison judges are reliable at, and it is what powers MT-Bench and Arena-Hard. Reference-based judging is the most constrained and needs the gold answer that caps your set size.", "cols": ["Gives", "The catch"], "rows": ["Pointwise / rubric", "Pairwise", "Reference-based"], "cells": [["an absolute number", {"text": "needs a stable internal scale", "tone": "crit"}], [{"text": "a reliable comparison", "tone": "good"}, "a ranking, not a level"], ["the tightest judgement", {"text": "needs a gold answer", "tone": "warn"}]], "t": "diagram", "id": "dg-9_10-01-0"},
+
     { t: "dl", items: [
       { k: "Pointwise / rubric", v: "Score one answer against a described scale. Gives an absolute number, which is convenient \u2014 and it is the hardest task, because the judge must hold the scale steady across prompts." },
       { k: "Pairwise", v: "\u201cIs A or B better?\u201d More reliable than absolute scores, and what powers MT-Bench and Arena-Hard. Gives an ordering rather than a level." },
@@ -40,6 +42,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "rubric", text: "A rubric that works",
       sub: "Described scale points, not numbered ones" },
+
+    {"kind": "flow", "title": "Described points turn measurement into classification", "caption": "\"Rate helpfulness 1–5\" gives the judge **no anchors, so it invents them** — and invents different ones for different prompts, so the scores drift in a way that looks like signal. Describing what each point means makes the task closer to **classification than to measurement**, which models do far better. It also makes disagreements auditable: if you disagree with a 3, there is a written definition of 3 to disagree with.", "cols": 3, "nodes": [{"id": "r", "label": "\"Rate helpfulness 1-5\"", "sub": "no anchors at all", "tone": "crit"}, {"id": "i", "label": "So the judge invents them", "sub": "differently per prompt", "tone": "crit"}, {"id": "d", "label": "The scores drift", "sub": "and the drift looks like signal", "tone": "crit"}, {"id": "a", "label": "Describe each point", "sub": "what a 3 means, exactly", "tone": "good"}, {"id": "c", "label": "Now it is classification", "sub": "which models do far better", "tone": "good"}, {"id": "u", "label": "And disagreements are auditable", "sub": "there is a definition to dispute", "tone": "teal"}], "edges": [["r", "i"], ["i", "d"], ["d", "a"], ["a", "c"], ["c", "u"]], "t": "diagram", "id": "dg-9_10-02-1"},
 
     { t: "code", lang: "text", title: "the shape of a usable rubric", code: `You are an impartial judge. Score the ANSWER on FAITHFULNESS to the CONTEXT.
 
@@ -70,6 +74,8 @@ Think step by step, listing each claim and its support, then output JSON:
 
     { t: "h2", n: "03", id: "geval", text: "G-Eval, in one paragraph",
       sub: "The refinement worth knowing" },
+
+    {"kind": "flow", "title": "G-Eval removes a quantisation problem that matters more than it sounds", "caption": "A plain rubric judge returns a **discrete** score — 3 or 4, with nothing in between. G-Eval reads the probability the model assigns to each score token and takes the **expected value**, giving 3.4 instead. With a 1–5 scale and a hundred cases, discrete scores give a coarse average dominated by which side of a boundary each case fell on, so two genuinely different systems can produce the same mean. The expectation restores the resolution that rounding threw away.", "cols": 3, "nodes": [{"id": "d", "label": "A discrete score: 3 or 4", "sub": "nothing in between", "tone": "warn"}, {"id": "b", "label": "Each case rounds to a side", "sub": "of an arbitrary boundary", "tone": "crit"}, {"id": "a", "label": "So the mean is coarse", "sub": "two systems, one average", "tone": "crit"}, {"id": "p", "label": "Read the score-token probabilities", "sub": "P(1), P(2), ... P(5)", "tone": "good"}, {"id": "e", "label": "Take the expectation: 3.4", "sub": "the resolution is back", "tone": "good"}], "edges": [["d", "b"], ["b", "a"], ["a", "p"], ["p", "e"]], "t": "diagram", "id": "dg-9_10-03-2"},
 
     { t: "callout", kind: "insight", title: "It weights the score by the model's own token probabilities",
       body: [

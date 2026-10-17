@@ -21,6 +21,7 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "Four kinds of case, and the one worth most per example", "caption": "Happy paths are cheap to write and **the least informative per case** — they catch an obvious regression and nothing else. The highest-value cases you own are the **known past bugs**: each one is a failure you have already paid for, and a regression test on it is the only way to stop paying twice. Edge cases are where behaviour is undefined unless somebody defined it, and adversarial inputs are 6.7's case where the corpus is the attack surface.", "cols": ["Value per case"], "rows": ["Happy paths", "Edge cases", "Known past bugs", "Adversarial inputs"], "cells": [[{"text": "lowest - catches an obvious regression, nothing more", "tone": "warn"}], ["boundaries, empty results, odd formats - undefined unless defined"], [{"text": "highest - a failure you already paid for", "tone": "good"}], [{"text": "injection, contradictions - 6.7's corpus-as-attack case", "tone": "violet"}]], "t": "diagram", "id": "dg-8_10-01-0"},
 
 
+
     { t: "dl", items: [
       { k: "Happy paths", v: "The common queries, so an obvious regression is obvious. Cheap to write and the least informative per case." },
       { k: "Edge cases", v: "Boundaries, empty results, unusual formats \u2014 where behaviour is undefined unless someone defined it." },
@@ -39,6 +40,7 @@ EC.receiveLesson({
       sub: "Thresholds, explicit and in advance" },
 
     {"kind": "flow", "title": "Gate on the metrics, and know that the right stopping point looks unremarkable", "caption": "A CI gate turns the golden set into a deployment condition rather than a report nobody reads. The caution comes from 7.15: **the right stopping point looks unremarkable when you reach it.** In the simulated alignment run the true quality peak sat at a KL of 1.0 where the held-out eval was up only slightly — so a gate tuned to demand an impressive improvement will walk straight past the optimum and keep going into the region where quality collapses.", "cols": 3, "nodes": [{"id": "g", "label": "Gate merges on the metrics", "sub": "not on a report", "tone": "good"}, {"id": "t", "label": "Thresholds, held out, in CI", "sub": "the mechanism", "tone": "good"}, {"id": "p", "label": "The real optimum looks unremarkable", "sub": "7.15's KL=1.0 peak", "tone": "crit"}, {"id": "d", "label": "Demand an impressive gain", "sub": "and the gate overshoots it", "tone": "crit"}, {"id": "s", "label": "So gate on 'no regression'", "sub": "rather than on a big win", "tone": "violet"}], "edges": [["g", "t"], ["t", "p"], ["p", "d"], ["d", "s"]], "t": "diagram", "id": "dg-8_10-02-1"},
+
 
 
     { t: "code", lang: "text", title: "what eval-driven development means concretely", code: `every prompt / model / retriever / tool change
