@@ -44,7 +44,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "The reference loads Qwen2.5-1.5B-Instruct with `BitsAndBytesConfig(load_in_4bit=True)`. **bitsandbytes requires CUDA and this machine has none**, so the four-bit path cannot run at all. The base here is GPT-2 in fp32." },
         { t: "p", text: "Everything else is the recipe unchanged \u2014 the dataset shape, the `LoraConfig`, the training loop, the before/after test, the merge. 4.5 covers what the four-bit storage would have changed, and it is only memory: the arithmetic runs in bf16 either way, so the training dynamics here are the same ones a QLoRA run would show." },
-        { t: "p", text: "The other substitution is the trainer. The usual choice is `trl`\u2019s `SFTTrainer`, which is a convenience wrapper; this runs the loop explicitly so that every line is visible. Same optimiser, same loss, same updates." }
+        { t: "p", text: "The other substitution is the trainer. The usual choice is `trl`\u2019s `SFTTrainer`, which is a convenience wrapper; this runs the loop explicitly so that every line is visible. Same optimiser, same loss, same updates. One detail if you do reach for it: `SFTTrainer` and `DPOTrainer` take `processing_class=tokenizer` in current `trl` — the older `tokenizer=` argument is deprecated, and the deprecation warning is easy to miss in a training log." }
       ] },
 
     { t: "h2", n: "02", id: "data", text: "Steps 2 and 4: the data",

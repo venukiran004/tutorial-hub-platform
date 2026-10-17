@@ -188,6 +188,17 @@ for a in range(7):
   <text x="20" y="208" class="s-sub">Individual waits are shorter and less predictable; the aggregate is what matters.</text>
 </svg>` },
 
+    { t: "code", lang: "python", title: "the same policy, with tenacity",
+      code: `from tenacity import retry, stop_after_attempt, wait_exponential_jitter, retry_if_exception_type
+
+@retry(retry=retry_if_exception_type((RateLimitError, APIConnectionError, InternalServerError)),
+       wait=wait_exponential_jitter(initial=1, max=60),
+       stop=stop_after_attempt(5),
+       reraise=True)
+def call(**kw):
+    return client.chat.completions.create(**kw)`,
+      caption: "`retry_if_exception_type` is the part that encodes the table above — the retryable set, and nothing else. A policy written without it retries the 400s too, which the table says will fail identically every time." },
+
     { t: "callout", kind: "insight", title: "The retry budget is a latency decision",
       body: [
         { t: "p", text: "Measured on the same schedule: 3 attempts is a worst case of 7.0 seconds before failing, 5 attempts is 31.0 seconds, and 7 attempts is 123.0 seconds. Those are user-visible waits on a synchronous request." },

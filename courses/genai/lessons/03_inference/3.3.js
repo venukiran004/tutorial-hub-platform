@@ -197,6 +197,20 @@ print("int8 perplexity : %.4f" % perplexity(qmodel))`,
       ],
       caption: "The GGUF levels run Q2_K through Q8_0, with Q4_K_M recommended. Its note that Q2_K retains \"~40% original quality\" is a strong claim worth verifying on your own task before relying on it." },
 
+    { t: "code", lang: "python", title: "loading each format",
+      code: `# GPTQ: a quantize_config is baked into the saved model
+from auto_gptq import AutoGPTQForCausalLM
+m = AutoGPTQForCausalLM.from_quantized("TheBloke/Llama-2-7B-GPTQ", device="cuda:0")
+
+# AWQ: the same shape, a different package
+from awq import AutoAWQForCausalLM
+m = AutoAWQForCausalLM.from_quantized("TheBloke/Llama-2-7B-AWQ")
+
+# GGUF: a single file, loaded by llama.cpp rather than transformers
+from llama_cpp import Llama
+m = Llama(model_path="llama-2-7b.Q4_K_M.gguf", n_ctx=4096)`,
+      caption: "The three formats are not interchangeable at the loader. GPTQ and AWQ are transformers-shaped and GPU-oriented; a `.gguf` file is a self-contained artefact for llama.cpp, which is why 3.7 lists it as the CPU answer rather than a quantization choice." },
+
     { t: "callout", kind: "good", title: "Quantize the KV cache too",
       body: [
         { t: "p", text: "3.2 measured that an fp8 KV cache doubles concurrency on top of whatever GQA gave — 244 concurrent requests to 488 at 2K context on a four-device node." },

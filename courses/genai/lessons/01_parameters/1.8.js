@@ -105,6 +105,8 @@ EC.receiveLesson({
 
 
 
+    { t: "p", text: "The SDK offers a second spelling for the same thing. `client.beta.chat.completions.parse(..., response_format=FruitList)` validates the response for you and returns it on `message.parsed` as an instance of the class, with `message.refusal` set instead when the model declined. It is the same guarantee reached through a different call, and it removes the `json.loads` plus `model_validate` pair that would otherwise follow." },
+
     { t: "p", text: "Writing `response_format=FruitList` is convenient enough that it is easy to forget a JSON Schema is being generated and sent. It is worth looking at once, because every decision in the class shows up in it, and the size of it is on your bill." },
 
     { t: "code", lang: "python", title: "g18.py — the schema behind the class", code: `from pydantic import BaseModel

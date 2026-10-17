@@ -38,6 +38,14 @@ EC.receiveLesson({
         ["**Context recall**", "Did retrieval find everything needed?", "context + **ground truth**", "Retrieval missed documents"]
       ] },
 
+    { t: "code", lang: "python", title: "the four, as RAGAS names them",
+      code: `from ragas import evaluate
+from ragas.metrics import faithfulness, answer_relevancy, context_precision, context_recall
+
+result = evaluate(dataset, metrics=[faithfulness, answer_relevancy,
+                                    context_precision, context_recall])`,
+      caption: "The snake_case names are worth knowing because they are what appears in a dashboard column and a CI log. `context_recall` is the only one of the four whose dataset rows need a `ground_truth` field — the other three read `question`, `answer` and `contexts`, all of which a production request already has." },
+
     { t: "callout", kind: "insight", title: "Only context recall needs a ground-truth answer",
       body: [
         { t: "p", text: "Three of the four are reference-free, which 8.1 argued is what lifts the ceiling on eval-set size \u2014 a gold answer per case bounds you by annotation effort, and faithfulness, answer relevancy and context precision all score against inputs the system already produced." },
