@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "goodhart", text: "Goodhart, applied to a learned reward",
       sub: "The proxy and the thing it proxies for come apart" },
 
+    {"kind": "trace", "title": "The proxy keeps climbing while true quality collapses", "caption": "The reward model is a **proxy** fitted from finite comparisons, and its direction is only **0.5931 cosine — 53.6 degrees — from the true one**. Optimise the proxy and you move partly toward quality and partly sideways. The table is the consequence: the proxy score rises linearly forever while the true score peaks around KL 1.0 and then falls, reaching **−9.0413 at KL 6.0 while the proxy reads 6.0000**. Anyone watching the training reward sees a successful run throughout.", "left": "KL from the reference", "codeW": 190, "vars": ["proxy score", "TRUE score", "true - proxy"], "steps": [{"code": "0.0", "state": ["0.0000", "0.0000", "0.0000"], "tone": "accent"}, {"code": "1.0", "state": ["1.0000", "0.2431", "-0.7569"], "changed": [1], "tone": "good", "note": "the true peak"}, {"code": "2.0", "state": ["2.0000", "-0.2138", "-2.2138"], "changed": [1], "tone": "warn", "note": "already below zero"}, {"code": "4.0", "state": ["4.0000", "-3.2275", "-7.2275"], "tone": "crit"}, {"code": "6.0", "state": ["6.0000", "-9.0413", "-15.0413"], "changed": [1, 2], "tone": "crit", "note": "proxy still rising"}], "t": "diagram", "id": "dg-7_11-01-0"},
+
+
     { t: "p", text: "The reward model is a *proxy* for human preference, fitted from a finite set of comparisons. Optimise the proxy hard enough and the two diverge \u2014 true quality peaks and then falls while the proxy score keeps climbing. 7.4 identified the structural reason: Bradley-Terry\u2019s gradient is \\(1-\\sigma(g)\\), which vanishes once a gap is large, so **nothing in RM training constrains how big a correct gap becomes**." },
 
     { t: "code", lang: "python", title: "g711.py \u00a7A \u2014 a 40-dimensional response space, RM fitted on 300 pairs", code: `w_true  = rng.normal(size=D); w_true /= np.linalg.norm(w_true)   # true preference
@@ -59,6 +62,9 @@ true  = w_true @ x - 0.35 * step**2      # drifting from pi_ref degrades fluency
     { t: "h2", n: "02", id: "headroom", text: "A better reward model buys headroom",
       sub: "The peak moves, and its position is exact" },
 
+    {"kind": "trace", "title": "A better reward model buys headroom, in closed form", "caption": "If true quality is c·s − 0.35s² where c is the cosine alignment and s the distance moved, the peak is at **s∗ = c/0.70** — a closed form, so unlike the cosines themselves it is not subject to sampling noise. Fitting the reward model on more pairs raises c and therefore pushes the peak further out: from **0.4799 at 50 pairs to 0.9980 at 100,000**, moving the best achievable true score from 0.1645 to **0.7115**. So more preference data does not just make the proxy better — it extends how hard you are allowed to optimise.", "left": "pairs fitted", "codeW": 150, "vars": ["cos(w, w')", "best KL", "best true score"], "steps": [{"code": "50", "state": ["0.4799", "0.69", "0.1645"], "tone": "crit"}, {"code": "100", "state": ["0.3660", "0.52", "0.0957"], "changed": [0], "tone": "crit", "note": "worse - sampling noise"}, {"code": "300", "state": ["0.5801", "0.83", "0.2403"], "tone": "warn"}, {"code": "1,000", "state": ["0.7835", "1.12", "0.4385"], "changed": [2], "tone": "accent"}, {"code": "5,000", "state": ["0.9612", "1.37", "0.6599"], "tone": "good"}, {"code": "100,000", "state": ["0.9980", "1.43", "0.7115"], "changed": [0, 2], "tone": "good"}], "t": "diagram", "id": "dg-7_11-02-1"},
+
+
     { t: "p", text: "If the true quality is \\(c \\cdot s - 0.35 s^2\\) where c is the cosine alignment and s is distance moved, the peak is at \\(s^* = c/0.70\\). That is a closed form, so unlike the cosines themselves it is not subject to sampling noise." },
 
     { t: "code", lang: "python", title: "g711.py \u00a7B \u2014 peak position against RM fit quality", code: `s_star = c / 0.70                       # closed form from d/ds [c*s - 0.35 s^2] = 0`,
@@ -88,6 +94,9 @@ true  = w_true @ x - 0.35 * step**2      # drifting from pi_ref degrades fluency
 
     { t: "h2", n: "03", id: "detection", text: "Detection and control",
       sub: "The RM cannot grade its own homework" },
+
+    {"kind": "trace", "title": "A held-out gold reward model is the cheapest warning available", "caption": "The training reward is useless as a signal — it rises monotonically through the collapse. A **second reward model held out of training** is not: the gap between them opens from 0.8441 at KL 1.0 to **15.5644 at KL 6.0**, and it tracks the true damage closely. That is the detectable signature: **rising KL, rising training reward, and a widening gap to the gold model** — and unlike human evaluation it costs a forward pass.", "left": "KL", "codeW": 110, "vars": ["training RM", "gold RM", "TRUE", "RM gap"], "steps": [{"code": "0.0", "state": ["0.0000", "0.0000", "0.0000", "0.0000"], "tone": "accent"}, {"code": "1.0", "state": ["1.0000", "0.1559", "0.2431", "0.8441"], "changed": [3], "tone": "good"}, {"code": "2.0", "state": ["2.0000", "-0.3881", "-0.2138", "2.3881"], "changed": [3], "tone": "warn"}, {"code": "4.0", "state": ["4.0000", "-3.5763", "-3.2275", "7.5763"], "tone": "crit"}, {"code": "6.0", "state": ["6.0000", "-9.5644", "-9.0413", "15.5644"], "changed": [3], "tone": "crit", "note": "gold tracks the truth"}], "t": "diagram", "id": "dg-7_11-03-2"},
+
 
     { t: "code", lang: "python", title: "g711.py \u00a7C \u2014 a held-out gold RM, fitted on different pairs", code: `w_gold = w_true + rng.normal(size=D) / np.sqrt(N_PAIRS) * 3.0
 w_gold /= np.linalg.norm(w_gold)        # never used to train the policy`,

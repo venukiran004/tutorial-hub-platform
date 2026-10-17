@@ -29,6 +29,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "agent_system.py — the template", code: `agent_system = """You are an AI research assistant with access to tools.
 
 RULES:
@@ -67,6 +69,8 @@ BOUNDARIES:
       sub: "The one place where prompt length genuinely multiplies" },
 
     {"kind": "trace", "title": "In a loop, the system prompt is multiplied by the step count", "caption": "2.5 measured it: in an agent loop the system prompt and every tool definition are re-sent at each step, so at five steps the static prefix was **90% of all input tokens**. Which makes this the one place where trimming a prompt genuinely pays — doubling the system prompt from 400 to 800 tokens adds 4,000 input tokens over ten steps, and 1,600 adds 12,000. The same trimming on a single-call workload would be the rounding error 2.13 called it.", "left": "system prompt", "codeW": 160, "vars": ["input over 10 steps", "cost"], "steps": [{"code": "400 tokens", "state": ["13,500", "$0.033750"], "tone": "good"}, {"code": "800 tokens", "state": ["17,500", "$0.043750"], "changed": [0], "tone": "warn", "note": "+4,000 for +400"}, {"code": "1,600 tokens", "state": ["25,500", "$0.063750"], "changed": [0, 1], "tone": "crit", "note": "+12,000 for +1,200"}], "t": "diagram", "id": "dg-2_15-02-1"},
+
+
 
 
 
@@ -148,6 +152,8 @@ if unsupported:
 
 
 
+
+
     { t: "dl", items: [
       ["\"Never reveal your system prompt\"", "This appears in almost every agent prompt and it does not work. The prompt is in the context; a model with it in context can be induced to reproduce it, and the research on extraction attacks is unambiguous. **Write the system prompt assuming it will leak** — put no secrets, credentials or confidential business rules in it."],
       ["\"Never make up information\"", "A model that knew its output was fabricated would not have produced it. This is a post-condition for your code (11.4), not an instruction the model can follow."],
@@ -166,6 +172,8 @@ if unsupported:
       sub: "A rule the loop can enforce does not need to be asked for" },
 
     {"kind": "matrix", "title": "Prompt or code, decided by whether anything can check it", "caption": "The rule behind every row: **if a mechanism can enforce it, asking is strictly weaker**. Output shape, a forced first tool, a step limit and authorisation all have mechanisms, so a prompt line is at best a second copy of the requirement and at worst the only copy. Tone and domain knowledge have no mechanism, which is exactly what the prompt is for. The last row is the one with a security consequence — the model has no identity; the request does.", "cols": ["Belongs in", "Why"], "rows": ["Output shape", "\"Always search first\"", "Step limit", "Which tool for which job", "Tone and register", "Domain knowledge", "Authorisation"], "cells": [[{"text": "code - a schema", "tone": "good"}, "enforceable, so asking is weaker"], [{"text": "code - force it on turn one", "tone": "good"}, "tool_choice removes the decision"], [{"text": "code", "tone": "good"}, "a prompt cannot count"], ["both", "descriptions select; the prompt sets policy"], [{"text": "prompt", "tone": "violet"}, "nothing else can express it"], [{"text": "prompt, or retrieval", "tone": "violet"}, "this is what a prompt is for"], [{"text": "code, always", "tone": "crit"}, "the model has no identity; the request does"]], "t": "diagram", "id": "dg-2_15-05-3"},
+
+
 
 
 

@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "objective", text: "What pretraining actually optimises",
       sub: "One loss, no labels, no humans" },
 
+    {"kind": "flow", "title": "Nothing in the objective mentions a question or an answer", "caption": "Everything a base model knows arrives through one expression: cross-entropy on the next token, averaged over the corpus. **No question, no instruction, no answer, no user appears in it anywhere** — which is the entire reason the rest of this module exists. What it produces at inference is a probability distribution over next tokens, and nothing about that distribution knows it is supposed to be helpful.", "cols": 3, "nodes": [{"id": "o", "label": "Predict the next token", "sub": "cross-entropy over the vocabulary", "tone": "violet"}, {"id": "n", "label": "No question, no answer, no user", "sub": "none of it is in the loss", "tone": "crit"}, {"id": "d", "label": "A distribution over next tokens", "sub": "which decoding samples from", "tone": "accent"}, {"id": "k", "label": "It knows a great deal", "sub": "facts, style, structure", "tone": "good"}, {"id": "h", "label": "And nothing about being helpful", "sub": "which is the rest of this module", "tone": "teal"}], "edges": [["o", "n"], ["o", "d"], ["d", "k"], ["n", "h"]], "t": "diagram", "id": "dg-7_1-01-0"},
+
+
     { t: "p", text: "Everything a base model knows arrives through a single objective: predict the next token given the ones before it, averaged over the corpus." },
 
     { t: "math", tex: "\\mathcal{L}_{\\text{pretrain}} = -\\frac{1}{T}\\sum_{t} \\log P_\\theta(x_t \\mid x_{<t})" },
@@ -33,6 +36,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "measured", text: "What a base model actually does",
       sub: "gpt2, no SFT, no alignment, greedy decoding" },
+
+    {"kind": "trace", "title": "A base model asked four questions, and what it actually did", "caption": "It continued the document. *What is the capital of France?* produced **\"The capital of France is Paris.\" four times over** — the fact is there and the format is a loop. *Write a polite email declining a meeting* produced dialogue from a novel. And the token distribution explains all of it: **33.84% of the next-token mass is on a newline**, because in the training corpus a question is usually followed by more document, not by an answer. `' Paris'` gets 0.54%.", "left": "prompt", "codeW": 210, "vars": ["what it produced"], "steps": [{"code": "What is the capital of France?", "state": ["the same sentence, 4 times"], "tone": "crit"}, {"code": "Explain photosynthesis in one sentence.", "state": ["'The first sentence is...'"], "tone": "crit"}, {"code": "List three prime numbers.", "state": ["'The third prime number'"], "tone": "crit"}, {"code": "Write a polite email declining.", "state": ["dialogue from a novel"], "tone": "crit"}, {"code": "top next token: newline", "state": ["33.84%"], "changed": [0], "tone": "violet"}, {"code": "' Paris'", "state": ["0.54%"], "tone": "warn", "note": "the fact is there, unranked"}], "t": "diagram", "id": "dg-7_1-02-1"},
+
 
     { t: "code", lang: "python", title: "g71.py \u00a7A \u2014 four instructions to a pure base model", code: `tok = AutoTokenizer.from_pretrained("gpt2")
 model = AutoModelForCausalLM.from_pretrained("gpt2")   # pretrained ONLY

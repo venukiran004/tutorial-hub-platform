@@ -100,6 +100,8 @@ for idx in CRANK[i]:
 
 
 
+
+
     { t: "p", text: "The remaining patterns in the list are different in kind. Small-to-big changes *what* is retrieved; Self-RAG and corrective RAG change *what happens next* \u2014 they add a grading step and a branch." },
 
     { t: "dl", items: [

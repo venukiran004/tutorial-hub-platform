@@ -103,6 +103,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Providers price input and output separately, usually with output 4–5× the input price, because output tokens are produced one forward pass at a time while input tokens are prefilled in parallel (3.1). So your effective rate depends on your traffic's shape. A RAG service sending 3,000 tokens of context for a 150-token answer pays almost entirely the input rate; a brainstorming tool pays mostly the output rate." },
 
     { t: "code", lang: "python", title: "g312.py — blended price at 3 input tokens per output", code: `for name, p_in, p_out in APIS:
@@ -126,6 +128,8 @@ EC.receiveLesson({
       sub: "And why \"10M tokens a day\" is the wrong threshold" },
 
     {"kind": "trace", "title": "The 10-million-token rule, checked against capacity", "caption": "\"Self-host above 10 million tokens a day\" is worth checking rather than accepting. One A100 at 1,500 tokens/sec flat out for 24 hours is **129.6 million tokens** — so 10M/day is **7.7% utilisation of a single GPU**, which costs $4.80 per million and is *more* than GPT-4o-mini's blended $0.26. The real break-even depends entirely on which API you are leaving: 8.0M/day against Claude Sonnet, and **182.9M/day against GPT-4o-mini — 141% of one GPU**, meaning you cannot get there on a single card at all.", "left": "leaving which API", "codeW": 180, "vars": ["break-even tok/day", "as % of one GPU"], "steps": [{"code": "one A100, 100% busy", "state": ["129.6M", "100%"], "tone": "violet"}, {"code": "Claude Sonnet", "state": ["8.0M", "6%"], "tone": "good"}, {"code": "GPT-4o", "state": ["11.0M", "8%"], "tone": "good", "note": "the rule works here"}, {"code": "Llama 3.1 70B hosted", "state": ["87.3M", "67%"], "changed": [0], "tone": "warn"}, {"code": "GPT-4o-mini", "state": ["182.9M", "141%"], "changed": [0, 1], "tone": "crit", "note": "more than one GPU"}], "t": "diagram", "id": "dg-3_12-03-1"},
+
+
 
 
 
@@ -170,6 +174,8 @@ for name, blended in blended_prices.items():
       sub: "You buy for the peak and you utilise at the mean" },
 
     {"kind": "trace", "title": "Peak-to-mean is what actually kills the economics", "caption": "The break-even figures assume you can run a GPU at whatever utilisation the volume implies, and in production you cannot — **you provision for peak and pay for it around the clock**. A mild 3:1 business-hours pattern means paying for three times the hardware the mean needs. At 500M tokens/day the cost per million runs from $0.384 at a flat profile to **$3.744 at 10:1** — a factor of 9.75 decided entirely by the traffic shape, not by the model, the framework or the hardware.", "left": "tokens/day and peak:mean", "codeW": 200, "vars": ["GPUs", "$/1M", "utilisation"], "steps": [{"code": "100M, flat", "state": ["1", "0.480", "77.2%"], "tone": "good"}, {"code": "100M, 3:1", "state": ["3", "1.440", "25.7%"], "changed": [1], "tone": "warn"}, {"code": "100M, 10:1", "state": ["8", "3.840", "9.6%"], "changed": [1], "tone": "crit"}, {"code": "500M, flat", "state": ["4", "0.384", "96.5%"], "tone": "good", "note": "the best case"}, {"code": "500M, 3:1", "state": ["12", "1.152", "32.2%"], "tone": "warn"}, {"code": "500M, 10:1", "state": ["39", "3.744", "9.9%"], "changed": [1], "tone": "crit", "note": "9.75x the flat cost"}], "t": "diagram", "id": "dg-3_12-04-2"},
+
+
 
 
 
@@ -237,6 +243,8 @@ for name, blended in blended_prices.items():
       sub: "Which is usually why people actually do it" },
 
     {"kind": "matrix", "title": "Nine levers, ordered by measured effect", "caption": "The first row dwarfs everything below it: **keeping the GPU busy is up to 20× on cost per token**, which is the same observation as §04 from the other side. Two rows down the list are already on by default in any serious framework, and the last is the one with the most written about it and the smallest measured return — **1.13×**, from 3.6. Spending a week on speculative decoding while running at 10% utilisation is the characteristic mistake here.", "cols": ["Effect"], "rows": ["Keep the GPU busy", "Flatten peak-to-mean", "Reserved or spot pricing", "A smaller model", "Quantization", "Batching", "Prefix caching", "Output length limits", "Speculative decoding"], "cells": [[{"text": "up to 20x - the largest lever here", "tone": "good"}], [{"text": "3:1 to 1:1 takes $1.13 to $0.38 at scale", "tone": "good"}], [{"text": "$2.00/hr to $0.60/hr, so 3.3x", "tone": "good"}], [{"text": "23x spread across the price list", "tone": "good"}], ["4x memory, which converts to batch size"], [{"text": "5.2x measured - already on by default", "tone": "accent"}], [{"text": "up to 2.8x on RAG traffic", "tone": "accent"}], ["linear in the tokens not generated"], [{"text": "1.13x measured - the smallest here", "tone": "warn"}]], "t": "diagram", "id": "dg-3_12-05-3"},
+
+
 
 
 

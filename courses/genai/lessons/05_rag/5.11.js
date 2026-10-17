@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "The pipeline in 5.7 makes every decision at build time: always retrieve, always from the one index, always `k=5`, always once. An agentic system turns each of those into a runtime decision the model makes." },
 
     { t: "dl", items: [
@@ -113,6 +115,8 @@ order = np.argsort(-(QV[i] @ FE[idxs].T))`,
       sub: "Where the decision is unavoidable" },
 
     {"kind": "matrix", "title": "Routing, by the shape of the question", "caption": "Each row has exactly one right source and the reason is structural rather than a quality judgement. **SQL for figures** because 5.12 measures retrieval returning a *sample* of rows that cannot be aggregated; a changelog for *what changed last week* because the index is only as fresh as its last build. The last row is the multi-hop case: the second query cannot be written until the first returns, which no amount of better routing removes.", "cols": ["Source", "Why not the others"], "rows": ["How does our retry work?", "What was Q4 revenue?", "What changed in the API?", "Which model, which quant?"], "cells": [[{"text": "the vector index", "tone": "good"}, "SQL has no prose; the web does not know you"], [{"text": "SQL", "tone": "good"}, {"text": "retrieval returns a sample (5.12)", "tone": "crit"}], [{"text": "the changelog", "tone": "good"}, "the index is as fresh as its last build"], [{"text": "both, in sequence", "tone": "violet"}, {"text": "query 2 needs query 1's answer", "tone": "warn"}]], "t": "diagram", "id": "dg-5_11-03-1"},
+
+
 
 
 

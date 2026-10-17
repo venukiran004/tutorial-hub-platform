@@ -26,6 +26,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "math", tex: "h \\;=\\; \\underbrace{W_0 x}_{\\text{frozen base}} \\;+\\; \\underbrace{\\tfrac{\\alpha}{r}\\,(BA)\\,x}_{\\text{trained add-on}}" },
 
     { t: "p", text: "A LoRA layer computes the base output exactly as before and adds a second term. The input passes through `A` into an `r`-dimensional bottleneck, back out through `B` to the output width, and the result is scaled by `\u03b1/r` before being added. In code it is three lines:" },
@@ -68,6 +70,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "With `B = 0` the product `BA` is the zero matrix, so the add-on contributes nothing and the wrapped model is **bit-for-bit the original model**. Training moves `B` away from zero gradually, so the adapter fades in rather than perturbing a working model from the first step." },
 
     { t: "callout", kind: "insight", title: "That initialisation is what makes the method safe to attach",
@@ -81,6 +85,8 @@ EC.receiveLesson({
       sub: "And what it turns out to be, once you substitute \u03b1 = 2r" },
 
     {"kind": "flow", "title": "What alpha/r is for, and the arithmetic worth following", "caption": "The stated reason is that a bigger `r` makes `BA` produce bigger numbers, so dividing by r cancels that and lets capacity and strength be tuned separately. **The intent is clearly right** — changing the rank should not silently change how hard the adapter pushes. It is worth following the arithmetic through rather than taking it on faith, because the convention α = 2r then means the scale is held at 2 regardless of r, so the dial people think they are turning when they raise α alongside r is not moving at all.", "cols": 3, "nodes": [{"id": "r", "label": "A bigger r", "sub": "more terms in the sum", "tone": "accent"}, {"id": "b", "label": "BA produces bigger numbers", "sub": "so capacity changes strength", "tone": "warn"}, {"id": "s", "label": "Divide by r", "sub": "the two become separable", "tone": "good"}, {"id": "c", "label": "The convention: alpha = 2r", "sub": "widely used", "tone": "violet"}, {"id": "h", "label": "So alpha/r is held at 2", "sub": "whatever r you choose", "tone": "violet"}, {"id": "n", "label": "Raising both moves nothing", "sub": "which is the thing to know", "tone": "teal"}], "edges": [["r", "b"], ["b", "s"], ["s", "c"], ["c", "h"], ["h", "n"]], "t": "diagram", "id": "dg-4_4-03-2"},
+
+
 
 
 

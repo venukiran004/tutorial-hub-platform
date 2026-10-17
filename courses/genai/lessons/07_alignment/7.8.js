@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "idea", text: "The baseline comes from siblings, not a critic",
       sub: "An empirical baseline instead of a learned one" },
 
+    {"kind": "flow", "title": "The siblings are the baseline", "caption": "PPO needs a value network because the reward arrives once, on the final token, so something must estimate how good each completion was **expected** to be — and that estimator is a second trainable LLM costing **104.3 GB at 7B**. GRPO's move is to generate G completions for the same prompt and use **the group's own mean and standard deviation** as the baseline. The siblings answer the question the critic was trained to answer, for free, and with no regression to fit.", "cols": 3, "nodes": [{"id": "r", "label": "The reward arrives on the last token", "sub": "once, per completion", "tone": "accent"}, {"id": "c", "label": "PPO: train a critic to estimate it", "sub": "a second LLM, 104.3 GB", "tone": "crit"}, {"id": "g", "label": "GRPO: generate G completions", "sub": "same prompt, G samples", "tone": "good"}, {"id": "m", "label": "Standardise against the group", "sub": "mean and std of the siblings", "tone": "violet"}, {"id": "f", "label": "No regression to fit", "sub": "and no second model", "tone": "good"}, {"id": "z", "label": "Unless all G agree", "sub": "then the advantage is exactly 0", "tone": "warn"}], "edges": [["r", "c"], ["r", "g"], ["g", "m"], ["m", "f"], ["m", "z"]], "t": "diagram", "id": "dg-7_8-01-0"},
+
+
     { t: "p", text: "7.5 established why PPO needs a value network: the reward arrives once on the final token, so something has to estimate how good each completion was *expected* to be in order to compute an advantage. That estimator is a second trainable LLM costing 104.3 GB at 7B." },
 
     { t: "code", lang: "text", title: "the substitution, in one line", code: `PPO :   advantage = actual reward - critic's prediction        (learned baseline, extra model)
@@ -38,6 +41,9 @@ GRPO:   advantage = actual reward - mean reward of G siblings  (empirical baseli
 
     { t: "h2", n: "02", id: "numbers", text: "The worked numbers, and a discrepancy",
       sub: "The usual computation is this twice and gets two answers" },
+
+    {"kind": "trace", "title": "A discrepancy worth tracking down: n or n-1", "caption": "Six binary rewards, three correct. Standardising them gives advantages of **±0.9129 with torch's default (unbiased, n−1)** and **±1.0 with the population standard deviation**, which is what a hand calculation produces. The ratio is exactly √(5/6) = 0.9129. Neither is wrong — but the two differ by 8.7% on every advantage in the batch, which is a systematic scaling of the gradient, and it is the kind of difference that gets attributed to a hyperparameter.", "left": "quantity", "codeW": 190, "vars": ["value"], "steps": [{"code": "rewards", "state": ["[1,0,1,0,0,1]"], "tone": "accent"}, {"code": "mean", "state": ["0.5000"], "tone": "accent"}, {"code": "std, n-1 (torch default)", "state": ["0.5477"], "tone": "good"}, {"code": "std, n (population)", "state": ["0.5000"], "tone": "warn"}, {"code": "advantage, torch", "state": ["+-0.9129"], "changed": [0], "tone": "good"}, {"code": "advantage, population std", "state": ["+-1.0"], "changed": [0], "tone": "warn", "note": "ratio = sqrt(5/6)"}], "t": "diagram", "id": "dg-7_8-02-1"},
+
 
     { t: "code", lang: "python", title: "g78.py \u00a7A \u2014 six samples, binary reward", code: `def grpo_advantages(rewards, eps=1e-4):
     mean = rewards.mean(dim=1, keepdim=True)
@@ -171,6 +177,9 @@ r = torch.tensor([[1., 0., 1., 0., 0., 1.]])`,
     { t: "h2", n: "04", id: "memory", text: "What deleting the critic buys",
       sub: "It is commonly said ~40%; measured it is 44%" },
 
+    {"kind": "trace", "title": "Deleting the critic is 44% of the memory", "caption": "PPO holds four models at 7B — policy and critic trained, reference and reward model frozen — for **234.7 GB**. Dropping the critic takes it to 130.4 GB, and dropping the reward model too, which RLVR does, reaches **117.3 GB: the same as DPO**. So GRPO with a verifier costs exactly what the offline method costs while keeping the online exploration that 7.6 identified as PPO's one irreplaceable property.", "left": "method", "codeW": 230, "vars": ["memory at 7B", "vs PPO"], "steps": [{"code": "PPO - policy + critic trained", "state": ["234.7 GB", "1.00x"], "tone": "crit"}, {"code": "GRPO - policy trained, RM frozen", "state": ["130.4 GB", "0.56x"], "changed": [0], "tone": "accent"}, {"code": "GRPO + RLVR - no RM at all", "state": ["117.3 GB", "0.50x"], "changed": [0], "tone": "good"}, {"code": "DPO", "state": ["117.3 GB", "0.50x"], "tone": "good", "note": "the same, without exploration"}], "t": "diagram", "id": "dg-7_8-04-2"},
+
+
     { t: "code", lang: "python", title: "g78.py \u00a7D \u2014 four configurations, 7B policy, bf16 + Adam", code: `trained = N * 16 / GB      # weights + grads + fp32 master + Adam m,v
 frozen  = N * 2  / GB      # bf16 weights only`,
       out: `  PPO  (policy+critic trained, ref+RM frozen)       234.7 GB   1.00x vs PPO
@@ -198,6 +207,9 @@ frozen  = N * 2  / GB      # bf16 weights only`,
 
     { t: "h2", n: "05", id: "verifiable", text: "Why this fits verifiable rewards",
       sub: "Binary rewards are the hardest case for a critic" },
+
+    {"kind": "flow", "title": "The thing GRPO deletes is hardest to do well exactly where it deletes it", "caption": "This is the cleanest answer to *why GRPO for reasoning*, and it is not just that it is cheaper. A critic predicts expected future reward from a **partial** sequence; with a continuous reward model that regression is tractable, and **with a binary verifier it is not** — predicting a 0/1 outcome from half a proof is close to hopeless. Meanwhile the group mean gets *easier* in that regime: the mean of six binary outcomes is an unbiased estimate of the pass rate, which is exactly the baseline you want.", "cols": 3, "nodes": [{"id": "c", "label": "A critic predicts from a partial sequence", "sub": "expected future reward", "tone": "accent"}, {"id": "s", "label": "Tractable with a smooth reward", "sub": "a continuous target", "tone": "good"}, {"id": "b", "label": "Near hopeless with a 0/1 verifier", "sub": "predict pass/fail from half a proof", "tone": "crit"}, {"id": "g", "label": "The group mean gets easier", "sub": "mean of six binaries = pass rate", "tone": "good"}, {"id": "u", "label": "An unbiased estimate, for free", "sub": "exactly the baseline wanted", "tone": "good"}, {"id": "a", "label": "So the deletion is best where it is made", "sub": "not merely cheaper", "tone": "teal"}], "edges": [["c", "s"], ["c", "b"], ["b", "g"], ["g", "u"], ["u", "a"]], "t": "diagram", "id": "dg-7_8-05-3"},
+
 
     { t: "ol", items: [
       "**No critic** \u2014 44% less memory measured, and no critic-collapse failure mode",

@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Attention computes `softmax(QKᵀ/√d)V`. The inner `QKᵀ` is an n×n matrix of scores — every token's affinity for every other token — and the standard implementation writes it to memory, reads it back for the softmax, writes the result, and reads it again for the final multiply. The arithmetic is modest; the traffic is not." },
 
     { t: "code", lang: "python", title: "g34.py — the intermediate, in bytes", code: `for n in (512, 1024, 2048, 4096, 8192, 16384):
@@ -54,6 +56,8 @@ EC.receiveLesson({
       sub: "Tile, fuse, and never write the matrix down" },
 
     {"kind": "trace", "title": "The fused kernel, measured — including the row that goes backwards", "caption": "FlashAttention is **exact**, not an approximation: tiling, kernel fusion, an online softmax and an IO-aware design that does *more* arithmetic to move fewer bytes. The measurement mostly agrees with the 2–4× claim at the lengths where it matters, and the 256-token row is worth leaving in: **0.67×, slower than naive**, because at short sequences the fusion overhead exceeds the traffic it saves. The gain is a function of length, not a constant.", "left": "sequence length", "codeW": 160, "vars": ["naive ms", "fused ms", "speedup"], "steps": [{"code": "128", "state": ["0.42", "0.24", "1.74x"], "tone": "good"}, {"code": "256", "state": ["0.76", "1.14", "0.67x"], "changed": [2], "tone": "crit", "note": "slower than naive"}, {"code": "512", "state": ["5.54", "4.41", "1.26x"], "tone": "accent"}, {"code": "1,024", "state": ["18.77", "10.98", "1.71x"], "changed": [2], "tone": "good"}, {"code": "2,048", "state": ["83.87", "56.30", "1.49x"], "tone": "good"}], "t": "diagram", "id": "dg-3_4-02-1"},
+
+
 
 
 
@@ -106,6 +110,8 @@ F.scaled_dot_product_attention(q, k, v)`,
 
 
 
+
+
     { t: "p", text: "3.1 established that decode is dominated by loading weights. That is true at the context lengths most deployments run at, and stops being true as context grows — because the feed-forward work per token is constant while the attention work grows with the context." },
 
     { t: "code", lang: "python", title: "g34.py — attention's share of a decode step", code: `d_model, d_ff, layers = 768, 3072, 12
@@ -133,6 +139,8 @@ for n in (128, 512, 2048, 8192, 32768):
       sub: "Bounded cost, at the price of a guarantee" },
 
     {"kind": "trace", "title": "A sliding window bounds the cost instead of reducing it", "caption": "FlashAttention makes exact attention cheaper; a window makes it **less**. Each token attends only to the W nearest, so cost per token is capped at W rather than growing with n — and the saving is nothing at 2,048 and **97% at 131,072**. The trade is explicit and unlike FlashAttention's: information outside the window is unreachable in one layer, recoverable only through stacking, so this is an approximation with a quality question attached.", "left": "sequence length", "codeW": 160, "vars": ["full attention", "window of 4,096", "saved"], "steps": [{"code": "2,048", "state": ["2048", "2048", "0%"], "tone": "accent", "note": "window not reached"}, {"code": "8,192", "state": ["8192", "4096", "50%"], "changed": [2], "tone": "good"}, {"code": "32,768", "state": ["32768", "4096", "88%"], "changed": [2], "tone": "good"}, {"code": "131,072", "state": ["131072", "4096", "97%"], "changed": [2], "tone": "good", "note": "cost is now flat"}], "t": "diagram", "id": "dg-3_4-04-3"},
+
+
 
 
 

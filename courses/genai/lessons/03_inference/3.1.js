@@ -89,6 +89,8 @@ for n in (16, 32, 64, 128, 256, 512):
 
 
 
+
+
     { t: "table",
       head: ["Metric", "What it is", "Phase", "Reference's target"],
       rows: [
@@ -105,6 +107,8 @@ for n in (16, 32, 64, 128, 256, 512):
       sub: "Weights, and then the cache that grows per request" },
 
     {"kind": "trace", "title": "Weights are a fixed cost; the KV cache is per request", "caption": "The weight arithmetic is simple — bytes per parameter times parameters — and it is the easy half. The distinction that matters operationally is the one underneath: **weights are a fixed cost, and the KV cache is a per-request cost that grows with sequence length.** A server has enough memory for the model and then a *budget* for concurrency, which is what 3.2 is about.", "left": "precision", "codeW": 150, "vars": ["bytes/param", "7B weights"], "steps": [{"code": "FP32", "state": ["4.0", "28.0 GB"], "tone": "crit"}, {"code": "FP16", "state": ["2.0", "14.0 GB"], "changed": [1], "tone": "accent"}, {"code": "INT8", "state": ["1.0", "7.0 GB"], "changed": [1], "tone": "good"}, {"code": "INT4", "state": ["0.5", "3.5 GB"], "changed": [1], "tone": "good"}, {"code": "plus KV cache", "state": ["per request", "grows with seq_len"], "tone": "violet", "note": "the concurrency budget"}], "t": "diagram", "id": "dg-3_1-03-1"},
+
+
 
 
 
@@ -132,6 +136,8 @@ memory_kv = 2 * n_layers * n_heads * head_dim * seq_len * 2
       sub: "FLOPs per byte loaded, and why decode loses" },
 
     {"kind": "flow", "title": "Arithmetic intensity, which makes the rest of the module coherent", "caption": "Arithmetic intensity is FLOPs performed per byte moved from memory, and hardware has a ratio too — peak FLOPs divided by bandwidth. Whichever side you fall on names your bottleneck. **Prefill loads the weights once and uses them against thousands of tokens, so it is compute-bound. Decode loads the same weights to process one token, so it is memory-bound** and the compute units idle. Which gives the estimate that governs everything: decode throughput ≈ model size / memory bandwidth, so a 14 GB model on 2 TB/s cannot beat about 7 ms per token however fast its arithmetic.", "cols": 3, "nodes": [{"id": "a", "label": "AI = FLOPs / bytes loaded", "sub": "compare to peak FLOPs / bandwidth", "tone": "violet"}, {"id": "p", "label": "Prefill: high AI", "sub": "one weight load, thousands of tokens", "tone": "good"}, {"id": "c", "label": "Compute-bound", "sub": "the arithmetic units are the limit", "tone": "good"}, {"id": "d", "label": "Decode: low AI", "sub": "one weight load, one token", "tone": "warn"}, {"id": "m", "label": "Memory-bound", "sub": "compute idles waiting for weights", "tone": "crit"}, {"id": "e", "label": "14 GB at 2 TB/s = 7 ms/token", "sub": "a floor arithmetic cannot beat", "tone": "teal"}], "edges": [["a", "p"], ["p", "c"], ["a", "d"], ["d", "m"], ["m", "e"]], "t": "diagram", "id": "dg-3_1-04-2"},
+
+
 
 
 

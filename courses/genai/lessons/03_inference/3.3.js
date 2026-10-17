@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "From 3.1: decode throughput is bounded by `model size / memory bandwidth`, because every token requires loading every weight. Halving the bytes per weight halves the bytes loaded, which halves that bound. Nothing about the arithmetic changes — the arithmetic was never the constraint." },
 
     { t: "p", text: "Prefill benefits far less, because prefill is compute-bound: it already amortises one weight load across hundreds of tokens, so reducing the load helps little and the dequantisation work can even cost more than it saves. **Quantization is a decode optimisation**, which means it helps throughput and TPOT and does almost nothing for TTFT." },
@@ -64,6 +66,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Method", "Bits", "How", "Reference's quality note"],
       rows: [
@@ -82,6 +86,8 @@ EC.receiveLesson({
       sub: "The measurement that makes the case for calibration" },
 
     {"kind": "trace", "title": "The one-line quantization, and what it did", "caption": "PyTorch's dynamic quantization needs no calibration data and is the first thing anyone tries. On GPT-2 it delivers the promised speedup — 1.69× — and takes perplexity from **2.0707 to 1136.9664**, a factor of 549. The model is not degraded; it is destroyed, and it will still return fluent-looking text. Which is the argument for the check: perplexity on held-out text from your own domain is cheap and catches catastrophes like this one, and a task metric from 2.12's set catches the subtler degradation perplexity misses.", "left": "precision", "codeW": 150, "vars": ["perplexity", "forward pass"], "steps": [{"code": "fp32", "state": ["2.0707", "378.7 ms"], "tone": "good"}, {"code": "int8 dynamic", "state": ["1136.9664", "224.4 ms"], "changed": [0, 1], "tone": "crit", "note": "1.69x faster, 549x worse"}, {"code": "so measure both", "state": ["perplexity", "and a task metric"], "tone": "violet"}], "t": "diagram", "id": "dg-3_3-03-2"},
+
+
 
 
 
@@ -122,6 +128,8 @@ print("int8 perplexity : %.4f" % perplexity(qmodel))`,
       sub: "The deployment target decides, not the bit count" },
 
     {"kind": "matrix", "title": "Which method, decided by where it will run", "caption": "The method follows the hardware rather than a quality ranking. Note the fourth row, which is the honest option people skip past: **BF16 — no quantization at all — when the memory is there.** And the last row is a warning rather than a recommendation: 2-bit is usually treated as about 40% of the original quality, which is rarely the right trade for the memory it returns.", "cols": ["Method", "Why"], "rows": ["Data-centre GPU", "Consumer GPU", "CPU or laptop", "Maximum quality", "Extreme constraint"], "cells": [[{"text": "FP8, or AWQ 4-bit", "tone": "good"}, "hardware FP8 on recent accelerators"], [{"text": "AWQ or GPTQ 4-bit", "tone": "good"}, "fits 6-8 GB; mature kernels"], [{"text": "GGUF Q4_K_M", "tone": "good"}, "the quality-size balance; llama.cpp"], [{"text": "BF16 - none at all", "tone": "violet"}, "the honest option when it fits"], [{"text": "GGUF Q2_K", "tone": "crit"}, "about 40% of quality - rarely worth it"]], "t": "diagram", "id": "dg-3_3-04-3"},
+
+
 
 
 

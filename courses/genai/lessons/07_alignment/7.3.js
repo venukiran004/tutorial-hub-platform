@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "same-loss", text: "The same loss, different data",
       sub: "Which is why the masking detail is the whole lesson" },
 
+    {"kind": "trace", "title": "The same loss, with most positions masked out", "caption": "SFT is ordinary cross-entropy on `(prompt, response)` pairs — **no new mathematics**. What changes is that the data now has structure: part of each sequence is input to condition on and part is output to learn. **Cross-entropy does not know the difference**, so handing it the concatenated sequence supervises every position, training the model to generate prompts too. The mask is what makes it SFT rather than more pretraining.", "left": "position", "codeW": 130, "vars": ["token", "label", "supervised?"], "steps": [{"code": "0-11", "state": ["'User: ... Assistant:'", "IGNORE", "no"], "tone": "warn"}, {"code": "12", "state": ["' The'", "383", "YES"], "changed": [2], "tone": "good"}, {"code": "15", "state": ["' France'", "4881", "YES"], "tone": "good"}, {"code": "17", "state": ["' Paris'", "6342", "YES"], "tone": "good"}, {"code": "18", "state": ["'.'", "13", "YES"], "tone": "good", "note": "the response only"}], "t": "diagram", "id": "dg-7_3-01-0"},
+
+
     { t: "p", text: "SFT trains on `(prompt, response)` pairs with ordinary cross-entropy \u2014 the identical objective from 7.2. There is no new mathematics. What changes is that the data now has *structure*: part of each sequence is input the model should condition on, and part is output it should learn to produce." },
 
     { t: "p", text: "Cross-entropy does not know the difference. If you hand it the concatenated sequence it supervises every position, which means it trains the model to generate the prompt as well as the response \u2014 and generating prompts is not the job." },
@@ -144,6 +147,9 @@ print("mean unmasked loss (everything)   :", sum(fs) / len(fs))`,
     { t: "h2", n: "03", id: "templates", text: "Chat templates",
       sub: "The structure 7.1 showed was missing" },
 
+    {"kind": "flow", "title": "A chat template is structural, not cosmetic", "caption": "7.1 measured a base model putting **33.84% of its next-token mass on a newline** after a question — it had no representation of a turn *ending*. A chat template supplies that representation: special tokens that mean \"the user's part stops here\" and \"your part stops here\". Which is why using the wrong template at inference is not a formatting preference — the model was trained to recognise specific tokens, and different ones leave it without the boundary it learned to depend on.", "cols": 3, "nodes": [{"id": "b", "label": "A base model has no turn boundary", "sub": "33.84% on a newline", "tone": "crit"}, {"id": "t", "label": "A template supplies one", "sub": "special tokens, learned", "tone": "good"}, {"id": "s", "label": "So the model knows when to stop", "sub": "and when it is being addressed", "tone": "good"}, {"id": "w", "label": "Use a different template at inference", "sub": "and the boundary is gone", "tone": "crit"}, {"id": "n", "label": "Not a formatting preference", "sub": "the tokens were trained on", "tone": "teal"}], "edges": [["b", "t"], ["t", "s"], ["s", "w"], ["w", "n"]], "t": "diagram", "id": "dg-7_3-03-1"},
+
+
     { t: "p", text: "7.1 measured a base model putting 33.84% of its next-token mass on a newline after a question \u2014 it had no representation of a turn ending. A chat template is what supplies that representation, which makes it structural rather than cosmetic." },
 
     { t: "code", lang: "python", title: "always derive the template, never hand-format", code: `messages = [{"role": "user", "content": "Summarise this email."},
@@ -161,6 +167,9 @@ text = tokenizer.apply_chat_template(messages, tokenize=False)`,
 
     { t: "h2", n: "04", id: "data", text: "How much data, and of what quality",
       sub: "The one place quantity has a known ceiling" },
+
+    {"kind": "matrix", "title": "Three orders of magnitude, and what each is actually buying", "caption": "The reason the numbers differ by so much is in the right-hand column rather than in the task's difficulty. **100–1,000 teaches a surface pattern the model can already produce** — you are selecting among behaviours it has, not installing one. Behaviour across varied inputs needs coverage of the variation, which is why the middle row is ten times the first. And the last row is what a lab builds, not a product team.", "cols": ["Examples", "Why this order of magnitude"], "rows": ["Output format, JSON shape", "Domain tone and behaviour", "Instruction-following"], "cells": [[{"text": "100 - 1,000", "tone": "good"}, "a surface pattern it can already produce"], [{"text": "1,000 - 10,000", "tone": "accent"}, "behaviour needs coverage of the variation"], [{"text": "10,000 - 100,000+", "tone": "crit"}, "the whole repertoire - what a lab builds"]], "t": "diagram", "id": "dg-7_3-04-2"},
+
 
     { t: "table",
       head: ["Goal", "Examples needed", "Why this order of magnitude"],

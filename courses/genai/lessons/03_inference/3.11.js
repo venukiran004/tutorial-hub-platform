@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "dl", items: [
       { k: "TTFT — time to first token", v: "From the request arriving to the first token reaching the client. It contains the queue wait, the prefill, and any scheduling delay. At low load it is mostly prefill; under load it is mostly queueing, which is the single most misread thing about it." },
       { k: "TPOT — time per output token", v: "The gap between consecutive tokens, after the first. It is what makes a stream feel smooth or stuttery, and it rises as the batch fills (3.5 measured 6.4× from batch 1 to 32). A *distribution*, not a number — one request's gaps vary enormously." },
@@ -88,6 +90,8 @@ for name, xs in (("TTFT ms", ttft), ("TPOT ms", tpot)):
 
 
 
+
+
     { t: "p", text: "Total tokens divided by wall clock tells you what the system can produce. The rate a single stream experiences tells you what a user feels. On the same run these were 12.6 and 3.7 tokens per second — because four streams were sharing the device, so each received roughly a quarter of the output." },
 
     { t: "code", lang: "python", title: "g311_ex.py — three definitions on identical records", code: `all_gaps = [g for r in reqs for g in r["gaps_ms"]]
@@ -120,6 +124,8 @@ print(statistics.median(per_req))           # median experience`,
       sub: "Aggregation order changes the answer more than the system does" },
 
     {"kind": "trace", "title": "The same p99, aggregated three ways, differing by 2.8x", "caption": "TPOT is a distribution over gaps, and gaps are **grouped inside requests** — so \"the p99 TPOT\" is ambiguous. Pooling every gap gives 1120.9 ms; taking each request's p99 and averaging gives 702.9; taking each request's *mean* and then percentiles gives 404.8. All three get called p99 TPOT and the spread is **2.8×**. The tail explains why: the worst 1% of gaps belong to just 3 of 24 requests, so pooling counts one bad request many times and per-request averaging counts it once.", "left": "how it is aggregated", "codeW": 230, "vars": ["p50", "p90", "p99"], "steps": [{"code": "pool every gap", "state": ["227.6", "357.2", "1120.9"], "tone": "crit"}, {"code": "per-request p99, then mean", "state": ["227.5", "390.9", "702.9"], "changed": [2], "tone": "warn"}, {"code": "per-request mean, then p99", "state": ["263.2", "327.4", "404.8"], "changed": [2], "tone": "accent"}, {"code": "worst 1% of gaps", "state": ["3 requests", "of 24", "2.8x spread"], "tone": "violet"}], "t": "diagram", "id": "dg-3_11-03-2"},
+
+
 
 
 
@@ -225,6 +231,8 @@ owners = {rid for _, rid, _ in worst[:int(0.01 * len(all_gaps)) + 1]}`,
 
 
 
+
+
     { t: "p", text: "The point of a load test is a curve, not a number: hold the arrival pattern fixed and vary the concurrency limit, then read throughput and the latency percentiles together. Here is mine, and it has a result I have to be careful about." },
 
     { t: "code", lang: "python", title: "g311.py — the same load at 1, 2, 4 and 8 slots", code: `for slots in (1, 2, 4, 8):
@@ -253,6 +261,8 @@ owners = {rid for _, rid, _ in worst[:int(0.01 * len(all_gaps)) + 1]}`,
       sub: "And what the thresholds get wrong" },
 
     {"kind": "matrix", "title": "Four signals, and why these four", "caption": "Queue depth is first because it is **the only leading indicator** — it rises before any latency does, which makes it the right thing to autoscale on. TTFT p99 should be read as queueing rather than as model speed: **64–99% of it was queue** in this measurement. And KV cache utilisation is the one nobody watches: preemption and recompute start around 90% and are invisible in the latency right up until they are not.", "cols": ["Alert on", "Why this one"], "rows": ["Queue depth", "TPOT p99", "TTFT p99", "KV cache utilisation"], "cells": [[{"text": "a few seconds of work", "tone": "good"}, "the only leading indicator"], ["the smoothness budget", "what a reading user feels; p50 hides stalls"], ["the SLA", {"text": "read it as queue - 64-99% was", "tone": "warn"}], [{"text": "above about 90%", "tone": "crit"}, "preemption starts, invisibly"]], "t": "diagram", "id": "dg-3_11-06-4"},
+
+
 
 
 
