@@ -11,6 +11,8 @@ EC.receiveLesson({
   prerequisites: ["14.2", "9.5", "9.6"],
   blocks: [
     { t: "h2", n: "01", id: "twice", text: "The retry that sends the email three times", sub: "And the run succeeded" },
+
+    {"kind": "trace", "title": "Three attempts, three emails, and the run reported success", "caption": "**LangGraph re-runs the whole node, not the part after the failure — so everything before the failing line happens again. There is no mechanism that could know which statement failed, and no way to resume a Python function in the middle.** Which makes the dangerous shape broader than it first sounds: **any node that performs an effect and then does anything that can fail — including a state write, a log, a second tool call, or a model call to summarise what it just did.**", "left": "attempt", "codeW": 160, "vars": ["emails sent", "node outcome"], "steps": [{"code": "1", "state": ["1", "failed after sending"], "tone": "crit"}, {"code": "2", "state": ["2", "failed after sending"], "changed": [0], "tone": "crit"}, {"code": "3", "state": ["3", "succeeded"], "changed": [0, 1], "tone": "crit", "note": "final status: sent"}, {"code": "what the caller saw", "state": ["-", "the run succeeded"], "tone": "warn"}], "t": "diagram", "id": "dg-14_3-01-1"},
     { t: "code", lang: "text", title: "A node that acts, then fails",
       code: "a node that sends and THEN fails, with max_attempts=3:\n  node attempts : 3\n  emails sent   : 3\n  final status  : sent",
       caption: "The run **succeeded**. The customer got three emails." },
@@ -46,6 +48,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "The key the node saw on each of its three attempts",
       code: "[None, None, None]\nemails sent: 3",
       caption: "It was written on attempt 1 and attempt 2 still saw `None`." },
@@ -54,6 +57,8 @@ EC.receiveLesson({
       { t: "p", text: "So graph state is **structurally unable** to hold an idempotency key. Not awkward, not discouraged \u2014 unable, by the same property that makes retries safe for everything else. 9.5 is the related fact: a checkpoint holds the state as of the last **completed** superstep." }
     ] },
     { t: "h2", n: "03", id: "outside", text: "So the key lives outside the transaction", sub: "And claimed before the effect" },
+
+    {"kind": "trace", "title": "Two attempts, one email, and the retry succeeded rather than exhausting itself", "caption": "The key did **two** things: it prevented the duplicate, **and it let the retry succeed** — attempt 2 found the key, skipped the effect and returned normally, so the node stopped at two rather than spending its budget. **The ordering is load-bearing: the key is claimed before the effect. Claiming it afterwards means a crash between the effect and the write leaves no record, so the retry sends again — the same bug with a smaller window, which is the worst kind, because it passes testing.**", "left": "attempt", "codeW": 170, "vars": ["ledger", "emails sent", "outcome"], "steps": [{"code": "1: claim, then send", "state": ["claimed", "1", "failed after sending"], "tone": "warn"}, {"code": "2: key found", "state": ["'sent'", "1", "skipped, returned ok"], "changed": [0, 2], "tone": "good"}, {"code": "total", "state": ["1 entry", "1", "2 attempts, not 3"], "changed": [2], "tone": "good", "note": "the retry succeeded"}], "t": "diagram", "id": "dg-14_3-03-2"},
     { t: "code", lang: "text", title: "With the key in an external ledger",
       code: "node attempts : 2\nemails sent   : 1\nledger        : {'ORD-4471-confirm': 'sent'}",
       caption: "**Two** attempts, not three \u2014 and one email." },
@@ -62,6 +67,8 @@ EC.receiveLesson({
       { t: "p", text: "The ordering is load-bearing: the key is claimed **before** the effect. Claiming it afterwards means a crash between the effect and the write leaves no record, so the retry sends again. That is the same bug with a smaller window, which is the worst kind \u2014 it passes testing." }
     ] },
     { t: "h2", n: "04", id: "where", text: "Where the key comes from", sub: "The request, not the node" },
+
+    {"kind": "flow", "title": "A key that changes per attempt is not a key", "caption": "`uuid4()` in the node and a timestamp both fail the same way: they differ on every attempt, so nothing matches. **The subtle one is specific to agents: a deterministic key over non-deterministic arguments is not deterministic. The retry re-runs the whole node, so a model call inside it runs again — and if the model phrases the email differently or rounds the amount differently, the hash changes and the key does not match.** So the key comes from **the request**, not from anything the node generates.", "cols": 3, "nodes": [{"id": "g", "label": "hash(thread_id, step, action, args)", "sub": "or an id from the caller", "tone": "good"}, {"id": "u", "label": "uuid4() in the node", "sub": "new every attempt", "tone": "crit"}, {"id": "t", "label": "A timestamp", "sub": "same problem", "tone": "crit"}, {"id": "m", "label": "Hashing the model's own output", "sub": "the arguments vary per attempt", "tone": "crit"}, {"id": "r", "label": "So: from the request, not the node", "sub": "the node is the thing re-running", "tone": "violet"}], "edges": [["u", "r"], ["t", "r"], ["m", "r"], ["g", "r"]], "t": "diagram", "id": "dg-14_3-04-3"},
     { t: "code", lang: "text", title: "Four options, one of them subtle",
       code: "good    hash of (thread_id, step, action, arguments)\n        or an id supplied by the caller\nbad     uuid4() in the node       -- different on every attempt\nbad     a timestamp               -- same\nsubtle  the model's own output, if the arguments it generates vary\n        between attempts",
       caption: "A key that changes per attempt is not a key." },
@@ -70,6 +77,8 @@ EC.receiveLesson({
       { t: "p", text: "So the key has to be derived from something stable: the thread, the step, and the **intent**, not the generated text. If the arguments genuinely must come from the model, generate them once in an earlier node and pass them in." }
     ] },
     { t: "h2", n: "05", id: "restart", text: "A restart is a different problem", sub: "And the answer depends on where the key lives" },
+
+    {"kind": "trace", "title": "A restart is a different problem, and only two of four survive it", "caption": "A dict in memory handles the retry and loses everything on restart. **Graph state cannot even handle the retry — 9.5 means the checkpoint holds the last completed superstep, so the failed step re-runs with nothing recorded.** A store survives both. **And the external system itself is best, because it is the only guarantee that does not depend on your process** — a payment API that rejects a duplicate idempotency key needs no cooperation from your code at all.", "left": "the key lives in", "codeW": 170, "vars": ["survives a retry", "survives a restart"], "steps": [{"code": "memory (a dict)", "state": ["yes", "no - the effect repeats"], "tone": "warn"}, {"code": "graph state", "state": ["NO - always None", "no"], "changed": [0, 1], "tone": "crit", "note": "structurally unable"}, {"code": "a store (9.6)", "state": ["yes", "yes"], "changed": [0, 1], "tone": "good"}, {"code": "the external system", "state": ["yes", "yes"], "tone": "good", "note": "needs nothing from you"}], "t": "diagram", "id": "dg-14_3-05-4"},
     { t: "table", head: ["the key lives in", "after a process restart"], rows: [
       ["memory (a dict)", "lost \u2014 **the effect repeats**"],
       ["graph state", "lost for the failed step; 9.5 means the checkpoint has the last **completed** superstep, so the step re-runs"],

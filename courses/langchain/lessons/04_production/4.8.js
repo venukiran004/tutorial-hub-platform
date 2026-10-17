@@ -28,6 +28,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Three invocations",
       code: "three invocations: ['a fixed answer', 'a fixed answer', 'a fixed answer']\nall identical: True",
       caption: "With a real model the only safe assertion is about shape, not content." },
@@ -35,6 +36,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "best", text: "The assertion that catches the most", sub: "On the resolved message list" },
 
     {"kind": "trace", "title": "The assertion that catches the most is about the prompt, not the answer", "caption": "Three assertions on what the model **received** rather than what it returned: the message count, the system message surviving unchanged, and the question actually interpolated. That last one is 1.3's silent failure caught — **an unapplied partial sends the literal `{tone}` and produces a plausible answer**, so asserting on the answer passes and asserting on the prompt does not. **Testing the input is where the cheap bugs are.**", "left": "assertion", "codeW": 240, "vars": ["result"], "steps": [{"code": "the model received 2 messages", "state": ["True"], "tone": "good"}, {"code": "the system message is unchanged", "state": ["True"], "tone": "good", "note": "catches 3.6's trimming bug"}, {"code": "the question was interpolated", "state": ["True"], "changed": [0], "tone": "violet", "note": "catches 1.3's silent partial"}], "t": "diagram", "id": "dg-4_8-02-2"},
+
 
 
 
@@ -77,6 +79,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["Kind", "Asserts", "Example"], rows: [
       ["deterministic", "exact behaviour, with a scripted model", "the model received these two messages"],
       ["property", "something true for every input", "the system message survives trimming"],
@@ -90,6 +93,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "cannot", text: "What a scripted model cannot test", sub: "And why the split matters" },
 
     {"kind": "steps", "title": "The highest-value test asserts on what the model was sent", "caption": "1.2 established that the chain's source is not evidence about the request — only the resolved message list is. A scripted model makes that list available, which turns prompt construction from something you read into something you assert on.", "items": [{"label": "script the model", "desc": "a FakeChatModel that records every message list it receives", "tone": "accent", "code": "no API key"}, {"label": "invoke the real chain", "desc": "the prompt, the parser and the composition are all genuine", "tone": "good", "code": "real machinery"}, {"label": "assert on model.seen[0]", "desc": "the system message, the retrieved context, the question — as actually sent", "tone": "good", "code": "the point"}, {"label": "assert on the parsed result", "desc": "and on what happens when the scripted reply is malformed (1.4)", "tone": "violet", "code": "both halves"}], "t": "diagram", "id": "dg-4_8-04-0"},
+
 
 
 

@@ -12,11 +12,15 @@ EC.receiveLesson({
   blocks: [
     { t: "h2", n: "01", id: "halfway", text: "A plan that fails halfway", sub: "And why doing nothing is worse" },
 
+    {"kind": "trace", "title": "The card is charged and nothing has shipped", "caption": "**Doing nothing leaves the customer paying for an order that does not exist — which is worse than the original failure, because the original failure was recoverable and this state is a support ticket.** That is the whole argument for compensation: not that a half-finished plan is untidy, but that the partial state is a **worse** state than either the start or the finish, and nothing in the graph will move it on its own.", "left": "step", "codeW": 160, "vars": ["reserved", "charged", "shipped", "emailed"], "steps": [{"code": "reserve stock", "state": ["True", "False", "False", "False"], "tone": "good"}, {"code": "charge the card", "state": ["True", "True", "False", "False"], "changed": [1], "tone": "good"}, {"code": "ship", "state": ["True", "True", "False", "False"], "tone": "crit", "note": "warehouse API down"}, {"code": "do nothing", "state": ["True", "True", "False", "False"], "tone": "crit", "note": "a support ticket"}], "t": "diagram", "id": "dg-14_4-01-1"},
+
     { t: "code", lang: "text", title: "Four steps, failing at the third",
       code: "completed: ['reserve stock', 'charge the card']\nfailed at: ship (ConnectionError: warehouse API down)\nworld    : {'reserved': True, 'charged': True,\n            'emailed': False, 'shipped': False}",
       caption: "The card is charged and nothing has shipped." },
     { t: "p", text: "Doing nothing leaves the customer paying for an order that does not exist \u2014 which is **worse than the original failure**, because the original failure was recoverable and this state is a support ticket." },
     { t: "h2", n: "02", id: "reverse", text: "Compensating in reverse", sub: "And why the order is not arbitrary" },
+
+    {"kind": "flow", "title": "Reverse order is a rule you adopt because it is cheap and always safe", "caption": "**The compensations have the steps' dependencies, inverted.** Releasing stock before refunding is harmless here — but in a system where **the refund needs the reservation record to look up the transaction**, it is not, **and reasoning about which case you are in, per plan, is more expensive than always going in reverse.** Which is usually the right trade for a recovery path: **the code least likely to be exercised and most likely to be wrong.**", "cols": 3, "nodes": [{"id": "l", "label": "Last done, first undone", "sub": "charge, then reserve", "tone": "good"}, {"id": "d", "label": "Compensations inherit the dependencies", "sub": "inverted", "tone": "accent"}, {"id": "r", "label": "A refund may need the reservation record", "sub": "so order can matter", "tone": "warn"}, {"id": "p", "label": "Deciding per plan costs more than the rule", "sub": "always reverse", "tone": "violet"}, {"id": "e", "label": "Least exercised, most likely wrong", "sub": "so prefer the cheap rule", "tone": "teal"}], "edges": [["l", "d"], ["d", "r"], ["r", "p"], ["p", "e"]], "t": "diagram", "id": "dg-14_4-02-2"},
     { t: "code", lang: "text", title: "Unwinding",
       code: "charge the card    compensated\nreserve stock      compensated\nworld after compensation: {'reserved': False, 'charged': False, ...}",
       caption: "Last done, first undone." },
@@ -25,6 +29,8 @@ EC.receiveLesson({
       { t: "p", text: "So reverse order is a rule you adopt because it is cheap and always safe, not because every plan requires it. That is usually the right trade for a recovery path, which is the code least likely to be exercised and most likely to be wrong." }
     ] },
     { t: "h2", n: "03", id: "noncomp", text: "The step that cannot be undone", sub: "The same plan, reordered" },
+
+    {"kind": "flow", "title": "A correction is a second effect, not an undo", "caption": "**An email is not compensable. Neither is a webhook delivered to a third party, a message posted to a channel, or a file written to someone else's bucket. Sending “please disregard” does not restore the previous state — the customer has now been told two things and trusts neither.** Which is why the **category** matters more than the mechanism: most of the literature is about *how* to compensate, and the part that decides whether your plan is correct is **which steps you cannot.**", "cols": 3, "nodes": [{"id": "e", "label": "'your order is confirmed' - sent", "sub": "then the charge failed", "tone": "crit"}, {"id": "u", "label": "Can it be un-sent? No", "sub": "not an undo", "tone": "crit"}, {"id": "c", "label": "'Please disregard' is a second effect", "sub": "two statements, neither trusted", "tone": "crit"}, {"id": "o", "label": "Also: webhooks, channel posts, others' buckets", "sub": "the same category", "tone": "warn"}, {"id": "w", "label": "So the question is which steps you cannot undo", "sub": "not how to undo them", "tone": "violet"}], "edges": [["e", "u"], ["u", "c"], ["c", "o"], ["o", "w"]], "t": "diagram", "id": "dg-14_4-03-3"},
     { t: "code", lang: "text", title: "With the email moved to step 1",
       code: "completed : ['email the customer']\nfailed at : charge the card\nsent      : [\"email: 'your order is confirmed'\"]\ncan it be un-sent? NO",
       caption: "The customer has been told their order is confirmed. It is not." },
@@ -58,6 +64,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Same steps, same compensations, different semantics",
       code: "reserve, charge, ship, email     a failure anywhere is recoverable\nemail, reserve, charge, ship     a failure after step 1 is not",
       caption: "The ordering is a **correctness property**, not a style choice." },
@@ -66,6 +73,8 @@ EC.receiveLesson({
       { t: "p", text: "The check is mechanical: if any non-compensable step is followed by a compensable one, the plan is reorderable and should be reordered. If it cannot be reordered because of a real dependency, the plan needs a human (14.6) rather than an attempt." }
     ] },
     { t: "h2", n: "05", id: "record", text: "What a saga records, and where", sub: "Not in the thing it compensates" },
+
+    {"kind": "flow", "title": "The handle is the part people forget, and a failed compensation is a dead letter", "caption": "14.3's measurement applies directly — **a failed attempt's state writes are discarded, so the compensation log cannot live in graph state.** It goes to a store or a table, **written as each step completes.** And **“refund the card” is not actionable while “refund transaction `txn_8841`” is: the record has to capture whatever identifier the compensation will need, at the moment the step runs, because it may not be derivable afterwards — especially if the failure is the system that would have told you.**", "cols": 3, "nodes": [{"id": "s", "label": "Not graph state", "sub": "14.3: failed writes are discarded", "tone": "crit"}, {"id": "l", "label": "A store or a table, per completed step", "sub": "step, args, result, time, handle", "tone": "good"}, {"id": "h", "label": "'refund txn_8841', not 'refund the card'", "sub": "capture it when the step runs", "tone": "violet"}, {"id": "n", "label": "It may not be derivable later", "sub": "the failure may be that system", "tone": "warn"}, {"id": "d", "label": "A failed compensation is a dead letter", "sub": "14.6 - not a retry loop", "tone": "crit"}], "edges": [["s", "l"], ["l", "h"], ["h", "n"], ["n", "d"]], "t": "diagram", "id": "dg-14_4-05-4"},
     { t: "p", text: "14.3's measurement applies directly: a failed attempt's state writes are discarded. So the compensation log cannot live in graph state \u2014 it goes to a store or a table, written as each step **completes**." },
     { t: "code", lang: "text", title: "Per completed step",
       code: "step, arguments, result, timestamp, compensation handle",

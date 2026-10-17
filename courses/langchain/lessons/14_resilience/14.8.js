@@ -38,6 +38,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "9 spans from two model calls",
       code: "chain LangGraph\n  chain agent\n    llm   model\n    chain route\n  chain tools\n    tool  get_order\n  chain agent\n    llm   model\n    chain route\n\nby kind: [('chain', 6), ('llm', 2), ('tool', 1)]",
       caption: "Collected with a `BaseCallbackHandler` recording `run_id` and `parent_run_id`." },
@@ -46,6 +47,8 @@ EC.receiveLesson({
       { t: "p", text: "Note also that the conditional edge appears as its own span. The routing decision is observable, which matters because a misrouted run and a badly-answered run look identical from the output." }
     ] },
     { t: "h2", n: "02", id: "attrs", text: "The attributes that make it diagnosable", sub: "None are there by default" },
+
+    {"kind": "trace", "title": "Seven attributes, none of them present by default", "caption": "**The attempt number is the one that silently corrupts metrics: 14.3 measured a node running three times inside one successful run, so without it p99 latency and cost per run are both wrong — and a duplicate-call detector fires on retries that were working exactly as configured.** Which is a general shape: **the retries, fallbacks and degradations are all invisible successes, and they all distort the numbers you use to judge the system.**", "left": "attribute", "codeW": 170, "vars": ["what its absence costs"], "steps": [{"code": "thread_id", "state": ["a failure maps to no conversation"], "tone": "good"}, {"code": "checkpoint_id", "state": ["no resumable point (10.8)"], "changed": [0], "tone": "good"}, {"code": "node name", "state": ["the span belongs nowhere"], "changed": [0], "tone": "good"}, {"code": "tool arguments", "state": ["duplicates undetectable (12.8)"], "changed": [0], "tone": "warn"}, {"code": "token counts", "state": ["13.1's cost not computable"], "changed": [0], "tone": "warn"}, {"code": "the finish reason", "state": ["truncated looks complete"], "changed": [0], "tone": "warn"}, {"code": "the attempt number", "state": ["3 attempts read as 3 runs"], "changed": [0], "tone": "crit", "note": "corrupts p99 and cost"}], "t": "diagram", "id": "dg-14_8-02-1"},
     { t: "dl", items: [
       ["`thread_id`", "So a failure maps to a conversation (14.6)."],
       ["`checkpoint_id`", "So it maps to a resumable point (10.8)."],
@@ -60,6 +63,8 @@ EC.receiveLesson({
       { t: "p", text: "So the most important attribute for data quality is the one about a mechanism that was functioning. That is a general shape worth noticing: the retries, the fallbacks and the degradations are all invisible successes, and they all distort the numbers you use to judge the system." }
     ] },
     { t: "h2", n: "03", id: "loop", text: "The metric that catches a silent loop", sub: "Distinct pairs against the total" },
+
+    {"kind": "trace", "title": "Six calls, two distinct pairs, and the run succeeded", "caption": "**This run finished, answered, and never came near the recursion limit — which defaults to 10007 supersteps, so a loop making two calls a turn is nowhere close. The only signal is the repetition.** So: **count distinct `(tool, arguments)` pairs per run against the total. The ratio is near 1.0 for a healthy run and falls as a loop develops.** It needs no labels, no gold answer and no model call — **a group-by over the trace, which is why it is the first metric to add.**", "left": "the trajectory", "codeW": 200, "vars": ["total calls", "distinct (tool, args)", "ratio"], "steps": [{"code": "get_order -> get_policy", "state": ["2", "2", "1.00"], "tone": "good"}, {"code": "-> get_order -> get_policy", "state": ["4", "2", "0.50"], "changed": [0, 2], "tone": "warn"}, {"code": "-> get_order -> get_policy", "state": ["6", "2", "0.33"], "changed": [0, 2], "tone": "crit", "note": "4 repeat calls"}, {"code": "the recursion limit", "state": ["10007", "-", "never reached"], "changed": [0, 2], "tone": "crit"}], "t": "diagram", "id": "dg-14_8-03-2"},
     { t: "code", lang: "text", title: "A trajectory from a run that SUCCEEDED",
       code: "get_order -> get_policy -> get_order -> get_policy ->\n  get_order -> get_policy\n\ndistinct (tool, args) pairs : 2\nrepeat calls                : 4",
       caption: "This run finished, answered, and never hit the recursion limit." },
@@ -68,6 +73,8 @@ EC.receiveLesson({
       { t: "p", text: "So: count distinct `(tool, arguments)` pairs per run and compare against the total. The ratio is near 1.0 for a healthy run and falls as a loop develops. It needs no labels, no gold answer and no model call \u2014 it is a group-by over the trace, which is why it is the first metric to add (14.7)." }
     ] },
     { t: "h2", n: "04", id: "levels", text: "What to log at each level", sub: "And the one thing not to" },
+
+    {"kind": "layers", "title": "Three levels, and one thing not to log at any of them", "caption": "**Not the full prompt on every span: it is the single largest thing you could log, it grows quadratically with the conversation (13.1), and it contains whatever the user typed — so the storage cost and the privacy exposure both scale with exactly the sessions you most want to keep.** The working compromise: **a hash plus the token count always, and the full prompt only on failures or a sample. A reported failure is then almost always in the sample, and a working run costs a hash.**", "items": [{"label": "Per run", "sub": "thread_id, question, answer, tokens, cost, time, outcome, turns", "tone": "good", "side": "one row"}, {"label": "Per turn", "sub": "node, model, tokens in/out, latency, finish reason, attempt", "tone": "good", "side": "per call"}, {"label": "Per tool", "sub": "name, arguments, result size, latency, error, retry count", "tone": "good", "side": "per call"}, {"label": "NOT the full prompt on every span", "sub": "quadratic, and it is user input", "tone": "crit", "side": "hash it"}, {"label": "Full text on failures and a sample", "sub": "so the reported failure is in it", "tone": "violet", "side": "sampled"}], "t": "diagram", "id": "dg-14_8-04-3"},
     { t: "dl", items: [
       ["**per run**", "`thread_id`, the question, the final answer, total tokens, total cost, wall time, outcome (answered / degraded / dead-lettered), turn count."],
       ["**per turn**", "Node, model, input and output tokens, latency, finish reason, attempt number."],
@@ -78,6 +85,8 @@ EC.receiveLesson({
       { t: "p", text: "Log a **hash** plus the token count always, and the full prompt only on failures or a sample. A reported failure is then almost always in the sample, and a working run costs a hash." }
     ] },
     { t: "h2", n: "05", id: "oneq", text: "The one question this has to answer", sub: "Work backwards from it" },
+
+    {"kind": "flow", "title": "Work backwards from one question", "caption": "*“A user says it was wrong at 14:30 — what happened?”* **Answering needs the `thread_id` from their session, the run within it, the span tree, the tool arguments and results, and the prompt as it was actually sent. If any of those is missing, the answer is a guess** — **and the last one is usually what is missing**, for the good reason above. **Designing from that question rather than from a list of metrics is what stops you collecting five dashboards that cannot answer it.**", "cols": 3, "nodes": [{"id": "t", "label": "thread_id, then the run", "sub": "from the user's session", "tone": "good"}, {"id": "s", "label": "The span tree", "sub": "which turn called what", "tone": "good"}, {"id": "a", "label": "Tool arguments and results", "sub": "with what, after what", "tone": "good"}, {"id": "p", "label": "The prompt as actually sent", "sub": "usually the missing one", "tone": "crit"}, {"id": "g", "label": "Any one missing -> a guess", "sub": "and five dashboards cannot help", "tone": "violet"}], "edges": [["t", "s"], ["s", "a"], ["a", "p"], ["p", "g"]], "t": "diagram", "id": "dg-14_8-05-4"},
     { t: "p", text: "*\u201cA user says it was wrong at 14:30 \u2014 what happened?\u201d*" },
     { t: "p", text: "Answering it needs the `thread_id` from the user's session, the run within it, the span tree, the tool arguments and results, and the prompt **as it was actually sent**. If any of those is missing, the answer is a guess." },
     { t: "callout", kind: "mental", title: "And the last one is the one usually missing", body: [

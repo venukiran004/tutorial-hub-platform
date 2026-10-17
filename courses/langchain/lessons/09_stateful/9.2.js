@@ -20,6 +20,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Three ways of invoking it directly",
       code: "no config            RAISED ValueError: Missing required config key 'N/A' for 'tools'.\nempty configurable   RAISED ValueError: Missing required config key 'N/A' for 'tools'.\nwith a thread_id     RAISED ValueError: Missing required config key 'N/A' for 'tools'.",
       caption: "No config you construct by hand satisfies it." },
@@ -41,6 +42,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Two tool calls in one message",
       code: "two tool calls in one AIMessage -> 2 ToolMessages\n  id=c1   'Refunds are available within 30 days of purchase.'\n  id=c2   'Refunds are available within 30 days of purchase.'",
       caption: "Each result carries the id of the request it answers." },
@@ -48,6 +50,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "errors", text: "When a tool raises", sub: "And when the model invents one" },
 
     {"kind": "flow", "title": "A raising tool becomes a ToolMessage, which is 3.7's one-try-block fix built in", "caption": "`ToolNode` catches the exception and returns its message as the `ToolMessage` content, so **the model reads what went wrong and can fix its argument or explain the problem** — which is exactly the behaviour 3.7 argued for and implemented by hand. The consequence worth noting: **a tool failure does not stop the graph.** The cycle continues, the model gets another turn, and a tool that always raises becomes a loop that the recursion limit terminates.", "cols": 3, "nodes": [{"id": "r", "label": "The tool raises", "sub": "a bad argument, a timeout", "tone": "accent"}, {"id": "c", "label": "Caught, returned as content", "sub": "3.7's fix, built in", "tone": "good"}, {"id": "m", "label": "The model reads it and retries", "sub": "or explains", "tone": "good"}, {"id": "n", "label": "The graph does not stop", "sub": "the cycle continues", "tone": "warn"}, {"id": "l", "label": "So an always-raising tool is a loop", "sub": "ended by the recursion limit", "tone": "crit"}], "edges": [["r", "c"], ["c", "m"], ["m", "n"], ["n", "l"]], "t": "diagram", "id": "dg-9_2-03-3"},
+
 
 
 
@@ -65,6 +68,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "condition", text: "tools_condition, and its hidden coupling", sub: "It is directly callable" },
 
     {"kind": "flow", "title": "The router is testable on its own and the tool node is not", "caption": "`tools_condition` is a pure function of state — read the last message, return `\"tools\"` or `END` — so **it is testable without a graph, a model or a fixture.** `ToolNode` is not: it executes real tools. **Which is worth knowing when deciding what to cover with tests: the routing logic is the cheap, high-value test and the tool node's behaviour needs a fixture.** The hidden coupling is that `tools_condition` assumes the node is *named* `\"tools\"`.", "cols": 3, "nodes": [{"id": "r", "label": "tools_condition", "sub": "a pure function of state", "tone": "good"}, {"id": "t", "label": "Testable with no graph", "sub": "cheap, high value", "tone": "good"}, {"id": "n", "label": "ToolNode executes real tools", "sub": "needs a fixture", "tone": "warn"}, {"id": "c", "label": "And it assumes the name 'tools'", "sub": "the hidden coupling", "tone": "crit"}, {"id": "f", "label": "So rename the node and routing breaks", "sub": "8.5's name-as-identity, again", "tone": "crit"}], "edges": [["r", "t"], ["n", "c"], ["c", "f"]], "t": "diagram", "id": "dg-9_2-04-4"},
+
 
 
 
@@ -90,12 +94,14 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "9.1's behaviour, collapsed",
       code: 'g.add_node("agent", agent)\ng.add_node("tools", ToolNode(tools))\ng.add_edge(START, "agent")\ng.add_conditional_edges("agent", tools_condition)\ng.add_edge("tools", "agent")',
       caption: "Same run, same messages." },
     { t: "h2", n: "06", id: "unroll", text: "When to write them out", sub: "Six requirements that force it" },
 
     {"kind": "matrix", "title": "An asymmetry worth knowing before you rely on them", "caption": "`ToolNode` **cannot be invoked on its own** — no config, an empty `configurable` and a `thread_id` all raise. It has to run inside a compiled graph. `tools_condition` is directly callable, which is why one is easy to unit test and the other is not.", "cols": ["callable on its own?", "how you test it"], "rows": ["ToolNode", "tools_condition"], "cells": [[{"text": "NO — raises under every config", "tone": "crit"}, {"text": "a 3-line throwaway graph", "tone": "warn"}], [{"text": "yes", "tone": "good"}, {"text": "call it with a state dict", "tone": "good"}]], "t": "diagram", "id": "dg-9_2-06-0"},
+
 
 
 

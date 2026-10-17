@@ -31,6 +31,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "Three branches on the same input",
       code: 'branches = RunnableParallel(\n    summary=prompt | model | StrOutputParser(),\n    sentiment=prompt | model | StrOutputParser(),\n    topic=prompt | model | StrOutputParser())\n\nout = branches.invoke({"text: "some input"})',
       out: 'result : {\'summary\': \'a short summary\', \'sentiment\': \'positive\', \'topic\': \'technology\'}\ntime   : 0.115 s\n\nthe same three, run one after another: 0.310 s\nspeedup: 2.7x  (three 100 ms calls)',
@@ -88,6 +89,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "Two ways to write the same thing",
       code: 'chain_a = RunnableParallel(ctx=retriever, q=RunnablePassthrough())\nchain_b = {"ctx": retriever, "q": RunnablePassthrough()}   # identical',
       out: "{'a':..., 'b':...} | fn -> {'a': 'HEY', 'b': 3}\nfirst step type         : RunnableParallel",
@@ -96,6 +98,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "limits", text: "What a fan-out cannot do", sub: "Three limits worth knowing before you reach for it" },
 
     {"kind": "flow", "title": "Independent in execution, atomic in result", "caption": "The all-or-nothing behaviour surprises people, because **a fan-out looks like independent work.** It is independent in execution and **atomic in result**: two branches succeeding and one raising gives you **an exception, not a partial dict.** The usual fix is per-branch `with_fallbacks` returning a sentinel — `None`, or an \"unavailable\" marker — so a degraded answer beats no answer. 14.5 generalises that as k-of-N degradation; here it is one method call per branch.", "cols": 3, "nodes": [{"id": "t", "label": "Three branches run concurrently", "sub": "genuinely independent", "tone": "good"}, {"id": "o", "label": "Two succeed, one raises", "sub": "", "tone": "warn"}, {"id": "e", "label": "You get an exception", "sub": "not a partial dict", "tone": "crit"}, {"id": "f", "label": "Per-branch with_fallbacks", "sub": "returning a sentinel", "tone": "good"}, {"id": "d", "label": "A degraded answer beats none", "sub": "14.5's k-of-N, in one method call", "tone": "good"}], "edges": [["t", "o"], ["o", "e"], ["e", "f"], ["f", "d"]], "t": "diagram", "id": "dg-2_3-04-2"},
+
 
 
 

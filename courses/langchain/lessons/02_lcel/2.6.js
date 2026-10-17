@@ -31,6 +31,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "Retry a flaky step",
       code: 'r = RunnableLambda(flaky).with_retry(stop_after_attempt=4)\nr.invoke("x")',
       out: "result   : ok on attempt 3\nattempts : 3",
@@ -82,6 +83,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "whatnot", text: "What not to retry", sub: "Retry is for transient failures only" },
 
     {"kind": "matrix", "title": "Five failures where a retry is three times the cost for the same answer", "caption": "A blanket retry on any of these is **three times the latency for the same failure, three times the cost if the call was billed before it failed, and a confusing trace.** The last row is the one that catches people, because it does not look like a network problem and `with_retry` catches it anyway: a validation error on parsed output is **a schema issue from 1.5**, and re-sending an identical request produces an identical violation. `with_retry` takes `retry_if_exception_type` — scope it.", "cols": ["Why retrying is wasted"], "rows": ["401 / 403", "400 bad request", "context length exceeded", "content filter", "a validation error"], "cells": [[{"text": "credentials will not fix themselves", "tone": "crit"}], [{"text": "malformed, and it will stay malformed", "tone": "crit"}], [{"text": "deterministic - it recurs identically", "tone": "crit"}], [{"text": "the input is the problem", "tone": "crit"}], [{"text": "a schema issue (1.5), not a network one", "tone": "crit"}]], "t": "diagram", "id": "dg-2_6-03-1"},
+
 
 
 

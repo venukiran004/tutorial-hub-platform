@@ -38,6 +38,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "dl", items: [
       ["**token count**", "summarise when the history exceeds N tokens"],
       ["**turn count**", "summarise every N turns"],
@@ -46,6 +47,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "turns", text: "Why a turn count is a bad proxy", sub: "Turns differ by 25\u00d7" },
 
     {"kind": "trace", "title": "A turn is not a unit of anything", "caption": "**So “every 10 turns” can mean 20 tokens or 510, depending on the conversation — and it fires at the wrong time in both directions: too early on a chatty exchange of “ok” and “thanks”, where summarising costs more than it saves, and too late on one with pasted logs, where ten turns has already exceeded the budget.** It is a proxy for the thing that matters, measured in a unit that varies by 25×.", "left": "measurement", "codeW": 190, "vars": ["tokens", "what 10 turns means"], "steps": [{"code": "a short turn", "state": ["2", "20 tokens"], "tone": "good"}, {"code": "a long turn", "state": ["51", "510 tokens"], "changed": [0, 1], "tone": "crit"}, {"code": "ratio", "state": ["25.5x", "the same trigger"], "changed": [0, 1], "tone": "violet", "note": "too early, or too late"}], "t": "diagram", "id": "dg-13_2-02-1"},
+
     { t: "code", lang: "text", title: "Two turns from the same conversation",
       code: "a short turn : 2 tokens\na long turn  : 51 tokens\nratio        : 25.5x\n\nso 'every 10 turns' can mean 20 tokens or 510, depending on\nthe conversation.",
       caption: "A turn is not a unit of anything." },
@@ -56,6 +58,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "where", text: "Where a token trigger should fire", sub: "Not at the window" },
 
     {"kind": "trace", "title": "A trigger at 100% fires when summarising is no longer possible", "caption": "**The summarisation call needs the history as input, so it needs the history to still fit — you have filled the window and the operation that would free it requires room you no longer have.** 60 to 70 percent is the practical range: it leaves space for the summarisation call **and for one more turn arriving while it runs**, which in a conversational system it will.", "left": "trigger at", "codeW": 150, "vars": ["tokens", "room to summarise?", "room for one more turn?"], "steps": [{"code": "50% of available", "state": ["3521", "yes", "yes"], "tone": "good"}, {"code": "70% of available", "state": ["4929", "yes", "yes"], "changed": [0], "tone": "good", "note": "the practical range"}, {"code": "90% of available", "state": ["6338", "barely", "no"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "100% of available", "state": ["7042", "NO", "no"], "changed": [0, 1], "tone": "crit", "note": "unusable"}], "t": "diagram", "id": "dg-13_2-03-2"},
+
     { t: "code", lang: "text", title: "Thresholds as a fraction of available history",
       code: "trigger at 50% of available = 3521 tokens\ntrigger at 70% of available = 4929 tokens\ntrigger at 90% of available = 6338 tokens\ntrigger at 100% of available = 7042 tokens",
       caption: "The last one is unusable." },
@@ -66,6 +69,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "drift", text: "Semantic drift", sub: "The trigger that matches the intent" },
 
     {"kind": "flow", "title": "The trigger that matches the intent, and the hardest to measure", "caption": "The real question is not *“is the history long”* but *“is the old history still relevant”* — and **a conversation that changed topic can drop its early turns entirely, while one still on the original question cannot.** But 5.4's warning applies directly: **an embedding measures similarity, not relevance, so two turns about different aspects of the same order look dissimilar — and dropping the early ones loses the order id**, which 13.3 measures as the failure that destroys the conversation.", "cols": 3, "nodes": [{"id": "s", "label": "Embed the first N and the last N", "sub": "low similarity = moved on", "tone": "accent"}, {"id": "m", "label": "It matches the actual intent", "sub": "relevance, not length", "tone": "good"}, {"id": "w", "label": "But 5.4: similarity is not relevance", "sub": "same order, different aspects", "tone": "crit"}, {"id": "d", "label": "So it can license dropping the order id", "sub": "13.3's fatal case", "tone": "crit"}, {"id": "t", "label": "Hence a token count as the default", "sub": "a proxy, but a measurable one", "tone": "violet"}], "edges": [["s", "m"], ["m", "w"], ["w", "d"], ["d", "t"]], "t": "diagram", "id": "dg-13_2-04-3"},
+
     { t: "p", text: "The real question is not *\u201cis the history long\u201d* but *\u201cis the old history still relevant\u201d*. A conversation that changed topic can drop its early turns entirely; one still on the original question cannot." },
     { t: "code", lang: "text", title: "The shape",
       code: "embed the first N turns, embed the last N turns, and compare.\nlow similarity = the conversation has moved on.",
@@ -77,6 +81,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "recommend", text: "The recommendation", sub: "Two triggers" },
 
     {"kind": "flow", "title": "Two triggers, and the thing to measure afterwards is neither of them", "caption": "A **token** trigger at 60–70% as the primary, because it tracks cost and the window directly and cannot be fooled by turn size — **plus a hard cap on turns as a backstop, because one enormous turn can exceed the budget in a single step before a percentage trigger has evaluated.** Then the measurement: **whether the summarised conversation can still answer what the full one could. A trigger that fires at the right time and a summary that destroys the subject is the worse outcome, because it is harder to notice.**", "cols": 3, "nodes": [{"id": "t", "label": "Primary: tokens at 60-70%", "sub": "cannot be fooled by turn size", "tone": "good"}, {"id": "c", "label": "Backstop: a hard turn cap", "sub": "one enormous turn", "tone": "good"}, {"id": "b", "label": "Which a percentage cannot catch", "sub": "it exceeds in one step", "tone": "warn"}, {"id": "m", "label": "Then measure answerability", "sub": "13.3's check, not the trigger", "tone": "violet"}, {"id": "w", "label": "Firing late is the better failure", "sub": "a destroyed summary hides", "tone": "crit"}], "edges": [["t", "c"], ["c", "b"], ["t", "m"], ["m", "w"]], "t": "diagram", "id": "dg-13_2-05-4"},
+
     { t: "p", text: "A **token** trigger at 60\u201370% of the available history budget as the primary. It tracks the cost and the window directly, and it cannot be fooled by turn size." },
     { t: "p", text: "Plus a **hard cap on turns** as a backstop, because a pathological case \u2014 one enormous turn \u2014 can exceed the budget in a single step before a percentage trigger has evaluated." },
     { t: "callout", kind: "good", title: "And the thing to measure afterwards is not the trigger", body: [

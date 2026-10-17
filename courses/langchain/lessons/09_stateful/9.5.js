@@ -38,12 +38,14 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Three invocations across two threads",
       code: "thread=alice  sent 'hello'    -> 2 messages in state\nthread=alice  sent 'again'    -> 4 messages in state\nthread=bob    sent 'hi'       -> 2 messages in state\n\nthread=alice  [HumanMessage('hello'), AIMessage('you said: hello'),\n               HumanMessage('again'), AIMessage('you said: again')]\nthread=bob    [HumanMessage('hi'), AIMessage('you said: hi')]",
       caption: "Alice's second message landed in a four-message conversation; Bob's first in a two-message one." },
     { t: "h2", n: "02", id: "scoped", text: "What is scoped to a thread", sub: "Everything in the state" },
 
     {"kind": "matrix", "title": "The whole state is thread-scoped, and two of these three want something else", "caption": "**There is no per-thread and per-user distinction inside the state** — the whole thing is scoped to the `thread_id`. Which is correct for conversation history and **wrong for the other two rows**: a user's preferences are **forgotten when a new conversation starts**, and a cached lookup is **recomputed once per thread.** Neither is a bug in the mechanism; both are the mechanism being asked to hold something whose lifetime is different, which is what 9.6's store is for.", "cols": ["Scope it wants", "What thread-scoping does"], "rows": ["Conversation history", "A user's preferences", "A cached lookup"], "cells": [[{"text": "the thread", "tone": "good"}, {"text": "correct", "tone": "good"}], [{"text": "the user", "tone": "crit"}, {"text": "forgotten on a new conversation", "tone": "crit"}], [{"text": "global", "tone": "crit"}, {"text": "recomputed once per thread", "tone": "crit"}]], "t": "diagram", "id": "dg-9_5-02-1"},
+
 
 
 
@@ -64,6 +66,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "leak", text: "The three ways it goes wrong", sub: "And the mechanism is not subtle" },
 
     {"kind": "flow", "title": "Nothing validates a thread_id, so the boundary has to be an authorisation decision", "caption": "**It is a dictionary key.** So a `thread_id` taken from the request body lets a caller read any conversation whose id they can guess or enumerate. **The fix is to derive it server-side from the authenticated session and never from the request body, which makes the boundary an authorisation decision rather than a parameter.** And the third failure is 9.4's, which is **the opposite bug — the leak is absent and so is the memory — and it hides the other two during testing.**", "cols": 3, "nodes": [{"id": "k", "label": "thread_id is a dictionary key", "sub": "nothing validates it", "tone": "crit"}, {"id": "b", "label": "Taken from the request body", "sub": "guessable, enumerable", "tone": "crit"}, {"id": "s", "label": "Derive it from the session", "sub": "server-side, always", "tone": "good"}, {"id": "a", "label": "Now it is an authorisation decision", "sub": "not a parameter", "tone": "good"}, {"id": "o", "label": "And 9.4's bug hides both in testing", "sub": "nothing stored, nothing leaked", "tone": "violet"}], "edges": [["k", "b"], ["b", "s"], ["s", "a"], ["a", "o"]], "t": "diagram", "id": "dg-9_5-03-2"},
+
 
 
 
@@ -96,6 +99,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Six turns",
       code: "after 6 turns: 12 messages in state\ncheckpoints for the thread: 13",
       caption: "Each checkpoint contains the full history up to that point." },
@@ -107,6 +111,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "trimming", text: "Trimming is a node, not a setting", sub: "And it has two shapes" },
 
     {"kind": "matrix", "title": "Two trimming strategies, and both are nodes you can get wrong", "caption": "**Both are nodes in the graph, which means they are also places where a decision gets made and can be got wrong.** Keeping the last N loses the beginning — **including anything the user said once and expects to be remembered.** Summarising uses 8.3's **id-based replacement** in `add_messages`, because you are editing history rather than appending to it. And the detail that makes the naive version fail: **a trimming node that drops a tool call but keeps its `ToolMessage` leaves the history malformed**, so trimming has to respect message pairing.", "cols": ["Loses", "The trap"], "rows": ["Keep the last N turns", "Summarise older turns"], "cells": [[{"text": "the beginning - said once, expected remembered", "tone": "crit"}, "and it must respect message pairing"], ["specifics, as 3.5 said", {"text": "needs id-based replacement, not an append", "tone": "violet"}]], "t": "diagram", "id": "dg-9_5-05-4"},
+
 
 
 

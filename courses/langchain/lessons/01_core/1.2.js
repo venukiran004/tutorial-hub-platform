@@ -40,6 +40,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "A conversation is a list. Each entry has a role, and LangChain gives each role a class rather than a dict key, which is what lets a parser or a graph pattern-match on it later." },
 
     { t: "table",
@@ -61,6 +62,7 @@ EC.receiveLesson({
       sub: "And the base class does the rest" },
 
     {"kind": "layers", "title": "One method, and everything the base class gives you", "caption": "You implement `_generate` — a function from a list of messages to a message. Every other capability on a chat model is inherited, which is why a thirty-line fake model supports batching, streaming and tool binding without another line.", "items": [{"label": "with_retry · with_fallbacks", "sub": "resilience, composed as methods", "tone": "violet", "side": "free"}, {"label": "bind_tools · with_structured_output", "sub": "the tool protocol", "tone": "teal", "side": "free"}, {"label": "batch · abatch", "sub": "concurrency over a list of inputs", "tone": "good", "side": "free"}, {"label": "stream · astream · ainvoke", "sub": "incremental and async delivery", "tone": "good", "side": "free"}, {"label": "_generate(messages) -> ChatResult", "sub": "the ONE method you write", "tone": "accent", "side": "yours"}], "t": "diagram", "id": "dg-1_2-02-0"},
+
 
 
 
@@ -127,6 +129,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Templates, partial variables, few-shot examples, message placeholders and chains are all machinery for producing one thing: a flat list of messages. The model receives that list. It does not receive your variables, your template, your chain structure or your intentions." },
 
     { t: "code", lang: "python", title: "Three constructions, one request",
@@ -144,6 +147,7 @@ EC.receiveLesson({
       sub: "Three guarantees, and only one of them is obvious" },
 
     {"kind": "trace", "title": "batch is 5.8x the loop, and max_concurrency is the dial", "caption": "`batch` runs the inputs **concurrently against a thread pool** and returns results in input order, which on this workload is **0.726 s down to 0.126 s — 5.8×**. The third row is the one worth knowing: `max_concurrency=2` gives 0.365 s, so the parameter is a real throttle rather than a hint. Which makes it the control you reach for when the provider's rate limit is the binding constraint rather than your own patience.", "left": "how it was called", "codeW": 190, "vars": ["time", "vs loop"], "steps": [{"code": "a loop over invoke", "state": ["0.726 s", "1.00x"], "tone": "crit"}, {"code": "batch, unbounded", "state": ["0.126 s", "5.76x"], "changed": [0, 1], "tone": "good"}, {"code": "batch(max_concurrency=2)", "state": ["0.365 s", "1.99x"], "changed": [0], "tone": "accent", "note": "a real throttle"}], "t": "diagram", "id": "dg-1_2-04-3"},
+
 
 
 
@@ -187,6 +191,7 @@ EC.receiveLesson({
       sub: "Because half the tutorials you will find still use them" },
 
     {"kind": "flow", "title": "If a tutorial imports a *Chain class, reach for the modern equivalent", "caption": "The pre-LCEL named chain classes are deprecated, **they still fill tutorials and interview questions**, and knowing the modern equivalent for each is worth more than it should be. The rule of thumb is mechanical and the reason is concrete: **you get streaming, async, batching and tracing for free, none of which the legacy classes support** — so porting is not a style preference, it is how those four features become available at all.", "cols": 3, "nodes": [{"id": "l", "label": "LLMChain, SequentialChain", "sub": "the pipe replaces both", "tone": "warn"}, {"id": "c", "label": "ConversationChain", "sub": "RunnableWithMessageHistory, or a checkpointer", "tone": "warn"}, {"id": "r", "label": "RetrievalQA", "sub": "create_retrieval_chain in LCEL", "tone": "warn"}, {"id": "a", "label": "initialize_agent, AgentExecutor", "sub": "create_agent, or LangGraph", "tone": "warn"}, {"id": "f", "label": "And you gain four features", "sub": "streaming, async, batching, tracing", "tone": "good"}, {"id": "n", "label": "None of which the legacy classes have", "sub": "so it is not a style choice", "tone": "teal"}], "edges": [["l", "f"], ["c", "f"], ["r", "f"], ["a", "f"], ["f", "n"]], "t": "diagram", "id": "dg-1_2-05-4"},
+
 
 
 

@@ -11,6 +11,8 @@ EC.receiveLesson({
   prerequisites: ["14.4", "8.7"],
   blocks: [
     { t: "h2", n: "01", id: "cannot", text: "You cannot get partial results by letting branches fail", sub: "The measurement" },
+
+    {"kind": "trace", "title": "Three branches finished and their results went with the failing one", "caption": "**And that is correct, not a flaw: a superstep is a transaction — either all of its writes commit or none do — because committing a partial superstep would leave state no node had agreed on.** It is the same property that makes 14.3's retry transparent, where a failed attempt leaves no trace. **Correct, and the exact opposite of what partial results need, which is why k-of-N is not a configuration setting.**", "left": "branch", "codeW": 160, "vars": ["finished?", "its writes"], "steps": [{"code": "docs, tickets, wiki", "state": ["yes", "discarded"], "tone": "crit"}, {"code": "crm", "state": ["no - ConnectionError", "none"], "changed": [0, 1], "tone": "crit"}, {"code": "billing", "state": ["no", "none"], "tone": "crit"}, {"code": "the run", "state": ["raised", "nothing committed"], "changed": [0, 1], "tone": "crit", "note": "a superstep is a transaction"}], "t": "diagram", "id": "dg-14_5-01-1"},
     { t: "code", lang: "text", title: "Five sources, two of them down",
       code: "the whole run raised: ConnectionError: crm is down\nresults from the 3 branches that SUCCEEDED: lost",
       caption: "One exception in one parallel node fails the **superstep**." },
@@ -46,6 +48,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "The same five sources, guarded",
       code: "succeeded : ['docs', 'tickets', 'wiki']\nfailed    : ['crm: crm is down', 'billing: billing is down']\nratio     : 3 of 5",
       caption: "The run **completed**." },
@@ -55,6 +58,8 @@ EC.receiveLesson({
       { t: "p", text: "Hence the separate `errors` key. A gather step that can only see `found` cannot distinguish two sources being down from two sources having nothing to say." }
     ] },
     { t: "h2", n: "03", id: "threshold", text: "The gather step owns the threshold", sub: "One line, and it is a product decision" },
+
+    {"kind": "trace", "title": "A threshold, not whatever arrived", "caption": "The same 3 of 5 passes at k=3 and fails the run at k=4, **which makes it a product decision rather than a tuning knob.** And the label is the rest of it: **a run that answers from 1 of 5 sources and does not say so is worse than an error, because the user cannot tell the answer is partial and will act on it as if it were complete.** *“I could not reach the billing system, so this excludes your balance”* **is a degraded answer; the same text without the caveat is a wrong answer. That sentence costs one string.**", "left": "threshold", "codeW": 150, "vars": ["3 of 5 arrived", "and if unlabelled"], "steps": [{"code": "k = 1 of 5", "state": ["proceed", "a wrong answer"], "tone": "warn"}, {"code": "k = 3 of 5", "state": ["proceed", "a wrong answer"], "tone": "good", "note": "label it"}, {"code": "k = 4 of 5", "state": ["FAIL the run", "-"], "changed": [0, 1], "tone": "crit"}, {"code": "k = 5 of 5", "state": ["FAIL the run", "-"], "tone": "crit"}], "t": "diagram", "id": "dg-14_5-03-2"},
     { t: "code", lang: "text", title: "3 of 5 arrived",
       code: "threshold k=1 of 5 -> proceed\nthreshold k=3 of 5 -> proceed\nthreshold k=4 of 5 -> FAIL the run\nthreshold k=5 of 5 -> FAIL the run",
       caption: "It has to be a **threshold**, not \u201cwhatever arrived\u201d." },
@@ -63,6 +68,8 @@ EC.receiveLesson({
       { t: "p", text: "*\u201cI could not reach the billing system, so this does not include your current balance\u201d* is a degraded answer. The same text without the caveat is a **wrong answer**. That sentence is the entire difference, and it costs one string." }
     ] },
     { t: "h2", n: "04", id: "budget", text: "A budget that caps a run's spend", sub: "Checked in the router" },
+
+    {"kind": "trace", "title": "Four calls, and the fifth was never made", "caption": "**The check belongs in the router, before the next call — checking afterwards tells you that you have already overspent, which is a report rather than a budget.** And **it exits through a node that produces something, not by raising: a budget that raises has spent the money and thrown away the work, the worst of both.** The exhausted run returns its partial answer, labelled — the same rule as the k-of-N case.", "left": "router check", "codeW": 160, "vars": ["spent", "next call allowed?"], "steps": [{"code": "before call 1", "state": ["$0.000", "yes"], "tone": "good"}, {"code": "before call 4", "state": ["$0.036", "yes"], "changed": [0], "tone": "good"}, {"code": "before call 5", "state": ["$0.048", "NO - cap $0.05"], "changed": [0, 1], "tone": "warn"}, {"code": "exit", "state": ["$0.048", "partial answer, labelled"], "changed": [1], "tone": "violet", "note": "not an exception"}], "t": "diagram", "id": "dg-14_5-04-3"},
     { t: "code", lang: "text", title: "$0.05 at $0.012 a call",
       code: "calls made : 4\nspent      : $0.048\nanswer     : partial answer -- budget exhausted after 4 calls",
       caption: "Checked **before** the next call, not after it." },
@@ -71,6 +78,8 @@ EC.receiveLesson({
       { t: "p", text: "And it exits through a node that **produces** something, not by raising. A budget that raises has spent the money **and** thrown away the work \u2014 the worst of both. The exhausted run should return its partial answer, labelled, which is the same rule as the k-of-N case." }
     ] },
     { t: "h2", n: "05", id: "three", text: "Three budgets", sub: "And the one that catches a loop" },
+
+    {"kind": "flow", "title": "A recursion limit for structural loops, a call budget for semantic ones", "caption": "**A loop that is making progress by LangGraph's reckoning never hits the recursion limit — and that default is 10007 supersteps, which at $0.012 a call is roughly $120 before anything stops it.** So the call budget is the much smaller number and the one that catches a silent loop. **All three belong in the config and are read in the router, which also makes them testable without reaching into the graph.**", "cols": 3, "nodes": [{"id": "c", "label": "Cost: dollars per run", "sub": "the one on the bill", "tone": "good"}, {"id": "n", "label": "Calls: model calls per run", "sub": "no pricing table needed", "tone": "violet"}, {"id": "w", "label": "Wall time: the one a user notices", "sub": "latency per run", "tone": "good"}, {"id": "r", "label": "recursion_limit defaults to 10007", "sub": "~$120 at $0.012 a call", "tone": "crit"}, {"id": "s", "label": "So: structural loops vs semantic ones", "sub": "both, in the config", "tone": "teal"}], "edges": [["c", "s"], ["n", "r"], ["r", "s"], ["w", "s"]], "t": "diagram", "id": "dg-14_5-05-4"},
     { t: "dl", items: [
       ["**cost**", "Dollars per run. The one that shows up on a bill."],
       ["**calls**", "Model calls per run. A cheaper proxy, checkable without a pricing table."],

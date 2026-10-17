@@ -38,6 +38,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "Two nodes, one key, no reducer",
       code: 'class S(TypedDict):\n    messages: List[str]        # NO reducer\n\ndef a(state: S):\n    return {"messages": ["from a"]}\n\ndef b(state: S):\n    return {"messages": ["from b"]}\n\n# START -> a -> b -> END',
       out: "  result: {'messages': ['from b']}",
@@ -49,6 +50,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "annotated", text: "A reducer is the merge function", sub: "Declared in the annotation" },
 
     {"kind": "flow", "title": "Annotated's second argument is read by the runtime", "caption": "The signature is **`reducer(current_value, node_update) -> new_value`**, and `operator.add` on two lists is concatenation. The point worth being precise about: **the annotation is not documentation here — it is the mechanism.** `Annotated[list, operator.add]` is read by the runtime to decide how to merge that key, so a type hint is doing load-bearing work, which is unusual enough to catch people.", "cols": 3, "nodes": [{"id": "a", "label": "Annotated[list, operator.add]", "sub": "a type hint", "tone": "accent"}, {"id": "r", "label": "The second argument is read", "sub": "by the runtime", "tone": "violet"}, {"id": "s", "label": "reducer(current, update) -> new", "sub": "the signature", "tone": "violet"}, {"id": "c", "label": "So a hint is load-bearing", "sub": "not documentation", "tone": "good"}, {"id": "u", "label": "Which is unusual enough to catch people", "sub": "remove it and behaviour changes", "tone": "teal"}], "edges": [["a", "r"], ["r", "s"], ["s", "c"], ["c", "u"]], "t": "diagram", "id": "dg-8_3-02-1"},
+
 
 
 
@@ -73,6 +75,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Two parallel nodes writing the same key",
       code: "NO reducer     RAISED InvalidUpdateError: At key 'found': Can receive only one\n               value per step. Use an Annotated key to handle multiple values.\noperator.add   -> {'found': ['left', 'right']}",
       caption: "Loud, specific, and it names the fix." },
@@ -84,6 +87,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "order", text: "Reducers and ordering", sub: "The runtime chooses the order, not you" },
 
     {"kind": "matrix", "title": "Updates within a superstep arrive in an order you do not control", "caption": "So **a reducer whose result depends on order produces nondeterministic state.** The distinction that matters is not associativity: **`operator.add` on lists is associative and *not* commutative** — `[a] + [b]` is not `[b] + [a]` — so list concatenation at a fan-in records the **scheduling order**, not a meaningful one. Numbers, set union, max and min are all safe; \"last write wins\" is the worst case, because **which write is last is not a question with an answer.**", "cols": ["Safe under reordering", "Not safe"], "rows": ["Arithmetic", "Sets", "Extremes", "Lists", "Overwrite"], "cells": [[{"text": "operator.add on numbers", "tone": "good"}, "-"], [{"text": "set union", "tone": "good"}, "-"], [{"text": "max / min", "tone": "good"}, "-"], ["-", {"text": "list concatenation - order is scheduling", "tone": "crit"}], ["-", {"text": "'last write wins' - which write is last?", "tone": "crit"}]], "t": "diagram", "id": "dg-8_3-04-3"},
+
 
 
 
@@ -113,6 +117,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "Deduplicating a fan-in",
       code: 'def merge_unique(current, update):\n    out = list(current)\n    for x in update:\n        if x not in out:\n            out.append(x)\n    return out\n\nclass S4(TypedDict):\n    docs: Annotated[List[str], merge_unique]',
       out: "  two parallel fetchers returning overlapping docs:\n    {'docs': ['doc1', 'doc2', 'doc3']}",
@@ -121,6 +126,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "addmessages", text: "add_messages is not operator.add", sub: "And the difference is load-bearing" },
 
     {"kind": "matrix", "title": "Three things add_messages does that operator.add does not", "caption": "It is not a convenience alias. **It coerces dicts and strings into `Message` objects**, so a node can return a plain string. **It assigns an id to messages that lack one.** And **it replaces a message whose id matches an existing one** — which is the behaviour that makes an edit-in-place possible at all, and the one that will surprise you if you assumed append-only semantics.", "cols": ["What it does"], "rows": ["Coercion", "Identity", "Replacement"], "cells": [["turns dicts and strings into Message objects"], ["assigns an id to messages that lack one"], [{"text": "REPLACES a message whose id already exists - not append-only", "tone": "violet"}]], "t": "diagram", "id": "dg-8_3-06-5"},
+
 
 
 

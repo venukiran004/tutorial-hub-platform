@@ -38,6 +38,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "One cycle",
       code: "HumanMessage('refund policy?')\nAIMessage(tool_calls=['lookup_policy'])        <- content: 'I should look up\n                                                  the refund policy first.'\nToolMessage('Refunds are available within 30 days of purchase.')\nAIMessage('The policy says 30 days, which answers the question.')",
       caption: "The first `AIMessage` has **both** content and a tool call." },
@@ -51,6 +52,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "schema", text: "The state schema", sub: "And what does not belong in it" },
 
     {"kind": "flow", "title": "Two keys, and the counter is the one that is not a duplicate", "caption": "**A `current_tool` or `last_result` key is a duplicate: the message list already holds both, so you get two sources of truth that can disagree — and the message list is the one the model actually reads.** 8.8's tell applies as well: a key existing only so a router can read back what a node already knew is a `Command` waiting to happen. **The step counter is different** — it is a property of the run that no single node knows.", "cols": 3, "nodes": [{"id": "m", "label": "messages, with add_messages", "sub": "the loop IS the list", "tone": "good"}, {"id": "s", "label": "steps, with operator.add", "sub": "the router needs it", "tone": "good"}, {"id": "d", "label": "current_tool / last_result", "sub": "already in the list", "tone": "crit"}, {"id": "t", "label": "Two sources of truth that disagree", "sub": "and the model reads the list", "tone": "crit"}, {"id": "c", "label": "The counter is not a duplicate", "sub": "no single node knows it", "tone": "violet"}], "edges": [["m", "d"], ["d", "t"], ["s", "c"]], "t": "diagram", "id": "dg-11_3-02-1"},
+
 
 
 
@@ -69,6 +71,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "A budget in the router",
       code: 'def guarded(state):\n    if state["steps"] >= 3:\n        return "give_up"\n    return tools_condition(state)',
       out: "  a model that never stops asking, with a 3-step budget:\n    steps taken: 3\n    last message: AIMessage('I could not complete this in 3 steps.')",
@@ -81,6 +84,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "goodat", text: "What ReAct is good at", sub: "And bad at" },
 
     {"kind": "flow", "title": "Good at exploration, bad at commitment", "caption": "It fits when **the next action genuinely depends on the last result** — searching, diagnosing, following a trail, recovering from a tool failure by trying something else. It fits badly where a router already works, and badly on **long plans, because the model re-decides from scratch every turn and so has no commitment to a strategy.** And the cost is unpredictable for a plain reason: **the step count is model output.**", "cols": 3, "nodes": [{"id": "e", "label": "Exploration: search, diagnose, trail", "sub": "the next step depends on the last", "tone": "good"}, {"id": "f", "label": "Recovering from a tool failure", "sub": "by trying something else", "tone": "good"}, {"id": "r", "label": "Anything a router does", "sub": "one classification is cheaper", "tone": "warn"}, {"id": "p", "label": "Long plans", "sub": "it re-decides every turn", "tone": "crit"}, {"id": "c", "label": "Predictable cost", "sub": "the step count is model output", "tone": "crit"}], "edges": [["e", "f"], ["r", "p"], ["p", "c"]], "t": "diagram", "id": "dg-11_3-04-3"},
+
 
 
 

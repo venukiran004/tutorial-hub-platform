@@ -16,6 +16,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "One generic executor, and a dict",
       code: 'REGISTRY = {\n    "docs":    {"prompt": "You answer from the documentation.", "enabled": True},\n    "account": {"prompt": "You answer about accounts.",         "enabled": True},\n}\n\ndef executor(state):\n    spec = REGISTRY.get(state["worker"])\n    if spec is None or not spec["enabled"]:\n        return {"trace": ["executor: %r unavailable" % state["worker"]]}\n    return {"results": [...], "trace": ["executor ran %s" % state["worker"]]}',
       out: "    worker=docs      -> ['executor ran docs']\n    worker=account   -> ['executor ran account']",
@@ -23,6 +24,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "runtime", text: "Adding one at runtime", sub: "No recompile" },
 
     {"kind": "steps", "title": "The registry turns the worker set into data", "caption": "`add_node` is a build-time call, so *“add a worker”* normally means editing the graph and redeploying. One generic executor plus a dict of specs removes that — and the safety comes from what a row **cannot** say.", "items": [{"label": "one generic executor node", "desc": "it reads a spec and runs it; the graph topology never changes", "tone": "accent", "code": "build time"}, {"label": "a dict of worker specs", "desc": "a prompt, a tool list from an ALLOWLIST, and a few flags", "tone": "good", "code": "data"}, {"label": "nothing else may be expressed", "desc": "no code, no new tool, no permission — or the registry grants capabilities without review", "tone": "crit", "code": "the limit"}, {"label": "enabled defaults to OFF", "desc": "so adding a row and turning it on are two deliberate steps", "tone": "good", "code": "safety"}], "t": "diagram", "id": "dg-12_6-02-0"},
+
 
 
 
@@ -55,6 +57,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "One node in the drawing, whatever the registry contains", "caption": "**This is worse than 8.8's `Command` problem: that hid the destinations inside node bodies, and an annotation could recover them for the renderer. Here the worker set is not in the code at all, so there is nothing to annotate** — the set is a runtime value. Which forces a deliberate replacement: **the registry has to become the documentation**, through a listing endpoint or by living in version control. Otherwise the only way to know what the system can do is to read a database.", "cols": 3, "nodes": [{"id": "g", "label": "draw_ascii() shows one node", "sub": "three workers, one box", "tone": "warn"}, {"id": "c", "label": "8.8 hid destinations in node bodies", "sub": "an annotation recovered them", "tone": "accent"}, {"id": "n", "label": "Here there is nothing to annotate", "sub": "the set is a runtime value", "tone": "crit"}, {"id": "l", "label": "So: a listing endpoint", "sub": "or the registry in version control", "tone": "good"}, {"id": "d", "label": "Or else: read a database to find out", "sub": "what the system can do", "tone": "crit"}], "edges": [["g", "c"], ["c", "n"], ["n", "l"], ["n", "d"]], "t": "diagram", "id": "dg-12_6-03-2"},
 
 
+
     { t: "code", lang: "text", title: "draw_ascii(), whatever the registry contains",
       code: "+-----------+\n| __start__ |\n+-----------+\n      *\n+------------+\n|  executor  |\n+------------+",
       caption: "One node, three workers." },
@@ -65,6 +68,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "inflight", text: "In-flight run safety", sub: "The read has to be atomic per run" },
 
     {"kind": "trace", "title": "One run must see one worker set", "caption": "**A run that started before a worker was disabled may route to it afterwards, so the registry read has to be atomic per run — a snapshot carried in state or context (10.7), or a pinned registry version.** Read per node execution, a single run can see two worker sets, so **the trace records decisions made against configurations that never coexisted, and no amount of logging recovers which was in force when** — 10.9's version-pinning argument exactly.", "left": "read strategy", "codeW": 190, "vars": ["worker sets one run can see", "trace interpretable?"], "steps": [{"code": "per node execution", "state": ["2 or more", "no"], "tone": "crit", "note": "never coexisted"}, {"code": "snapshot at run start", "state": ["1", "yes"], "changed": [0, 1], "tone": "good"}, {"code": "or pin a registry version", "state": ["1", "yes"], "tone": "good"}, {"code": "the kill switch, mid-flight", "state": ["'account' unavailable", "degraded, not raised"], "changed": [0, 1], "tone": "violet", "note": "one bad worker is not an outage"}], "t": "diagram", "id": "dg-12_6-04-3"},
+
 
 
     { t: "p", text: "A run that started before a worker was disabled may route to it afterwards. So the registry read must be atomic **per run**, not per node execution:" },
@@ -85,6 +89,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "A canary is a row, and a row is not a measurement", "caption": "Genuinely easier than the compiled version, **where two variants of a worker means two nodes and a conditional edge weighted by a random number.** The caution is that **a canary needs per-variant measurement to mean anything, so the trace has to record which variant ran** — the same point as 10.5's *record which exit fired*. A 5% canary whose results are pooled with the other 95% has shipped a variant and measured nothing.", "cols": 3, "nodes": [{"id": "r", "label": "A variant is a row with traffic: 0.05", "sub": "a data change", "tone": "good"}, {"id": "c", "label": "Compiled: two nodes and a weighted edge", "sub": "a deploy, per variant", "tone": "warn"}, {"id": "m", "label": "But a row is not a measurement", "sub": "10.5's 'record which exit fired'", "tone": "crit"}, {"id": "t", "label": "So the trace records which variant ran", "sub": "per-variant, or nothing", "tone": "good"}, {"id": "p", "label": "Pooled results = shipped, not measured", "sub": "the 5% disappears into the 95%", "tone": "crit"}], "edges": [["r", "c"], ["r", "m"], ["m", "t"], ["m", "p"]], "t": "diagram", "id": "dg-12_6-05-4"},
 
 
+
     { t: "code", lang: "python", title: "A variant is a row",
       code: 'REGISTRY["docs_v2"] = {..., "traffic": 0.05}',
       caption: "And the routing decision reads it." },
@@ -92,6 +97,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "when", text: "When to use it", sub: "And the test" },
 
     {"kind": "flow", "title": "The test is whether the workers differ in configuration or in structure", "caption": "**Workers differing only in configuration — a prompt, a tool list — are rows one executor serves. Workers differing structurally make the executor grow a branch per worker, at which point you have reinvented the graph badly.** The frequency test is the other half: **if the worker set changes a few times a year, a deploy is cheaper than a registry, a listing endpoint and a version-pinning scheme** — all three of which this lesson showed you need.", "cols": 3, "nodes": [{"id": "c", "label": "Differ only in configuration", "sub": "prompt, tool list -> rows", "tone": "good"}, {"id": "o", "label": "Added often, by people without deploys", "sub": "the case it is built for", "tone": "good"}, {"id": "s", "label": "Differ structurally", "sub": "a branch per worker", "tone": "crit"}, {"id": "g", "label": "You have reinvented the graph badly", "sub": "with no drawing of it", "tone": "crit"}, {"id": "f", "label": "Changes a few times a year?", "sub": "a deploy is cheaper", "tone": "warn"}], "edges": [["c", "o"], ["s", "g"], ["g", "f"]], "t": "diagram", "id": "dg-12_6-06-5"},
+
 
 
     { t: "table", head: ["worth it when", "not worth it when"], rows: [

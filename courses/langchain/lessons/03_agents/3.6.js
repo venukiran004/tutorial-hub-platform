@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "Three turns against one session",
       code: 'prompt = ChatPromptTemplate.from_messages([\n    ("system", "You are terse."),\n    MessagesPlaceholder(variable_name="history"),\n    ("human", "{input}")])\n\nwith_hist = RunnableWithMessageHistory(\n    prompt | model | StrOutputParser(), get_history,\n    input_messages_key="input", history_messages_key="history")\n\ncfg = {"configurable": {"session_id": "s1"}}\nfor i in range(1, 4):\n    with_hist.invoke({"input": "question %d" % i}, config=cfg)',
       out: "after 3 turns, stored messages: 6\n   Human:    question 1\n   AI:       ok 1\n   Human:    question 2\n   AI:       ok 2\n   Human:    question 3\n   AI:       ok 3",
@@ -40,6 +41,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "deprecated", text: "And it is deprecated", sub: "Pointing at module 9" },
 
     {"kind": "flow", "title": "Worth understanding anyway, for the same reason as the hand-written loop", "caption": "`RunnableWithMessageHistory` is deprecated in favour of a LangGraph checkpointer, and it is worth understanding **for the same reason 3.3 writes the agent loop by hand**: the graph version does the same job with more machinery, and **knowing what the simple version does makes the richer one legible rather than magical.** Read it once as the definition of what a checkpointer has to provide, then use the checkpointer.", "cols": 3, "nodes": [{"id": "d", "label": "RunnableWithMessageHistory", "sub": "deprecated", "tone": "warn"}, {"id": "j", "label": "It does one job", "sub": "load, append, save, per session", "tone": "accent"}, {"id": "c", "label": "A checkpointer does the same job", "sub": "with more machinery (9.4)", "tone": "accent"}, {"id": "l", "label": "So read this as the definition", "sub": "of what the richer one provides", "tone": "good"}, {"id": "m", "label": "Legible rather than magical", "sub": "3.3's argument, again", "tone": "teal"}], "edges": [["d", "j"], ["j", "c"], ["c", "l"], ["l", "m"]], "t": "diagram", "id": "dg-3_6-02-2"},
+
 
 
 
@@ -80,6 +82,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Trimming a 17-message history",
       code: 'original: 17 messages\n\nlast 6 messages        -> 6 kept: S H A H A H\nlast 4 messages        -> 4 kept: S H A H\nfirst 5 messages       -> 5 kept: S H A H A\nlast 5, end on human   -> 4 kept: S H A H',
       caption: "S = system, H = human, A = ai. Note that the system message survives every strategy." },
@@ -91,6 +94,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "loses", text: "What each strategy loses", sub: "The decision this is really about" },
 
     {"kind": "matrix", "title": "Trimming strategies, and what each one loses", "caption": "`RunnableWithMessageHistory` keys a store by `session_id` — config, not input, exactly as 2.9's test predicts. What it does not decide is which messages survive, and that choice is the one with consequences (13.3 measures them).", "cols": ["per-turn cost", "what it loses"], "rows": ["the full buffer", "last-k messages", "a token-budget trim", "a running summary"], "cells": [[{"text": "grows every turn", "tone": "crit"}, {"text": "nothing — until the window", "tone": "good"}], [{"text": "constant", "tone": "good"}, {"text": "the beginning, where the facts are", "tone": "crit"}], [{"text": "bounded", "tone": "good"}, {"text": "the same, but by the right unit", "tone": "warn"}], [{"text": "bounded + a call", "tone": "warn"}, {"text": "whatever the prompt omitted", "tone": "warn"}]], "t": "diagram", "id": "dg-3_6-04-0"},
+
 
 
 

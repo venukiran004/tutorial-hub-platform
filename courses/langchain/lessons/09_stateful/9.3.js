@@ -38,6 +38,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["", "control flow", "you write"], rows: [
       ["workflow", "**you** wrote it", "the structure; the model fills in steps"],
       ["agent", "the **model** decides it", "the tools; the model chooses and sequences"]
@@ -56,6 +57,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "A fixed sequence",
       code: "['outline', 'draft', 'polish']",
       caption: "Three model calls, always, in that order." },
@@ -63,6 +65,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "routing", text: "Routing", sub: "Control: yours, with the model classifying" },
 
     {"kind": "flow", "title": "Routing in a graph is 2.5's router with the destinations visible", "caption": "A classifier node plus a conditional edge does what 2.5's `RunnableLambda` returning a Runnable did — **and the difference is that the destinations are in the graph rather than inside a function.** So the drawing shows every branch, 8.7's path map keeps the decision topology-independent, and the router is a pure function you can test. **The cost is the schema and the wiring**, which is 8.6's four-lines-against-one comparison again.", "cols": 3, "nodes": [{"id": "c", "label": "A classifier node", "sub": "returns a domain word", "tone": "accent"}, {"id": "e", "label": "A conditional edge with a path map", "sub": "8.7", "tone": "violet"}, {"id": "d", "label": "Destinations are in the graph", "sub": "not inside a function", "tone": "good"}, {"id": "r", "label": "So the drawing shows every branch", "sub": "which 2.5 could not", "tone": "good"}, {"id": "s", "label": "At the cost of a schema and wiring", "sub": "8.6's comparison", "tone": "warn"}], "edges": [["c", "e"], ["e", "d"], ["d", "r"], ["r", "s"]], "t": "diagram", "id": "dg-9_3-03-2"},
+
 
 
 
@@ -87,6 +90,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Three reviewers in one superstep",
       code: "['security review', 'performance review', 'style review', 'merged 3']",
       caption: "Latency is the slowest branch; cost is still the sum." },
@@ -94,6 +98,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "orchestrator", text: "Orchestrator-worker", sub: "Control: shared" },
 
     {"kind": "flow", "title": "The orchestrator decides how many workers, which a fixed fan-out cannot", "caption": "**It needs 8.7's list-returning router**: the orchestrator produced three sections, so three workers ran. **A statically wired fan-out would have had to guess that number** — and guessing high wastes calls on sections that do not exist while guessing low drops work. Which is the first pattern in this lesson where the graph is doing something a chain genuinely cannot, rather than doing the same thing with more machinery.", "cols": 3, "nodes": [{"id": "o", "label": "The orchestrator plans", "sub": "three sections, this time", "tone": "violet"}, {"id": "l", "label": "Returns a list of destinations", "sub": "8.7's dynamic fan-out", "tone": "violet"}, {"id": "w", "label": "Three workers run", "sub": "the count came from runtime", "tone": "good"}, {"id": "s", "label": "A static fan-out must guess", "sub": "high wastes, low drops work", "tone": "crit"}, {"id": "f", "label": "The first pattern a chain cannot do", "sub": "rather than do more slowly", "tone": "teal"}], "edges": [["o", "l"], ["l", "w"], ["w", "s"], ["s", "f"]], "t": "diagram", "id": "dg-9_3-05-4"},
+
 
 
 
@@ -116,6 +121,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Generate, evaluate, loop back",
       code: "['generate', 'evaluate(score=1)', 'generate', 'evaluate(score=2)',\n 'generate', 'evaluate(score=3)']\nattempts: 3",
       caption: "Three iterations, ending on the quality condition." },
@@ -126,6 +132,7 @@ EC.receiveLesson({
     { t: "h2", n: "07", id: "table", text: "Where the control sits", sub: "The whole catalogue" },
 
     {"kind": "matrix", "title": "Six patterns, sorted by who holds control and whether the paths are enumerable", "caption": "**The enumerable column is the one that decides how you test and budget.** The first three have control in your code and **exactly enumerable paths** — so you can assert on the path, bound the cost and draw the graph completely. The last three take their shape from runtime, and the agent row is the honest end of it: **control is the model's and nothing is bounded**, which is 3.8's p95 and 8.9's recursion limit in one line.", "cols": ["Control", "Paths enumerable?"], "rows": ["Prompt chaining", "Routing", "Parallelisation", "Orchestrator-worker", "Evaluator-optimiser", "Agent"], "cells": [[{"text": "yours", "tone": "good"}, {"text": "yes - exactly one", "tone": "good"}], [{"text": "yours", "tone": "good"}, {"text": "yes - one per category", "tone": "good"}], [{"text": "yours", "tone": "good"}, {"text": "yes - a fixed fan-out", "tone": "good"}], ["shared", {"text": "no - the count is runtime", "tone": "warn"}], ["shared", {"text": "no - iterations are runtime", "tone": "warn"}], [{"text": "the model's", "tone": "crit"}, {"text": "no - nothing is bounded", "tone": "crit"}]], "t": "diagram", "id": "dg-9_3-07-6"},
+
 
 
 

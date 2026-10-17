@@ -13,6 +13,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "diff", text: "Compressing rather than dropping", sub: "The one strategy that is not a trade" },
 
     {"kind": "trace", "title": "Forty-eight percent saved, and nothing a later turn needs was lost", "caption": "**That is the case compression exists for, and it is the one strategy in this module that is not a trade. Filler, hedging and courtesy are a real fraction of an assistant's output and carry no information forward** — so removing them is a saving rather than a loss. Everything else here drops something a later turn might have wanted; this drops something no later turn can use.", "left": "version", "codeW": 150, "vars": ["tokens", "what it says", "information forward"], "steps": [{"code": "verbose", "state": ["23", "investigating, will confirm", "all of it"], "tone": "warn"}, {"code": "terse", "state": ["12", "investigating, will confirm", "all of it"], "changed": [0], "tone": "good", "note": "48% saved"}, {"code": "what was removed", "state": ["11", "hedging and courtesy", "none"], "changed": [1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-13_5-01-1"},
+
     { t: "code", lang: "text", title: "The same content, fewer tokens",
       code: "verbose: 23 tokens  'Still investigating with the payments team. I will\n                     confirm as soon as the duplicate is identified and\n                     the reversal is scheduled.'\nterse  : 12 tokens  'Investigating; will confirm once the reversal is\n                     scheduled.'\nsaved  : 48%",
       caption: "And nothing a later turn needs was lost." },
@@ -20,6 +21,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "safe", text: "What compresses safely", sub: "And the trap in the numbers" },
 
     {"kind": "trace", "title": "The largest saving is on the destructive case", "caption": "**The reason is structural: dense, information-bearing text is exactly the text that cannot be shortened, so a high compression ratio is evidence you compressed something that was mostly filler — or that you destroyed something that was not. Which means a step tuned to maximise the saving will converge on destroying the user's statements of fact.** 6.4 found the same shape in BM25: a confident magnitude anti-correlated with usefulness.", "left": "case", "codeW": 180, "vars": ["before -> after", "saved", "facts kept"], "steps": [{"code": "assistant courtesy", "state": ["20 -> 4", "80%", "NONE to lose"], "tone": "good"}, {"code": "a tool result", "state": ["42 -> 20", "52%", "order id, amount"], "changed": [0, 1, 2], "tone": "good"}, {"code": "the user's own words", "state": ["28 -> 4", "86%", "NONE"], "changed": [0, 1, 2], "tone": "crit", "note": "the biggest saving"}, {"code": "so: compress", "state": ["assistant turns, tool results", "-", "leave the user alone"], "tone": "violet"}], "t": "diagram", "id": "dg-13_5-02-2"},
+
     { t: "code", lang: "text", title: "Three cases",
       code: "case                  before  after  saved   facts kept after\nassistant courtesy    20      4      80%     NONE\na tool result         42      20     52%     ['order id', 'the amount']\nthe user's own words  28      4      86%     NONE",
       caption: "The **largest** saving is on the **destructive** case." },
@@ -31,6 +33,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "tools", text: "The tool-result case is the biggest win", sub: "Paid once, saved every turn" },
 
     {"kind": "trace", "title": "Paid once, saved on every later turn", "caption": "**4.4 explains the ratio: JSON tokenises badly — the quoting, braces and field names are tokens carrying no information the model needs, so reformatting as `order ORD-4471, 148.50, 11 March` is not lossy, it is the same content without the syntax.** And this one is **free and exact**, which none of the other strategies are: a tool result has a known structure, so compressing it is a formatting function rather than a model call.", "left": "the tool result", "codeW": 180, "vars": ["tokens", "cumulative over 10 turns"], "steps": [{"code": "raw JSON", "state": ["80", "800"], "tone": "crit"}, {"code": "compact", "state": ["21", "210"], "changed": [0, 1], "tone": "good", "note": "74%"}, {"code": "saved", "state": ["59", "590"], "changed": [0, 1], "tone": "violet", "note": "a formatting function"}], "t": "diagram", "id": "dg-13_5-03-3"},
+
     { t: "code", lang: "text", title: "A tool returning JSON",
       code: "raw JSON : 80 tokens\ncompact  : 21 tokens\nsaved    : 59 tokens, 74%\n\nover 10 subsequent turns that is 590 tokens saved.",
       caption: "Because the result sits in the history for **every** later turn (11.3)." },
@@ -41,6 +44,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "measure", text: "The measurement", sub: "Which a token count cannot give you" },
 
     {"kind": "steps", "title": "Three lines, and the stronger version when the facts are not enumerable", "caption": "**Mechanical, cheap, and the only thing that distinguishes a 60% saving from a 60% loss** — 13.3's check applied to a different operation. The stronger version is worth running on a handful of cases **even when you have a fact list, because the fact list only contains what you thought to write down.**", "items": [{"label": "List the facts the context must preserve", "code": "1", "desc": "Written down before compressing, not after — a list made afterwards is a list of what survived.", "tone": "accent"}, {"label": "Apply the compression", "code": "2", "desc": "Whichever of the three cases it is.", "tone": "good"}, {"label": "Check which facts survive", "code": "3", "desc": "Three lines of code, and the only check that separates a saving from a loss.", "tone": "good"}, {"label": "Stronger: ask both contexts the same question", "code": "+", "desc": "Two model calls per case, and it catches implications, tone and a constraint stated indirectly.", "tone": "violet"}], "t": "diagram", "id": "dg-13_5-04-4"},
+
     { t: "ol", items: [
       "List the facts the context must preserve.",
       "Apply the compression.",
@@ -54,6 +58,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "first", text: "Where compression sits", sub: "First" },
 
     {"kind": "matrix", "title": "Compression ratio is anti-correlated with safety", "caption": "The **largest** saving is the **destructive** one, because dense information-bearing text is exactly the text that cannot be shortened. So a compressor tuned to maximise its ratio converges on destroying what cannot be reconstructed.", "cols": ["before", "after", "saved", "facts kept", "verdict"], "rows": ["assistant courtesy", "a tool result", "the user’s own words"], "cells": [["20 tok", "4 tok", {"text": "80%", "tone": "good"}, "none to keep", {"text": "safe", "tone": "good"}], ["42 tok", "20 tok", {"text": "52%", "tone": "good"}, {"text": "all", "tone": "good"}, {"text": "safe — best win", "tone": "good"}], ["28 tok", "4 tok", {"text": "86%", "tone": "crit"}, {"text": "NONE", "tone": "crit"}, {"text": "destructive", "tone": "crit"}]], "t": "diagram", "id": "dg-13_5-05-0"},
+
 
 
 

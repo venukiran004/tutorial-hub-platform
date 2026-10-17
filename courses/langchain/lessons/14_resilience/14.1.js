@@ -11,6 +11,8 @@ EC.receiveLesson({
   prerequisites: ["13.6", "12.8", "6.2"],
   blocks: [
     { t: "h2", n: "01", id: "question", text: "The useful question", sub: "Not what broke \u2014 whether anything told you" },
+
+    {"kind": "flow", "title": "A handler is for a failure you can see; a detector is something you can forget to write", "caption": "**A failure you can see is a different engineering problem from one you cannot.** The first needs a handler and the framework usually hands you the exception. The second needs a **detector** — code somebody decides to write, which means it can simply not exist. **So the column worth having in a failure taxonomy is the signal, not the cause**, because the cause tells you what to build and the signal tells you whether you will ever get the chance.", "cols": 3, "nodes": [{"id": "v", "label": "A visible failure", "sub": "an exception arrives", "tone": "good"}, {"id": "h", "label": "Needs a handler", "sub": "the framework hands it to you", "tone": "good"}, {"id": "s", "label": "A silent failure", "sub": "the run succeeds", "tone": "crit"}, {"id": "d", "label": "Needs a detector", "sub": "which you write", "tone": "crit"}, {"id": "f", "label": "And can forget to write", "sub": "so: classify by signal", "tone": "violet"}], "edges": [["v", "h"], ["s", "d"], ["d", "f"]], "t": "diagram", "id": "dg-14_1-01-1"},
     { t: "p", text: "A failure you can see is a different engineering problem from one you cannot. The first needs a handler; the second needs a **detector**, which is something you write and can forget to write. So the column worth having in a failure taxonomy is the signal, not the cause." },
     { t: "h2", n: "02", id: "measured", text: "The measured table", sub: "Six surfaces, probed" },
 
@@ -40,10 +42,13 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "What each one actually does",
       code: "surface                     signal   what you actually get\nthe model call              RAISES   RuntimeError\na tool raising              RAISES   ValueError\na tool called wrongly       SILENT   ToolMessage status='error'\nan undeclared state key     SILENT   returned keys: ['known']\nthe graph looping           RAISES   GraphRecursionError\nthe process dying           RAISES   state survives: done=['a'] next=('b',)",
       caption: "The tool row **splits in two**, which is the finding." },
     { t: "h2", n: "03", id: "toolline", text: "The line the tool handler draws", sub: "Whose fault is it" },
+
+    {"kind": "trace", "title": "The same tool and the same ToolNode, split by whose mistake it was", "caption": "The default handler is four lines and the policy is precise: **it returns the model's mistakes to the model — bad arguments, a missing field, an unknown tool name — because the model can read the error and fix the call. It propagates the tool's own exceptions, because the model cannot fix a dependency being down.** Which makes `handle_tool_errors=True` worse than it looks: **it erases the distinction, so an outage arrives as a request to “please fix your mistakes”, and the model obliges by calling again.**", "left": "what went wrong", "codeW": 170, "vars": ["signal", "who can fix it"], "steps": [{"code": "the tool raises", "state": ["RAISES ValueError", "not the model"], "tone": "good"}, {"code": "bad arguments", "state": ["silent: ToolMessage status=error", "the model"], "changed": [0, 1], "tone": "good", "note": "'please fix and try again'"}, {"code": "handle_tool_errors=True", "state": ["silent for both", "nobody"], "changed": [0, 1], "tone": "crit", "note": "a loop that cannot succeed"}], "t": "diagram", "id": "dg-14_1-03-2"},
     { t: "code", lang: "python", title: "LangGraph's default, read from source",
       code: "def _default_handle_tool_errors(e: Exception) -> str:\n    if isinstance(e, ToolInvocationError):\n        return e.message\n    raise e",
       out: "the tool raises      -> RAISES  ValueError\nbad arguments        -> SILENT  ToolMessage status='error'\n\n\"Error invoking tool 'lookup' with kwargs {'wrong_arg': 'x'} with\n error:\\n order_id: Field required\\n Please fix the error and try again.\"",
@@ -53,6 +58,8 @@ EC.receiveLesson({
       { t: "p", text: "Which makes `handle_tool_errors=True` a worse default than it looks: it erases the distinction, so an outage arrives at the model as a message to *\u201cplease fix your mistakes\u201d*. The model obliges by calling the tool again, which is a loop that costs money and cannot succeed." }
     ] },
     { t: "h2", n: "04", id: "silent", text: "The four surfaces no single call demonstrates", sub: "All silent" },
+
+    {"kind": "flow", "title": "Four surfaces no single call can demonstrate, all silent", "caption": "These cannot be shown by probing one call, because **in every case the run succeeds** — the supervisor treats nonsense as a result, the retriever returns its k documents, the token count looks healthy, and the request completes. **Each one needs a detector that does not exist until somebody writes it: a plausibility check, a relevance check, a fact-survival check, a cost cap.** And for cost, **the only signal is the bill.**", "cols": 3, "nodes": [{"id": "s", "label": "A sub-agent: plausible nonsense", "sub": "12.8 - treated as a result", "tone": "crit"}, {"id": "r", "label": "Retrieval: k docs, none relevant", "sub": "6.2 - failure looks like success", "tone": "crit"}, {"id": "c", "label": "Context: the subject dropped", "sub": "13.3 - a healthy token count", "tone": "crit"}, {"id": "o", "label": "Cost: 40x what it should be", "sub": "13.1 - the only signal is the bill", "tone": "crit"}, {"id": "d", "label": "Each needs a detector you write", "sub": "the run succeeded in all four", "tone": "violet"}], "edges": [["s", "d"], ["r", "d"], ["c", "d"], ["o", "d"]], "t": "diagram", "id": "dg-14_1-04-3"},
     { t: "dl", items: [
       ["**sub-agent**", "A worker returning plausible nonsense. No exception, and the supervisor treats it as a result (12.8)."],
       ["**retrieval**", "A similarity search returns k documents whether or not any is relevant (6.2). Retrieval failure looks like retrieval success."],
@@ -67,6 +74,8 @@ EC.receiveLesson({
       { t: "p", text: "So the instinct to start with try/except and retries covers three of nine surfaces. The remaining six need instruments, and an instrument you did not build does not fail \u2014 it is simply absent, which is why a checklist (14.10) is the only thing that catches a missing one." }
     ] },
     { t: "h2", n: "05", id: "columns", text: "Three columns, not one", sub: "The shape of the rest of the module" },
+
+    {"kind": "layers", "title": "Three columns, and only one of them changes what you know", "caption": "**A surface with no detection column is a surface you will find out about from a user — and five of the nine start that way.** Which also says where to spend first: **containment and recovery are satisfying to build and they only help with failures you already know about. Detection is the one that changes what you know**, and for the silent surfaces it is the only column that exists at all until you build it.", "items": [{"label": "Detection: what tells you", "sub": "a schema check, 13.3's fact check, a cost cap", "tone": "violet", "side": "you build it"}, {"label": "Containment: what stops it spreading", "sub": "a timeout, a hop budget, a breaker", "tone": "good", "side": "14.2"}, {"label": "Recovery: what you do", "sub": "retry, compensate, degrade, escalate", "tone": "good", "side": "14.2-14.6"}, {"label": "No detection column -> a user tells you", "sub": "five of the nine surfaces", "tone": "crit", "side": "the finding"}], "t": "diagram", "id": "dg-14_1-05-4"},
     { t: "dl", items: [
       ["**detection**", "What tells you. For the silent ones this is something you build \u2014 a schema check, a fact-survival check (13.3), a duplicated-work metric (12.8), a cost cap."],
       ["**containment**", "What stops it spreading. A timeout, a hop budget, a recursion limit, a circuit breaker (14.2)."],

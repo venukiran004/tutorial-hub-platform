@@ -21,6 +21,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "A three-node run",
       code: "final: ['double -> 10', 'add_ten -> 20', 'final n=20']\n\n5 checkpoints, newest first:\n  step=3   next=()               n=20   id=1f0a5d3c\n  step=2   next=('final',)       n=20   id=1f0a5d2b\n  step=1   next=('add_ten',)     n=10   id=1f0a5d1a\n  step=0   next=('double',)      n=5    id=1f0a5d09\n  step=-1  next=('__start__',)   n=5    id=1f0a5cf8",
       caption: "Each entry carries a `checkpoint_id` \u2014 an address." },
@@ -28,6 +29,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "fork", text: "Forking", sub: "Re-running from an earlier point" },
 
     {"kind": "tree", "title": "A checkpoint_id is an address you can go back to", "caption": "Pass an earlier checkpoint's config to `invoke` and the graph continues from there. The measured fork **preserved the history before the fork** — so time travel is a branch, not an edit, and the original path is still there.", "root": {"label": "checkpoint 1", "sub": "the input", "tone": "accent", "children": [{"label": "checkpoint 2", "sub": "after node a", "tone": "good", "children": [{"label": "checkpoint 3", "sub": "the original path", "tone": "teal", "edge": "ran once"}, {"label": "checkpoint 3′", "sub": "the fork — a new branch", "tone": "violet", "edge": "re-invoked here"}]}]}, "t": "diagram", "id": "dg-9_9-02-0"},
+
 
 
 
@@ -68,6 +70,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "update_state at an old checkpoint",
       code: "original at step 1: n=10\nupdate_state(n=100) returned a new checkpoint config\nre-run from there  : ['double -> 10', 'add_ten -> 110', 'final n=110']",
       caption: "`add_ten -> 110` against the original run's `20`." },
@@ -75,6 +78,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "uses", text: "What it is actually for", sub: "Three uses, increasingly valuable" },
 
     {"kind": "flow", "title": "Not an additional feature with an additional cost", "caption": "9.4's cost is **a checkpoint per superstep, each holding the whole internal state.** Time travel **is not an additional feature with an additional cost — it is the thing checkpointing already bought.** So **the question is whether you use it, not whether to enable it**; and the sharp version of that: **a team paying for per-superstep persistence and still debugging by adding log lines and re-running is paying twice.**", "cols": 3, "nodes": [{"id": "c", "label": "A checkpoint per superstep", "sub": "9.4's measured cost", "tone": "accent"}, {"id": "a", "label": "Already holds the whole state", "sub": "at every step", "tone": "violet"}, {"id": "t", "label": "So time travel costs nothing more", "sub": "it is the same data", "tone": "good"}, {"id": "q", "label": "The question is whether you use it", "sub": "not whether to enable it", "tone": "good"}, {"id": "p", "label": "Log lines plus a re-run is paying twice", "sub": "for what you already stored", "tone": "teal"}], "edges": [["c", "a"], ["a", "t"], ["t", "q"], ["q", "p"]], "t": "diagram", "id": "dg-9_9-04-3"},
+
 
 
 
@@ -94,6 +98,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "constraint", text: "The constraint nobody mentions", sub: "9.7's rule, at a larger scale" },
 
     {"kind": "flow", "title": "Forking re-executes nodes, with a wider blast radius than 9.7's", "caption": "**Everything 9.7 said about re-execution applies again**, and further: a fork replays whole nodes, side effects included. **The idempotency-key case is the one where the right answer is genuinely ambiguous** — replaying with the old key makes the downstream call a no-op, **which is correct for recovery and wrong for a counterfactual where you want the action to happen differently.** So: **time travel is safe on a graph of pure computation and model calls, and needs care the moment a node acts on the world** — 9.7's conclusion, reached from the other side.", "cols": 3, "nodes": [{"id": "f", "label": "A fork re-executes nodes", "sub": "side effects included", "tone": "crit"}, {"id": "k", "label": "Replay with the old idempotency key", "sub": "the downstream call is a no-op", "tone": "warn"}, {"id": "r", "label": "Correct for recovery", "sub": "the action already happened", "tone": "good"}, {"id": "c", "label": "Wrong for a counterfactual", "sub": "you wanted it to happen differently", "tone": "crit"}, {"id": "s", "label": "Safe on pure computation and model calls", "sub": "9.7's conclusion, from the other side", "tone": "violet"}], "edges": [["f", "k"], ["k", "r"], ["k", "c"], ["c", "s"]], "t": "diagram", "id": "dg-9_9-05-4"},
+
 
 
 

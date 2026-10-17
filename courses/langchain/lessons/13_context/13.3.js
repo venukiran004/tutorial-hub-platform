@@ -14,12 +14,14 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "All five facts are in the first human turn", "caption": "Which is where real conversations put them — **the order id, the amount, the card, the date and the reason all arrive before anything else has happened.** That single property is what makes the next two sections come out the way they do: a strategy that keeps the **end** of a 19-message conversation keeps none of this, and nothing about the token count will say so.", "left": "fact", "codeW": 160, "vars": ["value", "stated in"], "steps": [{"code": "order id", "state": ["'ORD-4471'", "the first human turn"], "tone": "accent"}, {"code": "the amount", "state": ["'148.50'", "the first human turn"], "tone": "accent"}, {"code": "the card", "state": ["'ending 9921'", "the first human turn"], "tone": "accent"}, {"code": "the date", "state": ["'11 March'", "the first human turn"], "tone": "accent"}, {"code": "the reason", "state": ["'duplicate charge'", "the first human turn"], "tone": "accent", "note": "19 messages, 489 tokens"}], "t": "diagram", "id": "dg-13_3-01-1"},
 
+
     { t: "code", lang: "text", title: "19 messages, 489 tokens",
       code: "order id     'ORD-4471'\nthe amount   '148.50'\nthe card     'ending 9921'\nthe date     '11 March'\nthe reason   'duplicate charge'",
       caption: "All five are in the **first** human turn \u2014 which is where real conversations put them." },
     { t: "h2", n: "02", id: "window", text: "Strategy 1: a sliding window", sub: "And it destroys everything" },
 
     {"kind": "trace", "title": "Every window size that saves tokens keeps none of the facts", "caption": "**This is not a tuning problem: there is no window size that both saves tokens and keeps the first turn, because those are the same thing** — and no amount of adjusting it finds the order id. So the question the windowed conversation can no longer answer is *“which order are we talking about”*, **which is the entire subject of the conversation. The token count meanwhile looks excellent.**", "left": "window", "codeW": 200, "vars": ["tokens", "facts kept"], "steps": [{"code": "system + last 4", "state": ["107", "NONE"], "tone": "crit"}, {"code": "system + last 6", "state": ["156", "NONE"], "changed": [0], "tone": "crit"}, {"code": "system + last 10", "state": ["254", "NONE"], "changed": [0], "tone": "crit"}, {"code": "the full conversation", "state": ["489", "5 of 5"], "changed": [0, 1], "tone": "good", "note": "no size is between"}], "t": "diagram", "id": "dg-13_3-02-2"},
+
     { t: "code", lang: "text", title: "Three window sizes",
       code: "keep the system message + last 4  : 107 tokens, facts kept: NONE\nkeep the system message + last 6  : 156 tokens, facts kept: NONE\nkeep the system message + last 10 : 254 tokens, facts kept: NONE",
       caption: "At every size that saves meaningful tokens, **every fact is gone**." },
@@ -30,6 +32,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "summary", text: "Strategy 2: summarisation", sub: "Where the prompt is the strategy" },
 
     {"kind": "trace", "title": "Twenty-six tokens is the difference between one fact and five", "caption": "**These are not two strategies — they are one strategy with two prompts.** Which is 7.8's finding in a new place: **what the summary omits is permanently unrecoverable, so the summarisation prompt decides the ceiling.** And *“summarise the conversation”* gets you the vague one, **because identifiers are not narratively interesting** — the thing you cannot reconstruct is the thing a summariser has no reason to keep.", "left": "the prompt", "codeW": 170, "vars": ["tokens", "facts kept"], "steps": [{"code": "'summarise the conversation'", "state": ["80", "1 of 5"], "tone": "crit"}, {"code": "+ 'preserve all identifiers'", "state": ["106", "5 of 5"], "changed": [0, 1], "tone": "good", "note": "+26 tokens"}, {"code": "same strategy, same model", "state": ["one prompt apart", "the ceiling"], "tone": "violet"}], "t": "diagram", "id": "dg-13_3-03-3"},
+
     { t: "code", lang: "text", title: "Two summaries of the same conversation",
       code: "a vague summary      80 tokens, facts kept: ['the reason']\na detailed summary   106 tokens, facts kept: ['order id', 'the amount',\n                                   'the card', 'the date', 'the reason']",
       caption: "**26 tokens** is the difference between one fact and five." },
@@ -63,6 +66,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["strategy", "tokens", "facts kept", "answers \u201cwhich order?\u201d"], rows: [
       ["full conversation", "489", "5", "yes"],
       ["sliding window (6)", "156", "**0**", "**NO**"],
@@ -73,6 +77,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "loses", text: "What each strategy can no longer answer", sub: "Stated plainly" },
 
     {"kind": "flow", "title": "Three mechanisms, each covering another's blind spot", "caption": "**A sliding window loses the beginning, which is where the subject of the conversation usually is. Summarisation loses whatever the summariser judged unimportant — and identifiers are exactly what it drops.** So the practical shape is all three at once: **the summary covers the window's loss of the beginning, the verbatim recent turns cover the summary's loss of detail in what is still being discussed, and the system message is fixed anyway.**", "cols": 3, "nodes": [{"id": "w", "label": "A window loses the beginning", "sub": "where the subject is", "tone": "crit"}, {"id": "s", "label": "A summary loses the identifiers", "sub": "not narratively interesting", "tone": "crit"}, {"id": "d", "label": "A detailed summary, told to keep them", "sub": "covers the window's loss", "tone": "good"}, {"id": "l", "label": "The last few turns verbatim", "sub": "covers the summary's loss", "tone": "good"}, {"id": "y", "label": "Plus the system message", "sub": "fixed anyway", "tone": "good"}], "edges": [["w", "d"], ["s", "l"], ["d", "y"], ["l", "y"]], "t": "diagram", "id": "dg-13_3-05-4"},
+
     { t: "dl", items: [
       ["a **sliding window** loses the beginning", "Which is where the subject of the conversation usually is \u2014 the order id, the user's actual question, the constraint they stated once."],
       ["**summarisation** loses whatever the summariser judged unimportant", "And identifiers are exactly what a summariser drops: they are not narratively interesting, and they are the only thing you cannot reconstruct."]

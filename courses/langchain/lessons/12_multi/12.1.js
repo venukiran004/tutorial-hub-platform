@@ -38,6 +38,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "One agent with both tools",
       code: "model calls : 3\nmessages    : 6",
       caption: "Two tool calls and a final answer." },
@@ -53,6 +54,7 @@ EC.receiveLesson({
     {"kind": "steps", "title": "Three reasons, and all three are structural rather than about capability", "caption": "Note what none of them says: that specialists are better at their domain. **All three are about permissions, a context budget or ownership** — facts about the system's boundaries, not about how well a model performs. Which is what makes them checkable: you can say whether two tool sets need different permissions, and you cannot say whether three agents are “better at their jobs”.", "items": [{"label": "Different permissions", "code": "3.6", "desc": "An agent that can issue refunds and one that reads docs should not be one agent with both tools.", "tone": "good"}, {"label": "Context that will not fit or should not mix", "code": "7.6, 10.9", "desc": "Twenty tools per turn is a large fixed cost, and untrusted descriptions should not sit beside privileged tools.", "tone": "good"}, {"label": "Separate ownership and release cycles", "code": "10.1", "desc": "A team boundary — an interface is worth its cost when two groups evolve separately.", "tone": "good"}], "t": "diagram", "id": "dg-12_1-02-1"},
 
 
+
     { t: "dl", items: [
       ["different tools with different **permissions**", "An agent that can issue refunds and an agent that can read docs should not be one agent with both \u2014 then every turn has the refund tool available. Splitting is 3.6's least privilege."],
       ["**context** that does not fit or should not mix", "Twenty tools in one prompt is a large fixed cost per turn (11.3), and tool descriptions from an untrusted source should not share a prompt with privileged tools (7.6, 10.9)."],
@@ -61,6 +63,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "notreasons", text: "And the reasons that do not", sub: "Including the most common one" },
 
     {"kind": "flow", "title": "Three reasons that sound structural and are not", "caption": "**An org chart solves human communication-bandwidth and accountability problems, and neither constraint applies here** — so copying the structure imports the coordination cost without the reason for it. *“Each agent is simpler”* is true of each agent and false of the system. And *“it will scale better”* has a measurement against it: **more model calls per request is the opposite of scaling — 5 against 3 for the same answer.**", "cols": 3, "nodes": [{"id": "o", "label": "'It mirrors how a human team works'", "sub": "an org chart", "tone": "crit"}, {"id": "b", "label": "Solves bandwidth and accountability", "sub": "neither applies here", "tone": "crit"}, {"id": "s", "label": "'Each agent is simpler'", "sub": "true of each, false of the system", "tone": "crit"}, {"id": "c", "label": "'It will scale better'", "sub": "5 calls against 3", "tone": "crit"}, {"id": "m", "label": "More calls per request is not scaling", "sub": "it is the opposite", "tone": "violet"}], "edges": [["o", "b"], ["s", "m"], ["c", "m"]], "t": "diagram", "id": "dg-12_1-03-2"},
+
 
 
     { t: "callout", kind: "trap", title: "\u201cSpecialist agents are better at their domain\u201d", body: [
@@ -77,6 +80,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Four things are added, and no individual agent owns any of them", "caption": "Splitting one agent into three genuinely does reduce each one's prompt and tool list. **What it adds — handoff logic, the shared state's contract, attribution, the coordination failures — belongs to the system rather than to any agent, so each agent can be correct while the system fails.** And the sharper point is that the complexity became **harder to see**: a complicated agent is complicated in a file you can read.", "cols": 3, "nodes": [{"id": "h", "label": "Handoff logic", "sub": "between files", "tone": "warn"}, {"id": "s", "label": "The shared state's contract", "sub": "nobody's file", "tone": "warn"}, {"id": "a", "label": "Attribution, and the blame problem", "sub": "12.8", "tone": "warn"}, {"id": "n", "label": "Owned by the system, not an agent", "sub": "each agent can be correct", "tone": "crit"}, {"id": "f", "label": "And harder to see than a long file", "sub": "complicated in the space between", "tone": "violet"}], "edges": [["h", "n"], ["s", "n"], ["a", "n"], ["n", "f"]], "t": "diagram", "id": "dg-12_1-04-3"},
 
 
+
     { t: "p", text: "The *each agent is simpler* claim is true and misleading in the same sentence. Splitting one agent into three does reduce each one's prompt and tool list. What it adds is the handoff logic, the shared state's contract, the attribution problem and the coordination failures \u2014 none of which any individual agent owns." },
     { t: "callout", kind: "mental", title: "Bugs that nobody owns", body: [
       { t: "p", text: "12.8's failures \u2014 infinite handoffs, context loss at a boundary, duplicated work, the blame problem \u2014 are all properties of the **system** rather than of an agent. Each agent can be correct while the system fails." },
@@ -85,6 +89,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "default", text: "The honest default", sub: "11.1's ladder, one level up" },
 
     {"kind": "flow", "title": "Not whether several agents could work, but whether one cannot", "caption": "**Multiple agents will usually work; so will one, more cheaply and with fewer gaps** — which is 11.1's ladder reasoning one level up. The asymmetry holds too, and it is the practical argument: **splitting later is additive, while merging later means discovering which boundaries were load-bearing, and that needs measurements nobody took** while the system was still three agents.", "cols": 3, "nodes": [{"id": "d", "label": "One agent with the tools it needs", "sub": "the honest default", "tone": "good"}, {"id": "q", "label": "Not 'could several work?'", "sub": "but 'can one not?'", "tone": "violet"}, {"id": "s", "label": "Splitting later is additive", "sub": "a boundary you add", "tone": "good"}, {"id": "m", "label": "Merging later is archaeology", "sub": "which boundaries were load-bearing?", "tone": "crit"}, {"id": "n", "label": "And that needs measurements nobody took", "sub": "so the default is cheap insurance", "tone": "crit"}], "edges": [["d", "q"], ["q", "s"], ["q", "m"], ["m", "n"]], "t": "diagram", "id": "dg-12_1-05-4"},
+
 
 
     { t: "p", text: "One agent with the tools it needs, until one of the three structural reasons applies. And note that all three are about **permissions, context budget or ownership** rather than about capability." },

@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "Baseline RAG in LCEL",
       code: 'def format_docs(docs):\n    return "\\n\\n".join("[%s] %s" % (d.metadata["id"], d.page_content) for d in docs)\n\nchain = ({"context": retriever | format_docs,\n          "question": RunnablePassthrough()}\n         | prompt | model | StrOutputParser())',
       caption: "The dict literal is a `RunnableParallel` \u2014 2.2's shape, with retrieval on one branch." },
@@ -49,6 +50,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Inspecting the message list",
       code: "2 messages\n  System: Answer using ONLY the context below. If the context does not contain\n          the answer, say you do not know. Cite the [id] of each document you\n          use.  [data-retention] Retention defaults to 90 days...\n  Human:  how long do you keep my information",
       caption: "The retrieved context is inside the **system** message, with the instructions." },
@@ -59,6 +61,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "prompt", text: "The prompt is doing the grounding", sub: "Three instructions, all of them requests" },
 
     {"kind": "steps", "title": "Everything load-bearing is in the prompt, not the plumbing", "caption": "The pipeline is one LCEL expression. Three instructions do the actual work, and the third is the only one that produces something you can **check** — which is what 7.4 collects on.", "items": [{"label": "“answer using only the context”", "desc": "bounds the answer to retrieved text — a request, not a guarantee", "tone": "accent", "code": "grounding"}, {"label": "“say you do not know”", "desc": "gives the model an exit, because the retriever has none (7.1)", "tone": "warn", "code": "abstention"}, {"label": "“cite the id of each source”", "desc": "the one VERIFIABLE part — a cited id either was retrieved or was not", "tone": "good", "code": "checkable"}, {"label": "and the context goes in the SYSTEM message", "desc": "next to the instruction it could contradict — which is 7.6's whole problem", "tone": "crit", "code": "placement"}], "t": "diagram", "id": "dg-5_7-03-0"},
+
 
 
 

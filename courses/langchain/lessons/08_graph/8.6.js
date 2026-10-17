@@ -21,6 +21,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "A linear graph",
       code: 'g.add_edge(START, "a")\ng.add_edge("a", "b")\ng.add_edge("b", "c")\ng.add_edge("c", END)',
       out: "    {'trace': ['a', 'b', 'c']}",
@@ -29,6 +30,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "superstep", text: "The superstep", sub: "Two parallel nodes see the same input state" },
 
     {"kind": "timeline", "title": "The superstep: a consistent snapshot, then one commit", "caption": "Two parallel nodes **both saw `counter=0`**. Neither saw the other's update, and the node after them saw **`counter=2`** — both increments applied together by the reducer. Read a snapshot, run everything scheduled, commit once.", "span": 3, "tick": 1, "unit": "supersteps", "lanes": [{"label": "node_a", "bars": [[1, 2, "reads 0, writes +1", "good"]]}, {"label": "node_b", "bars": [[1, 2, "reads 0, writes +1", "good"]]}, {"label": "the reducer", "bars": [[2, 2.4, "merges", "violet"]]}, {"label": "node_c", "bars": [[2.4, 3, "reads counter=2", "accent"]]}], "t": "diagram", "id": "dg-8_6-02-0"},
+
 
 
 
@@ -74,6 +76,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "The node after the two parallel branches has **two incoming edges** and ran once, not twice. The runtime waits for all of a node's incoming paths before running it, then runs it a single time against the merged state." },
     { t: "callout", kind: "warn", title: "With a precise qualification", body: [
       { t: "p", text: "It waits for every incoming path that was **scheduled**, not every path that was declared. 8.7 measures the case that distinguishes those: when a router skips one branch of a fan-in, the join node still runs \u2014 there is no deadlock." },
@@ -82,6 +85,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "data", text: "The sequence is data, not shape", sub: "Which is the point of the whole module" },
 
     {"kind": "flow", "title": "Four add_edge calls against one expression, for a sequence with no branches", "caption": "**The honest cost is visible in that comparison**: the graph version of a linear sequence is four `add_edge` calls plus a schema, against one `|` expression. **Which is why 8.1's rule stands** — the sequence being data rather than shape buys you the ability to inspect and modify it, and on a chain with no cycle, no branch and no pause there is nothing to inspect that you did not just write.", "cols": 3, "nodes": [{"id": "c", "label": "a | b | c", "sub": "one expression", "tone": "good"}, {"id": "g", "label": "Four add_edge calls plus a schema", "sub": "the same sequence", "tone": "warn"}, {"id": "d", "label": "The sequence becomes data", "sub": "inspectable, modifiable", "tone": "violet"}, {"id": "n", "label": "With nothing to inspect", "sub": "on a linear chain", "tone": "crit"}, {"id": "r", "label": "So 8.1's rule stands", "sub": "pay for one of the three", "tone": "teal"}], "edges": [["c", "g"], ["g", "d"], ["d", "n"], ["n", "r"]], "t": "diagram", "id": "dg-8_6-04-3"},
+
 
 
 

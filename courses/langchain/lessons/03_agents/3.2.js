@@ -38,6 +38,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "What comes back",
       code: 'bound = model.bind_tools([calculate, lookup_order])\nr = bound.invoke([HumanMessage(content="what is 42 times 17?")])\n\nprint(type(r).__name__)\nprint(repr(r.content))\nprint(r.tool_calls)',
       out: "type        : AIMessage\ncontent     : ''\ntool_calls  : [{'name': 'calculate', 'args': {'expression': '42*17'}, 'id': 'c1', 'type': 'tool_call'}]",
@@ -46,6 +47,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "answer", text: "Executing and answering", sub: "The id ties the two together" },
 
     {"kind": "trace", "title": "The transcript shape a tool call produces", "caption": "Three messages for one tool round, and the middle one is the shape worth memorising: **an `AIMessage` whose content is empty and whose `tool_calls` carries the request.** The `ToolMessage` answering it is tied back by `tool_call_id`, not by position — which is what §03 is about, because the ids are the only thing connecting a request to its answer when there are several.", "left": "message", "codeW": 130, "vars": ["content", "the mechanism"], "steps": [{"code": "Human", "state": ["what is 42 times 17?", ""], "tone": "accent"}, {"code": "AI", "state": ["(empty)", "tool_calls=[('calculate', ...)]"], "changed": [1], "tone": "violet"}, {"code": "Tool", "state": ["714", "id=c1, tying it back"], "tone": "good"}], "t": "diagram", "id": "dg-3_2-02-1"},
+
 
 
 
@@ -89,6 +91,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Two calls, two answers",
       code: 'one AIMessage, 2 tool_calls\n  ToolMessage id=a   714\n  ToolMessage id=b   {"id": "A-1", "status": "shipped", "eta": "2026-10-12"}',
       caption: "One ToolMessage per call, each carrying the id it answers." },
@@ -100,6 +103,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "choice", text: "tool_choice", sub: "Forcing, forbidding and letting it decide" },
 
     {"kind": "matrix", "title": "Four settings, and the one that is about side effects rather than choice", "caption": "The first three constrain **which** tool; the fourth constrains **how many at once**. `parallel_tool_calls=False` is the one to reach for when calls have side effects or order matters — two concurrent writes to the same record is a correctness problem that no amount of tool-choice tuning addresses. And `\"any\"` is the setting for when **answering from memory is never acceptable**, which is 3.7's failure 4 made impossible by construction.", "cols": ["Meaning", "When"], "rows": ["auto", "any", "a named tool", "parallel_tool_calls=False"], "cells": [["the model decides", "a real agent - the default"], [{"text": "it must call some tool", "tone": "violet"}, {"text": "answering from memory is never acceptable", "tone": "good"}], ["it must call this one", "argument extraction"], [{"text": "at most one call per turn", "tone": "violet"}, {"text": "order matters, or calls have side effects", "tone": "crit"}]], "t": "diagram", "id": "dg-3_2-04-3"},
+
 
 
 

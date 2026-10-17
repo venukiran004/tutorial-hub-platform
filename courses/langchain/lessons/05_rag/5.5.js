@@ -27,6 +27,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "An exact index over the corpus",
       code: 'import faiss\n\nindex = faiss.IndexFlatIP(EMB.shape[1])   # inner product; vectors are normalised\nindex.add(EMB)\n\nD, I = index.search(v.reshape(1, -1), 5)',
       out: "  IndexFlatIP over 41 vectors of dim 384\n    1. data-retention     0.4429\n    2. data-deletion      0.4111\n    3. auth-session       0.3701\n    4. ops-backup         0.3654\n    5. data-audit         0.3571",
@@ -35,6 +36,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "approx", text: "Exact against approximate", sub: "And what the trade actually costs" },
 
     {"kind": "matrix", "title": "Three indexes, and only one has a recall you do not have to measure", "caption": "**`IndexFlatIP` is 1.000 by definition** — it compares everything, so there is no recall question to ask and no parameter to tune wrongly. The other two trade that away for query time, and the trade is the thing to be explicit about: **IVF's recall depends on `nprobe`, which is a number somebody chose**, and HNSW's typical 0.95–0.99 means **one query in twenty to one in a hundred silently misses a document it should have found.** At 41 vectors, or 41,000, exact search is the right answer.", "cols": ["Build", "Query", "Recall against exact"], "rows": ["IndexFlatIP", "IVF", "HNSW"], "cells": [[{"text": "instant", "tone": "good"}, "O(n)", {"text": "1.000 by definition", "tone": "good"}], ["a clustering pass", "O(n/nlist)", {"text": "depends on nprobe", "tone": "warn"}], [{"text": "graph build, slow", "tone": "warn"}, {"text": "O(log n)", "tone": "good"}, {"text": "typically 0.95-0.99", "tone": "warn"}]], "t": "diagram", "id": "dg-5_5-02-2"},
+
 
 
 
@@ -60,6 +62,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "filter", text: "The filter that matters more than the index", sub: "Measured, and the result is a leak" },
 
     {"kind": "compare", "title": "A vector store does two jobs, and the attention goes to the wrong one", "caption": "The index is a performance decision that does not matter below a few hundred thousand vectors. The metadata filter is a **correctness** decision that matters from the first document — and 7.5 measures what it costs to get the order wrong.", "columns": [{"title": "the index — over-discussed", "tone": "warn", "items": ["exact or approximate; flat, IVF or HNSW", "a latency and memory trade", "irrelevant below a few hundred thousand vectors", "easy to change later: re-index and measure"]}, {"title": "the metadata filter — under-discussed", "tone": "crit", "items": ["which documents this user may see at all", "a correctness and security decision", "matters from the very first document", "must run BEFORE similarity, not after (7.5)"]}], "t": "diagram", "id": "dg-5_5-03-0"},
+
 
 
 

@@ -38,6 +38,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["pattern", "model calls", "paths", "loops?", "predictable?"], rows: [
       ["single call", "1", "1", "no", "**yes**"],
       ["call + tools", "1", "1", "no", "**yes**"],
@@ -56,12 +57,14 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Where the control sits",
       code: "does the model need to decide ANYTHING?\n  no  -> a chain. most RAG pipelines are here (8.1).\n  yes -> does the SEQUENCE vary, or only the CHOICE?\n         only the choice -> ROUTER\n         the sequence too -> can you plan it up front?\n                             yes -> PLAN-AND-EXECUTE\n                             no  -> REACT",
       caption: "Two questions, four answers." },
     { t: "h2", n: "03", id: "modifiers", text: "Three modifiers, not alternatives", sub: "Which is the part the table hides" },
 
     {"kind": "flow", "title": "Three modifiers, each answering a different question from the tree", "caption": "**This is the part the decision table hides: reflection, reflexion and agentic RAG are not rungs on the ladder, they are modifiers you add to whichever rung you landed on.** A router can have agentic RAG behind one branch; a plan-and-execute worker can reflect on its output. So the tree picks the control structure, and these three answer a separate question about **which part is unreliable.**", "cols": 3, "nodes": [{"id": "q", "label": "Is output QUALITY the problem?", "sub": "-> reflection (11.4)", "tone": "good"}, {"id": "r", "label": "Does it fail the SAME way repeatedly?", "sub": "-> reflexion (11.5)", "tone": "good"}, {"id": "g", "label": "Is RETRIEVAL the unreliable part?", "sub": "-> agentic RAG (11.7)", "tone": "good"}, {"id": "m", "label": "Modifiers, not alternatives", "sub": "added to whichever rung you chose", "tone": "violet"}, {"id": "e", "label": "e.g. agentic RAG behind one router branch", "sub": "the tree still picked the structure", "tone": "teal"}], "edges": [["q", "m"], ["r", "m"], ["g", "m"], ["m", "e"]], "t": "diagram", "id": "dg-11_8-03-2"},
+
 
 
 
@@ -78,6 +81,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "guards", text: "The guards every pattern needs", sub: "Identical across all of them" },
 
     {"kind": "layers", "title": "Six guards, and five of them live in two places", "caption": "Read the right-hand column: **four of the six are the router's job, because the router is the only place that can make a decision rather than raise.** The give-up node is the exception and the one most often missing — **it is what turns “the agent failed” into a response you can show a user.** And `recursion_limit` is last on purpose: a backstop for what the other five did not anticipate.", "items": [{"label": "An iteration budget", "sub": "10.5, 8.9", "tone": "good", "side": "the router"}, {"label": "A progress check", "sub": "10.5 - a loop achieving nothing", "tone": "good", "side": "the router"}, {"label": "A default branch", "sub": "11.2 - model output is not enumerable", "tone": "good", "side": "the router"}, {"label": "Record which exit fired", "sub": "10.5 - or a dead loop hides", "tone": "good", "side": "the router"}, {"label": "A give-up node", "sub": "11.3 - failure as a response", "tone": "violet", "side": "the graph"}, {"label": "recursion_limit", "sub": "8.9 - for what you did not predict", "tone": "accent", "side": "a backstop"}], "t": "diagram", "id": "dg-11_8-04-3"},
+
 
 
 
@@ -101,6 +105,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["pattern", "model calls", "got the answer?", "notes"], rows: [
       ["single call", "1", "from memory", "**ungrounded** (5.7)"],
       ["call + tools", "**1**", "yes", "the tool output **is** the answer"],
@@ -116,6 +121,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "rule", text: "The rule, stated once", sub: "And the asymmetry behind it" },
 
     {"kind": "flow", "title": "Twenty real examples usually resolve to a router", "caption": "Read the table **upward** rather than downward — start at the cheapest row and stop at the first one that works. And the practical corollary is a conversation rather than a technique: **when a stakeholder asks for an agent, ask for twenty real examples of what it must handle. Most of the time they resolve to a handful of intents with one operation each, which is a router — and saying so early is worth more than any individual pattern in this module.**", "cols": 3, "nodes": [{"id": "a", "label": "'We need an agent'", "sub": "the usual starting point", "tone": "accent"}, {"id": "t", "label": "Ask for twenty real examples", "sub": "of what it must handle", "tone": "violet"}, {"id": "h", "label": "A handful of intents", "sub": "one operation each", "tone": "good"}, {"id": "r", "label": "Which is a router", "sub": "1 call, no loop", "tone": "good"}, {"id": "w", "label": "Saying so early is the value", "sub": "more than any pattern here", "tone": "teal"}], "edges": [["a", "t"], ["t", "h"], ["h", "r"], ["r", "w"]], "t": "diagram", "id": "dg-11_8-06-5"},
+
 
 
 

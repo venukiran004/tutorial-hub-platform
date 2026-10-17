@@ -11,6 +11,8 @@ EC.receiveLesson({
   prerequisites: ["14.1", "10.4"],
   blocks: [
     { t: "h2", n: "01", id: "jitter", text: "Why backoff needs jitter", sub: "The synchronised retry" },
+
+    {"kind": "trace", "title": "Backoff alone is deterministic, so it preserves the spike", "caption": "**If 60 clients failed because a dependency was overloaded, backoff without jitter sends all 60 back at the same instant — so the dependency gets the same spike that knocked it over, 500 ms later, and again at 1 s, 2 s, 4 s.** Full jitter cuts the peak by about 85%. **Equal jitter's peak is roughly twice full jitter's: the trade is a guaranteed minimum wait for a less even spread**, worth it when each retry is expensive and you want none arriving immediately.", "left": "strategy", "codeW": 160, "vars": ["busiest 50ms window", "delay range"], "steps": [{"code": "no jitter", "state": ["60 of 60", "0.50s - 0.50s"], "tone": "crit", "note": "the outage, repeated"}, {"code": "full jitter", "state": ["9 of 60", "0.02s - 0.49s"], "changed": [0, 1], "tone": "good", "note": "peak cut ~85%"}, {"code": "equal jitter", "state": ["14 of 60", "0.25s - 0.50s"], "changed": [0, 1], "tone": "good", "note": "a guaranteed wait"}], "t": "diagram", "id": "dg-14_2-01-1"},
     { t: "code", lang: "text", title: "60 clients retrying, in 50 ms windows",
       code: "strategy       busiest window   delay range\nno jitter      60 of 60         0.50s - 0.50s\nfull jitter     9 of 60         0.02s - 0.49s\nequal jitter   14 of 60         0.25s - 0.50s",
       caption: "Backoff alone is **deterministic**, so it preserves the spike." },
@@ -19,6 +21,8 @@ EC.receiveLesson({
       { t: "p", text: "**Full jitter** spreads them across the whole interval, cutting the peak by about 85%. **Equal jitter** spreads them across the second half, so its peak is roughly twice full jitter's \u2014 the trade is a guaranteed minimum wait for a less even spread, which is worth it when each retry is expensive and you want none arriving immediately." }
     ] },
     { t: "h2", n: "02", id: "predicate", text: "What LangGraph actually retries", sub: "A deny list, not an allow list" },
+
+    {"kind": "trace", "title": "A deny list, so the most retryable failure is the one it declines", "caption": "**`TimeoutError` is not retried, because it subclasses `OSError`, which is on the deny list — and a timeout is the single most retryable failure there is. `AttributeError` is retried three times, because it is not on the list, so a typo in a node costs three attempts and three times the latency before failing identically.** The default's shape is defensible for a library that cannot know your dependencies, **and it is not a policy for a system that can.**", "left": "exception", "codeW": 160, "vars": ["default_retry_on", "what you would want"], "steps": [{"code": "ConnectionError", "state": ["True", "True"], "tone": "good"}, {"code": "TimeoutError", "state": ["False", "True"], "changed": [0, 1], "tone": "crit", "note": "it subclasses OSError"}, {"code": "AttributeError", "state": ["True", "False"], "changed": [0, 1], "tone": "crit", "note": "a typo, three times"}, {"code": "ValueError, KeyError", "state": ["False", "False"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-14_2-02-2"},
     { t: "code", lang: "text", title: "default_retry_on, asked directly",
       code: "ValueError         -> False\nTimeoutError       -> False\nConnectionError    -> True\nAttributeError     -> True\nKeyError           -> False\nRuntimeError       -> False",
       caption: "Read from `langgraph.types.default_retry_on`." },
@@ -55,11 +59,14 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "100 requests, 3 attempts each",
       code: "no breaker   : 300 calls to a dependency that is down\nwith breaker : 5 attempted, 295 skipped\ntransitions  : [('closed', 'open')]",
       caption: "**300 doomed calls became 5.**" },
     { t: "p", text: "And the 5 it made were the ones that **discovered** the problem. Everything after was refused locally, in microseconds, with no network round trip \u2014 which is the difference between a degraded dependency and a degraded dependency plus 295 requests waiting on timeouts." },
     { t: "h2", n: "04", id: "halfopen", text: "Half-open is the part people omit", sub: "And the measured transitions" },
+
+    {"kind": "trace", "title": "Five transitions, and the probe is singular", "caption": "**A failure in half-open re-opens immediately rather than spending the threshold again.** Without that, recovery means every waiting client hitting a dependency that has just come back up — **which knocks it over again, and now you have an outage that oscillates.** So **a breaker without half-open is not a breaker, it is a timer**: the two properties that make it work are that the probe is **singular** and that a failed probe is **immediately** disqualifying.", "left": "event", "codeW": 190, "vars": ["state", "calls it let through"], "steps": [{"code": "2 failures", "state": ["open", "2"], "tone": "crit"}, {"code": "cooldown expires", "state": ["half-open", "2"], "changed": [0], "tone": "warn"}, {"code": "one probe, still down", "state": ["open", "3"], "changed": [0, 1], "tone": "crit", "note": "one failure, not a threshold"}, {"code": "cooldown, probe again", "state": ["half-open", "3"], "changed": [0], "tone": "warn"}, {"code": "the probe succeeds", "state": ["closed", "4"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-14_2-04-3"},
     { t: "code", lang: "text", title: "The full state machine, exercised",
       code: "after 2 failures          : state=open\none probe while still down: state=open (re-opened on ONE failure)\ndependency recovers, one probe succeeds:\n  result='ok' state=closed\n\ntransitions: [('closed','open'), ('open','half-open'),\n              ('half-open','open'), ('open','half-open'),\n              ('half-open','closed')]",
       caption: "Half-open sends **one** request, not a wave." },
@@ -68,6 +75,8 @@ EC.receiveLesson({
       { t: "p", text: "So a breaker without half-open is not a breaker, it is a timer. The two properties that make it work are that the probe is **singular** and that a failed probe is **immediately** disqualifying." }
     ] },
     { t: "h2", n: "05", id: "never", text: "What should not be retried", sub: "Three categories" },
+
+    {"kind": "flow", "title": "Safe, unsafe, and pointless are three different judgements", "caption": "**Safe** is a read, a lookup, or a model call that failed before generating. **Unsafe** is anything that already had an effect — which is 14.3, **where the measurement is that LangGraph re-runs the whole node, so a node that acts and then fails acts twice.** And **pointless** is its own category: a 400, a schema validation failure, a malformed prompt. **Retrying a deterministic failure three times costs three times as much and fails three times.**", "cols": 3, "nodes": [{"id": "s", "label": "Safe: a read, a lookup", "sub": "or a call that never generated", "tone": "good"}, {"id": "u", "label": "Unsafe: it already had an effect", "sub": "14.3 - the node re-runs entire", "tone": "crit"}, {"id": "p", "label": "Pointless: a 400, a bad schema", "sub": "deterministic", "tone": "warn"}, {"id": "c", "label": "3x the cost, 3x the latency", "sub": "and the identical failure", "tone": "warn"}, {"id": "w", "label": "So the predicate is a judgement per dependency", "sub": "not one you can inherit", "tone": "violet"}], "edges": [["p", "c"], ["s", "w"], ["u", "w"], ["c", "w"]], "t": "diagram", "id": "dg-14_2-05-4"},
     { t: "dl", items: [
       ["**safe**", "A read. A model call that failed before generating. A tool lookup."],
       ["**unsafe**", "Anything that already had an effect \u2014 which is 14.3, where the measurement is that LangGraph re-runs the **whole node**, so a node that acts and then fails acts twice."],

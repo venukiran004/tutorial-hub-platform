@@ -38,6 +38,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "The same question, four trajectories",
       code: "run    outcome  traj(exact)  traj(subset)  trajectory\nrun 1    1.0      1.0          1.0         get_order -> get_policy\nrun 2    1.0      0.0          0.0         search_web\nrun 3    1.0      0.0          1.0         get_order -> get_order ->\n                                           get_order -> get_policy\nrun 4    0.0      1.0          1.0         get_order -> get_policy",
       caption: "Only run 1 is unambiguous." },
@@ -47,6 +48,8 @@ EC.receiveLesson({
       ["**run 4** \u2014 outcome 0.0, trajectory 1.0", "It did everything right and then failed to answer \u2014 which **localises** the bug to the final generation rather than the tools."]
     ] },
     { t: "h2", n: "02", id: "neither", text: "Neither score is sufficient", sub: "And they fail differently" },
+
+    {"kind": "trace", "title": "Three aggregates for a system where one run guessed and one did triple the work", "caption": "**Exact-match trajectory scoring has the worse problem: it assumes one correct path, and for most questions there are several — so a perfectly good alternative route scores zero, which makes the metric fight any improvement to the agent's planning.** And it marked run 3 down for being **inefficient rather than wrong**: the right signal in the wrong column, because efficiency is worth measuring and should not come out of the correctness score.", "left": "metric", "codeW": 190, "vars": ["score over 4 runs", "what it misses"], "steps": [{"code": "outcome only", "state": ["0.75", "the guess, and the triple call"], "tone": "warn"}, {"code": "trajectory, exact", "state": ["0.50", "penalises any valid alternative"], "changed": [0, 1], "tone": "crit"}, {"code": "trajectory, subset", "state": ["0.75", "the three duplicate calls"], "changed": [0, 1], "tone": "warn"}, {"code": "so neither is sufficient", "state": ["-", "and they fail differently"], "tone": "violet"}], "t": "diagram", "id": "dg-14_7-02-1"},
     { t: "code", lang: "text", title: "Aggregated over the four runs",
       code: "outcome only        0.75\ntrajectory (exact)  0.50\ntrajectory (subset) 0.75",
       caption: "0.75 for a system where one run guessed and one did triple the work." },
@@ -55,6 +58,8 @@ EC.receiveLesson({
       { t: "p", text: "And it penalised run 3 for being inefficient rather than wrong. That is the right signal in the wrong column: efficiency is worth measuring and it should not come out of the correctness score." }
     ] },
     { t: "h2", n: "03", id: "composite", text: "The composite that works", sub: "Three measurements, not one" },
+
+    {"kind": "trace", "title": "Three measurements, and each verdict maps to a different fix", "caption": "**“Right answer, wrong source” justifies trajectory scoring on its own: it is indistinguishable from success on every output-based metric — exact match, BLEU, an LLM judge, a human reading the answer. All of them see a correct response.** And it is the failure that **generalises worst**: right on your test set and wrong in production, **because the mechanism that produced the right answer was not the mechanism you intended.** 7.1's lesson — a plausible path to the right output is not evidence the path was used.", "left": "run", "codeW": 130, "vars": ["outcome", "required tools", "duplicates", "verdict"], "steps": [{"code": "1", "state": ["1", "1", "no", "PASS"], "tone": "good"}, {"code": "2", "state": ["1", "0", "no", "SUSPECT - wrong source"], "changed": [1, 3], "tone": "crit"}, {"code": "3", "state": ["1", "1", "yes", "pass, inefficient"], "changed": [1, 2, 3], "tone": "warn"}, {"code": "4", "state": ["0", "1", "no", "FAIL at generation"], "changed": [0, 2, 3], "tone": "warn"}], "t": "diagram", "id": "dg-14_7-03-2"},
     { t: "code", lang: "text", title: "Outcome, required tools, duplicates",
       code: "run 1  outcome=1 required_tools=1 duplicates=no   PASS\nrun 2  outcome=1 required_tools=0 duplicates=no   SUSPECT -- right\n                                                  answer, wrong source\nrun 3  outcome=1 required_tools=1 duplicates=yes  pass, inefficient\nrun 4  outcome=0 required_tools=1 duplicates=no   FAIL at generation",
       caption: "Each verdict maps to a **different fix**." },
@@ -63,12 +68,16 @@ EC.receiveLesson({
       { t: "p", text: "And it is the failure that **generalises worst**: the agent is right on your test set and wrong in production, because the mechanism that produced the right answer was not the mechanism you intended. 7.1's lesson applies \u2014 a plausible path to the right output is not evidence the path was used." }
     ] },
     { t: "h2", n: "04", id: "labels", text: "What the labelled set has to contain", sub: "And the field people leave out" },
+
+    {"kind": "flow", "title": "Most agent evaluation is outcome-only because the labels do not exist", "caption": "Each case needs the question, the expected answer, **and the set of tools a correct answer requires** — and that last field is expensive: **it means someone deciding, per question, which sources a correct answer must consult.** Not that trajectory scoring is disputed; the labels simply are not there. **The cheap approximation is one line per case: assert that certain tools must appear and certain tools must not.** *“Must call `get_order`, must not call `search_web`”* catches run 2 without labelling a path.", "cols": 3, "nodes": [{"id": "q", "label": "The question and expected answer", "sub": "the ordinary two fields", "tone": "good"}, {"id": "t", "label": "Plus the tools a correct answer needs", "sub": "the expensive field", "tone": "accent"}, {"id": "p", "label": "Someone decides that per question", "sub": "which is why it is skipped", "tone": "warn"}, {"id": "c", "label": "Cheap version: must / must-not", "sub": "one line per case", "tone": "good"}, {"id": "r", "label": "Which still catches run 2", "sub": "without a labelled path", "tone": "violet"}], "edges": [["q", "t"], ["t", "p"], ["p", "c"], ["c", "r"]], "t": "diagram", "id": "dg-14_7-04-3"},
     { t: "p", text: "For each case: the question, the expected answer, **and** the set of tools a correct answer requires. That last field is the expensive one to produce and the one that makes trajectory scoring possible at all." },
     { t: "callout", kind: "tradeoff", title: "Which is why most agent evaluation is outcome-only", body: [
       { t: "p", text: "Not because trajectory scoring is disputed \u2014 because the labels for it **do not exist**. Producing them means someone deciding, per question, which sources a correct answer must consult." },
       { t: "p", text: "The cheap approximation: assert that certain tools **must** appear and certain tools must **not**. *\u201cAnswers about an order must call `get_order`\u201d* and *\u201cmust not call `search_web`\u201d* catches run 2 without labelling a full path, and it is one line per case." }
     ] },
     { t: "h2", n: "05", id: "nolabels", text: "The measurements that need no labels", sub: "And catch real bugs" },
+
+    {"kind": "layers", "title": "Five metrics that need no labels and catch real bugs", "caption": "**None of these tells you whether the answer was right, and all of them tell you something an outcome score cannot** — so they are worth having **before** a labelled set exists, which is the order most teams end up in anyway and not a compromise. The tool-error row is the bluntest of them: **a tool failing 40% of the time is a dependency problem wearing an agent costume.**", "items": [{"label": "Duplicate tool calls", "sub": "same tool, same arguments, one run (12.8)", "tone": "violet", "side": "caught run 3"}, {"label": "Tool error rate, per tool", "sub": "40% is a dependency problem", "tone": "warn", "side": "per tool"}, {"label": "Turns per run, as a distribution", "sub": "the tail is where the loops are", "tone": "warn", "side": "the tail"}, {"label": "Cost per run", "sub": "13.1 - a run that succeeded expensively", "tone": "good", "side": "the bill"}, {"label": "Fallback firing rate", "sub": "8% firing is 8% misrouted (12.2)", "tone": "good", "side": "misrouting"}], "t": "diagram", "id": "dg-14_7-05-4"},
     { t: "dl", items: [
       ["**duplicate tool calls**", "Same tool, same arguments, one run (12.8). Caught run 3."],
       ["**tool error rate**", "Per tool. A tool failing 40% of the time is a dependency problem wearing an agent costume."],
