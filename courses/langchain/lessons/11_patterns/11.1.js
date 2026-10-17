@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["rung", "model calls", "control", "can it loop?"], rows: [
       ["1 one call", "1", "yours", "no"],
       ["2 one call + tools", "2+", "yours", "no"],

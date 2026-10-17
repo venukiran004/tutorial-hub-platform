@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "With the measurement behind each",
       code: "[ ] every structured output has a fallback branch\n      a Literal field is validated, but an unmapped value still\n      needs a destination (12.2)\n[ ] retrieval is evaluated on YOUR queries, not a benchmark\n      6.4 measured 'I forgot my password' keeping zero tokens and\n      BM25 still returning a confident top-3\n[ ] the context strategy is checked for fact survival\n      13.3 measured a sliding window destroying 5 of 5 facts at a\n      healthy token count\n[ ] agents are evaluated on trajectory as well as outcome\n      a right answer from the wrong source scores 1.0 on every\n      output metric (14.7)",
       caption: "Each line names what would have caught it." },

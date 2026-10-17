@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "The same compiled graph",
       code: "added 'billing' to the registry, then invoked the SAME compiled graph:\n  ['executor ran billing']",
       caption: "The graph never changed." },

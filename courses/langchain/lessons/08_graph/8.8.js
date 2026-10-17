@@ -31,6 +31,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["", "conditional edge", "`Command`"], rows: [
       ["who decides", "node computes, router decides", "node computes **and** decides"],
       ["visibility", "the decision is in the graph's structure", "the decision is inside the node"],

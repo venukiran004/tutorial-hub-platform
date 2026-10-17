@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Representative figures \u2014 the shape is the finding",
       code: "stage               ms      share\nthe model call      1200.0   79.2%\na tool call          180.0   11.9%\nreranking             90.0    5.9%\nretrieval             45.0    3.0%\ngraph overhead         3.0    0.2%\nTOTAL               1518.0",
       caption: "Graph overhead is **0.2%** of the turn." },

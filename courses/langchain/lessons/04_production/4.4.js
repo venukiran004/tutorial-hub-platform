@@ -16,6 +16,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "Local counting",
       code: 'import tiktoken\nenc = tiktoken.get_encoding("cl100k_base")\n\ndef count(s):\n    return len(enc.encode(s))',
       caption: "The encoding matters \u2014 a different model family tokenises differently." },
@@ -23,6 +24,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "ratio", text: "Four characters per token is wrong where it matters", sub: "Measured on four kinds of content" },
 
     {"kind": "timeline", "title": "Four characters per token is wrong where it matters", "caption": "Prose runs around four characters per token; **JSON runs at 2.23**, because punctuation and rare strings cost a token each. So the rule of thumb undercounts **structured data by nearly half** — which is exactly what tool results and retrieved chunks are.", "span": 4.5, "tick": 1, "unit": "characters per token — higher is cheaper", "lanes": [{"label": "English prose", "bars": [[0, 4, "4.00 — the rule holds", "good"]]}, {"label": "the rule of thumb", "bars": [[0, 4, "assumed everywhere", "accent"]]}, {"label": "JSON", "bars": [[0, 2.23, "2.23 — undercounts", "crit"]]}], "t": "diagram", "id": "dg-4_4-02-0"},
+
 
 
 
@@ -49,6 +51,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["Part", "Tokens", "Share of input"], rows: [
       ["system prompt", "23", "8%"],
       ["retrieved context (4 chunks)", "244", "89%"],
@@ -63,6 +66,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "budget", text: "A budget as a code path", sub: "Not a hope" },
 
     {"kind": "flow", "title": "The point is not the number, it is that it is computed", "caption": "A system that counts before sending can **refuse an over-long request with a useful message, drop the lowest-scoring chunks deliberately, or summarise instead.** A system that does not count **discovers the limit as a provider error**, which 3.5 showed is unrecoverable mid-conversation — and arrives on exactly the long conversations you least want to drop. The budget is a code path rather than a hope, and that is the whole difference.", "cols": 3, "nodes": [{"id": "c", "label": "Count before sending", "sub": "a number you have", "tone": "violet"}, {"id": "r", "label": "Refuse, with a useful message", "sub": "a choice you made", "tone": "good"}, {"id": "d", "label": "Or drop the lowest-scoring chunks", "sub": "deliberately", "tone": "good"}, {"id": "s", "label": "Or summarise instead", "sub": "also a choice", "tone": "good"}, {"id": "n", "label": "Do not count", "sub": "and the provider tells you", "tone": "crit"}, {"id": "u", "label": "Unrecoverable mid-conversation", "sub": "3.5, on your longest sessions", "tone": "crit"}], "edges": [["c", "r"], ["c", "d"], ["c", "s"], ["n", "u"]], "t": "diagram", "id": "dg-4_4-04-3"},
+
 
 
 

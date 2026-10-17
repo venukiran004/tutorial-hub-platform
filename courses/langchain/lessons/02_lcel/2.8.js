@@ -19,6 +19,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "ainvoke, abatch, gather",
       code: 'one = await chain.ainvoke({"q": "a"})\nmany = await chain.abatch([{"q": c} for c in "abcdef"])\ngathered = await asyncio.gather(*[chain.ainvoke({"q": c}) for c in "abcdef"])',
       out: "ainvoke, one input        : 0.106 s  -> 'answer'\nabatch, six inputs        : 0.107 s  -> 6 results\nasyncio.gather, six       : 0.106 s  -> 6 results",
@@ -30,6 +31,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "trap", text: "The loop that looks concurrent", sub: "The same trap as 1.2, with a keyword in front of it" },
 
     {"kind": "timeline", "title": "Awaiting in a loop is serial", "caption": "The same trap as batching, wearing a different keyword. `for i in ...: await chain.ainvoke(...)` awaits each call before starting the next, so four 100 ms calls took **0.407 s**. `asyncio.gather` overlaps them and the cost becomes the maximum rather than the sum.", "span": 420, "tick": 100, "unit": "milliseconds", "lanes": [{"label": "await in a loop", "bars": [[0, 100, "1", "warn"], [100, 200, "2", "warn"], [200, 300, "3", "warn"], [300, 407, "4", "crit"]]}, {"label": "asyncio.gather", "bars": [[0, 103, "all four, concurrently", "good"]]}], "t": "diagram", "id": "dg-2_8-02-0"},
+
 
 
 
@@ -61,6 +63,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Six 100 ms calls at four limits",
       code: 'max_concurrency=1    0.607 s   (6 waves of 1)\nmax_concurrency=2    0.306 s   (3 waves of 2)\nmax_concurrency=3    0.206 s   (2 waves of 3)\nmax_concurrency=6    0.106 s   (1 wave of 6)',
       caption: "Each timing is the wave count times the per-call latency, almost exactly." },
@@ -72,6 +75,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "when", text: "When async is worth it", sub: "And when it is overhead" },
 
     {"kind": "matrix", "title": "The sync API is already concurrent where it matters", "caption": "The honest summary: **`batch` uses a thread pool and `RunnableParallel` runs branches in parallel**, so three of these four rows need no async at all. Async matters most when **something else needs the thread** — a server handling other requests while this one waits on a model — which is a different reason from the one people usually give, and it is why adding async to a script buys nothing.", "cols": ["Worth it?"], "rows": ["Many independent inputs", "A web server under load", "A fan-out of several chains", "One call in a script"], "cells": [[{"text": "yes - but batch already does this without async", "tone": "accent"}], [{"text": "yes - async frees the worker while the model thinks", "tone": "good"}], [{"text": "no need - RunnableParallel is concurrent in the sync API", "tone": "warn"}], [{"text": "no - invoke is simpler and identical in speed", "tone": "crit"}]], "t": "diagram", "id": "dg-2_8-04-3"},
+
 
 
 

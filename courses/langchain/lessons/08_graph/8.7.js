@@ -64,6 +64,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "8.6 said a fan-in node waits for every incoming path. Combine that with a router that only ever selects one branch, and the obvious worry is a hang \u2014 the join waiting forever for a branch that will never run." },
     { t: "code", lang: "text", title: "Router always picks \u201ca\u201d; \u201cjoin\u201d has edges from both a and b",
       code: "-> {'trace': ['start', 'a', 'join']}",

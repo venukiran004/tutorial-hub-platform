@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Two levels",
       code: "top -> research\nteam_sup -> searcher\nsearcher\nteam_sup -> FINISH\ntop -> FINISH\n\nmodel calls: top 2, team 2",
       caption: "**Two** coordination turns per unit of work \u2014 one at each level." },

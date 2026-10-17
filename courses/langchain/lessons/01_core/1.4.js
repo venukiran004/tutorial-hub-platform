@@ -33,6 +33,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "A parser's job is to survive what a model really produces, which is rarely the clean JSON the prompt asked for. Here are nine outputs that all occur in practice." },
 
     { t: "code", lang: "text", title: "JsonOutputParser on realistic output",
@@ -54,6 +55,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "callout", kind: "insight", title: "The parser scans forward and never looks back",
       body: [
         { t: "p", text: "`Here is the review:` followed by valid JSON raises. The same JSON followed by `Hope that helps!` parses fine. The parser looks for the first JSON-shaped span and reads to the end of it, so leading prose derails the scan while trailing prose is simply never reached." },
@@ -64,6 +66,7 @@ EC.receiveLesson({
       sub: "The most dangerous behaviour in this lesson" },
 
     {"kind": "trace", "title": "Truncation is repaired instead of reported", "caption": "`JsonOutputParser` uses a **partial** JSON parser because it has to — it is the same parser used to stream, where incomplete input is normal rather than an error. On a non-streamed response that means truncation is **silently repaired**. A rating truncated to `8.` parses as `8`; a title truncated mid-word parses as the truncated word; an unclosed array is closed. **Every one is a plausible value of the right type**, so no downstream validation catches it either.", "left": "what was cut", "codeW": 180, "vars": ["you get", "detectable?"], "steps": [{"code": "rating truncated to '8.'", "state": ["8", "no - a valid rating"], "tone": "crit"}, {"code": "title cut mid-word", "state": ["the truncated word", "no - a valid string"], "tone": "crit"}, {"code": "array left unclosed", "state": ["closed for you", "no - a valid list"], "changed": [1], "tone": "crit", "note": "and shorter than it was"}], "t": "diagram", "id": "dg-1_4-03-2"},
+
 
 
 
@@ -98,6 +101,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "CommaSeparatedListOutputParser",
       code: "'a, b, c'      -> ['a', 'b', 'c']\n'a,b,c'        -> ['a', 'b', 'c']\n'1. a\\n2. b'    -> ['1. a', '2. b']\n'- a\\n- b'      -> ['- a', '- b']\n'a, b, and c'  -> ['a', 'b', 'and c']",
       caption: "It splits on commas and nothing else." },
@@ -123,6 +127,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "`get_format_instructions()` returns text that the chain injects into the prompt \u2014 the parser telling the model what shape to produce. It is explicit about the failure modes above, including fences and preambles." },
 
     { t: "code", lang: "text", title: "What the parser asks for",
@@ -135,6 +140,7 @@ EC.receiveLesson({
       sub: "An extra model call, and whether that is the right trade" },
 
     {"kind": "trace", "title": "Repair is cheap; the deciding factor is whether the failure is visible", "caption": "At a 5% parse-failure rate a fixing parser costs **1.05 calls per request on average** — cheap enough that cost is not the deciding factor. The deciding factor is **visibility**: a fixing parser converts a loud exception into a silent extra call, so **a parse-failure rate that was an alert becomes a cost line nobody reads.** Which is why the first row wins on a different axis: with `with_structured_output` there is nothing to parse, so there is no failure to make visible.", "left": "strategy", "codeW": 190, "vars": ["calls", "at a 5% failure rate", "failure is"], "steps": [{"code": "with_structured_output", "state": ["1", "1.00", "impossible"], "tone": "good", "note": "nothing to parse"}, {"code": "plain parser, output valid", "state": ["1", "1.00", "loud"], "tone": "good"}, {"code": "OutputFixingParser", "state": ["2", "1.05", "silent"], "changed": [2], "tone": "crit"}, {"code": "RetryOutputParser", "state": ["2", "1.05", "silent"], "tone": "crit", "note": "re-sends the prompt too"}], "t": "diagram", "id": "dg-1_4-06-5"},
+
 
 
 

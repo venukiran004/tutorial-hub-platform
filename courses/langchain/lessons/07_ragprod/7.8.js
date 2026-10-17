@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "The source",
       code: "Plan        Seats   Rate limit   Price\nStarter     5       600/min      $49\nGrowth      25      2400/min     $199\nEnterprise  custom  custom       custom",
       caption: "Four columns, and the meaning is entirely in the alignment." },

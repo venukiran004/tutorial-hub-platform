@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "dl", items: [
       ["supervisor", "Decides who acts **next**, one turn at a time, seeing everything so far. A router in a loop (12.2)."],
       ["orchestrator", "Decides the whole **decomposition** up front, fans the pieces out, gathers the results. Plan-and-execute (11.6) with workers instead of steps."]

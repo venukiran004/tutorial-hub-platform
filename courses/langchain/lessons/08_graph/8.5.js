@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "No runtime required",
       code: 'def double(state):\n    return {"n": state["n"] * 2,\n            "log": ["doubled to %d" % (state["n"] * 2)]}\n\ndouble({"n": 5, "log": []})',
       out: "    {'n': 10, 'log': ['doubled to 10']}",
