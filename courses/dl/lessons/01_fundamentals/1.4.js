@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The chain rule", id: "chain" },
 
+    {"kind": "flow", "title": "The chain rule is the whole algorithm", "caption": "Backpropagation is not a new idea in calculus — it is the chain rule, applied from the loss backwards, with each layer's partial derivative **reused** by every layer behind it. That reuse is the entire efficiency: the full gradient costs about one extra forward pass rather than one pass per parameter.", "cols": 3, "nodes": [{"id": "l", "label": "dL/dy-hat", "sub": "start at the loss", "tone": "violet"}, {"id": "a", "label": "x dy-hat/dz2", "sub": "through the output activation", "tone": "accent"}, {"id": "w", "label": "-> dL/dW2", "sub": "times the stored a1", "tone": "good"}, {"id": "h", "label": "x dz2/da1", "sub": "through the weights: W2 transpose", "tone": "accent"}, {"id": "f", "label": "x da1/dz1", "sub": "through the hidden activation", "tone": "accent"}, {"id": "v", "label": "-> dL/dW1", "sub": "times the stored x", "tone": "good"}], "edges": [["l", "a"], ["a", "w"], ["a", "h"], ["h", "f"], ["f", "v"]], "t": "diagram", "id": "dg-1_4-01-0"},
+
+
     { t: "p", text: "Backpropagation computes the gradient of the loss with respect to every weight in the network. The loss depends on a weight only through a chain of intermediate quantities — the pre-activation the weight feeds, the activation that follows, the layers above, the prediction — and the derivative of a chain is the product of the derivatives of its links:" },
 
     { t: "math", tex: "\\frac{\\partial \\mathcal{L}}{\\partial w} = \\frac{\\partial \\mathcal{L}}{\\partial \\hat{y}} \\cdot \\frac{\\partial \\hat{y}}{\\partial z} \\cdot \\frac{\\partial z}{\\partial w}" },
@@ -27,6 +30,9 @@ EC.receiveLesson({
     { t: "p", text: "The insight that makes it an algorithm rather than a formula is that the first factors in that product are *shared*. Every weight in the last layer needs ∂L/∂ŷ · ∂ŷ/∂z; every weight in the layer below needs that same quantity times a few more factors. Compute the shared part once, at the output, and pass it backwards — that is the error signal δ — and the cost of all the gradients together is about the cost of one forward pass. Without that sharing, the gradient of a million-weight network would need a million separate chains." },
 
     { t: "h2", n: "02", text: "The two-layer derivation", id: "derivation" },
+
+    {"kind": "steps", "title": "The two-layer derivation, in the order it is actually done", "caption": "The forward pass must store its intermediate values, because every backward step needs them — that is the memory cost of training, and the reason activation checkpointing exists as a trade. Note that step 3 produces the quantity step 5 reuses: compute it once.", "items": [{"label": "Forward, storing a1 and z2", "desc": "they are needed on the way back", "code": "1", "tone": "accent"}, {"label": "dL/dy-hat at the output", "desc": "for cross-entropy with sigmoid this is (y-hat - y)", "code": "2", "tone": "good"}, {"label": "delta2 = dL/dz2", "desc": "the output layer's error signal", "code": "3", "tone": "violet"}, {"label": "dL/dW2 = delta2 x a1 transpose", "desc": "error times the input that produced it", "code": "4", "tone": "good"}, {"label": "delta1 = (W2 transpose delta2) * f'(z1)", "desc": "reuses delta2; the element-wise product is the activation's derivative", "code": "5", "tone": "violet"}, {"label": "dL/dW1 = delta1 x x transpose", "desc": "the same shape of rule, one layer down", "code": "6", "tone": "good"}], "t": "diagram", "id": "dg-1_4-02-1"},
+
 
     { t: "p", text: "The network is the one from lesson 1.3: **x** → [W¹, **b**¹, ReLU] → [W², **b**², sigmoid] → ŷ, with binary cross-entropy L = −[y log ŷ + (1 − y) log(1 − ŷ)]. Four steps, each one line of calculus." },
 
@@ -95,6 +101,9 @@ weight matrix at each layer and gated by the activation's derivative.`,
 
     { t: "h2", n: "03", text: "The derivation on the numbers", id: "worked" },
 
+    {"kind": "trace", "title": "Backpropagation on the same numbers, checked", "caption": "Continuing the forward pass of 1.3 (ŷ = 0.277) with the label y = 1. Watch the second row: the gradient into the first hidden unit is **exactly zero**, because ReLU's derivative there is zero — so that unit's weights receive no update at all this step. The dead-unit mechanism of 1.2 and the sparsity of 1.3 are the same fact seen from the backward direction.", "left": "quantity", "codeW": 180, "vars": ["value", "why"], "steps": [{"code": "y-hat - y", "state": ["0.277 - 1 = -0.723", "cross-entropy with sigmoid"], "tone": "accent"}, {"code": "dL/dW2 (unit 1)", "state": ["-0.723 x 0.0 = 0.000", "a1 was zero"], "changed": [0], "tone": "crit"}, {"code": "dL/dW2 (unit 2)", "state": ["-0.723 x 1.8 = -1.301", "a1 was 1.8"], "tone": "good"}, {"code": "dL/db2", "state": ["-0.723", "the error itself"], "tone": "good"}, {"code": "delta1 (unit 1)", "state": ["0.000", "ReLU'(0) = 0: no path"], "changed": [0], "tone": "crit"}, {"code": "delta1 (unit 2)", "state": ["-0.723 x (-0.7) x 1 = 0.506", "W2 x ReLU'(1.8)"], "tone": "good"}, {"code": "so dL/dW1 row 1", "state": ["all zeros", "that unit learns nothing"], "tone": "crit"}], "t": "diagram", "id": "dg-1_4-03-2"},
+
+
     { t: "p", text: "Take the weights and input from lesson 1.3 with label y = 1. The forward pass gave z¹ = [0, 1.8], a¹ = [0, 1.8], z² = −0.96, ŷ = 0.2769, and the loss is −log 0.2769 = 1.2842. Now the four steps with numbers, in float32 as PyTorch would do it:" },
 
     { t: "code", lang: "python", title: "Backpropagation by hand, then checked by autograd and a finite difference",
@@ -157,6 +166,9 @@ finite difference dL/dW2[0,1] = -1.3016  analytic -1.3016192` },
     { t: "p", text: "One step of gradient descent with learning rate 0.1 subtracts a tenth of each gradient: W² becomes [0.4, −0.5698], b² becomes 0.3723, the second row of W¹ moves to [0.749, 0.499] and its bias to −0.251. Re-run the forward pass and ŷ rises from 0.2769 to 0.3822, the loss falls from 1.284 to 0.962. The optimisers of lesson 1.5 are all elaborations of that one subtraction." },
 
     { t: "h2", n: "04", text: "The computational-graph view", id: "graph" },
+
+    {"kind": "flow", "title": "The computational graph is what the framework actually builds", "caption": "Every operation records its inputs and how to differentiate itself. `backward()` then walks that recorded graph in reverse topological order — which is why a tensor detached from the graph gets no gradient, why `.item()` breaks the chain, and why the graph is freed after one backward call unless you ask for it to be kept.", "cols": 3, "nodes": [{"id": "f", "label": "Each op records its inputs", "sub": "and its local derivative", "tone": "accent"}, {"id": "g", "label": "A DAG is built as you go", "sub": "define-by-run", "tone": "accent"}, {"id": "b", "label": "backward() walks it in reverse", "sub": "reverse topological order", "tone": "good"}, {"id": "d", "label": "detach() cuts the edge", "sub": "no gradient flows past it", "tone": "warn"}, {"id": "i", "label": ".item() leaves the graph", "sub": "a Python float has no history", "tone": "warn"}, {"id": "r", "label": "Freed after one backward", "sub": "retain_graph=True to reuse it", "tone": "teal"}], "edges": [["f", "g"], ["g", "b"], ["b", "d"], ["d", "i"], ["b", "r"]], "t": "diagram", "id": "dg-1_4-04-3"},
+
 
     { t: "code", lang: "text", title: "The same network as a graph of operations",
       code: `x → [×W¹] → [+b¹] → [ReLU] → [×W²] → [+b²] → [σ] → [Loss]

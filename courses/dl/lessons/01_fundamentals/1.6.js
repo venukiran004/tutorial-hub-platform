@@ -22,6 +22,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why it matters", id: "why" },
 
+    {"kind": "flow", "title": "Why initialisation is not a detail", "caption": "Two degenerate choices make the network untrainable before the first step. All-zero weights make every unit in a layer compute the same thing and receive the same gradient, so they stay identical forever — the layer has one effective unit however wide it is. Weights that are too large saturate the activations, and a saturated activation has no gradient.", "cols": 3, "nodes": [{"id": "z", "label": "All zeros", "sub": "every unit identical", "tone": "crit"}, {"id": "s", "label": "Symmetry never breaks", "sub": "same gradient, forever", "tone": "crit"}, {"id": "b", "label": "Too large", "sub": "activations saturate", "tone": "crit"}, {"id": "n", "label": "No gradient", "sub": "sigmoid' near zero", "tone": "crit"}, {"id": "t", "label": "Too small", "sub": "the signal shrinks per layer", "tone": "warn"}, {"id": "g", "label": "Scale by fan-in", "sub": "Xavier or He: keep the variance", "tone": "good"}], "edges": [["z", "s"], ["b", "n"], ["t", "g"], ["s", "g"], ["n", "g"]], "t": "diagram", "id": "dg-1_6-01-0"},
+
+
     { t: "p", text: "Before the first gradient step the weights have to be something, and that something is not neutral. Three failure modes, worth stating plainly:" },
 
     { t: "dl", items: [
@@ -48,6 +51,9 @@ print(net[0].weight.grad)`,
 
     { t: "h2", n: "02", text: "The variance argument", id: "variance" },
 
+    {"kind": "flow", "title": "The variance argument, which is the whole derivation", "caption": "A layer's output variance is its input variance times n·Var(W). For that to stay constant through the stack you need Var(W) = 1/n — which is Xavier. ReLU then halves the variance by zeroing half the units, so He compensates with 2/n. That single factor of two is the entire difference between the two initialisers.", "cols": 3, "nodes": [{"id": "v", "label": "Var(out) = n Var(W) Var(in)", "sub": "for a linear layer", "tone": "violet"}, {"id": "x", "label": "Want it constant", "sub": "so Var(W) = 1/n", "tone": "accent"}, {"id": "g", "label": "Xavier / Glorot", "sub": "for tanh and sigmoid", "tone": "good"}, {"id": "r", "label": "ReLU zeroes half", "sub": "halving the variance", "tone": "warn"}, {"id": "h", "label": "He: Var(W) = 2/n", "sub": "the factor of two compensates", "tone": "good"}, {"id": "f", "label": "fan_in or fan_out", "sub": "forward pass, or backward", "tone": "teal"}], "edges": [["v", "x"], ["x", "g"], ["g", "r"], ["r", "h"], ["h", "f"]], "t": "diagram", "id": "dg-1_6-02-1"},
+
+
     { t: "p", text: "Take one unit with n inputs, z = Σ wᵢaᵢ. If the inputs are independent with variance Var(a) and the weights are drawn independently with mean 0 and variance Var(w), then Var(z) = n · Var(w) · Var(a). To keep Var(z) equal to Var(a) — the same scale in as out — you need n · Var(w) = 1, that is **Var(w) = 1/n**. That is LeCun initialisation, and it is right for a linear layer or one followed by an activation that is roughly the identity near zero, like tanh." },
 
     { t: "p", text: "ReLU changes the arithmetic: it sets half the pre-activations to zero, and the half that survive carry, on average, half the variance. To compensate, the weights need twice the variance: **Var(w) = 2/n**. That is He (Kaiming) initialisation. Xavier (Glorot) uses 2/(n_in + n_out), which balances the forward pass (which cares about n_in) against the backward pass (which cares about n_out) for tanh and sigmoid." },
@@ -62,6 +68,9 @@ print(net[0].weight.grad)`,
     { t: "p", text: "Each also has a uniform version with the same variance — a uniform distribution on [−a, a] has variance a²/3, so `xavier_uniform_` draws from ±√(6 / (n_in + n_out)). The distribution's shape does not matter much; the variance does." },
 
     { t: "h2", n: "03", text: "Measured through twenty layers", id: "measured" },
+
+    {"kind": "flow", "title": "Measured through twenty layers", "caption": "The failure is geometric, which is why depth makes it dramatic: a per-layer factor slightly below one becomes vanishingly small after twenty layers, and slightly above one becomes enormous. The right initialiser keeps that factor at one, so the activation scale at layer twenty looks like the scale at layer one.", "cols": 3, "nodes": [{"id": "s", "label": "Too small a scale", "sub": "each layer shrinks the signal", "tone": "warn"}, {"id": "v", "label": "Vanishes by layer 20", "sub": "geometric decay", "tone": "crit"}, {"id": "b", "label": "Too large a scale", "sub": "each layer grows it", "tone": "warn"}, {"id": "e", "label": "Explodes by layer 20", "sub": "geometric growth, then NaN", "tone": "crit"}, {"id": "h", "label": "He init with ReLU", "sub": "factor stays at one", "tone": "good"}, {"id": "c", "label": "Scale is stable at depth", "sub": "layer 20 looks like layer 1", "tone": "teal"}], "edges": [["s", "v"], ["b", "e"], ["h", "c"], ["v", "h"], ["e", "h"]], "t": "diagram", "id": "dg-1_6-03-2"},
+
 
     { t: "p", text: "Twenty layers of 256 units, an input with standard deviation 1, and the standard deviation of the activations recorded after layers 1, 5, 10 and 20, for each initialisation and its matching activation:" },
 
@@ -121,6 +130,9 @@ ReLU, He 2/n_in                std at layers 1, 5, 10, 20: 0.8241 0.8410 0.8945 
     { t: "p", text: "The too-large tanh row looks healthy — a standard deviation of 0.97, layer after layer — and it is the worst of the five. tanh's outputs are pinned at ±1: 86.8 % of the units have |a| > 0.99, where the derivative 1 − tanh² is under 0.02. The signal survives; the gradient does not. This is why *variance ≈ 1* is the target and not *variance ≥ something*: the scale has to be right, not merely large." },
 
     { t: "h2", n: "04", text: "In PyTorch and Keras", id: "code" },
+
+    {"kind": "matrix", "title": "The initialiser each framework gives you by default", "caption": "Neither default is He, which is the point worth knowing: PyTorch's `Linear` uses a Kaiming-uniform variant with `a=√5` for historical reasons, and Keras's `Dense` uses Glorot uniform. With a ReLU stack both are a little small, so setting the initialiser explicitly is one line that occasionally matters a great deal.", "cols": ["Default", "With ReLU, prefer"], "rows": ["torch.nn.Linear", "torch.nn.Conv2d", "keras Dense", "keras Conv2D", "Bias terms"], "cells": [[{"text": "kaiming_uniform, a=sqrt(5)", "tone": "warn"}, "kaiming_normal_(nonlinearity='relu')"], [{"text": "kaiming_uniform, a=sqrt(5)", "tone": "warn"}, "the same"], [{"text": "glorot_uniform", "tone": "warn"}, "he_normal"], [{"text": "glorot_uniform", "tone": "warn"}, "he_normal"], [{"text": "zeros (both)", "tone": "good"}, "zeros is correct; symmetry is broken by W"]], "t": "diagram", "id": "dg-1_6-04-3"},
+
 
     { t: "code", lang: "python", title: "The calls, and what they produce",
       code: `import torch.nn as nn

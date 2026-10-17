@@ -22,6 +22,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "From the gradient to the update", id: "sgd" },
 
+    {"kind": "flow", "title": "From a gradient to an update", "caption": "Every optimiser in this lesson is the same skeleton with more state. Plain SGD keeps nothing; momentum keeps a running mean of the gradient; RMSprop keeps a running mean of its square; Adam keeps both. Each piece of state buys a specific behaviour, and costs one more copy of the parameters in memory.", "cols": 3, "nodes": [{"id": "g", "label": "Gradient g", "sub": "from backward()", "tone": "violet"}, {"id": "m", "label": "+ a running mean of g", "sub": "momentum: smooths the direction", "tone": "accent"}, {"id": "v", "label": "+ a running mean of g squared", "sub": "RMSprop: scales per parameter", "tone": "accent"}, {"id": "a", "label": "Both, bias-corrected", "sub": "Adam", "tone": "good"}, {"id": "u", "label": "theta -= step", "sub": "the update", "tone": "good"}, {"id": "c", "label": "Each costs memory", "sub": "one or two extra copies of the parameters", "tone": "warn"}], "edges": [["g", "m"], ["g", "v"], ["m", "a"], ["v", "a"], ["a", "u"], ["u", "c"]], "t": "diagram", "id": "dg-1_5-01-0"},
+
+
     { t: "p", text: "Lesson 1.4 ended with one step of gradient descent: θ ← θ − α∇L. That is stochastic gradient descent when ∇L is computed on a mini-batch rather than the whole dataset, and every optimiser below is a modification of that one line. The modifications answer two questions: *should the step remember previous gradients?* (momentum) and *should every parameter take the same size of step?* (adaptive methods)." },
 
     { t: "h3", text: "SGD with momentum" },
@@ -76,6 +79,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Each rule by hand, and checked", id: "worked" },
 
+    {"kind": "trace", "title": "One parameter, three gradients, four optimisers", "caption": "θ starts at 1.0 and receives the gradients 2.0, 1.5, −0.5. Read the SGD row: the third gradient is **negative**, so θ moves back up from 0.6500 to 0.7000 — plain SGD follows whatever the last gradient said. Momentum does not: its velocity is still positive from the first two steps, so it keeps descending through the sign flip. And notice the scale — Adam's default α = 0.001 moves θ by about 0.001 per step regardless of the gradient's size, because the division by √v normalises it away.", "left": "optimiser", "codeW": 190, "vars": ["after g = 2.0", "after g = 1.5", "after g = -0.5"], "steps": [{"code": "SGD, alpha 0.1", "state": ["0.8000", "0.6500", "0.7000"], "changed": [2], "tone": "warn", "note": "reverses"}, {"code": "SGD + momentum 0.9", "state": ["0.9800", "0.9470", "0.9223"], "changed": [2], "tone": "good", "note": "keeps going"}, {"code": "RMSprop, eta 0.001", "state": ["0.9968", "0.9949", "0.9955"], "tone": "accent"}, {"code": "Adam, alpha 0.001", "state": ["0.9990", "0.9980", "0.9974"], "tone": "accent", "note": "step ~ alpha"}, {"code": "torch.optim.Adam", "state": ["0.9990", "0.9980", "0.9974"], "tone": "good", "note": "matches"}], "t": "diagram", "id": "dg-1_5-02-1"},
+
+
     { t: "p", text: "One parameter, starting at θ = 1.0, receiving the gradients 2.0, 1.5 and −0.5 on three successive steps. Every rule is written out from its formula and the Adam result is compared against `torch.optim.Adam` given the same three gradients:" },
 
     { t: "code", lang: "python", title: "Three steps of each optimiser on one parameter",
@@ -121,6 +127,9 @@ print(f" torch.optim.Adam after the same three gradients: θ = {p.item():.6f}")`
 
     { t: "h2", n: "03", text: "Adam + L2 is not AdamW", id: "adamw" },
 
+    {"kind": "flow", "title": "Adam + L2 is not AdamW, and the difference is where the penalty goes", "caption": "Adding L2 to the **loss** means the penalty's gradient enters `g`, and is then divided by √v along with everything else — so a parameter with large historical gradients gets its weight decay quietly scaled down, which is the opposite of what regularisation should do. AdamW applies the decay directly to the parameter, after the adaptive step, so it is uniform.", "cols": 3, "nodes": [{"id": "l", "label": "L2 in the loss", "sub": "lambda ||w||² added to L", "tone": "warn"}, {"id": "g", "label": "Its gradient joins g", "sub": "2 lambda w", "tone": "warn"}, {"id": "v", "label": "Divided by sqrt(v)", "sub": "scaled per parameter", "tone": "crit"}, {"id": "u", "label": "Decay is now uneven", "sub": "weakest where gradients are largest", "tone": "crit"}, {"id": "w", "label": "AdamW", "sub": "decay applied to w directly", "tone": "good"}, {"id": "e", "label": "Uniform, as intended", "sub": "and the transformer default", "tone": "teal"}], "edges": [["l", "g"], ["g", "v"], ["v", "u"], ["u", "w"], ["w", "e"]], "t": "diagram", "id": "dg-1_5-03-2"},
+
+
     { t: "p", text: "L2 regularisation adds λθ to the gradient; weight decay subtracts αλθ from the parameter. With plain SGD these are the same thing. With Adam they are not, because the gradient — now including the λθ term — is divided by √v̂ before it is applied. A parameter with large gradients has a large √v̂ and its decay term is divided down to almost nothing; a parameter with tiny gradients has its decay term amplified. The regularisation strength becomes a function of the gradient scale, which is not what anyone asked for." },
 
     { t: "code", lang: "python", title: "Two parameters, one large gradient and one small, decayed both ways",
@@ -151,6 +160,9 @@ for cls, kw in [(torch.optim.Adam, dict(weight_decay=0.1)), (torch.optim.AdamW, 
     { t: "p", text: "With **AdamW** both parameters end in the same place: the decay λθ is applied to each directly, and the adaptive step (about 0.01 per step towards the gradient's sign for both, since Adam normalises the scale away) is the same for both. With **Adam + L2** the two parameters diverge: for the first, the decay term 0.1θ is swamped by the gradient of 10 and normalised away — it received almost no regularisation; for the second, 0.1θ is ten times larger than its gradient of 0.01, so the 'regulariser' *is* the update, and it crawls towards −g/λ = −0.1 at a fixed 0.01 per step. Same λ, two completely different effective strengths. AdamW is the standard for fine-tuning transformers for exactly this reason." },
 
     { t: "h2", n: "04", text: "Choosing an optimiser", id: "choose" },
+
+    {"kind": "matrix", "title": "Choosing an optimiser, and the one dial that matters more", "caption": "The honest summary is that the learning rate matters more than the choice between these, and a schedule matters more than either. AdamW with a warmup-and-decay schedule is the default for transformers; SGD with momentum still wins on large vision models given the budget to tune it.", "cols": ["Use", "Note"], "rows": ["SGD + momentum", "Adam", "AdamW", "RMSprop", "LAMB / LARS", "A schedule"], "cells": [[{"text": "large vision models", "tone": "good"}, "often the best final accuracy; needs tuning"], [{"text": "a fast first result", "tone": "accent"}, "forgiving; L2 behaves wrongly in it"], [{"text": "transformers", "tone": "good"}, "the default; decay is decoupled"], ["recurrent nets, historically", "largely superseded by Adam"], ["very large batches", "layer-wise scaling"], [{"text": "always", "tone": "violet"}, "warmup then cosine beats any fixed rate"]], "t": "diagram", "id": "dg-1_5-04-3"},
+
 
     { t: "table", head: ["Situation", "Choice", "Defaults"],
       rows: [

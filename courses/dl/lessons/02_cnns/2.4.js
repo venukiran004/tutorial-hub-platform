@@ -22,13 +22,14 @@ EC.receiveLesson({
 
     { t: "p", text: "A 1×1 kernel sees one pixel. It cannot detect an edge, a corner or anything spatial at all. What it does instead is take the vector of `C_in` channel values at each position and project it to `C_out` values — a fully connected layer applied identically at every pixel." },
 
-    { t: "diagram", kind: "cells", title: "1×1 convolution: a per-pixel channel mixer",
-      caption: "Spatial size is untouched. The 256-vector at each of the 28×28 positions is projected to 64 dimensions by the same matrix.",
-      items: [
-        { label: "256 × 28 × 28", sub: "input", tone: "accent" },
-        { label: "1×1 × 256 × 64", sub: "16,448 params", tone: "violet" },
-        { label: "64 × 28 × 28", sub: "output", tone: "good" }
-      ] },
+    { t: "diagram", kind: "flow", cols: 3, title: "1×1 convolution: a per-pixel channel mixer",
+      caption: "Spatial size is untouched — 28×28 in, 28×28 out. The 256-vector at each position is projected to 64 dimensions by the **same** matrix, which is why this is a channel mixer rather than a spatial operation, and why it costs 16,448 parameters against a 3×3's 147,520 for the same channel change.",
+      nodes: [
+        { id: "i", label: "256 × 28 × 28", sub: "input", tone: "accent" },
+        { id: "k", label: "1×1 × 256 × 64", sub: "16,448 parameters", tone: "violet" },
+        { id: "o", label: "64 × 28 × 28", sub: "output", tone: "good" }
+      ],
+      edges: [["i", "k"], ["k", "o"]] },
 
     { t: "out", text: `  Conv2d(256, 64, 1) : 16,448 parameters
   Conv2d(256, 64, 3) : 147,520 parameters  (9x)

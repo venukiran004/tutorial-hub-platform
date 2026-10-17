@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "L2 regularisation, or weight decay", id: "l2" },
 
+    {"kind": "flow", "title": "L2 as a penalty, and as weight decay", "caption": "They are the same thing seen from two sides: differentiating λ‖w‖² gives 2λw, so adding the penalty to the loss is identical to subtracting a fraction of w at every step. The second spelling is cheaper and is what 'weight decay' names — and, per 1.5, it is only equivalent for plain SGD, not for Adam.", "cols": 3, "nodes": [{"id": "p", "label": "Add lambda ||w||² to L", "sub": "a penalty on size", "tone": "accent"}, {"id": "d", "label": "Its gradient is 2 lambda w", "sub": "proportional to w", "tone": "accent"}, {"id": "u", "label": "w -= eta(g + 2 lambda w)", "sub": "the update", "tone": "good"}, {"id": "e", "label": "= decay then descend", "sub": "w shrinks a fraction each step", "tone": "good"}, {"id": "s", "label": "Equivalent, for SGD", "sub": "two spellings of one rule", "tone": "teal"}, {"id": "a", "label": "Not for Adam", "sub": "see AdamW in 1.5", "tone": "warn"}], "edges": [["p", "d"], ["d", "u"], ["u", "e"], ["e", "s"], ["s", "a"]], "t": "diagram", "id": "dg-1_7-01-0"},
+
+
     { t: "math", tex: "\\mathcal{L}_{\\text{reg}} = \\mathcal{L}_{\\text{data}} + \\frac{\\lambda}{2}\\sum_{l}\\big\\|\\mathbf{W}^{[l]}\\big\\|_F^2" },
 
     { t: "p", text: "The Frobenius norm squared is the sum of every weight squared, so the penalty grows with the size of the weights and its gradient with respect to W is simply λW. Every update therefore subtracts αλW from the weights in addition to the data gradient — they *decay* towards zero unless the data pushes back, which is where the name comes from. Large weights mean a function that swings hard on small input changes; keeping them small keeps the function smooth." },
@@ -42,6 +45,9 @@ gradient λW =
       body: [{ t: "p", text: "`torch.optim.SGD(..., weight_decay=λ)` adds λW to the gradient, which is exactly this penalty. With Adam the same argument is L2-in-the-gradient and behaves unevenly across parameters; `AdamW` applies the decay to the weights directly (lesson 1.5). Either way, the usual practice is to decay weights but not biases or normalisation parameters." }] },
 
     { t: "h2", n: "02", text: "Dropout", id: "dropout" },
+
+    {"kind": "flow", "title": "Dropout, and the scaling that makes test time match", "caption": "Dropping units at random makes the network an ensemble of subnetworks that share weights. The detail that matters in code: at training time the surviving activations are divided by (1−p) so the expected sum is unchanged — **inverted dropout** — which is what lets test time simply turn dropout off with no rescaling. Forgetting `model.eval()` leaves it on and quietly degrades every prediction.", "cols": 3, "nodes": [{"id": "t", "label": "Training: drop each unit with p", "sub": "a different subnetwork per batch", "tone": "accent"}, {"id": "s", "label": "Divide survivors by (1 - p)", "sub": "so the expected sum is unchanged", "tone": "good"}, {"id": "e", "label": "An ensemble, sharing weights", "sub": "that is the regularisation", "tone": "good"}, {"id": "v", "label": "Test: dropout off", "sub": "no rescaling needed", "tone": "good"}, {"id": "f", "label": "Forgetting model.eval()", "sub": "dropout stays on", "tone": "crit"}, {"id": "n", "label": "Noisy, worse predictions", "sub": "and non-deterministic ones", "tone": "crit"}], "edges": [["t", "s"], ["s", "e"], ["e", "v"], ["v", "f"], ["f", "n"]], "t": "diagram", "id": "dg-1_7-02-1"},
+
 
     { t: "code", lang: "text", title: "The rule",
       code: `TRAINING:   randomly set a fraction p of a layer's units to 0 on every forward pass
@@ -149,6 +155,9 @@ class Net(nn.Module):
 
     { t: "h2", n: "03", text: "Monte Carlo dropout: uncertainty from the same network", id: "mc" },
 
+    {"kind": "flow", "title": "Monte Carlo dropout: the same network, used differently", "caption": "Leave dropout **on** at inference and run the same input many times: each pass samples a different subnetwork, so the spread of the predictions is an estimate of the model's uncertainty. It costs n forward passes and requires nothing new to be trained — which is what makes it the cheapest uncertainty estimate available for a network that already uses dropout.", "cols": 3, "nodes": [{"id": "m", "label": "A trained dropout network", "sub": "nothing extra to fit", "tone": "violet"}, {"id": "o", "label": "Keep dropout ON at inference", "sub": "model.train() for the dropout layers", "tone": "accent"}, {"id": "n", "label": "Run the same input n times", "sub": "a different subnetwork each pass", "tone": "accent"}, {"id": "s", "label": "Mean = the prediction", "sub": "spread = the uncertainty", "tone": "good"}, {"id": "c", "label": "Costs n forward passes", "sub": "and nothing in training", "tone": "teal"}, {"id": "w", "label": "Not a calibrated posterior", "sub": "an approximation, and known to be", "tone": "warn"}], "edges": [["m", "o"], ["o", "n"], ["n", "s"], ["s", "c"], ["c", "w"]], "t": "diagram", "id": "dg-1_7-03-2"},
+
+
     { t: "p", text: "Keep dropout switched on at inference, run the same input through N times, and the predictions vary — each pass is a different sub-network's opinion. Their mean is a better prediction than any single pass and their standard deviation is a measure of how much the sub-networks disagree, which approximates Bayesian uncertainty. A high standard deviation is a flag: the model does not know, and a human should look." },
 
     { t: "code", lang: "python", title: "The function, run on the trained dropout network",
@@ -181,6 +190,9 @@ most uncertain digit: true 5, mean probs top-3 [0.606 0.392 0.002] for classes [
     { t: "p", text: "The network is nearly five times as uncertain on the digits it gets wrong as on the ones it gets right. Route the 10 % most uncertain predictions to a person and the remaining 90 % are 97.2 % accurate, against 94.8 % overall — and the flagged 10 % contain most of the errors (accuracy 58.5 %). The single most uncertain digit is a 5 the network reads as an 8 with probability 0.61 and as a 5 with 0.39: the sub-networks are genuinely split, and the standard deviation says so." },
 
     { t: "h2", n: "04", text: "Early stopping", id: "early" },
+
+    {"kind": "flow", "title": "Early stopping needs three things, and people forget the third", "caption": "A patience, a metric, and — the one that gets skipped — restoring the **best** weights rather than keeping the last ones. Without that restore, stopping ten epochs after the minimum leaves you with the weights from ten epochs of overfitting, which is most of the benefit thrown away at the final step.", "cols": 3, "nodes": [{"id": "v", "label": "Watch a validation metric", "sub": "not the training loss", "tone": "accent"}, {"id": "p", "label": "Patience: n epochs without improvement", "sub": "noise needs room", "tone": "accent"}, {"id": "s", "label": "Stop", "sub": "when patience runs out", "tone": "good"}, {"id": "r", "label": "Restore the best weights", "sub": "restore_best_weights=True", "tone": "good"}, {"id": "f", "label": "Forget to restore", "sub": "you keep the overfitted ones", "tone": "crit"}, {"id": "n", "label": "It is a regulariser", "sub": "a budget on capacity, through time", "tone": "teal"}], "edges": [["v", "p"], ["p", "s"], ["s", "r"], ["s", "f", "", "dashed"], ["r", "n"]], "t": "diagram", "id": "dg-1_7-04-3"},
+
 
     { t: "p", text: "The cheapest regulariser: watch the validation loss every epoch, keep the weights from the best epoch, and stop when it has not improved for `patience` epochs in a row. The loop, run on the no-dropout network:" },
 

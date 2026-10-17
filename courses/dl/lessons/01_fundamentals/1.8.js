@@ -22,6 +22,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Batch normalisation", id: "bn" },
 
+    {"kind": "flow", "title": "Batch normalisation, and the two modes people conflate", "caption": "During training it normalises using **this batch's** statistics and updates a running average; at inference it uses that running average instead, because a single row has no batch to normalise against. Those are genuinely different computations, which is why the mode matters and why batch norm behaves badly at batch size 1 or 2.", "cols": 3, "nodes": [{"id": "b", "label": "Training: this batch's mean and var", "sub": "per channel", "tone": "accent"}, {"id": "n", "label": "Normalise, then scale and shift", "sub": "gamma and beta are learned", "tone": "good"}, {"id": "r", "label": "Update a running average", "sub": "momentum, typically 0.1", "tone": "good"}, {"id": "i", "label": "Inference: use the running stats", "sub": "a single row has no batch", "tone": "good"}, {"id": "s", "label": "Small batches break it", "sub": "the statistics are noise", "tone": "crit"}, {"id": "g", "label": "GroupNorm or LayerNorm instead", "sub": "no batch dependence at all", "tone": "teal"}], "edges": [["b", "n"], ["n", "r"], ["r", "i"], ["b", "s"], ["s", "g"]], "t": "diagram", "id": "dg-1_8-01-0"},
+
+
     { t: "math", tex: "\\hat{x}_i = \\frac{x_i - \\mu_B}{\\sqrt{\\sigma_B^2 + \\epsilon}}, \\qquad y_i = \\gamma\\,\\hat{x}_i + \\beta" },
 
     { t: "p", text: "For each feature, subtract the mean over the mini-batch and divide by the standard deviation over the mini-batch, then let the network undo it if it wants to: γ and β are learned per feature, initialised to 1 and 0. It sits after the linear transformation and before the activation — z = Wx + b → BN(z) → ReLU — so the activation always sees inputs at a sensible scale regardless of what the weights have become." },
@@ -71,6 +74,9 @@ eval mode on the same batch:
     ] },
 
     { t: "h2", n: "02", text: "Layer normalisation", id: "ln" },
+
+    {"kind": "compare", "title": "Batch norm and layer norm normalise across different axes", "caption": "That one difference decides everything else. Batch norm averages **across the batch** for each channel, so it needs a batch and its behaviour changes between train and test. Layer norm averages **across the features** of each row independently, so it works at batch size 1, needs no running statistics, and behaves identically in both modes — which is why every transformer uses it.", "columns": [{"title": "Batch norm", "tone": "accent", "items": ["Averages over the batch, per channel", "Needs a batch; breaks at size 1-2", "Train and inference differ", "Keeps running statistics", "The CNN default"]}, {"title": "Layer norm", "tone": "good", "items": ["Averages over the features, per row", "Works at batch size 1", "Identical in both modes", "No running statistics at all", "The transformer default"]}], "t": "diagram", "id": "dg-1_8-02-1"},
+
 
     { t: "math", tex: "\\hat{x}_i = \\frac{x_i - \\mu_L}{\\sqrt{\\sigma_L^2 + \\epsilon}}, \\qquad \\mu_L, \\sigma_L^2 \\text{ computed over the features of one example}" },
 
@@ -129,6 +135,9 @@ row means tensor([0., 0., 0., 0.]) row stds tensor([1., 1., 1., 1.])` },
 </g></svg>` },
 
     { t: "h2", n: "03", text: "Vanishing and exploding gradients", id: "vanish" },
+
+    {"kind": "flow", "title": "Vanishing and exploding gradients are one mechanism", "caption": "The gradient through n layers is a **product** of n per-layer factors, so anything other than one is geometric: 0.9 to the twentieth is 0.12, and 1.1 to the twentieth is 6.7. Everything that fixes it is an attempt to hold that factor near one — a derivative that does not saturate, a normalisation that rescales, a skip connection that provides a path of factor exactly 1, or a clip that truncates the explosion.", "cols": 3, "nodes": [{"id": "p", "label": "The gradient is a product", "sub": "one factor per layer", "tone": "violet"}, {"id": "v", "label": "Factor < 1: vanishes", "sub": "0.9^20 = 0.12", "tone": "crit"}, {"id": "e", "label": "Factor > 1: explodes", "sub": "1.1^20 = 6.7", "tone": "crit"}, {"id": "a", "label": "ReLU: derivative 1 when on", "sub": "no saturation factor", "tone": "good"}, {"id": "n", "label": "Normalisation rescales", "sub": "per layer", "tone": "good"}, {"id": "s", "label": "Skip connections: factor 1", "sub": "an exact gradient highway", "tone": "good"}], "edges": [["p", "v"], ["p", "e"], ["v", "a"], ["a", "n"], ["n", "s"]], "t": "diagram", "id": "dg-1_8-03-2"},
+
 
     { t: "math", tex: "\\frac{\\partial \\mathcal{L}}{\\partial W^{[1]}} = \\prod_{l=2}^{L}\\frac{\\partial a^{[l]}}{\\partial z^{[l]}}\\, W^{[l]} \\cdot \\frac{\\partial \\mathcal{L}}{\\partial a^{[L]}}" },
 

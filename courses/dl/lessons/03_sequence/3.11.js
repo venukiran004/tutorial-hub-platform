@@ -21,12 +21,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Padding", id: "padding" },
 
-    { t: "diagram", kind: "cells", title: "A batch of three sequences",
-      caption: "Padding to the longest member is what makes a rectangular tensor possible. Here 5 of 15 positions — a third — are fake.",
-      items: [
-        { label: "w₁ w₂ w₃ w₄ w₅", sub: "length 5", tone: "good" },
-        { label: "w₁ w₂ w₃ ▢ ▢", sub: "length 3 + 2 pad", tone: "warn" },
-        { label: "w₁ w₂ ▢ ▢ ▢", sub: "length 2 + 3 pad", tone: "crit" }
+    { t: "diagram", kind: "matrix", title: "A batch of three sequences, padded to a rectangle",
+      caption: "Padding to the longest member is what makes a rectangular tensor possible, and the cost is visible here: **5 of 15 positions — a third — are fake**. The trap below is that those positions are not inert; an RNN keeps updating its hidden state across them unless it is told not to.",
+      cols: ["Positions", "Real / padded"],
+      rows: ["Sequence 1", "Sequence 2", "Sequence 3"],
+      cells: [
+        [{ text: "w₁ w₂ w₃ w₄ w₅", tone: "good" }, "5 real, 0 padded"],
+        [{ text: "w₁ w₂ w₃ ▢ ▢", tone: "warn" }, "3 real, 2 padded"],
+        [{ text: "w₁ w₂ ▢ ▢ ▢", tone: "crit" }, "2 real, 3 padded"]
       ] },
 
     { t: "callout", kind: "trap", title: "Padding is not free in an RNN",

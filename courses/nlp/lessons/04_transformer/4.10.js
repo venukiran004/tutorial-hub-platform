@@ -48,14 +48,17 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "Accurate to 0.14%, and easy to derive",
       body: [{ t: "p", text: "The rule is not a fitted approximation, it is the exact leading term. Attention is `4d²` — `W_Q`, `W_K`, `W_V`, `W_O`, each `d × d`. The FFN with the standard `d_ff = 4d` is `d × 4d + 4d × d = 8d²`. Together `12d²` per layer, times `L` layers. Everything it omits — biases at `O(d)` and LayerNorms at `O(d)` — is one order smaller, which is why the ratio comes out at 1.0014. You can do this arithmetic in your head from a model card, and it is the fastest sanity check there is on a configuration." }] },
 
-    { t: "diagram", kind: "cells", title: "Where 12 d-squared comes from",
-      items: [
-        { label: "W_Q", value: "d²", tone: "accent" },
-        { label: "W_K", value: "d²", tone: "accent" },
-        { label: "W_V", value: "d²", tone: "accent" },
-        { label: "W_O", value: "d²", tone: "accent" },
-        { label: "W_1", value: "4d²", tone: "violet" },
-        { label: "W_2", value: "4d²", tone: "violet" }
+    { t: "diagram", kind: "matrix", title: "Where 12d² per layer comes from",
+      caption: "Six weight matrices per block. Attention contributes four of d² each; the feed-forward network expands to 4d and back, contributing 4d² twice — so **two thirds of a transformer's parameters are in the MLP, not the attention**. The total is 12d² per layer, which is the number every scaling estimate starts from.",
+      cols: ["Parameters", "Part"],
+      rows: ["W_Q", "W_K", "W_V", "W_O", "W_1 (d → 4d)", "W_2 (4d → d)"],
+      cells: [
+        [{ text: "d²", tone: "accent" }, "attention"],
+        [{ text: "d²", tone: "accent" }, "attention"],
+        [{ text: "d²", tone: "accent" }, "attention"],
+        [{ text: "d²", tone: "accent" }, "attention output"],
+        [{ text: "4d²", tone: "violet" }, "feed-forward up"],
+        [{ text: "4d²", tone: "violet" }, "feed-forward down"]
       ] },
 
     { t: "h2", n: "04", text: "Width costs quadratically, depth linearly", id: "scaling" },

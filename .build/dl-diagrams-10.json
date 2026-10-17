@@ -1,0 +1,2982 @@
+{
+ "1.1": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "A perceptron is a weighted sum and a threshold",
+    "caption": "Four operations, and the last one is the only non-linear step. Without it the whole thing is a linear function of the inputs — which is the limitation §03 exists to remove, and the reason stacking two linear layers buys nothing at all.",
+    "cols": 4,
+    "nodes": [
+     {
+      "id": "x",
+      "label": "Inputs x",
+      "sub": "one value per feature",
+      "tone": "violet"
+     },
+     {
+      "id": "w",
+      "label": "Weighted sum",
+      "sub": "w·x + b: one number",
+      "tone": "accent"
+     },
+     {
+      "id": "a",
+      "label": "Activation",
+      "sub": "the only non-linear step",
+      "tone": "good"
+     },
+     {
+      "id": "y",
+      "label": "Output",
+      "sub": "a class, or a value",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "x",
+      "w"
+     ],
+     [
+      "w",
+      "a"
+     ],
+     [
+      "a",
+      "y"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "layers",
+    "title": "An MLP, and what each layer is allowed to do",
+    "caption": "Every layer is the same two operations — a linear map, then a non-linearity — and the depth is what lets them compose. Remove the non-linearities and the stack collapses algebraically to a single linear layer, however many you place.",
+    "items": [
+     {
+      "label": "Output layer",
+      "sub": "one unit per class, or one value",
+      "tone": "teal",
+      "side": "softmax"
+     },
+     {
+      "label": "Hidden layer 2",
+      "sub": "linear map, then a non-linearity",
+      "tone": "good",
+      "side": "ReLU"
+     },
+     {
+      "label": "Hidden layer 1",
+      "sub": "linear map, then a non-linearity",
+      "tone": "good",
+      "side": "ReLU"
+     },
+     {
+      "label": "Input layer",
+      "sub": "the features; no computation here",
+      "tone": "accent",
+      "side": "x"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "What the universal approximation theorem does and does not promise",
+    "caption": "It says a wide enough single hidden layer can approximate any continuous function on a bounded region to any accuracy. It says nothing about **how wide**, nothing about finding the weights, and nothing about generalising beyond the data — so it is an existence result, not an engineering one, and depth is preferred in practice because it needs exponentially fewer units.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "One hidden layer, wide enough",
+      "sub": "can approximate any continuous f",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": "On a bounded region",
+      "sub": "not everywhere",
+      "tone": "accent"
+     },
+     {
+      "id": "w",
+      "label": "How wide?",
+      "sub": "the theorem does not say",
+      "tone": "warn"
+     },
+     {
+      "id": "f",
+      "label": "Can you find the weights?",
+      "sub": "it does not say that either",
+      "tone": "warn"
+     },
+     {
+      "id": "g",
+      "label": "Will it generalise?",
+      "sub": "a separate question entirely",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "So: depth",
+      "sub": "exponentially fewer units in practice",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "b"
+     ],
+     [
+      "t",
+      "w"
+     ],
+     [
+      "w",
+      "f"
+     ],
+     [
+      "f",
+      "g"
+     ],
+     [
+      "g",
+      "d"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "trace",
+    "title": "Counting parameters, layer by layer",
+    "caption": "Each layer holds a weight matrix of (inputs × outputs) plus one bias per output. The arithmetic is worth doing by hand once, because it is what tells you a 784→128 first layer is **three quarters of the whole network** — and therefore where the memory and most of the overfitting risk live.",
+    "left": "layer",
+    "codeW": 170,
+    "vars": [
+     "weights",
+     "biases",
+     "total"
+    ],
+    "steps": [
+     {
+      "code": "input 784 -> hidden 128",
+      "state": [
+       "784 x 128 = 100,352",
+       "128",
+       "100,480"
+      ],
+      "tone": "crit",
+      "note": "92% of the model"
+     },
+     {
+      "code": "hidden 128 -> hidden 64",
+      "state": [
+       "128 x 64 = 8,192",
+       "64",
+       "8,256"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "hidden 64 -> output 10",
+      "state": [
+       "64 x 10 = 640",
+       "10",
+       "650"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "whole network",
+      "state": [
+       "109,184",
+       "202",
+       "109,386"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  }
+ ],
+ "1.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Why a non-linearity has to be there at all",
+    "caption": "Two linear layers composed are one linear layer: W₂(W₁x + b₁) + b₂ = (W₂W₁)x + (W₂b₁ + b₂), and the bracket is just another matrix and another vector. So without an activation, a hundred layers has exactly the representational power of one — and the whole of deep learning is the one function placed between them.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "Layer 1: W1x + b1",
+      "sub": "linear",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "Layer 2: W2(...) + b2",
+      "sub": "linear",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "= (W2W1)x + (W2b1 + b2)",
+      "sub": "one matrix, one vector",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "A hundred layers",
+      "sub": "still one linear map",
+      "tone": "crit"
+     },
+     {
+      "id": "e",
+      "label": "Insert a non-linearity",
+      "sub": "between every pair",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "Now depth composes",
+      "sub": "and the stack is not collapsible",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "b"
+     ],
+     [
+      "b",
+      "c"
+     ],
+     [
+      "c",
+      "d"
+     ],
+     [
+      "d",
+      "e"
+     ],
+     [
+      "e",
+      "f"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "The activations and their derivatives, on the same seven inputs",
+    "caption": "The derivative row is the one that matters. Sigmoid's peaks at **0.25** and falls to 0.045 by z = ±3 — multiply a dozen of those together in a backward pass and the gradient is gone, which is the vanishing-gradient problem in one number. ReLU's derivative is exactly 1 wherever it is on, which is why it fixed the problem, and exactly 0 where it is off, which is how a unit dies (§04).",
+    "left": "z",
+    "codeW": 100,
+    "vars": [
+     "sigmoid",
+     "its derivative",
+     "tanh",
+     "ReLU",
+     "its derivative"
+    ],
+    "steps": [
+     {
+      "code": "-3.0",
+      "state": [
+       "0.0474",
+       "0.0452",
+       "-0.9951",
+       "0.0",
+       "0"
+      ],
+      "tone": "crit",
+      "note": "saturated"
+     },
+     {
+      "code": "-1.0",
+      "state": [
+       "0.2689",
+       "0.1966",
+       "-0.7616",
+       "0.0",
+       "0"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "-0.5",
+      "state": [
+       "0.3775",
+       "0.2350",
+       "-0.4621",
+       "0.0",
+       "0"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "0.0",
+      "state": [
+       "0.5000",
+       "0.2500",
+       "0.0000",
+       "0.0",
+       "0 or 1"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "accent",
+      "note": "the maximum"
+     },
+     {
+      "code": "0.5",
+      "state": [
+       "0.6225",
+       "0.2350",
+       "0.4621",
+       "0.5",
+       "1"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "1.0",
+      "state": [
+       "0.7311",
+       "0.1966",
+       "0.7616",
+       "1.0",
+       "1"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "3.0",
+      "state": [
+       "0.9526",
+       "0.0452",
+       "0.9951",
+       "3.0",
+       "1"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit",
+      "note": "saturated again"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Which activation, and what each one is for",
+    "caption": "Three of these are defaults rather than choices: **ReLU** in a convolutional network, **GELU** in a transformer, and **softmax** or nothing at the output. The rest exist for a specific symptom — leaky and ELU for dying units, SELU for self-normalising stacks, and sigmoid only where a single bounded probability is genuinely wanted.",
+    "cols": [
+     "Range",
+     "Reach for it"
+    ],
+    "rows": [
+     "ReLU",
+     "Leaky ReLU / ELU",
+     "GELU",
+     "Swish / SiLU",
+     "SELU",
+     "Sigmoid",
+     "tanh"
+    ],
+    "cells": [
+     [
+      {
+       "text": "[0, ∞)",
+       "tone": "good"
+      },
+      "the CNN default"
+     ],
+     [
+      "(-∞, ∞) / (-α, ∞)",
+      "when units are dying"
+     ],
+     [
+      {
+       "text": "(-0.17, ∞)",
+       "tone": "good"
+      },
+      "the transformer default"
+     ],
+     [
+      "(-0.28, ∞)",
+      "a smooth ReLU alternative"
+     ],
+     [
+      "(-λα, ∞)",
+      "self-normalising; needs LeCun init"
+     ],
+     [
+      {
+       "text": "(0, 1)",
+       "tone": "warn"
+      },
+      "one bounded probability, at the output"
+     ],
+     [
+      {
+       "text": "(-1, 1)",
+       "tone": "warn"
+      },
+      "zero-centred; gates inside an LSTM"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "How a ReLU unit dies, and why it cannot recover",
+    "caption": "A large gradient step can push a unit's bias far enough negative that its pre-activation is below zero for **every** row in the dataset. The output is then always 0, so the derivative is always 0, so no gradient ever reaches its weights again — the unit is not merely unhelpful, it is permanently frozen. Leaky ReLU's small negative slope exists precisely to keep that path open.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "A large update",
+      "sub": "high learning rate, or a big gradient",
+      "tone": "warn"
+     },
+     {
+      "id": "b",
+      "label": "Bias pushed very negative",
+      "sub": "z < 0 for every input",
+      "tone": "crit"
+     },
+     {
+      "id": "o",
+      "label": "Output always 0",
+      "sub": "the unit contributes nothing",
+      "tone": "crit"
+     },
+     {
+      "id": "g",
+      "label": "Derivative always 0",
+      "sub": "so no gradient reaches its weights",
+      "tone": "crit"
+     },
+     {
+      "id": "f",
+      "label": "Frozen for good",
+      "sub": "it cannot climb back out",
+      "tone": "crit"
+     },
+     {
+      "id": "l",
+      "label": "Leaky ReLU: slope 0.01",
+      "sub": "a small gradient always survives",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "b"
+     ],
+     [
+      "b",
+      "o"
+     ],
+     [
+      "o",
+      "g"
+     ],
+     [
+      "g",
+      "f"
+     ],
+     [
+      "f",
+      "l"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "A forward pass, in matrix form",
+    "caption": "Two operations per layer, repeated. Writing it as matrices rather than loops is not only notation: it is what lets one GEMM call handle a whole batch, which is the difference between a network that trains in minutes and one that trains in days.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "x",
+      "label": "x, shape (features,)",
+      "sub": "or (batch, features)",
+      "tone": "violet"
+     },
+     {
+      "id": "z1",
+      "label": "z1 = W1 x + b1",
+      "sub": "one matrix multiply",
+      "tone": "accent"
+     },
+     {
+      "id": "a1",
+      "label": "a1 = f(z1)",
+      "sub": "element-wise",
+      "tone": "good"
+     },
+     {
+      "id": "z2",
+      "label": "z2 = W2 a1 + b2",
+      "sub": "the next layer",
+      "tone": "accent"
+     },
+     {
+      "id": "y",
+      "label": "y-hat = g(z2)",
+      "sub": "sigmoid, or softmax",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": "A batch is free",
+      "sub": "the same call, one more dimension",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "x",
+      "z1"
+     ],
+     [
+      "z1",
+      "a1"
+     ],
+     [
+      "a1",
+      "z2"
+     ],
+     [
+      "z2",
+      "y"
+     ],
+     [
+      "y",
+      "b"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "One forward pass, every number",
+    "caption": "W¹ = [[0.5, −0.3], [0.8, 0.6]], b¹ = [0.1, −0.2], x = [1.0, 2.0]. The first hidden unit's pre-activation comes out at exactly **0.0**, so ReLU zeroes it and that unit contributes nothing to this prediction — a concrete instance of the sparsity ReLU creates. The output 0.277 is below 0.5, so the prediction is class 0.",
+    "left": "step",
+    "codeW": 160,
+    "vars": [
+     "computation",
+     "result"
+    ],
+    "steps": [
+     {
+      "code": "z1, unit 1",
+      "state": [
+       "0.5(1.0) + (-0.3)(2.0) + 0.1",
+       "0.0"
+      ],
+      "tone": "warn",
+      "note": "exactly zero"
+     },
+     {
+      "code": "z1, unit 2",
+      "state": [
+       "0.8(1.0) + 0.6(2.0) - 0.2",
+       "1.8"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "a1 = ReLU(z1)",
+      "state": [
+       "max(0, z)",
+       "[0.0, 1.8]"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "good",
+      "note": "unit 1 is off"
+     },
+     {
+      "code": "z2",
+      "state": [
+       "0.4(0.0) + (-0.7)(1.8) + 0.3",
+       "-0.96"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "y-hat = sigma(z2)",
+      "state": [
+       "1 / (1 + e^0.96)",
+       "0.277"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "decision",
+      "state": [
+       "0.277 < 0.5",
+       "class 0"
+      ],
+      "tone": "teal"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "The loss is a choice about what the output means",
+    "caption": "Each loss is the negative log-likelihood of a different output distribution, which is why it comes paired with a specific final activation. Mixing them is the commonest beginner error: a softmax output with MSE trains, slowly and badly, because the gradient no longer simplifies to (p − y).",
+    "cols": [
+     "Final activation",
+     "Use for"
+    ],
+    "rows": [
+     "Binary cross-entropy",
+     "Categorical cross-entropy",
+     "Sparse categorical CE",
+     "MSE",
+     "MAE / Huber",
+     "CTC"
+    ],
+    "cells": [
+     [
+      {
+       "text": "sigmoid, one unit",
+       "tone": "good"
+      },
+      "two classes, or multi-label"
+     ],
+     [
+      {
+       "text": "softmax, k units",
+       "tone": "good"
+      },
+      "one of k classes, one-hot labels"
+     ],
+     [
+      {
+       "text": "softmax, k units",
+       "tone": "good"
+      },
+      "the same, with integer labels"
+     ],
+     [
+      {
+       "text": "none (linear)",
+       "tone": "good"
+      },
+      "regression; penalises large misses"
+     ],
+     [
+      {
+       "text": "none (linear)",
+       "tone": "good"
+      },
+      "regression with outliers"
+     ],
+     [
+      {
+       "text": "softmax per frame",
+       "tone": "accent"
+      },
+      "unaligned sequences: speech, OCR"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Why cross-entropy and not squared error for a classifier",
+    "caption": "With a sigmoid output and squared error, the gradient carries a factor of σ'(z) — which is at most 0.25 and near zero when the model is confidently **wrong**, so the worst predictions produce the smallest updates. Cross-entropy cancels that factor exactly, leaving a gradient of (p − y): confidently wrong means a large gradient, which is what you want.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "m",
+      "label": "MSE + sigmoid",
+      "sub": "gradient includes sigma'(z)",
+      "tone": "warn"
+     },
+     {
+      "id": "s",
+      "label": "Confidently wrong",
+      "sub": "sigma'(z) is near zero",
+      "tone": "crit"
+     },
+     {
+      "id": "t",
+      "label": "Tiny gradient",
+      "sub": "the worst case learns slowest",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "Cross-entropy + sigmoid",
+      "sub": "the sigma' factor cancels",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "Gradient is (p - y)",
+      "sub": "proportional to the error",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "Confidently wrong = big step",
+      "sub": "which is the behaviour wanted",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "m",
+      "s"
+     ],
+     [
+      "s",
+      "t"
+     ],
+     [
+      "c",
+      "g"
+     ],
+     [
+      "g",
+      "f"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "The chain rule is the whole algorithm",
+    "caption": "Backpropagation is not a new idea in calculus — it is the chain rule, applied from the loss backwards, with each layer's partial derivative **reused** by every layer behind it. That reuse is the entire efficiency: the full gradient costs about one extra forward pass rather than one pass per parameter.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "l",
+      "label": "dL/dy-hat",
+      "sub": "start at the loss",
+      "tone": "violet"
+     },
+     {
+      "id": "a",
+      "label": "x dy-hat/dz2",
+      "sub": "through the output activation",
+      "tone": "accent"
+     },
+     {
+      "id": "w",
+      "label": "-> dL/dW2",
+      "sub": "times the stored a1",
+      "tone": "good"
+     },
+     {
+      "id": "h",
+      "label": "x dz2/da1",
+      "sub": "through the weights: W2 transpose",
+      "tone": "accent"
+     },
+     {
+      "id": "f",
+      "label": "x da1/dz1",
+      "sub": "through the hidden activation",
+      "tone": "accent"
+     },
+     {
+      "id": "v",
+      "label": "-> dL/dW1",
+      "sub": "times the stored x",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "l",
+      "a"
+     ],
+     [
+      "a",
+      "w"
+     ],
+     [
+      "a",
+      "h"
+     ],
+     [
+      "h",
+      "f"
+     ],
+     [
+      "f",
+      "v"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "steps",
+    "title": "The two-layer derivation, in the order it is actually done",
+    "caption": "The forward pass must store its intermediate values, because every backward step needs them — that is the memory cost of training, and the reason activation checkpointing exists as a trade. Note that step 3 produces the quantity step 5 reuses: compute it once.",
+    "items": [
+     {
+      "label": "Forward, storing a1 and z2",
+      "desc": "they are needed on the way back",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "dL/dy-hat at the output",
+      "desc": "for cross-entropy with sigmoid this is (y-hat - y)",
+      "code": "2",
+      "tone": "good"
+     },
+     {
+      "label": "delta2 = dL/dz2",
+      "desc": "the output layer's error signal",
+      "code": "3",
+      "tone": "violet"
+     },
+     {
+      "label": "dL/dW2 = delta2 x a1 transpose",
+      "desc": "error times the input that produced it",
+      "code": "4",
+      "tone": "good"
+     },
+     {
+      "label": "delta1 = (W2 transpose delta2) * f'(z1)",
+      "desc": "reuses delta2; the element-wise product is the activation's derivative",
+      "code": "5",
+      "tone": "violet"
+     },
+     {
+      "label": "dL/dW1 = delta1 x x transpose",
+      "desc": "the same shape of rule, one layer down",
+      "code": "6",
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "Backpropagation on the same numbers, checked",
+    "caption": "Continuing the forward pass of 1.3 (ŷ = 0.277) with the label y = 1. Watch the second row: the gradient into the first hidden unit is **exactly zero**, because ReLU's derivative there is zero — so that unit's weights receive no update at all this step. The dead-unit mechanism of 1.2 and the sparsity of 1.3 are the same fact seen from the backward direction.",
+    "left": "quantity",
+    "codeW": 180,
+    "vars": [
+     "value",
+     "why"
+    ],
+    "steps": [
+     {
+      "code": "y-hat - y",
+      "state": [
+       "0.277 - 1 = -0.723",
+       "cross-entropy with sigmoid"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "dL/dW2 (unit 1)",
+      "state": [
+       "-0.723 x 0.0 = 0.000",
+       "a1 was zero"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "dL/dW2 (unit 2)",
+      "state": [
+       "-0.723 x 1.8 = -1.301",
+       "a1 was 1.8"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "dL/db2",
+      "state": [
+       "-0.723",
+       "the error itself"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "delta1 (unit 1)",
+      "state": [
+       "0.000",
+       "ReLU'(0) = 0: no path"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "delta1 (unit 2)",
+      "state": [
+       "-0.723 x (-0.7) x 1 = 0.506",
+       "W2 x ReLU'(1.8)"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "so dL/dW1 row 1",
+      "state": [
+       "all zeros",
+       "that unit learns nothing"
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "The computational graph is what the framework actually builds",
+    "caption": "Every operation records its inputs and how to differentiate itself. `backward()` then walks that recorded graph in reverse topological order — which is why a tensor detached from the graph gets no gradient, why `.item()` breaks the chain, and why the graph is freed after one backward call unless you ask for it to be kept.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "f",
+      "label": "Each op records its inputs",
+      "sub": "and its local derivative",
+      "tone": "accent"
+     },
+     {
+      "id": "g",
+      "label": "A DAG is built as you go",
+      "sub": "define-by-run",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "backward() walks it in reverse",
+      "sub": "reverse topological order",
+      "tone": "good"
+     },
+     {
+      "id": "d",
+      "label": "detach() cuts the edge",
+      "sub": "no gradient flows past it",
+      "tone": "warn"
+     },
+     {
+      "id": "i",
+      "label": ".item() leaves the graph",
+      "sub": "a Python float has no history",
+      "tone": "warn"
+     },
+     {
+      "id": "r",
+      "label": "Freed after one backward",
+      "sub": "retain_graph=True to reuse it",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "f",
+      "g"
+     ],
+     [
+      "g",
+      "b"
+     ],
+     [
+      "b",
+      "d"
+     ],
+     [
+      "d",
+      "i"
+     ],
+     [
+      "b",
+      "r"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "From a gradient to an update",
+    "caption": "Every optimiser in this lesson is the same skeleton with more state. Plain SGD keeps nothing; momentum keeps a running mean of the gradient; RMSprop keeps a running mean of its square; Adam keeps both. Each piece of state buys a specific behaviour, and costs one more copy of the parameters in memory.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "g",
+      "label": "Gradient g",
+      "sub": "from backward()",
+      "tone": "violet"
+     },
+     {
+      "id": "m",
+      "label": "+ a running mean of g",
+      "sub": "momentum: smooths the direction",
+      "tone": "accent"
+     },
+     {
+      "id": "v",
+      "label": "+ a running mean of g squared",
+      "sub": "RMSprop: scales per parameter",
+      "tone": "accent"
+     },
+     {
+      "id": "a",
+      "label": "Both, bias-corrected",
+      "sub": "Adam",
+      "tone": "good"
+     },
+     {
+      "id": "u",
+      "label": "theta -= step",
+      "sub": "the update",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Each costs memory",
+      "sub": "one or two extra copies of the parameters",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "g",
+      "m"
+     ],
+     [
+      "g",
+      "v"
+     ],
+     [
+      "m",
+      "a"
+     ],
+     [
+      "v",
+      "a"
+     ],
+     [
+      "a",
+      "u"
+     ],
+     [
+      "u",
+      "c"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "One parameter, three gradients, four optimisers",
+    "caption": "θ starts at 1.0 and receives the gradients 2.0, 1.5, −0.5. Read the SGD row: the third gradient is **negative**, so θ moves back up from 0.6500 to 0.7000 — plain SGD follows whatever the last gradient said. Momentum does not: its velocity is still positive from the first two steps, so it keeps descending through the sign flip. And notice the scale — Adam's default α = 0.001 moves θ by about 0.001 per step regardless of the gradient's size, because the division by √v normalises it away.",
+    "left": "optimiser",
+    "codeW": 190,
+    "vars": [
+     "after g = 2.0",
+     "after g = 1.5",
+     "after g = -0.5"
+    ],
+    "steps": [
+     {
+      "code": "SGD, alpha 0.1",
+      "state": [
+       "0.8000",
+       "0.6500",
+       "0.7000"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "warn",
+      "note": "reverses"
+     },
+     {
+      "code": "SGD + momentum 0.9",
+      "state": [
+       "0.9800",
+       "0.9470",
+       "0.9223"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good",
+      "note": "keeps going"
+     },
+     {
+      "code": "RMSprop, eta 0.001",
+      "state": [
+       "0.9968",
+       "0.9949",
+       "0.9955"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "Adam, alpha 0.001",
+      "state": [
+       "0.9990",
+       "0.9980",
+       "0.9974"
+      ],
+      "tone": "accent",
+      "note": "step ~ alpha"
+     },
+     {
+      "code": "torch.optim.Adam",
+      "state": [
+       "0.9990",
+       "0.9980",
+       "0.9974"
+      ],
+      "tone": "good",
+      "note": "matches"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Adam + L2 is not AdamW, and the difference is where the penalty goes",
+    "caption": "Adding L2 to the **loss** means the penalty's gradient enters `g`, and is then divided by √v along with everything else — so a parameter with large historical gradients gets its weight decay quietly scaled down, which is the opposite of what regularisation should do. AdamW applies the decay directly to the parameter, after the adaptive step, so it is uniform.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "l",
+      "label": "L2 in the loss",
+      "sub": "lambda ||w||² added to L",
+      "tone": "warn"
+     },
+     {
+      "id": "g",
+      "label": "Its gradient joins g",
+      "sub": "2 lambda w",
+      "tone": "warn"
+     },
+     {
+      "id": "v",
+      "label": "Divided by sqrt(v)",
+      "sub": "scaled per parameter",
+      "tone": "crit"
+     },
+     {
+      "id": "u",
+      "label": "Decay is now uneven",
+      "sub": "weakest where gradients are largest",
+      "tone": "crit"
+     },
+     {
+      "id": "w",
+      "label": "AdamW",
+      "sub": "decay applied to w directly",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "Uniform, as intended",
+      "sub": "and the transformer default",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "l",
+      "g"
+     ],
+     [
+      "g",
+      "v"
+     ],
+     [
+      "v",
+      "u"
+     ],
+     [
+      "u",
+      "w"
+     ],
+     [
+      "w",
+      "e"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Choosing an optimiser, and the one dial that matters more",
+    "caption": "The honest summary is that the learning rate matters more than the choice between these, and a schedule matters more than either. AdamW with a warmup-and-decay schedule is the default for transformers; SGD with momentum still wins on large vision models given the budget to tune it.",
+    "cols": [
+     "Use",
+     "Note"
+    ],
+    "rows": [
+     "SGD + momentum",
+     "Adam",
+     "AdamW",
+     "RMSprop",
+     "LAMB / LARS",
+     "A schedule"
+    ],
+    "cells": [
+     [
+      {
+       "text": "large vision models",
+       "tone": "good"
+      },
+      "often the best final accuracy; needs tuning"
+     ],
+     [
+      {
+       "text": "a fast first result",
+       "tone": "accent"
+      },
+      "forgiving; L2 behaves wrongly in it"
+     ],
+     [
+      {
+       "text": "transformers",
+       "tone": "good"
+      },
+      "the default; decay is decoupled"
+     ],
+     [
+      "recurrent nets, historically",
+      "largely superseded by Adam"
+     ],
+     [
+      "very large batches",
+      "layer-wise scaling"
+     ],
+     [
+      {
+       "text": "always",
+       "tone": "violet"
+      },
+      "warmup then cosine beats any fixed rate"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.6": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Why initialisation is not a detail",
+    "caption": "Two degenerate choices make the network untrainable before the first step. All-zero weights make every unit in a layer compute the same thing and receive the same gradient, so they stay identical forever — the layer has one effective unit however wide it is. Weights that are too large saturate the activations, and a saturated activation has no gradient.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "z",
+      "label": "All zeros",
+      "sub": "every unit identical",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "Symmetry never breaks",
+      "sub": "same gradient, forever",
+      "tone": "crit"
+     },
+     {
+      "id": "b",
+      "label": "Too large",
+      "sub": "activations saturate",
+      "tone": "crit"
+     },
+     {
+      "id": "n",
+      "label": "No gradient",
+      "sub": "sigmoid' near zero",
+      "tone": "crit"
+     },
+     {
+      "id": "t",
+      "label": "Too small",
+      "sub": "the signal shrinks per layer",
+      "tone": "warn"
+     },
+     {
+      "id": "g",
+      "label": "Scale by fan-in",
+      "sub": "Xavier or He: keep the variance",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "z",
+      "s"
+     ],
+     [
+      "b",
+      "n"
+     ],
+     [
+      "t",
+      "g"
+     ],
+     [
+      "s",
+      "g"
+     ],
+     [
+      "n",
+      "g"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "The variance argument, which is the whole derivation",
+    "caption": "A layer's output variance is its input variance times n·Var(W). For that to stay constant through the stack you need Var(W) = 1/n — which is Xavier. ReLU then halves the variance by zeroing half the units, so He compensates with 2/n. That single factor of two is the entire difference between the two initialisers.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "v",
+      "label": "Var(out) = n Var(W) Var(in)",
+      "sub": "for a linear layer",
+      "tone": "violet"
+     },
+     {
+      "id": "x",
+      "label": "Want it constant",
+      "sub": "so Var(W) = 1/n",
+      "tone": "accent"
+     },
+     {
+      "id": "g",
+      "label": "Xavier / Glorot",
+      "sub": "for tanh and sigmoid",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "ReLU zeroes half",
+      "sub": "halving the variance",
+      "tone": "warn"
+     },
+     {
+      "id": "h",
+      "label": "He: Var(W) = 2/n",
+      "sub": "the factor of two compensates",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "fan_in or fan_out",
+      "sub": "forward pass, or backward",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "v",
+      "x"
+     ],
+     [
+      "x",
+      "g"
+     ],
+     [
+      "g",
+      "r"
+     ],
+     [
+      "r",
+      "h"
+     ],
+     [
+      "h",
+      "f"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Measured through twenty layers",
+    "caption": "The failure is geometric, which is why depth makes it dramatic: a per-layer factor slightly below one becomes vanishingly small after twenty layers, and slightly above one becomes enormous. The right initialiser keeps that factor at one, so the activation scale at layer twenty looks like the scale at layer one.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "Too small a scale",
+      "sub": "each layer shrinks the signal",
+      "tone": "warn"
+     },
+     {
+      "id": "v",
+      "label": "Vanishes by layer 20",
+      "sub": "geometric decay",
+      "tone": "crit"
+     },
+     {
+      "id": "b",
+      "label": "Too large a scale",
+      "sub": "each layer grows it",
+      "tone": "warn"
+     },
+     {
+      "id": "e",
+      "label": "Explodes by layer 20",
+      "sub": "geometric growth, then NaN",
+      "tone": "crit"
+     },
+     {
+      "id": "h",
+      "label": "He init with ReLU",
+      "sub": "factor stays at one",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Scale is stable at depth",
+      "sub": "layer 20 looks like layer 1",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "v"
+     ],
+     [
+      "b",
+      "e"
+     ],
+     [
+      "h",
+      "c"
+     ],
+     [
+      "v",
+      "h"
+     ],
+     [
+      "e",
+      "h"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "The initialiser each framework gives you by default",
+    "caption": "Neither default is He, which is the point worth knowing: PyTorch's `Linear` uses a Kaiming-uniform variant with `a=√5` for historical reasons, and Keras's `Dense` uses Glorot uniform. With a ReLU stack both are a little small, so setting the initialiser explicitly is one line that occasionally matters a great deal.",
+    "cols": [
+     "Default",
+     "With ReLU, prefer"
+    ],
+    "rows": [
+     "torch.nn.Linear",
+     "torch.nn.Conv2d",
+     "keras Dense",
+     "keras Conv2D",
+     "Bias terms"
+    ],
+    "cells": [
+     [
+      {
+       "text": "kaiming_uniform, a=sqrt(5)",
+       "tone": "warn"
+      },
+      "kaiming_normal_(nonlinearity='relu')"
+     ],
+     [
+      {
+       "text": "kaiming_uniform, a=sqrt(5)",
+       "tone": "warn"
+      },
+      "the same"
+     ],
+     [
+      {
+       "text": "glorot_uniform",
+       "tone": "warn"
+      },
+      "he_normal"
+     ],
+     [
+      {
+       "text": "glorot_uniform",
+       "tone": "warn"
+      },
+      "he_normal"
+     ],
+     [
+      {
+       "text": "zeros (both)",
+       "tone": "good"
+      },
+      "zeros is correct; symmetry is broken by W"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "L2 as a penalty, and as weight decay",
+    "caption": "They are the same thing seen from two sides: differentiating λ‖w‖² gives 2λw, so adding the penalty to the loss is identical to subtracting a fraction of w at every step. The second spelling is cheaper and is what 'weight decay' names — and, per 1.5, it is only equivalent for plain SGD, not for Adam.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "p",
+      "label": "Add lambda ||w||² to L",
+      "sub": "a penalty on size",
+      "tone": "accent"
+     },
+     {
+      "id": "d",
+      "label": "Its gradient is 2 lambda w",
+      "sub": "proportional to w",
+      "tone": "accent"
+     },
+     {
+      "id": "u",
+      "label": "w -= eta(g + 2 lambda w)",
+      "sub": "the update",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "= decay then descend",
+      "sub": "w shrinks a fraction each step",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Equivalent, for SGD",
+      "sub": "two spellings of one rule",
+      "tone": "teal"
+     },
+     {
+      "id": "a",
+      "label": "Not for Adam",
+      "sub": "see AdamW in 1.5",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "p",
+      "d"
+     ],
+     [
+      "d",
+      "u"
+     ],
+     [
+      "u",
+      "e"
+     ],
+     [
+      "e",
+      "s"
+     ],
+     [
+      "s",
+      "a"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Dropout, and the scaling that makes test time match",
+    "caption": "Dropping units at random makes the network an ensemble of subnetworks that share weights. The detail that matters in code: at training time the surviving activations are divided by (1−p) so the expected sum is unchanged — **inverted dropout** — which is what lets test time simply turn dropout off with no rescaling. Forgetting `model.eval()` leaves it on and quietly degrades every prediction.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "Training: drop each unit with p",
+      "sub": "a different subnetwork per batch",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Divide survivors by (1 - p)",
+      "sub": "so the expected sum is unchanged",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "An ensemble, sharing weights",
+      "sub": "that is the regularisation",
+      "tone": "good"
+     },
+     {
+      "id": "v",
+      "label": "Test: dropout off",
+      "sub": "no rescaling needed",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "Forgetting model.eval()",
+      "sub": "dropout stays on",
+      "tone": "crit"
+     },
+     {
+      "id": "n",
+      "label": "Noisy, worse predictions",
+      "sub": "and non-deterministic ones",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "s"
+     ],
+     [
+      "s",
+      "e"
+     ],
+     [
+      "e",
+      "v"
+     ],
+     [
+      "v",
+      "f"
+     ],
+     [
+      "f",
+      "n"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Monte Carlo dropout: the same network, used differently",
+    "caption": "Leave dropout **on** at inference and run the same input many times: each pass samples a different subnetwork, so the spread of the predictions is an estimate of the model's uncertainty. It costs n forward passes and requires nothing new to be trained — which is what makes it the cheapest uncertainty estimate available for a network that already uses dropout.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "m",
+      "label": "A trained dropout network",
+      "sub": "nothing extra to fit",
+      "tone": "violet"
+     },
+     {
+      "id": "o",
+      "label": "Keep dropout ON at inference",
+      "sub": "model.train() for the dropout layers",
+      "tone": "accent"
+     },
+     {
+      "id": "n",
+      "label": "Run the same input n times",
+      "sub": "a different subnetwork each pass",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Mean = the prediction",
+      "sub": "spread = the uncertainty",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Costs n forward passes",
+      "sub": "and nothing in training",
+      "tone": "teal"
+     },
+     {
+      "id": "w",
+      "label": "Not a calibrated posterior",
+      "sub": "an approximation, and known to be",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "m",
+      "o"
+     ],
+     [
+      "o",
+      "n"
+     ],
+     [
+      "n",
+      "s"
+     ],
+     [
+      "s",
+      "c"
+     ],
+     [
+      "c",
+      "w"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Early stopping needs three things, and people forget the third",
+    "caption": "A patience, a metric, and — the one that gets skipped — restoring the **best** weights rather than keeping the last ones. Without that restore, stopping ten epochs after the minimum leaves you with the weights from ten epochs of overfitting, which is most of the benefit thrown away at the final step.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "v",
+      "label": "Watch a validation metric",
+      "sub": "not the training loss",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "Patience: n epochs without improvement",
+      "sub": "noise needs room",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Stop",
+      "sub": "when patience runs out",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Restore the best weights",
+      "sub": "restore_best_weights=True",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "Forget to restore",
+      "sub": "you keep the overfitted ones",
+      "tone": "crit"
+     },
+     {
+      "id": "n",
+      "label": "It is a regulariser",
+      "sub": "a budget on capacity, through time",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "v",
+      "p"
+     ],
+     [
+      "p",
+      "s"
+     ],
+     [
+      "s",
+      "r"
+     ],
+     [
+      "s",
+      "f",
+      "",
+      "dashed"
+     ],
+     [
+      "r",
+      "n"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.8": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Batch normalisation, and the two modes people conflate",
+    "caption": "During training it normalises using **this batch's** statistics and updates a running average; at inference it uses that running average instead, because a single row has no batch to normalise against. Those are genuinely different computations, which is why the mode matters and why batch norm behaves badly at batch size 1 or 2.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "b",
+      "label": "Training: this batch's mean and var",
+      "sub": "per channel",
+      "tone": "accent"
+     },
+     {
+      "id": "n",
+      "label": "Normalise, then scale and shift",
+      "sub": "gamma and beta are learned",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Update a running average",
+      "sub": "momentum, typically 0.1",
+      "tone": "good"
+     },
+     {
+      "id": "i",
+      "label": "Inference: use the running stats",
+      "sub": "a single row has no batch",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Small batches break it",
+      "sub": "the statistics are noise",
+      "tone": "crit"
+     },
+     {
+      "id": "g",
+      "label": "GroupNorm or LayerNorm instead",
+      "sub": "no batch dependence at all",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "b",
+      "n"
+     ],
+     [
+      "n",
+      "r"
+     ],
+     [
+      "r",
+      "i"
+     ],
+     [
+      "b",
+      "s"
+     ],
+     [
+      "s",
+      "g"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "compare",
+    "title": "Batch norm and layer norm normalise across different axes",
+    "caption": "That one difference decides everything else. Batch norm averages **across the batch** for each channel, so it needs a batch and its behaviour changes between train and test. Layer norm averages **across the features** of each row independently, so it works at batch size 1, needs no running statistics, and behaves identically in both modes — which is why every transformer uses it.",
+    "columns": [
+     {
+      "title": "Batch norm",
+      "tone": "accent",
+      "items": [
+       "Averages over the batch, per channel",
+       "Needs a batch; breaks at size 1-2",
+       "Train and inference differ",
+       "Keeps running statistics",
+       "The CNN default"
+      ]
+     },
+     {
+      "title": "Layer norm",
+      "tone": "good",
+      "items": [
+       "Averages over the features, per row",
+       "Works at batch size 1",
+       "Identical in both modes",
+       "No running statistics at all",
+       "The transformer default"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Vanishing and exploding gradients are one mechanism",
+    "caption": "The gradient through n layers is a **product** of n per-layer factors, so anything other than one is geometric: 0.9 to the twentieth is 0.12, and 1.1 to the twentieth is 6.7. Everything that fixes it is an attempt to hold that factor near one — a derivative that does not saturate, a normalisation that rescales, a skip connection that provides a path of factor exactly 1, or a clip that truncates the explosion.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "p",
+      "label": "The gradient is a product",
+      "sub": "one factor per layer",
+      "tone": "violet"
+     },
+     {
+      "id": "v",
+      "label": "Factor < 1: vanishes",
+      "sub": "0.9^20 = 0.12",
+      "tone": "crit"
+     },
+     {
+      "id": "e",
+      "label": "Factor > 1: explodes",
+      "sub": "1.1^20 = 6.7",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "ReLU: derivative 1 when on",
+      "sub": "no saturation factor",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "Normalisation rescales",
+      "sub": "per layer",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Skip connections: factor 1",
+      "sub": "an exact gradient highway",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "p",
+      "v"
+     ],
+     [
+      "p",
+      "e"
+     ],
+     [
+      "v",
+      "a"
+     ],
+     [
+      "a",
+      "n"
+     ],
+     [
+      "n",
+      "s"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.12": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "What the loss must be before a single step is taken",
+    "caption": "An untrained classifier should predict the prior, so its loss is predictable in advance — and a loss that does not match means something is wrong **before** any training question arises. The last row is the most useful: a loss far below the expected value at step zero is almost always a label leaking into the features.",
+    "left": "task",
+    "codeW": 210,
+    "vars": [
+     "expected initial loss",
+     "if it differs"
+    ],
+    "steps": [
+     {
+      "code": "binary, balanced",
+      "state": [
+       "ln 2 = 0.693",
+       "check the output layer"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "10 classes, balanced",
+      "state": [
+       "ln 10 = 2.303",
+       "check the softmax axis"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "k classes, balanced",
+      "state": [
+       "ln k",
+       "a wrong k, or a wrong reduction"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "binary, 1% positives",
+      "state": [
+       "0.056 if predicting the prior",
+       "a balanced guess gives 0.693"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "regression, standardised y",
+      "state": [
+       "about 1.0 for MSE",
+       "y was not standardised"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "much lower than expected",
+      "state": [
+       "a leak",
+       "a label in the features"
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "The overfit-one-batch test, and what each failure means",
+    "caption": "Take eight examples and train until the loss is essentially zero. If it cannot, the bug is in the model, the loss or the optimiser — not in the data or the regularisation, because neither is involved. It is the single highest-value five minutes in debugging a network, and it rules out most of the search space at once.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "b",
+      "label": "Take 8 examples",
+      "sub": "no augmentation, no dropout",
+      "tone": "violet"
+     },
+     {
+      "id": "t",
+      "label": "Train to near-zero loss",
+      "sub": "it should memorise them easily",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "It does",
+      "sub": "the machinery works; now generalise",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "It cannot",
+      "sub": "the bug is upstream of the data",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "Check: loss, labels, lr",
+      "sub": "wrong reduction, shifted labels, lr too low",
+      "tone": "warn"
+     },
+     {
+      "id": "g",
+      "label": "Check: gradients reach the layer",
+      "sub": "a detach, a frozen parameter, no requires_grad",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "b",
+      "t"
+     ],
+     [
+      "t",
+      "p"
+     ],
+     [
+      "t",
+      "f"
+     ],
+     [
+      "f",
+      "c"
+     ],
+     [
+      "c",
+      "g"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Bugs that let the model train anyway",
+    "caption": "These are the dangerous ones: the loss goes down, the run looks healthy, and the result is quietly wrong. Each has a specific cheap check, and all of them are invisible in a loss curve — which is why 'the loss is decreasing' is not evidence that the code is correct.",
+    "cols": [
+     "Symptom",
+     "The check"
+    ],
+    "rows": [
+     "No optimizer.zero_grad()",
+     "model.train() never called",
+     "Shuffling the labels too",
+     "Normalising with test stats",
+     "Softmax over the wrong axis",
+     "Augmenting validation"
+    ],
+    "cells": [
+     [
+      {
+       "text": "gradients accumulate; trains, badly",
+       "tone": "crit"
+      },
+      "print a gradient norm across two steps"
+     ],
+     [
+      {
+       "text": "dropout and BN stay in eval",
+       "tone": "crit"
+      },
+      "assert model.training inside the loop"
+     ],
+     [
+      {
+       "text": "it learns nothing, slowly",
+       "tone": "crit"
+      },
+      "shuffle indices, not the arrays separately"
+     ],
+     [
+      {
+       "text": "validation looks better than it is",
+       "tone": "crit"
+      },
+      "fit the scaler on train only"
+     ],
+     [
+      {
+       "text": "probabilities sum along the batch",
+       "tone": "crit"
+      },
+      "assert the sum over classes is 1"
+     ],
+     [
+      {
+       "text": "validation is harder than reality",
+       "tone": "warn"
+      },
+      "augment in the train transform only"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "Gradient clipping, and where it goes in the loop",
+    "caption": "The order is the part that gets wrong: clip **after** `backward()` and **before** `step()`, because clipping needs the gradients to exist and must happen before they are applied. With mixed precision there is one more requirement — unscale first, or you are clipping numbers that have been multiplied by the loss scale.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "f",
+      "label": "forward, loss",
+      "sub": "",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "backward()",
+      "sub": "gradients now exist",
+      "tone": "accent"
+     },
+     {
+      "id": "u",
+      "label": "unscale, if using AMP",
+      "sub": "or you clip scaled values",
+      "tone": "warn"
+     },
+     {
+      "id": "c",
+      "label": "clip_grad_norm_",
+      "sub": "here, and nowhere else",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "optimizer.step()",
+      "sub": "applies the clipped gradients",
+      "tone": "good"
+     },
+     {
+      "id": "z",
+      "label": "zero_grad()",
+      "sub": "before the next forward",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "f",
+      "b"
+     ],
+     [
+      "b",
+      "u"
+     ],
+     [
+      "u",
+      "c"
+     ],
+     [
+      "c",
+      "s"
+     ],
+     [
+      "s",
+      "z"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.13": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Label smoothing, and what it does to the target",
+    "caption": "A one-hot target asks the model to drive one logit to +∞ and the rest to −∞, which it pursues by growing the weights without bound — confident, over-fitted and badly calibrated. Smoothing by ε = 0.1 replaces the target with 0.9 and spreads 0.1 across the others, which gives the loss a finite minimum and measurably improves calibration.",
+    "left": "target for 5 classes",
+    "codeW": 200,
+    "vars": [
+     "true class",
+     "each other class",
+     "effect"
+    ],
+    "steps": [
+     {
+      "code": "one-hot",
+      "state": [
+       "1.000",
+       "0.000",
+       "optimum is logits at infinity"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "epsilon = 0.1",
+      "state": [
+       "0.900",
+       "0.025",
+       "a finite optimum"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "epsilon = 0.2",
+      "state": [
+       "0.800",
+       "0.050",
+       "more smoothing, less confidence"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "what it buys",
+      "state": [
+       "calibration",
+       "and a little accuracy",
+       "standard in image classification"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "What a teacher knows that a label does not",
+    "caption": "A hard label says 'this is a 7'. A teacher's softened output says 'this is a 7, and it looks somewhat like a 1, and nothing like an 8' — the **relative** probabilities over the wrong classes carry real information about the input's shape. That is the dark knowledge distillation transfers, and it is why a student trained on teacher outputs can beat the same student trained on labels.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "l",
+      "label": "A hard label",
+      "sub": "'this is a 7'",
+      "tone": "accent"
+     },
+     {
+      "id": "t",
+      "label": "A teacher's softmax",
+      "sub": "7: 0.9, 1: 0.08, 8: 0.001",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "The ratios carry shape",
+      "sub": "a 7 resembles a 1, not an 8",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Soften with temperature T",
+      "sub": "to make those ratios visible",
+      "tone": "accent"
+     },
+     {
+      "id": "k",
+      "label": "Student learns both",
+      "sub": "the label and the teacher",
+      "tone": "violet"
+     },
+     {
+      "id": "b",
+      "label": "Can beat label-only training",
+      "sub": "at a fraction of the size",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "l",
+      "k"
+     ],
+     [
+      "t",
+      "r"
+     ],
+     [
+      "r",
+      "s"
+     ],
+     [
+      "s",
+      "k"
+     ],
+     [
+      "k",
+      "b"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Why the T-squared factor is there",
+    "caption": "Dividing logits by T before the softmax shrinks the distribution's spread, and it shrinks the **gradients** by a factor of roughly 1/T² as well. Multiplying the distillation term by T² restores the gradient to the same magnitude as the hard-label term, so the two can be mixed with a weight α that means what it says at any temperature.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "d",
+      "label": "Divide logits by T",
+      "sub": "softens the distribution",
+      "tone": "accent"
+     },
+     {
+      "id": "g",
+      "label": "Gradients shrink by ~1/T²",
+      "sub": "a side effect of the division",
+      "tone": "warn"
+     },
+     {
+      "id": "m",
+      "label": "Mixed with the hard-label loss",
+      "sub": "weight alpha",
+      "tone": "accent"
+     },
+     {
+      "id": "i",
+      "label": "Without T², alpha lies",
+      "sub": "its real weight depends on T",
+      "tone": "crit"
+     },
+     {
+      "id": "t",
+      "label": "Multiply the soft term by T²",
+      "sub": "gradients restored to scale",
+      "tone": "good"
+     },
+     {
+      "id": "a",
+      "label": "Now alpha means alpha",
+      "sub": "at any temperature",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "d",
+      "g"
+     ],
+     [
+      "g",
+      "m"
+     ],
+     [
+      "m",
+      "i"
+     ],
+     [
+      "i",
+      "t"
+     ],
+     [
+      "t",
+      "a"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Mixed precision, and the range problem that loss scaling solves",
+    "caption": "fp16 has plenty of precision for activations and far too little **range**: gradients below about 6e−8 become exactly zero, and in a deep network many are. Multiplying the loss by a large constant lifts every gradient into representable territory; unscaling before the step removes the factor again. bf16 has fp32's exponent range and so needs none of this — which is why it is preferred where the hardware supports it.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "f",
+      "label": "fp16: 10-bit mantissa",
+      "sub": "precision is fine",
+      "tone": "accent"
+     },
+     {
+      "id": "r",
+      "label": "5-bit exponent",
+      "sub": "underflows below ~6e-8",
+      "tone": "crit"
+     },
+     {
+      "id": "z",
+      "label": "Small gradients become 0",
+      "sub": "silently, and many are small",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "Scale the loss up",
+      "sub": "every gradient scales with it",
+      "tone": "good"
+     },
+     {
+      "id": "u",
+      "label": "Unscale before step()",
+      "sub": "and skip the step on an inf",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": "bf16 needs none of it",
+      "sub": "fp32's exponent range",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "f",
+      "r"
+     ],
+     [
+      "r",
+      "z"
+     ],
+     [
+      "z",
+      "s"
+     ],
+     [
+      "s",
+      "u"
+     ],
+     [
+      "u",
+      "b"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "The mixed-precision loop, in order",
+    "caption": "Five lines in a fixed order. The scaler's job across them is bookkeeping: it multiplies the loss, it unscales before the optimiser sees the gradients, it **skips the step entirely** if any gradient overflowed, and it adjusts the scale factor based on how often that happens.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "with autocast():",
+      "sub": "forward in fp16 or bf16",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "scaler.scale(loss).backward()",
+      "sub": "gradients come back scaled",
+      "tone": "accent"
+     },
+     {
+      "id": "u",
+      "label": "scaler.unscale_(opt)",
+      "sub": "only if you need to clip",
+      "tone": "good"
+     },
+     {
+      "id": "p",
+      "label": "scaler.step(opt)",
+      "sub": "unscales, then steps - or skips",
+      "tone": "good"
+     },
+     {
+      "id": "d",
+      "label": "scaler.update()",
+      "sub": "adapts the scale factor",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "An overflowed step is dropped",
+      "sub": "which is correct, and normal",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "s"
+     ],
+     [
+      "s",
+      "u"
+     ],
+     [
+      "u",
+      "p"
+     ],
+     [
+      "p",
+      "d"
+     ],
+     [
+      "p",
+      "o"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.14": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "A residual block and an ODE solver are the same identity",
+    "caption": "A residual block computes h + f(h), which is Euler's method with a step of one. Taking the step size to zero turns the stack of blocks into a differential equation, and the **depth** becomes the integration interval — so a neural ODE is a residual network with infinitely many infinitesimally small layers, sharing one set of weights.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "r",
+      "label": "Residual block",
+      "sub": "h -> h + f(h)",
+      "tone": "accent"
+     },
+     {
+      "id": "e",
+      "label": "= Euler step, size 1",
+      "sub": "h + dt f(h) with dt = 1",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Let the step shrink",
+      "sub": "many small layers",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "dh/dt = f(h, t)",
+      "sub": "an ODE",
+      "tone": "violet"
+     },
+     {
+      "id": "d",
+      "label": "Depth = time integrated",
+      "sub": "a continuous parameter",
+      "tone": "violet"
+     },
+     {
+      "id": "w",
+      "label": "One set of weights",
+      "sub": "shared across all of it",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "r",
+      "e"
+     ],
+     [
+      "e",
+      "s"
+     ],
+     [
+      "s",
+      "o"
+     ],
+     [
+      "o",
+      "d"
+     ],
+     [
+      "d",
+      "w"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "The solver decides how much work to do",
+    "caption": "This is the property that has no analogue in a fixed network: an adaptive solver takes more steps where the dynamics are stiff and fewer where they are smooth, so **compute adapts to the input**. The cost is that the number of function evaluations is not known in advance, which makes latency hard to bound — the usual reason it does not ship.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "An adaptive solver",
+      "sub": "dopri5, and friends",
+      "tone": "accent"
+     },
+     {
+      "id": "e",
+      "label": "Error tolerance, not depth",
+      "sub": "the hyperparameter changes",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Stiff region: more steps",
+      "sub": "compute follows the input",
+      "tone": "good"
+     },
+     {
+      "id": "m",
+      "label": "Smooth region: fewer",
+      "sub": "cheaper, automatically",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "NFE is not fixed",
+      "sub": "function evaluations vary per input",
+      "tone": "warn"
+     },
+     {
+      "id": "l",
+      "label": "Latency is unbounded",
+      "sub": "the usual reason it stays in papers",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "e"
+     ],
+     [
+      "e",
+      "s"
+     ],
+     [
+      "e",
+      "m"
+     ],
+     [
+      "s",
+      "n"
+     ],
+     [
+      "n",
+      "l"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "The adjoint method: constant memory, at a price",
+    "caption": "Ordinary backpropagation stores every intermediate activation, and an adaptive solver may take hundreds of steps — so storing them all is prohibitive. The adjoint solves a second ODE **backwards** to recover what it needs, which makes memory independent of depth. The price is a second solve and some numerical error from reconstructing rather than remembering.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "b",
+      "label": "Ordinary backprop",
+      "sub": "store every step's activation",
+      "tone": "warn"
+     },
+     {
+      "id": "m",
+      "label": "Memory grows with NFE",
+      "sub": "hundreds of steps",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "Adjoint: solve backwards",
+      "sub": "a second ODE",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Memory is O(1) in depth",
+      "sub": "nothing stored",
+      "tone": "good"
+     },
+     {
+      "id": "t",
+      "label": "Costs a second solve",
+      "sub": "roughly double the time",
+      "tone": "warn"
+     },
+     {
+      "id": "e",
+      "label": "And reconstruction error",
+      "sub": "recovered, not remembered",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "b",
+      "m"
+     ],
+     [
+      "m",
+      "a"
+     ],
+     [
+      "a",
+      "c"
+     ],
+     [
+      "c",
+      "t"
+     ],
+     [
+      "t",
+      "e"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Invertibility, and what it buys",
+    "caption": "An ODE's trajectories cannot cross, so the map from input to output is a **homeomorphism** — invertible and continuous. That is exactly the property a normalising flow needs to track densities exactly, and it is also a real limitation: a continuous invertible map cannot tear a space apart, so some topologies simply cannot be separated without augmenting the dimension.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "Trajectories cannot cross",
+      "sub": "a property of ODEs",
+      "tone": "violet"
+     },
+     {
+      "id": "i",
+      "label": "So the map is invertible",
+      "sub": "a homeomorphism",
+      "tone": "accent"
+     },
+     {
+      "id": "f",
+      "label": "Exact density tracking",
+      "sub": "what a normalising flow needs",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "But it cannot tear",
+      "sub": "topology is preserved",
+      "tone": "warn"
+     },
+     {
+      "id": "r",
+      "label": "Some classes stay inseparable",
+      "sub": "nested rings, for instance",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "Augment the dimension",
+      "sub": "ANODE: add room to move",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "i"
+     ],
+     [
+      "i",
+      "f"
+     ],
+     [
+      "i",
+      "l"
+     ],
+     [
+      "l",
+      "r"
+     ],
+     [
+      "r",
+      "a"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "Where they actually fit",
+    "caption": "The honest assessment: neural ODEs are the right tool for a small set of problems and an expensive curiosity for the rest. Irregularly-sampled time series is the case where they genuinely win, because a continuous-time model handles 'observed at 3.7 hours' natively instead of binning it.",
+    "cols": [
+     "Verdict",
+     "Why"
+    ],
+    "rows": [
+     "Irregular time series",
+     "Continuous normalising flow",
+     "Physics with known dynamics",
+     "Image classification",
+     "A latency budget"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the real win",
+       "tone": "good"
+      },
+      "no binning; observe at any t"
+     ],
+     [
+      {
+       "text": "a natural fit",
+       "tone": "good"
+      },
+      "invertibility comes free"
+     ],
+     [
+      {
+       "text": "strong",
+       "tone": "good"
+      },
+      "the prior is the differential equation"
+     ],
+     [
+      {
+       "text": "not competitive",
+       "tone": "crit"
+      },
+      "a ResNet is faster and better"
+     ],
+     [
+      {
+       "text": "rules them out",
+       "tone": "crit"
+      },
+      "NFE varies per input"
+     ]
+    ]
+   }
+  }
+ ]
+}
