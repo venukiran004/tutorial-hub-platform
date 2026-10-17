@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "math", tex: "\\mathrm{RRF}(d) = \\sum_{r \\in \\text{retrievers}} \\frac{w_r}{k + \\mathrm{rank}_r(d)}" },
     { t: "code", lang: "python", title: "The whole implementation",
       code: 'def rrf(ranklists, k=60, weights=None):\n    if weights is None:\n        weights = [1.0] * len(ranklists)\n    sc = {}\n    for w, rl in zip(weights, ranklists):\n        for pos, did in enumerate(rl):\n            sc[did] = sc.get(did, 0.0) + w / (k + pos + 1)\n    return sorted(sc, key=lambda d: -sc[d])',
@@ -42,6 +43,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "k", text: "What the k constant does", sub: "And the default is wrong here" },
 
     {"kind": "trace", "title": "The k constant decides how much rank 1 dominates rank 2", "caption": "RRF scores a document as `1 / (k + rank)`, so **k sets how steeply the weight falls off.** At k=0 rank 1 is worth **twice** rank 2; at k=60 — the conventional default — the ratio is **1.016**, which is nearly flat. So the convention is a deliberate choice to treat the top ten or twenty positions as roughly equivalent, and **it only makes sense when every retriever's ranks are meaningful** — which 6.3 showed BM25's are not past rank 4 on this corpus.", "left": "k", "codeW": 110, "vars": ["1/(k+1)", "1/(k+2)", "ratio", "meaning"], "steps": [{"code": "0", "state": ["1.000000", "0.500000", "2.000", "rank 1 dominates"], "tone": "accent"}, {"code": "1", "state": ["0.500000", "0.333333", "1.500", "rank 1 dominates"], "tone": "accent"}, {"code": "10", "state": ["0.090909", "0.083333", "1.091", "balanced"], "tone": "good"}, {"code": "60", "state": ["0.016393", "0.016129", "1.016", "nearly flat"], "changed": [2], "tone": "violet", "note": "the convention"}], "t": "diagram", "id": "dg-6_5-02-1"},
+
 
 
 
@@ -61,6 +63,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Natural queries, MRR",
       code: "dense only     0.964\nbm25 only      0.286\nRRF 1:1        0.393",
       caption: "The fusion lands near its **worse** input, not between them." },
@@ -71,6 +74,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "weights", text: "And no weight fixes it", sub: "The trade is monotonic" },
 
     {"kind": "matrix", "title": "No weight fixes it, because the two classes want opposite weights", "caption": "Sweeping the weight does not find a setting that works — **it finds that the two query classes want opposite ends of the range.** Natural-language queries improve monotonically toward dense-only, reaching **0.964 at 1:0**. Exact-term queries are **perfect at 1:1 and degrade to 0.844 at 10:1.** There is no single weight that serves both, which means the choice is **a decision about which query class to favour** rather than a tuning problem with a solution.", "cols": ["natural MRR", "exact MRR"], "rows": ["1:1", "2:1", "3:1", "5:1", "10:1", "1:0 dense only"], "cells": [["0.393", {"text": "1.000", "tone": "good"}], ["0.446", "0.938"], ["0.464", "0.938"], ["0.496", "0.875"], ["0.642", {"text": "0.844", "tone": "warn"}], [{"text": "0.964", "tone": "good"}, {"text": "0.781", "tone": "crit"}]], "t": "diagram", "id": "dg-6_5-04-3"},
+
 
 
 

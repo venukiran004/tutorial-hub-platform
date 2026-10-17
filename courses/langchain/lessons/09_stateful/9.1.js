@@ -11,6 +11,8 @@ EC.receiveLesson({
   prerequisites: ["8.7", "3.3"],
   blocks: [
     { t: "h2", n: "01", id: "shape", text: "Two nodes and a conditional edge", sub: "That is the whole agent" },
+
+    {"kind": "cycle", "title": "Two nodes and a conditional edge is the whole agent", "caption": "The agent node calls the model; the conditional edge asks whether it requested a tool; the tool node runs it and the edge goes back. **Four messages for one tool round** — 3.3's 2n + 2 arithmetic, now as a graph. Everything the rest of this module adds — approval gates, trimming, step budgets, memory — is a modification to one of these two nodes or the edge between them.", "centre": "until no tool is asked for", "nodes": [{"label": "agent", "sub": "calls the model", "tone": "violet", "edge": "tool requested?"}, {"label": "should_continue", "sub": "the conditional edge", "tone": "accent", "edge": "yes"}, {"label": "tools", "sub": "runs it, appends a ToolMessage", "tone": "good", "edge": "back to agent"}], "t": "diagram", "id": "dg-9_1-01-1"},
     { t: "code", lang: "python", title: "The loop, written out",
       code: 'def agent(state):\n    return {"messages": [bound.invoke(state["messages"])]}\n\ndef tool_node(state):\n    last = state["messages"][-1]\n    out = []\n    for call in last.tool_calls:\n        result = by_name[call["name"]].invoke(call["args"])\n        out.append(ToolMessage(content=str(result), tool_call_id=call["id"]))\n    return {"messages": out}\n\ndef should_continue(state):\n    return "tools" if getattr(state["messages"][-1], "tool_calls", None) else END\n\ng.add_edge(START, "agent")\ng.add_conditional_edges("agent", should_continue, {"tools": "tools", END: END})\ng.add_edge("tools", "agent")      # <- the cycle',
       out: "    HumanMessage('what is the refund policy')\n    AIMessage(tool_calls=['lookup_policy'])\n    ToolMessage('Refunds are available within 30 days of purchase.')\n    AIMessage('Refunds are available within 30 days of purchase.')",
@@ -18,6 +20,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "grows", text: "The loop works by growing the message list", sub: "Measured on each call" },
 
     {"kind": "flow", "title": "The agent loop, as a graph you can see inside", "cols": 3, "caption": "3.3's loop was something you could not inspect. Here it is two nodes plus a conditional edge — and the `tools → agent` edge is the **cycle a chain could not express** (8.1), which is the whole reason this module exists.", "nodes": [{"id": "a", "label": "agent", "sub": "calls the model", "tone": "violet"}, {"id": "t", "label": "tools", "sub": "executes every call", "tone": "warn"}, {"id": "e", "label": "END", "sub": "no tools requested", "tone": "good"}], "edges": [["a", "t", "asked for tools"], ["t", "a", "the cycle", "dashed"], ["a", "e", "answered"]], "t": "diagram", "id": "dg-9_1-02-0"},
+
 
 
 
@@ -43,6 +46,8 @@ EC.receiveLesson({
       { t: "p", text: "8.3's warning applies directly: with no reducer, each node's update would replace the list and the model would see only the most recent message. The agent would call a tool, lose the question, and loop forever. That is the single mistake most likely to break an agent built from scratch." }
     ] },
     { t: "h2", n: "03", id: "termination", text: "The model decides when to stop", sub: "And that is the risk" },
+
+    {"kind": "flow", "title": "The termination condition is the model's judgement", "caption": "`should_continue` returns `END` **when the model stops asking for tools** — so the stopping decision belongs to the model, which **is the whole idea of an agent and also 8.9's problem**: if the model never stops asking, **only the recursion limit does.** Which is why 8.9 argued for setting that limit deliberately and low on any cyclic graph: here it is not a safety net, it is the only termination guarantee in the design.", "cols": 3, "nodes": [{"id": "m", "label": "The model stops asking", "sub": "no tool_calls in the reply", "tone": "good"}, {"id": "e", "label": "should_continue returns END", "sub": "the run finishes", "tone": "good"}, {"id": "n", "label": "The model never stops", "sub": "3.7's failure 1", "tone": "crit"}, {"id": "r", "label": "Only the recursion limit stops it", "sub": "8.9's 10,007 supersteps", "tone": "crit"}, {"id": "s", "label": "So it is the termination guarantee", "sub": "not a safety net", "tone": "violet"}], "edges": [["m", "e"], ["n", "r"], ["r", "s"]], "t": "diagram", "id": "dg-9_1-03-2"},
     { t: "p", text: "`should_continue` returns `END` when the model stops asking for tools. So the termination condition is the model's judgement, which is the whole idea of an agent and also 8.9's problem: if the model never stops asking, only the recursion limit does." },
     { t: "code", lang: "text", title: "A model that always asks for a tool",
       code: "recursion_limit=8:\n  RAISED GraphRecursionError: Recursion limit of 8 reached without\n  hitting a stop condition.",
@@ -52,6 +57,8 @@ EC.receiveLesson({
       { t: "p", text: "The shape is an iteration counter in the state, incremented in the agent node, and a router that returns `END` when it reaches a budget. Then \u201cgave up\u201d is a state you can route on, record and return to the caller \u2014 and the recursion limit catches only the case where that logic itself failed." }
     ] },
     { t: "h2", n: "04", id: "why", text: "Why the long form is worth seeing", sub: "9.2 collapses it to four lines" },
+
+    {"kind": "matrix", "title": "Four places a production change lands, and you need the long form to find them", "caption": "The prebuilts replace both nodes and the graph becomes four lines of wiring — **and every production change is a change to a specific node or edge.** Each row is a modification you can only make if you know which part it belongs to. **The order is: see the long version, use the short one, unroll when a requirement demands it** — the prebuilts are the right default *and* an abstraction you will need to open.", "cols": ["What goes here"], "rows": ["the conditional edge", "the tool node", "the agent node", "the cycle"], "cells": [[{"text": "a step budget", "tone": "violet"}], ["per-tool error handling (M14)"], ["a system prompt, and message trimming (9.5)"], [{"text": "interrupt() for approval (9.7)", "tone": "violet"}]], "t": "diagram", "id": "dg-9_1-04-3"},
     { t: "p", text: "The prebuilts replace both nodes and the graph becomes four lines of wiring. Worth having written it out once, because every production change is a change to a specific node or edge:" },
     { t: "dl", items: [
       ["the conditional edge", "where a step budget goes"],

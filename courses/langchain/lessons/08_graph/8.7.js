@@ -13,6 +13,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "routing", text: "A routing function returns a key", sub: "And the map translates it" },
 
     {"kind": "flow", "title": "The indirection buys a domain word instead of a node name", "caption": "A routing function returns a **key**, and the path map turns that key into a node. **The indirection looks redundant when the key and the node name are the same string**, and what it buys is that the router can return a **domain word** — `needs_review`, `escalate`, `retry` — rather than a node name. **That keeps the routing decision independent of the graph's topology**, so the function is testable on its own and a rename does not reach into it.", "cols": 3, "nodes": [{"id": "f", "label": "The router returns a key", "sub": "'needs_review'", "tone": "violet"}, {"id": "m", "label": "The path map resolves it", "sub": "key -> node name", "tone": "violet"}, {"id": "d", "label": "A domain word, not a node name", "sub": "escalate, retry", "tone": "good"}, {"id": "i", "label": "So the decision is topology-independent", "sub": "testable on its own", "tone": "good"}, {"id": "r", "label": "And a rename does not reach it", "sub": "which 8.5 said names do", "tone": "teal"}], "edges": [["f", "m"], ["m", "d"], ["d", "i"], ["i", "r"]], "t": "diagram", "id": "dg-8_7-01-1"},
+
     { t: "code", lang: "python", title: "Conditional edges",
       code: 'def route(state):\n    return "small" if state["n"] < 10 else "large"\n\ng.add_conditional_edges("classify", route,\n                        {"small": "small", "large": "large"})',
       out: "  n=5   -> ['classified 5', 'small']\n  n=50  -> ['classified 50', 'large']",
@@ -21,6 +22,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "missing", text: "The missing map entry", sub: "Compiles, then fails on one branch" },
 
     {"kind": "trace", "title": "compile() cannot check the map, because the return values are not knowable statically", "caption": "**`compile()` succeeds.** The map is not checked against the function, **because the function's return values are not knowable statically** — it is arbitrary Python. So a missing map entry is **a runtime error on the branch that returns the unmapped key**, which means **a rarely-taken branch can be wrong for months.** Which is the argument for testing the routing function directly: it is a pure function of state, and testing it needs no graph at all.", "left": "stage", "codeW": 150, "vars": ["result"], "steps": [{"code": "compile()", "state": ["succeeded"], "tone": "crit", "note": "the map is unchecked"}, {"code": "invoke, mapped branch", "state": ["works"], "tone": "good"}, {"code": "invoke, unmapped branch", "state": ["InvalidUpdateError / ValueError"], "changed": [0], "tone": "crit", "note": "months later"}], "t": "diagram", "id": "dg-8_7-02-2"},
+
     { t: "code", lang: "text", title: "A router that can return \u201cmedium\u201d, with no \u201cmedium\u201d in the map",
       code: "compile() : succeeded -- the map is not checked against the function,\n            because the function's return values are not knowable\n            statically.\ninvoke    : RAISED InvalidUpdateError / ValueError on the branch that\n            returns 'medium'",
       caption: "A runtime failure, on one branch only." },
@@ -36,6 +38,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "nomap", text: "Omitting the path map", sub: "Shorter, and it couples" },
 
     {"kind": "flow", "title": "Omitting the map works, and moves a rename into the router", "caption": "Return node names directly and the map can be left out — it works, and **renaming a node now means editing the router.** The map is **the seam between a routing decision and the graph's topology**, and it earns its verbosity **as soon as more than one edge routes on the same decision**, or as soon as the routing logic is worth testing independently of the graph. Below that, omitting it is a reasonable call rather than a shortcut.", "cols": 3, "nodes": [{"id": "o", "label": "Omit the map", "sub": "return node names", "tone": "accent"}, {"id": "w", "label": "It works", "sub": "and is shorter", "tone": "good"}, {"id": "r", "label": "A rename now edits the router", "sub": "the seam is gone", "tone": "warn"}, {"id": "t", "label": "Worth it at two edges on one decision", "sub": "or when the logic needs testing", "tone": "good"}, {"id": "b", "label": "Below that, a reasonable call", "sub": "not a shortcut", "tone": "teal"}], "edges": [["o", "w"], ["w", "r"], ["r", "t"], ["t", "b"]], "t": "diagram", "id": "dg-8_7-03-3"},
+
     { t: "code", lang: "python", title: "If the router returns node names",
       code: 'g.add_conditional_edges("classify", route)   # no map',
       out: "    n=5  -> ['classified 5', 'small']",
@@ -44,6 +47,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "more", text: "Routing to END, and to several nodes", sub: "Two more things a router can return" },
 
     {"kind": "trace", "title": "A router can return END, or a list", "caption": "Two capabilities that are easy to miss. **Returning `END` terminates from a conditional edge**, so a router can decide the run is finished rather than routing to a node that does nothing. And **returning a list fans out to several nodes** — `['small', 'large']` runs both — which makes a conditional edge a dynamic fan-out rather than only a choice, with 8.3's reducers then required on anything they both write.", "left": "the router returns", "codeW": 190, "vars": ["what runs"], "steps": [{"code": "'small'", "state": ["classified, then small"], "tone": "accent"}, {"code": "END", "state": ["classified, then nothing"], "changed": [0], "tone": "good", "note": "terminates"}, {"code": "['small', 'large']", "state": ["classified, then BOTH"], "changed": [0], "tone": "violet", "note": "a dynamic fan-out"}], "t": "diagram", "id": "dg-8_7-04-4"},
+
     { t: "code", lang: "python", title: "END as a destination",
       code: 'def route_end(state):\n    return END if state["n"] < 10 else "large"\n\ng.add_conditional_edges("classify", route_end, {END: END, "large": "large"})',
       out: "    n=5  -> ['classified 5']",
@@ -59,6 +63,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "skipped", text: "When a router skips a fan-in branch", sub: "No deadlock, and a quieter problem" },
 
     {"kind": "tree", "title": "The router failure compile() cannot catch", "caption": "A function's return values are not knowable statically, so **`compile()` succeeds** on a router that can return a key the path map lacks. The failure arrives at run time, on whichever input takes that branch — which may be the rare one.", "root": {"label": "route(state)", "sub": "returns a key", "tone": "accent", "children": [{"label": "“billing”", "sub": "in the map → billing_node", "tone": "good", "edge": "mapped"}, {"label": "“tech”", "sub": "in the map → tech_node", "tone": "good", "edge": "mapped"}, {"label": "“other”", "sub": "NOT in the map → raises at run time", "tone": "crit", "edge": "compiles fine"}]}, "t": "diagram", "id": "dg-8_7-05-0"},
+
 
 
 

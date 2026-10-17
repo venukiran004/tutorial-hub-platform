@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "The source",
       code: "Plan        Seats   Rate limit   Price\nStarter     5       600/min      $49\nGrowth      25      2400/min     $199\nEnterprise  custom  custom       custom",
       caption: "Four columns, and the meaning is entirely in the alignment." },
@@ -43,6 +44,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "three", text: "The three architectures", sub: "No vision model here, so this is the design comparison" },
 
     {"kind": "matrix", "title": "Three architectures for images and tables", "caption": "Three genuinely different answers to the same problem. **A shared embedding space** searches both modalities at once and needs a model trained for it. **Describe-then-embed** writes a text description with a vision model, embeds the **description**, stores the original and returns the original — so every stored vector comes from one text model and every comparison is text-to-text. And **page-as-image** stops extracting anything, which removes chunking and parsing along with the problem.", "cols": ["How it works", "What it needs"], "rows": ["A shared embedding space", "Describe, then embed", "Page as image"], "cells": [["one space, both modalities, searched together", {"text": "a model trained for it", "tone": "warn"}], [{"text": "embed the description, return the original", "tone": "good"}, "a vision call per asset, once"], ["treat each page as an image, many vectors", {"text": "a vision-language retriever", "tone": "warn"}]], "t": "diagram", "id": "dg-7_8-02-1"},
+
 
 
     { t: "h3", text: "A. Shared-space embeddings (CLIP-style)" },
@@ -70,6 +72,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "default", text: "Why B is the default", sub: "And the reason is not accuracy" },
 
     {"kind": "flow", "title": "Why describe-then-embed is the default", "caption": "It is usually presented as the pragmatic compromise and it is better than that: **once every stored vector comes from one text model, every comparison is text-to-text in one space** — so there is no modality gap to calibrate, no cross-modal score to reconcile, and none of 6.4's incomparable-scale problem arrives in a new form. The cost is **a vision call per asset at index time, paid once**, against a retrieval-time cost that the other two architectures carry on every query.", "cols": 3, "nodes": [{"id": "v", "label": "A vision model describes each asset", "sub": "once, at index time", "tone": "violet"}, {"id": "e", "label": "Embed the description", "sub": "with the same text model", "tone": "good"}, {"id": "o", "label": "One model, one space", "sub": "every comparison text-to-text", "tone": "good"}, {"id": "n", "label": "No modality gap to calibrate", "sub": "and no 6.4 in a new form", "tone": "good"}, {"id": "c", "label": "Cost paid once, not per query", "sub": "which the others do not do", "tone": "teal"}], "edges": [["v", "e"], ["e", "o"], ["o", "n"], ["n", "c"]], "t": "diagram", "id": "dg-7_8-03-2"},
+
 
 
     { t: "callout", kind: "insight", title: "It keeps the retrieval index textual", body: [

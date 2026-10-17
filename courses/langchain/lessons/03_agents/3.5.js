@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Twelve turns through an unchanged system",
       code: 'turn   messages   chars        cumulative   note\n1      2          68           68           <- first turn\n2      4          128          196\n3      6          188          384\n...\n12     24         728          4836         <- 12th turn costs ~11x the first',
       caption: "Each turn adds a fixed amount; each turn pays for everything before it." },
@@ -37,6 +38,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "money", text: "The arithmetic that decides", sub: "Small until it is not" },
 
     {"kind": "trace", "title": "Cost is quadratic in turns, because each turn re-sends everything before it", "caption": "The last prompt grows linearly — 300 characters a turn — and **the cumulative total grows quadratically**, because every turn re-sends the whole history. Twenty turns is 12,760 characters of input; a hundred turns is **303,800, which is 24× the twenty-turn figure for 5× the conversation.** That is the shape to recognise, because it means a conversation-length problem looks mild in testing and severe in production, where the long conversations live.", "left": "turns", "codeW": 120, "vars": ["last prompt", "cumulative", "input cost"], "steps": [{"code": "5", "state": ["308", "940", "$0.00071"], "tone": "good"}, {"code": "10", "state": ["608", "3,380", "$0.00253"], "tone": "accent"}, {"code": "20", "state": ["1,208", "12,760", "$0.00957"], "tone": "warn"}, {"code": "50", "state": ["3,008", "76,900", "$0.05768"], "changed": [1], "tone": "crit"}, {"code": "100", "state": ["6,008", "303,800", "$0.22785"], "changed": [1, 2], "tone": "crit", "note": "24x for 5x the turns"}], "t": "diagram", "id": "dg-3_5-02-1"},
+
 
 
 
@@ -67,6 +69,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Cost degrades gracefully: it gets expensive, someone notices, you fix it. The context window does not. Once the buffer exceeds it the request fails outright, and it fails **on the longest conversations first** \u2014 which are, by definition, the ones belonging to users who are getting the most value from the product." },
     { t: "callout", kind: "warn", title: "A deferred outage, not a default", body: [
       { t: "p", text: "The failure is adversarially distributed. It never happens in testing, because test conversations are short. It never happens to casual users. It happens to the power user demonstrating the product in a meeting, twenty turns in, and it is unrecoverable from their side \u2014 every subsequent message is also too long." },
@@ -75,6 +78,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "out", text: "The three ways out", sub: "All of them lose something" },
 
     {"kind": "matrix", "title": "Three strategies, and none of them loses nothing", "caption": "**There is no strategy that loses nothing**, which makes this a product decision rather than a technical one — you are choosing which kind of forgetting your users will meet. Trimming loses **early facts**: a name, an id, a constraint stated once. Summarising loses **specifics**: numbers, names and exact wording become a paraphrase. Retrieval loses nothing in principle and adds a lookup that can surface the wrong turn. 3.6 implements the first, 13.3 the second and 13.4 the third.", "cols": ["Keeps", "Loses"], "rows": ["Trim (drop oldest)", "Summarise", "Retrieve from history"], "cells": [["recent turns, and the system prompt", {"text": "early facts - a name, an id, a constraint", "tone": "crit"}], ["the gist of everything", {"text": "specifics - numbers and exact wording", "tone": "crit"}], [{"text": "everything, on demand", "tone": "good"}, {"text": "nothing - but it can retrieve the wrong turn", "tone": "warn"}]], "t": "diagram", "id": "dg-3_5-04-3"},
+
 
 
 

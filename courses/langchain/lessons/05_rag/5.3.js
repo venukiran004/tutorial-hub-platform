@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "The same corpus, split five ways",
       code: 'chunk size   chunks     mean chars   recall@5     MRR\n80           99         66           1.000        0.893\n150          64         102          1.000        0.893\n300          41         160          1.000        0.964\n600          41         160          1.000        0.964\n1200         41         160          1.000        0.964',
       caption: "At 300 and above nothing is split, because the mean document is 158 characters." },
@@ -46,6 +47,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Varying overlap at a fixed chunk size",
       code: 'overlap      chunks     recall@5     MRR\n0            64         1.000        0.893\n20           71         1.000        0.893\n50           85         1.000        0.929\n100          129        1.000        0.893',
       caption: "50 characters of overlap recovered some ranking. 100 doubled the chunk count and did not." },
@@ -53,6 +55,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "interpretable", text: "The failure no metric captures", sub: "Which is the real trade-off" },
 
     {"kind": "flow", "title": "A fragment that no longer carries its own subject", "caption": "The failure no metric here captures: a chunk that reads perfectly and **has lost what it is about** — *\"the limit is 600 per minute\"* with the sentence naming the product two chunks earlier. Retrieval scores it as relevant to the wrong question and the answer is confidently about the wrong thing. **Both mitigations cost tokens and both are cheaper than an answer about the wrong subject**: split on structural boundaries rather than character counts, and prepend a title or heading so each fragment carries its subject with it.", "cols": 3, "nodes": [{"id": "s", "label": "A split at a character count", "sub": "mid-topic, not mid-sentence", "tone": "warn"}, {"id": "f", "label": "The fragment reads fine", "sub": "and has lost its subject", "tone": "crit"}, {"id": "w", "label": "Retrieved for the wrong question", "sub": "scored as relevant", "tone": "crit"}, {"id": "b", "label": "Split on structural boundaries", "sub": "headings, sections", "tone": "good"}, {"id": "p", "label": "And prepend the title", "sub": "so it carries its own subject", "tone": "good"}], "edges": [["s", "f"], ["f", "w"], ["w", "b"], ["b", "p"]], "t": "diagram", "id": "dg-5_3-03-2"},
+
 
 
 

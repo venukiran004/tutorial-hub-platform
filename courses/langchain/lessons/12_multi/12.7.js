@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "dl", items: [
       ["**shared state**", "Every agent reads and writes one message list. Simplest, and every agent's output is in every later agent's prompt whether relevant or not."],
       ["**filtered state**", "Each agent receives a constructed view \u2014 10.2's `Send`, which gives a worker exactly what you passed and nothing else."],

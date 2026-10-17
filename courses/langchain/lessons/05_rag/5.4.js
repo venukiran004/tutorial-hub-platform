@@ -18,12 +18,14 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "One query, encoded",
       code: "model      : all-MiniLM-L6-v2\ndimensions : 384\nnormalised : |v| = 1.000000\nfirst 6    : [-0.0353, 0.0199, -0.0066, 0.0255, -0.0506, -0.0304]",
       caption: "384 numbers. Nothing about them is interpretable individually." },
     { t: "h2", n: "02", id: "cosine", text: "Cosine, by hand", sub: "And why normalisation collapses it to a dot product" },
 
     {"kind": "trace", "title": "Cosine by hand, and why the dot product is the same number", "caption": "*subscription cancel* against *stop plan renewing* — **no shared words** — scores **0.7139**, and against *API rate limit* scores **0.0699**. That gap is the thing dense retrieval buys and lexical matching cannot. And the third row is the arithmetic that makes 5.5's index safe: **because the vectors are normalised, the dot product equals the cosine exactly**, so an inner-product index ranks by cosine without computing one.", "left": "pair", "codeW": 220, "vars": ["score"], "steps": [{"code": "subscription cancel / stop plan renewing", "state": ["0.7139"], "tone": "good", "note": "no shared words"}, {"code": "subscription cancel / API rate limit", "state": ["0.0699"], "changed": [0], "tone": "accent"}, {"code": "dot product of the first pair", "state": ["0.7139"], "tone": "violet", "note": "identical, because normalised"}], "t": "diagram", "id": "dg-5_4-02-2"},
+
 
 
 
@@ -57,6 +59,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Four pairs against the same query",
       code: 'pair                                           cosine\nhow do I reset my pass / credential recovery   0.3449\nhow do I reset my pass / how do I change my p  0.8768\nhow do I reset my pass / how do I reset my ro  0.5330\nhow do I reset my pass / the weather in Berli  -0.0018',
       caption: "Row 3 \u2014 \u201creset my router\u201d \u2014 outscores row 1, which is the genuinely relevant text." },
@@ -68,6 +71,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "asymmetric", text: "Two methods, not one", sub: "And the mistake that produces no error" },
 
     {"kind": "flow", "title": "Some models prepend 'query:' and 'passage:', which is why there are two methods", "caption": "1.6 noted that `Embeddings` has `embed_documents` and `embed_query` as separate methods and that the split looks redundant. Here is why it is not: **some widely used models are asymmetric**, prepending something like `query:` to a search string and `passage:` to a stored document — **because a question and the text that answers it are different kinds of object.** Use one method for both and the model is comparing two things it was trained to represent differently.", "cols": 3, "nodes": [{"id": "q", "label": "A question", "sub": "short, interrogative", "tone": "accent"}, {"id": "p", "label": "The passage that answers it", "sub": "declarative, longer", "tone": "accent"}, {"id": "a", "label": "Asymmetric models prefix them", "sub": "'query:' and 'passage:'", "tone": "violet"}, {"id": "t", "label": "So there are two methods", "sub": "not one, redundantly", "tone": "good"}, {"id": "w", "label": "Use one for both", "sub": "and you compare mismatched encodings", "tone": "crit"}], "edges": [["q", "a"], ["p", "a"], ["a", "t"], ["t", "w"]], "t": "diagram", "id": "dg-5_4-04-3"},
+
 
 
 

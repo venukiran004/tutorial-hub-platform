@@ -13,6 +13,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "sentinels", text: "START, END and a normal edge", sub: "Sentinels, not nodes" },
 
     {"kind": "flow", "title": "START and END are sentinels, and only one of them is required", "caption": "**Nothing executes for either** — they mark where the runtime begins and where a path terminates. And the asymmetry is worth knowing: 8.9 shows that **a graph without an edge from `START` fails to compile**, because the runtime needs to know where to begin, **and a node without a path to `END` compiles fine.** So an unreachable dead end is a construction you can build and run, and the only thing that will tell you is the drawing.", "cols": 3, "nodes": [{"id": "s", "label": "START", "sub": "a sentinel, not a node", "tone": "violet"}, {"id": "e", "label": "END", "sub": "also a sentinel", "tone": "violet"}, {"id": "r", "label": "No edge from START: will not compile", "sub": "the runtime needs a beginning", "tone": "good"}, {"id": "n", "label": "No path to END: compiles fine", "sub": "a dead end you can run", "tone": "crit"}, {"id": "d", "label": "Only the drawing will tell you", "sub": "8.9's renderer", "tone": "teal"}], "edges": [["s", "r"], ["e", "n"], ["n", "d"]], "t": "diagram", "id": "dg-8_6-01-1"},
+
     { t: "code", lang: "python", title: "A linear graph",
       code: 'g.add_edge(START, "a")\ng.add_edge("a", "b")\ng.add_edge("b", "c")\ng.add_edge("c", END)',
       out: "    {'trace': ['a', 'b', 'c']}",
@@ -21,6 +22,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "superstep", text: "The superstep", sub: "Two parallel nodes see the same input state" },
 
     {"kind": "timeline", "title": "The superstep: a consistent snapshot, then one commit", "caption": "Two parallel nodes **both saw `counter=0`**. Neither saw the other's update, and the node after them saw **`counter=2`** — both increments applied together by the reducer. Read a snapshot, run everything scheduled, commit once.", "span": 3, "tick": 1, "unit": "supersteps", "lanes": [{"label": "node_a", "bars": [[1, 2, "reads 0, writes +1", "good"]]}, {"label": "node_b", "bars": [[1, 2, "reads 0, writes +1", "good"]]}, {"label": "the reducer", "bars": [[2, 2.4, "merges", "violet"]]}, {"label": "node_c", "bars": [[2.4, 3, "reads counter=2", "accent"]]}], "t": "diagram", "id": "dg-8_6-02-0"},
+
 
 
 
@@ -50,6 +52,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "fanin", text: "Fan-in waits", sub: "And runs once" },
 
     {"kind": "flow", "title": "Two incoming edges, and the node runs once", "caption": "**The runtime waits for all of a node's incoming paths before running it, then runs it a single time against the merged state.** Which is the behaviour that makes 8.3's reducers necessary rather than optional — the merge happens before the node sees anything, so two branches writing the same key have already had to agree on how. And it is also why a fan-in is the construct that **forces** you to notice a missing reducer: the error arrives at the join, not at either branch.", "cols": 3, "nodes": [{"id": "a", "label": "Branch a completes", "sub": "writes its keys", "tone": "accent"}, {"id": "b", "label": "Branch b completes", "sub": "writes its keys", "tone": "accent"}, {"id": "w", "label": "The runtime waits for both", "sub": "then merges", "tone": "violet"}, {"id": "o", "label": "The join runs ONCE", "sub": "not twice", "tone": "good"}, {"id": "r", "label": "So the reducer ran first", "sub": "which is why 8.3 is mandatory", "tone": "teal"}], "edges": [["a", "w"], ["b", "w"], ["w", "o"], ["o", "r"]], "t": "diagram", "id": "dg-8_6-03-2"},
+
     { t: "p", text: "The node after the two parallel branches has **two incoming edges** and ran once, not twice. The runtime waits for all of a node's incoming paths before running it, then runs it a single time against the merged state." },
     { t: "callout", kind: "warn", title: "With a precise qualification", body: [
       { t: "p", text: "It waits for every incoming path that was **scheduled**, not every path that was declared. 8.7 measures the case that distinguishes those: when a router skips one branch of a fan-in, the join node still runs \u2014 there is no deadlock." },
@@ -58,6 +61,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "data", text: "The sequence is data, not shape", sub: "Which is the point of the whole module" },
 
     {"kind": "flow", "title": "Four add_edge calls against one expression, for a sequence with no branches", "caption": "**The honest cost is visible in that comparison**: the graph version of a linear sequence is four `add_edge` calls plus a schema, against one `|` expression. **Which is why 8.1's rule stands** — the sequence being data rather than shape buys you the ability to inspect and modify it, and on a chain with no cycle, no branch and no pause there is nothing to inspect that you did not just write.", "cols": 3, "nodes": [{"id": "c", "label": "a | b | c", "sub": "one expression", "tone": "good"}, {"id": "g", "label": "Four add_edge calls plus a schema", "sub": "the same sequence", "tone": "warn"}, {"id": "d", "label": "The sequence becomes data", "sub": "inspectable, modifiable", "tone": "violet"}, {"id": "n", "label": "With nothing to inspect", "sub": "on a linear chain", "tone": "crit"}, {"id": "r", "label": "So 8.1's rule stands", "sub": "pay for one of the three", "tone": "teal"}], "edges": [["c", "g"], ["g", "d"], ["d", "n"], ["n", "r"]], "t": "diagram", "id": "dg-8_6-04-3"},
+
     { t: "code", lang: "python", title: "Two ways to express a pipeline",
       code: 'chain = a | b | c            # the sequence IS the expression\n\ng.add_edge("a", "b")         # the sequence is a list of edges\ng.add_edge("b", "c")',
       caption: "The second is more verbose, and the edges are data the runtime reads at each step." },

@@ -20,6 +20,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "Recording calls, sizes and timings",
       code: 'class Recorder(BaseCallbackHandler):\n    def on_llm_start(self, serialized, prompts, *, run_id=None, **kw):\n        self.llm_calls += 1\n        self.chars_in += sum(len(p) for p in prompts)\n        self.t0[run_id] = time.perf_counter()\n\n    def on_llm_end(self, response, *, run_id=None, **kw):\n        took = (time.perf_counter() - self.t0.pop(run_id)) * 1000\n        self.chars_out += len(response.generations[0][0].text)\n\nchain.invoke({"q": "explain"}, config={"callbacks": [rec]})',
       out: "llm calls : 1\nchars in  : 41\nchars out : 14",
@@ -29,6 +30,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "counts", text: "Event counts are not call counts", sub: "Three chain starts for a three-step chain" },
 
     {"kind": "tree", "title": "Event counts are not call counts", "caption": "A three-step chain fires `on_chain_start` **three** times, because the sequence is a chain and so is each non-model step. So an event count is a statement about the structure of your chain, not about how much work was done — which is the first thing a handler teaches.", "root": {"label": "RunnableSequence", "sub": "on_chain_start #1", "tone": "accent", "children": [{"label": "prompt", "sub": "on_chain_start #2", "tone": "good"}, {"label": "model", "sub": "on_chat_model_start", "tone": "violet"}, {"label": "parser", "sub": "on_chain_start #3", "tone": "good"}]}, "t": "diagram", "id": "dg-4_1-02-0"},
+
 
 
 
@@ -60,6 +62,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["", "Visible", "Via"], rows: [
       ["every model call, with its exact prompt", "yes", "`on_llm_start`"],
       ["time spent in each model call", "yes", "the start/end pair"],
@@ -74,6 +77,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "scope", text: "Per call, not globally", sub: "Which is 2.9's config rule again" },
 
     {"kind": "flow", "title": "Per-invocation, which is correct and is also the bug people write", "caption": "Handlers go in `config={\"callbacks\": [...]}`, so **they are per-invocation.** That is the right design — two concurrent requests should be recorded separately. It is also exactly where the mistake lives: **a handler that accumulates state across invocations is a bug that only appears under load**, because a single-request test cannot distinguish a per-call counter from a shared one.", "cols": 3, "nodes": [{"id": "c", "label": "callbacks go in config", "sub": "per invocation", "tone": "violet"}, {"id": "r", "label": "Two requests, two records", "sub": "which is correct", "tone": "good"}, {"id": "s", "label": "A handler with shared state", "sub": "accumulating across calls", "tone": "crit"}, {"id": "t", "label": "Passes every single-request test", "sub": "indistinguishable from correct", "tone": "crit"}, {"id": "l", "label": "And is wrong only under load", "sub": "which is when you find it", "tone": "crit"}], "edges": [["c", "r"], ["c", "s"], ["s", "t"], ["t", "l"]], "t": "diagram", "id": "dg-4_1-04-3"},
+
 
 
 

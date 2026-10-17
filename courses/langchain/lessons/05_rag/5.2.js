@@ -19,12 +19,14 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "A Document from the course corpus",
       code: "page_content : 'Cancelling a subscription. Open Account Settings and ch'\nmetadata     : {'id': 'bill-cancel-sub', 'team': 'billing', 'public': True}",
       caption: "`page_content` is embedded and reaches the model; `metadata` is what you filter on." },
     { t: "h2", n: "02", id: "fields", text: "The fields worth capturing", sub: "And what each one buys later" },
 
     {"kind": "matrix", "title": "The metadata is the half that decides what you can build", "caption": "Each field is nearly free at load time and effectively impossible to reconstruct afterwards. The `visibility` row is the one that matters most — 7.5 measures what happens when it is missing, and it is a data-exposure bug rather than a quality one.", "cols": ["cost at load", "what it enables later"], "rows": ["source", "page", "owner", "visibility", "last_updated"], "cells": [[{"text": "free", "tone": "good"}, "a citation the user can follow"], [{"text": "free", "tone": "good"}, "a citation that lands in the right place"], [{"text": "free", "tone": "good"}, "per-tenant filtering"], [{"text": "free", "tone": "good"}, {"text": "ACCESS CONTROL — see 7.5", "tone": "crit"}], [{"text": "free", "tone": "good"}, {"text": "staleness detection", "tone": "warn"}]], "t": "diagram", "id": "dg-5_2-02-0"},
+
 
 
 
@@ -60,6 +62,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["Format", "What is lost"], rows: [
       ["PDF", "column order; tables become interleaved text; headers repeat on every page"],
       ["HTML", "navigation and footer text mixed into the content unless stripped"],
@@ -74,6 +77,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "corpus", text: "The corpus this phase uses", sub: "Including three documents that exist to be excluded" },
 
     {"kind": "flow", "title": "A corpus built to be difficult, because an easy one teaches nothing", "caption": "Three deliberate properties, each of which breaks a different stage. **Near-duplicate documents that differ only in the detail that decides the answer** defeat a ranker that is nearly right. **Queries phrased the way a user would phrase them rather than the way the document does** defeat lexical overlap. And **rare exact terms appearing in exactly one place** defeat dense similarity. 5.8 shows what that costs, and module 6 is six repairs to those three failures.", "cols": 3, "nodes": [{"id": "n", "label": "Near-duplicates", "sub": "differing in the deciding detail", "tone": "violet"}, {"id": "q", "label": "User phrasing, not document phrasing", "sub": "no shared vocabulary", "tone": "violet"}, {"id": "r", "label": "Rare exact terms, in one place only", "sub": "mTLS, Retry-After", "tone": "violet"}, {"id": "a", "label": "Defeats a nearly-right ranker", "sub": "MMR, 6.6", "tone": "accent"}, {"id": "b", "label": "Defeats lexical overlap", "sub": "and dense helps here", "tone": "accent"}, {"id": "c", "label": "Defeats dense similarity", "sub": "BM25, 6.3", "tone": "accent"}], "edges": [["n", "a"], ["q", "b"], ["r", "c"]], "t": "diagram", "id": "dg-5_2-04-3"},
+
 
 
 

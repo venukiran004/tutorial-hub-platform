@@ -12,6 +12,8 @@ EC.receiveLesson({
   blocks: [
     { t: "h2", n: "01", id: "history", text: "The history is the run's history", sub: "And each entry has an address" },
 
+    {"kind": "trace", "title": "Five checkpoints, and the state before the decision is already there", "caption": "A three-node run leaves **five checkpoints, each with a step number, the next node and the state at that point.** Reading an earlier one answers *\"what did the state look like before the decision\"* **without re-running anything** — which is the debugging use on its own, and **the state is already there: you paid for it by checkpointing.** Which is §04's argument in advance: this is not a feature to enable, it is a thing you have already bought.", "left": "checkpoint", "codeW": 150, "vars": ["next", "n"], "steps": [{"code": "step=3", "state": ["()", "20"], "tone": "accent"}, {"code": "step=2", "state": ["('final',)", "20"], "tone": "accent"}, {"code": "step=1", "state": ["('add_ten',)", "10"], "changed": [1], "tone": "violet", "note": "before the decision"}, {"code": "5 in total", "state": ["newest first", "already stored"], "tone": "good"}], "t": "diagram", "id": "dg-9_9-01-1"},
+
     { t: "code", lang: "text", title: "A three-node run",
       code: "final: ['double -> 10', 'add_ten -> 20', 'final n=20']\n\n5 checkpoints, newest first:\n  step=3   next=()               n=20   id=1f0a5d3c\n  step=2   next=('final',)       n=20   id=1f0a5d2b\n  step=1   next=('add_ten',)     n=10   id=1f0a5d1a\n  step=0   next=('double',)      n=5    id=1f0a5d09\n  step=-1  next=('__start__',)   n=5    id=1f0a5cf8",
       caption: "Each entry carries a `checkpoint_id` \u2014 an address." },
@@ -19,6 +21,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "fork", text: "Forking", sub: "Re-running from an earlier point" },
 
     {"kind": "tree", "title": "A checkpoint_id is an address you can go back to", "caption": "Pass an earlier checkpoint's config to `invoke` and the graph continues from there. The measured fork **preserved the history before the fork** — so time travel is a branch, not an edit, and the original path is still there.", "root": {"label": "checkpoint 1", "sub": "the input", "tone": "accent", "children": [{"label": "checkpoint 2", "sub": "after node a", "tone": "good", "children": [{"label": "checkpoint 3", "sub": "the original path", "tone": "teal", "edge": "ran once"}, {"label": "checkpoint 3′", "sub": "the fork — a new branch", "tone": "violet", "edge": "re-invoked here"}]}]}, "t": "diagram", "id": "dg-9_9-02-0"},
+
 
 
 
@@ -42,11 +45,15 @@ EC.receiveLesson({
       { t: "p", text: "That is the whole point of forking from an address rather than re-running from the start: the prefix is real history, and only the suffix is recomputed." }
     ] },
     { t: "h2", n: "03", id: "counterfactual", text: "Forking with a change", sub: "The counterfactual" },
+
+    {"kind": "trace", "title": "The counterfactual is answerable by replaying, not reasoning", "caption": "The original had `n=10` at step 1. `update_state(n=100)` **returns a new checkpoint config rather than mutating the old one**, so re-running from there gives **`add_ten -> 110`, `final n=110`** — and **the original branch is still there to compare against.** Which is what the name *time travel* is pointing at: *\"what would it have done if n had been 100 there\"* is **answered by replaying rather than by reasoning about the code.**", "left": "run", "codeW": 190, "vars": ["trace"], "steps": [{"code": "original, step 1", "state": ["n=10"], "tone": "accent"}, {"code": "update_state(n=100)", "state": ["a NEW checkpoint config"], "tone": "violet", "note": "the original survives"}, {"code": "re-run from there", "state": ["add_ten -> 110, final n=110"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-9_9-03-2"},
     { t: "code", lang: "text", title: "update_state at an old checkpoint",
       code: "original at step 1: n=10\nupdate_state(n=100) returned a new checkpoint config\nre-run from there  : ['double -> 10', 'add_ten -> 110', 'final n=110']",
       caption: "`add_ten -> 110` against the original run's `20`." },
     { t: "p", text: "So *\u201cwhat would it have done if `n` had been 100 there\u201d* is answerable by **replaying, not reasoning** \u2014 which is the capability the name *time travel* is pointing at. `update_state` returns a new config rather than mutating the old checkpoint, so the original branch is still there to compare against." },
     { t: "h2", n: "04", id: "uses", text: "What it is actually for", sub: "Three uses, increasingly valuable" },
+
+    {"kind": "flow", "title": "Not an additional feature with an additional cost", "caption": "9.4's cost is **a checkpoint per superstep, each holding the whole internal state.** Time travel **is not an additional feature with an additional cost — it is the thing checkpointing already bought.** So **the question is whether you use it, not whether to enable it**; and the sharp version of that: **a team paying for per-superstep persistence and still debugging by adding log lines and re-running is paying twice.**", "cols": 3, "nodes": [{"id": "c", "label": "A checkpoint per superstep", "sub": "9.4's measured cost", "tone": "accent"}, {"id": "a", "label": "Already holds the whole state", "sub": "at every step", "tone": "violet"}, {"id": "t", "label": "So time travel costs nothing more", "sub": "it is the same data", "tone": "good"}, {"id": "q", "label": "The question is whether you use it", "sub": "not whether to enable it", "tone": "good"}, {"id": "p", "label": "Log lines plus a re-run is paying twice", "sub": "for what you already stored", "tone": "teal"}], "edges": [["c", "a"], ["a", "t"], ["t", "q"], ["q", "p"]], "t": "diagram", "id": "dg-9_9-04-3"},
     { t: "ol", items: [
       "**Debugging.** Read the state before a bad decision rather than adding logging and re-running. The state is already there.",
       "**Recovery.** A run failed at step 7 of 9 \u2014 resume from step 6 instead of repeating six model calls. **This is the one that pays for persistence in production.**",
@@ -57,6 +64,8 @@ EC.receiveLesson({
       { t: "p", text: "So the question is whether you use it, not whether to enable it. A team paying for per-superstep persistence and still debugging by adding log lines and re-running is paying twice." }
     ] },
     { t: "h2", n: "05", id: "constraint", text: "The constraint nobody mentions", sub: "9.7's rule, at a larger scale" },
+
+    {"kind": "flow", "title": "Forking re-executes nodes, with a wider blast radius than 9.7's", "caption": "**Everything 9.7 said about re-execution applies again**, and further: a fork replays whole nodes, side effects included. **The idempotency-key case is the one where the right answer is genuinely ambiguous** — replaying with the old key makes the downstream call a no-op, **which is correct for recovery and wrong for a counterfactual where you want the action to happen differently.** So: **time travel is safe on a graph of pure computation and model calls, and needs care the moment a node acts on the world** — 9.7's conclusion, reached from the other side.", "cols": 3, "nodes": [{"id": "f", "label": "A fork re-executes nodes", "sub": "side effects included", "tone": "crit"}, {"id": "k", "label": "Replay with the old idempotency key", "sub": "the downstream call is a no-op", "tone": "warn"}, {"id": "r", "label": "Correct for recovery", "sub": "the action already happened", "tone": "good"}, {"id": "c", "label": "Wrong for a counterfactual", "sub": "you wanted it to happen differently", "tone": "crit"}, {"id": "s", "label": "Safe on pure computation and model calls", "sub": "9.7's conclusion, from the other side", "tone": "violet"}], "edges": [["f", "k"], ["k", "r"], ["k", "c"], ["c", "s"]], "t": "diagram", "id": "dg-9_9-05-4"},
     { t: "p", text: "Forking **re-executes nodes**. So everything 9.7 said about re-execution applies again, with a wider blast radius:" },
     { t: "ul", items: [
       "a node with side effects runs its side effects **again**",

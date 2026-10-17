@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["pattern", "model calls", "paths", "loops?", "predictable?"], rows: [
       ["single call", "1", "1", "no", "**yes**"],
       ["call + tools", "1", "1", "no", "**yes**"],

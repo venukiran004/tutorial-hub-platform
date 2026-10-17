@@ -63,6 +63,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "ol", items: [
       "**compress** \u2014 no information loss, if done on the right text.",
       "**summarise** \u2014 lossy, with the prompt deciding what survives (13.3).",

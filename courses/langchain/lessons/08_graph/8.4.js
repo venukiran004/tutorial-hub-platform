@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "Five keys, one schema",
       code: 'class Leaky(TypedDict):\n    question: str\n    answer: str\n    _raw_api_response: str\n    _retry_count: int\n    _debug_timings: List[str]',
       out: "  one schema, five keys. invoke returns:\n    question               'what is it'\n    answer                 '42'\n    _raw_api_response      '{...8kb of json...}'\n    _retry_count           '2'\n    _debug_timings         \"['fetch: 12ms']\"",
@@ -38,6 +39,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "three", text: "The three-schema pattern", sub: "And what each one does" },
 
     {"kind": "flow", "title": "One graph, three schemas, and the internal one is the real state", "caption": "`StateGraph(Internal, input_schema=In, output_schema=OutS)` — **the internal schema is what nodes see, and the other two are the boundary.** A caller passes `{question}` and receives `{answer}`, and never sees `raw` or `retries` at all. Which is the mechanism behind all three of §03's benefits: the narrowing is not documentation, it is what the runtime enforces at the edges of the graph.", "cols": 4, "nodes": [{"id": "i", "label": "In: question", "sub": "what the caller passes", "tone": "accent"}, {"id": "n", "label": "Internal: question, answer, raw, retries", "sub": "what nodes see", "tone": "violet"}, {"id": "o", "label": "Out: answer", "sub": "what the caller receives", "tone": "accent"}, {"id": "e", "label": "Enforced at the edges", "sub": "not documented", "tone": "good"}], "edges": [["i", "n"], ["n", "o"], ["o", "e"]], "t": "diagram", "id": "dg-8_4-02-1"},
+
     { t: "code", lang: "python", title: "Separate input, internal and output",
       code: 'class In(TypedDict):\n    question: str\n\nclass Internal(TypedDict):\n    question: str\n    answer: str\n    raw: str\n    retries: int\n\nclass OutS(TypedDict):\n    answer: str\n\ng = StateGraph(Internal, input_schema=In, output_schema=OutS)',
       out: "  invoke({'question': ...}) -> {'answer': '42'}",
@@ -49,6 +51,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "buys", text: "What the split buys", sub: "Three things, and none of them is neatness" },
 
     {"kind": "matrix", "title": "Three things the split buys, and only one is about tidiness", "caption": "**A contract**: the caller cannot depend on an internal key because they never see it, so renaming `raw` is not a breaking change — with one schema, **every internal field is part of your public API by accident.** **A smaller checkpoint**: 9.x persists the state on *every superstep*, so an 8 KB raw response is **8 KB written per step, forever** — and note the output schema does not help here, only keeping it out of `Internal` does. **A boundary**: the leaky version returns the raw upstream response to the caller, which is how internal error details reach a client.", "cols": ["What it buys"], "rows": ["A contract", "A smaller checkpoint", "A boundary"], "cells": [[{"text": "renaming an internal key stops being a breaking change", "tone": "good"}], [{"text": "8 KB in the state is 8 KB per superstep, forever", "tone": "crit"}], [{"text": "upstream error details stop reaching the client", "tone": "crit"}]], "t": "diagram", "id": "dg-8_4-03-2"},
+
     { t: "dl", items: [
       ["a contract", "The caller cannot depend on an internal key because they never see it \u2014 so renaming `raw` is not a breaking change. With one schema, every internal field is part of your public API by accident."],
       ["a smaller checkpoint", "9.x persists the state on **every superstep**, so an 8 KB raw response in the schema is 8 KB written per step, forever. The output schema does not help here \u2014 only keeping it out of the internal schema does."],
@@ -61,6 +64,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "cost", text: "The honest cost", sub: "And a proportionate rule" },
 
     {"kind": "flow", "title": "The honest cost: three places to change, and nothing checks they agree", "caption": "**Three schemas for one graph is more code, and the keys have to be kept consistent by hand.** Promoting an internal key to public is **a change in two places, and nothing checks that the three agree** — so the failure mode is an output schema that declares a key the internal one no longer has, which is a silent empty field rather than an error. Worth paying when the graph has callers you do not control, and ceremony when it does not.", "cols": 3, "nodes": [{"id": "t", "label": "Three schemas", "sub": "for one graph", "tone": "accent"}, {"id": "p", "label": "Promoting a key: two edits", "sub": "and nothing links them", "tone": "warn"}, {"id": "m", "label": "A mismatch is not an error", "sub": "it is a silent empty field", "tone": "crit"}, {"id": "w", "label": "Worth it across a boundary", "sub": "callers you do not control", "tone": "good"}, {"id": "c", "label": "Ceremony inside one", "sub": "the same rule as 8.1", "tone": "teal"}], "edges": [["t", "p"], ["p", "m"], ["m", "w"], ["w", "c"]], "t": "diagram", "id": "dg-8_4-04-3"},
+
     { t: "p", text: "Three schemas for one graph is more code, and the keys have to be kept consistent across them by hand \u2014 promoting an internal key to public is a change in two places, and nothing checks that the three agree." },
     { t: "callout", kind: "good", title: "The trigger is an audience, not a line count", body: [
       { t: "p", text: "One schema while the graph is internal and small. Split input and output the moment the graph is called by code you do not own, persisted, or exposed over a network." },

@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["", "control flow", "you write"], rows: [
       ["workflow", "**you** wrote it", "the structure; the model fills in steps"],
       ["agent", "the **model** decides it", "the tools; the model chooses and sequences"]
@@ -39,11 +40,15 @@ EC.receiveLesson({
       { t: "p", text: "That is the concrete consequence rather than an abstraction, and 8.9's recursion limit is the evidence: a framework needs a hard step ceiling precisely because nobody can bound an agent's step count by reading it. The limit exists for agents, not for workflows." }
     ] },
     { t: "h2", n: "02", id: "chaining", text: "Prompt chaining", sub: "Control: yours, entirely" },
+
+    {"kind": "flow", "title": "Prompt chaining is a chain, and wanting the steps named is not a reason for a graph", "caption": "Three model calls in a fixed order with each output feeding the next — **which is a chain, so 8.1's rule applies and a graph adds nothing.** The exception is stated precisely: **if you need a gate between the steps, that is a reason to use a graph. Wanting the steps named is not.** Which is the most common bad reason in this module, because a graph does give you names and 2.9's `run_name` gives you the same thing on a chain.", "cols": 3, "nodes": [{"id": "c", "label": "Three calls, fixed order", "sub": "each feeding the next", "tone": "accent"}, {"id": "n", "label": "This is a chain", "sub": "8.1's rule applies", "tone": "good"}, {"id": "g", "label": "Need a gate between steps?", "sub": "a real reason for a graph", "tone": "violet"}, {"id": "w", "label": "Want the steps named?", "sub": "not a reason", "tone": "crit"}, {"id": "r", "label": "2.9's run_name does that on a chain", "sub": "for one method call", "tone": "teal"}], "edges": [["c", "n"], ["n", "g"], ["n", "w"], ["w", "r"]], "t": "diagram", "id": "dg-9_3-02-1"},
     { t: "code", lang: "text", title: "A fixed sequence",
       code: "['outline', 'draft', 'polish']",
       caption: "Three model calls, always, in that order." },
     { t: "p", text: "Which is a chain \u2014 8.1's rule applies, and a graph adds nothing here unless you need a gate between the steps. If you do need one, that is a reason to use a graph; wanting the steps named is not." },
     { t: "h2", n: "03", id: "routing", text: "Routing", sub: "Control: yours, with the model classifying" },
+
+    {"kind": "flow", "title": "Routing in a graph is 2.5's router with the destinations visible", "caption": "A classifier node plus a conditional edge does what 2.5's `RunnableLambda` returning a Runnable did — **and the difference is that the destinations are in the graph rather than inside a function.** So the drawing shows every branch, 8.7's path map keeps the decision topology-independent, and the router is a pure function you can test. **The cost is the schema and the wiring**, which is 8.6's four-lines-against-one comparison again.", "cols": 3, "nodes": [{"id": "c", "label": "A classifier node", "sub": "returns a domain word", "tone": "accent"}, {"id": "e", "label": "A conditional edge with a path map", "sub": "8.7", "tone": "violet"}, {"id": "d", "label": "Destinations are in the graph", "sub": "not inside a function", "tone": "good"}, {"id": "r", "label": "So the drawing shows every branch", "sub": "which 2.5 could not", "tone": "good"}, {"id": "s", "label": "At the cost of a schema and wiring", "sub": "8.6's comparison", "tone": "warn"}], "edges": [["c", "e"], ["e", "d"], ["d", "r"], ["r", "s"]], "t": "diagram", "id": "dg-9_3-03-2"},
     { t: "code", lang: "text", title: "The model picks a category; you picked the destinations",
       code: "topic='refund'      -> ['classified', 'billing']\ntopic='api error'   -> ['classified', 'technical']",
       caption: "The set of possible paths is still enumerable." },
@@ -52,17 +57,23 @@ EC.receiveLesson({
       { t: "p", text: "This is the pattern most often skipped in favour of an agent, and it solves a surprising proportion of \u201cwe need an agent\u201d requirements \u2014 because the real requirement is usually *handle these five kinds of request differently*, which is a router." }
     ] },
     { t: "h2", n: "04", id: "parallel", text: "Parallelisation", sub: "Control: yours, fan-out fixed" },
+
+    {"kind": "flow", "title": "The reducer on the shared key is mandatory, not optional", "caption": "**8.6's superstep model applies in full: all three branches see the same snapshot, none can observe another, and the reducer on the shared findings key is mandatory rather than optional** — without one the fan-in **raises** `InvalidUpdateError`, which 8.3 measured. Which makes parallelisation the pattern that forces you to understand reducers: you cannot build it and discover the requirement later, because it will not run.", "cols": 3, "nodes": [{"id": "s", "label": "Three branches, one snapshot", "sub": "none observes another", "tone": "accent"}, {"id": "w", "label": "All three write 'findings'", "sub": "in one superstep", "tone": "violet"}, {"id": "n", "label": "No reducer: InvalidUpdateError", "sub": "8.3 measured it", "tone": "crit"}, {"id": "r", "label": "So the reducer is mandatory", "sub": "not an optimisation", "tone": "good"}, {"id": "f", "label": "You cannot discover it later", "sub": "it will not run at all", "tone": "teal"}], "edges": [["s", "w"], ["w", "n"], ["n", "r"], ["r", "f"]], "t": "diagram", "id": "dg-9_3-04-3"},
     { t: "code", lang: "text", title: "Three reviewers in one superstep",
       code: "['security review', 'performance review', 'style review', 'merged 3']",
       caption: "Latency is the slowest branch; cost is still the sum." },
     { t: "p", text: "8.6's superstep model applies in full: all three see the same snapshot, none can observe another, and the reducer on the shared findings key is **mandatory** rather than optional (8.3) \u2014 without one the fan-in raises." },
     { t: "h2", n: "05", id: "orchestrator", text: "Orchestrator-worker", sub: "Control: shared" },
+
+    {"kind": "flow", "title": "The orchestrator decides how many workers, which a fixed fan-out cannot", "caption": "**It needs 8.7's list-returning router**: the orchestrator produced three sections, so three workers ran. **A statically wired fan-out would have had to guess that number** — and guessing high wastes calls on sections that do not exist while guessing low drops work. Which is the first pattern in this lesson where the graph is doing something a chain genuinely cannot, rather than doing the same thing with more machinery.", "cols": 3, "nodes": [{"id": "o", "label": "The orchestrator plans", "sub": "three sections, this time", "tone": "violet"}, {"id": "l", "label": "Returns a list of destinations", "sub": "8.7's dynamic fan-out", "tone": "violet"}, {"id": "w", "label": "Three workers run", "sub": "the count came from runtime", "tone": "good"}, {"id": "s", "label": "A static fan-out must guess", "sub": "high wastes, low drops work", "tone": "crit"}, {"id": "f", "label": "The first pattern a chain cannot do", "sub": "rather than do more slowly", "tone": "teal"}], "edges": [["o", "l"], ["l", "w"], ["w", "s"], ["s", "f"]], "t": "diagram", "id": "dg-9_3-05-4"},
     { t: "p", text: "The orchestrator decides **how many** workers at runtime, which a fixed fan-out cannot \u2014 it needs 8.7's list-returning router. In the measured run the orchestrator produced three sections, so three workers ran; a statically wired fan-out would have had to guess that number." },
     { t: "callout", kind: "warn", title: "The first pattern you cannot enumerate by reading", body: [
       { t: "p", text: "The execution graph depends on what the model planned, so cost and latency become **distributions rather than numbers**. That is the point at which capacity planning changes character: you are reasoning about a p99 rather than a count." },
       { t: "p", text: "Which also means the plan needs a bound. An orchestrator that decides to spawn two hundred workers is a correct implementation of a bad plan, and nothing downstream will question it \u2014 so the cap belongs in the orchestrator node, not in the worker." }
     ] },
     { t: "h2", n: "06", id: "evaluator", text: "Evaluator-optimiser", sub: "Control: shared, with a cycle" },
+
+    {"kind": "cycle", "title": "Evaluator-optimiser is a cycle with a condition, so the iteration count is runtime", "caption": "Generate, evaluate, and loop back if the evaluation says to. **Which makes the iteration count a runtime property** — so, like the orchestrator, this needs a graph rather than wanting one. And it inherits the agent's termination problem in a milder form: **the loop ends when the evaluator is satisfied, so an evaluator that is never satisfied is bounded only by the recursion limit.**", "centre": "until the evaluator passes", "nodes": [{"label": "generate", "sub": "a draft", "tone": "violet", "edge": "then"}, {"label": "evaluate", "sub": "against a rubric", "tone": "accent", "edge": "good enough?"}, {"label": "revise", "sub": "with the critique", "tone": "good", "edge": "back to evaluate"}], "t": "diagram", "id": "dg-9_3-06-5"},
     { t: "code", lang: "text", title: "Generate, evaluate, loop back",
       code: "['generate', 'evaluate(score=1)', 'generate', 'evaluate(score=2)',\n 'generate', 'evaluate(score=3)']\nattempts: 3",
       caption: "Three iterations, ending on the quality condition." },
@@ -71,6 +82,8 @@ EC.receiveLesson({
       { t: "p", text: "With both, \u201cthe output never got good enough\u201d is a state you can route on, record, and return to the caller as a result rather than an error \u2014 which is what lets a caller decide between retrying, escalating and accepting the best attempt." }
     ] },
     { t: "h2", n: "07", id: "table", text: "Where the control sits", sub: "The whole catalogue" },
+
+    {"kind": "matrix", "title": "Six patterns, sorted by who holds control and whether the paths are enumerable", "caption": "**The enumerable column is the one that decides how you test and budget.** The first three have control in your code and **exactly enumerable paths** — so you can assert on the path, bound the cost and draw the graph completely. The last three take their shape from runtime, and the agent row is the honest end of it: **control is the model's and nothing is bounded**, which is 3.8's p95 and 8.9's recursion limit in one line.", "cols": ["Control", "Paths enumerable?"], "rows": ["Prompt chaining", "Routing", "Parallelisation", "Orchestrator-worker", "Evaluator-optimiser", "Agent"], "cells": [[{"text": "yours", "tone": "good"}, {"text": "yes - exactly one", "tone": "good"}], [{"text": "yours", "tone": "good"}, {"text": "yes - one per category", "tone": "good"}], [{"text": "yours", "tone": "good"}, {"text": "yes - a fixed fan-out", "tone": "good"}], ["shared", {"text": "no - the count is runtime", "tone": "warn"}], ["shared", {"text": "no - iterations are runtime", "tone": "warn"}], [{"text": "the model's", "tone": "crit"}, {"text": "no - nothing is bounded", "tone": "crit"}]], "t": "diagram", "id": "dg-9_3-07-6"},
     { t: "table", head: ["pattern", "control", "paths enumerable?"], rows: [
       ["prompt chaining", "yours", "**yes** \u2014 exactly one"],
       ["routing", "yours", "**yes** \u2014 one per category"],

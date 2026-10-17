@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "Two nodes, one key, no reducer",
       code: 'class S(TypedDict):\n    messages: List[str]        # NO reducer\n\ndef a(state: S):\n    return {"messages": ["from a"]}\n\ndef b(state: S):\n    return {"messages": ["from b"]}\n\n# START -> a -> b -> END',
       out: "  result: {'messages': ['from b']}",
@@ -41,6 +42,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "annotated", text: "A reducer is the merge function", sub: "Declared in the annotation" },
 
     {"kind": "flow", "title": "Annotated's second argument is read by the runtime", "caption": "The signature is **`reducer(current_value, node_update) -> new_value`**, and `operator.add` on two lists is concatenation. The point worth being precise about: **the annotation is not documentation here — it is the mechanism.** `Annotated[list, operator.add]` is read by the runtime to decide how to merge that key, so a type hint is doing load-bearing work, which is unusual enough to catch people.", "cols": 3, "nodes": [{"id": "a", "label": "Annotated[list, operator.add]", "sub": "a type hint", "tone": "accent"}, {"id": "r", "label": "The second argument is read", "sub": "by the runtime", "tone": "violet"}, {"id": "s", "label": "reducer(current, update) -> new", "sub": "the signature", "tone": "violet"}, {"id": "c", "label": "So a hint is load-bearing", "sub": "not documentation", "tone": "good"}, {"id": "u", "label": "Which is unusual enough to catch people", "sub": "remove it and behaviour changes", "tone": "teal"}], "edges": [["a", "r"], ["r", "s"], ["s", "c"], ["c", "u"]], "t": "diagram", "id": "dg-8_3-02-1"},
+
     { t: "code", lang: "python", title: "Annotated metadata is the reducer",
       code: 'import operator\n\nclass S2(TypedDict):\n    messages: Annotated[List[str], operator.add]',
       out: "  result: {'messages': ['from a', 'from b']}",
@@ -49,6 +51,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "parallel", text: "Where it actually matters", sub: "And the failure changes character" },
 
     {"kind": "trace", "title": "Without a reducer, a concurrent write is an error", "caption": "Two nodes writing the same key in one superstep **raises `InvalidUpdateError: can receive only one value per step`** — it does not pick one, and it does not silently drop one. Which **reframes what a reducer is for: it is not an optimisation for accumulating history, it is what makes concurrent writes to a key possible at all.** A key that two nodes can **ever** write needs one, and the fan-in is what forces you to notice.", "left": "configuration", "codeW": 170, "vars": ["result of a fan-in"], "steps": [{"code": "no reducer", "state": ["InvalidUpdateError"], "tone": "crit", "note": "one value per step"}, {"code": "operator.add", "state": ["{'found': ['left', 'right']}"], "changed": [0], "tone": "good"}, {"code": "so a reducer", "state": ["makes the write possible at all"], "tone": "violet"}], "t": "diagram", "id": "dg-8_3-03-2"},
+
     { t: "code", lang: "text", title: "Two parallel nodes writing the same key",
       code: "NO reducer     RAISED InvalidUpdateError: At key 'found': Can receive only one\n               value per step. Use an Annotated key to handle multiple values.\noperator.add   -> {'found': ['left', 'right']}",
       caption: "Loud, specific, and it names the fix." },
@@ -60,6 +63,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "order", text: "Reducers and ordering", sub: "The runtime chooses the order, not you" },
 
     {"kind": "matrix", "title": "Updates within a superstep arrive in an order you do not control", "caption": "So **a reducer whose result depends on order produces nondeterministic state.** The distinction that matters is not associativity: **`operator.add` on lists is associative and *not* commutative** — `[a] + [b]` is not `[b] + [a]` — so list concatenation at a fan-in records the **scheduling order**, not a meaningful one. Numbers, set union, max and min are all safe; \"last write wins\" is the worst case, because **which write is last is not a question with an answer.**", "cols": ["Safe under reordering", "Not safe"], "rows": ["Arithmetic", "Sets", "Extremes", "Lists", "Overwrite"], "cells": [[{"text": "operator.add on numbers", "tone": "good"}, "-"], [{"text": "set union", "tone": "good"}, "-"], [{"text": "max / min", "tone": "good"}, "-"], ["-", {"text": "list concatenation - order is scheduling", "tone": "crit"}], ["-", {"text": "'last write wins' - which write is last?", "tone": "crit"}]], "t": "diagram", "id": "dg-8_3-04-3"},
+
     { t: "p", text: "Updates within a superstep are applied in an order you do not control, so a reducer whose result depends on order produces nondeterministic state. `operator.add` on lists is associative and **not** commutative \u2014 `[a] + [b]` is not `[b] + [a]`." },
     { t: "table", head: ["safe under reordering", "not safe"], rows: [
       ["`operator.add` on numbers", "list concatenation \u2014 order reflects scheduling"],
@@ -73,6 +77,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "custom", text: "A custom reducer", sub: "Any callable of (current, update)" },
 
     {"kind": "flow", "title": "Deduplicating a fan-in is a state-merge concern, so it belongs in the reducer", "caption": "Two parallel fetchers returning overlapping documents merge to a deduplicated list — **which is 7.2's multi-query union expressed as a reducer.** Putting it there means **no node has to know that a sibling might return the same document**, and that is exactly the coupling a reducer exists to remove. The alternative is a deduplication step after the fan-in, which works and puts knowledge of the fan-out's shape into a node that should not have it.", "cols": 3, "nodes": [{"id": "a", "label": "Fetcher A returns doc1, doc2", "sub": "in parallel", "tone": "accent"}, {"id": "b", "label": "Fetcher B returns doc2, doc3", "sub": "overlapping", "tone": "accent"}, {"id": "r", "label": "A dedup reducer merges them", "sub": "doc1, doc2, doc3", "tone": "violet"}, {"id": "n", "label": "Neither node knows about the other", "sub": "the coupling is gone", "tone": "good"}, {"id": "l", "label": "Which is what a reducer is for", "sub": "7.2's union, as a merge", "tone": "teal"}], "edges": [["a", "r"], ["b", "r"], ["r", "n"], ["n", "l"]], "t": "diagram", "id": "dg-8_3-05-4"},
+
     { t: "code", lang: "python", title: "Deduplicating a fan-in",
       code: 'def merge_unique(current, update):\n    out = list(current)\n    for x in update:\n        if x not in out:\n            out.append(x)\n    return out\n\nclass S4(TypedDict):\n    docs: Annotated[List[str], merge_unique]',
       out: "  two parallel fetchers returning overlapping docs:\n    {'docs': ['doc1', 'doc2', 'doc3']}",
@@ -81,6 +86,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "addmessages", text: "add_messages is not operator.add", sub: "And the difference is load-bearing" },
 
     {"kind": "matrix", "title": "Three things add_messages does that operator.add does not", "caption": "It is not a convenience alias. **It coerces dicts and strings into `Message` objects**, so a node can return a plain string. **It assigns an id to messages that lack one.** And **it replaces a message whose id matches an existing one** — which is the behaviour that makes an edit-in-place possible at all, and the one that will surprise you if you assumed append-only semantics.", "cols": ["What it does"], "rows": ["Coercion", "Identity", "Replacement"], "cells": [["turns dicts and strings into Message objects"], ["assigns an id to messages that lack one"], [{"text": "REPLACES a message whose id already exists - not append-only", "tone": "violet"}]], "t": "diagram", "id": "dg-8_3-06-5"},
+
     { t: "p", text: "LangGraph ships `add_messages` for message lists. It does three things `operator.add` does not: coerces dicts and strings into `Message` objects, assigns an id to messages that lack one, and **replaces** a message whose id matches an existing one." },
     { t: "code", lang: "text", title: "The third behaviour, measured",
       code: "existing: [('HumanMessage', 'hello', 'm1')]\nappend  : [('HumanMessage', 'hello', 'm1'), ('AIMessage', 'hi', 'm2')]\nsame id : [('HumanMessage', 'HELLO EDITED', 'm1')]",
