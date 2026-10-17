@@ -81,6 +81,8 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "A Pydantic class is a JSON Schema you are billed for", "caption": "`FruitList` becomes a schema with `$defs`, `properties`, `required` and `type` on every field — and that schema **costs 137 tokens on every request it is sent with**. Which is the thing nobody counts: a comfortably documented model with a dozen fields and descriptions is a fixed per-call tax, paid on every turn of every conversation, for information that never changes.", "cols": 3, "nodes": [{"id": "c", "label": "A Pydantic class", "sub": "FruitList, three fields", "tone": "accent"}, {"id": "s", "label": "model_json_schema()", "sub": "defs, properties, required", "tone": "violet"}, {"id": "t", "label": "137 tokens", "sub": "for this small one", "tone": "crit"}, {"id": "e", "label": "Sent on every request", "sub": "every turn, every conversation", "tone": "crit"}, {"id": "d", "label": "Field descriptions cost too", "sub": "they are part of the schema", "tone": "warn"}, {"id": "k", "label": "So keep the schema tight", "sub": "it is a per-call tax", "tone": "teal"}], "edges": [["c", "s"], ["s", "t"], ["t", "e"], ["e", "d"], ["d", "k"]], "t": "diagram", "id": "dg-1_8-02-0"},
 
+
+
     { t: "p", text: "Writing `response_format=FruitList` is convenient enough that it is easy to forget a JSON Schema is being generated and sent. It is worth looking at once, because every decision in the class shows up in it, and the size of it is on your bill." },
 
     { t: "code", lang: "python", title: "g18.py — the schema behind the class", code: `from pydantic import BaseModel
@@ -164,6 +166,8 @@ that schema costs 137 tokens on every request it is sent with.`,
 
     {"kind": "flow", "title": "Strict mode has no optional fields", "caption": "OpenAI's structured outputs accept only a subset of JSON Schema, and the restriction that changes your code is this one: **every property must appear in `required`**. There is no optional field. What you write instead is a field that is required but nullable — `anyOf: [string, null]` with a default — so the model must emit the key and may emit `null` as its value. The distinction matters downstream, because 'absent' and 'present but null' are different things to the code that reads it.", "cols": 3, "nodes": [{"id": "o", "label": "An optional field", "sub": "what you wanted to write", "tone": "warn"}, {"id": "r", "label": "Strict mode: all keys required", "sub": "no exceptions", "tone": "crit"}, {"id": "n", "label": "Write it required and nullable", "sub": "anyOf: [string, null]", "tone": "good"}, {"id": "m", "label": "The model must emit the key", "sub": "and may emit null", "tone": "good"}, {"id": "d", "label": "Absent and null are not the same", "sub": "to the code that reads it", "tone": "teal"}], "edges": [["o", "r"], ["r", "n"], ["n", "m"], ["m", "d"]], "t": "diagram", "id": "dg-1_8-03-1"},
 
+
+
     { t: "p", text: "OpenAI's structured outputs will only accept a subset of JSON Schema, and two of the restrictions catch people immediately." },
 
     { t: "code", lang: "python", title: "g18.py — strict-ready or not", code: `cases = [
@@ -216,6 +220,8 @@ class Strict(BaseModel):
 
     {"kind": "flow", "title": "A forced tool call is structured output with a different name", "caption": "Anthropic has no `response_format`, and the documented approach is to define a tool whose input schema is the shape you want and force the model to call it — at which point **the arguments the model produces *are* your structured response**, conforming for exactly the reason function-call arguments always do. The pattern generalises: any provider with function calling already has structured output.", "cols": 3, "nodes": [{"id": "n", "label": "No response_format", "sub": "Anthropic, and others", "tone": "warn"}, {"id": "t", "label": "Define a tool", "sub": "its input schema is your shape", "tone": "good"}, {"id": "f", "label": "Force the call", "sub": "tool_choice names it", "tone": "good"}, {"id": "a", "label": "The arguments are the response", "sub": "schema-conforming by construction", "tone": "violet"}, {"id": "g", "label": "Function calling implies structured output", "sub": "on any provider", "tone": "teal"}], "edges": [["n", "t"], ["t", "f"], ["f", "a"], ["a", "g"]], "t": "diagram", "id": "dg-1_8-04-2"},
 
+
+
     { t: "p", text: "Anthropic has no `response_format`. The documented approach is to define a tool whose input schema is the shape you want, and force the model to call it — at which point the arguments the model produces *are* your structured response, and they conform to the schema for the same reason function-calling arguments always do." },
 
     { t: "code", lang: "python", title: "anthropic_structured.py", code: `response = anthropic_client.messages.create(
@@ -248,6 +254,8 @@ data = next(b.input for b in response.content if b.type == "tool_use")`,
       sub: "The schema constrains the shape, not the truth" },
 
     {"kind": "flow", "title": "The schema removes the shape failures, not the wrong answers", "caption": "Structured output guarantees `calories` is an integer. It does not guarantee the integer is right — **a banana at 3,000 calories satisfies the schema perfectly**, and so does a `confidence` of 1.0 on an answer the model invented. The point of the schema is that it clears away the failures that are about *shape*, so your validation code can be about *meaning*. Code doing both jobs usually does the second one badly.", "cols": 3, "nodes": [{"id": "s", "label": "The schema guarantees types", "sub": "calories is an integer", "tone": "good"}, {"id": "w", "label": "Not that the value is right", "sub": "a banana at 3,000 calories", "tone": "crit"}, {"id": "c", "label": "Nor that confidence means anything", "sub": "1.0 on an invented answer", "tone": "crit"}, {"id": "r", "label": "Shape failures: gone", "sub": "no defensive parsing needed", "tone": "good"}, {"id": "v", "label": "So validate meaning instead", "sub": "ranges, cross-field consistency", "tone": "violet"}, {"id": "b", "label": "Code doing both does the second badly", "sub": "which is why separating helps", "tone": "teal"}], "edges": [["s", "w"], ["s", "c"], ["s", "r"], ["r", "v"], ["v", "b"]], "t": "diagram", "id": "dg-1_8-05-3"},
+
+
 
     { t: "p", text: "Structured output guarantees that `calories` is an integer. It does not guarantee the integer is right. A banana at 3,000 calories satisfies the schema perfectly, and so does a `confidence` of 1.0 on an answer the model invented." },
 

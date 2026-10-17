@@ -19,6 +19,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "what-it-is", text: "Examples instead of instructions",
       sub: "Zero, one, or a few worked cases — and no weight updates anywhere" },
 
+    {"kind": "flow", "title": "The examples supply what the instruction left out", "caption": "Zero-, one- and few-shot name the same thing at three sizes. What makes it *learning* is that behaviour on the query changes because of the examples while **nothing about the model changed** — the examples are in the context, and the weights are untouched. The mechanism in miniature: the instruction says \"classify the sentiment\" and never names a label set; the examples supply one and the model matches the pattern. Anything you can demonstrate, you do not have to describe.", "cols": 3, "nodes": [{"id": "i", "label": "\"Classify the sentiment\"", "sub": "names no label set", "tone": "warn"}, {"id": "e", "label": "Two worked examples", "sub": "which supply one", "tone": "good"}, {"id": "m", "label": "The model matches the pattern", "sub": "in context, not in the weights", "tone": "violet"}, {"id": "f", "label": "Format comes free", "sub": "easier to show than to specify", "tone": "good"}, {"id": "w", "label": "No weights changed", "sub": "which is why it is 'in-context'", "tone": "teal"}], "edges": [["i", "e"], ["e", "m"], ["m", "f"], ["m", "w"]], "t": "diagram", "id": "dg-2_2-01-0"},
+
+
     { t: "p", text: "The three terms name the same thing at three sizes. **Zero-shot** gives the task with no examples. **One-shot** gives one. **Few-shot** gives two to five. What makes it *learning* is that the model's behaviour on the query changes because of the examples, even though nothing about the model changed — the examples are in the context, and the context is all a forward pass sees." },
 
     { t: "code", lang: "python", title: "shots.py — the three forms", code: `zero_shot = "Classify the sentiment: 'This product is amazing!' -> "
@@ -122,6 +125,9 @@ for shots in (0, 1, 2, 4, 8):
     { t: "h2", n: "03", id: "the-rules", text: "The rules, and which of them held",
       sub: "Four claims, three confirmed and one not" },
 
+    {"kind": "matrix", "title": "Five rules for few-shot, three of them checkable here", "caption": "Two confirmed, one **not** confirmed, two untested on this task — and the honest labelling matters more than the score. The second row is worse than the usual phrasing: it is not diminishing returns but an actual reversal, with the hard split peaking at 0.748 on two examples and falling to 0.484 on eight. The order rule did not reproduce at all: as listed, reversed and two shuffles each gave 6 of 6.", "cols": ["Status", "Evidence"], "rows": ["2-5 examples is best", "Diminishing returns", "Best example last", "Format consistency", "Label balance"], "cells": [[{"text": "confirmed", "tone": "good"}, "2 reached 6/6; 4 and 8 added nothing"], [{"text": "worse than that", "tone": "crit"}, "hard: 0.748 at n=2, 0.484 at n=8"], [{"text": "not confirmed", "tone": "warn"}, "four orderings, all 6 of 6"], [{"text": "not tested", "tone": "accent"}, "but it is the mechanism"], [{"text": "not tested", "tone": "accent"}, "applies to classification, not this"]], "t": "diagram", "id": "dg-2_2-03-1"},
+
+
     { t: "p", text: "The common form gives five rules for few-shot prompting. Three of them are directly checkable on the measurement above." },
 
     { t: "table",
@@ -158,6 +164,9 @@ for shots in (0, 1, 2, 4, 8):
     { t: "h2", n: "04", id: "poison", text: "One wrong example",
       sub: "The strongest measurement in the lesson" },
 
+    {"kind": "trace", "title": "One wrong example halves the score", "caption": "If the model is matching a pattern, an example that breaks the pattern should do damage out of proportion to its share of the prompt — and it does. **One mislabelled example in four takes 6 of 6 down to 3 of 6.** That is the practical argument for auditing a few-shot block the way you would audit training data: the examples are not decoration, they are the specification, and a typo in them is a bug in the task definition.", "left": "example set", "codeW": 200, "vars": ["correct", "accuracy"], "steps": [{"code": "clean", "state": ["6 of 6", "1.00"], "tone": "good"}, {"code": "one wrong label of four", "state": ["3 of 6", "0.50"], "changed": [0, 1], "tone": "crit", "note": "25% bad input, 50% loss"}], "t": "diagram", "id": "dg-2_2-04-2"},
+
+
     { t: "p", text: "If the model is matching a pattern, then an example that breaks the pattern should do damage out of proportion to its share of the prompt. It does." },
 
     { t: "code", lang: "python", title: "g21.py — three correct examples and one wrong label", code: `clean    = [("hot", "cold"), ("up", "down"), ("big", "small"),  ("fast", "slow")]
@@ -182,6 +191,9 @@ for label, pairs in (("clean", clean), ("one wrong label", poisoned)):
     /* ============================================================ 05 */
     { t: "h2", n: "05", id: "dynamic", text: "Dynamic few-shot",
       sub: "Choosing the examples per query instead of fixing them" },
+
+    {"kind": "flow", "title": "Dynamic few-shot is retrieval, pointed at examples", "caption": "A fixed example set is chosen once for all queries. A dynamic one retrieves the **most similar examples for each query at request time** — which is exactly module 5's machinery applied to examples rather than documents, and it inherits all of it: an embedding model, an index, a top-k, and the same failure modes. Worth it when the task has many distinct sub-cases and one fixed set cannot represent them all.", "cols": 3, "nodes": [{"id": "f", "label": "A fixed example set", "sub": "chosen once, for every query", "tone": "accent"}, {"id": "q", "label": "A query arrives", "sub": "possibly unlike all of them", "tone": "warn"}, {"id": "r", "label": "Retrieve the nearest examples", "sub": "embed, index, top-k", "tone": "good"}, {"id": "b", "label": "Build the prompt per request", "sub": "examples chosen for this query", "tone": "good"}, {"id": "i", "label": "Inherits M5 entirely", "sub": "including its failure modes", "tone": "violet"}, {"id": "w", "label": "Worth it with many sub-cases", "sub": "where one fixed set cannot cover", "tone": "teal"}], "edges": [["f", "q"], ["q", "r"], ["r", "b"], ["b", "i"], ["i", "w"]], "t": "diagram", "id": "dg-2_2-05-3"},
+
 
     { t: "p", text: "A fixed example set is chosen once for all queries. A dynamic one retrieves the most similar examples for each query at request time — which is retrieval (M5) applied to examples rather than documents." },
 

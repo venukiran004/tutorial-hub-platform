@@ -64,6 +64,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "You are billed for the thinking you never see", "caption": "Reasoning tokens are output tokens: they are generated, billed and then discarded before the response reaches you. On the worked example — 500 reasoning plus 50 visible — **90.9% of what you paid for is invisible**. The bottom rows are why this needs a budget rather than a default: a 200-token answer at the quoted 100× reasoning ratio is 20,200 billed tokens, forty times the cost of the same answer from a non-reasoning model.", "left": "reasoning + visible", "codeW": 170, "vars": ["billed tokens", "per call", "per 10k calls"], "steps": [{"code": "0 + 500", "state": ["500", "$0.00500", "$50.00"], "tone": "good", "note": "no reasoning model"}, {"code": "500 + 50", "state": ["550", "$0.00550", "$55.00"], "changed": [0], "tone": "accent", "note": "90.9% unseen"}, {"code": "2,000 + 200", "state": ["2,200", "$0.02200", "$220.00"], "tone": "warn"}, {"code": "10,000 + 400", "state": ["10,400", "$0.10400", "$1,040.00"], "changed": [2], "tone": "crit"}, {"code": "200 answer at 100x", "state": ["20,200", "$0.20200", "$2,020.00"], "tone": "crit", "note": "the quoted ratio"}], "t": "diagram", "id": "dg-1_10-02-0"},
 
+
+
     { t: "code", lang: "python", title: "g18.py — the worked example and its neighbours", code: `print("the worked example: 500 reasoning + 50 visible")
 print("  billed output tokens : 550")
 print("  visible to the user  : 50")
@@ -108,6 +110,8 @@ at $10 per 1M output tokens (GPT-4o rate):
 
     {"kind": "matrix", "title": "reasoning_effort is choosing how much search to pay for", "caption": "The parameter is not a quality dial. It buys **search over approaches**, so it is worth paying for only when there is a search to do. The first row is the one that saves the most money: extraction, classification and formatting have no search in them at all, and a cheap non-reasoning model is both faster and orders of magnitude cheaper. The last row is the one that surprises people — thinking time is wall-clock time, and a 10,000-token trace is seconds of silence.", "cols": ["Effort", "Because"], "rows": ["Extraction, classification", "Multi-step arithmetic", "Debugging, planning, proofs", "Anything latency-sensitive"], "cells": [[{"text": "do not use a reasoning model", "tone": "crit"}, "there is no search to do"], [{"text": "low", "tone": "good"}, "the steps are known, not found"], [{"text": "medium to high", "tone": "accent"}, "a genuine search over approaches"], [{"text": "reconsider entirely", "tone": "crit"}, "a 10k trace is seconds of silence"]], "t": "diagram", "id": "dg-1_10-03-1"},
 
+
+
     { t: "p", text: "`reasoning_effort` takes `\"low\"`, `\"medium\"` or `\"high\"` and controls roughly how many reasoning tokens the model is willing to spend. It is not a quality dial in the sense of making answers better — it is a dial on how much compute the model is permitted to apply at inference time, which is only useful on problems where more compute helps." },
 
     { t: "table",
@@ -135,6 +139,8 @@ at $10 per 1M output tokens (GPT-4o rate):
       sub: "Three branches, and the empty one is the interesting one" },
 
     {"kind": "flow", "title": "Raise on the empty case rather than returning nothing", "caption": "A reasoning model can spend its whole budget thinking and return **no visible text at all** — a successful response, billed in full, with an empty content field. The temptation is to return `\"\"` and let the caller decide, but that pushes an invisible failure into code with no way to recognise it, and the symptom surfaces much later as a blank field in a UI or a record with a missing summary. Raise, and let the retry logic see it.", "cols": 3, "nodes": [{"id": "b", "label": "The budget goes on thinking", "sub": "and runs out", "tone": "warn"}, {"id": "e", "label": "Visible content is empty", "sub": "a successful response, billed", "tone": "crit"}, {"id": "r", "label": "Return \"\" and move on", "sub": "the tempting option", "tone": "crit"}, {"id": "l", "label": "A blank field, discovered later", "sub": "in a UI, or a stored record", "tone": "crit"}, {"id": "x", "label": "Raise instead", "sub": "at the point of the failure", "tone": "good"}, {"id": "y", "label": "Now retry logic can see it", "sub": "and so can your alerts", "tone": "teal"}], "edges": [["b", "e"], ["e", "r"], ["r", "l"], ["e", "x"], ["x", "y"]], "t": "diagram", "id": "dg-1_10-04-2"},
+
+
 
     { t: "code", lang: "python", title: "reasoning.py", code: `def ask(question, *, effort="medium", cap=8000):
     r = client.chat.completions.create(

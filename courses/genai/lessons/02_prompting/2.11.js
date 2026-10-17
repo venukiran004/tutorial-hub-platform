@@ -19,6 +19,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "signature", text: "A signature instead of a prompt",
       sub: "Declare the interface; the prompt is generated" },
 
+    {"kind": "flow", "title": "A signature is a typed interface; the prompt is generated from it", "caption": "The change is in **what you write down**. Instead of a string containing instructions and format directions, you declare input fields, output fields and a docstring, and the framework builds the prompt. Unusually for this area you can look at the result without spending anything — the adapter is an ordinary object — and what it produces is a `[[ ## field ## ]]` delimiter scheme with the docstring as the objective.", "cols": 3, "nodes": [{"id": "s", "label": "A signature", "sub": "review -> sentiment, plus a docstring", "tone": "violet"}, {"id": "a", "label": "An adapter builds the prompt", "sub": "at call time, per model", "tone": "accent"}, {"id": "d", "label": "Field delimiters, generated", "sub": "[[ ## sentiment ## ]]", "tone": "accent"}, {"id": "o", "label": "The docstring becomes the objective", "sub": "\"Classify the sentiment\"", "tone": "accent"}, {"id": "i", "label": "Inspectable without an API call", "sub": "print the adapter's output", "tone": "good"}, {"id": "v", "label": "So you can review what is sent", "sub": "which is the thing to do first", "tone": "teal"}], "edges": [["s", "a"], ["a", "d"], ["a", "o"], ["a", "i"], ["i", "v"]], "t": "diagram", "id": "dg-2_11-01-0"},
+
+
     { t: "p", text: "The central idea is a change of what you write down. Instead of a string containing instructions and format directions, you declare a **signature**: input fields, output fields, and a docstring saying what the module does. DSPy turns that into a prompt." },
 
     { t: "code", lang: "python", title: "dspy_basics.py — the worked example", code: `import dspy
@@ -80,6 +83,9 @@ for m in msgs:
     { t: "h2", n: "02", id: "optimising", text: "What a teleprompter actually does",
       sub: "It searches over examples, mostly" },
 
+    {"kind": "matrix", "title": "What each optimiser actually searches", "caption": "`BootstrapFewShot` does something much narrower than \"optimise the prompt\", and knowing what makes the whole thing less mysterious: it runs the module on training inputs, keeps the traces the metric scored as correct, and uses those as demonstrations. **It is automated example selection** — 2.2's work, done by machine. Instruction search is a different optimiser and a much larger compute bill.", "cols": ["Searches", "Needs"], "rows": ["BootstrapFewShot", "With random search", "MIPROv2", "BootstrapFinetune"], "cells": [[{"text": "which demonstrations to include", "tone": "good"}, "a metric and training inputs"], ["the same, over candidate sets", "the above, plus compute"], [{"text": "instructions and demonstrations", "tone": "violet"}, {"text": "a larger set, far more compute", "tone": "warn"}], [{"text": "model weights, from traces", "tone": "accent"}, "a fine-tunable model (M4)"]], "t": "diagram", "id": "dg-2_11-02-1"},
+
+
     { t: "code", lang: "python", title: "optimise.py — the worked example", code: `from dspy.teleprompt import BootstrapFewShot
 
 optimizer = BootstrapFewShot(metric=accuracy_metric, max_bootstrapped_demos=4)
@@ -111,6 +117,9 @@ result = optimized(review="This product is amazing!")`,
     { t: "h2", n: "03", id: "claims", text: "The four claims, examined",
       sub: "Modular, automatic, portable, reproducible" },
 
+    {"kind": "matrix", "title": "The four claims, graded", "caption": "Two hold outright, two with caveats. **Portability is the strongest** and the one worth dwelling on: a hand-tuned prompt is tuned against one model's quirks — the chat template it expects, how literally it takes an instruction, whether it responds to XML tags — and a signature has none of that baked in, because the prompt is produced at call time by an adapter that knows the target. Modularity is the most underrated: a typed interface makes a chain composition rather than string concatenation.", "cols": ["Verdict", "The caveat"], "rows": ["Modular", "Automatic", "Portable", "Reproducible"], "cells": [[{"text": "true, and underrated", "tone": "good"}, "a chain becomes composition, not concatenation"], [{"text": "partly", "tone": "warn"}, "it swaps prompt tuning for metric tuning"], [{"text": "genuinely true", "tone": "good"}, "the strongest claim - no quirks baked in"], [{"text": "true, with care", "tone": "accent"}, "save the compiled demonstrations too"]], "t": "diagram", "id": "dg-2_11-03-2"},
+
+
     { t: "dl", items: [
       ["**Modular** — compose modules like functions", "True, and the most underrated of the four. A signature is a typed interface, so a chain (2.8) becomes composition rather than string concatenation, and a step can be swapped without touching its neighbours."],
       ["**Automatic** — no manual prompt tuning", "Partly. It automates example selection well; instruction search needs `MIPROv2` and much more compute. And it replaces prompt tuning with metric tuning, which is work, just different work."],
@@ -123,6 +132,9 @@ result = optimized(review="This product is amazing!")`,
     /* ============================================================ 04 */
     { t: "h2", n: "04", id: "when", text: "When it is worth the setup",
       sub: "Three conditions, and all three should hold" },
+
+    {"kind": "flow", "title": "Compiling is an API bill before anything is deployed", "caption": "The cost that is easy to miss: compiling runs the module over the training set, sometimes many times, and those are **real API calls**. `MIPROv2` on a few hundred examples is a meaningful bill paid before a single user sees the feature — worth budgeting deliberately rather than discovering on an invoice. Which also sets the threshold for when the setup is worth it: a prompt you will tune once does not repay it, and a module you will port across three models does.", "cols": 3, "nodes": [{"id": "c", "label": "Compile the module", "sub": "over the training set", "tone": "accent"}, {"id": "r", "label": "Those are real API calls", "sub": "sometimes many passes", "tone": "warn"}, {"id": "b", "label": "A bill before deployment", "sub": "MIPROv2 on a few hundred cases", "tone": "crit"}, {"id": "o", "label": "Tuning one prompt once", "sub": "does not repay the setup", "tone": "warn"}, {"id": "p", "label": "Porting across three models", "sub": "does, and comfortably", "tone": "good"}, {"id": "m", "label": "And you need the metric either way", "sub": "which is 2.12", "tone": "teal"}], "edges": [["c", "r"], ["r", "b"], ["b", "o"], ["b", "p"], ["p", "m"]], "t": "diagram", "id": "dg-2_11-04-3"},
+
 
     { t: "callout", kind: "tradeoff", title: "The conditions",
       body: [

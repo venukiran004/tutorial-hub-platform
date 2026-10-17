@@ -19,6 +19,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "what-it-does", text: "A persona is context, compressed",
       sub: "It shifts the distribution toward a region of the training data" },
 
+    {"kind": "trace", "title": "A persona moves the distribution more than a parameter change does", "caption": "Two things in this measurement are worth separating. The **magnitude** is real and not small — the expert persona shifts the distribution by 0.1354 nats, against 0.0390 for the same question at temperature 1.0 versus 0.9, so a persona is doing more than a parameter change people take seriously. And **the argmax moved**, from `' to'` to `' the'` — which temperature cannot do at all, because it rescales without reordering.", "left": "persona", "codeW": 130, "vars": ["top token", "2nd token", "KL from none"], "steps": [{"code": "none", "state": ["' to'", "' that'", "0.0000"], "tone": "accent"}, {"code": "expert", "state": ["' the'", "' to'", "0.1354"], "changed": [0, 2], "tone": "crit", "note": "the argmax moved"}, {"code": "teacher", "state": ["' that'", "' to'", "0.0731"], "changed": [0], "tone": "warn"}, {"code": "child", "state": ["' that'", "' to'", "0.0585"], "tone": "warn"}, {"code": "for scale: t=1.0 vs 0.9", "state": ["", "", "0.0390"], "tone": "violet", "note": "smaller than all three"}], "t": "diagram", "id": "dg-2_6-01-0"},
+
+
     { t: "p", text: "A language model has been trained on text written by many kinds of writer. \"You are a senior database engineer\" is a conditioning signal: it makes the continuations that follow such a preamble in the training data more likely — technical vocabulary, particular concerns, a register. It is not instruction-following in the sense that \"return three bullets\" is; it is a prior." },
 
     { t: "code", lang: "python", title: "g25.py — measuring the shift", code: `QUESTION = "The most important consideration when designing a database index is"
@@ -58,6 +61,9 @@ for label, prefix in PERSONAS.items():
     /* ============================================================ 02 */
     { t: "h2", n: "02", id: "information", text: "A persona that carries information",
       sub: "The difference between flattery and constraints" },
+
+    {"kind": "flow", "title": "A persona earns its tokens only when it implies behaviour", "caption": "\"You are a world-class expert\" does almost nothing, because **there is no such thing as the world-class-expert register** — it says nothing the model can act on. A persona that names a role with specific concerns does something, because the training data contains text written by people with those concerns, and conditioning on the role makes those continuations more likely.", "cols": 3, "nodes": [{"id": "v", "label": "\"A world-class expert\"", "sub": "flattering, and empty", "tone": "crit"}, {"id": "n", "label": "No such register exists", "sub": "nothing to condition on", "tone": "crit"}, {"id": "s", "label": "\"A senior database engineer\"", "sub": "a role with specific concerns", "tone": "good"}, {"id": "t", "label": "Which exists in the training data", "sub": "vocabulary, priorities, register", "tone": "good"}, {"id": "c", "label": "So the continuations shift", "sub": "measurably - see section 01", "tone": "violet"}, {"id": "r", "label": "Name concerns, not excellence", "sub": "the practical rule", "tone": "teal"}], "edges": [["v", "n"], ["s", "t"], ["t", "c"], ["c", "r"], ["n", "r"]], "t": "diagram", "id": "dg-2_6-02-1"},
+
 
     { t: "p", text: "\"You are a world-class expert\" does almost nothing, because it says nothing the model can act on — there is no such thing as the world-class-expert register. A persona earns its tokens when it implies *specific* behaviour." },
 
@@ -106,6 +112,9 @@ these systems in production.
     { t: "h2", n: "03", id: "what-it-does-not", text: "Two things a persona does not do",
       sub: "And both are things people expect it to" },
 
+    {"kind": "flow", "title": "A persona shifts register; it adds nothing", "caption": "Telling a model it is a cardiologist does not give it medical knowledge it lacks — it shifts the register toward text written by cardiologists, which can make **a wrong answer sound more authoritative** rather than make it right. Nor does it add capability: if the task needs reasoning the model cannot do, \"you are a brilliant mathematician\" supplies none of it. Both failures are dangerous in the same direction, because the output gets more confident while staying wrong.", "cols": 3, "nodes": [{"id": "p", "label": "\"You are a cardiologist\"", "sub": "a conditioning signal", "tone": "accent"}, {"id": "k", "label": "No knowledge is added", "sub": "the weights are unchanged", "tone": "crit"}, {"id": "c", "label": "No capability is added", "sub": "reasoning it cannot do, it cannot do", "tone": "crit"}, {"id": "r", "label": "Only the register moves", "sub": "vocabulary and confidence", "tone": "warn"}, {"id": "w", "label": "So a wrong answer sounds expert", "sub": "which is worse than sounding unsure", "tone": "crit"}, {"id": "t", "label": "Both failures point the same way", "sub": "more confident, equally wrong", "tone": "teal"}], "edges": [["p", "k"], ["p", "c"], ["k", "r"], ["c", "r"], ["r", "w"], ["w", "t"]], "t": "diagram", "id": "dg-2_6-03-2"},
+
+
     { t: "dl", items: [
       ["It does not add knowledge", "Telling a model it is a cardiologist does not give it medical knowledge it lacks. It shifts the register toward text written by cardiologists, which can make a wrong answer *sound* more authoritative — which is worse than the plain version, because confidence is the signal readers use. This is the mechanism behind a particular kind of hallucination (11.1)."],
       ["It does not add capability", "A persona cannot make a model reason better than it can. If the task requires multi-step reasoning the model cannot do, \"you are a brilliant mathematician\" does not supply it — chain-of-thought (2.3) buys computation, and a persona buys register. They are different resources."]
@@ -121,6 +130,9 @@ these systems in production.
     /* ============================================================ 04 */
     { t: "h2", n: "04", id: "multi", text: "Multi-perspective prompting",
       sub: "When one role is too narrow for the question" },
+
+    {"kind": "flow", "title": "Three roles make the omission impossible", "caption": "This works for a reason worth naming. A single call asked for \"an evaluation\" will **pick a register and stay in it**, and the concerns of the other roles simply never appear — not because the model disagrees with them, but because it had to choose. Asking for all three in one response forces it to produce considerations it would otherwise have selected between, which is why the technique adds coverage rather than quality.", "cols": 3, "nodes": [{"id": "o", "label": "\"Evaluate this proposal\"", "sub": "one call, one register", "tone": "warn"}, {"id": "p", "label": "The model picks one and stays", "sub": "the others never appear", "tone": "crit"}, {"id": "m", "label": "Ask as three named roles", "sub": "engineer, lawyer, customer", "tone": "good"}, {"id": "f", "label": "Each must be answered", "sub": "the omission is impossible", "tone": "good"}, {"id": "c", "label": "It buys coverage", "sub": "not depth, and not quality", "tone": "violet"}, {"id": "s", "label": "So use it to find blind spots", "sub": "then judge separately", "tone": "teal"}], "edges": [["o", "p"], ["p", "m"], ["m", "f"], ["f", "c"], ["c", "s"]], "t": "diagram", "id": "dg-2_6-04-3"},
+
 
     { t: "code", lang: "python", title: "multi.py — the pattern", code: `prompt = """Evaluate this ML architecture from three perspectives:
 1. As a ML researcher: theoretical soundness and novelty
@@ -141,6 +153,9 @@ these systems in production.
     /* ============================================================ 05 */
     { t: "h2", n: "05", id: "substituting", text: "When a persona is hiding a missing specification",
       sub: "The failure mode this technique enables" },
+
+    {"kind": "flow", "title": "The delete test", "caption": "A persona is *context* — one of 2.1's four components — and it is seductive because it is easy to write and feels like it covers a lot. It routinely gets used in place of the **instruction** and **format** components, which it cannot substitute for. The test is one line: delete the persona and ask whether the prompt still says what you want. If it does not, the persona was carrying the specification, and carrying it badly — because a register is not a requirement and cannot be checked against one.", "cols": 3, "nodes": [{"id": "p", "label": "Delete the persona", "sub": "the whole line", "tone": "violet"}, {"id": "s", "label": "Does the prompt still say what you want?", "sub": "instruction, format, context", "tone": "accent"}, {"id": "y", "label": "Yes: the persona was context", "sub": "keep it, or do not", "tone": "good"}, {"id": "n", "label": "No: it was the specification", "sub": "and an unwritten one", "tone": "crit"}, {"id": "w", "label": "A register is not a requirement", "sub": "so nothing can check it", "tone": "crit"}, {"id": "f", "label": "Write the requirement instead", "sub": "then decide about the persona", "tone": "good"}], "edges": [["p", "s"], ["s", "y"], ["s", "n"], ["n", "w"], ["w", "f"]], "t": "diagram", "id": "dg-2_6-05-4"},
+
 
     { t: "p", text: "The four-component check from 2.1 is the guard here. A persona is *context* — one of the four — and it is seductive because it is easy to write and feels like it covers a lot. It routinely gets used in place of the instruction and format components, which it cannot substitute for." },
 

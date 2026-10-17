@@ -19,6 +19,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "two-jobs", text: "The definition does two different jobs",
       sub: "Selection is the description; arguments are the schema" },
 
+    {"kind": "trace", "title": "The 7% of the definition that decides everything", "caption": "This split is the whole lesson. When a tool is not being called, people edit the **schema**, because that is where the substance appears to be — and the schema has no influence on selection at all, since it is read *after* the model has decided. Selection is the name and the description, which together are a fraction of the tokens: the description is **6 of 84**. It is a retrieval problem, and the description is the document.", "left": "part of the definition", "codeW": 200, "vars": ["tokens", "share", "decides"], "steps": [{"code": "the whole definition", "state": ["84", "100%", ""], "tone": "violet"}, {"code": "the description string", "state": ["6", "7%", "whether it is called"], "changed": [2], "tone": "crit", "note": "the part people ignore"}, {"code": "name + wrapper", "state": ["25", "30%", "also selection"], "tone": "accent"}, {"code": "the parameters schema", "state": ["53", "63%", "the arguments only"], "tone": "warn", "note": "read after deciding"}], "t": "diagram", "id": "dg-2_10-01-0"},
+
+
     { t: "code", lang: "python", title: "g25.py — where the tokens are", code: `tool = {"type": "function", "function": {
     "name": "get_weather",
     "description": "Get current weather for a location",
@@ -41,6 +44,9 @@ EC.receiveLesson({
     /* ============================================================ 02 */
     { t: "h2", n: "02", id: "descriptions", text: "Writing a description that separates",
       sub: "The negative clause is the highest-value sentence" },
+
+    {"kind": "flow", "title": "The audience for a description is the model, not a maintainer", "caption": "\"Calls the v2 weather API with a 5-second timeout\" is true, costs tokens on every request, and has **no bearing on whether the model should select it**. A description's only job is to separate this tool from the others it sits beside, so write what distinguishes it — when to reach for it, and when not to — and put the implementation notes in a comment where they cost nothing.", "cols": 3, "nodes": [{"id": "i", "label": "\"Calls the v2 API, 5s timeout\"", "sub": "true, and useless here", "tone": "crit"}, {"id": "t", "label": "Billed on every request", "sub": "for information the model cannot use", "tone": "crit"}, {"id": "s", "label": "\"Current weather for a city\"", "sub": "what it is for", "tone": "good"}, {"id": "n", "label": "\"Not for forecasts - use forecast()\"", "sub": "what it is not for", "tone": "good"}, {"id": "d", "label": "Separation is the whole job", "sub": "against the tools beside it", "tone": "violet"}, {"id": "c", "label": "Implementation goes in a comment", "sub": "where it is free", "tone": "teal"}], "edges": [["i", "t"], ["t", "s"], ["s", "n"], ["n", "d"], ["d", "c"]], "t": "diagram", "id": "dg-2_10-02-1"},
+
 
     { t: "ladder", title: "From a label to a boundary", rungs: [
       { level: "bad", label: "A restatement of the name",
@@ -75,6 +81,9 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "arguments", text: "Getting the arguments right",
       sub: "This is where the schema earns its 53 tokens" },
 
+    {"kind": "flow", "title": "Once selected, arguments are a structured-output problem", "caption": "Everything from 1.8 and 2.7 applies unchanged, with one addition that is specific to tools: a per-property `description` is **a prompt sitting exactly where the value is generated**, which is the closest thing in the API to an instruction with a guaranteed location. An `enum` is a hard constraint; a property description is a soft one at the right place.", "cols": 3, "nodes": [{"id": "s", "label": "The tool is selected", "sub": "by name and description", "tone": "accent"}, {"id": "a", "label": "Now it is structured output", "sub": "1.8 and 2.7, unchanged", "tone": "violet"}, {"id": "e", "label": "enum: a hard constraint", "sub": "it cannot invent a value", "tone": "good"}, {"id": "p", "label": "A property description", "sub": "a prompt at the generation point", "tone": "good"}, {"id": "r", "label": "Required and nullable, not optional", "sub": "1.8's strict-mode rule", "tone": "accent"}, {"id": "c", "label": "And validate in code anyway", "sub": "well-typed is not safe (1.9)", "tone": "teal"}], "edges": [["s", "a"], ["a", "e"], ["a", "p"], ["p", "r"], ["r", "c"]], "t": "diagram", "id": "dg-2_10-03-2"},
+
+
     { t: "p", text: "Once a tool is selected, argument quality is a structured-output problem, and everything from 1.8 and 2.7 applies unchanged — an `enum` is a constraint, a per-property `description` is a prompt sitting exactly where the value is generated." },
 
     { t: "code", lang: "python", title: "args.py", code: `"parameters": {
@@ -108,6 +117,9 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "choice", text: "tool_choice removes decisions",
       sub: "Prefer removing a choice to influencing it" },
 
+    {"kind": "matrix", "title": "Three of these have a reliable version; one genuinely is prompting", "caption": "`tool_choice` is the only reliable way to control selection — everything else is **influence, and influence is a distribution**. The practical consequence is pipeline-shaped: if your agent always searches before answering, that is not an instruction, it is step one, and forcing it costs nothing while removing a failure mode. Save `\"auto\"` for turns where there is a genuine decision. The last row is the one with no mechanical answer.", "cols": ["The prompt attempt", "The reliable version"], "rows": ["Always call this tool", "Call some tool", "Never call one this turn", "Choose well among several"], "cells": [[{"text": "\"always use search first\"", "tone": "warn"}, {"text": "tool_choice names the function", "tone": "good"}], [{"text": "\"you must use a tool\"", "tone": "warn"}, {"text": "tool_choice=\"required\"", "tone": "good"}], [{"text": "\"answer from what you know\"", "tone": "warn"}, {"text": "tool_choice=\"none\"", "tone": "good"}], [{"text": "a good description per tool", "tone": "accent"}, {"text": "none - this really is prompting", "tone": "crit"}]], "t": "diagram", "id": "dg-2_10-04-3"},
+
+
     { t: "p", text: "1.9 listed the four settings. The prompting-relevant point is that `tool_choice` is the only reliable way to control selection — everything else is influence, and influence is a distribution." },
 
     { t: "table",
@@ -125,6 +137,9 @@ EC.receiveLesson({
     /* ============================================================ 05 */
     { t: "h2", n: "05", id: "how-many", text: "How many tools in one call",
       sub: "Selection degrades before the bill does" },
+
+    {"kind": "flow", "title": "The quality argument arrives before the cost argument", "caption": "1.9 measured the cost at 85 tokens per definition re-sent every turn, with routing crossing over around six tools. But **selection degrades before the bill does**: tools with overlapping descriptions compete, and the model's job is a retrieval task that gets harder with every near-duplicate you add. So the first fix is never 'attach fewer tools to save money' — it is to make the descriptions separate, and only then to route.", "cols": 3, "nodes": [{"id": "a", "label": "Add tools", "sub": "85 tokens each, every turn", "tone": "accent"}, {"id": "q", "label": "Selection degrades first", "sub": "overlapping descriptions compete", "tone": "crit"}, {"id": "c", "label": "Cost crosses over around six", "sub": "1.9's measurement", "tone": "warn"}, {"id": "s", "label": "So separate the descriptions", "sub": "before anything else", "tone": "good"}, {"id": "r", "label": "Then route to a subset", "sub": "retrieval over tools", "tone": "good"}], "edges": [["a", "q"], ["a", "c"], ["q", "s"], ["c", "r"], ["s", "r"]], "t": "diagram", "id": "dg-2_10-05-4"},
+
 
     { t: "p", text: "1.9 measured the cost: 85 tokens per definition, re-sent every turn, and routing crossing over at six tools. The quality argument arrives earlier than the cost argument." },
 

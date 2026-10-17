@@ -19,6 +19,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "the-prompt-form", text: "Describing a format in words",
       sub: "Show the shape, do not describe it" },
 
+    {"kind": "trace", "title": "A request, and a guarantee, priced", "caption": "Describing the format in the prompt costs 58 tokens; the generated JSON Schema costs 176 — **3.0× as much, and the only one of the two the model cannot violate**. That is usually a trade worth making, because 118 tokens is far cheaper than a parse failure. The thing that beats both for a format a schema cannot express is a literal example of the output: describing a structure in prose invites interpretation, and showing it does not.", "left": "how the format is given", "codeW": 210, "vars": ["tokens", "status"], "steps": [{"code": "described in the prompt", "state": ["58", "a request"], "tone": "warn"}, {"code": "a generated JSON Schema", "state": ["176", "a guarantee"], "changed": [0, 1], "tone": "good", "note": "3.0x, and enforced"}, {"code": "the difference", "state": ["+118", "cheaper than one failure"], "tone": "violet"}], "t": "diagram", "id": "dg-2_7-01-0"},
+
+
     { t: "p", text: "The single most effective thing in a format prompt is a literal example of the output. Describing a structure in prose invites interpretation; showing it does not — which is the same mechanism as few-shot prompting (2.2), applied to shape rather than to task." },
 
     { t: "code", lang: "python", title: "format.py — the pattern", code: `prompt = """Extract information from this text and return as JSON:
@@ -54,6 +57,9 @@ P("  generated JSON Schema : %3d tokens (a guarantee)" % n(schema))`,
     { t: "h2", n: "02", id: "what-schema-cannot", text: "What a schema cannot say",
       sub: "The prompt still carries the semantics" },
 
+    {"kind": "matrix", "title": "What the schema enforces, and what still has to be said somewhere", "caption": "Structured output makes the **shape** part of a format prompt redundant and nothing else. Everything about what the fields *mean* still has to be stated, and a schema has exactly one place to put it: `description`. The fifth row is the important one — *use null rather than guessing* is unexpressible and is precisely the instruction that prevents invented values. The last row is the check that catches hallucination, and it lives in code.", "cols": ["In the schema?", "Where it lives"], "rows": ["Is a string", "One of three values", "An ISO 8601 date", "Summary is one sentence", "Use null, do not guess", "end_date after start_date", "Entity is in the source"], "cells": [[{"text": "yes - type", "tone": "good"}, "schema, enforced"], [{"text": "yes - enum", "tone": "good"}, "schema, enforced"], [{"text": "yes - format", "tone": "good"}, "schema, enforced"], [{"text": "no", "tone": "warn"}, "the prompt, or a description"], [{"text": "no", "tone": "crit"}, "the prompt - and this is the one"], [{"text": "no", "tone": "crit"}, "code, after parsing (1.8)"], [{"text": "no", "tone": "crit"}, "code - it catches hallucination"]], "t": "diagram", "id": "dg-2_7-02-1"},
+
+
     { t: "p", text: "It is tempting to treat structured output as making the format prompt redundant. It does not — it makes the *shape* part redundant. Everything about what the fields mean still has to be said, and a schema has exactly one place to say it: `description`." },
 
     { t: "table",
@@ -79,6 +85,9 @@ P("  generated JSON Schema : %3d tokens (a guarantee)" % n(schema))`,
     /* ============================================================ 03 */
     { t: "h2", n: "03", id: "parsing", text: "Parsing output that is not guaranteed",
       sub: "Fail loudly, and never repair silently" },
+
+    {"kind": "flow", "title": "Strip, yes. Repair, no.", "caption": "The instinct to write a tolerant parser is right about stripping fences and finding the first `{`, and **wrong about repairing**. Repair libraries are good at their job and that is the problem: they turn malformed output into a *valid object that nobody specified*, so the loud failure you wanted becomes a row in a database with a plausible gap in it, found during an audit months later if at all. Retry instead — a failed parse is cheap to retry, usually succeeds, and when it does not that escalation is a real signal about the prompt or the input.", "cols": 3, "nodes": [{"id": "o", "label": "Output that may not parse", "sub": "no schema available", "tone": "accent"}, {"id": "s", "label": "Strip fences, find the first brace", "sub": "safe, and worth doing", "tone": "good"}, {"id": "r", "label": "Repair the JSON", "sub": "trailing commas, quotes", "tone": "crit"}, {"id": "u", "label": "A valid object nobody specified", "sub": "with a plausible gap", "tone": "crit"}, {"id": "a", "label": "Found in an audit, months later", "sub": "if at all", "tone": "crit"}, {"id": "t", "label": "Retry instead", "sub": "cheap, and usually works", "tone": "good"}, {"id": "e", "label": "A repeated failure is a signal", "sub": "about the prompt or the input", "tone": "teal"}], "edges": [["o", "s"], ["s", "r"], ["r", "u"], ["u", "a"], ["s", "t"], ["t", "e"]], "t": "diagram", "id": "dg-2_7-03-2"},
+
 
     { t: "p", text: "Without a schema, the output might not parse. The instinct is to write a tolerant parser that strips fences, finds the first `{`, and repairs trailing commas. That instinct is right about the stripping and wrong about the repair." },
 
@@ -112,6 +121,9 @@ def parse(raw, model_cls):
     /* ============================================================ 04 */
     { t: "h2", n: "04", id: "no-schema", text: "When structured output is unavailable",
       sub: "Three situations, and what to do in each" },
+
+    {"kind": "matrix", "title": "Three cases where there is no schema to lean on", "caption": "The first is a solved problem — a forced tool call is structured output under another name, available wherever function calling is. The second is honest about its limits: you cannot write a schema for fields you have not seen, so JSON mode plus your own validation is the real answer. The third generalises furthest: **any output with a structure you rely on deserves a post-condition**, JSON or not, and the post-condition is what turns \"it sometimes gets it wrong\" into a number on a dashboard.", "cols": ["What to do instead"], "rows": ["No schema mode at all", "Open-ended extraction", "Output that is not JSON"], "cells": [[{"text": "a forced tool call (1.8) - equivalent, and widely available", "tone": "good"}], [{"text": "JSON mode plus your own validation; you cannot schema unseen fields", "tone": "warn"}], [{"text": "a literal example, plus a post-condition that the structure is present", "tone": "violet"}]], "t": "diagram", "id": "dg-2_7-04-3"},
+
 
     { t: "dl", items: [
       ["A provider with no schema mode", "Anthropic, and most local serving stacks. Use a forced tool call (1.8), which is equivalent and available wherever function calling is. For a local model with neither, grammar-constrained decoding (3.13) is the same guarantee at the sampler level."],

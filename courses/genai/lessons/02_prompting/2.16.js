@@ -49,6 +49,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "the-filter", text: "The obvious defence, measured",
       sub: "A keyword filter on both attacks and legitimate traffic" },
 
+    {"kind": "trace", "title": "The keyword sanitiser, measured on both populations", "caption": "Almost everyone writes this filter first, and it is worth measuring on **both** populations — because a filter tested only against attacks looks fine. Against attacks it catches 3 of 10. Against benign input it blocks 6 of 8. That is **precision 0.33 and recall 0.30**: it misses most attacks while rejecting most legitimate users, which is the worst of both outcomes and the reason this layer is close to worthless on its own.", "left": "population", "codeW": 150, "vars": ["result", "reading"], "steps": [{"code": "10 attacks", "state": ["3 caught, 7 missed", "it does not stop them"], "tone": "crit"}, {"code": "8 benign inputs", "state": ["6 blocked", "6 false positives"], "changed": [0], "tone": "crit", "note": "worse than the attacks"}, {"code": "precision", "state": ["0.33", "most blocks are wrong"], "tone": "crit"}, {"code": "recall", "state": ["0.30", "most attacks get through"], "tone": "crit"}], "t": "diagram", "id": "dg-2_16-02-0"},
+
+
     { t: "p", text: "The common form gives an input sanitiser, and it is the first thing almost everyone writes. It is worth implementing exactly as written and measuring on both populations — because a filter that is only tested against attacks looks fine." },
 
     { t: "code", lang: "python", title: "g29.py — the sanitiser, implemented", code: `DANGEROUS = ["ignore previous", "system:", "you are now", "forget your"]
@@ -94,6 +97,9 @@ def sanitize(user_input):
     { t: "h2", n: "03", id: "layers", text: "The layered defence, and what each layer is worth",
       sub: "The six, honestly rated" },
 
+    {"kind": "matrix", "title": "Six layers, and only one of them is structural", "caption": "The ordering matters because effort distributes badly here. Teams spend weeks on the first row — **measured at 0.33 precision** — and minutes on the last, which is the only one that converts a successful injection into a *failed action*. Every other layer makes damage less likely; least privilege on tools makes it impossible, and that difference is the whole security argument.", "cols": ["What it is worth"], "rows": ["Keyword sanitisation", "A trained classifier", "Delimiter isolation", "Instruction hierarchy", "Output filtering", "Least privilege on tools"], "cells": [[{"text": "close to nothing - 0.33 precision, measured above", "tone": "crit"}], ["meaningfully better, and still probabilistic"], ["real but modest - raises the bar, guarantees nothing"], [{"text": "real, and absent if your port broke it (2.14)", "tone": "warn"}], ["catches the extraction case specifically"], [{"text": "the only structural one - damage impossible, not unlikely", "tone": "good"}]], "t": "diagram", "id": "dg-2_16-03-1"},
+
+
     { t: "table",
       head: ["Layer", "What it is worth", "Where"],
       rows: [
@@ -127,6 +133,9 @@ def sanitize(user_input):
 
     { t: "h2", n: "04", id: "indirect", text: "Indirect injection is the harder half",
       sub: "The attacker is not the user" },
+
+    {"kind": "flow", "title": "Indirect injection: the user is not the attacker", "caption": "Direct injection is someone typing an override into a chat box. **Indirect** injection is instructions arriving in content the system retrieved — a web page, an email, a support ticket, a document in the corpus, a tool result. It is worse on every axis: the user may be a victim rather than the attacker, filtering is harder because you cannot reject every retrieved document containing imperative sentences, and the surface grows with every capability that reads external content. What helps is the same conclusion as §03 from a different direction: treat retrieved content as untrusted **at the action boundary**, not the text boundary.", "cols": 3, "nodes": [{"id": "r", "label": "Retrieved content carries instructions", "sub": "a page, an email, a ticket", "tone": "crit"}, {"id": "v", "label": "The user is a victim", "sub": "not the attacker", "tone": "crit"}, {"id": "f", "label": "You cannot filter imperatives out", "sub": "documentation is full of them", "tone": "crit"}, {"id": "s", "label": "And the surface keeps growing", "sub": "browsing, email, files, MCP", "tone": "warn"}, {"id": "a", "label": "Untrusted at the action boundary", "sub": "not at the text boundary", "tone": "good"}, {"id": "l", "label": "Which is least privilege again", "sub": "section 03's last row", "tone": "teal"}], "edges": [["r", "v"], ["r", "f"], ["f", "s"], ["s", "a"], ["a", "l"]], "t": "diagram", "id": "dg-2_16-04-2"},
+
 
     { t: "p", text: "Direct injection is a user typing an override into the chat box. **Indirect** injection is instructions arriving in content the system retrieved: a web page, an email, a support ticket, a document in the RAG corpus, a tool result." },
 

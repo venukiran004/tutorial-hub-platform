@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "common-shape", text: "Every template is the same four components",
       sub: "What differs is which one carries the weight" },
 
+    {"kind": "matrix", "title": "Same four components; the weight moves", "caption": "Laid side by side the six templates have an identical structure and differ only in **which component carries the task**. That is what makes the collection useful as a diagnostic rather than a library: identify which component your task leans on, and the failure in the right-hand column tells you what you will get if you underwrite it. Three of the six lean on *context*, which is the component most often left implicit.", "cols": ["Carried by", "Without it"], "rows": ["Summarisation", "Entity extraction", "Classification", "Code review", "Data analysis", "Rewriting"], "cells": [[{"text": "output format", "tone": "violet"}, "an essay, or the wrong three bullets"], [{"text": "format, plus the null clause", "tone": "violet"}, "invented values that validate"], [{"text": "context", "tone": "accent"}, "labels applied inconsistently at the edges"], [{"text": "context", "tone": "accent"}, "style notes where you wanted security"], [{"text": "instruction", "tone": "good"}, "a description instead of an answer"], [{"text": "context", "tone": "accent"}, "a fluent rewrite that changed the meaning"]], "t": "diagram", "id": "dg-2_18-01-0"},
+
+
     { t: "p", text: "The templates cover summarisation, entity extraction, classification, code review, data analysis and a few others. Laid side by side, the structure is identical and the emphasis moves." },
 
     { t: "table",
@@ -83,6 +86,9 @@ not involved.
     { t: "h2", n: "03", id: "replace", text: "Which templates should not be prompts at all",
       sub: "Two of the six are structured-output problems" },
 
+    {"kind": "flow", "title": "Two of the six are starting points to migrate, not destinations", "caption": "The entity-extraction and classification templates ask **in prose** for something a schema can guarantee. 1.8's ranking puts a prompt-described format bottom of four approaches, so a template that describes a JSON shape in words is a thing to move off rather than a thing to polish — and the migration is mechanical: the shape becomes a schema and the template keeps only the semantics.", "cols": 3, "nodes": [{"id": "t", "label": "A template describing JSON in prose", "sub": "extraction, classification", "tone": "warn"}, {"id": "r", "label": "Bottom of 1.8's four approaches", "sub": "a request, not a guarantee", "tone": "crit"}, {"id": "s", "label": "Move the shape to a schema", "sub": "enforced, not asked", "tone": "good"}, {"id": "k", "label": "Keep the semantics in the prompt", "sub": "what each field means", "tone": "good"}, {"id": "n", "label": "And keep the null clause", "sub": "the part no schema can say (2.7)", "tone": "violet"}], "edges": [["t", "r"], ["r", "s"], ["s", "k"], ["k", "n"]], "t": "diagram", "id": "dg-2_18-03-1"},
+
+
     { t: "p", text: "The entity-extraction and classification templates ask in prose for something a schema can guarantee. The ranking (1.8) puts a prompt-described format bottom of four approaches, so a template that describes a JSON shape in words is a starting point to be migrated rather than a destination." },
 
     { t: "code", lang: "python", title: "replace.py — the extraction template, properly", code: `# The template version (reference section 18): asks, in prose, for JSON.
@@ -119,6 +125,9 @@ Base the sentiment only on the document, not on the subject matter.
 
     { t: "h2", n: "04", id: "unseen", text: "Choosing a shape for a task you have not seen",
       sub: "Four questions that pick the template" },
+
+    {"kind": "steps", "title": "Four questions that produce the template", "caption": "These generate a prompt rather than requiring you to find one that fits, which is why they are more useful than the six worked examples — **a template's generic parts are exactly the parts you have to replace**. The fourth is the one most often skipped, and it is mandatory rather than optional whenever the input might simply not contain the answer.", "items": [{"label": "Is the output consumed by code, or read by a person?", "desc": "code means a schema, and the template becomes semantics only", "code": "1", "tone": "accent"}, {"label": "Is there one right answer?", "desc": "yes means temperature 0 and exact match; no means a judge and a rubric", "code": "2", "tone": "accent"}, {"label": "Does the task select, or transform?", "desc": "selection needs a stated rule; transformation needs the invariant to preserve", "code": "3", "tone": "good"}, {"label": "Is the input reliable?", "desc": "if the answer may be absent, the null clause is mandatory", "code": "4", "tone": "violet"}], "t": "diagram", "id": "dg-2_18-04-2"},
+
 
     { t: "ol", items: [
       "**Is the output consumed by code or read by a person?** By code means a schema (1.8) and the template becomes semantics only. By a person means the output-format clause is about structure and length.",

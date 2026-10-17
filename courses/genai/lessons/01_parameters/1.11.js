@@ -96,6 +96,8 @@ but the real pipeline shrinks the shortest side to 768 first, giving 765.`,
 
     {"kind": "trace", "title": "Detail is a 9x price dial, and often buys nothing", "caption": "One 1024×1024 image costs $0.001912 at `detail=high` and $0.000212 at `low` — **9.0×**, measured. Whether that is worth paying turns entirely on whether the question needs resolution. \"Is there a person in this photo?\" is answered by a 512-pixel view, and nine times the tokens changes nothing. \"What does this sign say?\" is exactly what the tiles are for.", "left": "the question", "codeW": 220, "vars": ["detail", "why"], "steps": [{"code": "Is there a person in this photo?", "state": ["low", "512px answers it"], "tone": "good"}, {"code": "Which of these four layouts?", "state": ["low", "coarse structure"], "tone": "good"}, {"code": "What does this sign say?", "state": ["high", "text needs resolution"], "changed": [0], "tone": "accent"}, {"code": "Read the table in this scan", "state": ["high, or OCR", "see section 04"], "tone": "warn"}, {"code": "Describe this image", "state": ["low first", "measure before paying"], "tone": "violet"}], "t": "diagram", "id": "dg-1_11-02-0"},
 
+
+
     { t: "p", text: "`detail=\"low\"` gives the model a single 512-pixel view of the whole image, for a flat 85 tokens. `detail=\"high\"` gives it that overview *plus* a grid of 512-pixel crops at higher resolution. The difference is whether the model can read small text and resolve fine structure, and it costs 9× on the measured square image." },
 
     { t: "code", lang: "python", title: "g18.py — the price of detail", code: `print("cost of one high-detail 1024x1024 image at $2.50/1M input: $%.6f"
@@ -131,6 +133,8 @@ print("  ratio: %.1fx" % (765 / 85))`,
       sub: "Images are input tokens and share the window with everything else" },
 
     {"kind": "flow", "title": "Image tokens are input tokens, and they cannot be truncated", "caption": "Everything from 1.5 applies unchanged — image tokens count against the window and leave less room for output. What is different is that they arrive in **large indivisible blocks**. You can drop a retrieved chunk to make room; you cannot shave 200 tokens off an image. So a multimodal budget has to be computed before the prompt is assembled, not trimmed afterwards.", "cols": 3, "nodes": [{"id": "i", "label": "An image is input tokens", "sub": "765 per page at high detail", "tone": "accent"}, {"id": "w", "label": "Counted against the window", "sub": "like any other input", "tone": "accent"}, {"id": "b", "label": "But indivisible", "sub": "no partial image", "tone": "crit"}, {"id": "t", "label": "So text cannot be trimmed to fit", "sub": "the block is all or nothing", "tone": "crit"}, {"id": "c", "label": "Compute the budget first", "sub": "images, then output, then prompt", "tone": "good"}, {"id": "d", "label": "Or decide to send fewer images", "sub": "the only real lever", "tone": "teal"}], "edges": [["i", "w"], ["w", "b"], ["b", "t"], ["t", "c"], ["c", "d"]], "t": "diagram", "id": "dg-1_11-03-1"},
+
+
 
     { t: "p", text: "Everything from 1.5 applies unchanged: image tokens are input tokens, they count against the context window, and they leave less room for output. What is different is that they arrive in large indivisible blocks — you cannot truncate an image to fit." },
 
@@ -170,6 +174,8 @@ print("  ratio: %.1fx" % (765 / 85))`,
       sub: "A vision model is not an OCR engine, and is priced accordingly" },
 
     {"kind": "flow", "title": "Plausible-but-wrong costs more to find than obviously-wrong", "caption": "A vision model will read a scanned document, often well. It will also cost 765 tokens a page at high detail, take seconds, and occasionally hallucinate a digit — and that is the whole argument. **An OCR engine with low confidence produces garbage that is obviously garbage**; a vision model produces plausible numbers. The first failure is caught by the next person who looks; the second is caught by an audit, months later, if at all.", "cols": 3, "nodes": [{"id": "s", "label": "A scanned table", "sub": "the case that comes up constantly", "tone": "accent"}, {"id": "v", "label": "A vision model reads it", "sub": "765 tokens a page, seconds", "tone": "warn"}, {"id": "o", "label": "OCR reads it", "sub": "cheaper, and faster", "tone": "good"}, {"id": "p", "label": "Fails as plausible numbers", "sub": "one digit, quietly wrong", "tone": "crit"}, {"id": "g", "label": "Fails as obvious garbage", "sub": "with a confidence score", "tone": "good"}, {"id": "c", "label": "The second failure is cheaper", "sub": "11.1 is why models produce the first", "tone": "teal"}], "edges": [["s", "v"], ["s", "o"], ["v", "p"], ["o", "g"], ["p", "c"], ["g", "c"]], "t": "diagram", "id": "dg-1_11-04-2"},
+
+
 
     { t: "p", text: "The case that comes up constantly is a scanned document. A vision model will read it, often well. It will also cost 765 tokens per page at high detail, take seconds, and hallucinate a digit occasionally in a way that a dedicated OCR engine does not." },
 

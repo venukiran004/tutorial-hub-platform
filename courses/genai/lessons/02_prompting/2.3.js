@@ -58,6 +58,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "three-forms", text: "Three ways to ask for it",
       sub: "Zero-shot, few-shot, and structured" },
 
+    {"kind": "trace", "title": "Three ways to ask, priced on the prompt side", "caption": "The zero-shot form is **one clause and six tokens** — which is why it is always the first thing to try. Few-shot CoT costs 59 extra prompt tokens and buys a reasoning *shape* you want followed; structured CoT costs 42 and buys a fixed checklist. Neither is expensive on the input side, and §03 is where the real bill is.", "left": "form", "codeW": 170, "vars": ["prompt tokens", "extra", "buys"], "steps": [{"code": "direct", "state": ["25", "-", "nothing"], "tone": "accent"}, {"code": "zero-shot CoT", "state": ["31", "+6", "try this first"], "changed": [1], "tone": "good", "note": "one clause"}, {"code": "structured CoT", "state": ["67", "+42", "a fixed checklist"], "tone": "accent"}, {"code": "few-shot CoT", "state": ["84", "+59", "a reasoning shape"], "tone": "warn"}], "t": "diagram", "id": "dg-2_3-02-0"},
+
+
     { t: "code", lang: "python", title: "cot.py — the three forms, from the reference", code: `# Zero-shot CoT: one clause, no examples
 cot_zero = """Q: If a store has 45 apples and sells 3/5 of them, how many are left?
 
@@ -104,6 +107,9 @@ Problem: {problem}"""`,
     { t: "h2", n: "03", id: "output-cost", text: "The prompt cost is the small half",
       sub: "The working is output tokens, and output is the expensive side" },
 
+    {"kind": "trace", "title": "The real cost is on the output side, and so is the latency", "caption": "Six extra prompt tokens is nothing. What chain-of-thought actually costs is that a bare answer becomes a paragraph, and **output tokens are priced several times higher than input** — 90 tokens of working is 90× the cost of the answer alone. The latency is the half users feel: from 1.12, every output token is its own forward pass, so a 90-token answer takes roughly ninety times as long to finish. Streaming hides some of it, which is one reason CoT output is often left visible.", "left": "what the model emits", "codeW": 200, "vars": ["output tokens", "cost at $10/1M", "forward passes"], "steps": [{"code": "'18'", "state": ["1", "$0.000010", "1"], "tone": "good"}, {"code": "one-line working", "state": ["25", "$0.000250", "25"], "changed": [1], "tone": "accent"}, {"code": "five numbered steps", "state": ["90", "$0.000900", "90"], "changed": [1, 2], "tone": "crit", "note": "90x the latency too"}], "t": "diagram", "id": "dg-2_3-03-1"},
+
+
     { t: "p", text: "Six extra prompt tokens is nothing. What chain-of-thought actually costs is on the output side, where a bare answer becomes a paragraph — and output tokens are priced several times higher than input." },
 
     { t: "code", lang: "python", title: "g21.py — the output side", code: `for label, n_out in (("bare answer '18'", 1), ("one-line working", 25),
@@ -139,6 +145,9 @@ class Answer(BaseModel):
     /* ============================================================ 04 */
     { t: "h2", n: "04", id: "limits", text: "What chain-of-thought does not do",
       sub: "The working can be wrong, and confidently so" },
+
+    {"kind": "flow", "title": "The reasoning is the computation, not a record of one", "caption": "The steps a model writes are generated the same way everything else is — by sampling from a distribution. They are **not a trace of a computation that happened elsewhere; they *are* the computation**. Which has two consequences people conflate: a step can be wrong and the model will carry the wrong intermediate forward without noticing, and a plausible-looking chain is not evidence that the answer is right. Reading the chain tells you what it computed, not whether it was correct.", "cols": 3, "nodes": [{"id": "s", "label": "The steps are sampled", "sub": "like any other tokens", "tone": "violet"}, {"id": "n", "label": "Not a log of hidden work", "sub": "there is no hidden work", "tone": "accent"}, {"id": "w", "label": "A step can be wrong", "sub": "and nothing checks it", "tone": "crit"}, {"id": "c", "label": "The error is carried forward", "sub": "into every later step", "tone": "crit"}, {"id": "p", "label": "A plausible chain is not evidence", "sub": "of a correct answer", "tone": "crit"}, {"id": "v", "label": "So verify the answer, not the prose", "sub": "2.4 votes; 2.12 measures", "tone": "good"}], "edges": [["s", "n"], ["n", "w"], ["w", "c"], ["c", "p"], ["p", "v"]], "t": "diagram", "id": "dg-2_3-04-2"},
+
 
     { t: "p", text: "The reasoning a model produces is generated the same way everything else is — by sampling from a distribution. It is not a trace of a computation that happened elsewhere; it *is* the computation, which means it can be wrong at any step and the model will carry the wrong intermediate forward without noticing." },
 

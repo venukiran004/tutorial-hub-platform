@@ -21,6 +21,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "A stop sequence truncates the response; it does not stop the generation", "caption": "The model produced 30 tokens in every row below. The stop string decides how many of them you are *shown* — and you are **billed for all 30 regardless**. With `stop=\",\"` one token survives out of thirty. The third row is the other half of the trap: a stop string the model never emits does nothing at all, and generation simply runs to `max_tokens`.", "left": "stop string", "codeW": 150, "vars": ["you see", "kept", "billed for"], "steps": [{"code": "','", "state": ["' blue'", "1 of 30", "30"], "changed": [2], "tone": "crit", "note": "29 tokens paid for"}, {"code": "' purple'", "state": ["' blue, yellow,'", "4 of 30", "30"], "tone": "warn"}, {"code": "'\\n' - never emitted", "state": ["everything", "30 of 30", "30"], "tone": "warn", "note": "ran to the cap"}, {"code": "so the saving is", "state": ["display only", "never cost", ""], "tone": "violet"}], "t": "diagram", "id": "dg-1_6-01-0"},
 
+
+
     { t: "p", text: "The mental model most people carry is that a stop sequence interrupts generation the moment the model produces it. What actually happens is that the server generates tokens, decodes them, checks the accumulated text against each stop string, and cuts the response at the first match. The model is not consulted and does not know the parameter exists." },
 
     { t: "code", lang: "python", title: "g13b.py — a stop sequence, implemented", code: `ids = tok("Three colours: red, green,", return_tensors="pt").input_ids
@@ -77,6 +79,8 @@ for stop in (",", " purple", "\\n"):
 
     {"kind": "trace", "title": "What a bias number is worth, in odds", "caption": "A bias is added to the logit, so it multiplies the token's odds by `exp(bias)` — which makes the scale readable. **−100 is a ban** (odds × 4×10⁻⁴⁴, rank 50,257). −5 is strong discouragement that is still reachable. +5 is usually decisive and +10 is effectively forced. And +100 is indistinguishable from +10 at any precision you can observe, so reaching for a bigger number past +10 buys nothing.", "left": "logit_bias", "codeW": 130, "vars": ["odds multiplier", "p of ' blue'", "rank"], "steps": [{"code": "-100", "state": ["4e-44", "0.00000000", "50257"], "tone": "crit", "note": "a ban"}, {"code": "-5", "state": ["0.0067", "0.00036480", "259"], "tone": "warn", "note": "still possible"}, {"code": "0 - baseline", "state": ["1.0", "0.05137870", "2"], "tone": "accent"}, {"code": "+5", "state": ["148", "0.88936913", "1"], "changed": [1, 2], "tone": "good", "note": "usually decisive"}, {"code": "+10", "state": ["22026", "0.99916816", "1"], "tone": "good"}, {"code": "+100", "state": ["3e+43", "1.00000000", "1"], "tone": "violet", "note": "same as +10, observably"}], "t": "diagram", "id": "dg-1_6-02-1"},
 
+
+
     { t: "p", text: "`logit_bias` takes a map from token id to a number in the range −100 to +100, and adds that number to the corresponding logit. It happens before temperature, before truncation, before the penalties — it is a modification of the model's raw output, so everything downstream sees the biased vector as if the model had produced it." },
 
     { t: "code", lang: "python", title: "g13.py — logit_bias, implemented", code: `ids = tok("My favourite colour is", return_tensors="pt").input_ids
@@ -129,6 +133,8 @@ for bias in (-100.0, -5.0, 0.0, 5.0, 10.0, 100.0):
       sub: "You are not banning a word, you are banning a token" },
 
     {"kind": "trace", "title": "The id is not the word, and that is the whole disappointment", "caption": "`logit_bias` maps **ids to numbers**, and biasing `' blue'` leaves every other spelling of blue untouched. Seven forms of one word, six distinct ids, and one — `' bluish'` — that is not a single token at all, so no bias can reach it: you would have to bias `' blu'`, which also suppresses every other word starting that way. The one place the parameter is unbeatable is a single-token classifier: bias everything but your labels to −100, set `max_tokens=1`, and the answer is guaranteed to be a label, with its logprob as a free confidence score.", "left": "spelling", "codeW": 130, "vars": ["token ids", "pieces"], "steps": [{"code": "'blue'", "state": ["[18789]", "1"], "tone": "accent"}, {"code": "' blue'", "state": ["[9861]", "1"], "changed": [0], "tone": "good", "note": "the one you biased"}, {"code": "'Blue'", "state": ["[15957]", "1"], "tone": "warn"}, {"code": "' Blue'", "state": ["[11942]", "1"], "tone": "warn"}, {"code": "' BLUE'", "state": ["[110151]", "1"], "tone": "warn"}, {"code": "' blues'", "state": ["[51764]", "1"], "tone": "warn"}, {"code": "' bluish'", "state": ["[55577, 1109]", "2"], "changed": [1], "tone": "crit", "note": "unreachable by bias"}], "t": "diagram", "id": "dg-1_6-03-2"},
+
+
 
     { t: "p", text: "`logit_bias` maps ids to numbers, and an id is not a word. This is the source of every disappointment with the parameter, and it has three distinct forms." },
 

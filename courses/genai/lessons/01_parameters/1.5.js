@@ -91,6 +91,8 @@ print("asking for max_tokens=4096 alongside it needs %d of 128000" % (n + 4096))
 
     {"kind": "trace", "title": "The '1 token is about 4 characters' rule, measured on six samples", "caption": "The claim holds for English prose and nothing else. Measured, prose comes to 4.43 characters per token — close enough — while JSON is 2.77 and **UUIDs are 1.95**, so an id-heavy payload costs more than twice what the rule predicts. The last row is the one that bites internationally: the same French text is 73 tokens in cl100k and 57 in o200k, so switching tokeniser changed the bill by 22% with no change to the text.", "left": "sample", "codeW": 160, "vars": ["chars", "cl100k", "chars/token"], "steps": [{"code": "english prose", "state": ["270", "61", "4.43"], "tone": "good", "note": "the rule works here"}, {"code": "python code", "state": ["100", "32", "3.12"], "tone": "accent"}, {"code": "json", "state": ["72", "26", "2.77"], "tone": "warn"}, {"code": "uuids", "state": ["148", "76", "1.95"], "changed": [2], "tone": "crit", "note": "2x the rule's cost"}, {"code": "french", "state": ["236", "73", "3.23"], "tone": "warn", "note": "o200k: 57 tokens"}], "t": "diagram", "id": "dg-1_5-02-0"},
 
+
+
     { t: "p", text: "The common form gives the usual heuristics — 1 token ≈ 4 characters ≈ 0.75 words — and they are reasonable for the text they were measured on. Here is what they do on six other kinds of text." },
 
     { t: "code", lang: "python", title: "g13.py — tiktoken across six samples", code: `enc  = tiktoken.get_encoding("cl100k_base")      # GPT-4, GPT-3.5
@@ -135,6 +137,8 @@ the claim: 1 token ~ 4 characters (English) ~ 0.75 words
 
     {"kind": "matrix", "title": "finish_reason, and what each value obliges you to do", "caption": "This field is the difference between a truncated answer and a complete one, and code that ignores it treats the two identically. `length` is the one that silently corrupts results — a JSON response cut at `max_tokens` is unparseable, and a prose answer cut there just looks like a short answer. **Never retry `content_filter` blindly**; surface it.", "cols": ["What happened", "What to do"], "rows": ["stop", "length", "tool_calls", "content_filter"], "cells": [[{"text": "end-of-sequence, or a stop string", "tone": "good"}, "nothing - the normal case"], [{"text": "hit max_tokens, or the window filled", "tone": "crit"}, "raise the cap, or continue"], [{"text": "the model wants a tool and is waiting", "tone": "accent"}, "execute, send the result back"], [{"text": "a safety system blocked it", "tone": "warn"}, "surface it; do not retry blindly"]], "t": "diagram", "id": "dg-1_5-03-1"},
 
+
+
     { t: "p", text: "When output hits `max_tokens` the response stops mid-sentence, and there is nothing in the text that says so — a truncated answer and a short answer look identical. The only signal is `finish_reason`, which is the field most production bugs in this area come from not reading." },
 
     { t: "table",
@@ -175,6 +179,8 @@ for cap in (5, 15, 40):
       sub: "Reserve the output first, then fill what is left" },
 
     {"kind": "flow", "title": "Reserve output space; do not leave it as a remainder", "caption": "The pattern that works inverts the usual one. Decide how much output the feature needs, subtract it from the window with a margin, and let the prompt builder fill whatever is left — dropping the lowest-priority material when it runs out. The figure to log is `chunks_dropped`: **a retrieval system that silently drops half its context is one whose recall measurements no longer describe what the model saw**, and that disconnect is behind a large share of \"retrieval is good but answers are bad\" investigations.", "cols": 3, "nodes": [{"id": "w", "label": "The context window", "sub": "a fixed total", "tone": "violet"}, {"id": "o", "label": "Reserve the output first", "sub": "what the feature needs, plus margin", "tone": "good"}, {"id": "p", "label": "The prompt gets the remainder", "sub": "not the other way round", "tone": "good"}, {"id": "d", "label": "Drop by priority when it runs out", "sub": "lowest-value context first", "tone": "accent"}, {"id": "l", "label": "Log chunks_dropped", "sub": "the number nobody logs", "tone": "crit"}, {"id": "r", "label": "Or recall stops describing reality", "sub": "6.2 and 10.6 return to this", "tone": "teal"}], "edges": [["w", "o"], ["o", "p"], ["p", "d"], ["d", "l"], ["l", "r"]], "t": "diagram", "id": "dg-1_5-04-2"},
+
+
 
     { t: "p", text: "The pattern that works is to treat output space as a reservation rather than a remainder. Decide how much output the feature needs, subtract it from the window with a margin, and let the prompt-building code fill whatever is left — dropping the lowest-priority material when it runs out." },
 

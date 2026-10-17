@@ -21,6 +21,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "What the model actually returned", "caption": "Five tokens in, 50,257 scores out. Three things in this table are worth more than any parameter documentation. **Every logit is negative** — they run from −129.87 to −100.25, so their absolute values are an artefact of the final linear layer and mean nothing on their own. The *differences* are everything. And the eight most likely tokens together hold only 0.3202 of the mass, so the other 50,249 carry two thirds of it — which is the entire reason top-p and top-k exist.", "left": "token", "codeW": 130, "vars": ["logit", "probability", "cumulative"], "steps": [{"code": "' the'", "state": ["-100.2498", "0.084593", "0.084593"], "tone": "accent"}, {"code": "' now'", "state": ["-100.8176", "0.047946", "0.132539"], "tone": "accent"}, {"code": "' a'", "state": ["-100.8555", "0.046160", "0.178699"], "tone": "accent"}, {"code": "' France'", "state": ["-101.2102", "0.032377", "0.211076"], "tone": "warn"}, {"code": "' Paris'", "state": ["-101.2143", "0.032245", "0.243321"], "changed": [1], "tone": "good", "note": "the right answer, 5th"}, {"code": "' in'", "state": ["-101.4052", "0.026641", "0.269961"], "tone": "accent"}, {"code": "' also'", "state": ["-101.4141", "0.026405", "0.296366"], "tone": "accent"}, {"code": "' not'", "state": ["-101.5168", "0.023828", "0.320194"], "tone": "accent"}, {"code": "the other 50,249", "state": ["", "", "0.679806"], "changed": [2], "tone": "crit", "note": "two thirds of the mass"}], "t": "diagram", "id": "dg-1_1-01-0"},
 
+
+
     { t: "p", text: "A language model is a function from a sequence of token ids to a vector of scores. Not a word, not a sentence, not a probability — a vector of raw scores called **logits**, one for every entry in the vocabulary. Everything you can configure at inference time is a modification of that vector, or of how one entry is drawn from it." },
 
     { t: "p", text: "So start by looking at it. GPT-2 is small enough to run on a laptop and old enough to be predictable, which makes it a good specimen. Five tokens in; one score per vocabulary entry out." },
@@ -158,6 +160,8 @@ largest disagreement between the three: 2.429e-06`,
 
     {"kind": "trace", "title": "Temperature, read as 'how many tokens is it choosing from'", "caption": "\"0.7 is more creative than 0.2\" is vague. *The model is choosing from 62 plausible tokens instead of 2* is not. Entropy is the compact version of the same reading and is worth logging in production: a sudden drop means the model has become more certain than the task warrants. Note that **nothing is removed at any setting** — a token at 10⁻⁹ is still reachable, just not in your lifetime.", "left": "temperature", "codeW": 150, "vars": ["p of ' the'", "entropy, nats", "tokens to 90%"], "steps": [{"code": "0.2", "state": ["0.882437", "0.5253", "2"], "tone": "crit", "note": "effectively one choice"}, {"code": "0.7", "state": ["0.227430", "3.5521", "62"], "changed": [2], "tone": "good"}, {"code": "1.0", "state": ["0.084593", "5.9985", "1503"], "changed": [2], "tone": "accent", "note": "the model's own view"}, {"code": "1.5", "state": ["0.016138", "8.4797", "8841"], "changed": [2], "tone": "warn"}], "t": "diagram", "id": "dg-1_1-03-1"},
 
+
+
     { t: "p", text: "Temperature divides every logit by a constant before the softmax. Small tau exaggerates the gaps between scores and the distribution peaks; large tau shrinks them and the distribution flattens. Nothing is removed at any setting, which is the point people miss — a token with probability 10⁻⁹ at tau = 0.2 is still *reachable*, just not in your lifetime." },
 
     { t: "code", lang: "python", title: "g11.py — stage 1", code: `for t in (0.2, 0.7, 1.0, 1.5):
@@ -194,6 +198,8 @@ largest disagreement between the three: 2.429e-06`,
       sub: "A fixed count, and a fixed mass — and only one of them notices the shape" },
 
     {"kind": "trace", "title": "Why top-p is the one to reach for", "caption": "Top-k keeps a fixed **count** and top-p keeps a fixed **mass**, and the difference is everything. Across the same four temperatures top-k holds stubbornly at 50 while top-p ranges from 2 to 8,841 — it adapts to how confident the model actually is. That is also why providers tell you to move temperature *or* top-p and not both: top-p's cut depends on the distribution temperature just reshaped, so the two are not independent knobs.", "left": "temperature", "codeW": 150, "vars": ["top_k=50 keeps", "top_p=0.9 keeps"], "steps": [{"code": "0.2", "state": ["50", "2"], "tone": "accent", "note": "top-k keeps 48 no-hopers"}, {"code": "0.8", "state": ["50", "237"], "changed": [1], "tone": "good"}, {"code": "1.0", "state": ["50", "1503"], "changed": [1], "tone": "good"}, {"code": "1.5", "state": ["50", "8841"], "changed": [1], "tone": "warn", "note": "top-k now cuts real ones"}, {"code": "the pipeline, in order", "state": ["50257 -> 50", "-> 21 after top_p"], "tone": "violet"}], "t": "diagram", "id": "dg-1_1-04-2"},
+
+
 
     { t: "p", text: "Top-k keeps the k highest-scoring tokens and discards the rest. Top-p — nucleus sampling — sorts by probability, accumulates from the top, and keeps the smallest set whose cumulative mass reaches p. Both exist to stop the long tail contributing, and they differ in exactly one way: top-k is blind to the shape of the distribution and top-p is not." },
 
@@ -283,6 +289,8 @@ They summed to 0.713225 before renormalising and 1.000000 after.`,
 
     {"kind": "flow", "title": "The only stage with a memory", "caption": "The first three stages see the logit vector and nothing else — given the same vector they do the same thing whether it arrived at step 1 or step 400. Penalties are different: they read what has already been generated and push those tokens' logits down. With the context `The capital of France is`, a presence penalty of 1.0 moves exactly five logits down by 1.0, and `' Paris'` is not one of them, so it stays at −101.2143.", "cols": 3, "nodes": [{"id": "s", "label": "Stages 1-3: the vector only", "sub": "stateless, by construction", "tone": "accent"}, {"id": "p", "label": "Stage 4 reads the history", "sub": "which tokens were already emitted", "tone": "violet"}, {"id": "c", "label": "5 tokens in context", "sub": "The capital of France is", "tone": "accent"}, {"id": "d", "label": "5 logits move down by 1.0", "sub": "presence_penalty=1.0", "tone": "warn"}, {"id": "u", "label": "' Paris' is untouched", "sub": "still -101.2143", "tone": "good"}, {"id": "g", "label": "And the penalised set only grows", "sub": "every token emitted joins it", "tone": "teal"}], "edges": [["s", "p"], ["c", "d"], ["p", "d"], ["d", "u"], ["d", "g"]], "t": "diagram", "id": "dg-1_1-05-3"},
 
+
+
     { t: "p", text: "The first three stages operate on the logit vector alone. They have no memory: given the same vector they do the same thing, whether it arrived at step 1 or step 400. Penalties are different — they take the tokens already generated and push those tokens' logits down before sampling." },
 
     { t: "code", lang: "python", title: "g11.py — stage 4", code: `already = ids[0].tolist()
@@ -303,6 +311,8 @@ for i in set(already):
       sub: "It is the highest-scoring next token, which is a different thing" },
 
     {"kind": "trace", "title": "Greedy returns the most likely token, not the right one", "caption": "The prompt is `The capital of France is`. The answer is Paris. GPT-2 ranks `' Paris'` **fifth** at 0.032245, so greedy decoding returns `' the'` — every single time, and goes on to produce *\"the capital of the French Republic\"*. Sampling at 0.7 reaches Paris 9 times in 200 draws. Determinism and correctness are different properties, and `temperature=0` buys you only the first.", "left": "setting", "codeW": 130, "vars": ["distinct in 200 draws", "most frequent"], "steps": [{"code": "t=0, greedy", "state": ["1", "' the' x200"], "tone": "crit", "note": "' Paris' never"}, {"code": "t=0.7", "state": ["48", "' the' x50"], "changed": [0], "tone": "good", "note": "' Paris' x9"}, {"code": "t=1.0", "state": ["126", "' the' x14"], "changed": [0], "tone": "accent", "note": "' Paris' x8"}, {"code": "t=1.5", "state": ["188", "' now' x3"], "changed": [0], "tone": "warn", "note": "no token twice"}], "t": "diagram", "id": "dg-1_1-06-4"},
+
+
 
     { t: "p", text: "With `temperature=0` the sampler is skipped and the argmax is returned. People reach for this when they want the \"correct\" answer, and it is the right default for code and extraction. But it is worth being precise about what it gives you, because the prompt above makes the point better than any argument could." },
 
@@ -359,6 +369,8 @@ greedy continuation: 'The capital of France is the capital of the French Republi
       sub: "Autoregression is the reason a request costs what it costs" },
 
     {"kind": "matrix", "title": "The whole module, as one pass over a logit vector", "caption": "Two columns settle most of the confusion about these parameters. Only top-k and top-p **remove** candidates; temperature and the penalties merely rescale, so no setting of them can make a token unreachable. And only the penalties and the stop conditions look at what has already been generated — which is why they are the two that behave differently at token 400 than at token 1.", "cols": ["Removes candidates?", "Sees history?"], "rows": ["Model forward pass", "Temperature", "Top-k", "Top-p", "Penalties", "Sample", "Logit bias", "Stop and max_tokens"], "cells": [["no", {"text": "yes - the prompt", "tone": "accent"}], [{"text": "no - rescales only", "tone": "good"}, "no"], [{"text": "yes - a fixed count", "tone": "warn"}, "no"], [{"text": "yes - a fixed mass", "tone": "warn"}, "no"], [{"text": "no - rescales a subset", "tone": "good"}, {"text": "yes", "tone": "violet"}], ["-", "no"], [{"text": "effectively, at -100", "tone": "warn"}, "no"], [{"text": "ends the loop", "tone": "crit"}, {"text": "yes", "tone": "violet"}]], "t": "diagram", "id": "dg-1_1-07-5"},
+
+
 
     { t: "p", text: "The chosen token is appended to the sequence and the whole forward pass repeats. That loop is why generation is sequential and why output tokens cost several times what input tokens cost: the prompt is processed once, in parallel, but each output token requires its own pass over the model. 3.1 takes that apart properly — the two phases even have different names and different bottlenecks — but the shape is already visible in the `context` column above, which grows by one on every line." },
 

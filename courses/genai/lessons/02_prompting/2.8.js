@@ -19,6 +19,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "sequential", text: "The sequential chain",
       sub: "Each step's output is the next step's input" },
 
+    {"kind": "trace", "title": "A three-call chain is 1.90x, not 3x", "caption": "The naive expectation is that three calls cost three times one, and they do not — **the document is sent once**. Step 1 consumes 3,200 input tokens and replaces them with 300 tokens of claims, so steps 2 and 3 see 500 and 600 tokens rather than the paper. That is the whole reason decomposition is affordable. What it does cost is latency: one round trip becomes three sequential ones, and that is not recoverable by any amount of parallelism.", "left": "call", "codeW": 160, "vars": ["input", "output"], "steps": [{"code": "single call", "state": ["3,200", "400"], "tone": "accent", "note": "$0.012000"}, {"code": "1 extract claims", "state": ["3,200", "300"], "tone": "violet", "note": "the document, once"}, {"code": "2 find evidence", "state": ["500", "400"], "changed": [0], "tone": "good", "note": "claims, not the paper"}, {"code": "3 write review", "state": ["600", "500"], "tone": "good"}, {"code": "chain total", "state": ["4,300", "1,200"], "tone": "warn", "note": "$0.022750 = 1.90x"}, {"code": "latency", "state": ["3 round trips", "sequential"], "tone": "crit"}], "t": "diagram", "id": "dg-2_8-01-0"},
+
+
     { t: "code", lang: "python", title: "chain.py — the worked example", code: `step1 = model.invoke("Extract all technical claims from this paper: {paper}")
 step2 = model.invoke(f"For each claim, find supporting evidence: {step1}")
 step3 = model.invoke(f"Write a critical review based on: {step2}")`,
@@ -132,6 +135,9 @@ final    = call(f"Improve the answer based on this critique: {critique}")`,
     { t: "h2", n: "03", id: "compounding", text: "Error compounds through a chain",
       sub: "Three steps at 90% is not 90%" },
 
+    {"kind": "matrix", "title": "Error compounds, and the arithmetic is unforgiving", "caption": "A later step working on a wrong intermediate cannot recover — it produces a competent answer to the wrong question. At a very good 0.95 per step, **eight steps is 0.663**. At 0.80 per step, five steps is 0.328. This is the case against decomposing indefinitely and the reason a long agent loop is fragile where a short chain is not. It also explains a counterintuitive observation: adding a step to \"improve quality\" can *reduce* end-to-end accuracy, because the new step's own failure rate multiplies in.", "cols": ["2 steps", "3 steps", "5 steps", "8 steps"], "rows": ["0.99 per step", "0.95 per step", "0.90 per step", "0.80 per step"], "cells": [["0.980", "0.970", "0.951", {"text": "0.923", "tone": "good"}], ["0.903", "0.857", "0.774", {"text": "0.663", "tone": "warn"}], ["0.810", "0.729", "0.590", {"text": "0.430", "tone": "crit"}], ["0.640", "0.512", "0.328", {"text": "0.168", "tone": "crit"}]], "t": "diagram", "id": "dg-2_8-03-1"},
+
+
     { t: "p", text: "Each step in a chain has its own failure rate, and a later step operating on a wrong intermediate cannot recover — it produces a competent answer to the wrong question. The arithmetic is unforgiving." },
 
     { t: "table",
@@ -157,6 +163,9 @@ final    = call(f"Improve the answer based on this critique: {critique}")`,
     /* ============================================================ 04 */
     { t: "h2", n: "04", id: "when", text: "When to decompose",
       sub: "And when it is over-engineering" },
+
+    {"kind": "matrix", "title": "Three reasons to decompose, and one that is not a reason", "caption": "The first three each buy something a single call cannot give you — different parameters per step, a failure *location*, or a cheap model on the cheap steps, which is often a larger saving than any prompt optimisation. The last row is the common mistake: splitting a call because the prompt got long **moves** the complexity rather than reducing it, and adds two more places to fail at the measured price of 1.90×.", "cols": ["Because"], "rows": ["Steps want different params", "You need a failure location", "Steps want different models", "The prompt got long"], "cells": [[{"text": "one call has one temperature, and must compromise", "tone": "good"}], [{"text": "\"step 2 returned an empty list\" is debuggable; \"it is wrong\" is not", "tone": "good"}], [{"text": "the expensive model only where the reasoning is", "tone": "good"}], [{"text": "not a reason - 1.90x cost, 3x latency, more failure modes", "tone": "crit"}]], "t": "diagram", "id": "dg-2_8-04-2"},
+
 
     { t: "dl", items: [
       ["Decompose when steps need different treatment", "Extraction wants temperature 0 and a schema; the summary wants temperature 0.7 and prose. A single call has one set of parameters, so it must compromise on both — and 1.3's SQL incident is exactly this failure."],

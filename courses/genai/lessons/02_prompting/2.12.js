@@ -19,6 +19,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "the-set", text: "The test set is the hard part",
       sub: "And a saturated one tells you nothing" },
 
+    {"kind": "matrix", "title": "\"Representative\" is the word doing the work", "caption": "30–50 representative inputs is the usual suggestion, and *representative* gets read as *typical* — which produces a set every candidate passes and therefore **a measurement that cannot discriminate**. A set that can tell candidates apart is deliberately unbalanced toward the cases that break things: known production failures are 20% of it, and cases where the correct behaviour is to decline are 10%, because nothing else measures whether a prompt knows its limits.", "cols": ["Why", "Share"], "rows": ["Typical cases", "Edge cases", "Known failures", "Adversarial cases", "No good answer exists"], "cells": [["what most traffic sees", "40%"], [{"text": "empty, maximum length, odd formatting", "tone": "accent"}, "20%"], [{"text": "everything that has broken in production", "tone": "violet"}, "20%"], [{"text": "injection, contradictory instructions", "tone": "warn"}, "10%"], [{"text": "the right answer is to decline", "tone": "good"}, "10%"]], "t": "diagram", "id": "dg-2_12-01-0"},
+
+
     { t: "p", text: "The usual suggestion is 30–50 representative inputs with expected outputs. Representative is the word doing the work, and it is usually interpreted as \"typical\" — which produces a set every candidate passes, and therefore a measurement that cannot discriminate." },
 
     { t: "table",
@@ -42,6 +45,9 @@ EC.receiveLesson({
     /* ============================================================ 02 */
     { t: "h2", n: "02", id: "metric", text: "Choosing a metric",
       sub: "And knowing what it cannot see" },
+
+    {"kind": "matrix", "title": "Every metric is blind to something; know which thing", "caption": "The practical rule is to **prefer a cheap deterministic metric wherever one exists** — an exact-match check on an extracted field costs nothing, is perfectly reproducible and cannot drift. Reach for a judge only when the output is genuinely open-ended, and then treat the judge as a component that needs its own evaluation, because it is one. Note the third row: schema validity is usually the only half collected, and it is the half that tells you least.", "cols": ["Metric", "Blind to"], "rows": ["Classification", "Extraction", "Structured output", "Summarisation", "Open-ended"], "cells": [["accuracy, macro-F1", "which class is failing, unless sliced"], [{"text": "field-level exact match", "tone": "good"}, "whether the value is in the source"], ["validity and correctness", {"text": "only validity is usually collected", "tone": "crit"}], ["ROUGE, or a judge", {"text": "faithfulness - overlap is not truth", "tone": "crit"}], [{"text": "a judge against a rubric", "tone": "warn"}, "its own biases, until calibrated"]], "t": "diagram", "id": "dg-2_12-02-1"},
+
 
     { t: "table",
       head: ["Task", "Metric", "Blind to"],
@@ -70,6 +76,9 @@ Provide ratings as JSON: {"accuracy": X, "completeness": X, "clarity": X}"""`,
     /* ============================================================ 03 */
     { t: "h2", n: "03", id: "how-many", text: "How many cases you actually need",
       sub: "The arithmetic that contradicts the usual advice" },
+
+    {"kind": "matrix", "title": "What a test set of that size can actually detect", "caption": "At 95% confidence and 80% power, detecting a **2-point** lift from a 0.85 baseline needs 4,724 cases. 30 to 50 is nowhere near that, and the honest reading is at the bottom: n=30 detects a lift of roughly 50 points, n=50 about 15, n=100 about 11.5. So a 30-case set is not a measurement of small improvements — it is a smoke test, which is a useful thing to own as long as you do not read percentages off it.", "cols": ["+2%", "+5%", "+10%", "+20%"], "rows": ["baseline 0.50", "baseline 0.70", "baseline 0.85", "baseline 0.95"], "cells": [[{"text": "9806", "tone": "crit"}, "1565", "388", "93"], [{"text": "8080", "tone": "crit"}, "1251", "294", "62"], [{"text": "4724", "tone": "crit"}, "686", {"text": "141", "tone": "warn"}, {"text": "49", "tone": "good"}], ["1506", "162", "162", "162"]], "t": "diagram", "id": "dg-2_12-03-2"},
+
 
     { t: "code", lang: "python", title: "g29.py — sample size for a two-proportion comparison", code: `from scipy import stats
 
@@ -115,6 +124,9 @@ def n_needed(p1, p2, alpha=0.05, power=0.80):
     { t: "h2", n: "04", id: "significance", text: "Is the difference evidence?",
       sub: "One line of scipy, and it will disappoint you" },
 
+    {"kind": "trace", "title": "A three-point improvement is not significant at any size you will run", "caption": "0.82 against 0.85 — a difference people ship on — fails significance at 50 cases, at 200, and **at 1,000**, where p is still 0.0805. This is the number to keep in mind every time a prompt change moves a small test set by a few points: the move is almost certainly noise, and the correct response is not to run it again hoping for a better draw. Either get a much larger set, or accept that the two candidates are indistinguishable and choose on another ground.", "left": "test cases", "codeW": 140, "vars": ["0.82 vs 0.85", "p", "verdict"], "steps": [{"code": "n=50", "state": ["+3 points", "1.0000", "not significant"], "tone": "crit"}, {"code": "n=200", "state": ["+3 points", "0.5008", "not significant"], "tone": "crit"}, {"code": "n=1000", "state": ["+3 points", "0.0805", "not significant"], "changed": [1], "tone": "crit", "note": "still not, at 1,000"}], "t": "diagram", "id": "dg-2_12-04-3"},
+
+
     { t: "code", lang: "python", title: "g29.py — a 3-point improvement at three sizes", code: `for n in (50, 200, 1000):
     a, b = 0.82, 0.85
     ka, kb = round(a * n), round(b * n)
@@ -139,6 +151,9 @@ def n_needed(p1, p2, alpha=0.05, power=0.80):
     /* ============================================================ 05 */
     { t: "h2", n: "05", id: "production", text: "A/B testing in production",
       sub: "Where the sample size arrives on its own" },
+
+    {"kind": "flow", "title": "Offline rejects; production chooses", "caption": "What production adds is **real inputs and real outcomes**. An offline set measures whether the output matched what you expected; production measures whether users accepted it, edited it, retried or escalated — and no offline metric substitutes for those. What production costs is time and exposure: half your users get the worse variant until you stop. Which is the argument for both, in that order: offline to reject what is clearly worse, an A/B to choose between the survivors.", "cols": 3, "nodes": [{"id": "o", "label": "The offline set", "sub": "did it match what you expected", "tone": "accent"}, {"id": "r", "label": "Rejects the clearly worse", "sub": "cheaply, before exposure", "tone": "good"}, {"id": "p", "label": "Production", "sub": "accepted, edited, retried, escalated", "tone": "violet"}, {"id": "s", "label": "The signals that actually matter", "sub": "and no offline proxy for them", "tone": "good"}, {"id": "c", "label": "But half your users get the worse one", "sub": "until you stop", "tone": "crit"}, {"id": "b", "label": "So: offline, then A/B", "sub": "in that order", "tone": "teal"}], "edges": [["o", "r"], ["r", "b"], ["p", "s"], ["p", "c"], ["s", "b"], ["c", "b"]], "t": "diagram", "id": "dg-2_12-05-4"},
+
 
     { t: "code", lang: "python", title: "ab.py — the pattern, with the missing parts", code: `PROMPTS = {
     "A": "Summarize this article in 3 bullet points: {text}",
