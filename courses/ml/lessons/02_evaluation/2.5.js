@@ -25,6 +25,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "A synthetic 12-feature problem at 21.6 % prevalence, 3,000 training rows, 1,000 held for calibration, 2,000 for testing — large enough that a bin of predictions has a stable observed rate. **Bin the predicted probabilities into tenths; in each bin compare the mean prediction with the observed positive rate.** A calibrated model's two columns match; the diagram of one against the other lies on the diagonal." },
 
     { t: "code", lang: "text", title: "Five families, one test set (executed)",
@@ -73,7 +83,9 @@ ECE = Σ_bins (n_bin / n) · | mean prediction - observed rate |          the we
 
 
 
-    {"kind": "matrix", "title": "Each family is miscalibrated in its own characteristic direction", "caption": "The shape follows from the training objective. A forest averages 0/1 votes, which pulls every prediction toward the middle and cannot reach 0 or 1 unless every tree agrees. Cross-entropy on a deep network pushes logits apart without bound, which is over-confidence by construction.", "cols": ["Shape", "Fix"], "rows": ["Logistic regression", "Random forest", "Gradient boosting", "Naive Bayes", "SVM", "Neural networks", "KNN"], "cells": [[{"text": "calibrated", "tone": "good"}, "usually none needed"], [{"text": "under-confident, S-curve", "tone": "warn"}, "Platt or isotonic"], [{"text": "mildly off", "tone": "accent"}, "check; Platt if needed"], [{"text": "over-confident at the ends", "tone": "warn"}, "isotonic or Platt"], [{"text": "no probabilities at all", "tone": "crit"}, "Platt: probability=True"], [{"text": "over-confident", "tone": "warn"}, "temperature scaling"], [{"text": "coarse: fractions of k", "tone": "warn"}, "larger k; isotonic"]], "t": "diagram", "id": "dg-2_5-02-0"},
+
+
+
 
 
 
@@ -162,7 +174,9 @@ cal = CalibratedClassifierCV(FrozenEstimator(forest), method="sigmoid").fit(X_ca
 
 
 
-    {"kind": "matrix", "title": "When calibration matters, and when it does not", "caption": "The dividing line is whether anything does **arithmetic** on the probability. Ranking and a validation-swept threshold use only the ordering, so a miscalibrated score is harmless there. A cost formula, an expected value, or a number shown to a person all treat p as a probability.", "cols": ["Needs calibration", "Because"], "rows": ["Rank and act on top k", "Threshold from a sweep", "Threshold from p > c/b", "Expected value p x revenue", "Showing 'risk 73%'", "Combining several models"], "cells": [[{"text": "no", "tone": "good"}, "only the ordering is used"], [{"text": "no", "tone": "good"}, "the sweep reads outcomes, not scores"], [{"text": "yes", "tone": "crit"}, "the formula treats p as a probability"], [{"text": "yes", "tone": "crit"}, "arithmetic on p"], [{"text": "yes", "tone": "crit"}, "a person will act on the number"], [{"text": "yes", "tone": "crit"}, "scores are not on the same scale"]], "t": "diagram", "id": "dg-2_5-03-1"},
+
+
+
 
 
 

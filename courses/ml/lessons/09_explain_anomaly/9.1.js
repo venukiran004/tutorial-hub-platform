@@ -32,6 +32,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "table",
       head: ["Axis", "One side", "Other side", "Trade"],
       rows: [
@@ -46,6 +53,13 @@ EC.receiveLesson({
     ]},
 
     { t: "h2", n: "02", text: "Permutation importance", id: "permutation" },
+
+    {"kind": "flow", "title": "Permutation importance, and the two ways to get it wrong", "caption": "Shuffle one column, re-score, and the drop is that column's importance. Two decisions change the answer completely: measuring on the **training** rows reports how much the model memorised rather than how much it relies on the feature, and with correlated columns the shuffle leaves the information available through the copy — so both copies look unimportant and the credit vanishes.", "cols": 3, "nodes": [{"id": "b", "label": "Baseline score", "sub": "on held-out rows", "tone": "violet"}, {"id": "s", "label": "Shuffle one column", "sub": "breaks only its link to y", "tone": "accent"}, {"id": "d", "label": "Re-score; the drop is the importance", "sub": "repeat n times, average", "tone": "good"}, {"id": "t", "label": "Measured on training rows", "sub": "reports memorisation", "tone": "crit"}, {"id": "c", "label": "A correlated copy survives", "sub": "both look unimportant", "tone": "crit"}, {"id": "g", "label": "Group correlated columns", "sub": "and permute them together", "tone": "good"}], "edges": [["b", "s"], ["s", "d"], ["d", "t", "", "dashed"], ["d", "c"], ["c", "g"]], "t": "diagram", "id": "dg-9_1-02-1"},
+
+
+
+
+
 
     { t: "code", lang: "python", title: "The churn logistic model: importance as the score drop when a column is shuffled (executed; 30 % hold-out, 30 repeats)",
       hl: [3, 4, 5, 9, 10],
@@ -88,7 +102,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Partial dependence, ICE, and the case for ALE", id: "pdp" },
 
-    {"kind": "matrix", "title": "Why PDP lies when features are correlated, and ALE does not", "caption": "A PDP varies one feature across its whole range while holding the others at their observed values — which constructs rows that cannot exist, and asks the model to extrapolate into them. On a correlated pair the PDP slope came out **1.58 against a true 2.0**. ALE averages local differences within a bin instead, so it never leaves the data.", "cols": ["Assumes", "Failure"], "rows": ["Permutation importance", "PDP", "ICE", "ALE"], "cells": [["shuffling breaks only this link", {"text": "correlated features share credit", "tone": "warn"}], [{"text": "the feature can vary alone", "tone": "crit"}, {"text": "slope 1.58 vs a true 2.0", "tone": "crit"}], ["the same, per row", "the average hides the spread; ICE shows it"], [{"text": "only local differences", "tone": "good"}, "bin choice; no extrapolation"]], "t": "diagram", "id": "dg-9_1-03-1"},
+    {"kind": "matrix", "title": "Why PDP lies when features are correlated, and ALE does not", "caption": "A PDP varies one feature across its whole range while holding the others at their observed values — which constructs rows that cannot exist, and asks the model to extrapolate into them. On a correlated pair the PDP slope came out **1.58 against a true 2.0**. ALE averages local differences within a bin instead, so it never leaves the data.", "cols": ["Assumes", "Failure"], "rows": ["Permutation importance", "PDP", "ICE", "ALE"], "cells": [["shuffling breaks only this link", {"text": "correlated features share credit", "tone": "warn"}], [{"text": "the feature can vary alone", "tone": "crit"}, {"text": "slope 1.58 vs a true 2.0", "tone": "crit"}], ["the same, per row", "the average hides the spread; ICE shows it"], [{"text": "only local differences", "tone": "good"}, "bin choice; no extrapolation"]], "t": "diagram", "id": "dg-9_1-03-2"},
+
+
+
+
+
+
 
 
 

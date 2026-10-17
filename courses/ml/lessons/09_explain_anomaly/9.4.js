@@ -33,6 +33,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "p", text: "Three kinds of anomaly need three different questions. A **point anomaly** is a row that is improbable on its own: a monthly fee of £999 when every other fee is under £22. A **contextual anomaly** is improbable only given its context — a fee of £20 is ordinary for a Pro customer and strange for a Basic one; 35 °C is ordinary in July and an anomaly in January. A **collective anomaly** is a set of rows each of which is ordinary and whose combination is not: one login from a new device is nothing; forty logins from forty new devices in an hour is an account takeover. The statistical and distance methods in this lesson find point anomalies. Contextual anomalies are found by conditioning first (score within the group, or include the context as a feature and let a multivariate method see the combination); collective anomalies need a representation of the set — the window, the sequence, the graph — before any detector applies." },
 
     { t: "p", text: "The second distinction is what the training data contains. In **outlier detection** the data you fit on already holds the anomalies, at some unknown rate, and the detector must find them in the same data it learned from — so it must be robust to them, which is the theme of this lesson. In **novelty detection** the training data is clean by assumption, and the question is whether new rows look like it — the detector may be sensitive, since nothing in training will mislead it. scikit-learn's `LocalOutlierFactor` embodies the split: by default it scores the training rows and has no `predict` for new ones; with `novelty=True` it refuses to score training rows and only scores new ones. The third distinction is whether you have labels. Usually you have none, or a handful found by a fraud team last quarter — which makes every threshold a decision about capacity (how many rows can a human review?) rather than a decision about accuracy, and the lesson returns to that at the end." },
@@ -42,6 +49,13 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Univariate tests, worked on the fee column", id: "univariate" },
 
     {"kind": "matrix", "title": "Masking: the second outlier hides the first", "caption": "The series 10, 11, 12, 10, 11, 13, 12, 50, 52. Grubbs' test gives the 52 a G of 1.82 against a critical 2.22 — **not flagged**, because the 50 has pushed the standard deviation to 17.5. Remove the 52 by other means and the 50 is flagged immediately. The modified z-score flags both at once, because the median of 12 and the MAD of 1 never moved.", "cols": ["Flags the 52", "Why"], "rows": ["Grubbs, both present", "Grubbs, 52 removed", "Modified z (52)", "Modified z (50)", "Mean and sd"], "cells": [[{"text": "no: G 1.82 < 2.22", "tone": "crit"}, "the 50 inflated sd to 17.5"], [{"text": "yes: G 2.47 > 2.13", "tone": "good"}, "the masking is gone"], [{"text": "yes: 27.0", "tone": "good"}, "median 12, MAD 1: unmoved"], [{"text": "yes: 25.6", "tone": "good"}, "both found in one pass"], [{"text": "the wrong first move", "tone": "crit"}, "on any column you suspect"]], "t": "diagram", "id": "dg-9_4-02-1"},
+
+
+
+
+
+
+
 
 
 
@@ -84,6 +98,13 @@ def grubbs(x, alpha=0.05):                           # H0: no outlier; test the 
 
     { t: "h2", n: "03", text: "Mahalanobis distance: the multivariate z-score", id: "mahalanobis" },
 
+    {"kind": "trace", "title": "Four planted rows that are ordinary on every column", "caption": "Two features correlated at 0.85, so the normal rows form a thin ellipse. The point (2.5, −2.5) is 2.5 standard deviations out **on each axis separately** — unremarkable one column at a time — and far outside the ellipse. Mahalanobis ranks the three correlation-breakers 1, 2, 3 of 1,004; plain Euclidean distance ranks them 8, 13 and 30, mixed in with ordinary rows. The threshold needs no tuning: under a Gaussian, d² is χ² with p degrees of freedom, so 7.38 is the 97.5% point for two features.", "left": "planted row", "codeW": 150, "vars": ["d² empirical", "d² robust (MCD)", "Euclidean rank", "Mahalanobis rank"], "steps": [{"code": "(2.5, -2.5)", "state": ["72.1", "93.9", "8", "1"], "changed": [3], "tone": "crit", "note": "breaks the correlation"}, {"code": "(-2.0, 2.0)", "state": ["47.0", "61.2", "13", "2"], "changed": [3], "tone": "crit"}, {"code": "(3.0, -1.0)", "state": ["47.2", "61.3", "30", "3"], "changed": [3], "tone": "crit"}, {"code": "(2.8, 2.8)", "state": ["7.9", "7.4", "42", "far along it"], "tone": "warn", "note": "just over 7.38"}, {"code": "threshold χ²(0.975)", "state": ["7.38", "7.38", "", "all 4 found"], "tone": "violet"}], "t": "diagram", "id": "dg-9_4-03-2"},
+
+
+
+
+
+
     { t: "p", text: "A row can be ordinary on every column and anomalous as a combination. Two features with a correlation of 0.85 form a thin ellipse; the point (2.5, −2.5) is 2.5 standard deviations out on each axis — unremarkable one column at a time — and far outside the ellipse. The Mahalanobis distance d² = (x − μ)ᵀ Σ⁻¹ (x − μ) measures distance in units of the covariance: along the ellipse's long axis a unit of d costs many standard deviations of Euclidean distance, across its short axis very few. Under a Gaussian, d² follows a χ² distribution with as many degrees of freedom as there are features, which gives a threshold with a probability attached — for two features the 97.5 % point is 7.38." },
 
     { t: "code", lang: "python", title: "Classic and robust covariance on 1,000 correlated rows plus four planted ones (executed)",
@@ -103,6 +124,13 @@ MinCovDet(random_state=0).fit(X).mahalanobis(X)[-4:]   # d² [93.9, 61.2, 61.3, 
     { t: "callout", kind: "tradeoff", title: "What Mahalanobis cannot see", body: [{ t: "p", text: "One ellipse. Two clusters of normal rows produce one wide ellipse that covers the gap between them, and a row in the gap — anomalous by any local standard — gets a small distance. A curved relationship (spend rising with tenure then saturating) is fitted by a straight ellipse that calls the ends of the curve anomalous and the empty middle of the arc normal. In p dimensions the covariance has p(p+1)/2 parameters; with p = 50 and a few hundred rows it is poorly estimated, and with p > n it is singular. For those cases the density must be local (§04) or non-parametric (9.5). What Mahalanobis does well it does cheaply and with a calibrated threshold, which is why it is the first multivariate detector to try on a modest number of continuous features." }] },
 
     { t: "h2", n: "04", text: "Distance and density: KNN, DBSCAN noise, and the Local Outlier Factor", id: "lof" },
+
+    {"kind": "flow", "title": "From a global density to a local one", "caption": "Each step buys the ability to see an anomaly the previous one cannot. A global Gaussian misses a point sitting between two clusters; a KNN distance misses a sparse cluster's members, calling all of them anomalous; LOF compares each point's density with its **neighbours'** density, which is what finally makes 'anomalous for its neighbourhood' expressible.", "cols": 3, "nodes": [{"id": "g", "label": "One global Gaussian", "sub": "Mahalanobis: one ellipse", "tone": "violet"}, {"id": "m", "label": "Misses the gap between clusters", "sub": "the ellipse covers it", "tone": "crit"}, {"id": "k", "label": "k-NN distance", "sub": "local, but absolute", "tone": "accent"}, {"id": "s", "label": "Flags a whole sparse cluster", "sub": "its members are simply far apart", "tone": "crit"}, {"id": "l", "label": "LOF: density vs neighbours'", "sub": "a ratio, not a distance", "tone": "good"}, {"id": "t", "label": "k of 10-20, max over a range", "sub": "and scale the features first", "tone": "teal"}], "edges": [["g", "m"], ["m", "k"], ["k", "s"], ["s", "l"], ["l", "t"]], "t": "diagram", "id": "dg-9_4-04-3"},
+
+
+
+
+
 
     { t: "p", text: "The distance-based detectors drop the Gaussian and keep the geometry. The **KNN distance score** is the mean (or maximum) distance from a row to its k nearest neighbours: on the correlated data above, with k = 5, the three correlation-breaking rows rank 1st, 2nd and 3rd and the along-axis row 87th, and the score's AUC against the planted labels is 0.979. **DBSCAN noise** (7.3) is the same idea as a label: rows with fewer than `min_samples` neighbours within `eps` that are not reachable from a core point are noise; with eps 0.3 and min_samples 8, 46 rows are noise and the four planted ones are among them. Noise is a label, not a score — it cannot be ranked or thresholded at a review capacity — and the KNN score is preferable for that reason alone." },
 
@@ -170,6 +198,13 @@ planted = [[1.0, 0.0], [6.0, 5.0]]                   # 5 sd from the tight clust
     { t: "callout", kind: "tradeoff", title: "Choosing k, and LOF's known weaknesses", body: [{ t: "p", text: "k sets the neighbourhood that defines 'local'. Too small (k = 2–5) and LOF is noisy — a pair of anomalies next to each other become each other's dense neighbourhood and score 1.0; the original paper recommends k of 10–20 minimum and taking the maximum LOF over a range of k. Too large and the neighbourhood spans clusters and the score reverts toward a global one. LOF costs O(n²) distances naively and O(n log n) with a tree in low dimension; in high dimension distances concentrate (5.1) and every ratio drifts toward 1. It has no natural threshold — 1.5 is a common rule of thumb, but the right threshold is the review capacity — and its scores are not comparable across datasets or across k. Scale the features first: a distance-based detector on raw tenure (sd 17.5 months) and logins (sd 5.0) is a detector of tenure." }] },
 
     { t: "h2", n: "05", text: "On the churn customers: three detectors and what to do with the result", id: "churn" },
+
+    {"kind": "matrix", "title": "Three detectors on the churn customers, and what to do with the result", "caption": "An unsupervised detector returns a **ranking**, not a verdict, and the three disagree about the tail because they assume different things about 'normal'. The useful move is to treat the overlap as a priority queue and the disagreement as information: a row that all three flag is almost certainly odd; one that a single detector flags is a question about that detector's assumption.", "cols": ["Finds", "Then"], "rows": ["Flagged by all three", "Flagged by one only", "Flagged by none", "The score itself", "A label you trust"], "cells": [[{"text": "genuinely odd rows", "tone": "good"}, "review these first"], [{"text": "that detector's assumption", "tone": "accent"}, "ask which assumption fired"], ["nothing — not 'normal'", {"text": "absence of evidence", "tone": "warn"}], [{"text": "a ranking", "tone": "good"}, "threshold at review capacity"], [{"text": "never, unsupervised", "tone": "crit"}, "a random audit sample gives one"]], "t": "diagram", "id": "dg-9_4-05-4"},
+
+
+
+
+
 
     { t: "code", lang: "python", title: "Robust Mahalanobis, KNN distance and LOF on five standardised numeric columns (executed, 864 rows, the £999 row kept)",
       code: `Z = StandardScaler().fit_transform(df[["tenure_months", "monthly_fee", "logins_30d", "support_tickets", "discount_pct"]])

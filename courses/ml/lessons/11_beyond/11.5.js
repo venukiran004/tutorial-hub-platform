@@ -30,6 +30,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Nine words through the Porter stemmer and the WordNet lemmatiser (executed)",
       code: `word           Porter stem    lemma (as noun)   lemma as verb / adjective
 running        run            running           run / running
@@ -46,6 +53,10 @@ a stem is a string operation: fast, no dictionary, produces non-words, and 'orga
       caption: "Tokenising splits text into units — words by regular expression here, subwords in modern systems; stemming chops suffixes by rule; lemmatising maps to a dictionary form and needs the part of speech to do it well. For a linear classifier on TF-IDF the choice barely matters (the vectoriser's own lowercasing and token pattern do most of the work); for retrieval and small corpora, where 'cats' must match 'cat', it matters, and character n-grams are the alternative that needs no linguistics." },
 
     { t: "h2", n: "02", text: "Bag of words and TF-IDF, worked", id: "tfidf" },
+
+    {"kind": "flow", "title": "TF-IDF, worked: why the weight is a product of two opposite things", "caption": "Term frequency rewards a word for appearing often **in this document**; inverse document frequency punishes it for appearing in **many** documents. Their product is high only for a word that is frequent here and rare elsewhere — which is the definition of distinctive. The L2 normalisation at the end is what makes a long document and a short one comparable.", "cols": 3, "nodes": [{"id": "t", "label": "TF: count in this document", "sub": "often damped: 1 + log(count)", "tone": "accent"}, {"id": "i", "label": "IDF: log(N / df)", "sub": "near zero for a word in every document", "tone": "accent"}, {"id": "p", "label": "Multiply", "sub": "frequent here, rare elsewhere", "tone": "good"}, {"id": "l", "label": "L2-normalise the row", "sub": "long and short become comparable", "tone": "good"}, {"id": "s", "label": "Fit IDF on train only", "sub": "it is a statistic over documents", "tone": "crit"}, {"id": "c", "label": "Cosine is now a dot product", "sub": "rows are unit length", "tone": "teal"}], "edges": [["t", "p"], ["i", "p"], ["p", "l"], ["l", "c"], ["i", "s"]], "t": "diagram", "id": "dg-11_5-02-1"},
+
+
 
     { t: "code", lang: "text", title: "Three sentences (executed; scikit-learn's formulas)",
       code: `d1 'the cat sat on the mat'   d2 'the dog sat on the log'   d3 'cats and dogs'
@@ -65,6 +76,10 @@ cosine(d1, d2) = 0.6344      cosine(d1, d3) = 0.0000   -- 'cats' is not 'cat': t
       caption: "TF-IDF is term frequency times a rarity weight, then a unit-length row so that long documents do not dominate. `sublinear_tf` replaces tf by 1 + ln(tf) so that a word repeated ten times does not count ten times; `min_df` drops terms seen in fewer than n documents; `max_df` drops terms seen in more than a fraction; `ngram_range` adds word pairs. The hashing trick replaces the vocabulary with a hash of each token into a fixed number of buckets — no fitting, no vocabulary to store, streams and multi-machine training possible — at the cost of collisions." },
 
     { t: "h2", n: "03", text: "Naive Bayes and linear models on four newsgroups", id: "models" },
+
+    {"kind": "trace", "title": "Eight text pipelines on four newsgroups, measured", "caption": "Read the first three rows: switching from counts to TF-IDF buys **2.9 points**, and switching from multinomial to ComplementNB buys another 2.2 — and the whole thing fits and predicts in half a second. The tuned logistic regression and LinearSVC do not beat it. This is the measurement to have in hand before anyone proposes fine-tuning a transformer on four thousand documents.", "left": "pipeline", "codeW": 250, "vars": ["accuracy", "macro-F1", "fit + predict"], "steps": [{"code": "CountVectorizer + MultinomialNB", "state": ["0.8405", "0.8392", "0.6 s"], "tone": "warn"}, {"code": "TfidfVectorizer + MultinomialNB", "state": ["0.8693", "0.8656", "0.6 s"], "changed": [0], "tone": "good"}, {"code": "TfidfVectorizer + ComplementNB", "state": ["0.8914", "0.8890", "0.5 s"], "changed": [0], "tone": "good", "note": "the best here"}, {"code": "Tfidf + LogisticRegression(C=10)", "state": ["0.8680", "0.8660", "1.5 s"], "tone": "accent"}, {"code": "Tfidf + LinearSVC", "state": ["0.8840", "0.8824", "0.5 s"], "tone": "accent"}, {"code": "+ sublinear_tf, 1-2 grams", "state": ["0.8760", "0.8742", "1.4 s"], "tone": "warn"}, {"code": "+ stop_words='english'", "state": ["0.8894", "0.8879", "0.5 s"], "tone": "good"}, {"code": "char_wb 3-5 grams + LinearSVC", "state": ["0.8794", "0.8770", "6.9 s"], "tone": "warn", "note": "14x the time"}], "t": "diagram", "id": "dg-11_5-03-2"},
+
+
 
     { t: "code", lang: "python", title: "2,242 training and 1,492 test documents; headers, footers and quotes removed (executed)",
       code: `#  pipeline                                                     test accuracy   macro-F1   fit + predict
@@ -95,7 +110,12 @@ GridSearchCV(make_pipeline(TfidfVectorizer(sublinear_tf=True), LinearSVC()),
 
     { t: "h2", n: "04", text: "Retrieval: cosine on TF-IDF and BM25", id: "retrieval" },
 
-    {"kind": "matrix", "title": "Cosine on TF-IDF, and what BM25 adds", "caption": "Both rank documents by weighted term overlap. BM25 adds two things TF-IDF lacks: a **saturating** term frequency, so the tenth occurrence of a word adds almost nothing, and an explicit length normalisation with a tunable strength rather than the implicit one that L2 gives.", "cols": ["Term frequency", "Length"], "rows": ["TF-IDF + cosine", "BM25", "Raw count overlap", "Binary overlap"], "cells": [[{"text": "linear, or log-damped", "tone": "accent"}, "implicit, via L2 normalisation"], [{"text": "saturating: k1", "tone": "good"}, {"text": "explicit, tunable: b", "tone": "good"}], [{"text": "linear, unbounded", "tone": "crit"}, {"text": "none: long documents win", "tone": "crit"}], [{"text": "presence only", "tone": "warn"}, "none"]], "t": "diagram", "id": "dg-11_5-04-1"},
+    {"kind": "matrix", "title": "Cosine on TF-IDF, and what BM25 adds", "caption": "Both rank documents by weighted term overlap. BM25 adds two things TF-IDF lacks: a **saturating** term frequency, so the tenth occurrence of a word adds almost nothing, and an explicit length normalisation with a tunable strength rather than the implicit one that L2 gives.", "cols": ["Term frequency", "Length"], "rows": ["TF-IDF + cosine", "BM25", "Raw count overlap", "Binary overlap"], "cells": [[{"text": "linear, or log-damped", "tone": "accent"}, "implicit, via L2 normalisation"], [{"text": "saturating: k1", "tone": "good"}, {"text": "explicit, tunable: b", "tone": "good"}], [{"text": "linear, unbounded", "tone": "crit"}, {"text": "none: long documents win", "tone": "crit"}], [{"text": "presence only", "tone": "warn"}, "none"]], "t": "diagram", "id": "dg-11_5-04-3"},
+
+
+
+
+
 
 
 
@@ -117,6 +137,10 @@ length normalisation and saturation: the term 'launch'
       caption: "Both rank sensibly; they disagree on the details because cosine rewards a document that is *about nothing but* the query terms (short, concentrated) while BM25 rewards containing the terms with a bounded credit for repetition and a penalty for length. BM25 remains the default first stage of retrieval systems, dense embeddings the second, and the two are usually combined." },
 
     { t: "h2", n: "05", text: "Topics: LDA", id: "lda" },
+
+    {"kind": "flow", "title": "LDA: a document is a mixture of topics, a topic a distribution over words", "caption": "The generative story is the model: pick a topic mixture for the document, then for each word pick a topic from that mixture and a word from that topic. Fitting inverts the story. Two consequences people trip over: the number of topics is an input that the data does not choose for you, and the topics are **unlabelled** — the names are yours, read off the top words, and nothing guarantees they are coherent.", "cols": 3, "nodes": [{"id": "d", "label": "Per document", "sub": "a distribution over topics", "tone": "violet"}, {"id": "t", "label": "Per topic", "sub": "a distribution over words", "tone": "violet"}, {"id": "w", "label": "Each word: pick a topic, then a word", "sub": "the generative story", "tone": "accent"}, {"id": "f", "label": "Fitting inverts it", "sub": "variational, or Gibbs", "tone": "good"}, {"id": "k", "label": "k is an input", "sub": "coherence can guide; it does not decide", "tone": "warn"}, {"id": "n", "label": "Topics are unlabelled", "sub": "you name them; coherence is not guaranteed", "tone": "warn"}], "edges": [["d", "w"], ["t", "w"], ["w", "f"], ["f", "k"], ["f", "n"]], "t": "diagram", "id": "dg-11_5-05-4"},
+
+
 
     { t: "p", text: "Latent Dirichlet allocation is a generative model: each document is a mixture of K topics, each topic a distribution over words, and each word in a document is drawn by picking a topic from the document's mixture and a word from that topic. Fitting it (variational inference or Gibbs sampling) recovers the topics and each document's mixture from the word counts alone. It runs on counts, not TF-IDF, and it needs stop words removed and rare and ubiquitous terms pruned, or the topics are 'the, and, of'." },
 

@@ -32,6 +32,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "p", text: "Every lesson in this module uses the same series. Three stores — A, B and C — report daily sales from 1 January 2023 to 30 June 2025. The generator gave each store a base level (200, 120 and 80), a slow trend, a weekly pattern with factors 0.85, 0.90, 0.95, 1.00, 1.15, 1.30 and 0.85 from Monday to Sunday, a yearly pattern peaking in early July with an amplitude of 15 %, promotions on a random 10 % of days at +20 %, a +80 % Black Friday, a +25 % week before Christmas, closures on 25 December and 1 January, a permanent +30 lift for store C from 1 September 2024 after a refurbishment, and 8 % multiplicative noise. The raw file `sales_raw.csv` contains those numbers with faults you will meet in any warehouse: rows arrive unsorted with string dates, three days in March 2024 were loaded twice, store B's feed dropped for five days in June 2024 so the rows are absent rather than zero, one day at store A was recorded as £3.10 by a failed till, and the extract for the last day ran mid-afternoon. `store_sales.csv` is the clean version with the promo and holiday flags, which the later lessons use once the hygiene has been done here." },
 
     { t: "table", head: ["", "Ordinary tabular learning", "A time series"], rows: [
@@ -61,6 +68,13 @@ cross_val_score(gb, X, y, cv=KFold(5, shuffle=True))      # MAE 22.25
     { t: "h2", n: "02", text: "Getting the data right: seven checks, in order", id: "hygiene" },
 
     {"kind": "steps", "title": "Seven checks, and the order is the point", "caption": "Each check depends on the one above it being true. A lag feature is meaningless before the index is sorted, and `shift(1)` stops meaning 'yesterday' the moment the frequency is irregular — so a gap in the calendar silently changes what every later feature computes.", "items": [{"label": "The index is a real timestamp, sorted", "desc": "otherwise lags point at the wrong row", "code": "1", "tone": "crit"}, {"label": "The frequency is regular", "desc": "or shift(1) no longer means yesterday", "code": "2", "tone": "crit"}, {"label": "Gaps are explicit", "desc": "a missing day is a NaN, not an absent row", "code": "3", "tone": "warn"}, {"label": "Duplicated timestamps resolved", "desc": "two rows for one day is a grain error", "code": "4", "tone": "warn"}, {"label": "The series is one grain", "desc": "one store, one product, or an explicit key", "code": "5", "tone": "good"}, {"label": "Units and revisions understood", "desc": "a restated history changes the past under you", "code": "6", "tone": "good"}, {"label": "Only then: plot it", "desc": "level, trend, season, breaks, outliers", "code": "7", "tone": "violet"}], "t": "diagram", "id": "dg-10_1-02-1"},
+
+
+
+
+
+
+
 
 
 
@@ -102,6 +116,12 @@ last_day.sum() / same_weekday_last_week.sum()               # 7. the end: 217 vs
 
     { t: "h2", n: "03", text: "Missing values, outliers, events and shifts", id: "missing" },
 
+    {"kind": "flow", "title": "Four repairs, and the one that is never allowed", "caption": "Each treatment makes a different assumption about what the gap meant. The rule that matters is the last one: **backward-fill copies the future into the past**, so a feature built with it is a leak even though nothing about the code looks wrong — and the backtest will reward it.", "cols": 3, "nodes": [{"id": "g", "label": "A gap in the series", "sub": "a missing day, an outage", "tone": "violet"}, {"id": "f", "label": "Forward-fill", "sub": "for a state that persists", "tone": "good"}, {"id": "i", "label": "Interpolate", "sub": "for a continuous signal", "tone": "good"}, {"id": "z", "label": "Treat as zero", "sub": "only if absent means none", "tone": "accent"}, {"id": "l", "label": "Leave it NaN", "sub": "honest; the model must cope", "tone": "accent"}, {"id": "b", "label": "Backward-fill", "sub": "copies the future into the past", "tone": "crit"}], "edges": [["g", "f"], ["g", "i"], ["g", "z"], ["g", "l"], ["g", "b", "never", "dashed"]], "t": "diagram", "id": "dg-10_1-03-2"},
+
+
+
+
+
     { t: "p", text: "A gap in a series is not a missing cell; it is a missing day, and whatever you put there flows into every lag, window and difference that touches it. The treatment follows from what the gap *means*. A sensor that dropped out measured nothing, but the quantity existed: interpolate. A shop that was closed sold nothing: fill zero and add a `closed` flag, because zero is a value the model must learn to expect on those dates. A product not yet launched has no series yet: truncate. A public holiday is a real, explainable dip: keep it and add a regressor. A backfill lag in the pipeline means the value will arrive later: exclude the tail from training rather than fill it. And one method is never right for a series you will model." },
 
     { t: "code", lang: "python", title: "Backward fill is leakage written as a method call (executed: store B's five-day gap, naive one-step forecast)",
@@ -129,6 +149,12 @@ robust_z2 = 0.6745 * (ratio - 1) / local_mad(ratio - 1)      # 34 flags, and now
     { t: "callout", kind: "trap", title: "Fix the data before you look for structure", body: [{ t: "p", text: "Each of the faults above would have survived into a model and produced a plausible number. The duplicated days become a 'spike' the model tries to learn. The absent rows make the 7-day rolling mean on 15 June an average of 4–9 June plus 15 June — 166.6, a number that looks fine and spans a hole. The partial last day is a 63 % drop the model will forecast forward. The till fault is a −10 sd residual that widens every prediction interval. None of them raises an error." }] },
 
     { t: "h2", n: "04", text: "Classical decomposition, worked on twelve numbers", id: "decomposition" },
+
+    {"kind": "trace", "title": "Classical decomposition on twelve numbers, every intermediate exact", "caption": "The series is built as trend 30 + 1.5t plus a seasonal pattern of −3, +1, −4, +6 — so the procedure can be checked rather than believed. The centred 4-quarter moving average recovers the trend rising by **exactly 1.5** a quarter; subtracting it leaves the detrended values; averaging those by quarter recovers the seasonal indices exactly, and they sum to zero. The remainder is 0.0 at every point that has a trend estimate. Add N(0,1) noise and the indices come back as −2.44, +1.20, −4.26, +5.51 with a remainder sd of 0.57.", "left": "stage", "codeW": 170, "vars": ["Q1", "Q2", "Q3", "Q4"], "steps": [{"code": "the planted season", "state": ["-3.0", "+1.0", "-4.0", "+6.0"], "tone": "violet"}, {"code": "trend by centred MA", "state": ["rises 1.5 a quarter", "", "", "no estimate at the ends"], "tone": "accent"}, {"code": "detrended, cycle 1", "state": ["-3.0", "+1.0", "-4.0", "+6.0"], "tone": "good"}, {"code": "detrended, cycle 2", "state": ["-3.0", "+1.0", "-4.0", "+6.0"], "tone": "good"}, {"code": "averaged indices", "state": ["-3.0", "+1.0", "-4.0", "+6.0"], "changed": [0, 1, 2, 3], "tone": "good", "note": "sum 0.0"}, {"code": "remainder", "state": ["0.0", "0.0", "0.0", "0.0"], "tone": "good", "note": "exact"}, {"code": "with N(0,1) noise", "state": ["-2.44", "+1.20", "-4.26", "+5.51"], "tone": "accent", "note": "remainder sd 0.57"}], "t": "diagram", "id": "dg-10_1-04-3"},
+
+
+
+
 
     { t: "p", text: "Decomposition splits a series into trend, season and remainder so that each can be seen alone: y = T + S + R additively, or y = T × S × R multiplicatively. It is a diagnostic more than a model — its job is to tell you the season length, whether the trend has a break, and whether the remainder has anything left in it. The classical procedure is worked here on twelve quarterly numbers built as trend 30 + 1.5t plus a seasonal pattern of −3, +1, −4, +6, so that every intermediate value is exact and the pattern is recovered from the data alone." },
 
@@ -173,6 +199,12 @@ with N(0, 1) noise added to the same twelve numbers, one draw: indices −2.44, 
 </svg>` },
 
     { t: "h2", n: "05", text: "Additive or multiplicative, and what STL says about the daily series", id: "multiplicative" },
+
+    {"kind": "compare", "title": "Additive or multiplicative, and the test is the swing", "caption": "Look at whether the seasonal swing **grows with the level**. If December is always 40 units above trend, the season is additive; if December is always 30% above trend, it is multiplicative — and taking logs converts the second into the first, which is why a log transform and an additive model are usually the same decision.", "columns": [{"title": "Additive: y = T + S + R", "tone": "accent", "items": ["The swing is a constant number of units", "Works with zeros and negatives", "Residuals have constant spread", "No transform needed"]}, {"title": "Multiplicative: y = T x S x R", "tone": "good", "items": ["The swing is a constant percentage", "Needs strictly positive values", "Residual spread grows with the level", "log(y) makes it additive"]}], "t": "diagram", "id": "dg-10_1-05-4"},
+
+
+
+
 
     { t: "p", text: "The choice is read from how the seasonal swing behaves as the level changes: if the swing stays the same size in units, the components add; if it grows with the level, they multiply, and the right move is to model log(y), which turns the product into a sum for everything downstream. On the store data the evidence is across stores rather than across time, because the trend is slow: the Saturday-minus-Monday swing is 96.9 at store A, 59.0 at B and 41.3 at C, and divided by each store's level that is 0.422, 0.444 and 0.446 — one ratio, three levels. Pooled across the stores, the 28-day rolling standard deviation has a Spearman correlation of 0.931 with the rolling mean. The generator multiplied, and the data says so." },
 

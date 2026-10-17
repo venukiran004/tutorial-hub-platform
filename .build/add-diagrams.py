@@ -15,10 +15,24 @@ import json
 import os
 import re
 import sys
+import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 course = sys.argv[1] if len(sys.argv) > 1 else "python"
+
+def write_retry(path, text, tries=6):
+    """Retry a write that a lock briefly refused, rather than losing the
+    rest of the run."""
+    for k in range(tries):
+        try:
+            io.open(path, "w", encoding="utf-8", newline="\n").write(text)
+            return
+        except OSError:
+            if k == tries - 1:
+                raise
+            time.sleep(0.3 * (k + 1))
+
 
 specs = {}
 for f in sorted(glob.glob(os.path.join(HERE, "%s-diagrams-*.json" % course))):
@@ -63,5 +77,5 @@ for lid, items in specs.items():
                 end += 1
         lines.insert(end + 1, "")
         lines.insert(end + 2, block)
-    io.open(path, "w", encoding="utf-8", newline="\n").write("\n".join(lines))
+    write_retry(path, "\n".join(lines))
 print("added %d, replaced %d, lessons %d%s" % (added, replaced, len(specs), (", missing files: " + ", ".join(missing)) if missing else ""))

@@ -25,6 +25,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Five fold scores, and what can be said about them (executed)",
       code: `fold AUCs   0.85  0.82  0.90  0.79  0.88
 mean 0.848    sd 0.044    standard error of the mean 0.044 / sqrt(5) = 0.020    naive 95 % interval  0.848 ± 0.055
@@ -69,7 +79,9 @@ for _ in range(2000):
 
 
 
-    {"kind": "matrix", "title": "Why the naive paired t-test over folds is wrong", "caption": "Cross-validation folds share training rows, so the per-fold differences are **not independent** — and a t-test that assumes they are reports an interval far too narrow and a p-value far too small. The corrections exist because the dependence is structural, not a sampling accident.", "cols": ["Assumes", "Use"], "rows": ["Paired t over folds", "Corrected resampled t", "5x2cv paired t", "McNemar", "Bootstrap on the test set"], "cells": [[{"text": "folds are independent", "tone": "crit"}, "they share training rows"], [{"text": "accounts for the overlap", "tone": "good"}, "the default for repeated CV"], [{"text": "limits the reuse", "tone": "good"}, "when a stricter test is wanted"], [{"text": "per-row agreement", "tone": "good"}, "two models at one threshold"], [{"text": "one test set, resampled", "tone": "good"}, "an interval on a single number"]], "t": "diagram", "id": "dg-2_7-02-0"},
+
+
+
 
 
 
@@ -154,6 +166,16 @@ mcnemar([[201, 11], [12, 73]], exact=True)      # p = 1.0
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "The logistic model's AUC by plan and by region, with bootstrap intervals (executed)",
       hl: [4, 8, 9],
       code: `#   slice           n    positives   AUC     95 % CI
@@ -191,7 +213,9 @@ the width scales with 1 / sqrt(positives), so at 1 % prevalence a ± 0.02 interv
 
 
 
-    {"kind": "matrix", "title": "Offline is necessary and never sufficient", "caption": "Offline evaluation reads logged rows whose labels exist because some **past policy** chose to show them — so it answers 'which candidate looks most promising', not 'will this move the business'. Only the second question is the one the deployment is for, and only a randomised test answers it.", "cols": ["Offline", "Online"], "rows": ["Data", "Metric", "Comparison", "Failure mode", "Verdict"], "cells": [["logged rows, labels known", "live traffic, labels later"], [{"text": "AUC, log loss: proxies", "tone": "warn"}, {"text": "revenue, retention: the thing", "tone": "good"}], ["paired on the same rows", "randomised, with a control"], [{"text": "optimises the proxy", "tone": "crit"}, {"text": "slow; can harm users", "tone": "warn"}], [{"text": "necessary, not sufficient", "tone": "accent"}, {"text": "the final word", "tone": "good"}]], "t": "diagram", "id": "dg-2_7-04-1"},
+
+
+
 
 
 

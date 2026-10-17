@@ -30,6 +30,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "p", text: "A frequentist treats the parameter as fixed and the data as random, and reports the parameter value that makes the data most likely — the maximum-likelihood estimate — with a confidence interval about the procedure. A Bayesian treats the parameter as uncertain, encodes what was believed before the data in a prior p(θ), and updates it by Bayes' rule to a posterior p(θ | data) ∝ p(data | θ) p(θ). The posterior mode is the MAP estimate — the MLE with a prior — and the posterior mean, spread and intervals are all read from the same distribution. When the prior and likelihood are conjugate the posterior has a closed form; a Beta prior on a coin's probability is the classic case." },
 
     { t: "code", lang: "text", title: "Three heads in four tosses, prior Beta(2, 2) (executed)",
@@ -48,6 +55,10 @@ a stronger prior, Beta(20, 20), on the same 3 of 4:  MAP 0.5238, mean 0.5227 -- 
 
     { t: "h2", n: "02", text: "Bayesian linear regression, worked", id: "blr" },
 
+    {"kind": "trace", "title": "The predictive variance grows with distance from the data", "caption": "Five points, σ² = 1, τ² = 4. Two things to read. First, the posterior mean [1.9619, 1.5317] **is** the ridge estimate with λ = σ²/τ² = 0.25, exactly — MAP is penalised fitting, as 1.4 claimed. Second, the two sources of uncertainty add in quadrature: the noise contributes 1.000 at every x, while the **parameter** contribution grows from 0.436 at x = 0 to 3.154 at x = 10, so the total sd goes 1.091 to 3.309. A point estimate cannot express that, and it is the whole reason to carry the posterior.", "left": "predict at", "codeW": 130, "vars": ["mean", "total sd", "noise sd", "parameter sd"], "steps": [{"code": "posterior mean m", "state": ["[1.9619, 1.5317]", "", "OLS [2.06, 1.57]", "= ridge λ 0.25"], "tone": "violet"}, {"code": "x = 0", "state": ["1.962", "1.091", "1.000", "0.436"], "tone": "good"}, {"code": "x = 2", "state": ["5.025", "1.257", "1.000", "0.762"], "tone": "good"}, {"code": "x = 5", "state": ["9.620", "1.905", "1.000", "1.622"], "changed": [1, 3], "tone": "warn"}, {"code": "x = 10", "state": ["17.279", "3.309", "1.000", "3.154"], "changed": [1, 3], "tone": "crit", "note": "far from the data"}], "t": "diagram", "id": "dg-11_2-02-1"},
+
+
+
     { t: "p", text: "With Gaussian noise σ² and a Gaussian prior w ~ N(0, τ²I) on the weights, the posterior over w is Gaussian with precision A = ΦᵀΦ/σ² + I/τ² and mean m = A⁻¹Φᵀy/σ². The predictive distribution at a new input φ is Gaussian with mean φᵀm and variance σ² + φᵀA⁻¹φ: the noise plus the parameter uncertainty, and the second term grows with distance from the data. Five points from y = 2 + 1.5x + N(0, 1), with σ² = 1 and τ² = 4:" },
 
     { t: "code", lang: "text", title: "The posterior in closed form (executed)",
@@ -64,6 +75,10 @@ predictive at x = 10:   mean 17.279  sd 3.309   (parameter part 3.154)`,
       caption: "The posterior mean is the ridge solution with the penalty set by the ratio of noise variance to prior variance — the Bayesian reading of 4.3's λ. What ridge does not give is the second number: the predictive standard deviation, which is the noise near the data and three times the noise ten units away, because the slope's uncertainty (sd √0.0976 = 0.31) is multiplied by the distance. That growth is what a point estimate hides and what a Gaussian process makes the whole model." },
 
     { t: "h2", n: "03", text: "Gaussian processes: a prior over functions", id: "gp" },
+
+    {"kind": "flow", "title": "A Gaussian process is a prior over functions", "caption": "Instead of putting a prior on a weight vector, put one directly on the function: any finite set of inputs has a joint Gaussian over their outputs, with the covariance given by a kernel. Conditioning on the observed points gives a posterior that passes near the data and **fans out between and beyond** it. The kernel is the modelling choice — it encodes smoothness, periodicity, length scale — and the cost is the O(n³) inversion that keeps GPs to thousands of points.", "cols": 3, "nodes": [{"id": "k", "label": "A kernel", "sub": "smoothness, periodicity, length scale", "tone": "violet"}, {"id": "p", "label": "A prior over functions", "sub": "any finite set is jointly Gaussian", "tone": "accent"}, {"id": "o", "label": "Condition on the data", "sub": "an exact Gaussian posterior", "tone": "good"}, {"id": "m", "label": "Mean passes near the points", "sub": "exactly, if noise-free", "tone": "good"}, {"id": "v", "label": "Variance fans out between them", "sub": "uncertainty where there is no data", "tone": "good"}, {"id": "c", "label": "Cost O(n³)", "sub": "thousands of points, not millions", "tone": "crit"}], "edges": [["k", "p"], ["p", "o"], ["o", "m"], ["o", "v"], ["v", "c"]], "t": "diagram", "id": "dg-11_2-03-2"},
+
+
 
     { t: "p", text: "A Gaussian process puts the prior on the function itself: any finite set of function values is jointly Gaussian with a covariance given by a kernel k(x, x′) that says how similar two inputs' outputs should be. The RBF kernel k = exp(−(x − x′)²/2ℓ²) says nearby inputs have nearly equal outputs and inputs more than a few length-scales apart are unrelated. Conditioning the joint Gaussian on the observed values gives the posterior at any new point in closed form: mean k*ᵀ(K + σ²I)⁻¹y and variance k(x*, x*) − k*ᵀ(K + σ²I)⁻¹k*, where K is the kernel matrix of the training inputs and k* the kernel between the new point and each of them." },
 
@@ -94,6 +109,10 @@ three posterior samples at x = 1.5: 1.686, 1.177, 1.393`,
 
     { t: "h2", n: "04", text: "When there is no closed form: MCMC, Laplace and variational inference", id: "inference" },
 
+    {"kind": "matrix", "title": "When there is no closed form: three ways to approximate a posterior", "caption": "They trade accuracy against cost in opposite directions. MCMC is asymptotically exact and slow, and its diagnostics tell you when to distrust it. Variational inference is fast and systematically **under-estimates** the variance, because minimising the reverse KL prefers a narrow mode. Laplace is a single Gaussian at the mode and is cheapest of all.", "cols": ["Gives", "Costs"], "rows": ["MCMC (NUTS)", "Variational inference", "Laplace approximation", "Conjugate (when available)"], "cells": [[{"text": "asymptotically exact samples", "tone": "good"}, {"text": "slow; check R-hat and ESS", "tone": "warn"}], [{"text": "a fitted simple distribution", "tone": "accent"}, {"text": "fast; under-estimates variance", "tone": "crit"}], [{"text": "one Gaussian at the mode", "tone": "accent"}, "cheapest; wrong for skew or multimodality"], [{"text": "the exact posterior", "tone": "good"}, {"text": "only for specific prior-likelihood pairs", "tone": "warn"}]], "t": "diagram", "id": "dg-11_2-04-3"},
+
+
+
     { t: "p", text: "Conjugacy is the exception. For a logistic regression, a hierarchical model or anything with a non-Gaussian likelihood the posterior has no closed form, and three families approximate it. **MCMC** draws samples from the posterior by a random walk whose stationary distribution is the posterior — Metropolis accepts a proposal with probability min(1, p(θ′)/p(θ)); Hamiltonian Monte Carlo and NUTS (PyMC's and Stan's default) use gradients to propose far and accept often. **The Laplace approximation** fits a Gaussian at the mode with the curvature there. **Variational inference** chooses a tractable family q(θ) and optimises its parameters to minimise the KL divergence to the posterior — fast, scalable, and biased toward under-estimating the spread." },
 
     { t: "code", lang: "python", title: "Metropolis and Laplace on the coin posterior, where the answer is known (executed)",
@@ -112,6 +131,10 @@ for i in range(20000):
 
     { t: "h2", n: "05", text: "Bayesian optimisation: the acquisition function", id: "bo" },
 
+    {"kind": "flow", "title": "The acquisition function is where exploration is decided", "caption": "A surrogate model gives a mean and a variance at every untried point; the acquisition function turns those two numbers into one score to maximise. **Expected improvement** weighs how much better a point might be by how likely that is, so it naturally samples both near the best-so-far and where the model is simply ignorant — which is why it needs no explicit exploration parameter.", "cols": 3, "nodes": [{"id": "s", "label": "Surrogate over the space", "sub": "a GP: mean and variance everywhere", "tone": "violet"}, {"id": "m", "label": "High mean", "sub": "probably good: exploit", "tone": "accent"}, {"id": "v", "label": "High variance", "sub": "unknown: explore", "tone": "accent"}, {"id": "a", "label": "Expected improvement", "sub": "combines both into one score", "tone": "good"}, {"id": "e", "label": "Evaluate the argmax", "sub": "one expensive fit", "tone": "good"}, {"id": "u", "label": "Update and repeat", "sub": "the surrogate sharpens where it looked", "tone": "teal"}], "edges": [["s", "m"], ["s", "v"], ["m", "a"], ["v", "a"], ["a", "e"], ["e", "u"]], "t": "diagram", "id": "dg-11_2-05-4"},
+
+
+
     { t: "p", text: "8.1 used Bayesian optimisation to tune hyperparameters; this is the mechanism. A GP surrogate is fitted to the evaluations so far, and an acquisition function turns its posterior mean μ(x) and standard deviation σ(x) into a score for where to evaluate next. **Expected improvement** EI(x) = (μ − f_best − ξ) Φ(z) + σ φ(z), with z = (μ − f_best − ξ)/σ, rewards points that are either promising or uncertain; **upper confidence bound** μ + κσ makes the trade-off explicit; **probability of improvement** Φ(z) is greedier. The next point is the acquisition's maximiser, the function is evaluated there, and the surrogate is refitted." },
 
     { t: "code", lang: "python", title: "Fifteen evaluations of a 1-D objective, 20 seeds: EI against random search (executed)",
@@ -125,7 +148,12 @@ after three points at −1.5, 0, 2:   EI proposes x = 2.65 (EI 0.511);   UCB wit
 
     { t: "h2", n: "06", text: "Thompson sampling: the posterior as the policy", id: "thompson" },
 
-    {"kind": "matrix", "title": "Why the posterior makes a good policy", "caption": "Thompson sampling needs no exploration parameter at all: drawing one sample per arm from each posterior and playing the best explores exactly in proportion to how uncertain the arm is, and that proportion shrinks on its own as evidence arrives.", "cols": ["Explores by", "Tuning"], "rows": ["Epsilon-greedy", "UCB", "Thompson sampling", "Bayesian optimisation"], "cells": [[{"text": "acting randomly epsilon of the time", "tone": "warn"}, "epsilon, and a decay schedule"], [{"text": "an optimism bonus", "tone": "accent"}, "the confidence width"], [{"text": "sampling the posterior", "tone": "good"}, {"text": "none: it self-anneals", "tone": "good"}], [{"text": "an acquisition function", "tone": "accent"}, "the kernel, and the acquisition"]], "t": "diagram", "id": "dg-11_2-06-1"},
+    {"kind": "matrix", "title": "Why the posterior makes a good policy", "caption": "Thompson sampling needs no exploration parameter at all: drawing one sample per arm from each posterior and playing the best explores exactly in proportion to how uncertain the arm is, and that proportion shrinks on its own as evidence arrives.", "cols": ["Explores by", "Tuning"], "rows": ["Epsilon-greedy", "UCB", "Thompson sampling", "Bayesian optimisation"], "cells": [[{"text": "acting randomly epsilon of the time", "tone": "warn"}, "epsilon, and a decay schedule"], [{"text": "an optimism bonus", "tone": "accent"}, "the confidence width"], [{"text": "sampling the posterior", "tone": "good"}, {"text": "none: it self-anneals", "tone": "good"}], [{"text": "an acquisition function", "tone": "accent"}, "the kernel, and the acquisition"]], "t": "diagram", "id": "dg-11_2-06-5"},
+
+
+
+
+
 
 
 

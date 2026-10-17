@@ -30,6 +30,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "p", text: "A batch learner sees all its data at once and fits; an online learner sees one row (or a mini-batch), updates, discards it and waits for the next. The reasons to learn online are memory — the data do not fit — latency — the model must reflect the last minute — and drift — the world moves, and a model fitted last month is wrong this month. Evaluation is prequential (predict, then train): each row is scored by the model before the model sees its label, so the running accuracy is an honest out-of-sample number with no split at all." },
 
     { t: "code", lang: "python", title: "A 20,000-row logistic stream, three ways (executed)",
@@ -59,6 +66,10 @@ for x_i, y_i in stream: y_pred = model.predict_one(x_i); metric.update(y_i, y_pr
 
     { t: "h2", n: "02", text: "Concept drift on the stream", id: "drift" },
 
+    {"kind": "flow", "title": "Detecting drift on a stream, and what each detector watches", "caption": "A drift detector watches a **statistic**, and which statistic decides what it can see. Error-rate detectors need labels and so fire late; input-distribution detectors fire early and cannot tell a harmless population shift from a damaging one. Running both and comparing is what distinguishes 'more of some customers' from 'the relationship changed'.", "cols": 3, "nodes": [{"id": "s", "label": "The stream", "sub": "rows, then labels, later", "tone": "violet"}, {"id": "i", "label": "Input distribution", "sub": "no labels: fires early", "tone": "good"}, {"id": "e", "label": "Error rate", "sub": "needs labels: fires late", "tone": "warn"}, {"id": "a", "label": "ADWIN / DDM / Page-Hinkley", "sub": "on whichever statistic", "tone": "accent"}, {"id": "b", "label": "Input moved, error did not", "sub": "data drift: often harmless", "tone": "accent"}, {"id": "c", "label": "Error moved", "sub": "concept drift: act", "tone": "crit"}], "edges": [["s", "i"], ["s", "e"], ["i", "a"], ["e", "a"], ["a", "b"], ["a", "c"]], "t": "diagram", "id": "dg-11_3-02-1"},
+
+
+
     { t: "code", lang: "python", title: "At row 10,000 the sign of feature 0's effect flips (executed)",
       code: `batch model (fitted on rows 0-5,000):  accuracy on rows 5,000-10,000 0.8310;  on rows 10,000-20,000 0.6182   <- wrong for ever
 online SGD, η = 0.01:                  0.8340 before;  0.7160 in the 500 rows after the change;  0.8263 on rows 12,000-20,000
@@ -83,6 +94,10 @@ River HoeffdingAdaptiveTreeClassifier (a tree with ADWIN inside each branch): pr
     ] },
 
     { t: "h2", n: "03", text: "Federated averaging, worked on two clients", id: "fedavg" },
+
+    {"kind": "cycle", "title": "Federated averaging, one round", "caption": "The data never moves; the **model** does. Each client trains locally for a few steps and returns its update, the server averages them weighted by how many rows each client held, and the new global model goes back out. One round is a weighted average of gradients that were each computed on a different distribution — which is exactly why non-IID clients make this converge slowly, or to the wrong place.", "centre": "data stays put", "nodes": [{"label": "Server sends the model", "sub": "to a sample of clients", "tone": "violet"}, {"label": "Each trains locally", "sub": "a few steps, on its own rows", "tone": "accent"}, {"label": "Clients return updates", "sub": "weights or gradients, not data", "tone": "good"}, {"label": "Server averages, weighted by n", "sub": "and the next round begins", "tone": "teal"}], "t": "diagram", "id": "dg-11_3-03-2"},
+
+
 
     { t: "p", text: "Federated learning trains a single model on data held by many clients — phones, hospitals, banks — that cannot be pooled. FedAvg (McMahan et al., 2017) is the basic algorithm: the server sends the current global weights to the clients; each client runs a few epochs of local SGD on its own data and returns its updated weights; the server averages them, weighted by each client's number of rows; repeat. No data leaves a client; only weights travel." },
 
@@ -128,7 +143,12 @@ centralised logistic regression on the pooled 1,000 rows:  w = (1.52, −1.04, 0
 
     { t: "h2", n: "04", text: "Non-IID data: which kind", id: "noniid" },
 
-    {"kind": "matrix", "title": "Non-IID is not one problem", "caption": "Federated averaging degrades for different reasons depending on **how** the clients differ, and the fix differs with it. Label skew is the one that breaks naive averaging hardest: each client's update points at its own label distribution, and the average of those directions need not help anyone.", "cols": ["Clients differ in", "Mitigation"], "rows": ["Label skew", "Feature skew", "Quantity skew", "Concept skew"], "cells": [[{"text": "which classes they hold", "tone": "crit"}, "proximal terms, server momentum"], ["the same classes, different inputs", "normalisation that is not batch-wise"], [{"text": "how many rows", "tone": "warn"}, "weight the average by n"], [{"text": "P(y|x) itself", "tone": "crit"}, "personalisation: one model cannot fit all"]], "t": "diagram", "id": "dg-11_3-04-1"},
+    {"kind": "matrix", "title": "Non-IID is not one problem", "caption": "Federated averaging degrades for different reasons depending on **how** the clients differ, and the fix differs with it. Label skew is the one that breaks naive averaging hardest: each client's update points at its own label distribution, and the average of those directions need not help anyone.", "cols": ["Clients differ in", "Mitigation"], "rows": ["Label skew", "Feature skew", "Quantity skew", "Concept skew"], "cells": [[{"text": "which classes they hold", "tone": "crit"}, "proximal terms, server momentum"], ["the same classes, different inputs", "normalisation that is not batch-wise"], [{"text": "how many rows", "tone": "warn"}, "weight the average by n"], [{"text": "P(y|x) itself", "tone": "crit"}, "personalisation: one model cannot fit all"]], "t": "diagram", "id": "dg-11_3-04-3"},
+
+
+
+
+
 
 
 
@@ -162,6 +182,10 @@ centralised logistic regression on the pooled 1,000 rows:  w = (1.52, −1.04, 0
       caption: "On a convex, well-specified model, label and feature skew cost nothing: client drift — the local updates diverging from each other, which grows with the number of local steps — is real and measurable, and FedProx's proximal term shrinks it, but the averaged model still converges to the pooled solution. The situation that breaks the global model is concept skew, and no amount of averaging fixes it, because there is no single model to find: the centralised fit is as bad. The answers are personalisation (a global model as a starting point, fine-tuned per client), clustering clients into groups that share a concept, or a model with client-specific parts. Deep models add a fourth cost, which the convex case hides: with non-convex losses, local steps move clients toward different minima and averaging them can land between." },
 
     { t: "h2", n: "05", text: "Privacy: what an update leaks, and what it costs to hide it", id: "privacy" },
+
+    {"kind": "flow", "title": "What an update leaks, and what it costs to hide it", "caption": "Keeping the data local is not privacy. A gradient is a function of the rows that produced it, and from it an attacker can often recover whether a particular record was present — sometimes the record itself. Differential privacy bounds that by **clipping and adding noise**, and the bound is paid for in accuracy: a smaller ε is a stronger guarantee and a worse model.", "cols": 3, "nodes": [{"id": "u", "label": "A client's update", "sub": "no raw data sent", "tone": "violet"}, {"id": "m", "label": "Membership inference", "sub": "was this record in the batch?", "tone": "crit"}, {"id": "r", "label": "Reconstruction", "sub": "sometimes the record itself", "tone": "crit"}, {"id": "c", "label": "Clip the update", "sub": "bound any one row's influence", "tone": "good"}, {"id": "n", "label": "Add calibrated noise", "sub": "(epsilon, delta) differential privacy", "tone": "good"}, {"id": "a", "label": "Accuracy is the price", "sub": "smaller epsilon, worse model", "tone": "warn"}], "edges": [["u", "m"], ["u", "r"], ["m", "c"], ["c", "n"], ["n", "a"]], "t": "diagram", "id": "dg-11_3-05-4"},
+
+
 
     { t: "code", lang: "python", title: "A client with one row, and the two defences (executed)",
       code: `# a client holding ONE row (x, y = 0) trains one step from w = 0 and returns the update

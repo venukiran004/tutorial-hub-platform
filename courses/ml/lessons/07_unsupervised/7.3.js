@@ -34,6 +34,15 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Three indices computed by hand on {1, 2, 3} | {8, 9, 10} (executed; every value matches scikit-learn)",
       code: `SILHOUETTE   s(i) = (b(i) - a(i)) / max(a(i), b(i))       a = mean distance to own cluster,  b = mean distance to the nearest other cluster
    x = 1:  a = mean(1, 2) = 1.5      b = mean(7, 8, 9) = 8       s = 6.5/8 = 0.8125
@@ -87,6 +96,15 @@ CALINSKI-HARABASZ   CH = [B / (k - 1)] / [W / (n - k)]      B = Σ nᵢ ‖cᵢ 
 
 
 
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "ARI and NMI from a contingency table, by hand (executed)",
       code: `truth  A A A A B B B B        clustering  1 1 1 2 2 2 2 1          contingency:        cluster 1   cluster 2
                                                                         class A           3           1
@@ -122,6 +140,16 @@ sanity checks (executed):  relabel the clusters 1<->2: ARI 0.125 (labels are nom
 
     { t: "h2", n: "03", text: "Clustering on the right distance: documents and time series", id: "distances" },
 
+    {"kind": "flow", "title": "Clustering on the right distance", "caption": "The metric **is** the model. Euclidean distance on raw TF-IDF measures document length as much as content, so cosine is the standard choice for text; two time series with the same shape offset by a day are far apart pointwise and identical under dynamic time warping. Changing the distance changes what 'similar' means, which changes every cluster — before any algorithm is chosen.", "cols": 3, "nodes": [{"id": "d", "label": "What does similar mean?", "sub": "answer this before choosing a method", "tone": "violet"}, {"id": "t", "label": "Documents", "sub": "cosine: length-invariant", "tone": "good"}, {"id": "s", "label": "Time series", "sub": "DTW: shape, not alignment", "tone": "good"}, {"id": "m", "label": "Mixed types", "sub": "Gower: per-column, then averaged", "tone": "accent"}, {"id": "e", "label": "Euclidean on raw counts", "sub": "measures length more than content", "tone": "crit"}, {"id": "k", "label": "Then pick the algorithm", "sub": "many accept a precomputed matrix", "tone": "teal"}], "edges": [["d", "t"], ["d", "s"], ["d", "m"], ["d", "e", "", "dashed"], ["m", "k"]], "t": "diagram", "id": "dg-7_3-03-2"},
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "Documents: four newsgroups, 2,351 posts, tf-idf with 11,339 terms (executed)",
       hl: [2, 3, 4, 5, 8, 9, 10, 11],
       code: `#   representation                                                            ARI      NMI
@@ -148,6 +176,16 @@ sanity checks (executed):  relabel the clusters 1<->2: ARI 0.125 (labels are nom
     },
 
     { t: "h2", n: "04", text: "Using clusters", id: "using" },
+
+    {"kind": "matrix", "title": "Using clusters, and what each use demands of them", "caption": "The demands differ sharply. A segmentation shown to a marketing team needs to be **stable and nameable** and can afford to be statistically mediocre; a cluster id used as a model feature needs only to be reproducible at serving time, and must be fitted inside the fold like any other transform.", "cols": ["Needs the clustering to be", "Watch for"], "rows": ["A segmentation to act on", "A feature for a model", "Anomaly detection", "Compression / prototypes", "Exploration only"], "cells": [[{"text": "stable and nameable", "tone": "good"}, "clusters nobody can describe"], [{"text": "reproducible at serving", "tone": "accent"}, {"text": "fit it inside the fold", "tone": "crit"}], [{"text": "density-aware", "tone": "accent"}, "noise labels are the output"], [{"text": "faithful, not interpretable", "tone": "good"}, "k larger than you would report"], [{"text": "nothing much", "tone": "good"}, "treating a picture as a finding"]], "t": "diagram", "id": "dg-7_3-04-3"},
+
+
+
+
+
+
+
+
 
     { t: "code", lang: "python", title: "Cluster labels as features for the churn model (executed, 5-fold, clustering refitted inside each fold)",
       code: `# logistic regression on the 12 original columns                                   AUC 0.7616

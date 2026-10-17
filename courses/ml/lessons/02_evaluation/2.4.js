@@ -25,6 +25,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Targets 100, 150, 200, 250, 300; predictions 110, 140, 195, 262, 290 (executed)",
       code: `errors  e = ŷ - y :       +10    -10    -5    +12    -10
 
@@ -62,7 +72,9 @@ RMSLE                                                                  = 0.059`,
 
 
 
-    {"kind": "matrix", "title": "Which regression metric, decided by one question each", "caption": "The questions are about the **decision**, not the data. The loss a model trains on and the metric a business reads need not match — train on squared error because it is smooth, report MAE because operations understand it. What must match is the metric and the cost of being wrong.", "cols": ["If yes", "If no"], "rows": ["Large errors cost more", "Outliers you distrust", "Target spans orders", "Stakeholder wants %", "Comparing across targets"], "cells": [[{"text": "RMSE", "tone": "good"}, "MAE, trained on Huber"], [{"text": "MAE, median AE", "tone": "good"}, "RMSE is fine"], [{"text": "log the target; RMSLE", "tone": "good"}, "plain units"], [{"text": "WAPE, or MAPE if no zeros", "tone": "warn"}, "MAE in units"], [{"text": "R² or MASE", "tone": "accent"}, "units"]], "t": "diagram", "id": "dg-2_4-02-0"},
+
+
+
 
 
 
@@ -112,7 +124,9 @@ a linear model on 200 rows, 3 real features, then noise features appended (execu
 
 
 
-    {"kind": "matrix", "title": "Why MAPE cannot be used where it is asked for most", "caption": "MAPE divides by the actual, so a true value near zero produces an unbounded term, and one such row dominates the average. It is also asymmetric: under-forecasting is capped at 100% error while over-forecasting is not, so minimising MAPE systematically biases a forecast low.", "cols": ["Problem", "Instead"], "rows": ["A true value of 0", "A true value near 0", "Under vs over forecast", "Intermittent demand", "Comparing series"], "cells": [[{"text": "division by zero", "tone": "crit"}, "WAPE: divide by the total"], [{"text": "one row dominates", "tone": "crit"}, "WAPE, or MAE in units"], [{"text": "capped at 100% one way", "tone": "crit"}, "the bias is built in; use MAE"], [{"text": "mostly zeros: undefined", "tone": "crit"}, "MASE against a naive baseline"], [{"text": "scale-free but unstable", "tone": "warn"}, "MASE"]], "t": "diagram", "id": "dg-2_4-03-1"},
+
+
+
 
 
 
@@ -147,6 +161,16 @@ MSLE measures ratios:
     { t: "h2", n: "04", text: "A real model under every metric", id: "real" },
 
     {"kind": "matrix", "title": "Which regression metric, decided by one question each", "caption": "The questions are about the **decision**, not the data. The loss a model trains on and the metric a business reads need not match — train on squared error because it is smooth, report MAE because operations understand it. What must match is the metric and the cost of being wrong.", "cols": ["If yes", "If no"], "rows": ["Large errors cost more", "Outliers you distrust", "Target spans orders", "Stakeholder wants %", "Comparing across targets"], "cells": [[{"text": "RMSE", "tone": "good"}, "MAE, trained on Huber"], [{"text": "MAE, median AE", "tone": "good"}, "RMSE is fine"], [{"text": "log the target; RMSLE", "tone": "good"}, "plain units"], [{"text": "WAPE, or MAPE if no zeros", "tone": "warn"}, "MAE in units"], [{"text": "R² or MASE", "tone": "accent"}, "units"]], "t": "diagram", "id": "dg-2_4-04-3"},
+
+
+
+
+
+
+
+
+
+
 
 
 

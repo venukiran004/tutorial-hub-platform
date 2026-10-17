@@ -32,6 +32,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "p", text: "A series is weakly stationary when its mean is constant, its variance is constant, and the covariance between y_t and y_{t−k} depends only on k. A trend breaks the first condition, a level that multiplies its noise breaks the second, a season breaks the third in a structured way. The models of 10.4 and 10.5 are built for stationary input, so the series is transformed until the conditions hold and the forecast is transformed back. The order of transformations matters, because each is chosen for a symptom and undone in reverse." },
 
     { t: "table", head: ["Symptom", "Transform", "Notation", "Undo"], rows: [
@@ -55,7 +62,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Unit-root tests: the ADF regression as OLS, and KPSS beside it", id: "adf" },
 
-    {"kind": "matrix", "title": "Over-differencing is a failure, not a safe default", "caption": "Each unnecessary difference injects a negative MA(1) the model must then estimate, and inflates the forecast variance by 2(1 − ρ₁). Differencing white noise gives a lag-1 autocorrelation of −0.5 — measured at −0.496 on 20,000 points — and the store series shows it at the second step: sd rises from 0.146 to 0.200.", "cols": ["Lag-1 ACF after", "Meaning"], "rows": ["White noise, differenced", "AR(1) phi=0.7, differenced", "Store, first difference", "Store, second difference"], "cells": [[{"text": "-0.496 (theory -0.5)", "tone": "crit"}, "an MA(1) that was not there"], [{"text": "-0.158 (theory -0.15)", "tone": "crit"}, "the same, from a stationary start"], [{"text": "sd 0.146", "tone": "good"}, "appropriate"], [{"text": "sd 0.200, ACF -0.476", "tone": "crit"}, "over-differenced: variance up"]], "t": "diagram", "id": "dg-10_2-02-1"},
+    {"kind": "trace", "title": "Over-differencing is a failure, not a safe default", "caption": "Each unnecessary difference injects a negative MA(1) the model must then estimate, and inflates the forecast variance by 2(1 − ρ₁). Differencing white noise gives a lag-1 autocorrelation of −0.5 — measured at −0.496 on 20,000 points — and the store series shows it at the second step: sd rises from 0.146 to 0.200.", "left": "series", "codeW": 230, "vars": ["lag-1 ACF", "sd", "meaning"], "steps": [{"code": "white noise, differenced", "state": ["-0.496", "", "theory -0.5"], "tone": "crit"}, {"code": "AR(1) phi=0.7, differenced", "state": ["-0.158", "", "theory -0.15"], "tone": "crit"}, {"code": "store, first difference", "state": ["", "0.146", "appropriate"], "tone": "good"}, {"code": "store, second difference", "state": ["-0.476", "0.200", "over-differenced"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-10_2-02-1"},
+
+
+
+
+
+
+
 
 
 
@@ -103,6 +117,12 @@ pmdarima.ndiffs(log_sales, test="adf") -> 1;  ndiffs(test="kpss") -> 1;  nsdiffs
 
     { t: "h2", n: "03", text: "The ACF from its definition", id: "acf" },
 
+    {"kind": "flow", "title": "ADF and KPSS test opposite nulls, so read them as a pair", "caption": "The ADF regression is ordinary least squares on the differenced series, and its null is **a unit root** — so failing to reject means 'possibly non-stationary'. KPSS's null is the opposite, stationarity. Together they give four outcomes, and the useful two are the agreements; when they disagree you are in the ambiguous region and the backtest decides.", "cols": 2, "nodes": [{"id": "a", "label": "ADF: null is a unit root", "sub": "reject = stationary", "tone": "violet"}, {"id": "k", "label": "KPSS: null is stationarity", "sub": "reject = non-stationary", "tone": "violet"}, {"id": "s", "label": "ADF rejects, KPSS does not", "sub": "stationary: proceed", "tone": "good"}, {"id": "n", "label": "ADF does not, KPSS rejects", "sub": "difference it", "tone": "good"}, {"id": "u", "label": "Neither rejects", "sub": "too little data to tell", "tone": "warn"}, {"id": "b", "label": "Both reject", "sub": "perhaps trend-stationary; detrend", "tone": "warn"}], "edges": [["a", "s"], ["k", "n"], ["a", "u"], ["k", "b"]], "t": "diagram", "id": "dg-10_2-03-2"},
+
+
+
+
+
     { t: "p", text: "The autocorrelation at lag k is the correlation of the series with a copy of itself shifted k steps: r_k = c_k / c_0, where c_k = (1/n) Σ (y_t − ȳ)(y_{t+k} − ȳ) over the n − k available pairs and c_0 is the variance. The same n in every denominator makes the estimates well-behaved (positive definite) at the cost of a small downward bias at long lags. Twelve integers keep the arithmetic exact." },
 
     { t: "code", lang: "text", title: "Twelve integers, four lags (executed; every sum is exact)",
@@ -121,6 +141,12 @@ band ±1.96/√12 = ±0.566        statsmodels acf(x, nlags=4): [1.0, 0.4737, �
       caption: "Only r₃ is outside the band, at −0.71: the series rises for three steps and falls for three, so a value three steps ago is on the opposite side of the mean. With n = 12 the band is wide and the ACF is an illustration; with the store's 900 days it is ±0.065." },
 
     { t: "h2", n: "04", text: "The PACF, and why it is not the ACF", id: "pacf" },
+
+    {"kind": "flow", "title": "The PACF is not the ACF, and the difference is what identifies p", "caption": "An AR(1) with φ = 0.7 has an ACF of 0.7, 0.49, 0.343 — every lag correlated, because the correlation **propagates** through the chain. The PACF removes the propagation by controlling for the intervening lags, so it shows 0.7 and then nothing. That is why a PACF cutting off at lag p identifies an AR(p): the direct dependence stops there.", "cols": 3, "nodes": [{"id": "a", "label": "AR(1), phi = 0.7", "sub": "y depends on y at t-1 only", "tone": "violet"}, {"id": "c", "label": "ACF: 0.70, 0.49, 0.34", "sub": "every lag looks correlated", "tone": "warn"}, {"id": "w", "label": "Because it propagates", "sub": "t-2 acts through t-1", "tone": "warn"}, {"id": "p", "label": "PACF controls for the middle", "sub": "the direct part only", "tone": "good"}, {"id": "r", "label": "PACF: 0.70, then ~0", "sub": "it cuts off at p = 1", "tone": "good"}, {"id": "m", "label": "An MA(q) is the mirror", "sub": "ACF cuts off, PACF decays", "tone": "teal"}], "edges": [["a", "c"], ["c", "w"], ["w", "p"], ["p", "r"], ["r", "m"]], "t": "diagram", "id": "dg-10_2-04-3"},
+
+
+
+
 
     { t: "p", text: "If y_t depends on y_{t−1} and y_{t−1} depends on y_{t−2}, then y_t is correlated with y_{t−2} even when there is no direct link, and the ACF at lag 2 reports the total of both routes. The partial autocorrelation at lag k is the correlation between y_t and y_{t−k} after the intermediate lags have been regressed out — the direct effect only. It is the coefficient on y_{t−k} in a regression of y_t on y_{t−1} … y_{t−k}, and the Durbin–Levinson recursion computes it from the ACF alone: φ₁₁ = r₁, then for each k, φ_kk = (r_k − Σ_j φ_{k−1,j} r_{k−j}) / (1 − Σ_j φ_{k−1,j} r_j), with the earlier coefficients updated as φ_kj = φ_{k−1,j} − φ_kk φ_{k−1,k−j}." },
 
@@ -154,6 +180,12 @@ statsmodels pacf(method="ywm"): [0.4737, −0.6964, −0.3176, −0.0625]`,
 </svg>` },
 
     { t: "h2", n: "05", text: "Reading the two plots into a model", id: "reading" },
+
+    {"kind": "matrix", "title": "Reading the two plots into orders", "caption": "These five rules are the whole identification procedure, and they are rules about **where a plot cuts off** rather than where it is large. In practice they narrow the candidates to two or three, and an information criterion or a backtest picks among those — identification by eye was never meant to be the final answer.", "cols": ["Plot shows", "Order"], "rows": ["ACF decays slowly from 1", "ACF spikes at m, 2m, 3m", "PACF cuts off at lag p", "ACF cuts off at lag q", "PACF spike at lag m only"], "cells": [[{"text": "non-stationary in level", "tone": "accent"}, "d = 1"], [{"text": "non-stationary in season", "tone": "accent"}, "D = 1"], [{"text": "an AR signature", "tone": "good"}, "p"], [{"text": "an MA signature", "tone": "good"}, "q"], [{"text": "seasonal AR", "tone": "good"}, "P = 1"]], "t": "diagram", "id": "dg-10_2-05-4"},
+
+
+
+
 
     { t: "table", head: ["ACF", "PACF", "Model", "Why"], rows: [
       ["decays gradually", "**cuts off** after lag p", "AR(p)", "only p direct links exist; the ACF carries their indirect echoes"],

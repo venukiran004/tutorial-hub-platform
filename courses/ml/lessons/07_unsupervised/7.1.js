@@ -19,7 +19,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Lloyd's algorithm and its objective", id: "lloyd" },
 
-    {"kind": "steps", "title": "Lloyd's algorithm, and the objective it is descending", "caption": "Each step can only lower the within-cluster sum of squares, so the algorithm converges — to a **local** minimum that depends on the start, which is why `n_init` exists. What it cannot do is change the objective: k-means always looks for the partition that minimises squared distance to a centre, and that is what makes it find round, similar-sized blobs whether or not the data has any.", "items": [{"label": "Place k centres", "desc": "k-means++ spreads them; random restarts and takes the best", "code": "init", "tone": "accent"}, {"label": "Assign each row to its nearest centre", "desc": "this step cannot increase the objective", "code": "1", "tone": "good"}, {"label": "Move each centre to its members' mean", "desc": "nor can this one", "code": "2", "tone": "good"}, {"label": "Repeat until nothing moves", "desc": "convergence is guaranteed; optimality is not", "code": "loop", "tone": "violet"}, {"label": "The objective is squared distance to a centre", "desc": "so a feature's weight in the result is its variance", "code": "note", "tone": "crit"}], "t": "diagram", "id": "dg-7_1-01-0"},
+    {"kind": "cycle", "title": "Lloyd's algorithm, and the objective it descends", "caption": "Each of the two steps can only **lower** the within-cluster sum of squares, so the loop converges — to a local minimum that depends on where the centres started, which is why `n_init` exists and why k-means++ spreads the initial centres. What the loop cannot change is the objective: k-means always seeks the partition minimising squared distance to a centre, so it finds round, similar-sized blobs whether or not the data has any.", "centre": "converges, not optimal", "nodes": [{"label": "Place k centres", "sub": "k-means++, or random restarts", "tone": "violet"}, {"label": "Assign each row", "sub": "to its nearest centre", "tone": "accent"}, {"label": "Move each centre", "sub": "to its members' mean", "tone": "good"}, {"label": "Nothing moved?", "sub": "stop; else go round again", "tone": "teal"}], "t": "diagram", "id": "dg-7_1-01-0"},
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -89,7 +99,17 @@ the global optimum on these data has WCSS 1,132.7 -- this run stopped at 5,726.9
 
     { t: "h2", n: "02", text: "Choosing k: five rules on data where the answer is known", id: "choosing-k" },
 
-    {"kind": "matrix", "title": "Five rules for k, and what each is blind to", "caption": "On the churn customers the elbow has **no bend**, the gap statistic **keeps rising**, and silhouette peaks at 0.29 — all three are telling you the same thing, which is that there are no clusters here, only a continuum. The last row is the only one that can say that out loud, and the last row is not a statistic.", "cols": ["Pick k by", "Blind to"], "rows": ["Elbow", "Silhouette", "Davies-Bouldin", "Calinski-Harabasz", "Gap statistic", "Stability", "Business validity"], "cells": [[{"text": "the bend in inertia", "tone": "warn"}, "absent on real data: churn had none"], [{"text": "the maximum", "tone": "accent"}, "favours round, separated clusters"], [{"text": "the minimum", "tone": "accent"}, "also assumes round clusters"], [{"text": "the maximum", "tone": "accent"}, "prefers small k on a continuum"], [{"text": "within 1 SE of the next", "tone": "good"}, "can say 'no structure': it did"], [{"text": "the most reproducible", "tone": "good"}, {"text": "stable is not meaningful", "tone": "warn"}], [{"text": "what can be acted on", "tone": "good"}, {"text": "nothing — and it is not a statistic", "tone": "good"}]], "t": "diagram", "id": "dg-7_1-02-1"},
+    {"kind": "trace", "title": "Five rules for k, on data where the answer is known to be 4", "caption": "Four well-separated blobs. Every criterion agrees at k = 4 — inertia's elbow, the silhouette maximum, the Davies–Bouldin minimum, the Calinski–Harabasz maximum, and an **ARI of exactly 1.000** against the true labels. The gap statistic agrees too, at 1.424. That agreement is what a clear clustering looks like; the churn customers in §03 show what happens when the structure is not there, and the same five rules stop agreeing.", "left": "k", "codeW": 90, "vars": ["inertia", "silhouette", "Davies-Bouldin", "Calinski-Harabasz", "ARI vs truth"], "steps": [{"code": "2", "state": ["10,712.2", "0.495", "1.019", "546.3", "0.499"], "tone": "warn"}, {"code": "3", "state": ["5,682.7", "0.593", "0.586", "778.2", "0.709"], "tone": "warn"}, {"code": "4", "state": ["1,132.7", "0.767", "0.311", "3,396.4", "1.000"], "changed": [1, 2, 3, 4], "tone": "good", "note": "all agree"}, {"code": "5", "state": ["1,029.6", "0.653", "0.658", "2,812.8", "0.916"], "tone": "accent"}, {"code": "6", "state": ["930.8", "0.537", "0.890", "2,497.5", "0.818"]}, {"code": "7", "state": ["837.5", "0.427", "1.093", "2,320.0", "0.714"]}, {"code": "8", "state": ["739.0", "0.326", "1.182", "2,261.3", "0.605"], "tone": "crit", "note": "inertia still falls"}], "t": "diagram", "id": "dg-7_1-02-1"},
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -164,6 +184,17 @@ the global optimum on these data has WCSS 1,132.7 -- this run stopped at 5,726.9
     ]},
 
     { t: "h2", n: "03", text: "What k-means cannot find, and what it does at scale", id: "limits" },
+
+    {"kind": "matrix", "title": "What k-means cannot find, whatever k you give it", "caption": "Each failure traces back to the objective. Minimising squared distance to a centre means clusters are convex and roughly equal in spread, so a crescent gets cut in half and a small dense cluster gets absorbed by a large diffuse one. On the churn customers there is no bend in the inertia curve at all — the data is a continuum, and k-means will still happily return any k you ask for.", "cols": ["Why", "Use instead"], "rows": ["Crescents and rings", "Very different sizes", "Very different densities", "Elongated clusters", "A continuum", "Categorical columns"], "cells": [[{"text": "clusters must be convex", "tone": "crit"}, "DBSCAN, spectral"], [{"text": "a big cluster absorbs a small one", "tone": "crit"}, "GMM, HDBSCAN"], [{"text": "one radius for everything", "tone": "crit"}, "HDBSCAN"], [{"text": "spherical by construction", "tone": "warn"}, "GMM with full covariance"], [{"text": "it will still return k", "tone": "crit"}, "the gap statistic says 'none'"], [{"text": "a mean is undefined", "tone": "warn"}, "k-modes, or Gower distance"]], "t": "diagram", "id": "dg-7_1-03-2"},
+
+
+
+
+
+
+
+
+
 
     { t: "code", lang: "python", title: "Shapes, spreads, sizes and outliers (executed; ARI against the true grouping)",
       hl: [2, 3, 4, 5, 6],

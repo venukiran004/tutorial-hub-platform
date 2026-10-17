@@ -42,6 +42,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "Gradient boosting on the churn table as depth increases — 300 rounds each (executed)",
       hl: [2, 3, 4, 5, 6],
       code: `# 693 training rows, 297 validation rows, same preprocessing pipeline as 1.2
@@ -81,6 +91,16 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Penalties: L2 shrinks, L1 selects", id: "penalties" },
 
     {"kind": "compare", "title": "L2 shrinks every weight; L1 sets some to exactly zero", "caption": "The difference is the shape of the penalty at the origin. L2's gradient vanishes as a weight approaches zero, so it never quite arrives; L1's gradient is a constant ±λ that does not weaken, so it pushes a weight all the way to zero and holds it there.", "columns": [{"title": "L2 / ridge", "tone": "accent", "items": ["Penalty λ‖w‖²", "Gradient 2λw — vanishes near zero", "Shrinks smoothly; keeps every feature", "A closed form exists", "Shares weight between correlated features"]}, {"title": "L1 / lasso", "tone": "good", "items": ["Penalty λ‖w‖₁", "Gradient ±λ — constant, never weakens", "Sets weights to exactly zero: selection", "Coordinate descent, no closed form", "Picks one of a correlated group, arbitrarily"]}], "t": "diagram", "id": "dg-1_4-02-1"},
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -148,6 +168,16 @@ for C in [1000, 100, 10, 1, 0.1, 0.01, 0.001]:
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Penalised loss = negative log posterior",
       code: `Bayes:      p(w | data)  ∝  p(data | w) · p(w)                    posterior ∝ likelihood × prior
 MAP:        w_MAP = argmax_w  log p(data | w) + log p(w)             maximise the log posterior
@@ -195,6 +225,16 @@ The Gaussian is flat at zero — it says small, never exactly zero. That is the 
     { t: "h2", n: "04", text: "Early stopping", id: "early" },
 
     {"kind": "trace", "title": "Early stopping: the round where validation turns", "caption": "Six hundred boosting rounds on the same data. Training loss falls monotonically the whole way — it always will — while validation bottoms out at round 45 and then climbs. By round 600 the training loss is a **sixth** of its value at the minimum and the validation loss is 62% worse. The curve is the regulariser: stop where the second column turns.", "left": "boosting round", "codeW": 170, "vars": ["training log-loss", "validation log-loss"], "steps": [{"code": "round 1", "state": ["0.434", "0.434"]}, {"code": "round 10", "state": ["0.376", "0.394"]}, {"code": "round 25", "state": ["0.334", "0.375"]}, {"code": "round 45", "state": ["0.299", "0.373"], "changed": [1], "tone": "good", "note": "keep this model"}, {"code": "round 50", "state": ["0.291", "0.376"], "tone": "accent"}, {"code": "round 100", "state": ["0.225", "0.385"], "tone": "warn"}, {"code": "round 200", "state": ["0.142", "0.423"], "tone": "warn"}, {"code": "round 400", "state": ["0.069", "0.520"], "tone": "crit"}, {"code": "round 600", "state": ["0.036", "0.605"], "changed": [1], "tone": "crit", "note": "62% worse"}], "t": "diagram", "id": "dg-1_4-04-3"},
+
+
+
+
+
+
+
+
+
+
 
 
 

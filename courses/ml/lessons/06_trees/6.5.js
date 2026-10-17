@@ -22,6 +22,16 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Condorcet's theorem, and the independence that carries all of it", "caption": "Eleven independent voters at 0.60 each give a majority accuracy of **0.750** against the theorem's 0.753, and a hundred and one give 0.979. Make them mildly correlated and eleven fall to 0.630; make them near-copies and 0.606 — eleven copies of one opinion is one opinion. The last row is the warning: with voters **worse** than chance the majority is worse than any member, and more of them is worse still (0.367 at eleven, 0.156 at a hundred and one), because the theorem runs in reverse below 0.5.", "left": "voters", "codeW": 190, "vars": ["each", "majority of 11", "majority of 101"], "steps": [{"code": "independent, p = 0.55", "state": ["0.550", "0.633", "0.844"], "tone": "accent"}, {"code": "independent, p = 0.60", "state": ["0.600", "0.750", "0.979"], "changed": [1], "tone": "good"}, {"code": "independent, p = 0.70", "state": ["0.700", "0.922", "1.000"], "tone": "good"}, {"code": "mildly correlated, p = 0.60", "state": ["0.600", "0.630", ""], "changed": [1], "tone": "warn"}, {"code": "highly correlated, p = 0.60", "state": ["0.600", "0.606", ""], "changed": [1], "tone": "crit", "note": "eleven copies"}, {"code": "worse than chance, p = 0.45", "state": ["0.450", "0.367", "0.156"], "tone": "crit", "note": "runs in reverse"}], "t": "diagram", "id": "dg-6_5-01-0"},
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Majority of n independent voters, each correct with probability p (executed)",
       code: `P(majority correct) = Σ_{k > n/2} C(n, k) pᵏ (1 - p)ⁿ⁻ᵏ
 
@@ -79,7 +89,12 @@ the same 11 voters at 60 %, simulated with a shared 'difficulty' component (20,0
     {"kind": "matrix", "title": "The stacking leak: the meta-model trusted the biggest overfitter", "caption": "Fit three base models, take their predictions **on their own training rows** as meta-features, and the meta-model's coefficients come out [0.97, 2.46, 4.61] — trusting boosting most and logistic regression least, in exactly the order of their *training* AUCs. That is the order of how much they overfit. Out-of-fold meta-features reverse it, because they are the only ones that show how a member behaves on data it has not seen.", "cols": ["In-sample meta-features", "Out-of-fold"], "rows": ["Logistic weight", "Forest weight", "Boosting weight", "Hold-out AUC", "What it ranked by"], "cells": [[{"text": "0.97", "tone": "crit"}, {"text": "3.13", "tone": "good"}], [{"text": "2.46", "tone": "crit"}, {"text": "1.18", "tone": "good"}], [{"text": "4.61", "tone": "crit"}, {"text": "0.94", "tone": "good"}], [{"text": "0.712", "tone": "warn"}, {"text": "0.717", "tone": "good"}], [{"text": "training AUC: 0.797 / 0.849 / 0.877", "tone": "crit"}, "held-out behaviour"]], "t": "diagram", "id": "dg-6_5-02-1"},
 
 
-    {"kind": "matrix", "title": "The stacking leak: the meta-model trusted the biggest overfitter", "caption": "Fit three base models, take their predictions **on their own training rows** as meta-features, and the meta-model's coefficients come out [0.97, 2.46, 4.61] — trusting boosting most and logistic regression least, in exactly the order of their *training* AUCs. That is the order of how much they overfit. Out-of-fold meta-features reverse it, because they are the only ones that show how a member behaves on data it has not seen.", "cols": ["In-sample meta-features", "Out-of-fold"], "rows": ["Logistic weight", "Forest weight", "Boosting weight", "Hold-out AUC", "What it ranked by"], "cells": [[{"text": "0.97", "tone": "crit"}, {"text": "3.13", "tone": "good"}], [{"text": "2.46", "tone": "crit"}, {"text": "1.18", "tone": "good"}], [{"text": "4.61", "tone": "crit"}, {"text": "0.94", "tone": "good"}], [{"text": "0.712", "tone": "warn"}, {"text": "0.717", "tone": "good"}], [{"text": "training AUC: 0.797 / 0.849 / 0.877", "tone": "crit"}, "held-out behaviour"]], "t": "diagram", "id": "dg-6_5-02-0"},
+
+
+
+
+
+
 
 
 
@@ -154,7 +169,12 @@ the same 11 voters at 60 %, simulated with a shared 'difficulty' component (20,0
     {"kind": "matrix", "title": "Check the members' correlation before combining anything", "caption": "Above about 0.9 with one clearly best member, the combination lands at or below that member — the churn case, six ways, where the stack predicted 35× slower for −0.005 AUC. Below about 0.8 among comparably good members, averaging gains. The usual outcome on a well-specified problem is that the ensemble's gain is smaller than the gain from a better feature.", "cols": ["Combines", "Gain"], "rows": ["Bagging / forest", "Boosting", "Voting / averaging", "Stacking", "Members over 0.9 correlated", "One member much worse"], "cells": [["the same learner, deep", {"text": "large on high-variance learners", "tone": "good"}], ["the same learner, shallow", {"text": "largest on tabular data", "tone": "good"}], ["different families", {"text": "small unless diverse", "tone": "warn"}], ["families plus a meta-model", {"text": "small to moderate: 7.31 -> 7.12", "tone": "accent"}], [{"text": "nothing useful", "tone": "crit"}, {"text": "at or below the best member", "tone": "crit"}], ["harmful in an average", {"text": "8.70; harmless in a stack at -0.01", "tone": "warn"}]], "t": "diagram", "id": "dg-6_5-03-2"},
 
 
-    {"kind": "matrix", "title": "Check the members' correlation before combining anything", "caption": "Above about 0.9 with one clearly best member, the combination lands at or below that member — the churn case, six ways, where the stack predicted 35× slower for −0.005 AUC. Below about 0.8 among comparably good members, averaging gains. The usual outcome on a well-specified problem is that the ensemble's gain is smaller than the gain from a better feature.", "cols": ["Combines", "Gain"], "rows": ["Bagging / forest", "Boosting", "Voting / averaging", "Stacking", "Members over 0.9 correlated", "One member much worse"], "cells": [["the same learner, deep", {"text": "large on high-variance learners", "tone": "good"}], ["the same learner, shallow", {"text": "largest on tabular data", "tone": "good"}], ["different families", {"text": "small unless diverse", "tone": "warn"}], ["families plus a meta-model", {"text": "small to moderate: 7.31 -> 7.12", "tone": "accent"}], [{"text": "nothing useful", "tone": "crit"}, {"text": "at or below the best member", "tone": "crit"}], ["harmful in an average", {"text": "8.70; harmless in a stack at -0.01", "tone": "warn"}]], "t": "diagram", "id": "dg-6_5-03-1"},
+
+
+
+
+
+
 
 
 

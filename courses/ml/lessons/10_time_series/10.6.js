@@ -32,6 +32,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Seven numbers become a supervised table (executed; 2 January 2025 is a Thursday)",
       code: `A SERIES                            THE TABLE: every column is known BEFORE y is observed
 t  y                                date        lag1   lag2   lag3   roll3     dow   |  y
@@ -65,6 +72,12 @@ t  y                                date        lag1   lag2   lag3   roll3     d
       caption: "Cyclical encoding solves the wrap-around problem (December and January are one step apart, not eleven) and gives a smooth representation for long periods where one-hot would need 52 or 365 columns; for a short period with a jagged pattern, one-hot or enough harmonics is exact and one harmonic is not. A tree model can split an integer weekday into any pattern and does not need either — the encoding matters for linear models and neural networks." },
 
     { t: "h2", n: "02", text: "Three ways to forecast 28 steps", id: "strategies" },
+
+    {"kind": "matrix", "title": "Three ways to forecast 28 steps, and what each costs", "caption": "**Recursive** feeds its own prediction back in, so one model covers every horizon and its errors compound along the way. **Direct** fits a separate model per horizon — 28 models, no compounding, and no guarantee the 28 forecasts are mutually consistent. Direct-recursive hybrids sit between. The choice is usually decided by whether you can afford to fit and serve 28 models.", "cols": ["Models", "Trade"], "rows": ["Recursive", "Direct", "Hybrid (DirRec)", "Multi-output"], "cells": [[{"text": "one", "tone": "good"}, {"text": "errors compound with h", "tone": "warn"}], [{"text": "one per horizon: 28", "tone": "warn"}, {"text": "no compounding; may be inconsistent", "tone": "good"}], [{"text": "one per horizon, fed forward", "tone": "accent"}, "more complex; sometimes best"], [{"text": "one, 28 outputs", "tone": "accent"}, "shares structure; needs support"]], "t": "diagram", "id": "dg-10_6-02-1"},
+
+
+
+
 
     { t: "viz",
       title: "Recursive, direct and multi-output",
@@ -123,6 +136,12 @@ MIMO:       one RandomForest with 28 outputs (multi-output is native to forests)
 
     { t: "h2", n: "03", text: "One global model over many series", id: "global" },
 
+    {"kind": "flow", "title": "One global model over many series", "caption": "Instead of 200 models, fit one on all the series with the series identity as a feature. Short histories borrow strength from long ones, which is the whole gain — and it is also the whole risk, because a global model will happily impose the majority's seasonality on a series that does not share it. Static features are what let it tell them apart.", "cols": 3, "nodes": [{"id": "s", "label": "200 series", "sub": "some with weeks of history", "tone": "violet"}, {"id": "l", "label": "Stack them long", "sub": "one row per series-date", "tone": "accent"}, {"id": "i", "label": "Series id as a feature", "sub": "plus static attributes", "tone": "accent"}, {"id": "o", "label": "One model, fitted once", "sub": "short series borrow strength", "tone": "good"}, {"id": "r", "label": "Scales to new series", "sub": "no per-series fit needed", "tone": "good"}, {"id": "w", "label": "Risk: the majority's pattern", "sub": "imposed on a series that differs", "tone": "crit"}], "edges": [["s", "l"], ["l", "i"], ["i", "o"], ["o", "r"], ["o", "w"]], "t": "diagram", "id": "dg-10_6-03-2"},
+
+
+
+
+
     { t: "code", lang: "python", title: "Per-store models versus one model over all three stores (executed; direct strategy, h = 28, 10 origins, 395 s)",
       code: `#  store    level    per-store direct MAE    global direct MAE
 #    A      229.7          18.60                  17.56
@@ -145,7 +164,10 @@ MIMO:       one RandomForest with 28 outputs (multi-output is native to forests)
 
     { t: "h2", n: "04", text: "The boosting blind spot: trees cannot extrapolate", id: "trend" },
 
-    {"kind": "matrix", "title": "Trees cannot extrapolate, and a trend is extrapolation", "caption": "Every tree is flat beyond its last split, so a boosted model on raw levels cannot forecast above anything it has seen — it predicts the top of its training range forever. The fix is to take the trend out before the model sees it, which is what differencing or detrending does, and add it back afterwards.", "cols": ["On a trending series", "Fix"], "rows": ["Boosting on raw levels", "Boosting on differences", "Boosting + linear trend", "ARIMA or ETS", "A global model"], "cells": [[{"text": "caps at the training max", "tone": "crit"}, "detrend, or difference, first"], [{"text": "extrapolates correctly", "tone": "good"}, "cumulative-sum it back"], [{"text": "the trend is handled outside", "tone": "good"}, "a hybrid: linear part plus tree residual"], [{"text": "extrapolates by construction", "tone": "good"}, "nothing needed"], [{"text": "same blind spot", "tone": "warn"}, "same fix, applied per series"]], "t": "diagram", "id": "dg-10_6-04-1"},
+    {"kind": "matrix", "title": "Trees cannot extrapolate, and a trend is extrapolation", "caption": "Every tree is flat beyond its last split, so a boosted model on raw levels cannot forecast above anything it has seen — it predicts the top of its training range forever. The fix is to take the trend out before the model sees it, which is what differencing or detrending does, and add it back afterwards.", "cols": ["On a trending series", "Fix"], "rows": ["Boosting on raw levels", "Boosting on differences", "Boosting + linear trend", "ARIMA or ETS", "A global model"], "cells": [[{"text": "caps at the training max", "tone": "crit"}, "detrend, or difference, first"], [{"text": "extrapolates correctly", "tone": "good"}, "cumulative-sum it back"], [{"text": "the trend is handled outside", "tone": "good"}, "a hybrid: linear part plus tree residual"], [{"text": "extrapolates by construction", "tone": "good"}, "nothing needed"], [{"text": "same blind spot", "tone": "warn"}, "same fix, applied per series"]], "t": "diagram", "id": "dg-10_6-04-3"},
+
+
+
 
 
 
@@ -176,6 +198,12 @@ MIMO:       one RandomForest with 28 outputs (multi-output is native to forests)
       caption: "The objective decides which statistic the model estimates: squared error the mean, absolute error the median, a quantile loss the quantile. On a right-skewed target the median is below the mean, so the absolute-error model has the lower MAE and the larger negative bias — the same MAE-versus-bias trade-off as 10.3, made by the loss function rather than after the fact." },
 
     { t: "h2", n: "05", text: "Deep learning and foundation models: when they earn their cost", id: "deep" },
+
+    {"kind": "matrix", "title": "When a deep or foundation model earns its cost", "caption": "The honest answer on most business series is 'rarely'. These models need either many series to learn shared structure, or a signal a tree cannot express — long-range dependence, several interacting covariates, a distributional output. On a single store's daily sales with a weekly season, a damped ETS and a boosted tree are hard to beat and cost nothing to run.", "cols": ["Earns it when", "Otherwise"], "rows": ["One series, weekly season", "Hundreds of series", "Long-range dependence", "Many covariates", "A distribution needed", "No history (cold start)"], "cells": [[{"text": "almost never", "tone": "crit"}, "damped ETS, or boosting"], [{"text": "often: shared structure", "tone": "good"}, "a global boosted model first"], [{"text": "yes", "tone": "good"}, "ARIMA's memory is short"], [{"text": "yes: TFT-style models", "tone": "good"}, "SARIMAX, if they are knowable"], [{"text": "yes: DeepAR outputs one", "tone": "good"}, "quantile regression, or conformal"], [{"text": "a foundation model, zero-shot", "tone": "accent"}, "a hierarchy-based fallback"]], "t": "diagram", "id": "dg-10_6-05-4"},
+
+
+
+
 
     { t: "code", lang: "python", title: "A minimal LSTM on the store: lookback 28 → 28 outputs, sales only (executed; 300 epochs per origin, 44 s)",
       code: `class LSTMF(nn.Module):

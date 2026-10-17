@@ -19,6 +19,13 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Gradients as explanations", id: "gradients" },
 
+    {"kind": "flow", "title": "A gradient is a sensitivity, and sensitivity is not attribution", "caption": "The gradient says how the output would move for an infinitesimal change in a pixel — which is a different question from how much that pixel contributed. Saturation is where the two part company: a feature can be entirely responsible for the prediction and have a gradient of almost zero, because the unit it feeds is already flat. Integrated gradients fixes it by accumulating along a path from a baseline, which is also what buys the completeness guarantee.", "cols": 3, "nodes": [{"id": "g", "label": "Gradient at the input", "sub": "one backward pass", "tone": "violet"}, {"id": "s", "label": "Saturated unit", "sub": "responsible, but gradient ~ 0", "tone": "crit"}, {"id": "n", "label": "Noisy, pixel-level", "sub": "visually speckled", "tone": "warn"}, {"id": "i", "label": "Integrate from a baseline", "sub": "50-300 passes along a path", "tone": "good"}, {"id": "c", "label": "Completeness", "sub": "the attributions sum to the output gap", "tone": "good"}, {"id": "b", "label": "The baseline is a choice", "sub": "black image, blur, mean: it changes the answer", "tone": "warn"}], "edges": [["g", "s"], ["g", "n"], ["s", "i"], ["i", "c"], ["c", "b"]], "t": "diagram", "id": "dg-9_3-01-0"},
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Three gradient-based attributions",
       code: `SALIENCY / GRADIENT × INPUT      attribution_i = x_i · ∂F/∂x_i          one backward pass; the local slope. Cheap, noisy, and blind to saturation:
                                  a ReLU unit the model has already 'used' can have zero local gradient although the feature drove the output.
@@ -50,7 +57,13 @@ ATTENTION WEIGHTS                what a transformer 'looks at' when forming a re
 
     { t: "h2", n: "02", text: "A shortcut, found and fixed", id: "shortcut" },
 
-    {"kind": "steps", "title": "Four tests that find a shortcut, and they are the same every time", "caption": "A hospital's pen mark on X-rays from the sicker ward; a watermark on one class of stock image; snow behind the huskies; the acquisition channel encoded in a customer id. The cue differs and the procedure does not — and the last test needs no hypothesis at all.", "items": [{"label": "Remove the suspected cue", "desc": "and watch the class disappear", "code": "1", "tone": "accent"}, {"label": "Add it to the other class", "desc": "and watch that class appear", "code": "2", "tone": "accent"}, {"label": "Attribute", "desc": "Grad-CAM or integrated gradients: see where the mass sits", "code": "3", "tone": "good"}, {"label": "Slice the evaluation by the cue", "desc": "presence against absence", "code": "4", "tone": "good"}, {"label": "Or run the hypothesis-free version", "desc": "per-slice error analysis, flagging any slice it is suspiciously good at", "code": "5", "tone": "violet"}], "t": "diagram", "id": "dg-9_3-02-0"},
+    {"kind": "steps", "title": "Four tests that find a shortcut, and they are the same every time", "caption": "A hospital's pen mark on X-rays from the sicker ward; a watermark on one class of stock image; snow behind the huskies; the acquisition channel encoded in a customer id. The cue differs and the procedure does not — and the last test needs no hypothesis at all.", "items": [{"label": "Remove the suspected cue", "desc": "and watch the class disappear", "code": "1", "tone": "accent"}, {"label": "Add it to the other class", "desc": "and watch that class appear", "code": "2", "tone": "accent"}, {"label": "Attribute", "desc": "Grad-CAM or integrated gradients: see where the mass sits", "code": "3", "tone": "good"}, {"label": "Slice the evaluation by the cue", "desc": "presence against absence", "code": "4", "tone": "good"}, {"label": "Or run the hypothesis-free version", "desc": "per-slice error analysis, flagging any slice it is suspiciously good at", "code": "5", "tone": "violet"}], "t": "diagram", "id": "dg-9_3-02-1"},
+
+
+
+
+
+
 
 
 
@@ -98,7 +111,13 @@ ATTENTION WEIGHTS                what a transformer 'looks at' when forming a re
 
     { t: "h2", n: "03", text: "Attention is not attribution", id: "attention" },
 
-    {"kind": "matrix", "title": "Attention is not attribution", "caption": "Attention weights say where a representation was **gathered from**, not what moved the output — and the two can disagree completely: a token receiving 85% of the attention had a *negative* contribution to the prediction. The other methods differ mainly in whether they come with a completeness guarantee.", "cols": ["Guarantee", "Cost"], "rows": ["Gradient x input", "Integrated gradients", "Grad-CAM", "LRP", "Attention"], "cells": [[{"text": "none", "tone": "warn"}, "1 backward pass"], [{"text": "completeness", "tone": "good"}, "50-300 backward passes"], [{"text": "none", "tone": "warn"}, "1 backward pass; coarse"], [{"text": "conservation per layer", "tone": "good"}, "1 modified pass; rule-dependent"], [{"text": "none: not an attribution", "tone": "crit"}, "free — and misleading"]], "t": "diagram", "id": "dg-9_3-03-1"},
+    {"kind": "matrix", "title": "Attention is not attribution", "caption": "Attention weights say where a representation was **gathered from**, not what moved the output — and the two can disagree completely: a token receiving 85% of the attention had a *negative* contribution to the prediction. The other methods differ mainly in whether they come with a completeness guarantee.", "cols": ["Guarantee", "Cost"], "rows": ["Gradient x input", "Integrated gradients", "Grad-CAM", "LRP", "Attention"], "cells": [[{"text": "none", "tone": "warn"}, "1 backward pass"], [{"text": "completeness", "tone": "good"}, "50-300 backward passes"], [{"text": "none", "tone": "warn"}, "1 backward pass; coarse"], [{"text": "conservation per layer", "tone": "good"}, "1 modified pass; rule-dependent"], [{"text": "none: not an attribution", "tone": "crit"}, "free — and misleading"]], "t": "diagram", "id": "dg-9_3-03-2"},
+
+
+
+
+
+
 
 
 
@@ -124,6 +143,13 @@ ATTENTION WEIGHTS                what a transformer 'looks at' when forming a re
     },
 
     { t: "h2", n: "04", text: "Explanations as a service", id: "serving" },
+
+    {"kind": "flow", "title": "Explanations as a service, and the budget that decides the method", "caption": "An explanation shown in a product is a latency and consistency problem, not a research one. TreeSHAP is exact and fast enough to run per request; KernelSHAP needs hundreds of model calls and belongs in a batch job. And whatever is served must be **stable** — the same row explained twice must give the same answer, which rules LIME out of the request path entirely.", "cols": 3, "nodes": [{"id": "r", "label": "An explanation per request", "sub": "inside the latency budget", "tone": "violet"}, {"id": "t", "label": "TreeSHAP", "sub": "exact, milliseconds: serve it live", "tone": "good"}, {"id": "k", "label": "KernelSHAP", "sub": "hundreds of calls: batch it", "tone": "warn"}, {"id": "l", "label": "LIME", "sub": "stochastic: not reproducible", "tone": "crit"}, {"id": "p", "label": "Precompute per segment", "sub": "when live is impossible", "tone": "accent"}, {"id": "v", "label": "Version it with the model", "sub": "an explanation of the old model is wrong", "tone": "teal"}], "edges": [["r", "t"], ["r", "k"], ["r", "l", "", "dashed"], ["k", "p"], ["p", "v"]], "t": "diagram", "id": "dg-9_3-04-3"},
+
+
+
+
+
 
     { t: "code", lang: "python", title: "Latency, batching, caching (executed; the churn TreeSHAP explainer)",
       hl: [2, 3, 5, 6],

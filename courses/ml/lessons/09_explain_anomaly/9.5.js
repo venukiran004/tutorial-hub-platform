@@ -33,6 +33,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "p", text: "Liu, Ting and Zhou (2008) turned the definition around. Instead of modelling what normal looks like and measuring departure from it, grow a random tree: pick a feature at random, pick a split value uniformly between that feature's minimum and maximum in the current node, recurse. A row far from the others is separated from them in a few splits; a row in a dense region needs many. The **path length** h(x) is the number of splits from the root to the leaf that holds x; averaged over many trees, each grown on a random subsample of 256 rows, it is the score's raw material. Two details make it work. Trees are cut at depth ⌈log₂ 256⌉ = 8 — beyond that the remaining rows are normal by construction and further splits are wasted — and a leaf reached at the depth limit with n rows still inside is credited an extra c(n), the average path length of an unsuccessful search in a binary search tree of n items, as an estimate of how much deeper those rows would have gone." },
 
     { t: "code", lang: "python", title: "The score computed from the trees, checked against score_samples (executed on the 9.4 correlated data)",
@@ -65,6 +72,13 @@ class EIF:  # 300 trees, subsample 256, split: (x − p) · n <= 0 with n ~ N(0,
 
     { t: "h2", n: "02", text: "One-Class SVM: a boundary around the normal rows", id: "ocsvm" },
 
+    {"kind": "flow", "title": "One-Class SVM draws a boundary; Isolation Forest counts cuts", "caption": "Two opposite strategies. The SVM learns a **surface** enclosing the normal region, so its answer depends on a kernel width and a ν that bounds the fraction outside — and it degrades badly in high dimension. Isolation Forest never models normality at all: it splits at random and measures how **few cuts** isolate a row, which is cheap, scales linearly and needs no distance metric.", "cols": 3, "nodes": [{"id": "o", "label": "One-Class SVM", "sub": "enclose the normal region", "tone": "violet"}, {"id": "k", "label": "Needs a kernel width", "sub": "gamma decides the shape", "tone": "warn"}, {"id": "n", "label": "nu bounds the outside fraction", "sub": "and the support vectors", "tone": "warn"}, {"id": "i", "label": "Isolation Forest", "sub": "split at random, repeatedly", "tone": "accent"}, {"id": "p", "label": "Short path = anomalous", "sub": "few cuts isolate it", "tone": "good"}, {"id": "s", "label": "No metric, linear in n", "sub": "the default for tabular data", "tone": "good"}], "edges": [["o", "k"], ["k", "n"], ["i", "p"], ["p", "s"]], "t": "diagram", "id": "dg-9_5-02-1"},
+
+
+
+
+
+
     { t: "p", text: "Schölkopf's One-Class SVM (2001) fits a boundary in the kernel feature space that separates the training rows from the origin with the largest margin, allowing a fraction of them to fall outside. With the RBF kernel the boundary in the original space is a union of smooth blobs around the data. Two hyperparameters govern it, and the executed runs show what each does." },
 
     { t: "code", lang: "python", title: "ν and γ on the correlated data with four planted rows (executed)",
@@ -84,6 +98,13 @@ OneClassSVM(nu=0.05, gamma=γ)
     { t: "p", text: "The One-Class SVM is a novelty detector by temperament: it assumes the training rows are normal and draws the boundary around all but a fraction ν of them, so contamination in training is drawn inside the boundary unless ν is set high enough to leave it out. It scales as O(n²) to O(n³) in training and stores support vectors for prediction, which limits it to tens of thousands of rows; on the digits task below, with γ at its default, it reached only AUC 0.539 — the RBF width that suits a 64-pixel image is not the default, and the method needs tuning that unlabelled data cannot supply. It remains the right tool when the normal region is compact, the data is modest, and a smooth boundary with a probabilistic bound on the false-alarm rate is wanted." },
 
     { t: "h2", n: "03", text: "Reconstruction error: autoencoders and PCA", id: "reconstruction" },
+
+    {"kind": "flow", "title": "Reconstruction error: anomalous means 'not expressible'", "caption": "Compress and rebuild; the rows that rebuild badly are the ones the compression had no language for. Three failure modes follow directly from that framing: a network wide enough to learn the identity reconstructs **everything** perfectly, a trivially simple input reconstructs perfectly whether or not it is normal, and anomalies present in the training data get learned and then reconstructed happily.", "cols": 3, "nodes": [{"id": "x", "label": "Input row", "sub": "image, spectrum, sensor array", "tone": "violet"}, {"id": "b", "label": "Through a bottleneck", "sub": "PCA, or an autoencoder", "tone": "accent"}, {"id": "r", "label": "Rebuild it", "sub": "the error is the score", "tone": "good"}, {"id": "i", "label": "No real bottleneck", "sub": "it learns the identity: all errors ~ 0", "tone": "crit"}, {"id": "s", "label": "A blank input", "sub": "reconstructs perfectly, anomalous or not", "tone": "crit"}, {"id": "c", "label": "Anomalies in training", "sub": "learned, then reconstructed well", "tone": "crit"}], "edges": [["x", "b"], ["b", "r"], ["r", "i"], ["r", "s"], ["r", "c"]], "t": "diagram", "id": "dg-9_5-03-2"},
+
+
+
+
+
 
     { t: "p", text: "A model trained to reconstruct normal rows through a narrow bottleneck learns the structure of normal and nothing else; a row that does not share that structure is reconstructed badly, and the reconstruction error is its anomaly score. PCA is the linear case (7.4): project onto k components and back, and the residual is the error. An autoencoder replaces the projection by a neural encoder and decoder and can learn curved structure. The experiment is a novelty task: train on handwritten digits 0–8, and ask whether the error identifies the never-seen 9s." },
 
@@ -105,6 +126,13 @@ OneClassSVM(nu=0.05, gamma=γ)
 
     { t: "h2", n: "04", text: "COPOD and ECOD: tail probabilities, no parameters", id: "ecod" },
 
+    {"kind": "compare", "title": "COPOD and ECOD: tail probabilities, and nothing to tune", "caption": "Both estimate each column's empirical distribution and score a row by how far into the **tails** its values sit, combining the per-column tail probabilities. That makes them parameter-free, scale-free and fast — and blind to exactly what Mahalanobis sees, because a row ordinary in every marginal but impossible as a combination has no extreme tail anywhere.", "columns": [{"title": "COPOD / ECOD", "tone": "good", "items": ["Per-column empirical tails, combined", "No parameters at all", "Scale-free: no standardising needed", "Linear, and interpretable per column", "Blind to correlation structure"]}, {"title": "Mahalanobis", "tone": "accent", "items": ["One joint Gaussian with covariance", "Needs a well-estimated covariance", "Threshold from the chi-squared quantile", "Sees correlation-breaking rows", "Blind to non-elliptical shapes"]}], "t": "diagram", "id": "dg-9_5-04-3"},
+
+
+
+
+
+
     { t: "p", text: "ECOD (Li et al., 2022) asks, feature by feature, how far into the tail a value sits. For each feature it computes the empirical CDF on the training data, and for each row the left-tail probability F(x_j) and the right-tail probability 1 − F(x_j); −log of a tail probability is large when the value is extreme. The per-feature terms are combined into an outlier score with no distance, no neighbours, no kernel and no parameters, in O(n·p) time, which makes it a good first pass on wide tables. COPOD is its predecessor and uses an empirical copula for the same purpose. Both are in PyOD, which wraps some fifty detectors behind one `fit / decision_scores_ / predict` interface." },
 
     { t: "code", lang: "python", title: "ECOD by hand and in PyOD (executed on the correlated data)",
@@ -125,7 +153,13 @@ U_skew   = U_l where the feature's skewness < 0 else U_r
 
     { t: "h2", n: "05", text: "Thresholds, and evaluation when there are no labels", id: "evaluation" },
 
-    {"kind": "matrix", "title": "Setting a threshold when there are no labels", "caption": "Without labels there is no optimum to find, so the threshold must come from somewhere outside the data — and review capacity is the honest answer in almost every production system. The random audit sample is the part that is usually missing: without it the base rate is unknown, and a supervised model trained on the queue learns only the queue's biases.", "cols": ["Threshold from", "Gives"], "rows": ["Review capacity", "An expected rate", "A score elbow", "Analyst verdicts", "A random audit sample"], "cells": [[{"text": "how many can be checked", "tone": "good"}, "precision at depth, measurable weekly"], [{"text": "the assumed contamination", "tone": "accent"}, "a rate, if the assumption holds"], [{"text": "the score distribution", "tone": "warn"}, "often no elbow exists"], [{"text": "the queue's outcomes", "tone": "good"}, "precision only — never recall"], [{"text": "rows nobody selected", "tone": "good"}, {"text": "the base rate, and recall", "tone": "good"}]], "t": "diagram", "id": "dg-9_5-05-1"},
+    {"kind": "matrix", "title": "Setting a threshold when there are no labels", "caption": "Without labels there is no optimum to find, so the threshold must come from somewhere outside the data — and review capacity is the honest answer in almost every production system. The random audit sample is the part that is usually missing: without it the base rate is unknown, and a supervised model trained on the queue learns only the queue's biases.", "cols": ["Threshold from", "Gives"], "rows": ["Review capacity", "An expected rate", "A score elbow", "Analyst verdicts", "A random audit sample"], "cells": [[{"text": "how many can be checked", "tone": "good"}, "precision at depth, measurable weekly"], [{"text": "the assumed contamination", "tone": "accent"}, "a rate, if the assumption holds"], [{"text": "the score distribution", "tone": "warn"}, "often no elbow exists"], [{"text": "the queue's outcomes", "tone": "good"}, "precision only — never recall"], [{"text": "rows nobody selected", "tone": "good"}, {"text": "the base rate, and recall", "tone": "good"}]], "t": "diagram", "id": "dg-9_5-05-4"},
+
+
+
+
+
+
 
 
 
@@ -156,6 +190,13 @@ U_skew   = U_l where the feature's skewness < 0 else U_r
 
     { t: "h2", n: "06", text: "Streaming and drift", id: "streaming" },
 
+    {"kind": "cycle", "title": "Streaming: the reference window is a model that has to be refitted", "caption": "A detector trained once drifts into uselessness, because yesterday's normal becomes today's anomaly and the other way round. The loop below is the production shape — and the dangerous step is the refit: fit the new reference on a window that already contains the attack and the detector learns to accept it, so the window needs the same review as the model.", "centre": "versioned", "nodes": [{"label": "Reference window", "sub": "what normal looked like", "tone": "violet"}, {"label": "Score the stream", "sub": "against that reference", "tone": "accent"}, {"label": "Queue and review", "sub": "capacity-bounded", "tone": "good"}, {"label": "Refit on a schedule", "sub": "keep the previous version", "tone": "warn"}], "t": "diagram", "id": "dg-9_5-06-5"},
+
+
+
+
+
+
     { t: "code", lang: "python", title: "A detector fitted on an old window, scoring a stream that has moved (executed, 5 features)",
       code: `iso = IsolationForest(contamination=0.02).fit(old_window)           # 5,000 rows
 iso.predict(same_distribution_batch)      # flag rate 0.018   -- as configured
@@ -166,6 +207,13 @@ IsolationForest(contamination=0.02).fit(shifted_batch).predict(shifted_batch)   
     { t: "p", text: "A streaming detector has three design choices. **Window**: refit on a sliding window (the last N rows or days), so that slow change is absorbed and the reference stays current; the window must be long enough to contain the normal cycle (a week, if weekends differ) and short enough to forget. **Cadence**: refit on a schedule, or when the flag rate leaves its expected band, and always keep the previous model so that a batch can be scored by both when the two disagree. **Latency**: the Isolation Forest scores in microseconds per row and is the streaming default; LOF needs a neighbour search against the window; an autoencoder is a forward pass. Half-Space Trees and streaming variants of the forest update the model per row without refitting, for cases where a batch refit is too slow — and the features must be computed from the *past only*, which is the discipline the fraud system below enforces." },
 
     { t: "h2", n: "07", text: "A fraud system, end to end", id: "fraud" },
+
+    {"kind": "flow", "title": "A fraud system, end to end, and the two feedback paths", "caption": "The upper path is the queue, and it only ever teaches you **precision** — analysts verdict the rows you chose to show them. The lower path is what makes recall knowable: a random audit sample nobody selected, plus chargebacks that arrive weeks later. Without both, the supervised model trained on this data learns the queue's biases and nothing about the frauds the queue never surfaced.", "cols": 3, "nodes": [{"id": "t", "label": "Transaction", "sub": "features from the past only", "tone": "violet"}, {"id": "s", "label": "Score it", "sub": "against a versioned reference", "tone": "accent"}, {"id": "q", "label": "Queue, depth = capacity", "sub": "analysts verdict it", "tone": "good"}, {"id": "p", "label": "Precision at depth", "sub": "measured weekly", "tone": "good"}, {"id": "a", "label": "Random audit sample", "sub": "rows nobody selected", "tone": "teal"}, {"id": "c", "label": "Chargebacks, weeks later", "sub": "the recall estimate", "tone": "teal"}], "edges": [["t", "s"], ["s", "q"], ["q", "p"], ["t", "a"], ["a", "c"]], "t": "diagram", "id": "dg-9_5-07-6"},
+
+
+
+
+
 
     { t: "p", text: "The data is synthetic and built so that the mechanisms are visible: 30,000 card transactions over 30 days on 400 cards, each card with its own typical amount. Three fraud patterns are planted. **A**, card testing: a burst of eight tiny purchases at new merchants inside an hour (200 rows). **B**: one large purchase at five to ten times the card's typical amount, at night, at a new merchant (120 rows). **C**, which appears only after week 1: a stolen card used *normally* — twelve typical-amount purchases at new merchants spread over one day (240 rows). Features are computed per card from the past only: the amount's z-score against the card's own running history, the count of that card's transactions in the previous hour, a night flag, a new-merchant flag and the log amount. Week 1 (7,013 rows, 69 fraud) is the reference; the remaining 22,987 rows with 491 fraud are the stream." },
 

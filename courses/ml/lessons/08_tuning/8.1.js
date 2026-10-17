@@ -19,7 +19,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Grid versus random: the argument and the measurement", id: "random" },
 
-    {"kind": "matrix", "title": "Random search beats grid search for a reason that is arithmetic", "caption": "A grid over 4 hyperparameters at 5 values each is 625 fits that try only **5 distinct values** of whichever parameter actually matters. Random search with the same budget tries 625 distinct values of each. The argument is strongest exactly when it matters most: when you do not know in advance which parameter is the important one.", "cols": ["625 fits try", "Best for"], "rows": ["Grid, 4 params x 5", "Random, 625 draws", "Halving / successive", "Bayesian optimisation"], "cells": [[{"text": "5 values of each", "tone": "crit"}, "2-3 params you already understand"], [{"text": "625 values of each", "tone": "good"}, "the default; unknown importance"], [{"text": "many, cheaply at first", "tone": "good"}, "expensive fits, cheap early signal"], [{"text": "few, chosen from a model", "tone": "accent"}, "very expensive fits, smooth response"]], "t": "diagram", "id": "dg-8_1-01-0"},
+    {"kind": "trace", "title": "A grid of 25 points never found the peak; 25 random points nearly always did", "caption": "The target has a narrow peak on x₁ at 0.31 and a weak slope on x₂, with a maximum of 1.10. The 5×5 grid lands on x₁ ∈ {0, 0.25, 0.5, 0.75, 1} — never near 0.31 — and so returns **0.670, every single time**, with no variance to warn you. Twenty-five random points average 0.971. The probability argument explains it and does not depend on the dimension at all: if the good region is the top 5%, n draws all miss it with probability 0.95ⁿ.", "left": "budget", "codeW": 170, "vars": ["random: P(a hit)", "grid finds", "random finds"], "steps": [{"code": "n = 10 draws", "state": ["0.401", "", ""], "tone": "warn"}, {"code": "n = 20", "state": ["0.642", "", ""], "tone": "warn"}, {"code": "n = 60", "state": ["0.954", "", ""], "changed": [0], "tone": "good"}, {"code": "n = 100", "state": ["0.994", "", ""], "tone": "good"}, {"code": "25-point grid", "state": ["", "0.670 every time", ""], "tone": "crit", "note": "no variance"}, {"code": "25 random, 500 reps", "state": ["", "", "0.971 mean"], "changed": [2], "tone": "good", "note": "0.810-1.076"}], "t": "diagram", "id": "dg-8_1-01-0"},
+
+
+
+
+
+
+
 
 
 
@@ -95,6 +102,14 @@ simulation:  f(x₁, x₂) = exp(-((x₁ - 0.31) / 0.08)²) + 0.1 x₂     -- a 
 
     { t: "h2", n: "02", text: "Bayesian optimisation: the acquisition function by hand", id: "bayesian" },
 
+    {"kind": "trace", "title": "Four searches on one SVM, and the budget that mattered more than the method", "caption": "Grid, random and TPE all land on 0.9644 — and random and TPE both reach it **within the first five trials**, so the sophistication bought nothing here; the space was simply not hard. Successive halving was fastest and finished worst, and the reason is in the note: the candidate that won on 250 rows was not the one that won on 2,000, which is the standing risk of judging on a subsample.", "left": "search", "codeW": 210, "vars": ["best CV AUC", "chosen", "time"], "steps": [{"code": "grid, 5 C x 6 gamma", "state": ["0.9636", "C=1000, γ=0.01", "5 s"], "tone": "warn"}, {"code": "random, 30 configs", "state": ["0.9644", "C=21.6, γ=0.048", "3 s"], "changed": [0], "tone": "good"}, {"code": "Optuna TPE, 30 trials", "state": ["0.9644", "C=5.55, γ=0.073", "4 s"], "tone": "good"}, {"code": "both, after only 5 trials", "state": ["0.9644", "already there", ""], "tone": "accent", "note": "the space was easy"}, {"code": "successive halving, 60", "state": ["0.9477", "C=763, γ=0.0075", "2 s"], "changed": [0], "tone": "crit", "note": "250-row winner lost at 2,000"}], "t": "diagram", "id": "dg-8_1-02-1"},
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Expected improvement at three candidates, best score so far f* = 0.80 (executed)",
       code: `the surrogate gives, at any candidate x, a predicted mean μ(x) and a standard deviation σ(x) (a Gaussian process posterior, or TPE's density ratio)
 EI(x) = E[max(0, f(x) - f*)] = σ [ Z Φ(Z) + φ(Z) ],    Z = (μ - f*) / σ        Φ = normal CDF, φ = normal pdf
@@ -124,7 +139,12 @@ study.best_params; study.trials_dataframe()                                     
 
     { t: "h2", n: "03", text: "The tuned score is biased; nested CV is the fix", id: "nested" },
 
-    {"kind": "steps", "title": "Why the tuned score is biased, and what nested CV costs", "caption": "Taking the best of n cross-validated scores is taking the maximum of n noisy numbers, and the maximum of noise is positive. The inner loop chooses; the outer loop measures a procedure that includes the choosing. There is no way to get both from one loop.", "items": [{"label": "Fit 200 candidates, cross-validated", "desc": "each score is a mean with a standard error", "code": "1", "tone": "accent"}, {"label": "Report the best one", "desc": "the maximum of 200 noisy numbers", "code": "2", "tone": "warn"}, {"label": "That maximum is optimistic", "desc": "best-of-n: the noise is selected for, not averaged out", "code": "3", "tone": "crit"}, {"label": "Inner loop: choose the hyperparameters", "desc": "on the training part of each outer fold", "code": "fix", "tone": "good"}, {"label": "Outer loop: score the whole procedure", "desc": "including the choosing, on rows it never saw", "code": "fix", "tone": "good"}, {"label": "Cost: inner x outer fits", "desc": "and the answer is a procedure's score, not one model's", "code": "note", "tone": "violet"}], "t": "diagram", "id": "dg-8_1-03-1"},
+    {"kind": "steps", "title": "Why the tuned score is biased, and what nested CV costs", "caption": "Taking the best of n cross-validated scores is taking the maximum of n noisy numbers, and the maximum of noise is positive. The inner loop chooses; the outer loop measures a procedure that includes the choosing. There is no way to get both from one loop.", "items": [{"label": "Fit 200 candidates, cross-validated", "desc": "each score is a mean with a standard error", "code": "1", "tone": "accent"}, {"label": "Report the best one", "desc": "the maximum of 200 noisy numbers", "code": "2", "tone": "warn"}, {"label": "That maximum is optimistic", "desc": "best-of-n: the noise is selected for, not averaged out", "code": "3", "tone": "crit"}, {"label": "Inner loop: choose the hyperparameters", "desc": "on the training part of each outer fold", "code": "fix", "tone": "good"}, {"label": "Outer loop: score the whole procedure", "desc": "including the choosing, on rows it never saw", "code": "fix", "tone": "good"}, {"label": "Cost: inner x outer fits", "desc": "and the answer is a procedure's score, not one model's", "code": "note", "tone": "violet"}], "t": "diagram", "id": "dg-8_1-03-2"},
+
+
+
+
+
 
 
 

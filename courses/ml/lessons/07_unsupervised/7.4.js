@@ -19,7 +19,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "From variance maximisation to eigenvectors", id: "derivation" },
 
-    {"kind": "steps", "title": "From 'maximise the variance' to an eigenproblem", "caption": "The derivation is short and it explains every property PCA has. Maximising the projected variance subject to a unit-length direction is a Lagrange problem whose stationary condition **is** the eigenvector equation — so the components are eigenvectors not by construction but by consequence, and their eigenvalues are the variances.", "items": [{"label": "Centre the data", "desc": "the mean is subtracted; without this the first component points at the mean", "code": "1", "tone": "accent"}, {"label": "Ask for the unit direction of maximum variance", "desc": "maximise w'Cw subject to w'w = 1", "code": "2", "tone": "good"}, {"label": "Lagrange: Cw = lambda w", "desc": "the stationary condition is the eigenvector equation", "code": "3", "tone": "violet"}, {"label": "So the variance along w is lambda", "desc": "the eigenvalue is the explained variance", "code": "4", "tone": "violet"}, {"label": "Next direction, orthogonal to the first", "desc": "the second eigenvector, and so on", "code": "5", "tone": "good"}, {"label": "Equivalently, the SVD of the centred matrix", "desc": "which is how it is actually computed", "code": "note", "tone": "teal"}], "t": "diagram", "id": "dg-7_4-01-0"},
+    {"kind": "steps", "title": "From 'maximise the variance' to an eigenproblem", "caption": "The derivation is short and it explains every property PCA has. Maximising the projected variance subject to a unit-length direction is a Lagrange problem whose stationary condition **is** the eigenvector equation — so the components are eigenvectors not by construction but by consequence, and their eigenvalues are the variances.", "items": [{"label": "Centre the data", "desc": "without this the first component points at the mean", "code": "1", "tone": "accent"}, {"label": "Ask for the unit direction of maximum variance", "desc": "maximise w'Cw subject to w'w = 1", "code": "2", "tone": "good"}, {"label": "Lagrange: Cw = lambda w", "desc": "the stationary condition is the eigenvector equation", "code": "3", "tone": "violet"}, {"label": "So the variance along w is lambda", "desc": "the eigenvalue is the explained variance", "code": "4", "tone": "violet"}, {"label": "Next direction, orthogonal to the first", "desc": "the second eigenvector, and so on", "code": "5", "tone": "good"}, {"label": "Equivalently, the SVD of the centred matrix", "desc": "which is how it is actually computed", "code": "note", "tone": "teal"}], "t": "diagram", "id": "dg-7_4-01-0"},
+
+
+
+
+
+
+
+
+
 
 
 
@@ -68,6 +77,16 @@ the SVD route:  X = U D Vᵀ  ->  XᵀX = V D² Vᵀ,  so the columns of V are t
 
     { t: "h2", n: "02", text: "Scaling, loadings and choosing the number of components", id: "choosing" },
 
+    {"kind": "trace", "title": "Unscaled, PC1 *is* the tenure column", "caption": "On raw units the first component takes **80.2%** of the variance and its loadings are tenure 1.00 and everything else 0.00 — PCA has found the column measured in the largest numbers, which is not a discovery. Standardise and the picture changes completely: five components explain 35/21/20/19/5%, almost isotropic, and PC1 becomes 'plan tier', loading fee 0.71 and logins 0.71 together. Same data, same algorithm, different question answered.", "left": "input", "codeW": 150, "vars": ["explained variance", "PC1 loadings", "what PC1 is"], "steps": [{"code": "raw units", "state": ["80.2 / 9.8 / 8.4 / 1.5 / 0.2", "tenure 1.00, rest 0.00", "the tenure column"], "tone": "crit"}, {"code": "standardised", "state": ["34.6 / 20.9 / 20.0 / 19.1 / 5.5", "fee 0.71, logins 0.71", "plan tier"], "changed": [0, 1, 2], "tone": "good"}, {"code": "digits, 2 comps", "state": ["28.5% cumulative", "", "logistic 0.605, KNN 0.620"], "tone": "warn"}, {"code": "digits, 10 comps", "state": ["73.8%", "", "logistic 0.928, KNN 0.975"], "changed": [2], "tone": "good"}, {"code": "digits, 20 comps", "state": ["89.4%", "", "logistic 0.953, KNN 0.983"], "tone": "good"}, {"code": "digits, all 64", "state": ["100%", "", "logistic 0.969, KNN 0.986"], "tone": "accent", "note": "20 was enough"}], "t": "diagram", "id": "dg-7_4-02-1"},
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "Scale first: the churn numerics raw and standardised (executed)",
       hl: [2, 4],
       code: `#   input          explained variance ratio             PC1 loadings
@@ -113,7 +132,14 @@ the SVD route:  X = U D Vᵀ  ->  XᵀX = V D² Vᵀ,  so the columns of V are t
 
     { t: "h2", n: "03", text: "The two claims PCA makes, and when they are false", id: "claims" },
 
-    {"kind": "matrix", "title": "The two claims PCA makes", "caption": "PCA asserts that the interesting directions are the **high-variance** ones and that the structure is **linear**. Nothing in the computation looks at the target, so a low-variance direction carrying all the signal is discarded without complaint — and no amount of components fixes a curved manifold.", "cols": ["Claim", "False when"], "rows": ["Variance is relevance", "The structure is linear", "Components are readable", "Scaling is a detail"], "cells": [[{"text": "the big directions matter", "tone": "accent"}, {"text": "the signal is low-variance", "tone": "crit"}], [{"text": "a rotation suffices", "tone": "accent"}, {"text": "the manifold is curved", "tone": "crit"}], ["loadings name the mixture", {"text": "components mix every column", "tone": "warn"}], [{"text": "no: it decides the answer", "tone": "crit"}, "always: variance has units"]], "t": "diagram", "id": "dg-7_4-03-1"},
+    {"kind": "matrix", "title": "The two claims PCA makes", "caption": "PCA asserts that the interesting directions are the **high-variance** ones and that the structure is **linear**. Nothing in the computation looks at the target, so a low-variance direction carrying all the signal is discarded without complaint — and no amount of components fixes a curved manifold.", "cols": ["Claim", "False when"], "rows": ["Variance is relevance", "The structure is linear", "Components are readable", "Scaling is a detail"], "cells": [[{"text": "the big directions matter", "tone": "accent"}, {"text": "the signal is low-variance", "tone": "crit"}], [{"text": "a rotation suffices", "tone": "accent"}, {"text": "the manifold is curved", "tone": "crit"}], ["loadings name the mixture", {"text": "components mix every column", "tone": "warn"}], [{"text": "no: it decides the answer", "tone": "crit"}, "always: variance has units"]], "t": "diagram", "id": "dg-7_4-03-2"},
+
+
+
+
+
+
+
 
 
 
@@ -163,6 +189,16 @@ the SVD route:  X = U D Vᵀ  ->  XᵀX = V D² Vᵀ,  so the columns of V are t
     ]},
 
     { t: "h2", n: "04", text: "The toolkit around PCA", id: "toolkit" },
+
+    {"kind": "matrix", "title": "The toolkit around PCA, and what each one buys", "caption": "They differ in what they preserve. PCA preserves global variance; a random projection preserves **pairwise distances** with no fitting at all; NMF gives additive parts, which is what makes its components readable as topics or spectra. Truncated SVD is the one to use on sparse text, because it works on X directly without centring — and centring a sparse matrix would fill in every zero.", "cols": ["Preserves", "Use for"], "rows": ["PCA", "Kernel PCA", "Randomised PCA", "Random projection", "Truncated SVD", "NMF"], "cells": [[{"text": "global variance", "tone": "accent"}, "decorrelation, compression, denoising"], [{"text": "variance in kernel space", "tone": "accent"}, "non-linear structure; O(n²)"], [{"text": "the same, approximately", "tone": "good"}, "large or streaming matrices"], [{"text": "pairwise distances", "tone": "good"}, "a cheap first squeeze; no fitting"], [{"text": "variance, without centring", "tone": "good"}, "sparse text: keeps the zeros"], [{"text": "additive parts", "tone": "violet"}, "topics, spectra, images"]], "t": "diagram", "id": "dg-7_4-04-3"},
+
+
+
+
+
+
+
+
 
     { t: "code", lang: "python", title: "Whitening, solvers at scale, random projections, NMF (executed)",
       hl: [2, 5, 6, 7, 11, 12, 16, 17, 18],

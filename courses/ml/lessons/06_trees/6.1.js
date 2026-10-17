@@ -36,6 +36,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Six rows — predict Play from Outlook and Wind (executed)",
       code: `#   Outlook   Wind     Play              parent: 3 Yes / 3 No
 1   Sunny     Weak     No                entropy  H = -0.5 log₂ 0.5 - 0.5 log₂ 0.5 = 1.000 bit
@@ -103,6 +113,16 @@ the leaves predict their means, 3 and 21. Any threshold between 3 and 10 gives t
     {"kind": "tree", "title": "What a depth-3 tree actually learned, and what it is worth", "caption": "A readable model: three levels, eight leaves, and a rule you can print on a card. It scores 0.679 against the forest's 0.724 — so the tree costs about 0.045 of AUC and buys an explanation an on-call engineer can read at three in the morning. The catch from §03 is that the **rules themselves move** between resamples, so the explanation is less stable than it looks.", "root": {"label": "root: 16.2% churn", "sub": "989 customers", "tone": "violet", "children": [{"label": "tenure <= 12", "sub": "new customers: the highest-risk branch", "tone": "crit", "children": [{"label": "tickets >= 2", "sub": "angry and new", "tone": "crit"}, {"label": "tickets < 2", "sub": "new, quiet", "tone": "warn"}]}, {"label": "tenure > 12", "sub": "established", "tone": "good", "children": [{"label": "logins low", "sub": "disengaging", "tone": "warn"}, {"label": "logins normal", "sub": "the safe majority", "tone": "good"}]}]}, "t": "diagram", "id": "dg-6_1-02-1"},
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "viz",
       title: "The depth-2 churn tree (executed; 989 rows, 15 % churn)",
       caption: "Each leaf shows its training counts [no churn, churn] and churn rate. The tree found what 4.5's coefficients said: few logins and short tenure churn. Note the eight-row leaf: five splits deeper and leaves like that become single customers.",
@@ -167,7 +187,12 @@ the leaves predict their means, 3 and 21. Any threshold between 3 and 10 gives t
     {"kind": "matrix", "title": "Two noise columns ranked with the best real feature", "caption": "A random integer id with 989 distinct values and a random normal, added to the churn features. Mean-decrease-in-impurity ranks the noise at the top: a column with many distinct values offers many candidate thresholds, and among many random thresholds one always looks good on the training rows. Permutation importance puts random_normal at 0.032, and the CV AUC was 0.674 with the noise columns against 0.662 without — the tree used them to memorise.", "cols": ["MDI says", "What it is"], "rows": ["tenure", "random_normal", "random_id", "fee", "logins"], "cells": [[{"text": "0.178", "tone": "good"}, "a real feature; permutation 0.164"], [{"text": "0.178", "tone": "crit"}, "pure noise; permutation 0.032"], [{"text": "0.175", "tone": "crit"}, "a random id, 989 distinct values"], [{"text": "0.162", "tone": "good"}, "a real feature"], [{"text": "0.159", "tone": "warn"}, "ranked last here, first by permutation"]], "t": "diagram", "id": "dg-6_1-03-2"},
 
 
-    {"kind": "matrix", "title": "Two noise columns ranked with the best real feature", "caption": "A random integer id with 989 distinct values and a random normal, added to the churn features. Mean-decrease-in-impurity ranks the noise at the top: a column with many distinct values offers many candidate thresholds, and among many random thresholds one always looks good on the training rows. Permutation importance puts random_normal at 0.032, and the CV AUC was 0.674 with the noise columns against 0.662 without — the tree used them to memorise.", "cols": ["MDI says", "What it is"], "rows": ["tenure", "random_normal", "random_id", "fee", "logins"], "cells": [[{"text": "0.178", "tone": "good"}, "a real feature; permutation 0.164"], [{"text": "0.178", "tone": "crit"}, "pure noise; permutation 0.032"], [{"text": "0.175", "tone": "crit"}, "a random id, 989 distinct values"], [{"text": "0.162", "tone": "good"}, "a real feature"], [{"text": "0.159", "tone": "warn"}, "ranked last here, first by permutation"]], "t": "diagram", "id": "dg-6_1-03-1"},
+
+
+
+
+
+
 
 
 

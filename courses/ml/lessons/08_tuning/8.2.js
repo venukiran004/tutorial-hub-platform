@@ -19,6 +19,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The measurement problem", id: "measurement" },
 
+    {"kind": "trace", "title": "The measurement problem: 2.5% positives, and accuracy says 97.5%", "caption": "At a 2.5% base rate the do-nothing model is right 97.5% of the time, so accuracy cannot distinguish a useful model from a constant. PR-AUC can — its no-skill level **is** the prevalence, 0.025 — and so can recall at a fixed precision. This is the row to settle before any treatment is tried, because every treatment below will be judged by whichever metric you picked here.", "left": "predictor", "codeW": 190, "vars": ["accuracy", "ROC-AUC", "PR-AUC", "F1"], "steps": [{"code": "always 'negative'", "state": ["0.975", "0.500", "0.025", "0.000"], "tone": "crit", "note": "and useless"}, {"code": "a real model", "state": ["0.975", "0.867", "0.493", "0.401"], "changed": [1, 2, 3], "tone": "good"}, {"code": "what moved", "state": ["nothing", "a lot", "a lot", "a lot"], "tone": "violet"}, {"code": "no-skill level", "state": ["the base rate", "0.5", "prevalence", "0"], "tone": "accent"}], "t": "diagram", "id": "dg-8_2-01-0"},
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "A 2.5 % problem: 20,000 rows, 508 positives, logistic regression, 5-fold (executed)",
       hl: [2, 3],
       code: `#                                              accuracy   recall   precision   F1      ROC-AUC   PR-AUC   log-loss
@@ -42,7 +50,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The treatments, on identical folds", id: "treatments" },
 
-    {"kind": "matrix", "title": "SMOTE before the split, and the most seductive number in applied ML", "caption": "Every synthetic row is an interpolation of real minority rows, so when the split comes afterwards the training folds hold near-copies of the test folds' positives. The honest arrangement scores **worse than doing nothing at all** on this problem — which is the finding, not a disappointment.", "cols": ["ROC-AUC / PR-AUC", "F1"], "rows": ["SMOTE on all rows, then CV", "SMOTE inside each fold", "No resampling at all"], "cells": [[{"text": "0.988 / 0.987", "tone": "crit"}, {"text": "0.948", "tone": "crit"}], [{"text": "0.862 / 0.484", "tone": "good"}, {"text": "0.380", "tone": "good"}], [{"text": "0.867 / 0.493", "tone": "good"}, {"text": "0.401", "tone": "good"}]], "t": "diagram", "id": "dg-8_2-02-0"},
+    {"kind": "matrix", "title": "SMOTE before the split, and the most seductive number in applied ML", "caption": "Every synthetic row is an interpolation of real minority rows, so when the split comes afterwards the training folds hold near-copies of the test folds' positives. The honest arrangement scores **worse than doing nothing at all** on this problem — which is the finding, not a disappointment.", "cols": ["ROC-AUC / PR-AUC", "F1"], "rows": ["SMOTE on all rows, then CV", "SMOTE inside each fold", "No resampling at all"], "cells": [[{"text": "0.988 / 0.987", "tone": "crit"}, {"text": "0.948", "tone": "crit"}], [{"text": "0.862 / 0.484", "tone": "good"}, {"text": "0.380", "tone": "good"}], [{"text": "0.867 / 0.493", "tone": "good"}, {"text": "0.401", "tone": "good"}]], "t": "diagram", "id": "dg-8_2-02-1"},
+
+
+
+
+
 
 
 
@@ -84,6 +97,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "How the synthesis works, by hand", id: "synthesis" },
 
+    {"kind": "flow", "title": "How SMOTE synthesises a row, and where that goes wrong", "caption": "A synthetic positive is a point on the line between a real positive and one of its k minority neighbours. Two consequences follow immediately: the new row carries **no information** that was not already in those two, and if the pair straddles a region of the majority class the interpolation lands inside it, manufacturing a positive where positives do not occur.", "cols": 3, "nodes": [{"id": "p", "label": "Pick a minority row", "sub": "at random", "tone": "violet"}, {"id": "n", "label": "Find its k minority neighbours", "sub": "in feature space", "tone": "accent"}, {"id": "i", "label": "Interpolate", "sub": "a point on the line between them", "tone": "accent"}, {"id": "o", "label": "No new information", "sub": "it is a mixture of two real rows", "tone": "warn"}, {"id": "b", "label": "If the pair straddles the majority", "sub": "the new row lands inside it", "tone": "crit"}, {"id": "f", "label": "And if done before the split", "sub": "test positives have near-copies in train", "tone": "crit"}], "edges": [["p", "n"], ["n", "i"], ["i", "o"], ["i", "b"], ["b", "f"]], "t": "diagram", "id": "dg-8_2-03-2"},
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "SMOTE interpolation and ADASYN allocation (executed)",
       code: `SMOTE   minority rows (1, 2), (1.5, 2.5), (3, 2), (1.2, 1)         k = 2 nearest minority neighbours of (1, 2): (1.5, 2.5) and (1.2, 1)
         choose (1.5, 2.5), draw u = 0.4:   x_new = (1, 2) + 0.4 × ((1.5, 2.5) - (1, 2)) = (1, 2) + 0.4 × (0.5, 0.5) = (1.2, 2.2)
@@ -106,7 +127,12 @@ CLEANING  Tomek links on 3,000 rows (10 % minority): removed 69 majority rows, 0
 
     { t: "h2", n: "04", text: "Weights for boosting, ensembles for imbalance, thresholds from costs", id: "weights" },
 
-    {"kind": "matrix", "title": "Six levers for imbalance, and which one actually moved", "caption": "The threshold is almost always the largest single gain — F1 went from 0.109 to 0.351 by moving it, with no change to the model. Most of the other treatments turn out to be a threshold change in disguise, which is why they should be compared against simply tuning the cut.", "cols": ["Changes", "Gain here"], "rows": ["The metric", "The threshold", "class_weight", "Resampling", "Balanced ensembles", "Reframe as anomaly"], "cells": [[{"text": "how you see the problem", "tone": "good"}, "none, and it is still mandatory"], [{"text": "the decision, not the model", "tone": "good"}, {"text": "F1 0.109 -> 0.351", "tone": "good"}], ["the boundary; sometimes the fit", {"text": "large for hinge loss", "tone": "accent"}], [{"text": "the training distribution", "tone": "warn"}, "slightly worse than nothing here"], ["many balanced views", "0.857, 0.845 ranking"], [{"text": "the question itself", "tone": "accent"}, "below ~0.1% positives"]], "t": "diagram", "id": "dg-8_2-04-1"},
+    {"kind": "matrix", "title": "Six levers for imbalance, and which one actually moved", "caption": "The threshold is almost always the largest single gain — F1 went from 0.109 to 0.351 by moving it, with no change to the model. Most of the other treatments turn out to be a threshold change in disguise, which is why they should be compared against simply tuning the cut.", "cols": ["Changes", "Gain here"], "rows": ["The metric", "The threshold", "class_weight", "Resampling", "Balanced ensembles", "Reframe as anomaly"], "cells": [[{"text": "how you see the problem", "tone": "good"}, "none, and it is still mandatory"], [{"text": "the decision, not the model", "tone": "good"}, {"text": "F1 0.109 -> 0.351", "tone": "good"}], ["the boundary; sometimes the fit", {"text": "large for hinge loss", "tone": "accent"}], [{"text": "the training distribution", "tone": "warn"}, "slightly worse than nothing here"], ["many balanced views", "0.857, 0.845 ranking"], [{"text": "the question itself", "tone": "accent"}, "below ~0.1% positives"]], "t": "diagram", "id": "dg-8_2-04-3"},
+
+
+
+
+
 
 
 

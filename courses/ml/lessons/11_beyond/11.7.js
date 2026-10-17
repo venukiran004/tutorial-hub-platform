@@ -30,6 +30,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "A simulated loan book: 20,000 applicants, a protected attribute A, income and score correlated with A, a postcode that proxies it (executed)",
       code: `# repayment rate: group 0 0.862, group 1 0.679;  postcode = 1 for 20 % of group 0 and 71 % of group 1
 # logistic regression, approve if P(repay) >= 0.75 (break-even at £100 per repaid loan and −£300 per default)
@@ -77,6 +84,13 @@ the exercise: TPR 0.85 / FPR 0.15 with base rates 0.9 / 0.6 -> PPV 0.981 / 0.895
 
 
 
+
+
+
+
+
+
+
     { t: "p", text: "A causal question — did the promotion raise spend? — is not a prediction question, and a model that predicts spend well can answer it wrongly. The potential-outcomes framing: each customer has a spend with the promotion Y(1) and without it Y(0); the effect is Y(1) − Y(0); only one is observed. The naive comparison of treated and untreated customers estimates the effect only if treatment was assigned independently of the potential outcomes — which a randomised experiment guarantees and observational data almost never does. A DAG draws the assumptions: a **confounder** causes both treatment and outcome and must be adjusted for; a **collider** is caused by both and must *not* be conditioned on; a **mediator** lies on the path and conditioning on it removes the effect you want." },
 
     { t: "code", lang: "python", title: "A promotion the marketing team sent to engaged customers (executed, 30,000 customers)",
@@ -113,6 +127,10 @@ correlation of skill and luck:  everyone −0.004;  among the hired −0.618
 
     { t: "h2", n: "03", text: "Uplift: who to treat, from a randomised experiment", id: "uplift" },
 
+    {"kind": "matrix", "title": "Uplift: four kinds of customer, and only one is worth treating", "caption": "A churn model ranks by **risk**; an uplift model ranks by how much the treatment *changes* the outcome, and those are different orderings. The sure things would have stayed anyway, so the discount is wasted; the lost causes leave regardless; and the sleeping dogs are actively harmed by being contacted. Only the persuadables repay the intervention — and identifying them needs a randomised experiment, because it is a question about a counterfactual.", "cols": ["If treated", "If not treated"], "rows": ["Persuadable", "Sure thing", "Lost cause", "Sleeping dog"], "cells": [[{"text": "stays", "tone": "good"}, {"text": "leaves", "tone": "crit"}], ["stays", "stays"], ["leaves", "leaves"], [{"text": "leaves", "tone": "crit"}, {"text": "stays", "tone": "good"}]], "t": "diagram", "id": "dg-11_7-03-2"},
+
+
+
     { t: "code", lang: "python", title: "40,000 customers randomised to a promotion; the effect varies by customer (executed)",
       code: `# true effect: +4 for customers with low x1 (who spend little regardless), −2 for a sixth of customers, 0 otherwise; average +1.69
 difference of means (randomised):                       +1.700
@@ -127,6 +145,10 @@ a RESPONSE model (P(high spend | treated)): correlation with the true effect −
       caption: "Uplift modelling estimates the *difference* the treatment makes per customer, not the outcome. The four segments are the persuadables (treat), the sure things (waste), the lost causes (waste) and the sleeping dogs (harm — the bottom decile here). A response model trained on the treated arm ranks the sure things first, because they spend the most, and its correlation with the true effect is zero. Uplift needs a randomised experiment or an honest observational adjustment as its training data, and is evaluated by uplift-by-decile and Qini curves rather than by accuracy — there is no per-customer label for the effect." },
 
     { t: "h2", n: "04", text: "The system-design round", id: "design" },
+
+    {"kind": "flow", "title": "The system-design round, and the order that answers it", "caption": "The model is one box out of eight, and candidates who start there lose the round. The feature store is where most follow-up questions land, because it is the component that has to serve the **same** definition online and offline — and the point-in-time join is the thing that makes that hard.", "cols": 3, "nodes": [{"id": "d", "label": "The decision", "sub": "what acts on the output, at what cost", "tone": "violet"}, {"id": "l", "label": "Labels", "sub": "how, when, and how late", "tone": "accent"}, {"id": "f", "label": "Feature store", "sub": "one definition, online and offline", "tone": "accent"}, {"id": "m", "label": "Model and training loop", "sub": "one box out of eight", "tone": "good"}, {"id": "s", "label": "Serving and rollback", "sub": "latency, canary, previous version", "tone": "good"}, {"id": "o", "label": "Monitoring and retraining", "sub": "drift, bias, a trigger", "tone": "teal"}], "edges": [["d", "l"], ["l", "f"], ["f", "m"], ["m", "s"], ["s", "o"]], "t": "diagram", "id": "dg-11_7-04-3"},
+
+
 
     { t: "p", text: "The question is usually 'design X' — a fraud system, a recommender, a feature store, a labelling pipeline — and the failure mode is drawing boxes without numbers or naming a stack without a reason. The structure that works: clarify the requirements (users, latency, scale, the metric, what a wrong answer costs); state the decision and its shape (batch, real-time, streaming — 11.1); walk the data path from event to feature to model to action to feedback; do the arithmetic; name the failure modes and their monitors; and say what you would build first." },
 

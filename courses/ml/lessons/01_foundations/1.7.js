@@ -28,6 +28,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "We want the function with the lowest **true risk** R(f) = E[L(y, f(x))] over the whole population, but we only have n rows. **Empirical risk minimisation** picks the f in the hypothesis space H that minimises the training loss, and asks: how far is the training loss from the true risk? For a single fixed f, the training loss is an average of n independent draws and concentrates around R(f). The trouble is that we chose f *because* its training loss was low — among |H| candidates, some will look good by luck. The bound has to account for every f we might have picked." },
 
     { t: "code", lang: "text", title: "PAC learning: the sample complexity for a finite hypothesis space, and three worked numbers",
@@ -80,7 +90,7 @@ shatters(four)     # 14 of 16                        -> the two XOR labellings (
 
 
 
-    {"kind": "matrix", "title": "Every family is an assumption about the world", "caption": "There is no assumption-free learner — that is the no-free-lunch theorem stated usefully. Choosing a model is choosing which bias you believe, so the column that matters is the last one: what the family cannot see however much data you give it.", "cols": ["Assumes", "Fails on"], "rows": ["Linear / logistic", "Decision trees", "KNN / kernels", "Naive Bayes", "SVM (RBF)", "Neural networks"], "cells": [["the target is a weighted sum", {"text": "interactions, thresholds, XOR", "tone": "warn"}], ["axis-aligned rectangles", {"text": "smooth diagonals; extrapolation", "tone": "warn"}], ["nearby points share labels", {"text": "high dimension; junk features", "tone": "warn"}], ["features independent given y", {"text": "correlated features", "tone": "warn"}], ["the widest margin generalises", {"text": "heavy noise; large n", "tone": "warn"}], ["complex functions are stacks", {"text": "small tabular data", "tone": "warn"}]], "t": "diagram", "id": "dg-1_7-02-0"},
+
 
 
 
@@ -139,6 +149,16 @@ shatters(four)     # 14 of 16                        -> the two XOR labellings (
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "table",
       head: ["Axis", "One side", "Other side", "What the choice costs"],
       rows: [
@@ -165,7 +185,7 @@ shatters(four)     # 14 of 16                        -> the two XOR labellings (
 
 
 
-    {"kind": "matrix", "title": "In 500 dimensions the nearest point is 86% as far as the farthest", "caption": "Measured on 500 uniform points in the unit cube. The ratio of nearest to farthest climbs towards 1, which is the curse stated precisely: distance stops discriminating, so every method whose whole idea is 'nearby points are similar' loses its meaning. The second column is the same fact from the other side — by 100 dimensions, every point is on the surface.", "cols": ["nearest / farthest", "Within 0.05 of the surface"], "rows": ["d = 1", "d = 2", "d = 10", "d = 20", "d = 100", "d = 500"], "cells": [[{"text": "0.002", "tone": "good"}, "10%"], [{"text": "0.012", "tone": "good"}, "19%"], [{"text": "0.314", "tone": "accent"}, "65%"], [{"text": "0.421", "tone": "warn"}, "88%"], [{"text": "0.741", "tone": "crit"}, {"text": "100%", "tone": "crit"}], [{"text": "0.860", "tone": "crit"}, {"text": "100%", "tone": "crit"}]], "t": "diagram", "id": "dg-1_7-04-1"},
+
 
 
 

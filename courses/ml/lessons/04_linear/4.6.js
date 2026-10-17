@@ -37,6 +37,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "The generalised linear model",
       code: `1. RANDOM component       y ~ an exponential-family distribution with mean μ         (Normal, Bernoulli, Poisson, Gamma, Tweedie, ...)
 2. SYSTEMATIC component   η = xᵀβ                                                     (the linear predictor -- always linear)
@@ -69,6 +79,16 @@ mean-variance relationship is fixed by the family:   Normal Var = σ²,   Poisso
     { t: "h2", n: "02", text: "Poisson regression: counts, rates and IRLS", id: "poisson" },
 
     {"kind": "flow", "title": "IRLS: a GLM is weighted least squares, solved repeatedly", "caption": "There is no closed form, but there is something almost as good: linearise the link around the current fit, compute a working response and a weight per row, and solve an ordinary weighted least squares. Iterate and it converges — usually in four or five passes — which is why GLMs were practical decades before general optimisers were.", "cols": 3, "nodes": [{"id": "b", "label": "Current β", "sub": "start from zero, or a guess", "tone": "violet"}, {"id": "m", "label": "μ = g inverse of Xβ", "sub": "the fitted means", "tone": "accent"}, {"id": "z", "label": "Working response z", "sub": "the linearised target", "tone": "accent"}, {"id": "w", "label": "Weights W", "sub": "from the variance function", "tone": "accent"}, {"id": "s", "label": "Solve weighted least squares", "sub": "one ordinary solve", "tone": "good"}, {"id": "r", "label": "Repeat to convergence", "sub": "four or five passes", "tone": "teal"}], "edges": [["b", "m"], ["m", "z"], ["m", "w"], ["z", "s"], ["w", "s"], ["s", "r"], ["r", "b", "", "dashed"]], "t": "diagram", "id": "dg-4_6-02-1"},
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -116,6 +136,16 @@ sm.GLM(y, X, family=sm.families.Poisson(), offset=np.log(exposure)).fit()      #
     { t: "h2", n: "03", text: "When the family is wrong: overdispersion, Gamma, Tweedie", id: "families" },
 
     {"kind": "trace", "title": "Overdispersion: the coefficient is fine and the standard error is a lie", "caption": "The sample's variance is 3.989 against a mean of 1.837 — Poisson requires them equal, and φ = 1.77 measures the gap. Every method below recovers β₁ ≈ 0.382 correctly; they differ only in the **standard error**, and Poisson's is too small by a factor of √1.77. The consequence is measurable: across 200 simulations the nominal 95% Poisson interval contained the truth **79.5%** of the time — one interval in five is wrong — against 93.0% for quasi-Poisson.", "left": "model", "codeW": 190, "vars": ["β₁", "se", "coverage of a 95% CI"], "steps": [{"code": "Poisson GLM", "state": ["0.382", "0.0170", "79.5%"], "tone": "crit", "note": "φ = 1.77"}, {"code": "negative binomial", "state": ["0.386", "0.0234", ""], "tone": "good", "note": "α = 0.425"}, {"code": "quasi-Poisson", "state": ["0.382", "0.0226", "93.0%"], "changed": [1, 2], "tone": "good"}, {"code": "Poisson + HC0", "state": ["0.382", "0.0244", ""], "tone": "good", "note": "no distributional claim"}, {"code": "Gamma vs OLS on claims", "state": ["MAE 34.40", "vs 36.09", "min pred 8.1 vs -50.9"], "tone": "accent"}], "t": "diagram", "id": "dg-4_6-03-2"},
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -168,7 +198,11 @@ sm.GLM(y, X, family=sm.families.Poisson(), offset=np.log(exposure)).fit()      #
 
 
 
-    {"kind": "matrix", "title": "Choosing the loss is choosing a likelihood", "caption": "Squared error is the Normal likelihood and absolute error is the Laplace — so 'change the loss' and 'change the family' are the same move seen from two sides. Huber caps the gradient, which is exactly what makes contamination unable to drag the fit.", "cols": ["Use", "Because"], "rows": ["Counts, or a rate", "Positive skewed amounts", "Amounts with many zeros", "Occasional wild residuals", "A percentile or interval", "Gaussian-ish residuals"], "cells": [[{"text": "Poisson, log link, offset", "tone": "good"}, "variance grows; effects multiply"], [{"text": "Gamma, log link", "tone": "good"}, "unbiased for E[y], unlike log-OLS"], [{"text": "Tweedie, p by CV", "tone": "good"}, "a zero mass plus a Gamma tail"], [{"text": "Huber or absolute error", "tone": "good"}, "the gradient is capped"], [{"text": "quantile regression at tau", "tone": "accent"}, "pinball loss is minimised by the quantile"], [{"text": "squared error", "tone": "good"}, "most efficient when it holds"]], "t": "diagram", "id": "dg-4_6-04-1"},
+
+
+
+
+
 
 
 

@@ -23,6 +23,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "The model ŷ = β₀ + β₁x; the objective, residual sum of squares, J(β₀, β₁) = Σ(yᵢ − β₀ − β₁xᵢ)². Two partial derivatives, both set to zero, are the **normal equations** — and solving them is a page of algebra that ends in two lines worth memorising." },
 
     { t: "code", lang: "text", title: "The derivation",
@@ -68,6 +78,16 @@ RSS = 0.107      TSS = Σ(yᵢ - ȳ)² = 39.708      R² = 1 - 0.107/39.708 = 0.
     { t: "h2", n: "02", text: "By linear algebra: the normal equation", id: "matrix" },
 
     {"kind": "flow", "title": "The same estimate as a projection", "caption": "Least squares projects y onto the column space of X. The residual is **orthogonal** to every column, which is the geometric statement of the normal equation — and it is why adding any column can never increase the residual, hence why R² never falls when you add a feature, useful or not.", "cols": 3, "nodes": [{"id": "y", "label": "y", "sub": "the target vector", "tone": "violet"}, {"id": "c", "label": "col(X)", "sub": "every vector Xβ can reach", "tone": "accent"}, {"id": "p", "label": "Project y onto it", "sub": "the closest reachable point", "tone": "good"}, {"id": "r", "label": "residual ⟂ every column", "sub": "X'(y - Xβ) = 0", "tone": "good"}, {"id": "n", "label": "X'Xβ = X'y", "sub": "the normal equation", "tone": "teal"}, {"id": "m", "label": "More columns can only help", "sub": "so R² never falls", "tone": "warn"}], "edges": [["y", "c"], ["c", "p"], ["p", "r"], ["r", "n"], ["n", "m"]], "t": "diagram", "id": "dg-4_1-02-1"},
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -130,7 +150,11 @@ Xᵀ e = Xᵀ(y - ŷ) = [0, 0]                                 the residual is o
 
 
 
-    {"kind": "steps", "title": "Four derivations of one estimate, and what each is for", "caption": "They give the same β-hat and answer different questions. An interviewer asking 'derive it' wants the second; 'why squared error' wants the fourth; 'why does that one point move the line so much' wants the third. Knowing which view answers which question is most of what fluency here means.", "items": [{"label": "Calculus", "desc": "set the derivative to zero: slope is covariance over variance", "code": "intuition", "tone": "accent"}, {"label": "Linear algebra", "desc": "the normal equation, the solvers and the conditioning story", "code": "general", "tone": "good"}, {"label": "Geometry", "desc": "a projection: leverage, orthogonal residuals, why R-squared never falls", "code": "influence", "tone": "violet"}, {"label": "Likelihood", "desc": "Gaussian errors make OLS the MLE — hence squared error, and the standard errors", "code": "inference", "tone": "teal"}], "t": "diagram", "id": "dg-4_1-03-0"},
+
+
+
+
+
 
 
 
@@ -168,7 +192,11 @@ and the same σ̂² gives standard errors:   SE(β₁) = sqrt(σ̂² / Σ(xᵢ -
 
 
 
-    {"kind": "matrix", "title": "Five ways to solve it, and when each breaks", "caption": "The normal equation squares the condition number, so it is the first to fail under collinearity — which is why `LinearRegression` does not use it. QR/SVD is the default because it handles rank deficiency by returning the minimum-norm solution instead of raising.", "cols": ["Cost", "Conditioning"], "rows": ["Normal equation", "QR / SVD", "Cholesky on X'X + lambda I", "Gradient descent", "Coordinate descent"], "cells": [["O(np² + p³)", {"text": "squares it: fails first", "tone": "crit"}], ["O(np²)", {"text": "best; handles rank deficiency", "tone": "good"}], ["O(np² + p³)", {"text": "lambda fixes it", "tone": "good"}], [{"text": "O(npk)", "tone": "accent"}, "needs scaling; huge n or p"], [{"text": "O(npk)", "tone": "accent"}, "handles L1 exactly"]], "t": "diagram", "id": "dg-4_1-04-1"},
+
+
+
+
+
 
 
 
@@ -214,6 +242,16 @@ for it in range(2000): theta -= 0.02 * (2 / 5) * X.T @ (X @ theta - y)
     { t: "h2", n: "05", text: "The same machinery on the churn table", id: "churn" },
 
     {"kind": "flow", "title": "The same machinery, on a table with a kink in it", "caption": "Spend accrues at fee × months for the first twelve months and then flattens — so a single slope in tenure cannot fit both halves, and the diagnostics of 4.2 say so loudly. The fix is not a different algorithm: it is the interaction term the data's own structure implies.", "cols": 3, "nodes": [{"id": "f", "label": "Fit a line in tenure", "sub": "one slope for the whole range", "tone": "accent"}, {"id": "d", "label": "Residuals bend", "sub": "-56 at 0-6 months, +28 at 12-18", "tone": "crit"}, {"id": "r", "label": "RESET test rejects", "sub": "p = 1e-5", "tone": "crit"}, {"id": "i", "label": "Add fee x tenure", "sub": "the generator's own structure", "tone": "good"}, {"id": "s", "label": "Residuals flatten", "sub": "the kink is now representable", "tone": "good"}, {"id": "n", "label": "Same solver, same loss", "sub": "only the design matrix changed", "tone": "teal"}], "edges": [["f", "d"], ["d", "r"], ["r", "i"], ["i", "s"], ["s", "n"]], "t": "diagram", "id": "dg-4_1-05-4"},
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -34,6 +34,14 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Fisher's criterion, worked on two classes of four points (executed)",
       code: `within-class scatter   S_W = Σ_c Σ_{i∈c} (xᵢ - μ_c)(xᵢ - μ_c)ᵀ         how spread each class is around its own mean
 between-class scatter  S_B = Σ_c n_c (μ_c - μ)(μ_c - μ)ᵀ                how far the class means sit from the grand mean
@@ -105,6 +113,14 @@ class A: (1,2) (2,3) (3,3) (2,1)      class B: (6,5) (7,7) (8,6) (7,5)
 
 
 
+
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "The objective",
       code: `high-dimensional similarities:   p_{j|i} = exp(-‖xᵢ - xⱼ‖² / 2σᵢ²) / Σₖ exp(-‖xᵢ - xₖ‖² / 2σᵢ²),   symmetrised  pᵢⱼ = (p_{j|i} + p_{i|j}) / 2n
       each σᵢ is found by binary search so that the entropy of p_{·|i} equals log(perplexity): every point gets the same EFFECTIVE number of neighbours
@@ -138,6 +154,15 @@ the heavy-tailed q lets moderately-distant points sit far apart in the map, whic
     ]},
 
     { t: "h2", n: "03", text: "UMAP, Isomap, LLE: the manifold family", id: "manifold" },
+
+    {"kind": "matrix", "title": "The manifold family, and the one property that decides it", "caption": "Whether a method has a `transform` decides whether it can be part of a model at all. t-SNE has none — a new point cannot be placed without recomputing the entire embedding — so it is a tool for looking, never a preprocessing step. UMAP has one, which is the practical reason it displaced t-SNE in pipelines rather than in papers.", "cols": ["Preserves", "Has transform"], "rows": ["PCA", "t-SNE", "UMAP", "Isomap", "LLE"], "cells": [[{"text": "global variance", "tone": "accent"}, {"text": "yes", "tone": "good"}], [{"text": "local neighbourhoods", "tone": "accent"}, {"text": "no: for looking only", "tone": "crit"}], [{"text": "neighbourhoods + some global", "tone": "good"}, {"text": "yes", "tone": "good"}], [{"text": "geodesic distances", "tone": "accent"}, {"text": "yes; O(n²) paths", "tone": "warn"}], [{"text": "local linear reconstruction", "tone": "accent"}, {"text": "limited", "tone": "warn"}]], "t": "diagram", "id": "dg-7_5-03-2"},
+
+
+
+
+
+
+
 
     { t: "code", lang: "python", title: "UMAP on the same digits, and the Swiss roll under four methods (executed)",
       hl: [2, 3, 6, 10, 11, 12],

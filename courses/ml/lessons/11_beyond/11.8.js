@@ -30,6 +30,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "dl", items: [
       ["Bias–variance", "Expected squared error = bias² + variance + noise. Bias is what the model cannot represent; variance is how much it changes with the sample; the noise floor is what no model can reach. The shape of the answer: a low-capacity model under-fits (high bias), a high-capacity one fitted to few points memorises (high variance), and regularisation, more data and ensembling move along the curve. The number: in 11.6 a 256 × 256 network on 200 points scored 1.000 train / 0.851 test; weight decay of 1.0 gave 0.930 / 0.874 with the weight norm falling from 54 to 5 — variance traded for bias, test error down. In 11.4 the matrix-factorisation rank curve had its minimum at the generating rank and the regulariser moved the error more than the rank did."],
       ["L1 against L2", "L2 (ridge) shrinks all weights toward zero and never to zero; L1 (lasso) shrinks and *selects*, driving some weights to exactly zero, because its penalty has a corner at zero. Bayesian reading (11.2): L2 is a Gaussian prior, L1 a Laplace prior, and the Bayesian linear regression's posterior mean equalled ridge with λ = σ²/τ² to four decimals. When to use which: L2 for correlated features and stability, L1 for sparsity and interpretability, elastic net for both; L1's selection is unstable among correlated features — it picks one arbitrarily."],
@@ -41,6 +48,10 @@ EC.receiveLesson({
     { t: "callout", kind: "mental", title: "The question behind the question", body: [{ t: "p", text: "Almost every classic is a probe for one of three things: do you know what the evaluation is measuring (and what it is not), do you know where the leak is, and do you know that the model is not the decision? 'Explain precision and recall' is asking whether you will choose a threshold from costs. 'Explain boosting' is asking whether you know what it fits at each step and where it fails. 'How do you handle imbalance' is asking whether you will resample before or after the split. Answer the surface question in two sentences and the real one in the rest." }] },
 
     { t: "h2", n: "02", text: "From scratch, checked", id: "scratch" },
+
+    {"kind": "flow", "title": "From scratch, and the checks that prove it", "caption": "Writing an algorithm from scratch is only half the question — the other half is how you know it is right. Each of these checks is cheap and each catches a different class of bug: a closed form agrees to machine precision, a library agrees to tolerance, a finite-difference gradient catches a sign error, and a degenerate input catches the division by zero that real data will find.", "cols": 3, "nodes": [{"id": "w", "label": "Write it", "sub": "the smallest correct version", "tone": "violet"}, {"id": "c", "label": "Against a closed form", "sub": "machine precision, where one exists", "tone": "good"}, {"id": "l", "label": "Against the library", "sub": "to tolerance, on the same data", "tone": "good"}, {"id": "g", "label": "Gradient by finite difference", "sub": "catches a sign or an index error", "tone": "good"}, {"id": "e", "label": "A degenerate input", "sub": "one row, one class, a zero variance", "tone": "accent"}, {"id": "s", "label": "Then say the complexity", "sub": "and where it would break at scale", "tone": "teal"}], "edges": [["w", "c"], ["w", "l"], ["w", "g"], ["w", "e"], ["e", "s"]], "t": "diagram", "id": "dg-11_8-02-1"},
+
+
 
     { t: "code", lang: "python", title: "Gradient descent for linear and logistic regression (executed)",
       code: `def gd_linear(X, y, lr=0.1, epochs=300):
@@ -92,7 +103,12 @@ def auc_trapezoid(y, s):                                                        
 
     { t: "h2", n: "03", text: "The case structure", id: "structure" },
 
-    {"kind": "steps", "title": "The case structure", "caption": "The order is the content. Candidates who start at the model lose the round regardless of which model they name, because every choice after step two depends on answers they skipped.", "items": [{"label": "Restate the business decision", "desc": "what acts on the output, and what it costs to be wrong", "code": "1", "tone": "accent"}, {"label": "Define the target and the unit", "desc": "one row per what, labelled how, observed when", "code": "2", "tone": "accent"}, {"label": "Name the metric and the baseline", "desc": "with a threshold rule from the costs", "code": "3", "tone": "good"}, {"label": "Describe the split", "desc": "by time, by entity, or both — and say why", "code": "4", "tone": "good"}, {"label": "Only now, the features and the model", "desc": "simplest first, with the leakage checks named", "code": "5", "tone": "violet"}, {"label": "Say how it is served and monitored", "desc": "latency, refit cadence, drift, rollback", "code": "6", "tone": "teal"}, {"label": "State what would make you abandon it", "desc": "the answer that separates senior from mid", "code": "7", "tone": "teal"}], "t": "diagram", "id": "dg-11_8-03-1"},
+    {"kind": "steps", "title": "The case structure", "caption": "The order is the content. Candidates who start at the model lose the round regardless of which model they name, because every choice after step two depends on answers they skipped.", "items": [{"label": "Restate the business decision", "desc": "what acts on the output, and what it costs to be wrong", "code": "1", "tone": "accent"}, {"label": "Define the target and the unit", "desc": "one row per what, labelled how, observed when", "code": "2", "tone": "accent"}, {"label": "Name the metric and the baseline", "desc": "with a threshold rule from the costs", "code": "3", "tone": "good"}, {"label": "Describe the split", "desc": "by time, by entity, or both — and say why", "code": "4", "tone": "good"}, {"label": "Only now, the features and the model", "desc": "simplest first, with the leakage checks named", "code": "5", "tone": "violet"}, {"label": "Say how it is served and monitored", "desc": "latency, refit cadence, drift, rollback", "code": "6", "tone": "teal"}, {"label": "State what would make you abandon it", "desc": "the answer that separates senior from mid", "code": "7", "tone": "teal"}], "t": "diagram", "id": "dg-11_8-03-2"},
+
+
+
+
+
 
 
 
@@ -112,6 +128,10 @@ def auc_trapezoid(y, s):                                                        
       caption: "An interviewer is not looking for the model. They are looking for whether you will find the leak, whether you will measure against the right baseline with the right metric, and whether you know what happens after the model ships. Two sentences per move is enough; the numbers below are what make the sentences specific." },
 
     { t: "h2", n: "04", text: "Four cases, worked", id: "cases" },
+
+    {"kind": "matrix", "title": "Four cases, and the trap each one is testing", "caption": "Every case in a round is built around one failure the interviewer expects you to walk into. Naming the trap out loud, early, is what distinguishes a candidate who has read about these problems from one who has had them — and all four traps are things this course measured rather than asserted.", "cols": ["The trap", "Say"], "rows": ["Churn prediction", "Fraud detection", "Demand forecasting", "Recommendation"], "cells": [[{"text": "a feature recorded after the label", "tone": "crit"}, "availability at scoring time"], [{"text": "accuracy at 0.1% positives", "tone": "crit"}, "PR-AUC, and a capacity threshold"], [{"text": "a random split of a time series", "tone": "crit"}, "rolling origins with a gap"], [{"text": "offline metrics on logged exposure", "tone": "crit"}, "explore, then an A/B test"]], "t": "diagram", "id": "dg-11_8-04-3"},
+
+
 
     { t: "dl", items: [
       ["Telecom churn", "**Question behind the question:** who to call, at what cost, to retain how much. **Shape:** nightly batch (11.1: 8.4 ms per row against 1.9 µs per row in batch). **Baseline:** the retention team's current rule; the majority class. **Metric:** expected cost per customer — 2.3's £5 call, £100 loss, 40 % save rate gave a break-even probability of 0.125 and a minimum-cost threshold of 0.15 — and calibration, because the threshold is a probability. **Risks:** leakage from post-churn fields (refunds, cancellation flags; 1.6), preprocessing fitted outside the fold (8.2's SMOTE-before-CV gave 0.998), a threshold that is part of the artefact (11.1: 10 % against 61 % flagged at the same 0.35), and the causal question — the offer's *effect*, which 11.7's uplift model estimated at +3.8 for the top half against +1.7 on average, with a bottom decile the offer harms. **Plan:** hygiene, a pipeline with every transformation inside it, a calibrated logistic model as the yardstick (0.744 AUC on the course data against 0.703 for boosting), SHAP for the retention team's script (9.2), a randomised holdout to measure the offer, an uplift model on it, fairness by group, monitors on the score distribution and the offer's measured effect."],

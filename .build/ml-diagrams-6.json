@@ -1,679 +1,457 @@
 {
  "7.1": [
-  {
-   "after": "01",
-   "d": {
-    "kind": "steps",
-    "title": "Lloyd's algorithm, and the objective it is descending",
-    "caption": "Each step can only lower the within-cluster sum of squares, so the algorithm converges — to a **local** minimum that depends on the start, which is why `n_init` exists. What it cannot do is change the objective: k-means always looks for the partition that minimises squared distance to a centre, and that is what makes it find round, similar-sized blobs whether or not the data has any.",
-    "items": [
-     {
-      "label": "Place k centres",
-      "desc": "k-means++ spreads them; random restarts and takes the best",
-      "code": "init",
-      "tone": "accent"
-     },
-     {
-      "label": "Assign each row to its nearest centre",
-      "desc": "this step cannot increase the objective",
-      "code": "1",
-      "tone": "good"
-     },
-     {
-      "label": "Move each centre to its members' mean",
-      "desc": "nor can this one",
-      "code": "2",
-      "tone": "good"
-     },
-     {
-      "label": "Repeat until nothing moves",
-      "desc": "convergence is guaranteed; optimality is not",
-      "code": "loop",
-      "tone": "violet"
-     },
-     {
-      "label": "The objective is squared distance to a centre",
-      "desc": "so a feature's weight in the result is its variance",
-      "code": "note",
-      "tone": "crit"
-     }
-    ]
-   }
-  },
-  {
-   "after": "02",
-   "d": {
-    "kind": "matrix",
-    "title": "Five rules for k, and what each is blind to",
-    "caption": "On the churn customers the elbow has **no bend**, the gap statistic **keeps rising**, and silhouette peaks at 0.29 — all three are telling you the same thing, which is that there are no clusters here, only a continuum. The last row is the only one that can say that out loud, and the last row is not a statistic.",
-    "cols": [
-     "Pick k by",
-     "Blind to"
-    ],
-    "rows": [
-     "Elbow",
-     "Silhouette",
-     "Davies-Bouldin",
-     "Calinski-Harabasz",
-     "Gap statistic",
-     "Stability",
-     "Business validity"
-    ],
-    "cells": [
-     [
-      {
-       "text": "the bend in inertia",
-       "tone": "warn"
-      },
-      "absent on real data: churn had none"
-     ],
-     [
-      {
-       "text": "the maximum",
-       "tone": "accent"
-      },
-      "favours round, separated clusters"
-     ],
-     [
-      {
-       "text": "the minimum",
-       "tone": "accent"
-      },
-      "also assumes round clusters"
-     ],
-     [
-      {
-       "text": "the maximum",
-       "tone": "accent"
-      },
-      "prefers small k on a continuum"
-     ],
-     [
-      {
-       "text": "within 1 SE of the next",
-       "tone": "good"
-      },
-      "can say 'no structure': it did"
-     ],
-     [
-      {
-       "text": "the most reproducible",
-       "tone": "good"
-      },
-      {
-       "text": "stable is not meaningful",
-       "tone": "warn"
-      }
-     ],
-     [
-      {
-       "text": "what can be acted on",
-       "tone": "good"
-      },
-      {
-       "text": "nothing — and it is not a statistic",
-       "tone": "good"
-      }
-     ]
-    ]
-   }
-  }
+  {"after": "01",
+   "d": {"kind": "cycle",
+         "title": "Lloyd's algorithm, and the objective it descends",
+         "caption": "Each of the two steps can only **lower** the within-cluster sum of squares, so the loop converges — to a local minimum that depends on where the centres started, which is why `n_init` exists and why k-means++ spreads the initial centres. What the loop cannot change is the objective: k-means always seeks the partition minimising squared distance to a centre, so it finds round, similar-sized blobs whether or not the data has any.",
+         "centre": "converges, not optimal",
+         "nodes": [
+          {"label": "Place k centres", "sub": "k-means++, or random restarts", "tone": "violet"},
+          {"label": "Assign each row", "sub": "to its nearest centre", "tone": "accent"},
+          {"label": "Move each centre", "sub": "to its members' mean", "tone": "good"},
+          {"label": "Nothing moved?", "sub": "stop; else go round again", "tone": "teal"}]}},
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Five rules for k, on data where the answer is known to be 4",
+         "caption": "Four well-separated blobs. Every criterion agrees at k = 4 — inertia's elbow, the silhouette maximum, the Davies–Bouldin minimum, the Calinski–Harabasz maximum, and an **ARI of exactly 1.000** against the true labels. The gap statistic agrees too, at 1.424. That agreement is what a clear clustering looks like; the churn customers in §03 show what happens when the structure is not there, and the same five rules stop agreeing.",
+         "left": "k", "codeW": 90,
+         "vars": ["inertia", "silhouette", "Davies-Bouldin", "Calinski-Harabasz", "ARI vs truth"],
+         "steps": [
+          {"code": "2", "state": ["10,712.2", "0.495", "1.019", "546.3", "0.499"], "tone": "warn"},
+          {"code": "3", "state": ["5,682.7", "0.593", "0.586", "778.2", "0.709"], "tone": "warn"},
+          {"code": "4", "state": ["1,132.7", "0.767", "0.311", "3,396.4", "1.000"], "changed": [1, 2, 3, 4], "tone": "good", "note": "all agree"},
+          {"code": "5", "state": ["1,029.6", "0.653", "0.658", "2,812.8", "0.916"], "tone": "accent"},
+          {"code": "6", "state": ["930.8", "0.537", "0.890", "2,497.5", "0.818"]},
+          {"code": "7", "state": ["837.5", "0.427", "1.093", "2,320.0", "0.714"]},
+          {"code": "8", "state": ["739.0", "0.326", "1.182", "2,261.3", "0.605"], "tone": "crit", "note": "inertia still falls"}]}},
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "What k-means cannot find, whatever k you give it",
+         "caption": "Each failure traces back to the objective. Minimising squared distance to a centre means clusters are convex and roughly equal in spread, so a crescent gets cut in half and a small dense cluster gets absorbed by a large diffuse one. On the churn customers there is no bend in the inertia curve at all — the data is a continuum, and k-means will still happily return any k you ask for.",
+         "cols": ["Why", "Use instead"],
+         "rows": ["Crescents and rings", "Very different sizes", "Very different densities", "Elongated clusters", "A continuum", "Categorical columns"],
+         "cells": [
+          [{"text": "clusters must be convex", "tone": "crit"}, "DBSCAN, spectral"],
+          [{"text": "a big cluster absorbs a small one", "tone": "crit"}, "GMM, HDBSCAN"],
+          [{"text": "one radius for everything", "tone": "crit"}, "HDBSCAN"],
+          [{"text": "spherical by construction", "tone": "warn"}, "GMM with full covariance"],
+          [{"text": "it will still return k", "tone": "crit"}, "the gap statistic says 'none'"],
+          [{"text": "a mean is undefined", "tone": "warn"}, "k-modes, or Gower distance"]]}}
  ],
+
  "7.2": [
-  {
-   "after": "02",
-   "d": {
-    "kind": "matrix",
-    "title": "Six clustering families, by the shape each can find",
-    "caption": "The first column is the question people ask and the second is the one that decides the answer. DBSCAN finds any shape **at one density**, which is exactly why HDBSCAN replaced it as the default: real data has clusters at several densities, and a single eps cannot describe them.",
-    "cols": [
-     "Needs k",
-     "Finds shapes"
-    ],
-    "rows": [
-     "K-means",
-     "Agglomerative",
-     "DBSCAN",
-     "HDBSCAN",
-     "Gaussian mixture",
-     "Spectral"
-    ],
-    "cells": [
-     [
-      {
-       "text": "yes",
-       "tone": "warn"
-      },
-      "round, similar size"
-     ],
-     [
-      {
-       "text": "no: cut later",
-       "tone": "good"
-      },
-      "depends on the linkage"
-     ],
-     [
-      {
-       "text": "no: eps, min_samples",
-       "tone": "accent"
-      },
-      {
-       "text": "any, at one density",
-       "tone": "warn"
-      }
-     ],
-     [
-      {
-       "text": "no: min_cluster_size",
-       "tone": "good"
-      },
-      {
-       "text": "any, varying density",
-       "tone": "good"
-      }
-     ],
-     [
-      {
-       "text": "yes, by BIC",
-       "tone": "warn"
-      },
-      "elliptical, overlapping"
-     ],
-     [
-      {
-       "text": "yes",
-       "tone": "warn"
-      },
-      "connected, manifold-shaped"
-     ]
-    ]
-   }
-  },
-  {
-   "after": "03",
-   "d": {
-    "kind": "matrix",
-    "title": "The BIC that collapsed, and why it was not structure",
-    "caption": "BIC fell off a cliff at five components — from 2,502 to −1,317 — and it means nothing. The discount column takes three values with 686 rows at zero, and two components had **variance 0.0000** on it: a Gaussian concentrated on a point mass has unbounded density there, so the likelihood is arbitrarily large. With a covariance floor of 0.1 the collapse disappears and leaves a shallow minimum at three.",
-    "cols": [
-     "BIC, as fitted",
-     "With reg_covar=0.1"
-    ],
-    "rows": [
-     "1 component",
-     "2 components",
-     "3 components",
-     "4 components",
-     "5 components",
-     "6 components"
-    ],
-    "cells": [
-     [
-      "11,730",
-      "11,781"
-     ],
-     [
-      {
-       "text": "2,498",
-       "tone": "accent"
-      },
-      "10,442"
-     ],
-     [
-      {
-       "text": "2,524",
-       "tone": "accent"
-      },
-      {
-       "text": "10,193: the minimum",
-       "tone": "good"
-      }
-     ],
-     [
-      "2,502",
-      "10,386"
-     ],
-     [
-      {
-       "text": "-1,317: a collapse",
-       "tone": "crit"
-      },
-      "10,481"
-     ],
-     [
-      {
-       "text": "-185",
-       "tone": "crit"
-      },
-      "10,077"
-     ]
-    ]
-   }
-  }
+  {"after": "01",
+   "d": {"kind": "flow",
+         "title": "Agglomerative clustering, and why the linkage is the whole decision",
+         "caption": "Start with every row its own cluster and repeatedly merge the closest pair — but 'closest' has four definitions and they produce different shapes. **Single** linkage chains through noise and can snake a cluster across a dataset; **complete** forces compact balls; **Ward** minimises the variance increase and behaves most like k-means. The dendrogram is the deliverable: it lets you choose k after seeing the structure rather than before.",
+         "cols": 3,
+         "nodes": [
+          {"id": "s", "label": "n clusters of one", "sub": "every row alone", "tone": "violet"},
+          {"id": "m", "label": "Merge the closest pair", "sub": "n-1 times", "tone": "accent"},
+          {"id": "si", "label": "single: nearest members", "sub": "chains through noise", "tone": "crit"},
+          {"id": "co", "label": "complete: furthest members", "sub": "forces compact balls", "tone": "warn"},
+          {"id": "wa", "label": "Ward: variance increase", "sub": "behaves like k-means", "tone": "good"},
+          {"id": "d", "label": "Cut the dendrogram", "sub": "choose k after seeing it", "tone": "teal"}],
+         "edges": [["s", "m"], ["m", "si"], ["m", "co"], ["m", "wa"], ["wa", "d"]]}},
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Six clustering families, by the shape each can find",
+         "caption": "The first column is the question people ask and the second is the one that decides the answer. DBSCAN finds any shape **at one density**, which is exactly why HDBSCAN replaced it as the default: real data has clusters at several densities, and a single eps cannot describe them.",
+         "cols": ["Needs k", "Finds shapes"],
+         "rows": ["K-means", "Agglomerative", "DBSCAN", "HDBSCAN", "Gaussian mixture", "Spectral"],
+         "cells": [
+          [{"text": "yes", "tone": "warn"}, "round, similar size"],
+          [{"text": "no: cut later", "tone": "good"}, "depends on the linkage"],
+          [{"text": "no: eps, min_samples", "tone": "accent"}, {"text": "any, at one density", "tone": "warn"}],
+          [{"text": "no: min_cluster_size", "tone": "good"}, {"text": "any, varying density", "tone": "good"}],
+          [{"text": "yes, by BIC", "tone": "warn"}, "elliptical, overlapping"],
+          [{"text": "yes", "tone": "warn"}, "connected, manifold-shaped"]]}},
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "The BIC that collapsed, and why it was not structure",
+         "caption": "BIC fell off a cliff at five components — from 2,502 to **−1,317** — and it means nothing. The discount column takes three values with 686 rows at zero, and two components had variance **0.0000** on it: a Gaussian concentrated on a point mass has unbounded density there, so the likelihood is arbitrarily large and BIC follows it down. A covariance floor of 0.1 removes the collapse and leaves a shallow, believable minimum at three.",
+         "left": "components", "codeW": 150,
+         "vars": ["BIC as fitted", "with reg_covar = 0.1"],
+         "steps": [
+          {"code": "1", "state": ["11,730", "11,781"]},
+          {"code": "2", "state": ["2,498", "10,442"], "tone": "accent"},
+          {"code": "3", "state": ["2,524", "10,193"], "changed": [1], "tone": "good", "note": "the real minimum"},
+          {"code": "4", "state": ["2,502", "10,386"]},
+          {"code": "5", "state": ["-1,317", "10,481"], "changed": [0], "tone": "crit", "note": "variance 0.0000"},
+          {"code": "6", "state": ["-185", "10,077"], "tone": "crit"}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "HDBSCAN: one parameter instead of two, and noise as an answer",
+         "caption": "DBSCAN's `eps` fixes one density for the whole dataset, so a parameter that finds the sparse cluster merges the dense ones. HDBSCAN builds the hierarchy over **all** densities and then extracts the clusters that persist longest, which removes `eps` entirely and leaves `min_cluster_size` — a number you can reason about, because it is 'how many rows make a group worth naming'.",
+         "cols": 3,
+         "nodes": [
+          {"id": "d", "label": "DBSCAN: eps and min_samples", "sub": "one density for everything", "tone": "warn"},
+          {"id": "p", "label": "Mixed densities defeat it", "sub": "either merge or fragment", "tone": "crit"},
+          {"id": "h", "label": "Build over all densities", "sub": "a mutual-reachability hierarchy", "tone": "accent"},
+          {"id": "e", "label": "Extract the persistent clusters", "sub": "those that survive the longest", "tone": "good"},
+          {"id": "m", "label": "Only min_cluster_size", "sub": "a number you can defend", "tone": "good"},
+          {"id": "n", "label": "Noise is a label", "sub": "and it comes with a score", "tone": "teal"}],
+         "edges": [["d", "p"], ["p", "h"], ["h", "e"], ["e", "m"], ["m", "n"]]}}
  ],
+
  "7.3": [
-  {
-   "after": "01",
-   "d": {
-    "kind": "matrix",
-    "title": "Five questions about a clustering, and the index for each",
-    "caption": "The first row is the trap: on the two moons, k-means scored a silhouette of **0.487** and the true labelling scored **0.328** — so the internal index preferred the wrong answer, because it measures the geometry a convex method produces rather than the structure that is there.",
-    "cols": [
-     "Measure with",
-     "It cannot see"
-    ],
-    "rows": [
-     "Compact and separated?",
-     "Matches known labels?",
-     "Would it recur?",
-     "Is there structure at all?",
-     "Is it meaningful?"
-    ],
-    "cells": [
-     [
-      {
-       "text": "silhouette, DB, CH",
-       "tone": "accent"
-      },
-      {
-       "text": "moons: k-means 0.487 > truth 0.328",
-       "tone": "crit"
-      }
-     ],
-     [
-      {
-       "text": "ARI, AMI",
-       "tone": "good"
-      },
-      "whether those labels are what you wanted"
-     ],
-     [
-      {
-       "text": "stability ARI across halves",
-       "tone": "good"
-      },
-      {
-       "text": "reproducible mistakes: 0.971",
-       "tone": "warn"
-      }
-     ],
-     [
-      {
-       "text": "gap, silhouette level, stability",
-       "tone": "good"
-      },
-      "structure at a scale it cannot reach"
-     ],
-     [
-      {
-       "text": "profiles, top terms, a reading",
-       "tone": "good"
-      },
-      "nothing — this is the one that decides"
-     ]
-    ]
-   }
-  },
-  {
-   "after": "02",
-   "d": {
-    "kind": "matrix",
-    "title": "Why agreement must be corrected for chance",
-    "caption": "Two random partitions of the same rows agree substantially just by accident, and the raw Rand index reports that agreement as skill. ARI subtracts the expected value under random labelling, which is why it can go negative — and why a plain Rand index of 0.7 says almost nothing.",
-    "cols": [
-     "Corrects for chance",
-     "Reads"
-    ],
-    "rows": [
-     "Rand index",
-     "Adjusted Rand (ARI)",
-     "Mutual information",
-     "Adjusted MI (AMI)",
-     "Homogeneity",
-     "Completeness"
-    ],
-    "cells": [
-     [
-      {
-       "text": "no",
-       "tone": "crit"
-      },
-      "pair agreement, inflated"
-     ],
-     [
-      {
-       "text": "yes",
-       "tone": "good"
-      },
-      "pair agreement; 0 is chance"
-     ],
-     [
-      {
-       "text": "no",
-       "tone": "warn"
-      },
-      "shared information; grows with k"
-     ],
-     [
-      {
-       "text": "yes",
-       "tone": "good"
-      },
-      "shared information, corrected"
-     ],
-     [
-      {
-       "text": "n/a",
-       "tone": "accent"
-      },
-      "each cluster holds one class"
-     ],
-     [
-      {
-       "text": "n/a",
-       "tone": "accent"
-      },
-      "each class sits in one cluster"
-     ]
-    ]
-   }
-  }
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Five questions about a clustering, and the index for each",
+         "caption": "The first row is the trap: on the two moons, k-means scored a silhouette of **0.487** and the true labelling scored **0.328** — so the internal index preferred the wrong answer, because it measures the geometry a convex method produces rather than the structure that is there.",
+         "cols": ["Measure with", "It cannot see"],
+         "rows": ["Compact and separated?", "Matches known labels?", "Would it recur?", "Is there structure at all?", "Is it meaningful?"],
+         "cells": [
+          [{"text": "silhouette, DB, CH", "tone": "accent"}, {"text": "moons: k-means 0.487 > truth 0.328", "tone": "crit"}],
+          [{"text": "ARI, AMI", "tone": "good"}, "whether those labels are what you wanted"],
+          [{"text": "stability ARI across halves", "tone": "good"}, {"text": "reproducible mistakes: 0.971", "tone": "warn"}],
+          [{"text": "gap, silhouette level, stability", "tone": "good"}, "structure at a scale it cannot reach"],
+          [{"text": "profiles, top terms, a reading", "tone": "good"}, "nothing — this is the one that decides"]]}},
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Why agreement must be corrected for chance",
+         "caption": "Two random partitions of the same rows agree substantially just by accident, and the raw Rand index reports that agreement as skill. ARI subtracts the expected value under random labelling, which is why it can go negative — and why a plain Rand index of 0.7 says almost nothing.",
+         "cols": ["Corrects for chance", "Reads"],
+         "rows": ["Rand index", "Adjusted Rand (ARI)", "Mutual information", "Adjusted MI (AMI)", "Homogeneity", "Completeness"],
+         "cells": [
+          [{"text": "no", "tone": "crit"}, "pair agreement, inflated"],
+          [{"text": "yes", "tone": "good"}, "pair agreement; 0 is chance"],
+          [{"text": "no", "tone": "warn"}, "shared information; grows with k"],
+          [{"text": "yes", "tone": "good"}, "shared information, corrected"],
+          [{"text": "n/a", "tone": "accent"}, "each cluster holds one class"],
+          [{"text": "n/a", "tone": "accent"}, "each class sits in one cluster"]]}},
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "Clustering on the right distance",
+         "caption": "The metric **is** the model. Euclidean distance on raw TF-IDF measures document length as much as content, so cosine is the standard choice for text; two time series with the same shape offset by a day are far apart pointwise and identical under dynamic time warping. Changing the distance changes what 'similar' means, which changes every cluster — before any algorithm is chosen.",
+         "cols": 3,
+         "nodes": [
+          {"id": "d", "label": "What does similar mean?", "sub": "answer this before choosing a method", "tone": "violet"},
+          {"id": "t", "label": "Documents", "sub": "cosine: length-invariant", "tone": "good"},
+          {"id": "s", "label": "Time series", "sub": "DTW: shape, not alignment", "tone": "good"},
+          {"id": "m", "label": "Mixed types", "sub": "Gower: per-column, then averaged", "tone": "accent"},
+          {"id": "e", "label": "Euclidean on raw counts", "sub": "measures length more than content", "tone": "crit"},
+          {"id": "k", "label": "Then pick the algorithm", "sub": "many accept a precomputed matrix", "tone": "teal"}],
+         "edges": [["d", "t"], ["d", "s"], ["d", "m"], ["d", "e", "", "dashed"], ["m", "k"]]}},
+  {"after": "04",
+   "d": {"kind": "matrix",
+         "title": "Using clusters, and what each use demands of them",
+         "caption": "The demands differ sharply. A segmentation shown to a marketing team needs to be **stable and nameable** and can afford to be statistically mediocre; a cluster id used as a model feature needs only to be reproducible at serving time, and must be fitted inside the fold like any other transform.",
+         "cols": ["Needs the clustering to be", "Watch for"],
+         "rows": ["A segmentation to act on", "A feature for a model", "Anomaly detection", "Compression / prototypes", "Exploration only"],
+         "cells": [
+          [{"text": "stable and nameable", "tone": "good"}, "clusters nobody can describe"],
+          [{"text": "reproducible at serving", "tone": "accent"}, {"text": "fit it inside the fold", "tone": "crit"}],
+          [{"text": "density-aware", "tone": "accent"}, "noise labels are the output"],
+          [{"text": "faithful, not interpretable", "tone": "good"}, "k larger than you would report"],
+          [{"text": "nothing much", "tone": "good"}, "treating a picture as a finding"]]}}
  ],
+
  "7.4": [
-  {
-   "after": "01",
-   "d": {
-    "kind": "steps",
-    "title": "From 'maximise the variance' to an eigenproblem",
-    "caption": "The derivation is short and it explains every property PCA has. Maximising the projected variance subject to a unit-length direction is a Lagrange problem whose stationary condition **is** the eigenvector equation — so the components are eigenvectors not by construction but by consequence, and their eigenvalues are the variances.",
-    "items": [
-     {
-      "label": "Centre the data",
-      "desc": "the mean is subtracted; without this the first component points at the mean",
-      "code": "1",
-      "tone": "accent"
-     },
-     {
-      "label": "Ask for the unit direction of maximum variance",
-      "desc": "maximise w'Cw subject to w'w = 1",
-      "code": "2",
-      "tone": "good"
-     },
-     {
-      "label": "Lagrange: Cw = lambda w",
-      "desc": "the stationary condition is the eigenvector equation",
-      "code": "3",
-      "tone": "violet"
-     },
-     {
-      "label": "So the variance along w is lambda",
-      "desc": "the eigenvalue is the explained variance",
-      "code": "4",
-      "tone": "violet"
-     },
-     {
-      "label": "Next direction, orthogonal to the first",
-      "desc": "the second eigenvector, and so on",
-      "code": "5",
-      "tone": "good"
-     },
-     {
-      "label": "Equivalently, the SVD of the centred matrix",
-      "desc": "which is how it is actually computed",
-      "code": "note",
-      "tone": "teal"
-     }
-    ]
-   }
-  },
-  {
-   "after": "03",
-   "d": {
-    "kind": "matrix",
-    "title": "The two claims PCA makes",
-    "caption": "PCA asserts that the interesting directions are the **high-variance** ones and that the structure is **linear**. Nothing in the computation looks at the target, so a low-variance direction carrying all the signal is discarded without complaint — and no amount of components fixes a curved manifold.",
-    "cols": [
-     "Claim",
-     "False when"
-    ],
-    "rows": [
-     "Variance is relevance",
-     "The structure is linear",
-     "Components are readable",
-     "Scaling is a detail"
-    ],
-    "cells": [
-     [
-      {
-       "text": "the big directions matter",
-       "tone": "accent"
-      },
-      {
-       "text": "the signal is low-variance",
-       "tone": "crit"
-      }
-     ],
-     [
-      {
-       "text": "a rotation suffices",
-       "tone": "accent"
-      },
-      {
-       "text": "the manifold is curved",
-       "tone": "crit"
-      }
-     ],
-     [
-      "loadings name the mixture",
-      {
-       "text": "components mix every column",
-       "tone": "warn"
-      }
-     ],
-     [
-      {
-       "text": "no: it decides the answer",
-       "tone": "crit"
-      },
-      "always: variance has units"
-     ]
-    ]
-   }
-  }
+  {"after": "01",
+   "d": {"kind": "steps",
+         "title": "From 'maximise the variance' to an eigenproblem",
+         "caption": "The derivation is short and it explains every property PCA has. Maximising the projected variance subject to a unit-length direction is a Lagrange problem whose stationary condition **is** the eigenvector equation — so the components are eigenvectors not by construction but by consequence, and their eigenvalues are the variances.",
+         "items": [
+          {"label": "Centre the data", "desc": "without this the first component points at the mean", "code": "1", "tone": "accent"},
+          {"label": "Ask for the unit direction of maximum variance", "desc": "maximise w'Cw subject to w'w = 1", "code": "2", "tone": "good"},
+          {"label": "Lagrange: Cw = lambda w", "desc": "the stationary condition is the eigenvector equation", "code": "3", "tone": "violet"},
+          {"label": "So the variance along w is lambda", "desc": "the eigenvalue is the explained variance", "code": "4", "tone": "violet"},
+          {"label": "Next direction, orthogonal to the first", "desc": "the second eigenvector, and so on", "code": "5", "tone": "good"},
+          {"label": "Equivalently, the SVD of the centred matrix", "desc": "which is how it is actually computed", "code": "note", "tone": "teal"}]}},
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Unscaled, PC1 *is* the tenure column",
+         "caption": "On raw units the first component takes **80.2%** of the variance and its loadings are tenure 1.00 and everything else 0.00 — PCA has found the column measured in the largest numbers, which is not a discovery. Standardise and the picture changes completely: five components explain 35/21/20/19/5%, almost isotropic, and PC1 becomes 'plan tier', loading fee 0.71 and logins 0.71 together. Same data, same algorithm, different question answered.",
+         "left": "input", "codeW": 150,
+         "vars": ["explained variance", "PC1 loadings", "what PC1 is"],
+         "steps": [
+          {"code": "raw units", "state": ["80.2 / 9.8 / 8.4 / 1.5 / 0.2", "tenure 1.00, rest 0.00", "the tenure column"], "tone": "crit"},
+          {"code": "standardised", "state": ["34.6 / 20.9 / 20.0 / 19.1 / 5.5", "fee 0.71, logins 0.71", "plan tier"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "digits, 2 comps", "state": ["28.5% cumulative", "", "logistic 0.605, KNN 0.620"], "tone": "warn"},
+          {"code": "digits, 10 comps", "state": ["73.8%", "", "logistic 0.928, KNN 0.975"], "changed": [2], "tone": "good"},
+          {"code": "digits, 20 comps", "state": ["89.4%", "", "logistic 0.953, KNN 0.983"], "tone": "good"},
+          {"code": "digits, all 64", "state": ["100%", "", "logistic 0.969, KNN 0.986"], "tone": "accent", "note": "20 was enough"}]}},
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "The two claims PCA makes",
+         "caption": "PCA asserts that the interesting directions are the **high-variance** ones and that the structure is **linear**. Nothing in the computation looks at the target, so a low-variance direction carrying all the signal is discarded without complaint — and no amount of components fixes a curved manifold.",
+         "cols": ["Claim", "False when"],
+         "rows": ["Variance is relevance", "The structure is linear", "Components are readable", "Scaling is a detail"],
+         "cells": [
+          [{"text": "the big directions matter", "tone": "accent"}, {"text": "the signal is low-variance", "tone": "crit"}],
+          [{"text": "a rotation suffices", "tone": "accent"}, {"text": "the manifold is curved", "tone": "crit"}],
+          ["loadings name the mixture", {"text": "components mix every column", "tone": "warn"}],
+          [{"text": "no: it decides the answer", "tone": "crit"}, "always: variance has units"]]}},
+  {"after": "04",
+   "d": {"kind": "matrix",
+         "title": "The toolkit around PCA, and what each one buys",
+         "caption": "They differ in what they preserve. PCA preserves global variance; a random projection preserves **pairwise distances** with no fitting at all; NMF gives additive parts, which is what makes its components readable as topics or spectra. Truncated SVD is the one to use on sparse text, because it works on X directly without centring — and centring a sparse matrix would fill in every zero.",
+         "cols": ["Preserves", "Use for"],
+         "rows": ["PCA", "Kernel PCA", "Randomised PCA", "Random projection", "Truncated SVD", "NMF"],
+         "cells": [
+          [{"text": "global variance", "tone": "accent"}, "decorrelation, compression, denoising"],
+          [{"text": "variance in kernel space", "tone": "accent"}, "non-linear structure; O(n²)"],
+          [{"text": "the same, approximately", "tone": "good"}, "large or streaming matrices"],
+          [{"text": "pairwise distances", "tone": "good"}, "a cheap first squeeze; no fitting"],
+          [{"text": "variance, without centring", "tone": "good"}, "sparse text: keeps the zeros"],
+          [{"text": "additive parts", "tone": "violet"}, "topics, spectra, images"]]}}
  ],
+
  "7.5": [
-  {
-   "after": "01",
-   "d": {
-    "kind": "compare",
-    "title": "PCA finds what varies; LDA finds what separates",
-    "caption": "They can point in nearly opposite directions. If two classes differ along a low-variance axis, PCA throws that axis away and LDA keeps only it. LDA is supervised, which means it must be fitted inside the fold like any other label-using step.",
-    "columns": [
-     {
-      "title": "PCA",
-      "tone": "accent",
-      "items": [
-       "Unsupervised: never sees y",
-       "Maximises projected variance",
-       "As many components as features",
-       "Fit anywhere — but still inside the pipeline",
-       "Keeps a high-variance nuisance direction"
-      ]
-     },
-     {
-      "title": "LDA",
-      "tone": "good",
-      "items": [
-       "Supervised: uses the labels",
-       "Maximises between- over within-class scatter",
-       "At most K - 1 components",
-       "Must be fitted inside the fold",
-       "Assumes shared covariance; linear boundaries"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "after": "02",
-   "d": {
-    "kind": "matrix",
-    "title": "What a t-SNE plot does and does not tell you",
-    "caption": "It preserves neighbourhoods and negotiates away everything else. Cluster sizes here were stretched 4–14× **and in a different order**; between-cluster gaps correlate only 0.7 with the real ones; and pure Gaussian noise produced an embedding with a silhouette of 0.34. There is no `transform`, so a new point cannot be placed without re-running the whole embedding.",
-    "cols": [
-     "Trustworthy",
-     "Evidence"
-    ],
-    "rows": [
-     "Points drawn together",
-     "Cluster size",
-     "Gaps between clusters",
-     "Number of clusters",
-     "A gradient across the map",
-     "Coordinates as features"
-    ],
-    "cells": [
-     [
-      {
-       "text": "yes",
-       "tone": "good"
-      },
-      "they are neighbours in the input"
-     ],
-     [
-      {
-       "text": "no",
-       "tone": "crit"
-      },
-      "stretched 4-14x, in a different order"
-     ],
-     [
-      {
-       "text": "no",
-       "tone": "crit"
-      },
-      "correlation 0.7 with reality"
-     ],
-     [
-      {
-       "text": "no",
-       "tone": "crit"
-      },
-      "noise gave a silhouette of 0.34"
-     ],
-     [
-      {
-       "text": "no",
-       "tone": "crit"
-      },
-      "the layout has no global meaning"
-     ],
-     [
-      {
-       "text": "no",
-       "tone": "crit"
-      },
-      "there is no transform method"
-     ]
-    ]
-   }
-  }
+  {"after": "01",
+   "d": {"kind": "compare",
+         "title": "PCA finds what varies; LDA finds what separates",
+         "caption": "They can point in nearly opposite directions. If two classes differ along a low-variance axis, PCA throws that axis away and LDA keeps only it. LDA is supervised, which means it must be fitted inside the fold like any other label-using step.",
+         "columns": [
+          {"title": "PCA", "tone": "accent",
+           "items": ["Unsupervised: never sees y", "Maximises projected variance", "As many components as features", "Fit anywhere — but still inside the pipeline", "Keeps a high-variance nuisance direction"]},
+          {"title": "LDA", "tone": "good",
+           "items": ["Supervised: uses the labels", "Maximises between- over within-class scatter", "At most K - 1 components", "Must be fitted inside the fold", "Assumes shared covariance; linear boundaries"]}]}},
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "What a t-SNE plot does and does not tell you",
+         "caption": "It preserves neighbourhoods and negotiates away everything else. Cluster sizes here were stretched 4–14× **and in a different order**; between-cluster gaps correlate only 0.7 with the real ones; and pure Gaussian noise produced an embedding with a silhouette of 0.34. There is no `transform`, so a new point cannot be placed without re-running the whole embedding.",
+         "cols": ["Trustworthy", "Evidence"],
+         "rows": ["Points drawn together", "Cluster size", "Gaps between clusters", "Number of clusters", "A gradient across the map", "Coordinates as features"],
+         "cells": [
+          [{"text": "yes", "tone": "good"}, "they are neighbours in the input"],
+          [{"text": "no", "tone": "crit"}, "stretched 4-14x, in a different order"],
+          [{"text": "no", "tone": "crit"}, "correlation 0.7 with reality"],
+          [{"text": "no", "tone": "crit"}, "noise gave a silhouette of 0.34"],
+          [{"text": "no", "tone": "crit"}, "the layout has no global meaning"],
+          [{"text": "no", "tone": "crit"}, "there is no transform method"]]}},
+  {"after": "03",
+   "d": {"kind": "matrix",
+         "title": "The manifold family, and the one property that decides it",
+         "caption": "Whether a method has a `transform` decides whether it can be part of a model at all. t-SNE has none — a new point cannot be placed without recomputing the entire embedding — so it is a tool for looking, never a preprocessing step. UMAP has one, which is the practical reason it displaced t-SNE in pipelines rather than in papers.",
+         "cols": ["Preserves", "Has transform"],
+         "rows": ["PCA", "t-SNE", "UMAP", "Isomap", "LLE"],
+         "cells": [
+          [{"text": "global variance", "tone": "accent"}, {"text": "yes", "tone": "good"}],
+          [{"text": "local neighbourhoods", "tone": "accent"}, {"text": "no: for looking only", "tone": "crit"}],
+          [{"text": "neighbourhoods + some global", "tone": "good"}, {"text": "yes", "tone": "good"}],
+          [{"text": "geodesic distances", "tone": "accent"}, {"text": "yes; O(n²) paths", "tone": "warn"}],
+          [{"text": "local linear reconstruction", "tone": "accent"}, {"text": "limited", "tone": "warn"}]]}}
  ],
+
  "8.1": [
-  {
-   "after": "01",
-   "d": {
-    "kind": "matrix",
-    "title": "Random search beats grid search for a reason that is arithmetic",
-    "caption": "A grid over 4 hyperparameters at 5 values each is 625 fits that try only **5 distinct values** of whichever parameter actually matters. Random search with the same budget tries 625 distinct values of each. The argument is strongest exactly when it matters most: when you do not know in advance which parameter is the important one.",
-    "cols": [
-     "625 fits try",
-     "Best for"
-    ],
-    "rows": [
-     "Grid, 4 params x 5",
-     "Random, 625 draws",
-     "Halving / successive",
-     "Bayesian optimisation"
-    ],
-    "cells": [
-     [
-      {
-       "text": "5 values of each",
-       "tone": "crit"
-      },
-      "2-3 params you already understand"
-     ],
-     [
-      {
-       "text": "625 values of each",
-       "tone": "good"
-      },
-      "the default; unknown importance"
-     ],
-     [
-      {
-       "text": "many, cheaply at first",
-       "tone": "good"
-      },
-      "expensive fits, cheap early signal"
-     ],
-     [
-      {
-       "text": "few, chosen from a model",
-       "tone": "accent"
-      },
-      "very expensive fits, smooth response"
-     ]
-    ]
-   }
-  },
-  {
-   "after": "03",
-   "d": {
-    "kind": "steps",
-    "title": "Why the tuned score is biased, and what nested CV costs",
-    "caption": "Taking the best of n cross-validated scores is taking the maximum of n noisy numbers, and the maximum of noise is positive. The inner loop chooses; the outer loop measures a procedure that includes the choosing. There is no way to get both from one loop.",
-    "items": [
-     {
-      "label": "Fit 200 candidates, cross-validated",
-      "desc": "each score is a mean with a standard error",
-      "code": "1",
-      "tone": "accent"
-     },
-     {
-      "label": "Report the best one",
-      "desc": "the maximum of 200 noisy numbers",
-      "code": "2",
-      "tone": "warn"
-     },
-     {
-      "label": "That maximum is optimistic",
-      "desc": "best-of-n: the noise is selected for, not averaged out",
-      "code": "3",
-      "tone": "crit"
-     },
-     {
-      "label": "Inner loop: choose the hyperparameters",
-      "desc": "on the training part of each outer fold",
-      "code": "fix",
-      "tone": "good"
-     },
-     {
-      "label": "Outer loop: score the whole procedure",
-      "desc": "including the choosing, on rows it never saw",
-      "code": "fix",
-      "tone": "good"
-     },
-     {
-      "label": "Cost: inner x outer fits",
-      "desc": "and the answer is a procedure's score, not one model's",
-      "code": "note",
-      "tone": "violet"
-     }
-    ]
-   }
-  }
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "A grid of 25 points never found the peak; 25 random points nearly always did",
+         "caption": "The target has a narrow peak on x₁ at 0.31 and a weak slope on x₂, with a maximum of 1.10. The 5×5 grid lands on x₁ ∈ {0, 0.25, 0.5, 0.75, 1} — never near 0.31 — and so returns **0.670, every single time**, with no variance to warn you. Twenty-five random points average 0.971. The probability argument explains it and does not depend on the dimension at all: if the good region is the top 5%, n draws all miss it with probability 0.95ⁿ.",
+         "left": "budget", "codeW": 170,
+         "vars": ["random: P(a hit)", "grid finds", "random finds"],
+         "steps": [
+          {"code": "n = 10 draws", "state": ["0.401", "", ""], "tone": "warn"},
+          {"code": "n = 20", "state": ["0.642", "", ""], "tone": "warn"},
+          {"code": "n = 60", "state": ["0.954", "", ""], "changed": [0], "tone": "good"},
+          {"code": "n = 100", "state": ["0.994", "", ""], "tone": "good"},
+          {"code": "25-point grid", "state": ["", "0.670 every time", ""], "tone": "crit", "note": "no variance"},
+          {"code": "25 random, 500 reps", "state": ["", "", "0.971 mean"], "changed": [2], "tone": "good", "note": "0.810-1.076"}]}},
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Four searches on one SVM, and the budget that mattered more than the method",
+         "caption": "Grid, random and TPE all land on 0.9644 — and random and TPE both reach it **within the first five trials**, so the sophistication bought nothing here; the space was simply not hard. Successive halving was fastest and finished worst, and the reason is in the note: the candidate that won on 250 rows was not the one that won on 2,000, which is the standing risk of judging on a subsample.",
+         "left": "search", "codeW": 210,
+         "vars": ["best CV AUC", "chosen", "time"],
+         "steps": [
+          {"code": "grid, 5 C x 6 gamma", "state": ["0.9636", "C=1000, γ=0.01", "5 s"], "tone": "warn"},
+          {"code": "random, 30 configs", "state": ["0.9644", "C=21.6, γ=0.048", "3 s"], "changed": [0], "tone": "good"},
+          {"code": "Optuna TPE, 30 trials", "state": ["0.9644", "C=5.55, γ=0.073", "4 s"], "tone": "good"},
+          {"code": "both, after only 5 trials", "state": ["0.9644", "already there", ""], "tone": "accent", "note": "the space was easy"},
+          {"code": "successive halving, 60", "state": ["0.9477", "C=763, γ=0.0075", "2 s"], "changed": [0], "tone": "crit", "note": "250-row winner lost at 2,000"}]}},
+  {"after": "03",
+   "d": {"kind": "steps",
+         "title": "Why the tuned score is biased, and what nested CV costs",
+         "caption": "Taking the best of n cross-validated scores is taking the maximum of n noisy numbers, and the maximum of noise is positive. The inner loop chooses; the outer loop measures a procedure that includes the choosing. There is no way to get both from one loop.",
+         "items": [
+          {"label": "Fit 200 candidates, cross-validated", "desc": "each score is a mean with a standard error", "code": "1", "tone": "accent"},
+          {"label": "Report the best one", "desc": "the maximum of 200 noisy numbers", "code": "2", "tone": "warn"},
+          {"label": "That maximum is optimistic", "desc": "best-of-n: the noise is selected for, not averaged out", "code": "3", "tone": "crit"},
+          {"label": "Inner loop: choose the hyperparameters", "desc": "on the training part of each outer fold", "code": "fix", "tone": "good"},
+          {"label": "Outer loop: score the whole procedure", "desc": "including the choosing, on rows it never saw", "code": "fix", "tone": "good"},
+          {"label": "Cost: inner x outer fits", "desc": "and the answer is a procedure's score, not one model's", "code": "note", "tone": "violet"}]}}
+ ],
+
+ "8.2": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "The measurement problem: 2.5% positives, and accuracy says 97.5%",
+         "caption": "At a 2.5% base rate the do-nothing model is right 97.5% of the time, so accuracy cannot distinguish a useful model from a constant. PR-AUC can — its no-skill level **is** the prevalence, 0.025 — and so can recall at a fixed precision. This is the row to settle before any treatment is tried, because every treatment below will be judged by whichever metric you picked here.",
+         "left": "predictor", "codeW": 190,
+         "vars": ["accuracy", "ROC-AUC", "PR-AUC", "F1"],
+         "steps": [
+          {"code": "always 'negative'", "state": ["0.975", "0.500", "0.025", "0.000"], "tone": "crit", "note": "and useless"},
+          {"code": "a real model", "state": ["0.975", "0.867", "0.493", "0.401"], "changed": [1, 2, 3], "tone": "good"},
+          {"code": "what moved", "state": ["nothing", "a lot", "a lot", "a lot"], "tone": "violet"},
+          {"code": "no-skill level", "state": ["the base rate", "0.5", "prevalence", "0"], "tone": "accent"}]}},
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "SMOTE before the split, and the most seductive number in applied ML",
+         "caption": "Every synthetic row is an interpolation of real minority rows, so when the split comes afterwards the training folds hold near-copies of the test folds' positives. The honest arrangement scores **worse than doing nothing at all** on this problem — which is the finding, not a disappointment.",
+         "cols": ["ROC-AUC / PR-AUC", "F1"],
+         "rows": ["SMOTE on all rows, then CV", "SMOTE inside each fold", "No resampling at all"],
+         "cells": [
+          [{"text": "0.988 / 0.987", "tone": "crit"}, {"text": "0.948", "tone": "crit"}],
+          [{"text": "0.862 / 0.484", "tone": "good"}, {"text": "0.380", "tone": "good"}],
+          [{"text": "0.867 / 0.493", "tone": "good"}, {"text": "0.401", "tone": "good"}]]}},
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "How SMOTE synthesises a row, and where that goes wrong",
+         "caption": "A synthetic positive is a point on the line between a real positive and one of its k minority neighbours. Two consequences follow immediately: the new row carries **no information** that was not already in those two, and if the pair straddles a region of the majority class the interpolation lands inside it, manufacturing a positive where positives do not occur.",
+         "cols": 3,
+         "nodes": [
+          {"id": "p", "label": "Pick a minority row", "sub": "at random", "tone": "violet"},
+          {"id": "n", "label": "Find its k minority neighbours", "sub": "in feature space", "tone": "accent"},
+          {"id": "i", "label": "Interpolate", "sub": "a point on the line between them", "tone": "accent"},
+          {"id": "o", "label": "No new information", "sub": "it is a mixture of two real rows", "tone": "warn"},
+          {"id": "b", "label": "If the pair straddles the majority", "sub": "the new row lands inside it", "tone": "crit"},
+          {"id": "f", "label": "And if done before the split", "sub": "test positives have near-copies in train", "tone": "crit"}],
+         "edges": [["p", "n"], ["n", "i"], ["i", "o"], ["i", "b"], ["b", "f"]]}},
+  {"after": "04",
+   "d": {"kind": "matrix",
+         "title": "Six levers for imbalance, and which one actually moved",
+         "caption": "The threshold is almost always the largest single gain — F1 went from 0.109 to 0.351 by moving it, with no change to the model. Most of the other treatments turn out to be a threshold change in disguise, which is why they should be compared against simply tuning the cut.",
+         "cols": ["Changes", "Gain here"],
+         "rows": ["The metric", "The threshold", "class_weight", "Resampling", "Balanced ensembles", "Reframe as anomaly"],
+         "cells": [
+          [{"text": "how you see the problem", "tone": "good"}, "none, and it is still mandatory"],
+          [{"text": "the decision, not the model", "tone": "good"}, {"text": "F1 0.109 -> 0.351", "tone": "good"}],
+          ["the boundary; sometimes the fit", {"text": "large for hinge loss", "tone": "accent"}],
+          [{"text": "the training distribution", "tone": "warn"}, "slightly worse than nothing here"],
+          ["many balanced views", "0.857, 0.845 ranking"],
+          [{"text": "the question itself", "tone": "accent"}, "below ~0.1% positives"]]}}
+ ],
+
+ "8.3": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "Four curve shapes, and what each one tells you to do next",
+         "caption": "A learning curve answers 'would more data help' before you spend anything finding out. The first row is the one people act on wrongly: both lines low and together is **bias**, and more data does nothing — measured at 0.51 to 0.54 across a hundredfold increase in rows.",
+         "cols": ["Shape", "Do"],
+         "rows": ["Both low, converged", "Wide gap", "Narrowing, both rising", "Both flat at a good level", "Fold spread wide"],
+         "cells": [
+          [{"text": "high bias", "tone": "warn"}, "capacity or features; not more data"],
+          [{"text": "high variance", "tone": "warn"}, "more data, regularise, average"],
+          [{"text": "still learning", "tone": "accent"}, {"text": "get data first: 0.775 -> 0.917", "tone": "good"}],
+          [{"text": "at the floor", "tone": "good"}, "better features or cleaner labels; or stop"],
+          [{"text": "the estimate is unreliable", "tone": "crit"}, "+/- 0.13 at 100 rows: do not tune on it"]]}},
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "The course's own data, read by curve",
+         "caption": "Two datasets, two diagnoses, and the action is opposite in each. The churn curve has both lines low and close and does **not** move with a hundredfold increase in rows — 0.51 to 0.54 — which is bias: the features are the ceiling. The boosting curve is still rising at the right edge, 0.775 to 0.917, which means data is the cheapest next step. Reading the curve first is what stops a month being spent on the wrong one.",
+         "left": "what was measured", "codeW": 210,
+         "vars": ["at the left", "at the right", "diagnosis"],
+         "steps": [
+          {"code": "churn, 100 to 10,000 rows", "state": ["0.51", "0.54", "bias"], "tone": "warn", "note": "features are the ceiling"},
+          {"code": "boosting, rising curve", "state": ["0.775", "0.917", "still learning"], "changed": [1], "tone": "good", "note": "get data"},
+          {"code": "fold spread at 100 rows", "state": ["± 0.13", "", "do not tune here"], "tone": "crit"},
+          {"code": "logistic C, five decades", "state": ["0.736", "0.743", "the dial is flat"], "tone": "accent", "note": "stop searching it"}]}},
+  {"after": "03",
+   "d": {"kind": "steps",
+         "title": "Reading a curve in ten seconds",
+         "caption": "Five questions in order, and the first one that answers yes tells you what to do. The last is worth stating explicitly: a validation curve whose two lines are flat across the whole range is telling you the dial does not matter, so stop searching it.",
+         "items": [
+          {"label": "Is the gap wide?", "desc": "variance: regularise, average, or get data", "code": "1", "tone": "warn"},
+          {"label": "Are both lines low and together?", "desc": "bias: capacity or features; data will not help", "code": "2", "tone": "warn"},
+          {"label": "Is validation still rising at the right edge?", "desc": "data will help; get it before changing anything", "code": "3", "tone": "good"},
+          {"label": "Both flat and together, at a good level?", "desc": "done; the rest is features or noise", "code": "4", "tone": "good"},
+          {"label": "Is the fold spread wide?", "desc": "the estimate is unreliable: do not tune on it", "code": "5", "tone": "crit"},
+          {"label": "Both lines flat across the whole dial?", "desc": "the hyperparameter does not matter; stop searching", "code": "6", "tone": "violet"}]}}
+ ],
+
+ "8.4": [
+  {"after": "01",
+   "d": {"kind": "flow",
+         "title": "The harness: identical folds, one table, the cost column included",
+         "caption": "The point of a harness is that every candidate is judged on **the same folds with the same metric**, so the differences in the table are differences between models rather than between evaluations. The dummy is first because it is the number everything else is reported against, and the cost column is there because a 0.002 gain that triples latency is not a gain.",
+         "cols": 3,
+         "nodes": [
+          {"id": "f", "label": "Fix the folds", "sub": "repeated, stratified or grouped, once", "tone": "violet"},
+          {"id": "d", "label": "Dummy first", "sub": "the denominator for everything", "tone": "accent"},
+          {"id": "c", "label": "Each candidate, same folds", "sub": "inside its own Pipeline", "tone": "good"},
+          {"id": "m", "label": "One metric, chosen in advance", "sub": "plus the fold spread", "tone": "good"},
+          {"id": "t", "label": "Fit and predict time", "sub": "a column, not an afterthought", "tone": "teal"},
+          {"id": "r", "label": "Read the table", "sub": "then tune only the family that leads", "tone": "teal"}],
+         "edges": [["f", "d"], ["d", "c"], ["c", "m"], ["m", "t"], ["t", "r"]]}},
+  {"after": "02",
+   "d": {"kind": "matrix",
+         "title": "Eight questions that choose the family, with this course's evidence",
+         "caption": "None of these is answered by a leaderboard. The row-count question alone overturns the usual instinct: boosting defaults were the **worst** models on 989 rows, and the four libraries tied at 0.968 on 200,000.",
+         "cols": ["Points to", "Evidence here"],
+         "rows": ["How many rows", "The truth's shape", "Is it a probability", "Must a human read it", "Latency", "Categoricals and NaN", "Imbalance", "Refit cadence"],
+         "cells": [
+          [{"text": "under 1k: linear", "tone": "accent"}, "boosting defaults were worst at 989"],
+          [{"text": "additive: linear", "tone": "accent"}, "churn: logistic 0.752 beat everything"],
+          [{"text": "log-loss, then calibrate", "tone": "accent"}, "the forest compressed its probabilities"],
+          [{"text": "coefficients or rules", "tone": "accent"}, "the depth-3 tree scored 0.679"],
+          [{"text": "linear or symmetric trees", "tone": "accent"}, "KNN 382 ms; CatBoost 0.02 s"],
+          [{"text": "CatBoost, or cross-fitted", "tone": "accent"}, "naive target encoding leaked"],
+          [{"text": "log-loss plus a threshold", "tone": "accent"}, "the SVM collapsed to w = 0"],
+          [{"text": "models that refit in seconds", "tone": "accent"}, "16 ms to 1.2 s here"]]}},
+  {"after": "03",
+   "d": {"kind": "steps",
+         "title": "The procedure, not the flow chart",
+         "caption": "Order matters because each step makes the next one cheaper to judge. Fitting the dummy first is not a formality — it is the number every later result is reported against.",
+         "items": [
+          {"label": "Fit the dummy", "desc": "the majority class, or the mean: everything is measured from here", "code": "1", "tone": "accent"},
+          {"label": "Then a linear model with sensible features", "desc": "on identical repeated folds", "code": "2", "tone": "good"},
+          {"label": "Then a forest with a large leaf size", "desc": "a safe, barely-tuned variance baseline", "code": "3", "tone": "good"},
+          {"label": "Then early-stopped boosting", "desc": "the usual tabular ceiling, if it is going to win", "code": "4", "tone": "good"},
+          {"label": "If linear is within the fold spread, ship it", "desc": "Occam says simple beats equal, not simple beats better", "code": "5", "tone": "violet"},
+          {"label": "If trees win, find the non-linearity they found", "desc": "and ask whether a feature would give it to the linear model", "code": "6", "tone": "violet"},
+          {"label": "Tune only the family that leads", "desc": "then score the finalist on a slice the search never saw", "code": "7", "tone": "teal"}]}}
+ ],
+
+ "8.5": [
+  {"after": "01",
+   "d": {"kind": "matrix",
+         "title": "The estimator contract, and what each method may not do",
+         "caption": "The prohibitions are the content. `__init__` may not validate or transform its arguments — it only stores them — because `clone` rebuilds an estimator from `get_params` and anything computed in the constructor would be silently lost per fold.",
+         "cols": ["Must", "Must not"],
+         "rows": ["__init__", "fit", "transform / predict", "get_params", "Learned attributes", "Input validation"],
+         "cells": [
+          ["store the arguments, unchanged", {"text": "validate or transform them", "tone": "crit"}],
+          ["learn, and return self", {"text": "depend on a previous fit", "tone": "crit"}],
+          ["use only what fit learned", {"text": "learn anything new", "tone": "crit"}],
+          ["echo the constructor arguments", {"text": "omit one: clone would drop it", "tone": "crit"}],
+          [{"text": "end in a trailing underscore", "tone": "good"}, "exist before fit"],
+          ["happen in fit and transform", "happen in __init__"]]}},
+  {"after": "02",
+   "d": {"kind": "flow",
+         "title": "The template, end to end, as one object",
+         "caption": "Raw columns in, a probability out, and everything in between inside the estimator. Each arrow is a place where a hand-rolled pipeline usually leaks or drifts: the search reaching into preprocessing, the calibration fitted on internal folds, the refit on all rows, and the single artefact that serving calls.",
+         "cols": 3,
+         "nodes": [
+          {"id": "r", "label": "Raw columns", "sub": "by name, remainder dropped", "tone": "violet"},
+          {"id": "p", "label": "ColumnTransformer", "sub": "impute + indicator, encode, scale", "tone": "accent"},
+          {"id": "m", "label": "The model", "sub": "in the same Pipeline", "tone": "accent"},
+          {"id": "s", "label": "One search over both", "sub": "nested if the score is reported", "tone": "good"},
+          {"id": "c", "label": "Calibrate on internal folds", "sub": "if probabilities are the product", "tone": "good"},
+          {"id": "a", "label": "Refit on all rows, dump once", "sub": "one artefact, with a manifest", "tone": "teal"}],
+         "edges": [["r", "p"], ["p", "m"], ["m", "s"], ["s", "c"], ["c", "a"]]}},
+  {"after": "03",
+   "d": {"kind": "steps",
+         "title": "Persistence, and the reload check that catches the version drift",
+         "caption": "A pickle stores the object graph, not the behaviour — so the same file loaded against a different scikit-learn can predict differently, or fail to load at all. The golden-set check is the cheap guard: a handful of rows and their expected scores, compared on every reload, turning a silent behavioural change into a loud failure.",
+         "items": [
+          {"label": "joblib.dump the fitted Pipeline", "desc": "one artefact, not a model plus a script", "code": "1", "tone": "accent"},
+          {"label": "Write a manifest beside it", "desc": "library versions, seed, data hash, feature list", "code": "2", "tone": "good"},
+          {"label": "Save a golden set", "desc": "a few rows and the scores they produced", "code": "3", "tone": "good"},
+          {"label": "On reload, re-score it", "desc": "and compare to the saved scores", "code": "4", "tone": "violet"},
+          {"label": "A mismatch is a version change", "desc": "found at load, not in production", "code": "5", "tone": "teal"},
+          {"label": "Never load an untrusted artefact", "desc": "joblib.load executes whatever the file says", "code": "warn", "tone": "crit"}]}},
+  {"after": "04",
+   "d": {"kind": "matrix",
+         "title": "Four ways to persist a model, and what each trusts",
+         "caption": "`joblib.load` **executes whatever the file tells it to** — a model artefact from an untrusted source is a remote-code-execution vector, and one from a trusted source that has been tampered with is the same thing. ONNX is a data-only graph, which is what makes it the format for crossing a trust boundary, and it was 40× faster in the request path here.",
+         "cols": ["Stores", "Trust"],
+         "rows": ["joblib / pickle", "ONNX", "PMML", "Native save_model"],
+         "cells": [
+          [{"text": "the whole Python object graph", "tone": "accent"}, {"text": "executes code on load", "tone": "crit"}],
+          [{"text": "a graph of standard ops", "tone": "good"}, {"text": "data only; 40x lower latency", "tone": "good"}],
+          ["an XML model description", {"text": "data only", "tone": "good"}],
+          [{"text": "the trees themselves", "tone": "good"}, "data only; preprocessing is yours"]]}}
  ]
 }

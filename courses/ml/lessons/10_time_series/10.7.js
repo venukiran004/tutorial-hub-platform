@@ -20,7 +20,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why the interval widens", id: "widening" },
 
-    {"kind": "matrix", "title": "Four ways to get an interval, and what each one assumes", "caption": "The analytic interval is the narrowest and assumes the most — that the model is right and the errors normal — so it is the one that under-covers in practice. Conformal assumes only exchangeability between the calibration block and the test block, and gives coverage as a guarantee rather than a hope.", "cols": ["Assumes", "Works with"], "rows": ["Analytic", "Quantile regression", "Bootstrap / simulation", "Conformal"], "cells": [[{"text": "the model is right, errors normal", "tone": "warn"}, "ARIMA, ETS"], [{"text": "nothing about the shape", "tone": "good"}, "boosting, networks"], [{"text": "residuals exchangeable", "tone": "accent"}, "any model with a recursion"], [{"text": "exchangeability only", "tone": "good"}, {"text": "any model; coverage guaranteed", "tone": "good"}]], "t": "diagram", "id": "dg-10_7-01-0"},
+    {"kind": "flow", "title": "Why the interval widens with the horizon", "caption": "Each step of the recursion adds its own unknown shock, and the shocks accumulate — for a random walk the forecast variance grows **linearly in h**, so the interval widens with √h. That is not pessimism, it is arithmetic; an interval that stays the same width at every horizon is a sign the model's uncertainty is being computed wrongly.", "cols": 3, "nodes": [{"id": "o", "label": "One step ahead", "sub": "one unknown shock", "tone": "good"}, {"id": "t", "label": "Two steps", "sub": "two shocks, and the first is fed forward", "tone": "accent"}, {"id": "h", "label": "h steps", "sub": "variance accumulates", "tone": "accent"}, {"id": "r", "label": "Random walk: variance = h sigma²", "sub": "so the width grows with root h", "tone": "violet"}, {"id": "s", "label": "Stationary: it converges", "sub": "to the unconditional variance", "tone": "good"}, {"id": "f", "label": "A flat band at every h", "sub": "is a bug, not a feature", "tone": "crit"}], "edges": [["o", "t"], ["t", "h"], ["h", "r"], ["h", "s"], ["r", "f", "", "dashed"]], "t": "diagram", "id": "dg-10_7-01-0"},
+
+
+
+
+
+
+
 
 
 
@@ -60,6 +67,12 @@ h   sd = σ√h    half-width 1.96σ√h    interval
 
     { t: "h2", n: "02", text: "Four ways to get an interval", id: "four-ways" },
 
+    {"kind": "matrix", "title": "Four ways to get an interval, and what each one assumes", "caption": "The analytic interval is the narrowest and assumes the most — that the model is right and the errors normal — so it is the one that under-covers in practice. Conformal assumes only exchangeability between the calibration block and the test block, and gives coverage as a guarantee rather than a hope.", "cols": ["Assumes", "Works with"], "rows": ["Analytic", "Quantile regression", "Bootstrap / simulation", "Conformal"], "cells": [[{"text": "the model is right, errors normal", "tone": "warn"}, "ARIMA, ETS"], [{"text": "nothing about the shape", "tone": "good"}, "boosting, networks"], [{"text": "residuals exchangeable", "tone": "accent"}, "any model with a recursion"], [{"text": "exchangeability only", "tone": "good"}, {"text": "any model; coverage guaranteed", "tone": "good"}]], "t": "diagram", "id": "dg-10_7-02-1"},
+
+
+
+
+
     { t: "table", head: ["Method", "How", "Assumes", "Good for"], rows: [
       ["Analytic", "the model's own variance formula", "the model is right and the errors normal", "ARIMA, ETS"],
       ["Quantile regression", "one model per quantile, pinball loss", "nothing about the shape; enough data per quantile", "boosting, networks"],
@@ -78,7 +91,10 @@ h   sd = σ√h    half-width 1.96σ√h    interval
 
     { t: "h2", n: "03", text: "The pinball loss", id: "pinball" },
 
-    {"kind": "matrix", "title": "The pinball loss is minimised by the quantile you asked for", "caption": "That is the whole reason quantile regression works: weighting under- and over-predictions asymmetrically by τ makes the optimal constant prediction the τ-th quantile. At τ = 0.5 the weights are equal and it reduces to half the absolute error, which is why the median minimises MAE.", "cols": ["Penalises", "Optimal forecast"], "rows": ["tau = 0.5", "tau = 0.9", "tau = 0.1", "Squared error"], "cells": [[{"text": "both sides equally", "tone": "accent"}, "the median — hence MAE"], [{"text": "under-prediction 9x more", "tone": "good"}, "the 90th percentile"], [{"text": "over-prediction 9x more", "tone": "good"}, "the 10th percentile"], [{"text": "large errors quadratically", "tone": "warn"}, "the mean"]], "t": "diagram", "id": "dg-10_7-03-1"},
+    {"kind": "matrix", "title": "The pinball loss is minimised by the quantile you asked for", "caption": "That is the whole reason quantile regression works: weighting under- and over-predictions asymmetrically by τ makes the optimal constant prediction the τ-th quantile. At τ = 0.5 the weights are equal and it reduces to half the absolute error, which is why the median minimises MAE.", "cols": ["Penalises", "Optimal forecast"], "rows": ["tau = 0.5", "tau = 0.9", "tau = 0.1", "Squared error"], "cells": [[{"text": "both sides equally", "tone": "accent"}, "the median — hence MAE"], [{"text": "under-prediction 9x more", "tone": "good"}, "the 90th percentile"], [{"text": "over-prediction 9x more", "tone": "good"}, "the 10th percentile"], [{"text": "large errors quadratically", "tone": "warn"}, "the mean"]], "t": "diagram", "id": "dg-10_7-03-2"},
+
+
+
 
 
 
@@ -102,6 +118,12 @@ on 200,000 draws from a lognormal(4, 0.5), the minimisers of the three losses ar
       caption: "A model trained with the τ = 0.5 loss forecasts the median, which on a right-skewed target is below the mean — the MAE-versus-bias trade-off of 10.3 and 10.6, made by the loss. Independently fitted quantile models can cross (the 90th below the 50th); three of 150 rows did here, and the fix is to sort the predicted quantiles row-wise or to fit a model with a monotone constraint." },
 
     { t: "h2", n: "04", text: "Conformal prediction: coverage without distributional assumptions", id: "conformal" },
+
+    {"kind": "trace", "title": "Conformal coverage, and the level shift that breaks a static band", "caption": "A refurbishment lifts the level on 1 September. The **static** conformal band had 0.920 coverage before it and **0.595** in the six weeks after — the guarantee is conditional on exchangeability, and a level shift destroys exactly that. Adaptive conformal raises its target coverage after each miss, so the band widens from 29.8 to 57.4 and recovers to 0.833. The last rows are the other lesson: 30 calibration days cannot estimate an 80th percentile.", "left": "method", "codeW": 190, "vars": ["coverage before", "6 weeks after", "Sep-Nov", "band width"], "steps": [{"code": "static conformal, α 0.1", "state": ["0.920", "0.595", "0.773", "31.4 / 31.4"], "changed": [1], "tone": "crit"}, {"code": "adaptive (ACI), γ 0.02", "state": ["0.920", "0.833", "0.887", "29.8 / 57.4"], "changed": [1, 3], "tone": "good"}, {"code": "recent 90-day calibration", "state": ["half-width 42.0", "", "0.920", ""], "tone": "accent"}, {"code": "90 random historical days", "state": ["half-width 43.8", "", "0.947", ""], "tone": "accent"}, {"code": "α 0.2, 30 days", "state": ["", "", "0.753", "too few for an 80th pct"], "tone": "crit"}, {"code": "α 0.2, 90 or 180 days", "state": ["", "", "0.793", ""], "tone": "good"}], "t": "diagram", "id": "dg-10_7-04-3"},
+
+
+
+
 
     { t: "p", text: "Split conformal fits the model on a training block, computes absolute residuals on a calibration block the model never saw, and takes the (1 − α) empirical quantile of those residuals — with a finite-sample correction, the ⌈(n + 1)(1 − α)⌉-th smallest of n — as the half-width around every new point forecast. If the calibration and test errors are exchangeable, coverage is at least 1 − α, whatever the model and whatever the error distribution. That guarantee is what the other three methods lack. Its cost is a constant-width band (a residual quantile knows nothing about which days are harder) and the exchangeability assumption, which time series violate in two ways: the errors are autocorrelated, and the error distribution drifts." },
 
@@ -127,6 +149,12 @@ on 200,000 draws from a lognormal(4, 0.5), the minimisers of the three losses ar
       caption: "After the shift the model under-forecasts by about the size of the shift, the static band misses 40 % of days for six weeks, and nothing in it can notice. The adaptive band reacts to each miss and recovers most of the coverage at the price of doubling its width — which is the honest response to a model that has become wrong. EnbPI (bootstrap ensembles with leave-one-out residuals) is the other standard time-series conformal method; both exist because plain conformal's exchangeability does not hold across a change." },
 
     { t: "h2", n: "05", text: "Scoring a whole distribution", id: "scoring" },
+
+    {"kind": "matrix", "title": "Scoring a whole distribution, not a point", "caption": "A point forecast cannot be scored for its uncertainty, so a probabilistic forecast needs a proper score — one that is optimised only by the true distribution. CRPS is the natural generalisation of MAE to distributions and reduces to it when the forecast is a point, which makes it the one to report alongside the interval.", "cols": ["Scores", "Property"], "rows": ["Pinball loss", "CRPS", "Log score", "Interval coverage", "Interval width"], "cells": [["one quantile", {"text": "proper for that quantile", "tone": "good"}], [{"text": "the whole distribution", "tone": "good"}, {"text": "proper; reduces to MAE at a point", "tone": "good"}], ["the density at the outcome", {"text": "proper; unbounded on a surprise", "tone": "warn"}], ["the stated level", {"text": "necessary, not sufficient", "tone": "warn"}], ["sharpness", {"text": "meaningless without coverage", "tone": "crit"}]], "t": "diagram", "id": "dg-10_7-05-4"},
+
+
+
+
 
     { t: "code", lang: "python", title: "ETS(M,Ad,M) with 300 simulated paths per origin, 28 days ahead, 10 origins (executed, store A)",
       code: `CRPS(F, y) = E|X − y| − ½ E|X − X'|      for samples X, X' from the forecast distribution F

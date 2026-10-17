@@ -32,6 +32,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "A transformer that passes check_estimator (executed; scikit-learn 1.8)",
       hl: [3, 4, 6, 7, 9, 12],
       code: `class Winsorizer(TransformerMixin, BaseEstimator):                      # mixin first, BaseEstimator last: the MRO the checks expect
@@ -98,6 +105,14 @@ class NoValidate(TransformerMixin, BaseEstimator):
 
     { t: "h2", n: "02", text: "The template, end to end", id: "template" },
 
+    {"kind": "flow", "title": "The template, end to end, as one object", "caption": "Raw columns in, a probability out, and everything in between inside the estimator. Each arrow is a place where a hand-rolled pipeline usually leaks or drifts: the search reaching into preprocessing, the calibration fitted on internal folds, the refit on all rows, and the single artefact that serving calls.", "cols": 3, "nodes": [{"id": "r", "label": "Raw columns", "sub": "by name, remainder dropped", "tone": "violet"}, {"id": "p", "label": "ColumnTransformer", "sub": "impute + indicator, encode, scale", "tone": "accent"}, {"id": "m", "label": "The model", "sub": "in the same Pipeline", "tone": "accent"}, {"id": "s", "label": "One search over both", "sub": "nested if the score is reported", "tone": "good"}, {"id": "c", "label": "Calibrate on internal folds", "sub": "if probabilities are the product", "tone": "good"}, {"id": "a", "label": "Refit on all rows, dump once", "sub": "one artefact, with a manifest", "tone": "teal"}], "edges": [["r", "p"], ["p", "m"], ["m", "s"], ["s", "c"], ["c", "a"]], "t": "diagram", "id": "dg-8_5-02-1"},
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "Churn, the production way (executed; 989 rows with the 999 outlier and 126 missing tickets left in)",
       hl: [1, 2, 3, 4, 6, 7, 9, 12, 13],
       code: `pre = ColumnTransformer([("num", Pipeline([("impute", SimpleImputer(strategy="median", add_indicator=True)),      # missingness becomes a column
@@ -121,6 +136,14 @@ cal = CalibratedClassifierCV(clone(search.best_estimator_), method="isotonic", c
 
     { t: "h2", n: "03", text: "Persistence: joblib, the manifest, the reload check", id: "persistence" },
 
+    {"kind": "steps", "title": "Persistence, and the reload check that catches the version drift", "caption": "A pickle stores the object graph, not the behaviour — so the same file loaded against a different scikit-learn can predict differently, or fail to load at all. The golden-set check is the cheap guard: a handful of rows and their expected scores, compared on every reload, turning a silent behavioural change into a loud failure.", "items": [{"label": "joblib.dump the fitted Pipeline", "desc": "one artefact, not a model plus a script", "code": "1", "tone": "accent"}, {"label": "Write a manifest beside it", "desc": "library versions, seed, data hash, feature list", "code": "2", "tone": "good"}, {"label": "Save a golden set", "desc": "a few rows and the scores they produced", "code": "3", "tone": "good"}, {"label": "On reload, re-score it", "desc": "and compare to the saved scores", "code": "4", "tone": "violet"}, {"label": "A mismatch is a version change", "desc": "found at load, not in production", "code": "5", "tone": "teal"}, {"label": "Never load an untrusted artefact", "desc": "joblib.load executes whatever the file says", "code": "warn", "tone": "crit"}], "t": "diagram", "id": "dg-8_5-03-2"},
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "Save, hash, reload, verify (executed)",
       hl: [1, 4, 6, 7],
       code: `artefact = {"model": cal, "sklearn": "1.8.0", "numpy": "2.4.4", "python": "3.11.3", "features": num + cat, "trained_at": "2026-09-17",
@@ -139,7 +162,12 @@ np.allclose(back["model"].predict_proba(golden_rows)[:, 1], golden_predictions) 
 
     { t: "h2", n: "04", text: "ONNX: portable, fast, and picky", id: "onnx" },
 
-    {"kind": "matrix", "title": "Four ways to persist a model, and what each trusts", "caption": "`joblib.load` **executes whatever the file tells it to** — a model artefact from an untrusted source is a remote-code-execution vector, and one from a trusted source that has been tampered with is the same thing. ONNX is a data-only graph, which is what makes it the format for crossing a trust boundary, and it was 40× faster in the request path here.", "cols": ["Stores", "Trust"], "rows": ["joblib / pickle", "ONNX", "PMML", "Native save_model"], "cells": [[{"text": "the whole Python object graph", "tone": "accent"}, {"text": "executes code on load", "tone": "crit"}], [{"text": "a graph of standard ops", "tone": "good"}, {"text": "data only; 40x lower latency", "tone": "good"}], ["an XML model description", {"text": "data only", "tone": "good"}], [{"text": "the trees themselves", "tone": "good"}, "data only; preprocessing is yours"]], "t": "diagram", "id": "dg-8_5-04-1"},
+    {"kind": "matrix", "title": "Four ways to persist a model, and what each trusts", "caption": "`joblib.load` **executes whatever the file tells it to** — a model artefact from an untrusted source is a remote-code-execution vector, and one from a trusted source that has been tampered with is the same thing. ONNX is a data-only graph, which is what makes it the format for crossing a trust boundary, and it was 40× faster in the request path here.", "cols": ["Stores", "Trust"], "rows": ["joblib / pickle", "ONNX", "PMML", "Native save_model"], "cells": [[{"text": "the whole Python object graph", "tone": "accent"}, {"text": "executes code on load", "tone": "crit"}], [{"text": "a graph of standard ops", "tone": "good"}, {"text": "data only; 40x lower latency", "tone": "good"}], ["an XML model description", {"text": "data only", "tone": "good"}], [{"text": "the trees themselves", "tone": "good"}, "data only; preprocessing is yours"]], "t": "diagram", "id": "dg-8_5-04-3"},
+
+
+
+
+
 
 
 

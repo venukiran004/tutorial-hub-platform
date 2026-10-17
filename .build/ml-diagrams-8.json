@@ -121,6 +121,204 @@
      }
     ]
    }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Four repairs, and the one that is never allowed",
+    "caption": "Each treatment makes a different assumption about what the gap meant. The rule that matters is the last one: **backward-fill copies the future into the past**, so a feature built with it is a leak even though nothing about the code looks wrong — and the backtest will reward it.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "g",
+      "label": "A gap in the series",
+      "sub": "a missing day, an outage",
+      "tone": "violet"
+     },
+     {
+      "id": "f",
+      "label": "Forward-fill",
+      "sub": "for a state that persists",
+      "tone": "good"
+     },
+     {
+      "id": "i",
+      "label": "Interpolate",
+      "sub": "for a continuous signal",
+      "tone": "good"
+     },
+     {
+      "id": "z",
+      "label": "Treat as zero",
+      "sub": "only if absent means none",
+      "tone": "accent"
+     },
+     {
+      "id": "l",
+      "label": "Leave it NaN",
+      "sub": "honest; the model must cope",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "Backward-fill",
+      "sub": "copies the future into the past",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "g",
+      "f"
+     ],
+     [
+      "g",
+      "i"
+     ],
+     [
+      "g",
+      "z"
+     ],
+     [
+      "g",
+      "l"
+     ],
+     [
+      "g",
+      "b",
+      "never",
+      "dashed"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Classical decomposition on twelve numbers, every intermediate exact",
+    "caption": "The series is built as trend 30 + 1.5t plus a seasonal pattern of −3, +1, −4, +6 — so the procedure can be checked rather than believed. The centred 4-quarter moving average recovers the trend rising by **exactly 1.5** a quarter; subtracting it leaves the detrended values; averaging those by quarter recovers the seasonal indices exactly, and they sum to zero. The remainder is 0.0 at every point that has a trend estimate. Add N(0,1) noise and the indices come back as −2.44, +1.20, −4.26, +5.51 with a remainder sd of 0.57.",
+    "left": "stage",
+    "codeW": 170,
+    "vars": [
+     "Q1",
+     "Q2",
+     "Q3",
+     "Q4"
+    ],
+    "steps": [
+     {
+      "code": "the planted season",
+      "state": [
+       "-3.0",
+       "+1.0",
+       "-4.0",
+       "+6.0"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "trend by centred MA",
+      "state": [
+       "rises 1.5 a quarter",
+       "",
+       "",
+       "no estimate at the ends"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "detrended, cycle 1",
+      "state": [
+       "-3.0",
+       "+1.0",
+       "-4.0",
+       "+6.0"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "detrended, cycle 2",
+      "state": [
+       "-3.0",
+       "+1.0",
+       "-4.0",
+       "+6.0"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "averaged indices",
+      "state": [
+       "-3.0",
+       "+1.0",
+       "-4.0",
+       "+6.0"
+      ],
+      "changed": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "tone": "good",
+      "note": "sum 0.0"
+     },
+     {
+      "code": "remainder",
+      "state": [
+       "0.0",
+       "0.0",
+       "0.0",
+       "0.0"
+      ],
+      "tone": "good",
+      "note": "exact"
+     },
+     {
+      "code": "with N(0,1) noise",
+      "state": [
+       "-2.44",
+       "+1.20",
+       "-4.26",
+       "+5.51"
+      ],
+      "tone": "accent",
+      "note": "remainder sd 0.57"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "compare",
+    "title": "Additive or multiplicative, and the test is the swing",
+    "caption": "Look at whether the seasonal swing **grows with the level**. If December is always 40 units above trend, the season is additive; if December is always 30% above trend, it is multiplicative — and taking logs converts the second into the first, which is why a log transform and an additive model are usually the same decision.",
+    "columns": [
+     {
+      "title": "Additive: y = T + S + R",
+      "tone": "accent",
+      "items": [
+       "The swing is a constant number of units",
+       "Works with zeros and negatives",
+       "Residuals have constant spread",
+       "No transform needed"
+      ]
+     },
+     {
+      "title": "Multiplicative: y = T x S x R",
+      "tone": "good",
+      "items": [
+       "The swing is a constant percentage",
+       "Needs strictly positive values",
+       "Residual spread grows with the level",
+       "log(y) makes it additive"
+      ]
+     }
+    ]
+   }
   }
  ],
  "10.2": [
@@ -186,47 +384,246 @@
   {
    "after": "02",
    "d": {
-    "kind": "matrix",
+    "kind": "trace",
     "title": "Over-differencing is a failure, not a safe default",
     "caption": "Each unnecessary difference injects a negative MA(1) the model must then estimate, and inflates the forecast variance by 2(1 − ρ₁). Differencing white noise gives a lag-1 autocorrelation of −0.5 — measured at −0.496 on 20,000 points — and the store series shows it at the second step: sd rises from 0.146 to 0.200.",
+    "left": "series",
+    "codeW": 230,
+    "vars": [
+     "lag-1 ACF",
+     "sd",
+     "meaning"
+    ],
+    "steps": [
+     {
+      "code": "white noise, differenced",
+      "state": [
+       "-0.496",
+       "",
+       "theory -0.5"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "AR(1) phi=0.7, differenced",
+      "state": [
+       "-0.158",
+       "",
+       "theory -0.15"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "store, first difference",
+      "state": [
+       "",
+       "0.146",
+       "appropriate"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "store, second difference",
+      "state": [
+       "-0.476",
+       "0.200",
+       "over-differenced"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "ADF and KPSS test opposite nulls, so read them as a pair",
+    "caption": "The ADF regression is ordinary least squares on the differenced series, and its null is **a unit root** — so failing to reject means 'possibly non-stationary'. KPSS's null is the opposite, stationarity. Together they give four outcomes, and the useful two are the agreements; when they disagree you are in the ambiguous region and the backtest decides.",
+    "cols": 2,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "ADF: null is a unit root",
+      "sub": "reject = stationary",
+      "tone": "violet"
+     },
+     {
+      "id": "k",
+      "label": "KPSS: null is stationarity",
+      "sub": "reject = non-stationary",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "ADF rejects, KPSS does not",
+      "sub": "stationary: proceed",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "ADF does not, KPSS rejects",
+      "sub": "difference it",
+      "tone": "good"
+     },
+     {
+      "id": "u",
+      "label": "Neither rejects",
+      "sub": "too little data to tell",
+      "tone": "warn"
+     },
+     {
+      "id": "b",
+      "label": "Both reject",
+      "sub": "perhaps trend-stationary; detrend",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "s"
+     ],
+     [
+      "k",
+      "n"
+     ],
+     [
+      "a",
+      "u"
+     ],
+     [
+      "k",
+      "b"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "The PACF is not the ACF, and the difference is what identifies p",
+    "caption": "An AR(1) with φ = 0.7 has an ACF of 0.7, 0.49, 0.343 — every lag correlated, because the correlation **propagates** through the chain. The PACF removes the propagation by controlling for the intervening lags, so it shows 0.7 and then nothing. That is why a PACF cutting off at lag p identifies an AR(p): the direct dependence stops there.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "AR(1), phi = 0.7",
+      "sub": "y depends on y at t-1 only",
+      "tone": "violet"
+     },
+     {
+      "id": "c",
+      "label": "ACF: 0.70, 0.49, 0.34",
+      "sub": "every lag looks correlated",
+      "tone": "warn"
+     },
+     {
+      "id": "w",
+      "label": "Because it propagates",
+      "sub": "t-2 acts through t-1",
+      "tone": "warn"
+     },
+     {
+      "id": "p",
+      "label": "PACF controls for the middle",
+      "sub": "the direct part only",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "PACF: 0.70, then ~0",
+      "sub": "it cuts off at p = 1",
+      "tone": "good"
+     },
+     {
+      "id": "m",
+      "label": "An MA(q) is the mirror",
+      "sub": "ACF cuts off, PACF decays",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "c"
+     ],
+     [
+      "c",
+      "w"
+     ],
+     [
+      "w",
+      "p"
+     ],
+     [
+      "p",
+      "r"
+     ],
+     [
+      "r",
+      "m"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "Reading the two plots into orders",
+    "caption": "These five rules are the whole identification procedure, and they are rules about **where a plot cuts off** rather than where it is large. In practice they narrow the candidates to two or three, and an information criterion or a backtest picks among those — identification by eye was never meant to be the final answer.",
     "cols": [
-     "Lag-1 ACF after",
-     "Meaning"
+     "Plot shows",
+     "Order"
     ],
     "rows": [
-     "White noise, differenced",
-     "AR(1) phi=0.7, differenced",
-     "Store, first difference",
-     "Store, second difference"
+     "ACF decays slowly from 1",
+     "ACF spikes at m, 2m, 3m",
+     "PACF cuts off at lag p",
+     "ACF cuts off at lag q",
+     "PACF spike at lag m only"
     ],
     "cells": [
      [
       {
-       "text": "-0.496 (theory -0.5)",
-       "tone": "crit"
+       "text": "non-stationary in level",
+       "tone": "accent"
       },
-      "an MA(1) that was not there"
+      "d = 1"
      ],
      [
       {
-       "text": "-0.158 (theory -0.15)",
-       "tone": "crit"
+       "text": "non-stationary in season",
+       "tone": "accent"
       },
-      "the same, from a stationary start"
+      "D = 1"
      ],
      [
       {
-       "text": "sd 0.146",
+       "text": "an AR signature",
        "tone": "good"
       },
-      "appropriate"
+      "p"
      ],
      [
       {
-       "text": "sd 0.200, ACF -0.476",
-       "tone": "crit"
+       "text": "an MA signature",
+       "tone": "good"
       },
-      "over-differenced: variance up"
+      "q"
+     ],
+     [
+      {
+       "text": "seasonal AR",
+       "tone": "good"
+      },
+      "P = 1"
      ]
     ]
    }
@@ -276,11 +673,11 @@
    }
   },
   {
-   "after": "03",
+   "after": "02",
    "d": {
     "kind": "timeline",
-    "title": "Rolling origins, and the gap that makes them honest",
-    "caption": "Each origin trains on everything before it and scores the block after it, which recreates the moment the forecast is made. The **gap** is needed whenever a feature or a label is computed over a window: without it the last training labels depend on events inside the test block, and the backtest is quietly optimistic.",
+    "title": "Rolling origins: eight forecasts, each from what was knowable",
+    "caption": "One origin gives one number and no sense of its variability; eight give a spread, and the spread is what tells you whether a 3% improvement is real. Each origin refits on everything before it and scores the block after it — which recreates the moment the forecast is made, eight times over.",
     "span": 12,
     "tick": 3,
     "lanes": [
@@ -296,12 +693,6 @@
        [
         4,
         5,
-        "gap",
-        "warn"
-       ],
-       [
-        5,
-        6,
         "test",
         "good"
        ]
@@ -312,19 +703,13 @@
       "bars": [
        [
         0,
-        6,
+        5,
         "train",
         "accent"
        ],
        [
+        5,
         6,
-        7,
-        "gap",
-        "warn"
-       ],
-       [
-        7,
-        8,
         "test",
         "good"
        ]
@@ -335,20 +720,76 @@
       "bars": [
        [
         0,
-        8,
+        6,
         "train",
         "accent"
        ],
        [
-        8,
-        9,
-        "gap",
-        "warn"
+        6,
+        7,
+        "test",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "Origin 8",
+      "bars": [
+       [
+        0,
+        11,
+        "train",
+        "accent"
        ],
        [
-        9,
-        10,
+        11,
+        12,
         "test",
+        "good"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "timeline",
+    "title": "The gap, and why a window feature forces one",
+    "caption": "Without a gap, the last training label can depend on events inside the test block — any label or feature computed over a window reaches forward. The gap is simply that window's length, excluded from both sides, and it costs a little data to buy a backtest that is not quietly optimistic.",
+    "span": 12,
+    "tick": 3,
+    "lanes": [
+     {
+      "label": "Train",
+      "bars": [
+       [
+        0,
+        7,
+        "fitted on these",
+        "accent"
+       ]
+      ]
+     },
+     {
+      "label": "Gap",
+      "bars": [
+       [
+        7,
+        8,
+        "gap",
+        "warn"
+       ]
+      ]
+     },
+     {
+      "label": "Test",
+      "bars": [
+       [
+        8,
+        12,
+        "scored on these",
         "good"
        ]
       ]
@@ -358,67 +799,462 @@
       "bars": [
        [
         0,
-        10,
-        "train, whose last labels use test-period events",
+        8,
+        "last labels use test-period events",
         "crit"
        ]
       ]
      }
     ]
    }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Five errors, every forecast metric, worked",
+    "caption": "Errors of −10, +10, −5, +10, −5 against actuals of 120, 80, 100, 90, 110. The bias is **0.00** — the forecast is not systematically high or low, which no absolute metric can tell you and which is why ME belongs in every report. Note that four different percentage metrics give four different numbers on the same five errors (8.298, 8.153, 8.000), and MASE's 0.4375 is the only one that says something comparable across series: less than half the naive forecast's error.",
+    "left": "metric",
+    "codeW": 170,
+    "vars": [
+     "value",
+     "what it is optimised by"
+    ],
+    "steps": [
+     {
+      "code": "ME (bias)",
+      "state": [
+       "0.00",
+       "nothing: it is a diagnostic"
+      ],
+      "tone": "good",
+      "note": "no systematic lean"
+     },
+     {
+      "code": "MAE",
+      "state": [
+       "8.00",
+       "the median forecast"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "MSE",
+      "state": [
+       "70.00",
+       "the mean forecast"
+      ]
+     },
+     {
+      "code": "RMSE",
+      "state": [
+       "8.3666",
+       "the mean forecast"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "MAPE",
+      "state": [
+       "8.298%",
+       "biases forecasts low"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "sMAPE",
+      "state": [
+       "8.153%",
+       "symmetric in name only"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "WAPE",
+      "state": [
+       "8.000%",
+       "the volume-weighted share"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "MASE",
+      "state": [
+       "0.4375",
+       "vs naive MAE 18.286"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "comparable across series"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "The MAPE trap, and the metric for the job",
+    "caption": "MAPE divides by the actual, so it is undefined at zero, unstable near it, and **asymmetric**: an over-forecast can be penalised without limit while an under-forecast is capped at 100%. Minimising it therefore biases forecasts low, systematically. WAPE divides by the total instead, which keeps the percentage a stakeholder wants and removes every one of those problems.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "m",
+      "label": "MAPE",
+      "sub": "mean of |e| / actual",
+      "tone": "violet"
+     },
+     {
+      "id": "z",
+      "label": "An actual of zero",
+      "sub": "the denominator is zero",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "Asymmetric",
+      "sub": "under-forecast capped at 100%",
+      "tone": "crit"
+     },
+     {
+      "id": "b",
+      "label": "So it biases low",
+      "sub": "the bias is built into the metric",
+      "tone": "crit"
+     },
+     {
+      "id": "w",
+      "label": "WAPE",
+      "sub": "sum|e| / sum|actual|",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Still a percentage",
+      "sub": "and volume-weighted",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "m",
+      "z"
+     ],
+     [
+      "m",
+      "a"
+     ],
+     [
+      "a",
+      "b"
+     ],
+     [
+      "b",
+      "w"
+     ],
+     [
+      "w",
+      "s"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "06",
+   "d": {
+    "kind": "matrix",
+    "title": "The leakage catalogue, for series",
+    "caption": "Every one of these produces a backtest that looks excellent and a deployment that does not. The first is the most common by a wide margin, and the last is the most invisible: a target scaled using statistics computed over the whole series has had the test period's level folded into the training data.",
+    "cols": [
+     "The leak",
+     "The fix"
+    ],
+    "rows": [
+     "An unshifted window",
+     "Backward-fill",
+     "A centred rolling mean",
+     "Random K-fold",
+     "Scaling over all time",
+     "A revised history"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the feature contains today",
+       "tone": "crit"
+      },
+      "shift it by at least one period"
+     ],
+     [
+      {
+       "text": "the future copied back",
+       "tone": "crit"
+      },
+      "forward-fill, or leave NaN"
+     ],
+     [
+      {
+       "text": "reads t+1 to t+3",
+       "tone": "crit"
+      },
+      "trailing windows only"
+     ],
+     [
+      {
+       "text": "trains on the future",
+       "tone": "crit"
+      },
+      "rolling origins with a gap"
+     ],
+     [
+      {
+       "text": "the test level in the scaler",
+       "tone": "crit"
+      },
+      "fit the scaler per origin"
+     ],
+     [
+      {
+       "text": "the past changed after the fact",
+       "tone": "warn"
+      },
+      "use the vintage as-of each origin"
+     ]
+    ]
+   }
   }
  ],
  "10.4": [
   {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Simple exponential smoothing, one row at a time",
+    "caption": "One parameter and one line of arithmetic: the new level is α of the new observation plus (1−α) of the old level. That recursion expands into **geometrically decaying weights** on the whole history — 0.300, 0.210, 0.147, 0.103, ... which sum to 1 — so 'exponential smoothing' is a weighted average of everything, with the weight decided by α alone. The SSE column shows why α is fitted rather than chosen: 1101 at 0.1 against 443 at 0.5.",
+    "left": "t",
+    "codeW": 90,
+    "vars": [
+     "y",
+     "forecast made at t-1",
+     "new level (alpha = 0.3)"
+    ],
+    "steps": [
+     {
+      "code": "1",
+      "state": [
+       "28.5",
+       "—",
+       "28.5000"
+      ],
+      "tone": "violet",
+      "note": "initialised"
+     },
+     {
+      "code": "2",
+      "state": [
+       "34.0",
+       "28.5000",
+       "30.1500"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "3",
+      "state": [
+       "30.5",
+       "30.1500",
+       "30.2550"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "4",
+      "state": [
+       "42.0",
+       "30.2550",
+       "33.7785"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "5",
+      "state": [
+       "34.5",
+       "33.7785",
+       "33.9949"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "SSE by alpha",
+      "state": [
+       "0.1: 1101",
+       "0.3: 533",
+       "0.5: 443  0.9: 562"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "fitted alpha",
+      "state": [
+       "0.528",
+       "",
+       "forecast 48.9"
+      ],
+      "tone": "teal"
+     }
+    ]
+   }
+  },
+  {
    "after": "02",
    "d": {
-    "kind": "matrix",
+    "kind": "trace",
     "title": "Damping the trend, measured a year out",
-    "caption": "An undamped trend extrapolated far enough produces numbers nobody will sign off. The damped form replaces h·b with a geometric sum that has an asymptote of φ/(1−φ) slopes however far out — nine, at φ = 0.9. On the store, the undamped forecast climbed from 251.6 to 288.9 between h = 28 and h = 364; the damped fit went 253.3 to 261.6. The M3 and M4 competitions found the damped trend the single most robust method in the family.",
-    "cols": [
-     "Undamped",
-     "Damped (phi = 0.988)"
+    "caption": "An undamped trend extrapolated far enough produces numbers nobody will sign off. The damped form replaces h·b with a geometric sum that has an asymptote of φ/(1−φ) slopes however far out — nine, at φ = 0.9. On the store, the undamped forecast climbed from 251.6 to 288.9 between h = 28 and h = 364; the damped fit went 253.3 to 261.6. The M3 and M4 competitions found the damped trend the single most robust method in this family.",
+    "left": "horizon",
+    "codeW": 170,
+    "vars": [
+     "undamped",
+     "damped (phi = 0.988)",
+     "multiplier at phi = 0.9"
     ],
-    "rows": [
-     "h = 28",
-     "h = 364",
-     "Multiplier at h = 12",
-     "Far-horizon behaviour"
+    "steps": [
+     {
+      "code": "h = 1",
+      "state": [
+       "",
+       "",
+       "0.9 slopes"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "h = 4",
+      "state": [
+       "",
+       "",
+       "3.1"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "h = 12",
+      "state": [
+       "",
+       "",
+       "6.5"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "h = 28",
+      "state": [
+       "251.6",
+       "253.3",
+       ""
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "h = 364",
+      "state": [
+       "288.9",
+       "261.6",
+       "9.0 at h = 52"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "far horizon",
+      "state": [
+       "unbounded",
+       "asymptote phi/(1-phi)",
+       "= 9"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Holt-Winters: three recursions, updated together",
+    "caption": "Each component has its own smoothing parameter and its own update, and they are coupled: the level update subtracts the season so the level does not absorb it, and the season update subtracts the level so the season does not absorb the trend. Getting that bookkeeping wrong is how a hand-rolled implementation ends up with a season that slowly drifts into the level.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "o",
+      "label": "A new observation",
+      "sub": "y at time t",
+      "tone": "violet"
+     },
+     {
+      "id": "l",
+      "label": "Level, alpha",
+      "sub": "y minus the season, blended",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "Trend, beta",
+      "sub": "the change in level, blended",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Season, gamma",
+      "sub": "y minus the level, blended",
+      "tone": "accent"
+     },
+     {
+      "id": "f",
+      "label": "Forecast",
+      "sub": "level + h x trend + season",
+      "tone": "good"
+     },
+     {
+      "id": "d",
+      "label": "Damp the trend",
+      "sub": "phi, so h does not run away",
+      "tone": "teal"
+     }
     ],
-    "cells": [
+    "edges": [
      [
-      "251.6",
-      "253.3"
+      "o",
+      "l"
      ],
      [
-      {
-       "text": "288.9",
-       "tone": "crit"
-      },
-      {
-       "text": "261.6",
-       "tone": "good"
-      }
+      "l",
+      "b"
      ],
      [
-      {
-       "text": "12 slopes",
-       "tone": "crit"
-      },
-      {
-       "text": "6.5 slopes at phi = 0.9",
-       "tone": "good"
-      }
+      "o",
+      "s"
      ],
      [
-      {
-       "text": "unbounded",
-       "tone": "crit"
-      },
-      {
-       "text": "an asymptote of phi/(1-phi)",
-       "tone": "good"
-      }
+      "b",
+      "f"
+     ],
+     [
+      "s",
+      "f"
+     ],
+     [
+      "f",
+      "d"
      ]
     ]
    }
@@ -477,67 +1313,234 @@
  ],
  "10.5": [
   {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Three pieces, and what each one remembers",
+    "caption": "AR remembers the **series**: the forecast is a weighted sum of past values. MA remembers the **errors**: it corrects using how wrong the last few forecasts were. I is the bookkeeping that makes both legal on a series whose level wanders. Everything in SARIMA is these three, applied twice — once at lag 1 and once at lag m.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "AR(p)",
+      "sub": "weighted sum of past values",
+      "tone": "accent"
+     },
+     {
+      "id": "i",
+      "label": "I(d)",
+      "sub": "difference until stationary",
+      "tone": "good"
+     },
+     {
+      "id": "m",
+      "label": "MA(q)",
+      "sub": "weighted sum of past errors",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "ARIMA(p,d,q)",
+      "sub": "the three combined",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "x the same at lag m",
+      "sub": "(P,D,Q)m: SARIMA",
+      "tone": "teal"
+     },
+     {
+      "id": "x",
+      "label": "+ exogenous regressors",
+      "sub": "SARIMAX",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "c"
+     ],
+     [
+      "i",
+      "c"
+     ],
+     [
+      "m",
+      "c"
+     ],
+     [
+      "c",
+      "s"
+     ],
+     [
+      "s",
+      "x"
+     ]
+    ]
+   }
+  },
+  {
    "after": "02",
    "d": {
-    "kind": "matrix",
-    "title": "Reading the ACF and PACF into orders",
-    "caption": "These five rules are the whole identification procedure, and they are rules about **where a plot cuts off** rather than where it is large. The PACF cutting off at lag p is what distinguishes an AR from an MA, because a pure AR's partial correlations vanish beyond its order by construction.",
-    "cols": [
-     "Plot shows",
-     "Order"
+    "kind": "trace",
+    "title": "A one-step forecast by hand, and the recursion that follows",
+    "caption": "c = 0.8, φ = 0.5, θ = 0.3, with y₁₁ = 42.5, y₁₂ = 54.0 and ε₁₂ = −1.2. Because d = 1 the model lives in differences, so the first move is z₁₂ = 11.5. At h = 1 all three terms contribute; **beyond h = 1 the MA term drops out**, because the expectation of an unknown future error is zero, and each further step feeds its own prediction back in. The differences converge to c/(1−φ) = 1.60, so the level forecast becomes a straight line of slope 1.6 — and the hand recursion matched statsmodels to three decimals on the real series.",
+    "left": "horizon",
+    "codeW": 110,
+    "vars": [
+     "c + phi.z + theta.eps",
+     "z forecast",
+     "y forecast"
     ],
-    "rows": [
-     "ACF decays slowly from 1",
-     "ACF spikes at m, 2m, 3m",
-     "PACF cuts off at lag p",
-     "ACF cuts off at short lag q",
-     "PACF spike at lag m only"
-    ],
-    "cells": [
-     [
-      {
-       "text": "non-stationary in level",
-       "tone": "accent"
-      },
-      "d = 1"
-     ],
-     [
-      {
-       "text": "non-stationary in season",
-       "tone": "accent"
-      },
-      "D = 1"
-     ],
-     [
-      {
-       "text": "an AR signature",
-       "tone": "good"
-      },
-      "p"
-     ],
-     [
-      {
-       "text": "an MA signature",
-       "tone": "good"
-      },
-      "q"
-     ],
-     [
-      {
-       "text": "seasonal AR",
-       "tone": "good"
-      },
-      "P = 1"
-     ]
+    "steps": [
+     {
+      "code": "z at t=12",
+      "state": [
+       "54.0 - 42.5",
+       "11.500",
+       "54.000"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "h = 1",
+      "state": [
+       "0.8 + 5.750 - 0.360",
+       "6.190",
+       "60.190"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good",
+      "note": "MA still acts"
+     },
+     {
+      "code": "h = 2",
+      "state": [
+       "0.8 + 3.095 + 0",
+       "3.895",
+       "64.085"
+      ],
+      "tone": "accent",
+      "note": "MA gone"
+     },
+     {
+      "code": "h = 3",
+      "state": [
+       "0.8 + 1.947",
+       "2.747",
+       "66.832"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "h = 4",
+      "state": [
+       "0.8 + 1.374",
+       "2.174",
+       "69.006"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "long run",
+      "state": [
+       "c / (1 - phi)",
+       "1.60",
+       "slope 1.6 a quarter"
+      ],
+      "tone": "teal"
+     },
+     {
+      "code": "vs statsmodels",
+      "state": [
+       "910.997 912.294",
+       "913.701 915.162",
+       "identical"
+      ],
+      "tone": "good"
+     }
     ]
    }
   },
   {
    "after": "03",
    "d": {
+    "kind": "flow",
+    "title": "SARIMA multiplies, and that is why the orders are small",
+    "caption": "The seasonal and non-seasonal parts are **multiplied** as polynomial operators, not added — so a (1,1,1)(1,1,1)₁₂ model already generates terms at lags 1, 12 and 13 from two AR parameters. That is the whole reason useful SARIMA orders are nearly always 0, 1 or 2: the cross terms do the work that high orders would otherwise have to.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "n",
+      "label": "Non-seasonal (1,1,1)",
+      "sub": "lag 1 terms",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Seasonal (1,1,1) at m=12",
+      "sub": "lag 12 terms",
+      "tone": "accent"
+     },
+     {
+      "id": "x",
+      "label": "Multiplied, not added",
+      "sub": "polynomial operators",
+      "tone": "violet"
+     },
+     {
+      "id": "l",
+      "label": "Terms at lag 13 appear",
+      "sub": "from the cross product",
+      "tone": "good"
+     },
+     {
+      "id": "p",
+      "label": "Few parameters, long memory",
+      "sub": "two AR terms reach lag 13",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "So orders stay at 0, 1 or 2",
+      "sub": "higher is almost never right",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "n",
+      "x"
+     ],
+     [
+      "s",
+      "x"
+     ],
+     [
+      "x",
+      "l"
+     ],
+     [
+      "l",
+      "p"
+     ],
+     [
+      "p",
+      "o"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
     "kind": "steps",
     "title": "Twelve points cannot estimate an ARIMA(1,1,1)",
-    "caption": "Fitted to twelve quarterly numbers, statsmodels returns φ = −1.000 and θ = 0.996 — the **boundary** of the parameter space, where the AR root sits on the unit circle and the MA term tries to cancel it. That is not a model; it is an optimiser with nothing to work with.",
+    "caption": "Fitted to twelve quarterly numbers, statsmodels returns φ = −1.000 and θ = 0.996 — the **boundary** of the parameter space, where the AR root sits on the unit circle and the MA term tries to cancel it. That is not a model; it is an optimiser with nothing to work with, and it raises no error at all.",
     "items": [
      {
       "label": "Twelve observations, three parameters",
@@ -575,6 +1578,75 @@
       "code": "note",
       "tone": "good"
      }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "SARIMAX: a regressor must be knowable for the future you forecast",
+    "caption": "This is the question that decides whether an exogenous variable can be used at all, and it is operational rather than statistical. Price and promotions usually qualify because **somebody sets them** in advance; weather qualifies only as far as a forecast exists, and then you are stacking one forecast's error on another's.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "x",
+      "label": "A candidate regressor",
+      "sub": "price, promo, holiday, weather",
+      "tone": "violet"
+     },
+     {
+      "id": "q",
+      "label": "Known for the horizon?",
+      "sub": "the deciding question",
+      "tone": "accent"
+     },
+     {
+      "id": "y",
+      "label": "Yes: somebody sets it",
+      "sub": "price, promotion, calendar",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "Only via a forecast",
+      "sub": "weather: errors compound",
+      "tone": "warn"
+     },
+     {
+      "id": "n",
+      "label": "No",
+      "sub": "it cannot be a SARIMAX regressor",
+      "tone": "crit"
+     },
+     {
+      "id": "v",
+      "label": "Use VAR instead",
+      "sub": "it forecasts the regressor too",
+      "tone": "accent"
+     }
+    ],
+    "edges": [
+     [
+      "x",
+      "q"
+     ],
+     [
+      "q",
+      "y"
+     ],
+     [
+      "q",
+      "f"
+     ],
+     [
+      "q",
+      "n"
+     ],
+     [
+      "n",
+      "v"
+     ]
     ]
    }
   }
@@ -638,6 +1710,129 @@
    }
   },
   {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Three ways to forecast 28 steps, and what each costs",
+    "caption": "**Recursive** feeds its own prediction back in, so one model covers every horizon and its errors compound along the way. **Direct** fits a separate model per horizon — 28 models, no compounding, and no guarantee the 28 forecasts are mutually consistent. Direct-recursive hybrids sit between. The choice is usually decided by whether you can afford to fit and serve 28 models.",
+    "cols": [
+     "Models",
+     "Trade"
+    ],
+    "rows": [
+     "Recursive",
+     "Direct",
+     "Hybrid (DirRec)",
+     "Multi-output"
+    ],
+    "cells": [
+     [
+      {
+       "text": "one",
+       "tone": "good"
+      },
+      {
+       "text": "errors compound with h",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "one per horizon: 28",
+       "tone": "warn"
+      },
+      {
+       "text": "no compounding; may be inconsistent",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "one per horizon, fed forward",
+       "tone": "accent"
+      },
+      "more complex; sometimes best"
+     ],
+     [
+      {
+       "text": "one, 28 outputs",
+       "tone": "accent"
+      },
+      "shares structure; needs support"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "One global model over many series",
+    "caption": "Instead of 200 models, fit one on all the series with the series identity as a feature. Short histories borrow strength from long ones, which is the whole gain — and it is also the whole risk, because a global model will happily impose the majority's seasonality on a series that does not share it. Static features are what let it tell them apart.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "200 series",
+      "sub": "some with weeks of history",
+      "tone": "violet"
+     },
+     {
+      "id": "l",
+      "label": "Stack them long",
+      "sub": "one row per series-date",
+      "tone": "accent"
+     },
+     {
+      "id": "i",
+      "label": "Series id as a feature",
+      "sub": "plus static attributes",
+      "tone": "accent"
+     },
+     {
+      "id": "o",
+      "label": "One model, fitted once",
+      "sub": "short series borrow strength",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Scales to new series",
+      "sub": "no per-series fit needed",
+      "tone": "good"
+     },
+     {
+      "id": "w",
+      "label": "Risk: the majority's pattern",
+      "sub": "imposed on a series that differs",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "l"
+     ],
+     [
+      "l",
+      "i"
+     ],
+     [
+      "i",
+      "o"
+     ],
+     [
+      "o",
+      "r"
+     ],
+     [
+      "o",
+      "w"
+     ]
+    ]
+   }
+  },
+  {
    "after": "04",
    "d": {
     "kind": "matrix",
@@ -692,11 +1887,146 @@
      ]
     ]
    }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "When a deep or foundation model earns its cost",
+    "caption": "The honest answer on most business series is 'rarely'. These models need either many series to learn shared structure, or a signal a tree cannot express — long-range dependence, several interacting covariates, a distributional output. On a single store's daily sales with a weekly season, a damped ETS and a boosted tree are hard to beat and cost nothing to run.",
+    "cols": [
+     "Earns it when",
+     "Otherwise"
+    ],
+    "rows": [
+     "One series, weekly season",
+     "Hundreds of series",
+     "Long-range dependence",
+     "Many covariates",
+     "A distribution needed",
+     "No history (cold start)"
+    ],
+    "cells": [
+     [
+      {
+       "text": "almost never",
+       "tone": "crit"
+      },
+      "damped ETS, or boosting"
+     ],
+     [
+      {
+       "text": "often: shared structure",
+       "tone": "good"
+      },
+      "a global boosted model first"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "ARIMA's memory is short"
+     ],
+     [
+      {
+       "text": "yes: TFT-style models",
+       "tone": "good"
+      },
+      "SARIMAX, if they are knowable"
+     ],
+     [
+      {
+       "text": "yes: DeepAR outputs one",
+       "tone": "good"
+      },
+      "quantile regression, or conformal"
+     ],
+     [
+      {
+       "text": "a foundation model, zero-shot",
+       "tone": "accent"
+      },
+      "a hierarchy-based fallback"
+     ]
+    ]
+   }
   }
  ],
  "10.7": [
   {
    "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Why the interval widens with the horizon",
+    "caption": "Each step of the recursion adds its own unknown shock, and the shocks accumulate — for a random walk the forecast variance grows **linearly in h**, so the interval widens with √h. That is not pessimism, it is arithmetic; an interval that stays the same width at every horizon is a sign the model's uncertainty is being computed wrongly.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "o",
+      "label": "One step ahead",
+      "sub": "one unknown shock",
+      "tone": "good"
+     },
+     {
+      "id": "t",
+      "label": "Two steps",
+      "sub": "two shocks, and the first is fed forward",
+      "tone": "accent"
+     },
+     {
+      "id": "h",
+      "label": "h steps",
+      "sub": "variance accumulates",
+      "tone": "accent"
+     },
+     {
+      "id": "r",
+      "label": "Random walk: variance = h sigma²",
+      "sub": "so the width grows with root h",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "Stationary: it converges",
+      "sub": "to the unconditional variance",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "A flat band at every h",
+      "sub": "is a bug, not a feature",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "o",
+      "t"
+     ],
+     [
+      "t",
+      "h"
+     ],
+     [
+      "h",
+      "r"
+     ],
+     [
+      "h",
+      "s"
+     ],
+     [
+      "r",
+      "f",
+      "",
+      "dashed"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
    "d": {
     "kind": "matrix",
     "title": "Four ways to get an interval, and what each one assumes",
@@ -793,6 +2123,150 @@
      ]
     ]
    }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Conformal coverage, and the level shift that breaks a static band",
+    "caption": "A refurbishment lifts the level on 1 September. The **static** conformal band had 0.920 coverage before it and **0.595** in the six weeks after — the guarantee is conditional on exchangeability, and a level shift destroys exactly that. Adaptive conformal raises its target coverage after each miss, so the band widens from 29.8 to 57.4 and recovers to 0.833. The last rows are the other lesson: 30 calibration days cannot estimate an 80th percentile.",
+    "left": "method",
+    "codeW": 190,
+    "vars": [
+     "coverage before",
+     "6 weeks after",
+     "Sep-Nov",
+     "band width"
+    ],
+    "steps": [
+     {
+      "code": "static conformal, α 0.1",
+      "state": [
+       "0.920",
+       "0.595",
+       "0.773",
+       "31.4 / 31.4"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "adaptive (ACI), γ 0.02",
+      "state": [
+       "0.920",
+       "0.833",
+       "0.887",
+       "29.8 / 57.4"
+      ],
+      "changed": [
+       1,
+       3
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "recent 90-day calibration",
+      "state": [
+       "half-width 42.0",
+       "",
+       "0.920",
+       ""
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "90 random historical days",
+      "state": [
+       "half-width 43.8",
+       "",
+       "0.947",
+       ""
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "α 0.2, 30 days",
+      "state": [
+       "",
+       "",
+       "0.753",
+       "too few for an 80th pct"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "α 0.2, 90 or 180 days",
+      "state": [
+       "",
+       "",
+       "0.793",
+       ""
+      ],
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "Scoring a whole distribution, not a point",
+    "caption": "A point forecast cannot be scored for its uncertainty, so a probabilistic forecast needs a proper score — one that is optimised only by the true distribution. CRPS is the natural generalisation of MAE to distributions and reduces to it when the forecast is a point, which makes it the one to report alongside the interval.",
+    "cols": [
+     "Scores",
+     "Property"
+    ],
+    "rows": [
+     "Pinball loss",
+     "CRPS",
+     "Log score",
+     "Interval coverage",
+     "Interval width"
+    ],
+    "cells": [
+     [
+      "one quantile",
+      {
+       "text": "proper for that quantile",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "the whole distribution",
+       "tone": "good"
+      },
+      {
+       "text": "proper; reduces to MAE at a point",
+       "tone": "good"
+      }
+     ],
+     [
+      "the density at the outcome",
+      {
+       "text": "proper; unbounded on a surprise",
+       "tone": "warn"
+      }
+     ],
+     [
+      "the stated level",
+      {
+       "text": "necessary, not sufficient",
+       "tone": "warn"
+      }
+     ],
+     [
+      "sharpness",
+      {
+       "text": "meaningless without coverage",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
   }
  ],
  "10.8": [
@@ -850,55 +2324,320 @@
   {
    "after": "02",
    "d": {
+    "kind": "flow",
+    "title": "Cointegration: when differencing throws the signal away",
+    "caption": "Two series can each wander without bound while their **difference** stays stable — a spread, a ratio, a pair of prices tied by arbitrage. Differencing each one separately removes exactly the long-run relationship you wanted to model, which is why a VECM keeps the levels and adds an error-correction term that pulls the pair back toward equilibrium.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "Two non-stationary series",
+      "sub": "each has a unit root",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "Their spread is stationary",
+      "sub": "they are cointegrated",
+      "tone": "accent"
+     },
+     {
+      "id": "d",
+      "label": "Difference both",
+      "sub": "the long-run link is gone",
+      "tone": "crit"
+     },
+     {
+      "id": "v",
+      "label": "VECM keeps the levels",
+      "sub": "plus an error-correction term",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "The term pulls them back",
+      "sub": "toward the equilibrium spread",
+      "tone": "good"
+     },
+     {
+      "id": "j",
+      "label": "Test it: Engle-Granger, Johansen",
+      "sub": "before assuming either way",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "s"
+     ],
+     [
+      "s",
+      "d",
+      "",
+      "dashed"
+     ],
+     [
+      "s",
+      "v"
+     ],
+     [
+      "v",
+      "e"
+     ],
+     [
+      "e",
+      "j"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Hierarchical reconciliation: the parts must sum to the whole",
+    "caption": "Forecast each store and the total independently and they will not agree — which is unusable, because someone has to order stock against both. Bottom-up guarantees coherence and ignores the total's often-cleaner signal; top-down needs a disaggregation rule; **optimal reconciliation** projects all the forecasts onto the space where they add up, using every level's information at once.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "f",
+      "label": "Forecast every level",
+      "sub": "store, region, total",
+      "tone": "violet"
+     },
+     {
+      "id": "i",
+      "label": "They do not add up",
+      "sub": "incoherent: unusable",
+      "tone": "crit"
+     },
+     {
+      "id": "b",
+      "label": "Bottom-up",
+      "sub": "coherent; ignores the total's signal",
+      "tone": "accent"
+     },
+     {
+      "id": "t",
+      "label": "Top-down",
+      "sub": "needs a disaggregation rule",
+      "tone": "accent"
+     },
+     {
+      "id": "m",
+      "label": "MinT / optimal reconciliation",
+      "sub": "projects onto the coherent space",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Uses every level at once",
+      "sub": "and is usually the most accurate",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "f",
+      "i"
+     ],
+     [
+      "i",
+      "b"
+     ],
+     [
+      "i",
+      "t"
+     ],
+     [
+      "i",
+      "m"
+     ],
+     [
+      "m",
+      "c"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
     "kind": "matrix",
-    "title": "Choosing the multivariate tool from what you will know at forecast time",
-    "caption": "The deciding question is not statistical — it is whether the extra series will be **available for the future periods** you are forecasting. Price and promotions usually are, because someone sets them; a competitor's traffic usually is not, which is what pushes you from SARIMAX to VAR.",
+    "title": "Intermittent demand: most days are zero",
+    "caption": "A series that is zero four days in five breaks the usual machinery — MAPE is undefined, a mean forecast of 0.3 units is never the right order quantity, and ARIMA's residuals are not remotely normal. Croston's insight is to forecast the **size** and the **interval** separately and divide, which is why these methods are still the standard for spare parts fifty years on.",
     "cols": [
-     "Use",
-     "Because"
+     "Forecasts",
+     "Note"
     ],
     "rows": [
-     "Extras known ahead",
-     "Extras known only to now",
-     "Series tied long-run",
-     "Many series",
-     "Not sure it is worth it"
+     "Croston",
+     "SBA",
+     "TSB",
+     "A plain mean",
+     "ARIMA"
     ],
     "cells": [
      [
       {
-       "text": "SARIMAX, or boosting",
+       "text": "size / interval, separately",
        "tone": "good"
       },
-      "the regressors can be filled in"
+      "the original; slightly biased"
      ],
      [
       {
-       "text": "VAR",
+       "text": "the same, debiased",
        "tone": "good"
       },
-      "it forecasts the extras too"
+      "usually preferred to Croston"
      ],
      [
       {
-       "text": "VECM",
+       "text": "updates probability every period",
+       "tone": "good"
+      },
+      "handles obsolescence"
+     ],
+     [
+      {
+       "text": "a rate nobody can order",
+       "tone": "warn"
+      },
+      "0.3 units is not a decision"
+     ],
+     [
+      {
+       "text": "poorly",
+       "tone": "crit"
+      },
+      "the zeros break its assumptions"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "Volatility: when the mean is fine and the variance is not",
+    "caption": "ARCH and GARCH model the **variance** as its own autoregressive process, which is what captures volatility clustering — turbulent days following turbulent days. The mean equation can stay simple; it is the interval that was wrong. If the squared residuals of your model are autocorrelated, that is the diagnostic, and it means the point forecast may be fine while every stated uncertainty is not.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "r",
+      "label": "Residuals look fine",
+      "sub": "no autocorrelation in them",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "But squared residuals do not",
+      "sub": "volatility clusters",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "ARCH(q)",
+      "sub": "variance from past squared shocks",
+      "tone": "accent"
+     },
+     {
+      "id": "g",
+      "label": "GARCH(p,q)",
+      "sub": "plus past variances: far fewer terms",
+      "tone": "good"
+     },
+     {
+      "id": "m",
+      "label": "The mean model is unchanged",
+      "sub": "only the interval moves",
+      "tone": "good"
+     },
+     {
+      "id": "u",
+      "label": "Intervals now breathe",
+      "sub": "wide in turbulence, tight in calm",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "r",
+      "s"
+     ],
+     [
+      "s",
+      "a"
+     ],
+     [
+      "a",
+      "g"
+     ],
+     [
+      "g",
+      "m"
+     ],
+     [
+      "m",
+      "u"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "06",
+   "d": {
+    "kind": "matrix",
+    "title": "A changepoint is not an outlier, and the treatment differs",
+    "caption": "An outlier is one surprising observation; a changepoint is a **new regime**, and the distinction decides everything that follows. Smoothing over a changepoint produces a model that is permanently wrong by the size of the shift, while treating a genuine outlier as a regime change throws away the history that was still valid.",
+    "cols": [
+     "Is",
+     "Do"
+    ],
+    "rows": [
+     "An outlier",
+     "A level shift",
+     "A trend break",
+     "A seasonal change",
+     "Unsure"
+    ],
+    "cells": [
+     [
+      {
+       "text": "one odd observation",
        "tone": "accent"
       },
-      "differencing would discard the link"
+      "dampen it, or flag and keep"
      ],
      [
       {
-       "text": "a global model",
-       "tone": "accent"
+       "text": "a new level",
+       "tone": "crit"
       },
-      "cross-learning across series"
+      "a step regressor, or refit from the break"
      ],
      [
       {
-       "text": "a Granger screen, then backtest",
-       "tone": "good"
+       "text": "a new slope",
+       "tone": "crit"
       },
-      "the backtest is the verdict"
+      "a piecewise trend from the break"
+     ],
+     [
+      {
+       "text": "a new pattern",
+       "tone": "crit"
+      },
+      "refit the seasonal component only"
+     ],
+     [
+      {
+       "text": "both hypotheses testable",
+       "tone": "warn"
+      },
+      "backtest each; the data decides"
      ]
     ]
    }
@@ -1021,6 +2760,246 @@
       "desc": "the day the model stops beating it, you want to know",
       "code": "6",
       "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "The pipeline, as one object with the availability rule enforced",
+    "caption": "The feature builder is the dangerous component, because it is the only place that can reach forward in time. Making it take an **as-of timestamp** and refuse anything later turns the availability rule from a habit into a check — and the truncation test, which rebuilds features from a shortened history and compares, is what proves it holds.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "h",
+      "label": "History, as of t",
+      "sub": "nothing later is readable",
+      "tone": "violet"
+     },
+     {
+      "id": "f",
+      "label": "Feature builder",
+      "sub": "takes the as-of time; refuses later rows",
+      "tone": "accent"
+     },
+     {
+      "id": "m",
+      "label": "Model, fitted per origin",
+      "sub": "transforms refitted too",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "Forecast h periods",
+      "sub": "with an interval",
+      "tone": "good"
+     },
+     {
+      "id": "t",
+      "label": "Truncation test",
+      "sub": "rebuild from a shortened history; compare",
+      "tone": "teal"
+     },
+     {
+      "id": "r",
+      "label": "Reconcile the hierarchy",
+      "sub": "so the parts sum to the whole",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "h",
+      "f"
+     ],
+     [
+      "f",
+      "m"
+     ],
+     [
+      "m",
+      "o"
+     ],
+     [
+      "f",
+      "t"
+     ],
+     [
+      "o",
+      "r"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Reading the result table, and the questions it has to answer",
+    "caption": "A forecast review is not 'which number is lowest'. It is four questions, and the fourth is the one that most often changes the decision: a model that wins on average while being **systematically biased** on the newest stores will be distrusted by the people who use it, and rightly.",
+    "cols": [
+     "Question",
+     "Read"
+    ],
+    "rows": [
+     "Is it better than naive?",
+     "By how much, reliably?",
+     "Where does it lose?",
+     "Is it biased anywhere?",
+     "What does it cost?"
+    ],
+    "cells": [
+     [
+      {
+       "text": "MASE below 1",
+       "tone": "good"
+      },
+      "on every origin, not on average"
+     ],
+     [
+      {
+       "text": "the spread across origins",
+       "tone": "good"
+      },
+      "a 3% gain inside a 6% spread is nothing"
+     ],
+     [
+      {
+       "text": "per-store, per-horizon",
+       "tone": "accent"
+      },
+      "the worst slice, not the mean"
+     ],
+     [
+      {
+       "text": "ME by slice",
+       "tone": "crit"
+      },
+      "a persistent sign is correctable"
+     ],
+     [
+      {
+       "text": "fit and refit time",
+       "tone": "warn"
+      },
+      "and who maintains it"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "From a forecast to a decision",
+    "caption": "The forecast is an input, not an output. An order quantity depends on the **cost asymmetry** between holding stock and running out, which is a quantile of the predictive distribution rather than its mean — so a point forecast, however accurate, does not determine the order. This is why 10.7's intervals were not an optional extra.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "f",
+      "label": "A predictive distribution",
+      "sub": "not just a point",
+      "tone": "violet"
+     },
+     {
+      "id": "c",
+      "label": "Cost of a stockout",
+      "sub": "lost sale, lost customer",
+      "tone": "accent"
+     },
+     {
+      "id": "h",
+      "label": "Cost of holding",
+      "sub": "capital, space, spoilage",
+      "tone": "accent"
+     },
+     {
+      "id": "q",
+      "label": "The critical quantile",
+      "sub": "c / (c + h)",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "Order that quantile",
+      "sub": "not the mean",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Review on the decision",
+      "sub": "service level and holding, not MAE",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "f",
+      "q"
+     ],
+     [
+      "c",
+      "q"
+     ],
+     [
+      "h",
+      "q"
+     ],
+     [
+      "q",
+      "o"
+     ],
+     [
+      "o",
+      "r"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "06",
+   "d": {
+    "kind": "steps",
+    "title": "The handover",
+    "caption": "What makes a forecast survive its author leaving. Each item is a thing that, when missing, has caused a working forecast to be quietly abandoned within a year — most often the third, because nobody could tell whether a bad week was the model or the world.",
+    "items": [
+     {
+      "label": "The decision it feeds, written down",
+      "desc": "granularity and horizon follow from it",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "The baseline, still computed",
+      "desc": "every week, beside the model",
+      "code": "2",
+      "tone": "good"
+     },
+     {
+      "label": "The expected error, with its spread",
+      "desc": "so a bad week can be recognised as normal",
+      "code": "3",
+      "tone": "crit"
+     },
+     {
+      "label": "The refit schedule and who owns it",
+      "desc": "and what a failed refit falls back to",
+      "code": "4",
+      "tone": "good"
+     },
+     {
+      "label": "The availability rule, as a test",
+      "desc": "not as a paragraph in a document",
+      "code": "5",
+      "tone": "violet"
+     },
+     {
+      "label": "The conditions for abandoning it",
+      "desc": "agreed in advance, in writing",
+      "code": "6",
+      "tone": "teal"
      }
     ]
    }

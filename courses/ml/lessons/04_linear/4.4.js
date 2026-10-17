@@ -23,6 +23,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "y = sin(1.5x) + 0.3x + noise (sd 0.3), forty points on [−3, 3]; a 400-point test set from the same range (executed)",
       hl: [3, 7, 8, 12, 13, 14],
       code: `make_pipeline(StandardScaler(), PolynomialFeatures(d), LinearRegression())      # scale FIRST, then powers, then OLS
@@ -83,7 +93,11 @@ EC.receiveLesson({
 
 
 
-    {"kind": "matrix", "title": "Why a high-degree polynomial fails twice over", "caption": "Two separate failures that arrive together. The statistical one is variance — oscillation between the points. The numerical one is conditioning: the columns x, x², x³ ... are nearly collinear, so the Vandermonde matrix's condition number explodes and the coefficients are solved unreliably even where the fit is fine.", "cols": ["Failure", "Fix"], "rows": ["Oscillation between points", "Wild tails", "Ill-conditioning", "Extrapolation", "Many inputs"], "cells": [[{"text": "variance: it chases noise", "tone": "crit"}, "splines with 5-10 knots"], [{"text": "a polynomial cannot flatten", "tone": "crit"}, "natural splines: linear tails"], [{"text": "x, x², x³ are near-collinear", "tone": "crit"}, "orthogonal polynomials; ridge; scale first"], [{"text": "unbounded nonsense outside", "tone": "crit"}, "refuse inputs outside the training range"], [{"text": "the expansion explodes", "tone": "warn"}, "do not expand; let a tree find them"]], "t": "diagram", "id": "dg-4_4-02-0"},
+
+
+
+
+
 
 
 
@@ -146,10 +160,12 @@ cubic spline, 8 knots, extrapolation="linear":   x=4 -> -1.00     x=5 -> -1.79  
     {"kind": "matrix", "title": "Which dial to turn, by the shape you need", "caption": "A global polynomial cannot make a corner — it pays for one with oscillation everywhere else. Splines put the flexibility where the knots are and leave the rest alone, which is why they are the default for one smooth input. With many inputs, do not expand at all: let a tree ensemble find the interactions and engineer the two or three it points at.", "cols": ["Use", "Why not the other"], "rows": ["One input, smooth curve", "One input, a kink", "Few inputs, interactions", "Many inputs", "Outside the training range"], "cells": [[{"text": "splines, 5-10 knots", "tone": "good"}, "degree <= 5 only if you need the form"], [{"text": "a spline or a hinge", "tone": "good"}, "a polynomial cannot make a corner"], [{"text": "degree 2 plus ridge", "tone": "accent"}, "read the interaction coefficients"], [{"text": "do not expand", "tone": "warn"}, "the expansion explodes; use a tree"], [{"text": "refuse the input", "tone": "crit"}, "every expansion extrapolates nonsense"]], "t": "diagram", "id": "dg-4_4-03-2"},
 
 
-    {"kind": "matrix", "title": "Which dial to turn, by the shape you need", "caption": "A global polynomial cannot make a corner — it pays for one with oscillation everywhere else. Splines put the flexibility where the knots are and leave the rest alone, which is why they are the default for one smooth input. With many inputs, do not expand at all: let a tree ensemble find the interactions and engineer the two or three it points at.", "cols": ["Use", "Why not the other"], "rows": ["One input, smooth curve", "One input, a kink", "Few inputs, interactions", "Many inputs", "Outside the training range"], "cells": [[{"text": "splines, 5-10 knots", "tone": "good"}, "degree <= 5 only if you need the form"], [{"text": "a spline or a hinge", "tone": "good"}, "a polynomial cannot make a corner"], [{"text": "degree 2 plus ridge", "tone": "accent"}, "read the interaction coefficients"], [{"text": "do not expand", "tone": "warn"}, "the expansion explodes; use a tree"], [{"text": "refuse the input", "tone": "crit"}, "every expansion extrapolates nonsense"]], "t": "diagram", "id": "dg-4_4-03-3"},
 
 
-    {"kind": "matrix", "title": "Which dial to turn, by the shape you need", "caption": "A global polynomial cannot make a corner — it pays for one with oscillation everywhere else. Splines put the flexibility where the knots are and leave the rest alone, which is why they are the default for one smooth input. With many inputs, do not expand at all: let a tree ensemble find the interactions and engineer the two or three it points at.", "cols": ["Use", "Why not the other"], "rows": ["One input, smooth curve", "One input, a kink", "Few inputs, interactions", "Many inputs", "Outside the training range"], "cells": [[{"text": "splines, 5-10 knots", "tone": "good"}, "degree <= 5 only if you need the form"], [{"text": "a spline or a hinge", "tone": "good"}, "a polynomial cannot make a corner"], [{"text": "degree 2 plus ridge", "tone": "accent"}, "read the interaction coefficients"], [{"text": "do not expand", "tone": "warn"}, "the expansion explodes; use a tree"], [{"text": "refuse the input", "tone": "crit"}, "every expansion extrapolates nonsense"]], "t": "diagram", "id": "dg-4_4-03-1"},
+
+
+
+
 
 
 

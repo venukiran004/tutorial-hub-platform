@@ -32,6 +32,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "The axioms, the formula, and a three-feature computation over every coalition (executed)",
       code: `a prediction f(x) is a 'payout'; the features are 'players'; φⱼ is feature j's share. Four axioms determine it uniquely:
    efficiency   Σⱼ φⱼ = f(x) − E[f]           the shares add up to the prediction minus the baseline
@@ -64,6 +71,13 @@ likewise  φ₂ = 0.500,  φ₃ = 0.750.        Σφ = 3.000 = f(x) − baseline
     ]},
 
     { t: "h2", n: "02", text: "SHAP on the churn model", id: "shap" },
+
+    {"kind": "trace", "title": "One customer's prediction, decomposed exactly", "caption": "Tenure 2 months, fee 7.26, four logins, two tickets. The six contributions **sum to the prediction**: base −1.971 plus Σφ 2.423 gives log-odds 0.452, which is P(churn) = 0.611 — not approximately, exactly, because efficiency is an axiom rather than a hope. Four logins a month is the largest single push toward churn at +1.082, and not being a paid-channel customer is mildly protective at −0.077.", "left": "feature", "codeW": 190, "vars": ["SHAP φ (log-odds)", "direction"], "steps": [{"code": "base value", "state": ["-1.971", "the mean prediction"], "tone": "violet"}, {"code": "logins_30d = 4", "state": ["+1.082", "toward churn"], "changed": [0], "tone": "crit"}, {"code": "tenure_months = 2", "state": ["+0.932", "toward churn"], "tone": "crit"}, {"code": "support_tickets = 2", "state": ["+0.323", "toward churn"], "tone": "warn"}, {"code": "monthly_fee = 7.26", "state": ["+0.135", "toward churn"], "tone": "warn"}, {"code": "channel_paid = 0", "state": ["-0.077", "protective"], "tone": "good"}, {"code": "region_south = 1", "state": ["+0.058", "toward churn"]}, {"code": "-1.971 + 2.423", "state": ["0.452", "P(churn) = 0.611"], "changed": [0], "tone": "accent", "note": "efficiency"}], "t": "diagram", "id": "dg-9_2-02-1"},
+
+
+
+
+
 
     { t: "code", lang: "python", title: "TreeSHAP for one customer and for the population (executed; HistGradientBoosting, 30 % hold-out)",
       hl: [2, 4, 5, 6, 8, 10, 12],
@@ -118,7 +132,13 @@ likewise  φ₂ = 0.500,  φ₃ = 0.750.        Σφ = 3.000 = f(x) − baseline
 
     { t: "h2", n: "03", text: "LIME: a local surrogate, and its variance", id: "lime" },
 
-    {"kind": "matrix", "title": "SHAP and LIME are not two implementations of one idea", "caption": "SHAP has a guarantee that its values sum to the prediction; LIME has local fidelity only, and only as measured. The determinism row is the practical one: LIME's top-three features **changed in two of five seeds** on the same row, so a single LIME explanation shown to a customer is not reproducible.", "cols": ["SHAP", "LIME"], "rows": ["Basis", "Guarantee", "Determinism", "Global from local", "Interactions"], "cells": [[{"text": "axioms: unique solution", "tone": "good"}, "a weighted local surrogate"], [{"text": "efficiency, consistency", "tone": "good"}, {"text": "local fidelity only", "tone": "warn"}], [{"text": "TreeSHAP is exact", "tone": "good"}, {"text": "top-3 changed in 2 of 5 seeds", "tone": "crit"}], [{"text": "yes: mean |phi|", "tone": "good"}, {"text": "no natural aggregation", "tone": "warn"}], [{"text": "interaction values", "tone": "good"}, {"text": "not represented", "tone": "warn"}]], "t": "diagram", "id": "dg-9_2-03-1"},
+    {"kind": "matrix", "title": "SHAP and LIME are not two implementations of one idea", "caption": "SHAP has a guarantee that its values sum to the prediction; LIME has local fidelity only, and only as measured. The determinism row is the practical one: LIME's top-three features **changed in two of five seeds** on the same row, so a single LIME explanation shown to a customer is not reproducible.", "cols": ["SHAP", "LIME"], "rows": ["Basis", "Guarantee", "Determinism", "Global from local", "Interactions"], "cells": [[{"text": "axioms: unique solution", "tone": "good"}, "a weighted local surrogate"], [{"text": "efficiency, consistency", "tone": "good"}, {"text": "local fidelity only", "tone": "warn"}], [{"text": "TreeSHAP is exact", "tone": "good"}, {"text": "top-3 changed in 2 of 5 seeds", "tone": "crit"}], [{"text": "yes: mean |phi|", "tone": "good"}, {"text": "no natural aggregation", "tone": "warn"}], [{"text": "interaction values", "tone": "good"}, {"text": "not represented", "tone": "warn"}]], "t": "diagram", "id": "dg-9_2-03-2"},
+
+
+
+
+
+
 
 
 
@@ -161,6 +181,13 @@ likewise  φ₂ = 0.500,  φ₃ = 0.750.        Σφ = 3.000 = f(x) − baseline
     },
 
     { t: "h2", n: "04", text: "Anchors and counterfactuals", id: "anchors" },
+
+    {"kind": "flow", "title": "Anchors and counterfactuals answer the two questions people actually ask", "caption": "An attribution says which features mattered; it does not say what would have to change. A **counterfactual** answers 'what would make this a different decision' — the nearest point across the boundary — and an **anchor** answers 'when does this decision hold' as a rule with a measured precision. Both are directly actionable in a way a bar chart of φ values is not.", "cols": 3, "nodes": [{"id": "p", "label": "A refused application", "sub": "P(churn) 0.61", "tone": "violet"}, {"id": "s", "label": "SHAP says", "sub": "which features pushed it", "tone": "accent"}, {"id": "c", "label": "Counterfactual says", "sub": "the nearest change that flips it", "tone": "good"}, {"id": "a", "label": "Anchor says", "sub": "a rule that holds with 95% precision", "tone": "good"}, {"id": "f", "label": "Must be feasible", "sub": "'be younger' is not an action", "tone": "warn"}, {"id": "r", "label": "And sparse", "sub": "change two things, not twelve", "tone": "teal"}], "edges": [["p", "s"], ["p", "c"], ["p", "a"], ["c", "f"], ["f", "r"]], "t": "diagram", "id": "dg-9_2-04-3"},
+
+
+
+
+
 
     { t: "code", lang: "python", title: "Searching for an anchor: a rule that keeps the prediction 'high risk' (P ≥ 0.35) with high precision (executed)",
       hl: [3, 5, 6, 7, 9],

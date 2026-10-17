@@ -24,6 +24,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "Fifty-one features, 1,500 rows: what the model scores with all, with the true six, and by family (executed)",
       hl: [4, 5, 6],
       code: `# inf0..inf4: five linear signals   nonlin: a U-shaped signal (x² enters the logit)   red0..red2: linear combinations of inf0..inf2
@@ -54,7 +64,10 @@ EC.receiveLesson({
 
 
 
-    {"kind": "matrix", "title": "What each selector can and cannot see", "caption": "The two columns that decide most choices: whether the test can see a **non-linear** relationship at all, and what it does with correlated copies. An F-test ranks every copy of a useful feature highly; lasso picks one of them arbitrarily; permutation importance shares the credit, so a correlated copy can hide the drop entirely.", "cols": ["Sees non-linear", "Correlated copies"], "rows": ["Correlation filter", "ANOVA F / chi2", "Mutual information", "RFE", "L1 / lasso", "Tree importance", "Permutation importance"], "cells": [[{"text": "no", "tone": "warn"}, "duplicates only"], [{"text": "no", "tone": "warn"}, {"text": "every copy ranks high", "tone": "crit"}], [{"text": "yes", "tone": "good"}, "all rank high"], [{"text": "as the model does", "tone": "accent"}, "picks one of the group"], [{"text": "no", "tone": "warn"}, {"text": "picks one arbitrarily", "tone": "crit"}], [{"text": "yes", "tone": "good"}, "credit split across copies"], [{"text": "yes", "tone": "good"}, {"text": "a copy hides the drop", "tone": "crit"}]], "t": "diagram", "id": "dg-3_5-02-0"},
+
+
+
+
 
 
 
@@ -108,6 +121,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "RFE, forward selection, lasso and forest importance on the same bench (executed)",
       hl: [2, 4, 7, 8, 11, 12],
       code: `# wrappers, logistic regression, 6 features requested
@@ -131,7 +154,10 @@ EC.receiveLesson({
 
 
 
-    {"kind": "steps", "title": "Where selection must run", "caption": "Selecting on all the rows means the choice of columns was informed by the rows you later score — and with more features than rows you can select pure noise and get a convincing cross-validated number out of it. The selector is a fitted step like any other.", "items": [{"label": "Selection inside the Pipeline", "desc": "refitted per fold, from that fold's training rows only", "code": "right", "tone": "good"}, {"label": "Each fold may choose different columns", "desc": "that is the honest answer, not a bug", "code": "note", "tone": "accent"}, {"label": "Selection before the split", "desc": "the test rows' labels chose the columns", "code": "wrong", "tone": "crit"}, {"label": "With p greater than n", "desc": "noise survives and cross-validates well", "code": "wrong", "tone": "crit"}, {"label": "Report the set as a property of the model", "desc": "not as a discovery about the world", "code": "say so", "tone": "violet"}], "t": "diagram", "id": "dg-3_5-04-1"},
+
+
+
+
 
 
 

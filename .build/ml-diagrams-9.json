@@ -3,47 +3,136 @@
   {
    "after": "01",
    "d": {
-    "kind": "matrix",
-    "title": "Four serving shapes, decided by when the answer is needed",
-    "caption": "The latency column is the constraint and the last column is the question. A churn score refreshed nightly can be a table lookup in microseconds; a fraud decision at checkout cannot be a scheduled job, however cheap that would be.",
-    "cols": [
-     "Latency",
-     "Right when"
+    "kind": "trace",
+    "title": "Four serving shapes, measured, with the capacity each implies",
+    "caption": "The latencies are measured and the capacities follow from them: one synchronous worker handles about **82 req/s** at p99 through the scikit-learn pipeline, **1,961** through ONNX, and **35** through FastAPI's validation layer. So 500 req/s needs 7, 1 and 15 workers respectively. Note the inversion in the batch column — ONNX is forty times faster per request and *slower* in batch here, because its one-hot of string categoricals does not vectorise.",
+    "left": "shape",
+    "codeW": 200,
+    "vars": [
+     "p50 / p99 per row",
+     "batch",
+     "req/s per worker"
     ],
-    "rows": [
-     "Batch",
-     "Real-time",
-     "Streaming",
-     "Edge"
+    "steps": [
+     {
+      "code": "scikit-learn pipeline",
+      "state": [
+       "8.36 / 12.16 ms",
+       "1.9 µs/row at 9,920",
+       "~82"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "ONNX Runtime",
+      "state": [
+       "0.249 / 0.510 ms",
+       "36.6 ms at 248",
+       "~1,961"
+      ],
+      "changed": [
+       0,
+       2
+      ],
+      "tone": "good",
+      "note": "40x per request"
+     },
+     {
+      "code": "FastAPI, in-process",
+      "state": [
+       "20.24 / 28.56 ms",
+       "—",
+       "~35"
+      ],
+      "tone": "warn",
+      "note": "validation dominates"
+     },
+     {
+      "code": "to serve 500 req/s",
+      "state": [
+       "7 workers",
+       "1 worker",
+       "15 workers"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "nightly batch, 1M rows",
+      "state": [
+       "about 2 s",
+       "",
+       ""
+      ],
+      "tone": "teal"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Training–serving skew is a consequence of having two implementations",
+    "caption": "It is not a risk to be managed with care; it is arithmetic. If features are computed by training code and again by serving code, the two will diverge — on a rounding rule, a default, a category spelling, a time zone. Serialising the **fitted pipeline** and calling that object in both places removes the second implementation, and with it the possibility.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "Training feature code",
+      "sub": "pandas, in a notebook",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "Serving feature code",
+      "sub": "rewritten in the service",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "They diverge",
+      "sub": "a default, a rounding rule, a time zone",
+      "tone": "crit"
+     },
+     {
+      "id": "o",
+      "label": "One fitted Pipeline",
+      "sub": "serialised once",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Called in both places",
+      "sub": "there is no second implementation",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "A golden set on reload",
+      "sub": "catches it if it ever returns",
+      "tone": "teal"
+     }
     ],
-    "cells": [
+    "edges": [
      [
-      {
-       "text": "microseconds at read",
-       "tone": "good"
-      },
-      "the decision can wait"
+      "t",
+      "s"
      ],
      [
-      {
-       "text": "1-50 ms",
-       "tone": "accent"
-      },
-      "it is inside a user interaction"
+      "s",
+      "d"
      ],
      [
-      {
-       "text": "sub-second, async",
-       "tone": "accent"
-      },
-      "features must be fresh"
+      "t",
+      "o"
      ],
      [
-      {
-       "text": "no network",
-       "tone": "violet"
-      },
-      "offline, privacy, or scale"
+      "o",
+      "c"
+     ],
+     [
+      "c",
+      "g"
      ]
     ]
    }
@@ -109,6 +198,146 @@
      ]
     ]
    }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "cycle",
+    "title": "ADWIN: let the window decide its own length",
+    "caption": "A fixed window has to be chosen in advance, and the right length depends on a drift you have not seen yet. ADWIN keeps a growing window and repeatedly asks whether some split of it has two halves whose means differ by more than chance — if so, the old part is dropped. The window shortens itself exactly when the world changes and grows again when it is stable, which is the behaviour a fixed window can only approximate.",
+    "centre": "adaptive",
+    "nodes": [
+     {
+      "label": "Grow the window",
+      "sub": "append each new error",
+      "tone": "accent"
+     },
+     {
+      "label": "Try every split",
+      "sub": "are the two halves different?",
+      "tone": "good"
+     },
+     {
+      "label": "Significant difference",
+      "sub": "drop the older part",
+      "tone": "crit"
+     },
+     {
+      "label": "Shorter window, fresh stats",
+      "sub": "and the alarm fires",
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "Shadow, canary, A/B — three different questions",
+    "caption": "They are not stages of one process, they answer different things. **Shadow** asks 'does it run and agree' with no user exposed. **Canary** asks 'does it break anything' on a small share. **A/B** is the only one that asks 'is it better', because that needs randomisation and a business metric. Skipping to A/B means debugging a service in front of real users.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "Shadow",
+      "sub": "scores live traffic, nothing served",
+      "tone": "accent"
+     },
+     {
+      "id": "q1",
+      "label": "Does it run, and agree?",
+      "sub": "latency, errors, score drift",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Canary",
+      "sub": "1-5% of traffic",
+      "tone": "accent"
+     },
+     {
+      "id": "q2",
+      "label": "Does it break anything?",
+      "sub": "guardrails, error budget",
+      "tone": "good"
+     },
+     {
+      "id": "a",
+      "label": "A/B test",
+      "sub": "randomised, with a control",
+      "tone": "accent"
+     },
+     {
+      "id": "q3",
+      "label": "Is it better?",
+      "sub": "the business metric; only this answers it",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "q1"
+     ],
+     [
+      "q1",
+      "c"
+     ],
+     [
+      "c",
+      "q2"
+     ],
+     [
+      "q2",
+      "a"
+     ],
+     [
+      "a",
+      "q3"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "06",
+   "d": {
+    "kind": "tree",
+    "title": "What has to exist before a model is allowed to serve",
+    "caption": "The rollback entry is the one that gets deferred and the one that is needed at 3 a.m. A registry that can name the previous version, and a deployment that can return to it in one step, is what turns a bad release into an incident of minutes rather than hours.",
+    "root": {
+     "label": "A served model",
+     "sub": "the artefact is the smallest part",
+     "tone": "violet",
+     "children": [
+      {
+       "label": "Registry entry",
+       "sub": "version, data hash, metrics, owner",
+       "tone": "accent"
+      },
+      {
+       "label": "Model card",
+       "sub": "intended use, slices, fairness, limits",
+       "tone": "accent"
+      },
+      {
+       "label": "Monitors",
+       "sub": "schema, drift, prediction shape, errors",
+       "tone": "good"
+      },
+      {
+       "label": "Rollback",
+       "sub": "the previous version, one step away",
+       "tone": "crit"
+      },
+      {
+       "label": "A retraining trigger",
+       "sub": "and what it falls back to on failure",
+       "tone": "teal"
+      }
+     ]
+    }
+   }
   }
  ],
  "11.2": [
@@ -164,6 +393,282 @@
        "tone": "good"
       },
       "integrates over every p"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "The predictive variance grows with distance from the data",
+    "caption": "Five points, σ² = 1, τ² = 4. Two things to read. First, the posterior mean [1.9619, 1.5317] **is** the ridge estimate with λ = σ²/τ² = 0.25, exactly — MAP is penalised fitting, as 1.4 claimed. Second, the two sources of uncertainty add in quadrature: the noise contributes 1.000 at every x, while the **parameter** contribution grows from 0.436 at x = 0 to 3.154 at x = 10, so the total sd goes 1.091 to 3.309. A point estimate cannot express that, and it is the whole reason to carry the posterior.",
+    "left": "predict at",
+    "codeW": 130,
+    "vars": [
+     "mean",
+     "total sd",
+     "noise sd",
+     "parameter sd"
+    ],
+    "steps": [
+     {
+      "code": "posterior mean m",
+      "state": [
+       "[1.9619, 1.5317]",
+       "",
+       "OLS [2.06, 1.57]",
+       "= ridge λ 0.25"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "x = 0",
+      "state": [
+       "1.962",
+       "1.091",
+       "1.000",
+       "0.436"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "x = 2",
+      "state": [
+       "5.025",
+       "1.257",
+       "1.000",
+       "0.762"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "x = 5",
+      "state": [
+       "9.620",
+       "1.905",
+       "1.000",
+       "1.622"
+      ],
+      "changed": [
+       1,
+       3
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "x = 10",
+      "state": [
+       "17.279",
+       "3.309",
+       "1.000",
+       "3.154"
+      ],
+      "changed": [
+       1,
+       3
+      ],
+      "tone": "crit",
+      "note": "far from the data"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "A Gaussian process is a prior over functions",
+    "caption": "Instead of putting a prior on a weight vector, put one directly on the function: any finite set of inputs has a joint Gaussian over their outputs, with the covariance given by a kernel. Conditioning on the observed points gives a posterior that passes near the data and **fans out between and beyond** it. The kernel is the modelling choice — it encodes smoothness, periodicity, length scale — and the cost is the O(n³) inversion that keeps GPs to thousands of points.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "k",
+      "label": "A kernel",
+      "sub": "smoothness, periodicity, length scale",
+      "tone": "violet"
+     },
+     {
+      "id": "p",
+      "label": "A prior over functions",
+      "sub": "any finite set is jointly Gaussian",
+      "tone": "accent"
+     },
+     {
+      "id": "o",
+      "label": "Condition on the data",
+      "sub": "an exact Gaussian posterior",
+      "tone": "good"
+     },
+     {
+      "id": "m",
+      "label": "Mean passes near the points",
+      "sub": "exactly, if noise-free",
+      "tone": "good"
+     },
+     {
+      "id": "v",
+      "label": "Variance fans out between them",
+      "sub": "uncertainty where there is no data",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Cost O(n³)",
+      "sub": "thousands of points, not millions",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "k",
+      "p"
+     ],
+     [
+      "p",
+      "o"
+     ],
+     [
+      "o",
+      "m"
+     ],
+     [
+      "o",
+      "v"
+     ],
+     [
+      "v",
+      "c"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "When there is no closed form: three ways to approximate a posterior",
+    "caption": "They trade accuracy against cost in opposite directions. MCMC is asymptotically exact and slow, and its diagnostics tell you when to distrust it. Variational inference is fast and systematically **under-estimates** the variance, because minimising the reverse KL prefers a narrow mode. Laplace is a single Gaussian at the mode and is cheapest of all.",
+    "cols": [
+     "Gives",
+     "Costs"
+    ],
+    "rows": [
+     "MCMC (NUTS)",
+     "Variational inference",
+     "Laplace approximation",
+     "Conjugate (when available)"
+    ],
+    "cells": [
+     [
+      {
+       "text": "asymptotically exact samples",
+       "tone": "good"
+      },
+      {
+       "text": "slow; check R-hat and ESS",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "a fitted simple distribution",
+       "tone": "accent"
+      },
+      {
+       "text": "fast; under-estimates variance",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "one Gaussian at the mode",
+       "tone": "accent"
+      },
+      "cheapest; wrong for skew or multimodality"
+     ],
+     [
+      {
+       "text": "the exact posterior",
+       "tone": "good"
+      },
+      {
+       "text": "only for specific prior-likelihood pairs",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "The acquisition function is where exploration is decided",
+    "caption": "A surrogate model gives a mean and a variance at every untried point; the acquisition function turns those two numbers into one score to maximise. **Expected improvement** weighs how much better a point might be by how likely that is, so it naturally samples both near the best-so-far and where the model is simply ignorant — which is why it needs no explicit exploration parameter.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "Surrogate over the space",
+      "sub": "a GP: mean and variance everywhere",
+      "tone": "violet"
+     },
+     {
+      "id": "m",
+      "label": "High mean",
+      "sub": "probably good: exploit",
+      "tone": "accent"
+     },
+     {
+      "id": "v",
+      "label": "High variance",
+      "sub": "unknown: explore",
+      "tone": "accent"
+     },
+     {
+      "id": "a",
+      "label": "Expected improvement",
+      "sub": "combines both into one score",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "Evaluate the argmax",
+      "sub": "one expensive fit",
+      "tone": "good"
+     },
+     {
+      "id": "u",
+      "label": "Update and repeat",
+      "sub": "the surrogate sharpens where it looked",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "m"
+     ],
+     [
+      "s",
+      "v"
+     ],
+     [
+      "m",
+      "a"
+     ],
+     [
+      "v",
+      "a"
+     ],
+     [
+      "a",
+      "e"
+     ],
+     [
+      "e",
+      "u"
      ]
     ]
    }
@@ -281,6 +786,110 @@
    }
   },
   {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Detecting drift on a stream, and what each detector watches",
+    "caption": "A drift detector watches a **statistic**, and which statistic decides what it can see. Error-rate detectors need labels and so fire late; input-distribution detectors fire early and cannot tell a harmless population shift from a damaging one. Running both and comparing is what distinguishes 'more of some customers' from 'the relationship changed'.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "The stream",
+      "sub": "rows, then labels, later",
+      "tone": "violet"
+     },
+     {
+      "id": "i",
+      "label": "Input distribution",
+      "sub": "no labels: fires early",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "Error rate",
+      "sub": "needs labels: fires late",
+      "tone": "warn"
+     },
+     {
+      "id": "a",
+      "label": "ADWIN / DDM / Page-Hinkley",
+      "sub": "on whichever statistic",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "Input moved, error did not",
+      "sub": "data drift: often harmless",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "Error moved",
+      "sub": "concept drift: act",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "i"
+     ],
+     [
+      "s",
+      "e"
+     ],
+     [
+      "i",
+      "a"
+     ],
+     [
+      "e",
+      "a"
+     ],
+     [
+      "a",
+      "b"
+     ],
+     [
+      "a",
+      "c"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "cycle",
+    "title": "Federated averaging, one round",
+    "caption": "The data never moves; the **model** does. Each client trains locally for a few steps and returns its update, the server averages them weighted by how many rows each client held, and the new global model goes back out. One round is a weighted average of gradients that were each computed on a different distribution — which is exactly why non-IID clients make this converge slowly, or to the wrong place.",
+    "centre": "data stays put",
+    "nodes": [
+     {
+      "label": "Server sends the model",
+      "sub": "to a sample of clients",
+      "tone": "violet"
+     },
+     {
+      "label": "Each trains locally",
+      "sub": "a few steps, on its own rows",
+      "tone": "accent"
+     },
+     {
+      "label": "Clients return updates",
+      "sub": "weights or gradients, not data",
+      "tone": "good"
+     },
+     {
+      "label": "Server averages, weighted by n",
+      "sub": "and the next round begins",
+      "tone": "teal"
+     }
+    ]
+   }
+  },
+  {
    "after": "04",
    "d": {
     "kind": "matrix",
@@ -324,69 +933,354 @@
      ]
     ]
    }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "What an update leaks, and what it costs to hide it",
+    "caption": "Keeping the data local is not privacy. A gradient is a function of the rows that produced it, and from it an attacker can often recover whether a particular record was present — sometimes the record itself. Differential privacy bounds that by **clipping and adding noise**, and the bound is paid for in accuracy: a smaller ε is a stronger guarantee and a worse model.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "u",
+      "label": "A client's update",
+      "sub": "no raw data sent",
+      "tone": "violet"
+     },
+     {
+      "id": "m",
+      "label": "Membership inference",
+      "sub": "was this record in the batch?",
+      "tone": "crit"
+     },
+     {
+      "id": "r",
+      "label": "Reconstruction",
+      "sub": "sometimes the record itself",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "Clip the update",
+      "sub": "bound any one row's influence",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "Add calibrated noise",
+      "sub": "(epsilon, delta) differential privacy",
+      "tone": "good"
+     },
+     {
+      "id": "a",
+      "label": "Accuracy is the price",
+      "sub": "smaller epsilon, worse model",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "u",
+      "m"
+     ],
+     [
+      "u",
+      "r"
+     ],
+     [
+      "m",
+      "c"
+     ],
+     [
+      "c",
+      "n"
+     ],
+     [
+      "n",
+      "a"
+     ]
+    ]
+   }
   }
  ],
  "11.4": [
   {
    "after": "01",
    "d": {
+    "kind": "trace",
+    "title": "Collaborative filtering by hand, and why five users is not enough",
+    "caption": "With two or three co-rated items per pair, the correlations come out at **±1.000** — Ann–Di is −1.000 on two co-ratings, which carries no information at all. The user-based estimate for Ann on i3 is 3.000, driven entirely by that spurious −1. The item-based route is worse: its similarities are also ±1 and the prediction lands at **−2.717**, off the rating scale entirely. The arithmetic is correct and the data cannot support it.",
+    "left": "similarity",
+    "codeW": 180,
+    "vars": [
+     "co-rated items",
+     "r",
+     "what it is worth"
+    ],
+    "steps": [
+     {
+      "code": "Ann-Ben",
+      "state": [
+       "3",
+       "+0.885",
+       "plausible"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "Ann-Cy",
+      "state": [
+       "3",
+       "0.000",
+       "no information"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "Ann-Di",
+      "state": [
+       "2",
+       "-1.000",
+       "an artefact of n = 2"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "Ann-Ed",
+      "state": [
+       "4",
+       "+0.969",
+       "plausible"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "user-based r-hat(Ann, i3)",
+      "state": [
+       "",
+       "3.000",
+       "driven by the -1.000"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "item-based r-hat(Ann, i3)",
+      "state": [
+       "",
+       "-2.717",
+       "off the scale"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Matrix factorisation: learn the factors, never form the matrix",
+    "caption": "A users × items matrix of a million by a hundred thousand has 10¹¹ cells and perhaps 10⁷ observed ratings. Factorisation never builds it: it learns a short vector per user and per item such that their dot product reproduces the **observed** entries, and the unobserved ones fall out as predictions. ALS alternates two least-squares solves; SGD walks the observed entries one at a time.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "r",
+      "label": "Observed ratings only",
+      "sub": "a sparse list, not a matrix",
+      "tone": "violet"
+     },
+     {
+      "id": "u",
+      "label": "A vector per user",
+      "sub": "k factors, k ~ 10-200",
+      "tone": "accent"
+     },
+     {
+      "id": "i",
+      "label": "A vector per item",
+      "sub": "the same k",
+      "tone": "accent"
+     },
+     {
+      "id": "d",
+      "label": "Dot product = prediction",
+      "sub": "fit to the observed entries",
+      "tone": "good"
+     },
+     {
+      "id": "a",
+      "label": "ALS: alternate two solves",
+      "sub": "each is a ridge regression",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "SGD: walk the observed entries",
+      "sub": "one update each",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "r",
+      "u"
+     ],
+     [
+      "r",
+      "i"
+     ],
+     [
+      "u",
+      "d"
+     ],
+     [
+      "i",
+      "d"
+     ],
+     [
+      "d",
+      "a"
+     ],
+     [
+      "d",
+      "s"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
     "kind": "matrix",
-    "title": "Six recommender families, and what each cannot do",
-    "caption": "The failure column drives almost every architecture decision. Collaborative filtering of any kind cannot serve a brand-new item, which is why hybrids exist — not for accuracy, but because the cold start is a certainty rather than a risk.",
+    "title": "Implicit feedback: a click is not a rating, and a non-click is not a 'no'",
+    "caption": "With explicit ratings the unobserved entries are genuinely unknown and are skipped. With clicks there are **no negatives at all** — an item not clicked may never have been shown. That changes the objective: WRMF treats every unobserved pair as a weak negative with a confidence weight, and BPR gives up on absolute scores and optimises the **ranking** of a clicked item above a sampled unclicked one.",
     "cols": [
-     "Needs",
-     "Fails on"
+     "Explicit ratings",
+     "Implicit clicks"
     ],
     "rows": [
-     "User-based CF",
-     "Item-based CF",
-     "Matrix factorisation",
-     "WRMF / BPR",
-     "Content-based",
-     "Hybrid"
+     "An unobserved pair",
+     "The signal",
+     "Objective",
+     "Evaluation",
+     "Popularity"
     ],
     "cells": [
      [
-      "ratings from similar users",
       {
-       "text": "sparsity; O(users²)",
-       "tone": "warn"
-      }
-     ],
-     [
-      "co-ratings of items",
-      {
-       "text": "cold items; popularity bias",
-       "tone": "warn"
-      }
-     ],
-     [
-      "many interactions",
-      {
-       "text": "cold users and items",
-       "tone": "warn"
-      }
-     ],
-     [
-      "implicit signals",
-      "negative sampling to tune"
-     ],
-     [
-      {
-       "text": "item features",
-       "tone": "good"
-      },
-      "limited discovery"
-     ],
-     [
-      {
-       "text": "both",
+       "text": "unknown: skip it",
        "tone": "good"
       },
       {
-       "text": "more to tune and explain",
+       "text": "maybe never shown",
+       "tone": "crit"
+      }
+     ],
+     [
+      "a number the user chose",
+      "presence, and its frequency"
+     ],
+     [
+      {
+       "text": "squared error on observed",
+       "tone": "good"
+      },
+      {
+       "text": "weighted, or pairwise ranking",
        "tone": "accent"
       }
+     ],
+     [
+      "RMSE",
+      {
+       "text": "ranking metrics only",
+       "tone": "accent"
+      }
+     ],
+     [
+      "a mild effect",
+      {
+       "text": "dominates: it drives exposure",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "The cold start is a certainty, so the fallback is part of the design",
+    "caption": "Collaborative filtering of every kind needs interactions, and a new user or item has none. Every production recommender therefore has a **cascade**, and the honest version decides in advance what each stage falls back to — because the alternative is a new item that is structurally invisible until somebody happens to find it.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "n",
+      "label": "A new user or item",
+      "sub": "no interactions at all",
+      "tone": "violet"
+     },
+     {
+      "id": "c",
+      "label": "Content features",
+      "sub": "text, category, attributes",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Segment or popularity",
+      "sub": "what similar people like",
+      "tone": "accent"
+     },
+     {
+      "id": "e",
+      "label": "Deliberate exploration",
+      "sub": "show it, to learn something",
+      "tone": "accent"
+     },
+     {
+      "id": "f",
+      "label": "Then switch to CF",
+      "sub": "once interactions exist",
+      "tone": "good"
+     },
+     {
+      "id": "w",
+      "label": "With no fallback",
+      "sub": "a new item stays invisible",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "n",
+      "c"
+     ],
+     [
+      "n",
+      "s"
+     ],
+     [
+      "n",
+      "e"
+     ],
+     [
+      "c",
+      "f"
+     ],
+     [
+      "s",
+      "w",
+      "",
+      "dashed"
      ]
     ]
    }
@@ -501,6 +1395,172 @@
    }
   },
   {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "TF-IDF, worked: why the weight is a product of two opposite things",
+    "caption": "Term frequency rewards a word for appearing often **in this document**; inverse document frequency punishes it for appearing in **many** documents. Their product is high only for a word that is frequent here and rare elsewhere — which is the definition of distinctive. The L2 normalisation at the end is what makes a long document and a short one comparable.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "TF: count in this document",
+      "sub": "often damped: 1 + log(count)",
+      "tone": "accent"
+     },
+     {
+      "id": "i",
+      "label": "IDF: log(N / df)",
+      "sub": "near zero for a word in every document",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "Multiply",
+      "sub": "frequent here, rare elsewhere",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "L2-normalise the row",
+      "sub": "long and short become comparable",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Fit IDF on train only",
+      "sub": "it is a statistic over documents",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "Cosine is now a dot product",
+      "sub": "rows are unit length",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "p"
+     ],
+     [
+      "i",
+      "p"
+     ],
+     [
+      "p",
+      "l"
+     ],
+     [
+      "l",
+      "c"
+     ],
+     [
+      "i",
+      "s"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "Eight text pipelines on four newsgroups, measured",
+    "caption": "Read the first three rows: switching from counts to TF-IDF buys **2.9 points**, and switching from multinomial to ComplementNB buys another 2.2 — and the whole thing fits and predicts in half a second. The tuned logistic regression and LinearSVC do not beat it. This is the measurement to have in hand before anyone proposes fine-tuning a transformer on four thousand documents.",
+    "left": "pipeline",
+    "codeW": 250,
+    "vars": [
+     "accuracy",
+     "macro-F1",
+     "fit + predict"
+    ],
+    "steps": [
+     {
+      "code": "CountVectorizer + MultinomialNB",
+      "state": [
+       "0.8405",
+       "0.8392",
+       "0.6 s"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "TfidfVectorizer + MultinomialNB",
+      "state": [
+       "0.8693",
+       "0.8656",
+       "0.6 s"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "TfidfVectorizer + ComplementNB",
+      "state": [
+       "0.8914",
+       "0.8890",
+       "0.5 s"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "the best here"
+     },
+     {
+      "code": "Tfidf + LogisticRegression(C=10)",
+      "state": [
+       "0.8680",
+       "0.8660",
+       "1.5 s"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "Tfidf + LinearSVC",
+      "state": [
+       "0.8840",
+       "0.8824",
+       "0.5 s"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "+ sublinear_tf, 1-2 grams",
+      "state": [
+       "0.8760",
+       "0.8742",
+       "1.4 s"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "+ stop_words='english'",
+      "state": [
+       "0.8894",
+       "0.8879",
+       "0.5 s"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "char_wb 3-5 grams + LinearSVC",
+      "state": [
+       "0.8794",
+       "0.8770",
+       "6.9 s"
+      ],
+      "tone": "warn",
+      "note": "14x the time"
+     }
+    ]
+   }
+  },
+  {
    "after": "04",
    "d": {
     "kind": "matrix",
@@ -553,52 +1613,371 @@
      ]
     ]
    }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "LDA: a document is a mixture of topics, a topic a distribution over words",
+    "caption": "The generative story is the model: pick a topic mixture for the document, then for each word pick a topic from that mixture and a word from that topic. Fitting inverts the story. Two consequences people trip over: the number of topics is an input that the data does not choose for you, and the topics are **unlabelled** — the names are yours, read off the top words, and nothing guarantees they are coherent.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "d",
+      "label": "Per document",
+      "sub": "a distribution over topics",
+      "tone": "violet"
+     },
+     {
+      "id": "t",
+      "label": "Per topic",
+      "sub": "a distribution over words",
+      "tone": "violet"
+     },
+     {
+      "id": "w",
+      "label": "Each word: pick a topic, then a word",
+      "sub": "the generative story",
+      "tone": "accent"
+     },
+     {
+      "id": "f",
+      "label": "Fitting inverts it",
+      "sub": "variational, or Gibbs",
+      "tone": "good"
+     },
+     {
+      "id": "k",
+      "label": "k is an input",
+      "sub": "coherence can guide; it does not decide",
+      "tone": "warn"
+     },
+     {
+      "id": "n",
+      "label": "Topics are unlabelled",
+      "sub": "you name them; coherence is not guaranteed",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "d",
+      "w"
+     ],
+     [
+      "t",
+      "w"
+     ],
+     [
+      "w",
+      "f"
+     ],
+     [
+      "f",
+      "k"
+     ],
+     [
+      "f",
+      "n"
+     ]
+    ]
+   }
   }
  ],
  "11.6": [
   {
-   "after": "02",
+   "after": "01",
    "d": {
-    "kind": "steps",
-    "title": "Backpropagation is the chain rule, applied in reverse order",
-    "caption": "There is nothing in it beyond the chain rule — the insight is only that computing the derivatives from the output backwards reuses every partial result, so the whole gradient costs about one forward pass rather than one per parameter.",
-    "items": [
+    "kind": "flow",
+    "title": "The perceptron cannot do XOR, and one hidden layer can",
+    "caption": "XOR is not linearly separable, so no single linear boundary classifies it — that is the result that stalled the field for a decade. A hidden layer fixes it by **re-representing** the input: two units carve the plane into regions where the classes *are* separable, and the output layer draws one line in that new space. Everything about depth is this idea repeated.",
+    "cols": 3,
+    "nodes": [
      {
-      "label": "Forward: compute and keep each layer's output",
-      "desc": "these are needed again on the way back",
-      "code": "1",
-      "tone": "accent"
-     },
-     {
-      "label": "At the output, the loss derivative",
-      "desc": "for cross-entropy with softmax it is simply p - y",
-      "code": "2",
-      "tone": "good"
-     },
-     {
-      "label": "Multiply back through the activation",
-      "desc": "element-wise, by its derivative at the stored value",
-      "code": "3",
-      "tone": "good"
-     },
-     {
-      "label": "Multiply back through the weights",
-      "desc": "the transpose of the layer's matrix",
-      "code": "4",
-      "tone": "good"
-     },
-     {
-      "label": "The weight gradient is that times the stored input",
-      "desc": "which is why the forward values had to be kept",
-      "code": "5",
+      "id": "x",
+      "label": "XOR",
+      "sub": "(0,0) 0 (0,1) 1 (1,0) 1 (1,1) 0",
       "tone": "violet"
      },
      {
-      "label": "Repeat to the first layer",
-      "desc": "one pass back, every gradient: the whole trick",
-      "code": "6",
+      "id": "p",
+      "label": "A perceptron",
+      "sub": "one linear boundary",
+      "tone": "crit"
+     },
+     {
+      "id": "n",
+      "label": "No line separates it",
+      "sub": "provably",
+      "tone": "crit"
+     },
+     {
+      "id": "h",
+      "label": "Two hidden units",
+      "sub": "each a line, with a non-linearity",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "A new representation",
+      "sub": "where the classes are separable",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "The output draws one line",
+      "sub": "in that space",
       "tone": "teal"
      }
+    ],
+    "edges": [
+     [
+      "x",
+      "p"
+     ],
+     [
+      "p",
+      "n"
+     ],
+     [
+      "n",
+      "h"
+     ],
+     [
+      "h",
+      "r"
+     ],
+     [
+      "r",
+      "o"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Backpropagation on two weights, every number",
+    "caption": "The network is x → σ(w₁x) → σ(w₂h) with x = 1, y = 1, w₁ = 0.5, w₂ = −0.4. Read the backward block: each line is one factor of the chain rule, and the **same** ∂L/∂ŷ × ∂ŷ/∂z₂ is reused for both weights — that reuse is the entire efficiency of backpropagation. Note ∂L/∂w₁ = +0.0130 is positive while ∂L/∂w₂ = −0.0861 is negative, because w₂ is negative and flips the sign on the way back.",
+    "left": "quantity",
+    "codeW": 170,
+    "vars": [
+     "value",
+     "how"
+    ],
+    "steps": [
+     {
+      "code": "z1 = w1.x",
+      "state": [
+       "0.5000",
+       "forward"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "h = sigma(z1)",
+      "state": [
+       "0.6225",
+       "forward"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "z2 = w2.h",
+      "state": [
+       "-0.2490",
+       "forward"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "y-hat = sigma(z2)",
+      "state": [
+       "0.4381",
+       "forward"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "L",
+      "state": [
+       "0.1579",
+       "half squared error"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "dL/dy-hat",
+      "state": [
+       "-0.5619",
+       "-(y - y-hat)"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "dy-hat/dz2",
+      "state": [
+       "0.2462",
+       "y-hat(1 - y-hat)"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "dL/dw2",
+      "state": [
+       "-0.0861",
+       "x h = 0.6225"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "dL/dw1",
+      "state": [
+       "+0.0130",
+       "x w2 x h(1-h) x x"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "warn",
+      "note": "sign flipped by w2"
+     },
+     {
+      "code": "after one step, eta 0.5",
+      "state": [
+       "L 0.1541",
+       "w1 0.4935, w2 -0.3569"
+      ],
+      "tone": "teal"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Activation, learning rate and batch size, and what each one breaks",
+    "caption": "Three dials with three distinct failure modes. A saturating activation kills the gradient at both ends; a learning rate above the stability limit diverges exactly as in 1.8; and a batch size changes the gradient's **noise**, which is a regulariser — so raising it without lowering the learning rate often loses accuracy rather than gaining it.",
+    "cols": [
+     "Too much",
+     "Too little"
+    ],
+    "rows": [
+     "Sigmoid / tanh",
+     "ReLU",
+     "Learning rate",
+     "Batch size",
+     "Depth"
+    ],
+    "cells": [
+     [
+      {
+       "text": "saturates: gradient ~ 0",
+       "tone": "crit"
+      },
+      "it is the saturation either way"
+     ],
+     [
+      {
+       "text": "dead units below zero",
+       "tone": "warn"
+      },
+      "leaky or GELU fixes it"
+     ],
+     [
+      {
+       "text": "diverges, as in 1.8",
+       "tone": "crit"
+      },
+      {
+       "text": "crawls; may never arrive",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "less noise: less regularisation",
+       "tone": "warn"
+      },
+      {
+       "text": "noisy, slow per epoch",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "vanishing gradients",
+       "tone": "crit"
+      },
+      "underfits; cannot compose"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Four regularisers, and the one that is not what it looks like",
+    "caption": "Weight decay is L2 by another name, and early stopping is the same regulariser applied through time rather than through the objective. Dropout is the one worth understanding properly: at training time it removes units at random, which makes the network an **ensemble of subnetworks** — and at test time it is off, with the weights scaled, which is why forgetting `model.eval()` quietly degrades every prediction.",
+    "cols": [
+     "Mechanism",
+     "At test time"
+    ],
+    "rows": [
+     "Weight decay",
+     "Early stopping",
+     "Dropout",
+     "Batch norm",
+     "Data augmentation"
+    ],
+    "cells": [
+     [
+      {
+       "text": "L2 in the objective",
+       "tone": "accent"
+      },
+      "nothing to switch"
+     ],
+     [
+      {
+       "text": "stop before the noise",
+       "tone": "accent"
+      },
+      "nothing to switch"
+     ],
+     [
+      {
+       "text": "an ensemble of subnetworks",
+       "tone": "good"
+      },
+      {
+       "text": "off, weights scaled: eval()",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "normalises per batch",
+       "tone": "accent"
+      },
+      {
+       "text": "running statistics: eval()",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "more effective data",
+       "tone": "good"
+      },
+      "off, or test-time augmented"
+     ]
     ]
    }
   },
@@ -785,6 +2164,123 @@
      ]
     ]
    }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Uplift: four kinds of customer, and only one is worth treating",
+    "caption": "A churn model ranks by **risk**; an uplift model ranks by how much the treatment *changes* the outcome, and those are different orderings. The sure things would have stayed anyway, so the discount is wasted; the lost causes leave regardless; and the sleeping dogs are actively harmed by being contacted. Only the persuadables repay the intervention — and identifying them needs a randomised experiment, because it is a question about a counterfactual.",
+    "cols": [
+     "If treated",
+     "If not treated"
+    ],
+    "rows": [
+     "Persuadable",
+     "Sure thing",
+     "Lost cause",
+     "Sleeping dog"
+    ],
+    "cells": [
+     [
+      {
+       "text": "stays",
+       "tone": "good"
+      },
+      {
+       "text": "leaves",
+       "tone": "crit"
+      }
+     ],
+     [
+      "stays",
+      "stays"
+     ],
+     [
+      "leaves",
+      "leaves"
+     ],
+     [
+      {
+       "text": "leaves",
+       "tone": "crit"
+      },
+      {
+       "text": "stays",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "The system-design round, and the order that answers it",
+    "caption": "The model is one box out of eight, and candidates who start there lose the round. The feature store is where most follow-up questions land, because it is the component that has to serve the **same** definition online and offline — and the point-in-time join is the thing that makes that hard.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "d",
+      "label": "The decision",
+      "sub": "what acts on the output, at what cost",
+      "tone": "violet"
+     },
+     {
+      "id": "l",
+      "label": "Labels",
+      "sub": "how, when, and how late",
+      "tone": "accent"
+     },
+     {
+      "id": "f",
+      "label": "Feature store",
+      "sub": "one definition, online and offline",
+      "tone": "accent"
+     },
+     {
+      "id": "m",
+      "label": "Model and training loop",
+      "sub": "one box out of eight",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Serving and rollback",
+      "sub": "latency, canary, previous version",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "Monitoring and retraining",
+      "sub": "drift, bias, a trigger",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "d",
+      "l"
+     ],
+     [
+      "l",
+      "f"
+     ],
+     [
+      "f",
+      "m"
+     ],
+     [
+      "m",
+      "s"
+     ],
+     [
+      "s",
+      "o"
+     ]
+    ]
+   }
   }
  ],
  "11.8": [
@@ -853,6 +2349,75 @@
    }
   },
   {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "From scratch, and the checks that prove it",
+    "caption": "Writing an algorithm from scratch is only half the question — the other half is how you know it is right. Each of these checks is cheap and each catches a different class of bug: a closed form agrees to machine precision, a library agrees to tolerance, a finite-difference gradient catches a sign error, and a degenerate input catches the division by zero that real data will find.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "w",
+      "label": "Write it",
+      "sub": "the smallest correct version",
+      "tone": "violet"
+     },
+     {
+      "id": "c",
+      "label": "Against a closed form",
+      "sub": "machine precision, where one exists",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "Against the library",
+      "sub": "to tolerance, on the same data",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "Gradient by finite difference",
+      "sub": "catches a sign or an index error",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "A degenerate input",
+      "sub": "one row, one class, a zero variance",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Then say the complexity",
+      "sub": "and where it would break at scale",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "w",
+      "c"
+     ],
+     [
+      "w",
+      "l"
+     ],
+     [
+      "w",
+      "g"
+     ],
+     [
+      "w",
+      "e"
+     ],
+     [
+      "e",
+      "s"
+     ]
+    ]
+   }
+  },
+  {
    "after": "03",
    "d": {
     "kind": "steps",
@@ -901,6 +2466,54 @@
       "code": "7",
       "tone": "teal"
      }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Four cases, and the trap each one is testing",
+    "caption": "Every case in a round is built around one failure the interviewer expects you to walk into. Naming the trap out loud, early, is what distinguishes a candidate who has read about these problems from one who has had them — and all four traps are things this course measured rather than asserted.",
+    "cols": [
+     "The trap",
+     "Say"
+    ],
+    "rows": [
+     "Churn prediction",
+     "Fraud detection",
+     "Demand forecasting",
+     "Recommendation"
+    ],
+    "cells": [
+     [
+      {
+       "text": "a feature recorded after the label",
+       "tone": "crit"
+      },
+      "availability at scoring time"
+     ],
+     [
+      {
+       "text": "accuracy at 0.1% positives",
+       "tone": "crit"
+      },
+      "PR-AUC, and a capacity threshold"
+     ],
+     [
+      {
+       "text": "a random split of a time series",
+       "tone": "crit"
+      },
+      "rolling origins with a gap"
+     ],
+     [
+      {
+       "text": "offline metrics on logged exposure",
+       "tone": "crit"
+      },
+      "explore, then an A/B test"
+     ]
     ]
    }
   }

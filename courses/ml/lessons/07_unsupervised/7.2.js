@@ -19,6 +19,17 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Hierarchical: merge the closest, and define 'closest'", id: "hierarchical" },
 
+    {"kind": "flow", "title": "Agglomerative clustering, and why the linkage is the whole decision", "caption": "Start with every row its own cluster and repeatedly merge the closest pair — but 'closest' has four definitions and they produce different shapes. **Single** linkage chains through noise and can snake a cluster across a dataset; **complete** forces compact balls; **Ward** minimises the variance increase and behaves most like k-means. The dendrogram is the deliverable: it lets you choose k after seeing the structure rather than before.", "cols": 3, "nodes": [{"id": "s", "label": "n clusters of one", "sub": "every row alone", "tone": "violet"}, {"id": "m", "label": "Merge the closest pair", "sub": "n-1 times", "tone": "accent"}, {"id": "si", "label": "single: nearest members", "sub": "chains through noise", "tone": "crit"}, {"id": "co", "label": "complete: furthest members", "sub": "forces compact balls", "tone": "warn"}, {"id": "wa", "label": "Ward: variance increase", "sub": "behaves like k-means", "tone": "good"}, {"id": "d", "label": "Cut the dendrogram", "sub": "choose k after seeing it", "tone": "teal"}], "edges": [["s", "m"], ["m", "si"], ["m", "co"], ["m", "wa"], ["wa", "d"]], "t": "diagram", "id": "dg-7_2-01-0"},
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Agglomerative clustering and the four linkages, worked on A = 0, B = 1, C = 4, D = 5 (executed)",
       code: `start with n singleton clusters; repeatedly merge the two clusters at the smallest LINKAGE distance; record the height; stop at one cluster.
 
@@ -78,7 +89,15 @@ ratios of successive heights:  1.13   1.01   1.00   1.32   2.48   1.47   1.53
 
     { t: "h2", n: "02", text: "Density: DBSCAN, its parameters, and its successor", id: "density" },
 
-    {"kind": "matrix", "title": "Six clustering families, by the shape each can find", "caption": "The first column is the question people ask and the second is the one that decides the answer. DBSCAN finds any shape **at one density**, which is exactly why HDBSCAN replaced it as the default: real data has clusters at several densities, and a single eps cannot describe them.", "cols": ["Needs k", "Finds shapes"], "rows": ["K-means", "Agglomerative", "DBSCAN", "HDBSCAN", "Gaussian mixture", "Spectral"], "cells": [[{"text": "yes", "tone": "warn"}, "round, similar size"], [{"text": "no: cut later", "tone": "good"}, "depends on the linkage"], [{"text": "no: eps, min_samples", "tone": "accent"}, {"text": "any, at one density", "tone": "warn"}], [{"text": "no: min_cluster_size", "tone": "good"}, {"text": "any, varying density", "tone": "good"}], [{"text": "yes, by BIC", "tone": "warn"}, "elliptical, overlapping"], [{"text": "yes", "tone": "warn"}, "connected, manifold-shaped"]], "t": "diagram", "id": "dg-7_2-02-0"},
+    {"kind": "matrix", "title": "Six clustering families, by the shape each can find", "caption": "The first column is the question people ask and the second is the one that decides the answer. DBSCAN finds any shape **at one density**, which is exactly why HDBSCAN replaced it as the default: real data has clusters at several densities, and a single eps cannot describe them.", "cols": ["Needs k", "Finds shapes"], "rows": ["K-means", "Agglomerative", "DBSCAN", "HDBSCAN", "Gaussian mixture", "Spectral"], "cells": [[{"text": "yes", "tone": "warn"}, "round, similar size"], [{"text": "no: cut later", "tone": "good"}, "depends on the linkage"], [{"text": "no: eps, min_samples", "tone": "accent"}, {"text": "any, at one density", "tone": "warn"}], [{"text": "no: min_cluster_size", "tone": "good"}, {"text": "any, varying density", "tone": "good"}], [{"text": "yes, by BIC", "tone": "warn"}, "elliptical, overlapping"], [{"text": "yes", "tone": "warn"}, "connected, manifold-shaped"]], "t": "diagram", "id": "dg-7_2-02-1"},
+
+
+
+
+
+
+
+
 
 
 
@@ -153,7 +172,15 @@ result: one cluster {1, 2, 2.5, 3}, three noise points, and k was never chosen. 
 
     { t: "h2", n: "03", text: "Mixtures: which Gaussians generated the data", id: "gmm" },
 
-    {"kind": "matrix", "title": "The BIC that collapsed, and why it was not structure", "caption": "BIC fell off a cliff at five components — from 2,502 to −1,317 — and it means nothing. The discount column takes three values with 686 rows at zero, and two components had **variance 0.0000** on it: a Gaussian concentrated on a point mass has unbounded density there, so the likelihood is arbitrarily large. With a covariance floor of 0.1 the collapse disappears and leaves a shallow minimum at three.", "cols": ["BIC, as fitted", "With reg_covar=0.1"], "rows": ["1 component", "2 components", "3 components", "4 components", "5 components", "6 components"], "cells": [["11,730", "11,781"], [{"text": "2,498", "tone": "accent"}, "10,442"], [{"text": "2,524", "tone": "accent"}, {"text": "10,193: the minimum", "tone": "good"}], ["2,502", "10,386"], [{"text": "-1,317: a collapse", "tone": "crit"}, "10,481"], [{"text": "-185", "tone": "crit"}, "10,077"]], "t": "diagram", "id": "dg-7_2-03-1"},
+    {"kind": "trace", "title": "The BIC that collapsed, and why it was not structure", "caption": "BIC fell off a cliff at five components — from 2,502 to **−1,317** — and it means nothing. The discount column takes three values with 686 rows at zero, and two components had variance **0.0000** on it: a Gaussian concentrated on a point mass has unbounded density there, so the likelihood is arbitrarily large and BIC follows it down. A covariance floor of 0.1 removes the collapse and leaves a shallow, believable minimum at three.", "left": "components", "codeW": 150, "vars": ["BIC as fitted", "with reg_covar = 0.1"], "steps": [{"code": "1", "state": ["11,730", "11,781"]}, {"code": "2", "state": ["2,498", "10,442"], "tone": "accent"}, {"code": "3", "state": ["2,524", "10,193"], "changed": [1], "tone": "good", "note": "the real minimum"}, {"code": "4", "state": ["2,502", "10,386"]}, {"code": "5", "state": ["-1,317", "10,481"], "changed": [0], "tone": "crit", "note": "variance 0.0000"}, {"code": "6", "state": ["-185", "10,077"], "tone": "crit"}], "t": "diagram", "id": "dg-7_2-03-2"},
+
+
+
+
+
+
+
+
 
 
 
@@ -213,6 +240,17 @@ converged (many iterations later):  μ = (1.5, 8.5),  σ = (0.408, 0.408),  π =
     ]},
 
     { t: "h2", n: "04", text: "The rest of the family, and the churn customers by density", id: "others" },
+
+    {"kind": "flow", "title": "HDBSCAN: one parameter instead of two, and noise as an answer", "caption": "DBSCAN's `eps` fixes one density for the whole dataset, so a parameter that finds the sparse cluster merges the dense ones. HDBSCAN builds the hierarchy over **all** densities and then extracts the clusters that persist longest, which removes `eps` entirely and leaves `min_cluster_size` — a number you can reason about, because it is 'how many rows make a group worth naming'.", "cols": 3, "nodes": [{"id": "d", "label": "DBSCAN: eps and min_samples", "sub": "one density for everything", "tone": "warn"}, {"id": "p", "label": "Mixed densities defeat it", "sub": "either merge or fragment", "tone": "crit"}, {"id": "h", "label": "Build over all densities", "sub": "a mutual-reachability hierarchy", "tone": "accent"}, {"id": "e", "label": "Extract the persistent clusters", "sub": "those that survive the longest", "tone": "good"}, {"id": "m", "label": "Only min_cluster_size", "sub": "a number you can defend", "tone": "good"}, {"id": "n", "label": "Noise is a label", "sub": "and it comes with a score", "tone": "teal"}], "edges": [["d", "p"], ["p", "h"], ["h", "e"], ["e", "m"], ["m", "n"]], "t": "diagram", "id": "dg-7_2-04-3"},
+
+
+
+
+
+
+
+
+
 
     { t: "code", lang: "python", title: "Spectral, mean shift, affinity propagation (executed)",
       hl: [2, 3, 6, 8, 9],

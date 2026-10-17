@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Simple exponential smoothing: one level, one parameter", id: "ses" },
 
+    {"kind": "trace", "title": "Simple exponential smoothing, one row at a time", "caption": "One parameter and one line of arithmetic: the new level is α of the new observation plus (1−α) of the old level. That recursion expands into **geometrically decaying weights** on the whole history — 0.300, 0.210, 0.147, 0.103, ... which sum to 1 — so 'exponential smoothing' is a weighted average of everything, with the weight decided by α alone. The SSE column shows why α is fitted rather than chosen: 1101 at 0.1 against 443 at 0.5.", "left": "t", "codeW": 90, "vars": ["y", "forecast made at t-1", "new level (alpha = 0.3)"], "steps": [{"code": "1", "state": ["28.5", "—", "28.5000"], "tone": "violet", "note": "initialised"}, {"code": "2", "state": ["34.0", "28.5000", "30.1500"], "tone": "accent"}, {"code": "3", "state": ["30.5", "30.1500", "30.2550"], "tone": "accent"}, {"code": "4", "state": ["42.0", "30.2550", "33.7785"], "changed": [2], "tone": "good"}, {"code": "5", "state": ["34.5", "33.7785", "33.9949"], "tone": "good"}, {"code": "SSE by alpha", "state": ["0.1: 1101", "0.3: 533", "0.5: 443  0.9: 562"], "tone": "warn"}, {"code": "fitted alpha", "state": ["0.528", "", "forecast 48.9"], "tone": "teal"}], "t": "diagram", "id": "dg-10_4-01-0"},
+
+
+
+
+
     { t: "p", text: "The level is updated as ℓ_t = α y_t + (1 − α) ℓ_{t−1}, and every future value is forecast as the current level. Unrolling the recursion shows what it is: ℓ_t = α y_t + α(1 − α) y_{t−1} + α(1 − α)² y_{t−2} + …, a weighted average of all history with weights that sum to one and shrink geometrically. α is the only knob — near 1 trusts the newest point, near 0 trusts the long average — and the forecast is a flat line, which is exactly the limitation the next two forms remove." },
 
     { t: "code", lang: "text", title: "α = 0.3, ℓ₁ = y₁, on the twelve numbers (executed)",
@@ -56,7 +62,10 @@ final level (= the forecast for every horizon):  38.1   45.6   48.6   52.9`,
 
     { t: "h2", n: "02", text: "Holt's linear trend, and why it fails on a season", id: "holt" },
 
-    {"kind": "matrix", "title": "Damping the trend, measured a year out", "caption": "An undamped trend extrapolated far enough produces numbers nobody will sign off. The damped form replaces h·b with a geometric sum that has an asymptote of φ/(1−φ) slopes however far out — nine, at φ = 0.9. On the store, the undamped forecast climbed from 251.6 to 288.9 between h = 28 and h = 364; the damped fit went 253.3 to 261.6. The M3 and M4 competitions found the damped trend the single most robust method in the family.", "cols": ["Undamped", "Damped (phi = 0.988)"], "rows": ["h = 28", "h = 364", "Multiplier at h = 12", "Far-horizon behaviour"], "cells": [["251.6", "253.3"], [{"text": "288.9", "tone": "crit"}, {"text": "261.6", "tone": "good"}], [{"text": "12 slopes", "tone": "crit"}, {"text": "6.5 slopes at phi = 0.9", "tone": "good"}], [{"text": "unbounded", "tone": "crit"}, {"text": "an asymptote of phi/(1-phi)", "tone": "good"}]], "t": "diagram", "id": "dg-10_4-02-0"},
+    {"kind": "trace", "title": "Damping the trend, measured a year out", "caption": "An undamped trend extrapolated far enough produces numbers nobody will sign off. The damped form replaces h·b with a geometric sum that has an asymptote of φ/(1−φ) slopes however far out — nine, at φ = 0.9. On the store, the undamped forecast climbed from 251.6 to 288.9 between h = 28 and h = 364; the damped fit went 253.3 to 261.6. The M3 and M4 competitions found the damped trend the single most robust method in this family.", "left": "horizon", "codeW": 170, "vars": ["undamped", "damped (phi = 0.988)", "multiplier at phi = 0.9"], "steps": [{"code": "h = 1", "state": ["", "", "0.9 slopes"], "tone": "accent"}, {"code": "h = 4", "state": ["", "", "3.1"], "tone": "accent"}, {"code": "h = 12", "state": ["", "", "6.5"], "tone": "accent"}, {"code": "h = 28", "state": ["251.6", "253.3", ""], "tone": "good"}, {"code": "h = 364", "state": ["288.9", "261.6", "9.0 at h = 52"], "changed": [0, 1], "tone": "crit"}, {"code": "far horizon", "state": ["unbounded", "asymptote phi/(1-phi)", "= 9"], "tone": "violet"}], "t": "diagram", "id": "dg-10_4-02-1"},
+
+
+
 
 
 
@@ -83,6 +92,12 @@ the true slope is 1.5 a quarter; b started at 5.5 (a Q1-to-Q2 jump that is mostl
     { t: "callout", kind: "production", title: "Damp the trend", body: [{ t: "p", text: "An undamped trend extrapolated a year out produces numbers nobody will sign off. The damped form replaces h·b_t by (φ + φ² + … + φʰ) b_t with 0 < φ < 1: for φ = 0.9 the multiplier is 0.9 at h = 1, 3.1 at h = 4, 6.5 at h = 12 and 9.0 at h = 52, with an asymptote of φ/(1 − φ) = 9 slopes however far out. On the store, the undamped Holt–Winters forecast rose from 251.6 at h = 28 to 288.9 at h = 364; the damped fit (φ = 0.988) went 253.3 → 261.6. Neither knows the yearly cycle, but the damped one stops inventing a trend from the last few months. Damping is the highest-value default change in this family; the M3 and M4 competitions found the damped trend the single most robust method." }] },
 
     { t: "h2", n: "03", text: "Holt–Winters: level, slope and season", id: "holt-winters" },
+
+    {"kind": "flow", "title": "Holt-Winters: three recursions, updated together", "caption": "Each component has its own smoothing parameter and its own update, and they are coupled: the level update subtracts the season so the level does not absorb it, and the season update subtracts the level so the season does not absorb the trend. Getting that bookkeeping wrong is how a hand-rolled implementation ends up with a season that slowly drifts into the level.", "cols": 3, "nodes": [{"id": "o", "label": "A new observation", "sub": "y at time t", "tone": "violet"}, {"id": "l", "label": "Level, alpha", "sub": "y minus the season, blended", "tone": "accent"}, {"id": "b", "label": "Trend, beta", "sub": "the change in level, blended", "tone": "accent"}, {"id": "s", "label": "Season, gamma", "sub": "y minus the level, blended", "tone": "accent"}, {"id": "f", "label": "Forecast", "sub": "level + h x trend + season", "tone": "good"}, {"id": "d", "label": "Damp the trend", "sub": "phi, so h does not run away", "tone": "teal"}], "edges": [["o", "l"], ["l", "b"], ["o", "s"], ["b", "f"], ["s", "f"], ["f", "d"]], "t": "diagram", "id": "dg-10_4-03-2"},
+
+
+
+
 
     { t: "p", text: "The additive form keeps m seasonal indices and updates the one for the current position: ℓ_t = α(y_t − s_{t−m}) + (1 − α)(ℓ_{t−1} + b_{t−1}) deseasonalises the observation before updating the level; b_t = β(ℓ_t − ℓ_{t−1}) + (1 − β) b_{t−1} as before; s_t = γ(y_t − ℓ_t) + (1 − γ) s_{t−m} moves the index toward the observation's departure from the level; and the forecast is ℓ_t + h b_t + s_{t+h−m}. It needs starting values, and on a short series they matter: the level from the first season's mean, the slope from the difference between the first two seasons' means divided by m, the indices from the first season minus its mean." },
 
@@ -123,7 +138,10 @@ seasonal factors by weekday (Mon..Sun): 0.824  0.844  0.898  0.958  1.108  1.223
 
     { t: "h2", n: "04", text: "The ETS taxonomy", id: "ets" },
 
-    {"kind": "matrix", "title": "The ETS taxonomy, and its ARIMA twins", "caption": "Several ETS models are algebraically identical to an ARIMA — simple exponential smoothing *is* an ARIMA(0,1,1) with θ = α − 1. Where the correspondence runs out is the seasonal additive case, which has no ARIMA equivalent at all, and that is the practical reason to keep both families on the bench.", "cols": ["ETS", "ARIMA twin"], "rows": ["Simple exp. smoothing", "Holt's linear trend", "Damped trend", "Holt-Winters additive"], "cells": [[{"text": "(A,N,N)", "tone": "accent"}, "ARIMA(0,1,1), theta = alpha - 1"], [{"text": "(A,A,N)", "tone": "accent"}, "ARIMA(0,2,2)"], [{"text": "(A,Ad,N)", "tone": "good"}, "ARIMA(1,1,2): the workhorse"], [{"text": "(A,A,A)", "tone": "violet"}, {"text": "none", "tone": "warn"}]], "t": "diagram", "id": "dg-10_4-04-1"},
+    {"kind": "matrix", "title": "The ETS taxonomy, and its ARIMA twins", "caption": "Several ETS models are algebraically identical to an ARIMA — simple exponential smoothing *is* an ARIMA(0,1,1) with θ = α − 1. Where the correspondence runs out is the seasonal additive case, which has no ARIMA equivalent at all, and that is the practical reason to keep both families on the bench.", "cols": ["ETS", "ARIMA twin"], "rows": ["Simple exp. smoothing", "Holt's linear trend", "Damped trend", "Holt-Winters additive"], "cells": [[{"text": "(A,N,N)", "tone": "accent"}, "ARIMA(0,1,1), theta = alpha - 1"], [{"text": "(A,A,N)", "tone": "accent"}, "ARIMA(0,2,2)"], [{"text": "(A,Ad,N)", "tone": "good"}, "ARIMA(1,1,2): the workhorse"], [{"text": "(A,A,A)", "tone": "violet"}, {"text": "none", "tone": "warn"}]], "t": "diagram", "id": "dg-10_4-04-3"},
+
+
+
 
 
 

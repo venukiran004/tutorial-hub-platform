@@ -23,6 +23,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "Objective, gradient, solution — and why the matrix is always invertible",
       code: `J(β) = ‖y - Xβ‖²  +  λ ‖β‖²₂                          (features standardised, y centred, intercept unpenalised)
 
@@ -66,6 +76,16 @@ the SVD view:  β̂_ridge = V · diag( dⱼ / (dⱼ² + λ) ) · Uᵀ y,   so al
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "text", title: "From the subgradient to the update",
       code: `J(β) = ½ ‖y - Xβ‖² + λ ‖β‖₁                |βⱼ| has no derivative at 0; its subgradient is  sign(βⱼ) if βⱼ ≠ 0, and any value in [-1, 1] if βⱼ = 0
 
@@ -99,7 +119,11 @@ cycle over j until nothing changes: coordinate descent. Each step is exact; the 
 
 
 
-    {"kind": "matrix", "title": "Why L1 lands on the corner and L2 never does", "caption": "The constraint region's shape decides it. A diamond has corners **on the axes**, and a contour of the squared error is overwhelmingly likely to first touch a convex region at a corner; a circle has no corners, so the solution is shrunk but never exactly zero. The prior view says the same thing: a Laplace prior has a spike at zero, a Gaussian does not.", "cols": ["L2 / ridge", "L1 / lasso"], "rows": ["Constraint region", "Where contours touch", "Zeros", "Prior", "Solution"], "cells": [[{"text": "a circle", "tone": "accent"}, {"text": "a diamond", "tone": "accent"}], ["a smooth point: no axis", {"text": "a corner: on an axis", "tone": "good"}], [{"text": "never", "tone": "warn"}, {"text": "yes: selection", "tone": "good"}], ["Gaussian: smooth at 0", {"text": "Laplace: a spike at 0", "tone": "good"}], [{"text": "closed form, unique", "tone": "good"}, "coordinate descent"]], "t": "diagram", "id": "dg-4_3-03-0"},
+
+
+
+
+
 
 
 
@@ -162,7 +186,11 @@ probability:  L2 is a Gaussian prior, flat at zero -- 'small, not exactly zero'.
 
 
 
-    {"kind": "matrix", "title": "Correlated features are where the three penalties part company", "caption": "This is the practical reason to prefer elastic net when you do not know the structure: with a correlated group, ridge shares the weight and stays stable, lasso picks one member **arbitrarily** — so a resample can change which one — and elastic net keeps them together.", "cols": ["Correlated features", "p > n"], "rows": ["Ridge", "Lasso", "Elastic net"], "cells": [[{"text": "shares weight; stable", "tone": "good"}, "fine"], [{"text": "picks one, arbitrarily", "tone": "crit"}, {"text": "at most n non-zero", "tone": "warn"}], [{"text": "groups them", "tone": "good"}, "fine"]], "t": "diagram", "id": "dg-4_3-04-1"},
+
+
+
+
+
 
 
 

@@ -32,6 +32,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "table", head: ["Baseline", "Forecast for T + h", "Right when"], rows: [
       ["Naive", "y_T — the last value, repeated", "a random walk; finance; anything near a unit root"],
       ["Seasonal naive", "y_{T+h−m} — the value one season ago", "a strong, stable season: the default retail baseline"],
@@ -61,6 +68,12 @@ seasonal naive + the trend it missed (y_{t−4} + 6):   MAE 0.000`,
     { t: "callout", kind: "mental", title: "The baseline is the denominator", body: [{ t: "p", text: "Every metric that compares across series (MASE, §05) divides by the in-sample error of a naive or seasonal-naive forecast, and every forecast-value-added review (10.9) asks how much each step of the pipeline improved on it. Compute the baselines first, on the same backtest, at the same horizon, and keep the number: a model with a 28-day MAE of 24 is a 10 % improvement on 26.9 at store A, which may or may not be worth its cost, and that is the only frame in which the 24 means anything." }] },
 
     { t: "h2", n: "02", text: "Rolling-origin backtesting", id: "backtesting" },
+
+    {"kind": "timeline", "title": "Rolling origins: eight forecasts, each from what was knowable", "caption": "One origin gives one number and no sense of its variability; eight give a spread, and the spread is what tells you whether a 3% improvement is real. Each origin refits on everything before it and scores the block after it — which recreates the moment the forecast is made, eight times over.", "span": 12, "tick": 3, "lanes": [{"label": "Origin 1", "bars": [[0, 4, "train", "accent"], [4, 5, "test", "good"]]}, {"label": "Origin 2", "bars": [[0, 5, "train", "accent"], [5, 6, "test", "good"]]}, {"label": "Origin 3", "bars": [[0, 6, "train", "accent"], [6, 7, "test", "good"]]}, {"label": "Origin 8", "bars": [[0, 11, "train", "accent"], [11, 12, "test", "good"]]}], "t": "diagram", "id": "dg-10_3-02-1"},
+
+
+
+
 
     { t: "p", text: "A backtest simulates what you would have known at each decision point: fix an origin, fit on everything before it, forecast h steps, score, move the origin forward, repeat. Every forecast is made with only prior data; every origin is a sample of the error, and the spread across origins is as much a result as the mean. Two choices define the scheme. The **window** is expanding (train on all history; right when the process is stable) or sliding (a fixed length that moves; right after a regime change, when recent data is more relevant and old data dilutes the fit). The **step** between origins trades the number of folds against their overlap." },
 
@@ -112,7 +125,10 @@ seasonal naive + the trend it missed (y_{t−4} + 6):   MAE 0.000`,
 
     { t: "h2", n: "03", text: "The gap", id: "gap" },
 
-    {"kind": "timeline", "title": "Rolling origins, and the gap that makes them honest", "caption": "Each origin trains on everything before it and scores the block after it, which recreates the moment the forecast is made. The **gap** is needed whenever a feature or a label is computed over a window: without it the last training labels depend on events inside the test block, and the backtest is quietly optimistic.", "span": 12, "tick": 3, "lanes": [{"label": "Origin 1", "bars": [[0, 4, "train", "accent"], [4, 5, "gap", "warn"], [5, 6, "test", "good"]]}, {"label": "Origin 2", "bars": [[0, 6, "train", "accent"], [6, 7, "gap", "warn"], [7, 8, "test", "good"]]}, {"label": "Origin 3", "bars": [[0, 8, "train", "accent"], [8, 9, "gap", "warn"], [9, 10, "test", "good"]]}, {"label": "No gap", "bars": [[0, 10, "train, whose last labels use test-period events", "crit"]]}], "t": "diagram", "id": "dg-10_3-03-1"},
+    {"kind": "timeline", "title": "The gap, and why a window feature forces one", "caption": "Without a gap, the last training label can depend on events inside the test block — any label or feature computed over a window reaches forward. The gap is simply that window's length, excluded from both sides, and it costs a little data to buy a backtest that is not quietly optimistic.", "span": 12, "tick": 3, "lanes": [{"label": "Train", "bars": [[0, 7, "fitted on these", "accent"]]}, {"label": "Gap", "bars": [[7, 8, "gap", "warn"]]}, {"label": "Test", "bars": [[8, 12, "scored on these", "good"]]}, {"label": "No gap", "bars": [[0, 8, "last labels use test-period events", "crit"]]}], "t": "diagram", "id": "dg-10_3-03-2"},
+
+
+
 
 
 
@@ -149,6 +165,12 @@ for train, test in tscv.split(X):
 
     { t: "h2", n: "04", text: "Metrics, worked on five numbers", id: "metrics" },
 
+    {"kind": "trace", "title": "Five errors, every forecast metric, worked", "caption": "Errors of −10, +10, −5, +10, −5 against actuals of 120, 80, 100, 90, 110. The bias is **0.00** — the forecast is not systematically high or low, which no absolute metric can tell you and which is why ME belongs in every report. Note that four different percentage metrics give four different numbers on the same five errors (8.298, 8.153, 8.000), and MASE's 0.4375 is the only one that says something comparable across series: less than half the naive forecast's error.", "left": "metric", "codeW": 170, "vars": ["value", "what it is optimised by"], "steps": [{"code": "ME (bias)", "state": ["0.00", "nothing: it is a diagnostic"], "tone": "good", "note": "no systematic lean"}, {"code": "MAE", "state": ["8.00", "the median forecast"], "tone": "good"}, {"code": "MSE", "state": ["70.00", "the mean forecast"]}, {"code": "RMSE", "state": ["8.3666", "the mean forecast"], "tone": "accent"}, {"code": "MAPE", "state": ["8.298%", "biases forecasts low"], "tone": "warn"}, {"code": "sMAPE", "state": ["8.153%", "symmetric in name only"], "tone": "warn"}, {"code": "WAPE", "state": ["8.000%", "the volume-weighted share"], "tone": "good"}, {"code": "MASE", "state": ["0.4375", "vs naive MAE 18.286"], "changed": [0], "tone": "good", "note": "comparable across series"}], "t": "diagram", "id": "dg-10_3-04-3"},
+
+
+
+
+
     { t: "code", lang: "text", title: "Every metric on one example (executed)",
       code: `actual     120   80  100   90  110       sum 500
 forecast   110   90   95  100  105
@@ -177,6 +199,12 @@ MASE       = MAE / (in-sample naive MAE of the training series 95 105 88 112 100
 
     { t: "h2", n: "05", text: "The MAPE trap, and the metric for the job", id: "mape" },
 
+    {"kind": "flow", "title": "The MAPE trap, and the metric for the job", "caption": "MAPE divides by the actual, so it is undefined at zero, unstable near it, and **asymmetric**: an over-forecast can be penalised without limit while an under-forecast is capped at 100%. Minimising it therefore biases forecasts low, systematically. WAPE divides by the total instead, which keeps the percentage a stakeholder wants and removes every one of those problems.", "cols": 3, "nodes": [{"id": "m", "label": "MAPE", "sub": "mean of |e| / actual", "tone": "violet"}, {"id": "z", "label": "An actual of zero", "sub": "the denominator is zero", "tone": "crit"}, {"id": "a", "label": "Asymmetric", "sub": "under-forecast capped at 100%", "tone": "crit"}, {"id": "b", "label": "So it biases low", "sub": "the bias is built into the metric", "tone": "crit"}, {"id": "w", "label": "WAPE", "sub": "sum|e| / sum|actual|", "tone": "good"}, {"id": "s", "label": "Still a percentage", "sub": "and volume-weighted", "tone": "good"}], "edges": [["m", "z"], ["m", "a"], ["a", "b"], ["b", "w"], ["w", "s"]], "t": "diagram", "id": "dg-10_3-05-4"},
+
+
+
+
+
     { t: "code", lang: "text", title: "The same miss, four scores (executed)",
       code: `actual  forecast   |e|    APE
  100       60       40    40.0 %
@@ -202,6 +230,12 @@ on the store backtest (seasonal naive, 4-week mean, 20 origins × 28 days):
     { t: "callout", kind: "production", title: "Report MASE for selection, WAPE for the business, bias beside both, and everything by horizon and segment", body: [{ t: "p", text: "MASE is scale-free, always defined and comparable across series, so it chooses the model. WAPE is a percentage weighted by volume, which is what a planner understands and what the P&L feels. Bias is a decision, not a detail. And a single aggregate hides the one place the model is failing: break every number down by horizon (h = 1 against h = 28), by weekday against weekend, and by the top products against the long tail, because that place is usually where the money is." }] },
 
     { t: "h2", n: "06", text: "The leakage catalogue", id: "leakage" },
+
+    {"kind": "matrix", "title": "The leakage catalogue, for series", "caption": "Every one of these produces a backtest that looks excellent and a deployment that does not. The first is the most common by a wide margin, and the last is the most invisible: a target scaled using statistics computed over the whole series has had the test period's level folded into the training data.", "cols": ["The leak", "The fix"], "rows": ["An unshifted window", "Backward-fill", "A centred rolling mean", "Random K-fold", "Scaling over all time", "A revised history"], "cells": [[{"text": "the feature contains today", "tone": "crit"}, "shift it by at least one period"], [{"text": "the future copied back", "tone": "crit"}, "forward-fill, or leave NaN"], [{"text": "reads t+1 to t+3", "tone": "crit"}, "trailing windows only"], [{"text": "trains on the future", "tone": "crit"}, "rolling origins with a gap"], [{"text": "the test level in the scaler", "tone": "crit"}, "fit the scaler per origin"], [{"text": "the past changed after the fact", "tone": "warn"}, "use the vintage as-of each origin"]], "t": "diagram", "id": "dg-10_3-06-5"},
+
+
+
+
 
     { t: "table", head: ["#", "Leak", "What it looks like", "Fix"], rows: [
       ["1", "Random train/test split", "99 % R² on a random walk (10.1: 22.3 vs 31.3)", "split by time, always"],

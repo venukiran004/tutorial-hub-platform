@@ -25,6 +25,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "Ten customers, scored by a model and sorted by score; five churned. Sweep the threshold down from the top: each time it passes a positive, TPR (recall) rises by 1/5; each time it passes a negative, FPR (1 − specificity) rises by 1/5. **The ROC curve is the path of (FPR, TPR) as the threshold sweeps; a perfect ranker goes straight up then right; a random one follows the diagonal.**" },
 
     { t: "code", lang: "text", title: "Ten scores, ten thresholds, one curve (executed)",
@@ -86,7 +96,9 @@ average precision 0.794             the no-skill line is the prevalence: 0.50 he
 
 
 
-    {"kind": "matrix", "title": "ROC and PR answer different questions about the same ranking", "caption": "Both axes of ROC are within-class rates, so prevalence cannot move them — which makes ROC-AUC comparable across differently balanced datasets and blind to how rare the positives are. Precision mixes the classes, so PR tracks what acting on the flags will actually feel like.", "cols": ["ROC", "Precision-recall"], "rows": ["Axes", "No-skill level", "Effect of prevalence", "Blind to", "Use it for"], "cells": [["TPR against FPR", "precision against recall"], [{"text": "the diagonal: 0.5", "tone": "accent"}, {"text": "precision = prevalence", "tone": "accent"}], [{"text": "none", "tone": "good"}, {"text": "strong", "tone": "warn"}], [{"text": "how rare positives are", "tone": "warn"}, {"text": "the true negatives entirely", "tone": "warn"}], ["comparing rankers", "a cost per flag"]], "t": "diagram", "id": "dg-2_2-02-0"},
+
+
+
 
 
 
@@ -175,7 +187,9 @@ average precision 0.794             the no-skill line is the prevalence: 0.50 he
 
 
 
-    {"kind": "matrix", "title": "What each metric is a function of", "caption": "The first row needs a threshold and the rest do not, which is the division that matters when selecting a model: choosing on accuracy or F1 means choosing a model **and** a threshold at once, and the threshold is usually the default 0.5 nobody examined.", "cols": ["Reads", "Threshold-free"], "rows": ["Accuracy, F1, MCC", "ROC-AUC", "PR-AUC", "Log loss", "Brier"], "cells": [[{"text": "one threshold's matrix", "tone": "warn"}, {"text": "no", "tone": "warn"}], ["the ranking", {"text": "yes", "tone": "good"}], ["the ranking, through precision", {"text": "yes", "tone": "good"}], [{"text": "the probabilities", "tone": "good"}, {"text": "yes; punishes harshly", "tone": "good"}], [{"text": "the probabilities", "tone": "good"}, {"text": "yes; punishes gently", "tone": "good"}]], "t": "diagram", "id": "dg-2_2-03-1"},
+
+
+
 
 
 

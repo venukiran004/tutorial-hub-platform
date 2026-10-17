@@ -20,7 +20,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Neighbourhood collaborative filtering, by hand", id: "cf" },
 
-    {"kind": "matrix", "title": "Six recommender families, and what each cannot do", "caption": "The failure column drives almost every architecture decision. Collaborative filtering of any kind cannot serve a brand-new item, which is why hybrids exist — not for accuracy, but because the cold start is a certainty rather than a risk.", "cols": ["Needs", "Fails on"], "rows": ["User-based CF", "Item-based CF", "Matrix factorisation", "WRMF / BPR", "Content-based", "Hybrid"], "cells": [["ratings from similar users", {"text": "sparsity; O(users²)", "tone": "warn"}], ["co-ratings of items", {"text": "cold items; popularity bias", "tone": "warn"}], ["many interactions", {"text": "cold users and items", "tone": "warn"}], ["implicit signals", "negative sampling to tune"], [{"text": "item features", "tone": "good"}, "limited discovery"], [{"text": "both", "tone": "good"}, {"text": "more to tune and explain", "tone": "accent"}]], "t": "diagram", "id": "dg-11_4-01-0"},
+    {"kind": "trace", "title": "Collaborative filtering by hand, and why five users is not enough", "caption": "With two or three co-rated items per pair, the correlations come out at **±1.000** — Ann–Di is −1.000 on two co-ratings, which carries no information at all. The user-based estimate for Ann on i3 is 3.000, driven entirely by that spurious −1. The item-based route is worse: its similarities are also ±1 and the prediction lands at **−2.717**, off the rating scale entirely. The arithmetic is correct and the data cannot support it.", "left": "similarity", "codeW": 180, "vars": ["co-rated items", "r", "what it is worth"], "steps": [{"code": "Ann-Ben", "state": ["3", "+0.885", "plausible"], "tone": "good"}, {"code": "Ann-Cy", "state": ["3", "0.000", "no information"], "tone": "warn"}, {"code": "Ann-Di", "state": ["2", "-1.000", "an artefact of n = 2"], "changed": [1], "tone": "crit"}, {"code": "Ann-Ed", "state": ["4", "+0.969", "plausible"], "tone": "good"}, {"code": "user-based r-hat(Ann, i3)", "state": ["", "3.000", "driven by the -1.000"], "tone": "warn"}, {"code": "item-based r-hat(Ann, i3)", "state": ["", "-2.717", "off the scale"], "changed": [1], "tone": "crit"}], "t": "diagram", "id": "dg-11_4-01-0"},
+
+
+
+
+
+
+
 
 
 
@@ -50,6 +57,10 @@ ITEM-BASED: adjusted cosine between items (ratings minus each user's mean), over
 
     { t: "h2", n: "02", text: "Matrix factorisation: ALS and SGD", id: "mf" },
 
+    {"kind": "flow", "title": "Matrix factorisation: learn the factors, never form the matrix", "caption": "A users × items matrix of a million by a hundred thousand has 10¹¹ cells and perhaps 10⁷ observed ratings. Factorisation never builds it: it learns a short vector per user and per item such that their dot product reproduces the **observed** entries, and the unobserved ones fall out as predictions. ALS alternates two least-squares solves; SGD walks the observed entries one at a time.", "cols": 3, "nodes": [{"id": "r", "label": "Observed ratings only", "sub": "a sparse list, not a matrix", "tone": "violet"}, {"id": "u", "label": "A vector per user", "sub": "k factors, k ~ 10-200", "tone": "accent"}, {"id": "i", "label": "A vector per item", "sub": "the same k", "tone": "accent"}, {"id": "d", "label": "Dot product = prediction", "sub": "fit to the observed entries", "tone": "good"}, {"id": "a", "label": "ALS: alternate two solves", "sub": "each is a ridge regression", "tone": "good"}, {"id": "s", "label": "SGD: walk the observed entries", "sub": "one update each", "tone": "good"}], "edges": [["r", "u"], ["r", "i"], ["u", "d"], ["i", "d"], ["d", "a"], ["d", "s"]], "t": "diagram", "id": "dg-11_4-02-1"},
+
+
+
     { t: "p", text: "Model each rating as a global mean plus a user bias, an item bias and the dot product of a user vector and an item vector: r̂_ui = μ + b_u + b_i + p_uᵀq_i. The vectors are k latent factors learned only from the observed entries — Funk's SVD from the Netflix prize, which is not an SVD because an SVD would need every entry. Two solvers: alternating least squares fixes the item vectors and solves a ridge regression for each user (and vice versa), which is exact per step and parallel; stochastic gradient descent visits each observed rating and nudges its user and item vectors by the error, which is cheap per step and handles biases naturally." },
 
     { t: "code", lang: "python", title: "500 users × 200 items generated from rank 8 with biases and noise sd 0.4; 15 % observed, 80 / 20 split (executed)",
@@ -64,6 +75,10 @@ the noise floor: the generator's noise sd is 0.4, so no model can reach below ab
       caption: "Regularisation is the decisive hyperparameter: with 24 observed ratings per user and 8 factors, an unregularised solve over-fits, and too much shrinks the factors to zero and returns the bias baseline. The rank is chosen by the same validation curve, and it is not the case that more factors are better. ALS converges in a handful of passes; SGD needs many epochs and a learning-rate schedule, but scales to data that do not fit a per-user solve and to extra terms — time-dependent biases, implicit signals — that the Netflix-prize models used." },
 
     { t: "h2", n: "03", text: "Implicit feedback: clicks, not ratings", id: "implicit" },
+
+    {"kind": "matrix", "title": "Implicit feedback: a click is not a rating, and a non-click is not a 'no'", "caption": "With explicit ratings the unobserved entries are genuinely unknown and are skipped. With clicks there are **no negatives at all** — an item not clicked may never have been shown. That changes the objective: WRMF treats every unobserved pair as a weak negative with a confidence weight, and BPR gives up on absolute scores and optimises the **ranking** of a clicked item above a sampled unclicked one.", "cols": ["Explicit ratings", "Implicit clicks"], "rows": ["An unobserved pair", "The signal", "Objective", "Evaluation", "Popularity"], "cells": [[{"text": "unknown: skip it", "tone": "good"}, {"text": "maybe never shown", "tone": "crit"}], ["a number the user chose", "presence, and its frequency"], [{"text": "squared error on observed", "tone": "good"}, {"text": "weighted, or pairwise ranking", "tone": "accent"}], ["RMSE", {"text": "ranking metrics only", "tone": "accent"}], ["a mild effect", {"text": "dominates: it drives exposure", "tone": "crit"}]], "t": "diagram", "id": "dg-11_4-03-2"},
+
+
 
     { t: "p", text: "Most systems never see a rating. They see clicks, views, purchases and dwell — positive-only signals with no negatives: an unclicked item was not necessarily disliked, it was probably never shown. Two ideas turn this into a learning problem. **WRMF** (Hu, Koren and Volinsky) treats every entry as a preference — 1 if clicked, 0 otherwise — with a *confidence* 1 + α·count, so that observed clicks are weighted heavily and unobserved entries lightly, and solves it by ALS over the full matrix, which its algebra makes tractable. **BPR** (Rendle et al.) gives up on absolute scores and learns a ranking: for a user, a clicked item should score above an unclicked one, optimised by sampling (user, clicked, unclicked) triples and taking gradient steps on the sigmoid of the score difference." },
 
@@ -80,6 +95,10 @@ the same two hits at ranks 4 and 5:               NDCG = 0.5013                 
     { t: "callout", kind: "trap", title: "The offline metric is not the online outcome", body: [{ t: "p", text: "Held-out clicks were generated by the old system's exposure: a model that reproduces what was shown scores well and a model that would have surfaced something better scores badly, because the user never had the chance to click it. Offline ranking metrics select candidates; 11.1's A/B test or interleaving decides. Popularity bias compounds it — the held-out set is dominated by items that were popular, which is why popularity is a strong offline baseline and a weak product." }] },
 
     { t: "h2", n: "04", text: "Content, hybrids and the cold start", id: "cold" },
+
+    {"kind": "flow", "title": "The cold start is a certainty, so the fallback is part of the design", "caption": "Collaborative filtering of every kind needs interactions, and a new user or item has none. Every production recommender therefore has a **cascade**, and the honest version decides in advance what each stage falls back to — because the alternative is a new item that is structurally invisible until somebody happens to find it.", "cols": 3, "nodes": [{"id": "n", "label": "A new user or item", "sub": "no interactions at all", "tone": "violet"}, {"id": "c", "label": "Content features", "sub": "text, category, attributes", "tone": "good"}, {"id": "s", "label": "Segment or popularity", "sub": "what similar people like", "tone": "accent"}, {"id": "e", "label": "Deliberate exploration", "sub": "show it, to learn something", "tone": "accent"}, {"id": "f", "label": "Then switch to CF", "sub": "once interactions exist", "tone": "good"}, {"id": "w", "label": "With no fallback", "sub": "a new item stays invisible", "tone": "crit"}], "edges": [["n", "c"], ["n", "s"], ["n", "e"], ["c", "f"], ["s", "w", "", "dashed"]], "t": "diagram", "id": "dg-11_4-04-3"},
+
+
 
     { t: "code", lang: "python", title: "30 cold items nobody has clicked; 100 users with their history cut to n clicks (executed; NDCG@10)",
       code: `# each item has six binary 'genre' features; a user's profile is the mean of the features of the items they clicked; content score = cosine(profile, item)
@@ -109,7 +128,12 @@ the same two hits at ranks 4 and 5:               NDCG = 0.5013                 
 
     { t: "h2", n: "05", text: "The feedback loop: explore or stagnate", id: "explore" },
 
-    {"kind": "steps", "title": "The feedback loop, and why offline ranking metrics flatter the old system", "caption": "Held-out clicks were generated by **what the old system chose to show**. A model that reproduces those choices scores well; a model that would have surfaced something better scores badly, because the user never had the chance to click it. Popularity bias compounds it, which is why popularity is a strong offline baseline and a weak product.", "items": [{"label": "The old system chose what to show", "desc": "exposure, not preference, generated the log", "code": "1", "tone": "accent"}, {"label": "Clicks only exist for shown items", "desc": "everything else has no label at all", "code": "2", "tone": "warn"}, {"label": "Offline metrics reward agreement with it", "desc": "reproducing the old choices scores highest", "code": "3", "tone": "crit"}, {"label": "A better model looks worse", "desc": "its best suggestions were never shown, so never clicked", "code": "4", "tone": "crit"}, {"label": "Train on it and the loop tightens", "desc": "the catalogue narrows to what was already popular", "code": "5", "tone": "crit"}, {"label": "Break it deliberately", "desc": "explore, log propensities, and let an A/B test decide", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-11_4-05-1"},
+    {"kind": "steps", "title": "The feedback loop, and why offline ranking metrics flatter the old system", "caption": "Held-out clicks were generated by **what the old system chose to show**. A model that reproduces those choices scores well; a model that would have surfaced something better scores badly, because the user never had the chance to click it. Popularity bias compounds it, which is why popularity is a strong offline baseline and a weak product.", "items": [{"label": "The old system chose what to show", "desc": "exposure, not preference, generated the log", "code": "1", "tone": "accent"}, {"label": "Clicks only exist for shown items", "desc": "everything else has no label at all", "code": "2", "tone": "warn"}, {"label": "Offline metrics reward agreement with it", "desc": "reproducing the old choices scores highest", "code": "3", "tone": "crit"}, {"label": "A better model looks worse", "desc": "its best suggestions were never shown, so never clicked", "code": "4", "tone": "crit"}, {"label": "Train on it and the loop tightens", "desc": "the catalogue narrows to what was already popular", "code": "5", "tone": "crit"}, {"label": "Break it deliberately", "desc": "explore, log propensities, and let an A/B test decide", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-11_4-05-4"},
+
+
+
+
+
 
 
 

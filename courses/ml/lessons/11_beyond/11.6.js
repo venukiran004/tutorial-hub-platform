@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The perceptron, the MLP, and XOR", id: "perceptron" },
 
+    {"kind": "flow", "title": "The perceptron cannot do XOR, and one hidden layer can", "caption": "XOR is not linearly separable, so no single linear boundary classifies it — that is the result that stalled the field for a decade. A hidden layer fixes it by **re-representing** the input: two units carve the plane into regions where the classes *are* separable, and the output layer draws one line in that new space. Everything about depth is this idea repeated.", "cols": 3, "nodes": [{"id": "x", "label": "XOR", "sub": "(0,0) 0 (0,1) 1 (1,0) 1 (1,1) 0", "tone": "violet"}, {"id": "p", "label": "A perceptron", "sub": "one linear boundary", "tone": "crit"}, {"id": "n", "label": "No line separates it", "sub": "provably", "tone": "crit"}, {"id": "h", "label": "Two hidden units", "sub": "each a line, with a non-linearity", "tone": "good"}, {"id": "r", "label": "A new representation", "sub": "where the classes are separable", "tone": "good"}, {"id": "o", "label": "The output draws one line", "sub": "in that space", "tone": "teal"}], "edges": [["x", "p"], ["p", "n"], ["n", "h"], ["h", "r"], ["r", "o"]], "t": "diagram", "id": "dg-11_6-01-0"},
+
+
+
     { t: "code", lang: "python", title: "What a linear unit can learn (executed)",
       code: `Perceptron().fit(AND)    # weights (3, 2), bias −4: fires only when both inputs are 1.  Training accuracy 1.00
 Perceptron().fit(XOR)    # weights (0, 0), bias 0: no line separates (0,1),(1,0) from (0,0),(1,1).  Accuracy 0.50
@@ -32,7 +36,12 @@ a solving two-unit network: hidden weights [[4.27, 3.80], [−4.26, −4.04]], b
 
     { t: "h2", n: "02", text: "Forward pass and backpropagation, worked on two weights", id: "backprop" },
 
-    {"kind": "steps", "title": "Backpropagation is the chain rule, applied in reverse order", "caption": "There is nothing in it beyond the chain rule — the insight is only that computing the derivatives from the output backwards reuses every partial result, so the whole gradient costs about one forward pass rather than one per parameter.", "items": [{"label": "Forward: compute and keep each layer's output", "desc": "these are needed again on the way back", "code": "1", "tone": "accent"}, {"label": "At the output, the loss derivative", "desc": "for cross-entropy with softmax it is simply p - y", "code": "2", "tone": "good"}, {"label": "Multiply back through the activation", "desc": "element-wise, by its derivative at the stored value", "code": "3", "tone": "good"}, {"label": "Multiply back through the weights", "desc": "the transpose of the layer's matrix", "code": "4", "tone": "good"}, {"label": "The weight gradient is that times the stored input", "desc": "which is why the forward values had to be kept", "code": "5", "tone": "violet"}, {"label": "Repeat to the first layer", "desc": "one pass back, every gradient: the whole trick", "code": "6", "tone": "teal"}], "t": "diagram", "id": "dg-11_6-02-0"},
+    {"kind": "trace", "title": "Backpropagation on two weights, every number", "caption": "The network is x → σ(w₁x) → σ(w₂h) with x = 1, y = 1, w₁ = 0.5, w₂ = −0.4. Read the backward block: each line is one factor of the chain rule, and the **same** ∂L/∂ŷ × ∂ŷ/∂z₂ is reused for both weights — that reuse is the entire efficiency of backpropagation. Note ∂L/∂w₁ = +0.0130 is positive while ∂L/∂w₂ = −0.0861 is negative, because w₂ is negative and flips the sign on the way back.", "left": "quantity", "codeW": 170, "vars": ["value", "how"], "steps": [{"code": "z1 = w1.x", "state": ["0.5000", "forward"], "tone": "accent"}, {"code": "h = sigma(z1)", "state": ["0.6225", "forward"], "tone": "accent"}, {"code": "z2 = w2.h", "state": ["-0.2490", "forward"], "tone": "accent"}, {"code": "y-hat = sigma(z2)", "state": ["0.4381", "forward"], "tone": "accent"}, {"code": "L", "state": ["0.1579", "half squared error"], "tone": "violet"}, {"code": "dL/dy-hat", "state": ["-0.5619", "-(y - y-hat)"], "tone": "good"}, {"code": "dy-hat/dz2", "state": ["0.2462", "y-hat(1 - y-hat)"], "tone": "good"}, {"code": "dL/dw2", "state": ["-0.0861", "x h = 0.6225"], "changed": [0], "tone": "good"}, {"code": "dL/dw1", "state": ["+0.0130", "x w2 x h(1-h) x x"], "changed": [0], "tone": "warn", "note": "sign flipped by w2"}, {"code": "after one step, eta 0.5", "state": ["L 0.1541", "w1 0.4935, w2 -0.3569"], "tone": "teal"}], "t": "diagram", "id": "dg-11_6-02-1"},
+
+
+
+
+
 
 
 
@@ -65,6 +74,10 @@ after 10 / 50 / 200 steps:  ŷ = 0.5014 / 0.6928 / 0.8926`,
 
     { t: "h2", n: "03", text: "Activation, learning rate and batch size, measured", id: "dials" },
 
+    {"kind": "matrix", "title": "Activation, learning rate and batch size, and what each one breaks", "caption": "Three dials with three distinct failure modes. A saturating activation kills the gradient at both ends; a learning rate above the stability limit diverges exactly as in 1.8; and a batch size changes the gradient's **noise**, which is a regulariser — so raising it without lowering the learning rate often loses accuracy rather than gaining it.", "cols": ["Too much", "Too little"], "rows": ["Sigmoid / tanh", "ReLU", "Learning rate", "Batch size", "Depth"], "cells": [[{"text": "saturates: gradient ~ 0", "tone": "crit"}, "it is the saturation either way"], [{"text": "dead units below zero", "tone": "warn"}, "leaky or GELU fixes it"], [{"text": "diverges, as in 1.8", "tone": "crit"}, {"text": "crawls; may never arrive", "tone": "warn"}], [{"text": "less noise: less regularisation", "tone": "warn"}, {"text": "noisy, slow per epoch", "tone": "warn"}], [{"text": "vanishing gradients", "tone": "crit"}, "underfits; cannot compose"]], "t": "diagram", "id": "dg-11_6-03-2"},
+
+
+
     { t: "code", lang: "python", title: "Two moons (2,000 points, noise 0.25), one hidden layer of 32 units (executed)",
       code: `logistic regression (a straight line): 0.846
 
@@ -80,6 +93,10 @@ batch size (300 epochs max):   8: 0.937 (21,375 gradient steps, 2.9 s)   32: 0.9
 
     { t: "h2", n: "04", text: "Regularisation: weight decay, early stopping, dropout", id: "regularisation" },
 
+    {"kind": "matrix", "title": "Four regularisers, and the one that is not what it looks like", "caption": "Weight decay is L2 by another name, and early stopping is the same regulariser applied through time rather than through the objective. Dropout is the one worth understanding properly: at training time it removes units at random, which makes the network an **ensemble of subnetworks** — and at test time it is off, with the weights scaled, which is why forgetting `model.eval()` quietly degrades every prediction.", "cols": ["Mechanism", "At test time"], "rows": ["Weight decay", "Early stopping", "Dropout", "Batch norm", "Data augmentation"], "cells": [[{"text": "L2 in the objective", "tone": "accent"}, "nothing to switch"], [{"text": "stop before the noise", "tone": "accent"}, "nothing to switch"], [{"text": "an ensemble of subnetworks", "tone": "good"}, {"text": "off, weights scaled: eval()", "tone": "crit"}], [{"text": "normalises per batch", "tone": "accent"}, {"text": "running statistics: eval()", "tone": "crit"}], [{"text": "more effective data", "tone": "good"}, "off, or test-time augmented"]], "t": "diagram", "id": "dg-11_6-04-3"},
+
+
+
     { t: "code", lang: "python", title: "A 256 × 256 network on 200 noisy points, tested on 2,000 (executed)",
       code: `#  alpha (L2 weight decay)    train    test    weight norm
 #  0.0                        1.000    0.851      54.4      <- memorises 200 points
@@ -92,7 +109,12 @@ batch size (300 epochs max):   8: 0.937 (21,375 gradient steps, 2.9 s)   32: 0.9
 
     { t: "h2", n: "05", text: "When a network beats gradient boosting on a table", id: "tabular" },
 
-    {"kind": "matrix", "title": "When a network beats gradient boosting on a table", "caption": "Rarely, and for specific reasons. On a small heterogeneous table boosting wins and a regularised linear model is the yardstick — as this course's churn data showed. A network earns its place when there is a representation to **learn** or to share, which a boosted tree cannot do at all.", "cols": ["Use", "Because"], "rows": ["Small mixed table", "Many numeric columns", "High-cardinality cats", "Text, images, audio", "Multi-task or transfer", "Interpretability required"], "cells": [[{"text": "boosting", "tone": "good"}, "thresholds and additive effects"], [{"text": "an MLP or CNN", "tone": "accent"}, "smooth interactions across inputs"], [{"text": "embeddings, or target encoding", "tone": "accent"}, "embeddings compress categories"], [{"text": "a network, pre-trained", "tone": "good"}, "representation learning is the task"], [{"text": "a network", "tone": "good"}, "boosting cannot share representations"], [{"text": "linear, or boosting + SHAP", "tone": "good"}, "a network's weights are not readable"]], "t": "diagram", "id": "dg-11_6-05-1"},
+    {"kind": "matrix", "title": "When a network beats gradient boosting on a table", "caption": "Rarely, and for specific reasons. On a small heterogeneous table boosting wins and a regularised linear model is the yardstick — as this course's churn data showed. A network earns its place when there is a representation to **learn** or to share, which a boosted tree cannot do at all.", "cols": ["Use", "Because"], "rows": ["Small mixed table", "Many numeric columns", "High-cardinality cats", "Text, images, audio", "Multi-task or transfer", "Interpretability required"], "cells": [[{"text": "boosting", "tone": "good"}, "thresholds and additive effects"], [{"text": "an MLP or CNN", "tone": "accent"}, "smooth interactions across inputs"], [{"text": "embeddings, or target encoding", "tone": "accent"}, "embeddings compress categories"], [{"text": "a network, pre-trained", "tone": "good"}, "representation learning is the task"], [{"text": "a network", "tone": "good"}, "boosting cannot share representations"], [{"text": "linear, or boosting + SHAP", "tone": "good"}, "a network's weights are not readable"]], "t": "diagram", "id": "dg-11_6-05-4"},
+
+
+
+
+
 
 
 

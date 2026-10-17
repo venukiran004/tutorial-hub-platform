@@ -38,6 +38,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "What fit does, what it stores, and what the helpers promise (executed)",
       hl: [2, 3, 6, 9, 10, 11],
       code: `sc = StandardScaler()
@@ -68,6 +78,16 @@ hasattr(clone(sc), "mean_")                                 # False             
     { t: "h2", n: "02", text: "Mixed data, named features", id: "wiring" },
 
     {"kind": "flow", "title": "One ColumnTransformer, three branches, one fitted object", "caption": "Columns are selected **by name**, so a reordered input cannot silently shift the pipeline, and `remainder='drop'` means a new column added upstream is excluded rather than fed in unseen. Each branch is itself a small pipeline, and the whole assembly is one estimator that cross-validation can clone — which is what makes every leakage rule in module 1 automatic rather than remembered.", "cols": 3, "nodes": [{"id": "x", "label": "Raw DataFrame", "sub": "mixed types, missing values", "tone": "violet"}, {"id": "n", "label": "Numeric branch", "sub": "impute + indicator, then scale", "tone": "accent"}, {"id": "c", "label": "Categorical branch", "sub": "impute 'missing', then one-hot", "tone": "accent"}, {"id": "t", "label": "Text branch", "sub": "a vectoriser, if there is text", "tone": "accent"}, {"id": "h", "label": "Horizontally stacked", "sub": "get_feature_names_out names them", "tone": "good"}, {"id": "m", "label": "The model", "sub": "one estimator, cloned per fold", "tone": "teal"}], "edges": [["x", "n"], ["x", "c"], ["x", "t"], ["n", "h"], ["c", "h"], ["t", "h"], ["h", "m"]], "t": "diagram", "id": "dg-3_6-02-1"},
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -111,6 +131,16 @@ GridSearchCV(pipe, {"clf__C": [0.01, 0.1, 1], "pre__num__simpleimputer__strategy
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "RatioFeatures: append num_i / num_j columns, and pass scikit-learn's conformance checks (executed)",
       hl: [1, 3, 4, 6, 7, 9, 10, 15],
       code: `class RatioFeatures(TransformerMixin, BaseEstimator):                   # mixins first, BaseEstimator last: the required order
@@ -141,7 +171,10 @@ RatioFeatures(pairs=((3, 0),)).fit(X_num).get_feature_names_out(numeric)[-1]    
 
 
 
-    {"kind": "steps", "title": "One artefact, one code path", "caption": "Training–serving skew is not a risk you manage, it is a consequence of having two implementations. If the fitted Pipeline is the thing serialised and the thing called in serving, there is no second implementation to drift.", "items": [{"label": "ColumnTransformer by name", "desc": "remainder='drop', so a new column cannot slip in unnoticed", "code": "1", "tone": "accent"}, {"label": "A branch per type", "desc": "impute with indicator, scale if the model needs it, encode with unknown handling", "code": "2", "tone": "good"}, {"label": "The model, in the same Pipeline", "desc": "so every fold refits the preprocessing too", "code": "3", "tone": "good"}, {"label": "Tune with a grid that reaches the preprocessing", "desc": "the imputer strategy is a hyperparameter like any other", "code": "4", "tone": "violet"}, {"label": "Refit on everything, then joblib.dump", "desc": "with the library versions pinned beside it", "code": "5", "tone": "teal"}, {"label": "Serve by calling that object", "desc": "on a DataFrame with the training column names", "code": "6", "tone": "good"}], "t": "diagram", "id": "dg-3_6-04-1"},
+
+
+
+
 
 
 

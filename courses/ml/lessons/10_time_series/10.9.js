@@ -32,6 +32,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "table", head: ["Decision", "Choice for the store case", "Reason"], rows: [
       ["Granularity", "daily, per store", "matches the replenishment decision"],
       ["Horizon", "28 days", "matches the ordering lead time"],
@@ -70,6 +77,13 @@ fitting panel: 911 days × 3 stores;  calendar known in advance: promo, Black Fr
 
 
 
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "All three stores, eight origins, 28 days ahead (executed; 234 s for the backtest)",
       code: `#  model                          WAPE      MASE    bias     WAPE h=1-7   WAPE h=22-28
 #  seasonal naive (4-week mean)   10.65 %   1.064   +5.90     10.47 %      10.59 %      <- the yardstick
@@ -86,6 +100,12 @@ fitting panel: 911 days × 3 stores;  calendar known in advance: promo, Black Fr
 
     { t: "h2", n: "03", text: "The forecast-value-added review", id: "fva" },
 
+    {"kind": "flow", "title": "The pipeline, as one object with the availability rule enforced", "caption": "The feature builder is the dangerous component, because it is the only place that can reach forward in time. Making it take an **as-of timestamp** and refuse anything later turns the availability rule from a habit into a check — and the truncation test, which rebuilds features from a shortened history and compares, is what proves it holds.", "cols": 3, "nodes": [{"id": "h", "label": "History, as of t", "sub": "nothing later is readable", "tone": "violet"}, {"id": "f", "label": "Feature builder", "sub": "takes the as-of time; refuses later rows", "tone": "accent"}, {"id": "m", "label": "Model, fitted per origin", "sub": "transforms refitted too", "tone": "good"}, {"id": "o", "label": "Forecast h periods", "sub": "with an interval", "tone": "good"}, {"id": "t", "label": "Truncation test", "sub": "rebuild from a shortened history; compare", "tone": "teal"}, {"id": "r", "label": "Reconcile the hierarchy", "sub": "so the parts sum to the whole", "tone": "teal"}], "edges": [["h", "f"], ["f", "m"], ["m", "o"], ["f", "t"], ["o", "r"]], "t": "diagram", "id": "dg-10_9-03-2"},
+
+
+
+
+
     { t: "code", lang: "python", title: "Each level of effort scored against the previous one (executed)",
       code: `#  level                                              WAPE      MASE    bias     value added over the previous level
 #  seasonal naive (4-week mean)                       10.65 %   1.064   +5.90    <- the yardstick
@@ -97,6 +117,12 @@ fitting panel: 911 days × 3 stores;  calendar known in advance: promo, Black Fr
       caption: "The review records what each stage of the pipeline added, and it is allowed to be negative. Here the ML step is negative relative to SARIMAX, reconciliation costs 4 % because the total's forecast is worse than the stores' (10.8), and a crude human override *helps* — because the boosting model under-forecasts by 5.6 a day and any upward nudge corrects it. That last line is not a licence for overrides; it is a finding about the model's bias, and the SARIMAX row carries −1.27 of bias with no override at all. In real planning organisations the override line is more often negative, and this review is what exposes it either way." },
 
     { t: "h2", n: "04", text: "Serving, retraining and monitoring", id: "serving" },
+
+    {"kind": "matrix", "title": "Reading the result table, and the questions it has to answer", "caption": "A forecast review is not 'which number is lowest'. It is four questions, and the fourth is the one that most often changes the decision: a model that wins on average while being **systematically biased** on the newest stores will be distrusted by the people who use it, and rightly.", "cols": ["Question", "Read"], "rows": ["Is it better than naive?", "By how much, reliably?", "Where does it lose?", "Is it biased anywhere?", "What does it cost?"], "cells": [[{"text": "MASE below 1", "tone": "good"}, "on every origin, not on average"], [{"text": "the spread across origins", "tone": "good"}, "a 3% gain inside a 6% spread is nothing"], [{"text": "per-store, per-horizon", "tone": "accent"}, "the worst slice, not the mean"], [{"text": "ME by slice", "tone": "crit"}, "a persistent sign is correctable"], [{"text": "fit and refit time", "tone": "warn"}, "and who maintains it"]], "t": "diagram", "id": "dg-10_9-04-3"},
+
+
+
+
 
     { t: "viz",
       title: "The nightly run",
@@ -142,6 +168,12 @@ per origin in the backtest:  ETS 138 ms · SARIMAX 1,329 ms · global direct boo
 
     { t: "h2", n: "05", text: "Reading the forecast-versus-actual table", id: "monitoring" },
 
+    {"kind": "flow", "title": "From a forecast to a decision", "caption": "The forecast is an input, not an output. An order quantity depends on the **cost asymmetry** between holding stock and running out, which is a quantile of the predictive distribution rather than its mean — so a point forecast, however accurate, does not determine the order. This is why 10.7's intervals were not an optional extra.", "cols": 3, "nodes": [{"id": "f", "label": "A predictive distribution", "sub": "not just a point", "tone": "violet"}, {"id": "c", "label": "Cost of a stockout", "sub": "lost sale, lost customer", "tone": "accent"}, {"id": "h", "label": "Cost of holding", "sub": "capital, space, spoilage", "tone": "accent"}, {"id": "q", "label": "The critical quantile", "sub": "c / (c + h)", "tone": "good"}, {"id": "o", "label": "Order that quantile", "sub": "not the mean", "tone": "good"}, {"id": "r", "label": "Review on the decision", "sub": "service level and holding, not MAE", "tone": "teal"}], "edges": [["f", "q"], ["c", "q"], ["h", "q"], ["q", "o"], ["o", "r"]], "t": "diagram", "id": "dg-10_9-05-4"},
+
+
+
+
+
     { t: "p", text: "The single most valuable artefact is a table with one row per (store, target date, horizon, run, model, forecast, interval, actual). It makes every question answerable after the fact — which horizon degraded, when, for which store, under which model version — and it is what the backtest wrote. Without it a regression is unarguable; with it the questions below are one-line queries." },
 
     { t: "code", lang: "python", title: "Queries on the 2,688-row table (executed)",
@@ -172,6 +204,12 @@ longest run of same-sign daily mean error: 14 days -> a 14-day bias rule fires o
       caption: "A drift statistic on a seasonal series must compare like with like — the same season a year earlier — and must have enough points per window to sit below its own sampling noise; a 28-day window fires on nothing. The same discipline as the outlier rule in 10.1 and the CUSUM input in 10.8: the reference must be a distribution that is actually stable." },
 
     { t: "h2", n: "06", text: "The model chooser and the cheat sheet", id: "chooser" },
+
+    {"kind": "steps", "title": "The handover", "caption": "What makes a forecast survive its author leaving. Each item is a thing that, when missing, has caused a working forecast to be quietly abandoned within a year — most often the third, because nobody could tell whether a bad week was the model or the world.", "items": [{"label": "The decision it feeds, written down", "desc": "granularity and horizon follow from it", "code": "1", "tone": "accent"}, {"label": "The baseline, still computed", "desc": "every week, beside the model", "code": "2", "tone": "good"}, {"label": "The expected error, with its spread", "desc": "so a bad week can be recognised as normal", "code": "3", "tone": "crit"}, {"label": "The refit schedule and who owns it", "desc": "and what a failed refit falls back to", "code": "4", "tone": "good"}, {"label": "The availability rule, as a test", "desc": "not as a paragraph in a document", "code": "5", "tone": "violet"}, {"label": "The conditions for abandoning it", "desc": "agreed in advance, in writing", "code": "6", "tone": "teal"}], "t": "diagram", "id": "dg-10_9-06-5"},
+
+
+
+
 
     { t: "code", lang: "text", title: "The decision path",
       code: `how many series?

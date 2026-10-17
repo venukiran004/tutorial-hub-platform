@@ -42,6 +42,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "table",
       head: ["#", "Step", "Produces", "The mistake that survives to production"],
       rows: [
@@ -75,6 +85,16 @@ OWNERS          Retention (consumer), data engineering (features), analytics (mo
     { t: "h2", n: "02", text: "Exploration: what the table says before a model", id: "eda" },
 
     {"kind": "flow", "title": "What the table says before a model is fitted", "caption": "Each of these is cheap and each can end the project early — a target rate of 0.3% changes the metric, the threshold and the whole evaluation plan, and finding it on day one is worth more than any model. The leakage suspects found here are the ones 1.6 tests.", "cols": 3, "nodes": [{"id": "t", "label": "The table", "sub": "rows, columns, dtypes", "tone": "violet"}, {"id": "r", "label": "Target rate", "sub": "16.2% here: not 50%", "tone": "accent"}, {"id": "d", "label": "Distributions", "sub": "skew, zeros, sentinels", "tone": "accent"}, {"id": "m", "label": "Missingness pattern", "sub": "which columns, together?", "tone": "good"}, {"id": "c", "label": "Correlations", "sub": "with y, and among themselves", "tone": "good"}, {"id": "l", "label": "Leakage suspects", "sub": "anything recorded after y", "tone": "crit"}], "edges": [["t", "r"], ["r", "d"], ["d", "m"], ["m", "c"], ["c", "l"]], "t": "diagram", "id": "dg-1_2-02-1"},
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -125,7 +145,7 @@ df.groupby("refund_issued").churned.mean()          # refund 0: 0.029    refund 
 
 
 
-    {"kind": "matrix", "title": "How many times each set may be read", "caption": "The validation set can be used repeatedly because nothing is reported from it — it only chooses. The test set is a one-shot measurement, and every look before the end spends some of its honesty, because you start making choices that fit it.", "cols": ["May be read", "Because"], "rows": ["Training set", "Validation set", "Test set", "The CV score", "The baseline"], "cells": [[{"text": "constantly", "tone": "good"}, "the model is fitted on it"], [{"text": "many times", "tone": "good"}, "it chooses; it does not report"], [{"text": "once, at the end", "tone": "crit"}, "it is the only honest number left"], [{"text": "to compare, not to report", "tone": "warn"}, "it chose the hyperparameters"], [{"text": "every time", "tone": "accent"}, "the model is judged by its distance from it"]], "t": "diagram", "id": "dg-1_2-03-1"},
+
 
 
 
@@ -243,6 +263,16 @@ joblib.dump(pipe, "churn_pipeline.joblib")          # step 11: the fitted prepro
     { t: "h2", n: "04", text: "The scale case: a million rows, two hundred columns", id: "case" },
 
     {"kind": "flow", "title": "The scale case: what listwise deletion does to a million rows", "caption": "Two hundred columns, sixty of them missing 15% independently. The chance a row is complete is 0.85 to the power of 60, which is about one in seventeen thousand — so the 'safe' fix of dropping incomplete rows keeps **58** of the million. The naive fix destroys the dataset, and it does it silently.", "cols": 3, "nodes": [{"id": "a", "label": "1,000,000 rows", "sub": "200 columns", "tone": "good"}, {"id": "b", "label": "60 columns, 15% missing", "sub": "independently", "tone": "warn"}, {"id": "c", "label": "P(row complete)", "sub": "0.85^60 = 0.000058", "tone": "crit"}, {"id": "d", "label": "Listwise deletion", "sub": "drop any row with a gap", "tone": "crit"}, {"id": "e", "label": "58 rows left", "sub": "from a million", "tone": "crit"}, {"id": "f", "label": "Impute + indicator", "sub": "every row survives", "tone": "good"}], "edges": [["a", "b"], ["b", "c"], ["c", "d"], ["d", "e"], ["b", "f", "or", "dashed"]], "t": "diagram", "id": "dg-1_2-04-3"},
+
+
+
+
+
+
+
+
+
+
 
 
 

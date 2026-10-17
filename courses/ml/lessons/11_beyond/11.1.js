@@ -20,7 +20,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Serving shapes, measured", id: "serving" },
 
-    {"kind": "matrix", "title": "Four serving shapes, decided by when the answer is needed", "caption": "The latency column is the constraint and the last column is the question. A churn score refreshed nightly can be a table lookup in microseconds; a fraud decision at checkout cannot be a scheduled job, however cheap that would be.", "cols": ["Latency", "Right when"], "rows": ["Batch", "Real-time", "Streaming", "Edge"], "cells": [[{"text": "microseconds at read", "tone": "good"}, "the decision can wait"], [{"text": "1-50 ms", "tone": "accent"}, "it is inside a user interaction"], [{"text": "sub-second, async", "tone": "accent"}, "features must be fresh"], [{"text": "no network", "tone": "violet"}, "offline, privacy, or scale"]], "t": "diagram", "id": "dg-11_1-01-0"},
+    {"kind": "trace", "title": "Four serving shapes, measured, with the capacity each implies", "caption": "The latencies are measured and the capacities follow from them: one synchronous worker handles about **82 req/s** at p99 through the scikit-learn pipeline, **1,961** through ONNX, and **35** through FastAPI's validation layer. So 500 req/s needs 7, 1 and 15 workers respectively. Note the inversion in the batch column — ONNX is forty times faster per request and *slower* in batch here, because its one-hot of string categoricals does not vectorise.", "left": "shape", "codeW": 200, "vars": ["p50 / p99 per row", "batch", "req/s per worker"], "steps": [{"code": "scikit-learn pipeline", "state": ["8.36 / 12.16 ms", "1.9 µs/row at 9,920", "~82"], "tone": "accent"}, {"code": "ONNX Runtime", "state": ["0.249 / 0.510 ms", "36.6 ms at 248", "~1,961"], "changed": [0, 2], "tone": "good", "note": "40x per request"}, {"code": "FastAPI, in-process", "state": ["20.24 / 28.56 ms", "—", "~35"], "tone": "warn", "note": "validation dominates"}, {"code": "to serve 500 req/s", "state": ["7 workers", "1 worker", "15 workers"], "tone": "violet"}, {"code": "nightly batch, 1M rows", "state": ["about 2 s", "", ""], "tone": "teal"}], "t": "diagram", "id": "dg-11_1-01-0"},
+
+
+
+
+
+
+
 
 
 
@@ -69,6 +76,10 @@ GET  /health                                ->  {"status": "ok", "model_version"
 
     { t: "h2", n: "02", text: "Training–serving skew", id: "skew" },
 
+    {"kind": "flow", "title": "Training–serving skew is a consequence of having two implementations", "caption": "It is not a risk to be managed with care; it is arithmetic. If features are computed by training code and again by serving code, the two will diverge — on a rounding rule, a default, a category spelling, a time zone. Serialising the **fitted pipeline** and calling that object in both places removes the second implementation, and with it the possibility.", "cols": 3, "nodes": [{"id": "t", "label": "Training feature code", "sub": "pandas, in a notebook", "tone": "violet"}, {"id": "s", "label": "Serving feature code", "sub": "rewritten in the service", "tone": "crit"}, {"id": "d", "label": "They diverge", "sub": "a default, a rounding rule, a time zone", "tone": "crit"}, {"id": "o", "label": "One fitted Pipeline", "sub": "serialised once", "tone": "good"}, {"id": "c", "label": "Called in both places", "sub": "there is no second implementation", "tone": "good"}, {"id": "g", "label": "A golden set on reload", "sub": "catches it if it ever returns", "tone": "teal"}], "edges": [["t", "s"], ["s", "d"], ["t", "o"], ["o", "c"], ["c", "g"]], "t": "diagram", "id": "dg-11_1-02-1"},
+
+
+
     { t: "p", text: "Skew is any difference between how a feature is computed when the model is trained and when it is served: a different code path, a different data source, a different window, a preprocessing step that lived in the training script and not in the pipeline. The model sees inputs from a distribution it was not fitted on and is silently wrong. Three cases were manufactured on the churn service and measured." },
 
     { t: "code", lang: "python", title: "Three skews, measured on the 248 test customers (executed)",
@@ -83,7 +94,12 @@ GET  /health                                ->  {"status": "ok", "model_version"
 
     { t: "h2", n: "03", text: "Data drift: two-sample tests, PSI and the domain classifier", id: "drift" },
 
-    {"kind": "matrix", "title": "Data drift and concept drift need different monitors", "caption": "Data drift is P(X) moving: the inputs changed. Concept drift is P(Y|X) moving: the **relationship** changed. A model can be perfectly right under data drift and perfectly wrong under concept drift with inputs that look identical — which is why the second monitor needs labels, and therefore always arrives late.", "cols": ["Watches", "Needs labels"], "rows": ["Input schema and freshness", "Feature distributions", "Prediction distribution", "Error rate over time", "A domain classifier"], "cells": [["types, ranges, null rates, arrival", {"text": "no", "tone": "good"}], [{"text": "P(X) against a reference", "tone": "good"}, {"text": "no: catches data drift", "tone": "good"}], ["the output's shape", {"text": "no: a cheap early signal", "tone": "good"}], [{"text": "the model being wrong", "tone": "crit"}, {"text": "yes: concept drift, late", "tone": "warn"}], ["can it tell old from new rows", {"text": "no; AUC 0.5 means no drift", "tone": "good"}]], "t": "diagram", "id": "dg-11_1-03-1"},
+    {"kind": "matrix", "title": "Data drift and concept drift need different monitors", "caption": "Data drift is P(X) moving: the inputs changed. Concept drift is P(Y|X) moving: the **relationship** changed. A model can be perfectly right under data drift and perfectly wrong under concept drift with inputs that look identical — which is why the second monitor needs labels, and therefore always arrives late.", "cols": ["Watches", "Needs labels"], "rows": ["Input schema and freshness", "Feature distributions", "Prediction distribution", "Error rate over time", "A domain classifier"], "cells": [["types, ranges, null rates, arrival", {"text": "no", "tone": "good"}], [{"text": "P(X) against a reference", "tone": "good"}, {"text": "no: catches data drift", "tone": "good"}], ["the output's shape", {"text": "no: a cheap early signal", "tone": "good"}], [{"text": "the model being wrong", "tone": "crit"}, {"text": "yes: concept drift, late", "tone": "warn"}], ["can it tell old from new rows", {"text": "no; AUC 0.5 means no drift", "tone": "good"}]], "t": "diagram", "id": "dg-11_1-03-2"},
+
+
+
+
+
 
 
 
@@ -111,6 +127,10 @@ the large-n trap: two samples of 100,000 from N(0, 1) and N(0.02, 1):  KS p = 1.
 
     { t: "h2", n: "04", text: "Concept drift on a stream: ADWIN", id: "concept" },
 
+    {"kind": "cycle", "title": "ADWIN: let the window decide its own length", "caption": "A fixed window has to be chosen in advance, and the right length depends on a drift you have not seen yet. ADWIN keeps a growing window and repeatedly asks whether some split of it has two halves whose means differ by more than chance — if so, the old part is dropped. The window shortens itself exactly when the world changes and grows again when it is stable, which is the behaviour a fixed window can only approximate.", "centre": "adaptive", "nodes": [{"label": "Grow the window", "sub": "append each new error", "tone": "accent"}, {"label": "Try every split", "sub": "are the two halves different?", "tone": "good"}, {"label": "Significant difference", "sub": "drop the older part", "tone": "crit"}, {"label": "Shorter window, fresh stats", "sub": "and the alarm fires", "tone": "violet"}], "t": "diagram", "id": "dg-11_1-04-3"},
+
+
+
     { t: "code", lang: "python", title: "ADWIN on the error indicator of a deployed classifier (executed, river)",
       code: `# a logistic model trained on the first 1,500 of a 6,000-sample stream; at t = 3,000 the sign of feature 0's effect flips (P(y|x) changes)
 adwin = river.drift.ADWIN(delta=0.002)
@@ -132,6 +152,10 @@ for t, is_error in enumerate(model.predict(x_t) != y_t): adwin.update(is_error);
 
     { t: "h2", n: "05", text: "Rolling out: shadow, canary, A/B", id: "rollout" },
 
+    {"kind": "flow", "title": "Shadow, canary, A/B — three different questions", "caption": "They are not stages of one process, they answer different things. **Shadow** asks 'does it run and agree' with no user exposed. **Canary** asks 'does it break anything' on a small share. **A/B** is the only one that asks 'is it better', because that needs randomisation and a business metric. Skipping to A/B means debugging a service in front of real users.", "cols": 3, "nodes": [{"id": "s", "label": "Shadow", "sub": "scores live traffic, nothing served", "tone": "accent"}, {"id": "q1", "label": "Does it run, and agree?", "sub": "latency, errors, score drift", "tone": "good"}, {"id": "c", "label": "Canary", "sub": "1-5% of traffic", "tone": "accent"}, {"id": "q2", "label": "Does it break anything?", "sub": "guardrails, error budget", "tone": "good"}, {"id": "a", "label": "A/B test", "sub": "randomised, with a control", "tone": "accent"}, {"id": "q3", "label": "Is it better?", "sub": "the business metric; only this answers it", "tone": "violet"}], "edges": [["s", "q1"], ["q1", "c"], ["c", "q2"], ["q2", "a"], ["a", "q3"]], "t": "diagram", "id": "dg-11_1-05-4"},
+
+
+
     { t: "dl", items: [
       ["Shadow", "The new model scores all traffic and its predictions are logged, not served. Zero user risk; validates latency, error rate and the prediction distribution against the incumbent; cannot measure user behaviour, because nobody saw its output."],
       ["Canary", "The new model serves a small slice — 5 or 10 % — with guardrails on latency, errors and a business metric, widened on a schedule if they hold and rolled back automatically if they break."],
@@ -150,6 +174,10 @@ for t, is_error in enumerate(model.predict(x_t) != y_t): adwin.update(is_error);
       caption: "Never rely on offline metrics alone: the backtest says the model is better at its task, the A/B test says whether that changes what people do. Sizing comes first — a half-point lift on a 5 % conversion needs 31,000 users an arm, which is weeks for a small product — and the guardrails (latency, error rate, a floor on the business metric) are what make a canary safe to run before the test is powered." },
 
     { t: "h2", n: "06", text: "Registry, model card and rollback", id: "registry" },
+
+    {"kind": "tree", "title": "What has to exist before a model is allowed to serve", "caption": "The rollback entry is the one that gets deferred and the one that is needed at 3 a.m. A registry that can name the previous version, and a deployment that can return to it in one step, is what turns a bad release into an incident of minutes rather than hours.", "root": {"label": "A served model", "sub": "the artefact is the smallest part", "tone": "violet", "children": [{"label": "Registry entry", "sub": "version, data hash, metrics, owner", "tone": "accent"}, {"label": "Model card", "sub": "intended use, slices, fairness, limits", "tone": "accent"}, {"label": "Monitors", "sub": "schema, drift, prediction shape, errors", "tone": "good"}, {"label": "Rollback", "sub": "the previous version, one step away", "tone": "crit"}, {"label": "A retraining trigger", "sub": "and what it falls back to on failure", "tone": "teal"}]}, "t": "diagram", "id": "dg-11_1-06-5"},
+
+
 
     { t: "code", lang: "python", title: "The registry entry, and what a rollback actually changes (executed)",
       code: `{"name": "churn_pipe", "version": "churn_pipe@8544f1a0", "trained_at": "2026-09-17", "sklearn": "1.8.0", "python": "3.11.3",

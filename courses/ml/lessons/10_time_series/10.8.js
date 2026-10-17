@@ -32,6 +32,13 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
     { t: "p", text: "A vector autoregression regresses every series on every series' past: y_t = c + A₁y_{t−1} + … + A_p y_{t−p} + ε_t, with k²p coefficients for k series and p lags — three series at four lags is 36 parameters, which is the main practical constraint. Granger's test asks whether the past of x improves the prediction of y beyond what y's own past gives: an F-test of the restricted regression (y on its own lags) against the unrestricted one (y on its own lags and x's). Both series must be stationary first, or the test compares common trends." },
 
     { t: "code", lang: "python", title: "A two-day lead, recovered; and the confounder that fools the test (executed, 600 points)",
@@ -48,7 +55,14 @@ grangercausalitytests(df2[["y", "x"]], maxlag=2)     # 'x Granger-causes y': p =
 
     { t: "h2", n: "02", text: "Cointegration: when differencing throws away the signal", id: "cointegration" },
 
-    {"kind": "matrix", "title": "Choosing the multivariate tool from what you will know at forecast time", "caption": "The deciding question is not statistical — it is whether the extra series will be **available for the future periods** you are forecasting. Price and promotions usually are, because someone sets them; a competitor's traffic usually is not, which is what pushes you from SARIMAX to VAR.", "cols": ["Use", "Because"], "rows": ["Extras known ahead", "Extras known only to now", "Series tied long-run", "Many series", "Not sure it is worth it"], "cells": [[{"text": "SARIMAX, or boosting", "tone": "good"}, "the regressors can be filled in"], [{"text": "VAR", "tone": "good"}, "it forecasts the extras too"], [{"text": "VECM", "tone": "accent"}, "differencing would discard the link"], [{"text": "a global model", "tone": "accent"}, "cross-learning across series"], [{"text": "a Granger screen, then backtest", "tone": "good"}, "the backtest is the verdict"]], "t": "diagram", "id": "dg-10_8-02-1"},
+    {"kind": "flow", "title": "Cointegration: when differencing throws the signal away", "caption": "Two series can each wander without bound while their **difference** stays stable — a spread, a ratio, a pair of prices tied by arbitrage. Differencing each one separately removes exactly the long-run relationship you wanted to model, which is why a VECM keeps the levels and adds an error-correction term that pulls the pair back toward equilibrium.", "cols": 3, "nodes": [{"id": "t", "label": "Two non-stationary series", "sub": "each has a unit root", "tone": "violet"}, {"id": "s", "label": "Their spread is stationary", "sub": "they are cointegrated", "tone": "accent"}, {"id": "d", "label": "Difference both", "sub": "the long-run link is gone", "tone": "crit"}, {"id": "v", "label": "VECM keeps the levels", "sub": "plus an error-correction term", "tone": "good"}, {"id": "e", "label": "The term pulls them back", "sub": "toward the equilibrium spread", "tone": "good"}, {"id": "j", "label": "Test it: Engle-Granger, Johansen", "sub": "before assuming either way", "tone": "teal"}], "edges": [["t", "s"], ["s", "d", "", "dashed"], ["s", "v"], ["v", "e"], ["e", "j"]], "t": "diagram", "id": "dg-10_8-02-1"},
+
+
+
+
+
+
+
 
 
 
@@ -80,6 +94,12 @@ coint_johansen(P, det_order=0, k_ar_diff=1).lr1        # trace statistics 214.6,
 
     { t: "h2", n: "03", text: "Hierarchical reconciliation, worked", id: "hierarchy" },
 
+    {"kind": "flow", "title": "Hierarchical reconciliation: the parts must sum to the whole", "caption": "Forecast each store and the total independently and they will not agree — which is unusable, because someone has to order stock against both. Bottom-up guarantees coherence and ignores the total's often-cleaner signal; top-down needs a disaggregation rule; **optimal reconciliation** projects all the forecasts onto the space where they add up, using every level's information at once.", "cols": 3, "nodes": [{"id": "f", "label": "Forecast every level", "sub": "store, region, total", "tone": "violet"}, {"id": "i", "label": "They do not add up", "sub": "incoherent: unusable", "tone": "crit"}, {"id": "b", "label": "Bottom-up", "sub": "coherent; ignores the total's signal", "tone": "accent"}, {"id": "t", "label": "Top-down", "sub": "needs a disaggregation rule", "tone": "accent"}, {"id": "m", "label": "MinT / optimal reconciliation", "sub": "projects onto the coherent space", "tone": "good"}, {"id": "c", "label": "Uses every level at once", "sub": "and is usually the most accurate", "tone": "good"}], "edges": [["f", "i"], ["i", "b"], ["i", "t"], ["i", "m"], ["m", "c"]], "t": "diagram", "id": "dg-10_8-03-2"},
+
+
+
+
+
     { t: "p", text: "Forecasts made at different levels of a hierarchy do not add up: the total's model and the stores' models are different models, and their disagreement is not a rounding problem. Reconciliation makes them coherent while losing as little accuracy as possible. Bottom-up forecasts the leaves and sums; top-down forecasts the total and splits by historical proportions; optimal reconciliation forecasts every node and projects the whole vector onto the coherent space. With a summing matrix S mapping bottom series to all nodes, the OLS projection is b̃ = (SᵀS)⁻¹Sᵀŷ, and MinT (minimum trace) weights by the inverse covariance of the base forecast errors, b̃ = (SᵀW⁻¹S)⁻¹SᵀW⁻¹ŷ, so noisier nodes are pulled harder." },
 
     { t: "code", lang: "text", title: "Three stores under one total (executed; every number checkable by hand)",
@@ -110,6 +130,12 @@ base error variances (T, A, B, C): 1300, 453, 157, 144       -- the total's mode
 
     { t: "h2", n: "04", text: "Intermittent demand: Croston, SBA, TSB", id: "intermittent" },
 
+    {"kind": "matrix", "title": "Intermittent demand: most days are zero", "caption": "A series that is zero four days in five breaks the usual machinery — MAPE is undefined, a mean forecast of 0.3 units is never the right order quantity, and ARIMA's residuals are not remotely normal. Croston's insight is to forecast the **size** and the **interval** separately and divide, which is why these methods are still the standard for spare parts fifty years on.", "cols": ["Forecasts", "Note"], "rows": ["Croston", "SBA", "TSB", "A plain mean", "ARIMA"], "cells": [[{"text": "size / interval, separately", "tone": "good"}, "the original; slightly biased"], [{"text": "the same, debiased", "tone": "good"}, "usually preferred to Croston"], [{"text": "updates probability every period", "tone": "good"}, "handles obsolescence"], [{"text": "a rate nobody can order", "tone": "warn"}, "0.3 units is not a decision"], [{"text": "poorly", "tone": "crit"}, "the zeros break its assumptions"]], "t": "diagram", "id": "dg-10_8-04-3"},
+
+
+
+
+
     { t: "p", text: "When most periods are zero the mean is not the thing to forecast. A squared-error model on 0, 0, 0, 4, 0, 0, 7, … predicts about 1.5 every period — right on average and wrong every day. Croston keeps two exponentially smoothed quantities updated only when demand occurs — the demand size z and the interval p between demands — and forecasts z/p per period. The Syntetos–Boylan approximation multiplies by (1 − α/2) to remove Croston's upward bias; TSB updates the *probability* of demand every period, so a part that is dying out is noticed; Tweedie boosting handles the zero mass directly when there are many parts and rich features." },
 
     { t: "code", lang: "text", title: "Croston on thirteen periods, α = 0.2 (executed)",
@@ -135,6 +161,12 @@ classification: ADI = 13/4 = 3.25 (> 1.32);  CV² of the non-zero sizes = 0.22 (
 
     { t: "h2", n: "05", text: "Volatility: ARCH and GARCH", id: "garch" },
 
+    {"kind": "flow", "title": "Volatility: when the mean is fine and the variance is not", "caption": "ARCH and GARCH model the **variance** as its own autoregressive process, which is what captures volatility clustering — turbulent days following turbulent days. The mean equation can stay simple; it is the interval that was wrong. If the squared residuals of your model are autocorrelated, that is the diagnostic, and it means the point forecast may be fine while every stated uncertainty is not.", "cols": 3, "nodes": [{"id": "r", "label": "Residuals look fine", "sub": "no autocorrelation in them", "tone": "violet"}, {"id": "s", "label": "But squared residuals do not", "sub": "volatility clusters", "tone": "crit"}, {"id": "a", "label": "ARCH(q)", "sub": "variance from past squared shocks", "tone": "accent"}, {"id": "g", "label": "GARCH(p,q)", "sub": "plus past variances: far fewer terms", "tone": "good"}, {"id": "m", "label": "The mean model is unchanged", "sub": "only the interval moves", "tone": "good"}, {"id": "u", "label": "Intervals now breathe", "sub": "wide in turbulence, tight in calm", "tone": "teal"}], "edges": [["r", "s"], ["s", "a"], ["a", "g"], ["g", "m"], ["m", "u"]], "t": "diagram", "id": "dg-10_8-05-4"},
+
+
+
+
+
     { t: "p", text: "In financial series the mean is nearly unpredictable and the variance is not: quiet periods follow quiet ones and violent periods follow violent ones. GARCH(1,1) models that clustering directly: r_t = μ + ε_t, ε_t = σ_t z_t, σ²_t = ω + α ε²_{t−1} + β σ²_{t−1}. α is how strongly yesterday's shock raises today's variance, β how strongly yesterday's variance persists, α + β the persistence — 0.95 to 0.99 in real markets, and at exactly 1 the variance never mean-reverts — and ω/(1 − α − β) the long-run variance." },
 
     { t: "code", lang: "python", title: "GARCH(1,1) simulated with ω 0.05, α 0.10, β 0.85 and t(6) shocks, then fitted (executed, 3,000 points)",
@@ -150,6 +182,12 @@ arch_model(r, vol="GARCH", p=1, q=1, dist="t").fit()
       caption: "A constant-width band is right on average and wrong when it matters: in the most volatile tenth of days it covers 79 % for a nominal 90 %. The GARCH band widens and narrows with the conditional variance and holds 91 % in that decile — the volatility-aware interval of 10.7. EGARCH adds asymmetry without positivity constraints, GJR-GARCH the leverage effect (a negative return raises volatility more than a positive one), and the t or skew-t distribution the fat tails equity returns have." },
 
     { t: "h2", n: "06", text: "Changepoints and anomalies", id: "changepoints" },
+
+    {"kind": "matrix", "title": "A changepoint is not an outlier, and the treatment differs", "caption": "An outlier is one surprising observation; a changepoint is a **new regime**, and the distinction decides everything that follows. Smoothing over a changepoint produces a model that is permanently wrong by the size of the shift, while treating a genuine outlier as a regime change throws away the history that was still valid.", "cols": ["Is", "Do"], "rows": ["An outlier", "A level shift", "A trend break", "A seasonal change", "Unsure"], "cells": [[{"text": "one odd observation", "tone": "accent"}, "dampen it, or flag and keep"], [{"text": "a new level", "tone": "crit"}, "a step regressor, or refit from the break"], [{"text": "a new slope", "tone": "crit"}, "a piecewise trend from the break"], [{"text": "a new pattern", "tone": "crit"}, "refit the seasonal component only"], [{"text": "both hypotheses testable", "tone": "warn"}, "backtest each; the data decides"]], "t": "diagram", "id": "dg-10_8-06-5"},
+
+
+
+
 
     { t: "p", text: "Two different questions: is this one point strange (an anomaly, which you page someone about), or did the process itself change here (a changepoint, which means the model's assumptions have expired and the response is to retrain or truncate the training window)? Confusing them produces alert storms or missed regime shifts. The residual route from 9.4 finds anomalies: model the series, flag large residuals. CUSUM finds changepoints: accumulate standardised deviations above a drift allowance and alarm when the running sum exceeds a threshold — cheap, online, and only meaningful on a series that is stationary before the change." },
 

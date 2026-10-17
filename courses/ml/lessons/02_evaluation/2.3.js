@@ -40,6 +40,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "p", text: "Held-out set: 297 customers, 48 churners. The retention team's economics, agreed before modelling (1.2): **a call costs £5** in offer and agent time whether or not it was needed; **a lost churner costs £100**; a call to a genuine churner **saves them 40 % of the time**. So the cost at a threshold is £5 × (TP + FP) + £100 × (FN + 0.6 × TP)." },
 
     { t: "table",
@@ -87,6 +97,16 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Four rules, four thresholds", id: "rules" },
 
     {"kind": "flow", "title": "Four rules, four thresholds, from the same curve", "caption": "The sweep produces one table; which row you take is a business decision with four common shapes. Only the third uses the probability as a number, which is why it is the only one that needs the model to be calibrated (2.5).", "cols": 3, "nodes": [{"id": "s", "label": "The sweep", "sub": "precision, recall, cost at every cut", "tone": "violet"}, {"id": "r", "label": "Target recall", "sub": "highest cut with recall >= 0.95", "tone": "good"}, {"id": "p", "label": "Target precision", "sub": "lowest cut with precision >= 0.9", "tone": "good"}, {"id": "c", "label": "Minimum expected cost", "sub": "break-even at p = c / b", "tone": "accent"}, {"id": "k", "label": "Fixed capacity", "sub": "top k by score; recall is the outcome", "tone": "teal"}, {"id": "d", "label": "Leave it at 0.5", "sub": "13 flagged, near-worst on both", "tone": "crit"}], "edges": [["s", "r"], ["s", "p"], ["s", "c"], ["s", "k"], ["s", "d", "", "dashed"]], "t": "diagram", "id": "dg-2_3-02-1"},
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -155,7 +175,9 @@ top 29 by score    16 churners caught of 48    recall 0.333   precision 0.552   
 
 
 
-    {"kind": "matrix", "title": "The decision picks the metric, and the metric picks the threshold", "caption": "Each row is a different thing going wrong when you are wrong, and therefore a different rule. The last one is the case people model incorrectly most often: when capacity is fixed, neither precision nor recall is the objective — the top k is, and recall is the outcome you report.", "cols": ["Optimise", "Rule"], "rows": ["Screening a condition", "Auto-declining a card", "Retention calls", "A fixed review queue"], "cells": [[{"text": "recall", "tone": "good"}, "highest cut with recall >= 0.95"], [{"text": "precision", "tone": "good"}, "lowest cut with precision >= 0.9"], [{"text": "expected cost", "tone": "accent"}, "break-even at p = c / b"], [{"text": "precision at top k", "tone": "violet"}, "take k by score; report recall"]], "t": "diagram", "id": "dg-2_3-03-1"},
+
+
+
 
 
 

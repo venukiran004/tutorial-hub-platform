@@ -20,6 +20,12 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three pieces, one at a time", id: "pieces" },
 
+    {"kind": "flow", "title": "Three pieces, and what each one remembers", "caption": "AR remembers the **series**: the forecast is a weighted sum of past values. MA remembers the **errors**: it corrects using how wrong the last few forecasts were. I is the bookkeeping that makes both legal on a series whose level wanders. Everything in SARIMA is these three, applied twice — once at lag 1 and once at lag m.", "cols": 3, "nodes": [{"id": "a", "label": "AR(p)", "sub": "weighted sum of past values", "tone": "accent"}, {"id": "i", "label": "I(d)", "sub": "difference until stationary", "tone": "good"}, {"id": "m", "label": "MA(q)", "sub": "weighted sum of past errors", "tone": "accent"}, {"id": "c", "label": "ARIMA(p,d,q)", "sub": "the three combined", "tone": "violet"}, {"id": "s", "label": "x the same at lag m", "sub": "(P,D,Q)m: SARIMA", "tone": "teal"}, {"id": "x", "label": "+ exogenous regressors", "sub": "SARIMAX", "tone": "teal"}], "edges": [["a", "c"], ["i", "c"], ["m", "c"], ["c", "s"], ["s", "x"]], "t": "diagram", "id": "dg-10_5-01-0"},
+
+
+
+
+
     { t: "code", lang: "text", title: "ARIMA(p, d, q) and SARIMA(p, d, q)(P, D, Q)_m",
       code: `AR(p)   y_t = c + φ₁ y_{t−1} + ... + φ_p y_{t−p} + ε_t        the series remembers its own LEVEL; |φ| < 1 for stationarity, φ = 1 is a random walk
 MA(q)   y_t = c + ε_t + θ₁ ε_{t−1} + ... + θ_q ε_{t−q}        the series remembers its own SHOCKS; a surprise persists exactly q steps
@@ -35,7 +41,10 @@ executed on 2,000 simulated points:
 
     { t: "h2", n: "02", text: "A one-step forecast by hand", id: "by-hand" },
 
-    {"kind": "matrix", "title": "Reading the ACF and PACF into orders", "caption": "These five rules are the whole identification procedure, and they are rules about **where a plot cuts off** rather than where it is large. The PACF cutting off at lag p is what distinguishes an AR from an MA, because a pure AR's partial correlations vanish beyond its order by construction.", "cols": ["Plot shows", "Order"], "rows": ["ACF decays slowly from 1", "ACF spikes at m, 2m, 3m", "PACF cuts off at lag p", "ACF cuts off at short lag q", "PACF spike at lag m only"], "cells": [[{"text": "non-stationary in level", "tone": "accent"}, "d = 1"], [{"text": "non-stationary in season", "tone": "accent"}, "D = 1"], [{"text": "an AR signature", "tone": "good"}, "p"], [{"text": "an MA signature", "tone": "good"}, "q"], [{"text": "seasonal AR", "tone": "good"}, "P = 1"]], "t": "diagram", "id": "dg-10_5-02-0"},
+    {"kind": "trace", "title": "A one-step forecast by hand, and the recursion that follows", "caption": "c = 0.8, φ = 0.5, θ = 0.3, with y₁₁ = 42.5, y₁₂ = 54.0 and ε₁₂ = −1.2. Because d = 1 the model lives in differences, so the first move is z₁₂ = 11.5. At h = 1 all three terms contribute; **beyond h = 1 the MA term drops out**, because the expectation of an unknown future error is zero, and each further step feeds its own prediction back in. The differences converge to c/(1−φ) = 1.60, so the level forecast becomes a straight line of slope 1.6 — and the hand recursion matched statsmodels to three decimals on the real series.", "left": "horizon", "codeW": 110, "vars": ["c + phi.z + theta.eps", "z forecast", "y forecast"], "steps": [{"code": "z at t=12", "state": ["54.0 - 42.5", "11.500", "54.000"], "tone": "violet"}, {"code": "h = 1", "state": ["0.8 + 5.750 - 0.360", "6.190", "60.190"], "changed": [2], "tone": "good", "note": "MA still acts"}, {"code": "h = 2", "state": ["0.8 + 3.095 + 0", "3.895", "64.085"], "tone": "accent", "note": "MA gone"}, {"code": "h = 3", "state": ["0.8 + 1.947", "2.747", "66.832"], "tone": "accent"}, {"code": "h = 4", "state": ["0.8 + 1.374", "2.174", "69.006"], "tone": "accent"}, {"code": "long run", "state": ["c / (1 - phi)", "1.60", "slope 1.6 a quarter"], "tone": "teal"}, {"code": "vs statsmodels", "state": ["910.997 912.294", "913.701 915.162", "identical"], "tone": "good"}], "t": "diagram", "id": "dg-10_5-02-1"},
+
+
+
 
 
 
@@ -70,7 +79,10 @@ the same recursion on a FITTED model (a simulated ARIMA(1,1,1)+drift, n = 600):
 
     { t: "h2", n: "03", text: "SARIMA multiplies", id: "sarima" },
 
-    {"kind": "steps", "title": "Twelve points cannot estimate an ARIMA(1,1,1)", "caption": "Fitted to twelve quarterly numbers, statsmodels returns φ = −1.000 and θ = 0.996 — the **boundary** of the parameter space, where the AR root sits on the unit circle and the MA term tries to cancel it. That is not a model; it is an optimiser with nothing to work with.", "items": [{"label": "Twelve observations, three parameters", "desc": "plus a differencing order and a variance", "code": "1", "tone": "warn"}, {"label": "phi = -1.000", "desc": "the AR root on the unit circle: the boundary", "code": "2", "tone": "crit"}, {"label": "theta = 0.996", "desc": "the MA term trying to cancel it", "code": "3", "tone": "crit"}, {"label": "No error is raised", "desc": "the fit 'succeeds' and the forecast looks plausible", "code": "4", "tone": "crit"}, {"label": "A simple model needs a few dozen points", "desc": "a seasonal one needs several whole seasons", "code": "rule", "tone": "good"}, {"label": "The store fits here have 900", "desc": "which is why their orders are identifiable", "code": "note", "tone": "good"}], "t": "diagram", "id": "dg-10_5-03-1"},
+    {"kind": "flow", "title": "SARIMA multiplies, and that is why the orders are small", "caption": "The seasonal and non-seasonal parts are **multiplied** as polynomial operators, not added — so a (1,1,1)(1,1,1)₁₂ model already generates terms at lags 1, 12 and 13 from two AR parameters. That is the whole reason useful SARIMA orders are nearly always 0, 1 or 2: the cross terms do the work that high orders would otherwise have to.", "cols": 3, "nodes": [{"id": "n", "label": "Non-seasonal (1,1,1)", "sub": "lag 1 terms", "tone": "accent"}, {"id": "s", "label": "Seasonal (1,1,1) at m=12", "sub": "lag 12 terms", "tone": "accent"}, {"id": "x", "label": "Multiplied, not added", "sub": "polynomial operators", "tone": "violet"}, {"id": "l", "label": "Terms at lag 13 appear", "sub": "from the cross product", "tone": "good"}, {"id": "p", "label": "Few parameters, long memory", "sub": "two AR terms reach lag 13", "tone": "good"}, {"id": "o", "label": "So orders stay at 0, 1 or 2", "sub": "higher is almost never right", "tone": "teal"}], "edges": [["n", "x"], ["s", "x"], ["x", "l"], ["l", "p"], ["p", "o"]], "t": "diagram", "id": "dg-10_5-03-2"},
+
+
+
 
 
 
@@ -103,6 +115,12 @@ ARIMA(y, order=(8, 0, 0)).fit()                                      # lag 1 0.4
 
     { t: "h2", n: "04", text: "The store: orders, AIC and what the residuals say", id: "store" },
 
+    {"kind": "steps", "title": "Twelve points cannot estimate an ARIMA(1,1,1)", "caption": "Fitted to twelve quarterly numbers, statsmodels returns φ = −1.000 and θ = 0.996 — the **boundary** of the parameter space, where the AR root sits on the unit circle and the MA term tries to cancel it. That is not a model; it is an optimiser with nothing to work with, and it raises no error at all.", "items": [{"label": "Twelve observations, three parameters", "desc": "plus a differencing order and a variance", "code": "1", "tone": "warn"}, {"label": "phi = -1.000", "desc": "the AR root on the unit circle: the boundary", "code": "2", "tone": "crit"}, {"label": "theta = 0.996", "desc": "the MA term trying to cancel it", "code": "3", "tone": "crit"}, {"label": "No error is raised", "desc": "the fit 'succeeds' and the forecast looks plausible", "code": "4", "tone": "crit"}, {"label": "A simple model needs a few dozen points", "desc": "a seasonal one needs several whole seasons", "code": "rule", "tone": "good"}, {"label": "The store fits here have 900", "desc": "which is why their orders are identifiable", "code": "note", "tone": "good"}], "t": "diagram", "id": "dg-10_5-04-3"},
+
+
+
+
+
     { t: "code", lang: "python", title: "Four candidates on log sales, and auto_arima (executed, store A, closures interpolated)",
       code: `#  model                                AIC       AICc      BIC       parameters                        Ljung–Box(14) p    fit time
 #  (0,0,0)(0,1,1)7  read from 10.2   −1263.2   −1263.2   −1253.6   Θ −0.663                               0.000            0.1 s
@@ -129,6 +147,12 @@ Ljung–Box(14): p = 0.000     -- autocorrelation remains; the model has missed 
       caption: "The residuals name what is missing: every large one is a dated event, and the promotion effect sits in them at almost exactly its true size. A model that has missed a regressor shows it here before any backtest does. The four checks are: no autocorrelation (Ljung–Box p > 0.05 at lag min(10, n/5) or the season), zero mean, constant variance (a funnel means the interval is wrong even if the point forecast is fine), and rough normality — needed for the interval, not the point." },
 
     { t: "h2", n: "05", text: "SARIMAX: things you know about the future", id: "sarimax" },
+
+    {"kind": "flow", "title": "SARIMAX: a regressor must be knowable for the future you forecast", "caption": "This is the question that decides whether an exogenous variable can be used at all, and it is operational rather than statistical. Price and promotions usually qualify because **somebody sets them** in advance; weather qualifies only as far as a forecast exists, and then you are stacking one forecast's error on another's.", "cols": 3, "nodes": [{"id": "x", "label": "A candidate regressor", "sub": "price, promo, holiday, weather", "tone": "violet"}, {"id": "q", "label": "Known for the horizon?", "sub": "the deciding question", "tone": "accent"}, {"id": "y", "label": "Yes: somebody sets it", "sub": "price, promotion, calendar", "tone": "good"}, {"id": "f", "label": "Only via a forecast", "sub": "weather: errors compound", "tone": "warn"}, {"id": "n", "label": "No", "sub": "it cannot be a SARIMAX regressor", "tone": "crit"}, {"id": "v", "label": "Use VAR instead", "sub": "it forecasts the regressor too", "tone": "accent"}], "edges": [["x", "q"], ["q", "y"], ["q", "f"], ["q", "n"], ["n", "v"]], "t": "diagram", "id": "dg-10_5-05-4"},
+
+
+
+
 
     { t: "p", text: "The X is a matrix of exogenous regressors — columns you will still know at forecast time: your own promotion calendar, public holidays, a price you set, a competitor's opening date, weather *forecasts*, and Fourier terms sin(2πt/365.25), cos(2πt/365.25) that give a long season to a model whose seasonal machinery is busy with the weekly one. The regression coefficients and the ARIMA errors are estimated together, and the forecast requires the regressors for every future step." },
 

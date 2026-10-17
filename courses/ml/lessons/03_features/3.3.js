@@ -38,6 +38,16 @@ EC.receiveLesson({
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "table",
       head: ["Mechanism", "Missingness depends on…", "Example", "Safe treatments", "What breaks"],
       rows: [
@@ -92,6 +102,16 @@ cross_val_score(logistic, X_without_tickets, is_missing, scoring="roc_auc")     
 
 
 
+
+
+
+
+
+
+
+
+
+
     { t: "code", lang: "python", title: "Churn AUC by treatment, logistic regression unless stated, 5-fold (executed)",
       hl: [3, 4, 5, 9, 10, 12],
       code: `#   treatment                                  AUC
@@ -118,6 +138,16 @@ cross_val_score(logistic, X_without_tickets, is_missing, scoring="roc_auc")     
     { t: "h2", n: "03", text: "MNAR, planted, and what recovers it", id: "mnar" },
 
     {"kind": "trace", "title": "MNAR, planted: the indicator recovers what no imputer can", "caption": "Twenty-seven of the forty-one rows with three or more tickets were hidden — so the gaps are the **angriest customers**, churning at 0.333 against 0.148 for the rest. Median imputation hands each of them a ticket count of 1, which is exactly the wrong value, and loses ground against the complete column. Iterative imputation predicts a typical value from the other columns and is still wrong by design. Adding the indicator recovers 0.766 either way: the model does not need the value, it needs to know the row was hidden.", "left": "treatment", "codeW": 230, "vars": ["AUC", "spread"], "steps": [{"code": "the complete column (truth)", "state": ["0.767", "± 0.036"], "tone": "violet", "note": "the ceiling"}, {"code": "median imputation", "state": ["0.762", "± 0.033"], "tone": "warn", "note": "gives them a 1"}, {"code": "median + indicator", "state": ["0.766", "± 0.039"], "changed": [0], "tone": "good"}, {"code": "iterative imputation", "state": ["0.761", "± 0.034"], "tone": "warn", "note": "wrong by design"}, {"code": "iterative + indicator", "state": ["0.766", "± 0.039"], "changed": [0], "tone": "good", "note": "the indicator is the fix"}], "t": "diagram", "id": "dg-3_3-03-2"},
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -161,6 +191,16 @@ cross_val_score(logistic, X_without_tickets, is_missing, scoring="roc_auc")     
     { t: "h2", n: "04", text: "Categoricals, native handling, and the fold", id: "rest" },
 
     {"kind": "flow", "title": "A categorical imputer is a fitted step, and the fold is where it belongs", "caption": "Filling a categorical with its mode, or with a literal 'missing' level, is a choice with consequences: the mode hides the gap inside an existing level, while a 'missing' level lets the model learn from absence directly — which is what a NaN-native booster does for you, by sending missing rows to whichever child reduces the loss.", "cols": 3, "nodes": [{"id": "c", "label": "A categorical with gaps", "sub": "and an unseen level at serving", "tone": "violet"}, {"id": "m", "label": "Impute the mode", "sub": "the gap vanishes into a real level", "tone": "warn"}, {"id": "l", "label": "A 'missing' level", "sub": "absence becomes learnable", "tone": "good"}, {"id": "e", "label": "Encode with handle_unknown", "sub": "a new level is not fatal", "tone": "good"}, {"id": "b", "label": "Or a NaN-native booster", "sub": "a default direction per split", "tone": "accent"}, {"id": "f", "label": "All of it inside the fold", "sub": "the mode is learned from train only", "tone": "teal"}], "edges": [["c", "m"], ["c", "l"], ["l", "e"], ["e", "f"], ["c", "b", "", "dashed"]], "t": "diagram", "id": "dg-3_3-04-3"},
+
+
+
+
+
+
+
+
+
+
 
 
 
