@@ -87,6 +87,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "the-client", text: "Reading a stream properly",
       sub: "Three details, and usage is the one people miss" },
 
+    {"kind": "flow", "title": "What a stream hands you, chunk by chunk", "caption": "A stream is a sequence of deltas, and the fields you need are not all in the same place. Content arrives in `delta.content`, which is **absent on some chunks** rather than empty. `finish_reason` arrives on the final chunk, so the truncation check of 1.5 happens at the end, not the start. And usage arrives last of all, or only if you asked for it — so a cost counter that reads it eagerly reads nothing.", "cols": 3, "nodes": [{"id": "f", "label": "First chunk: role", "sub": "often no content at all", "tone": "accent"}, {"id": "d", "label": "delta.content, repeatedly", "sub": "absent, not empty, on some", "tone": "violet"}, {"id": "a", "label": "Accumulate, do not assume", "sub": "guard every access", "tone": "good"}, {"id": "r", "label": "finish_reason on the last chunk", "sub": "so check truncation at the end", "tone": "warn"}, {"id": "u", "label": "usage last, or only on request", "sub": "stream_options", "tone": "warn"}, {"id": "c", "label": "Then reconcile the cost", "sub": "1.14's counter", "tone": "teal"}], "edges": [["f", "d"], ["d", "a"], ["a", "r"], ["r", "u"], ["u", "c"]], "t": "diagram", "id": "dg-1_12-02-0"},
+
     { t: "code", lang: "python", title: "stream.py", code: `stream = client.chat.completions.create(
     model="gpt-4o",
     messages=[{"role": "user", "content": "Tell me a story"}],
@@ -122,6 +124,8 @@ if finish == "length":                         # 1.5 -- still applies to streams
     /* ============================================================ 03 */
     { t: "h2", n: "03", id: "errors", text: "An error after the response has started",
       sub: "HTTP 200, and then something goes wrong at token 400" },
+
+    {"kind": "flow", "title": "HTTP 200 arrives before the answer does", "caption": "A non-streaming request either succeeds or fails, and you find out before you have anything. A stream returns **200 as soon as the first chunk is ready** — so an error at token 400 arrives *after* you have already shown the user 399 tokens. There is no status code left to send, which means the handling cannot be an exception path: the UI has to be able to retract or mark a partial answer, and that is a design decision rather than a `try` block.", "cols": 3, "nodes": [{"id": "n", "label": "Non-streaming", "sub": "succeeds or fails, before anything", "tone": "good"}, {"id": "s", "label": "Streaming returns 200 early", "sub": "on the first chunk", "tone": "accent"}, {"id": "e", "label": "An error at token 400", "sub": "399 already on screen", "tone": "crit"}, {"id": "h", "label": "No status code left to send", "sub": "the header is long gone", "tone": "crit"}, {"id": "u", "label": "The UI must retract or mark it", "sub": "a design decision", "tone": "good"}, {"id": "t", "label": "Not something a try block fixes", "sub": "which is why it gets missed", "tone": "teal"}], "edges": [["n", "s"], ["s", "e"], ["e", "h"], ["h", "u"], ["u", "t"]], "t": "diagram", "id": "dg-1_12-03-1"},
 
     { t: "p", text: "A non-streaming request either succeeds or fails, and you find out before you have anything. A stream returns HTTP 200 as soon as the first chunk is ready — so an error at token 400 arrives *after* you have already shown the user 399 tokens." },
 
@@ -159,6 +163,8 @@ if finish in ("interrupted", "length"):
     /* ============================================================ 04 */
     { t: "h2", n: "04", id: "cost", text: "The one case where streaming saves money",
       sub: "Aborting, and only aborting" },
+
+    {"kind": "matrix", "title": "Streaming costs the same, unless you abandon it", "caption": "Same tokens, same price — streaming is not a discount. The exception is that a stream can be **abandoned**: stop reading, close the connection, and the server stops generating, so tokens never produced are never billed. Three situations make that worth building, and the first is simply common: in a chat UI people navigate away from long answers all the time, and closing the stream on unmount is a small change with a real saving.", "cols": ["The saving"], "rows": ["A user navigates away", "An output guardrail fires", "A repetition detector fires", "Everything else"], "cells": [[{"text": "close on unmount - common in chat, and a small change", "tone": "good"}], [{"text": "act on the partial response and stop it before completion (11.14)", "tone": "good"}], [{"text": "catch a loop early rather than paying for 400 tokens of it (1.4)", "tone": "good"}], [{"text": "no saving at all - identical tokens, identical price", "tone": "accent"}]], "t": "diagram", "id": "dg-1_12-04-2"},
 
     { t: "p", text: "Streaming and non-streaming cost the same for the same tokens. The exception is that a stream can be abandoned: if you stop reading and close the connection, the server stops generating, and the tokens that were never produced are never billed." },
 

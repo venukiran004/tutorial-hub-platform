@@ -19,6 +19,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "batch", text: "Half price for work that can wait",
       sub: "A JSONL file, a 24-hour window, and a completely different failure model" },
 
+    {"kind": "matrix", "title": "Half price, for agreeing to wait", "caption": "The batch API trades latency for 50% off, and the question it asks is only whether anything is waiting. The three yes rows are **free money** — the work is offline and deadline-free, so the discount costs nothing. The last row is the one to think about rather than answer quickly: a submitted batch is committed work, so a pipeline that might need to cancel mid-run is a poor fit even when nobody is waiting.", "cols": ["Batch?", "Why"], "rows": ["Nightly summarisation", "Backfilling embeddings", "Evaluation runs", "Anything a user awaits", "An agent's tool calls", "Anything cancellable"], "cells": [[{"text": "yes", "tone": "good"}, "nobody is waiting; 50% off for nothing"], [{"text": "yes", "tone": "good"}, "the canonical case - large and offline"], [{"text": "yes", "tone": "good"}, "halves the cost of measuring"], [{"text": "no", "tone": "crit"}, "24 hours is not a latency budget"], [{"text": "no", "tone": "crit"}, "each step needs the previous result"], [{"text": "careful", "tone": "warn"}, "a submitted batch is committed work"]], "t": "diagram", "id": "dg-1_13-01-0"},
+
     { t: "p", text: "The Batch API takes a file of requests, processes them asynchronously within a stated window — 24 hours on OpenAI — and charges 50% of the real-time rate. There is no quality difference; it is the same models, run when the provider has spare capacity." },
 
     { t: "code", lang: "python", title: "batch.py — the whole flow", code: `import json
@@ -132,6 +134,8 @@ for label, disc in (("OpenAI auto-cache (50% off input)",   0.5),
     /* ============================================================ 03 */
     { t: "h2", n: "03", id: "ordering", text: "The ordering mistake, priced",
       sub: "What it costs to put the user's question at the top" },
+
+    {"kind": "flow", "title": "The cache matches a prefix, so one variable token at the front costs everything", "caption": "Prompt caching keys on the **longest common prefix**, which makes message order a pricing decision. Static system text and documents first, variable user content last, and the cache hits. Put the query first and one variable token invalidates every static token behind it — measured on this workload, **$125.00 per 100,000 requests** for an ordering that looks like a style preference.", "cols": 3, "nodes": [{"id": "c", "label": "The cache matches a prefix", "sub": "longest common, from the front", "tone": "violet"}, {"id": "r", "label": "SYSTEM, then DOCS, then QUERY", "sub": "static first", "tone": "good"}, {"id": "h", "label": "The static prefix hits", "sub": "1,000 tokens at cache price", "tone": "good"}, {"id": "w", "label": "QUERY, then SYSTEM, then DOCS", "sub": "variable first", "tone": "crit"}, {"id": "m", "label": "Nothing behind it can match", "sub": "one token invalidates all of it", "tone": "crit"}, {"id": "p", "label": "$125.00 per 100,000 requests", "sub": "for the order alone", "tone": "crit"}], "edges": [["c", "r"], ["r", "h"], ["c", "w"], ["w", "m"], ["m", "p"]], "t": "diagram", "id": "dg-1_13-03-1"},
 
     { t: "code", lang: "python", title: "g18.py — the cost of the wrong order", code: `good = "SYSTEM(1000 static tokens) + DOCS(static) + USER QUERY(variable)"
 bad  = "USER QUERY(variable) + SYSTEM(1000 static tokens) + DOCS(static)"`,

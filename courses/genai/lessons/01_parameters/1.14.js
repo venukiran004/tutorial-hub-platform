@@ -19,6 +19,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "the-encoding", text: "The encoding is part of the answer",
       sub: "Same text, different model, different count" },
 
+    {"kind": "flow", "title": "The tokeniser is part of the price", "caption": "Two encodings over the same six samples disagree on exactly one of them — and it is the one that matters internationally. The same French text is **73 tokens in cl100k and 57 in o200k**, a 22% difference with no change to the text at all. English prose, code and UUIDs come out within a token either way. So a cost model built by measuring English and applied to a multilingual product is wrong in a direction that depends on the language.", "cols": 3, "nodes": [{"id": "e", "label": "English prose: 61 either way", "sub": "the encodings agree", "tone": "good"}, {"id": "c", "label": "Code, UUIDs: within a token", "sub": "also agree", "tone": "good"}, {"id": "f", "label": "French: 73 vs 57", "sub": "a 22% difference", "tone": "crit"}, {"id": "m", "label": "So measure in your own encoding", "sub": "not a published average", "tone": "good"}, {"id": "l", "label": "And per language", "sub": "the gap is language-dependent", "tone": "teal"}], "edges": [["e", "f"], ["c", "f"], ["f", "m"], ["m", "l"]], "t": "diagram", "id": "dg-1_14-01-0"},
+
     { t: "p", text: "`tiktoken` is a family of encodings, not one. `cl100k_base` is GPT-4 and GPT-3.5; `o200k_base` is GPT-4o and later. They give different answers, and the difference is not uniform — it depends on the language." },
 
     { t: "code", lang: "python", title: "g13.py — two encodings, six samples", code: `enc  = tiktoken.get_encoding("cl100k_base")
@@ -72,6 +74,8 @@ def count(text, model):
     { t: "h2", n: "02", id: "the-envelope", text: "The chat envelope nobody counts",
       sub: "Messages cost more than the text inside them" },
 
+    {"kind": "trace", "title": "The chat envelope nobody counts", "caption": "Messages are not just their content. Each one carries about 3 tokens of structural overhead and the reply is primed with 3 more — which on a short conversation is **9 tokens of envelope on 13 of content, a 69% overhead**. It stops being alarming at scale: on a 50-turn conversation of 20-token messages the envelope is 153 of 1,153 tokens, about 13%. The lesson is that short-message workloads pay a tax that long-message ones do not.", "left": "what is counted", "codeW": 220, "vars": ["tokens", "overhead"], "steps": [{"code": "content only", "state": ["13", "-"], "tone": "accent"}, {"code": "+ 3 per message", "state": ["19", "+6"], "changed": [0], "tone": "warn"}, {"code": "+ 3 reply priming", "state": ["22", "+9"], "changed": [1], "tone": "crit", "note": "69% on 13 tokens"}, {"code": "50 turns of 20 tokens", "state": ["1,153", "153 = 13%"], "tone": "good", "note": "the tax shrinks"}], "t": "diagram", "id": "dg-1_14-02-1"},
+
     { t: "p", text: "Counting `len(enc.encode(content))` for each message undercounts, because the chat format wraps every message in special tokens marking the role and the boundaries. The wrapper is small per message and not small across a long conversation." },
 
     { t: "code", lang: "python", title: "g18.py — the envelope, measured", code: `msgs = [{"role": "system", "content": "You are a helpful assistant."},
@@ -102,6 +106,8 @@ on a 50-turn conversation of 20-token messages it is 153 of 1153 tokens.`,
     /* ============================================================ 03 */
     { t: "h2", n: "03", id: "cost", text: "From tokens to money",
       sub: "The arithmetic is trivial; getting the rates right is not" },
+
+    {"kind": "trace", "title": "A price table, and a claim it does not support", "caption": "The same call priced four ways spans a factor of 66, from $0.000450 to $0.030000 — which is the real argument for routing rather than picking one model. The second half is a correction worth carrying: **GPT-4o-mini is widely called \"30× cheaper\" than GPT-4o, and its own price table says 16.7×** on both input and output. Still an enormous saving, and not the number people repeat.", "left": "model", "codeW": 150, "vars": ["$/1M in", "$/1M out", "this call"], "steps": [{"code": "gpt-4o-mini", "state": ["0.15", "0.60", "$0.000450"], "tone": "good"}, {"code": "gpt-4o", "state": ["2.50", "10.00", "$0.007500"], "tone": "accent"}, {"code": "claude-sonnet", "state": ["3.00", "15.00", "$0.010500"], "tone": "accent"}, {"code": "o3", "state": ["10.00", "40.00", "$0.030000"], "changed": [2], "tone": "crit", "note": "66x the first row"}, {"code": "4o / 4o-mini ratio", "state": ["16.7x", "16.7x", "not 30x"], "tone": "violet"}], "t": "diagram", "id": "dg-1_14-03-2"},
 
     { t: "code", lang: "python", title: "g18.py — a cost table", code: `PRICES = {"gpt-4o":        (2.50, 10.00),        # $ per 1M (input, output)
           "gpt-4o-mini":   (0.15,  0.60),
@@ -138,6 +144,8 @@ print("  from its own price table: input %.2f/%.2f = %.1fx, output %.2f/%.2f = %
     /* ============================================================ 04 */
     { t: "h2", n: "04", id: "in-practice", text: "The counter you actually ship",
       sub: "Cheap, cached, and honest about what it does not know" },
+
+    {"kind": "flow", "title": "Three places to call the counter", "caption": "A token counter is only useful where it changes a decision. Call it **before sending** to enforce the budget of 1.5; in an **admission check** to reject a request that cannot possibly fit, rather than discovering it from a 400; and in **logging**, so every request carries its own estimated cost and the bill is reconcilable without waiting for an invoice. Reconcile `PER_MESSAGE` and `PER_REPLY` against a real `usage.prompt_tokens` once, then trust it.", "cols": 4, "nodes": [{"id": "c", "label": "The counter", "sub": "tiktoken, plus the envelope", "tone": "violet"}, {"id": "b", "label": "Before sending", "sub": "enforce the budget (1.5)", "tone": "good"}, {"id": "a", "label": "In admission control", "sub": "reject what cannot fit", "tone": "good"}, {"id": "l", "label": "In logging, per span", "sub": "cost without the invoice (10.6)", "tone": "good"}, {"id": "r", "label": "Reconcile against usage once", "sub": "then trust the constants", "tone": "teal"}], "edges": [["c", "b"], ["c", "a"], ["c", "l"], ["l", "r"]], "t": "diagram", "id": "dg-1_14-04-3"},
 
     { t: "code", lang: "python", title: "tokens.py", code: `from dataclasses import dataclass
 

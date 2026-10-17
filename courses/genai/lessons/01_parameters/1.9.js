@@ -103,6 +103,8 @@ print(r.choices[0].message.content)`,
     { t: "h2", n: "02", id: "what-the-model-sees", text: "What the model is actually reading",
       sub: "A name, a description, and a JSON Schema" },
 
+    {"kind": "flow", "title": "A tool definition does two different jobs", "caption": "The model reads one JSON object and uses its halves for different decisions. **Whether** to call and **which** one comes almost entirely from the `name` and `description` — a retrieval problem in miniature, matching intent against short text. **What arguments** to produce comes from the `parameters` schema and is enforced exactly as structured output is, which is why an `enum` on `unit` means the model cannot invent `kelvin`. Vague descriptions cause wrong-tool bugs; loose schemas cause wrong-argument bugs, and they are fixed in different places.", "cols": 3, "nodes": [{"id": "d", "label": "One tool definition", "sub": "85 tokens, here", "tone": "violet"}, {"id": "n", "label": "name and description", "sub": "whether, and which", "tone": "accent"}, {"id": "p", "label": "parameters schema", "sub": "what arguments", "tone": "accent"}, {"id": "r", "label": "Vague description: wrong tool", "sub": "fix the prose", "tone": "warn"}, {"id": "e", "label": "Loose schema: wrong arguments", "sub": "add an enum, a range", "tone": "warn"}, {"id": "f", "label": "Two bugs, two different fixes", "sub": "which is why this split matters", "tone": "teal"}], "edges": [["d", "n"], ["d", "p"], ["n", "r"], ["p", "e"], ["r", "f"], ["e", "f"]], "t": "diagram", "id": "dg-1_9-02-0"},
+
     { t: "code", lang: "python", title: "g18.py — one tool definition", code: `tools = [{
     "type": "function",
     "function": {
@@ -139,6 +141,8 @@ print(r.choices[0].message.content)`,
     { t: "h2", n: "03", id: "tool-choice", text: "tool_choice, and what each setting is for",
       sub: "Four values, three genuinely different behaviours" },
 
+    {"kind": "matrix", "title": "tool_choice, and the job each setting is for", "caption": "Four settings, and the two middle ones are the ones people never reach for. `\"none\"` keeps the tools *visible* while forbidding the call, which is how you get the model to talk **about** its tools or to force a summary turn after a sequence of calls. `\"required\"` is for a turn that is meaningless without data — a router or a lookup step — where letting the model answer from memory is the failure.", "cols": ["Behaviour", "Reach for it when"], "rows": ["auto", "none", "required", "a named function"], "cells": [["the model decides whether and which", {"text": "the default", "tone": "good"}], [{"text": "visible but never called", "tone": "accent"}, "you want a summary turn"], [{"text": "must call at least one", "tone": "accent"}, "a router, or a lookup step"], [{"text": "that tool, always", "tone": "violet"}, "structured output, or one action"]], "t": "diagram", "id": "dg-1_9-03-1"},
+
     { t: "table",
       head: ["`tool_choice`", "Behaviour", "Use it when"],
       rows: [
@@ -161,6 +165,8 @@ print(r.choices[0].message.content)`,
     /* ============================================================ 04 */
     { t: "h2", n: "04", id: "the-cost", text: "What tools cost, measured",
       sub: "Every schema, on every turn, for the whole conversation" },
+
+    {"kind": "trace", "title": "Tools are a fixed tax on every request in the conversation", "caption": "One definition is 85 tokens, and definitions are resent on **every** turn because the model is stateless. Twenty tools is 1,700 tokens before the user has said anything — and at $2.50 per million input tokens, 100,000 requests with twenty tools is $425, or **$4,250 once each conversation runs ten turns**. Which is the argument for routing to a small tool subset rather than attaching the whole catalogue.", "left": "tools attached", "codeW": 150, "vars": ["tokens per request", "100k requests", "x10 turns"], "steps": [{"code": "1", "state": ["85", "$21.25", "$212.50"], "tone": "good"}, {"code": "5", "state": ["425", "$106.25", "$1,062.50"], "tone": "accent"}, {"code": "10", "state": ["850", "$212.50", "$2,125.00"], "tone": "warn"}, {"code": "20", "state": ["1,700", "$425.00", "$4,250.00"], "changed": [2], "tone": "crit"}, {"code": "50", "state": ["4,250", "$1,062.50", "$10,625.00"], "tone": "crit", "note": "route instead"}], "t": "diagram", "id": "dg-1_9-04-2"},
 
     { t: "p", text: "Tool definitions are input tokens. They are sent with the first request, and again with the second, and again with every turn of the conversation — because the model has no memory and the schemas have to be in the context each time it might need them." },
 
@@ -203,6 +209,8 @@ with a 10-turn conversation each, that is $4250.00`,
     /* ============================================================ 05 */
     { t: "h2", n: "05", id: "step-three", text: "Step 3 is your code, and it is not trusted input",
       sub: "The arguments came from a language model" },
+
+    {"kind": "flow", "title": "The model's tool call is a request, not an instruction", "caption": "The schema guarantees the arguments are well-typed. It guarantees nothing about whether they are **safe**, and those values arrived from a model that was reading user-supplied text. This is where prompt injection stops being a content problem and becomes an action problem: if a tool reads a web page, an email or a retrieved document, that text is in the context and can contain instructions. The defence is always at step 3 — your code authorises the action, not the model.", "cols": 3, "nodes": [{"id": "u", "label": "A tool reads untrusted text", "sub": "a page, an email, a document", "tone": "warn"}, {"id": "c", "label": "That text is now in the context", "sub": "and can contain instructions", "tone": "crit"}, {"id": "m", "label": "The model emits a tool call", "sub": "well-typed, possibly hostile", "tone": "crit"}, {"id": "s", "label": "Step 3 is your code", "sub": "it is the only trust boundary", "tone": "good"}, {"id": "a", "label": "Authorise against the user, not the model", "sub": "scope, limits, confirmation", "tone": "good"}, {"id": "l", "label": "A suggestion, never a command", "sub": "2.16 is the lesson", "tone": "teal"}], "edges": [["u", "c"], ["c", "m"], ["m", "s"], ["s", "a"], ["a", "l"]], "t": "diagram", "id": "dg-1_9-05-3"},
 
     { t: "p", text: "The schema guarantees the arguments are well-typed. It guarantees nothing about whether they are safe, and the values arrived from a model that was reading user-supplied text." },
 

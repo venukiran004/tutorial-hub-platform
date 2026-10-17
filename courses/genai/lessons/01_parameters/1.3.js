@@ -19,6 +19,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "top-k", text: "Top-k keeps a fixed count",
       sub: "Sort, take the first k, set everything else to negative infinity" },
 
+    {"kind": "flow", "title": "Top-k keeps a count, whatever the distribution looks like", "caption": "The cut is `k` tokens, always, and that is the flaw. When the model is confident — a peaked distribution — `top_k=50` keeps 49 tokens with almost no mass, and they can still be drawn. When the model is genuinely uncertain across hundreds of reasonable continuations, the same 50 **throws real candidates away**. The count is fixed; the distribution is not.", "cols": 3, "nodes": [{"id": "k", "label": "Keep the k highest scores", "sub": "discard the rest", "tone": "violet"}, {"id": "p", "label": "A peaked distribution", "sub": "one token holds 0.88", "tone": "accent"}, {"id": "f", "label": "A flat distribution", "sub": "8,841 tokens inside 90%", "tone": "accent"}, {"id": "j", "label": "49 no-hopers kept", "sub": "and still drawable", "tone": "warn"}, {"id": "c", "label": "Real candidates cut", "sub": "the cut is too tight", "tone": "crit"}, {"id": "a", "label": "Which is the argument for top-p", "sub": "a mass adapts; a count cannot", "tone": "teal"}], "edges": [["k", "p"], ["k", "f"], ["p", "j"], ["f", "c"], ["c", "a"], ["j", "a"]], "t": "diagram", "id": "dg-1_3-01-0"},
+
     { t: "p", text: "Top-k is the simpler of the two and the easier to reason about. Sort the logits, keep the k largest, set the rest to negative infinity so that softmax gives them exactly zero, and renormalise over what is left. Four lines:" },
 
     { t: "code", lang: "python", title: "g11.py — top-k", code: `def top_k_filter(lg, k):
@@ -33,6 +35,8 @@ EC.receiveLesson({
     /* ============================================================ 02 */
     { t: "h2", n: "02", id: "top-p", text: "Top-p keeps a fixed mass",
       sub: "The smallest set whose cumulative probability reaches p" },
+
+    {"kind": "trace", "title": "Top-p, worked through five tokens", "caption": "Sort by probability, accumulate from the top, and keep the smallest set whose cumulative mass reaches `p`. The boundary is the part worth being precise about: C's cumulative is **0.90 exactly**, which reaches the threshold, so C is kept and D is the first to go. The set is whatever it takes to cover the mass — three tokens here, two at a sharper temperature, thousands at a flatter one.", "left": "token", "codeW": 110, "vars": ["p", "mass before", "cumulative", "top_p=0.9"], "steps": [{"code": "A", "state": ["0.50", "0.00", "0.50", "keep"], "tone": "good"}, {"code": "B", "state": ["0.25", "0.50", "0.75", "keep"], "tone": "good"}, {"code": "C", "state": ["0.15", "0.75", "0.90", "keep"], "changed": [2], "tone": "good", "note": "reaches 0.90 exactly"}, {"code": "D", "state": ["0.05", "0.90", "0.95", "drop"], "changed": [3], "tone": "crit"}, {"code": "E", "state": ["0.05", "0.95", "1.00", "drop"], "tone": "crit"}], "t": "diagram", "id": "dg-1_3-02-1"},
 
     { t: "p", text: "Top-p — nucleus sampling — sorts by probability, accumulates from the top, and keeps tokens until the running total reaches p. The worked example is small enough to check in your head, and it contains the detail that everyone gets wrong on the first attempt:" },
 
@@ -162,6 +166,8 @@ top_p=0.9 keeps A, B, C -- cumulative 0.90 exactly at C.`,
     /* ============================================================ 04 */
     { t: "h2", n: "04", id: "edges", text: "The edge values, and what they really mean",
       sub: "top_p=1.0 does not keep everything, and top_p=0 does not keep nothing" },
+
+    {"kind": "matrix", "title": "The edge values, and the three that secretly mean greedy", "caption": "Measured on GPT-2's 50,257 tokens, `top_p=0.90` keeps 1,503, `0.95` keeps 3,119, `0.99` keeps 9,144 and `1.00` keeps 38,597 — so even \"no truncation\" quietly drops the 11,660 tokens with no representable mass. The rows to watch are the three different ways of accidentally asking for greedy decoding when you thought you were sampling.", "cols": ["What it means", "Equivalent to"], "rows": ["top_k=0", "top_k=1", "top_p=1.0", "top_p below top-1 prob", "top_p=0"], "cells": [["no top-k filtering - the 'unset' convention", "not filtering"], [{"text": "keep the single highest score", "tone": "crit"}, {"text": "temperature=0", "tone": "crit"}], ["keep everything with representable mass", "38,597 of 50,257"], [{"text": "keep exactly one token", "tone": "crit"}, {"text": "greedy, on this step", "tone": "crit"}], [{"text": "keep one - the first has 0 mass before it", "tone": "crit"}, {"text": "greedy, every step", "tone": "crit"}]], "t": "diagram", "id": "dg-1_3-04-2"},
 
     { t: "p", text: "Both parameters have edge values that behave slightly differently from what the documentation implies, and both are easy to check." },
 

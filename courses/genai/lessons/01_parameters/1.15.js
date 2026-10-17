@@ -19,6 +19,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "the-matrix", text: "What each provider accepts",
       sub: "The gaps are small in number and awkward in placement" },
 
+    {"kind": "matrix", "title": "The five differences that are not cosmetic", "caption": "Most of the support matrix is noise — a missing `top_k` on OpenAI is harmless, because top-p is the better rule anyway and there is no value to translate. These five are the ones that cost work. **Missing penalties on Anthropic is the one that bites**: a feature tuned with `frequency_penalty=0.5` to break loops has no equivalent, and the repetition has to be handled in the prompt instead.", "cols": ["Missing on", "What it costs you"], "rows": ["top_k", "Penalties", "seed", "JSON mode", "Batch API"], "cells": [["OpenAI", {"text": "nothing - top-p is better anyway", "tone": "good"}], ["Anthropic", {"text": "a real gap - handle it in the prompt", "tone": "crit"}], ["Anthropic", {"text": "pin a version, use t=0, cache (1.7)", "tone": "warn"}], ["Anthropic", {"text": "forced tool use is equivalent (1.8)", "tone": "accent"}], ["Google", {"text": "the larger discount, on output-heavy work", "tone": "warn"}]], "t": "diagram", "id": "dg-1_15-01-0"},
+
     { t: "table",
       head: ["Parameter", "OpenAI", "Anthropic", "Google", "HuggingFace"],
       rows: [
@@ -114,6 +116,8 @@ def call(provider, *, strict=True, **params):
     { t: "h2", n: "03", id: "choosing", text: "Choosing a model",
       sub: "The constraint that binds is rarely quality" },
 
+    {"kind": "matrix", "title": "What is actually driving each model recommendation", "caption": "Recommendation lists go stale within months; the **constraint** behind each one does not. Read the right-hand column and the list becomes reusable: two of these rows are hard limits that no amount of model progress removes — a context window is architectural, and an on-prem requirement is satisfied by no hosted model at any price.", "cols": ["The real constraint"], "rows": ["Simple classification", "Complex reasoning", "Code generation", "Under 500 ms", "100K+ context", "On-prem or private", "Cost-sensitive batches"], "cells": [[{"text": "cost and speed - the quality ceiling is not binding", "tone": "good"}], [{"text": "quality is binding, and you pay for it", "tone": "accent"}], [{"text": "a capability difference that shows up in evals", "tone": "accent"}], [{"text": "latency is binding; model size is the lever", "tone": "accent"}], [{"text": "a hard architectural limit, not a preference", "tone": "crit"}], [{"text": "a requirement no hosted model satisfies at any price", "tone": "crit"}], [{"text": "scheduling flexibility, not model choice (1.13)", "tone": "violet"}]], "t": "diagram", "id": "dg-1_15-03-1"},
+
     { t: "table",
       head: ["Task type", "Reference's recommendation", "What is actually driving it"],
       rows: [
@@ -141,6 +145,8 @@ def call(provider, *, strict=True, **params):
     /* ============================================================ 04 */
     { t: "h2", n: "04", id: "the-abstraction", text: "How much abstraction is worth building",
       sub: "Less than people build, and in a different place" },
+
+    {"kind": "flow", "title": "Normalising the names while the behaviours differ is worse than not abstracting", "caption": "The instinct on meeting the support matrix is to build a layer that hides it, and that is usually the wrong shape — **the differences that matter are behaviours, not parameter names**. An abstraction that smooths the names is actively misleading, because it makes switching providers *look* like a configuration change, and the eval step then gets skipped on the strength of the abstraction's promise. Switching providers is a project.", "cols": 3, "nodes": [{"id": "m", "label": "The support matrix looks like config", "sub": "names and flags", "tone": "accent"}, {"id": "l", "label": "So you build a layer", "sub": "one interface, many providers", "tone": "warn"}, {"id": "b", "label": "But the behaviours still differ", "sub": "not just the names", "tone": "crit"}, {"id": "s", "label": "Switching now looks free", "sub": "a config change", "tone": "crit"}, {"id": "e", "label": "So the eval gets skipped", "sub": "on the layer's promise", "tone": "crit"}, {"id": "p", "label": "Treat it as a project instead", "sub": "and keep the eval step", "tone": "good"}], "edges": [["m", "l"], ["l", "b"], ["b", "s"], ["s", "e"], ["e", "p"]], "t": "diagram", "id": "dg-1_15-04-2"},
 
     { t: "p", text: "The instinct on meeting the support matrix is to build a layer that hides it. That is usually the wrong shape, because the differences that matter are not parameter names — they are behaviours, and a layer that normalises the names while the behaviours differ is actively misleading." },
 
