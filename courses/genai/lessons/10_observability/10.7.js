@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "tracer", text: "The tracer",
       sub: "Twenty-five lines" },
 
+    {"kind": "flow", "title": "A tracer is three ideas, and nothing else is needed", "caption": "**The stack gives you parent links, and parent links give you the tree** — `self.stack[-1]` is the parent of whatever you open next. **Two clock reads give you duration**, which gives you both the waterfall and self time. And **`**attrs` gives you the searchable dimensions** — model, index, token counts, scores. That is the whole mechanism: everything in 10.4 and 10.5 falls out of a list, a clock and a dict.", "cols": 3, "nodes": [{"id": "s", "label": "A stack", "sub": "stack[-1] is the parent", "tone": "violet"}, {"id": "t", "label": "A tree", "sub": "from the parent links alone", "tone": "good"}, {"id": "c", "label": "Two clock reads", "sub": "start and end", "tone": "violet"}, {"id": "w", "label": "The waterfall and self time", "sub": "both, from duration", "tone": "good"}, {"id": "a", "label": "A dict of attributes", "sub": "model, index, tokens, scores", "tone": "violet"}, {"id": "q", "label": "The searchable dimensions", "sub": "which is what makes it useful", "tone": "good"}], "edges": [["s", "t"], ["c", "w"], ["a", "q"]], "t": "diagram", "id": "dg-10_7-01-0"},
+
+
     { t: "code", lang: "python", title: "A tracer, complete", code: `import contextlib
 
 
@@ -64,6 +67,9 @@ class Tracer:
 
     { t: "h2", n: "02", id: "extend", text: "What production adds",
       sub: "Three changes, no new concepts" },
+
+    {"kind": "matrix", "title": "Five things production adds, and the one that corrupts data silently", "caption": "The first row is the one that matters most and looks least important. **A plain list attribute is shared across tasks, so two concurrent requests interleave their stacks and the tree becomes nonsense** — not empty, not erroring: nonsense, with spans attached to the wrong parents. `contextvars.ContextVar` is the fix and it is a one-line change that nothing in a single-request test will reveal.", "cols": ["Toy", "Production", "Why"], "rows": ["The span stack", "The clock", "Span storage", "Events", "Status"], "cells": [["a list attribute", {"text": "contextvars.ContextVar", "tone": "crit"}, {"text": "concurrent requests interleave", "tone": "crit"}], ["a scripted clock", "time.perf_counter()", "monotonic, and not positional"], ["a growing list", "a batching exporter", "spans leave the process"], ["none", "span.add_event()", "first token, retry, guardrail"], ["a string", "a code plus the exception", "backends can aggregate it"]], "t": "diagram", "id": "dg-10_7-02-1"},
+
 
     { t: "table",
       head: ["Toy version", "Production version", "Why"],

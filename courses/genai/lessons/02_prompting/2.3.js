@@ -74,6 +74,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "cot.py — the three forms, from the reference", code: `# Zero-shot CoT: one clause, no examples
 cot_zero = """Q: If a store has 45 apples and sells 3/5 of them, how many are left?
 
@@ -136,6 +138,8 @@ Problem: {problem}"""`,
 
 
 
+
+
     { t: "p", text: "Six extra prompt tokens is nothing. What chain-of-thought actually costs is on the output side, where a bare answer becomes a paragraph — and output tokens are priced several times higher than input." },
 
     { t: "code", lang: "python", title: "g21.py — the output side", code: `for label, n_out in (("bare answer '18'", 1), ("one-line working", 25),
@@ -173,6 +177,8 @@ class Answer(BaseModel):
       sub: "The working can be wrong, and confidently so" },
 
     {"kind": "flow", "title": "The reasoning is the computation, not a record of one", "caption": "The steps a model writes are generated the same way everything else is — by sampling from a distribution. They are **not a trace of a computation that happened elsewhere; they *are* the computation**. Which has two consequences people conflate: a step can be wrong and the model will carry the wrong intermediate forward without noticing, and a plausible-looking chain is not evidence that the answer is right. Reading the chain tells you what it computed, not whether it was correct.", "cols": 3, "nodes": [{"id": "s", "label": "The steps are sampled", "sub": "like any other tokens", "tone": "violet"}, {"id": "n", "label": "Not a log of hidden work", "sub": "there is no hidden work", "tone": "accent"}, {"id": "w", "label": "A step can be wrong", "sub": "and nothing checks it", "tone": "crit"}, {"id": "c", "label": "The error is carried forward", "sub": "into every later step", "tone": "crit"}, {"id": "p", "label": "A plausible chain is not evidence", "sub": "of a correct answer", "tone": "crit"}, {"id": "v", "label": "So verify the answer, not the prose", "sub": "2.4 votes; 2.12 measures", "tone": "good"}], "edges": [["s", "n"], ["n", "w"], ["w", "c"], ["c", "p"], ["p", "v"]], "t": "diagram", "id": "dg-2_3-04-2"},
+
+
 
 
 

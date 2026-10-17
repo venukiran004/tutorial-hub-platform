@@ -35,6 +35,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "The three terms name the same thing at three sizes. **Zero-shot** gives the task with no examples. **One-shot** gives one. **Few-shot** gives two to five. What makes it *learning* is that the model's behaviour on the query changes because of the examples, even though nothing about the model changed — the examples are in the context, and the context is all a forward pass sees." },
 
     { t: "code", lang: "python", title: "shots.py — the three forms", code: `zero_shot = "Classify the sentiment: 'This product is amazing!' -> "
@@ -154,6 +156,8 @@ for shots in (0, 1, 2, 4, 8):
 
 
 
+
+
     { t: "p", text: "The common form gives five rules for few-shot prompting. Three of them are directly checkable on the measurement above." },
 
     { t: "table",
@@ -206,6 +210,8 @@ for shots in (0, 1, 2, 4, 8):
 
 
 
+
+
     { t: "p", text: "If the model is matching a pattern, then an example that breaks the pattern should do damage out of proportion to its share of the prompt. It does." },
 
     { t: "code", lang: "python", title: "g21.py — three correct examples and one wrong label", code: `clean    = [("hot", "cold"), ("up", "down"), ("big", "small"),  ("fast", "slow")]
@@ -232,6 +238,8 @@ for label, pairs in (("clean", clean), ("one wrong label", poisoned)):
       sub: "Choosing the examples per query instead of fixing them" },
 
     {"kind": "flow", "title": "Dynamic few-shot is retrieval, pointed at examples", "caption": "A fixed example set is chosen once for all queries. A dynamic one retrieves the **most similar examples for each query at request time** — which is exactly module 5's machinery applied to examples rather than documents, and it inherits all of it: an embedding model, an index, a top-k, and the same failure modes. Worth it when the task has many distinct sub-cases and one fixed set cannot represent them all.", "cols": 3, "nodes": [{"id": "f", "label": "A fixed example set", "sub": "chosen once, for every query", "tone": "accent"}, {"id": "q", "label": "A query arrives", "sub": "possibly unlike all of them", "tone": "warn"}, {"id": "r", "label": "Retrieve the nearest examples", "sub": "embed, index, top-k", "tone": "good"}, {"id": "b", "label": "Build the prompt per request", "sub": "examples chosen for this query", "tone": "good"}, {"id": "i", "label": "Inherits M5 entirely", "sub": "including its failure modes", "tone": "violet"}, {"id": "w", "label": "Worth it with many sub-cases", "sub": "where one fixed set cannot cover", "tone": "teal"}], "edges": [["f", "q"], ["q", "r"], ["r", "b"], ["b", "i"], ["i", "w"]], "t": "diagram", "id": "dg-2_2-05-3"},
+
+
 
 
 

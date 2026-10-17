@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Type", "Signal used", "Notes"],
       rows: [
@@ -43,6 +45,8 @@ EC.receiveLesson({
       sub: "And why the loss carries a \u03c4\u00b2" },
 
     {"kind": "trace", "title": "What temperature is for, and why the tau-squared factor is there", "caption": "At τ = 1 the teacher puts 0.778 on its top choice and the rest is nearly nothing — so the small differences, which are **where the extra signal lives**, contribute almost no gradient. Raising τ flattens the distribution and amplifies exactly those differences: at τ = 4 the top probability is 0.335 and entropy has nearly doubled. But flattening also shrinks the KL, by **a factor of 13 from τ=1 to τ=4** — which is what the τ² factor compensates, holding the effective gradient magnitude roughly constant so τ can be tuned without retuning the learning rate.", "left": "tau", "codeW": 110, "vars": ["max prob", "entropy", "KL(s||t)", "KL x tau^2"], "steps": [{"code": "1.0", "state": ["0.7779", "0.7945", "0.129992", "0.129992"], "tone": "accent"}, {"code": "2.0", "state": ["0.4968", "1.3610", "0.041660", "0.166638"], "changed": [2], "tone": "good"}, {"code": "4.0", "state": ["0.3353", "1.5487", "0.009788", "0.156608"], "changed": [2], "tone": "good", "note": "KL down 13x"}, {"code": "8.0", "state": ["0.2629", "1.5949", "0.002265", "0.144950"], "changed": [2], "tone": "warn", "note": "tau^2 holds it steady"}], "t": "diagram", "id": "dg-7_13-02-1"},
+
+
 
 
 
@@ -89,6 +93,8 @@ scaled = kl * tau**2`,
       sub: "Zero training compute, and one real problem" },
 
     {"kind": "trace", "title": "Why merging more than two models needs TIES", "caption": "The five methods differ mainly in how they handle **interference**, and this measurement is why that matters. Counting parameters where all task vectors agree on sign: **49.9% for two models, 24.9% for three, 6.2% for five** — matching the independent-delta prediction of 2^(1−n) exactly. So a plain average of five fine-tunes is averaging *disagreeing* signs on 94% of parameters, which is how merging produces a model worse than any of its inputs. TIES elects a sign per parameter and averages only the agreeing ones.", "left": "task vectors", "codeW": 160, "vars": ["all signs agree", "2^(1-n) predicts"], "steps": [{"code": "2", "state": ["49.9%", "50%"], "tone": "good"}, {"code": "3", "state": ["24.9%", "25%"], "changed": [0], "tone": "warn"}, {"code": "5", "state": ["6.2%", "6.25%"], "changed": [0], "tone": "crit", "note": "94% disagree"}], "t": "diagram", "id": "dg-7_13-03-2"},
+
+
 
 
 

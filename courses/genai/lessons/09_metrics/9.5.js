@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     {"kind": "matrix", "title": "Three fixes for n-gram overlap, at three prices", "caption": "Each one targets a specific failure of exact matching. **METEOR matches on stems and synonyms**, so a correct paraphrase stops scoring zero — at the cost of needing language resources, which is why it is rarely used outside English. **chrF works on character n-grams and needs no tokenizer at all**, which makes it robust to morphology and typos and almost free. BERTScore replaces matching with cosine similarity in embedding space, and needs a model pass per evaluation.", "cols": ["How it improves", "Cost"], "rows": ["METEOR", "chrF", "BERTScore"], "cells": [[{"text": "stems and synonyms; recall-weighted", "tone": "good"}, {"text": "needs language resources", "tone": "warn"}], [{"text": "character n-grams, no tokenizer", "tone": "good"}, {"text": "very cheap", "tone": "good"}], [{"text": "cosine similarity, greedily matched", "tone": "good"}, {"text": "a model pass", "tone": "warn"}]], "t": "diagram", "id": "dg-9_5-01-0"},
 
+
+
     { t: "table",
       head: ["Metric", "How it improves on n-gram overlap", "Cost"],
       rows: [
@@ -46,6 +48,8 @@ EC.receiveLesson({
       sub: "Greedy matching on contextual embeddings" },
 
     {"kind": "flow", "title": "BERTScore's greedy matching is not one-to-one, and that matters", "caption": "Each candidate token independently takes its **best** reference match, so two candidate tokens may claim the same reference token. An optimal one-to-one assignment — the Hungarian algorithm — would forbid that, and BERTScore does not use one. The practical consequence: **a repetitive candidate is not penalised the way BLEU's clipping penalises it.** Repeating a well-matching token raises precision because each copy finds the same good match again.", "cols": 3, "nodes": [{"id": "g", "label": "Each candidate token takes its best match", "sub": "independently, greedily", "tone": "accent"}, {"id": "t", "label": "Two tokens may claim the same one", "sub": "no one-to-one constraint", "tone": "warn"}, {"id": "h", "label": "An optimal assignment would forbid it", "sub": "Hungarian algorithm", "tone": "accent"}, {"id": "r", "label": "So repetition is not penalised", "sub": "unlike BLEU's clipping", "tone": "crit"}, {"id": "p", "label": "Each copy finds the same good match", "sub": "and raises precision", "tone": "crit"}], "edges": [["g", "t"], ["t", "h"], ["t", "r"], ["r", "p"]], "t": "diagram", "id": "dg-9_5-02-1"},
+
+
 
     { t: "code", lang: "text", title: "the algorithm", code: `1. embed every token of the candidate and the reference (CONTEXTUAL, so
    "bank" in two senses gets two different vectors)

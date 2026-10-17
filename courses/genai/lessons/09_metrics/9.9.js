@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     {"kind": "matrix", "title": "Four metrics, and the one that needs ground truth", "caption": "Three of these are **reference-free** — they need only the question, the answer and the context, all of which you already have on every production request. **Context recall is the exception**: it needs ground truth, because asking whether retrieval found *everything* requires knowing what everything was. Which is the natural division: three run continuously on live traffic, one runs on a curated set.", "cols": ["Needs", "Fails when"], "rows": ["Faithfulness", "Answer relevancy", "Context precision", "Context recall"], "cells": [[{"text": "answer + context", "tone": "good"}, "the model hallucinated"], [{"text": "question + answer", "tone": "good"}, "the model waffled on-topic"], [{"text": "question + context", "tone": "good"}, "retrieval returned noise"], [{"text": "context + GROUND TRUTH", "tone": "warn"}, "retrieval missed documents"]], "t": "diagram", "id": "dg-9_9-01-0"},
 
+
+
     { t: "table",
       head: ["Metric", "Question", "Needs", "Fails when"],
       rows: [
@@ -40,6 +42,8 @@ EC.receiveLesson({
       sub: "Three steps, and the third is division" },
 
     {"kind": "flow", "title": "A faithfulness pipeline that returns only a number has thrown away the useful half", "caption": "The computation extracts claims from the answer and checks each against the context. **Always log which claim was unsupported**, because that is what a person can act on: a score of 0.80 tells you to investigate and the failing claim tells you what to investigate. That is the same argument 8.9 made about agent traces and 6.8 made about production incidents — **the aggregate says something is wrong and the record says what.**", "cols": 3, "nodes": [{"id": "e", "label": "Extract claims from the answer", "sub": "one model call", "tone": "accent"}, {"id": "c", "label": "Check each against the context", "sub": "supported or not", "tone": "accent"}, {"id": "s", "label": "Score: 0.80", "sub": "tells you to investigate", "tone": "warn"}, {"id": "l", "label": "Log the unsupported claim", "sub": "tells you what to investigate", "tone": "good"}, {"id": "a", "label": "The aggregate says something is wrong", "sub": "the record says what", "tone": "violet"}], "edges": [["e", "c"], ["c", "s"], ["c", "l"], ["s", "a"], ["l", "a"]], "t": "diagram", "id": "dg-9_9-02-1"},
+
+
 
     { t: "code", lang: "text", title: "the procedure", code: `1. break the answer into atomic CLAIMS with an LLM
 2. for each claim, ask: "is this supported by the context?" (yes / no)
@@ -70,6 +74,8 @@ faithfulness = 4 / 5 = 0.80`,
       sub: "The reason to compute four numbers instead of one" },
 
     {"kind": "flow", "title": "High faithfulness with low context recall looks like a success", "caption": "The headline metric reads well and the system is failing. **The model is being scrupulously faithful — to context that did not contain the answer.** So the answer is grounded, cited, and wrong. This is 6.7's refund-policy case in metric form: a query retrieved a document genuinely on-topic and genuinely not an answer, and faithfulness rewarded the model for sticking to it. The split is diagnostic precisely because **faithfulness alone cannot distinguish a good answer from a well-grounded irrelevance.**", "cols": 3, "nodes": [{"id": "r", "label": "Retrieval missed the answer", "sub": "low context recall", "tone": "crit"}, {"id": "o", "label": "But returned something on-topic", "sub": "genuinely relevant, not an answer", "tone": "warn"}, {"id": "f", "label": "The model sticks to it faithfully", "sub": "high faithfulness", "tone": "good"}, {"id": "g", "label": "Grounded, cited, and wrong", "sub": "the headline looks fine", "tone": "crit"}, {"id": "b", "label": "So read the two together", "sub": "faithfulness alone cannot see it", "tone": "violet"}], "edges": [["r", "o"], ["o", "f"], ["f", "g"], ["g", "b"]], "t": "diagram", "id": "dg-9_9-03-2"},
+
+
 
     { t: "code", lang: "text", title: "the 2x2 that assigns blame", code: `faithfulness LOW  + context recall HIGH  -> GENERATION problem
                                             the context was there and it made things up

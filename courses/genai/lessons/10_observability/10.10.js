@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "defaults", text: "The defaults",
       sub: "Five decisions" },
 
+    {"kind": "matrix", "title": "Five defaults, and the asymmetry they all exploit", "caption": "Every row is the same trade: **metadata is small and payloads are not.** So keep 100% of metadata and 5–10% of prompt and chunk text; keep aggregated metrics forever and payloads for 14–30 days, because incidents are found in weeks and trends in months. The truncation rule is the neatest statement of the principle: **you rarely need chunk 5 in full, and you always need to know which chunk it was.**", "cols": ["Default", "Why"], "rows": ["Trace sampling", "Retention", "Payload truncation", "PII", "Tail sampling"], "cells": [["100% metadata, 5-10% payloads", {"text": "metadata is small; prompts are not", "tone": "good"}], ["payloads 14-30 days, metrics forever", "incidents in weeks, trends in months"], ["2 KB per chunk, always the template id", {"text": "which chunk matters more than its text", "tone": "violet"}], [{"text": "redact before export", "tone": "crit"}, "once in their store, it is in their backups"], [{"text": "100% of slow, errored, low-scored", "tone": "good"}, "the interesting traces are unrepresentative"]], "t": "diagram", "id": "dg-10_10-01-0"},
+
+
     { t: "table",
       head: ["Decision", "Sensible default", "Why"],
       rows: [
@@ -37,6 +40,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "headtail", text: "Head versus tail sampling",
       sub: "Decide before the request, or after" },
+
+    {"kind": "flow", "title": "Head sampling keeps a random 5% and throws away the failures", "caption": "**Head sampling decides at the start** — keep 5% — which is cheap and trivially implemented, and because the decision precedes the outcome it keeps a random 5% **including a random 5% of your failures**. Tail sampling decides after the request finishes, once you know it was slow, errored or scored badly. With errors, slow requests and low scores at 6.7% of traffic combined, tail sampling keeps **all of them** for about the same storage as head sampling at 5% keeps nothing in particular.", "cols": 3, "nodes": [{"id": "h", "label": "Head: decide at the start", "sub": "keep 5%", "tone": "accent"}, {"id": "r", "label": "A random 5% of failures too", "sub": "the decision precedes the outcome", "tone": "crit"}, {"id": "t", "label": "Tail: decide after it finishes", "sub": "needs a buffer", "tone": "good"}, {"id": "k", "label": "Keep 100% of the interesting ones", "sub": "slow, errored, low-scored", "tone": "good"}, {"id": "c", "label": "6.7% of traffic, combined", "sub": "about the same storage as 5%", "tone": "violet"}], "edges": [["h", "r"], ["r", "t"], ["t", "k"], ["k", "c"]], "t": "diagram", "id": "dg-10_10-02-1"},
+
 
     { t: "callout", kind: "trap", title: "Head sampling at 5% keeps 5% of your failures",
       body: [

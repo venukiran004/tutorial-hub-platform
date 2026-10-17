@@ -35,6 +35,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "chain.py — the worked example", code: `step1 = model.invoke("Extract all technical claims from this paper: {paper}")
 step2 = model.invoke(f"For each claim, find supporting evidence: {step1}")
 step3 = model.invoke(f"Write a critical review based on: {step2}")`,
@@ -164,6 +166,8 @@ final    = call(f"Improve the answer based on this critique: {critique}")`,
 
 
 
+
+
     { t: "p", text: "Each step in a chain has its own failure rate, and a later step operating on a wrong intermediate cannot recover — it produces a competent answer to the wrong question. The arithmetic is unforgiving." },
 
     { t: "table",
@@ -191,6 +195,8 @@ final    = call(f"Improve the answer based on this critique: {critique}")`,
       sub: "And when it is over-engineering" },
 
     {"kind": "matrix", "title": "Three reasons to decompose, and one that is not a reason", "caption": "The first three each buy something a single call cannot give you — different parameters per step, a failure *location*, or a cheap model on the cheap steps, which is often a larger saving than any prompt optimisation. The last row is the common mistake: splitting a call because the prompt got long **moves** the complexity rather than reducing it, and adds two more places to fail at the measured price of 1.90×.", "cols": ["Because"], "rows": ["Steps want different params", "You need a failure location", "Steps want different models", "The prompt got long"], "cells": [[{"text": "one call has one temperature, and must compromise", "tone": "good"}], [{"text": "\"step 2 returned an empty list\" is debuggable; \"it is wrong\" is not", "tone": "good"}], [{"text": "the expensive model only where the reasoning is", "tone": "good"}], [{"text": "not a reason - 1.90x cost, 3x latency, more failure modes", "tone": "crit"}]], "t": "diagram", "id": "dg-2_8-04-2"},
+
+
 
 
 

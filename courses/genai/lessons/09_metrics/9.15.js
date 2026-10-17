@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     {"kind": "matrix", "title": "Six operational metrics, and the one the user actually feels", "caption": "**TTFT is what the user feels**, and streaming is what makes it the real latency metric rather than total latency. TPOT decides whether the text outruns reading speed — about 25 tokens a second is comfortable, so anything faster is invisible and anything slower is felt as hesitation. And the cost row carries the operative instruction: **multiply by volume before committing to a design**, not after.", "cols": ["Definition", "Why it matters"], "rows": ["TTFT", "TPOT", "Total latency", "Throughput", "Cost per request", "Cache hit rate"], "cells": [["request sent to first token out", {"text": "what the user feels", "tone": "violet"}], ["steady-state generation speed", "~25 tokens/s is comfortable reading"], ["TTFT + TPOT x output tokens", "the number for a non-streaming API"], ["requests or tokens per second", "capacity planning"], ["in x in-rate + out x out-rate", {"text": "multiply by volume BEFORE designing", "tone": "warn"}], ["prompt or semantic cache hits", {"text": "the cheapest win available", "tone": "good"}]], "t": "diagram", "id": "dg-9_15-01-0"},
 
+
+
     { t: "table",
       head: ["Metric", "Definition", "Why it matters"],
       rows: [
@@ -35,6 +37,8 @@ EC.receiveLesson({
       sub: "Four numbers, one multiplication" },
 
     {"kind": "trace", "title": "Identical numbers, completely different experience", "caption": "Same TTFT, same TPOT, same total — and streaming changes the product. **With streaming** the user sees text at 400 ms and reads along as it arrives at 40 tokens per second, comfortably above the ~25 they can read. **Without streaming** they stare at a spinner for 5.4 seconds and then receive everything at once. The measurable quantities are equal; what differs is that in the first case the waiting is **filled**, which is why total latency is the wrong headline metric for a chat product.", "left": "configuration", "codeW": 180, "vars": ["TTFT", "TPOT", "total", "experience"], "steps": [{"code": "with streaming", "state": ["400 ms", "25 ms", "5.4 s", "reads along"], "tone": "good"}, {"code": "without streaming", "state": ["400 ms", "25 ms", "5.4 s", "5.4 s of spinner"], "changed": [3], "tone": "crit", "note": "identical numbers"}], "t": "diagram", "id": "dg-9_15-02-1"},
+
+
 
     { t: "code", lang: "text", title: "verified", code: `TTFT   = 400 ms
 TPOT   = 25 ms/token
@@ -62,6 +66,8 @@ total = 400 + (25 x 200) = 400 + 5,000 = 5,400 ms`,
       sub: "Because the distribution has a long tail" },
 
     {"kind": "flow", "title": "A mean of 2 s is consistent with almost anything", "caption": "LLM latency distributions have **long tails** — variable output length, queueing, cache misses, retries — and the mean hides them completely. A mean of 2 seconds is consistent with every request taking 2 seconds and with most taking 1 while one in twenty takes 20. **One in twenty is not an edge case at volume**: at a thousand requests an hour it is fifty people an hour having a bad time, and they are disproportionately the ones who complain and the ones who leave.", "cols": 3, "nodes": [{"id": "m", "label": "Mean latency: 2 s", "sub": "a single number", "tone": "warn"}, {"id": "a", "label": "Every request takes 2 s", "sub": "consistent with the mean", "tone": "accent"}, {"id": "b", "label": "Or most take 1 s and 1 in 20 takes 20", "sub": "also consistent", "tone": "crit"}, {"id": "v", "label": "At 1,000/hour that is 50 people", "sub": "every hour", "tone": "crit"}, {"id": "p", "label": "So p50 and p95, never the mean", "sub": "and p99 if you have the volume", "tone": "good"}], "edges": [["m", "a"], ["m", "b"], ["b", "v"], ["v", "p"]], "t": "diagram", "id": "dg-9_15-03-2"},
+
+
 
     { t: "callout", kind: "warn", title: "A p50 of 1 s with a p95 of 12 s is a bad experience for one user in twenty",
       body: [

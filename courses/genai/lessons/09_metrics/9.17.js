@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     {"kind": "matrix", "title": "Choose by how constrained the output is, not by what is familiar", "caption": "The organising question is **how much freedom the output has**, because that determines what can be checked. One correct answer admits exact match. A reference constrains the space enough for overlap metrics. **Execution is the only row that cannot be argued with** — a test passes or it does not. Retrieval asks whether the answer is *reachable* rather than whether it ranks first. And open-ended prose has no reference, so relative comparison is all that is left.", "cols": ["Metric", "Why"], "rows": ["One correct answer", "Bounded by a reference", "Verifiable by execution", "Retrieval into a pipeline", "Open-ended prose", "Grounded answers"], "cells": [[{"text": "exact match, F1", "tone": "good"}, "cheap and unambiguous"], ["BLEU, chrF, ROUGE, BERTScore", "a reference constrains the space"], [{"text": "pass@k", "tone": "good"}, {"text": "the only one that cannot be argued with", "tone": "good"}], ["Recall@k, MRR, NDCG", "reachable matters, not rank one"], [{"text": "pairwise judge, Elo", "tone": "warn"}, "no reference exists"], ["faithfulness, attribution", "supported, not string-matching"]], "t": "diagram", "id": "dg-9_17-01-0"},
 
+
+
     { t: "table",
       head: ["Output", "Metric", "Why"],
       rows: [
@@ -43,6 +45,8 @@ EC.receiveLesson({
 
     {"kind": "matrix", "title": "The pitfalls, by family", "caption": "Each family fails in a way characteristic of what it measures. **n-gram overlap is blind to meaning reversal** — a correct answer in different words scores near zero, and an inverted one can score perfectly. **ROUGE-recall rewards length**, so a summary that copies the source scores well. Judges carry position, verbosity and self-preference. And intrinsic metrics are not comparable across tokenizers or datasets, which is 9.2's three lies.", "cols": ["How it fails"], "rows": ["n-gram overlap", "ROUGE recall", "Model-based judges", "Intrinsic metrics", "pass@k", "Retrieval metrics", "Single-run agent scores"], "cells": [[{"text": "blind to paraphrase and to meaning reversal", "tone": "crit"}], [{"text": "rewards length - copying the source scores well", "tone": "crit"}], [{"text": "position, verbosity and self-preference, until measured", "tone": "crit"}], [{"text": "not comparable across tokenizers or datasets", "tone": "warn"}], [{"text": "returns 1.0 by boundary unless n far exceeds k", "tone": "warn"}], [{"text": "NDCG is not comparable without its gain function", "tone": "warn"}], [{"text": "one draw from a distribution, reported as a measurement", "tone": "crit"}]], "t": "diagram", "id": "dg-9_17-02-1"},
 
+
+
     { t: "dl", items: [
       { k: "n-gram overlap", v: "Blind to paraphrase and to meaning reversal. A correct answer in different words scores near zero; inserting \u201cnot\u201d barely moves the score. Both verified in 9.3." },
       { k: "ROUGE recall", v: "Rewards length. ROUGE-recall rises as the candidate grows, so a summary that copies the source scores well \u2014 which is why ROUGE-L F1 and a length constraint are both needed (9.4)." },
@@ -57,6 +61,8 @@ EC.receiveLesson({
       sub: "The same ranking, two defensible answers" },
 
     {"kind": "flow", "title": "A convention trap found by running both halves of the course", "caption": "This module uses linear NDCG gain and module 5 uses exponential — **a discrepancy found by computing both rather than read off a page.** Exponential weights a grade-3 document **seven times** a grade-1 one; linear weights it three times. So \"NDCG@6 = 0.96\" is not comparable across two teams unless both state the gain function, and the same applies to whether the ideal ranking is built from the judged pool or the full corpus. Two defensible conventions, incomparable numbers, and nothing in the metric's name warns you.", "cols": 3, "nodes": [{"id": "a", "label": "This module: linear gain", "sub": "grade 3 is worth 3x", "tone": "accent"}, {"id": "b", "label": "Module 5: exponential gain", "sub": "grade 3 is worth 7x", "tone": "accent"}, {"id": "f", "label": "Found by computing both", "sub": "not read off a page", "tone": "violet"}, {"id": "n", "label": "So NDCG@6 = 0.96 means nothing alone", "sub": "without the gain function", "tone": "crit"}, {"id": "i", "label": "And the ideal-ranking pool matters too", "sub": "judged pool or full corpus", "tone": "crit"}, {"id": "s", "label": "State both conventions, always", "sub": "the name warns you of neither", "tone": "good"}], "edges": [["a", "f"], ["b", "f"], ["f", "n"], ["n", "i"], ["i", "s"]], "t": "diagram", "id": "dg-9_17-03-2"},
+
+
 
     { t: "code", lang: "text", title: "g91.py \u00a7F \u2014 one ranking, two NDCG conventions", code: `relevance   [3, 2, 3, 0, 1, 2]       ideal [3, 3, 2, 2, 1, 0]
 

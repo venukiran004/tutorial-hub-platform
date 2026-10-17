@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "green", text: "Every classical signal is green",
       sub: "And the product is broken" },
 
+    {"kind": "flow", "title": "A retriever that finds nothing returns an empty list and a 200", "caption": "This is the whole reason LLM observability is a separate subject. **A database that cannot find a row raises an exception; a retriever that cannot find a chunk returns an empty list and the request succeeds.** So error rate, latency, saturation and traffic are all necessary and **none of them fire**. The practical consequence: correctness has to be instrumented deliberately, as its own signal with its own storage and its own alerts, because nothing you already run will tell you.", "cols": 4, "nodes": [{"id": "r", "label": "Retrieval finds nothing", "sub": "an empty list, and a 200", "tone": "crit"}, {"id": "e", "label": "Error rate: flat", "sub": "nothing raised", "tone": "good"}, {"id": "l", "label": "Latency: better, if anything", "sub": "less context to process", "tone": "good"}, {"id": "s", "label": "Saturation, traffic: unchanged", "sub": "every classical signal green", "tone": "good"}, {"id": "i", "label": "So instrument correctness deliberately", "sub": "its own signal, storage and alerts", "tone": "violet"}], "edges": [["r", "e"], ["r", "l"], ["r", "s"], ["e", "i"], ["l", "i"], ["s", "i"]], "t": "diagram", "id": "dg-10_1-01-0"},
+
+
     { t: "code", lang: "text", title: "What the two kinds of service give you", code: `  classical service          LLM service
   ------------------         ---------------------------------------------
   200 vs 500                 200 always. Correctness is a separate signal.
@@ -38,6 +41,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "three", text: "Three properties that make it worse",
       sub: "Non-determinism, compound systems, silent drift" },
+
+    {"kind": "matrix", "title": "Three properties, each breaking a different debugging habit", "caption": "**Non-determinism** means you cannot reproduce a failure by replaying the input — 1.2 measured logits differing by batch composition alone. **Compound systems** mean a RAG answer passes through six stages and the output cannot say which one broke. **Silent drift** means nothing crashes when your corpus triples or the provider swaps the weights behind an alias. Together they remove replay, bisection and crash reports: the three things debugging normally relies on.", "cols": ["What it breaks"], "rows": ["Non-determinism", "Compound systems", "Silent drift"], "cells": [[{"text": "replay - the same input does not reproduce the failure", "tone": "crit"}], [{"text": "bisection - six stages, and the output names none of them", "tone": "crit"}], [{"text": "crash reports - a tripled corpus raises nothing at all", "tone": "crit"}]], "t": "diagram", "id": "dg-10_1-02-1"},
+
 
     { t: "dl", items: [
       { k: "Non-determinism", v: "You cannot reproduce a failure by replaying the input. 1.2 measured logits differing by 1.984e-04 for the same prompt in one process with no sampling, purely from batch composition \u2014 so you need the actual request captured: inputs, retrieved chunks, the assembled prompt, the raw output." },

@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "conventions", text: "The conventions",
       sub: "Standard names, so a trace is readable by another tool" },
 
+    {"kind": "flow", "title": "The conventions buy correctness, not only portability", "caption": "The usual argument is portability — instrument once, change vendor later — and it is true and the weaker argument. **The stronger one came out of building the tracer: rolling up token counts by filtering on span kind overstated cost by 63% after an ordinary refactor**, because a span that should have been `INTERNAL` was `CLIENT`. A name that means exactly one thing is a name you can aggregate on safely, and an ad-hoc name is not.", "cols": 3, "nodes": [{"id": "p", "label": "Portability", "sub": "the usual argument", "tone": "accent"}, {"id": "k", "label": "Roll up tokens by span kind", "sub": "correct, and fragile", "tone": "warn"}, {"id": "r", "label": "An ordinary refactor", "sub": "one span mis-kinded", "tone": "crit"}, {"id": "o", "label": "Cost overstated by 63%", "sub": "silently", "tone": "crit"}, {"id": "n", "label": "A standard name means one thing", "sub": "so it aggregates safely", "tone": "good"}, {"id": "c", "label": "Correctness, then portability", "sub": "in that order", "tone": "teal"}], "edges": [["p", "n"], ["k", "r"], ["r", "o"], ["o", "n"], ["n", "c"]], "t": "diagram", "id": "dg-10_8-01-0"},
+
+
     { t: "code", lang: "text", title: "The GenAI semantic conventions", code: `  gen_ai.system                  the provider
   gen_ai.request.model           the model asked for
   gen_ai.response.model          the model that actually answered   <- these two differ!
@@ -39,6 +42,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "twomodels", text: "The two model fields",
       sub: "The cheapest detector there is" },
+
+    {"kind": "flow", "title": "Two model fields, and only one of them changes", "caption": "You log what you **requested** and what the provider **responded with**. When a provider moves an alias, **only the second changes**: you asked for `chat-large` yesterday and today, and yesterday that was `chat-large-2026-03-11`. So log both and alert when the response model is not the version you pinned — **one comparison on one attribute.** It also reframes the investigation: a quality metric tells you something got worse and leaves you hunting; this tells you the cause directly.", "cols": 3, "nodes": [{"id": "q", "label": "gen_ai.request.model", "sub": "what you asked for: chat-large", "tone": "accent"}, {"id": "r", "label": "gen_ai.response.model", "sub": "what you got: ...-2026-03-11", "tone": "accent"}, {"id": "a", "label": "An alias roll", "sub": "only the second one changes", "tone": "crit"}, {"id": "c", "label": "Alert on the mismatch", "sub": "one comparison, one attribute", "tone": "good"}, {"id": "i", "label": "It names the cause, not the symptom", "sub": "unlike a quality metric", "tone": "violet"}], "edges": [["q", "a"], ["r", "a"], ["a", "c"], ["c", "i"]], "t": "diagram", "id": "dg-10_8-02-1"},
+
 
     { t: "callout", kind: "warn", title: "`gen_ai.request.model` is what you asked for; `gen_ai.response.model` is what answered",
       body: [

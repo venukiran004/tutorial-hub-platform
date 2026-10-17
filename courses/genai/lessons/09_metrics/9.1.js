@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     {"kind": "matrix", "title": "Four families, sorted by what each one needs and cannot see", "caption": "The families are not ranked by quality — they are ranked by **what you have to supply**. Intrinsic metrics need only the model's own probabilities and are blind to whether the content is true. Reference-based metrics need a written gold answer per case, which is what caps the eval set, and are blind to a correct answer worded differently. Model-based metrics need a judge you have **validated**, and behavioural metrics need a checkable outcome and tell you nothing about why it failed.", "cols": ["Needs", "Blind to"], "rows": ["Intrinsic", "Reference-based", "Model-based", "Behavioural"], "cells": [["the model's token probabilities", {"text": "whether the content is true", "tone": "crit"}], [{"text": "a gold answer per case", "tone": "warn"}, "a correct answer worded differently"], [{"text": "a judge you have validated", "tone": "warn"}, "its own biases, until measured"], ["a checkable outcome", {"text": "why it failed, without the trace", "tone": "warn"}]], "t": "diagram", "id": "dg-9_1-01-0"},
 
+
+
     { t: "code", lang: "text", title: "the whole taxonomy", code: `1. INTRINSIC          "how surprised is the model by this text?"
    perplexity                              needs: the model's probabilities
    -> compares MODELS, not outputs. Cannot tell you if an answer is useful.

@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "ECE, and a uniform 0.20 shift", "caption": "Bin by stated confidence, take the absolute gap between mean confidence and actual accuracy in each bin, weight by bin size. A well-calibrated model reads **0.0136** with accuracy 0.758 against mean confidence 0.749 — tracking. Shift confidence up by 0.20 and ECE becomes **0.2075**, which is the shift showing up almost exactly: ECE is close to linear in a uniform offset, so the number is readable as \"how many points overconfident, on average\".", "left": "model", "codeW": 200, "vars": ["ECE", "accuracy", "mean confidence"], "steps": [{"code": "well calibrated", "state": ["0.0136", "0.758", "0.749"], "tone": "good"}, {"code": "overconfident by 0.20", "state": ["0.2075", "0.544", "0.752"], "changed": [0], "tone": "crit", "note": "the shift, almost exactly"}], "t": "diagram", "id": "dg-9_14-01-0"},
 
+
+
     { t: "math", tex: "\\text{ECE} = \\sum_{b=1}^{B} \\frac{n_b}{N}\\,\\big|\\,\\text{conf}(b) - \\text{acc}(b)\\,\\big|" },
 
     { t: "p", text: "Bin by stated confidence, take the absolute gap between mean confidence and actual accuracy inside each bin, and weight by bin size. Zero means confidence tracks accuracy exactly." },
@@ -67,6 +69,8 @@ EC.receiveLesson({
       sub: "Or the metric has a useless optimum" },
 
     {"kind": "flow", "title": "Refusal has to be measured in both directions", "caption": "A red-team suite measures whether the model does things it should not. **Optimise only that and the trivially best model refuses every request** — it scores perfectly and ships nothing. 7.11 catalogued hedging as the reward hack evaluation misses, because **a refusal is never *wrong* the way an incorrect answer is**, so nothing penalises it. Over-refusal is its safety-flavoured sibling, and the only defence is a second suite of benign requests that *should* be answered.", "cols": 3, "nodes": [{"id": "r", "label": "Red-team suite", "sub": "does it do what it should not?", "tone": "accent"}, {"id": "o", "label": "Optimise only that", "sub": "and refusing everything wins", "tone": "crit"}, {"id": "h", "label": "A refusal is never wrong", "sub": "the way an error is", "tone": "crit"}, {"id": "b", "label": "A benign suite too", "sub": "requests that should be answered", "tone": "good"}, {"id": "t", "label": "Two numbers, both reported", "sub": "or the metric has a trivial optimum", "tone": "violet"}], "edges": [["r", "o"], ["o", "h"], ["h", "b"], ["b", "t"]], "t": "diagram", "id": "dg-9_14-02-1"},
+
+
 
     { t: "callout", kind: "trap", title: "Measuring only harmful output makes \u201crefuse everything\u201d optimal",
       body: [

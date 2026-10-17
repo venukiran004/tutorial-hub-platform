@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "tiers", text: "The three tiers",
       sub: "Free, sampled, human" },
 
+    {"kind": "matrix", "title": "Three tiers, and the rule that comes first", "caption": "**Never block the response on a judge.** It adds a second of latency and a second failure mode for a score you can compute afterwards from the stored trace. Below that: **deterministic checks are free, so run them on everything** — empty retrieval, missing citation, malformed JSON and refusal patterns need no model. And sample for the judge, **stratified**: random 2% plus 100% of thumbs-down plus 100% of low-similarity retrievals, so the budget lands where the failures are.", "cols": ["The rule", "Why"], "rows": ["Never block on a judge", "Free checks everywhere", "Sample and stratify"], "cells": [[{"text": "score asynchronously from the trace", "tone": "crit"}, "a second of latency and a second failure mode"], [{"text": "empty retrieval, citations, JSON, refusals", "tone": "good"}, "no model needed, so no budget needed"], [{"text": "2% random + 100% of thumbs-down", "tone": "violet"}, "the budget lands where failures are"]], "t": "diagram", "id": "dg-10_11-01-0"},
+
+
     { t: "code", lang: "text", title: "What runs on what", code: `  every request  -> trace stored
         |
         +-- cheap, deterministic checks on 100%      free, instant
@@ -40,6 +43,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "cost", text: "Why a judge is dearer than the call it scores",
       sub: "Measured" },
+
+    {"kind": "flow", "title": "A judge call costs 107% of the generation it scores", "caption": "A faithfulness judge has to see **the context** to decide whether a claim is supported and **the answer** to find the claims — so its input is the generation's input plus the generation's output. That puts a judge call at **107% of the generation it scores**, which means judging every request **more than doubles your model spend**. Which is both why 'score a sample' is the only affordable policy and why the cheap tier matters: a citation check and a refusal regex cost nothing and catch a real share of failures.", "cols": 3, "nodes": [{"id": "c", "label": "The judge needs the context", "sub": "to check support", "tone": "accent"}, {"id": "a", "label": "And the answer", "sub": "to find the claims", "tone": "accent"}, {"id": "i", "label": "So its input is input plus output", "sub": "of the call it is scoring", "tone": "violet"}, {"id": "p", "label": "107% of the generation", "sub": "measured", "tone": "crit"}, {"id": "d", "label": "Judging everything doubles the bill", "sub": "more than doubles", "tone": "crit"}, {"id": "f", "label": "So prefer the free tier where it answers", "sub": "citations, refusals, empty retrieval", "tone": "good"}], "edges": [["c", "i"], ["a", "i"], ["i", "p"], ["p", "d"], ["d", "f"]], "t": "diagram", "id": "dg-10_11-02-1"},
+
 
     { t: "code", lang: "text", title: "Priced at $3.00 / $15.00 per million", code: `one generation :  1842 in / 214 out = $0.00874
 one judge call :  2356 in / 150 out = $0.00932

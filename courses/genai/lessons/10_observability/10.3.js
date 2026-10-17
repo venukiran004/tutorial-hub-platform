@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "quality", text: "Layer 1 \u2014 Quality",
       sub: "The product" },
 
+    {"kind": "matrix", "title": "Five quality metrics, and where each number comes from", "caption": "The third column is the one that decides whether a metric is affordable. **Answer accuracy needs an offline regression set and runs nightly**; faithfulness and relevancy need an LLM judge on sampled live traces, which 10.11 prices. **Refusal rate and thumbs-down need no model at all** — a regex and a product-UI join — which makes them the two to instrument first. The alert conditions are deliberately relative rather than absolute, because 10.12 shows an absolute threshold pages on noise.", "cols": ["Comes from", "Alert when"], "rows": ["Answer accuracy", "Faithfulness", "Answer relevancy", "Refusal rate", "Thumbs-down rate"], "cells": [["an offline eval, nightly", {"text": "2 sigma below the 7-day mean", "tone": "good"}], [{"text": "a judge on sampled traces", "tone": "warn"}, "below 0.90"], [{"text": "a judge", "tone": "warn"}, "below 0.85"], [{"text": "a regex - free", "tone": "good"}, "doubles week on week"], [{"text": "the product UI, joined to the trace", "tone": "good"}, "doubles, or beats 5%"]], "t": "diagram", "id": "dg-10_3-01-0"},
+
+
     { t: "table",
       head: ["Metric", "Definition", "Where it comes from", "Alert when"],
       rows: [
@@ -37,6 +40,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "retrieval", text: "Layer 2 \u2014 Retrieval",
       sub: "The layer that fails most often" },
+
+    {"kind": "matrix", "title": "Six retrieval metrics, and the two that come free from the span", "caption": "Most of this layer needs a judge or a labelled set. **Two do not: empty-retrieval rate and mean top-1 score come straight off the retriever span**, cost nothing, and are the earliest signals in the whole system — 10.13's incident shows empty retrieval going from 0.4% to 11.2% while faithfulness stayed at 0.95. Instrument those two before buying anything, because they catch an index or embedding change within the hour.", "cols": ["Comes from", "Alert when"], "rows": ["Context recall", "Context precision", "Recall@k, MRR, NDCG", "Empty-retrieval rate", "Mean top-1 score", "Index size and freshness"], "cells": [[{"text": "a judge against ground truth", "tone": "warn"}, "below 0.85"], [{"text": "a judge, or labelled qrels", "tone": "warn"}, "below 0.60"], ["a nightly retrieval eval", "recall@10 below 0.90"], [{"text": "the retriever span - free", "tone": "good"}, {"text": "above 2%", "tone": "violet"}], [{"text": "the retriever span - free", "tone": "good"}, {"text": "drops more than 0.10", "tone": "violet"}], ["the indexer job", "count moves more than 5%"]], "t": "diagram", "id": "dg-10_3-02-1"},
+
 
     { t: "table",
       head: ["Metric", "Definition", "Where it comes from", "Alert when"],

@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "g713.py \u00a7A \u2014 dataset cost, human against AI", code: `dataset size                  human @$3     AI @$0.001            ratio
 1,000 pairs                      $3,000             $1            3000x
 10,000 pairs                    $30,000            $10            3000x
@@ -62,6 +64,8 @@ EC.receiveLesson({
       sub: "Two phases, and an explicit document" },
 
     {"kind": "flow", "title": "Constitutional AI replaces the criterion, not just the labeller", "caption": "RLAIF swaps a human labeller for a model and keeps the criterion implicit — whatever the judge model happens to prefer. Constitutional AI additionally replaces the criterion with **something written down**: the model critiques its own output against an explicit set of principles, then revises. Which changes what can be audited. A disagreement about behaviour becomes a disagreement about a **text you can read and edit**, rather than about an annotator pool's tacit preferences.", "cols": 3, "nodes": [{"id": "h", "label": "RLHF: a human labeller", "sub": "criterion implicit, in their heads", "tone": "accent"}, {"id": "a", "label": "RLAIF: a model labeller", "sub": "criterion implicit, in its weights", "tone": "accent"}, {"id": "c", "label": "Constitutional: written principles", "sub": "critique, then revise", "tone": "violet"}, {"id": "r", "label": "The criterion becomes a document", "sub": "readable, editable, versioned", "tone": "good"}, {"id": "d", "label": "So disagreements are about the text", "sub": "not about tacit preferences", "tone": "teal"}], "edges": [["h", "a"], ["a", "c"], ["c", "r"], ["r", "d"]], "t": "diagram", "id": "dg-7_12-02-1"},
+
+
 
 
 

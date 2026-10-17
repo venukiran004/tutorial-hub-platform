@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "runbook", text: "The runbook",
       sub: "Pin this next to the dashboard" },
 
+    {"kind": "steps", "title": "Two experiments, ten minutes, no metrics and no labels", "caption": "Before any statistics: **run the retriever on its own with no model involved.** Give it the failing queries and look at what comes back — if the right chunk is not there, you have a retrieval problem and nothing about the model matters. **Then run the generator with hand-picked perfect context**: paste in the chunks that should have been retrieved, and if the answer is now correct, generation is fine. Between them they name the broken layer with **no metrics, no judge and no labels** — the statistical version needs a labelled set and a day.", "items": [{"label": "Run the retriever alone, on the failing queries", "desc": "no model involved; look at what comes back", "code": "1", "tone": "violet"}, {"label": "Right chunk absent? It is retrieval", "desc": "and nothing about the model matters", "code": "2", "tone": "good"}, {"label": "Run the generator with hand-picked perfect context", "desc": "paste the chunks that should have been found", "code": "3", "tone": "violet"}, {"label": "Answer now correct? Generation is fine", "desc": "so the layer is named", "code": "4", "tone": "good"}, {"label": "Ten minutes, no judge, no labelled set", "desc": "the statistical version needs both, and a day", "code": "5", "tone": "teal"}], "t": "diagram", "id": "dg-10_14-01-0"},
+
+
     { t: "code", lang: "text", title: "Ten steps, in order", code: `   1. Is it real?          sample size, confidence interval, 2 days of data
    2. When did it start?   the exact hour. Line it up against the change log.
    3. What changed?        deploys, prompt edits, index rebuilds, provider notices,
@@ -52,6 +55,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "tension", text: "Where the runbook fights itself",
       sub: "Step 4 against the alerting arithmetic" },
 
+    {"kind": "flow", "title": "Slice freely in an incident, sparingly in an alert rule", "caption": "The runbook says to slice, and it is right — 10.13 found a 21% cohort inside a 60% headline. But **every slice divides the sample**, and 10.12's arithmetic says the detectable effect grows as the slice shrinks. Neither the runbook nor the alerting guidance mentions this, and **the two instructions genuinely conflict**. The resolution is to separate the activities: slicing is for investigation, where you already know something is wrong and are hunting for where. For small slices you do want to alert on, lengthen the window instead.", "cols": 3, "nodes": [{"id": "s", "label": "Slice: it found a 21% cohort", "sub": "inside a 60% headline", "tone": "good"}, {"id": "d", "label": "But each slice divides the sample", "sub": "and the margin grows", "tone": "crit"}, {"id": "c", "label": "The two instructions conflict", "sub": "and neither mentions it", "tone": "crit"}, {"id": "i", "label": "Slice freely when investigating", "sub": "you already know it is wrong", "tone": "good"}, {"id": "a", "label": "Sparingly in an alert rule", "sub": "or it pages on noise", "tone": "good"}, {"id": "w", "label": "Small slice you must alert on?", "sub": "lengthen the window", "tone": "violet"}], "edges": [["s", "d"], ["d", "c"], ["c", "i"], ["c", "a"], ["a", "w"]], "t": "diagram", "id": "dg-10_14-02-1"},
+
+
     { t: "callout", kind: "tradeoff", title: "\u201cSlice it\u201d and \u201calert at two sigma\u201d cannot both be followed on a daily window",
       body: [
         { t: "p", text: "Step 4 is right: an average is a mix of populations, and 10.13 showed a 21% cohort hiding inside a 60% headline. But every slice divides the sample, so the detectable effect grows as \u221ak \u2014 and 10.12 measured a 200-example daily set resolving to 3.08 points at the headline and **10.68 points across twelve tenants**." },
@@ -61,6 +67,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", id: "pitfalls", text: "The pitfalls",
       sub: "Each one makes a runbook step impossible" },
+
+    {"kind": "matrix", "title": "Eight pitfalls, and the step each one breaks", "caption": "The first is the one that makes everything else impossible: **retrieval and generation failures look identical in the final answer, so you cannot debug what you did not capture.** The third is the one that makes \"nothing changed\" unprovable — model alias, embedding model, prompt template, index and chunking config, and without **all five** the claim cannot be checked. And the seventh is 10.10's finding: head sampling at 5% keeps a random 5% and throws away the failures.", "cols": ["Why it hurts"], "rows": ["Logging only the answer", "One number, no slices", "No version pins", "A judge in the request path", "Alerting on any drop", "Tracing without attributes", "Head sampling at 5%", "Shipping PII to a vendor"], "cells": [[{"text": "retrieval and generation failures look identical", "tone": "crit"}], [{"text": "it hid a 21% cohort inside a 60% headline", "tone": "crit"}], [{"text": "five of them, and without all five 'nothing changed' is unprovable", "tone": "crit"}], ["a second of latency and a second failure mode, for a score you can defer"], [{"text": "200 samples carry +-3 points; people stop reading alerts", "tone": "warn"}], [{"text": "a tree of names with no scores or token counts is a pretty picture", "tone": "warn"}], [{"text": "you keep a random 5% and throw away the failures", "tone": "crit"}], [{"text": "redact at export - once in their store it is in their backups", "tone": "crit"}]], "t": "diagram", "id": "dg-10_14-03-2"},
+
 
     { t: "table",
       head: ["Pitfall", "Why it hurts", "Which step it breaks"],

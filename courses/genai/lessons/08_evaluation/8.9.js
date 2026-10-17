@@ -22,6 +22,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Dimension", "Metric", "What it catches"],
       rows: [
@@ -52,6 +54,8 @@ assert steps <= 6                                 # efficiency / no runaway loop
       sub: "And the path does not always matter" },
 
     {"kind": "matrix", "title": "Three ways to score a path, and what each one punishes", "caption": "Gold-trace matching is deterministic and cheap and **punishes valid alternative routes** — which matters because most tasks have several. Judging the trajectory handles that and imports every bias from 8.6, position and verbosity included. Outcome-only is correct when the path genuinely does not matter, and 7.9's reasoning models are the case where it does not: the model was rewarded on the answer alone and discovered its own path.", "cols": ["Cost", "What it punishes"], "rows": ["Gold-trace matching", "Judge the trajectory", "Outcome only"], "cells": [[{"text": "deterministic and cheap", "tone": "good"}, {"text": "valid alternative routes", "tone": "crit"}], ["a model call per trace", {"text": "imports 8.6's biases", "tone": "warn"}], [{"text": "a final-state check", "tone": "good"}, "nothing - and sees nothing either"]], "t": "diagram", "id": "dg-8_9-02-1"},
+
+
 
 
 

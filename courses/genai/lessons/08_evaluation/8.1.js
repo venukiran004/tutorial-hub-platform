@@ -22,6 +22,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "The question \u201cis this good?\u201d means something different depending on what \u201cthis\u201d is, and the giveaway is the unit of measurement." },
 
     { t: "table",
@@ -49,6 +51,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "the four classes, in order", code: `exact metrics  ->  reference-based  ->  model-graded (LLM-as-judge)  ->  human judgment
 (cheap, narrow)    (BLEU/ROUGE/F1)     (scalable, noisy)                (gold, expensive)`,
       hl: [1, 2],
@@ -72,6 +76,8 @@ EC.receiveLesson({
       sub: "Two axes, not one scale" },
 
     {"kind": "matrix", "title": "Four terms, and the one that decides how large your eval set can be", "caption": "Offline against online is a question of *when*; reference-based against reference-free is a question of **what bounds you**. A gold answer per case means somebody has to write it, so annotation effort caps the set size — and that is why reference-free metrics matter structurally rather than conveniently: faithfulness, answer relevancy and context precision all need **no gold answer**, so the set can be as large as your traffic.", "cols": ["What it means", "The consequence"], "rows": ["Offline evaluation", "Online evaluation", "Reference-based", "Reference-free"], "cells": [["a fixed dataset, before deploy", "regression testing; 8.10 makes it a gate"], ["live traffic: A/B, feedback, drift", {"text": "the only ground truth (8.11)", "tone": "violet"}], ["compare against a gold answer", {"text": "annotation effort caps the set size", "tone": "crit"}], ["score on its own terms", {"text": "so the set can be as large as traffic", "tone": "good"}]], "t": "diagram", "id": "dg-8_1-03-2"},
+
+
 
 
 

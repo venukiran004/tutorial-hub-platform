@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "BLEU is a geometric mean of clipped precisions, times a length penalty", "caption": "Three pieces, each doing one job. **Modified n-gram precision** counts matches with each reference n-gram usable only as often as it appears — the clipping of §03. The **geometric mean** across n = 1 to 4 means a zero at any order drives the whole score to zero, which is why BLEU is harsh on short candidates. And the **brevity penalty** exists because precision alone rewards saying less: a one-word candidate that happens to match scores 1.0 without it.", "cols": 3, "nodes": [{"id": "p", "label": "Clipped n-gram precision", "sub": "each reference n-gram counts once", "tone": "accent"}, {"id": "g", "label": "Geometric mean over n=1..4", "sub": "a zero anywhere zeroes everything", "tone": "violet"}, {"id": "b", "label": "Brevity penalty", "sub": "e^(1 - r/c) when c <= r", "tone": "accent"}, {"id": "w", "label": "Because precision rewards saying less", "sub": "a one-word match scores 1.0", "tone": "crit"}, {"id": "s", "label": "BP x exp(sum of w_n log p_n)", "sub": "the whole formula", "tone": "good"}], "edges": [["p", "g"], ["b", "w"], ["g", "s"], ["w", "s"]], "t": "diagram", "id": "dg-9_3-01-0"},
 
+
+
     { t: "math", tex: "\\text{BLEU} = \\text{BP}\\cdot\\exp\\!\\left(\\sum_{n=1}^{N} w_n \\log p_n\\right), \\qquad \\text{BP} = \\begin{cases} 1 & c > r \\\\ e^{(1 - r/c)} & c \\le r\\end{cases}" },
 
     { t: "dl", items: [
@@ -32,6 +34,8 @@ EC.receiveLesson({
       sub: "Six tokens against five" },
 
     {"kind": "trace", "title": "BLEU-4 worked through, every intermediate", "caption": "Note how the clipping bites: at n=2 the candidate has 4 bigrams and only **3 survive clipping**, and at n=4 only 1 of 2. The geometric mean of the four precisions is 0.7071, the brevity penalty for a 5-token candidate against a 6-token reference is 0.818731, and the product is **0.578930**. Every figure reproduces the published one to four decimal places.", "left": "n", "codeW": 130, "vars": ["candidate", "clipped", "p_n"], "steps": [{"code": "1", "state": ["5", "5", "1.0000"], "tone": "good"}, {"code": "2", "state": ["4", "3", "0.7500"], "changed": [1], "tone": "accent"}, {"code": "3", "state": ["3", "2", "0.6667"], "tone": "accent"}, {"code": "4", "state": ["2", "1", "0.5000"], "changed": [1], "tone": "warn"}, {"code": "geometric mean", "state": ["", "", "0.707107"], "tone": "violet"}, {"code": "BP = exp(1 - 6/5)", "state": ["0.818731", "", ""], "tone": "accent"}, {"code": "BLEU-4", "state": ["0.578930", "", ""], "tone": "good"}], "t": "diagram", "id": "dg-9_3-02-1"},
+
+
 
     { t: "code", lang: "text", title: "the pair", code: `reference : the cat sat on the mat      (6 tokens)
 candidate : the cat sat on mat          (5 tokens)`,
@@ -79,6 +83,8 @@ bleu = bp * geo`,
       sub: "The degenerate case it prevents" },
 
     {"kind": "flow", "title": "Why clipping exists, in one candidate", "caption": "Take `\"the the the the the\"` against a reference containing `\"the\"` twice. **Unclipped, all five candidate unigrams appear in the reference, so precision is 1.0** — a perfect score for a string that says nothing. Clipping caps the count at how often the n-gram appears in the reference, giving 2/5. That is the entire reason for the `min(count_candidate, count_reference)` term, and it generalises: clipping is what stops a precision metric rewarding repetition.", "cols": 3, "nodes": [{"id": "c", "label": "\"the the the the the\"", "sub": "against a reference with 'the' twice", "tone": "accent"}, {"id": "u", "label": "Unclipped precision: 1.0", "sub": "all five appear in the reference", "tone": "crit"}, {"id": "l", "label": "Clipped at the reference count", "sub": "min(5, 2) = 2", "tone": "good"}, {"id": "p", "label": "Precision 2/5", "sub": "which is the honest figure", "tone": "good"}, {"id": "g", "label": "It generalises", "sub": "precision must not reward repetition", "tone": "teal"}], "edges": [["c", "u"], ["c", "l"], ["l", "p"], ["p", "g"]], "t": "diagram", "id": "dg-9_3-03-2"},
+
+
 
     { t: "callout", kind: "good", title: "Without clipping, repetition scores perfectly",
       body: [

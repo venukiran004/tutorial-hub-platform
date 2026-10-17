@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "four", text: "The four signals",
       sub: "One question each" },
 
+    {"kind": "matrix", "title": "Four signals, and what each one can answer", "caption": "The cardinality column is what decides retention policy. **Metrics are low-cardinality numbers over time and cheap to keep forever**, which is why trends live there. Logs and traces are high-cardinality and have to be sampled or expired. Evals sit in the middle and are the LLM-specific addition — and the questions column shows why they cannot be folded into any of the other three.", "cols": ["Answers", "Cardinality"], "rows": ["Metrics", "Logs", "Traces", "Evals"], "cells": [["is something wrong, and since when?", {"text": "low - keep forever", "tone": "good"}], ["what did this component say?", {"text": "high - sample or expire", "tone": "warn"}], [{"text": "where in the pipeline did it break?", "tone": "good"}, {"text": "high - sampled", "tone": "warn"}], [{"text": "was the answer any good?", "tone": "violet"}, "medium - the LLM-specific one"]], "t": "diagram", "id": "dg-10_2-01-0"},
+
+
     { t: "table",
       head: ["Signal", "Shape", "Answers", "Cardinality"],
       rows: [
@@ -36,6 +39,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "evals", text: "Why evals are a fourth signal",
       sub: "Not a kind of metric" },
+
+    {"kind": "flow", "title": "A metric comes from the machinery; an eval score comes from the meaning", "caption": "A metric is derived from counts, durations and bytes. **An eval score is derived from the meaning of a request and its response**, which is why it does not fit in the metrics pillar even though it ends up on a dashboard as a number: faithfulness at 0.91 is the output of a judge with a rubric and a version, not a counter. The operational consequence is specific — **an eval score must be joinable to the trace that produced it.** A faithfulness score with no trace is a number you cannot act on.", "cols": 3, "nodes": [{"id": "m", "label": "A metric: counts, durations, bytes", "sub": "derived from the machinery", "tone": "accent"}, {"id": "e", "label": "An eval score: 0.91 faithfulness", "sub": "derived from the meaning", "tone": "violet"}, {"id": "j", "label": "Produced by a judge with a rubric", "sub": "and a rubric version", "tone": "warn"}, {"id": "t", "label": "So it must join to its trace", "sub": "by trace_id", "tone": "good"}, {"id": "n", "label": "A score with no trace is unactionable", "sub": "which is the common failure", "tone": "crit"}], "edges": [["m", "e"], ["e", "j"], ["j", "t"], ["t", "n"]], "t": "diagram", "id": "dg-10_2-02-1"},
+
 
     { t: "callout", kind: "good", title: "An eval score is a judgement about content, attached to a specific request",
       body: [

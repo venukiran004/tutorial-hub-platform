@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "An agent judge sees a different object entirely", "caption": "An answer judge sees a question and a response. An agent judge sees **the whole trace** — which tools were called, with what arguments, in what order, what came back, and how the agent reacted to a failure. That supports judgements an answer judge cannot make: whether the right answer was reached **by luck**, whether a tool error was recovered from or silently swallowed, whether the path was reasonable. None of that is visible in the final string.", "cols": 3, "nodes": [{"id": "a", "label": "An answer judge: question and response", "sub": "one string in, one score out", "tone": "accent"}, {"id": "t", "label": "An agent judge: the whole trace", "sub": "tools, arguments, order, results", "tone": "violet"}, {"id": "l", "label": "Was it right by luck?", "sub": "invisible in the answer", "tone": "good"}, {"id": "r", "label": "Did it recover from the tool error?", "sub": "or swallow it silently", "tone": "good"}, {"id": "p", "label": "Was the path reasonable?", "sub": "a judgement about process", "tone": "good"}], "edges": [["a", "t"], ["t", "l"], ["t", "r"], ["t", "p"]], "t": "diagram", "id": "dg-9_13-01-0"},
 
+
+
     { t: "p", text: "An answer judge sees a question and a response. An agent judge sees the whole trace \u2014 which tools were called, with what arguments, in what order, what came back, and how the agent reacted to a failure. That is a different object and it supports judgements an answer judge cannot make." },
 
     { t: "callout", kind: "insight", title: "The judgement it adds is \u201cwas this a reasonable way to get there\u201d",
@@ -40,6 +42,8 @@ EC.receiveLesson({
       sub: "Seven, from 8.9, with the statistical framing added" },
 
     {"kind": "matrix", "title": "Seven dimensions, and five of them are free", "caption": "The column that matters operationally is the last one. **Tool selection, efficiency, recovery and cost are all computable from the trace with no judge at all** — they are counting exercises. Only trajectory quality genuinely needs a judge, and tool arguments need one only for the semantic half: schema validity is free. So an agent evaluation suite can be mostly deterministic, which is the opposite of what the phrase \"agent-as-a-judge\" suggests.", "cols": ["Metric", "Free or judged?"], "rows": ["Task success", "Tool selection", "Tool arguments", "Trajectory quality", "Efficiency", "Recovery", "Cost and latency"], "cells": [["final-state check, or a judge", "free if checkable"], ["right tool per step", {"text": "free", "tone": "good"}], ["schema plus semantics", {"text": "schema free, semantics judged", "tone": "accent"}], ["against a gold trace or a judge", {"text": "judged", "tone": "warn"}], ["steps, calls, tokens, retries", {"text": "free", "tone": "good"}], ["recovers from an error?", {"text": "free", "tone": "good"}], ["per resolved task", {"text": "free", "tone": "good"}]], "t": "diagram", "id": "dg-9_13-02-1"},
+
+
 
     { t: "table",
       head: ["Dimension", "Metric", "Free or judged?"],
@@ -64,6 +68,8 @@ EC.receiveLesson({
       sub: "The statistical framing agents specifically need" },
 
     {"kind": "flow", "title": "A one-shot success figure on an agent is one draw from a distribution", "caption": "Temperature, tool latency and model non-determinism mean the same input produces **different trajectories**, so a single run is a sample rather than a measurement. 9.7's framing applies directly: report pass@1 and pass@k with **n and temperature attached**, and read the gap between them as an **instability budget**. An agent at pass@1 of 0.70 and pass@5 of 0.95 is not a 70% agent or a 95% agent — it is an agent whose answer depends on the draw, and that is the number to act on.", "cols": 3, "nodes": [{"id": "n", "label": "Temperature, tool latency, non-determinism", "sub": "the same input, different traces", "tone": "accent"}, {"id": "o", "label": "One run is one draw", "sub": "not a measurement", "tone": "crit"}, {"id": "p", "label": "Report pass@1 and pass@k", "sub": "with n and temperature attached", "tone": "good"}, {"id": "g", "label": "The gap is an instability budget", "sub": "0.70 against 0.95", "tone": "violet"}, {"id": "a", "label": "And that is the number to act on", "sub": "neither 70% nor 95%", "tone": "teal"}], "edges": [["n", "o"], ["o", "p"], ["p", "g"], ["g", "a"]], "t": "diagram", "id": "dg-9_13-03-2"},
+
+
 
     { t: "callout", kind: "warn", title: "So every agent metric should carry a sampling budget",
       body: [

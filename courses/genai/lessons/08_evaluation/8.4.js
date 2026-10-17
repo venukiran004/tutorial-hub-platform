@@ -22,6 +22,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Benchmark", "Tests", "Format"],
       rows: [
@@ -51,6 +53,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Benchmark data leaks into training sets. The mechanism is unglamorous \u2014 these datasets are public, discussed in papers, reproduced in blog posts and GitHub repositories, and pretraining corpora are scraped from the web. A model can have seen the test." },
 
     { t: "callout", kind: "warn", title: "Which makes a benchmark score an upper bound on capability",
@@ -64,6 +68,8 @@ EC.receiveLesson({
       sub: "The score is a property of the harness too" },
 
     {"kind": "flow", "title": "A benchmark number without its harness is not reproducible", "caption": "Scores shift with formatting, few-shot count and answer-parsing — and that is not a minor caveat, it means **the number is a property of the harness as much as of the model.** Two papers reporting MMLU for the same model can legitimately differ by several points without either being wrong. Which is why the instruction is always to report the harness and its settings, and why `lm-evaluation-harness` exists at all: it is a fixed harness so the remaining difference is the model.", "cols": 3, "nodes": [{"id": "f", "label": "Formatting", "sub": "prompt template, answer markers", "tone": "accent"}, {"id": "s", "label": "Few-shot count", "sub": "0, 5, 25 shots", "tone": "accent"}, {"id": "p", "label": "Answer parsing", "sub": "how a choice is extracted", "tone": "accent"}, {"id": "n", "label": "The number moves several points", "sub": "with the model unchanged", "tone": "crit"}, {"id": "r", "label": "So report the harness and settings", "sub": "or it is not reproducible", "tone": "good"}, {"id": "h", "label": "Which is why a fixed harness exists", "sub": "lm-evaluation-harness", "tone": "teal"}], "edges": [["f", "n"], ["s", "n"], ["p", "n"], ["n", "r"], ["r", "h"]], "t": "diagram", "id": "dg-8_4-03-2"},
+
+
 
 
 

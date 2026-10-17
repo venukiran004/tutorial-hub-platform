@@ -111,6 +111,8 @@ but the real pipeline shrinks the shortest side to 768 first, giving 765.`,
 
 
 
+
+
     { t: "p", text: "`detail=\"low\"` gives the model a single 512-pixel view of the whole image, for a flat 85 tokens. `detail=\"high\"` gives it that overview *plus* a grid of 512-pixel crops at higher resolution. The difference is whether the model can read small text and resolve fine structure, and it costs 9× on the measured square image." },
 
     { t: "code", lang: "python", title: "g18.py — the price of detail", code: `print("cost of one high-detail 1024x1024 image at $2.50/1M input: $%.6f"
@@ -146,6 +148,8 @@ print("  ratio: %.1fx" % (765 / 85))`,
       sub: "Images are input tokens and share the window with everything else" },
 
     {"kind": "flow", "title": "Image tokens are input tokens, and they cannot be truncated", "caption": "Everything from 1.5 applies unchanged — image tokens count against the window and leave less room for output. What is different is that they arrive in **large indivisible blocks**. You can drop a retrieved chunk to make room; you cannot shave 200 tokens off an image. So a multimodal budget has to be computed before the prompt is assembled, not trimmed afterwards.", "cols": 3, "nodes": [{"id": "i", "label": "An image is input tokens", "sub": "765 per page at high detail", "tone": "accent"}, {"id": "w", "label": "Counted against the window", "sub": "like any other input", "tone": "accent"}, {"id": "b", "label": "But indivisible", "sub": "no partial image", "tone": "crit"}, {"id": "t", "label": "So text cannot be trimmed to fit", "sub": "the block is all or nothing", "tone": "crit"}, {"id": "c", "label": "Compute the budget first", "sub": "images, then output, then prompt", "tone": "good"}, {"id": "d", "label": "Or decide to send fewer images", "sub": "the only real lever", "tone": "teal"}], "edges": [["i", "w"], ["w", "b"], ["b", "t"], ["t", "c"], ["c", "d"]], "t": "diagram", "id": "dg-1_11-03-1"},
+
+
 
 
 
@@ -200,6 +204,8 @@ print("  ratio: %.1fx" % (765 / 85))`,
       sub: "A vision model is not an OCR engine, and is priced accordingly" },
 
     {"kind": "flow", "title": "Plausible-but-wrong costs more to find than obviously-wrong", "caption": "A vision model will read a scanned document, often well. It will also cost 765 tokens a page at high detail, take seconds, and occasionally hallucinate a digit — and that is the whole argument. **An OCR engine with low confidence produces garbage that is obviously garbage**; a vision model produces plausible numbers. The first failure is caught by the next person who looks; the second is caught by an audit, months later, if at all.", "cols": 3, "nodes": [{"id": "s", "label": "A scanned table", "sub": "the case that comes up constantly", "tone": "accent"}, {"id": "v", "label": "A vision model reads it", "sub": "765 tokens a page, seconds", "tone": "warn"}, {"id": "o", "label": "OCR reads it", "sub": "cheaper, and faster", "tone": "good"}, {"id": "p", "label": "Fails as plausible numbers", "sub": "one digit, quietly wrong", "tone": "crit"}, {"id": "g", "label": "Fails as obvious garbage", "sub": "with a confidence score", "tone": "good"}, {"id": "c", "label": "The second failure is cheaper", "sub": "11.1 is why models produce the first", "tone": "teal"}], "edges": [["s", "v"], ["s", "o"], ["v", "p"], ["o", "g"], ["p", "c"], ["g", "c"]], "t": "diagram", "id": "dg-1_11-04-2"},
+
+
 
 
 

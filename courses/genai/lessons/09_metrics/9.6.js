@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     {"kind": "matrix", "title": "Three metrics for constrained output", "caption": "These are the cheapest metrics in the module and the ones with no judge, no reference model and no ambiguity — **provided the output is genuinely constrained**. Exact match is right for extraction, classification and structured fields, and the words *after normalisation* in its definition are doing almost all of the work, which §02 is about. Token F1 is the fallback for short answers where the wording varies slightly.", "cols": ["Definition", "Use for"], "rows": ["Exact match", "Token F1", "Accuracy"], "cells": [[{"text": "equals the reference, after normalisation", "tone": "violet"}, "extraction, classification, structured"], ["harmonic mean of token P and R", "short-answer QA with varied wording"], ["fraction correct", "multiple-choice benchmarks"]], "t": "diagram", "id": "dg-9_6-01-0"},
 
+
+
     { t: "table",
       head: ["Metric", "Definition", "Use for"],
       rows: [
@@ -39,6 +41,8 @@ EC.receiveLesson({
       sub: "And it must be written once" },
 
     {"kind": "flow", "title": "Without normalisation the metric is measuring formatting", "caption": "Lowercase, strip punctuation, strip articles, collapse whitespace — four operations, and without them **`\"The Answer.\"` and `\"answer\"` are different strings**. A model that is right every time then scores zero, and what you have built is a formatting checker wearing a correctness metric's name. Which is why every serious QA benchmark publishes its normaliser alongside its data: the normaliser *is* part of the metric.", "cols": 4, "nodes": [{"id": "l", "label": "Lowercase", "sub": "", "tone": "good"}, {"id": "p", "label": "Strip punctuation", "sub": "", "tone": "good"}, {"id": "a", "label": "Strip articles", "sub": "a, an, the", "tone": "good"}, {"id": "w", "label": "Collapse whitespace", "sub": "", "tone": "good"}, {"id": "n", "label": "Skip them and \"The Answer.\" != \"answer\"", "sub": "you built a formatting checker", "tone": "crit"}], "edges": [["l", "p"], ["p", "a"], ["a", "w"], ["w", "n"]], "t": "diagram", "id": "dg-9_6-02-1"},
+
+
 
     { t: "p", text: "Before comparing: lowercase, strip punctuation, strip articles, collapse whitespace. Otherwise `\u201cThe Answer.\u201d` and `\u201canswer\u201d` are different strings and your metric is measuring formatting." },
 
@@ -73,6 +77,8 @@ def exact_match(pred, gold):
       sub: "For when wording varies slightly" },
 
     {"kind": "trace", "title": "Three predictions, exact match 0.0 every time", "caption": "All three say the right thing and **all three score exact match 0.0**. Token F1 separates them usefully: adding a harmless word costs little (0.8889), spelling the number differently costs more (0.7500), and **reordering costs nothing at all — 1.0000**, because F1 treats both strings as bags of tokens. That last row is the limitation to keep in mind: token F1 cannot see word order, so `\"per year 18 days\"` is a perfect answer by this metric.", "left": "prediction", "codeW": 210, "vars": ["exact match", "token F1"], "steps": [{"code": "'18 vacation days per year'", "state": ["0.0", "0.8889"], "tone": "accent"}, {"code": "'eighteen days per year'", "state": ["0.0", "0.7500"], "changed": [1], "tone": "warn"}, {"code": "'per year 18 days'", "state": ["0.0", "1.0000"], "changed": [1], "tone": "crit", "note": "order is invisible"}], "t": "diagram", "id": "dg-9_6-03-2"},
+
+
 
     { t: "p", text: "Token F1 treats both strings as bags of tokens and takes the harmonic mean of precision and recall \u2014 the same arithmetic as 9.4\u2019s ROUGE-1, applied to a short answer rather than a summary." },
 

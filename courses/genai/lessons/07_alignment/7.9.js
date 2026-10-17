@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "the whole idea", code: `def reward(problem, completion):
     if problem.type == "math":
         return 1.0 if extract_boxed(completion) == problem.gold else 0.0
@@ -64,6 +66,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "7.8 measured that GRPO produces exactly zero advantage when all G samples in a group receive the same reward. With a learned reward model, continuous scores make exact ties rare. With a 0/1 verifier they are the common case." },
 
     { t: "code", lang: "text", title: "7.8's measurement, re-read for RLVR", code: `rewards                        std        advantages
@@ -86,6 +90,8 @@ mean |advantage|: 0.000 at 0/6, 0.6802 at 1/6, 0.9127 at 3/6, 0.000 at 6/6`,
       sub: "The DeepSeek-R1 shape, in four stages" },
 
     {"kind": "steps", "title": "Four stages, and why stage 3 is not circular", "caption": "Re-training on the model's own correct outputs sounds circular and is not, because **RL and SFT move weights differently**: RL gives a noisy, high-variance signal, and SFT gives dense imitation. So stage 3 **consolidates** — it takes the behaviour RL discovered stochastically and makes it the default, which is cheaper and more stable than continuing to run RL. It is the same mechanism as 7.13's finding that distilling a reasoning model's traces beats training the smaller model with RL directly.", "items": [{"label": "Cold-start SFT (optional)", "desc": "a few thousand long chain-of-thought examples, for a readable format", "code": "1", "tone": "accent"}, {"label": "GRPO with verifiable rewards", "desc": "maths and code - this is where it learns to think longer", "code": "2", "tone": "violet"}, {"label": "Rejection sampling", "desc": "keep the RL model's correct traces and use them as new SFT data", "code": "3", "tone": "good"}, {"label": "A final preference or safety pass", "desc": "DPO or RLHF for what no verifier can supply", "code": "4", "tone": "good"}], "t": "diagram", "id": "dg-7_9-03-2"},
+
+
 
 
 
@@ -116,6 +122,8 @@ mean |advantage|: 0.000 at 0/6, 0.6802 at 1/6, 0.9127 at 3/6, 0.000 at 6/6`,
       sub: "The result that made this approach famous" },
 
     {"kind": "flow", "title": "Nobody told it to think longer", "caption": "Given only *correct answer = 1* as a signal, **response length grew on its own** over training. No part of the reward mentions length, reasoning steps, backtracking or verification — and behaviours like *\"Wait, let me reconsider…\"* appeared **without ever being demonstrated**. The mechanism is unglamorous and worth stating: longer reasoning raises the pass rate, the pass rate is the only thing rewarded, so length rises as a side effect of the thing that was optimised.", "cols": 3, "nodes": [{"id": "r", "label": "The reward: correct = 1", "sub": "nothing else at all", "tone": "violet"}, {"id": "l", "label": "Longer reasoning passes more often", "sub": "on these problems", "tone": "accent"}, {"id": "g", "label": "So length grows on its own", "sub": "never mentioned in the reward", "tone": "good"}, {"id": "b", "label": "And backtracking appears", "sub": "'Wait, let me reconsider...'", "tone": "good"}, {"id": "n", "label": "Never demonstrated to it", "sub": "no example contained it", "tone": "violet"}, {"id": "s", "label": "A side effect of what was optimised", "sub": "which is the whole mechanism", "tone": "teal"}], "edges": [["r", "l"], ["l", "g"], ["g", "b"], ["b", "n"], ["n", "s"]], "t": "diagram", "id": "dg-7_9-04-3"},
+
+
 
 
 

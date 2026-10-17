@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "A point estimate without an interval is a coin flip dressed as a decision", "caption": "Every metric in this module produces a point estimate, and **a point estimate without an interval cannot support a decision.** A three-point gap on 200 examples sits well inside a ±5.3-point margin, so the data is consistent with either variant being better — and shipping on it is exactly the phrase: a coin flip dressed as a decision. This is the most common unforced error in the module, and the fix is one line of arithmetic.", "cols": 3, "nodes": [{"id": "p", "label": "A point estimate", "sub": "every metric here produces one", "tone": "accent"}, {"id": "g", "label": "A 3-point gap on 200 examples", "sub": "looks like a result", "tone": "warn"}, {"id": "m", "label": "Inside a +-5.3-point margin", "sub": "so both orderings fit the data", "tone": "crit"}, {"id": "c", "label": "A coin flip dressed as a decision", "sub": "which is what shipping on it is", "tone": "crit"}, {"id": "f", "label": "SE = sqrt(p(1-p)/N)", "sub": "one line, and it settles it", "tone": "good"}], "edges": [["p", "g"], ["g", "m"], ["m", "c"], ["c", "f"]], "t": "diagram", "id": "dg-9_16-01-0"},
 
+
+
     { t: "math", tex: "\\text{SE} = \\sqrt{\\frac{p(1-p)}{N}}, \\qquad \\text{95\\% CI} = p \\pm 1.96 \\times \\text{SE}" },
 
     { t: "code", lang: "text", title: "g91.py \u00a7G \u2014 p = 0.82 on N = 200, verified", code: `SE = sqrt(0.82 x 0.18 / 200) = sqrt(0.000738) = 0.0272
@@ -40,6 +42,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "The margin shrinks as the square root, which is the whole problem", "caption": "Four times the examples halves the margin. **50 cases gives ±10.6 points** — enough only to detect a change that is visible by eye. 200 gives ±5.3, and 1,000 gives ±2.4, which is finally fine enough to resolve the kind of improvement a prompt change actually produces. The square-root relationship is why eval sets cannot be cheaply made precise: going from ±2.4 to ±1.2 needs **4,000 cases**, not 2,000.", "left": "N", "codeW": 140, "vars": ["95% margin"], "steps": [{"code": "50", "state": ["+- 10.6 points"], "tone": "crit"}, {"code": "200", "state": ["+- 5.3 points"], "changed": [0], "tone": "warn"}, {"code": "1,000", "state": ["+- 2.4 points"], "changed": [0], "tone": "good"}, {"code": "4,000 would give", "state": ["+- 1.2 points"], "tone": "accent", "note": "4x for half the margin"}], "t": "diagram", "id": "dg-9_16-02-1"},
 
+
+
     { t: "table",
       head: ["N", "95% margin"],
       rows: [
@@ -59,6 +63,8 @@ EC.receiveLesson({
       sub: "The change that needs far fewer examples" },
 
     {"kind": "flow", "title": "Run both variants on the same examples, and the dominant variance disappears", "caption": "Two **independent** runs carry the variance from **example difficulty**, which is usually the dominant source — so you are mostly measuring which sample of questions each variant happened to get. Running both on the same examples and testing the **difference** removes that term entirely. For pass/fail outcomes the right test is **McNemar's**, which looks only at the cases where the two variants disagree — A passed and B failed, against the reverse — and ignores everything they agreed on, which is where the information is.", "cols": 3, "nodes": [{"id": "i", "label": "Two independent runs", "sub": "different example samples", "tone": "warn"}, {"id": "d", "label": "Carries example-difficulty variance", "sub": "usually the dominant source", "tone": "crit"}, {"id": "s", "label": "Same examples, both variants", "sub": "paired", "tone": "good"}, {"id": "t", "label": "Test the difference", "sub": "the difficulty term cancels", "tone": "good"}, {"id": "m", "label": "McNemar's test, for pass/fail", "sub": "only the disagreements count", "tone": "violet"}], "edges": [["i", "d"], ["d", "s"], ["s", "t"], ["t", "m"]], "t": "diagram", "id": "dg-9_16-03-2"},
+
+
 
     { t: "callout", kind: "good", title: "Run both variants on the same examples and test the per-example differences",
       body: [
