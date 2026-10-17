@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "algebra", text: "On unit vectors there is no choice",
       sub: "The three metrics are the same ranking written three ways" },
 
+    {"kind": "trace", "title": "Three metrics, one ordering", "caption": "If every vector has length 1 the relationships collapse. Cosine is the dot product divided by two magnitudes that are both 1. Squared Euclidean expands to `2 − 2(a·b)`, so sorting by L2 ascending **is** sorting by dot product descending. Three names, one ordering — confirmed on twenty questions: identical recall at every k and the **same top-1 result 100% of the time**. The debate about which metric to use is, on normalised vectors, not a debate.", "left": "metric", "codeW": 150, "vars": ["r@1", "r@5", "same top-1 as cosine"], "steps": [{"code": "cosine", "state": ["75%", "95%", "100%"], "tone": "good"}, {"code": "dot product", "state": ["75%", "95%", "100%"], "tone": "good"}, {"code": "L2 distance", "state": ["75%", "95%", "100%"], "tone": "good", "note": "identical, not similar"}], "t": "diagram", "id": "dg-5_6-01-0"},
+
+
+
     { t: "p", text: "If every vector has length 1, the relationships collapse. Cosine similarity is defined as the dot product divided by the two magnitudes, and both magnitudes are 1:" },
 
     { t: "math", tex: "\\cos(a,b) = \\frac{a \\cdot b}{\\|a\\|\\,\\|b\\|} = a \\cdot b" },
@@ -50,6 +54,10 @@ R_l2  = np.argsort(d2, axis=1)`,
     { t: "h2", n: "02", id: "broken", text: "My first attempt measured nothing",
       sub: "And the failure is worth more than the result would have been" },
 
+    {"kind": "trace", "title": "The first attempt measured nothing, because the vectors were not normalised", "caption": "The equivalence in §01 holds **only** on unit vectors, and these were not: norms ran from **1.4315 to 5.6318, a ratio of 3.93×**. With magnitudes varying that much, cosine and dot product are genuinely different rankings and the comparison would have been meaningful — which is why the first run had to be thrown away and rerun with normalisation. The lesson is to print the norms before concluding anything about the metric.", "left": "chunk vector norms", "codeW": 200, "vars": ["value"], "steps": [{"code": "min", "state": ["1.4315"], "tone": "warn"}, {"code": "median", "state": ["2.1696"], "tone": "warn"}, {"code": "max", "state": ["5.6318"], "tone": "crit"}, {"code": "ratio", "state": ["3.93x"], "tone": "crit", "note": "not unit vectors"}], "t": "diagram", "id": "dg-5_6-02-1"},
+
+
+
     { t: "callout", kind: "warn", title: "\u201cUnnormalised\u201d vectors that were normalised anyway",
       body: [
         { t: "p", text: "To show where the metrics diverge I encoded the corpus with `normalize_embeddings=False` and compared again. All three metrics agreed perfectly, which is not what should happen." },
@@ -78,6 +86,10 @@ def encode_raw(texts, bs=64):
 
     { t: "h2", n: "03", id: "magnitude", text: "What magnitude encodes",
       sub: "And it is not what you want to rank by" },
+
+    {"kind": "trace", "title": "Magnitude encodes length, at a correlation of -0.85", "caption": "The norms are not noise. **Chunk length against vector norm correlates at −0.8524** — short chunks get long vectors. Which means an unnormalised dot product systematically favours short chunks, and that is a ranking bias nobody chose: it has nothing to do with relevance and everything to do with how many characters happened to fall between two boundaries.", "left": "length band", "codeW": 170, "vars": ["chunks", "median norm"], "steps": [{"code": "0-150 chars", "state": ["195", "3.9468"], "tone": "crit"}, {"code": "150-300 chars", "state": ["229", "2.5975"], "changed": [1], "tone": "warn"}, {"code": "300-450 chars", "state": ["343", "2.1124"], "tone": "accent"}, {"code": "450-700 chars", "state": ["420", "1.9508"], "changed": [1], "tone": "good"}, {"code": "correlation", "state": ["-0.8524", "length vs norm"], "tone": "violet"}], "t": "diagram", "id": "dg-5_6-03-2"},
+
+
 
     { t: "code", lang: "python", title: "g56.py \u2014 does chunk length drive the magnitude?", code: `lens = np.array([len(c) for c in chunks])
 print(np.corrcoef(lens, norms)[0, 1])`,
@@ -164,6 +176,10 @@ R_l2  = np.argsort(d2, axis=1)`,
 
     { t: "h2", n: "05", id: "practice", text: "What to actually do",
       sub: "Three rules, and a check" },
+
+    {"kind": "steps", "title": "Four lines, and the exception", "caption": "Normalise at index time so nothing downstream has to remember; normalise the query **the same way**, because doing one side and not the other produces a ranking that is neither cosine nor dot product; then use inner product, now the cheapest and equivalent to all three. The exception is real: some models encode confidence or specificity in magnitude **on purpose** and are trained with an unnormalised objective, and for those, normalising discards information the model intended you to use.", "items": [{"label": "Normalise at index time", "desc": "so the stored vectors are unit length", "code": "1", "tone": "good"}, {"label": "Normalise the query the same way", "desc": "one side only is a real bug, and a silent one", "code": "2", "tone": "crit"}, {"label": "Then use inner product", "desc": "cheapest, and now equivalent to the other two", "code": "3", "tone": "good"}, {"label": "Verify once: print min, median, max norm", "desc": "if they are not 1.0, something is not doing what you think", "code": "4", "tone": "violet"}, {"label": "Unless the model was trained unnormalised", "desc": "then magnitude is signal, and the model's own metric is right", "code": "5", "tone": "teal"}], "t": "diagram", "id": "dg-5_6-05-3"},
+
+
 
     { t: "ol", items: [
       "**Normalise at index time**, so the stored vectors are unit length and nothing downstream has to remember.",

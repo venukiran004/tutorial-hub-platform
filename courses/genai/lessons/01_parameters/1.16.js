@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "1.5 introduced `finish_reason` for the truncation case. It is worth returning to properly, because it is the field that distinguishes a complete answer from a partial one, a tool request from a text reply, and a blocked response from a short one — and the text alone distinguishes none of them." },
 
     { t: "code", lang: "python", title: "handle.py — every branch", code: `def handle(response):
@@ -60,6 +63,9 @@ EC.receiveLesson({
       sub: "One is an audit record; the other is a control signal" },
 
     {"kind": "flow", "title": "One of these can prevent a 429; the other only explains it", "caption": "They look like the same kind of telemetry and they are not. **`usage` is an audit record** — it arrives after the work is done, so it cannot prevent anything, but it is what reconciles your cost model against the invoice. **The rate-limit headers are a control signal** — they arrive on every response and say how much headroom is left, which is enough to slow down *before* a 429 rather than back off after one.", "cols": 3, "nodes": [{"id": "u", "label": "usage", "sub": "arrives after the work", "tone": "accent"}, {"id": "a", "label": "An audit record", "sub": "cannot prevent anything", "tone": "warn"}, {"id": "r", "label": "Reconciles cost to the invoice", "sub": "1.14's counter", "tone": "good"}, {"id": "h", "label": "x-ratelimit-remaining", "sub": "on every response", "tone": "accent"}, {"id": "c", "label": "A control signal", "sub": "headroom, right now", "tone": "violet"}, {"id": "s", "label": "Slow down before the 429", "sub": "not back off after it", "tone": "good"}], "edges": [["u", "a"], ["a", "r"], ["h", "c"], ["c", "s"]], "t": "diagram", "id": "dg-1_16-02-1"},
+
+
+
 
 
 
@@ -162,6 +168,9 @@ for a in range(7):
       sub: "Some errors will never succeed, however patient you are" },
 
     {"kind": "matrix", "title": "What is worth retrying, and what retrying only costs you", "caption": "The dividing line is whether the same request could plausibly succeed. A 429 or a 5xx is transient, so backoff is exactly the right tool — and honour `retry-after` when it is present rather than guessing. The 'no' rows are deterministic: a malformed request will be malformed again, a blocked input will be blocked again, and an over-long prompt needs fixing rather than resending. **A timeout is the hard one**, because the request may already have been processed.", "cols": ["Retry?", "Notes"], "rows": ["429 rate limit", "500 / 502 / 503", "Timeout or reset", "400 bad request", "401 / 403", "404 unknown model", "content_filter", "Context length exceeded"], "cells": [[{"text": "yes", "tone": "good"}, "honour retry-after if present"], [{"text": "yes", "tone": "good"}, "transient; backoff applies"], [{"text": "yes, carefully", "tone": "warn"}, "it may already have run"], [{"text": "no", "tone": "crit"}, "it will be malformed again"], [{"text": "no", "tone": "crit"}, "credentials; retrying wastes time"], [{"text": "no", "tone": "crit"}, "often a deprecation - fail loudly"], [{"text": "no", "tone": "crit"}, "identical input, identical block"], [{"text": "no", "tone": "crit"}, "fix the prompt, do not resend it"]], "t": "diagram", "id": "dg-1_16-04-2"},
+
+
+
 
 
 

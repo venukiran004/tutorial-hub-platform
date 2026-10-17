@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["Parameter", "OpenAI", "Anthropic", "Google", "HuggingFace"],
       rows: [
@@ -128,6 +131,9 @@ def call(provider, *, strict=True, **params):
 
 
 
+
+
+
     { t: "table",
       head: ["Task type", "Reference's recommendation", "What is actually driving it"],
       rows: [
@@ -157,6 +163,9 @@ def call(provider, *, strict=True, **params):
       sub: "Less than people build, and in a different place" },
 
     {"kind": "flow", "title": "Normalising the names while the behaviours differ is worse than not abstracting", "caption": "The instinct on meeting the support matrix is to build a layer that hides it, and that is usually the wrong shape — **the differences that matter are behaviours, not parameter names**. An abstraction that smooths the names is actively misleading, because it makes switching providers *look* like a configuration change, and the eval step then gets skipped on the strength of the abstraction's promise. Switching providers is a project.", "cols": 3, "nodes": [{"id": "m", "label": "The support matrix looks like config", "sub": "names and flags", "tone": "accent"}, {"id": "l", "label": "So you build a layer", "sub": "one interface, many providers", "tone": "warn"}, {"id": "b", "label": "But the behaviours still differ", "sub": "not just the names", "tone": "crit"}, {"id": "s", "label": "Switching now looks free", "sub": "a config change", "tone": "crit"}, {"id": "e", "label": "So the eval gets skipped", "sub": "on the layer's promise", "tone": "crit"}, {"id": "p", "label": "Treat it as a project instead", "sub": "and keep the eval step", "tone": "good"}], "edges": [["m", "l"], ["l", "b"], ["b", "s"], ["s", "e"], ["e", "p"]], "t": "diagram", "id": "dg-1_15-04-2"},
+
+
+
 
 
 

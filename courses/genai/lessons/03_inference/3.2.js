@@ -22,6 +22,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "At each decode step the model attends over every previous token. The query comes from the current token, but the keys and values come from *all* of them — and crucially, the key and value for token 7 are the same at step 8 as they were at step 50. Recomputing them is pure waste." },
 
     { t: "code", lang: "text", title: "The illustration", code: `Without KV Cache: recompute attention for ALL previous tokens at each step
@@ -67,6 +70,9 @@ for _ in range(N_NEW):
 
 
 
+
+
+
     { t: "math", tex: "\\text{KV bytes} = 2 \\times n_{\\text{layers}} \\times n_{\\text{heads}} \\times d_{\\text{head}} \\times \\text{seq\\_len} \\times \\text{bytes per value}" },
 
     { t: "p", text: "The leading 2 is for K and V. The last term is 2 for float16. Everything else is architecture." },
@@ -107,6 +113,9 @@ print("batch of 16: %.2f GB (it says ~16 GB)" % (ex * 16 / 1e9))`,
 
 
 
+
+
+
     { t: "p", text: "A server loads the model once. Everything after that — every additional concurrent request — costs KV cache, and the cache grows with each request's sequence length. So the capacity question is not \"does the model fit\" but \"how many requests fit alongside it\"." },
 
     { t: "code", lang: "python", title: "capacity.py", code: `# Llama-2 7B in fp16 on an 80 GB accelerator
@@ -138,6 +147,9 @@ for seq in (1024, 4096, 16384, 32768):
 
 
 
+
+
+
     { t: "p", text: "The naive implementation pre-allocates each request's cache for the maximum sequence length it might reach, because the cache must be contiguous. A request that generates 50 tokens of a possible 4,096 wastes 98.8% of its allocation." },
 
     { t: "table",
@@ -159,6 +171,9 @@ Request 2: [Block 3, Block 5]            (shares Block 3 = prefix cache)`,
       sub: "Fewer key-value heads, proportionally less to store" },
 
     {"kind": "trace", "title": "MQA and GQA change how much cache there is to manage", "caption": "Sections 03 and 04 are about managing the cache; this is about shrinking it, by having several query heads share one key-value head. MQA divides the cache by the head count — **64× on a 64-head model** — at some quality cost. GQA divides by heads/groups and is the compromise that won: near-MHA quality at close to MQA's size, which is why essentially every recent large model uses it. And an 8× smaller cache is 8× the concurrency from §03's table.", "left": "attention variant", "codeW": 190, "vars": ["K and V per layer", "cache divided by"], "steps": [{"code": "MHA", "state": ["one per head", "1x"], "tone": "crit"}, {"code": "MQA", "state": ["one, shared by all", "n_heads = 64x"], "changed": [1], "tone": "warn", "note": "quality cost"}, {"code": "GQA, 8 groups of 64", "state": ["one per group", "8.0x"], "changed": [0, 1], "tone": "good", "note": "the compromise that won"}], "t": "diagram", "id": "dg-3_2-05-4"},
+
+
+
 
 
 

@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Chain-of-thought (2.3) lets a model compute intermediate values. ReAct lets it *obtain* them — the intermediate step is a tool call whose result comes back from outside the model. The pattern is three token types repeated until an answer is produced." },
 
     { t: "code", lang: "text", title: "The ReAct trace", code: `Thought: I need to find the population of Tokyo.
@@ -139,6 +142,9 @@ for i, (kind, text) in enumerate(TRACE, 1):
 
 
 
+
+
+
     { t: "code", lang: "python", title: "react.py", code: `def react(question, tools, *, max_steps=10, budget_tokens=50_000):
     messages = [{"role": "system", "content": SYSTEM},
                 {"role": "user", "content": question}]
@@ -180,6 +186,9 @@ for i, (kind, text) in enumerate(TRACE, 1):
 
 
 
+
+
+
     { t: "table",
       head: ["Failure", "What it looks like", "Guard"],
       rows: [
@@ -204,6 +213,9 @@ for i, (kind, text) in enumerate(TRACE, 1):
       sub: "And when a fixed chain is better" },
 
     {"kind": "flow", "title": "The honest test: can you draw the flowchart?", "caption": "If you can draw it, **write it as code** — the control flow belongs in your program, where it is deterministic, testable and cheap. A loop is for the case where you genuinely cannot, because the path depends on data you will not have until runtime. The most common over-engineering in this area is the third branch: a question answerable from the prompt does not need a loop around it, and a loop will sometimes take two steps to reach the same answer.", "cols": 3, "nodes": [{"id": "q", "label": "Can you draw the flowchart?", "sub": "the honest test", "tone": "violet"}, {"id": "y", "label": "Yes, with branches", "sub": "extract, classify, summarise", "tone": "accent"}, {"id": "c", "label": "Write it as code", "sub": "deterministic, testable, cheap", "tone": "good"}, {"id": "o", "label": "Yes, with no branches", "sub": "one question, one answer", "tone": "accent"}, {"id": "s", "label": "One call is enough", "sub": "the commonest over-engineering", "tone": "good"}, {"id": "n", "label": "No - the path depends on runtime data", "sub": "one lookup, or six", "tone": "warn"}, {"id": "a", "label": "That is what an agent is for", "sub": "and only that", "tone": "teal"}], "edges": [["q", "y"], ["y", "c"], ["q", "o"], ["o", "s"], ["q", "n"], ["n", "a"]], "t": "diagram", "id": "dg-2_5-05-3"},
+
+
+
 
 
 

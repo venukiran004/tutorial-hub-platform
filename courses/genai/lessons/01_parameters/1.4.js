@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "All three penalties do the same kind of thing — modify the logits of tokens that have already been generated — and they differ in how much and how. The common form gives all three; here they are side by side." },
 
     { t: "dl", items: [
@@ -129,6 +132,9 @@ token counts: {' the': 3, ' cat': 2, ' sat': 2, ' on': 2}
 
 
 
+
+
+
     { t: "p", text: "\"It repeats less\" is not a measurement. The cheapest useful metric is the ratio of distinct tokens to total tokens in the generated span — it is one line, it has no free parameters, and it moves in the right direction." },
 
     { t: "code", lang: "python", title: "g13.py — greedy, with the penalty swept", code: `prompt = "The best way to learn a language is"
@@ -171,6 +177,9 @@ for rp in (1.0, 1.1, 1.2, 1.5, 2.0):
       sub: "The penalised set is small, and it is made of the words you need" },
 
     {"kind": "trace", "title": "What the penalty costs, and why it is less than it sounds", "caption": "The penalised set grows with every token emitted, which sounds alarming until you count it. After 400 tokens only **165 distinct tokens are penalised — 0.328% of the vocabulary**. So the worry that a long generation ends up unable to say common words is not what the arithmetic shows; the real cost is narrower and more specific, which is that the words a passage legitimately needs to repeat get pushed away precisely because it has been using them.", "left": "tokens emitted", "codeW": 150, "vars": ["distinct penalised", "of the vocabulary"], "steps": [{"code": "10", "state": ["9", "0.018%"], "tone": "good"}, {"code": "50", "state": ["36", "0.072%"], "tone": "good"}, {"code": "100", "state": ["57", "0.113%"], "tone": "accent"}, {"code": "200", "state": ["95", "0.189%"], "tone": "accent"}, {"code": "400", "state": ["165", "0.328%"], "changed": [1], "tone": "warn", "note": "still well under 1%"}], "t": "diagram", "id": "dg-1_4-04-2"},
+
+
+
 
 
 

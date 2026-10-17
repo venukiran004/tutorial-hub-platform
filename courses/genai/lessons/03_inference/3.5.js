@@ -22,6 +22,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "A decode step loads every weight in the model to produce one token. That load is the cost, and it does not change when you add a second request to the step — the same weights, read once, now serve two tokens. This is the whole of the argument, and it follows directly from 3.1: decode is memory-bound, so the resource being consumed is bytes moved, and batching moves the same bytes for more output." },
 
     { t: "p", text: "The arithmetic does grow with the batch. On a GPU that scarcely matters until the batch is large, because the arithmetic units were idle anyway. On the 4-thread CPU I measured on it matters much sooner, and the curve below shows that honestly — it is a weaker version of the GPU story, not a different one." },
@@ -68,6 +71,9 @@ EC.receiveLesson({
       sub: "Every row runs until the longest row finishes" },
 
     {"kind": "trace", "title": "Static batching wastes 68% of the machine on chat traffic", "caption": "Rows are processed in lockstep, so a request that wanted 12 tokens occupies its slot until the one that wanted 320 finishes. On a uniform workload that costs nothing; on chat traffic it costs most of the machine, because **output lengths are long-tailed** — many short answers and a few very long ones, which is exactly the distribution that maximises the gap between the mean and the maximum. Note the waste plateaus at 68.2%: past batch 16 the longest request already sets the length, so a bigger batch neither helps nor hurts.", "left": "batch size", "codeW": 140, "vars": ["slots used", "useful tokens", "waste"], "steps": [{"code": "1", "state": ["6,514", "6,514", "0.0%"], "tone": "good", "note": "no padding, no batching"}, {"code": "4", "state": ["16,100", "6,514", "59.5%"], "changed": [2], "tone": "warn"}, {"code": "8", "state": ["19,200", "6,514", "66.1%"], "tone": "crit"}, {"code": "16", "state": ["20,480", "6,514", "68.2%"], "changed": [2], "tone": "crit"}, {"code": "64", "state": ["20,480", "6,514", "68.2%"], "tone": "crit", "note": "the longest request sets it"}], "t": "diagram", "id": "dg-3_5-02-1"},
+
+
+
 
 
 
@@ -170,6 +176,9 @@ for bs in (1, 4, 8, 16, 32, 64):
       sub: "A long prompt stalls everybody else's tokens unless you break it up" },
 
     {"kind": "trace", "title": "One prefill stalls every active stream for 34 decode steps", "caption": "Prefill and decode compete for the same device. A decode step takes about 39 ms; prefilling a 512-token prompt takes 1,315 ms — so while that prefill runs, **every other stream pauses for the equivalent of 33.9 decode steps**. Chunked prefill splits the prompt into four pieces of 128 and runs a decode step between them: the prefill finishes slightly later and everybody else's tokens keep flowing. It is a **TPOT optimisation paid for with TTFT**, right on a service with many active streams and wrong on one with few.", "left": "work", "codeW": 170, "vars": ["median ms", "decode steps stalled"], "steps": [{"code": "one decode step", "state": ["38.76", "-"], "tone": "accent"}, {"code": "prefill 256 tokens", "state": ["798.86", "20.6"], "changed": [1], "tone": "warn"}, {"code": "prefill 512 tokens", "state": ["1315.39", "33.9"], "changed": [1], "tone": "crit"}, {"code": "chunked into 4 x 128", "state": ["slightly more", "others keep flowing"], "tone": "good"}], "t": "diagram", "id": "dg-3_5-04-2"},
+
+
+
 
 
 

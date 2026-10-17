@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "loop", text: "What \u201cagentic\u201d adds",
       sub: "Three decisions a static pipeline makes in advance" },
 
+    {"kind": "flow", "title": "Three build-time decisions become runtime ones", "caption": "5.7's pipeline decides everything in advance: always retrieve, always from the one index, always k=5, always once. An agentic system hands each of those to the model. **Only the first reduces cost** — a question answerable from general knowledge does not need the index, and skipping it saves the tokens and the latency, which is why adaptive RAG is the one to reach for soonest. The third is the one that genuinely requires an agent, because the second query cannot be written until the first returns.", "cols": 3, "nodes": [{"id": "w", "label": "Whether to retrieve", "sub": "skip it when unnecessary", "tone": "good"}, {"id": "c", "label": "The only one that cuts cost", "sub": "reach for it first", "tone": "good"}, {"id": "r", "label": "Where to retrieve from", "sub": "index, SQL, or the web", "tone": "accent"}, {"id": "f", "label": "And the worst failure mode", "sub": "see section 03", "tone": "warn"}, {"id": "a", "label": "Whether to retrieve again", "sub": "multi-hop", "tone": "violet"}, {"id": "n", "label": "The case that needs an agent", "sub": "query 2 depends on query 1", "tone": "violet"}], "edges": [["w", "c"], ["r", "f"], ["a", "n"]], "t": "diagram", "id": "dg-5_11-01-0"},
+
+
+
     { t: "p", text: "The pipeline in 5.7 makes every decision at build time: always retrieve, always from the one index, always `k=5`, always once. An agentic system turns each of those into a runtime decision the model makes." },
 
     { t: "dl", items: [
@@ -105,6 +109,10 @@ order = np.argsort(-(QV[i] @ FE[idxs].T))`,
 
     { t: "h2", n: "03", id: "tools", text: "Routing between kinds of source",
       sub: "Where the decision is unavoidable" },
+
+    {"kind": "matrix", "title": "Routing, by the shape of the question", "caption": "Each row has exactly one right source and the reason is structural rather than a quality judgement. **SQL for figures** because 5.12 measures retrieval returning a *sample* of rows that cannot be aggregated; a changelog for *what changed last week* because the index is only as fresh as its last build. The last row is the multi-hop case: the second query cannot be written until the first returns, which no amount of better routing removes.", "cols": ["Source", "Why not the others"], "rows": ["How does our retry work?", "What was Q4 revenue?", "What changed in the API?", "Which model, which quant?"], "cells": [[{"text": "the vector index", "tone": "good"}, "SQL has no prose; the web does not know you"], [{"text": "SQL", "tone": "good"}, {"text": "retrieval returns a sample (5.12)", "tone": "crit"}], [{"text": "the changelog", "tone": "good"}, "the index is as fresh as its last build"], [{"text": "both, in sequence", "tone": "violet"}, {"text": "query 2 needs query 1's answer", "tone": "warn"}]], "t": "diagram", "id": "dg-5_11-03-1"},
+
+
 
     { t: "p", text: "The agent has three tools: a knowledge base, a web search and a SQL database. That routing decision cannot be avoided by searching everything, because the sources answer different kinds of question and one of them (5.12) cannot be searched by similarity at all." },
 

@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "same", text: "The decision, restated",
       sub: "Two questions settle most of it" },
 
+    {"kind": "matrix", "title": "The three mechanisms, with the build and per-request costs measured", "caption": "*RAG for what the model knows, fine-tuning for how it behaves, prompting first* is sound, and the decision is usually settled by two rows rather than by a capability comparison. **Citations exist only in the middle column.** And the last two rows are the measured halves of 4.1 and 4.2: a style transferred from twelve examples, and a fact came back with its relation reversed under rephrasing.", "cols": ["Prompting", "RAG", "Fine-tuning"], "rows": ["Build cost", "Per request", "Changing it", "Citations", "Teaches behaviour", "Teaches facts"], "cells": [[{"text": "none", "tone": "good"}, "13.2 s for 360k chars", "71 s for 16 examples"], ["instruction tokens", "11 ms + 423 tokens", {"text": "nothing", "tone": "good"}], [{"text": "edit a string", "tone": "good"}, {"text": "edit a document", "tone": "good"}, {"text": "retrain", "tone": "crit"}], [{"text": "no", "tone": "crit"}, {"text": "yes - only here", "tone": "good"}, {"text": "no", "tone": "crit"}], ["weakly, temporarily", {"text": "no", "tone": "crit"}, {"text": "yes - 4 of 4", "tone": "good"}], ["yes, if they fit", {"text": "yes, and editable", "tone": "good"}, {"text": "relation reversed", "tone": "crit"}]], "t": "diagram", "id": "dg-5_2-01-0"},
+
+
+
     { t: "p", text: "The common form gives a decision matrix and a set of rules of thumb, and the short version is sound: *RAG for what the model knows, fine-tuning for how it behaves, prompting first*. 4.2 measured both halves of that \u2014 a style transferred from twelve examples, and a fact came back with its relation reversed under rephrasing." },
 
     { t: "p", text: "What is worth adding from the retrieval side is that the decision is usually made by two properties of the thing you are trying to change, not by a comparison of capabilities:" },
@@ -49,6 +53,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "freshness", text: "The property only RAG has",
       sub: "An update path, and a source you can point at" },
+
+    {"kind": "flow", "title": "Two properties that are unique rather than merely better", "caption": "Most of the comparison is a trade. These two are not available at all from the alternatives. **The update path**: 4.2 measured a fact changed in a document taking effect instantly, while the fine-tuned model kept reciting the old value with no prompt able to override it. **The citation**: the system knows which chunk produced the answer, so it can show its work — and nothing in a set of weights can.", "cols": 3, "nodes": [{"id": "u", "label": "Change a document", "sub": "and the answer changes now", "tone": "violet"}, {"id": "f", "label": "A fine-tune keeps the old value", "sub": "no prompt overrides it (4.2)", "tone": "crit"}, {"id": "c", "label": "The system knows which chunk", "sub": "so it can cite", "tone": "violet"}, {"id": "w", "label": "Weights cannot be cited", "sub": "there is no 'which part'", "tone": "crit"}, {"id": "n", "label": "Neither is a trade", "sub": "they are simply absent elsewhere", "tone": "teal"}], "edges": [["u", "f"], ["c", "w"], ["f", "n"], ["w", "n"]], "t": "diagram", "id": "dg-5_2-02-1"},
+
+
 
     { t: "p", text: "Two things in that table are unique to retrieval rather than merely better. The first is the update path, which 4.2 measured directly. The second is citation: the system knows *which chunk* produced the answer, so it can show its work." },
 
@@ -121,6 +129,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", id: "together", text: "They compose",
       sub: "And the usual production system is all three" },
+
+    {"kind": "flow", "title": "A mature system uses all three, each for its own job", "caption": "\"Complementary\" is right and vague. The useful version assigns each mechanism the thing it is actually good at: **fine-tune the behaviour** — the answer format, the citation discipline, saying *that is not in the documentation* instead of guessing, which 4.1 measured transferring from a dozen examples. **Retrieve the content**, because it changes and needs to be citable. **Prompt the specifics** — the user's tier, the conversation so far, anything genuinely per-request.", "cols": 3, "nodes": [{"id": "f", "label": "Fine-tune the behaviour", "sub": "format, citation discipline, abstaining", "tone": "good"}, {"id": "r", "label": "Retrieve the content", "sub": "it changes, and must be citable", "tone": "good"}, {"id": "p", "label": "Prompt the specifics", "sub": "tier, history, this request", "tone": "good"}, {"id": "a", "label": "Saying 'not in the documentation'", "sub": "is a behaviour, not a fact", "tone": "violet"}, {"id": "n", "label": "Which is why it is fine-tuned", "sub": "and not retrieved", "tone": "teal"}], "edges": [["f", "a"], ["a", "n"], ["r", "n"], ["p", "n"]], "t": "diagram", "id": "dg-5_2-04-2"},
+
+
 
     { t: "p", text: "It is commonly called them complementary and puts \u201cRAG + FT\u201d at the top of its cost column. In practice a mature system uses all three, each doing the job it is suited to:" },
 

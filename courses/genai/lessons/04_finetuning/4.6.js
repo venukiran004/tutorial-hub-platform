@@ -63,6 +63,9 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Under 1% trainable, at every rank worth using", "caption": "The headline claim of parameter-efficient fine-tuning, counted. A rank-8 adapter on one projection type is **294,912 of 124 million parameters — 0.24%** — and even rank 32 stays under one per cent. Which is what the memory saving actually comes from: optimiser state and gradients are allocated per *trainable* parameter, so Adam's two moments on 0.24% of the model is a rounding error against two moments on all of it.", "left": "configuration", "codeW": 190, "vars": ["trainable", "share", "frozen"], "steps": [{"code": "full fine-tune", "state": ["124,439,808", "100.00%", "0"], "tone": "crit"}, {"code": "LoRA r=4 on c_attn", "state": ["147,456", "0.12%", "124,292,352"], "changed": [1], "tone": "good"}, {"code": "LoRA r=8 on c_attn", "state": ["294,912", "0.24%", "124,144,896"], "tone": "good"}, {"code": "LoRA r=16 on c_attn", "state": ["589,824", "0.47%", "123,849,984"], "tone": "good"}, {"code": "LoRA r=32 on c_attn", "state": ["1,179,648", "0.95%", "123,260,160"], "tone": "accent", "note": "still under 1%"}], "t": "diagram", "id": "dg-4_6-02-0"},
 
 
+
+
+
     { t: "code", lang: "python", title: "g46.py \u2014 counting what has requires_grad", code: `def build(r, alpha):
     m = GPT2LMHeadModel.from_pretrained("gpt2")
     for p in m.parameters():
@@ -95,6 +98,9 @@ tr = sum(p.numel() for p in m.parameters() if p.requires_grad)`,
     {"kind": "trace", "title": "'Identical to the base' checked rather than asserted", "caption": "4.4 argued that `B = 0` makes a freshly wrapped model identical to the base. That is a checkable claim, and it checks out exactly: **max logit difference 0.000e+00 across the whole vocabulary**, not merely small. B's maximum absolute value at init is 0.0 and A's standard deviation is 0.03615 — so A is random and harmless, because anything multiplied into a zero B contributes nothing.", "left": "measurement", "codeW": 220, "vars": ["value"], "steps": [{"code": "max |logit difference|", "state": ["0.000e+00"], "tone": "good", "note": "not small - zero"}, {"code": "all logits identical", "state": ["True"], "tone": "good"}, {"code": "max |B| at init", "state": ["0.0"], "tone": "violet"}, {"code": "std of A at init", "state": ["0.03615"], "tone": "accent", "note": "random, and harmless"}], "t": "diagram", "id": "dg-4_6-03-1"},
 
 
+
+
+
     { t: "p", text: "4.4 argued that `B = 0` makes a freshly wrapped model identical to the base. That is a checkable claim, so I checked it." },
 
     { t: "code", lang: "python", title: "g46.py \u2014 base logits against wrapped logits", code: `with torch.no_grad():
@@ -121,6 +127,9 @@ print((lo_base - lo_lora).abs().max(), torch.equal(lo_base, lo_lora))`,
     {"kind": "trace", "title": "B takes the first step alone", "caption": "`BA` differentiates by the product rule, so the gradient reaching `A` carries a factor of `B` and the gradient reaching `B` carries a factor of `A`. With `B = 0` the first is **exactly zero** and the second is not — measured at 0.00000000 and 0.34045655 on the very first backward pass, before any step. So B moves first, alone, and A only begins moving once B is non-zero. The adapter's first few steps are therefore a one-matrix optimisation, which is part of why the fade-in is gentle.", "left": "first backward pass", "codeW": 200, "vars": ["gradient norm", "why"], "steps": [{"code": "|grad A|", "state": ["0.00000000", "proportional to B = 0"], "tone": "crit"}, {"code": "|grad B|", "state": ["0.34045655", "proportional to A, non-zero"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-4_6-04-2"},
 
 
+
+
+
     { t: "code", lang: "python", title: "g46.py \u2014 the very first backward pass, before any step", code: `out = m2(x, attention_mask=mask, labels=labels, use_cache=False)
 out.loss.backward()
 lay = m2.transformer.h[0].attn.c_attn
@@ -144,6 +153,9 @@ print(lay.A.grad.norm(), lay.B.grad.norm())`,
       sub: "The claim everything else depends on" },
 
     {"kind": "trace", "title": "'Frozen' verified, because it is easy to get wrong", "caption": "A frozen base is what makes 4.1's forgetting reversible rather than permanent — and *frozen* only means what it says if nothing has quietly re-enabled gradients: a stray `requires_grad`, an optimizer built over `model.parameters()` instead of the trainable subset, a library that helpfully turns them back on. Verified after 24 steps: loss fell 4.834 to 3.439, A's gradient grew from zero as predicted, and **0 of 12 base matrices changed, with max difference 0.000e+00**. The embedding matrix did not move either.", "left": "step", "codeW": 120, "vars": ["loss", "|grad A|", "max |B|"], "steps": [{"code": "0", "state": ["4.8339", "0.000000", "0.000000"], "tone": "accent"}, {"code": "1", "state": ["4.7168", "0.014908", "0.000200"], "changed": [1], "tone": "good", "note": "A starts moving"}, {"code": "8", "state": ["4.4918", "0.130279", "0.001614"], "tone": "good"}, {"code": "16", "state": ["4.1082", "0.121425", "0.003299"], "tone": "good"}, {"code": "23", "state": ["3.4390", "", ""], "tone": "good"}, {"code": "base matrices changed", "state": ["0 of 12", "0.000e+00", "frozen"], "tone": "violet"}], "t": "diagram", "id": "dg-4_6-05-3"},
+
+
+
 
 
     { t: "p", text: "4.3 argued that a frozen base makes 4.1\u2019s catastrophic forgetting reversible rather than permanent. That is only true if \u201cfrozen\u201d means what it says, which is easy to get wrong \u2014 a stray `requires_grad`, an optimizer constructed over `model.parameters()` instead of the trainable subset, a library that re-enables gradients. So I snapshotted the base matrices before training and compared afterwards." },
@@ -188,6 +200,9 @@ for i, blk in enumerate(m.transformer.h):
       sub: "The adapter is the artefact" },
 
     {"kind": "trace", "title": "422x smaller is what makes adapters practical", "caption": "The artefact you ship is 24 tensors and 294,912 parameters — **0.59 MB against a 248.9 MB model, 422× smaller**. Scaled up to a real configuration (rank 8 on seven projection types across 32 layers of a 7B) that is **29.4 MB against 14,000 MB**. Which is the number behind every claim about serving many fine-tunes from one base: the adapters fit in the memory you would otherwise spend on a second copy of the model.", "left": "artefact", "codeW": 190, "vars": ["parameters", "size at fp16"], "steps": [{"code": "gpt2 adapter, r=8", "state": ["294,912", "0.59 MB"], "tone": "good"}, {"code": "gpt2 base", "state": ["124,439,808", "248.9 MB"], "changed": [1], "tone": "accent", "note": "422x"}, {"code": "7B adapter, 7 types x 32L", "state": ["14,680,064", "29.4 MB"], "tone": "good"}, {"code": "7B base", "state": ["7,000,000,000", "14,000 MB"], "changed": [1], "tone": "accent", "note": "476x"}], "t": "diagram", "id": "dg-4_6-06-4"},
+
+
+
 
 
     { t: "code", lang: "python", title: "g46.py \u2014 the size of what gets saved", code: `sd = {k: v for k, v in m3.state_dict().items() if ".A" in k or ".B" in k}

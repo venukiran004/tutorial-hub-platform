@@ -55,6 +55,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "The common form gives an input sanitiser, and it is the first thing almost everyone writes. It is worth implementing exactly as written and measuring on both populations — because a filter that is only tested against attacks looks fine." },
 
     { t: "code", lang: "python", title: "g29.py — the sanitiser, implemented", code: `DANGEROUS = ["ignore previous", "system:", "you are now", "forget your"]
@@ -106,6 +109,9 @@ def sanitize(user_input):
 
 
 
+
+
+
     { t: "table",
       head: ["Layer", "What it is worth", "Where"],
       rows: [
@@ -141,6 +147,9 @@ def sanitize(user_input):
       sub: "The attacker is not the user" },
 
     {"kind": "flow", "title": "Indirect injection: the user is not the attacker", "caption": "Direct injection is someone typing an override into a chat box. **Indirect** injection is instructions arriving in content the system retrieved — a web page, an email, a support ticket, a document in the corpus, a tool result. It is worse on every axis: the user may be a victim rather than the attacker, filtering is harder because you cannot reject every retrieved document containing imperative sentences, and the surface grows with every capability that reads external content. What helps is the same conclusion as §03 from a different direction: treat retrieved content as untrusted **at the action boundary**, not the text boundary.", "cols": 3, "nodes": [{"id": "r", "label": "Retrieved content carries instructions", "sub": "a page, an email, a ticket", "tone": "crit"}, {"id": "v", "label": "The user is a victim", "sub": "not the attacker", "tone": "crit"}, {"id": "f", "label": "You cannot filter imperatives out", "sub": "documentation is full of them", "tone": "crit"}, {"id": "s", "label": "And the surface keeps growing", "sub": "browsing, email, files, MCP", "tone": "warn"}, {"id": "a", "label": "Untrusted at the action boundary", "sub": "not at the text boundary", "tone": "good"}, {"id": "l", "label": "Which is least privilege again", "sub": "section 03's last row", "tone": "teal"}], "edges": [["r", "v"], ["r", "f"], ["f", "s"], ["s", "a"], ["a", "l"]], "t": "diagram", "id": "dg-2_16-04-2"},
+
+
+
 
 
 

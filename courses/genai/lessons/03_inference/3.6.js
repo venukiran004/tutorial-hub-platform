@@ -76,6 +76,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Acceptance rate is the fraction of drafted tokens the target agrees with. Everything else follows from it, so it is the number to measure first — and it is a property of your *traffic*, not of the model pair alone." },
 
     { t: "code", lang: "python", title: "g36.py — acceptance by domain, K = 4", code: `def spec_round(seq, K):
@@ -143,6 +146,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Let `c` be the cost of a draft pass as a fraction of a target pass, `r` the acceptance rate, and `K` the number of tokens drafted per round. One round costs `K·c + 1` target-pass-equivalents and yields `1 + r·K` tokens. Plain decoding yields exactly 1 token per target pass, so the speedup is the ratio:" },
 
     { t: "math", tex: "\\text{speedup} \\;=\\; \\frac{1 + rK}{Kc + 1}" },
@@ -161,6 +167,9 @@ EC.receiveLesson({
       sub: "1.13× best case, where it is commonly said 2–3×" },
 
     {"kind": "trace", "title": "1.13x at best, and slower at K=8", "caption": "The advertised figure for speculative decoding is 2–3×. Measured on this pair — gpt2 drafting for gpt2-medium, a size ratio of 2.85× — the best result is **1.13× at K=4**, and **K=8 is 0.71×, slower than not speculating at all**. The reason is §02's table: acceptance falls as K rises (0.650 at K=1 down to 0.231 at K=8), so the drafts get cheaper per token and far likelier to be thrown away. A 2.85× size ratio is simply not enough; the published numbers assume a much smaller draft.", "left": "variant", "codeW": 170, "vars": ["total for 24 tokens", "vs plain"], "steps": [{"code": "plain greedy", "state": ["6960.6 ms", "1.00x"], "tone": "accent", "note": "290 ms/token"}, {"code": "speculative K=2", "state": ["6305.1 ms", "1.10x"], "tone": "good"}, {"code": "speculative K=4", "state": ["6172.9 ms", "1.13x"], "changed": [1], "tone": "good", "note": "the best here"}, {"code": "speculative K=8", "state": ["9737.7 ms", "0.71x"], "changed": [1], "tone": "crit", "note": "slower than plain"}], "t": "diagram", "id": "dg-3_6-04-2"},
+
+
+
 
 
 

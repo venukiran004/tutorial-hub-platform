@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "what", text: "What the model is trained to do",
       sub: "One vector per text, compared by a dot product" },
 
+    {"kind": "flow", "title": "A bi-encoder is what makes search possible; a cross-encoder is what makes it accurate", "caption": "A retrieval model encodes the query and the document **separately** into the same space, so a dot product predicts relevance — and that separation is the whole reason search works, because documents can be embedded once, offline, and a query compared against a million of them. A cross-encoder takes the pair *together* and is far more accurate, because the two texts can attend to each other — and useless for search, since scoring a million documents means a million forward passes. 5.9 uses one as a second stage over a shortlist, which is the only place it fits.", "cols": 3, "nodes": [{"id": "b", "label": "Bi-encoder", "sub": "query and document, separately", "tone": "violet"}, {"id": "o", "label": "Documents embedded once, offline", "sub": "a million vectors, precomputed", "tone": "good"}, {"id": "d", "label": "A dot product per candidate", "sub": "which is why search scales", "tone": "good"}, {"id": "c", "label": "Cross-encoder", "sub": "the pair, together", "tone": "accent"}, {"id": "a", "label": "Far more accurate", "sub": "the texts attend to each other", "tone": "good"}, {"id": "m", "label": "A forward pass per document", "sub": "so: a shortlist only (5.9)", "tone": "crit"}], "edges": [["b", "o"], ["o", "d"], ["c", "a"], ["a", "m"]], "t": "diagram", "id": "dg-5_3-01-0"},
+
+
+
     { t: "p", text: "A retrieval embedding model is a **bi-encoder**: it encodes the query and the document *separately*, into the same space, so that the dot product of the two vectors predicts relevance. That separation is what makes retrieval possible at all \u2014 the documents can be embedded once, offline, and a query compared against a million of them with one matrix multiply." },
 
     { t: "p", text: "The alternative is a **cross-encoder**, which takes the query and the document *together* and produces a relevance score. It is far more accurate, because the two texts can attend to each other, and it is useless for search: scoring a million documents means a million forward passes. 5.9 uses one as a second stage over a shortlist, which is the arrangement that makes both properties available." },
@@ -31,6 +35,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "models", text: "Four models on the same corpus",
       sub: "The leaderboard answer came last" },
+
+    {"kind": "trace", "title": "A 30-point recall spread across four reasonable models", "caption": "The result that matters is the spread: **95% down to 65% at k=5** across four models anyone might pick, which is larger than any other single decision in this module except chunking. And it inverts the general leaderboards — `all-mpnet-base-v2` has the higher published ranking and is **last here**, at 65%, for 9.4× the encode time. There is no substitute for measuring on your own corpus.", "left": "model", "codeW": 190, "vars": ["dims", "encode s", "r@5"], "steps": [{"code": "all-MiniLM-L6-v2", "state": ["384", "26.9", "95%"], "tone": "good", "note": "fastest and best"}, {"code": "bge-small-en-v1.5", "state": ["384", "174.5", "90%"], "tone": "accent", "note": "6.5x the encode cost"}, {"code": "paraphrase-MiniLM-L3-v2", "state": ["384", "23.8", "80%"], "tone": "warn", "note": "trained for paraphrase"}, {"code": "all-mpnet-base-v2", "state": ["768", "251.8", "65%"], "changed": [1, 2], "tone": "crit", "note": "higher general ranking"}], "t": "diagram", "id": "dg-5_3-02-1"},
+
+
 
     { t: "code", lang: "python", title: "g53.py \u2014 identical corpus, identical questions", code: `for name in MODELS:
     enc = SentenceTransformer(name)
@@ -130,6 +138,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", id: "choosing", text: "Choosing one",
       sub: "Four properties, in the order they matter" },
+
+    {"kind": "matrix", "title": "Three things to choose on, and one silent failure", "caption": "Recall on **your** corpus comes first and is measured rather than inferred. Encode throughput sets how long a re-index takes — 26.9 s against 251.8 s on 1,200 chunks is the difference between re-indexing on every deploy and treating it as a batch job. And the trap: `all-MiniLM-L6-v2` has a **256-token limit**, roughly 1,000 characters, so a 2,000-character chunk is silently cut in half before it is embedded. The call succeeds and returns a vector.", "cols": ["Why", "Watch"], "rows": ["Recall on your corpus", "Encode throughput", "Dimensions", "The sequence limit"], "cells": [[{"text": "65% to 95% spread here", "tone": "good"}, "measured, never inferred"], ["sets the re-index cost", "26.9 s against 251.8 s"], ["storage and search cost", "irrelevant at thousands of vectors"], [{"text": "256 tokens on MiniLM", "tone": "crit"}, {"text": "truncates silently, returns a vector", "tone": "crit"}]], "t": "diagram", "id": "dg-5_3-04-2"},
+
+
 
     { t: "ol", items: [
       "**Recall on your corpus.** Measured, not inferred. The spread here was 65% to 95% at k=5 across four reasonable models \u2014 larger than any other single decision in this module except chunking.",

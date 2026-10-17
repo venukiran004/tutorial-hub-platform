@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "why", text: "Why this is the decision that matters",
       sub: "It is upstream of everything and it is baked into the index" },
 
+    {"kind": "flow", "title": "Chunking is the one decision that nothing downstream can undo", "caption": "The text is cut, each piece is embedded, and from that moment **the retriever can only return pieces of that shape**. A better metric, a re-ranker or a rewritten query reorders what chunking produced; none of them can produce a passage that was never a chunk. There is a representational argument too: a chunk becomes **one vector**, so every topic, digression and code block inside it is averaged into a single point — too large and the point represents nothing in particular.", "cols": 3, "nodes": [{"id": "c", "label": "The text is cut once", "sub": "at index time", "tone": "violet"}, {"id": "r", "label": "The retriever returns those pieces", "sub": "and only those", "tone": "violet"}, {"id": "q", "label": "Query-time fixes reorder", "sub": "metric, re-ranker, rewrite", "tone": "accent"}, {"id": "n", "label": "None can invent a passage", "sub": "that was never a chunk", "tone": "crit"}, {"id": "v", "label": "And a chunk is one vector", "sub": "everything in it, averaged", "tone": "warn"}, {"id": "b", "label": "Too large: it represents nothing", "sub": "in particular", "tone": "crit"}], "edges": [["c", "r"], ["r", "q"], ["q", "n"], ["c", "v"], ["v", "b"]], "t": "diagram", "id": "dg-5_4-01-0"},
+
+
+
     { t: "p", text: "5.1 split a RAG system into two phases on different clocks. Chunking sits at the start of the slow one: the text is cut, each piece is embedded, and from that moment the retriever can only return pieces of that shape. A query-time improvement \u2014 a better metric, a re-ranker, a rewritten query \u2014 reorders what chunking produced. It cannot reassemble a sentence that was cut in half." },
 
     { t: "p", text: "There is also a representational argument, and it is the one that explains the measurements below. A chunk becomes **one vector**. Everything in that chunk \u2014 every topic, every digression, every code block \u2014 is averaged into a single point in 384-dimensional space. Make the chunk too large and that point represents nothing in particular; make it too small and it represents something true but incomplete." },
@@ -85,6 +89,10 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "overlap", text: "Overlap: no measurable effect",
       sub: "Which is not the result I expected to report" },
 
+    {"kind": "trace", "title": "Overlap: no measurable effect, and double the index", "caption": "Six overlap settings on the same corpus, and recall at k=5 moves between 90% and 100% **without a trend** — 50 is the worst and 100 the best, which is noise on twenty questions rather than a signal. What overlap does reliably is grow the index: at 250 of 500 it holds **2.0× the chunks** and 2.0× the storage and encode cost. On a corpus with real structural seams, the money is better spent on §04.", "left": "overlap", "codeW": 130, "vars": ["chunks", "r@5", "index MB"], "steps": [{"code": "0", "state": ["724", "95%", "1.11"], "tone": "good"}, {"code": "25", "state": ["762", "95%", "1.17"], "tone": "good"}, {"code": "50", "state": ["804", "90%", "1.23"], "changed": [1], "tone": "warn", "note": "the worst, mid-range"}, {"code": "100", "state": ["904", "100%", "1.39"], "changed": [1], "tone": "good"}, {"code": "250", "state": ["1441", "95%", "2.21"], "changed": [0, 2], "tone": "crit", "note": "2.0x the index"}], "t": "diagram", "id": "dg-5_4-03-1"},
+
+
+
     { t: "code", lang: "python", title: "g54.py \u2014 overlap at a fixed 500-character size", code: `for ov in (0, 25, 50, 100, 200, 250):
     chunks, meta = H.build(H.chunk_fixed, size=500, overlap=ov)`,
       out: `  overlap      chunks      r@1      r@3      r@5     r@10     index MB
@@ -116,6 +124,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", id: "strategy", text: "Strategy: the cleanest win in the module",
       sub: "Cut where the document already has seams" },
+
+    {"kind": "trace", "title": "Structure-aware splitting: the cleanest win in the module", "caption": "Fixed splitting cuts every N characters regardless of what is there — mid-sentence, mid-table, mid-code-block. Recursive prefers paragraph breaks over line breaks over spaces. Heading-aware uses the document's own structure. The result is **r@1 from 65% to 85% and r@5 to 100%**, for free, by cutting where the author already cut. Note that document recall was 100% for all three: the gain is entirely in returning the right *passage*.", "left": "strategy", "codeW": 180, "vars": ["chunks", "mean len", "r@1", "r@5"], "steps": [{"code": "fixed", "state": ["804", "496", "65%", "90%"], "tone": "crit"}, {"code": "recursive", "state": ["1187", "347", "75%", "95%"], "changed": [2], "tone": "accent"}, {"code": "markdown + heading", "state": ["1241", "338", "85%", "100%"], "changed": [2, 3], "tone": "good", "note": "free, and the biggest win"}], "t": "diagram", "id": "dg-5_4-04-2"},
+
+
 
     { t: "p", text: "Fixed-size splitting cuts every N characters regardless of what is there \u2014 mid-sentence, mid-table, mid-code-block. Recursive splitting tries a list of separators in order, preferring paragraph breaks over line breaks over spaces, so it cuts at the largest natural boundary that fits. Structure-aware splitting goes further and uses the document\u2019s own markup." },
 
@@ -156,6 +168,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "05", id: "cannot", text: "What chunking cannot fix",
       sub: "The failure this module has been carrying since 5.1" },
+
+    {"kind": "flow", "title": "The question no chunk boundary can reach", "caption": "One question failed at **every configuration in the sweep**: *\"Why divide alpha by r?\"*, found at rank 15. The passage that answers it calls the term a **\"volume knob\"** and never uses the word *divide*. The text is correctly cut, correctly embedded and correctly indexed — the query and the answer simply share no vocabulary. That is a query problem, and it is what 5.8 and 5.9 exist to fix.", "cols": 3, "nodes": [{"id": "q", "label": "\"Why divide alpha by r?\"", "sub": "rank 15, every configuration", "tone": "crit"}, {"id": "p", "label": "The passage says 'volume knob'", "sub": "and never says 'divide'", "tone": "crit"}, {"id": "c", "label": "The chunking is correct", "sub": "so is the embedding and the index", "tone": "good"}, {"id": "v", "label": "No shared vocabulary", "sub": "between question and answer", "tone": "violet"}, {"id": "r", "label": "Rewrite the query (5.8)", "sub": "or add keyword search (5.9)", "tone": "good"}], "edges": [["q", "p"], ["p", "c"], ["c", "v"], ["v", "r"]], "t": "diagram", "id": "dg-5_4-05-3"},
+
+
 
     { t: "p", text: "One question has failed at every configuration in this sweep: *\u201cWhy divide alpha by r?\u201d*, which 5.1 found at rank 15. The passage that answers it calls the term a **\u201cvolume knob\u201d** and never uses the word \u201cdivide\u201d." },
 

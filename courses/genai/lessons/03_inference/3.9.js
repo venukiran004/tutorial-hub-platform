@@ -22,6 +22,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Magnitude pruning is the simplest idea in compression: rank every weight by absolute value, set the smallest fraction to zero, keep the rest. The intuition is sound — most weights in a trained network are small, and small weights contribute little. The intuition about *speed*, however, is wrong, and the measurement shows it plainly." },
 
     { t: "code", lang: "python", title: "g39.py — prune the smallest weights, measure both halves", code: `def prune_unstructured(frac):
@@ -152,6 +155,9 @@ for frac in (0.1, 0.3, 0.5, 0.7, 0.9):
 
 
 
+
+
+
     { t: "p", text: "Distillation trains a student network to reproduce a teacher's output *distribution* rather than the ground-truth label. The extra information is in the parts the label throws away: a teacher that puts 0.6 on \"cat\", 0.3 on \"dog\" and 0.001 on \"car\" is telling the student that dogs are nearly cats and cars are not, which a one-hot label cannot say." },
 
     { t: "math", tex: "\\mathcal{L} = \\alpha \\, \\mathcal{L}_{\\text{CE}}(\\text{student}, y) + (1-\\alpha) \\, T^2 \\, \\mathrm{KL}\\!\\left(\\sigma(z_t/T) \\,\\|\\, \\sigma(z_s/T)\\right)" },
@@ -194,6 +200,9 @@ for frac in (0.1, 0.3, 0.5, 0.7, 0.9):
       sub: "Mostly the answer is quantization" },
 
     {"kind": "matrix", "title": "Which of the three, and the fourth option people skip", "caption": "Quantization is nearly always the right **first** answer, because it needs no retraining and composes with everything else. Distillation is the only one of the three that can *beat* the original on your own distribution, because the student is trained on your data. And the last row is the honest one that gets skipped: **a smaller off-the-shelf model that passes your evaluation is strictly better than compressing a larger one**, because somebody else paid for the training.", "cols": ["When", "The catch"], "rows": ["Quantization", "Structured pruning", "Distillation", "None of them"], "cells": [[{"text": "smaller or faster, no retraining", "tone": "good"}, "nearly always the first answer"], ["you own the pipeline and need a shape", {"text": "budget the recovery fine-tune", "tone": "warn"}], [{"text": "a narrower task, teacher plus data", "tone": "good"}, "the only one that can beat the original"], [{"text": "a smaller model already passes", "tone": "violet"}, "strictly better - somebody else paid"]], "t": "diagram", "id": "dg-3_9-04-2"},
+
+
+
 
 
 

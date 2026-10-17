@@ -94,6 +94,10 @@ for idx in CRANK[i]:
     { t: "h2", n: "02", id: "selfrag", text: "Self-RAG and corrective RAG",
       sub: "Control flow, not retrieval" },
 
+    {"kind": "matrix", "title": "Six patterns, and the one that is free", "caption": "The first row is the one to take first and the easiest to miss: **smaller chunks with no other change gave 90% r@1 at 103 context tokens against 75% at 230** — better retrieval for *fewer* tokens. Everything below it costs something. Small-to-big and sentence window change what is **returned**; Self-RAG and corrective RAG change **control flow**, adding a grading step and a branch, and that is a different kind of commitment — one or more extra model calls on every query.", "cols": ["Changes", "Extra cost", "Worth it when"], "rows": ["Small chunks, flat", "Small-to-big", "Sentence window", "Self-RAG", "Corrective RAG", "Adaptive RAG"], "cells": [[{"text": "granularity", "tone": "good"}, {"text": "fewer tokens", "tone": "good"}, "almost always"], ["what is returned", {"text": "12x context", "tone": "crit"}, "chunks cannot stand alone"], ["what is returned", {"text": "about 3x", "tone": "warn"}, "same reason, cheaper"], [{"text": "control flow", "tone": "violet"}, "1+ calls", "failure rate justifies grading"], [{"text": "control flow", "tone": "violet"}, "1+ calls", "a second source exists"], ["whether to retrieve", "1 call", {"text": "much traffic needs none", "tone": "good"}]], "t": "diagram", "id": "dg-5_10-02-0"},
+
+
+
     { t: "p", text: "The remaining patterns in the list are different in kind. Small-to-big changes *what* is retrieved; Self-RAG and corrective RAG change *what happens next* \u2014 they add a grading step and a branch." },
 
     { t: "dl", items: [

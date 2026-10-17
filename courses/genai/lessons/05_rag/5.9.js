@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "bm25", text: "The sparse retriever",
       sub: "Exact tokens, weighted by rarity" },
 
+    {"kind": "trace", "title": "A formula with no model beats the embeddings at k=1", "caption": "BM25 weights each query term by how rare it is across the corpus and dampens repetition and length. There is no model and no training — and it indexes 1,187 chunks in **0.18 seconds against 26.9 to embed them, 150× faster**. Its strength is the dense retriever's blind spot: an embedding is a lossy summary, so a rare identifier contributes little to the vector and may be swamped, while **BM25 treats a rare term as the most informative thing in the query**. Here it wins at k=1 and at k=10.", "left": "retriever", "codeW": 180, "vars": ["build", "r@1", "r@5", "r@10"], "steps": [{"code": "dense (MiniLM)", "state": ["26.9 s", "75%", "95%", "95%"], "tone": "accent"}, {"code": "sparse (BM25)", "state": ["0.18 s", "80%", "90%", "100%"], "changed": [0, 1, 3], "tone": "good", "note": "150x cheaper to build"}], "t": "diagram", "id": "dg-5_9-01-0"},
+
+
+
     { t: "p", text: "BM25 scores a document by how many query terms it contains, weighting each term by how rare it is across the corpus and dampening the effect of repetition and document length. There is no model and no training \u2014 it is a formula over term counts, and it indexes 1,187 chunks in **0.18 seconds** against 26.9 seconds to embed them." },
 
     { t: "p", text: "Its strength is the dense retriever\u2019s blind spot. An embedding is a lossy summary of meaning, so a rare identifier \u2014 a function name, an error code, a symbol like `alpha` \u2014 contributes a little to the vector and may be swamped. BM25 treats a rare term as the most informative thing in the query." },
@@ -47,6 +51,10 @@ SPARSE = np.array([np.argsort(-bm25.get_scores(tokenize(q))) for q, _, _ in QS])
     { t: "h2", n: "02", id: "disagree", text: "Where they disagree",
       sub: "Thirteen ties out of twenty, and a split on the rest" },
 
+    {"kind": "trace", "title": "Where they disagree, which is the argument for having both", "caption": "Thirteen of the twenty questions are tied at rank 1, so the aggregate hides the interesting part: on the seven that differ, **dense wins 3 and BM25 wins 4**, and the cases are qualitatively different. Dense wins where the query paraphrases — *\"What does top_p do?\"*. BM25 wins where a rare term carries the question, including the stuck one: **rank 10 against dense's 15**. Neither is better; they fail on different things, which is exactly the condition under which fusion helps.", "left": "question", "codeW": 220, "vars": ["dense", "BM25", "better"], "steps": [{"code": "What does top_p do?", "state": ["1", "2", "dense"], "tone": "accent"}, {"code": "What is the formula for LoRA?", "state": ["1", "8", "dense"], "changed": [1], "tone": "accent"}, {"code": "What is continuous batching?", "state": ["2", "1", "BM25"], "tone": "good"}, {"code": "What is self-consistency?", "state": ["4", "1", "BM25"], "changed": [0], "tone": "good"}, {"code": "Why divide alpha by r?", "state": ["15", "10", "BM25"], "tone": "warn", "note": "still not found"}, {"code": "13 further questions", "state": ["1", "1", "tied"], "tone": "violet"}], "t": "diagram", "id": "dg-5_9-02-1"},
+
+
+
     { t: "code", lang: "python", title: "g59.py \u2014 rank of the first correct chunk under each", code: `for i, (q, doc, must) in enumerate(QS):
     d = first_correct(DENSE, i)
     s = first_correct(SPARSE, i)`,
@@ -73,6 +81,10 @@ SPARSE = np.array([np.argsort(-bm25.get_scores(tokenize(q))) for q, _, _ in QS])
 
     { t: "h2", n: "03", id: "rrf", text: "Reciprocal rank fusion",
       sub: "Combine the rankings, not the scores" },
+
+    {"kind": "trace", "title": "RRF, which works because it throws the scores away", "caption": "Averaging the scores does not work: a cosine similarity of 0.58 and a BM25 score of 14.2 are not on the same scale, not bounded the same way, and move differently across queries — so any weighting is a guess that needs recalibrating whenever either side changes. RRF uses **only the ranks**, summing 1/(k + rank). The result beats both inputs at every cutoff: **100% at r@5 against 95% and 90% alone**, and the k parameter barely matters, which is what makes it safe to deploy without tuning.", "left": "retriever", "codeW": 160, "vars": ["r@1", "r@3", "r@5", "r@10"], "steps": [{"code": "dense alone", "state": ["75%", "90%", "95%", "95%"], "tone": "accent"}, {"code": "BM25 alone", "state": ["80%", "85%", "90%", "100%"], "tone": "accent"}, {"code": "RRF k=10", "state": ["75%", "95%", "95%", "100%"], "tone": "good"}, {"code": "RRF k=60", "state": ["80%", "95%", "100%", "100%"], "changed": [2], "tone": "good", "note": "beats both inputs"}, {"code": "RRF k=200", "state": ["80%", "95%", "100%", "100%"], "tone": "good", "note": "k barely matters"}], "t": "diagram", "id": "dg-5_9-03-2"},
+
+
 
     { t: "p", text: "The obvious way to combine two retrievers is to average their scores, and it does not work: a cosine similarity of 0.58 and a BM25 score of 14.2 are not on the same scale, are not bounded the same way, and move differently across queries. Any weighting is a guess that needs recalibrating whenever either side changes." },
 

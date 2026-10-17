@@ -69,6 +69,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "g18.py — the worked example and its neighbours", code: `print("the worked example: 500 reasoning + 50 visible")
 print("  billed output tokens : 550")
 print("  visible to the user  : 50")
@@ -118,6 +121,9 @@ at $10 per 1M output tokens (GPT-4o rate):
 
 
 
+
+
+
     { t: "p", text: "`reasoning_effort` takes `\"low\"`, `\"medium\"` or `\"high\"` and controls roughly how many reasoning tokens the model is willing to spend. It is not a quality dial in the sense of making answers better — it is a dial on how much compute the model is permitted to apply at inference time, which is only useful on problems where more compute helps." },
 
     { t: "table",
@@ -145,6 +151,9 @@ at $10 per 1M output tokens (GPT-4o rate):
       sub: "Three branches, and the empty one is the interesting one" },
 
     {"kind": "flow", "title": "Raise on the empty case rather than returning nothing", "caption": "A reasoning model can spend its whole budget thinking and return **no visible text at all** — a successful response, billed in full, with an empty content field. The temptation is to return `\"\"` and let the caller decide, but that pushes an invisible failure into code with no way to recognise it, and the symptom surfaces much later as a blank field in a UI or a record with a missing summary. Raise, and let the retry logic see it.", "cols": 3, "nodes": [{"id": "b", "label": "The budget goes on thinking", "sub": "and runs out", "tone": "warn"}, {"id": "e", "label": "Visible content is empty", "sub": "a successful response, billed", "tone": "crit"}, {"id": "r", "label": "Return \"\" and move on", "sub": "the tempting option", "tone": "crit"}, {"id": "l", "label": "A blank field, discovered later", "sub": "in a UI, or a stored record", "tone": "crit"}, {"id": "x", "label": "Raise instead", "sub": "at the point of the failure", "tone": "good"}, {"id": "y", "label": "Now retry logic can see it", "sub": "and so can your alerts", "tone": "teal"}], "edges": [["b", "e"], ["e", "r"], ["r", "l"], ["e", "x"], ["x", "y"]], "t": "diagram", "id": "dg-1_10-04-2"},
+
+
+
 
 
 

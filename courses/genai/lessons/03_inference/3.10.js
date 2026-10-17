@@ -81,6 +81,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Most traffic does not need your best model. A router classifies the incoming request and dispatches it to a small, a medium or a large model, so the expensive one only sees the requests that need it. Because the price spread across models is large — 3.12 measured 23× across one provider's list — even a mediocre router pays for itself." },
 
     { t: "p", text: "The arithmetic that matters is not the router's accuracy but the cost of its two error types. Sending a hard request to the small model produces a bad answer or a retry on the large one; sending an easy request to the large model costs money and nothing else. Those are very different failures, so the router should be **biased towards escalation**: the asymmetry means you should route up when uncertain." },

@@ -21,6 +21,9 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Two substitutions, and what each one does not change", "caption": "`bitsandbytes` requires CUDA and this machine has none, so the four-bit path cannot run at all — the base here is GPT-2 in fp32. **That changes only memory**: the arithmetic runs in bf16 either way, so the training dynamics are the same ones 4.5 describes. The second substitution replaces a convenience wrapper with an explicit loop, so every line is visible — same optimiser, same loss, same updates.", "cols": 3, "nodes": [{"id": "q", "label": "No CUDA, so no 4-bit path", "sub": "bitsandbytes needs it", "tone": "warn"}, {"id": "f", "label": "GPT-2 in fp32 instead", "sub": "the base changes", "tone": "accent"}, {"id": "m", "label": "Which changes memory only", "sub": "arithmetic is bf16 either way", "tone": "good"}, {"id": "t", "label": "An explicit loop, not a wrapper", "sub": "every line visible", "tone": "accent"}, {"id": "s", "label": "Same optimiser, loss and updates", "sub": "so the recipe is unchanged", "tone": "good"}], "edges": [["q", "f"], ["f", "m"], ["t", "s"], ["m", "s"]], "t": "diagram", "id": "dg-4_7-01-0"},
 
 
+
+
+
     { t: "callout", kind: "note", title: "The Q is missing from this QLoRA",
       body: [
         { t: "p", text: "The reference loads Qwen2.5-1.5B-Instruct with `BitsAndBytesConfig(load_in_4bit=True)`. **bitsandbytes requires CUDA and this machine has none**, so the four-bit path cannot run at all. The base here is GPT-2 in fp32." },
@@ -32,6 +35,9 @@ EC.receiveLesson({
       sub: "Sixteen pairs, formatted so the roles are unambiguous" },
 
     {"kind": "flow", "title": "Sixteen examples, with the roles written out by hand", "caption": "GPT-2 has no chat template, so the `User:` / `Assistant:` structure has to be written into the string along with an explicit `<|endoftext|>` — which is a useful thing to see once, because on an instruct model that formatting is applied for you and getting it wrong is a silent failure. Sixteen examples, 22–31 tokens each, **427 tokens total**: far below the 500–1,000 usually recommended, and enough to see the behaviour transfer.", "cols": 3, "nodes": [{"id": "n", "label": "No chat template on gpt2", "sub": "nothing is applied for you", "tone": "warn"}, {"id": "r", "label": "Write the roles into the string", "sub": "User: ... Assistant: ...", "tone": "accent"}, {"id": "e", "label": "And the EOS token explicitly", "sub": "or it never learns to stop", "tone": "crit"}, {"id": "d", "label": "16 examples, 427 tokens", "sub": "22-31 tokens each", "tone": "good"}, {"id": "b", "label": "Below the usual 500-1,000", "sub": "deliberately", "tone": "violet"}, {"id": "t", "label": "Enough to transfer a behaviour", "sub": "not enough to generalise it", "tone": "teal"}], "edges": [["n", "r"], ["r", "e"], ["e", "d"], ["d", "b"], ["b", "t"]], "t": "diagram", "id": "dg-4_7-02-1"},
+
+
+
 
 
     { t: "p", text: "The task is deliberately obvious \u2014 answer in a pirate voice \u2014 so that success or failure is visible without a metric. The usual choice is six examples to demonstrate and notes that real tasks need 500\u20131,000; I used sixteen, which is still far below that and enough to see the behaviour transfer." },
@@ -58,6 +64,9 @@ rows = [tok(to_text(q, a), return_tensors="pt").input_ids[0] for q, a in PAIRS]`
     {"kind": "flow", "title": "Before: the base model cannot hold the role at all", "caption": "Asked the four held-out questions, base GPT-2 produces `I'm not sure if I can recommend a book. I'm not sure if I can recommend a b` — **a refusal it then repeats**, and in two cases it emits the `Assistant:` token itself and keeps going, continuing the transcript rather than answering within it. Both failures are the same thing: the model is completing a document, and nothing has taught it that the document is a dialogue with turns.", "cols": 3, "nodes": [{"id": "p", "label": "A held-out question", "sub": "in User: / Assistant: form", "tone": "accent"}, {"id": "r", "label": "\"I'm not sure if I can...\"", "sub": "then repeated verbatim", "tone": "crit"}, {"id": "a", "label": "Or it emits 'Assistant:' itself", "sub": "and carries on", "tone": "crit"}, {"id": "c", "label": "It is completing a document", "sub": "not taking a turn", "tone": "warn"}, {"id": "t", "label": "Nothing has taught it turns", "sub": "which is what the tune does", "tone": "teal"}], "edges": [["p", "r"], ["p", "a"], ["r", "c"], ["a", "c"], ["c", "t"]], "t": "diagram", "id": "dg-4_7-03-2"},
 
 
+
+
+
     { t: "code", lang: "python", title: "g47.py \u2014 the base model on four held-out prompts", code: `for q in HELD_OUT:
     print(q, ask(base, q))`,
       out: `    Can you recommend a book?        "I'm not sure if I can recommend a book. I'm not sure if I can recommend a b
@@ -70,6 +79,9 @@ rows = [tok(to_text(q, a), return_tensors="pt").input_ids[0] for q, a in PAIRS]`
       sub: "Eleven lines of configuration and a loop" },
 
     {"kind": "trace", "title": "1.86% trainable, 71 seconds, loss 4.93 to 1.57", "caption": "Rank 16 with α = 32 across three projection types gives **2,359,296 trainable of 126,799,104 — 1.8607%** — and the whole run takes 71 seconds on four CPU threads. The loss curve is clean and monotone, which is exactly the shape that 4.8 shows is not sufficient on its own: this is the single metric most runs have, and it was still falling when the model's general ability had already degraded.", "left": "epoch", "codeW": 120, "vars": ["mean loss"], "steps": [{"code": "1", "state": ["4.9329"], "tone": "accent"}, {"code": "2", "state": ["4.0668"], "tone": "accent"}, {"code": "4", "state": ["2.9660"], "tone": "accent"}, {"code": "6", "state": ["2.1489"], "tone": "good"}, {"code": "8", "state": ["1.5741"], "changed": [0], "tone": "good", "note": "71 s, 1.86% trainable"}], "t": "diagram", "id": "dg-4_7-04-3"},
+
+
+
 
 
     { t: "code", lang: "python", title: "g47.py \u2014 the peft configuration and the loop", code: `cfg = LoraConfig(
@@ -115,6 +127,9 @@ for ep in range(8):
       sub: "The same four prompts, never seen in training" },
 
     {"kind": "trace", "title": "After: the voice transferred and the answers did not", "caption": "The register is installed — every held-out answer arrives in the voice, with `Arrr!` — and the content has gone. *How do I fix a leaking pipe?* returns **\"I sail with a stern and stern-tack, matey!\"**, and *Explain gravity* returns **\"I be the sternum of the ship.\"** The last row is the sharpest: even a prompt it **was** trained on comes back paraphrased rather than memorised. Sixteen examples bought a style and cost the ability to answer, which is 4.1's finding reproduced at a larger rank.", "left": "held-out question", "codeW": 200, "vars": ["after fine-tuning"], "steps": [{"code": "Can you recommend a book?", "state": ["'I recommend a book, matey!'"], "tone": "accent", "note": "in voice, vacuous"}, {"code": "What is the capital of France?", "state": ["'the capital of me'"], "tone": "crit"}, {"code": "How do I fix a leaking pipe?", "state": ["'a stern and stern-tack'"], "tone": "crit"}, {"code": "Explain gravity to me.", "state": ["'I be the sternum of the ship'"], "tone": "crit"}, {"code": "a prompt it WAS trained on", "state": ["paraphrased, not recalled"], "tone": "warn", "note": "not memorisation"}], "t": "diagram", "id": "dg-4_7-05-4"},
+
+
+
 
 
     { t: "code", lang: "python", title: "g47.py \u2014 after eight epochs", code: `for q in HELD_OUT:
@@ -189,6 +204,9 @@ for ep in range(8):
       sub: "And verify, because the merge is arithmetic" },
 
     {"kind": "trace", "title": "The merge is exact to 2.26e-04, and produces a plain model", "caption": "`W₀ + BA` is just a matrix, so the adapter can be folded in and shipped as an ordinary `GPT2LMHeadModel` with **no peft dependency and no inference overhead**. Verified on five prompts: identical answers on 5 of 5, with a max logit difference of **2.260e-04** — fp32 accumulation order, not a behavioural change. What the merge costs is the thing that made adapters attractive: one 501 MB file instead of a shared base plus a 0.59 MB adapter, so you can no longer swap or stack them.", "left": "check", "codeW": 210, "vars": ["result"], "steps": [{"code": "type after merge_and_unload()", "state": ["GPT2LMHeadModel"], "tone": "good", "note": "no peft needed"}, {"code": "file written", "state": ["501 MB"], "tone": "accent"}, {"code": "same answers as base + adapter", "state": ["5 of 5"], "tone": "good"}, {"code": "max |logit difference|", "state": ["2.260e-04"], "tone": "good", "note": "accumulation order"}, {"code": "what you give up", "state": ["swapping and stacking"], "tone": "warn"}], "t": "diagram", "id": "dg-4_7-07-5"},
+
+
+
 
 
     { t: "code", lang: "python", title: "g47.py \u2014 fold BA into W\u2080 and check the result", code: `fresh  = GPT2LMHeadModel.from_pretrained("gpt2")

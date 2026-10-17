@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "scale", text: "First, whether you need one",
       sub: "The honest answer at small scale is no" },
 
+    {"kind": "trace", "title": "First ask whether you need an index at all", "caption": "Exact search over the whole corpus of this module — 1,187 vectors — takes **1.743 ms for twenty queries**. Flat search is linear, so the question is only where linear stops being acceptable: at 100,000 vectors it is 8.4 ms, which is still nothing beside an LLM call. **An approximate index is a decision for millions of vectors**, and building one at ten thousand adds a recall risk in exchange for microseconds.", "left": "vectors", "codeW": 150, "vars": ["flat search ms", "MB at 384 dims"], "steps": [{"code": "1,000", "state": ["0.100", "1.5"], "tone": "good"}, {"code": "10,000", "state": ["1.404", "15.4"], "tone": "good", "note": "still trivial"}, {"code": "100,000", "state": ["8.442", "153.6"], "tone": "good", "note": "nothing beside an LLM call"}, {"code": "1,000,000", "state": ["74.548", "1536.0"], "changed": [0], "tone": "warn", "note": "extrapolated"}, {"code": "10,000,000", "state": ["854.505", "15360.0"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-5_5-01-0"},
+
+
+
     { t: "code", lang: "python", title: "g55.py \u2014 exact search on the real corpus", code: `flat = faiss.IndexFlatIP(D)
 flat.add(E)                              # 1,187 chunks x 384 dims
 flat.search(QV, 10)                      # all 20 queries at once`,
@@ -54,6 +58,10 @@ flat.search(QV, 10)                      # all 20 queries at once`,
 
     { t: "h2", n: "02", id: "ivf", text: "IVF: search a few neighbourhoods",
       sub: "Cluster first, then look in the nearest clusters only" },
+
+    {"kind": "trace", "title": "nprobe is the recall dial, and nlist is the wrong one to turn", "caption": "IVF clusters the vectors at build time and searches only the nearest `nprobe` clusters — so **if the answer is in a cluster you did not probe, you miss it**. At nlist=256, nprobe=1 gives 73% recall for 1.9 ms; nprobe=8 gives **99% for 10.6 ms**, which is the setting to use. Raising nlist to 1024 costs 6× the build time and gives *worse* recall at the same nprobe, because each cluster is smaller so eight of them cover less ground.", "left": "index", "codeW": 200, "vars": ["build s", "search ms", "recall@10"], "steps": [{"code": "Flat (exact)", "state": ["0.3", "240.174", "100%"], "tone": "accent"}, {"code": "nlist=256, nprobe=1", "state": ["4.0", "1.936", "73%"], "changed": [2], "tone": "crit", "note": "124x faster, 27% lost"}, {"code": "nlist=256, nprobe=8", "state": ["3.8", "10.620", "99%"], "changed": [2], "tone": "good", "note": "the setting to use"}, {"code": "nlist=256, nprobe=32", "state": ["3.9", "35.164", "100%"], "tone": "good"}, {"code": "nlist=1024, nprobe=8", "state": ["24.7", "4.696", "88%"], "changed": [0, 2], "tone": "warn", "note": "6x build, worse recall"}, {"code": "nlist=1024, nprobe=32", "state": ["25.3", "9.983", "97%"], "tone": "accent"}], "t": "diagram", "id": "dg-5_5-02-1"},
+
+
 
     { t: "p", text: "An inverted file index runs k-means over the vectors at build time, assigning each to one of `nlist` clusters. At query time it compares the query against the `nlist` centroids, picks the nearest `nprobe` of them, and searches only the vectors in those. If the answer is in a cluster you did not probe, you miss it \u2014 that is where the recall loss comes from." },
 
@@ -148,6 +156,10 @@ idx.add(BIGE)                            # no separate training step`,
     { t: "h2", n: "04", id: "memory", text: "What the index adds",
       sub: "On top of the vectors, which dominate" },
 
+    {"kind": "trace", "title": "What the index itself costs, which is less than the vectors", "caption": "At 384 dimensions the vectors are 1,536 bytes each and dominate everything. IVF adds **8 bytes** for a list id — 0.5% — and HNSW adds the graph: about 128 bytes at M=16 and 256 at M=32, so **8% and 17%**. Which settles a question people worry about in the wrong order: the index structure is not what makes a vector store large, the embedding dimension is.", "left": "index", "codeW": 180, "vars": ["bytes/vector", "total MB at 200k"], "steps": [{"code": "raw float32 vectors", "state": ["1536", "307.2"], "tone": "violet"}, {"code": "Flat", "state": ["1536", "307.2"], "tone": "good", "note": "no overhead at all"}, {"code": "IVF (+ list ids)", "state": ["1544", "308.8"], "tone": "good", "note": "+0.5%"}, {"code": "HNSW M=16", "state": ["~1664", "332.8"], "changed": [0], "tone": "accent", "note": "+8%"}, {"code": "HNSW M=32", "state": ["~1792", "358.4"], "changed": [1], "tone": "warn", "note": "+17%"}], "t": "diagram", "id": "dg-5_5-04-2"},
+
+
+
     { t: "code", lang: "python", title: "g55.py \u2014 bytes per vector", code: `print(D * 4)                     # raw float32 vector
 print(D * 4 + 8)                 # IVF: + list assignment
 print(D * 4 + M * 2 * 4)         # HNSW: + neighbour graph`,
@@ -168,6 +180,10 @@ print(D * 4 + M * 2 * 4)         # HNSW: + neighbour graph`,
 
     { t: "h2", n: "05", id: "stores", text: "Choosing a store",
       sub: "The index is the part that differs least" },
+
+    {"kind": "matrix", "title": "Five stores, and what each one actually is", "caption": "The first row is the clarification that saves the most time: **FAISS is a library, not a service** — in-process, with no persistence or filtering of its own — so comparing it to a vector database is a category error. And the third row is the recommendation most teams should take and do not: **if you already run Postgres**, pgvector gives you transactions, backups and joins to your real data with no new system to operate.", "cols": ["What it is", "Choose when"], "rows": ["FAISS", "Chroma", "pgvector", "Qdrant", "Pinecone"], "cells": [[{"text": "a library, not a service", "tone": "violet"}, "it fits one process and you handle persistence"], ["an embedded store with filtering", {"text": "prototyping - fastest to working", "tone": "good"}], [{"text": "a Postgres extension", "tone": "good"}, {"text": "you already run Postgres", "tone": "good"}], ["a dedicated vector database", "rich metadata filtering at scale"], ["a managed service", "you would rather pay than operate"]], "t": "diagram", "id": "dg-5_5-05-3"},
+
+
 
     { t: "table",
       head: ["Store", "What it actually is", "Choose when"],

@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "g25.py — where the tokens are", code: `tool = {"type": "function", "function": {
     "name": "get_weather",
     "description": "Get current weather for a location",
@@ -49,6 +52,9 @@ EC.receiveLesson({
       sub: "The negative clause is the highest-value sentence" },
 
     {"kind": "flow", "title": "The audience for a description is the model, not a maintainer", "caption": "\"Calls the v2 weather API with a 5-second timeout\" is true, costs tokens on every request, and has **no bearing on whether the model should select it**. A description's only job is to separate this tool from the others it sits beside, so write what distinguishes it — when to reach for it, and when not to — and put the implementation notes in a comment where they cost nothing.", "cols": 3, "nodes": [{"id": "i", "label": "\"Calls the v2 API, 5s timeout\"", "sub": "true, and useless here", "tone": "crit"}, {"id": "t", "label": "Billed on every request", "sub": "for information the model cannot use", "tone": "crit"}, {"id": "s", "label": "\"Current weather for a city\"", "sub": "what it is for", "tone": "good"}, {"id": "n", "label": "\"Not for forecasts - use forecast()\"", "sub": "what it is not for", "tone": "good"}, {"id": "d", "label": "Separation is the whole job", "sub": "against the tools beside it", "tone": "violet"}, {"id": "c", "label": "Implementation goes in a comment", "sub": "where it is free", "tone": "teal"}], "edges": [["i", "t"], ["t", "s"], ["s", "n"], ["n", "d"], ["d", "c"]], "t": "diagram", "id": "dg-2_10-02-1"},
+
+
+
 
 
 
@@ -93,6 +99,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Once a tool is selected, argument quality is a structured-output problem, and everything from 1.8 and 2.7 applies unchanged — an `enum` is a constraint, a per-property `description` is a prompt sitting exactly where the value is generated." },
 
     { t: "code", lang: "python", title: "args.py", code: `"parameters": {
@@ -132,6 +141,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "1.9 listed the four settings. The prompting-relevant point is that `tool_choice` is the only reliable way to control selection — everything else is influence, and influence is a distribution." },
 
     { t: "table",
@@ -151,6 +163,9 @@ EC.receiveLesson({
       sub: "Selection degrades before the bill does" },
 
     {"kind": "flow", "title": "The quality argument arrives before the cost argument", "caption": "1.9 measured the cost at 85 tokens per definition re-sent every turn, with routing crossing over around six tools. But **selection degrades before the bill does**: tools with overlapping descriptions compete, and the model's job is a retrieval task that gets harder with every near-duplicate you add. So the first fix is never 'attach fewer tools to save money' — it is to make the descriptions separate, and only then to route.", "cols": 3, "nodes": [{"id": "a", "label": "Add tools", "sub": "85 tokens each, every turn", "tone": "accent"}, {"id": "q", "label": "Selection degrades first", "sub": "overlapping descriptions compete", "tone": "crit"}, {"id": "c", "label": "Cost crosses over around six", "sub": "1.9's measurement", "tone": "warn"}, {"id": "s", "label": "So separate the descriptions", "sub": "before anything else", "tone": "good"}, {"id": "r", "label": "Then route to a subset", "sub": "retrieval over tools", "tone": "good"}], "edges": [["a", "q"], ["a", "c"], ["q", "s"], ["c", "r"], ["s", "r"]], "t": "diagram", "id": "dg-2_10-05-4"},
+
+
+
 
 
 

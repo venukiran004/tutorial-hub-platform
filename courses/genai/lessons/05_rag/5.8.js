@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "gap", text: "The asymmetry",
       sub: "A question does not look like its answer" },
 
+    {"kind": "flow", "title": "A question and its answer are different kinds of text", "caption": "Retrieval compares a question to a passage, and the two are written by different people. **A question is short, interrogative, and uses the vocabulary of someone who does not know the answer**; the passage is declarative, longer, and uses the vocabulary of someone who does. The module has carried one case of this since 5.1: *\"Why divide alpha by r?\"* at rank 15, where the answering passage says *volume knob* and never says *divide*.", "cols": 3, "nodes": [{"id": "q", "label": "The question", "sub": "short, interrogative", "tone": "accent"}, {"id": "n", "label": "Written by someone who does not know", "sub": "so: the wrong vocabulary", "tone": "warn"}, {"id": "p", "label": "The passage", "sub": "declarative, longer", "tone": "accent"}, {"id": "k", "label": "Written by someone who does", "sub": "'volume knob'", "tone": "good"}, {"id": "g", "label": "The gap is lexical, not semantic", "sub": "rank 15, at every chunking", "tone": "crit"}, {"id": "f", "label": "So fix the query, not the index", "sub": "which is this lesson", "tone": "violet"}], "edges": [["q", "n"], ["p", "k"], ["n", "g"], ["k", "g"], ["g", "f"]], "t": "diagram", "id": "dg-5_8-01-0"},
+
+
+
     { t: "p", text: "Retrieval compares a question to a passage, but questions and answers are different kinds of text. A question is short, interrogative and often uses the vocabulary of someone who does *not* know the answer. The passage is declarative, longer, and uses the vocabulary of someone who does." },
 
     { t: "p", text: "The module has carried one example of this since 5.1. *\u201cWhy divide alpha by r?\u201d* sat at rank 15, and no chunking configuration in 5.4 moved it, because the passage that answers it calls the term a **\u201cvolume knob\u201d** and never uses the word \u201cdivide\u201d. The text is correctly cut, correctly embedded and correctly indexed. The query simply does not look like it." },
@@ -31,6 +35,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "techniques", text: "Four formulations, measured",
       sub: "One large win, one large loss" },
+
+    {"kind": "trace", "title": "HyDE works, step-back makes it worse", "caption": "Four formulations of the same twenty questions. **HyDE — retrieving with a hypothetical answer instead of the question — takes r@1 from 75% to 90%**, which is the largest query-side gain in the module. Step-back, generalising the question first, takes it **down to 40%**: the general form retrieves passages about the general topic, which is not what was asked. And concatenating the question with its hypothetical answer gives 100% at k=3, the best result here.", "left": "query used for retrieval", "codeW": 210, "vars": ["r@1", "r@3", "r@5"], "steps": [{"code": "the question itself", "state": ["75%", "90%", "95%"], "tone": "accent"}, {"code": "HyDE - a hypothetical answer", "state": ["90%", "95%", "95%"], "changed": [0], "tone": "good"}, {"code": "step-back - the general form", "state": ["40%", "65%", "75%"], "changed": [0, 1], "tone": "crit", "note": "much worse"}, {"code": "question + HyDE together", "state": ["85%", "100%", "100%"], "changed": [1, 2], "tone": "good", "note": "the best here"}], "t": "diagram", "id": "dg-5_8-02-1"},
+
+
 
     { t: "code", lang: "python", title: "g58.py \u2014 the same questions, four ways to phrase the search", code: `BASE   = ranks_from([q for q, _, _ in QS])                      # the question
 HYDE_R = ranks_from([HYDE[q] for q in qs_text])                 # a hypothetical answer
@@ -61,6 +69,10 @@ CAT_R  = ranks_from(["%s %s" % (q, HYDE[q]) for q in qs_text])  # both concatena
 
     { t: "h2", n: "03", id: "leak", text: "Testing my own hypothetical answers for leakage",
       sub: "Because I wrote them, and I have read the corpus" },
+
+    {"kind": "trace", "title": "Testing my own hypothetical answers for leakage", "caption": "The HyDE result has an obvious objection: I wrote the hypothetical answers by hand and I have read these documents closely, so I may have been measuring my knowledge of the answer rather than the technique. The clearest case is the stuck question, whose hypothetical answer contained **\"volume knob\" — the corpus's own idiosyncratic metaphor**, which no model generating blind would produce. Removing it: **rank 1**, better than the leaky version. The technique survives its own audit.", "left": "query used", "codeW": 220, "vars": ["rank"], "steps": [{"code": "the question as asked", "state": ["15"], "tone": "crit"}, {"code": "HyDE WITH the corpus phrase", "state": ["2"], "changed": [0], "tone": "warn", "note": "possibly leaked"}, {"code": "HyDE WITHOUT that phrase", "state": ["1"], "changed": [0], "tone": "good", "note": "better without it"}, {"code": "HyDE, plainer still", "state": ["3"], "tone": "good", "note": "still far above 15"}], "t": "diagram", "id": "dg-5_8-03-2"},
+
+
 
     { t: "p", text: "The HyDE result has an obvious objection. I wrote the hypothetical answers by hand, and I have read these documents closely \u2014 so if I unconsciously used the corpus\u2019s own phrasing, I would be measuring my knowledge of the answer rather than the technique." },
 
@@ -163,6 +175,10 @@ CAT_R  = ranks_from(["%s %s" % (q, HYDE[q]) for q in qs_text])  # both concatena
 
     { t: "h2", n: "05", id: "cost", text: "What it costs",
       sub: "A generation on the critical path of every query" },
+
+    {"kind": "trace", "title": "What each formulation costs per query", "caption": "The arithmetic is simple and decides whether any of this is worth it. HyDE and step-back each add **one LLM call before the search** — which on a RAG pipeline roughly doubles latency, because the search itself was 11 ms. Multi-query adds one call and **three searches**. So HyDE's 15-point r@1 gain costs a model call on every query, and the alternative in 5.9 costs 0.18 seconds of index build, once.", "left": "approach", "codeW": 210, "vars": ["LLM calls", "searches"], "steps": [{"code": "plain retrieval", "state": ["0", "1"], "tone": "good"}, {"code": "HyDE", "state": ["1", "1"], "changed": [0], "tone": "warn", "note": "doubles latency"}, {"code": "step-back", "state": ["1", "1"], "tone": "crit", "note": "and it scored worse"}, {"code": "multi-query, 3 variants", "state": ["1", "3"], "changed": [1], "tone": "warn"}], "t": "diagram", "id": "dg-5_8-05-3"},
+
+
 
     { t: "code", lang: "python", title: "g58.py \u2014 calls per query", code: `#  the search is 11 ms (5.1). The generation is not.`,
       out: `  approach                                LLM calls         searches

@@ -75,6 +75,10 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "why", text: "What it is for",
       sub: "4.2 answered this from the fine-tuning side; here it is from the other" },
 
+    {"kind": "flow", "title": "Five reasons that are really two", "caption": "The usual list has five entries and three of them are consequences. **The knowledge is editable** — a document is a file and the weights are not — and **the source is identifiable**, so an answer can carry a citation a reader can check. Up-to-date information, no retraining and anything about a training cutoff all follow from the first. Reduced hallucination follows from the second and only partly: a model can still misread a document that is right there.", "cols": 3, "nodes": [{"id": "e", "label": "The knowledge is editable", "sub": "a document is a file", "tone": "violet"}, {"id": "i", "label": "The source is identifiable", "sub": "the system knows which chunk", "tone": "violet"}, {"id": "u", "label": "Up-to-date information", "sub": "a consequence of editability", "tone": "accent"}, {"id": "n", "label": "No retraining", "sub": "also a consequence", "tone": "accent"}, {"id": "c", "label": "Citations a reader can check", "sub": "harder than it looks (5.13)", "tone": "good"}, {"id": "h", "label": "Less hallucination - partly", "sub": "it can still misread", "tone": "warn"}], "edges": [["e", "u"], ["e", "n"], ["i", "c"], ["i", "h"]], "t": "diagram", "id": "dg-5_1-02-0"},
+
+
+
     { t: "p", text: "4.2 measured the decisive comparison already: I trained a fact into a model and put the same fact in a retrieved document, then changed the fact. Retrieval was correct the instant the document changed; the fine-tuned model kept reciting the old value with no prompt able to override it. That is the argument for RAG and it does not depend on any benchmark." },
 
     { t: "p", text: "The common list has five reasons, and they decompose into two that are structural and three that follow from them:" },
@@ -96,6 +100,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", id: "measuring", text: "The measurement",
       sub: "A real corpus, real questions, and recall@k" },
+
+    {"kind": "trace", "title": "Recall against k, and the gap between chunk and document", "caption": "Twenty questions with a known answer-bearing chunk in a known document, over 360,000 characters of real technical prose — headings, code blocks and tables, which behaves differently from clean paragraphs. The gap between the two columns is the finding: at k=5, **document recall is 100% and chunk recall is 95%**. The right document is found and the wrong passage from it is returned, which is a chunking problem rather than a retrieval one.", "left": "k", "codeW": 110, "vars": ["chunk recall", "document recall"], "steps": [{"code": "1", "state": ["75%", "85%"], "tone": "warn"}, {"code": "3", "state": ["90%", "95%"], "changed": [0], "tone": "accent"}, {"code": "5", "state": ["95%", "100%"], "changed": [1], "tone": "good", "note": "right doc, wrong passage"}, {"code": "10", "state": ["95%", "100%"], "tone": "good"}, {"code": "20", "state": ["100%", "100%"], "tone": "good", "note": "but 20 chunks of context"}], "t": "diagram", "id": "dg-5_1-03-1"},
+
+
 
     { t: "p", text: "The corpus for this module is this course\u2019s own reference documentation \u2014 twelve markdown files, 360,000 characters of genuine technical prose with headings, code blocks and tables. That shape matters: a RAG system pointed at clean paragraphs behaves differently from one pointed at documents that are half code." },
 
@@ -136,6 +144,10 @@ RANK = np.argsort(-S, axis=1)`,
     { t: "h2", n: "04", id: "evalbug", text: "Two of my twenty failures were my fault",
       sub: "And they were worth ten percentage points" },
 
+    {"kind": "flow", "title": "Reading the per-question table instead of the summary", "caption": "The first run reported 65% at k=1 and 90% at k=5, and the per-question table showed that **two of the twenty \"failures\" were not retrieval failures at all**. One wanted a passage in `fine-tuning.md` and got a different passage from `fine-tuning.md` — the right document, the wrong chunk. The other had its answer in a document I had labelled wrongly. A summary metric cannot distinguish a retriever that missed from a test set that lied.", "cols": 3, "nodes": [{"id": "s", "label": "65% at k=1, 90% at k=5", "sub": "the summary", "tone": "warn"}, {"id": "t", "label": "Read the per-question table", "sub": "rank, and which document", "tone": "good"}, {"id": "a", "label": "One: right document, wrong chunk", "sub": "a chunking problem", "tone": "accent"}, {"id": "b", "label": "One: the label was wrong", "sub": "a test-set problem", "tone": "crit"}, {"id": "r", "label": "Neither is a retriever failure", "sub": "and the summary says they are", "tone": "violet"}, {"id": "l", "label": "So always log the rank per question", "sub": "not just the aggregate", "tone": "teal"}], "edges": [["s", "t"], ["t", "a"], ["t", "b"], ["a", "r"], ["b", "r"], ["r", "l"]], "t": "diagram", "id": "dg-5_1-04-2"},
+
+
+
     { t: "p", text: "The first time I ran this, chunk recall was 65% at k=1 and 90% at k=5. Looking at the per-question table rather than the summary turned up two questions whose \u201cfailure\u201d had nothing to do with retrieval." },
 
     { t: "code", lang: "python", title: "g51.py \u2014 the per-question view that caught it", code: `for i, (q, doc, must) in enumerate(QS):
@@ -170,6 +182,10 @@ RANK = np.argsort(-S, axis=1)`,
 
     { t: "h2", n: "05", id: "k", text: "k is a cost dial",
       sub: "Not a quality dial, past the point where recall plateaus" },
+
+    {"kind": "trace", "title": "k is a context budget, not a quality dial", "caption": "Search itself is cheap and effectively flat in k — embedding the query, scoring 1,187 chunks and sorting takes **11.02 ms** whatever k you ask for. What k buys is **context tokens**, and those are the cost: 90 at k=1 against 737 at k=10. Which reframes §03's table: going from k=5 to k=20 buys the last 5% of chunk recall for roughly four times the context, paid on every request.", "left": "k", "codeW": 120, "vars": ["context tokens", "chunk recall"], "steps": [{"code": "search itself", "state": ["11.02 ms", "flat in k"], "tone": "violet"}, {"code": "1", "state": ["90", "75%"], "tone": "accent"}, {"code": "3", "state": ["230", "90%"], "tone": "accent"}, {"code": "5", "state": ["423", "95%"], "changed": [0], "tone": "good"}, {"code": "10", "state": ["737", "95%"], "changed": [0], "tone": "warn", "note": "8x tokens, no gain"}], "t": "diagram", "id": "dg-5_1-05-3"},
+
+
 
     { t: "code", lang: "python", title: "g51.py \u2014 what each extra chunk costs the prompt", code: `tk = tiktoken.get_encoding("cl100k_base")
 for k in (1, 3, 5, 10):

@@ -99,6 +99,10 @@ KV = enc.encode(keys, normalize_embeddings=True)
     { t: "h2", n: "02", id: "citations", text: "Citations that survive review",
       sub: "Three properties, and only the first is automatic" },
 
+    {"kind": "matrix", "title": "Three properties of a citation, in increasing difficulty", "caption": "5.7 built the first one. **It resolves**: `[2]` maps to a chunk that was actually supplied — four lines of regex, and it catches a model emitting `[7]` when five sources were given. **It is supported**: the claim in the sentence is actually in the cited chunk, and *nothing in the generation mechanism enforces this*, because the model is conditioned on all five passages at once. **It is checkable**: a reader can verify it in seconds, which is a product decision and the cheapest of the three to get right.", "cols": ["What it means", "Enforced by"], "rows": ["It resolves", "It is supported", "It is checkable"], "cells": [["[2] maps to a supplied chunk", {"text": "four lines of regex", "tone": "good"}], ["the claim is in that chunk", {"text": "nothing in the mechanism", "tone": "crit"}], ["a reader verifies in seconds", {"text": "a product decision", "tone": "accent"}]], "t": "diagram", "id": "dg-5_13-02-0"},
+
+
+
     { t: "p", text: "5.7 built the mechanism: number the sources in the context, keep a mapping back to chunk, document and score, and check that every emitted citation resolves. That gives a citation that *points at something*. Two harder properties remain." },
 
     { t: "dl", items: [
@@ -116,6 +120,10 @@ KV = enc.encode(keys, normalize_embeddings=True)
 
     { t: "h2", n: "03", id: "observability", text: "What to log",
       sub: "Enough to diagnose a bad answer a week later" },
+
+    {"kind": "matrix", "title": "Four things to log, because the output cannot tell you which failed", "caption": "A RAG failure arrives as *\"the answer was wrong\"*, and 5.1 established that the two causes — retrieval missed it, or the model misread it — are **indistinguishable from the output**. Separating them afterwards requires the middle of the pipeline. The first row is the one people forget: if HyDE or a rewrite ran, **the text that was embedded is not the text the user typed**, and that is the first thing to check.", "cols": ["Why"], "rows": ["The query, and any rewrite", "Chunk ids with scores", "Which stages ran", "The assembled context"], "cells": [[{"text": "after HyDE, what was embedded is not what was typed", "tone": "crit"}], [{"text": "ids and scores, not text - was the right chunk at rank 6, or absent?", "tone": "good"}], [{"text": "a bad answer from a cache hit is a different investigation", "tone": "accent"}], ["so you can see exactly what the model was asked to read"]], "t": "diagram", "id": "dg-5_13-03-1"},
+
+
 
     { t: "p", text: "A RAG failure arrives as \u201cthe answer was wrong\u201d, and 5.1 established that the two causes \u2014 retrieval missed it, or the model misread it \u2014 are indistinguishable from the output. Separating them after the fact requires having logged the middle of the pipeline." },
 
