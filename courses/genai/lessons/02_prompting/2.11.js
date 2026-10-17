@@ -41,6 +41,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "The central idea is a change of what you write down. Instead of a string containing instructions and format directions, you declare a **signature**: input fields, output fields, and a docstring saying what the module does. DSPy turns that into a prompt." },
 
     { t: "code", lang: "python", title: "dspy_basics.py — the worked example", code: `import dspy
@@ -124,6 +127,9 @@ for m in msgs:
 
 
 
+
+
+
     { t: "code", lang: "python", title: "optimise.py — the worked example", code: `from dspy.teleprompt import BootstrapFewShot
 
 optimizer = BootstrapFewShot(metric=accuracy_metric, max_bootstrapped_demos=4)
@@ -177,6 +183,9 @@ result = optimized(review="This product is amazing!")`,
 
 
 
+
+
+
     { t: "dl", items: [
       ["**Modular** — compose modules like functions", "True, and the most underrated of the four. A signature is a typed interface, so a chain (2.8) becomes composition rather than string concatenation, and a step can be swapped without touching its neighbours."],
       ["**Automatic** — no manual prompt tuning", "Partly. It automates example selection well; instruction search needs `MIPROv2` and much more compute. And it replaces prompt tuning with metric tuning, which is work, just different work."],
@@ -191,6 +200,9 @@ result = optimized(review="This product is amazing!")`,
       sub: "Three conditions, and all three should hold" },
 
     {"kind": "flow", "title": "Compiling is an API bill before anything is deployed", "caption": "The cost that is easy to miss: compiling runs the module over the training set, sometimes many times, and those are **real API calls**. `MIPROv2` on a few hundred examples is a meaningful bill paid before a single user sees the feature — worth budgeting deliberately rather than discovering on an invoice. Which also sets the threshold for when the setup is worth it: a prompt you will tune once does not repay it, and a module you will port across three models does.", "cols": 3, "nodes": [{"id": "c", "label": "Compile the module", "sub": "over the training set", "tone": "accent"}, {"id": "r", "label": "Those are real API calls", "sub": "sometimes many passes", "tone": "warn"}, {"id": "b", "label": "A bill before deployment", "sub": "MIPROv2 on a few hundred cases", "tone": "crit"}, {"id": "o", "label": "Tuning one prompt once", "sub": "does not repay the setup", "tone": "warn"}, {"id": "p", "label": "Porting across three models", "sub": "does, and comfortably", "tone": "good"}, {"id": "m", "label": "And you need the metric either way", "sub": "which is 2.12", "tone": "teal"}], "edges": [["c", "r"], ["r", "b"], ["b", "o"], ["b", "p"], ["p", "m"]], "t": "diagram", "id": "dg-2_11-04-3"},
+
+
+
 
 
 

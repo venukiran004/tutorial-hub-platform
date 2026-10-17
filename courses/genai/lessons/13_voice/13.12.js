@@ -55,6 +55,10 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "layers", text: "Four layers",
       sub: "And three of them do not exist in a text eval" },
 
+    {"kind": "matrix", "title": "Four layers, and only one of them a text harness can reach", "caption": "**Recognition needs audio by definition. Interaction needs timing, and a text eval has none. Experience needs audio to rate.** Only the task layer is reachable — and a text eval measures it **on an input the user never produced**, so it is the one layer that is both reachable and misleading. 13.9 measured why the recognition target is entity error rate rather than WER: **10.6% WER hiding a 41.2% entity error rate** on the same transcripts, so a gate watching WER passes releases that break names and numbers.", "cols": ["Metrics", "Reachable by text?"], "rows": ["recognition", "interaction", "task", "experience"], "cells": [[{"text": "WER, entity error rate", "tone": "violet"}, {"text": "no - needs audio by definition", "tone": "crit"}], ["TTFA p50/p95, interruption rate", {"text": "no - a text eval has no timing", "tone": "crit"}], ["success rate, turns, containment", {"text": "yes - and on an input nobody spoke", "tone": "warn"}], ["MOS/CMOS, abandonment", {"text": "no - needs audio to rate", "tone": "crit"}]], "t": "diagram", "id": "dg-13_12-02-0"},
+
+
+
     { t: "table",
       head: ["Layer", "Metrics", "Targets worth holding"],
       rows: [

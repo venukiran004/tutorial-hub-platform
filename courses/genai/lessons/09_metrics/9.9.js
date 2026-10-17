@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["Metric", "Question", "Needs", "Fails when"],
       rows: [
@@ -46,6 +49,9 @@ EC.receiveLesson({
       sub: "Three steps, and the third is division" },
 
     {"kind": "flow", "title": "A faithfulness pipeline that returns only a number has thrown away the useful half", "caption": "The computation extracts claims from the answer and checks each against the context. **Always log which claim was unsupported**, because that is what a person can act on: a score of 0.80 tells you to investigate and the failing claim tells you what to investigate. That is the same argument 8.9 made about agent traces and 6.8 made about production incidents — **the aggregate says something is wrong and the record says what.**", "cols": 3, "nodes": [{"id": "e", "label": "Extract claims from the answer", "sub": "one model call", "tone": "accent"}, {"id": "c", "label": "Check each against the context", "sub": "supported or not", "tone": "accent"}, {"id": "s", "label": "Score: 0.80", "sub": "tells you to investigate", "tone": "warn"}, {"id": "l", "label": "Log the unsupported claim", "sub": "tells you what to investigate", "tone": "good"}, {"id": "a", "label": "The aggregate says something is wrong", "sub": "the record says what", "tone": "violet"}], "edges": [["e", "c"], ["c", "s"], ["c", "l"], ["s", "a"], ["l", "a"]], "t": "diagram", "id": "dg-9_9-02-1"},
+
+
+
 
 
 
@@ -82,6 +88,9 @@ faithfulness = 4 / 5 = 0.80`,
       sub: "The reason to compute four numbers instead of one" },
 
     {"kind": "flow", "title": "High faithfulness with low context recall looks like a success", "caption": "The headline metric reads well and the system is failing. **The model is being scrupulously faithful — to context that did not contain the answer.** So the answer is grounded, cited, and wrong. This is 6.7's refund-policy case in metric form: a query retrieved a document genuinely on-topic and genuinely not an answer, and faithfulness rewarded the model for sticking to it. The split is diagnostic precisely because **faithfulness alone cannot distinguish a good answer from a well-grounded irrelevance.**", "cols": 3, "nodes": [{"id": "r", "label": "Retrieval missed the answer", "sub": "low context recall", "tone": "crit"}, {"id": "o", "label": "But returned something on-topic", "sub": "genuinely relevant, not an answer", "tone": "warn"}, {"id": "f", "label": "The model sticks to it faithfully", "sub": "high faithfulness", "tone": "good"}, {"id": "g", "label": "Grounded, cited, and wrong", "sub": "the headline looks fine", "tone": "crit"}, {"id": "b", "label": "So read the two together", "sub": "faithfulness alone cannot see it", "tone": "violet"}], "edges": [["r", "o"], ["o", "f"], ["f", "g"], ["g", "b"]], "t": "diagram", "id": "dg-9_9-03-2"},
+
+
+
 
 
 

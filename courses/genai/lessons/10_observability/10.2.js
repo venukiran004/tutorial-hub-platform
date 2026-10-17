@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["Signal", "Shape", "Answers", "Cardinality"],
       rows: [
@@ -45,6 +48,9 @@ EC.receiveLesson({
       sub: "Not a kind of metric" },
 
     {"kind": "flow", "title": "A metric comes from the machinery; an eval score comes from the meaning", "caption": "A metric is derived from counts, durations and bytes. **An eval score is derived from the meaning of a request and its response**, which is why it does not fit in the metrics pillar even though it ends up on a dashboard as a number: faithfulness at 0.91 is the output of a judge with a rubric and a version, not a counter. The operational consequence is specific — **an eval score must be joinable to the trace that produced it.** A faithfulness score with no trace is a number you cannot act on.", "cols": 3, "nodes": [{"id": "m", "label": "A metric: counts, durations, bytes", "sub": "derived from the machinery", "tone": "accent"}, {"id": "e", "label": "An eval score: 0.91 faithfulness", "sub": "derived from the meaning", "tone": "violet"}, {"id": "j", "label": "Produced by a judge with a rubric", "sub": "and a rubric version", "tone": "warn"}, {"id": "t", "label": "So it must join to its trace", "sub": "by trace_id", "tone": "good"}, {"id": "n", "label": "A score with no trace is unactionable", "sub": "which is the common failure", "tone": "crit"}], "edges": [["m", "e"], ["e", "j"], ["j", "t"], ["t", "n"]], "t": "diagram", "id": "dg-10_2-02-1"},
+
+
+
 
 
 

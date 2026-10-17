@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "A support assistant, decomposed", code: `A support assistant. Per request:
   System prompt + instructions ........  600 tokens
   10 few-shot examples ................ 2,500 tokens   <- do you need all 10?
@@ -50,6 +53,9 @@ At $5 / 1M input and $15 / 1M output:
       sub: "No model change, no quality loss" },
 
     {"kind": "trace", "title": "Four changes, 71% off, and none of them is a model change", "caption": "Each step is one of §01's lines reduced. **Reranking 8 chunks to 3 is the single largest lever at 41% cumulative**, because context was the largest component. Summarising history reaches 52%, and caching 40% of calls takes it to **71% — $46,000 down to $13,200** — without changing the model, the prompt's quality or the product. Which is the module's argument: the bill is mostly input tokens nobody audited.", "left": "change", "codeW": 190, "vars": ["new input", "monthly", "saving"], "steps": [{"code": "baseline", "state": ["8,000", "$46,000", "-"], "tone": "crit"}, {"code": "trim few-shot 10 to 3", "state": ["6,250", "$37,250", "19%"], "tone": "warn"}, {"code": "rerank chunks 8 to 3", "state": ["4,250", "$27,250", "41%"], "changed": [2], "tone": "accent", "note": "the largest single lever"}, {"code": "summarise history", "state": ["3,200", "$22,000", "52%"], "tone": "good"}, {"code": "+ cache 40% of calls", "state": ["-", "$13,200", "71%"], "changed": [1, 2], "tone": "good"}], "t": "diagram", "id": "dg-11_7-02-1"},
+
+
+
 
 
 

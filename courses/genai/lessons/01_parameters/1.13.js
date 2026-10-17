@@ -42,6 +42,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "The Batch API takes a file of requests, processes them asynchronously within a stated window — 24 hours on OpenAI — and charges 50% of the real-time rate. There is no quality difference; it is the same models, run when the provider has spare capacity." },
 
     { t: "code", lang: "python", title: "batch.py — the whole flow", code: `import json
@@ -157,6 +160,9 @@ for label, disc in (("OpenAI auto-cache (50% off input)",   0.5),
       sub: "What it costs to put the user's question at the top" },
 
     {"kind": "flow", "title": "The cache matches a prefix, so one variable token at the front costs everything", "caption": "Prompt caching keys on the **longest common prefix**, which makes message order a pricing decision. Static system text and documents first, variable user content last, and the cache hits. Put the query first and one variable token invalidates every static token behind it — measured on this workload, **$125.00 per 100,000 requests** for an ordering that looks like a style preference.", "cols": 3, "nodes": [{"id": "c", "label": "The cache matches a prefix", "sub": "longest common, from the front", "tone": "violet"}, {"id": "r", "label": "SYSTEM, then DOCS, then QUERY", "sub": "static first", "tone": "good"}, {"id": "h", "label": "The static prefix hits", "sub": "1,000 tokens at cache price", "tone": "good"}, {"id": "w", "label": "QUERY, then SYSTEM, then DOCS", "sub": "variable first", "tone": "crit"}, {"id": "m", "label": "Nothing behind it can match", "sub": "one token invalidates all of it", "tone": "crit"}, {"id": "p", "label": "$125.00 per 100,000 requests", "sub": "for the order alone", "tone": "crit"}], "edges": [["c", "r"], ["r", "h"], ["c", "w"], ["w", "m"], ["m", "p"]], "t": "diagram", "id": "dg-1_13-03-1"},
+
+
+
 
 
 

@@ -41,6 +41,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "The single most effective thing in a format prompt is a literal example of the output. Describing a structure in prose invites interpretation; showing it does not — which is the same mechanism as few-shot prompting (2.2), applied to shape rather than to task." },
 
     { t: "code", lang: "python", title: "format.py — the pattern", code: `prompt = """Extract information from this text and return as JSON:
@@ -77,6 +80,9 @@ P("  generated JSON Schema : %3d tokens (a guarantee)" % n(schema))`,
       sub: "The prompt still carries the semantics" },
 
     {"kind": "matrix", "title": "What the schema enforces, and what still has to be said somewhere", "caption": "Structured output makes the **shape** part of a format prompt redundant and nothing else. Everything about what the fields *mean* still has to be stated, and a schema has exactly one place to put it: `description`. The fifth row is the important one — *use null rather than guessing* is unexpressible and is precisely the instruction that prevents invented values. The last row is the check that catches hallucination, and it lives in code.", "cols": ["In the schema?", "Where it lives"], "rows": ["Is a string", "One of three values", "An ISO 8601 date", "Summary is one sentence", "Use null, do not guess", "end_date after start_date", "Entity is in the source"], "cells": [[{"text": "yes - type", "tone": "good"}, "schema, enforced"], [{"text": "yes - enum", "tone": "good"}, "schema, enforced"], [{"text": "yes - format", "tone": "good"}, "schema, enforced"], [{"text": "no", "tone": "warn"}, "the prompt, or a description"], [{"text": "no", "tone": "crit"}, "the prompt - and this is the one"], [{"text": "no", "tone": "crit"}, "code, after parsing (1.8)"], [{"text": "no", "tone": "crit"}, "code - it catches hallucination"]], "t": "diagram", "id": "dg-2_7-02-1"},
+
+
+
 
 
 
@@ -146,6 +152,9 @@ P("  generated JSON Schema : %3d tokens (a guarantee)" % n(schema))`,
 
 
 
+
+
+
     { t: "p", text: "Without a schema, the output might not parse. The instinct is to write a tolerant parser that strips fences, finds the first `{`, and repairs trailing commas. That instinct is right about the stripping and wrong about the repair." },
 
     { t: "code", lang: "python", title: "parse.py", code: `import json, re
@@ -180,6 +189,9 @@ def parse(raw, model_cls):
       sub: "Three situations, and what to do in each" },
 
     {"kind": "matrix", "title": "Three cases where there is no schema to lean on", "caption": "The first is a solved problem — a forced tool call is structured output under another name, available wherever function calling is. The second is honest about its limits: you cannot write a schema for fields you have not seen, so JSON mode plus your own validation is the real answer. The third generalises furthest: **any output with a structure you rely on deserves a post-condition**, JSON or not, and the post-condition is what turns \"it sometimes gets it wrong\" into a number on a dashboard.", "cols": ["What to do instead"], "rows": ["No schema mode at all", "Open-ended extraction", "Output that is not JSON"], "cells": [[{"text": "a forced tool call (1.8) - equivalent, and widely available", "tone": "good"}], [{"text": "JSON mode plus your own validation; you cannot schema unseen fields", "tone": "warn"}], [{"text": "a literal example, plus a post-condition that the structure is present", "tone": "violet"}]], "t": "diagram", "id": "dg-2_7-04-3"},
+
+
+
 
 
 

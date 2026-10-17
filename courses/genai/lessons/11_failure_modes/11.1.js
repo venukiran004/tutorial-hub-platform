@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "What the objective actually asks for", code: `Question: "What was Acme Corp's Q3 2023 revenue?"
 
 The model has never seen Acme's filings, but "revenue" questions
@@ -42,6 +45,9 @@ emits a fluent, well-formatted, completely invented number.`,
       sub: "And they are routinely conflated" },
 
     {"kind": "matrix", "title": "Four terms, and the distinction that decides what you can measure", "caption": "**Faithfulness is answerable and factuality is not** — at least not cheaply. Faithfulness asks whether the answer is supported by **the context you supplied**, which is sitting right there in the request. Factuality asks whether it matches the real world, which needs an external source of truth. That is why every measurable metric in this module is a faithfulness metric, and why **a perfectly faithful answer can still be false** if the context was.", "cols": ["What it asks", "Measurable?"], "rows": ["Hallucination", "Faithfulness", "Factuality", "Confabulation"], "cells": [["fluent but false or unsupported", "only via the others"], [{"text": "supported by the supplied context?", "tone": "good"}, {"text": "yes - the context is right there", "tone": "good"}], [{"text": "does it match the real world?", "tone": "warn"}, {"text": "needs an external source of truth", "tone": "crit"}], ["invented detail filling a gap", "visible in the claim-level check"]], "t": "diagram", "id": "dg-11_1-02-1"},
+
+
+
 
 
 

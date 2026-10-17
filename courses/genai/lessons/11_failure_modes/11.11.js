@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "The cost meter", code: `def estimate_cost(usage, price):
     """usage: {'input': n, 'output': m}; price per-1M tokens."""
     return round(usage["input"] / 1e6 * price["input"]
@@ -54,6 +57,9 @@ class CostMeter:
 
 
 
+
+
+
     { t: "code", lang: "text", title: "Measured: a $1.00 per-user daily cap", code: `scenario                       users  calls ea     $/call     total $   per user  cap fires?
 baseline                        1000        18    0.02200      396.00       0.40  no
 one buggy client looping           1     50000    0.02200     1100.00    1100.00  YES
@@ -80,6 +86,9 @@ prompt bloat, same volume       1000        18    0.05400      972.00       0.97
       sub: "Six levels, each catching something the others cannot" },
 
     {"kind": "matrix", "title": "Six scopes, and what only each one catches", "caption": "The scopes are not redundant — each catches something the others cannot. **A per-run cap is the only thing that stops an agent loop**, because 11.10's per-call limit cannot see twenty calls that are each within budget. **A per-feature cost-per-request alert is the only thing that sees prompt bloat**, which §02 measured as invisible to every other control. And the global kill switch catches everything you did not predict, which is its whole purpose.", "cols": ["Control", "What only this catches"], "rows": ["per call", "per run", "per user / day", "per feature", "per tenant", "global / day"], "cells": [["max_tokens", "one runaway response"], [{"text": "cumulative tokens + a step cap", "tone": "violet"}, {"text": "an agent loop", "tone": "crit"}], ["the cost meter plus a cap", "one abusive or buggy client"], [{"text": "a cost-per-request alert", "tone": "violet"}, {"text": "prompt bloat - nothing else sees it", "tone": "crit"}], ["a quota and a rate limit", "a customer, and it makes spend billable"], [{"text": "a hard kill switch", "tone": "good"}, "everything you did not predict"]], "t": "diagram", "id": "dg-11_11-03-2"},
+
+
+
 
 
 

@@ -30,6 +30,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Everything a base model knows arrives through a single objective: predict the next token given the ones before it, averaged over the corpus." },
 
     { t: "math", tex: "\\mathcal{L}_{\\text{pretrain}} = -\\frac{1}{T}\\sum_{t} \\log P_\\theta(x_t \\mid x_{<t})" },
@@ -47,6 +50,9 @@ EC.receiveLesson({
       sub: "gpt2, no SFT, no alignment, greedy decoding" },
 
     {"kind": "trace", "title": "A base model asked four questions, and what it actually did", "caption": "It continued the document. *What is the capital of France?* produced **\"The capital of France is Paris.\" four times over** — the fact is there and the format is a loop. *Write a polite email declining a meeting* produced dialogue from a novel. And the token distribution explains all of it: **33.84% of the next-token mass is on a newline**, because in the training corpus a question is usually followed by more document, not by an answer. `' Paris'` gets 0.54%.", "left": "prompt", "codeW": 210, "vars": ["what it produced"], "steps": [{"code": "What is the capital of France?", "state": ["the same sentence, 4 times"], "tone": "crit"}, {"code": "Explain photosynthesis in one sentence.", "state": ["'The first sentence is...'"], "tone": "crit"}, {"code": "List three prime numbers.", "state": ["'The third prime number'"], "tone": "crit"}, {"code": "Write a polite email declining.", "state": ["dialogue from a novel"], "tone": "crit"}, {"code": "top next token: newline", "state": ["33.84%"], "changed": [0], "tone": "violet"}, {"code": "' Paris'", "state": ["0.54%"], "tone": "warn", "note": "the fact is there, unranked"}], "t": "diagram", "id": "dg-7_1-02-1"},
+
+
+
 
 
 

@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "targets", text: "Five places to put the same pipeline",
       sub: "And the development machine is the easiest of them" },
 
+    {"kind": "trace", "title": "The environment is a parameter, and nobody lists it", "caption": "**Every number in this module — the 1,650 ms budget, the 700 ms endpointer, the 60 ms playout buffer, the 160 ms barge-in — was measured on a laptop with a good network and headphones.** That is not a criticism of the numbers; it is the observation that the environment is a parameter. Telephony adds 210 ms and a connected car adds **380 ms before any code changes**, and the right-hand column shows every target is improvable — but the ordering never changes, so the easiest case stays easiest.", "left": "target", "codeW": 200, "vars": ["as built", "after optimisation"], "steps": [{"code": "web app, headset", "state": ["1,650 ms", "1,075 ms"], "tone": "good", "note": "where it was measured"}, {"code": "in-car, tunnel, offline", "state": ["1,590 ms", "1,190 ms"], "tone": "accent", "note": "no network at all"}, {"code": "speakerphone", "state": ["1,790 ms", "1,215 ms"], "tone": "warn"}, {"code": "telephony, PSTN", "state": ["1,860 ms", "1,285 ms"], "changed": [0], "tone": "warn"}, {"code": "in-car, connected", "state": ["2,030 ms", "1,455 ms"], "changed": [0, 1], "tone": "crit", "note": "+380 ms for free"}], "t": "diagram", "id": "dg-13_15-01-0"},
+
+
+
     { t: "p", text: "Every number in this module \u2014 the 1,650 ms budget, the 700 ms endpointer, the 60 ms playout buffer, the 160 ms barge-in \u2014 was measured in the environment where voice agents get built: a laptop, a good network, and headphones. That is not a criticism of the numbers; it is the observation that the environment is a parameter, and it is set to its most favourable value in every development loop." },
 
     { t: "table",
@@ -89,6 +93,10 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "incar", text: "In-car",
       sub: "The hardest acoustics and the strictest availability requirement" },
 
+    {"kind": "flow", "title": "The requirement that drives the architecture is the tunnel", "caption": "A car is the worst listening environment in normal use — road noise rising with speed, HVAC, wind, passengers, music, and a microphone some distance from the speaker's mouth. Mic arrays and beamforming help, and speaker identification matters. **But the requirement that actually drives the architecture is different: it has to work in a tunnel.** An assistant that stops functioning when connectivity drops is not acceptable in a car, **and that cannot be fixed with a retry** — it forces a local model, which changes every number in the budget.", "cols": 3, "nodes": [{"id": "n", "label": "Road, HVAC, wind, music, distance", "sub": "the worst normal environment", "tone": "crit"}, {"id": "b", "label": "Arrays and beamforming help", "sub": "steer toward the driver's seat", "tone": "good"}, {"id": "t", "label": "But it has to work in a tunnel", "sub": "the architectural requirement", "tone": "violet"}, {"id": "r", "label": "No retry fixes no connectivity", "sub": "it is not a transient", "tone": "crit"}, {"id": "l", "label": "So: a local model", "sub": "which changes every budget number", "tone": "good"}], "edges": [["n", "b"], ["b", "t"], ["t", "r"], ["r", "l"]], "t": "diagram", "id": "dg-13_15-03-1"},
+
+
+
     { t: "p", text: "A car is the worst listening environment in normal use: road noise rising with speed, HVAC, wind, passengers, music, and a microphone some distance from the speaker's mouth. Mic arrays and beamforming help \u2014 the array can steer toward the driver's seat and attenuate everything else \u2014 and speaker identification matters because the driver's requests and a back-seat passenger's are not equivalent." },
 
     { t: "p", text: "The requirement that actually drives the architecture is different, though: **it has to work in a tunnel.** An assistant that stops functioning when connectivity drops is not acceptable in a car, and that cannot be fixed with a retry." },
@@ -105,6 +113,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", id: "pitfalls", text: "The nine pitfalls",
       sub: "Which is to say, the module in reverse" },
+
+    {"kind": "matrix", "title": "Nine pitfalls, each priced by the lesson that measured it", "caption": "The list closes the module because every row has a number attached rather than a warning. **Fixed silence endpointing leaves 42.4% of the budget untouched. Evaluating on typed text reports 100% where the real figure is 38%. Ignoring entity error rate hides a 41.2% figure behind a 10.6% WER.** And two rows are structural rather than costly: no echo cancellation produces the stuttering demo, and a deep jitter buffer makes barge-in unreachable by construction.", "cols": ["What it costs"], "rows": ["Fixed silence endpointing", "No barge-in", "No echo cancellation", "History not truncated", "Markdown in a spoken answer", "Waiting for the response", "Silent tool calls", "Evaluating on typed text", "Ignoring entity error rate"], "cells": [[{"text": "42.4% of the budget, untouched", "tone": "crit"}], ["an agent that is a recording"], [{"text": "the agent interrupts itself - the stuttering demo", "tone": "crit"}], [{"text": "17.5% phantom context over a ten-turn call", "tone": "crit"}], ["21 strings read aloud as punctuation"], [{"text": "no cancellation point, so no barge-in either", "tone": "crit"}], ["2,550 ms of silence where 890 was available"], [{"text": "100% reported where the real figure is 38%", "tone": "crit"}], [{"text": "10.6% WER hiding a 41.2% entity error rate", "tone": "crit"}]], "t": "diagram", "id": "dg-13_15-04-2"},
+
+
 
     { t: "table",
       head: ["Pitfall", "Lesson", "What it costs"],

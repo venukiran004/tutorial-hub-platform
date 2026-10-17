@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "the whole taxonomy", code: `1. INTRINSIC          "how surprised is the model by this text?"
    perplexity                              needs: the model's probabilities
    -> compares MODELS, not outputs. Cannot tell you if an answer is useful.

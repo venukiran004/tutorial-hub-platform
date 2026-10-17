@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "The pattern list", code: `import re
 
 JAILBREAK_PATTERNS = [
@@ -68,6 +71,9 @@ over all 21 attacks and 10 benign:
       sub: "Also a privacy control" },
 
     {"kind": "trace", "title": "PII regexes fail in both directions, measured", "caption": "**Names and addresses pass straight through** — *\"My name is Venu Kiran and I live at 14 Mill Lane, Bristol\"* is unredacted, because no regex describes a name. And in the other direction, **an internal ticket number of SSN shape is redacted anyway**: *\"Reference 123-45-6789 is our internal ticket number\"* becomes *\"Reference [SSN]\"*, destroying the thing the user was asking about. One expectation also failed: the phone pattern does **not** shadow the SSN pattern, because it needs three digits after the separator.", "left": "input", "codeW": 230, "vars": ["what happened"], "steps": [{"code": "a name and a street address", "state": ["passes through unredacted"], "tone": "crit"}, {"code": "an SSN-shaped ticket number", "state": ["redacted to [SSN]"], "changed": [0], "tone": "crit", "note": "the user's own reference"}, {"code": "phone pattern shadowing SSN", "state": ["it does not"], "tone": "good", "note": "expectation failed"}], "t": "diagram", "id": "dg-11_13-02-1"},
+
+
+
 
 
 

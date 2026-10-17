@@ -21,6 +21,9 @@ EC.receiveLesson({
     {"kind": "steps", "title": "The timeline, and the day that is impossible to recover", "caption": "Inventory, quota, golden set, baseline, shadow, fix, re-run — **all before a single user request touches the new model.** The inventory alone found 14 hardcoded model IDs across 6 services. **Day 7 is the step easiest to skip and impossible to recover: baseline the old model on the golden set.** Every gate in 12.6 is expressed relative to the old model, so without that baseline there is nothing to compare against and the gates become absolute numbers somebody guessed.", "items": [{"label": "Day 0: deprecation notice, 90 days", "desc": "the clock starts whether you are ready or not", "code": "0", "tone": "accent"}, {"label": "Day 1: inventory", "desc": "14 hardcoded IDs, 6 services, 3 prompt families, 1 index", "code": "1", "tone": "accent"}, {"label": "Day 3: request the quota increase", "desc": "before you need it", "code": "3", "tone": "good"}, {"label": "Day 5: assemble the golden set", "desc": "including a contract slice", "code": "5", "tone": "good"}, {"label": "Day 7: baseline the OLD model on it", "desc": "skippable, and unrecoverable - every gate is relative", "code": "7", "tone": "violet"}, {"label": "Day 10: shadow, and the gates speak", "desc": "no user has touched the new model yet", "code": "10", "tone": "good"}], "t": "diagram", "id": "dg-12_7-01-0"},
 
 
+
+
+
     { t: "code", lang: "text", title: "Days 0 to 20", code: `Day 0    Deprecation notice: your pinned snapshot retires in 90 days.
 Day 1    Inventory: 14 hardcoded model IDs across 6 services, 3 prompt families,
          1 fine-tuned classifier, 1 embedding index (5M chunks).
@@ -52,6 +55,9 @@ Day 20   Canary 1%.`,
     {"kind": "trace", "title": "Accuracy up, latency down, and one request in eighteen unparseable", "caption": "**Every signal a quality-focused suite watches improved**: accuracy up two points, p95 latency down from 1.9 s to 1.4 s. And valid-JSON fell from 99.7% to **94.2% — one request in eighteen**. 12.1 made this the argument for the deterministic rung and 12.6 made it the argument for the contract slice. The absolute floor matters here too: a purely relative gate would have had to compare 94.2% against 99.7% with a tolerance somebody chose, and 99.5% absolute leaves no room for that judgement.", "left": "gate", "codeW": 180, "vars": ["old", "new", "verdict"], "steps": [{"code": "task accuracy", "state": ["0.86", "0.88", "pass"], "tone": "good"}, {"code": "p95 latency", "state": ["1.9 s", "1.4 s", "pass"], "tone": "good"}, {"code": "valid JSON", "state": ["99.7%", "94.2%", "FAIL"], "changed": [1, 2], "tone": "crit", "note": "1 in 18 unparseable"}], "t": "diagram", "id": "dg-12_7-02-1"},
 
 
+
+
+
     { t: "callout", kind: "trap", title: "Accuracy 0.86 \u2192 0.88, valid JSON 99.7% \u2192 94.2%",
       body: [
         { t: "p", text: "Every signal a quality-focused suite watches improved. Accuracy up two points, p95 latency down from 1.9s to 1.4s. And one request in eighteen now produces unparseable output, because the new model wraps JSON in code fences \u2014 which is a **total failure** for the consumer of that output, not a degraded one." },
@@ -65,6 +71,9 @@ Day 20   Canary 1%.`,
     {"kind": "flow", "title": "The fix was three deletions and one setting", "caption": "Day 12's fix adds nothing. **Enable strict schema mode, then delete the now-redundant \"respond only in JSON\" instruction** and the formatting scaffolding around it — because the new model honours the schema natively and the old instructions were fighting it, producing the code fences that broke the parser. Which is the generalisable lesson of a migration: **a prompt tuned around an old model's weakness becomes a prompt fighting a new model's strength.**", "cols": 3, "nodes": [{"id": "s", "label": "Enable strict schema mode", "sub": "one setting", "tone": "good"}, {"id": "d", "label": "Delete 'respond only in JSON'", "sub": "now redundant", "tone": "good"}, {"id": "f", "label": "And the formatting scaffolding", "sub": "which produced the code fences", "tone": "good"}, {"id": "w", "label": "It was working around a weakness", "sub": "the old model's", "tone": "accent"}, {"id": "n", "label": "And fighting a strength", "sub": "the new model's", "tone": "violet"}], "edges": [["s", "d"], ["d", "f"], ["f", "w"], ["w", "n"]], "t": "diagram", "id": "dg-12_7-03-2"},
 
 
+
+
+
     { t: "callout", kind: "good", title: "Prompts accumulate scaffolding for weaknesses the new model does not have",
       body: [
         { t: "p", text: "Day 12\u2019s fix is three deletions and one setting: enable strict schema mode, **drop** the now-redundant \u201crespond only in JSON\u201d instruction, and **trim** the chain-of-thought scaffolding the new model does natively. The result at day 18 is better than the old model on every axis \u2014 JSON 99.9%, output tokens 295 against the old 310, accuracy 0.89." },
@@ -76,6 +85,9 @@ Day 20   Canary 1%.`,
       sub: "Where the arithmetic needs an assumption stated" },
 
     {"kind": "trace", "title": "Checking the verbosity-to-cost claim", "caption": "Verbosity creep is listed as a cost risk, and it is worth putting the arithmetic behind it rather than asserting it. **Output tokens are priced several times input**, so a verbosity change hits the bill harder per token than an input change — but output is usually the smaller share, so the two effects partly cancel. The 20% flag in 12.6's gate table is calibrated on that balance: large enough not to fire on ordinary variation, small enough to catch a model that got chattier.", "left": "change", "codeW": 190, "vars": ["effect on cost"], "steps": [{"code": "input tokens +20%", "state": ["large - input dominates"], "tone": "warn"}, {"code": "output tokens +20%", "state": ["smaller share, dearer rate"], "tone": "accent"}, {"code": "so the 20% flag", "state": ["catches chattiness, not noise"], "tone": "good"}], "t": "diagram", "id": "dg-12_7-04-3"},
+
+
+
 
 
     { t: "code", lang: "text", title: "Measured: what +44% output costs, by input size", code: `input tokens       cost old     cost new   increase

@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "TRACE 4f1c9a \u2014 one RAG request", code: `TRACE 4f1c9a  duration 3134 ms
 SPAN                                   ms     %  WHEN
 chat_request                         3134 100.0%  ##############################################

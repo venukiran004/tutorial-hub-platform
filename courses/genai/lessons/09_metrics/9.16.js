@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "math", tex: "\\text{SE} = \\sqrt{\\frac{p(1-p)}{N}}, \\qquad \\text{95\\% CI} = p \\pm 1.96 \\times \\text{SE}" },
 
     { t: "code", lang: "text", title: "g91.py \u00a7G \u2014 p = 0.82 on N = 200, verified", code: `SE = sqrt(0.82 x 0.18 / 200) = sqrt(0.000738) = 0.0272
@@ -52,6 +55,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["N", "95% margin"],
       rows: [
@@ -71,6 +77,9 @@ EC.receiveLesson({
       sub: "The change that needs far fewer examples" },
 
     {"kind": "flow", "title": "Run both variants on the same examples, and the dominant variance disappears", "caption": "Two **independent** runs carry the variance from **example difficulty**, which is usually the dominant source — so you are mostly measuring which sample of questions each variant happened to get. Running both on the same examples and testing the **difference** removes that term entirely. For pass/fail outcomes the right test is **McNemar's**, which looks only at the cases where the two variants disagree — A passed and B failed, against the reverse — and ignores everything they agreed on, which is where the information is.", "cols": 3, "nodes": [{"id": "i", "label": "Two independent runs", "sub": "different example samples", "tone": "warn"}, {"id": "d", "label": "Carries example-difficulty variance", "sub": "usually the dominant source", "tone": "crit"}, {"id": "s", "label": "Same examples, both variants", "sub": "paired", "tone": "good"}, {"id": "t", "label": "Test the difference", "sub": "the difficulty term cancels", "tone": "good"}, {"id": "m", "label": "McNemar's test, for pass/fail", "sub": "only the disagreements count", "tone": "violet"}], "edges": [["i", "d"], ["d", "s"], ["s", "t"], ["t", "m"]], "t": "diagram", "id": "dg-9_16-03-2"},
+
+
+
 
 
 

@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "Moderation against categories", code: `SAFETY_CATEGORIES = ["hate", "harassment", "violence", "self_harm", "sexual", "illegal"]
 
 def moderate(text: str, classify) -> dict:
@@ -44,6 +47,9 @@ def moderate(text: str, classify) -> dict:
       sub: "The one near-certain detector in the module" },
 
     {"kind": "matrix", "title": "The canary is the only check here with no threshold", "caption": "Plant a unique secret string in the system prompt; **if it appears in the output, the model reproduced part of its system prompt — there is no other way for that string to exist.** Compare the others: moderation has a threshold and a precision/recall trade-off, and PII regexes have the false positives 11.13 measured. The canary's limitation is the mirror image of theirs: **near-zero false positives and a high false-negative rate**, because a model that paraphrases its instructions rather than quoting them leaves no trace.", "cols": ["False positives", "False negatives"], "rows": ["Content moderation", "PII regex", "Secrets scan", "Canary token"], "cells": [[{"text": "a threshold decides", "tone": "warn"}, "a threshold decides"], [{"text": "measured, and real", "tone": "crit"}, {"text": "names and addresses", "tone": "crit"}], ["low - keys have shape", "a novel secret format"], [{"text": "near zero - no other source", "tone": "good"}, {"text": "high - paraphrase leaves no trace", "tone": "warn"}]], "t": "diagram", "id": "dg-11_14-02-1"},
+
+
+
 
 
 

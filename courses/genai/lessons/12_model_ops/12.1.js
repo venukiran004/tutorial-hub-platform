@@ -21,6 +21,9 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "Three properties, each breaking a different testing assumption", "caption": "**Non-determinism** breaks the idea that a test has an outcome — temperature above zero gives different output each run, and 1.7 measured that even at zero the provider's batching moves the logits. **Open-endedness** breaks exact match, because many valid answers exist and no single correct string does. And **multi-dimensionality** breaks the single number: an answer can be correct but unsafe, or helpful but ungrounded, and one score cannot say which.", "cols": ["What it breaks"], "rows": ["Non-deterministic", "Open-ended", "Multi-dimensional"], "cells": [[{"text": "the idea that a test has one outcome", "tone": "crit"}], [{"text": "exact match - there is no single correct string", "tone": "crit"}], [{"text": "the single number - correct but unsafe is a real state", "tone": "crit"}]], "t": "diagram", "id": "dg-12_1-01-0"},
 
 
+
+
+
     { t: "dl", items: [
       { k: "Non-deterministic", v: "Temperature above zero gives different outputs each run, and even at zero providers are not bit-stable \u2014 1.2 measured logits differing by 1.984e-04 for an identical prompt in one process from batch composition alone. So an exact-match assertion is flaky by construction." },
       { k: "Open-ended", v: "Many valid answers exist, so there is no single correct string and exact match mostly fails. 9.3 measured a correct paraphrase scoring near zero on overlap metrics." },
@@ -31,6 +34,9 @@ EC.receiveLesson({
       sub: "Cheapest to most trustworthy" },
 
     {"kind": "matrix", "title": "Four rungs, and human eval's real job", "caption": "The ladder runs from free to expensive, and the last row's *use for* column is the one worth reading: **human evaluation's primary job is calibrating the judge**, not grading the system. You cannot afford it at volume, so you spend it establishing whether the cheap thing you *can* run at volume agrees with you — which is 9.12's κ measurement, and it is the only thing that makes rung three trustworthy.", "cols": ["Measures", "Cost", "Use for"], "rows": ["Deterministic checks", "Reference metrics", "LLM-as-judge", "Human eval"], "cells": [["format, JSON, length, regex", {"text": "free", "tone": "good"}, "structure and guardrails"], ["overlap with a gold answer", "cheap", "extraction, classification"], ["quality against a rubric", "medium", "open-ended generation, RAG"], ["ground truth on a sample", {"text": "expensive", "tone": "crit"}, {"text": "calibrating the judge", "tone": "violet"}]], "t": "diagram", "id": "dg-12_1-02-1"},
+
+
+
 
 
     { t: "table",
@@ -53,6 +59,9 @@ EC.receiveLesson({
       sub: "Free and reliable" },
 
     {"kind": "flow", "title": "Deterministic checks measure a contract, not a lesser kind of quality", "caption": "12.7's migration is the case for this rung. **The quality gate passed on day 10 — task accuracy went 0.86 to 0.88 — while valid-JSON fell to 94.2%**, which is one request in eighteen unparseable. A judge scoring helpfulness cannot see that, because the answer *was* helpful; it simply was not parseable. So these checks are not a beginner's version of evaluation to be outgrown — **they measure whether the output satisfies a contract**, which is a different question from whether it is good.", "cols": 3, "nodes": [{"id": "q", "label": "The quality gate passed", "sub": "accuracy 0.86 to 0.88", "tone": "good"}, {"id": "j", "label": "Valid JSON fell to 94.2%", "sub": "one in eighteen unparseable", "tone": "crit"}, {"id": "n", "label": "A judge cannot see it", "sub": "the answer was helpful", "tone": "crit"}, {"id": "c", "label": "These check a contract", "sub": "not a degree of quality", "tone": "violet"}, {"id": "o", "label": "So they are never outgrown", "sub": "a different question entirely", "tone": "good"}], "edges": [["q", "j"], ["j", "n"], ["n", "c"], ["c", "o"]], "t": "diagram", "id": "dg-12_1-03-2"},
+
+
+
 
 
     { t: "code", lang: "python", title: "The checks", code: `def deterministic_evals(output: str, case: dict) -> dict:
@@ -82,6 +91,9 @@ EC.receiveLesson({
       sub: "Each with a control" },
 
     {"kind": "matrix", "title": "Four judge biases, and the one that is a format choice", "caption": "Three of these are controlled by how you run the judge. The fourth is controlled by **what you ask it**: \"rate 1–10\" is unstable run to run, and **\"which is better\" is far more stable** — so preferring pairwise is not a refinement, it removes a failure mode rather than mitigating one. Self-preference is the only row where the fix is a different model family, because no instruction removes a model's taste for its own style.", "cols": ["What happens", "Control"], "rows": ["Position", "Verbosity", "Self-preference", "Absolute scoring"], "cells": [["favours the first answer", {"text": "randomise, or average both orders", "tone": "good"}], ["prefers longer answers", "compare at matched lengths"], ["prefers its own family", {"text": "a different family as judge", "tone": "good"}], [{"text": "\"rate 1-10\" is unstable run to run", "tone": "crit"}, {"text": "prefer pairwise - it removes the mode", "tone": "violet"}]], "t": "diagram", "id": "dg-12_1-04-3"},
+
+
+
 
 
     { t: "table",

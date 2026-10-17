@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "ground truth and what the retriever returned, rank 1 to 10", code: `Q1  relevant D03 D07 D09   ->  D05 [D03] D11 [D07] D02 D08 [D09] D01 D12 D04
 Q2  relevant D02 D06       ->  [D02] [D06] D04 D10 D01 D03 D05 D08 D11 D12
 Q3  relevant D12           ->  D04 D01 D08 D02 D06 D10 D03 D05 [D12] D11
@@ -38,6 +41,9 @@ Q5  relevant D05 D11       ->  D03 [D11] D02 D08 [D05] D01 D06 D10 D12 D04`,
       sub: "The shapes are the lesson" },
 
     {"kind": "trace", "title": "Precision is not monotonic; recall only ever climbs", "caption": "Walking down the ranking, **precision jumps at every hit and decays at every miss** — 0.5000, 0.3333, 0.5000, 0.4000, 0.3333, 0.4286 — so precision@5 and precision@10 can disagree about which retriever is better. **Recall only ever climbs**, and flattens permanently once the last relevant chunk is found: it is 1.0000 from k=7 onwards and still 1.0000 at k=50. That makes recall a hard bound rather than a curve, and makes the choice of k a precision decision.", "left": "k", "codeW": 110, "vars": ["precision@k", "direction"], "steps": [{"code": "1", "state": ["0.5000", "hit"], "tone": "good"}, {"code": "2", "state": ["0.3333", "miss - falls"], "changed": [0], "tone": "warn"}, {"code": "3", "state": ["0.5000", "hit - rises"], "changed": [0], "tone": "good"}, {"code": "4", "state": ["0.4000", "miss"], "tone": "warn"}, {"code": "5", "state": ["0.3333", "miss"], "tone": "warn"}, {"code": "6", "state": ["0.4286", "hit"], "changed": [0], "tone": "good", "note": "not monotonic"}, {"code": "recall from k=7", "state": ["1.0000", "flat to k=50"], "tone": "violet"}], "t": "diagram", "id": "dg-9_8-02-1"},
+
+
+
 
 
 
@@ -93,6 +99,9 @@ F1@5 = 2 x 0.4000 x 0.6667 / (0.4000 + 0.6667) = 0.5333 / 1.0667 = 0.5000`,
 
 
 
+
+
+
     { t: "code", lang: "text", title: "g91.py \u00a7E \u2014 MRR: first hits at ranks 2, 1, 9, 1, 2", code: `Q1 1/2 = 0.5000   Q2 1/1 = 1.0000   Q3 1/9 = 0.1111
 Q4 1/1 = 1.0000   Q5 1/2 = 0.5000
 
@@ -131,6 +140,9 @@ MAP = (0.4762 + 1.0000 + 0.1111 + 0.5417 + 0.4500) / 5 = 0.5158`,
 
 
 
+
+
+
     { t: "code", lang: "text", title: "g91.py \u00a7F \u2014 graded relevance [3, 2, 3, 0, 1]", code: `LINEAR gain  rel / log2(rank+1)
   3/1.0000 + 2/1.5850 + 3/2.0000 + 0/2.3219 + 1/2.5850
   = 3.0000 + 1.2619 + 1.5000 + 0 + 0.3869      DCG  = 6.1487
@@ -159,6 +171,9 @@ SAME ranking, SAME labels, two standard conventions: 0.9724 vs 0.9575`,
       sub: "What a retrieval eval report should look like" },
 
     {"kind": "matrix", "title": "The scoreboard, and the two queries that diagnose themselves", "caption": "Read across the rows rather than down the columns. **Q2 has AP 1.0000 and RR 1.0000** — both relevant documents at the top, a perfect retrieval. **Q3 has RR 0.1111**, meaning its single relevant document sat at rank 9, so P@5 is 0.0000 and R@5 is 0.0000 while R@10 is 1.0000: a complete failure at k=5 and a complete success at k=10, from one document's position. The means at the bottom average all of that away.", "cols": ["P@5", "R@5", "AP", "RR"], "rows": ["Q1", "Q2", "Q3", "Q4", "Q5", "Mean"], "cells": [["0.4000", "0.6667", "0.4762", "0.5000"], ["0.4000", "1.0000", {"text": "1.0000", "tone": "good"}, {"text": "1.0000", "tone": "good"}], [{"text": "0.0000", "tone": "crit"}, {"text": "0.0000", "tone": "crit"}, "0.1111", {"text": "0.1111", "tone": "crit"}], ["0.4000", "0.5000", "0.5417", "1.0000"], ["0.4000", "1.0000", "0.4500", "0.5000"], [{"text": "0.3200", "tone": "violet"}, {"text": "0.6333", "tone": "violet"}, {"text": "MAP 0.5158", "tone": "violet"}, {"text": "MRR 0.6222", "tone": "violet"}]], "t": "diagram", "id": "dg-9_8-05-4"},
+
+
+
 
 
 

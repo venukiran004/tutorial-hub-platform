@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["Metric", "Meaning", "Watch for"],
       rows: [
@@ -56,6 +59,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "dl", items: [
       { k: "Jailbreak success \u2194 over-refusal", v: "11.16 measured these moving in opposite directions at a ten-to-one exchange rate. Either alone makes a threshold change look like a free win." },
       { k: "Block rate \u2194 precision", v: "Separates an attack from a broken guardrail, which block rate alone confounds." },
@@ -75,6 +81,9 @@ EC.receiveLesson({
       sub: "Untrusted input to logged event" },
 
     {"kind": "flow", "title": "Assume yes, fail closed, and tune both directions", "caption": "**\"Assume YES for any user-facing LLM\"** — there is no version of a user-facing application where untrusted text does not reach the model, so the first question is not really a question. The *retrieved content* clause in the fourth input step is the one 11.15 found missing from the implementation. Output guardrails **fail closed**: any failure routes to a safe response rather than passing through. And the last line is the module's thesis compressed: **tune for harmful false negatives AND over-refusal false positives.**", "cols": 4, "nodes": [{"id": "a", "label": "Untrusted text reaching the model?", "sub": "assume yes, always", "tone": "violet"}, {"id": "i", "label": "Input: scan, redact, scope, wrap", "sub": "user AND retrieved content", "tone": "good"}, {"id": "m", "label": "Model, with a canary in the prompt", "sub": "so a leak is detectable", "tone": "good"}, {"id": "o", "label": "Output: fail closed", "sub": "any failure goes to a safe response", "tone": "good"}, {"id": "t", "label": "Tune both directions", "sub": "harmful misses and over-refusals", "tone": "teal"}], "edges": [["a", "i"], ["i", "m"], ["m", "o"], ["o", "t"]], "t": "diagram", "id": "dg-11_17-03-2"},
+
+
+
 
 
 

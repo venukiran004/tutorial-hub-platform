@@ -60,6 +60,10 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "mitigations", text: "Reducing the errors",
       sub: "Four mechanisms, in order of value" },
 
+    {"kind": "matrix", "title": "Four ways to reduce recognition errors, in order of value", "caption": "**Contextual biasing is the highest-value one and the cheapest**: supply the recogniser with the terms expected on *this* call — the caller's own contacts, the product names, the payee list — and the rare words that fail stop failing. 5.8 and 6.7 made the same point for retrieval and decoding: **the information is available at request time and costs nothing to supply.** The other three are fallbacks for when you cannot enumerate the vocabulary in advance.", "cols": ["What it does"], "rows": ["Contextual biasing", "Constrained slots", "N-best rescoring", "Phonetic matching"], "cells": [[{"text": "supply this call's expected terms - highest value, lowest cost", "tone": "good"}], [{"text": "decode against the shape you know the answer has", "tone": "good"}], ["take the top several hypotheses and rescore against context"], [{"text": "match by sound rather than spelling, against a known set", "tone": "accent"}]], "t": "diagram", "id": "dg-13_9-02-0"},
+
+
+
     { t: "dl", items: [
       { k: "Contextual biasing (highest value)", v: "Supply the recogniser with a list of expected terms for this call \u2014 the caller's own name, their saved payee names, the product names in your catalogue, the agent names on shift. Most APIs accept a phrase list or boost list per request. It directly counteracts the language model's preference for frequent words, and it is the single cheapest large improvement available." },
       { k: "Constrained slots", v: "When you know the shape of the answer, decode against it. A date slot should not be able to produce a non-date; a yes-or-no slot should not produce a sentence. This converts an open recognition problem into a classification over a small set, which is a fundamentally easier problem." },
@@ -75,6 +79,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", id: "confirm", text: "Confirming",
       sub: "By consequence, not by confidence" },
+
+    {"kind": "matrix", "title": "Confirm on consequence, not on confidence", "caption": "\"Confirm when confidence is low\" sounds principled and **is the wrong axis**, for two reasons: confidence is poorly calibrated on exactly the rare words that fail — a recogniser can be **confidently wrong about a name it has never seen** — and confidence says nothing about whether being wrong matters. **The column that decides is consequence**, and the error-prone column only refines it. Note row five: an account number spoken as digits is *reliable* and *consequential*, so it gets a cheap check digit rather than a readback.", "cols": ["Error-prone?", "Consequence", "Confirm?"], "rows": ["caller's name", "transfer amount", "appointment date", "payee name", "account number", "yes / no", "free-text description"], "cells": [[{"text": "very", "tone": "warn"}, "mild, recoverable", "once, cheaply"], ["yes", {"text": "severe - wrong money", "tone": "crit"}, {"text": "always", "tone": "crit"}], ["yes", {"text": "severe", "tone": "crit"}, {"text": "always", "tone": "crit"}], [{"text": "very", "tone": "warn"}, {"text": "severe", "tone": "crit"}, "always, against a list"], [{"text": "no", "tone": "good"}, {"text": "severe", "tone": "crit"}, {"text": "a check digit, not a readback", "tone": "violet"}], ["no", "varies", "before a destructive action"], ["yes", {"text": "low", "tone": "good"}, "never"]], "t": "diagram", "id": "dg-13_9-03-1"},
+
+
 
     { t: "p", text: "The standard advice is to confirm when the recogniser's confidence is low. It sounds principled and it is the wrong axis, for two reasons. Confidence is poorly calibrated on exactly the rare words that fail \u2014 a recogniser can be confidently wrong about a name it has never seen. And confidence says nothing about whether being wrong matters." },
 

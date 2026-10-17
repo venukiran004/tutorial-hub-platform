@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["Decision", "Sensible default", "Why"],
       rows: [
@@ -46,6 +49,9 @@ EC.receiveLesson({
       sub: "Decide before the request, or after" },
 
     {"kind": "flow", "title": "Head sampling keeps a random 5% and throws away the failures", "caption": "**Head sampling decides at the start** — keep 5% — which is cheap and trivially implemented, and because the decision precedes the outcome it keeps a random 5% **including a random 5% of your failures**. Tail sampling decides after the request finishes, once you know it was slow, errored or scored badly. With errors, slow requests and low scores at 6.7% of traffic combined, tail sampling keeps **all of them** for about the same storage as head sampling at 5% keeps nothing in particular.", "cols": 3, "nodes": [{"id": "h", "label": "Head: decide at the start", "sub": "keep 5%", "tone": "accent"}, {"id": "r", "label": "A random 5% of failures too", "sub": "the decision precedes the outcome", "tone": "crit"}, {"id": "t", "label": "Tail: decide after it finishes", "sub": "needs a buffer", "tone": "good"}, {"id": "k", "label": "Keep 100% of the interesting ones", "sub": "slow, errored, low-scored", "tone": "good"}, {"id": "c", "label": "6.7% of traffic, combined", "sub": "about the same storage as 5%", "tone": "violet"}], "edges": [["h", "r"], ["r", "t"], ["t", "k"], ["k", "c"]], "t": "diagram", "id": "dg-10_10-02-1"},
+
+
+
 
 
 

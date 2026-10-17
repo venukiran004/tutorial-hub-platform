@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "The grounded system prompt", code: `Answer the question using ONLY the provided context.
 Rules:
 1. If the answer is not in the context, reply exactly:
@@ -44,6 +47,9 @@ Rules:
       sub: "Free, and it only proves half of what you want" },
 
     {"kind": "flow", "title": "A citation that resolves is not a citation that supports", "caption": "11.3 measured this directly: **an answer citing a real, retrieved chunk while claiming the opposite of what the chunk says passes the subset check cleanly.** So citation accuracy needs two checks — validate the cited ids, which is free and structural, **and** run entailment, which is not. One practical trap from the same measurement: a validator written for opaque ids like `c12` finds **zero citations** in `[refund-policy]`, so it reports perfect compliance on an answer it never parsed.", "cols": 3, "nodes": [{"id": "c", "label": "The cited id is real and retrieved", "sub": "the subset check passes", "tone": "good"}, {"id": "o", "label": "And the claim says the opposite", "sub": "of what that chunk says", "tone": "crit"}, {"id": "t", "label": "So: ids AND entailment", "sub": "the first free, the second not", "tone": "violet"}, {"id": "v", "label": "A validator for 'c12' ids", "sub": "finds zero in [refund-policy]", "tone": "crit"}, {"id": "p", "label": "And reports perfect compliance", "sub": "on an answer it never parsed", "tone": "crit"}], "edges": [["c", "o"], ["o", "t"], ["v", "p"], ["t", "v"]], "t": "diagram", "id": "dg-11_5-02-1"},
+
+
+
 
 
 
@@ -70,6 +76,9 @@ Rules:
 
 
 
+
+
+
     { t: "dl", items: [
       { k: "Lower temperature (0\u20130.3) for factual tasks", v: "Less random invention, and it addresses the context-versus-parametric conflict \u2014 1.1 measured how much the sampling distribution widens with temperature, and a factual task wants none of that width." },
       { k: "Cap `max_tokens`", v: "So the model cannot run past supported content and confabulate. This is the direct fix for 11.3\u2019s third scenario, and 11.8 shows it is also the second-largest cost lever \u2014 the same setting serves both goals." },
@@ -87,6 +96,9 @@ Rules:
       sub: "The first layer with a bill" },
 
     {"kind": "trace", "title": "Verify-then-serve is not deployable as written", "caption": "11.4 timed the NLI model at 739 ms per claim, so a four-claim answer is **2,957 ms against a 3,134 ms request — a 94% latency overhead**. The honest options are a small NLI model, a GPU, or gating only the sampled share. The **0.9 threshold also deserves a look**: with a four-sentence answer, claims are scored in quarters — 0.75 or 1.0, nothing between — so a 0.9 threshold is really \"all four claims must pass\", and saying that is clearer than quoting a decimal.", "left": "quantity", "codeW": 190, "vars": ["value"], "steps": [{"code": "NLI per claim", "state": ["739 ms"], "tone": "crit"}, {"code": "four-claim answer", "state": ["2,957 ms"], "tone": "crit"}, {"code": "the request itself", "state": ["3,134 ms"], "tone": "accent"}, {"code": "overhead", "state": ["94%"], "changed": [0], "tone": "crit"}, {"code": "possible scores on 4 claims", "state": ["0, 0.25, 0.5, 0.75, 1.0"], "tone": "violet"}, {"code": "so a 0.9 threshold means", "state": ["all four must pass"], "tone": "good"}], "t": "diagram", "id": "dg-11_5-04-3"},
+
+
+
 
 
 

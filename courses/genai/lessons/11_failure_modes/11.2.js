@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["Cause", "What is happening", "Fix"],
       rows: [
@@ -45,6 +48,9 @@ EC.receiveLesson({
       sub: "Not a nicety" },
 
     {"kind": "flow", "title": "If the instruction set contains no acceptable 'I don't know', the model guesses", "caption": "This follows directly from 11.1's mechanism. The objective rewards a plausible continuation, and **if no acceptable abstention exists in the instruction set, the most plausible continuation is a guess.** Adding an explicit out removes a large fraction of RAG hallucinations, because the model is no longer choosing between inventing and disobeying. And it pairs with an operational metric: 11.6 tracks abstention rate **in both directions** — too low means overconfident, too high means retrieval is weak.", "cols": 3, "nodes": [{"id": "n", "label": "No abstention in the instructions", "sub": "nothing acceptable to say", "tone": "crit"}, {"id": "c", "label": "The choice is invent or disobey", "sub": "and inventing is more plausible", "tone": "crit"}, {"id": "a", "label": "Add an explicit out", "sub": "with exact wording", "tone": "good"}, {"id": "r", "label": "A large fraction of them disappear", "sub": "for free", "tone": "good"}, {"id": "m", "label": "Then track abstention both ways", "sub": "too low and too high are both bad", "tone": "violet"}], "edges": [["n", "c"], ["c", "a"], ["a", "r"], ["r", "m"]], "t": "diagram", "id": "dg-11_2-02-1"},
+
+
+
 
 
 

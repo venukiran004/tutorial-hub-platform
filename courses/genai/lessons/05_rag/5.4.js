@@ -35,6 +35,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "5.1 split a RAG system into two phases on different clocks. Chunking sits at the start of the slow one: the text is cut, each piece is embedded, and from that moment the retriever can only return pieces of that shape. A query-time improvement \u2014 a better metric, a re-ranker, a rewritten query \u2014 reorders what chunking produced. It cannot reassemble a sentence that was cut in half." },
 
     { t: "p", text: "There is also a representational argument, and it is the one that explains the measurements below. A chunk becomes **one vector**. Everything in that chunk \u2014 every topic, every digression, every code block \u2014 is averaged into a single point in 384-dimensional space. Make the chunk too large and that point represents nothing in particular; make it too small and it represents something true but incomplete." },
@@ -119,6 +122,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "g54.py \u2014 overlap at a fixed 500-character size", code: `for ov in (0, 25, 50, 100, 200, 250):
     chunks, meta = H.build(H.chunk_fixed, size=500, overlap=ov)`,
       out: `  overlap      chunks      r@1      r@3      r@5     r@10     index MB
@@ -152,6 +158,9 @@ EC.receiveLesson({
       sub: "Cut where the document already has seams" },
 
     {"kind": "trace", "title": "Structure-aware splitting: the cleanest win in the module", "caption": "Fixed splitting cuts every N characters regardless of what is there — mid-sentence, mid-table, mid-code-block. Recursive prefers paragraph breaks over line breaks over spaces. Heading-aware uses the document's own structure. The result is **r@1 from 65% to 85% and r@5 to 100%**, for free, by cutting where the author already cut. Note that document recall was 100% for all three: the gain is entirely in returning the right *passage*.", "left": "strategy", "codeW": 180, "vars": ["chunks", "mean len", "r@1", "r@5"], "steps": [{"code": "fixed", "state": ["804", "496", "65%", "90%"], "tone": "crit"}, {"code": "recursive", "state": ["1187", "347", "75%", "95%"], "changed": [2], "tone": "accent"}, {"code": "markdown + heading", "state": ["1241", "338", "85%", "100%"], "changed": [2, 3], "tone": "good", "note": "free, and the biggest win"}], "t": "diagram", "id": "dg-5_4-04-2"},
+
+
+
 
 
 
@@ -209,6 +218,9 @@ EC.receiveLesson({
       sub: "The failure this module has been carrying since 5.1" },
 
     {"kind": "flow", "title": "The question no chunk boundary can reach", "caption": "One question failed at **every configuration in the sweep**: *\"Why divide alpha by r?\"*, found at rank 15. The passage that answers it calls the term a **\"volume knob\"** and never uses the word *divide*. The text is correctly cut, correctly embedded and correctly indexed — the query and the answer simply share no vocabulary. That is a query problem, and it is what 5.8 and 5.9 exist to fix.", "cols": 3, "nodes": [{"id": "q", "label": "\"Why divide alpha by r?\"", "sub": "rank 15, every configuration", "tone": "crit"}, {"id": "p", "label": "The passage says 'volume knob'", "sub": "and never says 'divide'", "tone": "crit"}, {"id": "c", "label": "The chunking is correct", "sub": "so is the embedding and the index", "tone": "good"}, {"id": "v", "label": "No shared vocabulary", "sub": "between question and answer", "tone": "violet"}, {"id": "r", "label": "Rewrite the query (5.8)", "sub": "or add keyword search (5.9)", "tone": "good"}], "edges": [["q", "p"], ["p", "c"], ["c", "v"], ["v", "r"]], "t": "diagram", "id": "dg-5_4-05-3"},
+
+
+
 
 
 

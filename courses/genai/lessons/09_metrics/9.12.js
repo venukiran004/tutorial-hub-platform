@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "the confusion matrix", code: `                   human PASS   human FAIL   | judge total
 judge PASS             50           12        |     62
 judge FAIL              8           30        |     38
@@ -64,6 +67,9 @@ step 3 \u2014 kappa
       sub: "And why your own ceiling matters more" },
 
     {"kind": "matrix", "title": "The conventional bands, and where 0.584 lands", "caption": "The bands are a convention rather than a theorem, and they are useful for one decision: **whether a judge is good enough to gate on.** 0.584 lands in *moderate*, which means it is usable for tracking a trend and **not** usable as a merge gate on its own — one rater in three disagreeing is too much to block a deploy on. Substantial, above 0.61, is the usual threshold for gating.", "cols": ["Reading"], "rows": ["below 0.20", "0.21 - 0.40", "0.41 - 0.60", "0.61 - 0.80", "above 0.80"], "cells": [[{"text": "poor - the judge is close to useless", "tone": "crit"}], ["fair"], [{"text": "moderate - 0.584 lands here; track, do not gate", "tone": "warn"}], [{"text": "substantial - usable for gating", "tone": "good"}], ["almost perfect"]], "t": "diagram", "id": "dg-9_12-02-1"},
+
+
+
 
 
 

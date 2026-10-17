@@ -30,6 +30,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "The reward model is a *proxy* for human preference, fitted from a finite set of comparisons. Optimise the proxy hard enough and the two diverge \u2014 true quality peaks and then falls while the proxy score keeps climbing. 7.4 identified the structural reason: Bradley-Terry\u2019s gradient is \\(1-\\sigma(g)\\), which vanishes once a gap is large, so **nothing in RM training constrains how big a correct gap becomes**." },
 
     { t: "code", lang: "python", title: "g711.py \u00a7A \u2014 a 40-dimensional response space, RM fitted on 300 pairs", code: `w_true  = rng.normal(size=D); w_true /= np.linalg.norm(w_true)   # true preference
@@ -83,6 +86,9 @@ true  = w_true @ x - 0.35 * step**2      # drifting from pi_ref degrades fluency
 
 
 
+
+
+
     { t: "p", text: "If the true quality is \\(c \\cdot s - 0.35 s^2\\) where c is the cosine alignment and s is distance moved, the peak is at \\(s^* = c/0.70\\). That is a closed form, so unlike the cosines themselves it is not subject to sampling noise." },
 
     { t: "code", lang: "python", title: "g711.py \u00a7B \u2014 peak position against RM fit quality", code: `s_star = c / 0.70                       # closed form from d/ds [c*s - 0.35 s^2] = 0`,
@@ -114,6 +120,9 @@ true  = w_true @ x - 0.35 * step**2      # drifting from pi_ref degrades fluency
       sub: "The RM cannot grade its own homework" },
 
     {"kind": "trace", "title": "A held-out gold reward model is the cheapest warning available", "caption": "The training reward is useless as a signal — it rises monotonically through the collapse. A **second reward model held out of training** is not: the gap between them opens from 0.8441 at KL 1.0 to **15.5644 at KL 6.0**, and it tracks the true damage closely. That is the detectable signature: **rising KL, rising training reward, and a widening gap to the gold model** — and unlike human evaluation it costs a forward pass.", "left": "KL", "codeW": 110, "vars": ["training RM", "gold RM", "TRUE", "RM gap"], "steps": [{"code": "0.0", "state": ["0.0000", "0.0000", "0.0000", "0.0000"], "tone": "accent"}, {"code": "1.0", "state": ["1.0000", "0.1559", "0.2431", "0.8441"], "changed": [3], "tone": "good"}, {"code": "2.0", "state": ["2.0000", "-0.3881", "-0.2138", "2.3881"], "changed": [3], "tone": "warn"}, {"code": "4.0", "state": ["4.0000", "-3.5763", "-3.2275", "7.5763"], "tone": "crit"}, {"code": "6.0", "state": ["6.0000", "-9.5644", "-9.0413", "15.5644"], "changed": [3], "tone": "crit", "note": "gold tracks the truth"}], "t": "diagram", "id": "dg-7_11-03-2"},
+
+
+
 
 
 

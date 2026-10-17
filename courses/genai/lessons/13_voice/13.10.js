@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "silence", text: "Silence is a message",
       sub: "And it is not the message you want to send" },
 
+    {"kind": "matrix", "title": "A voice agent has one way to represent a pause, and it already means several things", "caption": "A chat agent can show a spinner or three animated dots — all of which say *work in progress* without saying anything. **A voice agent has silence, and silence already has other meanings.** The expensive band is 1.2 to 2 seconds, because **the repeat arrives while your response is being prepared**: it hits the pipeline mid-generation, triggers barge-in if you have it and corrupts the turn if you do not, so you are now handling an interruption on a turn that was merely slow.", "cols": ["The user concludes", "And does"], "rows": ["under 800 ms", "800-1200 ms", "1200-2000 ms", "2000-3000 ms", "over 3000 ms"], "cells": [[{"text": "normal turn-taking", "tone": "good"}, "waits"], ["it is thinking", "waits, slightly uncertain"], [{"text": "it did not hear me", "tone": "crit"}, {"text": "repeats - mid-generation", "tone": "crit"}], [{"text": "something is broken", "tone": "crit"}, "says hello?"], [{"text": "the call has dropped", "tone": "crit"}, "hangs up"]], "t": "diagram", "id": "dg-13_10-01-0"},
+
+
+
     { t: "p", text: "A chat agent can show a spinner, a \u201clooking that up\u2026\u201d line, or three animated dots. All of them communicate *work in progress* without saying anything. A voice agent has exactly one way to represent a pause, and it already means several other things in conversation." },
 
     { t: "table",
@@ -92,6 +96,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", id: "honest", text: "Fillers are not free of content",
       sub: "Anything said before the result exists cannot be retracted" },
+
+    {"kind": "matrix", "title": "The natural-sounding fillers are the unsafe ones", "caption": "A filler is spoken **before the tool has returned**, so it cannot reference the outcome. This sounds obvious and is violated constantly, because **the natural-sounding phrases are exactly the ones that presume success.** *\"Sure, I can do that\"* promises success before the tool ran; *\"I've cancelled that for you\"* states a completed action that may fail; *\"Good news!\"* promises an outcome it cannot know. The safe set all share one property: they commit to nothing.", "cols": ["Safe?", "Why"], "rows": ["\"Let me check that for you\"", "\"One moment\"", "\"Let me look that up\"", "\"Sure, I can do that\"", "\"I've cancelled that\"", "\"Good news!\""], "cells": [[{"text": "yes", "tone": "good"}, "commits to nothing"], [{"text": "yes", "tone": "good"}, "commits to nothing"], [{"text": "yes", "tone": "good"}, "commits to nothing"], [{"text": "no", "tone": "crit"}, "promises success before the tool ran"], [{"text": "no", "tone": "crit"}, "states a completed action that may fail"], [{"text": "no", "tone": "crit"}, "promises an outcome it cannot know"]], "t": "diagram", "id": "dg-13_10-03-1"},
+
+
 
     { t: "p", text: "A filler is spoken before the tool has returned, which means it cannot reference the outcome. This sounds obvious and is violated constantly, because the natural-sounding phrases are the ones that presume success." },
 

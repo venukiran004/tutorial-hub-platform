@@ -40,6 +40,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Of the seven-item production checklist, one item is a precondition for the other six: knowing which prompt produced which output. Without it, a quality change cannot be attributed, a rollback cannot be verified, and an A/B test has no data (2.12)." },
 
     { t: "code", lang: "python", title: "record.py", code: `@dataclass(frozen=True)
@@ -79,6 +82,9 @@ def answer(question, *, prompt_name="summarise"):
       sub: "The answer is files for longer than people expect" },
 
     {"kind": "matrix", "title": "Git gives you five of these for free; the registry trades one away", "caption": "Files in git give review, history, rollback and atomicity with the code for nothing and with no new system. The row that is the **real** trade is the fifth: in git the prompt and the parser that reads its output move together, and in a registry they do not — so a prompt change can land without the code change that handles it. The case for a registry arrives when people who cannot deploy need to change prompts, which is a genuine situation and not a tooling preference.", "cols": ["Files in git", "A registry"], "rows": ["Review", "Rollback", "Who can change it", "Change speed", "Tied to code version", "Audit trail"], "cells": [[{"text": "a pull request, with a diff", "tone": "good"}, "a UI, usually without one"], ["revert and deploy", {"text": "a click", "tone": "good"}], ["people who can ship code", {"text": "anyone with access", "tone": "warn"}], ["a deploy cycle", {"text": "immediate", "tone": "good"}], [{"text": "yes - prompt and parser move together", "tone": "good"}, {"text": "no - the real trade", "tone": "crit"}], [{"text": "git history, free", "tone": "good"}, "whatever the tool records"]], "t": "diagram", "id": "dg-2_17-02-1"},
+
+
+
 
 
 
@@ -146,6 +152,9 @@ def answer(question, *, prompt_name="summarise"):
 
 
 
+
+
+
     { t: "code", lang: "python", title: "rollout.py", code: `ROLLOUT = {"summarise": {"v_new": "a3f91c2b8e40", "percent": 10}}
 
 def choose_version(name, user_id):
@@ -172,6 +181,9 @@ def check_rollout(name):
       sub: "Which items are load-bearing" },
 
     {"kind": "matrix", "title": "The checklist, rated rather than recited", "caption": "Five are essential, and two are not prompt management at all. The second row carries the only real condition — an A/B framework is essential **at volume** and overkill below it, because 2.12's sample sizes say a low-traffic A/B cannot resolve the differences you would be running it to find. The last two rows belong to other lessons, and saying so keeps the checklist honest rather than long.", "cols": ["Verdict"], "rows": ["Version-controlled prompts", "An A/B framework", "An evaluation suite", "Quality per prompt version", "Rollback capability", "Cost tracking per prompt", "Injection defence", "Rate limiting"], "cells": [[{"text": "essential - everything else depends on it", "tone": "good"}], [{"text": "essential at volume; overkill below it (2.12)", "tone": "accent"}], [{"text": "essential, with 2.12's caveat about size", "tone": "good"}], [{"text": "essential - and impossible without row one", "tone": "good"}], [{"text": "essential, and free if prompts are in git", "tone": "good"}], ["useful - it is how you find the prompt that doubled"], [{"text": "essential, and not here - it is 2.16, at the action boundary", "tone": "warn"}], [{"text": "ordinary API hygiene (1.16), not prompt management", "tone": "warn"}]], "t": "diagram", "id": "dg-2_17-04-3"},
+
+
+
 
 
 

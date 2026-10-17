@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "math", tex: "\\text{SE} = \\sqrt{\\frac{p(1-p)}{N}}, \\qquad \\text{2}\\sigma\\text{ band} = 2 \\times \\text{SE}" },
 
     { t: "code", lang: "text", title: "Verified \u2014 smallest drop a 2-sigma alert can see, at p = 0.95", code: `  N=50   /day  smallest drop a 2-sigma alert can see: 6.2 pts
@@ -51,6 +54,9 @@ EC.receiveLesson({
       sub: "And the reason for each" },
 
     {"kind": "matrix", "title": "Seven alerts, and the two that need no judge", "caption": "**Empty retrieval is the earliest RAG signal there is and it needs no judge** — a counter on the retriever span. Top-1 score collapse catches an index or embedding change **within an hour**, which no quality metric does. And the response-model mismatch catches a provider alias roll immediately, which is 10.8's one-comparison alert. Three of these seven cost nothing to run and catch the failures that take longest to find by any other route.", "cols": ["Condition", "Why this one"], "rows": ["Quality regression", "Empty retrieval", "Top-1 score collapse", "Response model mismatch", "Refusal spike", "p95 latency", "Cost per request"], "cells": [["2 sigma below the 7-day mean, twice", "drift without paging on noise"], [{"text": "above 2% over 30 min", "tone": "good"}, {"text": "the earliest RAG signal, and free", "tone": "good"}], [{"text": "falls more than 0.10 day over day", "tone": "good"}, {"text": "an index change within the hour", "tone": "good"}], [{"text": "not the pinned version", "tone": "good"}, {"text": "an alias roll, immediately", "tone": "good"}], ["doubles day over day", "guardrail and prompt regressions"], ["above the SLO for 10 min", "classical, still necessary"], ["1.5x the 7-day mean", "prompt bloat and retry storms"]], "t": "diagram", "id": "dg-10_12-02-1"},
+
+
+
 
 
 

@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "dl", items: [
       { k: "Batch / async API", v: "Many providers offer roughly a **50% discount** for non-real-time work \u2014 overnight classification, backfills, re-indexing evaluations. This is a genuine price cut and it is the largest single discount available, for the price of giving up latency." },
       { k: "Streaming", v: "Does **not** reduce tokens and does not reduce cost. It slashes *perceived* latency \u2014 first token in about a second \u2014 which often lets you avoid escalating to a bigger model purely for speed. That is an indirect saving and a better experience." }

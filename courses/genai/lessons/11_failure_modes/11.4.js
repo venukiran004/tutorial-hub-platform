@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "The scorer, verbatim", code: `# Faithfulness = fraction of answer claims supported by the context.
 # \`entails(premise, hypothesis)\` can be an NLI model OR an LLM judge call.
 
@@ -69,6 +72,9 @@ def faithfulness_score(answer: str, context: str, entails) -> dict:
 
 
 
+
+
+
     { t: "callout", kind: "trap", title: "The invented policy scores HIGHER than the true one",
       body: [
         { t: "p", text: "Cosine similarity between context and claim is the obvious cheap substitute for `entails`. Measured on the same claim set: supported claims span **0.4679 to 0.7982** and unsupported ones span **0.0503 to 0.8108**. The ranges overlap completely, so **no threshold separates them**." },
@@ -87,6 +93,9 @@ def faithfulness_score(answer: str, context: str, entails) -> dict:
       sub: "Better calibrated, and it has to run somewhere else" },
 
     {"kind": "trace", "title": "Neither signal belongs in the request path", "caption": "`roberta-large-mnli` is 355M parameters and runs **a separate forward pass over the whole context per claim**, so cost scales with claims × context length: **739 ms per claim, 2,957 ms for a four-claim answer** on CPU. And 10.11 measured an LLM judge at 107% of the generation it scores. So the conclusion is not *use a judge instead* — it is that **neither belongs in the request path at these latencies**, and a blocking faithfulness gate is an offline or sampled check wearing a synchronous costume.", "left": "approach", "codeW": 190, "vars": ["cost", "verdict"], "steps": [{"code": "NLI, per claim", "state": ["739 ms", "scales with context"], "tone": "crit"}, {"code": "NLI, four-claim answer", "state": ["2,957 ms", "against a 3,134 ms request"], "changed": [0], "tone": "crit", "note": "94% overhead"}, {"code": "an LLM judge", "state": ["107% of the call", "10.11's measurement"], "tone": "crit"}, {"code": "so: offline or sampled", "state": ["not in the path", "either way"], "tone": "violet"}], "t": "diagram", "id": "dg-11_4-03-2"},
+
+
+
 
 
 

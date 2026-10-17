@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["Metric", "What it measures", "How"],
       rows: [
@@ -45,6 +48,9 @@ EC.receiveLesson({
       sub: "So the metric moves the wrong way" },
 
     {"kind": "trace", "title": "The same system, the same metric, opposite conclusions", "caption": "**An abstention makes no claims, and the fraction of an empty set is 1.0 by construction** — so every refusal is a perfect faithfulness score. The consequence is worse than a bias: as context recall degrades from 0.93 to 0.20, **overall faithfulness barely moves**, because the system increasingly abstains and each abstention scores 1.0. Computed over **answered requests only**, the same system falls 0.920 to 0.750 monotonically. Same data, same metric name, opposite reading — and the first version would never have paged anyone.", "left": "context recall", "codeW": 170, "vars": ["faithfulness, all", "faithfulness, answered"], "steps": [{"code": "0.93", "state": ["high", "0.920"], "tone": "good"}, {"code": "degrading", "state": ["barely moves", "falling"], "changed": [1], "tone": "warn"}, {"code": "0.20", "state": ["still high", "0.750"], "changed": [0, 1], "tone": "crit", "note": "abstentions score 1.0"}], "t": "diagram", "id": "dg-11_6-02-1"},
+
+
+
 
 
 
@@ -74,6 +80,9 @@ EC.receiveLesson({
       sub: "Regression-test prompts like code" },
 
     {"kind": "flow", "title": "The golden set needs cases whose right answer is an abstention", "caption": "**A golden case whose correct answer is an abstention is the only way to test the abstention path**, and without such cases a system that never abstains scores perfectly. Run the set on every prompt change *and* every model change, because both can silently regress grounding — 12.4 is about the version that changes without you. And size it honestly: 9.16's arithmetic applies unchanged, so **a ten-case set measuring a 0.20 hallucination rate carries ±24.8 points**, which is not a measurement.", "cols": 3, "nodes": [{"id": "a", "label": "Cases whose answer is an abstention", "sub": "the only test of that path", "tone": "violet"}, {"id": "w", "label": "Without them, never abstaining scores 100%", "sub": "a silent gap", "tone": "crit"}, {"id": "p", "label": "Run on every prompt change", "sub": "and every model change", "tone": "good"}, {"id": "m", "label": "Both regress grounding silently", "sub": "12.4 is the second one", "tone": "warn"}, {"id": "s", "label": "Ten cases carries +-24.8 points", "sub": "which is not a measurement", "tone": "crit"}], "edges": [["a", "w"], ["w", "p"], ["p", "m"], ["m", "s"]], "t": "diagram", "id": "dg-11_6-03-2"},
+
+
+
 
 
 

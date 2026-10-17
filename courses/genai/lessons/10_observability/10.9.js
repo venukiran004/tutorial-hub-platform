@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["Tool", "Shape", "Strongest at", "Watch out for"],
       rows: [

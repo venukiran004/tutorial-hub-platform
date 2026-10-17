@@ -21,6 +21,9 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Storing the model inside the prompt artefact is a validity statement", "caption": "**A prompt is fitted to a model the way hyperparameters are fitted to a dataset** — few-shot count and ordering, chain-of-thought scaffolding, output-format instructions, all tuned against one model's quirks. So putting `model:` in the YAML beside the template is not redundant metadata: **it asserts that this template is only valid against that model**, which makes a model change a reason to re-validate the prompt rather than a config edit. The changelog entry does the same job for the reason the rule exists.", "cols": 3, "nodes": [{"id": "f", "label": "A prompt is fitted to a model", "sub": "like hyperparameters to data", "tone": "violet"}, {"id": "t", "label": "Few-shot order, CoT, format rules", "sub": "all tuned to its quirks", "tone": "accent"}, {"id": "m", "label": "So model: belongs in the artefact", "sub": "beside the template", "tone": "good"}, {"id": "v", "label": "It asserts validity, not provenance", "sub": "this template, that model", "tone": "good"}, {"id": "c", "label": "And the changelog records why each rule exists", "sub": "'v3: added abstention rule'", "tone": "teal"}], "edges": [["f", "t"], ["t", "m"], ["m", "v"], ["v", "c"]], "t": "diagram", "id": "dg-12_2-01-0"},
 
 
+
+
+
     { t: "code", lang: "yaml", title: "prompts/support_v3.yaml", code: `id: support_assistant
 version: 3
 model: claude-opus-4-8
@@ -56,6 +59,9 @@ changelog:
     {"kind": "flow", "title": "A -0.02 gate on 100 cases is inside the noise", "caption": "9.16's arithmetic applies directly: **at a pass rate near 0.90 a 100-case suite carries a 95% margin of about ±4.3 points**, so a gate that blocks a regression beyond −0.02 is blocking on a quantity it cannot measure. A 400-case suite halves that to about ±2.2 and still does not reach it. **The fix is not a different constant** — it is to compare the two runs as a *paired* comparison on the same cases, which removes the example-difficulty variance that dominates the margin.", "cols": 3, "nodes": [{"id": "g", "label": "Gate at -0.02", "sub": "a reasonable-looking constant", "tone": "accent"}, {"id": "m", "label": "100 cases carries +-4.3 points", "sub": "at a 0.90 pass rate", "tone": "crit"}, {"id": "f", "label": "400 cases: about +-2.2", "sub": "still not enough", "tone": "warn"}, {"id": "n", "label": "Not a constant problem", "sub": "a design problem", "tone": "violet"}, {"id": "p", "label": "Pair the runs on the same cases", "sub": "the difficulty variance cancels", "tone": "good"}], "edges": [["g", "m"], ["m", "f"], ["f", "n"], ["n", "p"]], "t": "diagram", "id": "dg-12_2-02-1"},
 
 
+
+
+
     { t: "code", lang: "python", title: "Block the change if it regresses the suite", code: `def gate_prompt_change(old_prompt, new_prompt, eval_set, judge_fn, min_delta=-0.02):
     old = run_eval(eval_set, make_pipeline(old_prompt), judge_fn)["pass_rate"]
     new = run_eval(eval_set, make_pipeline(new_prompt), judge_fn)["pass_rate"]
@@ -84,6 +90,9 @@ changelog:
       sub: "Your prompt is coupled to the model it was tuned on" },
 
     {"kind": "flow", "title": "Prompt drift needs no deprecation notice", "caption": "This is the quiet version of a forced migration: **the alias moves, the model changes, and a prompt tuned against the old one is now tuned against nothing.** The instruction that follows is simple and widely skipped — **re-run the eval set on every model upgrade**, not because the model got worse but because your prompt was fitted to a different one. And 10.8 measured why you will not notice otherwise: an alias roll is gradual, **19.9% of traffic on day one and 100% on day two**, so a by-day quality chart shows a slope rather than a step.", "cols": 3, "nodes": [{"id": "a", "label": "The alias moves", "sub": "no notice, no deploy", "tone": "crit"}, {"id": "p", "label": "Your prompt was fitted to the old one", "sub": "and now fits nothing", "tone": "crit"}, {"id": "g", "label": "The roll is gradual", "sub": "19.9% day one, 100% day two", "tone": "warn"}, {"id": "s", "label": "So the chart shows a slope", "sub": "not a step you would notice", "tone": "crit"}, {"id": "r", "label": "Re-run the eval set on every upgrade", "sub": "widely skipped", "tone": "good"}], "edges": [["a", "p"], ["a", "g"], ["g", "s"], ["s", "r"]], "t": "diagram", "id": "dg-12_2-03-2"},
+
+
+
 
 
     { t: "callout", kind: "insight", title: "A provider updating the model silently degrades a prompt tuned for the old one",

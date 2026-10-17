@@ -112,6 +112,10 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "shadow", text: "The transcript you need anyway",
       sub: "Why speech-native does not actually remove the ASR bill" },
 
+    {"kind": "flow", "title": "Speech-native removes the ASR latency and keeps the ASR bill", "caption": "This is the detail that breaks most speech-native cost models. **You still need a transcript** — for quality review, dispute resolution, the eval set, any text-based guardrail, and in a regulated industry because you are required to have one. So you run recognition over the call anyway. The good news: **it is off the critical path**, so it can run after the call, in batch, at a cheaper tier, adding zero latency. The bad news: **it costs the same money it did in the cascade.**", "cols": 3, "nodes": [{"id": "s", "label": "Speech-native: no ASR stage", "sub": "two stages of latency gone", "tone": "good"}, {"id": "t", "label": "But you still need a transcript", "sub": "review, disputes, evals, guardrails", "tone": "crit"}, {"id": "o", "label": "Off the critical path", "sub": "batch, after the call, cheaper tier", "tone": "good"}, {"id": "z", "label": "Zero added latency", "sub": "which is the real win", "tone": "good"}, {"id": "b", "label": "And the same bill", "sub": "the latency went, the cost did not", "tone": "crit"}], "edges": [["s", "t"], ["t", "o"], ["o", "z"], ["o", "b"]], "t": "diagram", "id": "dg-13_2-03-0"},
+
+
+
     { t: "p", text: "This is the detail that breaks most speech-native cost models. You still need a transcript \u2014 for quality review, for dispute resolution, for the eval set, for any text-based guardrail, and in a regulated industry because you are required to have one. So you run speech recognition over the call anyway." },
 
     { t: "p", text: "The good news is that this transcription is **off the critical path**. It can run after the call, in batch, at a cheaper tier, and it adds zero latency. The bad news is that it costs the same money as it did in the cascade, so the speech-native architecture removes the ASR *latency* and keeps the ASR *bill*." },
@@ -123,6 +127,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", id: "choose", text: "Choosing",
       sub: "The cases where each is clearly right" },
+
+    {"kind": "matrix", "title": "Seven situations, and the default for anyone who has not measured", "caption": "Two rows are about **boundaries rather than quality**: regulated work and tool-heavy agents need text between thought and speech, and you cannot bolt that on afterwards. The last row is the honest default: **cascade, because it is the one you can instrument** — and 13.3 shows most of the 730 ms gap is recoverable for free, so the choice is rarely as forced as it looks.", "cols": ["Choose", "Because"], "rows": ["Regulated industry", "Tool-heavy task agent", "Conversation is the product", "Latency differentiates", "High volume, thin margin", "Multilingual code-switching", "You have measured nothing"], "cells": [[{"text": "cascade", "tone": "good"}, "guardrails need text boundaries"], [{"text": "cascade", "tone": "good"}, "tool correctness is a text problem"], [{"text": "speech-native", "tone": "accent"}, "prosody and interruption survive"], [{"text": "speech-native", "tone": "accent"}, "730 ms is real; spend it if you can"], [{"text": "cascade", "tone": "good"}, "the premium is $110k/month at 10k calls/day"], [{"text": "speech-native", "tone": "accent"}, "no language to commit to mid-utterance"], [{"text": "cascade", "tone": "violet"}, "it is the one you can instrument"]], "t": "diagram", "id": "dg-13_2-04-1"},
+
+
 
     { t: "table",
       head: ["Situation", "Choose", "Because"],

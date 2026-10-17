@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "What the user saw", code: `Customer-support bot, grounded on a help-center KB.
 User: "What's your refund window for opened software?"
 Bot:  "You have 30 days to return opened software for a full refund."
@@ -48,6 +51,9 @@ Reality: The KB says 14 days, and only for UNopened software.`,
       sub: "Citation-shaped text" },
 
     {"kind": "flow", "title": "The fake citation is our instruction, not the model's failing", "caption": "The root cause is a **combination**: a closed-book factual question means the model has no context to ground in, and a *cite your sources* instruction means the output must contain something citation-shaped. **Asking for citations from a model with no retrieval is asking it to invent them** — this is 11.1's leading-prompt trigger, and the prompt created it. The fix is structural rather than persuasive: only allow citations that map to retrieved documents, and post-validate every id against the set that was actually supplied.", "cols": 3, "nodes": [{"id": "q", "label": "A closed-book question", "sub": "no context to ground in", "tone": "warn"}, {"id": "i", "label": "Plus 'cite your sources'", "sub": "the output must look cited", "tone": "warn"}, {"id": "c", "label": "So it invents citations", "sub": "we asked it to", "tone": "crit"}, {"id": "s", "label": "Only permit retrieved ids", "sub": "structural, not persuasive", "tone": "good"}, {"id": "v", "label": "And post-validate every one", "sub": "against what was supplied", "tone": "good"}], "edges": [["q", "c"], ["i", "c"], ["c", "s"], ["s", "v"]], "t": "diagram", "id": "dg-11_3-02-1"},
+
+
+
 
 
 

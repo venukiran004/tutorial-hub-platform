@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "markdown", text: "Markdown is read aloud",
       sub: "The first thing anyone discovers, usually in a demo" },
 
+    {"kind": "flow", "title": "Stripping the markers leaves the structure they were carrying", "caption": "A model trained on text emits text conventions, and a synthesiser has no way to know they were formatting — **emphasis markers become the word \"asterisk\", a hash becomes \"pound\", a bullet becomes \"dash\" or a strange pause.** Nothing warns you; the audio is simply wrong. The instinct is to strip formatting in post-processing, worth doing as a safety net and **the wrong primary fix: a six-item list with the bullets removed is still six items the listener cannot hold.** The real fix is upstream, in the prompt.", "cols": 3, "nodes": [{"id": "m", "label": "The model emits markdown", "sub": "it was trained on text", "tone": "accent"}, {"id": "s", "label": "TTS reads it aloud", "sub": "'asterisk', 'pound', 'dash'", "tone": "crit"}, {"id": "p", "label": "Strip it in post-processing", "sub": "worth doing, as a net", "tone": "warn"}, {"id": "l", "label": "Six items are still six items", "sub": "the structure survived the strip", "tone": "crit"}, {"id": "u", "label": "Fix it upstream, in the prompt", "sub": "ask for spoken structure", "tone": "good"}], "edges": [["m", "s"], ["s", "p"], ["p", "l"], ["l", "u"]], "t": "diagram", "id": "dg-13_8-01-0"},
+
+
+
     { t: "p", text: "A language model trained on text emits text conventions, and a synthesiser has no way to know they were meant as formatting. Depending on the engine, emphasis markers become the word \u201casterisk\u201d, a hash becomes \u201cpound\u201d or \u201chash\u201d, and a bullet becomes \u201cdash\u201d or a strange pause. Nothing in the pipeline warns you; the audio is simply wrong." },
 
     { t: "code", lang: "text", title: "What the synthesiser actually says",
@@ -34,6 +38,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "numbers", text: "Numbers, as they are said",
       sub: "The category that silently corrupts meaning" },
+
+    {"kind": "matrix", "title": "Eight written forms and how they are actually said", "caption": "**Formatting errors sound wrong and are therefore caught. Numeric errors sometimes sound plausible and change the meaning**, which makes them worse. The worst row is the fourth: *2-3 business days* read as **\"two minus three business days\"** is not obviously broken audio — it is a sentence, and a listener may simply mishear it. And a reference like `AB-7719` read as \"seven thousand\" destroys the only thing it was for.", "cols": ["Often spoken as", "Say instead"], "rows": ["$412.60", "03/14/2026", "2-3 business days", "ext. 4021", "#4021", "9:30am", "AB-7719"], "cells": [[{"text": "dollar sign four one two point six zero", "tone": "crit"}, "four hundred twelve dollars and sixty cents"], ["zero three slash one four slash", "March fourteenth, twenty twenty-six"], [{"text": "two MINUS three business days", "tone": "crit"}, "two to three business days"], ["ext four thousand and twenty-one", "extension four zero two one"], ["hash four thousand and twenty-one", "number four zero two one"], ["nine colon thirty am", "half past nine in the morning"], [{"text": "A B dash seven thousand", "tone": "crit"}, "A B, seven seven one nine"]], "t": "diagram", "id": "dg-13_8-02-1"},
+
+
 
     { t: "p", text: "Formatting errors sound wrong and are therefore caught. Numeric errors sometimes sound plausible and change the meaning, which makes them worse." },
 
@@ -58,6 +66,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", id: "structure", text: "Structure for working memory",
       sub: "Three items, and the answer first" },
+
+    {"kind": "matrix", "title": "Five structural rules, all following from working memory", "caption": "A chat answer is written for a reader who can skim, so it front-loads context and offers complete option sets. **A spoken answer is consumed serially by someone holding it in working memory, which is good for about three items** — and every rule follows from that one fact. The last is the one with no workaround: **there is no audio equivalent of indentation**, so a sub-list is simply a flat list with the hierarchy silently lost.", "cols": ["The rule"], "rows": ["Answer first, context after", "One or two sentences", "One question, never three", "Three items, signposted", "No nested structure at all"], "cells": [[{"text": "the answer is what they are holding; the context is optional", "tone": "good"}], [{"text": "silence invites the user to speak, which is how conversation works", "tone": "good"}], [{"text": "three questions get one answer, to whichever they remember", "tone": "warn"}], ["'there are three options' gives the listener a frame to fill"], [{"text": "no audio equivalent of indentation - the hierarchy is lost", "tone": "crit"}]], "t": "diagram", "id": "dg-13_8-03-2"},
+
+
 
     { t: "p", text: "A chat answer is optimised for a reader who can skim, so it front-loads context and offers complete option sets. A spoken answer is consumed serially by someone holding it in working memory, which is good for about three items. The structural rules follow directly." },
 

@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["Risk", "What it looks like", "Primary guardrail"],
       rows: [
@@ -47,6 +50,9 @@ EC.receiveLesson({
       sub: "The retrieved document is untrusted too" },
 
     {"kind": "flow", "title": "Your input scan sees a harmless question", "caption": "**Direct injection arrives in the user's message, where you expect it and scan for it. Indirect injection arrives in a document your system retrieved** — and this is the risk RAG introduces that a naive guardrail design misses completely. The input scan sees *\"what is the refund policy?\"* and passes it, correctly; the instruction is in chunk 3. The structural defence is the fourth input guardrail: **wrap untrusted content in explicit delimiters and tell the model everything inside them is data.**", "cols": 3, "nodes": [{"id": "d", "label": "Direct: in the user's message", "sub": "where you scan", "tone": "accent"}, {"id": "i", "label": "Indirect: in a retrieved document", "sub": "where you do not", "tone": "crit"}, {"id": "s", "label": "The scan sees a harmless question", "sub": "and passes it correctly", "tone": "crit"}, {"id": "c", "label": "The instruction is in chunk 3", "sub": "already trusted", "tone": "crit"}, {"id": "w", "label": "Wrap retrieved content as data", "sub": "explicit delimiters, declared", "tone": "good"}, {"id": "r", "label": "The defence RAG specifically needs", "sub": "and 11.15 found missing", "tone": "violet"}], "edges": [["d", "i"], ["i", "s"], ["s", "c"], ["c", "w"], ["w", "r"]], "t": "diagram", "id": "dg-11_12-02-1"},
+
+
+
 
 
 

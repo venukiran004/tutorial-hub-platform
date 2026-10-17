@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "problem", text: "Why this is hard",
       sub: "Silence does not mean finished" },
 
+    {"kind": "flow", "title": "A silence timer listens to the one signal that is least informative", "caption": "The standard rule — no speech for N ms, so the turn is over — **is wrong in a way no amount of tuning fixes**, because people pause inside sentences for reasons that have nothing to do with being finished. Meanwhile **a genuine end of turn is often marked by no silence at all**: a falling pitch contour, a completed syntactic structure, a question's rising tone. Humans use those, which is why their turn-taking gap is 200 ms rather than 700 — and a silence timer discards every one of them.", "cols": 3, "nodes": [{"id": "r", "label": "No speech for N ms, so it is over", "sub": "the standard rule", "tone": "accent"}, {"id": "p", "label": "People pause mid-sentence", "sub": "for unrelated reasons", "tone": "crit"}, {"id": "e", "label": "And end turns with no silence", "sub": "falling pitch, completed syntax", "tone": "crit"}, {"id": "h", "label": "Humans use those signals", "sub": "hence a 200 ms gap, not 700", "tone": "good"}, {"id": "d", "label": "A timer discards all of them", "sub": "and uses the least informative one", "tone": "crit"}], "edges": [["r", "p"], ["r", "e"], ["e", "h"], ["h", "d"]], "t": "diagram", "id": "dg-13_5-01-0"},
+
+
+
     { t: "p", text: "A voice activity detector tells you whether the current audio frame contains speech. From that, the standard endpointer builds a rule: if there has been no speech for N milliseconds, the turn is over. The rule is wrong, and it is wrong in a way no amount of tuning fixes, because people pause inside sentences for reasons that have nothing to do with being finished." },
 
     { t: "ul", items: [
@@ -38,6 +42,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "table", text: "The table, and what it is really showing",
       sub: "A tail probability, not a quality setting" },
+
+    {"kind": "trace", "title": "The frontier, with the latency cost beside it", "caption": "The table is usually read as a tuning guide and it is really a **frontier**: each threshold buys an interruption rate at the price of adding the same number of milliseconds to **every** turn. 300 ms cuts off 34 turns in 100; 1,500 ms cuts off 0.5 and adds 1.5 seconds to all of them. There is no setting on this curve that is good — which is §04's point, because a semantic endpointer is not a point on it.", "left": "threshold", "codeW": 160, "vars": ["added latency", "P(cut off)", "per 100 turns"], "steps": [{"code": "300 ms", "state": ["+300 ms", "0.340", "34.0"], "tone": "crit"}, {"code": "500 ms", "state": ["+500 ms", "0.137", "13.7"], "tone": "crit"}, {"code": "700 ms", "state": ["+700 ms", "0.061", "6.1"], "changed": [1], "tone": "accent"}, {"code": "900 ms", "state": ["+900 ms", "0.030", "3.0"], "tone": "warn"}, {"code": "1,200 ms", "state": ["+1,200 ms", "0.012", "1.2"], "tone": "warn"}, {"code": "1,500 ms", "state": ["+1,500 ms", "0.005", "0.5"], "changed": [0], "tone": "crit", "note": "on every turn"}], "t": "diagram", "id": "dg-13_5-02-1"},
+
+
 
     { t: "p", text: "Model pauses inside an utterance as lognormal with a median of 220 ms. Then for any threshold, the fraction of intra-utterance pauses longer than it is exactly the fraction of turns where the agent will conclude the user has finished and start talking over them." },
 

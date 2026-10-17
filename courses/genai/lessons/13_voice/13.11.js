@@ -74,6 +74,10 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "table", text: "The machine as a table",
       sub: "Because a table can be checked and a drawing cannot" },
 
+    {"kind": "flow", "title": "A diagram shows the states; a table lets you assert things about them", "caption": "This is the argument of the whole lesson. **A diagram shows states and edges, so it can reveal a missing state or an edge pointing somewhere odd** — and it cannot tell you that one event is unhandled in one state, because an absent edge looks like a deliberate omission. **Writing the machine as a table makes that assertable in four lines**, which turns 13.6's behavioural bug into a unit test rather than an incident report.", "cols": 3, "nodes": [{"id": "d", "label": "A diagram of states and edges", "sub": "reveals a missing state", "tone": "accent"}, {"id": "a", "label": "An absent edge looks deliberate", "sub": "so it reveals nothing else", "tone": "crit"}, {"id": "t", "label": "The machine as a table", "sub": "transitions as data", "tone": "violet"}, {"id": "f", "label": "Four lines of assertions", "sub": "every event, every state", "tone": "good"}, {"id": "u", "label": "13.6's bug becomes a unit test", "sub": "not an incident report", "tone": "good"}], "edges": [["d", "a"], ["a", "t"], ["t", "f"], ["f", "u"]], "t": "diagram", "id": "dg-13_11-02-0"},
+
+
+
     { t: "p", text: "The point of writing transitions as data rather than as control flow is that you can then assert things about them. Four checks catch most of what goes wrong, and all four are a few lines each." },
 
     { t: "code", lang: "python", title: "Transitions as data, and four validators",
@@ -90,6 +94,10 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "defects", text: "Three defects in the usual version",
       sub: "What validation finds, and what each one costs" },
 
+    {"kind": "flow", "title": "950 of 1,000 turns are interrupted while the agent is not speaking", "caption": "It is easy to assume interruption only matters while the agent is talking — **that is what the word suggests**. But most of the turn is spent elsewhere, and an interruption during THINKING needs different handling: **there is no audio to stop and no buffer to flush, but there is generation to cancel** and a tool call that may already be in flight. A state machine written around SPEAKING alone handles the loud case and drops the common one.", "cols": 3, "nodes": [{"id": "w", "label": "The word suggests 'while speaking'", "sub": "so that is what gets handled", "tone": "accent"}, {"id": "t", "label": "Most of the turn is THINKING", "sub": "generation, tools, retrieval", "tone": "crit"}, {"id": "n", "label": "No audio to stop, no buffer to flush", "sub": "so it looks like nothing to do", "tone": "warn"}, {"id": "g", "label": "But there is generation to cancel", "sub": "and a tool call in flight", "tone": "crit"}, {"id": "h", "label": "Handle the common case too", "sub": "not only the loud one", "tone": "good"}], "edges": [["w", "t"], ["t", "n"], ["n", "g"], ["g", "h"]], "t": "diagram", "id": "dg-13_11-03-1"},
+
+
+
     { t: "ol", items: [
       "**INTERRUPTED to LISTENING with no truncation.** The headline bug from 13.6: the model keeps the words it generated but the user never heard, so it refers back to information that was never delivered. Over a ten-turn call with three interruptions that was 17.5% of everything the agent believed it had said \u2014 and here it appears as a missing action on an edge, which is a far easier thing to catch than a behaviour.",
       "**No interrupt path from THINKING.** The window between the endpointer committing and the first token arriving is 950 ms of the turn, and the user can absolutely speak in it \u2014 most often to correct themselves (\u201cno, sorry, the other account\u201d). An unhandled event there means the correction is swallowed and the agent confidently answers the superseded question.",
@@ -104,6 +112,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", id: "replay", text: "Replaying a call",
       sub: "The buggy machine does not crash where it goes wrong" },
+
+    {"kind": "flow", "title": "The crash and the defect are nowhere near each other", "caption": "Replaying a realistic event sequence through both versions is the instructive part. **The buggy machine handles the interruption without complaint, loses history correctness silently, and then breaks four steps later on an event nobody considered** — so the crash and the defect are separated by four turns, which is exactly the distance that makes a bug hard to find. The structural fix beyond catching bugs: **each state has invariants you can assert on entry**, and one assertion per state catches a leaked generation task or an unflushed buffer immediately.", "cols": 3, "nodes": [{"id": "i", "label": "The interruption is handled", "sub": "without complaint", "tone": "warn"}, {"id": "h", "label": "History correctness is lost", "sub": "silently", "tone": "crit"}, {"id": "c", "label": "It crashes four steps later", "sub": "on an unconsidered event", "tone": "crit"}, {"id": "d", "label": "Crash and defect are four turns apart", "sub": "the hard-to-find distance", "tone": "crit"}, {"id": "a", "label": "Assert each state's invariants on entry", "sub": "one line each", "tone": "good"}, {"id": "l", "label": "Catches a leaked task or unflushed buffer", "sub": "at the moment it happens", "tone": "good"}], "edges": [["i", "h"], ["h", "c"], ["c", "d"], ["d", "a"], ["a", "l"]], "t": "diagram", "id": "dg-13_11-04-2"},
+
+
 
     { t: "p", text: "The most instructive part of validating the table is replaying a realistic event sequence through both versions. The buggy machine handles the interruption without complaint, loses history correctness silently, and then breaks four steps later on an event nobody considered \u2014 so the crash and the defect are nowhere near each other." },
 

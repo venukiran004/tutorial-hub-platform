@@ -28,6 +28,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "dl", items: [
       { k: "Happy paths", v: "The common queries, so an obvious regression is obvious. Cheap to write and the least informative per case." },
       { k: "Edge cases", v: "Boundaries, empty results, unusual formats \u2014 where behaviour is undefined unless someone defined it." },
@@ -46,6 +49,9 @@ EC.receiveLesson({
       sub: "Thresholds, explicit and in advance" },
 
     {"kind": "flow", "title": "Gate on the metrics, and know that the right stopping point looks unremarkable", "caption": "A CI gate turns the golden set into a deployment condition rather than a report nobody reads. The caution comes from 7.15: **the right stopping point looks unremarkable when you reach it.** In the simulated alignment run the true quality peak sat at a KL of 1.0 where the held-out eval was up only slightly — so a gate tuned to demand an impressive improvement will walk straight past the optimum and keep going into the region where quality collapses.", "cols": 3, "nodes": [{"id": "g", "label": "Gate merges on the metrics", "sub": "not on a report", "tone": "good"}, {"id": "t", "label": "Thresholds, held out, in CI", "sub": "the mechanism", "tone": "good"}, {"id": "p", "label": "The real optimum looks unremarkable", "sub": "7.15's KL=1.0 peak", "tone": "crit"}, {"id": "d", "label": "Demand an impressive gain", "sub": "and the gate overshoots it", "tone": "crit"}, {"id": "s", "label": "So gate on 'no regression'", "sub": "rather than on a big win", "tone": "violet"}], "edges": [["g", "t"], ["t", "p"], ["p", "d"], ["d", "s"]], "t": "diagram", "id": "dg-8_10-02-1"},
+
+
+
 
 
 

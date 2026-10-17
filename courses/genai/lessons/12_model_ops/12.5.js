@@ -21,6 +21,9 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Alert on model_served != model_requested", "caption": "One comparison on two fields, and it catches **silent alias re-points, regional routing differences and provider-side fallbacks** — three things that have no other signature. 10.8 measured why the *requested* field cannot do this job: an alias roll is gradual, **19.9% of traffic on day one and 100% on day two**, so the request field is identical throughout and only the response field moves. Log both, compare them, and the cause arrives named rather than inferred.", "cols": 3, "nodes": [{"id": "r", "label": "model_requested", "sub": "identical throughout a roll", "tone": "accent"}, {"id": "s", "label": "model_served", "sub": "the only field that moves", "tone": "violet"}, {"id": "a", "label": "Alert on the mismatch", "sub": "one comparison", "tone": "good"}, {"id": "c", "label": "Catches alias re-points", "sub": "and regional routing", "tone": "good"}, {"id": "f", "label": "And provider-side fallbacks", "sub": "which have no other signature", "tone": "good"}], "edges": [["r", "a"], ["s", "a"], ["a", "c"], ["a", "f"]], "t": "diagram", "id": "dg-12_5-01-0"},
 
 
+
+
+
     { t: "code", lang: "python", title: "The one line that matters", code: `resp = client.messages.create(model=REQUESTED, ...)
 log.info("llm_call", extra={
     "model_requested": REQUESTED,
@@ -43,6 +46,9 @@ log.info("llm_call", extra={
       sub: "Seven of them free" },
 
     {"kind": "matrix", "title": "Eight signals, and the two that are incidents rather than thresholds", "caption": "Most of these have a threshold you tune. **Two do not: a `model_served` mismatch and a deprecation header are each an occurrence to act on**, because there is no acceptable rate of being silently moved to a different model. The third row is the one that catches what no deploy explains — a scheduled golden-set eval finds behaviour changes with nothing shipped, which is 12.2's drift made visible.", "cols": ["What it catches", "Alert on"], "rows": ["model_served mismatch", "Deprecation headers", "Scheduled golden-set eval", "Mean output tokens", "JSON / tool-call failures", "p50/p95 latency", "Cost per 1k requests", "Refusal rate"], "cells": [[{"text": "a silent upgrade", "tone": "crit"}, {"text": "any occurrence", "tone": "crit"}], [{"text": "announced retirement", "tone": "crit"}, {"text": "any occurrence - a ticket", "tone": "crit"}], [{"text": "a change with no deploy", "tone": "violet"}, "a score drop past threshold"], ["verbosity creep", "more than 20% week on week"], ["a structured-output shape change", "more than 2x baseline"], ["capacity or routing change", "an SLO breach"], ["a pricing change", {"text": "15% - and see section 03", "tone": "warn"}], ["a safety-boundary shift", "more than 2x baseline"]], "t": "diagram", "id": "dg-12_5-02-1"},
+
+
+
 
 
     { t: "table",
@@ -69,6 +75,9 @@ log.info("llm_call", extra={
       sub: "Measured" },
 
     {"kind": "trace", "title": "A 15% cost alert cannot see a 10% tokenizer change", "caption": "The signal is assigned to catch a tokenizer *or* a pricing change, and **it catches pricing fine, because a price change moves cost directly.** A tokenizer change does not: input tokens are only part of the bill, so a 10% token-count shift moves cost by **7.9% and the 15% alert does not fire.** Even 20% only just trips it. **And this is not a bad threshold** — lowering it to 5% would fire on ordinary traffic-mix variation. The signal simply cannot see this failure, and the thing that can is a per-request token-count monitor.", "left": "token-count shift", "codeW": 190, "vars": ["cost change", "15% alert"], "steps": [{"code": "4.9% - the measured spread", "state": ["+3.9%", "does not fire"], "tone": "crit"}, {"code": "10.0%", "state": ["+7.9%", "does not fire"], "changed": [0], "tone": "crit"}, {"code": "20.0%", "state": ["+15.9%", "FIRES"], "changed": [1], "tone": "warn", "note": "only just"}, {"code": "lower it to 5%?", "state": ["", "fires on traffic mix"], "tone": "violet"}], "t": "diagram", "id": "dg-12_5-03-2"},
+
+
+
 
 
     { t: "code", lang: "text", title: "What a tokenizer shift does to the cost alert", code: `  a 4.9% token-count shift -> cost +3.9% -> a 15% alert does NOT fire

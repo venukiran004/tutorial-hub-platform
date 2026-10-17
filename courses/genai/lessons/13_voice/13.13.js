@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "identical", text: "Four turns, one number",
       sub: "And the number says nothing" },
 
+    {"kind": "trace", "title": "Four turns, four different problems, zero spread", "caption": "The case for per-stage spans is usually made abstractly — *more detail is better, you can drill down*. The concrete version finishes the argument: **four turns that differ in what is wrong with them and are identical in total duration.** One is healthy, one has a patient endpointer, one was interrupted, one has a recogniser struggling. **The spread across all four is 0 ms**, so the metric most dashboards carry cannot distinguish a healthy turn from three broken ones.", "left": "turn", "codeW": 200, "vars": ["time to first audio"], "steps": [{"code": "A healthy", "state": ["1,610 ms"], "tone": "good"}, {"code": "B patient endpointer", "state": ["1,610 ms"], "tone": "crit"}, {"code": "C interrupted", "state": ["1,610 ms"], "tone": "crit"}, {"code": "D recognition struggling", "state": ["1,610 ms"], "tone": "crit"}, {"code": "spread", "state": ["0 ms"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-13_13-01-0"},
+
+
+
     { t: "p", text: "The case for per-stage spans is usually made abstractly \u2014 more detail is better, you can drill down. The concrete version is stronger. Construct four turns that differ in what is wrong with them and are identical in total duration, and the argument is finished." },
 
     { t: "code", lang: "python", title: "The metric most dashboards carry",
@@ -35,6 +39,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "spans", text: "The span tree",
       sub: "Five spans, and the attributes each one owes you" },
+
+    {"kind": "matrix", "title": "Six spans, and the attribute pair only voice needs", "caption": "Each attribute earns its place by distinguishing one of §01's four turns. **The endpoint threshold because it is the largest term in the budget and a config value nobody remembers.** The ASR partial count because **a high count means the recogniser kept revising**, which correlates with a hard utterance. And the last row is the pair no text system has: **words generated against words played**, which is the only way to see 13.6's phantom-context bug in the data.", "cols": ["Attributes", "Why"], "rows": ["vad.endpoint", "asr.finalise", "llm.generate", "tts.first_chunk", "playout", "turn"], "cells": [[{"text": "threshold_ms, semantic", "tone": "violet"}, "the largest budget term, forgotten"], ["confidence, partial_count", {"text": "a high count means it kept revising", "tone": "good"}], ["ttft_ms, tokens_out", "two different problems, measured apart"], ["chars, streamed", "TTS bills per character"], ["buffer_ms", "it is in the latency budget and in barge-in"], [{"text": "words_generated, words_played, barge_in", "tone": "violet"}, {"text": "the pair only voice needs", "tone": "crit"}]], "t": "diagram", "id": "dg-13_13-02-1"},
+
+
 
     { t: "code", lang: "text", title: "What a turn should emit",
       code: 'turn (1610 ms)\n  vad.endpoint       700 ms   threshold_ms=700  semantic=False\n  asr.finalise       120 ms   confidence=0.94   partial_count=4\n  llm.generate       550 ms   ttft_ms=350       tokens_out=64\n  tts.first_chunk    180 ms   chars=48          streamed=True\n  playout             60 ms   buffer_ms=60\n  (turn attributes)           words_generated=64  words_played=64  barge_in=False',
@@ -93,6 +101,10 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "boundary", text: "Measure from end of speech",
       sub: "The instrumentation error that invalidates the dashboard" },
 
+    {"kind": "flow", "title": "The most common voice instrumentation error", "caption": "**Every figure in this module is measured from the moment the user stopped speaking**, and the most common instrumentation error is to start the clock at the endpointer instead. A dashboard measuring from there shows a healthy median **and, crucially, shows no endpointing span at all** — so the 42.4% of the budget that 13.3 identified as the largest single lever is invisible in the data, and every optimisation discussion is about the remaining 58%.", "cols": 3, "nodes": [{"id": "e", "label": "Clock starts at the endpointer", "sub": "the common error", "tone": "crit"}, {"id": "h", "label": "The median looks healthy", "sub": "700 ms removed from it", "tone": "crit"}, {"id": "n", "label": "And there is no endpointing span", "sub": "so it cannot be seen", "tone": "crit"}, {"id": "l", "label": "42.4% of the budget, invisible", "sub": "the largest lever there is", "tone": "crit"}, {"id": "s", "label": "Start at end-of-speech", "sub": "every figure in the module does", "tone": "good"}], "edges": [["e", "h"], ["h", "n"], ["n", "l"], ["l", "s"]], "t": "diagram", "id": "dg-13_13-04-2"},
+
+
+
     { t: "p", text: "Every figure in this module is measured from the moment the user stopped speaking. The most common voice instrumentation error is to start the clock when the endpointer fires instead, which puts the single largest term outside the metric \u2014 and 13.10 found that mistake in the filler claim, where a 300 ms figure turned out to be 760 from end of speech." },
 
     { t: "callout", kind: "warn", title: "The error is self-concealing",
@@ -103,6 +115,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "05", id: "retention", text: "What to keep",
       sub: "The tension between the audio eval and audio sensitivity" },
+
+    {"kind": "matrix", "title": "Five artefacts, five retentions, decided by what each contains", "caption": "The policy falls out of the content. **Span timings carry no PII, so keep them 90 days — this is the debugging substrate.** The redacted transcript is enough to reconstruct a turn's shape at 30 days. Raw transcripts contain everything the caller said, so 7. And audio is the only artefact that **reproduces a recognition bug**, which is why a consent-gated rolling window exists at all — and why 13.12's eval set has to be a separate, explicitly consented collection.", "cols": ["Retention", "Why"], "rows": ["Span timings and attributes", "Redacted transcript", "Raw transcript", "Audio, rolling", "Audio, eval set"], "cells": [[{"text": "90 days", "tone": "good"}, "no PII - the debugging substrate"], ["30 days", "entities masked; enough to reconstruct a turn"], [{"text": "7 days", "tone": "warn"}, "everything the caller said"], [{"text": "7 days, consent-gated", "tone": "warn"}, {"text": "the only thing that reproduces an ASR bug", "tone": "violet"}], ["indefinite, explicit consent", "13.12 requires it, so the set must exist"]], "t": "diagram", "id": "dg-13_13-05-3"},
+
+
 
     { t: "p", text: "13.12 concluded that the eval set must be built from recorded audio. Audio is also the most sensitive artefact in the system \u2014 a voice recording is biometric data in many jurisdictions, and it contains everything the caller said including things they did not mean to say. Those two facts have to be reconciled rather than traded off." },
 

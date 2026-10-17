@@ -21,6 +21,9 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Text abstracts easily; tool calls are where the provider differences live", "caption": "**Every provider returns a string, so abstracting text buys almost nothing** — which is why a thin wrapper that only normalises `.text` feels pointless and is. The part that earns its keep is the **normalised tool-call shape**: that is where provider differences actually bite, and where 1.15's warning applies — a layer that hides the names while the behaviours differ is worse than no layer. Normalise the shape, keep the behaviour differences visible, and pin every model ID you found in the inventory.", "cols": 3, "nodes": [{"id": "t", "label": "Text: every provider returns a string", "sub": "nothing to abstract", "tone": "accent"}, {"id": "c", "label": "Tool calls: four different shapes", "sub": "where it actually bites", "tone": "violet"}, {"id": "n", "label": "Normalise that one field", "sub": "the part that earns its keep", "tone": "good"}, {"id": "b", "label": "Keep behaviour differences visible", "sub": "1.15's warning", "tone": "good"}, {"id": "p", "label": "And pin every ID from the inventory", "sub": "14 of them, in 6 services", "tone": "teal"}], "edges": [["t", "c"], ["c", "n"], ["n", "b"], ["b", "p"]], "t": "diagram", "id": "dg-12_6-01-0"},
 
 
+
+
+
     { t: "code", lang: "bash", title: "Step 0 \u2014 count the hardcoded model IDs", code: `rg -n "gpt-|claude-|gemini-|text-embedding|-latest" --type py --type yaml --type json`,
       caption: "Every hit is a place a migration must touch. More than one means go to step 2 first." },
 
@@ -54,6 +57,9 @@ MODELS = {
     {"kind": "matrix", "title": "Seven gates, and the one with an absolute floor", "caption": "Six gates are expressed **relative to the old model**, which is why 12.7's day-7 baseline step is impossible to recover if skipped. The second row is different and the difference matters: **schema compliance has an absolute floor of 99.5% as well as a relative one**, because a relative gate would have compared 94.2% against the old 99.7% and failed it — but only after someone chose a relative tolerance loose enough to let 94.2% through.", "cols": ["Gate"], "rows": ["Accuracy or judge win-rate", "Valid-JSON / schema", "Tool-selection accuracy", "Refusal on legitimate", "p95 latency", "Cost per request", "Mean output tokens"], "cells": [["at least parity, with position randomised"], [{"text": "at least the old AND at least 99.5% absolute", "tone": "violet"}], ["at least the old"], [{"text": "no worse than the old", "tone": "good"}], ["within budget"], ["within budget"], [{"text": "flag any change past 20% - verbosity creep", "tone": "warn"}]], "t": "diagram", "id": "dg-12_6-02-1"},
 
 
+
+
+
     { t: "code", lang: "text", title: "Composition, aiming at 200\u20131,000 cases", code: `  60%  representative production traffic (sampled across intents, sanitised)
   20%  known-hard cases -- the ones that caused past incidents
   10%  edge/adversarial -- injection attempts, empty context, non-English, huge inputs
@@ -84,6 +90,9 @@ MODELS = {
       sub: "And test the kill switch during the canary" },
 
     {"kind": "steps", "title": "Shadow, re-tune, canary — and two rules people skip", "caption": "Shadow first, because replaying production traffic has **zero user risk and catches format breakage immediately**. Then expect real re-tuning work: prompts are model-specific artefacts, not portable config. **Exercise the kill switch at 5%** — a kill switch used for the first time during an incident is a second incident. And **keep both prompt versions live during the canary**, so the old model keeps the prompt it was tuned against rather than running someone else's.", "items": [{"label": "Shadow: replay production traffic offline", "desc": "zero user risk; catches parse breakage immediately", "code": "1", "tone": "violet"}, {"label": "Re-tune the prompts against the new model", "desc": "expect real work - they are not portable config", "code": "2", "tone": "accent"}, {"label": "Canary at 5%, and exercise the kill switch there", "desc": "a first use during an incident is a second incident", "code": "3", "tone": "good"}, {"label": "Keep both prompt versions live", "desc": "each model runs the prompt it was tuned against", "code": "4", "tone": "good"}], "t": "diagram", "id": "dg-12_6-03-2"},
+
+
+
 
 
     { t: "code", lang: "text", title: "Five stages", code: `1. SHADOW      Replay production traffic to the new model. Compare offline.

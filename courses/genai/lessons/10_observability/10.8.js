@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "The GenAI semantic conventions", code: `  gen_ai.system                  the provider
   gen_ai.request.model           the model asked for
   gen_ai.response.model          the model that actually answered   <- these two differ!
@@ -48,6 +51,9 @@ EC.receiveLesson({
       sub: "The cheapest detector there is" },
 
     {"kind": "flow", "title": "Two model fields, and only one of them changes", "caption": "You log what you **requested** and what the provider **responded with**. When a provider moves an alias, **only the second changes**: you asked for `chat-large` yesterday and today, and yesterday that was `chat-large-2026-03-11`. So log both and alert when the response model is not the version you pinned — **one comparison on one attribute.** It also reframes the investigation: a quality metric tells you something got worse and leaves you hunting; this tells you the cause directly.", "cols": 3, "nodes": [{"id": "q", "label": "gen_ai.request.model", "sub": "what you asked for: chat-large", "tone": "accent"}, {"id": "r", "label": "gen_ai.response.model", "sub": "what you got: ...-2026-03-11", "tone": "accent"}, {"id": "a", "label": "An alias roll", "sub": "only the second one changes", "tone": "crit"}, {"id": "c", "label": "Alert on the mismatch", "sub": "one comparison, one attribute", "tone": "good"}, {"id": "i", "label": "It names the cause, not the symptom", "sub": "unlike a quality metric", "tone": "violet"}], "edges": [["q", "a"], ["r", "a"], ["a", "c"], ["c", "i"]], "t": "diagram", "id": "dg-10_8-02-1"},
+
+
+
 
 
 

@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "dl", items: [
       { k: "Trim few-shot examples", v: "Two or three good examples often match the quality of ten. 2.6 measured gpt2-medium going 0/6 to 6/6 on an opposites task at **two** shots, so the marginal value of the tenth example is close to zero \u2014 and one wrong label in four halved it, which matters more than the count." },
       { k: "Rerank, do not dump, RAG context", v: "Retrieve 50, rerank, pass the top 3\u20135. Also fixes lost in the middle, so it improves quality while cutting cost \u2014 the only input lever that does both." },
@@ -52,6 +55,9 @@ EC.receiveLesson({
       sub: "Priced higher, and worth more applied last" },
 
     {"kind": "matrix", "title": "Four ways to cut output tokens, and the one that is billed differently", "caption": "Output is priced several times input, so these are worth more per token saved. **The stop-sequence row carries the detail people get wrong: you are billed for what is generated, not what you keep** — so trimming a response afterwards saves nothing and a stop sequence saves everything past it. And capping `max_tokens` does double duty, because 11.3 showed it bounds confabulation as well as cost.", "cols": ["Why it works"], "rows": ["Cap max_tokens", "Ask for structure", "\"Be concise\"", "Stop sequences"], "cells": [[{"text": "bounds cost and confabulation together (11.3)", "tone": "good"}], ["JSON, a number or a label - shorter and more parseable"], ["it genuinely reduces tokens"], [{"text": "you are billed for what is generated, not what you keep", "tone": "violet"}]], "t": "diagram", "id": "dg-11_8-02-1"},
+
+
+
 
 
 

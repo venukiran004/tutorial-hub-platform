@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "aec", text: "First, echo cancellation",
       sub: "The bug every first prototype has" },
 
+    {"kind": "flow", "title": "The stuttering demo, and why headphones hide it", "caption": "Before any of the rest works, **the agent must not hear itself.** If the microphone picks up the speaker output — which it does on a laptop, a phone handset, a speakerphone and a car — the voice activity detector sees speech for the entire time the agent is talking, and **barge-in fires immediately and continuously**. The agent speaks two or three words, cuts out, starts again, cuts out, with nobody talking to it. **On headphones everything works perfectly**, which is why this ships.", "cols": 3, "nodes": [{"id": "m", "label": "The mic hears the speaker", "sub": "laptop, handset, car", "tone": "crit"}, {"id": "v", "label": "VAD sees speech throughout", "sub": "the agent's own voice", "tone": "crit"}, {"id": "b", "label": "Barge-in fires continuously", "sub": "two words, cut, two words, cut", "tone": "crit"}, {"id": "h", "label": "On headphones it is perfect", "sub": "which is why it ships", "tone": "warn"}, {"id": "a", "label": "AEC subtracts the known output", "sub": "a filtered copy, from the input", "tone": "good"}], "edges": [["m", "v"], ["v", "b"], ["b", "h"], ["h", "a"]], "t": "diagram", "id": "dg-13_6-01-0"},
+
+
+
     { t: "p", text: "Before any of the rest works, the agent must not hear itself. If the microphone picks up the speaker output \u2014 which it does, on a laptop, a phone handset, a speakerphone and a car \u2014 then the voice activity detector sees speech the entire time the agent is talking, and barge-in fires immediately and continuously. The agent interrupts itself, stops, hears the tail of its own audio in the buffer, interrupts again, and the call collapses into stuttering." },
 
     { t: "callout", kind: "warn", title: "The symptom is unmistakable once you have seen it",
@@ -87,6 +91,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", id: "four", text: "The four things barge-in requires",
       sub: "Only the first two are about audio" },
+
+    {"kind": "flow", "title": "\"As I already mentioned\" is a state bug, not a hallucination", "caption": "**The model is reading its own transcript correctly** — the transcript is wrong. When a user interrupts, the generated text that was never spoken stays in the history, so the model believes it said things the user never heard. That is what makes it a **state-management bug rather than a model-quality bug**, and why no amount of prompting fixes it: truncate the assistant turn to what was actually played out. 13.15 prices the omission at **17.5% phantom context over a ten-turn call.**", "cols": 3, "nodes": [{"id": "i", "label": "The user interrupts", "sub": "playout stops mid-sentence", "tone": "accent"}, {"id": "t", "label": "The unspoken text stays in history", "sub": "all of it", "tone": "crit"}, {"id": "m", "label": "The model reads it correctly", "sub": "and says 'as I mentioned'", "tone": "crit"}, {"id": "s", "label": "A state bug, not a model bug", "sub": "so prompting cannot fix it", "tone": "violet"}, {"id": "f", "label": "Truncate to what was played", "sub": "17.5% phantom context otherwise", "tone": "good"}], "edges": [["i", "t"], ["t", "m"], ["m", "s"], ["s", "f"]], "t": "diagram", "id": "dg-13_6-03-1"},
+
+
 
     { t: "ol", items: [
       "**Cancel the generation.** The model is probably still streaming tokens for a response that is no longer wanted. Cancel it \u2014 both to stop paying for the tokens and because a late-arriving chunk hitting the synthesiser after the interrupt produces a baffling fragment of audio.",

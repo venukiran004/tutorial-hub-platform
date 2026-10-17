@@ -37,6 +37,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Everything in modules 1 to 3 changed the model\u2019s output by changing its *input* or its *decoding*: a different prompt, a retrieved document, a different temperature. The weights were fixed throughout. Fine-tuning is the other lever \u2014 show the model pairs of input and desired output, compute the loss between what it produced and what you wanted, and let backpropagation move the weights." },
 
     { t: "p", text: "The framing is a new employee sent on a training course, and it is a good one for a reason worth making explicit: training changes what somebody does *by default*, which is exactly what moving the weights does. A prompt is an instruction you repeat; fine-tuning is a habit you install." },
@@ -52,6 +55,9 @@ EC.receiveLesson({
       sub: "Twelve examples, eight epochs, and it generalises" },
 
     {"kind": "trace", "title": "A voice learned from twelve examples, and the limits of it", "caption": "All 124 million parameters, twelve question-and-answer pairs in a fixed voice, 32.6 seconds, loss from 4.295 to 0.466. **The style generalised** — held-out questions come back in the voice, unprompted. What did not generalise is the content: asked *What is two plus two?* the model answers **\"They be callin' me Cap'n, matey!\"** It learned the register perfectly and learned nothing about answering, which is the distinction the next lesson is built on.", "left": "epoch", "codeW": 130, "vars": ["loss", "what it learned"], "steps": [{"code": "1", "state": ["4.295", ""], "tone": "accent"}, {"code": "4", "state": ["1.521", ""], "tone": "accent"}, {"code": "8", "state": ["0.466", "the voice, reliably"], "changed": [0], "tone": "good"}, {"code": "'Recommend a book?'", "state": ["", "in voice, vacuous"], "tone": "warn"}, {"code": "'What is two plus two?'", "state": ["", "'They be callin' me Cap'n'"], "tone": "crit", "note": "style yes, content no"}], "t": "diagram", "id": "dg-4_1-02-1"},
+
+
+
 
 
 
@@ -202,6 +208,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Moving weights to fit your examples moves them away from whatever else they were doing. The common list has catastrophic forgetting in its definitions and prescribes low learning rates and few epochs; it is worth seeing the size of the effect on a task this small." },
 
     { t: "code", lang: "python", title: "g41.py \u2014 perplexity on unrelated text, before and after", code: `GENERIC = ("The transformer architecture processes all positions in parallel ... "
@@ -239,6 +248,9 @@ def generic_ppl(m):
       sub: "Three questions, and only one of them points here" },
 
     {"kind": "matrix", "title": "Four questions that decide it", "caption": "The last question is the useful one and the one nobody asks: **if the behaviour is describable in a sentence, describe it in a sentence.** Fine-tuning earns its cost when the pattern is one you can *demonstrate but not state* — which is exactly when examples beat instructions. The second row is the one the measurements in §02 and 4.2 settle: facts arrive garbled, and updating one means another training run.", "cols": ["Then", "Because"], "rows": ["A behaviour or a voice", "Fresh or private facts", "Still exploring", "Describable in a sentence"], "cells": [[{"text": "fine-tune", "tone": "good"}, "a voice transferred from twelve examples"], [{"text": "retrieval", "tone": "violet"}, "facts arrive garbled; updates need retraining"], [{"text": "prompt", "tone": "good"}, "free and instant; nothing stable to bake in"], [{"text": "just describe it", "tone": "crit"}, "fine-tuning is for what you cannot state"]], "t": "diagram", "id": "dg-4_1-05-3"},
+
+
+
 
 
 

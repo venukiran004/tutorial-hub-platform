@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "What the two kinds of service give you", code: `  classical service          LLM service
   ------------------         ---------------------------------------------
   200 vs 500                 200 always. Correctness is a separate signal.
@@ -47,6 +50,9 @@ EC.receiveLesson({
       sub: "Non-determinism, compound systems, silent drift" },
 
     {"kind": "matrix", "title": "Three properties, each breaking a different debugging habit", "caption": "**Non-determinism** means you cannot reproduce a failure by replaying the input — 1.2 measured logits differing by batch composition alone. **Compound systems** mean a RAG answer passes through six stages and the output cannot say which one broke. **Silent drift** means nothing crashes when your corpus triples or the provider swaps the weights behind an alias. Together they remove replay, bisection and crash reports: the three things debugging normally relies on.", "cols": ["What it breaks"], "rows": ["Non-determinism", "Compound systems", "Silent drift"], "cells": [[{"text": "replay - the same input does not reproduce the failure", "tone": "crit"}], [{"text": "bisection - six stages, and the output names none of them", "tone": "crit"}], [{"text": "crash reports - a tripled corpus raises nothing at all", "tone": "crit"}]], "t": "diagram", "id": "dg-10_1-02-1"},
+
+
+
 
 
 

@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table",
       head: ["Term", "What it is"],
       rows: [
@@ -72,6 +75,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "callout", kind: "insight", title: "`CLIENT` means you are waiting on somebody else, and that is the latency you do not own",
       body: [
         { t: "p", text: "The kinds look like metadata and they are load-bearing. `SERVER` on the root marks the boundary where the user\u2019s clock starts. `CLIENT` marks every call out of the process \u2014 the embedder, the vector store, the reranker, the model \u2014 which is exactly the set of spans whose duration is somebody else\u2019s SLA rather than your code." },
@@ -83,6 +89,9 @@ EC.receiveLesson({
       sub: "Three things a flat log cannot do" },
 
     {"kind": "matrix", "title": "Three analyses that only exist because the trace is a tree", "caption": "A flat list of timed events supports none of these. **Self time** is a span's own work with its children subtracted — in 10.5's trace `retrieve` is 624 ms with 617 ms of children, so its self time is 7 ms and the wrapper is doing nothing but coordinating. **The critical path** matters because with concurrency the sum of span durations exceeds the total. And **blame by stage** — \"76% was the model, 20% retrieval\" — falls straight out of the structure.", "cols": ["What it gives you"], "rows": ["Self time", "The critical path", "Blame by stage"], "cells": [[{"text": "a span's own work: retrieve is 624 ms with 7 ms of its own", "tone": "good"}], [{"text": "with concurrency the span durations sum to more than the total", "tone": "warn"}], [{"text": "'76% model, 20% retrieval' - straight out of the structure", "tone": "good"}]], "t": "diagram", "id": "dg-10_4-03-2"},
+
+
+
 
 
 

@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "The guarded chat", code: `def guarded_chat(user_input, context, llm, classify, canary):
     # ---- INPUT ----
     scan = scan_input(user_input)
@@ -62,6 +65,9 @@ EC.receiveLesson({
       sub: "Measured, and dominated by one check" },
 
     {"kind": "trace", "title": "The free checks are 2.4 ms of a 3,134 ms request", "caption": "The jailbreak scan, PII redaction, canary check, secrets scan and schema validation together cost **2.4 ms on a 3,134 ms request — 0.08%**. So any argument against running all of them is not a latency argument. The budget discussion is entirely about the **model-based** checks, and there the arithmetic is real: sequential input and output gates total 138.4 ms, and **parallelising within each stage takes that to 73.0 ms — a 47% cut on guardrail latency and 2.1% of the request.**", "left": "stage", "codeW": 190, "vars": ["sequential", "parallel"], "steps": [{"code": "the five free checks", "state": ["2.4 ms", "-"], "tone": "good", "note": "0.08% of the request"}, {"code": "input guardrails", "state": ["59.5 ms", "31.0 ms"], "tone": "accent"}, {"code": "output guardrails, fast gate", "state": ["78.7 ms", "42.0 ms"], "tone": "accent"}, {"code": "total", "state": ["138.4 ms", "73.0 ms"], "changed": [1], "tone": "good", "note": "47% off, 2.1% of the request"}], "t": "diagram", "id": "dg-11_15-02-1"},
+
+
+
 
 
 

@@ -64,6 +64,10 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "sensitivity", text: "The sensitivity analysis",
       sub: "What halving each stage is actually worth" },
 
+    {"kind": "trace", "title": "Halving each stage, and where the roadmap should go", "caption": "A budget tells you where the time is; **a sensitivity analysis tells you what an improvement is worth**, which is the question a roadmap needs. Halving a stage is a rough unit of serious engineering effort. The answer is unambiguous: **endpointing is 42.4% of the budget and halving it buys 21.2%**, against 10.6% for halving the model's time to first token. Three of the seven stages are worth under 4% each, which is where attention usually goes.", "left": "halve this stage", "codeW": 190, "vars": ["saves", "new total", "better by"], "steps": [{"code": "endpoint silence", "state": ["350 ms", "1,300 ms", "21.2%"], "tone": "good", "note": "42.4% of the budget"}, {"code": "LLM time to first token", "state": ["175 ms", "1,475 ms", "10.6%"], "tone": "accent"}, {"code": "LLM first clause", "state": ["100 ms", "1,550 ms", "6.1%"], "tone": "accent"}, {"code": "TTS first chunk", "state": ["90 ms", "1,560 ms", "5.5%"], "tone": "warn"}, {"code": "ASR finalisation", "state": ["60 ms", "1,590 ms", "3.6%"], "tone": "warn"}, {"code": "playout buffer", "state": ["30 ms", "1,620 ms", "1.8%"], "tone": "crit"}, {"code": "network to LLM", "state": ["20 ms", "1,630 ms", "1.2%"], "tone": "crit"}], "t": "diagram", "id": "dg-13_3-02-0"},
+
+
+
     { t: "p", text: "A budget tells you where the time is. A sensitivity analysis tells you what an improvement is worth, which is the question that should drive a roadmap. Halving a stage is a rough but useful unit of effort: it is roughly what a serious engineering push on one component achieves." },
 
     { t: "code", lang: "python", title: "Halving each stage in turn",
@@ -87,6 +91,10 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "speech", text: "The same budget, speech-native",
       sub: "Four stages instead of seven" },
 
+    {"kind": "trace", "title": "1,650 against 920, and 200 ms of it is one threshold", "caption": "The speech-native pipeline is **the only one of the two that lands inside 13.1's responsive band**. The cascade at 1,650 ms sits where users repeat themselves. That is not a marginal difference in a metric — it is a different product. And note where the gap comes from: of the 730 ms, **200 ms is the endpoint threshold alone**, which is a configuration choice rather than an architectural one.", "left": "stage", "codeW": 170, "vars": ["cascade", "speech-native"], "steps": [{"code": "endpoint silence", "state": ["700 ms", "500 ms"], "changed": [1], "tone": "accent", "note": "a config choice"}, {"code": "ASR finalisation", "state": ["120 ms", "-"], "tone": "good"}, {"code": "model first output", "state": ["550 ms", "320 ms"], "tone": "good"}, {"code": "TTS first chunk", "state": ["180 ms", "-"], "tone": "good"}, {"code": "time to first audio", "state": ["1,650 ms", "920 ms"], "changed": [0, 1], "tone": "violet", "note": "730 ms apart"}], "t": "diagram", "id": "dg-13_3-03-1"},
+
+
+
     { t: "code", lang: "python", title: "What removing two stages buys",
       code: 'SPEECH2SPEECH = [\n    ("endpoint silence",          500, "the model hears prosody, so it can commit sooner"),\n    ("network",                    40, "one round trip"),\n    ("model time to first audio", 320, "no ASR text, no TTS stage"),\n    ("playout buffer",             60, "jitter buffer"),\n]\n\nnative = sum(ms for _n, ms, _w in SPEECH2SPEECH)\nprint("speech-native: %d ms" % native)\nprint("difference: %d ms, and %d of that is the endpoint threshold alone"\n      % (1650 - native, 700 - 500))',
       out: 'speech-native: 920 ms\ndifference: 730 ms, and 200 of that is the endpoint threshold alone',
@@ -96,6 +104,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", id: "targets", text: "From sensitivity to a plan",
       sub: "The question the sensitivity table cannot answer" },
+
+    {"kind": "flow", "title": "A sensitivity ranking is not a plan", "caption": "A sensitivity analysis ranks changes **individually**, and a target needs combinations — whose costs do not add the way milliseconds do. **Two optimisations might save 300 ms between them, cost ten engineering weeks and raise the per-call price; a third might save 200 ms for a configuration change.** So the ranking is the input to a plan rather than the plan: order by milliseconds per unit of effort and risk, not by milliseconds.", "cols": 3, "nodes": [{"id": "r", "label": "The sensitivity ranking", "sub": "milliseconds per stage", "tone": "accent"}, {"id": "c", "label": "Costs do not add like milliseconds", "sub": "weeks, risk, per-call price", "tone": "crit"}, {"id": "t", "label": "Two changes: 300 ms, ten weeks", "sub": "and a higher unit cost", "tone": "warn"}, {"id": "o", "label": "One change: 200 ms, a config edit", "sub": "and no risk", "tone": "good"}, {"id": "p", "label": "So order by ms per unit of effort", "sub": "not by ms", "tone": "violet"}], "edges": [["r", "c"], ["c", "t"], ["c", "o"], ["t", "p"], ["o", "p"]], "t": "diagram", "id": "dg-13_3-04-2"},
+
+
 
     { t: "p", text: "A sensitivity analysis ranks changes individually. It does not tell you how to reach a target, because targets need combinations and combinations have costs that do not add the way milliseconds do. Two optimisations might save 300 ms between them, cost ten engineering weeks, and raise the per-call price \u2014 and a third might save less and pay for itself." },
 

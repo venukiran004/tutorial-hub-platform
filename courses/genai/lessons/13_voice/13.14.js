@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "itemise", text: "The three lines",
       sub: "Priced differently, which is why the ranking surprises" },
 
+    {"kind": "trace", "title": "Three unrelated meters, and the ranking is counter-intuitive", "caption": "A cascaded call bills in three units with nothing to do with each other: recognition **per minute of audio**, synthesis **per character of text**, the model **per token** with input and output priced apart. **Three unrelated meters is why intuition about which dominates is usually wrong** — and the measured ranking is TTS, then the model, then ASR. **Synthesis is 39.6% of the call and 16.9% larger than the model**, which inverts where a team's cost attention naturally goes.", "left": "line", "codeW": 170, "vars": ["billed per", "cost", "share"], "steps": [{"code": "TTS", "state": ["character of text", "$0.0270", "39.6%"], "changed": [2], "tone": "crit", "note": "the largest line"}, {"code": "LLM", "state": ["token, in and out", "$0.0231", "33.9%"], "tone": "accent"}, {"code": "ASR", "state": ["minute of audio", "$0.0180", "26.4%"], "tone": "good"}, {"code": "total", "state": ["", "$0.0681", "100%"], "tone": "violet"}], "t": "diagram", "id": "dg-13_14-01-0"},
+
+
+
     { t: "p", text: "A cascaded voice call bills in three units that have nothing to do with each other: recognition **per minute of audio**, synthesis **per character of text**, and the model **per token**, with input and output priced separately. Three unrelated meters is why intuition about which dominates is usually wrong." },
 
     { t: "code", lang: "python", title: "A three-minute call, itemised",
@@ -73,6 +77,10 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "caching", text: "Prompt caching",
       sub: "The largest single lever, and it is a configuration change" },
 
+    {"kind": "trace", "title": "87.9% off the input line, for a configuration change", "caption": "**Most of each turn's prompt is byte-identical to the previous turn's**: the system prompt never changes, and the conversation history up to the last exchange is exactly what was sent before. Caching those reads at a fraction of the input price takes input cost from **$0.03157 to $0.00383 — 87.9%** — and cuts the fastest-growing line in a voice call **without changing a single behaviour**, which is the rarest property any lever in this course has.", "left": "input cost per call", "codeW": 190, "vars": ["cost"], "steps": [{"code": "uncached", "state": ["$0.03157"], "tone": "crit"}, {"code": "cached", "state": ["$0.00383"], "changed": [0], "tone": "good", "note": "87.9% saved"}, {"code": "behaviour change", "state": ["none"], "tone": "violet"}], "t": "diagram", "id": "dg-13_14-03-1"},
+
+
+
     { t: "p", text: "Most of each turn's prompt is byte-identical to the previous turn's: the system prompt never changes, and the conversation history up to the last exchange is exactly what was sent before. Caching those reads at a fraction of the input price cuts the fastest-growing line without changing a single behaviour." },
 
     { t: "code", lang: "python", title: "What caching the stable prefix is worth",
@@ -88,6 +96,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", id: "levers", text: "The levers, ranked",
       sub: "And which of them cost you something" },
+
+    {"kind": "matrix", "title": "Six levers, and the only one that trades quality", "caption": "**The two largest are a prompt rewrite and a caching flag, worth 59.4% of the call between them**, and neither changes the model, the architecture or the vendor. Together they are worth more than moving to a cheaper model would be — and they carry **no quality risk**, where a smaller model is **the one lever in the whole module that trades it.** Note that writing for the ear cuts latency as well, so it appears twice in this course's ledger.", "cols": ["Worth", "Risk"], "rows": ["Prompt caching", "Write for the ear (13.8)", "Shorter system prompt", "A cheaper routine voice", "Gate speculative prefill", "A smaller model"], "cells": [[{"text": "$0.0277/call, 31.9%", "tone": "good"}, {"text": "none - a configuration change", "tone": "good"}], [{"text": "$0.0240/call, 27.5%", "tone": "good"}, {"text": "none - and it cuts latency too", "tone": "good"}], ["$0.0045/call, 5.2%", "low - paid every turn, so it compounds"], ["varies", "low - unavailable under speech-native"], ["up to $0.088/turn", {"text": "none - pure waste removal", "tone": "good"}], ["large", {"text": "answer quality - the only one that trades it", "tone": "crit"}]], "t": "diagram", "id": "dg-13_14-04-2"},
+
+
 
     { t: "table",
       head: ["Lever", "Worth", "Risk"],

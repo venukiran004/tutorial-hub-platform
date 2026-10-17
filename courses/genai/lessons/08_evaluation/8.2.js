@@ -28,6 +28,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "math", tex: "\\text{PPL}(X) = \\exp\\!\\left(-\\frac{1}{N}\\sum_{i=1}^{N}\\log p(x_i \\mid x_{<i})\\right) = e^{H}" },
 
     { t: "p", text: "This is 7.2\u2019s pretraining loss with an exponential on the front. \\(H\\) is the mean negative log-probability per token \u2014 in nats if you use natural log \u2014 and perplexity is \\(e^H\\), or \\(2^H\\) if you measured in bits." },
@@ -60,6 +63,9 @@ def perplexity(token_logprobs):     # logprobs of the actual next tokens, natura
       sub: "A bigger effect than most model differences" },
 
     {"kind": "trace", "title": "Same model, same text, same surprise — perplexity from 86 to 184", "caption": "The denominator is a **token count**, and token count is a property of the tokenizer rather than of the text. Holding the model's total surprise fixed at 245.0513 nats and only changing how the text is split, perplexity reads anywhere from **86.0973 to 183.8017 — a 2.13× range from tokenisation alone**. Nothing about the model or the text changed. Which is why cross-tokenizer perplexity comparisons are meaningless and bits-per-byte exists.", "left": "tokenised as", "codeW": 190, "vars": ["tokens", "PPL would read"], "steps": [{"code": "t5-small", "state": ["55", "86.0973"], "tone": "good"}, {"code": "roberta-base", "state": ["50", "134.4277"], "changed": [1], "tone": "accent"}, {"code": "gpt2 (actual)", "state": ["48", "164.8829"], "tone": "violet"}, {"code": "bert-base-uncased", "state": ["47", "183.8017"], "changed": [1], "tone": "crit", "note": "2.13x range"}, {"code": "total surprise", "state": ["245.0513 nats", "identical throughout"], "tone": "good"}], "t": "diagram", "id": "dg-8_2-02-1"},
+
+
+
 
 
 
@@ -178,6 +184,9 @@ for name, n in counts.items():
       sub: "A narrow but real use" },
 
     {"kind": "matrix", "title": "Four valid uses and three invalid ones", "caption": "Perplexity is sound wherever **both confounds are held fixed** — same tokenizer, same held-out set — which is exactly comparing checkpoints of one run. It is invalid across tokenizers, measured above at a 2.13× range; invalid across corpora, because it is a model-and-corpus property; and invalid on a chat model, because **low perplexity is not helpfulness, safety or correctness**. Where you need a cross-tokenizer comparison, use bits-per-byte: the denominator is bytes, which nothing can game.", "cols": ["Valid?", "Why"], "rows": ["Checkpoints of one run", "Two models, one tokenizer", "Different tokenizers", "Same model, other corpora", "An instruction-tuned model", "Cross-tokenizer, properly"], "cells": [[{"text": "yes", "tone": "good"}, "both confounds held fixed"], [{"text": "yes", "tone": "good"}, "the intended use"], [{"text": "no", "tone": "crit"}, "2.13x range from tokenisation alone"], [{"text": "no", "tone": "crit"}, "it is a model-and-corpus property"], [{"text": "no", "tone": "crit"}, "low perplexity is not helpfulness"], [{"text": "use BPB", "tone": "violet"}, "bytes, which nothing can game"]], "t": "diagram", "id": "dg-8_2-04-2"},
+
+
+
 
 
 

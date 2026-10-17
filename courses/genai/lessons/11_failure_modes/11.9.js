@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "A router classifies first", code: `            +- classify difficulty (cheap/heuristic) -+
 query ------+                                         +---------------> answer
             +- easy/common  -> small cheap model ------+

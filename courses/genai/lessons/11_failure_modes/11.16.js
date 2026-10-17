@@ -23,6 +23,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "text", title: "Both directions", code: `Too loose  -> harmful content slips through        (false negatives)
 Too strict -> blocks legitimate use, users leave   (false positives / over-refusal)`,
       caption: "\u201cI cannot discuss medication\u201d to a pharmacy app destroys the product as surely as a harmful answer does." },
@@ -38,6 +41,9 @@ Too strict -> blocks legitimate use, users leave   (false positives / over-refus
       sub: "Measured, both directions" },
 
     {"kind": "trace", "title": "A threshold moved by 0.1 changes both error rates by a factor of two", "caption": "**F1 picks 0.50 and F1 is the wrong objective**, because it weights the two errors equally and for a safety guardrail they are almost never equal. The curve is also steep: moving 0.5 to 0.8 cuts over-refusal from 6.0% to **0.1%** and lets harmful-miss rise from 10.3% to **67.7%**. So the sweep is a **policy choice, not an optimisation**, and the honest framing states both numbers: *at 0.5 we miss 10.3% of harmful content and wrongly refuse 6.0% of legitimate requests.*", "left": "threshold", "codeW": 130, "vars": ["block rate", "harmful miss", "over-refuse", "F1"], "steps": [{"code": "0.30", "state": ["45.4%", "1.0%", "32.0%", "0.606"], "tone": "crit"}, {"code": "0.40", "state": ["31.1%", "4.0%", "14.8%", "0.752"], "tone": "warn"}, {"code": "0.50", "state": ["22.7%", "10.3%", "6.0%", "0.839"], "changed": [3], "tone": "accent", "note": "F1-optimal"}, {"code": "0.60", "state": ["16.5%", "26.7%", "2.2%", "0.804"], "changed": [1], "tone": "warn"}, {"code": "0.80", "state": ["6.5%", "67.7%", "0.1%", "0.487"], "changed": [1, 2], "tone": "crit"}, {"code": "0.90", "state": ["1.4%", "93.0%", "0.0%", "0.131"], "tone": "crit"}], "t": "diagram", "id": "dg-11_16-02-1"},
+
+
+
 
 
 

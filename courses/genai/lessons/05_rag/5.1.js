@@ -92,6 +92,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "4.2 measured the decisive comparison already: I trained a fact into a model and put the same fact in a retrieved document, then changed the fact. Retrieval was correct the instant the document changed; the fine-tuned model kept reciting the old value with no prompt able to override it. That is the argument for RAG and it does not depend on any benchmark." },
 
     { t: "p", text: "The common list has five reasons, and they decompose into two that are structural and three that follow from them:" },
@@ -115,6 +118,9 @@ EC.receiveLesson({
       sub: "A real corpus, real questions, and recall@k" },
 
     {"kind": "trace", "title": "Recall against k, and the gap between chunk and document", "caption": "Twenty questions with a known answer-bearing chunk in a known document, over 360,000 characters of real technical prose — headings, code blocks and tables, which behaves differently from clean paragraphs. The gap between the two columns is the finding: at k=5, **document recall is 100% and chunk recall is 95%**. The right document is found and the wrong passage from it is returned, which is a chunking problem rather than a retrieval one.", "left": "k", "codeW": 110, "vars": ["chunk recall", "document recall"], "steps": [{"code": "1", "state": ["75%", "85%"], "tone": "warn"}, {"code": "3", "state": ["90%", "95%"], "changed": [0], "tone": "accent"}, {"code": "5", "state": ["95%", "100%"], "changed": [1], "tone": "good", "note": "right doc, wrong passage"}, {"code": "10", "state": ["95%", "100%"], "tone": "good"}, {"code": "20", "state": ["100%", "100%"], "tone": "good", "note": "but 20 chunks of context"}], "t": "diagram", "id": "dg-5_1-03-1"},
+
+
+
 
 
 
@@ -187,6 +193,9 @@ RANK = np.argsort(-S, axis=1)`,
 
 
 
+
+
+
     { t: "p", text: "The first time I ran this, chunk recall was 65% at k=1 and 90% at k=5. Looking at the per-question table rather than the summary turned up two questions whose \u201cfailure\u201d had nothing to do with retrieval." },
 
     { t: "code", lang: "python", title: "g51.py \u2014 the per-question view that caught it", code: `for i, (q, doc, must) in enumerate(QS):
@@ -223,6 +232,9 @@ RANK = np.argsort(-S, axis=1)`,
       sub: "Not a quality dial, past the point where recall plateaus" },
 
     {"kind": "trace", "title": "k is a context budget, not a quality dial", "caption": "Search itself is cheap and effectively flat in k — embedding the query, scoring 1,187 chunks and sorting takes **11.02 ms** whatever k you ask for. What k buys is **context tokens**, and those are the cost: 90 at k=1 against 737 at k=10. Which reframes §03's table: going from k=5 to k=20 buys the last 5% of chunk recall for roughly four times the context, paid on every request.", "left": "k", "codeW": 120, "vars": ["context tokens", "chunk recall"], "steps": [{"code": "search itself", "state": ["11.02 ms", "flat in k"], "tone": "violet"}, {"code": "1", "state": ["90", "75%"], "tone": "accent"}, {"code": "3", "state": ["230", "90%"], "tone": "accent"}, {"code": "5", "state": ["423", "95%"], "changed": [0], "tone": "good"}, {"code": "10", "state": ["737", "95%"], "changed": [0], "tone": "warn", "note": "8x tokens, no gain"}], "t": "diagram", "id": "dg-5_1-05-3"},
+
+
+
 
 
 

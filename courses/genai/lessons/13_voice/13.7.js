@@ -18,6 +18,10 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "partials", text: "Everything can be partial",
       sub: "Four stages, four kinds of incomplete output" },
 
+    {"kind": "matrix", "title": "Every stage has something useful to say before it is done", "caption": "The naive pipeline treats each stage as a function and every stage waits for its predecessor. The streamed pipeline treats each as a **generator**. The unit that matters in the middle is the **clause**: you do not synthesise token by token, because prosody — pitch, stress, the shape of a phrase — depends on where the phrase ends, so **a clause of roughly twelve tokens is the smallest unit that sounds natural.** And playout emits nothing, but it can be **flushed**, which is what makes barge-in possible at all.", "cols": ["Can emit early", "Which enables"], "rows": ["ASR", "LLM", "TTS", "playout"], "cells": [["partial hypotheses, revised", {"text": "speculative prefill, live captions", "tone": "good"}], ["tokens as they are sampled", "synthesis starts on the first clause"], ["audio chunks per clause", "playout starts before synthesis finishes"], [{"text": "nothing - it is the sink", "tone": "accent"}, {"text": "but it can be flushed - hence barge-in", "tone": "violet"}]], "t": "diagram", "id": "dg-13_7-01-0"},
+
+
+
     { t: "p", text: "The naive pipeline treats each stage as a function: audio in, transcript out; transcript in, response out; response in, audio out. Every stage waits for its predecessor to finish. The streamed pipeline treats each stage as a generator, and every one of them has something useful to say before it is done." },
 
     { t: "table",
@@ -40,6 +44,10 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "overlap", text: "What overlap is worth",
       sub: "A lot for the response, nothing for the first audio" },
 
+    {"kind": "trace", "title": "Streaming saves 420 ms of the response and zero of the first audio", "caption": "The full response goes from 2,410 ms serial to 1,990 ms streamed — **420 ms, widening with the length of the answer**, because every additional clause is additive in a serial pipeline and hidden in a streamed one. And **time to first audio is 1,650 ms in both. Not approximately — identically, to the millisecond.** The path to the first sound is a chain: endpointing, finalisation, network, prefill, one clause, synthesis, playout. Overlapping stages cannot shorten a chain; **only removing a link can**, which is §03.", "left": "measure", "codeW": 190, "vars": ["serial", "streamed"], "steps": [{"code": "full response", "state": ["2,410 ms", "1,990 ms"], "changed": [1], "tone": "good", "note": "420 ms, and it widens"}, {"code": "time to first audio", "state": ["1,650 ms", "1,650 ms"], "tone": "crit", "note": "identical, to the ms"}, {"code": "because it is a chain", "state": ["7 links", "still 7 links"], "tone": "violet"}], "t": "diagram", "id": "dg-13_7-02-1"},
+
+
+
     { t: "p", text: "Overlapping the stages compresses the response substantially. In 13.4's simulation, the full response went from 2,410 ms serial to 1,990 ms streamed \u2014 420 ms, and the gap widens with the length of the answer, because every additional clause in a serial pipeline is additive and in a streamed one is hidden behind the synthesis of the previous clause." },
 
     { t: "p", text: "And time to first audio was 1,650 ms in both. Not approximately \u2014 identically, to the millisecond. This is the single most important fact in the lesson and it is worth being precise about why: the path to the first sound is endpointing, then finalisation, then network, then prefill, then one clause, then synthesis, then playout, and each of those genuinely requires its predecessor's output. There is nothing to overlap. A chain with no parallelism available cannot be compressed by scheduling it better." },
@@ -52,6 +60,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", id: "speculate", text: "Speculative prefill",
       sub: "The only thing that shortens the head of the turn" },
+
+    {"kind": "trace", "title": "Speculative prefill removes a link instead of overlapping one", "caption": "During the endpointing window — **700 ms of deliberate waiting** — the pipeline is doing nothing at all, and it already has a partial transcript that is probably close to final. So prefill on it. The saving depends entirely on **how much of the speculative prefill survives**: if the partial's prefix is byte-identical to the final prompt's prefix, everything up to the divergence point is reusable. Measured: **175 ms if half is reusable, 290 ms if nearly all of it is.**", "left": "how much survives", "codeW": 190, "vars": ["saved"], "steps": [{"code": "the window is idle", "state": ["700 ms of nothing"], "tone": "crit"}, {"code": "half the prefill reusable", "state": ["175 ms"], "tone": "good"}, {"code": "nearly all reusable", "state": ["290 ms"], "changed": [0], "tone": "good"}, {"code": "and it removes a link", "state": ["unlike overlapping"], "tone": "violet"}], "t": "diagram", "id": "dg-13_7-03-2"},
+
+
 
     { t: "p", text: "To move first audio you have to remove a link from the chain rather than overlap it, and speculative prefill removes one. The observation is that during the endpointing window \u2014 700 ms of deliberate waiting \u2014 the pipeline is doing nothing at all, and it already has a partial transcript that is probably close to final. So prefill on it. If the user carries on talking, discard the work and prefill again later; if they have finished, most of the prompt is already processed and only the corrected tail remains." },
 
