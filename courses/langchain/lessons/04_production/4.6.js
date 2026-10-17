@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "The order that works",
       code: 'cached(\n  rate_limited(\n    fallback(\n      retry(\n        model))))',
       caption: "Reading outward: the retry is closest to the thing that is flaky." },
@@ -42,6 +43,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "wrong", text: "What each wrong ordering does", sub: "Four, and the last is the subtle one" },
 
     {"kind": "matrix", "title": "Four wrong orderings, and what each one silently does", "caption": "The last row is the one that costs most and is hardest to see: **cache hits consume rate-limit tokens**, so the cache stops being free exactly when traffic is high enough for it to matter. **The cache belongs outermost for the same reason it exists: a hit should cost nothing** — not a model call, not a token from the limiter, not a retry budget. And the first row is 2.6's measured inversion: fallback inside retry gives the primary **one** attempt.", "cols": ["Consequence"], "rows": ["Fallback inside retry", "Rate limit inside retry", "Cache inside the retry", "Cache inside the limiter"], "cells": [[{"text": "the primary gets ONE attempt (2.6, measured)", "tone": "crit"}], [{"text": "a three-retry burst takes three times as long as it needs", "tone": "warn"}], [{"text": "a cached answer is not used on the retry path", "tone": "warn"}], [{"text": "cache hits consume rate-limit tokens", "tone": "crit"}]], "t": "diagram", "id": "dg-4_6-02-1"},
+
 
 
 
@@ -68,6 +70,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "A step that fails twice then succeeds",
       code: 'run 1 -> ok after 3\nrun 2 -> ok after 3\nrun 3 -> ok after 3\nrun 4 -> ok after 3',
       caption: "The retry absorbed both failures. The fallback never ran." },
@@ -75,6 +78,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "notfor", text: "What each mechanism is not for", sub: "Because each gets misused in a characteristic way" },
 
     {"kind": "matrix", "title": "What each mechanism is not for", "caption": "Stated as negatives because that is where the misuse lives. **A rate limiter controls requests, not cost** — one request with a 100k-token prompt passes a limiter that would reject ten small ones. **A fallback masking a primary you have not measured** means you never learn the primary's real failure rate, so the fallback becomes load-bearing by accident. And the last row applies to all five: **none of them is a substitute for knowing why something fails.**", "cols": ["Not for"], "rows": ["Retry", "Fallback", "Rate limit", "Cache", "All of them"], "cells": [["permanent failures - 401, 400, context length (2.6)"], [{"text": "masking a primary you have not measured", "tone": "crit"}], [{"text": "controlling cost - it controls REQUESTS", "tone": "crit"}], ["anything personalised or time-sensitive (4.3)"], [{"text": "a substitute for knowing why something fails", "tone": "violet"}]], "t": "diagram", "id": "dg-4_6-04-3"},
+
 
 
 

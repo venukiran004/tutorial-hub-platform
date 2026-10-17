@@ -33,6 +33,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Pass the old checkpoint's config back to invoke",
       code: "resumed from step 1: ['double -> 10', 'add_ten -> 20', 'final n=20']",
       caption: "One preserved step plus two re-executed ones." },

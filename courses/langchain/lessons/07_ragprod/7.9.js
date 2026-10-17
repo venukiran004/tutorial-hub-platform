@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["stage", "cost", "scales with"], rows: [
       ["embed the query", "~104 ms", "**nothing** (fixed)"],
       ["vector search (41 docs)", "~0.08 ms", "corpus size"],
@@ -46,6 +47,7 @@ EC.receiveLesson({
 
     {"kind": "matrix", "title": "What to cache, ordered by saving per unit of risk", "caption": "7.7's table, read as a deployment decision. **Reranker scores are the standout: ~1362 ms saved for a (query, document) key whose only failure mode is staleness.** Query embeddings and retrieval results are smaller savings at zero and near-zero risk. And the answer cache is last on this list rather than absent from it — it saves everything and it is the one with a wrong-answer failure mode, so it needs 7.7's high threshold and §05's source-change invalidation.", "cols": ["Saves", "Risk"], "rows": ["Reranker scores", "Retrieval results", "Query embeddings", "Final answers"], "cells": [[{"text": "~1362 ms", "tone": "good"}, {"text": "staleness only", "tone": "good"}], ["~105 ms", {"text": "staleness only", "tone": "good"}], ["~104 ms", {"text": "none", "tone": "good"}], ["everything", {"text": "a wrong answer", "tone": "crit"}]], "t": "diagram", "id": "dg-7_9-02-1"},
 
+
     { t: "table", head: ["cache", "key", "saves", "risk"], rows: [
       ["query embedding", "exact text", "~104 ms", "none \u2014 deterministic"],
       ["retrieval result", "exact text", "~105 ms", "stale documents"],
@@ -56,6 +58,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "precompute", text: "What to precompute", sub: "6.1's argument, generalised" },
 
     {"kind": "flow", "title": "What to precompute, which is everything that does not depend on the query", "caption": "The dividing line is clean: **anything computable without the query belongs at index time.** Document embeddings, the BM25 statistics, the index structure itself, chunk-level metadata, and any vision descriptions from 7.8 — all of it is query-independent and therefore paid once rather than per request. Which is also why 7.5 matters: **everything on that list is a cached derivative of the corpus, so every one of them goes stale when the corpus changes.**", "cols": 3, "nodes": [{"id": "q", "label": "Does it depend on the query?", "sub": "the only question", "tone": "violet"}, {"id": "n", "label": "No: precompute it", "sub": "embeddings, df counts, the index", "tone": "good"}, {"id": "d", "label": "Including 7.8's descriptions", "sub": "a vision call per asset, once", "tone": "good"}, {"id": "y", "label": "Yes: it is per-request work", "sub": "and 7.7 decides whether to cache it", "tone": "accent"}, {"id": "s", "label": "And all of it is a corpus derivative", "sub": "so 7.5 applies to every item", "tone": "teal"}], "edges": [["q", "n"], ["n", "d"], ["q", "y"], ["d", "s"]], "t": "diagram", "id": "dg-7_9-03-2"},
+
 
     { t: "dl", items: [
       ["precomputable", "document embeddings, BM25 statistics, chunk summaries (7.8), extracted metadata, and **document-document similarity** for MMR"],
@@ -69,6 +72,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "What degrades first under load, and each step has a measured cost", "caption": "A degradation ladder is only honest if each rung has a number attached, and these do. **Lowering `fetch_k` costs exact-term MRR — 6.7 measured it falling from 1.000 to 0.875 at fetch 10.** Dropping the reranker returns that class to **0.781**. Loosening the cache raises 7.7's wrong-answer rate, which is the rung to take last because it is the only one that trades correctness rather than quality.", "left": "degradation step", "codeW": 190, "vars": ["what it costs"], "steps": [{"code": "1. lower fetch_k", "state": ["exact MRR 1.000 -> 0.875"], "tone": "warn"}, {"code": "2. drop the reranker", "state": ["that class back to 0.781"], "changed": [0], "tone": "warn"}, {"code": "3. loosen the cache", "state": ["7.7's wrong-answer rate"], "tone": "crit", "note": "trades correctness, not quality"}], "t": "diagram", "id": "dg-7_9-04-3"},
 
+
     { t: "code", lang: "text", title: "What teams actually do under pressure, in order",
       code: "1. lower fetch_k      -> 6.7 measured exact-term MRR falling\n                         from 1.000 to 0.875 at fetch 10\n2. drop the reranker  -> that class returns to 0.781\n3. loosen the cache   -> 7.7's wrong-answer rate rises\n4. shorten context    -> 7.3's effective k falls, recall 1.000 -> 0.929",
       caption: "Every one is a quality decision taken for a latency reason." },
@@ -79,6 +83,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "free", text: "The one that is free", sub: "6.8's finding is the scaling lesson too" },
 
     {"kind": "trace", "title": "The one that is free: more stages, half the latency", "caption": "`dense + rerank` is **1.456 s a query**. `hybrid + mmr + rerank` — **three more stages** — is **0.717 s**, less than half. This is 6.8's finding stated as a deployment fact rather than an ablation result: **MMR narrows the candidate set before the cross-encoder runs, so the expensive stage does fewer forward passes**, and the cheap stages that enable that cost a handful of dot products. **The only optimisation in this module that costs nothing and trades nothing.**", "left": "pipeline", "codeW": 200, "vars": ["latency per query"], "steps": [{"code": "dense + rerank", "state": ["1.456 s"], "tone": "crit"}, {"code": "hybrid + mmr + rerank", "state": ["0.717 s"], "changed": [0], "tone": "good", "note": "three more stages"}], "t": "diagram", "id": "dg-7_9-05-4"},
+
 
     { t: "code", lang: "text", title: "Reordering, not reducing",
       code: "dense + rerank          1.456 s/query\nhybrid + mmr + rerank   0.717 s/query   <- more stages, half the latency",

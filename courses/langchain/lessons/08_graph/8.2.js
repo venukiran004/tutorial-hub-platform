@@ -11,6 +11,8 @@ EC.receiveLesson({
   prerequisites: ["8.1"],
   blocks: [
     { t: "h2", n: "01", id: "minimum", text: "The minimum viable graph", sub: "A node returns a partial update" },
+
+    {"kind": "flow", "title": "A node returns the keys it wants to change, not a state", "caption": "**That distinction organises the rest of the module.** A node returns **a dict of the keys it wants to change**, and the runtime merges it into the state according to each key's reducer. **It does not return a state object** — and 8.5 shows what goes wrong when you treat it as though it does, which is three separate mistakes all stemming from the same misreading.", "cols": 3, "nodes": [{"id": "n", "label": "A node receives the whole state", "sub": "every key", "tone": "accent"}, {"id": "r", "label": "And returns a partial dict", "sub": "only what it changes", "tone": "violet"}, {"id": "m", "label": "The runtime merges it", "sub": "per key, via its reducer", "tone": "violet"}, {"id": "s", "label": "Not a state object", "sub": "which is the misreading", "tone": "crit"}, {"id": "t", "label": "8.5's three mistakes come from it", "sub": "all from this one confusion", "tone": "teal"}], "edges": [["n", "r"], ["r", "m"], ["m", "s"], ["s", "t"]], "t": "diagram", "id": "dg-8_2-01-1"},
     { t: "code", lang: "python", title: "Schema, node, edges, compile",
       code: 'class S(TypedDict):\n    value: int\n\ndef add_one(state: S):\n    return {"value": state["value"] + 1}\n\ng = StateGraph(S)\ng.add_node("add_one", add_one)\ng.add_edge(START, "add_one")\ng.add_edge("add_one", END)\napp = g.compile()',
       out: "  result : {'value': 2}",
@@ -35,6 +37,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Three malformed inputs",
       code: "a key not in the schema    accepted -> {'value': 2}\nthe wrong type for a key   RAISED TypeError: can only concatenate str (not \"int\") to str\na missing required key     RAISED KeyError: 'value'",
       caption: "Only the first is the runtime speaking." },
@@ -43,6 +46,8 @@ EC.receiveLesson({
       { t: "p", text: "The other two raised from inside the node: a `TypeError` because the node computed `\"not an int\" + 1`, and a `KeyError` because the node looked up an absent key. The runtime passed both straight through. So a `TypedDict` schema is a **key filter plus a reducer registry**, and type errors surface wherever the value is eventually *used* \u2014 which may be several nodes downstream of the one that wrote it." }
     ] },
     { t: "h2", n: "03", id: "dropped", text: "The silent drop", sub: "The one worth knowing" },
+
+    {"kind": "flow", "title": "An undeclared key is accepted and dropped, silently", "caption": "A node returning a key the schema does not declare **does not raise.** The update is accepted, the key is dropped, and the resulting state looks exactly as it would if the node had returned `{}`. Which makes a typo in a key name **invisible**: the node ran, no error appeared, and the value it computed is simply gone — a failure shape this course has met repeatedly, and one `TypedDict` cannot catch because it is not checked at runtime.", "cols": 3, "nodes": [{"id": "r", "label": "Return an undeclared key", "sub": "a typo, usually", "tone": "crit"}, {"id": "a", "label": "Accepted", "sub": "no exception", "tone": "crit"}, {"id": "d", "label": "And dropped", "sub": "the value is gone", "tone": "crit"}, {"id": "i", "label": "Indistinguishable from returning {}", "sub": "in the resulting state", "tone": "crit"}, {"id": "t", "label": "TypedDict cannot catch it", "sub": "it is not checked at runtime", "tone": "warn"}], "edges": [["r", "a"], ["a", "d"], ["d", "i"], ["i", "t"]], "t": "diagram", "id": "dg-8_2-03-2"},
     { t: "code", lang: "python", title: "A node returning an undeclared key",
       code: 'class S2(TypedDict):\n    value: int\n\ndef rogue(state: S2):\n    return {"value": 1, "undeclared": "hello"}',
       out: "  node returns an undeclared key:\n    accepted -> {'value': 1}",
@@ -52,6 +57,8 @@ EC.receiveLesson({
       { t: "p", text: "And it is invisible from inside the node: its unit test passes, because the test asserts on the returned dict (8.5) rather than on what the runtime did with it. The only way to see it is to stream with `mode=\"updates\"` (8.9) and notice the key is absent from the state." }
     ] },
     { t: "h2", n: "04", id: "pydantic", text: "Pydantic, for the validation TypedDict does not do", sub: "And it changes every node" },
+
+    {"kind": "trace", "title": "Pydantic raises where TypedDict accepts", "caption": "A Pydantic state model validates on the way in: **a wrong type and a missing key both raise `ValidationError`.** The proportionate default is **`TypedDict` for a graph whose callers you control, and Pydantic when the state crosses a boundary you do not** — an API, a queue, a persisted checkpoint from an older schema version. **The same reasoning 4.7 applied to structured output: validate where the data stops being yours.**", "left": "input", "codeW": 170, "vars": ["with Pydantic"], "steps": [{"code": "valid", "state": ["{'value': 2}"], "tone": "good"}, {"code": "wrong type", "state": ["ValidationError: not an integer"], "changed": [0], "tone": "good", "note": "TypedDict accepts it"}, {"code": "missing key", "state": ["ValidationError: field required"], "tone": "good", "note": "TypedDict accepts it"}], "t": "diagram", "id": "dg-8_2-04-3"},
     { t: "code", lang: "python", title: "The node body changes",
       code: 'from pydantic import BaseModel\n\nclass SP(BaseModel):\n    value: int\n\ndef p_node(state: SP):\n    return {"value": state.value + 1}   # state.value, NOT state["value"]',
       out: "  valid input        : {'value': 2}\n  wrong type         : RAISED ValidationError: Input should be a valid integer\n  missing key        : RAISED ValidationError: Field required",
@@ -62,6 +69,8 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "The proportionate default is `TypedDict` for a graph whose callers you control, and Pydantic when the state crosses a boundary you do not \u2014 an API, a queue, a persisted checkpoint from an older version. That is the same reasoning 4.7 applied to structured output: validate where the data stops being yours." },
     { t: "h2", n: "05", id: "interface", text: "The state is the interface between nodes", sub: "And it has no private part" },
+
+    {"kind": "flow", "title": "The schema is the only contract between nodes", "caption": "A node receives the whole state and returns a partial update, so **the schema is the only contract between nodes. There is no other channel: no arguments, no return value another node reads, no shared object.** Which is a strong property — every dependency is in one declaration — and 8.5 shows its cost: because a node receives *everything*, the schema says what is *available* rather than what each node actually uses.", "cols": 3, "nodes": [{"id": "s", "label": "The state schema", "sub": "one declaration", "tone": "violet"}, {"id": "n", "label": "No arguments between nodes", "sub": "none at all", "tone": "accent"}, {"id": "r", "label": "No return value another node reads", "sub": "and no shared object", "tone": "accent"}, {"id": "o", "label": "So it is the only contract", "sub": "every dependency is in it", "tone": "good"}, {"id": "c", "label": "And it says available, not used", "sub": "which is 8.5's cost", "tone": "warn"}], "edges": [["n", "o"], ["r", "o"], ["s", "o"], ["o", "c"]], "t": "diagram", "id": "dg-8_2-05-4"},
     { t: "p", text: "A node receives the whole state and returns a partial update, so the schema is the **only** contract between nodes. There is no other channel: no arguments, no return value another node reads, no shared object." },
     { t: "callout", kind: "warn", title: "Every key is effectively public", body: [
       { t: "p", text: "Every key in the schema is a field shared by every node, so a key added for one node's convenience is visible to all of them \u2014 and so is a key added for debugging." },

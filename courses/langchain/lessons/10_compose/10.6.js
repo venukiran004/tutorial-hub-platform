@@ -38,6 +38,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "h3", text: "1. The silently dropped key" },
     { t: "code", lang: "text", title: "A node with a typo in its returned key",
       code: "the node's own test passes: typo({'value': 0}) -> {'valu': 99}\nthe graph says:                                    {'value': 0}",

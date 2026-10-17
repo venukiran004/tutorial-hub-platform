@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Different questions that score high",
       code: "0.8762   is retention 30 days               | is retention 90 days\n0.8703   how do I cancel my annual plan     | how do I cancel my monthly plan\n0.8304   can I store data in the EU region  | can I store data in the US region",
       caption: "Each differs in a single token that decides the whole answer." },
@@ -43,6 +44,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "The usable row is a high threshold and a low hit rate", "caption": "Read the sweep for its usable row rather than its summary statistic. **At 0.40 the cache serves 8 wrong answers. At 0.90 it serves zero and misses five of eight genuine repeats.** A high threshold and a low hit rate is **the correct operating point when one of your two errors is telling a user something false** — and §03 is why those two errors cannot be traded off against each other on a single axis.", "left": "threshold", "codeW": 130, "vars": ["hits", "correct", "WRONG served", "repeats missed"], "steps": [{"code": "0.40", "state": ["14", "6", "8", "2"], "tone": "crit"}, {"code": "0.60", "state": ["11", "3", "8", "5"], "tone": "crit"}, {"code": "0.70", "state": ["6", "3", "3", "5"], "tone": "warn"}, {"code": "0.85", "state": ["5", "3", "2", "5"], "tone": "warn"}, {"code": "0.90", "state": ["3", "3", "0", "5"], "changed": [2], "tone": "good", "note": "the usable row"}], "t": "diagram", "id": "dg-7_7-02-1"},
 
+
     { t: "code", lang: "text", title: "Eight paraphrase pairs against eight near-misses",
       code: "threshold   hits   correct   WRONG served   genuine repeats MISSED\n0.40        14     6         8              2\n0.50        12     4         8              4\n0.60        11     3         8              5\n0.70        6      3         3              5\n0.80        6      3         3              5\n0.85        5      3         2              5\n0.90        3      3         0              5\n0.95        2      2         0              6\n\nAUC of similarity as a paraphrase classifier: 0.375",
       caption: "No row has zero of both." },
@@ -54,6 +56,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "asymmetry", text: "The two errors are not comparable", sub: "Which decides how to tune" },
 
     {"kind": "flow", "title": "A miss costs latency; a wrong hit is a specific false statement", "caption": "**A miss costs latency** — you do work you would have done anyway and the user gets a correct answer slightly later. **A wrong hit serves a confidently wrong answer to a different question, with a citation, and the user has no way to tell.** *\"Is retention 30 days\"* answered from the entry for *\"is retention 90 days\"* is not a degraded answer: it is **a specific false statement about a data policy, delivered with a citation to a real document, to a user who asked a precise question.**", "cols": 3, "nodes": [{"id": "m", "label": "A miss", "sub": "the work you would have done", "tone": "good"}, {"id": "l", "label": "Costs latency", "sub": "a correct answer, later", "tone": "good"}, {"id": "w", "label": "A wrong hit", "sub": "a different question's answer", "tone": "crit"}, {"id": "f", "label": "A specific false statement", "sub": "about a data policy", "tone": "crit"}, {"id": "c", "label": "With a citation to a real document", "sub": "so it looks verified", "tone": "crit"}, {"id": "n", "label": "And no way for the user to tell", "sub": "so they are not comparable errors", "tone": "crit"}], "edges": [["m", "l"], ["w", "f"], ["f", "c"], ["c", "n"]], "t": "diagram", "id": "dg-7_7-03-2"},
+
 
     { t: "dl", items: [
       ["a miss", "Costs latency. You do the work you would have done anyway, and the user gets a correct answer slightly later."],
@@ -68,6 +71,7 @@ EC.receiveLesson({
 
     {"kind": "matrix", "title": "Three caches carry no risk, and they are keyed on exact text", "caption": "The pattern is visible down the key column: **the three safe caches are keyed on exact text and the dangerous one is keyed on an embedding.** Exact keying cannot join two different questions, which is the entire source of §03's risk. And the reranker-score row is the one worth taking first: **~1362 ms saved, keyed on a (query, document) pair, with stale documents as the only failure mode** — the best ratio of saving to risk anywhere in this module.", "cols": ["Key", "Risk if wrong", "Saves"], "rows": ["Query embedding", "Retrieval result", "Reranker scores", "Final answer"], "cells": [[{"text": "exact query text", "tone": "good"}, {"text": "none - deterministic", "tone": "good"}, "~104 ms"], [{"text": "exact query text", "tone": "good"}, "stale documents only", "~105 ms"], [{"text": "(query, doc) pair", "tone": "good"}, "stale documents only", {"text": "~1362 ms", "tone": "good"}], [{"text": "query EMBEDDING", "tone": "crit"}, {"text": "a wrong answer", "tone": "crit"}, "everything"]], "t": "diagram", "id": "dg-7_7-04-3"},
 
+
     { t: "table", head: ["layer", "key", "risk if wrong", "saves"], rows: [
       ["query embedding", "**exact** query text", "none \u2014 deterministic", "~104 ms"],
       ["retrieval result", "**exact** query text", "stale documents only", "~105 ms"],
@@ -81,6 +85,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "stale", text: "And if you do cache answers", sub: "The expiry nobody designs for" },
 
     {"kind": "flow", "title": "Two expiry conditions, and almost nobody implements the second", "caption": "A cached answer **was grounded in documents that can change** (7.5), so it has **two** expiry conditions: **time, which everyone implements**, and **source change — any cited document was edited or deleted — which almost nobody does.** And 5.7's citation requirement is what makes the second one computable at all: the cache entry knows which documents it depended on, so a document edit can invalidate exactly the entries that cited it.", "cols": 3, "nodes": [{"id": "a", "label": "A cached answer", "sub": "grounded in documents", "tone": "accent"}, {"id": "t", "label": "Expires on time", "sub": "everyone implements this", "tone": "good"}, {"id": "s", "label": "And on source change", "sub": "almost nobody does", "tone": "crit"}, {"id": "c", "label": "The entry knows what it cited", "sub": "because 5.7 required citations", "tone": "violet"}, {"id": "i", "label": "So an edit invalidates exactly those", "sub": "computable, and cheap", "tone": "good"}], "edges": [["a", "t"], ["a", "s"], ["s", "c"], ["c", "i"]], "t": "diagram", "id": "dg-7_7-05-4"},
+
 
     { t: "p", text: "A cached answer was grounded in documents that can change (7.5), so it has **two** expiry conditions: time, which everyone implements, and **source change** \u2014 any cited document was edited or deleted \u2014 which almost nobody does." },
     { t: "callout", kind: "mental", title: "5.7's citation requirement, collecting a third time", body: [

@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["", "control flow", "you write"], rows: [
       ["workflow", "**you** wrote it", "the structure; the model fills in steps"],
       ["agent", "the **model** decides it", "the tools; the model chooses and sequences"]

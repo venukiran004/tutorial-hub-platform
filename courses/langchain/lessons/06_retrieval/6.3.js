@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "math", tex: "\\mathrm{score}(q,d) = \\sum_{t \\in q} \\mathrm{IDF}(t) \\cdot \\frac{f(t,d)\\,(k_1+1)}{f(t,d) + k_1\\left(1 - b + b\\,\\frac{|d|}{\\mathrm{avgdl}}\\right)}" },
     { t: "code", lang: "python", title: "The implementation",
       code: 'def idf(self, t):\n    n = self.df.get(t, 0)\n    return math.log((self.N - n + 0.5) / (n + 0.5) + 1.0)\n\ndef score(self, query, i):\n    d = self.docs[i]\n    total = 0.0\n    for t in tok(query):\n        f = d.count(t)\n        if f == 0:\n            continue\n        num = f * (self.k1 + 1)\n        den = f + self.k1 * (1 - self.b + self.b * self.dl[i] / self.avgdl)\n        total += self.idf(t) * num / den\n    return total',
@@ -39,6 +40,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Ranks 5 through 41 are tied at zero, and their order is the sort's accident", "caption": "**Only 4 of 41 documents score above zero** for a two-term query, because most contain neither term. So ranks 5 through 41 are **all tied at 0.0000, and their order is whatever the sort happened to produce** — which matters the moment anything reads beyond the top few: a `fetch_k` of 20 over BM25 returns 4 ranked documents and 16 arbitrary ones, and a fusion step downstream will treat rank 7 as meaningfully better than rank 12.", "cols": 3, "nodes": [{"id": "q", "label": "A two-term query", "sub": "over 41 documents", "tone": "accent"}, {"id": "n", "label": "4 score above zero", "sub": "most contain neither term", "tone": "violet"}, {"id": "t", "label": "37 tied at 0.0000", "sub": "order = the sort's accident", "tone": "crit"}, {"id": "f", "label": "fetch_k=20 returns 16 arbitrary ones", "sub": "indistinguishable from ranked", "tone": "crit"}, {"id": "u", "label": "And fusion will trust those ranks", "sub": "rank 7 over rank 12", "tone": "crit"}], "edges": [["q", "n"], ["n", "t"], ["t", "f"], ["f", "u"]], "t": "diagram", "id": "dg-6_3-02-1"},
 
 
+
     { t: "p", text: "Only **4 of 41** documents score above zero for that two-term query \u2014 most contain neither term. So ranks 5 through 41 are all tied at 0.0000, and their order is whatever the sort happened to produce." },
     { t: "callout", kind: "trap", title: "Comparing two rankings over a tied tail tells you nothing", body: [
       { t: "p", text: "Two orderings derived from the **same scores** can differ, purely because one sorted `(score, index)` descending and the other used `argsort` ascending by index. A `mine[:5] == ref[:5]` check will pass or fail depending on which tie-break each path happened to use." },
@@ -47,6 +49,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "idf", text: "Two IDF variants", sub: "And the surprise is where they differ" },
 
     {"kind": "matrix", "title": "Two IDF variants, and one of them can go negative", "caption": "The difference is a `+ 1` inside the logarithm, and it decides whether a score can be negative. **The Lucene-style formula is always positive. `BM25Okapi`'s crosses zero at df = N/2** — so a term appearing in more than half the corpus gets a *negative* weight, meaning a document containing it scores **worse** than one that does not. §04 shows what that does on a small corpus, where df = N/2 is reached easily.", "cols": ["Formula", "Sign"], "rows": ["Lucene-style", "BM25Okapi"], "cells": [["log((N - df + 0.5) / (df + 0.5) + 1)", {"text": "always positive", "tone": "good"}], ["log((N - df + 0.5) / (df + 0.5))", {"text": "crosses zero at df = N/2", "tone": "crit"}]], "t": "diagram", "id": "dg-6_3-03-2"},
+
 
 
     { t: "table", head: ["", "Formula", "Sign"], rows: [
@@ -65,6 +68,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "A term in half the corpus makes the query unanswerable", "caption": "With the term in **1 of 2** documents the Okapi IDF is exactly `log(1.5 / 1.5) = log(1) = 0`, so **both documents score 0.0 and the query is unanswerable.** With it in **2 of 2** the IDF is negative, and the epsilon floor is computed from the average IDF — **which is itself negative here** — so the \"floor\" is negative too and both documents score below zero. Neither case raises; both produce a ranking with no information in it.", "cols": 3, "nodes": [{"id": "h", "label": "The term in 1 of 2 documents", "sub": "df = N/2 exactly", "tone": "warn"}, {"id": "z", "label": "IDF = log(1) = 0", "sub": "both score 0.0", "tone": "crit"}, {"id": "a", "label": "The term in 2 of 2", "sub": "df > N/2", "tone": "warn"}, {"id": "n", "label": "IDF negative, and so is the floor", "sub": "the floor is the average IDF", "tone": "crit"}, {"id": "r", "label": "Neither raises", "sub": "a ranking with no information", "tone": "crit"}], "edges": [["h", "z"], ["a", "n"], ["z", "r"], ["n", "r"]], "t": "diagram", "id": "dg-6_3-04-3"},
 
 
+
     { t: "code", lang: "text", title: "Two documents, one query term",
       code: "term in 1 of 2  ('sat')\n  raw Okapi idf       : 0.0000\n  rank_bm25 idf used  : 0.0000\n  rank_bm25 get_scores: [0.0, 0.0]\n  my idf              : 0.6931\n\nterm in 2 of 2  ('sat')\n  raw Okapi idf       : -1.6094\n  rank_bm25 idf used  : -0.1006\n  rank_bm25 get_scores: [-0.1006, -0.1006]\n  my idf              : 0.1823",
       caption: "In the first case one document plainly contains the word and both score zero." },
@@ -76,6 +80,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "k1b", text: "What k1 and b control", sub: "And why they do nothing here" },
 
     {"kind": "matrix", "title": "Both tuning parameters do nothing on this corpus, for stated reasons", "caption": "This is the measurement that stops a pointless sweep. **`k1` does nothing because every matched term appears exactly once** — the term-frequency distribution over all matches is `{1: 13}`, and with `f = 1` the saturation factor multiplies every term in every document by the same amount, so the **order** is unchanged. **`b` does nothing because the documents are the same length**: min 17, mean 25.5, max 39 tokens, standard deviation 4.5. `b` normalises by `|d| / avgdl`, and there is nothing to correct.", "cols": ["Why it does nothing here"], "rows": ["k1", "b"], "cells": [[{"text": "every matched term appears once: tf distribution is {1: 13}", "tone": "violet"}], [{"text": "lengths are 17 to 39 tokens, sd 4.5 - nothing to normalise", "tone": "violet"}]], "t": "diagram", "id": "dg-6_3-05-4"},
+
 
 
     { t: "code", lang: "text", title: "Six settings, six identical rows",
@@ -95,6 +100,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "limits", text: "What BM25 fixes and what it cannot", sub: "The mirror image of 6.2" },
 
     {"kind": "flow", "title": "The one failure left after BM25, and no parameter reaches it", "caption": "The worst single case is `I forgot my password`, which scores above zero on **0 of 41 documents.** The relevant document says *\"Credential recovery … signed recovery link\"* and **contains neither *forgot* nor *password*.** No value of `k1` or `b` reaches that, because **the term is not in the document at all** — which makes it the complement of 6.2's dense failure rather than a weakness of BM25. Dense bridges vocabulary and misses exact terms; BM25 does exactly the reverse, which is the argument for 6.4.", "cols": 3, "nodes": [{"id": "q", "label": "'I forgot my password'", "sub": "the user's words", "tone": "accent"}, {"id": "d", "label": "The document says 'credential recovery'", "sub": "neither term appears", "tone": "crit"}, {"id": "z", "label": "0 of 41 score above zero", "sub": "nothing to rank", "tone": "crit"}, {"id": "p", "label": "No k1 or b reaches it", "sub": "the term is absent", "tone": "crit"}, {"id": "c", "label": "And dense got this one right", "sub": "the exact complement", "tone": "good"}], "edges": [["q", "d"], ["d", "z"], ["z", "p"], ["p", "c"]], "t": "diagram", "id": "dg-6_3-06-5"},
+
 
 
     { t: "code", lang: "text", title: "Both query classes",

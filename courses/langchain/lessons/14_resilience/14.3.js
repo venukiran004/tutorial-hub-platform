@@ -37,6 +37,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "The key the node saw on each of its three attempts",
       code: "[None, None, None]\nemails sent: 3",
       caption: "It was written on attempt 1 and attempt 2 still saw `None`." },

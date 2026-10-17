@@ -53,6 +53,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "dl", items: [
       ["**retry**", "The error is transient **and** the step is idempotent (14.2, 14.3). Automatic, bounded, no human."],
       ["**degrade**", "A partial answer is useful **and** can be labelled (14.5). Automatic, and the user is told."],

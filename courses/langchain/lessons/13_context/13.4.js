@@ -31,6 +31,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Two levels",
       code: "level 1 -- four segment summaries:\n  34 tok  Turns 1-4: customer reported a duplicate charge on order O...\n  18 tok  Turns 5-8: payments team investigating; customer confirmed...\n  16 tok  Turns 9-12: reversal scheduled; customer asked about the t...\n  17 tok  Turns 13-16: customer asked whether the card would be char...\n  total: 85 tokens\n\nlevel 2 -- one summary of those four:\n  46 tokens\n  facts kept: ['order id', 'the amount', 'the card', 'the date']",
       caption: "85 tokens of summaries became 46 \u2014 and the cost stops growing." },

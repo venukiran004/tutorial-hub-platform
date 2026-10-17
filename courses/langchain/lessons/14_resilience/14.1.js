@@ -31,6 +31,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "What each one actually does",
       code: "surface                     signal   what you actually get\nthe model call              RAISES   RuntimeError\na tool raising              RAISES   ValueError\na tool called wrongly       SILENT   ToolMessage status='error'\nan undeclared state key     SILENT   returned keys: ['known']\nthe graph looping           RAISES   GraphRecursionError\nthe process dying           RAISES   state survives: done=['a'] next=('b',)",
       caption: "The tool row **splits in two**, which is the finding." },

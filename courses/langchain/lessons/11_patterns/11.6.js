@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "The trace",
       code: "planned 3 steps\nstep 1: 'look up the refund window'\nstep 2: 'look up the payment destination'\nstep 3: 'write the answer'\n\nplanner calls: 1\nworker calls : 3\ntotal        : 4",
       caption: "One planning call, then one call per step." },

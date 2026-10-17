@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "9 spans from two model calls",
       code: "chain LangGraph\n  chain agent\n    llm   model\n    chain route\n  chain tools\n    tool  get_order\n  chain agent\n    llm   model\n    chain route\n\nby kind: [('chain', 6), ('llm', 2), ('tool', 1)]",
       caption: "Collected with a `BaseCallbackHandler` recording `run_id` and `parent_run_id`." },
