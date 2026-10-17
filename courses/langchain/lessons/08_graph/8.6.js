@@ -28,6 +28,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Both increment, and both report what they saw",
       code: 'class S2(TypedDict):\n    counter: Annotated[int, operator.add]\n    saw: Annotated[List[str], operator.add]\n\ndef left(state):\n    return {"counter": 1, "saw": ["left saw counter=%d" % state["counter"]]}\n\ndef right(state):\n    return {"counter": 1, "saw": ["right saw counter=%d" % state["counter"]]}',
       out: "    left saw counter=0\n    right saw counter=0\n    after saw counter=2\n    final counter = 2",

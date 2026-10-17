@@ -22,6 +22,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "values \u2014 the full state after each superstep",
       code: "1. {'n': 1, 'trace': []}\n2. {'n': 2, 'trace': ['a']}\n3. {'n': 20, 'trace': ['a', 'b']}",
       caption: "Three chunks for two nodes \u2014 the first is the **input** state." },

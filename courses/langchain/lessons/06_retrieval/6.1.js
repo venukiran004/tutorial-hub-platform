@@ -29,6 +29,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Measured on this machine, 41 documents",
       code: "ONE-OFF, reused by every query afterwards\n  embedding all 41  documents            2915.8 ms\n\nPER QUERY, fixed -- paid once whatever the corpus size\n  encoding the query                     104.5 ms\n\nPER QUERY, scales with documents scored\n  vector search over 41  precomputed     0.082 ms   (0.00200 ms/doc)\n  cross-encoding 20  candidates         1362.1 ms   (68.10 ms/doc)\n  cross-encoding all 41  documents      3036.8 ms   (74.07 ms/doc)",
       caption: "CPU timings, illustrative in absolute terms. The **ratio** is the durable result." },

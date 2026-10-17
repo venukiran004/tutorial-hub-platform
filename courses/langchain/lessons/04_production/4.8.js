@@ -11,11 +11,17 @@ EC.receiveLesson({
   prerequisites: ["1.2", "3.6"],
   blocks: [
     { t: "h2", n: "01", id: "deterministic", text: "A scripted model makes assertion possible", sub: "Which it otherwise is not" },
+
+    {"kind": "flow", "title": "The machinery is deterministic once the token generation is", "caption": "This is why the course runs on a scripted model at all, and **the same technique is what makes a test suite possible.** Everything around the model — prompt rendering, trimming, parsing, routing, retries, the message list — is ordinary deterministic code. Replace the one non-deterministic component with a script and **all of it becomes assertable**, which is a far larger share of a real system than people expect.", "cols": 3, "nodes": [{"id": "m", "label": "The model is the only non-determinism", "sub": "everything else is code", "tone": "violet"}, {"id": "s", "label": "Script its output", "sub": "FakeChatModel(script=[...])", "tone": "good"}, {"id": "a", "label": "Now the machinery is assertable", "sub": "prompts, trimming, parsing, routing", "tone": "good"}, {"id": "l", "label": "Which is most of a real system", "sub": "more than people expect", "tone": "teal"}], "edges": [["m", "s"], ["s", "a"], ["a", "l"]], "t": "diagram", "id": "dg-4_8-01-1"},
+
     { t: "code", lang: "text", title: "Three invocations",
       code: "three invocations: ['a fixed answer', 'a fixed answer', 'a fixed answer']\nall identical: True",
       caption: "With a real model the only safe assertion is about shape, not content." },
     { t: "p", text: "This is why the course runs on a scripted model at all, and the same technique is what makes a test suite possible: the machinery is deterministic once the token generation is." },
     { t: "h2", n: "02", id: "best", text: "The assertion that catches the most", sub: "On the resolved message list" },
+
+    {"kind": "trace", "title": "The assertion that catches the most is about the prompt, not the answer", "caption": "Three assertions on what the model **received** rather than what it returned: the message count, the system message surviving unchanged, and the question actually interpolated. That last one is 1.3's silent failure caught — **an unapplied partial sends the literal `{tone}` and produces a plausible answer**, so asserting on the answer passes and asserting on the prompt does not. **Testing the input is where the cheap bugs are.**", "left": "assertion", "codeW": 240, "vars": ["result"], "steps": [{"code": "the model received 2 messages", "state": ["True"], "tone": "good"}, {"code": "the system message is unchanged", "state": ["True"], "tone": "good", "note": "catches 3.6's trimming bug"}, {"code": "the question was interpolated", "state": ["True"], "changed": [0], "tone": "violet", "note": "catches 1.3's silent partial"}], "t": "diagram", "id": "dg-4_8-02-2"},
+
     { t: "code", lang: "python", title: "Asserting on what was sent",
       code: 'm = FakeChatModel(script=["ok"])\n(PROMPT | m | StrOutputParser()).invoke({"q": "the question"})\nsent = m.seen[0]\n\nassert len(sent) == 2\nassert sent[0].content == "You are terse."          # system message intact\nassert "the question" in sent[1].content           # variable interpolated',
       out: "assert the model received 2 messages      -> True\nassert the system message is unchanged    -> True\nassert the question was interpolated      -> True",
@@ -26,6 +32,9 @@ EC.receiveLesson({
       { t: "p", text: "None of the three raises an exception, and all three produce plausible-looking answers. All three are caught by asserting on the list, which is why it is the highest-value test available." }
     ] },
     { t: "h2", n: "03", id: "three", text: "Three kinds of test", sub: "And what each can assert" },
+
+    {"kind": "matrix", "title": "Three kinds of test, and only one of them has a threshold", "caption": "**Deterministic** tests assert exact behaviour against a scripted model and either pass or fail — ordinary unit tests, and most of what this module can be tested with. **Property** tests assert something true for every input, which is how you check an invariant like *the system message survives trimming* without enumerating cases. **Evaluation** is the only one with a threshold and a trend, and therefore the only one that can be flaky by design.", "cols": ["Asserts", "Example"], "rows": ["Deterministic", "Property", "Evaluation"], "cells": [[{"text": "exact behaviour, scripted model", "tone": "good"}, "the model received these two messages"], [{"text": "something true for every input", "tone": "good"}, "the system message survives trimming"], [{"text": "quality, with a threshold and a trend", "tone": "warn"}, "answer helpfulness on a graded set"]], "t": "diagram", "id": "dg-4_8-03-3"},
+
     { t: "table", head: ["Kind", "Asserts", "Example"], rows: [
       ["deterministic", "exact behaviour, with a scripted model", "the model received these two messages"],
       ["property", "something true for every input", "the system message survives trimming"],
@@ -39,6 +48,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "cannot", text: "What a scripted model cannot test", sub: "And why the split matters" },
 
     {"kind": "steps", "title": "The highest-value test asserts on what the model was sent", "caption": "1.2 established that the chain's source is not evidence about the request — only the resolved message list is. A scripted model makes that list available, which turns prompt construction from something you read into something you assert on.", "items": [{"label": "script the model", "desc": "a FakeChatModel that records every message list it receives", "tone": "accent", "code": "no API key"}, {"label": "invoke the real chain", "desc": "the prompt, the parser and the composition are all genuine", "tone": "good", "code": "real machinery"}, {"label": "assert on model.seen[0]", "desc": "the system message, the retrieved context, the question — as actually sent", "tone": "good", "code": "the point"}, {"label": "assert on the parsed result", "desc": "and on what happens when the scripted reply is malformed (1.4)", "tone": "violet", "code": "both halves"}], "t": "diagram", "id": "dg-4_8-04-0"},
+
+
 
 
 

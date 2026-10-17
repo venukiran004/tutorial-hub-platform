@@ -15,6 +15,8 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Six inputs in the time of one, three ways, all identical", "caption": "`abatch` over six inputs takes **0.107 s against 0.106 s for a single `ainvoke`** — and hand-rolled `asyncio.gather` matches it exactly. Which is the useful negative result: **`abatch` is not doing anything cleverer than `gather`, and it is not doing anything worse.** So the choice between them is about whose code you would rather read, and the reason to reach for async at all is not throughput, which §04 is about.", "left": "call", "codeW": 190, "vars": ["time", "results"], "steps": [{"code": "ainvoke, one input", "state": ["0.106 s", "1"], "tone": "accent"}, {"code": "abatch, six inputs", "state": ["0.107 s", "6"], "changed": [1], "tone": "good", "note": "the same wall clock"}, {"code": "asyncio.gather, six", "state": ["0.106 s", "6"], "tone": "good", "note": "no cleverer, no worse"}], "t": "diagram", "id": "dg-2_8-01-1"},
 
 
+
+
     { t: "code", lang: "python", title: "ainvoke, abatch, gather",
       code: 'one = await chain.ainvoke({"q": "a"})\nmany = await chain.abatch([{"q": c} for c in "abcdef"])\ngathered = await asyncio.gather(*[chain.ainvoke({"q": c}) for c in "abcdef"])',
       out: "ainvoke, one input        : 0.106 s  -> 'answer'\nabatch, six inputs        : 0.107 s  -> 6 results\nasyncio.gather, six       : 0.106 s  -> 6 results",
@@ -26,6 +28,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "trap", text: "The loop that looks concurrent", sub: "The same trap as 1.2, with a keyword in front of it" },
 
     {"kind": "timeline", "title": "Awaiting in a loop is serial", "caption": "The same trap as batching, wearing a different keyword. `for i in ...: await chain.ainvoke(...)` awaits each call before starting the next, so four 100 ms calls took **0.407 s**. `asyncio.gather` overlaps them and the cost becomes the maximum rather than the sum.", "span": 420, "tick": 100, "unit": "milliseconds", "lanes": [{"label": "await in a loop", "bars": [[0, 100, "1", "warn"], [100, 200, "2", "warn"], [200, 300, "3", "warn"], [300, 407, "4", "crit"]]}, {"label": "asyncio.gather", "bars": [[0, 103, "all four, concurrently", "good"]]}], "t": "diagram", "id": "dg-2_8-02-0"},
+
+
 
 
 
@@ -49,6 +53,8 @@ EC.receiveLesson({
     {"kind": "trace", "title": "ceil(n / limit) x latency, exactly — which makes it a sanity check", "caption": "Six inputs at 100 ms, swept over the concurrency limit, land on the arithmetic to three decimal places. **That is what makes it useful as a sanity check: if your measured time does not match `ceil(n / limit) × latency`, something else is in the path** — a shared connection pool, a provider-side queue, or a semaphore you forgot you had. And note what benchmarking cannot tell you: **the fastest setting is always the highest one**, so the number you want comes from the provider's documented rate limit divided across your workers.", "left": "max_concurrency", "codeW": 160, "vars": ["time", "waves"], "steps": [{"code": "1", "state": ["0.607 s", "6 of 1"], "tone": "crit"}, {"code": "2", "state": ["0.306 s", "3 of 2"], "changed": [0], "tone": "warn"}, {"code": "3", "state": ["0.206 s", "2 of 3"], "tone": "accent"}, {"code": "6", "state": ["0.106 s", "1 of 6"], "changed": [0], "tone": "good", "note": "always fastest - so do not benchmark"}], "t": "diagram", "id": "dg-2_8-03-2"},
 
 
+
+
     { t: "code", lang: "text", title: "Six 100 ms calls at four limits",
       code: 'max_concurrency=1    0.607 s   (6 waves of 1)\nmax_concurrency=2    0.306 s   (3 waves of 2)\nmax_concurrency=3    0.206 s   (2 waves of 3)\nmax_concurrency=6    0.106 s   (1 wave of 6)',
       caption: "Each timing is the wave count times the per-call latency, almost exactly." },
@@ -60,6 +66,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "when", text: "When async is worth it", sub: "And when it is overhead" },
 
     {"kind": "matrix", "title": "The sync API is already concurrent where it matters", "caption": "The honest summary: **`batch` uses a thread pool and `RunnableParallel` runs branches in parallel**, so three of these four rows need no async at all. Async matters most when **something else needs the thread** — a server handling other requests while this one waits on a model — which is a different reason from the one people usually give, and it is why adding async to a script buys nothing.", "cols": ["Worth it?"], "rows": ["Many independent inputs", "A web server under load", "A fan-out of several chains", "One call in a script"], "cells": [[{"text": "yes - but batch already does this without async", "tone": "accent"}], [{"text": "yes - async frees the worker while the model thinks", "tone": "good"}], [{"text": "no need - RunnableParallel is concurrent in the sync API", "tone": "warn"}], [{"text": "no - invoke is simpler and identical in speed", "tone": "crit"}]], "t": "diagram", "id": "dg-2_8-04-3"},
+
+
 
 
     { t: "table", head: ["Situation", "Worth it?"], rows: [

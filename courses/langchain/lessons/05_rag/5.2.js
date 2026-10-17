@@ -25,6 +25,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["Field", "What", "What it buys"], rows: [
       ["`source`", "which file or URL", "citation, and the only route back to the original"],
       ["`page` / offset", "where in it", "a citation that points at a page, not a document"],

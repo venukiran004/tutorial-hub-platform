@@ -35,6 +35,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Four pairs against the same query",
       code: 'pair                                           cosine\nhow do I reset my pass / credential recovery   0.3449\nhow do I reset my pass / how do I change my p  0.8768\nhow do I reset my pass / how do I reset my ro  0.5330\nhow do I reset my pass / the weather in Berli  -0.0018',
       caption: "Row 3 \u2014 \u201creset my router\u201d \u2014 outscores row 1, which is the genuinely relevant text." },

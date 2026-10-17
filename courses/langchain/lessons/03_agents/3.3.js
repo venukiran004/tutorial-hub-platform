@@ -22,6 +22,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "The agent loop in full",
       code: 'tool_map = {t.name: t for t in tools}\nmessages = [HumanMessage(question)]\n\nwhile True:\n    ai = model_with_tools.invoke(messages)\n    messages.append(ai)\n    if not ai.tool_calls:                 # no tools wanted -> done\n        break\n    for tc in ai.tool_calls:              # may be several in one turn\n        out = tool_map[tc["name"]].invoke(tc["args"])\n        messages.append(ToolMessage(content=str(out),\n                                    tool_call_id=tc["id"]))\n\nprint(ai.content)',
       hl: [7, 8],
@@ -33,6 +35,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "run", text: "Running it", sub: "Two tools, three model calls, six messages" },
 
     {"kind": "trace", "title": "2n + 2 messages, n + 1 model calls", "caption": "Each tool round adds **exactly two** messages — the model's request and the tool's answer — and the final answer adds one more. So the arithmetic is fixed: **a run with n tool rounds produces 2n + 2 messages and invokes the model n + 1 times.** Which is the formula to have when reading a bill or a trace, because it turns \"the agent took a while\" into a number of model calls you can check against the transcript length.", "left": "tool rounds", "codeW": 150, "vars": ["messages", "model calls"], "steps": [{"code": "0", "state": ["2", "1"], "tone": "good"}, {"code": "1", "state": ["4", "2"], "tone": "accent"}, {"code": "3", "state": ["8", "4"], "tone": "accent"}, {"code": "n", "state": ["2n + 2", "n + 1"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_3-02-1"},
+
+
     { t: "code", lang: "text", title: "A trace",
       code: 'step 1: call lookup_order {"order_id": "A-1"}        -> {"id": "A-1", "status": "shipped", "et\nstep 2: call calculate    {"expression": "3*19.99"}  -> 59.97\nstep 3: model answered -> Order A-1 shipped and arrives on the 12th. Three of them cost 59.97.\n\n6 messages in the final list, 3 model calls.',
       caption: "Human, AI+call, Tool, AI+call, Tool, AI. Two rounds plus the answer." },
@@ -40,6 +44,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "growth", text: "What the model saw each time", sub: "The cost model of every agent" },
 
     {"kind": "trace", "title": "Every model call re-sends the whole transcript", "caption": "Call 1 sends 1 message, call 2 sends 3, call 3 sends 5 — **the accumulated list, every time.** Which has a consequence worth stating plainly: **a tool returning a lot of text is expensive out of proportion to its usefulness**, because the result rides in every subsequent call. A tool that returns a 40 KB document and is used on step one is paid for again on steps two, three and four. 3.5 shows the same shape for conversation history and 13.1 prices it properly.", "left": "model call", "codeW": 140, "vars": ["messages sent", "contents"], "steps": [{"code": "1", "state": ["1", "Human"], "tone": "good"}, {"code": "2", "state": ["3", "Human, AI, Tool"], "changed": [0], "tone": "accent"}, {"code": "3", "state": ["5", "Human, AI, Tool, AI, Tool"], "changed": [0], "tone": "warn", "note": "a big tool result is paid for n times"}], "t": "diagram", "id": "dg-3_3-03-2"},
+
+
     { t: "code", lang: "text", title: "The input grows by two each call",
       code: 'call 1: 1 messages -> Human\ncall 2: 3 messages -> Human, AI, Tool\ncall 3: 5 messages -> Human, AI, Tool, AI, Tool',
       caption: "Each call re-sends everything before it." },
@@ -50,6 +56,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "missing", text: "What this loop is missing", sub: "Three things, and it is unsafe without them" },
 
     {"kind": "matrix", "title": "Three things missing, and all three are in 3.7", "caption": "The hand-written loop is worth writing **once**, so that every prebuilt agent afterwards is recognisable and so that when one misbehaves you know what it is doing. These three gaps are why you should not ship it. The first is the one with the misleading symptom: **a model that always asks for a tool never terminates**, and 3.7 shows that it fails with an error about *length* rather than about looping.", "cols": ["Consequence"], "rows": ["No iteration cap", "No error handling", "No unknown-tool guard"], "cells": [[{"text": "a model that always asks for a tool never terminates", "tone": "crit"}], [{"text": "one tool raising kills the whole run", "tone": "crit"}], [{"text": "a hallucinated name is a KeyError", "tone": "crit"}]], "t": "diagram", "id": "dg-3_3-04-3"},
+
+
     { t: "table", head: ["Missing", "Consequence"], rows: [
       ["no iteration cap", "a model that always asks for a tool never terminates"],
       ["no error handling", "a tool raising kills the whole run"],

@@ -15,6 +15,8 @@ EC.receiveLesson({
     {"kind": "trace", "title": "2.7x on three calls, and the shape is the commonest fan-out there is", "caption": "Three 100 ms calls sequentially is 0.310 s; the same three as a `RunnableParallel` is **0.115 s — 2.7×**, which is as close to the theoretical 3× as a thread pool and three identical latencies allow. Each branch receives **the same input** and produces one key of the output dict, and that shape — one input, several independent computations, a dict of results — is the single most common fan-out in LLM applications: summarise **and** classify **and** extract, all from one document.", "left": "how the three ran", "codeW": 200, "vars": ["time", "speedup"], "steps": [{"code": "one after another", "state": ["0.310 s", "1.0x"], "tone": "crit"}, {"code": "RunnableParallel", "state": ["0.115 s", "2.7x"], "changed": [0, 1], "tone": "good", "note": "three 100 ms calls"}, {"code": "the shape", "state": ["one input", "a dict of results"], "tone": "violet"}], "t": "diagram", "id": "dg-2_3-01-0"},
 
 
+
+
     { t: "code", lang: "python", title: "Three branches on the same input",
       code: 'branches = RunnableParallel(\n    summary=prompt | model | StrOutputParser(),\n    sentiment=prompt | model | StrOutputParser(),\n    topic=prompt | model | StrOutputParser())\n\nout = branches.invoke({"text: "some input"})',
       out: 'result : {\'summary\': \'a short summary\', \'sentiment\': \'positive\', \'topic\': \'technology\'}\ntime   : 0.115 s\n\nthe same three, run one after another: 0.310 s\nspeedup: 2.7x  (three 100 ms calls)',
@@ -56,6 +58,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Why you will almost never see RunnableParallel written out", "caption": "2.2 established the coercion; this is where it pays. **Because a dict in a pipe becomes a `RunnableParallel`, the fan-out idiom reads as data rather than as a constructor call** — `{'a': chain_a, 'b': chain_b} | next_step` instead of `RunnableParallel(a=chain_a, b=chain_b) | next_step`. Which is why you will almost never see the class named in a codebase **despite it being everywhere**, and why knowing the coercion is necessary to read the code at all.", "cols": 3, "nodes": [{"id": "w", "label": "What you write", "sub": "{'a': chain_a, 'b': chain_b}", "tone": "accent"}, {"id": "b", "label": "What it becomes", "sub": "RunnableParallel", "tone": "violet"}, {"id": "r", "label": "So the idiom reads as data", "sub": "not as a constructor", "tone": "good"}, {"id": "n", "label": "The class is almost never named", "sub": "despite being everywhere", "tone": "good"}, {"id": "k", "label": "So the coercion is required reading", "sub": "to read the code at all", "tone": "teal"}], "edges": [["w", "b"], ["b", "r"], ["r", "n"], ["n", "k"]], "t": "diagram", "id": "dg-2_3-03-1"},
 
 
+
+
     { t: "code", lang: "python", title: "Two ways to write the same thing",
       code: 'chain_a = RunnableParallel(ctx=retriever, q=RunnablePassthrough())\nchain_b = {"ctx": retriever, "q": RunnablePassthrough()}   # identical',
       out: "{'a':..., 'b':...} | fn -> {'a': 'HEY', 'b': 3}\nfirst step type         : RunnableParallel",
@@ -64,6 +68,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "limits", text: "What a fan-out cannot do", sub: "Three limits worth knowing before you reach for it" },
 
     {"kind": "flow", "title": "Independent in execution, atomic in result", "caption": "The all-or-nothing behaviour surprises people, because **a fan-out looks like independent work.** It is independent in execution and **atomic in result**: two branches succeeding and one raising gives you **an exception, not a partial dict.** The usual fix is per-branch `with_fallbacks` returning a sentinel — `None`, or an \"unavailable\" marker — so a degraded answer beats no answer. 14.5 generalises that as k-of-N degradation; here it is one method call per branch.", "cols": 3, "nodes": [{"id": "t", "label": "Three branches run concurrently", "sub": "genuinely independent", "tone": "good"}, {"id": "o", "label": "Two succeed, one raises", "sub": "", "tone": "warn"}, {"id": "e", "label": "You get an exception", "sub": "not a partial dict", "tone": "crit"}, {"id": "f", "label": "Per-branch with_fallbacks", "sub": "returning a sentinel", "tone": "good"}, {"id": "d", "label": "A degraded answer beats none", "sub": "14.5's k-of-N, in one method call", "tone": "good"}], "edges": [["t", "o"], ["o", "e"], ["e", "f"], ["f", "d"]], "t": "diagram", "id": "dg-2_3-04-2"},
+
+
 
 
     { t: "ul", items: [

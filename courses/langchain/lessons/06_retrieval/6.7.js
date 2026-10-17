@@ -47,6 +47,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "dl", items: [
       ["it can **promote** a document stage one misranked", "`Retry-After`: candidate rank 11 \u2192 1. This is why you buy it."],
       ["it can **demote** a document stage one got right", "`auth-reset`: rank 1 \u2192 3, at every depth. This is why you measure it per query class."],

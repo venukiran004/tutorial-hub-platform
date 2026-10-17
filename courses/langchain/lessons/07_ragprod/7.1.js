@@ -34,6 +34,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "AUC \u2014 the probability an answerable query outscores an unanswerable one",
       code: "signal              answerable  unanswerable  AUC     overlapping pairs\nabsolute top-1      0.4581      0.2187        0.943   4 of 70\ntop1 - top2 gap     0.1140      0.0664        0.614   27 of 70",
       caption: "1.0 is perfect separation; 0.5 is a coin flip." },

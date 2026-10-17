@@ -22,6 +22,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "A node that fails twice then succeeds",
       code: 'g.add_node("flaky", flaky, retry_policy=RetryPolicy(max_attempts=3,\n                                                    initial_interval=0.01))',
       out: "  the node raises RuntimeError twice, then succeeds:\n    RAISED RuntimeError: transient failure 1\n    the node body ran 1 time(s)",

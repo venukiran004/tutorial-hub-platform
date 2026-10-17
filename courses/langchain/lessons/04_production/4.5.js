@@ -22,11 +22,16 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Ten acquisitions at five per second",
       code: 'elapsed: 2.01 s\n\nI predicted ~1.0 s: five instant from a full bucket, then five more\nat 0.2 s each. the measurement says 2.01 s, which is 10 / 5 -- so\nEVERY acquisition waited for a token.',
       caption: "10 / 5 exactly. No request was free." },
     { t: "p", text: "The practical consequence is specific: a worker that does a burst of work immediately on boot gets **no** burst allowance for it and pays the full rate. If your job starts by firing twenty requests, those twenty are throttled from the first one." },
     { t: "h2", n: "02", id: "clock", text: "And the clock starts late", sub: "Which is why bucket size looked irrelevant" },
+
+    {"kind": "trace", "title": "max_bucket_size is the burst allowance after idle; the rate is what you settle to", "caption": "Five acquires, three bucket sizes. **A bucket of 1 is a strict metronome** — one free, then four waits, 0.81 s. A bucket of 5 absorbs the whole burst and costs **0.00 s**, then throttles afterwards. So the two parameters answer different questions: **the rate is your sustained throughput and the bucket is how much of a spike you can pass through without smoothing it.**", "left": "max_bucket_size", "codeW": 170, "vars": ["5 acquires took", "shape"], "steps": [{"code": "1", "state": ["0.81 s", "1 free, then 4 waits"], "tone": "warn", "note": "a strict metronome"}, {"code": "3", "state": ["0.41 s", "3 free, then 2 waits"], "changed": [0], "tone": "accent"}, {"code": "5", "state": ["0.00 s", "5 free, 0 waits"], "changed": [0], "tone": "good", "note": "the burst passes through"}], "t": "diagram", "id": "dg-4_5-02-1"},
+
     { t: "callout", kind: "insight", title: "The measurement that made no sense, and the source that explained it", body: [
       { t: "p", text: "Varying `max_bucket_size` across 1, 3 and 5 produced identical timings, which should be impossible if the bucket is a burst allowance. Sleeping longer before the burst did not help either." },
       { t: "p", text: "The implementation says why: `# initialize on first call to avoid a burst` \u2014 `self.last` is `None` until the first `acquire()`, so elapsed time is measured from the first request rather than from construction. Idle time before you ever call it accrues nothing, which is also why the bucket looked empty in the first measurement. It is deliberate and the comment states the intent." }
@@ -36,6 +41,9 @@ EC.receiveLesson({
       caption: "Now the burst allowance is exact: bucket size is how many go through instantly." },
     { t: "p", text: "So `max_bucket_size` is the burst allowance **after an idle period**, and the rate is what you settle to. A bucket of 1 is a strict metronome; a bigger bucket absorbs a spike and then throttles." },
     { t: "h2", n: "03", id: "why", text: "Why limit client-side at all", sub: "Rather than handling 429s" },
+
+    {"kind": "matrix", "title": "Five differences between handling 429s and not causing them", "caption": "Read down the right-hand column: **the request is never made, so there is nothing to bill, nothing to retry and no storm to have.** The second row is the one people do not expect — **a rejected request may still be billed**, depending on the provider and where the rejection happened. And the last two rows are the compounding pair: failures correlated across a burst are what turns a brief limit into an outage, and a client-side limiter removes the correlation rather than the symptom.", "cols": ["Handling 429s", "Limiting client-side"], "rows": ["The request", "Billing", "Retrying", "Correlation", "Storms"], "cells": [["is made and rejected", {"text": "is never made", "tone": "good"}], [{"text": "you may still be billed", "tone": "crit"}, {"text": "nothing to bill", "tone": "good"}], [{"text": "adds load to a busy provider", "tone": "crit"}, {"text": "you wait locally", "tone": "good"}], [{"text": "correlated across the burst", "tone": "crit"}, {"text": "the burst is smoothed", "tone": "good"}], [{"text": "retry storms are possible", "tone": "crit"}, {"text": "no storm to have", "tone": "good"}]], "t": "diagram", "id": "dg-4_5-03-2"},
+
     { t: "table", head: ["Handling 429s", "Limiting client-side"], rows: [
       ["the request is made and rejected", "the request is never made"],
       ["you may still be billed for it", "nothing to bill"],
@@ -48,6 +56,9 @@ EC.receiveLesson({
       { t: "p", text: "2.6 made the case for scoping retries; this is the other half. A retry policy and a rate limiter solve adjacent problems, and a system with retries but no limiter has built an amplifier." }
     ] },
     { t: "h2", n: "04", id: "process", text: "It is per-process", sub: "Which makes the number a function of your replica count" },
+
+    {"kind": "flow", "title": "Four workers at five per second is twenty at the provider", "caption": "`InMemoryRateLimiter` holds its bucket **in memory**, so the limit is per process and not per service. **Four workers each limited to five requests per second is twenty at the provider** — and the number to configure is the provider limit divided by the worker count, **which means it has to change when you scale.** A limiter that was correct at two workers is four times too permissive at eight, silently, with no code change involved.", "cols": 3, "nodes": [{"id": "m", "label": "The bucket is in memory", "sub": "per process", "tone": "violet"}, {"id": "f", "label": "4 workers x 5/s", "sub": "= 20/s at the provider", "tone": "crit"}, {"id": "d", "label": "So configure limit / workers", "sub": "not the limit", "tone": "good"}, {"id": "s", "label": "Which changes when you scale", "sub": "and nothing reminds you", "tone": "crit"}, {"id": "c", "label": "Correct at 2, 4x too loose at 8", "sub": "with no code change", "tone": "crit"}], "edges": [["m", "f"], ["f", "d"], ["d", "s"], ["s", "c"]], "t": "diagram", "id": "dg-4_5-04-3"},
+
     { t: "p", text: "`InMemoryRateLimiter` holds its bucket in memory, so four workers each limited to five requests per second is **twenty** at the provider. The number to configure is the provider limit divided by the worker count \u2014 which means it has to change when you scale." },
     { t: "callout", kind: "tradeoff", title: "Which is an argument for where it lives", body: [
       { t: "p", text: "A constant in the source is wrong the first time someone changes the replica count, and nothing connects the two. The limit belongs in configuration derived from the deployment's worker count, so scaling up does not silently multiply your request rate." },

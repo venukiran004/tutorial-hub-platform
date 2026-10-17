@@ -22,6 +22,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "One chain, two behaviours",
       code: 'model = base_model.configurable_fields(\n    script=ConfigurableField(id="script", name="Script",\n                             description="what the model returns"))\n\nmodel.invoke(msgs)                                        # default\nmodel.invoke(msgs, config={"configurable": {"script": ["overridden"]}})',
       out: "default        : default\nwith config    : overridden",
@@ -30,6 +32,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "alternatives", text: "configurable_alternatives", sub: "Swap the whole component" },
 
     {"kind": "flow", "title": "Four product features from one deployed object", "caption": "Worth being explicit about what `configurable_alternatives` makes possible, because the mechanism is small and the consequences are not. **Per-tenant model choice, an A/B test between two prompts, a premium tier on a larger model, and a fallback to a cheaper model under load — all from one deployed object**, selected by a value that can arrive in a request header. None of those needs a second deployment, a feature flag in the chain's code, or a branch you have to maintain.", "cols": 3, "nodes": [{"id": "o", "label": "One deployed object", "sub": "with declared alternatives", "tone": "violet"}, {"id": "t", "label": "Per-tenant model choice", "sub": "from a header", "tone": "good"}, {"id": "a", "label": "An A/B between two prompts", "sub": "no second deployment", "tone": "good"}, {"id": "p", "label": "A premium tier on a bigger model", "sub": "same object", "tone": "good"}, {"id": "f", "label": "A cheaper fallback under load", "sub": "selected at request time", "tone": "good"}, {"id": "n", "label": "And no branch to maintain", "sub": "which is the point", "tone": "teal"}], "edges": [["o", "t"], ["o", "a"], ["o", "p"], ["o", "f"], ["t", "n"]], "t": "diagram", "id": "dg-2_9-02-1"},
+
+
 
 
     { t: "code", lang: "python", title: "A cheap model and a careful one",
@@ -47,6 +51,8 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Name it while you build, because the moment you need it is an incident", "caption": "2.2 noted that a chain is a value you can name; this is how. The argument for doing it **as you build rather than when you need it** is specific: **the moment you need it is during an incident, and at that point every span in the tree is called `RunnableSequence` and you are matching step indices by hand.** Tags and metadata do the same job for filtering — a `tenant` in metadata is what turns \"it is slow\" into \"it is slow for one customer\".", "left": "what with_config sets", "codeW": 190, "vars": ["value", "what it buys"], "steps": [{"code": "run_name", "state": ["summarise", "a name in the trace"], "tone": "good"}, {"code": "tags", "state": ["['prod','v2']", "filtering by deploy"], "tone": "good"}, {"code": "metadata", "state": ["{'tenant': 'acme'}", "slow for one customer"], "tone": "good"}, {"code": "without it", "state": ["RunnableSequence", "step indices, by hand"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-2_9-03-2"},
 
 
+
+
     { t: "code", lang: "python", title: "Naming a run",
       code: 'named = chain.with_config(run_name="summarise",\n                          tags=["prod", "v2"],\n                          metadata={"tenant": "acme"})',
       out: "run_name : summarise\ntags     : ['prod', 'v2']\nmetadata : {'tenant': 'acme'}",
@@ -59,6 +65,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "which", text: "Config or input?", sub: "One sentence, and it resolves most cases" },
 
     {"kind": "matrix", "title": "Config or input, decided by one question", "caption": "The dividing line is whether **a later step reads it as data**. Anything the prompt interpolates, anything a step consumes — that is input. Anything that selects *how* the chain runs — which tier, which tenant, a request id, callbacks, a concurrency limit, a recursion cap — that is config. The test is practical rather than philosophical: **if removing it from the input would change what the prompt says, it is input.**", "cols": ["Config", "Input"], "rows": ["Selection", "Identity", "Tracing", "Limits", "The content"], "cells": [[{"text": "which model tier", "tone": "violet"}, "the question being asked"], [{"text": "which tenant", "tone": "violet"}, "the user's name, if the answer uses it"], [{"text": "a request id, callbacks, tags", "tone": "violet"}, "the conversation history"], [{"text": "max_concurrency, recursion limit", "tone": "violet"}, "the documents to summarise"], ["-", {"text": "anything the prompt interpolates", "tone": "good"}]], "t": "diagram", "id": "dg-2_9-04-3"},
+
+
 
 
     { t: "table", head: ["Belongs in config", "Belongs in the input"], rows: [
