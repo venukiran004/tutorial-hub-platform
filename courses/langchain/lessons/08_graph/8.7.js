@@ -18,6 +18,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Conditional edges",
       code: 'def route(state):\n    return "small" if state["n"] < 10 else "large"\n\ng.add_conditional_edges("classify", route,\n                        {"small": "small", "large": "large"})',
       out: "  n=5   -> ['classified 5', 'small']\n  n=50  -> ['classified 50', 'large']",
@@ -26,6 +28,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "missing", text: "The missing map entry", sub: "Compiles, then fails on one branch" },
 
     {"kind": "trace", "title": "compile() cannot check the map, because the return values are not knowable statically", "caption": "**`compile()` succeeds.** The map is not checked against the function, **because the function's return values are not knowable statically** — it is arbitrary Python. So a missing map entry is **a runtime error on the branch that returns the unmapped key**, which means **a rarely-taken branch can be wrong for months.** Which is the argument for testing the routing function directly: it is a pure function of state, and testing it needs no graph at all.", "left": "stage", "codeW": 150, "vars": ["result"], "steps": [{"code": "compile()", "state": ["succeeded"], "tone": "crit", "note": "the map is unchecked"}, {"code": "invoke, mapped branch", "state": ["works"], "tone": "good"}, {"code": "invoke, unmapped branch", "state": ["InvalidUpdateError / ValueError"], "changed": [0], "tone": "crit", "note": "months later"}], "t": "diagram", "id": "dg-8_7-02-2"},
+
+
 
 
 
@@ -51,6 +55,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "If the router returns node names",
       code: 'g.add_conditional_edges("classify", route)   # no map',
       out: "    n=5  -> ['classified 5', 'small']",
@@ -59,6 +65,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "more", text: "Routing to END, and to several nodes", sub: "Two more things a router can return" },
 
     {"kind": "trace", "title": "A router can return END, or a list", "caption": "Two capabilities that are easy to miss. **Returning `END` terminates from a conditional edge**, so a router can decide the run is finished rather than routing to a node that does nothing. And **returning a list fans out to several nodes** — `['small', 'large']` runs both — which makes a conditional edge a dynamic fan-out rather than only a choice, with 8.3's reducers then required on anything they both write.", "left": "the router returns", "codeW": 190, "vars": ["what runs"], "steps": [{"code": "'small'", "state": ["classified, then small"], "tone": "accent"}, {"code": "END", "state": ["classified, then nothing"], "changed": [0], "tone": "good", "note": "terminates"}, {"code": "['small', 'large']", "state": ["classified, then BOTH"], "changed": [0], "tone": "violet", "note": "a dynamic fan-out"}], "t": "diagram", "id": "dg-8_7-04-4"},
+
+
 
 
 
@@ -79,6 +87,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "skipped", text: "When a router skips a fan-in branch", sub: "No deadlock, and a quieter problem" },
 
     {"kind": "tree", "title": "The router failure compile() cannot catch", "caption": "A function's return values are not knowable statically, so **`compile()` succeeds** on a router that can return a key the path map lacks. The failure arrives at run time, on whichever input takes that branch — which may be the rare one.", "root": {"label": "route(state)", "sub": "returns a key", "tone": "accent", "children": [{"label": "“billing”", "sub": "in the map → billing_node", "tone": "good", "edge": "mapped"}, {"label": "“tech”", "sub": "in the map → tech_node", "tone": "good", "edge": "mapped"}, {"label": "“other”", "sub": "NOT in the map → raises at run time", "tone": "crit", "edge": "compiles fine"}]}, "t": "diagram", "id": "dg-8_7-05-0"},
+
+
 
 
 

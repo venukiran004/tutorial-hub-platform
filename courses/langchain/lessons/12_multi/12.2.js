@@ -35,11 +35,16 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "The loop",
       code: "supervisor -> docs\ndocs\nsupervisor -> account\naccount\nsupervisor -> FINISH\n\nsupervisor turns: 3\nfinal messages  : 3",
       caption: "A router inside a loop." },
     { t: "p", text: "11.2's router sees the request. A supervisor sees the request **and everything the workers have produced so far**, which is what lets it decide the second step based on the first step's result \u2014 and is why it costs a model call per turn (12.1)." },
     { t: "h2", n: "02", id: "shared", text: "What the workers shared", sub: "And why `name` matters" },
+
+    {"kind": "trace", "title": "One list, so every worker's output is in every later worker's prompt", "caption": "The shared list is the simplest channel and it has a price: **context for free, and tokens paid for repeatedly** — 12.7's trade. Which is also why `name` earns its place: **without it a later worker sees a sequence of `AIMessage`s with no attribution and cannot tell which agent said what, and 12.8's blame problem is unanswerable.** The field looks cosmetic and is the only thing making the list readable.", "left": "the shared list", "codeW": 150, "vars": ["name", "content", "in the next prompt?"], "steps": [{"code": "worker 1 writes", "state": ["docs", "'Refunds: 30 days.'", "yes"], "tone": "good"}, {"code": "worker 2 writes", "state": ["account", "'2 open orders.'", "yes"], "changed": [0, 1], "tone": "good"}, {"code": "without name", "state": ["-", "same content", "unattributable"], "changed": [0, 2], "tone": "crit", "note": "12.8's blame problem"}], "t": "diagram", "id": "dg-12_2-02-1"},
+
     { t: "code", lang: "text", title: "One message list",
       code: "docs           AIMessage('Refunds: 30 days.')\naccount        AIMessage('2 open orders.')",
       caption: "Each worker wrote into the same list, so each saw the previous one's output." },
@@ -48,6 +53,9 @@ EC.receiveLesson({
       { t: "p", text: "Which is why the `name` field matters: without it, a later worker sees a sequence of `AIMessage`s with no attribution and cannot tell which agent said what. And 12.8's blame problem is unanswerable without it." }
     ] },
     { t: "h2", n: "03", id: "failure1", text: "Failure 1: a worker that does not exist", sub: "11.2's failure, on every turn" },
+
+    {"kind": "trace", "title": "A router draws once; a supervisor draws once per turn", "caption": "Same failure as 11.2's — a routing key not in the path map — but the exposure is different: **a router classifies once per request, so an unmapped category is one draw; a supervisor classifies once per turn, so a five-turn task is five draws from the same distribution.** Which means **a supervisor needs the default branch more than a router does**, and for the same reason: the set of strings a model can emit is not enumerable.", "left": "pattern", "codeW": 190, "vars": ["classifications", "draws at the unmapped key"], "steps": [{"code": "a router, one request", "state": ["1", "1"], "tone": "good"}, {"code": "a supervisor, 5-turn task", "state": ["5", "5"], "changed": [0, 1], "tone": "crit"}, {"code": "with no default branch", "state": ["-", "RAISED on any of them"], "changed": [1], "tone": "crit"}, {"code": "with one", "state": ["-", "routes to fallback"], "tone": "good"}], "t": "diagram", "id": "dg-12_2-03-2"},
+
     { t: "code", lang: "text", title: "A supervisor naming \u201clegal_team\u201d, with no default",
       code: "RAISED (the routing key is not in the path map)",
       caption: "With the default branch, the same output routes to `fallback`." },
@@ -56,11 +64,17 @@ EC.receiveLesson({
       { t: "p", text: "So a supervisor needs 11.2's default branch **more** than a router does, and for the same reason: the set of strings a model can emit is not enumerable, and asking it nicely is 4.7's request rather than a guarantee." }
     ] },
     { t: "h2", n: "04", id: "failure2", text: "Failure 2: never finishing", sub: "And the turn budget" },
+
+    {"kind": "trace", "title": "A supervisor that never says FINISH, stopped by a turn budget", "caption": "The alternation runs four times and then the graph **returns a usable answer** rather than raising. **So a supervisor needs all of 11.8's guards — a turn budget, a give-up node and a default branch — and needs them more than a single agent does, because it has one more thing that can fail: the coordination decision itself.** That is a failure mode a single agent does not have at all.", "left": "turn", "codeW": 120, "vars": ["who ran", "turns used"], "steps": [{"code": "1", "state": ["sup -> docs", "1"], "tone": "good"}, {"code": "2", "state": ["sup -> docs", "2"], "changed": [1], "tone": "warn"}, {"code": "3", "state": ["sup -> docs", "3"], "changed": [1], "tone": "warn"}, {"code": "4", "state": ["sup", "4"], "changed": [1], "tone": "crit", "note": "never says FINISH"}, {"code": "exit", "state": ["gave up after 4 turns", "4"], "changed": [0], "tone": "violet", "note": "returned, not raised"}], "t": "diagram", "id": "dg-12_2-04-3"},
+
     { t: "code", lang: "text", title: "A supervisor that never says FINISH, with a 4-turn budget",
       code: "['sup', 'docs', 'sup', 'docs', 'sup', 'docs', 'sup', 'gave up after 4 turns']",
       caption: "The graph returned a usable answer." },
     { t: "p", text: "So a supervisor needs **all** of 11.8's guards \u2014 a turn budget, a give-up node, and a default branch \u2014 and it needs them more than a single agent does, because it has one more thing that can fail: the coordination decision itself." },
     { t: "h2", n: "05", id: "worth", text: "What makes a supervisor worth it", sub: "A place to put policy" },
+
+    {"kind": "flow", "title": "A decision point between every pair of steps, and what belongs in it", "caption": "Not specialisation — a prompt does that for one model call instead of two. **What a supervisor adds is a place to put policy**, and these four are what that place is for. **If there is no policy, the extra turn is a model call that decides who works next — and a router would have decided that once, for free.** 12.3's swarm makes it concrete by removing the turn, and with it the only place these could live.", "cols": 3, "nodes": [{"id": "p", "label": "Permission checks", "sub": "may this worker run for this user?", "tone": "good"}, {"id": "b", "label": "Budget checks", "sub": "have we spent enough?", "tone": "good"}, {"id": "a", "label": "Approval gates (9.8)", "sub": "pause before the worker that acts", "tone": "good"}, {"id": "o", "label": "Observability", "sub": "one place knows the whole plan", "tone": "good"}, {"id": "n", "label": "No policy? Then it is a call to pick a worker", "sub": "a router did that once, free", "tone": "crit"}], "edges": [["p", "n"], ["b", "n"], ["a", "n"], ["o", "n"]], "t": "diagram", "id": "dg-12_2-05-4"},
+
     { t: "p", text: "Not specialisation \u2014 12.1 established that a prompt does that for one model call instead of two. What a supervisor adds is **a decision point between every pair of steps**, and that is where these belong:" },
     { t: "ul", items: [
       "**permission checks** \u2014 may this worker run for this user?",

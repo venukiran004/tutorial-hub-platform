@@ -35,6 +35,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Pairwise similarity among the top 5",
       code: "query: 'stop my plan renewing'\nplain top 5: ['bill-cancel-sub', 'bill-cancel-trial', 'bill-overage',\n              'ops-cancel-report', 'bill-cancel-order']\n\n  bill-cancel-sub      1.00 0.59 0.32 0.43 0.53\n  bill-cancel-trial    0.59 1.00 0.32 0.32 0.47\n  bill-overage         0.32 0.32 1.00 0.11 0.10\n  ops-cancel-report    0.43 0.32 0.11 1.00 0.48\n  bill-cancel-order    0.53 0.47 0.10 0.48 1.00",
       caption: "The slots are filled with documents similar to **each other**, not just to the query." },
@@ -42,6 +44,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "formula", text: "The formula", sub: "Relevance minus redundancy" },
 
     {"kind": "flow", "title": "The formula penalises a candidate for resembling what is already chosen", "caption": "Two terms with one dial. **λ times similarity to the query, minus (1−λ) times the maximum similarity to anything already selected** — so a document competes on relevance and is docked for redundancy against the set so far. At **λ = 1** it is plain relevance ranking and MMR does nothing. At **λ = 0** it ignores the query entirely and maximises diversity, which is useless. The useful range is in between, and §03 measures what that costs on the metrics.", "cols": 3, "nodes": [{"id": "r", "label": "lambda x sim(d, query)", "sub": "relevance", "tone": "accent"}, {"id": "p", "label": "minus (1-lambda) x max sim(d, selected)", "sub": "redundancy penalty", "tone": "violet"}, {"id": "o", "label": "lambda = 1", "sub": "plain relevance; MMR off", "tone": "good"}, {"id": "z", "label": "lambda = 0", "sub": "ignores the query - useless", "tone": "crit"}, {"id": "m", "label": "Selection is greedy and sequential", "sub": "which is why it needs fetch_k", "tone": "teal"}], "edges": [["r", "o"], ["p", "z"], ["o", "m"], ["z", "m"]], "t": "diagram", "id": "dg-6_6-02-1"},
+
+
 
 
 
@@ -72,6 +76,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "MMR against the baseline",
       code: "lambda   natural MRR   natural R@5\n1.0      0.964         1.000\n0.7      0.964         1.000\n0.5      0.929         0.893\n0.3      0.929         0.893",
       caption: "No improvement at any lambda, and a real cost below 0.7." },
@@ -83,6 +89,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "fetchk", text: "fetch_k is what makes it possible", sub: "5.1's point, arriving a second time" },
 
     {"kind": "trace", "title": "fetch_k is what makes diversity possible at all", "caption": "MMR selects greedily **from the candidates it was given**, so with `fetch_k = k` there is nothing to choose between — it returns the same five documents in a different order. Widening the pool is what lets it reach past the near-duplicates: at `fetch_k=5` the result is **five cancellation documents**; at 10 it has pulled in `api-versioning` and `bill-seats`. Which is the `fetch_k > k` rule arriving for the second time, and 6.7 is the third.", "left": "fetch_k", "codeW": 130, "vars": ["selected"], "steps": [{"code": "5", "state": ["cancel-sub, overage, cancel-report, cancel-trial, cancel-order"], "tone": "crit", "note": "all cancellation"}, {"code": "10", "state": ["cancel-sub, api-versioning, overage, cancel-report, seats"], "changed": [0], "tone": "good", "note": "genuinely diverse"}, {"code": "20", "state": ["wider still"], "tone": "good"}], "t": "diagram", "id": "dg-6_6-04-3"},
+
+
 
 
 

@@ -35,12 +35,17 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "dl", items: [
       ["supervisor", "Decides who acts **next**, one turn at a time, seeing everything so far. A router in a loop (12.2)."],
       ["orchestrator", "Decides the whole **decomposition** up front, fans the pieces out, gathers the results. Plan-and-execute (11.6) with workers instead of steps."]
     ] },
     { t: "p", text: "And the same thing decides it: whether the decomposition is knowable before starting. If the second piece depends on the first piece's result, a plan is a guess \u2014 11.6's conclusion, with agents in place of steps." },
     { t: "h2", n: "02", id: "fanout", text: "The orchestrator, with a real fan-out", sub: "One superstep" },
+
+    {"kind": "trace", "title": "Three pieces planned, three workers run, three results gathered", "caption": "One planning call, then the three pieces run in **one superstep** rather than one after another — which is the orchestrator's actual advantage over a supervisor, and it is structural rather than a tuning win: **a supervisor cannot parallelise, because it decides who works next only after seeing the last result.** The cost model is `1 + N` calls and the latency is one planning call plus the **slowest** worker.", "left": "stage", "codeW": 170, "vars": ["pieces", "results", "supersteps used"], "steps": [{"code": "orchestrator", "state": ["3", "0", "1"], "tone": "accent", "note": "1 model call"}, {"code": "fan-out", "state": ["3", "3", "2"], "changed": [1, 2], "tone": "good", "note": "all three at once"}, {"code": "gather", "state": ["3", "3 gathered", "3"], "changed": [1], "tone": "good"}, {"code": "a supervisor would need", "state": ["3", "3", "6+"], "changed": [2], "tone": "warn", "note": "2 calls per turn"}], "t": "diagram", "id": "dg-12_5-02-1"},
+
     { t: "code", lang: "python", title: "Plan, fan out, gather",
       code: 'def fan(state):\n    return [Send("worker", {"piece": p}) for p in state["pieces"]]\n\ng.add_conditional_edges("orchestrate", fan, ["worker"])\ng.add_edge("worker", "gather")',
       out: "    orchestrator planned 3 pieces\n      did: refund policy\n      did: account status\n      did: open orders\n    gathered 3 results",
@@ -50,6 +55,9 @@ EC.receiveLesson({
       { t: "p", text: "So the comparison is not only about predictability. For independent pieces, an orchestrator is faster in wall-clock terms by roughly the piece count, at the same total cost." }
     ] },
     { t: "h2", n: "03", id: "failure", text: "What each does when a worker fails", sub: "Sharply different" },
+
+    {"kind": "flow", "title": "The orchestrator's workers must not raise", "caption": "A supervisor's recovery is a **normal turn** — it sees the failure in shared state and retries, switches worker or gives up, for one more coordination call and nothing special. An orchestrator has already fanned out, and the measured run kept the two successes **only because the worker caught its own failure**: **had it raised, the whole superstep would have failed and all three results would be lost** (10.2). So error handling in a worker is structural, not a nicety.", "cols": 3, "nodes": [{"id": "s", "label": "Supervisor: a normal turn", "sub": "retry, switch, give up", "tone": "good"}, {"id": "o", "label": "Orchestrator: already fanned out", "sub": "no turn left to decide in", "tone": "accent"}, {"id": "c", "label": "The worker caught its own failure", "sub": "['ok: a', 'FAILED: b', 'ok: c']", "tone": "good"}, {"id": "r", "label": "Had it raised: the superstep fails", "sub": "all three results lost", "tone": "crit"}, {"id": "n", "label": "So re-running 20 workers for 1 raise", "sub": "repeats 19 successful calls", "tone": "crit"}], "edges": [["s", "o"], ["o", "c"], ["c", "r"], ["r", "n"]], "t": "diagram", "id": "dg-12_5-03-2"},
+
     { t: "p", text: "**A supervisor** sees the failure in the shared state on its next turn and decides what to do \u2014 retry, try a different worker, give up. The recovery is a normal turn, costing one more coordination call and needing nothing special." },
     { t: "p", text: "**An orchestrator** has already fanned out. So one worker failing in a batch of three means:" },
     { t: "code", lang: "text", title: "One of three fails",
@@ -60,12 +68,18 @@ EC.receiveLesson({
       { t: "p", text: "Which makes the worker's error handling a structural requirement rather than a nicety: re-running twenty workers because one raised repeats nineteen successful model calls." }
     ] },
     { t: "h2", n: "04", id: "gather", text: "The gather node owns the decision", sub: "Because only it knows the ratio" },
+
+    {"kind": "flow", "title": "A worker cannot see either number, so the decision is not its to make", "caption": "**One failure in three may be fine; three in three is not — and a worker can see neither number, because it does not even know how many siblings it has.** Which is 10.2's fan-out cap argument repeated: the decision needs a view only one node has. So **an orchestrator carries policy in two nodes — the orchestrator bounds the fan-out, the gather node decides what counts as enough — and neither can be pushed down.**", "cols": 3, "nodes": [{"id": "w", "label": "A worker knows: itself", "sub": "not the sibling count", "tone": "warn"}, {"id": "g", "label": "The gather node knows the ratio", "sub": "successes against failures", "tone": "good"}, {"id": "o", "label": "The orchestrator bounds the fan-out", "sub": "10.2's cap", "tone": "good"}, {"id": "t", "label": "Two policy nodes, not one", "sub": "and neither is a worker", "tone": "violet"}, {"id": "p", "label": "Each decision needs a view only it has", "sub": "which is why it cannot move", "tone": "teal"}], "edges": [["w", "g"], ["g", "t"], ["o", "t"], ["t", "p"]], "t": "diagram", "id": "dg-12_5-04-3"},
+
     { t: "p", text: "One failure in three may be fine; three in three is not. A worker can see **neither** number \u2014 it does not even know how many siblings it has \u2014 so the partial-success decision belongs in the gather node." },
     { t: "callout", kind: "mental", title: "The same argument as the fan-out cap", body: [
       { t: "p", text: "10.2 put the worker cap in the node that **builds** the `Send` list, for the same reason: the decision needs a number only that node can see. Here the gather node is the one that can count successes against failures." },
       { t: "p", text: "So an orchestrator has two nodes carrying policy \u2014 the orchestrator bounds the fan-out, the gather node decides what counts as enough \u2014 and neither decision can be pushed into a worker." }
     ] },
     { t: "h2", n: "05", id: "choose", text: "Choosing", sub: "Six dimensions" },
+
+    {"kind": "compare", "title": "Six dimensions, and two of them decide it", "caption": "**An orchestrator when the pieces are independent and knowable, because then the parallelism is free and the cost is predictable. A supervisor when the next step depends on the last result, or when you need a decision point between every pair of steps for policy** (12.2). The other four rows follow from those two, and the last row is the one most often forgotten when the parallelism is what attracted you.", "columns": [{"title": "supervisor", "tone": "accent", "items": ["decomposition emerges turn by turn", "no parallel workers", "2 model calls per turn", "adapts to a result immediately", "a worker failure is a normal turn", "policy point: the supervisor, every turn"]}, {"title": "orchestrator", "tone": "good", "items": ["decomposition decided up front", "parallel workers, in one superstep", "1 + N model calls", "adapts only by replanning", "a worker failure is the gather node's job", "policy point: the orchestrator, once"]}], "t": "diagram", "id": "dg-12_5-05-4"},
+
     { t: "table", head: ["", "supervisor", "orchestrator"], rows: [
       ["decomposition", "emerges turn by turn", "decided up front"],
       ["parallel workers", "no", "**yes** (one superstep)"],

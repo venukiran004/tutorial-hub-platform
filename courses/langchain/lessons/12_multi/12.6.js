@@ -12,6 +12,9 @@ EC.receiveLesson({
   blocks: [
     { t: "h2", n: "01", id: "problem", text: "add_node is a build-time call", sub: "So the worker set is topology" },
 
+    {"kind": "flow", "title": "The worker set stops being topology and becomes runtime state", "caption": "`add_node` runs at build time, so *“add a worker”* normally means editing the graph and redeploying. One generic executor reading a dict of specs removes that — **and moves the worker set out of the code and into data, which is the entire point and also the entire cost.** Notice what the executor already does with an unknown or disabled name: it **degrades** and records why, rather than raising.", "cols": 3, "nodes": [{"id": "a", "label": "add_node is a build-time call", "sub": "the worker set is topology", "tone": "accent"}, {"id": "e", "label": "One generic executor", "sub": "it reads a spec and runs it", "tone": "good"}, {"id": "d", "label": "A dict of worker specs", "sub": "prompt, flags, allowlisted tools", "tone": "good"}, {"id": "r", "label": "The worker set is now runtime state", "sub": "data, not structure", "tone": "violet"}, {"id": "u", "label": "Unknown or disabled: it degrades", "sub": "'executor: unavailable'", "tone": "good"}], "edges": [["a", "e"], ["e", "d"], ["d", "r"], ["r", "u"]], "t": "diagram", "id": "dg-12_6-01-1"},
+
+
     { t: "code", lang: "python", title: "One generic executor, and a dict",
       code: 'REGISTRY = {\n    "docs":    {"prompt": "You answer from the documentation.", "enabled": True},\n    "account": {"prompt": "You answer about accounts.",         "enabled": True},\n}\n\ndef executor(state):\n    spec = REGISTRY.get(state["worker"])\n    if spec is None or not spec["enabled"]:\n        return {"trace": ["executor: %r unavailable" % state["worker"]]}\n    return {"results": [...], "trace": ["executor ran %s" % state["worker"]]}',
       out: "    worker=docs      -> ['executor ran docs']\n    worker=account   -> ['executor ran account']",
@@ -39,11 +42,16 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "The same compiled graph",
       code: "added 'billing' to the registry, then invoked the SAME compiled graph:\n  ['executor ran billing']",
       caption: "The graph never changed." },
     { t: "p", text: "The worker is a row of data the executor reads, so a new one needs no `add_node`, no `compile()` and no deploy \u2014 which is the entire point and also the entire cost." },
     { t: "h2", n: "03", id: "cost", text: "What this costs", sub: "The topology stops describing the system" },
+
+    {"kind": "flow", "title": "One node in the drawing, whatever the registry contains", "caption": "**This is worse than 8.8's `Command` problem: that hid the destinations inside node bodies, and an annotation could recover them for the renderer. Here the worker set is not in the code at all, so there is nothing to annotate** — the set is a runtime value. Which forces a deliberate replacement: **the registry has to become the documentation**, through a listing endpoint or by living in version control. Otherwise the only way to know what the system can do is to read a database.", "cols": 3, "nodes": [{"id": "g", "label": "draw_ascii() shows one node", "sub": "three workers, one box", "tone": "warn"}, {"id": "c", "label": "8.8 hid destinations in node bodies", "sub": "an annotation recovered them", "tone": "accent"}, {"id": "n", "label": "Here there is nothing to annotate", "sub": "the set is a runtime value", "tone": "crit"}, {"id": "l", "label": "So: a listing endpoint", "sub": "or the registry in version control", "tone": "good"}, {"id": "d", "label": "Or else: read a database to find out", "sub": "what the system can do", "tone": "crit"}], "edges": [["g", "c"], ["c", "n"], ["n", "l"], ["n", "d"]], "t": "diagram", "id": "dg-12_6-03-2"},
+
     { t: "code", lang: "text", title: "draw_ascii(), whatever the registry contains",
       code: "+-----------+\n| __start__ |\n+-----------+\n      *\n+------------+\n|  executor  |\n+------------+",
       caption: "One node, three workers." },
@@ -52,6 +60,9 @@ EC.receiveLesson({
       { t: "p", text: "So the registry has to **become** the documentation: a listing endpoint, or the registry itself in version control. Without one of those, the only way to know what the system can do is to read a database." }
     ] },
     { t: "h2", n: "04", id: "inflight", text: "In-flight run safety", sub: "The read has to be atomic per run" },
+
+    {"kind": "trace", "title": "One run must see one worker set", "caption": "**A run that started before a worker was disabled may route to it afterwards, so the registry read has to be atomic per run — a snapshot carried in state or context (10.7), or a pinned registry version.** Read per node execution, a single run can see two worker sets, so **the trace records decisions made against configurations that never coexisted, and no amount of logging recovers which was in force when** — 10.9's version-pinning argument exactly.", "left": "read strategy", "codeW": 190, "vars": ["worker sets one run can see", "trace interpretable?"], "steps": [{"code": "per node execution", "state": ["2 or more", "no"], "tone": "crit", "note": "never coexisted"}, {"code": "snapshot at run start", "state": ["1", "yes"], "changed": [0, 1], "tone": "good"}, {"code": "or pin a registry version", "state": ["1", "yes"], "tone": "good"}, {"code": "the kill switch, mid-flight", "state": ["'account' unavailable", "degraded, not raised"], "changed": [0, 1], "tone": "violet", "note": "one bad worker is not an outage"}], "t": "diagram", "id": "dg-12_6-04-3"},
+
     { t: "p", text: "A run that started before a worker was disabled may route to it afterwards. So the registry read must be atomic **per run**, not per node execution:" },
     { t: "ul", items: [
       "read the registry once at the start of the run and carry the snapshot in the state (or the context, 10.7)",
@@ -66,11 +77,17 @@ EC.receiveLesson({
       caption: "The executor **degraded** rather than raising." },
     { t: "p", text: "Which is the right default for a kill switch: the point is to stop a worker without failing every run that wanted it. A kill switch that raises turns one bad worker into a total outage." },
     { t: "h2", n: "05", id: "canary", text: "Canarying", sub: "A data change" },
+
+    {"kind": "flow", "title": "A canary is a row, and a row is not a measurement", "caption": "Genuinely easier than the compiled version, **where two variants of a worker means two nodes and a conditional edge weighted by a random number.** The caution is that **a canary needs per-variant measurement to mean anything, so the trace has to record which variant ran** — the same point as 10.5's *record which exit fired*. A 5% canary whose results are pooled with the other 95% has shipped a variant and measured nothing.", "cols": 3, "nodes": [{"id": "r", "label": "A variant is a row with traffic: 0.05", "sub": "a data change", "tone": "good"}, {"id": "c", "label": "Compiled: two nodes and a weighted edge", "sub": "a deploy, per variant", "tone": "warn"}, {"id": "m", "label": "But a row is not a measurement", "sub": "10.5's 'record which exit fired'", "tone": "crit"}, {"id": "t", "label": "So the trace records which variant ran", "sub": "per-variant, or nothing", "tone": "good"}, {"id": "p", "label": "Pooled results = shipped, not measured", "sub": "the 5% disappears into the 95%", "tone": "crit"}], "edges": [["r", "c"], ["r", "m"], ["m", "t"], ["m", "p"]], "t": "diagram", "id": "dg-12_6-05-4"},
+
     { t: "code", lang: "python", title: "A variant is a row",
       code: 'REGISTRY["docs_v2"] = {..., "traffic": 0.05}',
       caption: "And the routing decision reads it." },
     { t: "p", text: "Genuinely easier than the compiled-graph version, where two variants of a worker means two nodes and a conditional edge weighted by a random number. The caution is that a canary needs **per-variant measurement** to mean anything, so the trace has to record which variant ran \u2014 the same point as 10.5's *record which exit fired*." },
     { t: "h2", n: "06", id: "when", text: "When to use it", sub: "And the test" },
+
+    {"kind": "flow", "title": "The test is whether the workers differ in configuration or in structure", "caption": "**Workers differing only in configuration — a prompt, a tool list — are rows one executor serves. Workers differing structurally make the executor grow a branch per worker, at which point you have reinvented the graph badly.** The frequency test is the other half: **if the worker set changes a few times a year, a deploy is cheaper than a registry, a listing endpoint and a version-pinning scheme** — all three of which this lesson showed you need.", "cols": 3, "nodes": [{"id": "c", "label": "Differ only in configuration", "sub": "prompt, tool list -> rows", "tone": "good"}, {"id": "o", "label": "Added often, by people without deploys", "sub": "the case it is built for", "tone": "good"}, {"id": "s", "label": "Differ structurally", "sub": "a branch per worker", "tone": "crit"}, {"id": "g", "label": "You have reinvented the graph badly", "sub": "with no drawing of it", "tone": "crit"}, {"id": "f", "label": "Changes a few times a year?", "sub": "a deploy is cheaper", "tone": "warn"}], "edges": [["c", "o"], ["s", "g"], ["g", "f"]], "t": "diagram", "id": "dg-12_6-06-5"},
+
     { t: "table", head: ["worth it when", "not worth it when"], rows: [
       ["workers are genuinely added often, by people who should not need a deploy", "the worker set changes a few times a year \u2014 a deploy is cheaper than a registry, a listing endpoint and a version-pinning scheme"],
       ["workers differ only in **configuration** \u2014 a prompt, a tool list \u2014 so one executor serves all of them", "workers differ **structurally**, because then the executor grows a branch per worker and you have reinvented the graph badly"]

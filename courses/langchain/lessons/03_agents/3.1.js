@@ -35,6 +35,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "A function becomes a tool",
       code: '@tool\ndef calculate(expression: str) -> str:\n    """Evaluate a mathematical expression. Use for any arithmetic."""\n    return str(eval(expression, {"__builtins__": {}}, {}))\n\nprint(calculate.name)\nprint(calculate.description)\nprint(calculate.args)',
       out: "name        : calculate\ndescription : Evaluate a mathematical expression. Use for any arithmetic.\nargs        : {'expression': {'title': 'Expression', 'type': 'string'}}",
@@ -43,6 +45,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "description", text: "The description is prompt", sub: "Not documentation, and the difference is measurable in behaviour" },
 
     {"kind": "trace", "title": "Three descriptions of the same tool, and what the model can tell from each", "caption": "The description is the only part of a tool definition that answers **when to use this**, and the third row is the only one that does. An empty description leaves the model guessing from the function name; an accurate one-liner says what the tool *is* and nothing about *when*. The other half of the same problem is overlap: **if `search_docs` and `search_tickets` both say \"search for information\", the model is choosing at random**, and no amount of instruction in the system prompt fixes a specification problem.", "left": "description", "codeW": 230, "vars": ["what the model can tell"], "steps": [{"code": "(empty)", "state": ["only the name - it is guessing"], "tone": "crit"}, {"code": "'Looks up an order.'", "state": ["accurate, and silent on WHEN"], "tone": "warn"}, {"code": "'...by its id. Use for any question about a specific order...'", "state": ["which questions this answers"], "changed": [0], "tone": "good"}, {"code": "two tools, overlapping", "state": ["it chooses at random"], "tone": "crit", "note": "a specification problem"}], "t": "diagram", "id": "dg-3_1-02-1"},
+
+
 
 
 
@@ -82,6 +86,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "args_schema with Pydantic",
       code: 'class SearchArgs(BaseModel):\n    query: str = Field(description="search terms")\n    top_k:  int = Field(default=5, ge=1, le=20, description="how many hits")\n\nsearch_tool = StructuredTool.from_function(\n    _search, name="search",\n    description="Search the docs. Use when the answer is likely to be in "\n                "documentation rather than in an order record.",\n    args_schema=SearchArgs)',
       out: "args : {'query': {...}, 'top_k': {'default': 5, 'maximum': 20, 'minimum': 1, ...}}\nok   : ['hit 0 for \\'retry\\'', 'hit 1 for \\'retry\\'']\ntop_k=99 -> ValidationError (ge/le enforced, like 1.5)",
@@ -90,6 +96,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "errors", text: "Failing usefully", sub: "ToolException is a message, not a crash" },
 
     {"kind": "flow", "title": "A tool's error message is prompt, because the model reads it", "caption": "`ToolException: user_id must be numeric, got 'alice'` goes back into the transcript, **so the model reads it** — and either fixes its argument or explains the problem to the user. Which makes the wording of a tool's failure a prompt-engineering decision rather than a logging one: **\"invalid input\" tells the model nothing it can act on, and naming the constraint and the offending value tells it exactly what to change.**", "cols": 3, "nodes": [{"id": "r", "label": "The tool raises", "sub": "ToolException with a message", "tone": "accent"}, {"id": "t", "label": "The message enters the transcript", "sub": "as a ToolMessage", "tone": "violet"}, {"id": "m", "label": "So the model reads it", "sub": "and can act on it", "tone": "good"}, {"id": "g", "label": "'must be numeric, got alice'", "sub": "it fixes the argument", "tone": "good"}, {"id": "b", "label": "'invalid input'", "sub": "it has nothing to change", "tone": "crit"}], "edges": [["r", "t"], ["t", "m"], ["m", "g"], ["m", "b"]], "t": "diagram", "id": "dg-3_1-04-3"},
+
+
 
 
 

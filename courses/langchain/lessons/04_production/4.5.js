@@ -35,6 +35,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Ten acquisitions at five per second",
       code: 'elapsed: 2.01 s\n\nI predicted ~1.0 s: five instant from a full bucket, then five more\nat 0.2 s each. the measurement says 2.01 s, which is 10 / 5 -- so\nEVERY acquisition waited for a token.',
       caption: "10 / 5 exactly. No request was free." },
@@ -42,6 +44,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "clock", text: "And the clock starts late", sub: "Which is why bucket size looked irrelevant" },
 
     {"kind": "trace", "title": "max_bucket_size is the burst allowance after idle; the rate is what you settle to", "caption": "Five acquires, three bucket sizes. **A bucket of 1 is a strict metronome** — one free, then four waits, 0.81 s. A bucket of 5 absorbs the whole burst and costs **0.00 s**, then throttles afterwards. So the two parameters answer different questions: **the rate is your sustained throughput and the bucket is how much of a spike you can pass through without smoothing it.**", "left": "max_bucket_size", "codeW": 170, "vars": ["5 acquires took", "shape"], "steps": [{"code": "1", "state": ["0.81 s", "1 free, then 4 waits"], "tone": "warn", "note": "a strict metronome"}, {"code": "3", "state": ["0.41 s", "3 free, then 2 waits"], "changed": [0], "tone": "accent"}, {"code": "5", "state": ["0.00 s", "5 free, 0 waits"], "changed": [0], "tone": "good", "note": "the burst passes through"}], "t": "diagram", "id": "dg-4_5-02-1"},
+
+
 
 
 
@@ -77,6 +81,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["Handling 429s", "Limiting client-side"], rows: [
       ["the request is made and rejected", "the request is never made"],
       ["you may still be billed for it", "nothing to bill"],
@@ -91,6 +97,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "process", text: "It is per-process", sub: "Which makes the number a function of your replica count" },
 
     {"kind": "flow", "title": "Four workers at five per second is twenty at the provider", "caption": "`InMemoryRateLimiter` holds its bucket **in memory**, so the limit is per process and not per service. **Four workers each limited to five requests per second is twenty at the provider** — and the number to configure is the provider limit divided by the worker count, **which means it has to change when you scale.** A limiter that was correct at two workers is four times too permissive at eight, silently, with no code change involved.", "cols": 3, "nodes": [{"id": "m", "label": "The bucket is in memory", "sub": "per process", "tone": "violet"}, {"id": "f", "label": "4 workers x 5/s", "sub": "= 20/s at the provider", "tone": "crit"}, {"id": "d", "label": "So configure limit / workers", "sub": "not the limit", "tone": "good"}, {"id": "s", "label": "Which changes when you scale", "sub": "and nothing reminds you", "tone": "crit"}, {"id": "c", "label": "Correct at 2, 4x too loose at 8", "sub": "with no code change", "tone": "crit"}], "edges": [["m", "f"], ["f", "d"], ["d", "s"], ["s", "c"]], "t": "diagram", "id": "dg-4_5-04-3"},
+
+
 
 
 

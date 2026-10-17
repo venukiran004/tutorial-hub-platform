@@ -11,12 +11,18 @@ EC.receiveLesson({
   prerequisites: ["12.2", "8.8"],
   blocks: [
     { t: "h2", n: "01", id: "handoff", text: "Peer-to-peer handoff", sub: "No central router" },
+
+    {"kind": "trace", "title": "The reason travelled with the destination", "caption": "`Command(goto=target, update={...})` is 8.8's case exactly: **the handoff carries both where to go and why, in one return value**, so nothing has to reconstruct the reason from state afterwards. And the count is the swarm's real advantage — **no supervisor means no coordination turn, so one model call per step rather than two.**", "left": "step", "codeW": 150, "vars": ["who ran", "hops", "model calls"], "steps": [{"code": "billing", "state": ["billing -> tech (not my area)", "1", "1"], "tone": "accent"}, {"code": "tech", "state": ["tech answered", "1", "2"], "changed": [0, 2], "tone": "good"}, {"code": "a supervisor would have cost", "state": ["3 coordination turns", "-", "4"], "changed": [2], "tone": "warn"}], "t": "diagram", "id": "dg-12_3-01-1"},
+
     { t: "code", lang: "python", title: "An agent that may hand off",
       code: 'def billing_agent(state):\n    out = billing.invoke(state["messages"])\n    if out.content.startswith("HANDOFF:"):\n        target = out.content.split(":", 1)[1]\n        return Command(goto=target,\n                       update={"hops": 1,\n                               "trace": ["billing -> %s (not my area)" % target]})\n    return {"messages": [AIMessage(content=out.content, name="billing")], ...}',
       out: "    billing -> tech (not my area)\n    tech answered\n\n  hops: 1",
       caption: "The reason travelled with the destination \u2014 8.8's case exactly." },
     { t: "p", text: "There is no supervisor, so there is no coordination turn: one model call per step rather than two (12.1). That is the swarm's real advantage." },
     { t: "h2", n: "02", id: "loop", text: "The loop two agents can get into", sub: "Measured" },
+
+    {"kind": "flow", "title": "Two correct agents, and a loop that is a property of the pair", "caption": "Each one correctly declines a request outside its area. **There is no bug in either agent's logic, no wrong prompt and no malfunction — and reviewing either one in isolation would find nothing.** Which is 12.1's point made concrete: the complexity moved into the handoffs, and this failure lives entirely in the gap between two correct components, where no code review is looking.", "cols": 3, "nodes": [{"id": "b", "label": "billing: not my area -> tech", "sub": "correct", "tone": "good"}, {"id": "t", "label": "tech: not my area -> billing", "sub": "also correct", "tone": "good"}, {"id": "l", "label": "GraphRecursionError at limit 8", "sub": "no stop condition reached", "tone": "crit"}, {"id": "r", "label": "Reviewing either agent finds nothing", "sub": "both are right", "tone": "crit"}, {"id": "p", "label": "The loop belongs to the pair", "sub": "the gap between two files", "tone": "violet"}], "edges": [["b", "t"], ["t", "b"], ["t", "l"], ["l", "r"], ["r", "p"]], "t": "diagram", "id": "dg-12_3-02-2"},
+
     { t: "code", lang: "text", title: "Each thinks the other should handle it",
       code: "recursion_limit=8: RAISED GraphRecursionError: Recursion limit of 8 reached\nwithout hitting a stop condition.",
       caption: "The swarm's characteristic failure." },
@@ -25,6 +31,9 @@ EC.receiveLesson({
       { t: "p", text: "The loop is a property of **the pair**. Which is 12.1's point made concrete: the complexity moved into the handoffs, and this failure lives entirely in the gap between two correct components." }
     ] },
     { t: "h2", n: "03", id: "guard", text: "The guard, and where it has to live", sub: "Shared state" },
+
+    {"kind": "flow", "title": "The counter cannot be per-agent, so it lives in the state", "caption": "**No single agent knows how many hops have happened — one counting its own handoffs cannot see the other's — so the counter has to be in the shared state, which every agent increments and every agent reads.** And the escalation is the swarm's give-up node (11.3): without it, exhausting the budget is an exception rather than an answer. Escalating to a human is also the **right** outcome here: two agents that cannot place a request is exactly what a person should see.", "cols": 3, "nodes": [{"id": "a", "label": "An agent counts its own handoffs", "sub": "and cannot see the other's", "tone": "crit"}, {"id": "s", "label": "So: hops in the shared state", "sub": "all increment, all read", "tone": "good"}, {"id": "e", "label": "Budget spent -> escalate", "sub": "the swarm's give-up node (11.3)", "tone": "good"}, {"id": "x", "label": "Without it: an exception, not an answer", "sub": "GraphRecursionError", "tone": "crit"}, {"id": "h", "label": "And a human is the right recipient", "sub": "nobody could place the request", "tone": "violet"}], "edges": [["a", "s"], ["s", "e"], ["e", "x"], ["e", "h"]], "t": "diagram", "id": "dg-12_3-03-3"},
+
     { t: "code", lang: "python", title: "A hop budget",
       code: 'def billing_agent(state):\n    if state["hops"] >= 2:\n        return {"messages": [AIMessage(content="Escalating to a human.",\n                                        name="billing")],\n                "trace": ["billing: hop budget spent, escalating"]}\n    return Command(goto="tech", update={"hops": 1, ...})',
       out: "    billing -> tech\n    tech -> billing\n    billing: hop budget spent, escalating\n\n  hops: 2",
@@ -36,6 +45,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "compare", text: "Swarm against supervisor", sub: "Five dimensions" },
 
     {"kind": "cycle", "title": "A swarm has no supervisor", "centre": "no coordinator", "caption": "Each agent decides whether to answer or hand off, and the handoff is a `Command` (8.8) carrying the reason with the destination. That removes the coordination turn — **one** model call per step — and removes the place policy would have lived.", "nodes": [{"label": "triage", "sub": "answers or hands off", "tone": "accent", "edge": "Command(goto)"}, {"label": "billing", "sub": "same choice again", "tone": "good", "edge": "hands back"}, {"label": "technical", "sub": "and the loop is possible", "tone": "warn", "edge": "hands on"}], "t": "diagram", "id": "dg-12_3-04-0"},
+
+
 
 
 

@@ -18,6 +18,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Schema, node, edges, compile",
       code: 'class S(TypedDict):\n    value: int\n\ndef add_one(state: S):\n    return {"value": state["value"] + 1}\n\ng = StateGraph(S)\ng.add_node("add_one", add_one)\ng.add_edge(START, "add_one")\ng.add_edge("add_one", END)\napp = g.compile()',
       out: "  result : {'value': 2}",
@@ -26,6 +28,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "validates", text: "What the runtime validates", sub: "And it is less than it looks" },
 
     {"kind": "matrix", "title": "What the runtime actually validates: almost nothing", "caption": "The schema is a **contract between nodes**, not a validator. An unknown input key is accepted and filtered out; a wrong type raises from the node body rather than at the boundary, so the traceback points at your code instead of at the caller who sent it.", "cols": ["what happens", "where you find out"], "rows": ["a key not in the schema", "a wrong type", "a missing key", "an extra key from a node"], "cells": [[{"text": "accepted, then filtered out", "tone": "crit"}, {"text": "nowhere — silent", "tone": "crit"}], [{"text": "TypeError", "tone": "warn"}, {"text": "the node body, not the edge", "tone": "warn"}], [{"text": "KeyError in the node", "tone": "warn"}, {"text": "at run time", "tone": "warn"}], [{"text": "silently discarded", "tone": "crit"}, {"text": "nowhere — silent", "tone": "crit"}]], "t": "diagram", "id": "dg-8_2-02-0"},
+
+
 
 
 
@@ -63,6 +67,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "A node returning an undeclared key",
       code: 'class S2(TypedDict):\n    value: int\n\ndef rogue(state: S2):\n    return {"value": 1, "undeclared": "hello"}',
       out: "  node returns an undeclared key:\n    accepted -> {'value': 1}",
@@ -74,6 +80,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "pydantic", text: "Pydantic, for the validation TypedDict does not do", sub: "And it changes every node" },
 
     {"kind": "trace", "title": "Pydantic raises where TypedDict accepts", "caption": "A Pydantic state model validates on the way in: **a wrong type and a missing key both raise `ValidationError`.** The proportionate default is **`TypedDict` for a graph whose callers you control, and Pydantic when the state crosses a boundary you do not** — an API, a queue, a persisted checkpoint from an older schema version. **The same reasoning 4.7 applied to structured output: validate where the data stops being yours.**", "left": "input", "codeW": 170, "vars": ["with Pydantic"], "steps": [{"code": "valid", "state": ["{'value': 2}"], "tone": "good"}, {"code": "wrong type", "state": ["ValidationError: not an integer"], "changed": [0], "tone": "good", "note": "TypedDict accepts it"}, {"code": "missing key", "state": ["ValidationError: field required"], "tone": "good", "note": "TypedDict accepts it"}], "t": "diagram", "id": "dg-8_2-04-3"},
+
+
 
 
 
@@ -91,6 +99,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "interface", text: "The state is the interface between nodes", sub: "And it has no private part" },
 
     {"kind": "flow", "title": "The schema is the only contract between nodes", "caption": "A node receives the whole state and returns a partial update, so **the schema is the only contract between nodes. There is no other channel: no arguments, no return value another node reads, no shared object.** Which is a strong property — every dependency is in one declaration — and 8.5 shows its cost: because a node receives *everything*, the schema says what is *available* rather than what each node actually uses.", "cols": 3, "nodes": [{"id": "s", "label": "The state schema", "sub": "one declaration", "tone": "violet"}, {"id": "n", "label": "No arguments between nodes", "sub": "none at all", "tone": "accent"}, {"id": "r", "label": "No return value another node reads", "sub": "and no shared object", "tone": "accent"}, {"id": "o", "label": "So it is the only contract", "sub": "every dependency is in it", "tone": "good"}, {"id": "c", "label": "And it says available, not used", "sub": "which is 8.5's cost", "tone": "warn"}], "edges": [["n", "o"], ["r", "o"], ["s", "o"], ["o", "c"]], "t": "diagram", "id": "dg-8_2-05-4"},
+
+
 
 
 

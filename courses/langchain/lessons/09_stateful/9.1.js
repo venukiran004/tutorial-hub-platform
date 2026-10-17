@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "The loop, written out",
       code: 'def agent(state):\n    return {"messages": [bound.invoke(state["messages"])]}\n\ndef tool_node(state):\n    last = state["messages"][-1]\n    out = []\n    for call in last.tool_calls:\n        result = by_name[call["name"]].invoke(call["args"])\n        out.append(ToolMessage(content=str(result), tool_call_id=call["id"]))\n    return {"messages": out}\n\ndef should_continue(state):\n    return "tools" if getattr(state["messages"][-1], "tool_calls", None) else END\n\ng.add_edge(START, "agent")\ng.add_conditional_edges("agent", should_continue, {"tools": "tools", END: END})\ng.add_edge("tools", "agent")      # <- the cycle',
       out: "    HumanMessage('what is the refund policy')\n    AIMessage(tool_calls=['lookup_policy'])\n    ToolMessage('Refunds are available within 30 days of purchase.')\n    AIMessage('Refunds are available within 30 days of purchase.')",
@@ -24,6 +26,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "grows", text: "The loop works by growing the message list", sub: "Measured on each call" },
 
     {"kind": "flow", "title": "The agent loop, as a graph you can see inside", "cols": 3, "caption": "3.3's loop was something you could not inspect. Here it is two nodes plus a conditional edge — and the `tools → agent` edge is the **cycle a chain could not express** (8.1), which is the whole reason this module exists.", "nodes": [{"id": "a", "label": "agent", "sub": "calls the model", "tone": "violet"}, {"id": "t", "label": "tools", "sub": "executes every call", "tone": "warn"}, {"id": "e", "label": "END", "sub": "no tools requested", "tone": "good"}], "edges": [["a", "t", "asked for tools"], ["t", "a", "the cycle", "dashed"], ["a", "e", "answered"]], "t": "diagram", "id": "dg-9_1-02-0"},
+
+
 
 
 
@@ -60,6 +64,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "`should_continue` returns `END` when the model stops asking for tools. So the termination condition is the model's judgement, which is the whole idea of an agent and also 8.9's problem: if the model never stops asking, only the recursion limit does." },
     { t: "code", lang: "text", title: "A model that always asks for a tool",
       code: "recursion_limit=8:\n  RAISED GraphRecursionError: Recursion limit of 8 reached without\n  hitting a stop condition.",
@@ -71,6 +77,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "why", text: "Why the long form is worth seeing", sub: "9.2 collapses it to four lines" },
 
     {"kind": "matrix", "title": "Four places a production change lands, and you need the long form to find them", "caption": "The prebuilts replace both nodes and the graph becomes four lines of wiring — **and every production change is a change to a specific node or edge.** Each row is a modification you can only make if you know which part it belongs to. **The order is: see the long version, use the short one, unroll when a requirement demands it** — the prebuilts are the right default *and* an abstraction you will need to open.", "cols": ["What goes here"], "rows": ["the conditional edge", "the tool node", "the agent node", "the cycle"], "cells": [[{"text": "a step budget", "tone": "violet"}], ["per-tool error handling (M14)"], ["a system prompt, and message trimming (9.5)"], [{"text": "interrupt() for approval (9.7)", "tone": "violet"}]], "t": "diagram", "id": "dg-9_1-04-3"},
+
+
 
 
 

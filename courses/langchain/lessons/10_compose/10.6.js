@@ -16,12 +16,16 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "No graph required",
       code: "double({'n': 5, 'trace': []}) -> {'n': 10, 'trace': ['double']}",
       caption: "8.5's rule: state in, partial update out." },
     { t: "h2", n: "02", id: "routers", text: "Level 2: routers are functions too", sub: "And this is the test people skip" },
 
     {"kind": "flow", "title": "The router is a pure function, and covering every outcome costs almost nothing", "caption": "**The failure it prevents is 8.7's**: a router returning a key the path map lacks **compiles fine and fails at runtime on one branch only.** Since the router is a pure function of state, **covering every outcome costs almost nothing — and it is skipped precisely because it looks too trivial to write.** Which pairs with §01: the two cheapest test levels in the module are the two most often absent.", "cols": 3, "nodes": [{"id": "r", "label": "The router: state -> a key", "sub": "a pure function", "tone": "accent"}, {"id": "m", "label": "A missing map entry compiles", "sub": "8.7 measured it", "tone": "crit"}, {"id": "o", "label": "And fails on one branch only", "sub": "possibly months later", "tone": "crit"}, {"id": "c", "label": "Covering every outcome is trivial", "sub": "no graph needed", "tone": "good"}, {"id": "s", "label": "And skipped for looking trivial", "sub": "the same reason as section 01", "tone": "teal"}], "edges": [["r", "m"], ["m", "o"], ["o", "c"], ["c", "s"]], "t": "diagram", "id": "dg-10_6-02-2"},
+
+
 
 
 
@@ -32,6 +36,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "graph", text: "Level 3: the graph, for what only the runtime does", sub: "Three failures a node test cannot see" },
 
     {"kind": "layers", "title": "Three layers, divided by what only the runtime does", "caption": "Nodes and routers are plain functions, so they test as a dict in and a dict out — cheap, and covering most of the logic. Reserve the expensive layers for what **only** the runtime can show you: reducers merging, and interrupts resuming.", "items": [{"label": "nodes and routers", "sub": "a dict in, a dict out — no runtime, nothing to mock", "tone": "good", "side": "most tests"}, {"label": "a compiled graph", "sub": "reducers, supersteps, routing — what only the runtime does", "tone": "warn", "side": "some"}, {"label": "with a checkpointer", "sub": "interrupts, resume, time travel", "tone": "crit", "side": "a few"}], "t": "diagram", "id": "dg-10_6-03-0"},
+
+
 
 
 
@@ -77,6 +83,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Two tests, then re-running the first",
       code: "test_a -> ['double', 'small']\ntest_b -> ['double', 'small']\n\nre-invoking test_a's thread: ['double', 'small', 'double', 'small']",
       caption: "The second run **appended** to the first." },
@@ -90,6 +98,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Deterministic output, real machinery",
       code: 'script = [AIMessage(content="", tool_calls=[...]),\n          AIMessage(content="the answer")]',
       caption: "Only token generation is faked." },
@@ -97,6 +107,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "assert", text: "What to assert", sub: "Including the underused one" },
 
     {"kind": "matrix", "title": "Five assertions, and the one that catches prompt bugs", "caption": "**`model.seen` — asserting on what the model actually received — is the one that catches prompt and history bugs**, which is 4.8's finding that testing the input is where the cheap bugs are. The other four cover the graph's own failure modes: dropped keys and bad reducers in the final state, routing bugs in the visited sequence, loops in the call count, and the pause itself in `get_state().next`.", "cols": ["Catches"], "rows": ["Final state keys and values", "The visited-node sequence", "The number of model calls", "What the model received", "get_state().next on pause"], "cells": [["dropped keys, bad reducers"], ["routing bugs"], ["loops, redundant calls"], [{"text": "prompt and history bugs - testing the input", "tone": "violet"}], ["that the pause actually happened"]], "t": "diagram", "id": "dg-10_6-06-5"},
+
+
 
 
 

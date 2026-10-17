@@ -14,12 +14,16 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "The critique feeds back into the next generation", "caption": "Three rounds, and the loop exits on the critic's `GOOD` rather than on a counter. What makes this a pattern and not just two prompts is the **feedback edge**: round 2's generator sees *“Too terse. State the payment method”*, so the critique is an **input** to the next draft rather than a report about the last one. Which is also where the cost comes from — §02 — because that text is carried forward.", "left": "round", "codeW": 130, "vars": ["critique", "exits?"], "steps": [{"code": "1", "state": ["Too terse. State the payment method.", "no"], "tone": "warn"}, {"code": "2", "state": ["Better. Add the processing time.", "no"], "changed": [0], "tone": "warn"}, {"code": "3", "state": ["GOOD", "yes"], "changed": [0, 1], "tone": "good", "note": "not a counter"}], "t": "diagram", "id": "dg-11_4-01-1"},
 
+
+
     { t: "code", lang: "text", title: "The trace",
       code: "generate\ncritique: Too terse. State the payment method.\ngenerate\ncritique: Better. Add the processing time.\ngenerate\ncritique: GOOD\n\nrounds: 3\nfinal : 'Refunds are available within 30 days of purchase and are\n         processed to the original payment method within 5 business days.'",
       caption: "The critique feeds back into the next generation." },
     { t: "h2", n: "02", id: "cost", text: "The cost, counted", sub: "And the tokens are worse" },
 
     {"kind": "flow", "title": "Six calls is the floor, and the tokens are worse than six times", "caption": "**Each generation carries the previous critique and each critique carries the full draft, so the per-call token count grows with the round number — the sixth call is the most expensive one, not an equal sixth of the total.** Which means the honest way to price reflection is in **tokens rather than calls**, and that the growth is superlinear in rounds: *“just add one more round”* is not a sixth more cost.", "cols": 3, "nodes": [{"id": "c", "label": "3 generator + 3 critic = 6 calls", "sub": "where one call was 1", "tone": "warn"}, {"id": "g", "label": "Each generation carries the critique", "sub": "and each critique the draft", "tone": "crit"}, {"id": "p", "label": "So per-call tokens grow with the round", "sub": "the sixth call is the dearest", "tone": "crit"}, {"id": "t", "label": "Price it in tokens, not calls", "sub": "the growth is superlinear", "tone": "violet"}, {"id": "o", "label": "'One more round' is not +1/6", "sub": "which is the budgeting error", "tone": "teal"}], "edges": [["c", "g"], ["g", "p"], ["p", "t"], ["t", "o"]], "t": "diagram", "id": "dg-11_4-02-2"},
+
+
 
     { t: "code", lang: "text", title: "Model calls",
       code: "generator calls: 3\ncritic calls   : 3\ntotal          : 6 model calls for one answer",
@@ -32,6 +36,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "The first revision added the most, for a structural reason", "caption": "Round 1 to 2 adds the payment method; round 2 to 3 adds a processing time. **The diminishing return is not a tuning artefact to be optimised away — it follows from the critic being the same model with a different prompt, so it shares the generator's blind spots: a third round finds style issues because the errors it can see, it already saw.** Which is why a *different* model as critic behaves differently.", "left": "draft", "codeW": 110, "vars": ["what it added", "size of the gain"], "steps": [{"code": "round 1", "state": ["'Refunds take 30 days.'", "baseline"], "tone": "accent"}, {"code": "round 2", "state": ["the payment method", "the most"], "changed": [0, 1], "tone": "good"}, {"code": "round 3", "state": ["5 business days", "less"], "changed": [0, 1], "tone": "warn"}, {"code": "round 4+", "state": ["style, not errors", "same blind spots"], "tone": "crit", "note": "same model, same gaps"}], "t": "diagram", "id": "dg-11_4-03-3"},
 
+
+
     { t: "code", lang: "text", title: "The three drafts",
       code: "round 1: 'Refunds take 30 days.'\nround 2: 'Refunds are available within 30 days of purchase, processed to\n          the original payment method.'\nround 3: 'Refunds are available within 30 days of purchase and are processed\n          to the original payment method within 5 business days.'",
       caption: "The **first** revision added the most." },
@@ -42,6 +48,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "cannot", text: "What reflection cannot catch", sub: "7.4's finding, in a new place" },
 
     {"kind": "timeline", "title": "Reflection costs 6 calls where 1 would do", "caption": "Generate, critique, revise — and the cost is the part worth measuring first. Three rounds took **3 generator calls plus 3 critic calls**, so six model calls against one, and the token count grows faster still because each round carries the critique.", "span": 7, "tick": 1, "unit": "model calls", "lanes": [{"label": "a single call", "bars": [[0, 1, "1", "good"]]}, {"label": "1 round", "bars": [[0, 2, "2", "teal"]]}, {"label": "2 rounds", "bars": [[0, 4, "4", "warn"]]}, {"label": "3 rounds", "bars": [[0, 6, "6 — for one answer", "crit"]]}], "t": "diagram", "id": "dg-11_4-04-0"},
+
+
 
 
 
@@ -77,6 +85,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "guard", text: "Three exits, not two", sub: "10.5's progress check" },
 
     {"kind": "flow", "title": "Three exits, and the flag is the only signal the loop is working", "caption": "The third exit is 10.5's progress check: **a critic that says the same thing twice means the loop is not converging.** And recording **which** exit fired is not optional monitoring — *“good enough”* and *“ran out of rounds”* produce the same output, so **the output alone cannot distinguish them, and a loop whose budget is always the exit has no real exit condition.**", "cols": 3, "nodes": [{"id": "g", "label": "The critique says GOOD", "sub": "-> END", "tone": "good"}, {"id": "b", "label": "The round budget is spent", "sub": "-> END, with a flag", "tone": "warn"}, {"id": "u", "label": "The critique is unchanged", "sub": "-> END, with a flag (10.5)", "tone": "warn"}, {"id": "s", "label": "The outputs look identical", "sub": "so record which fired", "tone": "violet"}, {"id": "n", "label": "Budget always the exit = no exit condition", "sub": "an expensive no-op", "tone": "crit"}], "edges": [["g", "s"], ["b", "s"], ["u", "s"], ["s", "n"]], "t": "diagram", "id": "dg-11_4-05-4"},
+
+
 
     { t: "p", text: "A critic that says the same thing twice means the loop is not converging. So the router wants three exits:" },
     { t: "ul", items: [

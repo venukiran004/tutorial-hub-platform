@@ -35,6 +35,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["stage", "cost", "scales with"], rows: [
       ["embed the query", "~104 ms", "**nothing** (fixed)"],
       ["vector search (41 docs)", "~0.08 ms", "corpus size"],
@@ -58,6 +60,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["cache", "key", "saves", "risk"], rows: [
       ["query embedding", "exact text", "~104 ms", "none \u2014 deterministic"],
       ["retrieval result", "exact text", "~105 ms", "stale documents"],
@@ -68,6 +72,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "precompute", text: "What to precompute", sub: "6.1's argument, generalised" },
 
     {"kind": "flow", "title": "What to precompute, which is everything that does not depend on the query", "caption": "The dividing line is clean: **anything computable without the query belongs at index time.** Document embeddings, the BM25 statistics, the index structure itself, chunk-level metadata, and any vision descriptions from 7.8 — all of it is query-independent and therefore paid once rather than per request. Which is also why 7.5 matters: **everything on that list is a cached derivative of the corpus, so every one of them goes stale when the corpus changes.**", "cols": 3, "nodes": [{"id": "q", "label": "Does it depend on the query?", "sub": "the only question", "tone": "violet"}, {"id": "n", "label": "No: precompute it", "sub": "embeddings, df counts, the index", "tone": "good"}, {"id": "d", "label": "Including 7.8's descriptions", "sub": "a vision call per asset, once", "tone": "good"}, {"id": "y", "label": "Yes: it is per-request work", "sub": "and 7.7 decides whether to cache it", "tone": "accent"}, {"id": "s", "label": "And all of it is a corpus derivative", "sub": "so 7.5 applies to every item", "tone": "teal"}], "edges": [["q", "n"], ["n", "d"], ["q", "y"], ["d", "s"]], "t": "diagram", "id": "dg-7_9-03-2"},
+
+
 
 
 
@@ -93,6 +99,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "What teams actually do under pressure, in order",
       code: "1. lower fetch_k      -> 6.7 measured exact-term MRR falling\n                         from 1.000 to 0.875 at fetch 10\n2. drop the reranker  -> that class returns to 0.781\n3. loosen the cache   -> 7.7's wrong-answer rate rises\n4. shorten context    -> 7.3's effective k falls, recall 1.000 -> 0.929",
       caption: "Every one is a quality decision taken for a latency reason." },
@@ -103,6 +111,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "free", text: "The one that is free", sub: "6.8's finding is the scaling lesson too" },
 
     {"kind": "trace", "title": "The one that is free: more stages, half the latency", "caption": "`dense + rerank` is **1.456 s a query**. `hybrid + mmr + rerank` — **three more stages** — is **0.717 s**, less than half. This is 6.8's finding stated as a deployment fact rather than an ablation result: **MMR narrows the candidate set before the cross-encoder runs, so the expensive stage does fewer forward passes**, and the cheap stages that enable that cost a handful of dot products. **The only optimisation in this module that costs nothing and trades nothing.**", "left": "pipeline", "codeW": 200, "vars": ["latency per query"], "steps": [{"code": "dense + rerank", "state": ["1.456 s"], "tone": "crit"}, {"code": "hybrid + mmr + rerank", "state": ["0.717 s"], "changed": [0], "tone": "good", "note": "three more stages"}], "t": "diagram", "id": "dg-7_9-05-4"},
+
+
 
 
 

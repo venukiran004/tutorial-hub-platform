@@ -35,12 +35,16 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Three requests",
       code: "'I want a refund'         -> billing     ['billing handled it']\n'the API returns 500'     -> technical   ['technical handled it']\n'add a teammate'          -> account     ['account handled it']",
       caption: "The branch did no model work, so the cost is one classification plus the handler." },
     { t: "h2", n: "02", id: "ceiling", text: "The classification failure", sub: "And it defines the ceiling" },
 
     {"kind": "trace", "title": "No amount of care in the router's code closes this", "caption": "8.7's version was a router whose **own code** could return an unmapped key, fixable by enumerating the outcomes with an `Enum` and building the map from them. **Here the value comes from a model, and the set of strings a model can emit is not enumerable** — each row below is a different unmapped key, and a refusal is a fifth. Which is why the ceiling of the pattern is set by this one failure.", "left": "what the model returned", "codeW": 190, "vars": ["the route lookup"], "steps": [{"code": "'billing'", "state": ["matched"], "tone": "good"}, {"code": "'Billing'", "state": ["KeyError"], "changed": [0], "tone": "crit"}, {"code": "'billing.'", "state": ["KeyError"], "tone": "crit"}, {"code": "'I think billing'", "state": ["KeyError"], "tone": "crit"}, {"code": "a refusal", "state": ["KeyError"], "tone": "crit", "note": "not enumerable"}], "t": "diagram", "id": "dg-11_2-02-1"},
+
+
 
     { t: "code", lang: "text", title: "A category not in the path map",
       code: "RAISED KeyError: 'nonsense'",
@@ -61,6 +65,8 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "Structured output moves the failure to a better place, and does not remove it", "caption": "Constraining the generation changes the failure from *“the model said something else”* to *“the provider rejected the generation”* — **loud, and at the boundary**, which is a far better failure than a `KeyError` three nodes later. **The default branch still earns its place**, because provider-level constraint is not available everywhere and 4.7's distinction holds: a schema is a request to the provider, not a guarantee from the model.", "cols": 3, "nodes": [{"id": "p", "label": "Constrain the generation", "sub": "a Literal over known labels", "tone": "good"}, {"id": "f", "label": "'the provider rejected it'", "sub": "not 'the model said something else'", "tone": "good"}, {"id": "b", "label": "Loud, and at the boundary", "sub": "not a KeyError three nodes later", "tone": "violet"}, {"id": "n", "label": "Not available everywhere", "sub": "so not a universal fix", "tone": "warn"}, {"id": "d", "label": "The default branch still earns its place", "sub": "4.7: request, not guarantee", "tone": "accent"}], "edges": [["p", "f"], ["f", "b"], ["b", "n"], ["n", "d"]], "t": "diagram", "id": "dg-11_2-03-2"},
 
+
+
     { t: "code", lang: "python", title: "A constrained classification",
       code: 'class Classification(BaseModel):\n    category: Literal["billing", "technical", "account"]',
       caption: "4.6 and 4.7's structured output, applied to routing." },
@@ -68,6 +74,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "cannot", text: "What a router cannot do", sub: "And what that is worth" },
 
     {"kind": "flow", "title": "Each thing it cannot do buys a property you can state", "caption": "The limits are the features. **It cannot call two handlers, so the number of paths equals the number of categories. It cannot loop or revisit a decision, so the model-call count is 1. It cannot sequence several operations, so maximum latency is classification plus the slowest handler** — a number you can write in a design document. And *can it run away?* **No, structurally** — not “unlikely”, not “bounded by a limit”.", "cols": 3, "nodes": [{"id": "h", "label": "Cannot call two handlers", "sub": "-> paths = categories", "tone": "good"}, {"id": "l", "label": "Cannot loop or revisit", "sub": "-> model calls = 1", "tone": "good"}, {"id": "s", "label": "Cannot sequence operations", "sub": "-> latency = classify + slowest", "tone": "good"}, {"id": "w", "label": "A number for a design document", "sub": "all three are countable", "tone": "violet"}, {"id": "r", "label": "Can it run away? No, structurally", "sub": "not 'unlikely'", "tone": "teal"}], "edges": [["h", "w"], ["l", "w"], ["s", "w"], ["w", "r"]], "t": "diagram", "id": "dg-11_2-04-3"},
+
+
 
     { t: "table", head: ["cannot", "which buys"], rows: [
       ["call two handlers for one request", "paths = the number of categories"],

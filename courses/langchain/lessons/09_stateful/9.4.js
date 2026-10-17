@@ -35,6 +35,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "A two-node graph, run once",
       code: "final state: {'n': 20, 'trace': ['a', 'b']}\ncheckpoints written: 4\n\nnewest first:\n  step=2   next=()               values={'n': 20, 'trace': ['a', 'b']}\n  step=1   next=('b',)           values={'n': 2,  'trace': ['a']}\n  step=0   next=('a',)           values={'n': 1,  'trace': []}\n  step=-1  next=('__start__',)   values={'trace': []}",
       caption: "Each records the state **after** that step and what would run next." },
@@ -45,6 +47,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "cost", text: "The serialisation cost", sub: "8.4's warning, quantified" },
 
     {"kind": "trace", "title": "An 8 KB blob in the state is 24 KB written for a two-node run", "caption": "Without the blob, a two-node run writes **88 bytes across four checkpoints**. With an 8 KB field in the schema it writes **24,062 bytes** — because **the whole state is serialised at every superstep**, so the blob is paid for once per step rather than once. Which is 8.4's argument for the three-schema split, measured: **keeping a large value out of the state schema is the only thing that helps, and an output schema does not.**", "left": "state", "codeW": 180, "vars": ["bytes per checkpoint", "total for a 2-node run"], "steps": [{"code": "without the blob", "state": ["30, 24, 21, 13", "88 bytes"], "tone": "good"}, {"code": "with an 8 KB blob", "state": ["8020, 8020, 8020, 2", "24,062 bytes"], "changed": [0, 1], "tone": "crit", "note": "273x"}], "t": "diagram", "id": "dg-9_4-02-1"},
+
+
 
 
 
@@ -63,6 +67,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Invoking the same `thread_id` again continues from the persisted state. The important detail is what happens to an accumulating key: the reducer appends to the **persisted** list, so the second run's history includes the first." },
     { t: "callout", kind: "mental", title: "That is the entire mechanism of conversational memory", body: [
       { t: "p", text: "There is no separate memory feature. Memory is a checkpointer plus a reducer: the state comes back, the reducer appends to it, and the model's next call sees the whole history." },
@@ -71,6 +77,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "survives", text: "What survives a restart", sub: "Measured for one row, documented for the others" },
 
     {"kind": "matrix", "title": "Three savers, and the default survives nothing", "caption": "**`InMemorySaver` holds checkpoints in a Python dict, so a redeploy, a crash or a second worker process all produce an empty result — and the code is unchanged, so nothing indicates a problem.** Which is exactly what a process restart looks like from the outside: memory that worked in development and does not in production, with no error and no diff. The concurrent-readers column is the one that bites at the second worker rather than the first restart.", "cols": ["Survives restart", "Survives redeploy", "Concurrent readers"], "rows": ["InMemorySaver", "SqliteSaver", "PostgresSaver"], "cells": [[{"text": "no", "tone": "crit"}, {"text": "no", "tone": "crit"}, {"text": "one process", "tone": "crit"}], [{"text": "yes", "tone": "good"}, "yes, same disk", {"text": "one machine", "tone": "warn"}], [{"text": "yes", "tone": "good"}, {"text": "yes", "tone": "good"}, {"text": "many", "tone": "good"}]], "t": "diagram", "id": "dg-9_4-04-3"},
+
+
 
 
 
@@ -91,6 +99,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "mistake", text: "The mistake the default invites", sub: "Accepted and ignored" },
 
     {"kind": "flow", "title": "A thread_id with no checkpointer is accepted and does nothing", "caption": "Passing `thread_id` **without** a checkpointer is **accepted** — the run completes normally and persists nothing. So the configuration that looks like memory is memory-shaped and empty, and **the only symptom is that the second turn does not remember the first**, which reads as a model problem rather than a missing argument. 9.5 adds the sharper version: **a system that remembers nothing cannot leak anything, so this bug hides the two security bugs in that lesson during testing.**", "cols": 3, "nodes": [{"id": "t", "label": "thread_id, no checkpointer", "sub": "the default invites it", "tone": "crit"}, {"id": "a", "label": "Accepted", "sub": "the run completes", "tone": "crit"}, {"id": "n", "label": "Nothing is persisted", "sub": "and no error", "tone": "crit"}, {"id": "s", "label": "The symptom is 'it does not remember'", "sub": "which reads as a model problem", "tone": "crit"}, {"id": "h", "label": "And it hides 9.5's leaks in testing", "sub": "nothing to leak", "tone": "violet"}], "edges": [["t", "a"], ["a", "n"], ["n", "s"], ["s", "h"]], "t": "diagram", "id": "dg-9_4-05-4"},
+
+
 
 
 

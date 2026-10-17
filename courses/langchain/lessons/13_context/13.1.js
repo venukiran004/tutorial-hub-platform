@@ -39,6 +39,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Measured",
       code: "turns   final prompt   cumulative tokens sent   ratio\n1       171            171                      1.0x\n2       220            391                      1.8x\n5       367            1345                     3.7x\n10      612            3915                     6.4x\n20      1102           12730                    11.6x\n40      2082           45060                    21.6x",
       caption: "At 40 turns the conversation has sent **21.6\u00d7** its own final length." },

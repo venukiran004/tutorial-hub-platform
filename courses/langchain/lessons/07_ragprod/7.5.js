@@ -35,6 +35,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "A delete the index never heard about",
       code: "built an index over 10 documents, ntotal=10\nquery top 3: ['api-limits', 'bill-overage', 'bill-cancel-sub']\n\ndeleted from source : api-limits\n  index ntotal      : 10  (unchanged)\n  query top 3       : ['api-limits', 'bill-overage', 'bill-cancel-sub']",
       caption: "The deleted document is still first." },
@@ -42,6 +44,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "renumber", text: "The delete that breaks your ids", sub: "Where the off-by-one bugs come from" },
 
     {"kind": "matrix", "title": "Three indexes, three different things a delete does", "caption": "**`IndexFlatIP`'s `remove_ids` shifts the array, so ids after the deleted one renumber** — and if your document metadata is aligned positionally, every document after the deletion now points at the wrong text. **That the course's own exercises use positional alignment is the point**: it is correct for a fixed corpus and becomes a defect the moment the corpus can change, which is a reasonable summary of this whole lesson.", "cols": ["What a delete does", "Consequence"], "rows": ["IndexFlatIP", "IVF", "HNSW"], "cells": [["remove_ids shifts the array", {"text": "ids after it renumber", "tone": "crit"}], ["removes from one inverted list", {"text": "cheap, and the list stays", "tone": "good"}], [{"text": "no true delete in faiss", "tone": "warn"}, "tombstone and filter at query time"]], "t": "diagram", "id": "dg-7_5-02-1"},
+
+
 
 
 
@@ -69,6 +73,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "A nightly rebuild at 02:00",
       code: "edit time   served stale until   window\n02:05       next 02:00           23 h 55 m\n09:00       next 02:00           17 h 00 m\n14:30       next 02:00           11 h 30 m\n23:45       next 02:00            2 h 15 m",
       caption: "Mean about 12 hours; worst case nearly 24." },
@@ -86,6 +92,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "dl", items: [
       ["BM25", "`df`, `avgdl` and `N` are corpus-wide. Add a thousand documents incrementally and every IDF is computed from stale counts \u2014 and 6.3 showed IDF is where BM25's behaviour lives."],
       ["IVF", "The cluster centroids were fit on the original data, so new documents are assigned to the nearest **old** centroid. As the corpus shifts, the partitioning gets worse."],
@@ -95,6 +103,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "visible", text: "The cheapest freshness signal", sub: "5.2 collecting again" },
 
     {"kind": "flow", "title": "The cheapest freshness signal is a date in the citation", "caption": "`[data-retention, updated 2024-03-11]` — **the document's own timestamp, carried into the answer.** It costs one metadata field and one formatting change, and it does something no monitoring can: **it makes staleness visible to the person who can judge whether it matters.** A user reading a policy answer dated eight months ago knows to check; the same user reading an undated answer does not know there was anything to check.", "cols": 3, "nodes": [{"id": "m", "label": "An updated_at in the metadata", "sub": "5.2's loader decision", "tone": "accent"}, {"id": "c", "label": "Carried into the citation", "sub": "[id, updated 2024-03-11]", "tone": "violet"}, {"id": "v", "label": "Staleness becomes visible", "sub": "in the answer itself", "tone": "good"}, {"id": "j", "label": "To the person who can judge it", "sub": "which monitoring cannot do", "tone": "good"}, {"id": "n", "label": "Undated, there is nothing to check", "sub": "and no way to know that", "tone": "crit"}], "edges": [["m", "c"], ["c", "v"], ["v", "j"], ["j", "n"]], "t": "diagram", "id": "dg-7_5-05-4"},
+
+
 
 
 

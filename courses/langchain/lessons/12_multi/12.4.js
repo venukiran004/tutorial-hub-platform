@@ -35,11 +35,16 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Two levels",
       code: "top -> research\nteam_sup -> searcher\nsearcher\nteam_sup -> FINISH\ntop -> FINISH\n\nmodel calls: top 2, team 2",
       caption: "**Two** coordination turns per unit of work \u2014 one at each level." },
     { t: "p", text: "The inner supervisor decides within the team; the outer one decides which team acts. Both are 12.1's coordination calls that do no work, so a hierarchy multiplies the overhead rather than adding to it." },
     { t: "h2", n: "02", id: "boundary", text: "Where the state boundary falls", sub: "10.1's rule, unchanged" },
+
+    {"kind": "flow", "title": "State crosses by key name, which is right for messages and wrong for notes", "caption": "10.1's rule unchanged, with sharper consequences at a team boundary: **a team with a `candidates` key the top level also declares has its working notes merged upward, and a team whose key the parent does not declare has its update silently discarded.** So the boundary is a **schema design** decision — and across a team boundary the wrapper with an explicit mapping is the better of the two, because then the interface is code a rename breaks visibly.", "cols": 3, "nodes": [{"id": "m", "label": "messages, declared by both", "sub": "merges upward - correct", "tone": "good"}, {"id": "c", "label": "candidates, declared by both", "sub": "working notes merge upward", "tone": "crit"}, {"id": "u", "label": "A key the parent omits", "sub": "silently discarded", "tone": "crit"}, {"id": "n", "label": "So: name internal keys so they cannot collide", "sub": "one option", "tone": "good"}, {"id": "w", "label": "Or wrap with an explicit mapping", "sub": "a rename breaks it visibly", "tone": "violet"}], "edges": [["m", "c"], ["c", "u"], ["u", "n"], ["u", "w"]], "t": "diagram", "id": "dg-12_4-02-1"},
+
     { t: "code", lang: "text", title: "The team's messages merged upward",
       code: "-            HumanMessage('research refunds')\nsearcher     AIMessage('found 3 sources')",
       caption: "Both schemas declare `messages`, so the team's output reached the parent." },
@@ -48,6 +53,9 @@ EC.receiveLesson({
       { t: "p", text: "So the boundary is a **schema design** decision: name the team's internal keys so they cannot collide, or wrap the team in a function with an explicit mapping. The second is better across a team boundary, because then the interface is code a rename breaks visibly." }
     ] },
     { t: "h2", n: "03", id: "hidden", text: "What the parent's history hides", sub: "An agent's decisions" },
+
+    {"kind": "trace", "title": "Five top-level checkpoints, and the team's turns arrived in one of them", "caption": "`get_state(cfg, subgraphs=True)` reaches inside, but **the default is opacity — and what is opaque here is an agent's decisions: which worker the team's supervisor chose, and why.** That is precisely the information you want when the output is wrong, and 12.8's blame problem is already hard without a layer of the reasoning invisible by default. **So a hierarchy makes the hardest multi-agent failure harder.**", "left": "top-level checkpoint", "codeW": 160, "vars": ["next", "trace"], "steps": [{"code": "step=0", "state": ["('top',)", "[]"], "tone": "accent"}, {"code": "step=1", "state": ["('research',)", "top -> research"], "changed": [0, 1], "tone": "good"}, {"code": "step=2", "state": ["('top',)", "+ team_sup -> searcher, ..."], "changed": [1], "tone": "violet", "note": "a whole team, one superstep"}, {"code": "what is hidden", "state": ["which worker, and why", "an agent's decisions"], "tone": "crit"}], "t": "diagram", "id": "dg-12_4-03-2"},
+
     { t: "code", lang: "text", title: "The top-level checkpoints",
       code: "top-level checkpoints: 5\n  step=2   next=('top',)        trace=['top -> research', 'team_sup -> searcher', ...]\n  step=1   next=('research',)   trace=['top -> research']\n  step=0   next=('top',)        trace=[]",
       caption: "The team's internal turns arrived together, in one superstep." },
@@ -56,6 +64,9 @@ EC.receiveLesson({
       { t: "p", text: "That is precisely the information you want when the output is wrong, and 12.8's blame problem is already hard without a layer of the reasoning being invisible by default. So a hierarchy makes the hardest multi-agent failure harder." }
     ] },
     { t: "h2", n: "04", id: "cost", text: "What each level costs", sub: "Simple and unforgiving arithmetic" },
+
+    {"kind": "trace", "title": "Two coordination calls per level, before any work happens", "caption": "Simple and unforgiving arithmetic on a task that needs **one** worker turn. **Each level adds a coordination model call per unit of work, a state boundary to get right, and a layer of opacity in the parent's trace** — and only the first of those three shows up in a bill. The other two show up when something is wrong, which is why the depth decision is not purely a cost question.", "left": "depth", "codeW": 140, "vars": ["coordination calls", "boundaries to get right", "layers of opacity"], "steps": [{"code": "one level", "state": ["2", "1", "1"], "tone": "good"}, {"code": "two levels", "state": ["4", "2", "2"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "three levels", "state": ["6", "3", "3"], "changed": [0, 1, 2], "tone": "crit", "note": "for one worker turn"}], "t": "diagram", "id": "dg-12_4-04-3"},
+
     { t: "p", text: "Each level adds three things:" },
     { t: "ul", items: [
       "one **coordination model call** per unit of work at that level",
@@ -66,6 +77,9 @@ EC.receiveLesson({
       code: "one level    2 coordination calls before any work\ntwo levels   4\nthree levels 6",
       caption: "On a task that needs one worker turn." },
     { t: "h2", n: "05", id: "depth", text: "The depth at which it stops paying", sub: "One level" },
+
+    {"kind": "flow", "title": "One level, and only when the teams are real", "caption": "Real meaning 12.1's structural reasons — different **permissions**, different **owners**, or a context budget that genuinely does not fit. **A team that exists because the agent list was getting long is 10.1's “this graph is getting long” one level up, and that was the weakest reason to nest anything.** Beyond one level the structure mirrors an org chart, which **imports the cost without the reason**.", "cols": 3, "nodes": [{"id": "r", "label": "Real: permissions, owners, context", "sub": "12.1's three", "tone": "good"}, {"id": "o", "label": "One level of teams", "sub": "the practical ceiling", "tone": "good"}, {"id": "l", "label": "'The agent list was getting long'", "sub": "10.1's weakest reason, one level up", "tone": "crit"}, {"id": "c", "label": "Beyond that: an org chart", "sub": "human bandwidth, not this", "tone": "crit"}, {"id": "i", "label": "The cost without the reason", "sub": "imported wholesale", "tone": "crit"}], "edges": [["r", "o"], ["l", "c"], ["c", "i"]], "t": "diagram", "id": "dg-12_4-05-4"},
+
     { t: "callout", kind: "mental", title: "One level of teams, and only when the teams are real", body: [
       { t: "p", text: "Real meaning 12.1's structural reasons: different **permissions**, different **owners**, or a context budget that genuinely does not fit. A team that exists because the agent list was getting long is 10.1's \u201cthis graph is getting long\u201d one level up \u2014 and that was the weakest reason to nest anything." },
       { t: "p", text: "Beyond one level the structure is mirroring an org chart, and 12.1 already noted that an org chart solves human bandwidth and accountability problems that do not apply here. Importing the shape imports the cost without the reason." }

@@ -35,6 +35,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "dl", items: [
       ["the documents are good", "\u2192 generate"],
       ["the documents are off-topic", "\u2192 rewrite the query, retrieve again (7.2)"],
@@ -45,6 +47,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "three", text: "Three queries, three paths", sub: "On the real corpus" },
 
     {"kind": "trace", "title": "Three queries, and the machinery cost nothing on the first", "caption": "The good path is the one worth noticing: **0.443 graded good and went straight to generate, so the extra structure cost nothing on a query the baseline already handled.** The rewrite path is 7.2's measured case — **0.139 to 0.709**, with `bill-cancel-sub` replacing the order-cancellation document. And 7.2's caveat holds: that rewrite was written knowing the corpus, and a blind rewriter landed **0 of 5** attempts on one query.", "left": "query", "codeW": 210, "vars": ["top score", "path"], "steps": [{"code": "'how long do you keep my information'", "state": ["0.443", "good -> generate"], "tone": "good"}, {"code": "'I want out'", "state": ["0.139", "weak -> rewrite"], "changed": [0, 1], "tone": "warn"}, {"code": "-> 'cancel my subscription auto-renewal'", "state": ["0.709", "good -> generate"], "changed": [0, 1], "tone": "good", "note": "7.2's case"}, {"code": "'...airspeed velocity of an unladen swallow'", "state": ["0.128", "rewrote to itself"], "changed": [0, 1], "tone": "crit"}, {"code": "-> second grade", "state": ["0.128", "gave up"], "tone": "crit", "note": "7.1's required outcome"}], "t": "diagram", "id": "dg-11_7-02-1"},
+
+
 
     { t: "code", lang: "text", title: "The good path",
       code: "'how long do you keep my information'\n  retrieve -> [('data-retention', 0.443), ('data-deletion', 0.411), ...]\n  grade: top score 0.4429 -> good\n  generate from ['data-retention', 'data-deletion']",
@@ -63,6 +67,8 @@ EC.receiveLesson({
 
     {"kind": "steps", "title": "Three graders, and each inherits a limitation measured in module 7", "caption": "**The pattern cannot be better than its grader**, and every available grader carries a known flaw. The cross-encoder case is the sharpest: **using it as a grader would refuse precisely the queries dense retrieval handles correctly, so it would send working retrievals down the rewrite path** — two models failing on the same query class are not an ensemble (7.1).", "items": [{"label": "A score threshold", "code": "free", "desc": "7.1's AUC 0.943 — and the populations overlap, so it is a chosen trade rather than a classifier.", "tone": "good"}, {"label": "A cross-encoder", "code": "~68 ms/pair", "desc": "Refuses the queries dense retrieval answers correctly (7.1) — a second opinion, not a better one.", "tone": "warn"}, {"label": "An LLM grader", "code": "a call per doc", "desc": "7.4 measured a model scoring a contradiction at +5.293 — relevance is not correctness.", "tone": "crit"}], "t": "diagram", "id": "dg-11_7-03-2"},
 
+
+
     { t: "table", head: ["grader", "cost", "what it inherits"], rows: [
       ["a score threshold", "free", "7.1's **AUC 0.943** \u2014 and the populations overlap, so it is a chosen trade, not a classifier"],
       ["a cross-encoder", "~68 ms per pair", "7.1 measured it **refusing** the vocabulary-mismatch queries dense answers correctly \u2014 a second opinion, not a better one"],
@@ -75,6 +81,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "cost", text: "The cost, and the gate that pays for it", sub: "7.2's conclusion as a graph" },
 
     {"kind": "flow", "title": "Grade cheaply first, and spend a model call only on failure", "caption": "Worst case per query is retrieve, grade, rewrite, retrieve, grade, generate — **with an LLM grader that is three model calls before generation, on every query, including the ones 7.2 measured the baseline answering at MRR 0.964.** The gate is 7.2's conclusion expressed as a graph: **the free threshold first, escalating only when it says the retrieval was weak.** A loop that grades expensively on every query has spent its budget on the queries that did not need it.", "cols": 3, "nodes": [{"id": "w", "label": "Worst case: 6 operations per query", "sub": "retrieve, grade, rewrite, again", "tone": "crit"}, {"id": "l", "label": "LLM grader: 3 calls before generating", "sub": "on every query", "tone": "crit"}, {"id": "b", "label": "Including the ones at MRR 0.964", "sub": "which needed none of it", "tone": "crit"}, {"id": "t", "label": "So: the free threshold first", "sub": "AUC 0.943, no call", "tone": "good"}, {"id": "e", "label": "Escalate only on weak", "sub": "7.2's conclusion as a graph", "tone": "good"}], "edges": [["w", "l"], ["l", "b"], ["b", "t"], ["t", "e"]], "t": "diagram", "id": "dg-11_7-04-3"},
+
+
 
     { t: "p", text: "Worst case per query: retrieve, grade, rewrite, retrieve, grade, generate. With an **LLM grader** that is three model calls before generation, on **every** query \u2014 including the ones 7.2 measured the baseline answering at MRR 0.964." },
     { t: "callout", kind: "good", title: "Grade cheaply first, spend a model call only on failure", body: [
