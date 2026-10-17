@@ -23,6 +23,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Span", "Must carry", "Nice to have"],
       rows: [
@@ -47,6 +49,8 @@ EC.receiveLesson({
       sub: "Because they make \u201cnothing changed\u201d provable" },
 
     {"kind": "matrix", "title": "Three attributes that earn their place above all others", "caption": "Each one turns an unanswerable question into a comparison. **`chat-large` is not a version and `chat-large-2026-03-11` is** — when a provider rolls an alias, only the pinned comparison catches it. **Prompts change more often than code** and frequently outside version control, so a template ID or hash is the only way to attribute a quality change to one. And **every re-index is a deploy**: naming the index `support-docs-v4` rather than `support-docs` makes that deploy visible in every trace.", "cols": ["Why it is first"], "rows": ["The exact model version", "The prompt template ID", "The index version"], "cells": [[{"text": "an alias roll is invisible without it - and it is one comparison", "tone": "crit"}], [{"text": "prompts change more often than code, often outside version control", "tone": "crit"}], [{"text": "every re-index is a deploy; the name is what makes it visible", "tone": "crit"}]], "t": "diagram", "id": "dg-10_6-02-1"},
+
+
 
 
 

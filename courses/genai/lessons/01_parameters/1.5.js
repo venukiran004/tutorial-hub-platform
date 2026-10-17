@@ -110,6 +110,8 @@ print("asking for max_tokens=4096 alongside it needs %d of 128000" % (n + 4096))
 
 
 
+
+
     { t: "p", text: "The common form gives the usual heuristics — 1 token ≈ 4 characters ≈ 0.75 words — and they are reasonable for the text they were measured on. Here is what they do on six other kinds of text." },
 
     { t: "code", lang: "python", title: "g13.py — tiktoken across six samples", code: `enc  = tiktoken.get_encoding("cl100k_base")      # GPT-4, GPT-3.5
@@ -173,6 +175,8 @@ the claim: 1 token ~ 4 characters (English) ~ 0.75 words
 
 
 
+
+
     { t: "p", text: "When output hits `max_tokens` the response stops mid-sentence, and there is nothing in the text that says so — a truncated answer and a short answer look identical. The only signal is `finish_reason`, which is the field most production bugs in this area come from not reading." },
 
     { t: "table",
@@ -213,6 +217,8 @@ for cap in (5, 15, 40):
       sub: "Reserve the output first, then fill what is left" },
 
     {"kind": "flow", "title": "Reserve output space; do not leave it as a remainder", "caption": "The pattern that works inverts the usual one. Decide how much output the feature needs, subtract it from the window with a margin, and let the prompt builder fill whatever is left — dropping the lowest-priority material when it runs out. The figure to log is `chunks_dropped`: **a retrieval system that silently drops half its context is one whose recall measurements no longer describe what the model saw**, and that disconnect is behind a large share of \"retrieval is good but answers are bad\" investigations.", "cols": 3, "nodes": [{"id": "w", "label": "The context window", "sub": "a fixed total", "tone": "violet"}, {"id": "o", "label": "Reserve the output first", "sub": "what the feature needs, plus margin", "tone": "good"}, {"id": "p", "label": "The prompt gets the remainder", "sub": "not the other way round", "tone": "good"}, {"id": "d", "label": "Drop by priority when it runs out", "sub": "lowest-value context first", "tone": "accent"}, {"id": "l", "label": "Log chunks_dropped", "sub": "the number nobody logs", "tone": "crit"}, {"id": "r", "label": "Or recall stops describing reality", "sub": "6.2 and 10.6 return to this", "tone": "teal"}], "edges": [["w", "o"], ["o", "p"], ["p", "d"], ["d", "l"], ["l", "r"]], "t": "diagram", "id": "dg-1_5-04-2"},
+
+
 
 
 

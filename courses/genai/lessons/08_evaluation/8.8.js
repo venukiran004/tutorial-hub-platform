@@ -26,6 +26,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Metric", "Meaning", "The question it answers"],
       rows: [
@@ -67,6 +69,8 @@ def mrr(retrieved_ids, relevant_ids):
       sub: "The RAGAS quartet" },
 
     {"kind": "matrix", "title": "Three of these need no gold answer, which is what lifts the ceiling", "caption": "8.1 argued that reference-free evaluation is what removes the cap on eval-set size, because a gold answer per case bounds you by annotation effort. Here is where that pays: **faithfulness, answer relevancy and context precision all need no reference**, so they can run on every production request. Context recall and answer correctness need gold answers and therefore stay on a curated set — which is the natural division between what you measure continuously and what you measure in CI.", "cols": ["Question", "Reference needed?"], "rows": ["Faithfulness", "Answer Relevancy", "Context Precision", "Context Recall", "Answer Correctness"], "cells": [["are the claims supported by the context?", {"text": "no - runs on live traffic", "tone": "good"}], ["does it address the question?", {"text": "no", "tone": "good"}], ["are the chunks relevant and well ranked?", {"text": "no", "tone": "good"}], ["did retrieval get everything needed?", {"text": "yes - a gold answer", "tone": "warn"}], ["is the answer factually right?", {"text": "yes", "tone": "warn"}]], "t": "diagram", "id": "dg-8_8-02-1"},
+
+
 
 
 

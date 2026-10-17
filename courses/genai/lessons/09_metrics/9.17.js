@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Output", "Metric", "Why"],
       rows: [
@@ -51,6 +53,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "dl", items: [
       { k: "n-gram overlap", v: "Blind to paraphrase and to meaning reversal. A correct answer in different words scores near zero; inserting \u201cnot\u201d barely moves the score. Both verified in 9.3." },
       { k: "ROUGE recall", v: "Rewards length. ROUGE-recall rises as the candidate grows, so a summary that copies the source scores well \u2014 which is why ROUGE-L F1 and a length constraint are both needed (9.4)." },
@@ -65,6 +69,8 @@ EC.receiveLesson({
       sub: "The same ranking, two defensible answers" },
 
     {"kind": "flow", "title": "A convention trap found by running both halves of the course", "caption": "This module uses linear NDCG gain and module 5 uses exponential — **a discrepancy found by computing both rather than read off a page.** Exponential weights a grade-3 document **seven times** a grade-1 one; linear weights it three times. So \"NDCG@6 = 0.96\" is not comparable across two teams unless both state the gain function, and the same applies to whether the ideal ranking is built from the judged pool or the full corpus. Two defensible conventions, incomparable numbers, and nothing in the metric's name warns you.", "cols": 3, "nodes": [{"id": "a", "label": "This module: linear gain", "sub": "grade 3 is worth 3x", "tone": "accent"}, {"id": "b", "label": "Module 5: exponential gain", "sub": "grade 3 is worth 7x", "tone": "accent"}, {"id": "f", "label": "Found by computing both", "sub": "not read off a page", "tone": "violet"}, {"id": "n", "label": "So NDCG@6 = 0.96 means nothing alone", "sub": "without the gain function", "tone": "crit"}, {"id": "i", "label": "And the ideal-ranking pool matters too", "sub": "judged pool or full corpus", "tone": "crit"}, {"id": "s", "label": "State both conventions, always", "sub": "the name warns you of neither", "tone": "good"}], "edges": [["a", "f"], ["b", "f"], ["f", "n"], ["n", "i"], ["i", "s"]], "t": "diagram", "id": "dg-9_17-03-2"},
+
+
 
 
 

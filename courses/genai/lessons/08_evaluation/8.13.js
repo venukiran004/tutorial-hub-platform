@@ -26,6 +26,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["You want to know\u2026", "Use", "Measured in this module"],
       rows: [
@@ -59,6 +61,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Tool", "Focus", "Layer"],
       rows: [
@@ -82,6 +86,8 @@ EC.receiveLesson({
       sub: "Most of them this module measured rather than asserted" },
 
     {"kind": "matrix", "title": "Seven pitfalls, and the two that this module measured as worse than stated", "caption": "Two rows are sharper than the received wisdom. **An inverted sentence scored ROUGE-1 and ROUGE-2 of exactly 1.0000** — so \"BLEU/ROUGE don't measure correctness\" understates it; they can award a perfect score to a reversal of meaning. And **a judge outputting \"good\" for everything got 95.1% raw agreement and κ = 0.000** — so raw agreement is not evidence of a working judge, and Cohen's κ is the number that catches it.", "cols": ["The sharper version"], "rows": ["Benchmarks insufficient", "Contamination inflates", "BLEU/ROUGE miss correctness", "LLM judges are biased", "RAG failures are retrieval", "Faithfulness over fluency", "Eval-driven development"], "cells": [[{"text": "no benchmark contains your retriever, documents or users", "tone": "warn"}], [{"text": "memorisation and competence give the same number, so a score is a ceiling", "tone": "warn"}], [{"text": "measured: an inverted sentence scored ROUGE-1 and ROUGE-2 of 1.0000", "tone": "crit"}], [{"text": "measured: an all-\"good\" judge got 95.1% agreement and kappa = 0.000", "tone": "crit"}], [{"text": "the branch is whether the gold chunk is in top-k; the branches share no fixes", "tone": "accent"}], [{"text": "and the score depends on a claim policy that has to be written down", "tone": "accent"}], [{"text": "gate merges, grow the set from production failures, measure online", "tone": "good"}]], "t": "diagram", "id": "dg-8_13-03-2"},
+
+
 
 
 

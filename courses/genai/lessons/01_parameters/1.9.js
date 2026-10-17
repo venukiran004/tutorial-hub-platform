@@ -124,6 +124,8 @@ print(r.choices[0].message.content)`,
 
 
 
+
+
     { t: "code", lang: "python", title: "g18.py — one tool definition", code: `tools = [{
     "type": "function",
     "function": {
@@ -161,6 +163,8 @@ print(r.choices[0].message.content)`,
       sub: "Four values, three genuinely different behaviours" },
 
     {"kind": "matrix", "title": "tool_choice, and the job each setting is for", "caption": "Four settings, and the two middle ones are the ones people never reach for. `\"none\"` keeps the tools *visible* while forbidding the call, which is how you get the model to talk **about** its tools or to force a summary turn after a sequence of calls. `\"required\"` is for a turn that is meaningless without data — a router or a lookup step — where letting the model answer from memory is the failure.", "cols": ["Behaviour", "Reach for it when"], "rows": ["auto", "none", "required", "a named function"], "cells": [["the model decides whether and which", {"text": "the default", "tone": "good"}], [{"text": "visible but never called", "tone": "accent"}, "you want a summary turn"], [{"text": "must call at least one", "tone": "accent"}, "a router, or a lookup step"], [{"text": "that tool, always", "tone": "violet"}, "structured output, or one action"]], "t": "diagram", "id": "dg-1_9-03-1"},
+
+
 
 
 
@@ -225,6 +229,8 @@ print(r.choices[0].message.content)`,
 
 
 
+
+
     { t: "p", text: "Tool definitions are input tokens. They are sent with the first request, and again with the second, and again with every turn of the conversation — because the model has no memory and the schemas have to be in the context each time it might need them." },
 
     { t: "code", lang: "python", title: "g18.py — the arithmetic", code: `one = n(tools)                       # 85 tokens for the get_weather definition
@@ -268,6 +274,8 @@ with a 10-turn conversation each, that is $4250.00`,
       sub: "The arguments came from a language model" },
 
     {"kind": "flow", "title": "The model's tool call is a request, not an instruction", "caption": "The schema guarantees the arguments are well-typed. It guarantees nothing about whether they are **safe**, and those values arrived from a model that was reading user-supplied text. This is where prompt injection stops being a content problem and becomes an action problem: if a tool reads a web page, an email or a retrieved document, that text is in the context and can contain instructions. The defence is always at step 3 — your code authorises the action, not the model.", "cols": 3, "nodes": [{"id": "u", "label": "A tool reads untrusted text", "sub": "a page, an email, a document", "tone": "warn"}, {"id": "c", "label": "That text is now in the context", "sub": "and can contain instructions", "tone": "crit"}, {"id": "m", "label": "The model emits a tool call", "sub": "well-typed, possibly hostile", "tone": "crit"}, {"id": "s", "label": "Step 3 is your code", "sub": "it is the only trust boundary", "tone": "good"}, {"id": "a", "label": "Authorise against the user, not the model", "sub": "scope, limits, confirmation", "tone": "good"}, {"id": "l", "label": "A suggestion, never a command", "sub": "2.16 is the lesson", "tone": "teal"}], "edges": [["u", "c"], ["c", "m"], ["m", "s"], ["s", "a"], ["a", "l"]], "t": "diagram", "id": "dg-1_9-05-3"},
+
+
 
 
 

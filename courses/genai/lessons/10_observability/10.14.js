@@ -23,6 +23,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Ten steps, in order", code: `   1. Is it real?          sample size, confidence interval, 2 days of data
    2. When did it start?   the exact hour. Line it up against the change log.
    3. What changed?        deploys, prompt edits, index rebuilds, provider notices,
@@ -62,6 +64,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "callout", kind: "tradeoff", title: "\u201cSlice it\u201d and \u201calert at two sigma\u201d cannot both be followed on a daily window",
       body: [
         { t: "p", text: "Step 4 is right: an average is a mix of populations, and 10.13 showed a 21% cohort hiding inside a 60% headline. But every slice divides the sample, so the detectable effect grows as \u221ak \u2014 and 10.12 measured a 200-example daily set resolving to 3.08 points at the headline and **10.68 points across twelve tenants**." },
@@ -73,6 +77,8 @@ EC.receiveLesson({
       sub: "Each one makes a runbook step impossible" },
 
     {"kind": "matrix", "title": "Eight pitfalls, and the step each one breaks", "caption": "The first is the one that makes everything else impossible: **retrieval and generation failures look identical in the final answer, so you cannot debug what you did not capture.** The third is the one that makes \"nothing changed\" unprovable — model alias, embedding model, prompt template, index and chunking config, and without **all five** the claim cannot be checked. And the seventh is 10.10's finding: head sampling at 5% keeps a random 5% and throws away the failures.", "cols": ["Why it hurts"], "rows": ["Logging only the answer", "One number, no slices", "No version pins", "A judge in the request path", "Alerting on any drop", "Tracing without attributes", "Head sampling at 5%", "Shipping PII to a vendor"], "cells": [[{"text": "retrieval and generation failures look identical", "tone": "crit"}], [{"text": "it hid a 21% cohort inside a 60% headline", "tone": "crit"}], [{"text": "five of them, and without all five 'nothing changed' is unprovable", "tone": "crit"}], ["a second of latency and a second failure mode, for a score you can defer"], [{"text": "200 samples carry +-3 points; people stop reading alerts", "tone": "warn"}], [{"text": "a tree of names with no scores or token counts is a pretty picture", "tone": "warn"}], [{"text": "you keep a random 5% and throw away the failures", "tone": "crit"}], [{"text": "redact at export - once in their store it is in their backups", "tone": "crit"}]], "t": "diagram", "id": "dg-10_14-03-2"},
+
+
 
 
 

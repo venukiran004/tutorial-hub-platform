@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Over-refusal is invisible by default, and that asymmetry drives the tuning", "caption": "Six of ten benign-but-tricky inputs blocked, **precision 0.571 — so nearly half of everything the regex scan blocked was a real user.** What makes this insidious is the visibility asymmetry: **a harmful answer that escapes generates a complaint, a screenshot and an incident; a wrongly refused question generates a shrug and a lost user.** Teams tighten in response to the failures they see and never loosen in response to the ones they do not, so the threshold ratchets in one direction only.", "cols": 3, "nodes": [{"id": "b", "label": "6 of 10 benign inputs blocked", "sub": "precision 0.571", "tone": "crit"}, {"id": "h", "label": "A harmful escape: a screenshot", "sub": "an incident, a post-mortem", "tone": "crit"}, {"id": "o", "label": "A wrong refusal: a shrug", "sub": "and a lost user", "tone": "crit"}, {"id": "a", "label": "Only one of them is visible", "sub": "the asymmetry", "tone": "violet"}, {"id": "r", "label": "So the threshold ratchets one way", "sub": "tighten, never loosen", "tone": "crit"}, {"id": "m", "label": "Which is why you measure both", "sub": "deliberately, on a schedule", "tone": "good"}], "edges": [["b", "o"], ["h", "a"], ["o", "a"], ["a", "r"], ["r", "m"]], "t": "diagram", "id": "dg-11_16-01-0"},
 
 
+
+
     { t: "code", lang: "text", title: "Both directions", code: `Too loose  -> harmful content slips through        (false negatives)
 Too strict -> blocks legitimate use, users leave   (false positives / over-refusal)`,
       caption: "\u201cI cannot discuss medication\u201d to a pharmacy app destroys the product as surely as a harmful answer does." },
@@ -36,6 +38,8 @@ Too strict -> blocks legitimate use, users leave   (false positives / over-refus
       sub: "Measured, both directions" },
 
     {"kind": "trace", "title": "A threshold moved by 0.1 changes both error rates by a factor of two", "caption": "**F1 picks 0.50 and F1 is the wrong objective**, because it weights the two errors equally and for a safety guardrail they are almost never equal. The curve is also steep: moving 0.5 to 0.8 cuts over-refusal from 6.0% to **0.1%** and lets harmful-miss rise from 10.3% to **67.7%**. So the sweep is a **policy choice, not an optimisation**, and the honest framing states both numbers: *at 0.5 we miss 10.3% of harmful content and wrongly refuse 6.0% of legitimate requests.*", "left": "threshold", "codeW": 130, "vars": ["block rate", "harmful miss", "over-refuse", "F1"], "steps": [{"code": "0.30", "state": ["45.4%", "1.0%", "32.0%", "0.606"], "tone": "crit"}, {"code": "0.40", "state": ["31.1%", "4.0%", "14.8%", "0.752"], "tone": "warn"}, {"code": "0.50", "state": ["22.7%", "10.3%", "6.0%", "0.839"], "changed": [3], "tone": "accent", "note": "F1-optimal"}, {"code": "0.60", "state": ["16.5%", "26.7%", "2.2%", "0.804"], "changed": [1], "tone": "warn"}, {"code": "0.80", "state": ["6.5%", "67.7%", "0.1%", "0.487"], "changed": [1, 2], "tone": "crit"}, {"code": "0.90", "state": ["1.4%", "93.0%", "0.0%", "0.131"], "tone": "crit"}], "t": "diagram", "id": "dg-11_16-02-1"},
+
+
 
 
     { t: "code", lang: "text", title: "A moderation classifier on 300 harmful and 1,200 benign-tricky", code: `threshold    block rate   harmful miss  over-refuse           F1

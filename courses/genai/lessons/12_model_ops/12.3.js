@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "need", text: "Do you even need it?",
       sub: "Three tools, three different jobs" },
 
+    {"kind": "matrix", "title": "Three mechanisms, and the sequencing that follows", "caption": "The decision is about **what you need to change**, and the three answers do not overlap. Facts baked into weights **go stale**, require a training run to update rather than an index write, and **cannot be cited** — the third is the one that surprises people, and 11.1 explains it: the objective rewards plausible continuations, so training on your facts makes plausible-sounding variants of them more likely too. So: prompt first, then RAG for knowledge, then fine-tune for behaviour, format or cost.", "cols": ["Change what", "Example"], "rows": ["Prompting / few-shot", "RAG", "Fine-tuning"], "cells": [["nothing in the model; just instructions", "a quick behaviour tweak"], [{"text": "knowledge - facts it should use", "tone": "good"}, "answer from our latest docs"], [{"text": "behaviour, format, style", "tone": "violet"}, "our exact JSON schema, house tone"]], "t": "diagram", "id": "dg-12_3-01-0"},
+
+
     { t: "table",
       head: ["Use\u2026", "When you need to change\u2026", "Example"],
       rows: [
@@ -35,6 +38,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "forgetting", text: "Catastrophic forgetting",
       sub: "The main production risk" },
+
+    {"kind": "trace", "title": "Every metric the team watched improved", "caption": "Task accuracy went **70% to 92% — up 22 points**, which is the number in the pull request and the number in the summary. The general benchmark went **85% to 61%**, and nobody was watching it. This is the same structure as 11.17's closing rule: **a single number that only improves is measuring one error direction**, and the direction it is not measuring is where the damage went. The fix is to keep a general-ability metric in the gate, not to fine-tune less.", "left": "metric", "codeW": 200, "vars": ["before", "after"], "steps": [{"code": "task accuracy", "state": ["70%", "92%"], "changed": [1], "tone": "good", "note": "the number reported"}, {"code": "general benchmark", "state": ["85%", "61%"], "changed": [1], "tone": "crit", "note": "nobody was watching"}], "t": "diagram", "id": "dg-12_3-02-1"},
+
 
     { t: "code", lang: "text", title: "The illustration", code: `Before FT:  task accuracy 70% | general benchmark 85%
 After FT:   task accuracy 92% | general benchmark 61%   <- forgot a lot`,

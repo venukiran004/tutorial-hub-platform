@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "There is no term for truth in the objective", "caption": "Next-token prediction maximises the probability of a **plausible continuation** given the prefix, and there is no term in that objective for truth and no internal signal distinguishing a remembered fact from a well-shaped guess. **So hallucination is the default rather than a fault** — 1.1 showed the same structure from the sampling side: the model always produces *something*, and nothing in the mechanism can return nothing. The consequence runs through the whole module: **abstention is a capability you have to add.**", "cols": 3, "nodes": [{"id": "o", "label": "Maximise a plausible continuation", "sub": "given the prefix", "tone": "violet"}, {"id": "t", "label": "No term for truth", "sub": "anywhere in the objective", "tone": "crit"}, {"id": "s", "label": "No signal for 'I am guessing'", "sub": "remembered and invented look alike", "tone": "crit"}, {"id": "d", "label": "So hallucination is the default", "sub": "not a fault", "tone": "crit"}, {"id": "a", "label": "Abstention has to be added", "sub": "it is not there to switch on", "tone": "good"}], "edges": [["o", "t"], ["o", "s"], ["t", "d"], ["s", "d"], ["d", "a"]], "t": "diagram", "id": "dg-11_1-01-0"},
 
 
+
+
     { t: "code", lang: "text", title: "What the objective actually asks for", code: `Question: "What was Acme Corp's Q3 2023 revenue?"
 
 The model has never seen Acme's filings, but "revenue" questions
@@ -40,6 +42,8 @@ emits a fluent, well-formatted, completely invented number.`,
       sub: "And they are routinely conflated" },
 
     {"kind": "matrix", "title": "Four terms, and the distinction that decides what you can measure", "caption": "**Faithfulness is answerable and factuality is not** — at least not cheaply. Faithfulness asks whether the answer is supported by **the context you supplied**, which is sitting right there in the request. Factuality asks whether it matches the real world, which needs an external source of truth. That is why every measurable metric in this module is a faithfulness metric, and why **a perfectly faithful answer can still be false** if the context was.", "cols": ["What it asks", "Measurable?"], "rows": ["Hallucination", "Faithfulness", "Factuality", "Confabulation"], "cells": [["fluent but false or unsupported", "only via the others"], [{"text": "supported by the supplied context?", "tone": "good"}, {"text": "yes - the context is right there", "tone": "good"}], [{"text": "does it match the real world?", "tone": "warn"}, {"text": "needs an external source of truth", "tone": "crit"}], ["invented detail filling a gap", "visible in the claim-level check"]], "t": "diagram", "id": "dg-11_1-02-1"},
+
+
 
 
     { t: "dl", items: [

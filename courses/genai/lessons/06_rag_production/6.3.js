@@ -30,6 +30,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "5.4 established that chunking is the highest-leverage decision in a retrieval pipeline. Parsing sits *before* chunking, and it has the same property with less attention paid to it: a table flattened into a column of orphaned numbers cannot be rescued by any chunk size, any embedding model or any re-ranker." },
 
     { t: "table",
@@ -57,6 +59,8 @@ EC.receiveLesson({
       sub: "\u201cTell me more about it\u201d is not a query" },
 
     {"kind": "flow", "title": "Standard RAG works on turn one and breaks on turn two", "caption": "Embedding the latest user message works until the message stops being self-contained — and **a follow-up usually is not, because the subject lives in the previous turn**. *\"And what about the second one?\"* embeds to nothing useful. The fix is a generation before the retrieval: rewrite the follow-up into a standalone question using the history, then retrieve on the rewrite. Same shape as HyDE, same cost: a full model call on the critical path.", "cols": 3, "nodes": [{"id": "t", "label": "Turn 1: a self-contained question", "sub": "embeds fine", "tone": "good"}, {"id": "f", "label": "Turn 2: \"and the second one?\"", "sub": "the subject is in turn 1", "tone": "crit"}, {"id": "e", "label": "Embedding it retrieves noise", "sub": "there is nothing to match", "tone": "crit"}, {"id": "r", "label": "Rewrite to standalone first", "sub": "using the history", "tone": "good"}, {"id": "s", "label": "Then retrieve on the rewrite", "sub": "same shape as HyDE (5.8)", "tone": "good"}, {"id": "c", "label": "A model call on the critical path", "sub": "which is the cost", "tone": "warn"}], "edges": [["t", "f"], ["f", "e"], ["e", "r"], ["r", "s"], ["s", "c"]], "t": "diagram", "id": "dg-6_3-02-1"},
+
+
 
 
 
@@ -112,6 +116,8 @@ rag_chain.invoke({
       sub: "A predicate that is exact does not belong in a vector" },
 
     {"kind": "flow", "title": "If a constraint is exactly expressible, it is a filter", "caption": "Stated as a rule: **this tenant, this year, this department, this access level — these should be filters, not hopes about cosine similarity.** An embedding has no notion of exactness, so a constraint expressed in the query text is a preference the retriever may ignore. And the ordering matters as much as the existence: 6.8 measures post-filtering returning 19 foreign rows at identical recall, because it searched everything and dropped afterwards.", "cols": 3, "nodes": [{"id": "e", "label": "An exact constraint", "sub": "tenant, year, access level", "tone": "violet"}, {"id": "q", "label": "Put it in the query text", "sub": "a hope about similarity", "tone": "crit"}, {"id": "f", "label": "Make it a filter", "sub": "the store enforces it", "tone": "good"}, {"id": "p", "label": "Pre-filter, not post-filter", "sub": "restrict, then search", "tone": "good"}, {"id": "l", "label": "Post-filtering still read the data", "sub": "19 foreign rows (6.8)", "tone": "crit"}], "edges": [["e", "q"], ["e", "f"], ["f", "p"], ["p", "l"]], "t": "diagram", "id": "dg-6_3-03-2"},
+
+
 
 
 

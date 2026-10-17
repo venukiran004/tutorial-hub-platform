@@ -26,6 +26,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Signal", "Examples", "Note"],
       rows: [
@@ -62,6 +64,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "callout", kind: "good", title: "Compare success, cost and latency together or the result is misleading",
       body: [
         { t: "p", text: "A change that improves answers by adding a re-ranking pass and a longer prompt will win on quality and lose on both other axes. 6.2 measured the magnitude \u2014 11 ms of retrieval against 2,405 ms for a cross-encoder \u2014 so a quality-only A/B readout hides a 200\u00d7 latency change in one stage." },
@@ -80,6 +84,8 @@ EC.receiveLesson({
       sub: "What an offline set cannot show by construction" },
 
     {"kind": "flow", "title": "The no-results rate is the cheapest leading indicator in a RAG system", "caption": "It rises when queries move away from the corpus, and crucially **it rises before answer quality visibly degrades** — because the system is still producing fluent answers from whatever it did retrieve. Which makes it a leading indicator rather than a lagging one, and it costs a counter. The same logic applies to rising fallback usage: both measure *the gap between what users ask and what you indexed*, which is the thing that actually drifts.", "cols": 3, "nodes": [{"id": "q", "label": "Queries move away from the corpus", "sub": "new products, new vocabulary", "tone": "accent"}, {"id": "n", "label": "The no-results rate rises", "sub": "a counter, essentially free", "tone": "good"}, {"id": "f", "label": "Answers stay fluent", "sub": "from whatever was retrieved", "tone": "crit"}, {"id": "l", "label": "So quality degrades later", "sub": "making this a leading indicator", "tone": "violet"}, {"id": "g", "label": "It measures the ask-index gap", "sub": "which is what drifts", "tone": "teal"}], "edges": [["q", "n"], ["q", "f"], ["f", "l"], ["n", "l"], ["l", "g"]], "t": "diagram", "id": "dg-8_11-03-2"},
+
+
 
 
 

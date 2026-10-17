@@ -30,6 +30,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "The thresholds \u2014 under 100K, 100K to 10M, 10M to 1B, beyond \u2014 are the standard advice and they correlate with something real. 5.5 measured what that something is, and it is not latency." },
 
     { t: "code", lang: "python", title: "5.5 \u2014 exact search against corpus size", code: `for n in (1_000, 10_000, 100_000, 1_000_000, 10_000_000):
@@ -128,6 +130,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "5.1 established that index time and query time run on different clocks. The update strategy is a decision about how fast the slow clock ticks, and there are three answers." },
 
     { t: "dl", items: [
@@ -147,6 +151,8 @@ EC.receiveLesson({
       sub: "Blue-green, because the alternative is answering from a half-built index" },
 
     {"kind": "flow", "title": "A rebuild in place is worse than stale — it is arbitrary", "caption": "A full rebuild has a failure mode incremental updates do not: **while it runs the index is partially populated**, so queries return whatever has been written so far. That is not stale data, which is at least consistent and explainable — it is an arbitrary subset, and a user who asks the same question twice during the rebuild gets two different answers for no reason they could discover. Build into a new index and swap an alias.", "cols": 3, "nodes": [{"id": "r", "label": "Rebuild in place", "sub": "writing as it goes", "tone": "crit"}, {"id": "p", "label": "Partially populated", "sub": "for the whole run", "tone": "crit"}, {"id": "a", "label": "Answers are arbitrary", "sub": "worse than stale", "tone": "crit"}, {"id": "n", "label": "Build into a new index", "sub": "the old one keeps serving", "tone": "good"}, {"id": "s", "label": "Then swap the alias", "sub": "atomically", "tone": "good"}, {"id": "k", "label": "And keep the old one briefly", "sub": "so a rollback is a second swap", "tone": "teal"}], "edges": [["r", "p"], ["p", "a"], ["a", "n"], ["n", "s"], ["s", "k"]], "t": "diagram", "id": "dg-6_2-04-2"},
+
+
 
 
 
@@ -178,6 +184,8 @@ EC.receiveLesson({
       sub: "Ten items, and they are not equal" },
 
     {"kind": "matrix", "title": "The production checklist, weighted by what this module measured", "caption": "Two items change rank once measured. **Re-ranking is conditional, not high** — 6.1 measured it helping a weak first stage and *hurting* a strong one, so it needs a before-and-after on your own set. And **evaluation is the highest-weight item** because nothing else on the list is decidable without it. The cheapest item is incremental indexing, at a 1.3 ms hash check.", "cols": ["Weight", "Because"], "rows": ["Evaluation pipeline", "Hybrid search", "Fallback for no context", "PII filtering on retrieval", "Metadata filtering", "Source citations", "Incremental indexing", "Monitoring", "Re-ranking", "Caching"], "cells": [[{"text": "highest", "tone": "good"}, "nothing else is decidable without it"], [{"text": "high", "tone": "good"}, "100% recall@5 for nine lines, no model"], [{"text": "high", "tone": "good"}, "governs the 5% retrieval misses"], [{"text": "mandatory", "tone": "crit"}, "where tenancy exists; pre-filter or leak"], [{"text": "high", "tone": "good"}, "where the predicate is exact"], [{"text": "high", "tone": "good"}, "cheap, and load-bearing for trust"], [{"text": "high", "tone": "good"}, "the cheapest item: a 1.3 ms hash"], ["high", "log scores, not just ids"], [{"text": "conditional", "tone": "warn"}, "helped a weak stage, hurt a strong one"], ["medium", "a latency feature, not a cost one"]], "t": "diagram", "id": "dg-6_2-05-3"},
+
+
 
 
 

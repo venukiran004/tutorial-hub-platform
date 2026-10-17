@@ -23,6 +23,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "What runs on what", code: `  every request  -> trace stored
         |
         +-- cheap, deterministic checks on 100%      free, instant
@@ -47,6 +49,8 @@ EC.receiveLesson({
       sub: "Measured" },
 
     {"kind": "flow", "title": "A judge call costs 107% of the generation it scores", "caption": "A faithfulness judge has to see **the context** to decide whether a claim is supported and **the answer** to find the claims — so its input is the generation's input plus the generation's output. That puts a judge call at **107% of the generation it scores**, which means judging every request **more than doubles your model spend**. Which is both why 'score a sample' is the only affordable policy and why the cheap tier matters: a citation check and a refusal regex cost nothing and catch a real share of failures.", "cols": 3, "nodes": [{"id": "c", "label": "The judge needs the context", "sub": "to check support", "tone": "accent"}, {"id": "a", "label": "And the answer", "sub": "to find the claims", "tone": "accent"}, {"id": "i", "label": "So its input is input plus output", "sub": "of the call it is scoring", "tone": "violet"}, {"id": "p", "label": "107% of the generation", "sub": "measured", "tone": "crit"}, {"id": "d", "label": "Judging everything doubles the bill", "sub": "more than doubles", "tone": "crit"}, {"id": "f", "label": "So prefer the free tier where it answers", "sub": "citations, refusals, empty retrieval", "tone": "good"}], "edges": [["c", "i"], ["a", "i"], ["i", "p"], ["p", "d"], ["d", "f"]], "t": "diagram", "id": "dg-10_11-02-1"},
+
+
 
 
 

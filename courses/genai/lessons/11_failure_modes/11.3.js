@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "It did not invent a number — it extended a real policy to an uncovered case", "caption": "Retrieval returned a **generic** refund chunk; the specific *opened software* clause was in a chunk that was not retrieved. Notice what the model did **not** do: it did not invent a figure from nothing. **It took a real policy from a real retrieved chunk and extended it to a case the chunk did not cover** — which is why the output is so convincing and why a citation check passes it. The fix has two halves: better chunking plus a reranker so the clause is retrievable, and an instruction to abstain when the documents do not cover the case.", "cols": 3, "nodes": [{"id": "r", "label": "A generic refund chunk retrieved", "sub": "the specific clause was not", "tone": "warn"}, {"id": "e", "label": "The model extends it", "sub": "to a case it does not cover", "tone": "crit"}, {"id": "n", "label": "Nothing was invented from nothing", "sub": "which is why it convinces", "tone": "crit"}, {"id": "c", "label": "And a citation check passes it", "sub": "the chunk is real and cited", "tone": "crit"}, {"id": "f", "label": "Fix retrieval, and allow abstention", "sub": "both halves are needed", "tone": "good"}], "edges": [["r", "e"], ["e", "n"], ["n", "c"], ["c", "f"]], "t": "diagram", "id": "dg-11_3-01-0"},
 
 
+
+
     { t: "code", lang: "text", title: "What the user saw", code: `Customer-support bot, grounded on a help-center KB.
 User: "What's your refund window for opened software?"
 Bot:  "You have 30 days to return opened software for a full refund."
@@ -46,6 +48,8 @@ Reality: The KB says 14 days, and only for UNopened software.`,
       sub: "Citation-shaped text" },
 
     {"kind": "flow", "title": "The fake citation is our instruction, not the model's failing", "caption": "The root cause is a **combination**: a closed-book factual question means the model has no context to ground in, and a *cite your sources* instruction means the output must contain something citation-shaped. **Asking for citations from a model with no retrieval is asking it to invent them** — this is 11.1's leading-prompt trigger, and the prompt created it. The fix is structural rather than persuasive: only allow citations that map to retrieved documents, and post-validate every id against the set that was actually supplied.", "cols": 3, "nodes": [{"id": "q", "label": "A closed-book question", "sub": "no context to ground in", "tone": "warn"}, {"id": "i", "label": "Plus 'cite your sources'", "sub": "the output must look cited", "tone": "warn"}, {"id": "c", "label": "So it invents citations", "sub": "we asked it to", "tone": "crit"}, {"id": "s", "label": "Only permit retrieved ids", "sub": "structural, not persuasive", "tone": "good"}, {"id": "v", "label": "And post-validate every one", "sub": "against what was supplied", "tone": "good"}], "edges": [["q", "c"], ["i", "c"], ["c", "s"], ["s", "v"]], "t": "diagram", "id": "dg-11_3-02-1"},
+
+
 
 
     { t: "code", lang: "text", title: "What the user saw", code: `Research-assistant LLM.

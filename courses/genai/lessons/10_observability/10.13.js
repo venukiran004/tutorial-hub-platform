@@ -23,6 +23,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Two layers, and the numbers pick a branch", code: `                        +--- RETRIEVAL failure: the right chunk never reached the prompt
       95% -> 60%  ------+
                         +--- GENERATION failure: the right chunk was there and was ignored`,
@@ -64,6 +66,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Cohort", "Share of traffic", "Accuracy", "Was"],
       rows: [
@@ -82,6 +86,8 @@ EC.receiveLesson({
       sub: "The finding this module contributes" },
 
     {"kind": "trace", "title": "Slice before you theorise: a 21% cohort inside a 60% headline", "caption": "The headline fell from 0.95 to 0.60 and the average is a **mix of two populations behaving completely differently.** Questions about existing docs are 60% of traffic and fell from 0.96 to 0.86 — unwelcome and unremarkable. Questions about the new product line are 40% of traffic and fell from 0.86 to **0.21**. One slice turns \"quality regressed\" into \"the new product line has no usable documents in the index\", which is a different investigation and a different fix.", "left": "cohort", "codeW": 200, "vars": ["share", "was", "now"], "steps": [{"code": "existing product docs (A)", "state": ["60%", "0.96", "0.86"], "tone": "warn"}, {"code": "the new product line (B)", "state": ["40%", "0.86", "0.21"], "changed": [2], "tone": "crit", "note": "the real failure"}, {"code": "the headline average", "state": ["100%", "0.95", "0.60"], "tone": "violet", "note": "hides both"}], "t": "diagram", "id": "dg-10_13-03-2"},
+
+
 
 
 
@@ -119,6 +125,8 @@ EC.receiveLesson({
       sub: "Every layer's input is the layer below's output" },
 
     {"kind": "trace", "title": "Walking the stack bottom-up, attribute by attribute", "caption": "Comparing a healthy trace against a failing one, **most attributes are identical** — same index, same 20 results returned, same pinned model, no truncation. Three differ and they tell the whole story: **`above_threshold` is 0 against 6**, so nothing cleared the cut-off; `rerank.top_score` is **0.31 against 0.78**, so the best available chunk was weakly related; and the chunk IDs are all from the **old** product manual. The search worked perfectly and there was nothing right to find.", "left": "span attribute", "codeW": 200, "vars": ["healthy", "failing"], "steps": [{"code": "retrieve.index", "state": ["support-docs-v4", "the same"], "tone": "good"}, {"code": "retrieve.returned", "state": ["20", "20"], "tone": "good", "note": "the search worked"}, {"code": "retrieve.above_threshold", "state": ["6", "0"], "changed": [1], "tone": "crit"}, {"code": "rerank.top_score", "state": ["0.78", "0.31"], "changed": [1], "tone": "crit"}, {"code": "retrieve.chunk_ids", "state": ["mixed docs", "all the OLD manual"], "changed": [1], "tone": "crit"}, {"code": "llm.generate.model", "state": ["pinned", "the same pin"], "tone": "good"}, {"code": "prompt_tokens", "state": ["1842", "1799"], "tone": "good", "note": "no truncation"}], "t": "diagram", "id": "dg-10_13-04-3"},
+
+
 
 
 

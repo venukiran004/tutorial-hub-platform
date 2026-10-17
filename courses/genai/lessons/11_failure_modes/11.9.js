@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "A cascade is strictly more expensive than a router, always", "caption": "At 80% easy traffic and a 15× price gap, a **router** costs 25.3% of running everything on the strong model. A **cascade** costs that plus the cheap model's price on the escalated share — so it is **strictly more expensive, always, by exactly that amount**. The gap is 1.3 points here. What the premium buys is that **a cascade needs no classifier**: a router requires something that can predict difficulty *before* seeing an answer, and a cascade just tries the cheap model and checks.", "cols": 3, "nodes": [{"id": "r", "label": "Router: classify, then one call", "sub": "25.3% of strong-only", "tone": "good"}, {"id": "c", "label": "Cascade: cheap first, escalate", "sub": "26.6% - strictly more", "tone": "accent"}, {"id": "d", "label": "The difference is the cheap call", "sub": "on the escalated share", "tone": "violet"}, {"id": "n", "label": "But a cascade needs no classifier", "sub": "which is what it buys", "tone": "good"}, {"id": "p", "label": "A router must predict difficulty", "sub": "before seeing any answer", "tone": "warn"}], "edges": [["r", "d"], ["c", "d"], ["d", "n"], ["n", "p"]], "t": "diagram", "id": "dg-11_9-01-0"},
 
 
+
+
     { t: "code", lang: "text", title: "A router classifies first", code: `            +- classify difficulty (cheap/heuristic) -+
 query ------+                                         +---------------> answer
             +- easy/common  -> small cheap model ------+

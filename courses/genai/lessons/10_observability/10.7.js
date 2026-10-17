@@ -23,6 +23,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "A tracer, complete", code: `import contextlib
 
 
@@ -71,6 +73,8 @@ class Tracer:
       sub: "Three changes, no new concepts" },
 
     {"kind": "matrix", "title": "Five things production adds, and the one that corrupts data silently", "caption": "The first row is the one that matters most and looks least important. **A plain list attribute is shared across tasks, so two concurrent requests interleave their stacks and the tree becomes nonsense** — not empty, not erroring: nonsense, with spans attached to the wrong parents. `contextvars.ContextVar` is the fix and it is a one-line change that nothing in a single-request test will reveal.", "cols": ["Toy", "Production", "Why"], "rows": ["The span stack", "The clock", "Span storage", "Events", "Status"], "cells": [["a list attribute", {"text": "contextvars.ContextVar", "tone": "crit"}, {"text": "concurrent requests interleave", "tone": "crit"}], ["a scripted clock", "time.perf_counter()", "monotonic, and not positional"], ["a growing list", "a batching exporter", "spans leave the process"], ["none", "span.add_event()", "first token, retry, guardrail"], ["a string", "a code plus the exception", "backends can aggregate it"]], "t": "diagram", "id": "dg-10_7-02-1"},
+
+
 
 
 

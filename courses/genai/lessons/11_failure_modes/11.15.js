@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "The context parameter goes into the model untouched", "caption": "Reading the pipeline carefully: `scan_input` runs on `user_input` and `redact` runs on `user_input` — and **the `context` parameter goes straight into the model untouched.** So the pipeline that exists to defend against injection has **no defence against the indirect injection of 11.12**, which is the form RAG introduces. That is less an inconsistency than a demonstration of how easy the gap is to leave: the function reads as complete, and every check is present. The fix is two lines, and it has to be noticed first.", "cols": 3, "nodes": [{"id": "u", "label": "scan_input(user_input)", "sub": "present and correct", "tone": "good"}, {"id": "r", "label": "redact(user_input)", "sub": "present and correct", "tone": "good"}, {"id": "c", "label": "context: straight to the model", "sub": "unscanned, unwrapped", "tone": "crit"}, {"id": "n", "label": "No defence against indirect injection", "sub": "the form RAG introduces", "tone": "crit"}, {"id": "f", "label": "The function reads as complete", "sub": "which is why it is missed", "tone": "warn"}, {"id": "x", "label": "Two lines: scan it, and wrap both as data", "sub": "once noticed", "tone": "good"}], "edges": [["u", "c"], ["r", "c"], ["c", "n"], ["n", "f"], ["f", "x"]], "t": "diagram", "id": "dg-11_15-01-0"},
 
 
+
+
     { t: "code", lang: "python", title: "The guarded chat", code: `def guarded_chat(user_input, context, llm, classify, canary):
     # ---- INPUT ----
     scan = scan_input(user_input)
@@ -60,6 +62,8 @@ EC.receiveLesson({
       sub: "Measured, and dominated by one check" },
 
     {"kind": "trace", "title": "The free checks are 2.4 ms of a 3,134 ms request", "caption": "The jailbreak scan, PII redaction, canary check, secrets scan and schema validation together cost **2.4 ms on a 3,134 ms request — 0.08%**. So any argument against running all of them is not a latency argument. The budget discussion is entirely about the **model-based** checks, and there the arithmetic is real: sequential input and output gates total 138.4 ms, and **parallelising within each stage takes that to 73.0 ms — a 47% cut on guardrail latency and 2.1% of the request.**", "left": "stage", "codeW": 190, "vars": ["sequential", "parallel"], "steps": [{"code": "the five free checks", "state": ["2.4 ms", "-"], "tone": "good", "note": "0.08% of the request"}, {"code": "input guardrails", "state": ["59.5 ms", "31.0 ms"], "tone": "accent"}, {"code": "output guardrails, fast gate", "state": ["78.7 ms", "42.0 ms"], "tone": "accent"}, {"code": "total", "state": ["138.4 ms", "73.0 ms"], "changed": [1], "tone": "good", "note": "47% off, 2.1% of the request"}], "t": "diagram", "id": "dg-11_15-02-1"},
+
+
 
 
     { t: "code", lang: "text", title: "Measured on a 3,134 ms request", code: `INPUT guardrails:
