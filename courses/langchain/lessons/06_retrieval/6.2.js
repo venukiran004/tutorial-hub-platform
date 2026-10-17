@@ -19,6 +19,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "The whole of a vector search",
       code: 'mine = []\nfor i, t in enumerate(TXT):\n    d = EMB[i]\n    num = sum(float(a) * float(b) for a, b in zip(v, d))\n    den = (math.sqrt(sum(float(a) * a for a in v))\n           * math.sqrt(sum(float(b) * b for b in d)))\n    mine.append(num / den)',
       out: "  top 3 by hand-written cosine:\n    api-limits           0.463018\n    bill-cancel-sub      0.333873\n    bill-overage         0.284438\n  max absolute difference from the library: 8.28e-08",

@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "A function is already enough, until it needs to carry something", "caption": "For a stateless transformation a plain function is a complete component — `RunnableLambda` wraps one explicitly and the pipe will coerce a bare function for you, producing something with all four of `invoke`, `batch`, `stream` and `ainvoke`. **Reach for a subclass only when you need something a function cannot carry**: configuration, validation, or a meaningful name in a trace. The last is the practical one: a `RunnableLambda` wrapping a lambda shows up in a span tree as `RunnableLambda`, **which is unhelpful at three in the morning.**", "cols": 3, "nodes": [{"id": "f", "label": "A plain function", "sub": "stateless transformation", "tone": "good"}, {"id": "c", "label": "The pipe coerces it", "sub": "into a full Runnable", "tone": "good"}, {"id": "n", "label": "Need config or validation?", "sub": "a function cannot carry them", "tone": "accent"}, {"id": "t", "label": "Or a name in the trace", "sub": "the practical reason", "tone": "violet"}, {"id": "u", "label": "'RunnableLambda' at 3am", "sub": "is unhelpful", "tone": "crit"}, {"id": "s", "label": "Then subclass", "sub": "and not before", "tone": "good"}], "edges": [["f", "c"], ["n", "s"], ["t", "u"], ["u", "s"]], "t": "diagram", "id": "dg-1_7-01-1"},
 
 
+
+
     { t: "p", text: "For a stateless transformation, a plain function is already enough. `RunnableLambda` wraps one explicitly, and the pipe will coerce a bare function for you." },
 
     { t: "code", lang: "python", title: "Three ways to put a function in a chain",
@@ -36,6 +38,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Implement the one required method and the protocol arrives", "caption": "The same pattern as the chat model in 1.2: define `_call` (or `invoke`) and `batch`, `stream` and the async half are **inherited, not written.** That consistency is the point, and it gives you a question to ask of any base class in this library: **which single method is it defined in terms of?** Answer that and you know both what you have to write and what you get for free.", "cols": 3, "nodes": [{"id": "o", "label": "Implement one method", "sub": "invoke, or _call", "tone": "violet"}, {"id": "b", "label": "batch arrives", "sub": "inherited", "tone": "good"}, {"id": "s", "label": "stream arrives", "sub": "inherited", "tone": "good"}, {"id": "a", "label": "and the async half", "sub": "inherited", "tone": "good"}, {"id": "q", "label": "So ask of any base class", "sub": "which one method is it defined on?", "tone": "teal"}], "edges": [["o", "b"], ["o", "s"], ["o", "a"], ["b", "q"], ["s", "q"], ["a", "q"]], "t": "diagram", "id": "dg-1_7-02-2"},
 
 
+
+
     { t: "code", lang: "python", title: "Configurable and named",
       code: 'class TruncateWords(Runnable):\n    """Keeps the first n words. Configurable, named, inspectable."""\n\n    def __init__(self, n: int = 5):\n        self.n = n\n\n    def invoke(self, input: str, config=None, **kw) -> str:\n        words = str(input).split()\n        return " ".join(words[:self.n]) + (" ..." if len(words) > self.n else "")',
       out: 'invoke : \'one two three four ...\'\nbatch  : [\'a b c d ...\', \'x y\']',
@@ -47,6 +51,8 @@ EC.receiveLesson({
       sub: "Which can be better than the general one, because you know the prompt" },
 
     {"kind": "trace", "title": "Writing your own parser is where 1.4's rule becomes literally true", "caption": "The parser handles clean input and prose around it, and **raises on commas** — deliberately, because a list parser that silently splits on the wrong delimiter is 1.4's exact failure. The part worth copying is that `get_format_instructions` is **implemented in the same class**: 1.4's rule was that a parser and its instructions must travel together, and writing your own is where you can make that literally true rather than a convention someone has to remember.", "left": "input", "codeW": 190, "vars": ["result"], "steps": [{"code": "clean bullet list", "state": ["['alpha','beta','gamma']"], "tone": "good"}, {"code": "prose around it", "state": ["['alpha','beta','gamma']"], "tone": "good", "note": "tolerant where it is safe"}, {"code": "commas", "state": ["OutputParserException"], "changed": [0], "tone": "violet", "note": "strict where it matters"}], "t": "diagram", "id": "dg-1_7-03-3"},
+
+
 
 
     { t: "code", lang: "python", title: "The bullet-list parser 1.4 was missing",
@@ -69,6 +75,8 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Six components, three of them yours, one expression", "caption": "A prompt, a model, a built-in parser, a custom parser, a coerced function and a custom Runnable — **three written for this chain and three from the library** — compose in a single `|` expression and inspect as a flat list of six steps. Which is the chapter's claim discharged: the protocol did not care which half of the chain you wrote, and nothing in the composition needed to know that `BulletListParser` was not shipped with the package.", "left": "step", "codeW": 190, "vars": ["from"], "steps": [{"code": "ChatPromptTemplate", "state": ["the library"], "tone": "accent"}, {"code": "FakeChatModel", "state": ["yours"], "tone": "good"}, {"code": "StrOutputParser", "state": ["the library"], "tone": "accent"}, {"code": "BulletListParser", "state": ["yours"], "tone": "good"}, {"code": "RunnableLambda", "state": ["a coerced function"], "tone": "accent"}, {"code": "TruncateWords", "state": ["yours"], "tone": "good", "note": "and the pipe cannot tell"}], "t": "diagram", "id": "dg-1_7-04-4"},
 
 
+
+
     { t: "code", lang: "python", title: "The whole chain",
       code: 'prompt = ChatPromptTemplate.from_messages([\n    ("system", "List three items. {fmt}"),\n    ("human", "{topic}")]).partial(fmt=bp.get_format_instructions())\n\npipeline = (prompt | model | StrOutputParser() | bp\n            | RunnableLambda(lambda items: [i.upper() for i in items])\n            | TruncateWords(n=2))\n\nprint([type(s).__name__ for s in pipeline.steps])\nprint(repr(pipeline.invoke({"topic": "greek letters"})))',
       out: '[\'ChatPromptTemplate\', \'FakeChatModel\', \'StrOutputParser\', \'BulletListParser\', \'RunnableLambda\', \'TruncateWords\']\n"[\'ALPHA\', \'BETA\', ..."',
@@ -79,6 +87,8 @@ EC.receiveLesson({
       sub: "LCEL does not type-check between steps" },
 
     {"kind": "flow", "title": "The chain ran and the answer is wrong", "caption": "A component received a list where it expected a string, did something defensible with it, and the chain completed. **Nothing raised** — which is the failure this whole lesson has been circling. Adding an explicit type check turns it into `TypeError: TruncateWords expected str, got list` at the point of the mistake. Worth doing on **any component whose expected input is not obvious from its position**, which is most custom components: a reader cannot tell from `| TruncateWords(n=2)` what the previous step produced.", "cols": 3, "nodes": [{"id": "l", "label": "A list arrives where a str was expected", "sub": "from the step before", "tone": "crit"}, {"id": "d", "label": "The component does something defensible", "sub": "and returns", "tone": "crit"}, {"id": "c", "label": "The chain completes", "sub": "nothing raised", "tone": "crit"}, {"id": "v", "label": "Add an explicit check", "sub": "TypeError at the mistake", "tone": "good"}, {"id": "r", "label": "'| TruncateWords(n=2)'", "sub": "tells a reader nothing about its input", "tone": "violet"}], "edges": [["l", "d"], ["d", "c"], ["c", "v"], ["v", "r"]], "t": "diagram", "id": "dg-1_7-05-5"},
+
+
 
 
     { t: "callout", kind: "warn", title: "A list met a function expecting a string",
@@ -98,6 +108,8 @@ EC.receiveLesson({
       sub: "One or two methods, which is why the ecosystem is large" },
 
     {"kind": "matrix", "title": "What the protocol demands of an implementer", "caption": "One method, usually — and in exchange each component gets batching, streaming, async and the composition operators. That trade is the whole argument for implementing the interface rather than wrapping it.", "cols": ["the one method you write", "what you get in exchange"], "rows": ["a Runnable", "an output parser", "a chat model", "a retriever"], "cells": [[{"text": "invoke", "tone": "accent"}, {"text": "batch, stream, async, |", "tone": "good"}], [{"text": "parse", "tone": "accent"}, {"text": "the same, plus streaming", "tone": "good"}], [{"text": "_generate", "tone": "accent"}, {"text": "bind_tools, structured output", "tone": "good"}], [{"text": "_get_relevant_documents", "tone": "accent"}, {"text": "composes into any chain", "tone": "good"}]], "t": "diagram", "id": "dg-1_7-06-0"},
+
+
 
 
 

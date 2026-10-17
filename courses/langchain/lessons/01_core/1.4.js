@@ -26,6 +26,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "A parser's job is to survive what a model really produces, which is rarely the clean JSON the prompt asked for. Here are nine outputs that all occur in practice." },
 
     { t: "code", lang: "text", title: "JsonOutputParser on realistic output",
@@ -40,6 +42,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Whether your chain works depends on which side the model puts its chattiness", "caption": "`Here is the review:` followed by valid JSON **raises**. The same JSON followed by `Hope that helps!` **parses fine.** The parser looks for the first JSON-shaped span and reads to the end of it, so **leading prose derails the scan and trailing prose is never reached.** The consequence is uncomfortable: whether your chain works is a property of the prompt and the model version rather than of your code, so **a chain can be stable for months and break on a model update.**", "cols": 3, "nodes": [{"id": "b", "label": "Prose BEFORE the JSON", "sub": "'Here is the review:'", "tone": "crit"}, {"id": "s", "label": "The scan starts on the prose", "sub": "and derails", "tone": "crit"}, {"id": "a", "label": "Prose AFTER the JSON", "sub": "'Hope that helps!'", "tone": "good"}, {"id": "n", "label": "Never reached", "sub": "the span ended first", "tone": "good"}, {"id": "p", "label": "So it is a property of the model", "sub": "not of your code", "tone": "violet"}, {"id": "m", "label": "Stable for months, broken by an update", "sub": "and nothing in your repo changed", "tone": "crit"}], "edges": [["b", "s"], ["a", "n"], ["s", "p"], ["n", "p"], ["p", "m"]], "t": "diagram", "id": "dg-1_4-02-1"},
 
 
+
+
     { t: "callout", kind: "insight", title: "The parser scans forward and never looks back",
       body: [
         { t: "p", text: "`Here is the review:` followed by valid JSON raises. The same JSON followed by `Hope that helps!` parses fine. The parser looks for the first JSON-shaped span and reads to the end of it, so leading prose derails the scan while trailing prose is simply never reached." },
@@ -50,6 +54,8 @@ EC.receiveLesson({
       sub: "The most dangerous behaviour in this lesson" },
 
     {"kind": "trace", "title": "Truncation is repaired instead of reported", "caption": "`JsonOutputParser` uses a **partial** JSON parser because it has to — it is the same parser used to stream, where incomplete input is normal rather than an error. On a non-streamed response that means truncation is **silently repaired**. A rating truncated to `8.` parses as `8`; a title truncated mid-word parses as the truncated word; an unclosed array is closed. **Every one is a plausible value of the right type**, so no downstream validation catches it either.", "left": "what was cut", "codeW": 180, "vars": ["you get", "detectable?"], "steps": [{"code": "rating truncated to '8.'", "state": ["8", "no - a valid rating"], "tone": "crit"}, {"code": "title cut mid-word", "state": ["the truncated word", "no - a valid string"], "tone": "crit"}, {"code": "array left unclosed", "state": ["closed for you", "no - a valid list"], "changed": [1], "tone": "crit", "note": "and shorter than it was"}], "t": "diagram", "id": "dg-1_4-03-2"},
+
+
 
 
     { t: "p", text: "`JsonOutputParser` uses a **partial** JSON parser, because it has to \u2014 it is the same parser used to parse incrementally while streaming, where incomplete input is the normal case rather than an error. The consequence on a non-streamed response is that truncation is repaired instead of reported." },
@@ -70,6 +76,8 @@ EC.receiveLesson({
     {"kind": "trace", "title": "A forgiving parser is not a more robust parser", "caption": "There is a tempting intuition that a forgiving parser is more robust, and these rows show the opposite. **The marker stays attached** — `'1. a\\n2. b'` becomes `['1. a', '2. b']` — and a numbered or bulleted list is exactly what a model produces when asked for a list unless told otherwise. And `'a, b, and c'` yields **`'and c'`**. The parser never raises, so a downstream loop iterates over wrong-shaped data and **the bug surfaces somewhere else entirely.**", "left": "model output", "codeW": 170, "vars": ["parsed as", "right?"], "steps": [{"code": "'a, b, c'", "state": ["['a','b','c']", "yes"], "tone": "good"}, {"code": "'a,b,c'", "state": ["['a','b','c']", "yes"], "tone": "good"}, {"code": "'1. a\\n2. b'", "state": ["['1. a','2. b']", "no - markers kept"], "changed": [1], "tone": "crit"}, {"code": "'- a\\n- b'", "state": ["['- a','- b']", "no - markers kept"], "tone": "crit"}, {"code": "'a, b, and c'", "state": ["['a','b','and c']", "no - 'and c'"], "changed": [0], "tone": "crit", "note": "and it never raises"}], "t": "diagram", "id": "dg-1_4-04-3"},
 
 
+
+
     { t: "code", lang: "text", title: "CommaSeparatedListOutputParser",
       code: "'a, b, c'      -> ['a', 'b', 'c']\n'a,b,c'        -> ['a', 'b', 'c']\n'1. a\\n2. b'    -> ['1. a', '2. b']\n'- a\\n- b'      -> ['- a', '- b']\n'a, b, and c'  -> ['a', 'b', 'and c']",
       caption: "It splits on commas and nothing else." },
@@ -88,6 +96,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "A parser and its format instructions must travel together", "caption": "`get_format_instructions()` returns text the chain injects into the prompt — **the parser telling the model what shape to produce**, and it is explicit about the failure modes above, fences and preambles included. Which makes the practical consequence sharp: **swapping a parser without re-running the prompt is a silent change.** The prompt still asks for the old shape, the new parser expects a different one, and **nothing in the type system connects them.**", "cols": 3, "nodes": [{"id": "g", "label": "get_format_instructions()", "sub": "the parser's own request", "tone": "violet"}, {"id": "i", "label": "Injected into the prompt", "sub": "fences and preambles covered", "tone": "accent"}, {"id": "s", "label": "Swap the parser only", "sub": "and leave the prompt", "tone": "crit"}, {"id": "o", "label": "The prompt asks for the old shape", "sub": "the parser expects a new one", "tone": "crit"}, {"id": "n", "label": "Nothing in the types connects them", "sub": "so it is silent", "tone": "crit"}, {"id": "t", "label": "So move them as a pair", "sub": "1.7 puts both in one class", "tone": "good"}], "edges": [["g", "i"], ["s", "o"], ["o", "n"], ["n", "t"], ["i", "t"]], "t": "diagram", "id": "dg-1_4-05-4"},
 
 
+
+
     { t: "p", text: "`get_format_instructions()` returns text that the chain injects into the prompt \u2014 the parser telling the model what shape to produce. It is explicit about the failure modes above, including fences and preambles." },
 
     { t: "code", lang: "text", title: "What the parser asks for",
@@ -100,6 +110,8 @@ EC.receiveLesson({
       sub: "An extra model call, and whether that is the right trade" },
 
     {"kind": "trace", "title": "Repair is cheap; the deciding factor is whether the failure is visible", "caption": "At a 5% parse-failure rate a fixing parser costs **1.05 calls per request on average** — cheap enough that cost is not the deciding factor. The deciding factor is **visibility**: a fixing parser converts a loud exception into a silent extra call, so **a parse-failure rate that was an alert becomes a cost line nobody reads.** Which is why the first row wins on a different axis: with `with_structured_output` there is nothing to parse, so there is no failure to make visible.", "left": "strategy", "codeW": 190, "vars": ["calls", "at a 5% failure rate", "failure is"], "steps": [{"code": "with_structured_output", "state": ["1", "1.00", "impossible"], "tone": "good", "note": "nothing to parse"}, {"code": "plain parser, output valid", "state": ["1", "1.00", "loud"], "tone": "good"}, {"code": "OutputFixingParser", "state": ["2", "1.05", "silent"], "changed": [2], "tone": "crit"}, {"code": "RetryOutputParser", "state": ["2", "1.05", "silent"], "tone": "crit", "note": "re-sends the prompt too"}], "t": "diagram", "id": "dg-1_4-06-5"},
+
+
 
 
     { t: "table",

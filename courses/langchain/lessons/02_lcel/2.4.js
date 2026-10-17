@@ -19,18 +19,26 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "The original is gone",
       code: 'naive = prompt | model | StrOutputParser()\nnaive.invoke({"text: "long doc"})',
       out: "naive.invoke({'text': ...}) -> 'a summary'",
       caption: "A dict went in; a string came out. The document is no longer available." },
     { t: "p", text: "This is correct behaviour \u2014 a pipeline step transforms its input into its output. It becomes a problem the moment a later step needs something an earlier step consumed: citing the source alongside the summary, scoring the answer against the question, logging the input with the result." },
     { t: "h2", n: "02", id: "passthrough", text: "RunnablePassthrough", sub: "Forward the input unchanged" },
+
+    {"kind": "flow", "title": "Useless alone, load-bearing inside a fan-out", "caption": "`RunnablePassthrough` is an identity Runnable — **on its own it is useless.** Inside a fan-out it is **how you make the input survive a branch that transforms it**: one branch produces a summary and the passthrough branch preserves the original, so the next step can see both. That is exactly the role it plays in the standard RAG chain, where the retriever branch produces context and the passthrough branch preserves the question.", "cols": 3, "nodes": [{"id": "i", "label": "The input", "sub": "{'text': 'long doc'}", "tone": "accent"}, {"id": "s", "label": "Branch 1: summarise", "sub": "transforms it", "tone": "violet"}, {"id": "p", "label": "Branch 2: RunnablePassthrough", "sub": "identity - preserves it", "tone": "violet"}, {"id": "b", "label": "The next step sees both", "sub": "summary and original", "tone": "good"}, {"id": "r", "label": "Which is the RAG chain exactly", "sub": "context, and the question", "tone": "teal"}], "edges": [["i", "s"], ["i", "p"], ["s", "b"], ["p", "b"], ["b", "r"]], "t": "diagram", "id": "dg-2_4-02-1"},
+
     { t: "code", lang: "python", title: "Compute and keep",
       code: 'keep = RunnableParallel(summary=naive, original=RunnablePassthrough())\nkeep.invoke({"text: "long doc"})',
       out: "{'summary': 'a summary', 'original': {'text': 'long doc'}}",
       caption: "One branch computes, the other forwards. Both are available downstream." },
     { t: "p", text: "`RunnablePassthrough` is an identity Runnable. On its own it is useless; inside a fan-out it is how you make the input survive a branch that transforms it. This is exactly the role it plays in the standard RAG chain, where the retriever branch produces context and the passthrough branch preserves the question." },
     { t: "h2", n: "03", id: "assign", text: ".assign is the one you want", sub: "Add a key, keep the rest" },
+
+    {"kind": "trace", "title": ".assign reads like a sequence of let bindings", "caption": "`RunnablePassthrough.assign(k=fn)` **adds a key and keeps everything else** — which is the difference between it and a plain fan-out, where you have to name every key you want to survive. That compositionality is what makes it the backbone of real chains: **each step adds one derived value and nothing has to be threaded through by hand**, so a chain of five assigns reads like five `let` bindings rather than five dict reconstructions.", "left": "stage", "codeW": 150, "vars": ["the dict"], "steps": [{"code": "before", "state": ["{'text': 'a b c'}"], "tone": "accent"}, {"code": "after .assign(word_count=fn)", "state": ["{'text': 'a b c', 'word_count': 3}"], "changed": [0], "tone": "good", "note": "nothing threaded by hand"}], "t": "diagram", "id": "dg-2_4-03-2"},
+
     { t: "code", lang: "python", title: "Enriching a dict",
       code: 'enrich = RunnablePassthrough.assign(word_count=lambda x: len(x["text"].split()))\nenrich.invoke({"text: "a b c"})',
       out: "before : {'text': 'a b c'}\nafter  : {'text': 'a b c', 'word_count': 3}",
@@ -44,12 +52,18 @@ EC.receiveLesson({
       caption: "The second assign read `word_count`, which the first one added." },
     { t: "p", text: "That compositionality is what makes `.assign` the backbone of real chains: each step adds one derived value and nothing has to be threaded through by hand. A chain of five assigns reads like a sequence of `let` bindings." },
     { t: "h2", n: "04", id: "itemgetter", text: "itemgetter", sub: "Pulling one key out, with no LangChain import" },
+
+    {"kind": "flow", "title": "A branch of a fan-out can be a whole sub-chain", "caption": "`itemgetter(\"k\")` pulls one key out of a dict input, and the second entry is the one worth noticing: **`itemgetter(\"doc\") | RunnableLambda(len)` is a two-step chain used as a branch value.** Branches of a fan-out can be **arbitrary Runnables**, not just single steps — which is why the RAG idiom can put an entire retrieval sub-chain behind one key, and why the fan-out construct scales to real pipelines rather than only to leaf computations.", "cols": 3, "nodes": [{"id": "i", "label": "itemgetter('k')", "sub": "a callable, so coerced", "tone": "accent"}, {"id": "c", "label": "itemgetter('doc') | len", "sub": "a two-step chain", "tone": "violet"}, {"id": "b", "label": "Used as one branch value", "sub": "inside the fan-out", "tone": "violet"}, {"id": "a", "label": "So branches are arbitrary Runnables", "sub": "not single steps", "tone": "good"}, {"id": "r", "label": "Hence a retrieval sub-chain per key", "sub": "which is how RAG is written", "tone": "teal"}], "edges": [["i", "b"], ["c", "b"], ["b", "a"], ["a", "r"]], "t": "diagram", "id": "dg-2_4-04-3"},
+
     { t: "code", lang: "python", title: "A builtin, coerced",
       code: 'from operator import itemgetter\n\npipeline = {"text: itemgetter("doc"),\n            "n":    itemgetter("doc") | RunnableLambda(len)}\n\n(pipeline | RunnableLambda(lambda d: d)).invoke({"doc": "hello", "other": 1})',
       out: "{'text': 'hello', 'n': 5}",
       caption: "`itemgetter` is from the standard library; the pipe coerces it like any function." },
     { t: "p", text: "Note the second entry: `itemgetter(\"doc\") | RunnableLambda(len)` is a two-step chain used as a branch value. Branches of a fan-out can be arbitrary Runnables, which is why the RAG idiom can put a whole retrieval sub-chain behind one key." },
     { t: "h2", n: "05", id: "shapes", text: "The four shapes", sub: "A lookup table worth memorising" },
+
+    {"kind": "matrix", "title": "Five shapes, and the question each one answers", "caption": "Read as a lookup from intent to syntax, which is how it gets used in practice. The third and fourth rows are the pair people confuse: **a fan-out with a passthrough keeps the input alongside a result and makes you name every surviving key; `.assign` adds a key and keeps the rest.** Reach for the first when you are building a new dict shape and the second when you are accumulating onto an existing one.", "cols": ["What to write"], "rows": ["Keep only the output", "Run steps side by side", "Keep the input alongside", "Add a key, keep the rest", "Take one key"], "cells": [["a | b"], ["{'x': a, 'y': b} - coerced to RunnableParallel"], [{"text": "RunnableParallel(out=a, orig=RunnablePassthrough())", "tone": "accent"}], [{"text": "RunnablePassthrough.assign(k=fn)", "tone": "good"}], ["itemgetter('k')"]], "t": "diagram", "id": "dg-2_4-05-4"},
+
     { t: "table", head: ["What you want", "What to write"], rows: [
       ["run a step, keep only its output", "`a | b`"],
       ["run steps side by side", "`RunnableParallel(x=a, y=b)` or `{\"x\": a, \"y\": b}`"],

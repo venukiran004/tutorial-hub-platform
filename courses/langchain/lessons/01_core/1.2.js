@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "A class per role, so something downstream can pattern-match on it", "caption": "A conversation is a list, and each entry has a role. **The framework gives each role a class rather than a dict key**, which is what lets a parser or a graph pattern-match on it later — `isinstance(m, ToolMessage)` is a branch you can write, and `m[\"role\"] == \"tool\"` is a string comparison you can misspell. The fourth is the one with real structure: a `ToolMessage` is tied back to the call that produced it by `tool_call_id`.", "cols": 4, "nodes": [{"id": "s", "label": "SystemMessage", "sub": "frames the whole conversation", "tone": "accent"}, {"id": "h", "label": "HumanMessage", "sub": "what the user said", "tone": "accent"}, {"id": "a", "label": "AIMessage", "sub": "the reply, or a tool it wants to call", "tone": "violet"}, {"id": "t", "label": "ToolMessage", "sub": "tied back by tool_call_id", "tone": "violet"}, {"id": "p", "label": "So you can branch on type", "sub": "not on a string key", "tone": "good"}], "edges": [["s", "h"], ["h", "a"], ["a", "t"], ["t", "p"]], "t": "diagram", "id": "dg-1_2-01-1"},
 
 
+
+
     { t: "p", text: "A conversation is a list. Each entry has a role, and LangChain gives each role a class rather than a dict key, which is what lets a parser or a graph pattern-match on it later." },
 
     { t: "table",
@@ -49,6 +51,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "The contract for a chat model is smaller than it looks. Implement `_generate`, which takes a list of messages and returns a result wrapping one message, and `BaseChatModel` supplies everything else." },
 
     { t: "code", lang: "python", title: "The scripted model this course runs on",
@@ -70,6 +74,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "The model receives a flat list of messages and nothing else", "caption": "Templates, partial variables, few-shot examples, message placeholders and chains are **all machinery for producing one thing**: a flat list of messages. Three quite different constructions produce byte-identical lists here. **The model does not receive your variables, your template, your chain structure or your intentions** — which is why the single most useful debugging move in this course is to render the prompt and look at the list.", "cols": 3, "nodes": [{"id": "t", "label": "A template with variables", "sub": "one construction", "tone": "accent"}, {"id": "p", "label": "A partial plus a placeholder", "sub": "another", "tone": "accent"}, {"id": "c", "label": "A chain of three steps", "sub": "a third", "tone": "accent"}, {"id": "l", "label": "All three produce the same list", "sub": "byte-identical", "tone": "violet"}, {"id": "m", "label": "The model sees only that", "sub": "not the structure that built it", "tone": "good"}, {"id": "d", "label": "So render it and look", "sub": "the best debugging move here", "tone": "teal"}], "edges": [["t", "l"], ["p", "l"], ["c", "l"], ["l", "m"], ["m", "d"]], "t": "diagram", "id": "dg-1_2-03-2"},
 
 
+
+
     { t: "p", text: "Templates, partial variables, few-shot examples, message placeholders and chains are all machinery for producing one thing: a flat list of messages. The model receives that list. It does not receive your variables, your template, your chain structure or your intentions." },
 
     { t: "code", lang: "python", title: "Three constructions, one request",
@@ -87,6 +93,8 @@ EC.receiveLesson({
       sub: "Three guarantees, and only one of them is obvious" },
 
     {"kind": "trace", "title": "batch is 5.8x the loop, and max_concurrency is the dial", "caption": "`batch` runs the inputs **concurrently against a thread pool** and returns results in input order, which on this workload is **0.726 s down to 0.126 s — 5.8×**. The third row is the one worth knowing: `max_concurrency=2` gives 0.365 s, so the parameter is a real throttle rather than a hint. Which makes it the control you reach for when the provider's rate limit is the binding constraint rather than your own patience.", "left": "how it was called", "codeW": 190, "vars": ["time", "vs loop"], "steps": [{"code": "a loop over invoke", "state": ["0.726 s", "1.00x"], "tone": "crit"}, {"code": "batch, unbounded", "state": ["0.126 s", "5.76x"], "changed": [0, 1], "tone": "good"}, {"code": "batch(max_concurrency=2)", "state": ["0.365 s", "1.99x"], "changed": [0], "tone": "accent", "note": "a real throttle"}], "t": "diagram", "id": "dg-1_2-04-3"},
+
+
 
 
     { t: "dl", items: [
@@ -111,6 +119,8 @@ EC.receiveLesson({
       sub: "Because half the tutorials you will find still use them" },
 
     {"kind": "flow", "title": "If a tutorial imports a *Chain class, reach for the modern equivalent", "caption": "The pre-LCEL named chain classes are deprecated, **they still fill tutorials and interview questions**, and knowing the modern equivalent for each is worth more than it should be. The rule of thumb is mechanical and the reason is concrete: **you get streaming, async, batching and tracing for free, none of which the legacy classes support** — so porting is not a style preference, it is how those four features become available at all.", "cols": 3, "nodes": [{"id": "l", "label": "LLMChain, SequentialChain", "sub": "the pipe replaces both", "tone": "warn"}, {"id": "c", "label": "ConversationChain", "sub": "RunnableWithMessageHistory, or a checkpointer", "tone": "warn"}, {"id": "r", "label": "RetrievalQA", "sub": "create_retrieval_chain in LCEL", "tone": "warn"}, {"id": "a", "label": "initialize_agent, AgentExecutor", "sub": "create_agent, or LangGraph", "tone": "warn"}, {"id": "f", "label": "And you gain four features", "sub": "streaming, async, batching, tracing", "tone": "good"}, {"id": "n", "label": "None of which the legacy classes have", "sub": "so it is not a style choice", "tone": "teal"}], "edges": [["l", "f"], ["c", "f"], ["r", "f"], ["a", "f"], ["f", "n"]], "t": "diagram", "id": "dg-1_2-05-4"},
+
+
 
 
     { t: "p", text: "Pre-LCEL LangChain shipped named chain classes. They are deprecated, they still fill tutorials and interview questions, and knowing the modern equivalent for each is worth more than it should be." },

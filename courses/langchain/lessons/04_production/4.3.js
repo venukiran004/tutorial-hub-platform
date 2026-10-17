@@ -19,6 +19,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Setting a cache and hitting it",
       code: 'set_llm_cache(InMemoryCache())\nchain.invoke({"q": "what is LCEL?"})      # model called\nchain.invoke({"q": "what is LCEL?"})      # cache hit, no model call\nchain.invoke({"q": "what is LCEL? "})     # trailing space -> model called',
       out: "first  invoke -> 'cached answer'   (model calls: 1)\nsecond invoke -> 'cached answer'   (model calls: 1)\nthe second call hit the cache: True\na trailing space is a different key -> model calls: 1",

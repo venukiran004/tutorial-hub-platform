@@ -19,6 +19,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "The span tree for a nested chain",
       code: 'chain  chain          59.9 ms\n  chain  chain           0.9 ms\n  chain  chain          54.3 ms\n    chain  ChatPromptTemplate    0.4 ms\n    llm    model          51.5 ms\n    chain  chain           0.4 ms\n  chain  chain           2.4 ms',
       caption: "The model call is the deepest row and the slowest. That is the usual shape." },

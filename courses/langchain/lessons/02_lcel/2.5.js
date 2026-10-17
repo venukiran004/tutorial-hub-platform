@@ -19,12 +19,17 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Conditions and chains, in order",
       code: 'branch = RunnableBranch(\n    (lambda x: "math" in x["topic"].lower(), math_chain),\n    (lambda x: "code" in x["topic"].lower(), code_chain),\n    general)                       # the default, last and unconditional',
       out: "topic=Math           -> MATH: help\ntopic=Code review    -> CODE: help\ntopic=Weather        -> GENERAL: help",
       caption: "Evaluated top to bottom; the first matching condition wins." },
     { t: "p", text: "The final argument is the default and is not a tuple \u2014 it runs when nothing matched. Forgetting it is a construction error rather than a runtime surprise, which is the one thing `RunnableBranch` does better than an `if` chain." },
     { t: "h2", n: "02", id: "function", text: "A function that returns a Runnable", sub: "Usually more readable" },
+
+    {"kind": "trace", "title": "A function that returns a Runnable is the whole routing mechanism", "caption": "There is no router class doing anything clever. **A function inspects the input, returns a Runnable, and the pipe invokes whatever came back** — so routing is composition rather than a feature, and the branches can be any Runnable including whole sub-chains. Which also means the routing logic is ordinary Python you can unit-test without the framework, separately from the chains it selects between.", "left": "classified topic", "codeW": 170, "vars": ["chain selected", "result"], "steps": [{"code": "Math", "state": ["the maths chain", "MATH: help"], "tone": "good"}, {"code": "Code review", "state": ["the code chain", "CODE: help"], "tone": "good"}, {"code": "Weather", "state": ["the default", "GENERAL: help"], "changed": [0], "tone": "accent", "note": "see section 04"}], "t": "diagram", "id": "dg-2_5-02-1"},
+
     { t: "code", lang: "python", title: "The same router, as ordinary Python",
       code: 'def route(x):\n    t = x["topic"].lower()\n    if "math" in t:\n        return math_chain\n    if "code" in t:\n        return code_chain\n    return general\n\nfn_router = RunnableLambda(route)',
       out: "topic=Math           -> MATH: help\ntopic=Code review    -> CODE: help\ntopic=Weather        -> GENERAL: help",
@@ -34,6 +39,9 @@ EC.receiveLesson({
       { t: "p", text: "For two branches, `RunnableBranch` is fine. For three or more, the function usually wins: the conditions are ordinary statements you can read, debug and unit-test, rather than lambdas inside a tuple list where a misplaced bracket is a long afternoon." }
     ] },
     { t: "h2", n: "03", id: "cannot", text: "What neither can do", sub: "And why that matters more than the choice between them" },
+
+    {"kind": "flow", "title": "What neither a chain nor a router can express", "caption": "Every one of these is something an agent does routinely. **Call a tool, look at what came back, decide whether to call another. Retrieve, grade the documents, decide to retrieve again with a different query. Draft, critique, revise. Ask a human to approve.** None is expressible as a chain, and **the attempt to express them is what produces the recursive-chain code nobody can follow.** 8.1 shows the three failures directly, so the graph arrives as an answer to something rather than as a new API.", "cols": 3, "nodes": [{"id": "t", "label": "Call a tool, then decide again", "sub": "an unknown number of times", "tone": "crit"}, {"id": "g", "label": "Retrieve, grade, maybe re-retrieve", "sub": "a loop with a condition", "tone": "crit"}, {"id": "d", "label": "Draft, critique, revise", "sub": "a cycle", "tone": "crit"}, {"id": "h", "label": "Ask a human to approve", "sub": "and suspend until they do", "tone": "crit"}, {"id": "n", "label": "A chain is a straight line", "sub": "and a router is one branch of it", "tone": "warn"}, {"id": "r", "label": "Forcing them produces recursive chains", "sub": "which is what 8.1 is for", "tone": "teal"}], "edges": [["t", "n"], ["g", "n"], ["d", "n"], ["h", "n"], ["n", "r"]], "t": "diagram", "id": "dg-2_5-03-2"},
+
     { t: "ul", items: [
       "**Loop back to an earlier step.** A chain is a directed acyclic path; there is no way to express \u201cgo again\u201d.",
       "**Run a branch, inspect the result, and choose again.** Routing happens once, before the branch runs.",
@@ -45,6 +53,9 @@ EC.receiveLesson({
       { t: "p", text: "None of those are expressible as a chain, and the attempt to express them is what produces the recursive-chain code that nobody can follow. 8.1 shows the three failures directly, so that the graph arrives as an answer to something rather than as a new API to learn." }
     ] },
     { t: "h2", n: "04", id: "default", text: "The default branch", sub: "Where routing costs the most" },
+
+    {"kind": "flow", "title": "A default that answers converts every routing failure into a wrong answer", "caption": "A router that mis-classifies sends the question to a chain that **cannot** answer it, and the user gets a confident wrong answer rather than an error — **worse than a failure, because nothing signals it.** The temptation is to make the default a general-purpose chain so something always gets answered, and that **converts every routing failure into a plausible answer from the wrong specialist**: invisible in metrics, arriving as a complaint. A default that says it does not know is **a measurable signal**, and its rate is a number you can watch.", "cols": 3, "nodes": [{"id": "m", "label": "The router mis-classifies", "sub": "it will, at some rate", "tone": "warn"}, {"id": "g", "label": "Default: a general-purpose chain", "sub": "so something always answers", "tone": "crit"}, {"id": "p", "label": "A plausible answer, wrong specialist", "sub": "invisible in metrics", "tone": "crit"}, {"id": "c", "label": "It arrives as a complaint", "sub": "weeks later", "tone": "crit"}, {"id": "d", "label": "Default: 'I am not sure who handles that'", "sub": "a measurable signal", "tone": "good"}, {"id": "w", "label": "And its rate is a number to watch", "sub": "which the other version has no version of", "tone": "teal"}], "edges": [["m", "g"], ["g", "p"], ["p", "c"], ["m", "d"], ["d", "w"]], "t": "diagram", "id": "dg-2_5-04-3"},
+
     { t: "p", text: "A router that mis-classifies sends the question to a chain that cannot answer it, and the user gets a confident wrong answer rather than an error. That is worse than a failure, because nothing signals it." },
     { t: "code", lang: "python", title: "An honest default",
       code: 'safe = RunnableBranch(\n    (lambda x: "math" in x["topic"].lower(), math_chain),\n    RunnableLambda(lambda x: "I am not sure which specialist handles that."))',

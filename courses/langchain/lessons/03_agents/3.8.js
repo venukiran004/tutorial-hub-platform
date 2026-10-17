@@ -55,6 +55,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Across this module: the loop is nine lines and the termination condition is a model judgement (3.3). The transcript grows by two per round and is re-sent every time (3.3, 3.5). Three guards are mandatory and a fourth failure cannot be guarded at all (3.7). Memory is a deferred outage unless bounded (3.5). None of that is an argument against agents; it is an argument for knowing what one costs before choosing it." },
     { t: "callout", kind: "mental", title: "Mental model: an agent buys adaptability with predictability", body: [
       { t: "p", text: "Everything on the give-up list is a form of predictability, and the thing you get in exchange is the ability to handle inputs you did not anticipate. That is a good trade exactly when the inputs are genuinely unanticipated and a bad one when you simply did not enumerate them." },

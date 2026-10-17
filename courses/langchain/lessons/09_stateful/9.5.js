@@ -19,6 +19,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Three invocations across two threads",
       code: "thread=alice  sent 'hello'    -> 2 messages in state\nthread=alice  sent 'again'    -> 4 messages in state\nthread=bob    sent 'hi'       -> 2 messages in state\n\nthread=alice  [HumanMessage('hello'), AIMessage('you said: hello'),\n               HumanMessage('again'), AIMessage('you said: again')]\nthread=bob    [HumanMessage('hi'), AIMessage('you said: hi')]",
       caption: "Alice's second message landed in a four-message conversation; Bob's first in a two-message one." },

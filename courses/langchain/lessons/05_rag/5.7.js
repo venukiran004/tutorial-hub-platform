@@ -35,6 +35,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "dl", items: [
       ["`using ONLY the context`", "Without it the model answers from its training data, fluently and without indicating that it did."],
       ["`say you do not know`", "Gives the model a licence to abstain. Without one, \u201cno answer\u201d is not an available output and it will produce something. 7.1 builds the retrieval-side half of this."],

@@ -19,6 +19,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "put, get, search",
       code: 'store.put(("users", "alice"), "prefs", {"tone": "brief", "lang": "en"})\nstore.put(("users", "alice"), "facts", {"team": "platform"})\nstore.put(("users", "bob"),   "prefs", {"tone": "detailed"})\n\nstore.get(("users", "alice"), "prefs").value\nstore.search(("users", "alice"))',
       out: "  alice prefs : {'tone': 'brief', 'lang': 'en'}\n  bob   prefs : {'tone': 'detailed'}\n\n  everything under ('users','alice'):\n    prefs    {'tone': 'brief', 'lang': 'en'}\n    facts    {'team': 'platform'}",

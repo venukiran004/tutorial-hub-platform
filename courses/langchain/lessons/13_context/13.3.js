@@ -38,6 +38,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["strategy", "tokens", "facts kept", "answers \u201cwhich order?\u201d"], rows: [
       ["full conversation", "489", "5", "yes"],
       ["sliding window (6)", "156", "**0**", "**NO**"],

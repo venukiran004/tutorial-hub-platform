@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["Metric", "Answers", "Blind to"], rows: [
       ["Recall@k", "did we fetch it at all", "where it ranked"],
       ["Precision@k", "how much of k was useful", "**ceilinged by |relevant|**"],

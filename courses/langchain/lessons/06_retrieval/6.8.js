@@ -23,6 +23,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["config", "nat MRR", "exact MRR", "nat R@5", "exact R@5", "s/query"], rows: [
       ["dense k=5", "**0.964**", "0.781", "1.000", "0.875", "**0.076**"],
       ["hybrid RRF", "0.393", "1.000", "0.429", "1.000", "0.098"],

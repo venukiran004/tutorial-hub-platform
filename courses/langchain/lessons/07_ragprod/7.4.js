@@ -37,6 +37,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "A four-sentence answer",
       code: "- Retention defaults to 90 days\n- Enterprise tenants can configure between 30 and 730 days\n- Deletion requests complete within 30 days\n- Backups are retained separately for 35 days\n\nclaims to verify : 4\nat 1 call each   : 4x the generation cost of the answer itself",
       caption: "Checking at the answer level passes if **any** part is grounded." },
