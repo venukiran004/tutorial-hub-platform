@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "dl", items: [
       ["the documents are good", "\u2192 generate"],
       ["the documents are off-topic", "\u2192 rewrite the query, retrieve again (7.2)"],

@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "An unconditional cycle, recursion_limit=20",
       code: "RAISED GraphRecursionError: Recursion limit of 20 reached without\nhitting a stop condition.\n  took 0.004 s",
       caption: "Fast here, because the node does nothing." },

@@ -14,12 +14,16 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "On two queries, the two retrievers share no documents at all", "caption": "`Retry-After`: dense returns `api-idempotency, api-webhooks, bill-refund` and BM25 returns `api-limits, ops-backup, ops-sla` — **no overlap.** `I forgot my password`: dense returns `auth-reset` first and BM25 returns nothing above zero. **They disagree by design**, which is the premise of fusion rather than a problem with it: two retrievers that agreed would be one retriever, and the value of combining them comes entirely from the disagreement.", "left": "query and retriever", "codeW": 200, "vars": ["top 3"], "steps": [{"code": "'Retry-After', dense", "state": ["api-idempotency, api-webhooks, bill-refund"], "tone": "warn"}, {"code": "'Retry-After', bm25", "state": ["api-limits, ops-backup, ops-sla"], "changed": [0], "tone": "warn", "note": "no overlap at all"}, {"code": "'I forgot my password', dense", "state": ["auth-reset first"], "tone": "good"}, {"code": "'I forgot my password', bm25", "state": ["nothing above zero"], "tone": "crit"}], "t": "diagram", "id": "dg-6_4-01-1"},
 
+
+
     { t: "code", lang: "text", title: "Two retrievers, two query classes",
       code: "query: 'Retry-After'\n  dense: ['api-idempotency', 'api-webhooks', 'bill-refund']\n  bm25 : ['api-limits', 'ops-backup', 'ops-sla']\n\nquery: 'I forgot my password'\n  dense: ['auth-reset', 'auth-signin-fail', 'bill-cancel-trial']\n  bm25 : ['ops-backup', 'ops-sla', 'ops-status']",
       caption: "`api-limits` is relevant for the first; `auth-reset` for the second. Each retriever gets one right." },
     { t: "h2", n: "02", id: "survives", text: "How much of each query survives", sub: "The column that explains everything else" },
 
     {"kind": "matrix", "title": "BM25’s magnitude is anti-correlated with its usefulness", "caption": "The obvious way to combine dense and sparse is wrong three times over, and the third reason is the one nobody mentions: cosine is bounded and BM25 is not, so a weighted sum is **uncalibrated**. Worse, a high BM25 score can mean the query was all stopwords.", "cols": ["BM25 score", "tokens kept", "what it means"], "rows": ["“I forgot my password”", "“how long do you keep…”"], "cells": [[{"text": "a 41-way tie at 0.0000", "tone": "crit"}, {"text": "ZERO", "tone": "crit"}, {"text": "still returns a top-3", "tone": "crit"}], [{"text": "3.8583 — confident", "tone": "crit"}, {"text": "stopwords only", "tone": "crit"}, {"text": "high score, no signal", "tone": "crit"}]], "t": "diagram", "id": "dg-6_4-02-0"},
+
+
 
 
 
@@ -46,6 +50,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "three", text: "Three reasons a weighted sum fails", sub: "Any one of them is sufficient" },
 
     {"kind": "trace", "title": "Three reasons a weighted sum fails, and the ranges are the first", "caption": "On one query: **dense scores span 0.5757 and BM25 scores span 5.1527** — an order of magnitude apart, so any fixed weight is really a weight times a scale factor nobody wrote down. **Second**, the ranges are per-query: dense's minimum is **negative** here, so a sum can be dragged down by a strongly-disliked document. **Third**, a weight fitted on one query distribution does not transfer, which §04 shows normalisation makes worse rather than better.", "left": "retriever", "codeW": 170, "vars": ["top 3 scores", "corpus range"], "steps": [{"code": "dense", "state": ["0.4672, 0.308, 0.2663", "-0.1085 to +0.4672"], "tone": "accent"}, {"code": "bm25", "state": ["5.1527, 2.2929, 2.0678", "0.0000 to +5.1527"], "changed": [1], "tone": "crit", "note": "9x the range"}, {"code": "so a fixed weight", "state": ["is weight x unknown scale", "per query"], "tone": "violet"}], "t": "diagram", "id": "dg-6_4-03-2"},
+
+
     { t: "code", lang: "text", title: "Both distributions, one query",
       code: "query: 'Idempotency-Key header'\n  dense scores: [0.4672, 0.308, 0.2663]\n  bm25 scores : [5.1527, 2.2929, 2.0678]\n\nover the whole corpus, for this one query:\n  dense: min -0.1085  max +0.4672  range 0.5757\n  bm25 : min +0.0000  max +5.1527  range 5.1527",
       caption: "An order of magnitude apart, and only one of them is bounded." },
@@ -57,6 +63,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "norm", text: "Why normalising is worse, not better", sub: "The obvious repair" },
 
     {"kind": "flow", "title": "Normalisation destroys the one piece of information that mattered", "caption": "The obvious fix for incomparable ranges is to normalise each retriever's scores to [0, 1], and it is **worse, not better.** On a query where something matched but **nothing relevant did**, normalisation **maps the best irrelevant document to exactly 1.0 — the same value a perfect match would receive.** It destroys the one piece of information that said *this result was weak*, which is the opposite of what a fusion step needs.", "cols": 3, "nodes": [{"id": "r", "label": "Ranges are incomparable", "sub": "so normalise to [0,1]", "tone": "accent"}, {"id": "q", "label": "A query where nothing relevant matched", "sub": "but something did", "tone": "warn"}, {"id": "o", "label": "The best irrelevant doc maps to 1.0", "sub": "exactly", "tone": "crit"}, {"id": "s", "label": "The same value a perfect match gets", "sub": "indistinguishable", "tone": "crit"}, {"id": "d", "label": "Weakness was the information", "sub": "and normalising deleted it", "tone": "crit"}], "edges": [["r", "q"], ["q", "o"], ["o", "s"], ["s", "d"]], "t": "diagram", "id": "dg-6_4-04-3"},
+
+
     { t: "callout", kind: "warn", title: "On the degenerate query it is not even reachable", body: [
       { t: "p", text: "Min-max normalising each retriever per query is the obvious fix. Applied to `I forgot my password`: all 41 documents are at 0.0000, so `max - min` is **0.0000** and the normalisation is a division by zero." },
       { t: "p", text: "The usual guard is to emit zeros, or to emit 1.0 for the arbitrary top document \u2014 and the second choice manufactures a *maximally confident* signal out of 41 tied zeros. You have taken the worst possible input and given it the highest possible score." }
@@ -65,6 +73,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "ensemble", text: "What EnsembleRetriever does", sub: "It refuses to read the scores" },
 
     {"kind": "flow", "title": "Reading orderings and never scores sidesteps two of the three reasons", "caption": "`EnsembleRetriever` applies reciprocal rank fusion, **reading each retriever's ordering and never its scores.** That sidesteps reasons 1 and 2 entirely: **rank 1 means the same thing whatever scale a retriever's scores are on**, with no normalisation and no per-query calibration. What it does not sidesteps is reason 3 — the weights between retrievers are still a fitted choice, which is what 6.5 measures and finds cannot be fixed by tuning.", "cols": 3, "nodes": [{"id": "o", "label": "Read the ordering only", "sub": "never the scores", "tone": "violet"}, {"id": "s", "label": "Scale-independent", "sub": "reason 1, gone", "tone": "good"}, {"id": "c", "label": "No per-query calibration", "sub": "reason 2, gone", "tone": "good"}, {"id": "w", "label": "The weights remain a choice", "sub": "reason 3, still there", "tone": "warn"}, {"id": "m", "label": "Which 6.5 measures", "sub": "and finds unfixable by tuning", "tone": "teal"}], "edges": [["o", "s"], ["o", "c"], ["s", "w"], ["c", "w"], ["w", "m"]], "t": "diagram", "id": "dg-6_4-05-4"},
+
+
     { t: "code", lang: "python", title: "The hybrid retriever",
       code: 'from langchain.retrievers import EnsembleRetriever\n\nhybrid = EnsembleRetriever(\n    retrievers=[dense_retriever, bm25_retriever],\n    weights=[0.5, 0.5])',
       caption: "Those weights apply to reciprocal-rank contributions, not to the raw scores." },

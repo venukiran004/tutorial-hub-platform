@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "What fits, on this corpus",
       code: "corpus: 41 documents\ntokens per document: min 20  mean 31.1  max 46\n\nbudget   reserve   available   chunks that fit (at mean)\n4096     1000      3096        99\n8192     1000      7192        231\n32768    1000      31768       1020\n128000   1000      127000      4080",
       caption: "These are 158-character support documents. A corpus of PDF pages runs 500\u20131500 tokens each." },
@@ -35,6 +37,9 @@ EC.receiveLesson({
       { t: "p", text: "That failure is particularly annoying because it is load-dependent: it appears only when the model wants to produce a long answer, which correlates with the questions that most need one. So it passes testing and fails on the hard queries." }
     ] },
     { t: "h2", n: "02", id: "effectivek", text: "The budget sets an effective k", sub: "Which is the whole lesson" },
+
+    {"kind": "trace", "title": "The budget sets an effective k, whatever k you configured", "caption": "**If only three chunks fit, you are running retrieval at k=3 regardless of what the retriever was configured with.** Everything ranked fourth or below is discarded, so **the quality of the cut depends entirely on the ranking** — and the trace shows what that costs: recall is 0.571 at an effective k of 1 and does not reach 1.000 until 5. Note MRR is flat at 0.964 throughout, so **the metric that moves is the one about coverage and the metric that does not is the one about ordering.**", "left": "effective k", "codeW": 160, "vars": ["R@k", "MRR"], "steps": [{"code": "1", "state": ["0.571", "0.964"], "tone": "crit"}, {"code": "2", "state": ["0.929", "0.964"], "changed": [0], "tone": "warn"}, {"code": "3", "state": ["0.929", "0.964"], "tone": "warn"}, {"code": "5", "state": ["1.000", "0.964"], "changed": [0], "tone": "good"}, {"code": "10", "state": ["1.000", "0.964"], "tone": "good", "note": "MRR never moved"}], "t": "diagram", "id": "dg-7_3-02-1"},
+
     { t: "p", text: "If only three chunks fit, you are running retrieval at `k=3` regardless of what `k` the retriever was configured with. Everything ranked fourth or below is discarded, so the quality of the cut depends entirely on the ranking." },
     { t: "code", lang: "text", title: "Recall at each effective k",
       code: "effective k=1    R@k 0.571  MRR 0.964\neffective k=2    R@k 0.929  MRR 0.964\neffective k=3    R@k 0.929  MRR 0.964\neffective k=5    R@k 1.000  MRR 0.964\neffective k=10   R@k 1.000  MRR 0.964",
@@ -44,6 +49,9 @@ EC.receiveLesson({
       { t: "p", text: "The common response to a latency problem is to drop the expensive reranking stage, and the common response to a budget problem is to send fewer chunks. Doing both together is the worst combination: you have made the ranking matter more and simultaneously removed the component that improves it. 6.8's measurement offers the better move \u2014 a cheap narrowing stage in front of the reranker halved total latency while improving every metric." }
     ] },
     { t: "h2", n: "03", id: "ordering", text: "Ordering is free", sub: "So use it" },
+
+    {"kind": "flow", "title": "Ordering costs nothing, which is reason enough to do it", "caption": "Models attend less reliably to the middle of a long context, and **demonstrating that effect needs a real model** — so what the lesson presents is the ordering *arithmetic* rather than a measurement of model behaviour, and it says so. **The construction costs nothing**, which is a good reason to adopt it regardless of the effect's exact size: put the highest-scoring chunks first and last, and the ones you are least sure about in the middle where attention is weakest.", "cols": 3, "nodes": [{"id": "m", "label": "Attention is weaker in the middle", "sub": "a known effect", "tone": "accent"}, {"id": "d", "label": "Measuring it needs a real model", "sub": "so this is arithmetic, labelled", "tone": "warn"}, {"id": "o", "label": "Best chunks first and last", "sub": "least-certain in the middle", "tone": "good"}, {"id": "c", "label": "The construction is free", "sub": "a sort, not a model call", "tone": "good"}, {"id": "r", "label": "So adopt it regardless of the size", "sub": "the asymmetry of the bet", "tone": "teal"}], "edges": [["m", "d"], ["d", "o"], ["o", "c"], ["c", "r"]], "t": "diagram", "id": "dg-7_3-03-2"},
+
     { t: "p", text: "Models attend less reliably to the middle of a long context. Demonstrating that effect needs a real model, so what follows is the ordering **arithmetic** rather than a measurement of model behaviour \u2014 but the construction costs nothing, which is a good reason to adopt it regardless of the effect's exact size." },
     { t: "code", lang: "text", title: "Three orderings of the same ten documents",
       code: "relevance   : the best document first, the worst last\nreversed    : the worst first, the best last\ninterleaved : best, worst, second-best, second-worst, ...",
@@ -53,6 +61,9 @@ EC.receiveLesson({
       { t: "p", text: "The reason to like this is the cost: zero tokens, zero latency, a few lines. Compared with every other technique in this module \u2014 each of which adds a model call or a forward pass \u2014 a free reordering is worth adopting even on a modest expected benefit." }
     ] },
     { t: "h2", n: "04", id: "counting", text: "Counting tokens, not estimating", sub: "And where the estimate breaks" },
+
+    {"kind": "matrix", "title": "Three budgeting mistakes, and chars-over-4 is tuned for prose", "caption": "4.4 measured the other direction: **JSON came out at 2.23 characters per token, so the same estimate undercounts by 45%.** The rule is that the heuristic is tuned for English prose and **fails on anything structured** — JSON, code, tables, identifiers, non-Latin scripts. And an undercount is the dangerous direction: **it means a request that gets rejected or truncated** rather than one that is merely smaller than it could be.", "cols": ["What it costs"], "rows": ["Characters over 4", "Forgetting the envelope", "No room for the answer"], "cells": [[{"text": "undercounts structured text by 45%, so requests get rejected", "tone": "crit"}], ["a chat format adds tokens per message; it matters on many short turns"], [{"text": "fails at generation, after the input tokens are paid for", "tone": "crit"}]], "t": "diagram", "id": "dg-7_3-04-3"},
+
     { t: "code", lang: "text", title: "Measured on ten concatenated documents",
       code: "characters            : 1743\nchars/4 estimate      : 435\nactual tiktoken count : 377\nestimate error        : +15.4%",
       caption: "Prose tokenises close to 4 chars/token, so the estimate is defensible **here**." },

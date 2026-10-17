@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Five keys, one schema",
       code: 'class Leaky(TypedDict):\n    question: str\n    answer: str\n    _raw_api_response: str\n    _retry_count: int\n    _debug_timings: List[str]',
       out: "  one schema, five keys. invoke returns:\n    question               'what is it'\n    answer                 '42'\n    _raw_api_response      '{...8kb of json...}'\n    _retry_count           '2'\n    _debug_timings         \"['fetch: 12ms']\"",

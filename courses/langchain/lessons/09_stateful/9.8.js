@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "interrupt_before",
       code: 'app = g.compile(checkpointer=saver, interrupt_before=["execute"])',
       out: "  invoke stops before 'execute':\n    trace: ['prepared']\n    next : ('execute',)\n\n  resuming with invoke(None) runs the rest:\n    ['prepared', 'EXECUTED refund of 50.00']",

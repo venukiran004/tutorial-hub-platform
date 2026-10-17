@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "A node taking a RunnableConfig",
       code: 'def old_node(state, config: RunnableConfig):\n    c = config["configurable"]\n    return {"out": ["model=%s tone=%s" % (c.get("model", "<default>"),\n                                          c.get("tone", "<default>"))]}',
       out: "    {}                        -> ['model=<default> tone=<default>']\n    {'model': 'fast', ...}    -> ['model=fast tone=brief']",

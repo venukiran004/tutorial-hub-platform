@@ -33,6 +33,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Three malformed inputs",
       code: "a key not in the schema    accepted -> {'value': 2}\nthe wrong type for a key   RAISED TypeError: can only concatenate str (not \"int\") to str\na missing required key     RAISED KeyError: 'value'",
       caption: "Only the first is the runtime speaking." },

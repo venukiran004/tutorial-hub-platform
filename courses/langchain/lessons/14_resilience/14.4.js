@@ -47,6 +47,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Same steps, same compensations, different semantics",
       code: "reserve, charge, ship, email     a failure anywhere is recoverable\nemail, reserve, charge, ship     a failure after step 1 is not",
       caption: "The ordering is a **correctness property**, not a style choice." },

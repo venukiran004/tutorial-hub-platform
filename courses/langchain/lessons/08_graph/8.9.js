@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Four malformed graphs",
       code: "a node with no edge from START         RAISED ValueError: Graph must have an\n                                       entrypoint: add at least one edge\n                                       from START to another node\na node with no edge to END             compiled\nan edge to a node that does not exist  RAISED ValueError: Found edge ending\n                                       at unknown node `nonexistent`\na graph with no nodes at all           compiled",
       caption: "Two structural facts it can see; two it does not care about." },

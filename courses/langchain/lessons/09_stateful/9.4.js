@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "A two-node graph, run once",
       code: "final state: {'n': 20, 'trace': ['a', 'b']}\ncheckpoints written: 4\n\nnewest first:\n  step=2   next=()               values={'n': 20, 'trace': ['a', 'b']}\n  step=1   next=('b',)           values={'n': 2,  'trace': ['a']}\n  step=0   next=('a',)           values={'n': 1,  'trace': []}\n  step=-1  next=('__start__',)   values={'trace': []}",
       caption: "Each records the state **after** that step and what would run next." },

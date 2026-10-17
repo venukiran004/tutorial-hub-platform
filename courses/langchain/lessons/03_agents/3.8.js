@@ -18,6 +18,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["Approach", "Calls (p50)", "Calls (p95)", "Character"], rows: [
       ["a single call", "1", "1", "cheapest, no decisions, fails on anything unexpected"],
       ["a fixed chain", "3", "3", "deterministic path, every step runs every time"],
@@ -36,6 +38,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["Property", "What happens instead"], rows: [
       ["determinism", "the same input can take a different path"],
       ["predictable cost", "p50 and p95 differ by several model calls"],
@@ -47,6 +51,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "test", text: "The test", sub: "Four questions about the actual task" },
 
     {"kind": "matrix", "title": "One question, three answers, and the first one is a reminder", "caption": "**If the steps are known in advance, you do not need a model to choose what you already know** — which is the sentence worth carrying out of this module, because the agent is the default people reach for and it is the right answer to only the third row. One decision then a fixed path is a router: cheaper, testable, and with the p50/p95 spread of §01's third row rather than its fourth.", "cols": ["Build"], "rows": ["Steps known in advance", "One decision, then fixed", "Must react, repeatedly"], "cells": [[{"text": "a chain - no model needed to choose what you know", "tone": "good"}], [{"text": "a router (2.5) - cheaper and testable", "tone": "good"}], [{"text": "an agent, accepting the tail cost and the non-determinism", "tone": "violet"}]], "t": "diagram", "id": "dg-3_8-03-3"},
+
+
 
 
 
@@ -70,6 +76,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "honest", text: "The honest version", sub: "What the module adds up to" },
 
     {"kind": "compare", "title": "The honest summary of the module", "caption": "An agent is a more expensive way to be less reliable, bought for the cases where you genuinely cannot write the steps down. That is a real set of cases, and it is much smaller than the number of systems using one.", "columns": [{"title": "a chain — the default", "tone": "good", "items": ["the steps are known before the request arrives", "one model call per unit of work", "the control flow is in your code, so it is readable and testable", "a failure has one place to be"]}, {"title": "an agent — when earned", "tone": "warn", "items": ["the next step genuinely depends on what the last one returned", "3+ model calls, and a variable number", "the control flow is a model's decision, so a trace is the only record", "needs a cap, a budget and a guard before it ships"]}], "t": "diagram", "id": "dg-3_8-04-0"},
+
+
 
 
 

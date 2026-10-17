@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["Feature", "Note"], rows: [
       ["the loop itself", "identical in shape to 3.3"],
       ["an iteration cap", "a recursion limit, so it terminates"],
@@ -46,6 +48,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "The prebuilt agent",
       code: 'from langgraph.prebuilt import create_react_agent\n\nagent = create_react_agent(model, [calculate, lookup_order])\nout = agent.invoke({"messages": [HumanMessage(content="where is order A-1?")]})',
       out: "messages returned: 4\n   Human:    where is order A-1?\n   AI:                     tool_calls=[('lookup_order', {'order_id': 'A-1'})]\n   Tool:     {\"id\": \"A-1\", \"status\": \"shipped\", \"eta\": \"2026-10-12\"}\n   AI:       Order A-1 has shipped and arrives on the 12th.",
@@ -59,6 +63,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "callout", kind: "warn", title: "The deprecation warning this emits", body: [
       { t: "p", text: "Running `create_react_agent` from `langgraph.prebuilt` produces: *\u201ccreate_react_agent has been moved to `langchain.agents`. Please update your import to `from langchain.agents import create_agent`. Deprecated in LangGraph V1.0 to be removed in V2.0.\u201d*" },
       { t: "p", text: "So you will encounter both names, and the overwhelming majority of material you find online uses the deprecated one \u2014 which is worth knowing when a tutorial does not match your imports, and when deciding what to write in new code." }
@@ -66,6 +72,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "middleware", text: "Middleware", sub: "Hooks around every model and tool call" },
 
     {"kind": "matrix", "title": "Five middleware, all of them cross-cutting concerns the loop body would otherwise carry", "caption": "Middleware runs **around each model call and each tool call inside the loop**, which is the only place several of these can work at all. Summarisation has to happen *before* each model call, not once at the start. Human-in-the-loop has to interrupt *between* a decision and its execution. And tool gating has to filter the tool list *per user* at the moment the model is asked, which no static construction can do.", "cols": ["What it does", "Why it must be there"], "rows": ["summarization", "human-in-the-loop", "PII redaction", "tool gating", "fallbacks"], "cells": [["trim or summarise before each model call", {"text": "before EACH call, not once", "tone": "violet"}], ["pause for approval before a tool runs", {"text": "between decision and execution", "tone": "violet"}], ["strip identifiers in and out", "on every boundary crossing"], ["hide tools this user may not call", {"text": "per user, at ask time", "tone": "violet"}], ["swap the model mid-loop on failure", "inside the loop, not around it"]], "t": "diagram", "id": "dg-3_4-04-3"},
+
+
 
 
 

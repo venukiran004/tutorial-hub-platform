@@ -11,6 +11,9 @@ EC.receiveLesson({
   prerequisites: ["7.1", "6.2"],
   blocks: [
     { t: "h2", n: "01", id: "whichfail", text: "Which queries actually fail", sub: "Not the ones you would guess" },
+
+    {"kind": "trace", "title": "Which queries actually fail, and they fail at reciprocal rank 0.00", "caption": "Not a degraded ranking — **zero**. *\"I want out\"* and *\"the robot keeps emailing me\"* return three plausible documents each and **the right one is in none of them.** Which is the population query rewriting exists for: the query shares no vocabulary with the document and dense similarity has nothing to bridge. Note they are also both phrased the way a person actually talks, which is the part a test set written by the system's author tends to miss.", "left": "query", "codeW": 210, "vars": ["rr", "top 3"], "steps": [{"code": "'I want out'", "state": ["0.00", "cancel-order, user-remove, intg-oauth"], "tone": "crit"}, {"code": "'the robot keeps emailing me'", "state": ["0.00", "cancel-order, auth-email, cancel-sub"], "tone": "crit"}, {"code": "both", "state": ["plausible, and wrong", "no shared vocabulary"], "tone": "violet"}], "t": "diagram", "id": "dg-7_2-01-1"},
+
     { t: "code", lang: "text", title: "The eight genuine failures",
       code: "rr    query                          top 3\n0.00  'I want out'                   ['bill-cancel-order', 'user-remove', 'intg-oauth']\n0.00  'the robot keeps emailing me'  ['bill-cancel-order', 'auth-email', 'bill-cancel-sub']\n0.00  'Retry-After'                  ['api-idempotency', 'api-webhooks', 'bill-refund']\n0.25  'where is my money'            ['bill-overage', 'bill-payment-method', 'bill-tax']\n0.25  'WebAuthn'                     ['intg-webhook-out', 'api-auth', 'intg-oauth']\n0.50  \"I can't get in\"               ['auth-reset', 'auth-signin-fail', 'user-invite']\n0.50  'make it stop'                 ['bill-cancel-sub', 'ops-cancel-report', ...]\n0.50  'who can see my data'          ['user-roles', 'data-residency', 'ops-status']\n\nMRR over these 8: 0.250",
       caption: "Vague and colloquial queries, plus 6.2's exact terms. Not ordinary questions." },
@@ -19,6 +22,9 @@ EC.receiveLesson({
       { t: "p", text: "`I want out` is the instructive failure: it wants the **subscription** cancellation document and gets the **order** cancellation document. That is 5.8's near-duplicate problem reached from a query too vague to distinguish them \u2014 so the transformation is doing disambiguation, not translation." }
     ] },
     { t: "h2", n: "02", id: "rewrite", text: "Rewriting", sub: "And what it actually changes" },
+
+    {"kind": "flow", "title": "The rewrite added no information — it substituted the document's words", "caption": "**The mechanism matters more than the number.** `the robot keeps emailing me` became `disable outgoing webhook notifications`, **which works because `intg-webhook-out` uses the word *webhook*.** No information was added: the user's words were replaced with the corpus's words. Which is why §03's measurement is the important one — if a rewrite works by knowing the target vocabulary, then **a rewrite written by someone who knows the corpus is not evidence that rewriting works.**", "cols": 3, "nodes": [{"id": "u", "label": "'the robot keeps emailing me'", "sub": "the user's words", "tone": "accent"}, {"id": "r", "label": "'disable outgoing webhook notifications'", "sub": "the rewrite", "tone": "violet"}, {"id": "w", "label": "It works because the doc says 'webhook'", "sub": "the corpus's word", "tone": "good"}, {"id": "n", "label": "No information was added", "sub": "words were substituted", "tone": "warn"}, {"id": "c", "label": "So who wrote it matters", "sub": "which section 03 measures", "tone": "teal"}], "edges": [["u", "r"], ["r", "w"], ["w", "n"], ["n", "c"]], "t": "diagram", "id": "dg-7_2-02-2"},
+
     { t: "code", lang: "text", title: "All eight fixed",
       code: "rr before -> after    rewritten to\n0.00 -> 1.00           'I want out'          cancel my subscription auto-renewal\n0.00 -> 1.00           'the robot keeps...'  disable outgoing webhook notifications\n0.00 -> 1.00           'Retry-After'         Retry-After header rate limit 429\n0.25 -> 1.00           'where is my money'   refund processing time\n...\nMRR: 0.250 -> 1.000",
       caption: "A rewrite is a model call, so the rewritten text is scripted here." },
@@ -28,6 +34,9 @@ EC.receiveLesson({
       { t: "p", text: "This is worth being blunt about because it is the standard way query-transformation demos mislead. The rewrite is evaluated by the person who chose it, against the corpus they chose it for." }
     ] },
     { t: "h2", n: "03", id: "circular", text: "The circularity, measured", sub: "What a blind rewriter produces" },
+
+    {"kind": "trace", "title": "The circularity, measured: uninformed rewrites do far less", "caption": "The informed rewrite took *\"I want out\"* from 0.00 to **1.00**. Four plausible rewrites written **without** knowing the target document land at **0.50, 0.50, 1.00 and lower** — so rewriting genuinely helps, and **the measured benefit of an author-written rewrite overstates what a model will achieve**, because the author knows which word the document uses. The honest number is the uninformed one, and reporting the informed one is the easiest mistake to make in this lesson.", "left": "rewrite of 'I want out'", "codeW": 190, "vars": ["rr", "top 1"], "steps": [{"code": "baseline (no rewrite)", "state": ["0.00", "cancel-order"], "tone": "crit"}, {"code": "informed rewrite", "state": ["1.00", "the right one"], "changed": [0], "tone": "good", "note": "and I knew the corpus"}, {"code": "'cancel my account'", "state": ["0.50", "cancel-trial"], "tone": "warn"}, {"code": "'how do I leave'", "state": ["0.50", "cancel-order"], "tone": "warn"}, {"code": "'unsubscribe me'", "state": ["1.00", "the right one"], "tone": "good"}], "t": "diagram", "id": "dg-7_2-03-3"},
+
     { t: "code", lang: "text", title: "Rewrites made without seeing the corpus",
       code: "'I want out'  (baseline 0.00, informed rewrite 1.00)\n   rr=0.50  cancel my account         top1=bill-cancel-trial\n   rr=0.50  how do I leave            top1=bill-cancel-order\n   rr=1.00  unsubscribe me            top1=bill-cancel-sub\n   rr=1.00  close my account          top1=bill-cancel-sub\n   rr=0.50  I want to quit            top1=bill-cancel-trial\n   -> 2 of 5 blind variants landed on rank 1\n\n'the robot keeps emailing me'  (baseline 0.00, informed rewrite 1.00)\n   rr=0.00  stop automated emails     top1=bill-cancel-order\n   rr=0.00  turn off notifications    top1=ops-status\n   rr=0.00  unsubscribe from alerts   top1=intg-slack\n   rr=0.00  too many automated...     top1=auth-signin-fail\n   rr=0.00  disable email alerts      top1=ops-status\n   -> 0 of 5 blind variants landed on rank 1",
       caption: "**Zero of five** on the second query." },
@@ -52,6 +61,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Union of five variants",
       code: "'I want out'\n   best single variant : rr=1.00\n   union of 5 variants : 7 docs, rr=0.50\n   recall of the union : 1.00",
       caption: "The union is **worse** than one of its own members." },
@@ -61,12 +72,18 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "In practice the fix is to fuse rather than concatenate: 6.5's reciprocal rank fusion over the variants' result lists gives the union an ordering, and each variant's rank-1 document competes properly. Which is the same machinery, applied to query variants instead of to retrievers." },
     { t: "h2", n: "05", id: "hyde", text: "HyDE", sub: "Embed a hypothetical answer instead of the question" },
+
+    {"kind": "flow", "title": "HyDE rests on 5.4's asymmetry", "caption": "A question and its answer are **different kinds of text**, so generate a plausible answer and embed **that** — because **an answer looks more like a document than a question does.** Measured here it fixes both test queries. And the caveat applies in full: **I wrote the hypothetical documents too**, so the same circularity §03 measured for rewriting applies unchanged, and the honest version of the result needs a model generating them blind.", "cols": 3, "nodes": [{"id": "q", "label": "A question", "sub": "interrogative, short", "tone": "accent"}, {"id": "a", "label": "Generate a plausible answer", "sub": "declarative, longer", "tone": "violet"}, {"id": "e", "label": "Embed that instead", "sub": "it looks like a document", "tone": "good"}, {"id": "f", "label": "Fixes both test queries", "sub": "measured", "tone": "good"}, {"id": "c", "label": "And I wrote the hypotheticals", "sub": "section 03's caveat, in full", "tone": "crit"}], "edges": [["q", "a"], ["a", "e"], ["e", "f"], ["f", "c"]], "t": "diagram", "id": "dg-7_2-05-4"},
+
     { t: "p", text: "The idea rests on 5.4's asymmetry: a question and its answer are different kinds of text, so generate a plausible answer and embed **that**, because an answer looks more like a document than a question does. Measured here, it fixes both test queries \u2014 and I wrote the hypothetical documents too, so the same caveat applies in full." },
     { t: "callout", kind: "trap", title: "The failure mode is in the name", body: [
       { t: "p", text: "The hypothesis is *hypothetical*. The model invents an answer, which may be wrong, and you then retrieve documents similar to the invented answer \u2014 so a confidently wrong hypothesis retrieves confidently wrong documents." },
       { t: "p", text: "The error is amplified rather than detected, because HyDE has no mechanism for noticing its hypothesis was false. It is the one technique in this lesson that can make retrieval worse in a way the retrieval metrics will reward, since the retrieved documents genuinely do match the (wrong) hypothesis." }
     ] },
     { t: "h2", n: "06", id: "cost", text: "The cost, and where to put the decision", sub: "7.1 supplies the mechanism" },
+
+    {"kind": "matrix", "title": "Four techniques, and the one whose latency is serial", "caption": "Three of these add one round trip and can overlap their searches. **Decomposition cannot: if the sub-questions are dependent, the retrievals are serial**, so the latency is the sum rather than the maximum — and that is the difference between +1 round trip and +n. Which is the reason the decision about *where* to put query transformation matters: a technique that is cheap in token terms can be expensive in wall-clock, and only this column shows it.", "cols": ["Extra calls", "Extra retrievals", "Latency shape"], "rows": ["Rewrite", "Multi-query", "Decomposition", "HyDE"], "cells": [["1", "0 - it replaces", {"text": "+1 round trip", "tone": "good"}], ["1", "n-1", "+1 round trip, n searches"], [{"text": "1 + 1 per sub-question", "tone": "warn"}, "n", {"text": "SERIAL if dependent", "tone": "crit"}], ["1, longer output", "0 - it replaces", "+1 round trip, more tokens"]], "t": "diagram", "id": "dg-7_2-06-5"},
+
     { t: "table", head: ["technique", "extra model calls", "extra retrievals", "latency shape"], rows: [
       ["rewrite", "1", "0 (replaces)", "+1 round trip"],
       ["multi-query", "1", "n\u22121", "+1 round trip, n searches"],

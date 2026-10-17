@@ -29,6 +29,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Install closure",
       code: 'langchain-core   1.4.7   29 packages in its install closure\nlanggraph        1.2.5   34 packages in its install closure',
       caption: "Resolved from installed metadata, excluding optional extras." },
@@ -39,6 +41,8 @@ EC.receiveLesson({
       sub: "Where the framework genuinely does not earn its place" },
 
     {"kind": "flow", "title": "On a single call, the uniformity is paid for and not used", "caption": "Both versions of a one-shot question-and-answer are about the same size, and **the raw SDK version is clearer to someone who has not used LangChain** — which on most teams is most people. The reason is not that the framework is heavy here; it is that **there is no composition being exploited.** One call has nothing to compose with, so the uniformity that 1.1 argued for is a cost with no corresponding benefit on this task.", "cols": 3, "nodes": [{"id": "s", "label": "The raw SDK version", "sub": "one create() call", "tone": "good"}, {"id": "l", "label": "The LangChain version", "sub": "prompt | model | parser", "tone": "accent"}, {"id": "w", "label": "Roughly a wash on size", "sub": "neither is shorter", "tone": "violet"}, {"id": "c", "label": "But nothing is being composed", "sub": "one call has no neighbours", "tone": "crit"}, {"id": "p", "label": "So the uniformity is paid for, unused", "sub": "which is the whole argument", "tone": "teal"}], "edges": [["s", "w"], ["l", "w"], ["w", "c"], ["c", "p"]], "t": "diagram", "id": "dg-1_8-02-1"},
+
+
 
 
 
@@ -117,6 +121,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "ul", items: [
       "**The abstraction your team has to learn** before they can read the chain at all, which on most teams is most of the team.",
       "**A dependency whose release cadence you now track**, with breaking changes you did not schedule.",
@@ -135,6 +141,8 @@ EC.receiveLesson({
       sub: "Five questions about the system you are actually building" },
 
     {"kind": "matrix", "title": "The test, and what to do when it comes out ambiguous", "caption": "The decision rule is a count rather than a judgement, which is what makes it usable. **None yes: use the SDK**, because you are paying for uniformity you will not use. **Two or more yes: use the framework**, because each of those features is cheap with uniform components and expensive without. And the middle row is the honest one — **exactly one yes is a judgement call**, and the suggestion is concrete: write the raw version plus the one feature, and revisit at the second.", "cols": ["Decision", "Why"], "rows": ["None yes", "Exactly one yes", "Two or more yes"], "cells": [[{"text": "use the SDK", "tone": "good"}, "you are paying for unused uniformity"], [{"text": "judgement call", "tone": "warn"}, "write the raw version plus that one feature"], [{"text": "use the framework", "tone": "good"}, "each is cheap with uniform components"]], "t": "diagram", "id": "dg-1_8-05-3"},
+
+
 
 
 
