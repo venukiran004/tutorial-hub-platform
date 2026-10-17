@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Three requests",
       code: "'I want a refund'         -> billing     ['billing handled it']\n'the API returns 500'     -> technical   ['technical handled it']\n'add a teammate'          -> account     ['account handled it']",
       caption: "The branch did no model work, so the cost is one classification plus the handler." },

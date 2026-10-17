@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "The same corpus, split five ways",
       code: 'chunk size   chunks     mean chars   recall@5     MRR\n80           99         66           1.000        0.893\n150          64         102          1.000        0.893\n300          41         160          1.000        0.964\n600          41         160          1.000        0.964\n1200         41         160          1.000        0.964',
       caption: "At 300 and above nothing is split, because the mean document is 158 characters." },

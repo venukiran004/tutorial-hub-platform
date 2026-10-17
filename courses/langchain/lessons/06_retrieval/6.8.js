@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "timeline", "title": "Three results I did not expect", "caption": "Assembled in order and measured at every step. Reranking on top of dense made natural queries **worse** — 0.964 down to 0.845 — which is the opposite of the advertised effect, and why every stage has to be measured on **your** queries rather than adopted.", "span": 1, "tick": 0.2, "unit": "MRR on the 14 natural queries", "lanes": [{"label": "dense alone", "bars": [[0, 0.964, "0.964 — the baseline", "good"]]}, {"label": "+ rerank", "bars": [[0, 0.845, "0.845 — WORSE", "crit"]]}, {"label": "+ hybrid fusion", "bars": [[0, 0.88, "helps keyword only", "warn"]]}, {"label": "+ MMR", "bars": [[0, 0.88, "coverage, not relevance", "warn"]]}], "t": "diagram", "id": "dg-6_8-02-0"},
 
 
+
+
     { t: "table", head: ["config", "nat MRR", "exact MRR", "nat R@5", "exact R@5", "s/query"], rows: [
       ["dense k=5", "**0.964**", "0.781", "1.000", "0.875", "**0.076**"],
       ["hybrid RRF", "0.393", "1.000", "0.429", "1.000", "0.098"],

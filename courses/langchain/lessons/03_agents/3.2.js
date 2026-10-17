@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "What comes back",
       code: 'bound = model.bind_tools([calculate, lookup_order])\nr = bound.invoke([HumanMessage(content="what is 42 times 17?")])\n\nprint(type(r).__name__)\nprint(repr(r.content))\nprint(r.tool_calls)',
       out: "type        : AIMessage\ncontent     : ''\ntool_calls  : [{'name': 'calculate', 'args': {'expression': '42*17'}, 'id': 'c1', 'type': 'tool_call'}]",

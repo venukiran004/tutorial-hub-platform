@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "happy", text: "The schema becomes a tool",
       sub: "Which is why there is nothing to parse" },
 
+    {"kind": "flow", "title": "The data arrives in a field that was never a string", "caption": "`with_structured_output` **does not ask for JSON and then parse it.** It binds your schema as a **tool definition**, the model emits a tool call, and the call's arguments are validated into your type. The model's text output is empty and **the data arrives in a structured field that was never a string** — which is why every failure mode in 1.4 is simply absent here rather than mitigated: there is no text to scan, no fence to strip and no truncation to repair.", "cols": 3, "nodes": [{"id": "s", "label": "Your Pydantic schema", "sub": "a class", "tone": "accent"}, {"id": "t", "label": "Bound as a TOOL definition", "sub": "not as prompt text", "tone": "violet"}, {"id": "c", "label": "The model emits a tool call", "sub": "text output is empty", "tone": "violet"}, {"id": "v", "label": "Arguments validated into your type", "sub": "never a string", "tone": "good"}, {"id": "a", "label": "So 1.4's failures are absent", "sub": "not mitigated - absent", "tone": "good"}], "edges": [["s", "t"], ["t", "c"], ["c", "v"], ["v", "a"]], "t": "diagram", "id": "dg-1_5-01-1"},
+
+
 
     { t: "p", text: "`with_structured_output` does not ask the model for JSON and then parse it. It binds your schema as a **tool definition**, the model emits a tool call, and the call's arguments are validated into your type. The model's text output is empty; the data arrives in a structured field that was never a string." },
 
@@ -35,6 +38,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "validation", text: "Constraints are enforced",
       sub: "Not suggested, which is what putting them in the prompt does" },
 
+    {"kind": "flow", "title": "A Field constraint is both the request and the guarantee", "caption": "This is the argument for putting constraints in `Field()` rather than in prompt text. **\"Rate out of ten\" in a system message is a request.** `Field(ge=1, le=10)` is **both** — a request, because it appears in the schema the model sees, **and** a guarantee, because the value is checked before it reaches you. One declaration does both jobs, and the prompt-text version does only the first and gives you no way to know when it was ignored.", "cols": 3, "nodes": [{"id": "p", "label": "\"Rate out of ten\" in the prompt", "sub": "a request", "tone": "warn"}, {"id": "n", "label": "And nothing checks it", "sub": "an 11 arrives silently", "tone": "crit"}, {"id": "f", "label": "Field(ge=1, le=10)", "sub": "one declaration", "tone": "violet"}, {"id": "r", "label": "In the schema the model sees", "sub": "so it is still a request", "tone": "good"}, {"id": "g", "label": "And checked on the way back", "sub": "so it is also a guarantee", "tone": "good"}], "edges": [["p", "n"], ["f", "r"], ["f", "g"]], "t": "diagram", "id": "dg-1_5-02-2"},
+
+
     { t: "code", lang: "text", title: "Four malformed tool calls",
       code: 'rating above le=10       -> ValidationError (rating)\nrating not a number      -> ValidationError (rating)\nrating missing           -> ValidationError (rating)\nrecommended missing      -> ValidationError (recommended)',
       caption: "A model returning 48.8 does not quietly become your data." },
@@ -45,6 +51,8 @@ EC.receiveLesson({
       sub: "The one nobody writes a branch for" },
 
     {"kind": "tree", "title": "A structured-output call has three outcomes, not two", "caption": "The third is the one almost no code guards. When the model answers in prose instead of calling the tool it returns **`None`** — no exception, and `include_raw=True` reports `parsed=None` with `parsing_error=None`, because nothing failed to parse: nothing was offered to the parser.", "root": {"label": "with_structured_output(Schema)", "sub": "the schema is bound as a tool", "tone": "accent", "children": [{"label": "valid arguments", "sub": "Pydantic validates → your object", "tone": "good", "edge": "the model calls the tool"}, {"label": "ValidationError", "sub": "a rating of 48.8 raises", "tone": "warn", "edge": "out of range"}, {"label": "returns None", "sub": "no exception, no parsing_error", "tone": "crit", "edge": "answers in prose"}]}, "t": "diagram", "id": "dg-1_5-03-0"},
+
+
 
 
 
@@ -85,6 +93,9 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "mechanisms", text: "Three mechanisms, one line of code",
       sub: "And the guarantee changes when you change provider" },
 
+    {"kind": "matrix", "title": "Three mechanisms behind one line of code", "caption": "`with_structured_output` picks one of three, and **which one you get decides what you are guaranteed.** Tool calling is strongest and needs a tool-calling model. JSON mode guarantees **valid JSON but not necessarily *your* schema** — the distinction that matters, because a valid object with the wrong fields passes the parser and fails your code. And prompt-and-parse works anywhere and is the weakest, with every failure mode from 1.4 attached.", "cols": ["How", "What it guarantees"], "rows": ["Tool calling", "JSON mode", "Prompt and parse"], "cells": [["the schema bound as a tool", {"text": "strongest - needs a tool-calling model", "tone": "good"}], ["the provider constrains the output", {"text": "valid JSON, but not YOUR schema", "tone": "warn"}], ["format instructions, then parse text", {"text": "works anywhere; 1.4 applies in full", "tone": "crit"}]], "t": "diagram", "id": "dg-1_5-04-3"},
+
+
     { t: "table",
       head: ["Mechanism", "How", "What it guarantees"],
       rows: [
@@ -101,6 +112,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "05", id: "schemas", text: "Literal and Optional",
       sub: "Communicating a constraint and enforcing it with one declaration" },
+
+    {"kind": "trace", "title": "A Literal does two jobs from one declaration", "caption": "It **appears as an enum in the tool schema**, so the model is told the allowed values, **and** it is enforced on the way back, so a model that invents a fourth category **raises rather than widening your data.** Writing \"answer positive, negative or neutral\" in the prompt does only the first — and the third row is what that costs you. `Optional` is the companion: an omitted field arrives as `None` rather than as an absence you have to test for.", "left": "model output", "codeW": 200, "vars": ["result"], "steps": [{"code": "valid, with evidence", "state": ["positive, 0.91, 2 quotes"], "tone": "good"}, {"code": "valid, evidence omitted", "state": ["evidence=None"], "tone": "good", "note": "Optional, not absent"}, {"code": "sentiment off the Literal", "state": ["ValidationError"], "changed": [0], "tone": "crit", "note": "raises, not widens"}], "t": "diagram", "id": "dg-1_5-05-4"},
+
 
     { t: "code", lang: "python", title: "A classification schema",
       code: 'from typing import Literal, Optional, List\n\nclass Sentiment(BaseModel):\n    """Classification with a confidence."""\n    sentiment: Literal["positive", "negative", "neutral"]\n    confidence: float = Field(ge=0, le=1)\n    evidence: Optional[List[str]] = Field(default=None, description="supporting quotes")',

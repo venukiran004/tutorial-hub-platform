@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["Stage", "Goal", "Cost"], rows: [
       ["recall", "cast wide; miss nothing you need", "cheap, over everything"],
       ["precision", "narrow and order what you kept", "expensive, over few"]

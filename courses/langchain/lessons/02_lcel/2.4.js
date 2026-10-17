@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "The original is gone",
       code: 'naive = prompt | model | StrOutputParser()\nnaive.invoke({"text: "long doc"})',
       out: "naive.invoke({'text': ...}) -> 'a summary'",

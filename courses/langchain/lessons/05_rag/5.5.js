@@ -32,6 +32,8 @@ EC.receiveLesson({
     {"kind": "compare", "title": "A vector store does two jobs, and the attention goes to the wrong one", "caption": "The index is a performance decision that does not matter below a few hundred thousand vectors. The metadata filter is a **correctness** decision that matters from the first document — and 7.5 measures what it costs to get the order wrong.", "columns": [{"title": "the index — over-discussed", "tone": "warn", "items": ["exact or approximate; flat, IVF or HNSW", "a latency and memory trade", "irrelevant below a few hundred thousand vectors", "easy to change later: re-index and measure"]}, {"title": "the metadata filter — under-discussed", "tone": "crit", "items": ["which documents this user may see at all", "a correctness and security decision", "matters from the very first document", "must run BEFORE similarity, not after (7.5)"]}], "t": "diagram", "id": "dg-5_5-03-0"},
 
 
+
+
     { t: "code", lang: "text", title: "One query, with and without a filter",
       code: "the corpus contains 3 restricted documents:\n  int-salary     Internal only. Engineering salary bands for the\n  int-incident   Internal only. Post-incident review for the Apri\n  int-roadmap    Internal only. Unannounced roadmap items for the\n\nquery: 'what are the engineering salary bands'\n  unfiltered search returns : ['int-salary', 'ops-sla', 'data-export']\n  filtered to public        : ['ops-sla', 'data-export', 'auth-mfa']",
       caption: "`int-salary` is the top unfiltered result \u2014 because it is genuinely the best answer." },

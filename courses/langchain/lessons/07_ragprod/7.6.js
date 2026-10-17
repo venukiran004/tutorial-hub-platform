@@ -22,6 +22,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Every component behaved correctly",
       code: "user input    : 'how do I cancel my subscription'   <- clean\nretrieval     : returns bill-cancel-sub             <- working\nprompt build  : concatenates the document           <- working\nmodel         : receives the injected instruction",
       caption: "The user never sent anything suspicious." },

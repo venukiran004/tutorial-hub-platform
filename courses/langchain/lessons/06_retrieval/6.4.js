@@ -20,6 +20,8 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "BM25’s magnitude is anti-correlated with its usefulness", "caption": "The obvious way to combine dense and sparse is wrong three times over, and the third reason is the one nobody mentions: cosine is bounded and BM25 is not, so a weighted sum is **uncalibrated**. Worse, a high BM25 score can mean the query was all stopwords.", "cols": ["BM25 score", "tokens kept", "what it means"], "rows": ["“I forgot my password”", "“how long do you keep…”"], "cells": [[{"text": "a 41-way tie at 0.0000", "tone": "crit"}, {"text": "ZERO", "tone": "crit"}, {"text": "still returns a top-3", "tone": "crit"}], [{"text": "3.8583 — confident", "tone": "crit"}, {"text": "stopwords only", "tone": "crit"}, {"text": "high score, no signal", "tone": "crit"}]], "t": "diagram", "id": "dg-6_4-02-0"},
 
 
+
+
     { t: "code", lang: "text", title: "Surviving terms, per query",
       code: "query                                  max     docs>0  surviving terms\n'Idempotency-Key header'               5.1527  4       ['idempotency-key', 'header']\n'mTLS'                                 3.3009  1       ['mtls']\n'Retry-After'                          2.9871  1       ['retry-after']\n'stop my plan renewing'                2.8963  2       ['plan']\n'how long do you keep my information'  3.8583  5       ['do', 'you']\n'I forgot my password'                 0.0000  0       []",
       caption: "Two rows deserve attention, and both are fatal to weighted fusion." },

@@ -23,6 +23,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "A plain function at the end",
       code: 'blocking = prompt | model | StrOutputParser() | RunnableLambda(lambda s: s.upper())\nlist(blocking.stream({"q": "x"}))',
       out: "with a plain RunnableLambda at the end: ['ONE TWO THREE']\ncount: 1",

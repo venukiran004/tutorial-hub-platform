@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "steps", "title": "The registry turns the worker set into data", "caption": "`add_node` is a build-time call, so *“add a worker”* normally means editing the graph and redeploying. One generic executor plus a dict of specs removes that — and the safety comes from what a row **cannot** say.", "items": [{"label": "one generic executor node", "desc": "it reads a spec and runs it; the graph topology never changes", "tone": "accent", "code": "build time"}, {"label": "a dict of worker specs", "desc": "a prompt, a tool list from an ALLOWLIST, and a few flags", "tone": "good", "code": "data"}, {"label": "nothing else may be expressed", "desc": "no code, no new tool, no permission — or the registry grants capabilities without review", "tone": "crit", "code": "the limit"}, {"label": "enabled defaults to OFF", "desc": "so adding a row and turning it on are two deliberate steps", "tone": "good", "code": "safety"}], "t": "diagram", "id": "dg-12_6-02-0"},
 
 
+
+
     { t: "code", lang: "text", title: "The same compiled graph",
       code: "added 'billing' to the registry, then invoked the SAME compiled graph:\n  ['executor ran billing']",
       caption: "The graph never changed." },

@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "One agent with both tools",
       code: "model calls : 3\nmessages    : 6",
       caption: "Two tool calls and a final answer." },

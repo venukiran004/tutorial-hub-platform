@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "One chain, two behaviours",
       code: 'model = base_model.configurable_fields(\n    script=ConfigurableField(id="script", name="Script",\n                             description="what the model returns"))\n\nmodel.invoke(msgs)                                        # default\nmodel.invoke(msgs, config={"configurable": {"script": ["overridden"]}})',
       out: "default        : default\nwith config    : overridden",

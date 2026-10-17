@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "The contract is small: three ways to call a Runnable, each with an async twin." },
     { t: "table", head: ["Method", "What it does", "Returns"], rows: [
       ["`invoke(input)`", "run once, synchronously", "one output"],

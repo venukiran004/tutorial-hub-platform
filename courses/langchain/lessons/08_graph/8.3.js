@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Two nodes, one key, no reducer",
       code: 'class S(TypedDict):\n    messages: List[str]        # NO reducer\n\ndef a(state: S):\n    return {"messages": ["from a"]}\n\ndef b(state: S):\n    return {"messages": ["from b"]}\n\n# START -> a -> b -> END',
       out: "  result: {'messages': ['from b']}",

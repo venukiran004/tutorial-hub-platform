@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["Feature", "Note"], rows: [
       ["the loop itself", "identical in shape to 3.3"],
       ["an iteration cap", "a recursion limit, so it terminates"],

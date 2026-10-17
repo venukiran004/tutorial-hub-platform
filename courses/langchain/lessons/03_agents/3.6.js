@@ -41,6 +41,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["Strategy", "Loses"], rows: [
       ["drop oldest (`last`)", "early facts: a name, an order id, a constraint stated once"],
       ["keep oldest (`first`)", "everything recent, which is usually what the question is about"],

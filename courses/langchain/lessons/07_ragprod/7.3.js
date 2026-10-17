@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "What fits, on this corpus",
       code: "corpus: 41 documents\ntokens per document: min 20  mean 31.1  max 46\n\nbudget   reserve   available   chunks that fit (at mean)\n4096     1000      3096        99\n8192     1000      7192        231\n32768    1000      31768       1020\n128000   1000      127000      4080",
       caption: "These are 158-character support documents. A corpus of PDF pages runs 500\u20131500 tokens each." },

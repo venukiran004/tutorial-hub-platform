@@ -24,6 +24,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Take two pieces of user input. One is an attempt at injection; the other is a completely ordinary question about Python dictionaries. Neither is exotic, and both contain braces." },
 
     { t: "code", lang: "python", title: "Four ways to build the same prompt",
@@ -49,6 +51,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "partials", text: "Partials",
       sub: "Binding a variable at build time" },
 
+    {"kind": "trace", "title": "A missing variable is loud; an unapplied partial is silent", "caption": "A partial fills a variable at construction rather than at the call site, and removes it from `input_variables`. **The failure mode is asymmetric and that is the thing to carry.** A *missing* variable is a loud `KeyError` at invoke time. A partial you intended to apply and did not is **silent** — the literal text `{tone}` goes to the model, which will usually produce a plausible answer, so nothing fails and nothing is logged.", "left": "state", "codeW": 200, "vars": ["input_variables", "what happens"], "steps": [{"code": "before the partial", "state": ["question, role, tone", ""], "tone": "accent"}, {"code": "after the partial", "state": ["question, role", "tone is filled in"], "changed": [0], "tone": "good"}, {"code": "a variable left unfilled", "state": ["", "KeyError - loud"], "tone": "good", "note": "the good failure"}, {"code": "a partial you forgot to apply", "state": ["", "'{tone}' sent to the model"], "changed": [1], "tone": "crit", "note": "silent, and plausible"}], "t": "diagram", "id": "dg-1_3-02-1"},
+
+
     { t: "p", text: "A partial fills a variable when the template is constructed rather than when it is called, which removes it from the call site's responsibility." },
 
     { t: "code", lang: "python", title: "Applying a partial",
@@ -60,6 +65,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", id: "placeholder", text: "Where prompts grow",
       sub: "MessagesPlaceholder, and the line that is not in your source" },
+
+    {"kind": "trace", "title": "Where a prompt grows without anyone deciding that it should", "caption": "`MessagesPlaceholder` splices a list of messages into the template, which is how conversation history enters a prompt — and **it is the single most common place for a prompt to grow with nobody choosing to grow it.** The growth is perfectly linear at **+52 characters a turn** here, which is the shape to recognise: nothing spikes, nothing errors, and by turn eight the prompt is **ten times** what it was at turn one.", "left": "turn", "codeW": 110, "vars": ["messages", "chars sent", "growth"], "steps": [{"code": "1", "state": ["2", "38", "-"], "tone": "good"}, {"code": "2", "state": ["4", "90", "+52"], "tone": "accent"}, {"code": "4", "state": ["8", "194", "+52"], "tone": "accent"}, {"code": "6", "state": ["12", "298", "+52"], "changed": [1], "tone": "warn"}, {"code": "8", "state": ["16", "402", "+52"], "changed": [1], "tone": "crit", "note": "10.6x turn one"}], "t": "diagram", "id": "dg-1_3-03-2"},
+
 
     { t: "p", text: "`MessagesPlaceholder` splices a list of messages into the template. It is how conversation history enters a prompt, and it is the single most common place for a prompt to grow without anyone deciding that it should." },
 
@@ -77,6 +85,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", id: "fewshot", text: "Few-shot examples",
       sub: "A fake conversation the model reads as precedent" },
+
+    {"kind": "flow", "title": "Every example is in every request, forever", "caption": "Few-shot examples are not a special mechanism — `FewShotChatMessagePromptTemplate` renders each one as a human turn followed by an AI turn, **producing an invented conversation the model treats as precedent**. The cost is structural: **ten examples at thirty tokens each is three hundred tokens on every call for the lifetime of the service.** Which is the argument for a semantic example selector: pick the k most relevant per query, trading a retrieval step for a permanent prompt tax.", "cols": 3, "nodes": [{"id": "r", "label": "Each example becomes a turn pair", "sub": "human, then AI", "tone": "accent"}, {"id": "p", "label": "An invented conversation", "sub": "treated as precedent", "tone": "violet"}, {"id": "c", "label": "10 examples x 30 tokens", "sub": "= 300 tokens, every call", "tone": "crit"}, {"id": "f", "label": "For the lifetime of the service", "sub": "a permanent tax", "tone": "crit"}, {"id": "s", "label": "Or select k per query", "sub": "a retrieval step instead", "tone": "good"}], "edges": [["r", "p"], ["p", "c"], ["c", "f"], ["f", "s"]], "t": "diagram", "id": "dg-1_3-04-3"},
+
 
     { t: "p", text: "Few-shot examples are not a special mechanism. `FewShotChatMessagePromptTemplate` renders each example as a human turn followed by an AI turn, producing an invented conversation that the model treats as precedent for the real question." },
 

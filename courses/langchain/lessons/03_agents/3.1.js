@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "A function becomes a tool",
       code: '@tool\ndef calculate(expression: str) -> str:\n    """Evaluate a mathematical expression. Use for any arithmetic."""\n    return str(eval(expression, {"__builtins__": {}}, {}))\n\nprint(calculate.name)\nprint(calculate.description)\nprint(calculate.args)',
       out: "name        : calculate\ndescription : Evaluate a mathematical expression. Use for any arithmetic.\nargs        : {'expression': {'title': 'Expression', 'type': 'string'}}",

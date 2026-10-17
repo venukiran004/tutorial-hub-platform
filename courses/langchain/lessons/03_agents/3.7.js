@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "What the guards look like",
       code: 'for i in range(max_iters):                       # 1. a cap\n    ai = bound.invoke(messages)\n    messages.append(ai)\n    if not ai.tool_calls:\n        return messages\n    for c in ai.tool_calls:\n        if c["name"] not in tool_map:                # 2. unknown tool\n            messages.append(ToolMessage(\n                content="error: no tool named %r. available: %s"\n                        % (c["name"], list(tool_map)),\n                tool_call_id=c["id"]))\n            continue\n        try:\n            out = tool_map[c["name"]].invoke(c["args"])\n        except Exception as e:                       # 3. tool errors\n            out = "error: %s" % e\n        messages.append(ToolMessage(content=str(out), tool_call_id=c["id"]))',
       hl: [1, 7, 15],

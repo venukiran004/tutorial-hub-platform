@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "The same failure, second call passes input again",
       code: "step_a ran 2 time(s), step_b ran 2 time(s)",
       caption: "`step_a` ran **twice**." },

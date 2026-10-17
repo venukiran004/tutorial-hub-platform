@@ -24,6 +24,8 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "Separate the one-off, the per-query and the per-document cost", "caption": "End-to-end timing gave only 29×, because the dense query is dominated by **104 ms of query encoding** — a fixed cost paid once per query. Separating the three kinds of cost gives the honest number: **37,088× per document**.", "cols": ["bi-encoder", "cross-encoder"], "rows": ["cost per document, once", "cost per query", "cost per candidate document", "so it can run over"], "cells": [[{"text": "embed once, reuse forever", "tone": "good"}, {"text": "nothing to precompute", "tone": "crit"}], [{"text": "~104 ms encoding — fixed", "tone": "warn"}, {"text": "none", "tone": "good"}], [{"text": "a dot product", "tone": "good"}, {"text": "37,088x more", "tone": "crit"}], [{"text": "the whole corpus", "tone": "good"}, {"text": "a shortlist only", "tone": "warn"}]], "t": "diagram", "id": "dg-6_1-02-0"},
 
 
+
+
     { t: "code", lang: "text", title: "Measured on this machine, 41 documents",
       code: "ONE-OFF, reused by every query afterwards\n  embedding all 41  documents            2915.8 ms\n\nPER QUERY, fixed -- paid once whatever the corpus size\n  encoding the query                     104.5 ms\n\nPER QUERY, scales with documents scored\n  vector search over 41  precomputed     0.082 ms   (0.00200 ms/doc)\n  cross-encoding 20  candidates         1362.1 ms   (68.10 ms/doc)\n  cross-encoding all 41  documents      3036.8 ms   (74.07 ms/doc)",
       caption: "CPU timings, illustrative in absolute terms. The **ratio** is the durable result." },

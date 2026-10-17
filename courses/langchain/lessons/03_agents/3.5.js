@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "Twelve turns through an unchanged system",
       code: 'turn   messages   chars        cumulative   note\n1      2          68           68           <- first turn\n2      4          128          196\n3      6          188          384\n...\n12     24         728          4836         <- 12th turn costs ~11x the first',
       caption: "Each turn adds a fixed amount; each turn pays for everything before it." },

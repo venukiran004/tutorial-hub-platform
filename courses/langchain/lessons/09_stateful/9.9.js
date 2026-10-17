@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "tree", "title": "A checkpoint_id is an address you can go back to", "caption": "Pass an earlier checkpoint's config to `invoke` and the graph continues from there. The measured fork **preserved the history before the fork** — so time travel is a branch, not an edit, and the original path is still there.", "root": {"label": "checkpoint 1", "sub": "the input", "tone": "accent", "children": [{"label": "checkpoint 2", "sub": "after node a", "tone": "good", "children": [{"label": "checkpoint 3", "sub": "the original path", "tone": "teal", "edge": "ran once"}, {"label": "checkpoint 3′", "sub": "the fork — a new branch", "tone": "violet", "edge": "re-invoked here"}]}]}, "t": "diagram", "id": "dg-9_9-02-0"},
 
 
+
+
     { t: "code", lang: "text", title: "Pass the old checkpoint's config back to invoke",
       code: "resumed from step 1: ['double -> 10', 'add_ten -> 20', 'final n=20']",
       caption: "One preserved step plus two re-executed ones." },

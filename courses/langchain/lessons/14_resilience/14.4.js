@@ -37,6 +37,8 @@ EC.receiveLesson({
     {"kind": "steps", "title": "Non-compensable steps go last", "caption": "Not a style choice — a **correctness property**. With the email last, a failure anywhere is recoverable. Move it to step 1 and any failure after it is not, because a correction email is a second effect rather than an undo.", "items": [{"label": "reserve stock", "desc": "compensation: release the reservation", "tone": "good", "code": "reversible"}, {"label": "charge the card", "desc": "compensation: refund txn_8841 — capture the handle NOW", "tone": "good", "code": "reversible"}, {"label": "create the shipment", "desc": "compensation: cancel the shipment", "tone": "good", "code": "reversible"}, {"label": "email the customer", "desc": "nothing can un-send it — so it must go last", "tone": "crit", "code": "FINAL"}], "t": "diagram", "id": "dg-14_4-04-0"},
 
 
+
+
     { t: "code", lang: "text", title: "Same steps, same compensations, different semantics",
       code: "reserve, charge, ship, email     a failure anywhere is recoverable\nemail, reserve, charge, ship     a failure after step 1 is not",
       caption: "The ordering is a **correctness property**, not a style choice." },

@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Three steps, one sequence",
       code: 'chain = prompt | model | StrOutputParser()\n\nprint(type(chain).__name__)\nprint([type(s).__name__ for s in chain.steps])\nprint(len(chain.steps))',
       out: 'type        : RunnableSequence\nsteps       : [\'ChatPromptTemplate\', \'FakeChatModel\', \'StrOutputParser\']\nlen(steps)  : 3',

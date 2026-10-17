@@ -29,6 +29,8 @@ EC.receiveLesson({
     {"kind": "timeline", "title": "A correction to my own reasoning", "caption": "I expected the **gap** between rank 1 and rank 2 to be the signal — a confident retrieval should separate its winner. It is not. The plain absolute score separates answerable from unanswerable far better, and a plausible mechanism is not evidence.", "span": 1, "tick": 0.1, "unit": "AUC — answerable against unanswerable", "lanes": [{"label": "the rank 1-2 gap", "bars": [[0, 0.614, "0.614 — near chance", "crit"]]}, {"label": "the top score", "bars": [[0, 0.943, "0.943 — threshold on this", "good"]]}], "t": "diagram", "id": "dg-7_1-03-0"},
 
 
+
+
     { t: "code", lang: "text", title: "AUC \u2014 the probability an answerable query outscores an unanswerable one",
       code: "signal              answerable  unanswerable  AUC     overlapping pairs\nabsolute top-1      0.4581      0.2187        0.943   4 of 70\ntop1 - top2 gap     0.1140      0.0664        0.614   27 of 70",
       caption: "1.0 is perfect separation; 0.5 is a coin flip." },

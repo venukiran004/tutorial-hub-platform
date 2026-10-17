@@ -20,6 +20,8 @@ EC.receiveLesson({
     {"kind": "matrix", "title": "The metadata is the half that decides what you can build", "caption": "Each field is nearly free at load time and effectively impossible to reconstruct afterwards. The `visibility` row is the one that matters most — 7.5 measures what happens when it is missing, and it is a data-exposure bug rather than a quality one.", "cols": ["cost at load", "what it enables later"], "rows": ["source", "page", "owner", "visibility", "last_updated"], "cells": [[{"text": "free", "tone": "good"}, "a citation the user can follow"], [{"text": "free", "tone": "good"}, "a citation that lands in the right place"], [{"text": "free", "tone": "good"}, "per-tenant filtering"], [{"text": "free", "tone": "good"}, {"text": "ACCESS CONTROL — see 7.5", "tone": "crit"}], [{"text": "free", "tone": "good"}, {"text": "staleness detection", "tone": "warn"}]], "t": "diagram", "id": "dg-5_2-02-0"},
 
 
+
+
     { t: "table", head: ["Field", "What", "What it buys"], rows: [
       ["`source`", "which file or URL", "citation, and the only route back to the original"],
       ["`page` / offset", "where in it", "a citation that points at a page, not a document"],

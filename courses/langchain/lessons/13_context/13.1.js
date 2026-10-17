@@ -21,6 +21,8 @@ EC.receiveLesson({
     {"kind": "timeline", "title": "A conversation costs the sum of its prefixes", "caption": "Cumulative tokens sent divided by the final prompt size, measured. At 40 turns the conversation has sent **21.6×** its own final length — which is not the number anyone quotes.", "span": 22, "tick": 2, "unit": "cumulative tokens ÷ final prompt", "lanes": [{"label": "1 turn", "bars": [[0, 1, "1.0x", "good"]]}, {"label": "5 turns", "bars": [[0, 3.7, "3.7x", "good"]]}, {"label": "10 turns", "bars": [[0, 6.4, "6.4x", "accent"]]}, {"label": "20 turns", "bars": [[0, 11.6, "11.6x", "warn"]]}, {"label": "40 turns", "bars": [[0, 21.6, "21.6x", "crit"]]}], "t": "diagram", "id": "dg-13_1-02-0"},
 
 
+
+
     { t: "code", lang: "text", title: "Measured",
       code: "turns   final prompt   cumulative tokens sent   ratio\n1       171            171                      1.0x\n2       220            391                      1.8x\n5       367            1345                     3.7x\n10      612            3915                     6.4x\n20      1102           12730                    11.6x\n40      2082           45060                    21.6x",
       caption: "At 40 turns the conversation has sent **21.6\u00d7** its own final length." },

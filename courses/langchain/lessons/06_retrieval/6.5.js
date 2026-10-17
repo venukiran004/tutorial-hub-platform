@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "math", tex: "\\mathrm{RRF}(d) = \\sum_{r \\in \\text{retrievers}} \\frac{w_r}{k + \\mathrm{rank}_r(d)}" },
     { t: "code", lang: "python", title: "The whole implementation",
       code: 'def rrf(ranklists, k=60, weights=None):\n    if weights is None:\n        weights = [1.0] * len(ranklists)\n    sc = {}\n    for w, rl in zip(weights, ranklists):\n        for pos, did in enumerate(rl):\n            sc[did] = sc.get(did, 0.0) + w / (k + pos + 1)\n    return sorted(sc, key=lambda d: -sc[d])',

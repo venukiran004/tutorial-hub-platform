@@ -18,6 +18,9 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "cost", text: "The dependency, measured",
       sub: "Start with the number someone will ask for" },
 
+    {"kind": "trace", "title": "The dependency, stated rather than defended", "caption": "**29 packages in `langchain-core`'s install closure and 34 in `langgraph`'s.** That is the honest cost line and it is worth leading with: not a large dependency by modern Python standards, and not free — **29 packages is 29 things with release cadences, CVE feeds and transitive pins**, and \"we added a framework\" is a sentence that gets asked about in a review. Quoting the number is a better answer than arguing that it is small.", "left": "package", "codeW": 170, "vars": ["version", "install closure"], "steps": [{"code": "langchain-core", "state": ["1.4.7", "29 packages"], "tone": "accent"}, {"code": "langgraph", "state": ["1.2.5", "34 packages"], "tone": "accent"}, {"code": "what that means", "state": ["release cadences", "CVE feeds, transitive pins"], "tone": "violet"}], "t": "diagram", "id": "dg-1_8-01-0"},
+
+
     { t: "code", lang: "text", title: "Install closure",
       code: 'langchain-core   1.4.7   29 packages in its install closure\nlanggraph        1.2.5   34 packages in its install closure',
       caption: "Resolved from installed metadata, excluding optional extras." },
@@ -26,6 +29,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", id: "wash", text: "The single-call task",
       sub: "Where the framework genuinely does not earn its place" },
+
+    {"kind": "flow", "title": "On a single call, the uniformity is paid for and not used", "caption": "Both versions of a one-shot question-and-answer are about the same size, and **the raw SDK version is clearer to someone who has not used LangChain** — which on most teams is most people. The reason is not that the framework is heavy here; it is that **there is no composition being exploited.** One call has nothing to compose with, so the uniformity that 1.1 argued for is a cost with no corresponding benefit on this task.", "cols": 3, "nodes": [{"id": "s", "label": "The raw SDK version", "sub": "one create() call", "tone": "good"}, {"id": "l", "label": "The LangChain version", "sub": "prompt | model | parser", "tone": "accent"}, {"id": "w", "label": "Roughly a wash on size", "sub": "neither is shorter", "tone": "violet"}, {"id": "c", "label": "But nothing is being composed", "sub": "one call has no neighbours", "tone": "crit"}, {"id": "p", "label": "So the uniformity is paid for, unused", "sub": "which is the whole argument", "tone": "teal"}], "edges": [["s", "w"], ["l", "w"], ["w", "c"], ["c", "p"]], "t": "diagram", "id": "dg-1_8-02-1"},
+
 
     { t: "code", lang: "python", title: "Without a framework",
       code: 'def answer(question):\n    resp = client.chat.completions.create(\n        model=MODEL,\n        messages=[{"role": "system", "content": "You are terse."},\n                  {"role": "user",   "content": question}])\n    return resp.choices[0].message.content.strip()',
@@ -84,6 +90,9 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "uncounted", text: "What a line count does not capture",
       sub: "And it is not a short list" },
 
+    {"kind": "matrix", "title": "Three costs a line count cannot show", "caption": "A line-count comparison is the argument everyone reaches for and it measures the least important axis. **The abstraction your team has to learn** before they can read the chain at all is the largest of the three on most teams. **A dependency whose release cadence you now track** brings breaking changes you did not schedule. And **indirection in the traceback** — a failure inside a step inside a sequence — is the one that is invisible until the first production incident.", "cols": ["Why a line count misses it"], "rows": ["The abstraction to learn", "A cadence you now track", "Traceback indirection"], "cells": [[{"text": "paid once per person, by most of the team", "tone": "crit"}], [{"text": "breaking changes you did not schedule", "tone": "warn"}], [{"text": "invisible until the first production incident", "tone": "crit"}]], "t": "diagram", "id": "dg-1_8-04-2"},
+
+
     { t: "ul", items: [
       "**The abstraction your team has to learn** before they can read the chain at all, which on most teams is most of the team.",
       "**A dependency whose release cadence you now track**, with breaking changes you did not schedule.",
@@ -100,6 +109,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "05", id: "test", text: "The test",
       sub: "Five questions about the system you are actually building" },
+
+    {"kind": "matrix", "title": "The test, and what to do when it comes out ambiguous", "caption": "The decision rule is a count rather than a judgement, which is what makes it usable. **None yes: use the SDK**, because you are paying for uniformity you will not use. **Two or more yes: use the framework**, because each of those features is cheap with uniform components and expensive without. And the middle row is the honest one — **exactly one yes is a judgement call**, and the suggestion is concrete: write the raw version plus the one feature, and revisit at the second.", "cols": ["Decision", "Why"], "rows": ["None yes", "Exactly one yes", "Two or more yes"], "cells": [[{"text": "use the SDK", "tone": "good"}, "you are paying for unused uniformity"], [{"text": "judgement call", "tone": "warn"}, "write the raw version plus that one feature"], [{"text": "use the framework", "tone": "good"}, "each is cheap with uniform components"]], "t": "diagram", "id": "dg-1_8-05-3"},
+
 
     { t: "ol", items: [
       "Will you ever need a second provider, for failover or for cost?",

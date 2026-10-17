@@ -26,6 +26,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "Async and serial",
       code: 'for i in range(4):\n    await chain.ainvoke({"q": str(i)})       # serial\n\nawait chain.abatch([{"q": str(i)} for i in range(4)])   # concurrent',
       out: "for i in ...: await chain.ainvoke(...)   0.407 s\nawait chain.abatch([...])                0.106 s\n3.8x",

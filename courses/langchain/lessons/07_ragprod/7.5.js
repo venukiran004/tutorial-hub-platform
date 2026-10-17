@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "text", title: "A delete the index never heard about",
       code: "built an index over 10 documents, ntotal=10\nquery top 3: ['api-limits', 'bill-overage', 'bill-cancel-sub']\n\ndeleted from source : api-limits\n  index ntotal      : 10  (unchanged)\n  query top 3       : ['api-limits', 'bill-overage', 'bill-cancel-sub']",
       caption: "The deleted document is still first." },

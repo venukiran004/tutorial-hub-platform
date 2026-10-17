@@ -17,6 +17,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "The agent loop in full",
       code: 'tool_map = {t.name: t for t in tools}\nmessages = [HumanMessage(question)]\n\nwhile True:\n    ai = model_with_tools.invoke(messages)\n    messages.append(ai)\n    if not ai.tool_calls:                 # no tools wanted -> done\n        break\n    for tc in ai.tool_calls:              # may be several in one turn\n        out = tool_map[tc["name"]].invoke(tc["args"])\n        messages.append(ToolMessage(content=str(out),\n                                    tool_call_id=tc["id"]))\n\nprint(ai.content)',
       hl: [7, 8],
