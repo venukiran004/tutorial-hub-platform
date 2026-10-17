@@ -11,10 +11,13 @@ EC.receiveLesson({
   prerequisites: ["13.3", "9.6", "6.2"],
   blocks: [
     { t: "h2", n: "01", id: "why", text: "Why 13.3 is not enough", sub: "Linear, not constant" },
+
+    {"kind": "trace", "title": "Smaller than the history, and still linear", "caption": "**Summarise every 8 turns and a 200-turn conversation carries 25 summaries** — so a flat summary **postpones the problem by a constant factor rather than removing it.** Which is the precise reason to go hierarchical: not that flat summarisation is bad, but that its cost curve has the same shape as the one it replaced, just with a smaller constant in front of it.", "left": "conversation length", "codeW": 180, "vars": ["summaries carried", "shape"], "steps": [{"code": "24 turns", "state": ["3", "linear"], "tone": "good"}, {"code": "80 turns", "state": ["10", "linear"], "changed": [0], "tone": "warn"}, {"code": "200 turns", "state": ["25", "linear"], "changed": [0], "tone": "crit", "note": "the same shape"}], "t": "diagram", "id": "dg-13_4-01-1"},
     { t: "p", text: "A flat summary grows with the conversation: summarise every 8 turns and a 200-turn conversation carries 25 summaries. Smaller than the history, still **linear** \u2014 so it postpones the problem by a constant factor rather than removing it." },
     { t: "h2", n: "02", id: "hier", text: "Hierarchical summarisation", sub: "Summaries of summaries" },
 
     {"kind": "tree", "title": "Hierarchical summarisation, and where the loss compounds", "caption": "85 tokens of segment summaries became **46**, bounded by its prompt rather than its input — so the cost stops growing. But each level is lossy and level 2 can only keep what level 1 kept, so **the detail requirement belongs at level 1**.", "root": {"label": "level 2 — one summary", "sub": "46 tokens — 4 of 5 facts", "tone": "accent", "children": [{"label": "turns 1-4", "sub": "34 tok", "tone": "good", "edge": "summarised"}, {"label": "turns 5-8", "sub": "18 tok", "tone": "good"}, {"label": "turns 9-12", "sub": "16 tok", "tone": "good"}, {"label": "turns 13-16", "sub": "17 tok", "tone": "good"}]}, "t": "diagram", "id": "dg-13_4-02-0"},
+
 
 
 
@@ -47,6 +50,8 @@ EC.receiveLesson({
       { t: "p", text: "And note what it cost even on the careful path: **4 of 5 facts**. *\u201cThe reason\u201d* did not survive the second pass. A bounded summary of a growing input has to drop something, and each level decides what independently." }
     ] },
     { t: "h2", n: "03", id: "compounds", text: "The loss compounds", sub: "7.8's ceiling, applied twice" },
+
+    {"kind": "trace", "title": "Level 2's ceiling is level 1's output, not the conversation", "caption": "A vague level 1 produces a level 2 with **no facts at all**, and **a careful top-level prompt cannot rescue it** — so **the detail requirement has to be at level 1, and the top level merely has to not drop what arrives. Getting that order wrong produces a system where the expensive, carefully-prompted step operates on nothing.** 7.8's finding with two lossy steps instead of one: every level multiplies the ways a fact can disappear.", "left": "level", "codeW": 160, "vars": ["careful level 1", "vague level 1"], "steps": [{"code": "level 1 output", "state": ["identifiers present", "'a billing problem'"], "tone": "accent"}, {"code": "level 2 output", "state": ["4 of 5 facts", "NONE"], "changed": [0, 1], "tone": "crit"}, {"code": "so the ceiling is", "state": ["level 1's output", "not the conversation"], "tone": "violet", "note": "even the careful path lost one"}], "t": "diagram", "id": "dg-13_4-03-2"},
     { t: "code", lang: "text", title: "A vague level 1",
       code: "vague level 1: ['Turns 1-4: customer reported a billing problem.',\n                'Turns 5-8: investigation ongoing.']\nvague level 2: 'The customer has a billing problem under investigation.'\nfacts kept   : NONE",
       caption: "Level 2 can only keep what level 1 kept." },
@@ -58,6 +63,8 @@ EC.receiveLesson({
       { t: "p", text: "One per segment, plus one per re-generation of the top level. That is the price of a constant token count \u2014 you are trading per-turn input tokens for periodic generation calls, which is usually worth it and is not free." }
     ] },
     { t: "h2", n: "04", id: "retrieve", text: "Retrieval from history", sub: "Leave the past somewhere and fetch it" },
+
+    {"kind": "flow", "title": "Knowably wrong against unknowably wrong", "caption": "The history becomes a corpus, so every finding from modules 5 to 7 applies — chunking, missed exact terms, *“which order”* as a vocabulary-mismatch query. **But the serious objection is the last one: a similarity search always returns k turns, even when none is relevant. Carrying the last 6 turns is wrong in a knowable way — you know exactly what you dropped. Retrieving 6 is wrong in an unknowable way, because retrieval failure looks like retrieval success.**", "cols": 3, "nodes": [{"id": "c", "label": "The history is now a corpus", "sub": "modules 5-7 all apply", "tone": "accent"}, {"id": "k", "label": "A window drops a known set", "sub": "you can enumerate the loss", "tone": "good"}, {"id": "r", "label": "Retrieval returns k either way", "sub": "6.2 - even with none relevant", "tone": "crit"}, {"id": "f", "label": "Failure looks exactly like success", "sub": "confidently ranked", "tone": "crit"}, {"id": "d", "label": "A worse position to debug from", "sub": "even when it is right more often", "tone": "violet"}], "edges": [["c", "k"], ["c", "r"], ["r", "f"], ["f", "d"]], "t": "diagram", "id": "dg-13_4-04-3"},
     { t: "p", text: "Write every turn to a store (9.6) and retrieve the relevant ones per question instead of carrying all of them. The history becomes a **corpus** and the conversation becomes a **RAG problem** \u2014 so every finding from modules 5 to 7 applies to it." },
     { t: "ul", items: [
       "The turns need chunking decisions (5.3).",
@@ -70,12 +77,16 @@ EC.receiveLesson({
       { t: "p", text: "So replacing a window with retrieval exchanges a loss you can enumerate for one you cannot, which is a worse position to debug from even when it is right more often." }
     ] },
     { t: "h2", n: "05", id: "goodfor", text: "What retrieval from history is actually for", sub: "The long tail" },
+
+    {"kind": "layers", "title": "The shape is additive, not substitutive", "caption": "**No retrieval strategy reliably surfaces “what we were just talking about” — that query has no distinguishing terms**, so the recent turns are not something retrieval can replace. **What retrieval is for is a conversation spanning weeks where the relevant earlier turn is three days old and topically specific**: a genuine retrieval problem, where carrying it is not an option.", "items": [{"label": "The system message", "sub": "fixed", "tone": "good", "side": "always"}, {"label": "A detailed summary", "sub": "13.3 - told to keep identifiers", "tone": "good", "side": "always"}, {"label": "The last N turns verbatim", "sub": "what the model is mid-sentence on", "tone": "good", "side": "always"}, {"label": "Retrieved older turns", "sub": "topically specific, days old", "tone": "accent", "side": "sometimes"}], "t": "diagram", "id": "dg-13_4-05-4"},
     { t: "p", text: "Not replacing the recent turns. The recent turns are what the model needs to continue the sentence it is in the middle of, and no retrieval strategy reliably surfaces *\u201cwhat we were just talking about\u201d* \u2014 that query has no distinguishing terms." },
     { t: "p", text: "What it **is** good for is a conversation spanning weeks where the relevant earlier turn is three days old and topically specific. That is a genuine retrieval problem and carrying it is not an option." },
     { t: "code", lang: "text", title: "So the shape is additive, not substitutive",
       code: "the system message        always\na detailed summary        always (13.3)\nthe last N turns verbatim always\nretrieved older turns     when the question warrants it",
       caption: "Four mechanisms \u2014 each added because the previous three had a blind spot." },
     { t: "h2", n: "06", id: "scale", text: "How far each one scales", sub: "The ranking" },
+
+    {"kind": "trace", "title": "Two strategies reach an indefinite session, and only one an indefinite history", "caption": "Read the last column. **A sliding window scales to any length and loses the start, which 13.3 showed is fatal on its own. Hierarchical summarisation is roughly constant and reaches an indefinite session. Retrieval reaches an indefinite history** — a different claim, and the one that matters for a conversation resumed after a month. Which is why §05's shape uses the last three rows together rather than choosing between them.", "left": "strategy", "codeW": 190, "vars": ["token cost", "scales to"], "steps": [{"code": "carry everything", "state": ["quadratic (13.1)", "a short session"], "tone": "crit"}, {"code": "a sliding window", "state": ["constant", "any length - loses the start"], "changed": [0, 1], "tone": "warn"}, {"code": "flat summarisation", "state": ["linear in summaries", "a long session"], "changed": [0, 1], "tone": "warn"}, {"code": "hierarchical", "state": ["roughly constant", "an indefinite session"], "changed": [0, 1], "tone": "good"}, {"code": "retrieval from history", "state": ["constant", "an indefinite HISTORY"], "changed": [1], "tone": "good", "note": "a different claim"}], "t": "diagram", "id": "dg-13_4-06-5"},
     { t: "table", head: ["strategy", "token cost", "scales to"], rows: [
       ["carry everything", "quadratic (13.1)", "a short session"],
       ["sliding window", "constant", "any length, **loses the start**"],

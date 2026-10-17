@@ -37,6 +37,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "dl", items: [
       ["**shared state**", "Every agent reads and writes one message list. Simplest, and every agent's output is in every later agent's prompt whether relevant or not."],
       ["**filtered state**", "Each agent receives a constructed view \u2014 10.2's `Send`, which gives a worker exactly what you passed and nothing else."],
@@ -45,6 +46,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "shared", text: "Shared state", sub: "Context for free, and paid for" },
 
     {"kind": "trace", "title": "B received the human's message and A's output, with nobody designing a payload", "caption": "Both halves of the trade are real. **The benefit is context for free — B knows what was asked and what A found, and no interface had to be written** — which is why shared state is the right default inside one graph. **The cost is that A's working notes are in B's prompt and B pays for them**, and 12.2 noted it compounds across a supervisor loop, since every worker's output reaches every later worker.", "left": "what B's prompt held", "codeW": 190, "vars": ["origin", "B asked for it?", "B pays for it?"], "steps": [{"code": "HumanMessage", "state": ["the user", "yes", "yes"], "tone": "good"}, {"code": "A's output", "state": ["agent A", "no", "yes"], "changed": [0, 1], "tone": "warn", "note": "context for free"}, {"code": "in a supervisor loop", "state": ["every earlier worker", "no", "every turn"], "changed": [0, 2], "tone": "crit"}], "t": "diagram", "id": "dg-12_7-02-1"},
+
 
     { t: "code", lang: "text", title: "What B saw",
       code: "b saw ['HumanMessage', 'a']",
@@ -57,6 +59,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "The worker saw one key, and not the one that mattered", "caption": "`keys=['piece']` — **`secret` was in the parent state and did not cross.** So `Send` is the mechanism for agent-to-agent isolation **inside one graph**, and the right default when one agent's context should not reach another, **which is 12.1's second structural reason for splitting agents at all**: the isolation is the reason for the split, so it would be odd to split and then share everything anyway.", "left": "key in the parent state", "codeW": 170, "vars": ["the worker saw it?"], "steps": [{"code": "piece", "state": ["yes - sent explicitly"], "tone": "good"}, {"code": "secret", "state": ["no"], "changed": [0], "tone": "good", "note": "the isolation"}, {"code": "so Send is the boundary", "state": ["inside one graph"], "tone": "violet"}], "t": "diagram", "id": "dg-12_7-03-2"},
 
+
     { t: "code", lang: "text", title: "What the worker received",
       code: "worker saw keys=['piece']",
       caption: "**Not** `secret`, which was in the parent state." },
@@ -64,6 +67,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "attribution", text: "The attribution problem", sub: "And its one-field fix" },
 
     {"kind": "trace", "title": "One field, and two separate things depend on it", "caption": "**An agent cannot weigh information it cannot attribute: a claim from the retrieval agent and a guess from the summarising agent should not carry equal authority, and without `name` they are both just assistant turns.** The second reason is 12.8's: when the output is wrong, *“which agent said that”* has to be answerable from the history. **Nothing in the runtime sets `name`**, so it is a deliberate choice every agent has to make.", "left": "message", "codeW": 170, "vars": ["name", "attributable?", "weighable?"], "steps": [{"code": "HumanMessage('task')", "state": ["None", "yes - it is human", "yes"], "tone": "good"}, {"code": "AIMessage('found 3 sources')", "state": ["'a'", "yes", "yes - retrieval"], "changed": [0, 2], "tone": "good"}, {"code": "AIMessage('summarised')", "state": ["'b'", "yes", "yes - a summary"], "changed": [2], "tone": "good"}, {"code": "the same two, unnamed", "state": ["None", "no", "equal authority"], "changed": [0, 1, 2], "tone": "crit", "note": "nothing sets it for you"}], "t": "diagram", "id": "dg-12_7-04-3"},
+
 
     { t: "code", lang: "text", title: "With and without the name field",
       code: "name=None   HumanMessage('task')\nname='a'    AIMessage('A: found 3 sources')\nname='b'    AIMessage('B: summarised')",
@@ -75,6 +79,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "services", text: "Once they are separate services", sub: "10.9's three concerns, unchanged" },
 
     {"kind": "flow", "title": "10.9's three concerns, and then one design question", "caption": "Across a service boundary the payload must be JSON-able — **a LangChain message object is; a graph's full state with reducers is not** — there is a hop per handoff, and the peer can crash, which 10.9 measured as **an empty line rather than an error.** Then the real question: **the whole conversation is simple and grows without bound and crosses the wire every hop; a task-specific payload is bounded and leaves the receiver without context it might need.**", "cols": 3, "nodes": [{"id": "s", "label": "A message object serialises", "sub": "state with reducers does not", "tone": "warn"}, {"id": "l", "label": "A hop per handoff", "sub": "on every handoff", "tone": "warn"}, {"id": "f", "label": "A crash returns an empty line", "sub": "10.9 measured it", "tone": "crit"}, {"id": "w", "label": "Payload: the whole conversation", "sub": "simple, unbounded, every hop", "tone": "accent"}, {"id": "t", "label": "Payload: task-specific", "sub": "bounded, and missing context", "tone": "accent"}], "edges": [["s", "l"], ["l", "f"], ["f", "w"], ["f", "t"]], "t": "diagram", "id": "dg-12_7-05-4"},
+
 
     { t: "table", head: ["concern", "here"], rows: [
       ["serialisation", "the payload must be JSON-able. A LangChain message object is; a graph's full state with reducers is not."],
@@ -93,6 +98,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "recommend", text: "The practical recommendation", sub: "Two settings" },
 
     {"kind": "layers", "title": "Three choices inside a graph, two across services, and one that is not optional", "caption": "The last row is the one that applies either way: **record the handoff itself — who handed to whom and why.** That is the trace 12.8's blame problem needs, and the reason 8.8 argued for `Command` carrying the reason **with** the destination rather than leaving it to be reconstructed from state afterwards. Across services, the conversation **id** is what lets a bounded payload stay bounded without blinding the receiver.", "items": [{"label": "Shared state for the conversation", "sub": "context for free, inside one graph", "tone": "good", "side": "in-graph"}, {"label": "Send for anything a worker should not see", "sub": "the isolation boundary", "tone": "good", "side": "in-graph"}, {"label": "name on every message", "sub": "so attribution survives", "tone": "good", "side": "in-graph"}, {"label": "An explicit task payload with a schema", "sub": "bounded and declared", "tone": "accent", "side": "services"}, {"label": "Plus the conversation id", "sub": "so the receiver can fetch history", "tone": "accent", "side": "services"}, {"label": "Record the handoff itself", "sub": "who, to whom, and why", "tone": "violet", "side": "always"}], "t": "diagram", "id": "dg-12_7-06-5"},
+
 
     { t: "p", text: "**Inside one graph**: shared state for the conversation, `Send` for anything a worker should not see, and `name` on every message so attribution survives." },
     { t: "p", text: "**Across services**: an explicit task payload with a schema, plus the conversation id so the receiving side can fetch history. And whichever you choose, **record the handoff itself** \u2014 who handed to whom and why, which is the trace 12.8 needs and the reason 8.8 argued for `Command` carrying the reason with the destination." },

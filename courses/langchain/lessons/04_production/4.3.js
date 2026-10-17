@@ -37,6 +37,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "Setting a cache and hitting it",
       code: 'set_llm_cache(InMemoryCache())\nchain.invoke({"q": "what is LCEL?"})      # model called\nchain.invoke({"q": "what is LCEL?"})      # cache hit, no model call\nchain.invoke({"q": "what is LCEL? "})     # trailing space -> model called',
       out: "first  invoke -> 'cached answer'   (model calls: 1)\nsecond invoke -> 'cached answer'   (model calls: 1)\nthe second call hit the cache: True\na trailing space is a different key -> model calls: 1",
@@ -45,6 +46,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "rate", text: "Hit rate on realistic traffic", sub: "Ten queries about one thing" },
 
     {"kind": "trace", "title": "Hit rate is free to compute and points the wrong way", "caption": "Ten queries about the same thing: **exact match gets 2 hits and a 0.5 similarity threshold gets 8.** So lowering the threshold quadruples the hit rate, which looks like a straightforward win and is the number every dashboard carries. It is also **the number that rewards exactly the behaviour §03 shows is dangerous** — because a looser threshold increases hits by joining queries that are not the same question.", "left": "matching", "codeW": 190, "vars": ["hits", "rate"], "steps": [{"code": "exact match", "state": ["2", "20%"], "tone": "good"}, {"code": "semantic, threshold 0.9", "state": ["5", "50%"], "tone": "accent"}, {"code": "semantic, threshold 0.7", "state": ["6", "60%"], "tone": "warn"}, {"code": "semantic, threshold 0.5", "state": ["8", "80%"], "changed": [0, 1], "tone": "crit", "note": "and see section 03"}], "t": "diagram", "id": "dg-4_3-02-1"},
+
 
 
 
@@ -79,6 +81,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "At those thresholds nothing in that particular query set joined wrongly, so the risk was real and undemonstrated. Here it is demonstrated \u2014 three pairs that are **different questions** with high word overlap." },
     { t: "table", head: ["Query A", "Query B", "Similarity"], rows: [
       ["reset my password", "reset my username", "0.50"],
@@ -93,6 +96,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "never", text: "What must never be cached", sub: "Four categories" },
 
     {"kind": "matrix", "title": "Four things that must never be cached", "caption": "The first row is the one with a security consequence rather than a quality one: **a cached answer for user A served to user B.** The third is the one that is easy to forget because the cache key looks right — the question is identical and **the index may have changed underneath it**, so a RAG answer cached yesterday is an answer about yesterday's corpus with today's confidence.", "cols": ["Because"], "rows": ["Anything personalised", "Anything time-sensitive", "Anything retrieved", "Anything meant to vary"], "cells": [[{"text": "a cached answer for user A served to user B", "tone": "crit"}], ["balances, stock, status, prices"], [{"text": "the index may have changed (7.5)", "tone": "crit"}], ["a creative task should vary"]], "t": "diagram", "id": "dg-4_3-04-3"},
+
 
 
 

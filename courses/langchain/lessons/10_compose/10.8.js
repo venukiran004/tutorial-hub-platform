@@ -18,6 +18,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "@task and @entrypoint",
       code: '@task\ndef double(n: int) -> int:\n    return n * 2\n\n@task\ndef add_ten(n: int) -> int:\n    return n + 10\n\n@entrypoint(checkpointer=InMemorySaver())\ndef pipeline(n: int) -> int:\n    a = double(n).result()\n    b = add_ten(a).result()\n    return b',
       out: "    pipeline.invoke(5, cfg) -> 20",
@@ -30,6 +31,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "step_b fails, then the thread is resumed",
       code: "first invoke, step_b fails: RAISED RuntimeError: fail once\n  step_a ran 1 time(s), step_b ran 1 time(s)\n\nRESUMING with invoke(None, cfg): -> 20\n  step_a ran 1 time(s), step_b ran 2 time(s)",
       caption: "`step_a` ran **once** across both calls." },
@@ -37,6 +39,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "callform", text: "And the call form decides it", sub: "invoke(None) against invoke(input)" },
 
     {"kind": "matrix", "title": "The call form decides whether you replay", "caption": "My own expectation was wrong here. `invoke(input, cfg)` starts a **new run** on the same thread — the step counter reached 2. Only `invoke(None, cfg)` replays from the checkpoint, where completed tasks are returned from cache rather than re-executed.", "cols": ["what it does", "step_a ran"], "rows": ["invoke(input, cfg)", "invoke(None, cfg)"], "cells": [[{"text": "starts a NEW run", "tone": "crit"}, {"text": "twice", "tone": "crit"}], [{"text": "replays from the checkpoint", "tone": "good"}, {"text": "once — cached", "tone": "good"}]], "t": "diagram", "id": "dg-10_8-03-0"},
+
 
 
 
@@ -76,6 +79,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["", "unit of replay", "side effects on resume"], rows: [
       ["graph API", "the **node**, from the top", "happen again (9.7, 9.9, 10.4)"],
       ["functional", "the **task**, from its checkpoint", "do **not** happen again"]
@@ -92,6 +96,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "8.6 established that a graph's structure is **data**, and that is what the tooling reads. With the functional API there is no structure to read:" },
     { t: "ul", items: [
       "**draw the graph** (8.9) \u2014 there is no graph to draw",
@@ -103,6 +108,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "choose", text: "Choosing", sub: "A legibility decision, not a capability one" },
 
     {"kind": "flow", "title": "Two front ends over one runtime, so this is a legibility decision", "caption": "Both compile to the same Pregel runtime, which means **nothing here is a capability argument — the question is whether the structure is worth declaring.** For an agent loop it plainly is: the two-nodes-and-a-cycle shape **is** the design, and 9.1 showed every production requirement attaching to a specific node or edge. For a five-step sequence with one retryable call, a schema and four edges restate what `a(); b(); c()` already says.", "cols": 3, "nodes": [{"id": "o", "label": "One Pregel runtime, two front ends", "sub": "not a capability question", "tone": "violet"}, {"id": "q", "label": "Is the structure worth declaring?", "sub": "the actual question", "tone": "violet"}, {"id": "a", "label": "An agent loop: yes", "sub": "the shape is the design", "tone": "good"}, {"id": "r", "label": "9.1: requirements attach to nodes", "sub": "and to edges", "tone": "good"}, {"id": "p", "label": "A 5-step sequence: ceremony", "sub": "a(); b(); c() already says it", "tone": "accent"}], "edges": [["o", "q"], ["q", "a"], ["a", "r"], ["q", "p"]], "t": "diagram", "id": "dg-10_8-06-5"},
+
 
 
 

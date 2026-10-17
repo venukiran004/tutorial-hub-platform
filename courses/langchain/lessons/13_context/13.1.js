@@ -12,6 +12,8 @@ EC.receiveLesson({
   blocks: [
     { t: "h2", n: "01", id: "where", text: "Where the tokens go", sub: "In one agent turn" },
 
+    {"kind": "trace", "title": "Three components are fixed and one grows", "caption": "The system prompt and the tool descriptions are **a fixed cost per turn** (11.3), and the question is paid once. **So every strategy in this module is about the 86%** — which is also why 11.3's advice to keep the tool list short matters less than it sounds for a long conversation: trimming 53 tokens of tool descriptions is worth a fraction of what trimming the history is.", "left": "component", "codeW": 190, "vars": ["tokens", "share", "grows?"], "steps": [{"code": "the system prompt", "state": ["13", "2.3%", "no"], "tone": "good"}, {"code": "the tool descriptions", "state": ["53", "9.3%", "no"], "changed": [0, 1], "tone": "good"}, {"code": "the question", "state": ["13", "2.3%", "paid once"], "changed": [0, 1, 2], "tone": "good"}, {"code": "the conversation history", "state": ["489", "86.0%", "every turn"], "changed": [0, 1, 2], "tone": "crit", "note": "the only one"}], "t": "diagram", "id": "dg-13_1-01-1"},
+
     { t: "code", lang: "text", title: "Four components",
       code: "component                   tokens    share\nthe system prompt           13        2.3%\nthe tool descriptions       53        9.3%\nthe question                13        2.3%\nthe conversation history    489       86.0%\nTOTAL                       568",
       caption: "The history dominates, and it is the only part that **grows**." },
@@ -19,6 +21,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "quadratic", text: "The quadratic growth", sub: "The sum of the prefixes" },
 
     {"kind": "timeline", "title": "A conversation costs the sum of its prefixes", "caption": "Cumulative tokens sent divided by the final prompt size, measured. At 40 turns the conversation has sent **21.6×** its own final length — which is not the number anyone quotes.", "span": 22, "tick": 2, "unit": "cumulative tokens ÷ final prompt", "lanes": [{"label": "1 turn", "bars": [[0, 1, "1.0x", "good"]]}, {"label": "5 turns", "bars": [[0, 3.7, "3.7x", "good"]]}, {"label": "10 turns", "bars": [[0, 6.4, "6.4x", "accent"]]}, {"label": "20 turns", "bars": [[0, 11.6, "11.6x", "warn"]]}, {"label": "40 turns", "bars": [[0, 21.6, "21.6x", "crit"]]}], "t": "diagram", "id": "dg-13_1-02-0"},
+
 
 
 
@@ -49,6 +52,8 @@ EC.receiveLesson({
       { t: "p", text: "9.5 found the same shape in storage: every checkpoint holds the full history to that point, so persistence is quadratic too. The two costs have **one cause**, which means one fix addresses both." }
     ] },
     { t: "h2", n: "03", id: "three", text: "Three pressures, at different points", sub: "And only one announces itself" },
+
+    {"kind": "flow", "title": "Forced by the third, and it should be decided because of the first", "caption": "**Cost rises from the first turn with no threshold — it is always happening. Latency rises gradually. The window is a cliff: it works, then it fails.** So **a team that waits for the context error has been paying the quadratic cost for however long it took to get there, and the error arrives at the worst moment — on the longest and most valuable conversations.** 7.3's finding sits in between, with quality degrading before the window is reached.", "cols": 3, "nodes": [{"id": "c", "label": "Cost: from turn 1, no threshold", "sub": "always happening", "tone": "crit"}, {"id": "q", "label": "Quality: degrades in the middle", "sub": "7.3, before any limit", "tone": "crit"}, {"id": "w", "label": "The window: a cliff", "sub": "works, then fails", "tone": "warn"}, {"id": "f", "label": "Only the cliff announces itself", "sub": "so it forces the decision", "tone": "violet"}, {"id": "l", "label": "On the longest, most valuable conversations", "sub": "the worst moment to find out", "tone": "crit"}], "edges": [["c", "f"], ["q", "f"], ["w", "f"], ["f", "l"]], "t": "diagram", "id": "dg-13_1-03-2"},
     { t: "ol", items: [
       "**Cost** rises quadratically, from the first turn. No threshold \u2014 it is always happening.",
       "**Latency** rises with input tokens, gradually.",
@@ -59,6 +64,8 @@ EC.receiveLesson({
       { t: "p", text: "And 7.3's finding sits in between: the model attends less reliably to the middle of a long context, so **quality degrades before the window is reached**. There are three reasons to manage context and only one of them tells you about itself." }
     ] },
     { t: "h2", n: "04", id: "budget", text: "The budget as arithmetic", sub: "A fixed number of tokens" },
+
+    {"kind": "trace", "title": "The budget is a fixed number of tokens, reached by subtraction", "caption": "**The reserve is 7.3's point: a budget without it fails at generation time** — the prompt fits and there is no room left to answer. And note what the last rows say about this corpus: **the turns are small, so even 40 turns fits an 8K window, which means the cost problem bites long before the window does.** A conversation carrying pasted logs or raw tool results reverses that completely.", "left": "line", "codeW": 190, "vars": ["tokens", "remaining for history"], "steps": [{"code": "the window", "state": ["8192", "8192"], "tone": "accent"}, {"code": "reserve for the answer", "state": ["-1000", "7192"], "changed": [1], "tone": "violet", "note": "7.3 - or it fails at generation"}, {"code": "system + tools", "state": ["-66", "7126"], "changed": [1], "tone": "good"}, {"code": "the question", "state": ["-13", "7113"], "changed": [1], "tone": "good"}, {"code": "40 turns of history", "state": ["2082", "FITS"], "changed": [0, 1], "tone": "warn", "note": "cost bites first"}], "t": "diagram", "id": "dg-13_1-04-3"},
     { t: "code", lang: "text", title: "An 8,192 window with 1,000 reserved",
       code: "window                   8192\nreserve for the answer  -1000\nsystem + tools          -66\nthe question            -13\n= available for history  7113\n\n5   turns of history = 367    tokens  FITS\n10  turns of history = 612    tokens  FITS\n20  turns of history = 1102   tokens  FITS\n40  turns of history = 2082   tokens  FITS",
       caption: "The reserve is 7.3's point: a budget without it fails at generation time." },

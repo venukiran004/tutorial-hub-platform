@@ -24,6 +24,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Four stages",
       code: "retrieve (wide)  ->  fuse  ->  diversify  ->  rerank  ->  k=5\n   41 docs           20        20 -> 8       8 -> 5",
       caption: "Each stage is more expensive per document than the one before it." },
@@ -31,6 +32,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "ablation", text: "The ablation", sub: "Each addition has to justify itself" },
 
     {"kind": "timeline", "title": "Three results I did not expect", "caption": "Assembled in order and measured at every step. Reranking on top of dense made natural queries **worse** — 0.964 down to 0.845 — which is the opposite of the advertised effect, and why every stage has to be measured on **your** queries rather than adopted.", "span": 1, "tick": 0.2, "unit": "MRR on the 14 natural queries", "lanes": [{"label": "dense alone", "bars": [[0, 0.964, "0.964 — the baseline", "good"]]}, {"label": "+ rerank", "bars": [[0, 0.845, "0.845 — WORSE", "crit"]]}, {"label": "+ hybrid fusion", "bars": [[0, 0.88, "helps keyword only", "warn"]]}, {"label": "+ MMR", "bars": [[0, 0.88, "coverage, not relevance", "warn"]]}], "t": "diagram", "id": "dg-6_8-02-0"},
+
 
 
 
@@ -78,6 +80,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "`dense + rerank` cross-encodes **20** candidates. The full pipeline inserts MMR, which narrows those 20 to **8** before the reranker runs \u2014 so the expensive stage does 8 forward passes instead of 20. At 6.1's measured ~68 ms per pair that is a saving of roughly 0.8 s, and MMR itself is a handful of dot products over 20 vectors." },
     { t: "callout", kind: "mental", title: "A cheap filter in front of an expensive stage can pay for itself many times over", body: [
       { t: "p", text: "The instinct is that every pipeline stage adds latency. That holds only for stages that do not **narrow**. A stage that reduces the input to a more expensive stage has negative marginal cost whenever its own cost is below the saving it creates downstream." },
@@ -86,6 +89,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "reading", text: "Reading the ablation", sub: "And what the table cannot tell you" },
 
     {"kind": "matrix", "title": "Three stages, three different verdicts", "caption": "**Not every stage pays for itself, and the ablation is the only way to know which.** One stage is pure cost, one helps a class and harms another, and one improves **both latency and accuracy — for reasons unrelated to the diversity it was designed for.** And what the table cannot show is answer quality, which is what the diversity was for in the first place. Both limitations point the same way: **a pipeline measured only on ranking metrics is a pipeline whose stages you partly do not understand.**", "cols": ["Verdict"], "rows": ["Hybrid, after reranking", "Reranking", "MMR"], "cells": [[{"text": "pure cost - it contributed nothing once reranking existed", "tone": "crit"}], [{"text": "helps one class, harms another - a trade", "tone": "warn"}], [{"text": "improves latency AND accuracy, for the wrong reason", "tone": "good"}]], "t": "diagram", "id": "dg-6_8-04-3"},
+
 
 
 
@@ -105,6 +109,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "method", text: "The method", sub: "Which generalises past this corpus" },
 
     {"kind": "flow", "title": "A stage's value is a property of the pipeline, not of the stage", "caption": "Step four is what this lesson adds to the usual method. **`hybrid` genuinely helped before reranking existed and contributed nothing after** — so you cannot evaluate a technique in isolation and carry the result forward. **A stage's value is not a property of the stage; it is a property of the pipeline it sits in.** Which gives the closing line its force: **a pipeline assembled from a blog post is a pipeline nobody has ablated.**", "cols": 3, "nodes": [{"id": "h", "label": "hybrid helped, before reranking", "sub": "measurably", "tone": "good"}, {"id": "a", "label": "And contributed nothing after", "sub": "same stage, same corpus", "tone": "crit"}, {"id": "p", "label": "So value belongs to the pipeline", "sub": "not to the stage", "tone": "violet"}, {"id": "c", "label": "You cannot carry a result forward", "sub": "from someone else's pipeline", "tone": "crit"}, {"id": "b", "label": "A pipeline from a blog post", "sub": "is one nobody has ablated", "tone": "teal"}], "edges": [["h", "a"], ["a", "p"], ["p", "c"], ["c", "b"]], "t": "diagram", "id": "dg-6_8-05-4"},
+
 
 
 

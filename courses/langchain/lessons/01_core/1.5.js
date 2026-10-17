@@ -40,6 +40,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "`with_structured_output` does not ask the model for JSON and then parse it. It binds your schema as a **tool definition**, the model emits a tool call, and the call's arguments are validated into your type. The model's text output is empty; the data arrives in a structured field that was never a string." },
 
     { t: "code", lang: "python", title: "A typed object back",
@@ -77,6 +78,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Four malformed tool calls",
       code: 'rating above le=10       -> ValidationError (rating)\nrating not a number      -> ValidationError (rating)\nrating missing           -> ValidationError (rating)\nrecommended missing      -> ValidationError (recommended)',
       caption: "A model returning 48.8 does not quietly become your data." },
@@ -87,6 +89,7 @@ EC.receiveLesson({
       sub: "The one nobody writes a branch for" },
 
     {"kind": "tree", "title": "A structured-output call has three outcomes, not two", "caption": "The third is the one almost no code guards. When the model answers in prose instead of calling the tool it returns **`None`** — no exception, and `include_raw=True` reports `parsed=None` with `parsing_error=None`, because nothing failed to parse: nothing was offered to the parser.", "root": {"label": "with_structured_output(Schema)", "sub": "the schema is bound as a tool", "tone": "accent", "children": [{"label": "valid arguments", "sub": "Pydantic validates → your object", "tone": "good", "edge": "the model calls the tool"}, {"label": "ValidationError", "sub": "a rating of 48.8 raises", "tone": "warn", "edge": "out of range"}, {"label": "returns None", "sub": "no exception, no parsing_error", "tone": "crit", "edge": "answers in prose"}]}, "t": "diagram", "id": "dg-1_5-03-0"},
+
 
 
 
@@ -168,6 +171,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table",
       head: ["Mechanism", "How", "What it guarantees"],
       rows: [
@@ -186,6 +190,7 @@ EC.receiveLesson({
       sub: "Communicating a constraint and enforcing it with one declaration" },
 
     {"kind": "trace", "title": "A Literal does two jobs from one declaration", "caption": "It **appears as an enum in the tool schema**, so the model is told the allowed values, **and** it is enforced on the way back, so a model that invents a fourth category **raises rather than widening your data.** Writing \"answer positive, negative or neutral\" in the prompt does only the first — and the third row is what that costs you. `Optional` is the companion: an omitted field arrives as `None` rather than as an absence you have to test for.", "left": "model output", "codeW": 200, "vars": ["result"], "steps": [{"code": "valid, with evidence", "state": ["positive, 0.91, 2 quotes"], "tone": "good"}, {"code": "valid, evidence omitted", "state": ["evidence=None"], "tone": "good", "note": "Optional, not absent"}, {"code": "sentiment off the Literal", "state": ["ValidationError"], "changed": [0], "tone": "crit", "note": "raises, not widens"}], "t": "diagram", "id": "dg-1_5-05-4"},
+
 
 
 

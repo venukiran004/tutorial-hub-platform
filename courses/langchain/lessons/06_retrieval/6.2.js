@@ -37,6 +37,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "The whole of a vector search",
       code: 'mine = []\nfor i, t in enumerate(TXT):\n    d = EMB[i]\n    num = sum(float(a) * float(b) for a, b in zip(v, d))\n    den = (math.sqrt(sum(float(a) * a for a in v))\n           * math.sqrt(sum(float(b) * b for b in d)))\n    mine.append(num / den)',
       out: "  top 3 by hand-written cosine:\n    api-limits           0.463018\n    bill-cancel-sub      0.333873\n    bill-overage         0.284438\n  max absolute difference from the library: 8.28e-08",
@@ -48,6 +49,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "baseline", text: "The baseline on two query classes", sub: "And the gap between them" },
 
     {"kind": "matrix", "title": "Three query classes, three different mechanisms failing", "caption": "The baseline fails for **three structurally different reasons**, which is why module 6 needs more than one repair. `Retry-After` returns three documents plausibly about API behaviour and **none containing the header** — the decisive signal is lexical and dense has none. `I forgot my password` works **by luck**, at only 0.3064, because the model happens to bridge *password* and *credential recovery*. And the near-duplicate case gets the right answer first with three near-identical documents behind it.", "cols": ["What happens", "Why"], "rows": ["Exact terms", "Vocabulary mismatch", "Near-duplicate competition"], "cells": [[{"text": "none of the top 3 contains the header", "tone": "crit"}, "the signal is lexical"], [{"text": "right, at 0.3064", "tone": "warn"}, "it happens to bridge the words"], [{"text": "right first, 3 near-identical behind", "tone": "warn"}, "no diversity in the ranking"]], "t": "diagram", "id": "dg-6_2-02-1"},
+
 
 
 
@@ -70,6 +72,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "notconfidence", text: "The scores are not confidences", sub: "And the retriever cannot abstain" },
 
     {"kind": "trace", "title": "A nonsense query scores 0.1279, and a good one scores 0.4630", "caption": "*\"What is the airspeed velocity of an unladen swallow\"* returns `api-limits` at **0.1279** — a real number, in the same units as the 0.4630 a genuine match earned. So **the scores are not confidences**: there is no value below which the retriever is telling you it found nothing. A threshold can be fitted to one corpus and one query distribution, and it is a fitted constant rather than a property of the score, which 7.1 is about.", "left": "query", "codeW": 230, "vars": ["top score", "returned"], "steps": [{"code": "'how many calls before throttling'", "state": ["0.4630", "api-limits"], "tone": "good"}, {"code": "'Retry-After'", "state": ["0.4445", "api-idempotency"], "tone": "warn", "note": "wrong, and scores well"}, {"code": "'airspeed velocity of a swallow'", "state": ["0.1279", "api-limits"], "changed": [0], "tone": "crit", "note": "nonsense, same units"}], "t": "diagram", "id": "dg-6_2-03-2"},
+
 
 
 

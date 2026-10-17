@@ -54,6 +54,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "100 requests, 3 attempts each",
       code: "no breaker   : 300 calls to a dependency that is down\nwith breaker : 5 attempted, 295 skipped\ntransitions  : [('closed', 'open')]",
       caption: "**300 doomed calls became 5.**" },

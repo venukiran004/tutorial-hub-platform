@@ -23,6 +23,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Top-1 cosine, answerable against unanswerable",
       code: "answerable  : min 0.2461  mean 0.4581  max 0.6431\nunanswerable: min 0.0764  mean 0.2187  max 0.3900\n\nthe worst answerable query scores 0.2461\nthe best unanswerable scores        0.3900",
       caption: "The ranges overlap, so no threshold separates them cleanly." },
@@ -30,6 +31,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "sweep", text: "The sweep", sub: "Both error rates, at every threshold" },
 
     {"kind": "trace", "title": "The sweep has no good row", "caption": "Read down the two error columns: **at 0.00 the guard answers everything and is wrong five times; at 0.40 it is wrong zero times and refuses four real questions.** There is no threshold that does both — 0.30 is the least bad at one wrong answer and one wrong refusal, and \"least bad\" is the honest description. Which is why §05 layers signals rather than tuning this one: **a single score cannot separate these populations well enough to pick a row you would defend.**", "left": "threshold", "codeW": 130, "vars": ["answered", "wrongly refused", "wrongly answered"], "steps": [{"code": "0.00", "state": ["14", "0", "5"], "tone": "crit"}, {"code": "0.15", "state": ["14", "0", "3"], "tone": "warn"}, {"code": "0.30", "state": ["13", "1", "1"], "changed": [2], "tone": "accent", "note": "the least bad row"}, {"code": "0.35", "state": ["11", "3", "1"], "tone": "warn"}, {"code": "0.40", "state": ["10", "4", "0"], "changed": [1], "tone": "crit", "note": "4 real questions refused"}], "t": "diagram", "id": "dg-7_1-02-2"},
+
 
 
 
@@ -49,6 +51,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "signals", text: "Two signals, compared properly", sub: "And I was wrong about which wins" },
 
     {"kind": "timeline", "title": "A correction to my own reasoning", "caption": "I expected the **gap** between rank 1 and rank 2 to be the signal — a confident retrieval should separate its winner. It is not. The plain absolute score separates answerable from unanswerable far better, and a plausible mechanism is not evidence.", "span": 1, "tick": 0.1, "unit": "AUC — answerable against unanswerable", "lanes": [{"label": "the rank 1-2 gap", "bars": [[0, 0.614, "0.614 — near chance", "crit"]]}, {"label": "the top score", "bars": [[0, 0.943, "0.943 — threshold on this", "good"]]}], "t": "diagram", "id": "dg-7_1-03-0"},
+
 
 
 
@@ -91,6 +94,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Scoring each query against its own top-1 document",
       code: "answerable mean  -6.737\nunanswerable mean -10.333\n\nworst answerable : -11.014   'I forgot my password'\nbest unanswerable:  -8.950   'how do I integrate with Salesforce'",
       caption: "The worst answerable query scores below **every** unanswerable one." },
@@ -101,6 +105,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "other", text: "What else the guard should use", sub: "Since no single signal is enough" },
 
     {"kind": "matrix", "title": "Three signals, each weak, with partly independent failures", "caption": "**Layering these is not the same as having a reliable guard** — it is accepting that each signal is weak and that their failures are partly independent. The first is the only one that **sees the context rather than a score**, and it is unenforced. The second is **free and detectable with a regex**. And AUC 0.943 on the retrieval score is **good enough to be useful and not good enough to be alone.** The honest framing: abstention is a risk-management problem, not a solved one.", "cols": ["What it sees", "Its weakness"], "rows": ["The licence to abstain", "Citation verification", "The retrieval score"], "cells": [[{"text": "the context itself - the only one that does", "tone": "good"}, {"text": "unenforced", "tone": "crit"}], [{"text": "whether anything was cited", "tone": "good"}, "free, and only a signal"], ["a number", {"text": "AUC 0.943 - useful, not sufficient", "tone": "warn"}]], "t": "diagram", "id": "dg-7_1-05-4"},
+
 
 
 

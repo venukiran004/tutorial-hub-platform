@@ -37,11 +37,13 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "12.3 measured it: two agents each handing to the other, bounded only by the recursion limit \u2014 and **neither agent is broken**, since each correctly declines a request outside its area." },
     { t: "p", text: "**Guard**: a hop budget in the **shared** state, plus an escalation node. It has to be shared because no single agent can see the other's handoffs." },
     { t: "h2", n: "02", id: "context", text: "Failure 2: context loss at a boundary", sub: "Which is a choice" },
 
     {"kind": "trace", "title": "Neither is wrong; the failure is choosing one without noticing", "caption": "**“I was charged twice” became “check duplicate charge” — a reasonable summary that loses the user's own words**, which may matter for tone, for quoting back to them, or for a detail the summariser judged irrelevant. Shared state keeps everything and pays for it; a payload is bounded and drops whatever the first agent did not think to include. **Guard: pass the conversation id with the payload, so the receiver can fetch rather than hope.**", "left": "channel", "codeW": 160, "vars": ["what B received", "the original wording"], "steps": [{"code": "shared state", "state": ["2 messages", "kept"], "tone": "good", "note": "and paid for"}, {"code": "a task payload", "state": ["'check duplicate charge'", "gone"], "changed": [0, 1], "tone": "crit"}, {"code": "payload + conversation id", "state": ["bounded, and fetchable", "retrievable"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-12_8-02-1"},
+
 
     { t: "code", lang: "text", title: "Shared state against a task payload",
       code: "shared state: b saw 2 message(s): ['I was charged twice', 'transferring']\ntask payload: b saw payload='check duplicate charge'\n              (the original wording is gone)",
@@ -53,6 +55,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "duplicate", text: "Failure 3: duplicated work", sub: "And where the guard fails" },
 
     {"kind": "flow", "title": "Check-then-act cannot work when the check and the act are the same step", "caption": "The work-done key worked here — **searches performed: 1**, because the writer checked before acting. It only works **with shared state**: with a task payload each agent is blind to the others' work unless the payload says so. **And in a parallel fan-out it does not work at all, because 8.6's superstep means both workers read the same snapshot, so neither sees the other's claim.** So deduplication in a fan-out belongs in the **orchestrator, before the fan-out**.", "cols": 3, "nodes": [{"id": "k", "label": "A work-done key in shared state", "sub": "searches performed: 1", "tone": "good"}, {"id": "p", "label": "With a task payload: blind", "sub": "unless the payload says so", "tone": "warn"}, {"id": "s", "label": "In a fan-out: the same snapshot", "sub": "8.6's superstep", "tone": "crit"}, {"id": "n", "label": "So neither worker sees the other's claim", "sub": "check and act in one step", "tone": "crit"}, {"id": "o", "label": "Dedupe in the orchestrator", "sub": "before the fan-out (12.5)", "tone": "good"}], "edges": [["k", "p"], ["p", "s"], ["s", "n"], ["n", "o"]], "t": "diagram", "id": "dg-12_8-03-2"},
+
 
     { t: "code", lang: "text", title: "A work-done key",
       code: "researcher searched\nwriter: reusing the existing search\nsearches performed: 1",
@@ -66,6 +69,7 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "No single agent is wrong, and there is no message to point at", "caption": "Attribution via `name` is only half of it. **The harder version: B's output was reasonable given what A passed it, and A's output was reasonable given the question — so no agent is wrong and the system is.** The only thing that helps is **recording the handoffs with their reasons, so the chain of “why did you give it that” is reconstructable** — 8.8's argument for `Command` carrying the reason, and 5.7's auditability principle once more.", "cols": 3, "nodes": [{"id": "a", "label": "A was reasonable, given the question", "sub": "review finds nothing", "tone": "good"}, {"id": "b", "label": "B was reasonable, given A's handoff", "sub": "review finds nothing", "tone": "good"}, {"id": "n", "label": "So the system is wrong and nobody is", "sub": "no message to point at", "tone": "crit"}, {"id": "h", "label": "Record handoffs WITH their reasons", "sub": "8.8's Command argument", "tone": "violet"}, {"id": "c", "label": "Then 'why did you give it that' is answerable", "sub": "5.7's auditability", "tone": "good"}], "edges": [["a", "n"], ["b", "n"], ["n", "h"], ["h", "c"]], "t": "diagram", "id": "dg-12_8-04-3"},
 
+
     { t: "code", lang: "text", title: "Attribution, with name set",
       code: "name=None   HumanMessage('I was charged twice')\nname='a'    AIMessage('transferring')",
       caption: "Without `name`, the answer is \u201cunknown\u201d." },
@@ -76,6 +80,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "guards", text: "The guards, collected", sub: "And where they live" },
 
     {"kind": "trace", "title": "Six failures, and the right-hand column is the content", "caption": "**Two of the six can only live in shared state**, because no agent and no payload can see what they need — the hop count and what has already been done are both properties of the system. **One lives on every message** (`name`), one in the handoff payload (the conversation id), and two are 11.8's guards arriving unchanged. Note there is no row whose answer is *“write a better prompt”*.", "left": "failure", "codeW": 170, "vars": ["guard", "where it has to live"], "steps": [{"code": "infinite handoff", "state": ["a hop budget + escalation", "shared state"], "tone": "crit"}, {"code": "duplicated work", "state": ["a work-done key", "shared state, or the orchestrator"], "changed": [0, 1], "tone": "crit"}, {"code": "context loss", "state": ["pass the conversation id", "the handoff payload"], "changed": [0, 1], "tone": "warn"}, {"code": "the blame problem", "state": ["name + recorded handoffs", "every message"], "changed": [0, 1], "tone": "warn"}, {"code": "a bad worker name", "state": ["a default branch (11.2)", "every router"], "changed": [0, 1], "tone": "good"}, {"code": "never finishing", "state": ["a turn budget + give-up", "the supervisor"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-12_8-05-4"},
+
 
     { t: "table", head: ["failure", "guard", "where"], rows: [
       ["infinite handoff", "a hop budget + escalation", "**shared state**"],

@@ -109,6 +109,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "The fastest way to understand what LangChain is doing is to write the part that matters. A protocol needs one method; composition needs one operator." },
 
     { t: "code", lang: "python", title: "A composable protocol from scratch",
@@ -127,6 +128,7 @@ EC.receiveLesson({
       sub: "A new component type that composes with code written before it" },
 
     {"kind": "flow", "title": "The test of an interface: add a type nobody anticipated", "caption": "Add a component the original author never planned for — a retry wrapper — and see how much existing code has to change. **The answer is none.** `Retry` wraps anything and is wrapped by anything, because the only thing it needs to know about its neighbours is that they have `invoke`. That is the whole payoff, and it is why `with_retry`, `with_fallbacks` and `with_config` can ship as methods on the base class: **each one is just a wrapper that satisfies the same protocol.**", "cols": 3, "nodes": [{"id": "n", "label": "A type nobody anticipated", "sub": "a retry wrapper", "tone": "accent"}, {"id": "k", "label": "It only needs one fact", "sub": "its neighbours have invoke", "tone": "violet"}, {"id": "c", "label": "No existing code changes", "sub": "prompt | Retry(flaky) | parser", "tone": "good"}, {"id": "w", "label": "So wrappers can be base-class methods", "sub": "with_retry, with_fallbacks, with_config", "tone": "good"}, {"id": "d", "label": "A dozen features, one mechanism", "sub": "which is the payoff", "tone": "teal"}], "edges": [["n", "k"], ["k", "c"], ["c", "w"], ["w", "d"]], "t": "diagram", "id": "dg-1_1-03-1"},
+
 
 
 
@@ -166,6 +168,7 @@ EC.receiveLesson({
       sub: "What the real protocol adds to the hand-built one" },
 
     {"kind": "flow", "title": "Six methods rather than one, and the idea is unchanged", "caption": "The library's contract is the hand-built one plus five more methods, and **each addition is a capability the uniformity makes free rather than a new concept.** `batch` is many inputs with bounded concurrency; `stream` is incremental output *through the whole chain*, not just the model; the `a`-prefixed half is async; and `with_config` attaches callbacks, tags and runtime values per call. Anything implementing them composes with anything else that does.", "cols": 3, "nodes": [{"id": "i", "label": "invoke", "sub": "the same as the hand-built one", "tone": "accent"}, {"id": "b", "label": "batch", "sub": "many inputs, bounded concurrency", "tone": "good"}, {"id": "s", "label": "stream", "sub": "incremental through the WHOLE chain", "tone": "good"}, {"id": "a", "label": "ainvoke / abatch / astream", "sub": "the async half of every method", "tone": "good"}, {"id": "c", "label": "with_config", "sub": "callbacks, tags, runtime values", "tone": "good"}, {"id": "u", "label": "Still one idea", "sub": "implement them, and you compose", "tone": "teal"}], "edges": [["i", "b"], ["b", "s"], ["s", "a"], ["a", "c"], ["c", "u"]], "t": "diagram", "id": "dg-1_1-04-2"},
+
 
 
 

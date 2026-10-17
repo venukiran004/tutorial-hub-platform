@@ -20,6 +20,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "A node that routes itself",
       code: 'from langgraph.types import Command\n\ndef step(state):\n    n = state["n"] * 2\n    return Command(update={"n": n, "trace": ["doubled to %d" % n]},\n                   goto="big" if n > 10 else "small")',
       out: "    n=2   -> ['doubled to 4', 'small']\n    n=20  -> ['doubled to 40', 'big']",
@@ -27,6 +28,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "which", text: "Command or a conditional edge?", sub: "They express the same thing, split differently" },
 
     {"kind": "compare", "title": "Command, or a conditional edge", "caption": "A node returning a `Command` carries an update and a destination together — and then there is no `add_conditional_edges` call at all, because the routing came from the return value. The useful question is what each one makes visible.", "columns": [{"title": "add_conditional_edges", "tone": "good", "items": ["the routing is declared in the graph", "so the drawn graph shows every possible path", "the update and the decision are separate steps", "a path map gives you a place for a default"]}, {"title": "a node returning Command", "tone": "warn", "items": ["update and destination in one return", "the routing is INSIDE the node, so the drawn graph shows nothing", "fewer moving parts for a genuine state-machine transition", "annotate the destinations or you lose the diagram"]}], "t": "diagram", "id": "dg-8_8-02-0"},
+
 
 
 
@@ -71,6 +73,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "Transferring control, with the reason attached",
       code: 'def triage(state):\n    t = state["topic"]\n    target = "billing" if t == "refund" else "tech"\n    return Command(update={"trace": ["triage -> %s" % target]},\n                   goto=target)',
       out: "  topic='refund'      -> ['triage -> billing', 'billing handled it']\n  topic='api error'   -> ['triage -> tech', 'tech handled it']",
@@ -79,6 +82,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "cost", text: "The cost", sub: "The topology is no longer in the topology" },
 
     {"kind": "flow", "title": "The drawn graph becomes incomplete, and the annotation is not enforced", "caption": "**With conditional edges you can draw the graph and see every path. With `Command` the destinations live inside node bodies, so the drawn graph is incomplete** — the renderer has no way to know where a node might send execution. The `Command[Literal[...]]` annotation restores it, **it is optional, and skipping it costs you the only diagram anyone looks at.** Which makes it one of those annotations worth treating as **mandatory by convention**: not enforced, cheap, and what it protects is legibility for someone who is not you.", "cols": 3, "nodes": [{"id": "e", "label": "Conditional edges", "sub": "every path is drawable", "tone": "good"}, {"id": "c", "label": "Command: destinations in node bodies", "sub": "invisible to the renderer", "tone": "crit"}, {"id": "i", "label": "So the drawing is incomplete", "sub": "and silently so", "tone": "crit"}, {"id": "a", "label": "Command[Literal[...]] restores it", "sub": "optional", "tone": "good"}, {"id": "m", "label": "Mandatory by convention", "sub": "cheap, and it protects legibility", "tone": "teal"}], "edges": [["e", "c"], ["c", "i"], ["i", "a"], ["a", "m"]], "t": "diagram", "id": "dg-8_8-04-3"},
+
 
 
 

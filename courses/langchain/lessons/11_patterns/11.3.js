@@ -37,6 +37,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "One cycle",
       code: "HumanMessage('refund policy?')\nAIMessage(tool_calls=['lookup_policy'])        <- content: 'I should look up\n                                                  the refund policy first.'\nToolMessage('Refunds are available within 30 days of purchase.')\nAIMessage('The policy says 30 days, which answers the question.')",
       caption: "The first `AIMessage` has **both** content and a tool call." },
@@ -53,6 +54,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "Two keys",
       code: 'class ReActState(TypedDict):\n    messages: Annotated[List[BaseMessage], add_messages]\n    steps: Annotated[int, operator.add]',
       caption: "Messages because the loop is the list; a counter because the router needs it." },
@@ -63,6 +65,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "guards", text: "The loop guards", sub: "And the give-up node" },
 
     {"kind": "trace", "title": "A model that never stops asking, and the graph returned anyway", "caption": "Three steps taken, then an `AIMessage` a caller can show a user — **the graph returned rather than raising.** Two things earn their place here. **The budget is in the router, so the graph exits instead of hitting the recursion limit** (8.9, 10.5). And `guarded` **wraps** `tools_condition` rather than replacing it — 9.2's unrolling done minimally: keep the prebuilt's logic, add the one thing it has no notion of.", "left": "step", "codeW": 170, "vars": ["router returns", "steps"], "steps": [{"code": "1", "state": ["tools_condition -> tools", "1"], "tone": "good"}, {"code": "2", "state": ["tools_condition -> tools", "2"], "changed": [1], "tone": "good"}, {"code": "3", "state": ["give_up", "3"], "changed": [0], "tone": "warn", "note": "budget spent"}, {"code": "result", "state": ["'I could not... in 3 steps.'", "3"], "tone": "violet", "note": "returned, not raised"}], "t": "diagram", "id": "dg-11_3-03-2"},
+
 
 
 
@@ -78,6 +81,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "goodat", text: "What ReAct is good at", sub: "And bad at" },
 
     {"kind": "flow", "title": "Good at exploration, bad at commitment", "caption": "It fits when **the next action genuinely depends on the last result** — searching, diagnosing, following a trail, recovering from a tool failure by trying something else. It fits badly where a router already works, and badly on **long plans, because the model re-decides from scratch every turn and so has no commitment to a strategy.** And the cost is unpredictable for a plain reason: **the step count is model output.**", "cols": 3, "nodes": [{"id": "e", "label": "Exploration: search, diagnose, trail", "sub": "the next step depends on the last", "tone": "good"}, {"id": "f", "label": "Recovering from a tool failure", "sub": "by trying something else", "tone": "good"}, {"id": "r", "label": "Anything a router does", "sub": "one classification is cheaper", "tone": "warn"}, {"id": "p", "label": "Long plans", "sub": "it re-decides every turn", "tone": "crit"}, {"id": "c", "label": "Predictable cost", "sub": "the step count is model output", "tone": "crit"}], "edges": [["e", "f"], ["r", "p"], ["p", "c"]], "t": "diagram", "id": "dg-11_3-04-3"},
+
 
 
 

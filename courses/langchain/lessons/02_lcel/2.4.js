@@ -37,6 +37,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "The original is gone",
       code: 'naive = prompt | model | StrOutputParser()\nnaive.invoke({"text: "long doc"})',
       out: "naive.invoke({'text': ...}) -> 'a summary'",
@@ -62,6 +63,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "Compute and keep",
       code: 'keep = RunnableParallel(summary=naive, original=RunnablePassthrough())\nkeep.invoke({"text: "long doc"})',
       out: "{'summary': 'a summary', 'original': {'text': 'long doc'}}",
@@ -70,6 +72,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "assign", text: ".assign is the one you want", sub: "Add a key, keep the rest" },
 
     {"kind": "trace", "title": ".assign reads like a sequence of let bindings", "caption": "`RunnablePassthrough.assign(k=fn)` **adds a key and keeps everything else** — which is the difference between it and a plain fan-out, where you have to name every key you want to survive. That compositionality is what makes it the backbone of real chains: **each step adds one derived value and nothing has to be threaded through by hand**, so a chain of five assigns reads like five `let` bindings rather than five dict reconstructions.", "left": "stage", "codeW": 150, "vars": ["the dict"], "steps": [{"code": "before", "state": ["{'text': 'a b c'}"], "tone": "accent"}, {"code": "after .assign(word_count=fn)", "state": ["{'text': 'a b c', 'word_count': 3}"], "changed": [0], "tone": "good", "note": "nothing threaded by hand"}], "t": "diagram", "id": "dg-2_4-03-2"},
+
 
 
 
@@ -119,6 +122,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "A builtin, coerced",
       code: 'from operator import itemgetter\n\npipeline = {"text: itemgetter("doc"),\n            "n":    itemgetter("doc") | RunnableLambda(len)}\n\n(pipeline | RunnableLambda(lambda d: d)).invoke({"doc": "hello", "other": 1})',
       out: "{'text': 'hello', 'n': 5}",
@@ -127,6 +131,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "shapes", text: "The four shapes", sub: "A lookup table worth memorising" },
 
     {"kind": "matrix", "title": "Five shapes, and the question each one answers", "caption": "Read as a lookup from intent to syntax, which is how it gets used in practice. The third and fourth rows are the pair people confuse: **a fan-out with a passthrough keeps the input alongside a result and makes you name every surviving key; `.assign` adds a key and keeps the rest.** Reach for the first when you are building a new dict shape and the second when you are accumulating onto an existing one.", "cols": ["What to write"], "rows": ["Keep only the output", "Run steps side by side", "Keep the input alongside", "Add a key, keep the rest", "Take one key"], "cells": [["a | b"], ["{'x': a, 'y': b} - coerced to RunnableParallel"], [{"text": "RunnableParallel(out=a, orig=RunnablePassthrough())", "tone": "accent"}], [{"text": "RunnablePassthrough.assign(k=fn)", "tone": "good"}], ["itemgetter('k')"]], "t": "diagram", "id": "dg-2_4-05-4"},
+
 
 
 
