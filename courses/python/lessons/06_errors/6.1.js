@@ -50,6 +50,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "`raise` does two things. It creates (or takes) an exception **instance**, and it abandons the current expression. Python then walks back up the call stack looking for a `try` whose `except` matches. Every frame it passes is discarded — its local variables are gone — until a handler claims the exception or the stack runs out." },
 
     { t: "code", lang: "python", title: "three frames, one handler", code: `
@@ -136,6 +137,7 @@ main()
       sub: "An except clause is an isinstance check, so every base class in the tree is a catch group somebody designed for you." },
 
     {"kind": "tree", "title": "The hierarchy is an API", "caption": "Catching a class catches every subclass. except Exception catches almost everything; except BaseException also catches KeyboardInterrupt and SystemExit, which is almost never what you want.", "root": {"label": "BaseException", "tone": "crit", "children": [{"label": "SystemExit"}, {"label": "KeyboardInterrupt"}, {"label": "Exception", "tone": "accent", "children": [{"label": "ValueError", "tone": "good", "children": [{"label": "UnicodeError"}]}, {"label": "LookupError", "children": [{"label": "KeyError"}, {"label": "IndexError"}]}, {"label": "OSError", "tone": "warn", "children": [{"label": "FileNotFoundError"}]}]}]}, "t": "diagram", "id": "dg-6_1-02-2"},
+
 
 
 
@@ -278,6 +280,7 @@ no permission`,
     { t: "h2", n: "03", text: "Which clause wins, and what happens to the name", id: "matching" },
 
     {"kind": "trace", "title": "The first matching clause wins, and the name is gone after the block", "caption": "**Clauses are tried top to bottom and the first match wins — so a broad clause above a narrow one makes the narrow one dead code**, and nothing warns you. The second half is the part that bites: **`as err` is deleted at the end of the `except` block, so reading `err` afterwards raises `NameError`.** Python does that deliberately, **to break the reference cycle between the exception and the frame that caught it** — which means anything you still need must be copied out inside the block.", "left": "what you read", "codeW": 180, "vars": ["value"], "steps": [{"code": "type(err).__name__", "state": ["KeyError"], "tone": "good"}, {"code": "err.args", "state": ["('customer',)"], "changed": [0], "tone": "good"}, {"code": "err.args[0]", "state": ["customer"], "changed": [0], "tone": "good"}, {"code": "repr(err)", "state": ["KeyError('customer')"], "changed": [0], "tone": "good"}, {"code": "err, after the block", "state": ["NameError - it is deleted"], "changed": [0], "tone": "crit", "note": "breaks a reference cycle"}], "t": "diagram", "id": "dg-6_1-03-0"},
+
 
 
 

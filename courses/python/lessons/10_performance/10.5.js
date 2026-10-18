@@ -48,6 +48,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "One query, or a hundred and one",
       caption: "The loop looks like it touches memory. Each iteration is a network round trip to the database, so the cost is not the Python — it is 100 × the latency between your service and a machine in another rack.",
@@ -155,6 +156,7 @@ def test_order_list_does_not_n_plus_one(client, query_counter, make_orders):
     { t: "h2", n: "02", text: "2 — Accidental quadratic", id: "quadratic" },
 
     {"kind": "trace", "title": "One row of this table is the whole accidental quadratic", "caption": "**`x in c` is `O(n)` on a list and `O(1)` on a set — and that single difference, inside a loop, is the commonest quadratic in production Python.** The rest of the table is the cost of switching: **a set has no order and no duplicates, so it is not a drop-in replacement for a list you are also iterating.** Which is why the usual fix is **both** — 2.8's “hold the data twice” — and why `deque` is the answer to a different quadratic: **removing from the front of a list is `O(n)` and `O(1)` on a deque.**", "left": "operation", "codeW": 170, "vars": ["list", "set / dict", "deque"], "steps": [{"code": "x in c", "state": ["O(n)", "O(1)", "O(n)"], "tone": "crit", "note": "the quadratic"}, {"code": "append to the end", "state": ["O(1)", "O(1)", "O(1)"], "changed": [0, 1, 2], "tone": "good"}, {"code": "insert or remove at the front", "state": ["O(n)", "-", "O(1)"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "index by position", "state": ["O(1)", "-", "O(n)"], "changed": [0, 1, 2], "tone": "good"}, {"code": "order / duplicates", "state": ["yes / yes", "insertion / NO", "yes / yes"], "changed": [0, 1, 2], "tone": "warn"}], "t": "diagram", "id": "dg-10_5-02-0"},
+
 
 
 

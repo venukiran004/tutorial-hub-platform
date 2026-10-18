@@ -48,6 +48,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "a dependency is just a callable", code: `
 from typing import Annotated
 from fastapi import Depends, HTTPException, status
@@ -140,6 +141,7 @@ app = FastAPI(dependencies=[Depends(verify_api_key)])
 
     {"kind": "flow", "title": "The override is by object, not by import path", "caption": "**`app.dependency_overrides[get_db] = fake_db` keys on the function object itself — so moving `get_db` to another module does not break the test**, which is the failure mode of every `@patch(\"app.routes.get_db\")` string. That is the payoff of declaring dependencies rather than importing them: **the test substitutes the same object the route asked for, with no knowledge of where either lives.** And it composes: **overriding a dependency replaces it for every route that depends on it, including transitively**, so one line can substitute a database for the whole suite.", "cols": 3, "nodes": [{"id": "p", "label": "patch('app.routes.get_db')", "sub": "a string, and a path", "tone": "crit"}, {"id": "m", "label": "Breaks when the function moves", "sub": "silently, as a no-op patch", "tone": "crit"}, {"id": "o", "label": "dependency_overrides[get_db]", "sub": "the OBJECT", "tone": "violet"}, {"id": "s", "label": "Survives any move or rename", "sub": "the import follows it", "tone": "good"}, {"id": "t", "label": "And applies transitively", "sub": "one line for the whole suite", "tone": "good"}], "edges": [["p", "m"], ["m", "o"], ["o", "s"], ["s", "t"]], "t": "diagram", "id": "dg-12_5-02-0"},
 
+
     { t: "code", lang: "python", title: "the reason to use Depends at all", code: `
 import pytest
 from fastapi.testclient import TestClient
@@ -176,6 +178,7 @@ def test_admin_only_route_is_forbidden(client):
     { t: "h2", n: "03", text: "Middleware, and when not to use it", id: "middleware" },
 
     {"kind": "layers", "title": "Middleware wraps every request", "caption": "Each middleware sees the request on the way in and the response on the way out, in nested order. Cross-cutting concerns — request IDs, timing, CORS — belong here; business logic does not.", "taper": true, "items": [{"label": "request-id middleware", "sub": "outermost: first in, last out", "tone": "warn"}, {"label": "timing / logging middleware", "tone": "accent"}, {"label": "CORS middleware", "tone": "accent"}, {"label": "router → dependencies → handler", "sub": "the innermost", "tone": "good"}], "t": "diagram", "id": "dg-12_5-03-3"},
+
 
 
 
@@ -398,6 +401,7 @@ raise HTTPException(500, f"query failed: {sql}")
     { t: "h2", n: "05", text: "After the response", id: "background" },
 
     {"kind": "flow", "title": "A background task runs in the same process, with no retry and no durability", "caption": "**`BackgroundTasks` runs after the response in the same process — so a restart between the response and the task loses it silently**, and the client has already been told the work succeeded. Which makes the decision rule sharp rather than a preference: **use it for work whose loss is acceptable — a cache warm, a metric, a best-effort notification — and a real queue for anything a user would complain about losing.** The giveaway question: **if this task never ran, would anyone open a ticket?**", "cols": 3, "nodes": [{"id": "b", "label": "BackgroundTasks: after the response", "sub": "same process", "tone": "accent"}, {"id": "n", "label": "No retry, no durability", "sub": "a restart loses it", "tone": "crit"}, {"id": "c", "label": "And the client was told it succeeded", "sub": "the response already went", "tone": "crit"}, {"id": "a", "label": "Fine for a cache warm or a metric", "sub": "loss is acceptable", "tone": "good"}, {"id": "q", "label": "A real queue otherwise", "sub": "would anyone open a ticket?", "tone": "violet"}], "edges": [["b", "n"], ["n", "c"], ["c", "a"], ["a", "q"]], "t": "diagram", "id": "dg-12_5-05-1"},
+
 
     { t: "code", lang: "python", title: "BackgroundTasks, and its limits", code: `
 from fastapi import BackgroundTasks

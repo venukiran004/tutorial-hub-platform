@@ -105,6 +105,7 @@ def test_discount_by_quantity(quantity: int, expected: str) -> None:
 
 
 
+
     { t: "code", lang: "python", title: "three ways to name cases", code: `
 # 1. Automatic -- fine for scalars, unreadable for objects
 @pytest.mark.parametrize("payload", [{"a": 1}, {"b": 2}])
@@ -148,6 +149,7 @@ FAILED test_pricing.py::test_discount[at-threshold-no-discount]`},
     { t: "h2", n: "03", text: "Marking individual cases", id: "marks" },
 
     {"kind": "trace", "title": "Four marks, and only `xfail` keeps running the case", "caption": "**`xfail` runs the test and records the expected failure, so the case still documents the requirement and reports when it starts passing** — which `skip` cannot do, because a skipped test tells you nothing about the code. **`strict=True` is the version to prefer: an unexpected pass *fails* the suite, forcing the marker to be removed** rather than left in place for a year after the bug was fixed. And the last row is the warning: **deleting the case loses the requirement it documented, which is almost never what you want.**", "left": "mark", "codeW": 150, "vars": ["runs?", "use when"], "steps": [{"code": "xfail", "state": ["yes", "a known bug you intend to fix"], "tone": "good"}, {"code": "xfail(strict=True)", "state": ["yes", "and an unexpected pass FAILS"], "changed": [1], "tone": "violet"}, {"code": "skip", "state": ["no", "genuinely not applicable, permanently"], "changed": [0, 1], "tone": "warn"}, {"code": "skipif", "state": ["conditionally", "platform, version, optional dependency"], "changed": [0, 1], "tone": "good"}, {"code": "deleting the case", "state": ["-", "almost never - it documented a requirement"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-9_4-03-1"},
+
 
 
 
@@ -201,6 +203,7 @@ def test_parse_decimal(value: str, expected: Decimal) -> None:
     { t: "h2", n: "04", text: "Stacking and fixtures", id: "stacking" },
 
     {"kind": "matrix", "title": "Stacked parametrize is a product", "caption": "Two @parametrize decorators multiply: three inputs by two modes is six test cases, each reported with its own id.", "rows": ["x=1", "x=2", "x=3"], "cols": ["mode='fast'", "mode='safe'"], "cells": [[{"text": "case", "tone": "good"}, {"text": "case", "tone": "good"}], [{"text": "case", "tone": "good"}, {"text": "case", "tone": "good"}], [{"text": "case", "tone": "good"}, {"text": "case", "tone": "good"}]], "t": "diagram", "id": "dg-9_4-04-2"},
+
 
 
 

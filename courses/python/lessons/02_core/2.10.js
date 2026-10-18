@@ -52,6 +52,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "The loop you were about to write, and the built-in that replaces it",
       caption: "Each built-in is a loop someone already wrote, in C, correctly. Reaching for one is faster to read and usually faster to run.",
@@ -164,6 +165,7 @@ print(dict(zip(["host", "port"], ["localhost", 8080])))
 
 
 
+
     { t: "code", lang: "python", title: "key does the work", code: `
 from operator import itemgetter
 
@@ -205,6 +207,7 @@ None
     { t: "h2", n: "03", text: "any and all", id: "any-all" },
 
     {"kind": "trace", "title": "It stopped at 2, which is the whole reason to keep it a generator", "caption": "**`any` and `all` short-circuit — the trace prints `checking 0`, `checking 1`, `checking 2` and then stops, because the third element satisfied it.** Which is why the argument should be a generator expression and not a list comprehension: **`any([f(x) for x in xs])` evaluates `f` for every element before `any` sees any of them, so the short-circuit is thrown away.** Dropping two brackets changes the cost from `O(n)` to `O(position of the first match)`.", "left": "call", "codeW": 190, "vars": ["result", "elements evaluated"], "steps": [{"code": "all(x > 0 for x in [1, 0, 2])", "state": ["False", "stops at the 0"], "tone": "good"}, {"code": "any(check(x) for x in xs)", "state": ["True", "0, 1, 2 then stops"], "changed": [0, 1], "tone": "violet"}, {"code": "any([check(x) for x in xs])", "state": ["True", "ALL of them"], "changed": [1], "tone": "crit", "note": "two brackets, O(n)"}], "t": "diagram", "id": "dg-2_10-03-2"},
+
 
 
 

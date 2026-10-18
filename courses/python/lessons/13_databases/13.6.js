@@ -114,7 +114,8 @@ def test_the_dashboard_query_count_is_bounded(client, db):
 
     { t: "h2", n: "02", text: "Reading EXPLAIN", id: "explain" },
 
-    {"kind": "tree", "title": "Reading an EXPLAIN plan", "caption": "Read from the innermost node outward: how each table is accessed, how the results are joined, then sorted or aggregated. A Seq Scan on a large table under a filter is the line that wants an index.", "root": {"label": "Sort (by created_at)", "tone": "warn", "children": [{"label": "Hash Join", "tone": "accent", "children": [{"label": "Seq Scan on orders", "sub": "Filter: status = 'open' — index candidate", "tone": "crit"}, {"label": "Hash", "children": [{"label": "Index Scan on customers_pkey", "tone": "good"}]}]}]}, "t": "diagram", "id": "dg-13_6-02-0"},
+    {"kind": "tree", "title": "Reading an EXPLAIN plan", "caption": "Read from the innermost node outward: how each table is accessed, how the results are joined, then sorted or aggregated. A Seq Scan on a large table under a filter is the line that wants an index.", "root": {"label": "Sort (by created_at)", "tone": "warn", "children": [{"label": "Hash Join", "tone": "accent", "children": [{"label": "Seq Scan on orders", "sub": "Filter: status = 'open' — index candidate", "tone": "crit"}, {"label": "Hash", "children": [{"label": "Index Scan on customers_pkey", "tone": "good"}]}]}]}, "t": "diagram", "id": "dg-13_6-02-2"},
+
 
 
 
@@ -191,7 +192,8 @@ EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM orders WHERE account_id = 'a-1';
 
     { t: "h2", n: "03", text: "Indexing for a query", id: "indexing" },
 
-    {"kind": "layers", "title": "A composite index is used left to right", "caption": "An index on `(customer_id, created_at, status)` serves a query on `customer_id`, and on `customer_id` **and** `created_at`. It cannot serve a query on `created_at` alone — the leading column must be constrained.", "items": [{"label": "customer_id", "sub": "the leading column — must be constrained", "tone": "good", "side": "1st"}, {"label": "created_at", "sub": "usable once the leading one is fixed", "tone": "good", "side": "2nd"}, {"label": "status", "sub": "usable once both above are fixed", "tone": "warn", "side": "3rd"}], "t": "diagram", "id": "dg-13_6-03-1"},
+    {"kind": "layers", "title": "A composite index is used left to right", "caption": "An index on `(customer_id, created_at, status)` serves a query on `customer_id`, and on `customer_id` **and** `created_at`. It cannot serve a query on `created_at` alone — the leading column must be constrained.", "items": [{"label": "customer_id", "sub": "the leading column — must be constrained", "tone": "good", "side": "1st"}, {"label": "created_at", "sub": "usable once the leading one is fixed", "tone": "good", "side": "2nd"}, {"label": "status", "sub": "usable once both above are fixed", "tone": "warn", "side": "3rd"}], "t": "diagram", "id": "dg-13_6-03-3"},
+
 
 
 
@@ -279,6 +281,8 @@ ANALYZE orders;`},
 
     { t: "h2", n: "04", text: "Fixing the N+1", id: "fixing" },
 
+    {"kind": "trace", "title": "The third pattern works even when the ORM cannot help", "caption": "**Collect the keys, fetch them in one query, index them by key, then attach** — four steps, no eager-loading configuration, and it works across an HTTP boundary or a second data store where `selectinload` cannot reach. Which is why it is the general one: **the first two fixes are the ORM telling the database to do the work, and this one is you doing it.** The measured shape is the same in all three: **1 + N queries become 2**, and the second is a single `IN` over a de-duplicated key list.", "left": "fix", "codeW": 170, "vars": ["queries", "works when"], "steps": [{"code": "selectinload / joinedload", "state": ["2 or 1", "one database, one session"], "tone": "good"}, {"code": "a JOIN written by hand", "state": ["1", "you are writing SQL anyway"], "changed": [0, 1], "tone": "good"}, {"code": "collect keys, fetch, index, attach", "state": ["2", "ALWAYS - including across HTTP"], "changed": [0, 1], "tone": "violet"}, {"code": "all three replace", "state": ["1 + N", "-"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-13_6-04-0"},
+
     { t: "code", lang: "python", title: "the same problem in three frameworks", code: `
 # SQLAlchemy -- state the load per query.
 orders = db.scalars(
@@ -337,6 +341,8 @@ select(Order.id, Order.total, Order.created_at)`},
     ]},
 
     { t: "h2", n: "05", text: "Queries an index cannot save", id: "no-index" },
+
+    {"kind": "trace", "title": "Six queries where adding an index is the wrong instinct", "caption": "**`count(*)` must visit every row to check visibility, so no index makes it cheap — use an estimate from `pg_class` or keep a counter table.** The last row is the one that surprises: **a `WHERE status = 'active'` matching 60% of the table will not use an index, because random heap reads for most of the table are slower than a sequential scan** — and the fix is a **partial index on the rare value** rather than a better index on the common one. And the general shape: **three of the six are fixed by returning less, not by seeking faster.**", "left": "query", "codeW": 160, "vars": ["why an index does not help", "what does"], "steps": [{"code": "count(*) on a large table", "state": ["every row, for visibility", "pg_class estimate, or a counter"], "tone": "crit"}, {"code": "OFFSET 100000", "state": ["it counts past every skipped row", "cursor pagination (12.6)"], "changed": [0, 1], "tone": "crit"}, {"code": "ORDER BY random()", "state": ["sorts the entire table", "TABLESAMPLE, or a random id"], "changed": [0, 1], "tone": "crit"}, {"code": "LIKE '%term%'", "state": ["no prefix for a B-tree to seek", "a trigram index, or full-text"], "changed": [0, 1], "tone": "crit"}, {"code": "WHERE status = 'active' at 60%", "state": ["a sequential scan is cheaper", "a PARTIAL index on the rare value"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-13_6-05-1"},
 
     { t: "table",
       head: ["Query", "Why an index does not help", "What does"],

@@ -117,7 +117,8 @@ cur.execute(
 
     { t: "h2", n: "02", text: "SQL injection", id: "injection" },
 
-    {"kind": "compare", "title": "SQL injection, and the parameter that prevents it", "caption": "String formatting puts the user's text into the SQL; a parameter sends the SQL and the value separately, so the value can never be parsed as SQL. Every DB-API driver supports parameters; none require formatting.", "columns": [{"title": "f\"… WHERE name = '{name}'\"", "tone": "crit", "items": ["name = \"x' OR '1'='1\"", "the value becomes SQL", "one line from a breach"]}, {"title": "cur.execute(\"… WHERE name = %s\", (name,))", "tone": "good", "items": ["value sent separately", "never parsed as SQL", "also faster: plans are cached"]}], "t": "diagram", "id": "dg-13_3-02-0"},
+    {"kind": "compare", "title": "SQL injection, and the parameter that prevents it", "caption": "String formatting puts the user's text into the SQL; a parameter sends the SQL and the value separately, so the value can never be parsed as SQL. Every DB-API driver supports parameters; none require formatting.", "columns": [{"title": "f\"… WHERE name = '{name}'\"", "tone": "crit", "items": ["name = \"x' OR '1'='1\"", "the value becomes SQL", "one line from a breach"]}, {"title": "cur.execute(\"… WHERE name = %s\", (name,))", "tone": "good", "items": ["value sent separately", "never parsed as SQL", "also faster: plans are cached"]}], "t": "diagram", "id": "dg-13_3-02-2"},
+
 
 
 
@@ -199,6 +200,8 @@ cur.execute(query, params)`},
 
     { t: "h2", n: "03", text: "Getting rows back usefully", id: "rows" },
 
+    {"kind": "trace", "title": "Four row factories, and `class_row` fails early when a column is renamed", "caption": "**`class_row` is the one to reach for in application code: it gives type checking, autocompletion, and an early failure when the query and the class disagree** — a renamed column raises at the row factory rather than producing a `None` that travels. The default tuple is the one to avoid in anything but a script: **`row[3]` rots the moment a column is inserted**, and nothing tells you. And `dict_row` is the middle ground — **named access with no schema**, so a typo'd key is still a `KeyError` at use.", "left": "row factory", "codeW": 150, "vars": ["access", "when the query changes"], "steps": [{"code": "default (tuple)", "state": ["row[3]", "silently wrong"], "tone": "crit"}, {"code": "dict_row", "state": ["row['total']", "KeyError at use"], "changed": [0, 1], "tone": "good"}, {"code": "namedtuple_row", "state": ["row.total", "AttributeError at use"], "changed": [0, 1], "tone": "good"}, {"code": "class_row(Order)", "state": ["row.total, typed", "fails AT the row factory"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-13_3-03-0"},
+
     { t: "code", lang: "python", title: "row factories", code: `
 from psycopg.rows import dict_row, class_row, namedtuple_row
 
@@ -256,7 +259,8 @@ with conn.cursor(name="stream") as cur:       # naming it is the switch
 
     { t: "h2", n: "04", text: "Writing efficiently", id: "writing" },
 
-    {"kind": "timeline", "title": "Row by row versus a batch", "caption": "A thousand single-row INSERTs are a thousand round trips; executemany or a multi-row VALUES sends them in one. COPY is faster still for bulk loads.", "span": 10, "tick": 2, "lanes": [{"label": "1,000 × execute()", "tone": "crit", "bars": [[0, 10, "1,000 round trips"]]}, {"label": "executemany(rows)", "tone": "warn", "bars": [[0, 1.6, "batched"]]}, {"label": "COPY FROM", "tone": "good", "bars": [[0, 0.5, "bulk"]]}], "t": "diagram", "id": "dg-13_3-04-1"},
+    {"kind": "timeline", "title": "Row by row versus a batch", "caption": "A thousand single-row INSERTs are a thousand round trips; executemany or a multi-row VALUES sends them in one. COPY is faster still for bulk loads.", "span": 10, "tick": 2, "lanes": [{"label": "1,000 × execute()", "tone": "crit", "bars": [[0, 10, "1,000 round trips"]]}, {"label": "executemany(rows)", "tone": "warn", "bars": [[0, 1.6, "batched"]]}, {"label": "COPY FROM", "tone": "good", "bars": [[0, 0.5, "bulk"]]}], "t": "diagram", "id": "dg-13_3-04-3"},
+
 
 
 
@@ -326,6 +330,8 @@ with cur.copy("COPY events (id, type, payload) FROM STDIN") as copy:
     },
 
     { t: "h2", n: "05", text: "Failures", id: "failures" },
+
+    {"kind": "trace", "title": "A bare `except Exception` turns four different situations into one 500", "caption": "**A unique violation is a 409 the user can act on; a foreign-key violation is a 400; a serialisation failure is a retry; and a connection error is a 503 with a backoff.** Collapsing all four into a 500 throws away the only information that distinguishes them — **and the client cannot tell “you sent a duplicate” from “our database is down”.** The practical form is to catch the driver's specific exception types, **or inspect `e.sqlstate`, which is a documented five-character code and stable across versions.**", "left": "database error", "codeW": 170, "vars": ["what it means", "the right response"], "steps": [{"code": "unique violation", "state": ["a duplicate the user sent", "409, actionable"], "tone": "good"}, {"code": "foreign-key violation", "state": ["a reference that does not exist", "400"], "changed": [0, 1], "tone": "good"}, {"code": "serialisation failure", "state": ["a concurrent write won", "retry the transaction"], "changed": [0, 1], "tone": "good"}, {"code": "connection error", "state": ["the database is unreachable", "503, with backoff"], "changed": [0, 1], "tone": "good"}, {"code": "except Exception", "state": ["all four", "500 - and no way to tell"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-13_3-05-1"},
 
     { t: "code", lang: "python", title: "the errors worth catching separately", code: `
 from psycopg import errors

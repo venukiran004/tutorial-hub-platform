@@ -27,6 +27,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "the object behind every function", code: `
 import inspect
 
@@ -144,6 +145,7 @@ def audited(fn):
 
 
 
+
     { t: "code", lang: "python", title: "`__annotations__` is not enough", code: `
 from __future__ import annotations       # makes annotations STRINGS
 
@@ -209,6 +211,7 @@ typing.get_type_hints(handler)
 
 
 
+
     { t: "code", lang: "python", title: "possible, and rarely right", code: `
 import inspect
 
@@ -242,6 +245,7 @@ class Logger:
     { t: "h2", n: "05", text: "The rest of the module", id: "rest" },
 
     {"kind": "trace", "title": "Seven functions, and two of them fail where you least expect", "caption": "**`getsource` needs the file to exist, so it fails in a zipapp, in a REPL and in anything that compiled from a string** — which is the one to guard rather than assume. **`getdoc` is better than `obj.__doc__` because it dedents *and* follows inheritance**, so an overridden method with no docstring still reports the base's. And the row frameworks are built on: **`iscoroutinefunction` is how a framework decides whether to `await`** — which is why decorating an async function with a sync wrapper breaks dispatch, unless `wraps` preserved it.", "left": "function", "codeW": 170, "vars": ["gives", "note"], "steps": [{"code": "getsource(obj)", "state": ["the source text", "fails in a zipapp or a REPL"], "tone": "crit"}, {"code": "getdoc(obj)", "state": ["dedented AND inherited", "better than __doc__"], "changed": [0, 1], "tone": "violet"}, {"code": "iscoroutinefunction(fn)", "state": ["a bool", "how a framework decides to await"], "changed": [0, 1], "tone": "violet"}, {"code": "getmembers(obj, predicate)", "state": ["name/value pairs", "isfunction on a class, ismethod on an instance"], "changed": [0, 1], "tone": "good"}, {"code": "unwrap(fn)", "state": ["the innermost function", "follows __wrapped__ down"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-8_7-05-2"},
+
 
 
 

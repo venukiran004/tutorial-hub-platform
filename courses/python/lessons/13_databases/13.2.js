@@ -105,6 +105,8 @@ CREATE TABLE orders (
 
     { t: "h2", n: "02", text: "Keys", id: "keys" },
 
+    {"kind": "trace", "title": "Five key choices, and UUID v7 is usually the right default", "caption": "**An auto-increment `BIGINT` is compact and index-friendly, and it leaks your volume — order 4,281 tells a competitor how many orders you have had.** A v4 UUID leaks nothing and **fragments the index, because random inserts land everywhere in the B-tree.** **v7 is time-ordered, so it keeps the UUID benefits with sequential locality** — which is why it is the default to reach for. And the warning on natural keys is the one that costs most to fix: **natural keys change, and then so does every reference to them.**", "left": "key", "codeW": 150, "vars": ["example", "trade-off"], "steps": [{"code": "auto-increment BIGINT", "state": ["1, 2, 3", "leaks volume; needs a round trip"], "tone": "warn"}, {"code": "UUID v4", "state": ["random", "fragments the index"], "changed": [0, 1], "tone": "warn"}, {"code": "UUID v7", "state": ["time-ordered", "the best default"], "changed": [0, 1], "tone": "violet"}, {"code": "a natural key", "state": ["email, isbn", "they CHANGE, and so does every ref"], "changed": [0, 1], "tone": "crit"}, {"code": "composite", "state": ["(order_id, line_no)", "honest; awkward in ORMs and URLs"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-13_2-02-0"},
+
     { t: "table",
       head: ["Key", "Example", "Trade-off"],
       rows: [
@@ -150,7 +152,8 @@ CREATE TABLE users (
 
     { t: "h2", n: "03", text: "Normalise, then stop", id: "normalisation" },
 
-    {"kind": "flow", "title": "Normalise, then stop", "caption": "Split repeating groups into their own table (1NF), move columns that depend on part of a key (2NF), then columns that depend on other non-key columns (3NF). Beyond that, denormalise deliberately for read performance and say so.", "cols": 4, "nodes": [{"id": "a", "label": "one wide table", "sub": "repeating columns, duplication", "tone": "crit"}, {"id": "b", "label": "1NF", "sub": "atomic values, one row per fact", "tone": "warn"}, {"id": "c", "label": "2NF / 3NF", "sub": "each fact stored once, keyed", "tone": "good"}, {"id": "d", "label": "deliberate denormalisation", "sub": "a cached total, documented", "tone": "accent"}], "edges": [["a", "b"], ["b", "c"], ["c", "d", "only when measured"]], "t": "diagram", "id": "dg-13_2-03-0"},
+    {"kind": "flow", "title": "Normalise, then stop", "caption": "Split repeating groups into their own table (1NF), move columns that depend on part of a key (2NF), then columns that depend on other non-key columns (3NF). Beyond that, denormalise deliberately for read performance and say so.", "cols": 4, "nodes": [{"id": "a", "label": "one wide table", "sub": "repeating columns, duplication", "tone": "crit"}, {"id": "b", "label": "1NF", "sub": "atomic values, one row per fact", "tone": "warn"}, {"id": "c", "label": "2NF / 3NF", "sub": "each fact stored once, keyed", "tone": "good"}, {"id": "d", "label": "deliberate denormalisation", "sub": "a cached total, documented", "tone": "accent"}], "edges": [["a", "b"], ["b", "c"], ["c", "d", "only when measured"]], "t": "diagram", "id": "dg-13_2-03-3"},
+
 
 
 
@@ -241,6 +244,8 @@ CREATE TABLE users (
 
     { t: "h2", n: "04", text: "Referential integrity", id: "fks" },
 
+    {"kind": "flow", "title": "`CASCADE` on the wrong relationship is a data-loss incident", "caption": "**Deleting a customer should not silently delete their orders** — an order is a financial record with a life of its own, and `ON DELETE CASCADE` there turns one careless `DELETE` into an audit problem. The useful rule: **cascade down an ownership relationship where the child cannot exist without the parent — an order line without an order — and `RESTRICT` everywhere else, so the delete fails and somebody has to decide.** And `SET NULL` is the third option worth knowing: **it keeps the child and forgets the link**, which is right for an optional reference.", "cols": 3, "nodes": [{"id": "c", "label": "CASCADE a customer -> their orders", "sub": "a data-loss incident", "tone": "crit"}, {"id": "o", "label": "An order outlives the customer row", "sub": "it is a financial record", "tone": "crit"}, {"id": "d", "label": "CASCADE only down ownership", "sub": "an order line without an order", "tone": "good"}, {"id": "r", "label": "RESTRICT everywhere else", "sub": "so somebody has to decide", "tone": "violet"}, {"id": "n", "label": "SET NULL keeps the child", "sub": "for an optional reference", "tone": "good"}], "edges": [["c", "o"], ["o", "d"], ["d", "r"], ["r", "n"]], "t": "diagram", "id": "dg-13_2-04-1"},
+
     { t: "code", lang: "sql", title: "the delete behaviour is a design decision", code: `
 -- CASCADE: the child cannot exist without the parent. Deleting an
 -- order deletes its lines, which is correct -- a line item alone is
@@ -287,6 +292,8 @@ CREATE INDEX CONCURRENTLY order_items_order_id_idx
     ]},
 
     { t: "h2", n: "05", text: "Indexes, briefly", id: "indexes" },
+
+    {"kind": "trace", "title": "The leading-column rule is the one that catches people", "caption": "**An index on `(account_id, created_at)` does nothing for a query filtering on `created_at` alone** — a composite index is usable left to right, so the leading column must appear in the predicate. Which is why **two single-column indexes are not equivalent to one composite index, and one composite index is not equivalent to two.** The second row is the companion rule: **the index can satisfy `account_id` alone, so a separate index on it is redundant** — and an unused index still costs a write on every insert.", "left": "query filters on", "codeW": 170, "vars": ["index (account_id, created_at)"], "steps": [{"code": "account_id AND created_at", "state": ["used fully"], "tone": "good"}, {"code": "account_id alone", "state": ["used - the leading column"], "changed": [0], "tone": "good"}, {"code": "created_at alone", "state": ["NOT USED at all"], "changed": [0], "tone": "crit"}, {"code": "a separate index on account_id", "state": ["redundant - and costs a write"], "changed": [0], "tone": "warn"}], "t": "diagram", "id": "dg-13_2-05-2"},
 
     { t: "code", lang: "sql", title: "the four rules worth knowing now", code: `
 -- 1. COLUMN ORDER IN A COMPOSITE INDEX IS NOT ARBITRARY.

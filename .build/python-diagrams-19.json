@@ -1,0 +1,212 @@
+{
+ "13.1": [
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Three ranking functions on the values 10, 10, 9",
+         "caption": "**`row_number()` gives 1, 2, 3 — `rank()` gives 1, 1, 3 — `dense_rank()` gives 1, 1, 2.** Which is the whole distinction and the reason the wrong one is a quiet bug: **`row_number()` breaks ties arbitrarily, so “top 3 by score” silently drops one of two equal scores and the result is non-deterministic between runs.** Use `row_number()` when you need exactly one row per group, **`rank()` when the gap after a tie is meaningful, and `dense_rank()` when it is not.**",
+         "left": "function", "codeW": 150,
+         "vars": ["on 10, 10, 9", "use when"],
+         "steps": [
+          {"code": "row_number()", "state": ["1, 2, 3", "exactly one row per group"], "tone": "good"},
+          {"code": "rank()", "state": ["1, 1, 3", "the gap after a tie matters"], "changed": [0, 1], "tone": "good"},
+          {"code": "dense_rank()", "state": ["1, 1, 2", "it does not"], "changed": [0, 1], "tone": "good"},
+          {"code": "row_number() for 'top 3'", "state": ["drops one of two equal scores", "non-deterministic between runs"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "05",
+   "d": {"kind": "flow",
+         "title": "Each CTE is a named step you can read, test and reason about",
+         "caption": "**The equivalent nested-subquery version is the same work and unreadable** — so this is a legibility argument rather than a performance one, and worth being precise about: **on PostgreSQL a plain CTE is no longer an optimisation fence, so the planner inlines it and the two forms usually produce the same plan.** Which removes the old reason to avoid them. The remaining practical advantage: **you can run a single CTE on its own to see what it returns**, where a nested subquery has to be extracted by hand first.",
+         "cols": 3,
+         "nodes": [
+          {"id": "n", "label": "Nested subqueries", "sub": "the same work, unreadable", "tone": "crit"},
+          {"id": "c", "label": "A CTE is a named step", "sub": "read top to bottom", "tone": "good"},
+          {"id": "p", "label": "And no longer a planner fence", "sub": "on modern PostgreSQL", "tone": "violet"},
+          {"id": "s", "label": "So the plans usually match", "sub": "the old objection is gone", "tone": "good"},
+          {"id": "t", "label": "And you can run one CTE alone", "sub": "to see what it returns", "tone": "violet"}],
+         "edges": [["n", "c"], ["c", "p"], ["p", "s"], ["s", "t"]]}}
+ ],
+
+ "13.2": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Five key choices, and UUID v7 is usually the right default",
+         "caption": "**An auto-increment `BIGINT` is compact and index-friendly, and it leaks your volume — order 4,281 tells a competitor how many orders you have had.** A v4 UUID leaks nothing and **fragments the index, because random inserts land everywhere in the B-tree.** **v7 is time-ordered, so it keeps the UUID benefits with sequential locality** — which is why it is the default to reach for. And the warning on natural keys is the one that costs most to fix: **natural keys change, and then so does every reference to them.**",
+         "left": "key", "codeW": 150,
+         "vars": ["example", "trade-off"],
+         "steps": [
+          {"code": "auto-increment BIGINT", "state": ["1, 2, 3", "leaks volume; needs a round trip"], "tone": "warn"},
+          {"code": "UUID v4", "state": ["random", "fragments the index"], "changed": [0, 1], "tone": "warn"},
+          {"code": "UUID v7", "state": ["time-ordered", "the best default"], "changed": [0, 1], "tone": "violet"},
+          {"code": "a natural key", "state": ["email, isbn", "they CHANGE, and so does every ref"], "changed": [0, 1], "tone": "crit"},
+          {"code": "composite", "state": ["(order_id, line_no)", "honest; awkward in ORMs and URLs"], "changed": [0, 1], "tone": "good"}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "`CASCADE` on the wrong relationship is a data-loss incident",
+         "caption": "**Deleting a customer should not silently delete their orders** — an order is a financial record with a life of its own, and `ON DELETE CASCADE` there turns one careless `DELETE` into an audit problem. The useful rule: **cascade down an ownership relationship where the child cannot exist without the parent — an order line without an order — and `RESTRICT` everywhere else, so the delete fails and somebody has to decide.** And `SET NULL` is the third option worth knowing: **it keeps the child and forgets the link**, which is right for an optional reference.",
+         "cols": 3,
+         "nodes": [
+          {"id": "c", "label": "CASCADE a customer -> their orders", "sub": "a data-loss incident", "tone": "crit"},
+          {"id": "o", "label": "An order outlives the customer row", "sub": "it is a financial record", "tone": "crit"},
+          {"id": "d", "label": "CASCADE only down ownership", "sub": "an order line without an order", "tone": "good"},
+          {"id": "r", "label": "RESTRICT everywhere else", "sub": "so somebody has to decide", "tone": "violet"},
+          {"id": "n", "label": "SET NULL keeps the child", "sub": "for an optional reference", "tone": "good"}],
+         "edges": [["c", "o"], ["o", "d"], ["d", "r"], ["r", "n"]]}},
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "The leading-column rule is the one that catches people",
+         "caption": "**An index on `(account_id, created_at)` does nothing for a query filtering on `created_at` alone** — a composite index is usable left to right, so the leading column must appear in the predicate. Which is why **two single-column indexes are not equivalent to one composite index, and one composite index is not equivalent to two.** The second row is the companion rule: **the index can satisfy `account_id` alone, so a separate index on it is redundant** — and an unused index still costs a write on every insert.",
+         "left": "query filters on", "codeW": 170,
+         "vars": ["index (account_id, created_at)"],
+         "steps": [
+          {"code": "account_id AND created_at", "state": ["used fully"], "tone": "good"},
+          {"code": "account_id alone", "state": ["used - the leading column"], "changed": [0], "tone": "good"},
+          {"code": "created_at alone", "state": ["NOT USED at all"], "changed": [0], "tone": "crit"},
+          {"code": "a separate index on account_id", "state": ["redundant - and costs a write"], "changed": [0], "tone": "warn"}]}}
+ ],
+
+ "13.3": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Four row factories, and `class_row` fails early when a column is renamed",
+         "caption": "**`class_row` is the one to reach for in application code: it gives type checking, autocompletion, and an early failure when the query and the class disagree** — a renamed column raises at the row factory rather than producing a `None` that travels. The default tuple is the one to avoid in anything but a script: **`row[3]` rots the moment a column is inserted**, and nothing tells you. And `dict_row` is the middle ground — **named access with no schema**, so a typo'd key is still a `KeyError` at use.",
+         "left": "row factory", "codeW": 150,
+         "vars": ["access", "when the query changes"],
+         "steps": [
+          {"code": "default (tuple)", "state": ["row[3]", "silently wrong"], "tone": "crit"},
+          {"code": "dict_row", "state": ["row['total']", "KeyError at use"], "changed": [0, 1], "tone": "good"},
+          {"code": "namedtuple_row", "state": ["row.total", "AttributeError at use"], "changed": [0, 1], "tone": "good"},
+          {"code": "class_row(Order)", "state": ["row.total, typed", "fails AT the row factory"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "A bare `except Exception` turns four different situations into one 500",
+         "caption": "**A unique violation is a 409 the user can act on; a foreign-key violation is a 400; a serialisation failure is a retry; and a connection error is a 503 with a backoff.** Collapsing all four into a 500 throws away the only information that distinguishes them — **and the client cannot tell “you sent a duplicate” from “our database is down”.** The practical form is to catch the driver's specific exception types, **or inspect `e.sqlstate`, which is a documented five-character code and stable across versions.**",
+         "left": "database error", "codeW": 170,
+         "vars": ["what it means", "the right response"],
+         "steps": [
+          {"code": "unique violation", "state": ["a duplicate the user sent", "409, actionable"], "tone": "good"},
+          {"code": "foreign-key violation", "state": ["a reference that does not exist", "400"], "changed": [0, 1], "tone": "good"},
+          {"code": "serialisation failure", "state": ["a concurrent write won", "retry the transaction"], "changed": [0, 1], "tone": "good"},
+          {"code": "connection error", "state": ["the database is unreachable", "503, with backoff"], "changed": [0, 1], "tone": "good"},
+          {"code": "except Exception", "state": ["all four", "500 - and no way to tell"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "13.4": [
+  {"after": "01",
+   "d": {"kind": "flow",
+         "title": "A transaction spans exactly the writes that must agree, and nothing slow",
+         "caption": "**External calls belong outside it — or the transaction is open for the duration of someone else's outage, holding locks and a pooled connection while a payment gateway times out.** Which is the rule and its reason in one sentence. The practical shape: **validate and call out first, then open the transaction, write, and commit**; if the external call must happen after the write, **commit and then do it, accepting that the two can disagree** — and reconcile, rather than holding a transaction open to pretend they cannot.",
+         "cols": 3,
+         "nodes": [
+          {"id": "e", "label": "An HTTP call inside the transaction", "sub": "a payment gateway timing out", "tone": "crit"},
+          {"id": "h", "label": "Locks and a connection held meanwhile", "sub": "for someone else's outage", "tone": "crit"},
+          {"id": "o", "label": "Call out first, then open it", "sub": "validate outside", "tone": "good"},
+          {"id": "c", "label": "Or commit, then call", "sub": "accepting they can disagree", "tone": "good"},
+          {"id": "r", "label": "And reconcile", "sub": "rather than pretending", "tone": "violet"}],
+         "edges": [["e", "h"], ["h", "o"], ["o", "c"], ["c", "r"]]}},
+  {"after": "05",
+   "d": {"kind": "flow",
+         "title": "A retried transaction re-runs everything inside it",
+         "caption": "**So anything with an external effect must be outside the transaction — or idempotent, which is 14.3's territory and the harder of the two options.** The retry itself is narrow: **retry on a serialisation failure or a deadlock, which the database tells you about by code, and never on a constraint violation**, because that will fail identically every time. And the bound matters: **a few attempts with jitter, because a retry storm under contention makes the contention worse** — every retrying transaction is still competing for the same rows.",
+         "cols": 3,
+         "nodes": [
+          {"id": "r", "label": "The retry re-runs the whole block", "sub": "every statement inside it", "tone": "accent"},
+          {"id": "e", "label": "So an email inside it sends twice", "sub": "move it out, or make it idempotent", "tone": "crit"},
+          {"id": "s", "label": "Retry on serialisation failure or deadlock", "sub": "the database says which by code", "tone": "good"},
+          {"id": "c", "label": "Never on a constraint violation", "sub": "it will fail identically", "tone": "crit"},
+          {"id": "j", "label": "A few attempts, with jitter", "sub": "or the contention gets worse", "tone": "violet"}],
+         "edges": [["r", "e"], ["e", "s"], ["s", "c"], ["c", "j"]]}}
+ ],
+
+ "13.5": [
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "The loading strategy is a per-query decision, and the default is the N+1",
+         "caption": "**`lazy=\"select\"` is the default and it is the N+1 generator: each attribute access issues another query, at a point in the code far from the one that loaded the parent.** `selectinload` issues one extra query with an `IN` clause — **the right default for a collection** — and `joinedload` uses one query with a join, **which is right for a many-to-one and wrong for a collection, because the parent's columns are duplicated per child row.** And `raise` is the one worth knowing about: **it turns an accidental lazy load into an exception**, so the N+1 fails loudly in tests.",
+         "left": "strategy", "codeW": 150,
+         "vars": ["queries", "right for"],
+         "steps": [
+          {"code": "lazy='select' (the default)", "state": ["1 + N", "almost nothing"], "tone": "crit"},
+          {"code": "selectinload", "state": ["2, the second with IN", "collections"], "changed": [0, 1], "tone": "violet"},
+          {"code": "joinedload", "state": ["1, with a join", "many-to-one"], "changed": [0, 1], "tone": "good"},
+          {"code": "joinedload on a collection", "state": ["1, with duplicated parent columns", "wrong"], "changed": [0, 1], "tone": "warn"},
+          {"code": "lazy='raise'", "state": ["an exception", "making the N+1 loud in tests"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "05",
+   "d": {"kind": "flow",
+         "title": "`select(Order.id, Order.total)` is Core semantics through the ORM's session",
+         "caption": "**No instances are constructed, no identity-map entries are made, and nothing is tracked for changes** — which is most of what the ORM costs, removed by naming columns instead of a class. Worth knowing because it is the cheapest escape hatch: **the session, the connection and the transaction are all still yours**, so a reporting query inside an ORM application does not need a second access layer. The other two costs the ORM imposes: **a unit-of-work flush whose ordering you do not control, and an identity map that keeps every loaded row alive for the session's life.**",
+         "cols": 3,
+         "nodes": [
+          {"id": "s", "label": "select(Order.id, Order.total)", "sub": "columns, not a class", "tone": "violet"},
+          {"id": "n", "label": "No instances, no identity map, no tracking", "sub": "most of the cost, gone", "tone": "good"},
+          {"id": "t", "label": "Same session, connection, transaction", "sub": "no second access layer", "tone": "good"},
+          {"id": "f", "label": "And the costs it leaves elsewhere", "sub": "flush ordering you do not control", "tone": "warn"},
+          {"id": "i", "label": "Plus an identity map holding every row", "sub": "for the session's whole life", "tone": "warn"}],
+         "edges": [["s", "n"], ["n", "t"], ["f", "i"]]}}
+ ],
+
+ "13.6": [
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "The third pattern works even when the ORM cannot help",
+         "caption": "**Collect the keys, fetch them in one query, index them by key, then attach** — four steps, no eager-loading configuration, and it works across an HTTP boundary or a second data store where `selectinload` cannot reach. Which is why it is the general one: **the first two fixes are the ORM telling the database to do the work, and this one is you doing it.** The measured shape is the same in all three: **1 + N queries become 2**, and the second is a single `IN` over a de-duplicated key list.",
+         "left": "fix", "codeW": 170,
+         "vars": ["queries", "works when"],
+         "steps": [
+          {"code": "selectinload / joinedload", "state": ["2 or 1", "one database, one session"], "tone": "good"},
+          {"code": "a JOIN written by hand", "state": ["1", "you are writing SQL anyway"], "changed": [0, 1], "tone": "good"},
+          {"code": "collect keys, fetch, index, attach", "state": ["2", "ALWAYS - including across HTTP"], "changed": [0, 1], "tone": "violet"},
+          {"code": "all three replace", "state": ["1 + N", "-"], "changed": [0, 1], "tone": "accent"}]}},
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "Six queries where adding an index is the wrong instinct",
+         "caption": "**`count(*)` must visit every row to check visibility, so no index makes it cheap — use an estimate from `pg_class` or keep a counter table.** The last row is the one that surprises: **a `WHERE status = 'active'` matching 60% of the table will not use an index, because random heap reads for most of the table are slower than a sequential scan** — and the fix is a **partial index on the rare value** rather than a better index on the common one. And the general shape: **three of the six are fixed by returning less, not by seeking faster.**",
+         "left": "query", "codeW": 160,
+         "vars": ["why an index does not help", "what does"],
+         "steps": [
+          {"code": "count(*) on a large table", "state": ["every row, for visibility", "pg_class estimate, or a counter"], "tone": "crit"},
+          {"code": "OFFSET 100000", "state": ["it counts past every skipped row", "cursor pagination (12.6)"], "changed": [0, 1], "tone": "crit"},
+          {"code": "ORDER BY random()", "state": ["sorts the entire table", "TABLESAMPLE, or a random id"], "changed": [0, 1], "tone": "crit"},
+          {"code": "LIKE '%term%'", "state": ["no prefix for a B-tree to seek", "a trigram index, or full-text"], "changed": [0, 1], "tone": "crit"},
+          {"code": "WHERE status = 'active' at 60%", "state": ["a sequential scan is cheaper", "a PARTIAL index on the rare value"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "13.7": [
+  {"after": "01",
+   "d": {"kind": "flow",
+         "title": "Autogenerate is a draft, not a migration",
+         "caption": "**It misses server defaults, enum changes, index method choices and anything about data** — so the generated file is a starting point you are expected to edit, and treating it as output is how a migration drops a column it should have renamed. The two habits that follow: **read every generated migration before committing it**, and **write the data migration by hand**, because autogenerate compares schemas and has no idea a column's values need moving. And the one that saves an outage: **test the downgrade**, since the first time you need it will be the worst time to discover it was never run.",
+         "cols": 3,
+         "nodes": [
+          {"id": "a", "label": "Autogenerate compares schemas", "sub": "and nothing else", "tone": "accent"},
+          {"id": "m", "label": "Misses defaults, enums, index methods", "sub": "and all data changes", "tone": "crit"},
+          {"id": "r", "label": "So read every generated file", "sub": "it is a draft", "tone": "good"},
+          {"id": "d", "label": "Write data migrations by hand", "sub": "it cannot see values", "tone": "good"},
+          {"id": "t", "label": "And test the downgrade", "sub": "before you need it", "tone": "violet"}],
+         "edges": [["a", "m"], ["m", "r"], ["r", "d"], ["d", "t"]]}}
+ ],
+
+ "13.8": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Two scenarios with the same cause: something scoped wrongly",
+         "caption": "**A module-level `session = Session()` produces random `InvalidRequestError`s, objects from one user's request appearing in another's response, and sporadic deadlocks** — because a `Session` is a unit of work for one request and sharing it shares its identity map. The pool exhaustion is the mirror image: **requests hang for ~30 s and then fail with `QueuePool limit of size 5 overflow 10 reached`, because connections were checked out and never returned.** The rule in one line: **the engine is global and the session is per request.**",
+         "left": "symptom", "codeW": 170,
+         "vars": ["diagnosis", "fix"],
+         "steps": [
+          {"code": "random InvalidRequestError", "state": ["one Session shared across requests", "one per request"], "tone": "crit"},
+          {"code": "another user's objects in a response", "state": ["a shared identity map", "same fix"], "changed": [0, 1], "tone": "crit"},
+          {"code": "hangs ~30s, then QueuePool limit", "state": ["connections never returned", "a with block, or a dependency"], "changed": [0, 1], "tone": "crit"},
+          {"code": "the rule", "state": ["engine global, session per request", "-"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "The async ORM removes the safety net that hid the decision",
+         "caption": "**“Lazy loading just works” is what the sync ORM gave you, and the async one does not — so the loading strategy becomes a per-query decision you have to make.** Which sounds like a regression and is closer to an improvement: **in sync code the same laziness was issuing the same N+1, silently, and the async version raises instead.** The general lesson behind the grouped scenarios: **bound everything — the pool, the statement timeout, the result set and the retry count** — because every one of them is unbounded by default.",
+         "cols": 3,
+         "nodes": [
+          {"id": "s", "label": "Sync: lazy loading 'just works'", "sub": "and issues the N+1 silently", "tone": "warn"},
+          {"id": "a", "label": "Async: it raises instead", "sub": "no safety net", "tone": "violet"},
+          {"id": "d", "label": "So the strategy is a per-query decision", "sub": "which it always was", "tone": "good"},
+          {"id": "b", "label": "And bound everything", "sub": "pool, timeout, result set, retries", "tone": "violet"},
+          {"id": "u", "label": "All four are unbounded by default", "sub": "which is the pattern", "tone": "crit"}],
+         "edges": [["s", "a"], ["a", "d"], ["d", "b"], ["b", "u"]]}}
+ ]
+}

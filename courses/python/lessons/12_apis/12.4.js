@@ -48,6 +48,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "where each parameter comes from", code: `
 from typing import Annotated
 from fastapi import FastAPI, Header, Path, Query
@@ -180,6 +181,7 @@ def create_order(payload: OrderCreate, response: Response) -> OrderPublic:
 
     {"kind": "flow", "title": "The breaking-change check is the one worth adding first", "caption": "**`oasdiff` in CI turns “we think this is backward compatible” into a build that fails when it is not** — which is the only mechanism in the lesson that catches a removed field or a narrowed type before a client does. The generated schema is the input that makes it possible: **because the models *are* the contract, the OpenAPI document cannot drift from the code**, so a diff between two commits' schemas is a diff of the real API. **And the client generators are downstream of the same file**, so a breaking change shows up as a compile error in a typed client.", "cols": 3, "nodes": [{"id": "m", "label": "The models ARE the contract", "sub": "so the schema cannot drift", "tone": "good"}, {"id": "s", "label": "A generated OpenAPI document", "sub": "per commit", "tone": "good"}, {"id": "o", "label": "oasdiff in CI", "sub": "compares it to the last release", "tone": "violet"}, {"id": "f", "label": "A removed field fails the build", "sub": "not a client", "tone": "violet"}, {"id": "c", "label": "And a typed client gets a compile error", "sub": "generated from the same file", "tone": "good"}], "edges": [["m", "s"], ["s", "o"], ["o", "f"], ["f", "c"]], "t": "diagram", "id": "dg-12_4-03-0"},
 
+
     { t: "code", lang: "python", title: "OpenAPI is an artefact, not a website", code: `
 # The interactive pages are the least interesting use:
 #   /docs      Swagger UI
@@ -262,6 +264,7 @@ class OrderPublic(BaseModel):
 
 
 
+
     { t: "ladder",
       title: "An endpoint that queries a database",
       rungs: [
@@ -304,6 +307,7 @@ async def list_orders(
     { t: "h2", n: "05", text: "Structure", id: "structure" },
 
     {"kind": "flow", "title": "`lifespan` replaced the startup and shutdown events", "caption": "**One async context manager around the application's whole life: everything before the `yield` is startup and everything after is shutdown** — which is 5.8's context-manager shape at application scope, and it fixes the thing the old decorators could not express: **a resource whose setup and teardown belong together, like a connection pool, is now one function rather than two that must be kept in sync.** And the ordering guarantee matters: **shutdown runs in reverse, so the pool closes before the thing that registered it.**", "cols": 3, "nodes": [{"id": "l", "label": "lifespan: one async context manager", "sub": "for the whole application", "tone": "violet"}, {"id": "y", "label": "Before yield is startup", "sub": "after it is shutdown", "tone": "good"}, {"id": "p", "label": "So a pool is ONE function", "sub": "not two kept in sync", "tone": "good"}, {"id": "r", "label": "And shutdown runs in reverse", "sub": "5.8's ExitStack ordering", "tone": "good"}, {"id": "o", "label": "on_event could not express that", "sub": "which is why it was replaced", "tone": "accent"}], "edges": [["l", "y"], ["y", "p"], ["p", "r"], ["r", "o"]], "t": "diagram", "id": "dg-12_4-05-1"},
+
 
     { t: "code", lang: "python", title: "routers, and the lifespan for expensive objects", code: `
 # app/api/orders.py

@@ -47,6 +47,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "watch when each line executes", code: `
 def counter(n: int):
     print("  body starts")
@@ -193,6 +194,7 @@ def naturals():
 
 
 
+
     { t: "p", text: "The real value is composition. Each stage pulls one item from the stage before it, so a chain of generators processes a stream in constant memory — no stage ever holds the whole dataset." },
 
     { t: "code", lang: "python", title: "a log-processing pipeline", code: `
@@ -241,6 +243,7 @@ def parse(lines) -> list[dict]:
     { t: "h2", n: "03", text: "yield from", id: "yield-from" },
 
     {"kind": "trace", "title": "`yield from` delegates, and the recursion flattens a tree in four lines", "caption": "**`yield from sub` yields every value the sub-generator produces, so a recursive walk needs no accumulator and no loop** — the output `['root', 'a', 'a1', 'b']` is a pre-order traversal with one statement per level. The part the equivalent `for` loop cannot do: **`yield from` also forwards `send`, `throw` and the sub-generator's return value**, so a delegating generator is transparent to its caller. **Which is why it exists at all — the loop version is equivalent only for plain iteration.**", "left": "what it does", "codeW": 180, "vars": ["result"], "steps": [{"code": "yield from a sub-generator", "state": ["yields everything it produces"], "tone": "good"}, {"code": "recursive walk of a tree", "state": ["['root', 'a', 'a1', 'b']"], "changed": [0], "tone": "good", "note": "no accumulator"}, {"code": "and it forwards send and throw", "state": ["the delegate is transparent"], "changed": [0], "tone": "violet"}, {"code": "a for loop instead", "state": ["equivalent only for plain iteration"], "changed": [0], "tone": "warn"}], "t": "diagram", "id": "dg-5_7-03-0"},
+
 
 
 
@@ -310,6 +313,7 @@ def outer(groups):
 
 
 
+
     { t: "code", lang: "python", title: "the `with` inside a generator", code: `
 def read_lines(path: Path) -> Iterator[str]:
     with path.open(encoding="utf-8") as handle:
@@ -354,6 +358,7 @@ with path.open(encoding="utf-8") as handle:
     { t: "h2", n: "05", text: "When a generator is wrong", id: "when-wrong" },
 
     {"kind": "compare", "title": "Five tests, and three of them are about what you do next", "caption": "**The first row is the one people quote and the middle three are the ones that actually decide it**, because they are about consumption rather than size. **You consume it once, you only iterate, early exit is likely** — all three favour a generator and none of them mention how big the data is. And the last row is the sharpest: **you cannot sort or reverse a generator without materialising it**, so a pipeline that ends in `sorted()` has already paid for the list and should probably have been one.", "columns": [{"title": "A generator", "tone": "violet", "items": ["the source is large or unbounded", "you consume it once", "you only iterate", "early exit is likely", "stages compose into a pipeline"]}, {"title": "A list", "tone": "good", "items": ["the result is small and known", "you need it more than once", "you need len(), indexing or slicing", "you will consume all of it anyway", "you need to sort or reverse it"]}], "t": "diagram", "id": "dg-5_7-05-2"},
+
 
 
 

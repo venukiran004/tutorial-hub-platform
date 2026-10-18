@@ -52,6 +52,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "What a call actually does",
       caption: "A call binds arguments to parameters in a fresh local namespace, runs the body, and returns. Falling off the end returns `None` — there is no such thing as a function that returns nothing.",
@@ -207,6 +208,7 @@ print(error["message"])       # TypeError: 'NoneType' object is not subscriptabl
 
 
 
+
     { t: "code", lang: "python", title: "the signal that a function is doing too much", code: `
 # Three jobs: fetch, transform, persist. Untestable without a database,
 # and unusable if you only want one of the three.
@@ -260,6 +262,7 @@ def process_orders(day: date) -> dict[str, Decimal]:
     { t: "h2", n: "04", text: "Docstrings", id: "docstrings" },
 
     {"kind": "trace", "title": "How much docstring, decided by who reads it", "caption": "**A docstring that restates the signature earns nothing — the signature is already there, and type hints say the types.** So the amount is a function of the audience: **a short private helper needs a one-line summary or nothing at all if the name and hints say it; a public API needs Summary, Args, Returns and Raises, because callers cannot read your source.** And the two rows that always need text regardless of size: **a non-obvious constraint — idempotency, thread-safety, ordering, units — and anything surprising, where you document *why* rather than *what*.**", "left": "the function", "codeW": 190, "vars": ["what it needs"], "steps": [{"code": "short, obvious, private", "state": ["one line, or nothing"], "tone": "good"}, {"code": "public API", "state": ["Summary, Args, Returns, Raises"], "changed": [0], "tone": "violet"}, {"code": "a non-obvious constraint", "state": ["THAT constraint, always"], "changed": [0], "tone": "violet", "note": "units, ordering, thread-safety"}, {"code": "surprising behaviour", "state": ["why, not what"], "changed": [0], "tone": "violet"}, {"code": "restating the signature", "state": ["worth nothing"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-3_1-04-2"},
+
 
 
 

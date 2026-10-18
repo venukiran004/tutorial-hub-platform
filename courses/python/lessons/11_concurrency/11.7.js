@@ -48,6 +48,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "What happens to the siblings when one fails",
       caption: "`gather` reports the first exception and leaves the others running, so a dead dependency costs you three requests instead of one. A `TaskGroup` cancels the siblings and raises everything that went wrong together.",
@@ -168,6 +169,7 @@ def _log_if_failed(task: asyncio.Task) -> None:
     { t: "h2", n: "03", text: "Cancellation", id: "cancellation" },
 
     {"kind": "steps", "title": "Cancellation is cooperative", "caption": "task.cancel() schedules a CancelledError to be raised at the task's next await. The task can clean up in finally, but it must not swallow the error, or the caller waits forever.", "items": [{"label": "task.cancel()", "desc": "marks the task; nothing happens yet", "tone": "accent"}, {"label": "the task reaches an await", "desc": "CancelledError is raised there", "tone": "warn"}, {"label": "finally: blocks run", "desc": "close connections, release locks — keep it short", "tone": "good"}, {"label": "the error propagates", "desc": "except CancelledError: pass is the bug — re-raise", "tone": "crit"}], "t": "diagram", "id": "dg-11_7-03-2"},
+
 
 
 
@@ -317,6 +319,7 @@ async def call(url: str):
     { t: "h2", n: "05", text: "Bridging sync and async", id: "bridging" },
 
     {"kind": "trace", "title": "Five bridges, and `asyncio.run` inside a running loop raises", "caption": "**`asyncio.run` creates and closes a loop, so calling it from inside a coroutine is the error `asyncio.run() cannot be called from a running event loop`** — use it once, at the entry point. The workhorse is the second row: **`await asyncio.to_thread(fn)` is one line around a legacy blocking call you cannot replace.** And the third is the distinction people get wrong: **CPU-bound work needs a *process* pool, because pure Python in a thread contends for the GIL** — so `to_thread` on a tight numeric loop buys nothing.", "left": "direction", "codeW": 160, "vars": ["use", "note"], "steps": [{"code": "sync -> async, at the top", "state": ["asyncio.run(main())", "once; never inside a loop"], "tone": "good"}, {"code": "async -> a blocking function", "state": ["await asyncio.to_thread(fn)", "the workhorse"], "changed": [0, 1], "tone": "violet"}, {"code": "async -> CPU-bound work", "state": ["run_in_executor(process_pool, fn)", "a PROCESS - the GIL"], "changed": [0, 1], "tone": "violet"}, {"code": "sync -> async, from inside a loop", "state": ["run_coroutine_threadsafe", "returns a futures.Future"], "changed": [0, 1], "tone": "good"}, {"code": "a callback from another thread", "state": ["loop.call_soon_threadsafe(fn)", "the ONLY safe loop method"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-11_7-05-0"},
+
 
 
     { t: "table",

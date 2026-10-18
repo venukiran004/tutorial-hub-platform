@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Where the boundary goes", id: "boundary" },
 
+    {"kind": "flow", "title": "A transaction spans exactly the writes that must agree, and nothing slow", "caption": "**External calls belong outside it — or the transaction is open for the duration of someone else's outage, holding locks and a pooled connection while a payment gateway times out.** Which is the rule and its reason in one sentence. The practical shape: **validate and call out first, then open the transaction, write, and commit**; if the external call must happen after the write, **commit and then do it, accepting that the two can disagree** — and reconcile, rather than holding a transaction open to pretend they cannot.", "cols": 3, "nodes": [{"id": "e", "label": "An HTTP call inside the transaction", "sub": "a payment gateway timing out", "tone": "crit"}, {"id": "h", "label": "Locks and a connection held meanwhile", "sub": "for someone else's outage", "tone": "crit"}, {"id": "o", "label": "Call out first, then open it", "sub": "validate outside", "tone": "good"}, {"id": "c", "label": "Or commit, then call", "sub": "accepting they can disagree", "tone": "good"}, {"id": "r", "label": "And reconcile", "sub": "rather than pretending", "tone": "violet"}], "edges": [["e", "h"], ["h", "o"], ["o", "c"], ["c", "r"]], "t": "diagram", "id": "dg-13_4-01-0"},
+
     { t: "code", lang: "python", title: "the boundary is the invariant", code: `
 # WRONG. Two transactions. If the second fails, money has left one
 # account and arrived nowhere. The database was consistent at every
@@ -60,7 +62,8 @@ def checkout(order_id):
 
     { t: "h2", n: "02", text: "Isolation levels", id: "isolation" },
 
-    {"kind": "matrix", "title": "Isolation levels and the anomalies they allow", "caption": "Higher isolation prevents more anomalies and costs more locking or retries. PostgreSQL's default is READ COMMITTED; SERIALIZABLE may abort a transaction that must then be retried.", "rows": ["READ UNCOMMITTED", "READ COMMITTED", "REPEATABLE READ", "SERIALIZABLE"], "cols": ["dirty read", "non-repeatable read", "phantom read", "anomaly"], "cells": [[{"text": "possible", "tone": "crit"}, {"text": "possible", "tone": "crit"}, {"text": "possible", "tone": "crit"}, {"text": "possible", "tone": "crit"}], [{"text": "prevented", "tone": "good"}, {"text": "possible", "tone": "warn"}, {"text": "possible", "tone": "warn"}, {"text": "possible", "tone": "warn"}], [{"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}, {"text": "pg: prevented", "tone": "good"}, {"text": "possible", "tone": "warn"}], [{"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}, {"text": "prevented — may abort", "tone": "good"}]], "t": "diagram", "id": "dg-13_4-02-0"},
+    {"kind": "matrix", "title": "Isolation levels and the anomalies they allow", "caption": "Higher isolation prevents more anomalies and costs more locking or retries. PostgreSQL's default is READ COMMITTED; SERIALIZABLE may abort a transaction that must then be retried.", "rows": ["READ UNCOMMITTED", "READ COMMITTED", "REPEATABLE READ", "SERIALIZABLE"], "cols": ["dirty read", "non-repeatable read", "phantom read", "anomaly"], "cells": [[{"text": "possible", "tone": "crit"}, {"text": "possible", "tone": "crit"}, {"text": "possible", "tone": "crit"}, {"text": "possible", "tone": "crit"}], [{"text": "prevented", "tone": "good"}, {"text": "possible", "tone": "warn"}, {"text": "possible", "tone": "warn"}, {"text": "possible", "tone": "warn"}], [{"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}, {"text": "pg: prevented", "tone": "good"}, {"text": "possible", "tone": "warn"}], [{"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}, {"text": "prevented — may abort", "tone": "good"}]], "t": "diagram", "id": "dg-13_4-02-2"},
+
 
 
 
@@ -203,7 +206,8 @@ if result.rowcount == 0:
 
     { t: "h2", n: "04", text: "Deadlocks", id: "deadlocks" },
 
-    {"kind": "cycle", "title": "A database deadlock", "caption": "Transaction 1 updates row A then wants row B; transaction 2 updated B and wants A. The database detects the cycle, aborts one, and the application must retry. Updating rows in a consistent order prevents it.", "nodes": [{"label": "T1 locks row A", "tone": "accent"}, {"label": "T1 waits for row B", "tone": "warn"}, {"label": "T2 locks row B", "tone": "accent"}, {"label": "T2 waits for row A", "tone": "warn"}], "centre": "detected → one is aborted", "t": "diagram", "id": "dg-13_4-04-1"},
+    {"kind": "cycle", "title": "A database deadlock", "caption": "Transaction 1 updates row A then wants row B; transaction 2 updated B and wants A. The database detects the cycle, aborts one, and the application must retry. Updating rows in a consistent order prevents it.", "nodes": [{"label": "T1 locks row A", "tone": "accent"}, {"label": "T1 waits for row B", "tone": "warn"}, {"label": "T2 locks row B", "tone": "accent"}, {"label": "T2 waits for row A", "tone": "warn"}], "centre": "detected → one is aborted", "t": "diagram", "id": "dg-13_4-04-3"},
+
 
 
 
@@ -305,6 +309,8 @@ INSERT ... ON CONFLICT (key) DO UPDATE ...;
     ]},
 
     { t: "h2", n: "05", text: "Retrying correctly", id: "retry" },
+
+    {"kind": "flow", "title": "A retried transaction re-runs everything inside it", "caption": "**So anything with an external effect must be outside the transaction — or idempotent, which is 14.3's territory and the harder of the two options.** The retry itself is narrow: **retry on a serialisation failure or a deadlock, which the database tells you about by code, and never on a constraint violation**, because that will fail identically every time. And the bound matters: **a few attempts with jitter, because a retry storm under contention makes the contention worse** — every retrying transaction is still competing for the same rows.", "cols": 3, "nodes": [{"id": "r", "label": "The retry re-runs the whole block", "sub": "every statement inside it", "tone": "accent"}, {"id": "e", "label": "So an email inside it sends twice", "sub": "move it out, or make it idempotent", "tone": "crit"}, {"id": "s", "label": "Retry on serialisation failure or deadlock", "sub": "the database says which by code", "tone": "good"}, {"id": "c", "label": "Never on a constraint violation", "sub": "it will fail identically", "tone": "crit"}, {"id": "j", "label": "A few attempts, with jitter", "sub": "or the contention gets worse", "tone": "violet"}], "edges": [["r", "e"], ["e", "s"], ["s", "c"], ["c", "j"]], "t": "diagram", "id": "dg-13_4-05-1"},
 
     { t: "code", lang: "python", title: "the retry that SERIALIZABLE requires", code: `
 from psycopg import errors

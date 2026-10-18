@@ -31,6 +31,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "This runs nightly. It reads the day's orders, applies volume discounts, writes a summary file and emails anyone whose account went over its credit limit. It was written in an afternoon, it works, and everyone is slightly afraid of it." },
 
     { t: "code", lang: "python", title: "nightly.py — as found", code: `
@@ -80,6 +81,7 @@ run()
     { t: "h2", n: "02", text: "What is actually wrong", id: "wrong" },
 
     {"kind": "steps", "title": "Three passes over a script", "caption": "Correctness first, then the seams that make it testable, then what production needs. Doing them in this order means each pass has something stable to work on.", "items": [{"label": "Pass 1 — correctness", "desc": "the mutable default, the bare except, the wrong encoding, the off-by-one", "tone": "crit"}, {"label": "Pass 2 — seams", "desc": "pure functions, injected I/O, a main() that takes arguments", "tone": "accent"}, {"label": "Pass 3 — production", "desc": "logging, config, exit codes, idempotence, a test", "tone": "good"}], "t": "diagram", "id": "dg-5_12-02-4"},
+
 
 
 
@@ -202,6 +204,7 @@ def test_current_behaviour(tmp_path, monkeypatch):
 
 
 
+
     { t: "code", lang: "python", title: "nightly.py — after pass 1", code: `
 import csv
 import smtplib
@@ -289,6 +292,7 @@ def run():
       sub: "Behaviour must not change at all. If a test result moves, you made a mistake." },
 
     {"kind": "flow", "title": "Two tests in 0.01s, which is what the seams bought", "caption": "**`2 passed in 0.01s` — and the measurement that matters is the time, not the count.** The pass did not add tests to the script; **it separated the pure calculation from the I/O so that a test needs no file, no SMTP server and no clock.** Which is the general shape: **a function that reads, computes and writes can only be tested by providing all three, so the seam goes between computing and the rest.** And the discount rule is now testable **in isolation, at every boundary value, in milliseconds.**", "cols": 3, "nodes": [{"id": "o", "label": "Read, compute, write, email - one function", "sub": "testable only end to end", "tone": "crit"}, {"id": "s", "label": "Put the seam around the computing", "sub": "a pure function", "tone": "violet"}, {"id": "t", "label": "Now a test needs no file", "sub": "no SMTP, no clock", "tone": "good"}, {"id": "r", "label": "2 passed in 0.01s", "sub": "the time is the result", "tone": "good"}, {"id": "b", "label": "And every boundary value is cheap", "sub": "which is why they get tested", "tone": "teal"}], "edges": [["o", "s"], ["s", "t"], ["t", "r"], ["r", "b"]], "t": "diagram", "id": "dg-5_12-04-2"},
+
 
 
 
@@ -413,6 +417,7 @@ def test_report_is_stable_regardless_of_row_order():
     { t: "h2", n: "05", text: "Pass 3 — production", id: "pass3" },
 
     {"kind": "trace", "title": "Seven production changes, and four of them are about the next failure", "caption": "**A date argument, because any job derived from `date.today()` cannot be re-run or backfilled without editing the source.** Then three that are about what a crash leaves behind: **dated filenames, because `summary.txt` was overwritten every night including when today's was wrong; write-then-rename, because a crash mid-write leaves a truncated report that looks complete; and distinct exit codes, so a scheduler can retry a 2 in an hour, page on a 3, and merely log a 1.** And the quality gate: **silently skipping rows is right for a handful and wrong for a third of the file.**", "left": "change", "codeW": 170, "vars": ["what it prevents"], "steps": [{"code": "a date argument", "state": ["no re-run, no backfill without editing"], "tone": "violet"}, {"code": "dated output filenames", "state": ["yesterday's report gone"], "changed": [0], "tone": "crit"}, {"code": "write-then-rename", "state": ["a truncated report that looks complete"], "changed": [0], "tone": "crit"}, {"code": "distinct exit codes 0/1/2/3", "state": ["a scheduler that cannot tell them apart"], "changed": [0], "tone": "violet"}, {"code": "a quality gate on skipped rows", "state": ["quietly incomplete, instead of loud"], "changed": [0], "tone": "crit"}, {"code": "logging, not print", "state": ["no timestamps, levels or filters"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-5_12-05-3"},
+
 
 
 

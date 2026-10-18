@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table",
       head: ["Symptom in the test", "What the design is doing", "The change"],
       rows: [
@@ -42,6 +43,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Seams, without a framework", id: "seams" },
 
     {"kind": "flow", "title": "A default argument is a complete dependency-injection system", "caption": "**No container, no decorator, no framework** — a parameter with a default keeps every existing call site working and gives every test a substitution point. Which is 3.2's keyword argument doing the job a Java codebase needs a framework for, and it has one real advantage over a constructor: **the substitution is visible in the signature, so a reader can see what the function depends on without reading the body.** The limit is the usual one: **once three or four dependencies travel together, a constructor or a small object reads better.**", "cols": 3, "nodes": [{"id": "d", "label": "def charge(order, gateway=stripe)", "sub": "a default argument", "tone": "violet"}, {"id": "c", "label": "Every existing call site still works", "sub": "nothing to migrate", "tone": "good"}, {"id": "t", "label": "And every test has a substitution point", "sub": "pass a fake", "tone": "good"}, {"id": "s", "label": "Visible in the signature", "sub": "the dependency is documented", "tone": "violet"}, {"id": "l", "label": "Past three or four: a constructor", "sub": "or a small object", "tone": "accent"}], "edges": [["d", "c"], ["c", "t"], ["t", "s"], ["s", "l"]], "t": "diagram", "id": "dg-9_6-02-1"},
+
 
 
 
@@ -93,6 +95,7 @@ class ReportService:
     { t: "h2", n: "03", text: "Functional core, imperative shell", id: "core" },
 
     {"kind": "flow", "title": "Functional core, imperative shell", "caption": "Pure functions in the middle take data and return data — trivially testable. The thin shell around them does the I/O: reads the file, calls the API, writes the database. Tests target the core; a few integration tests cover the shell.", "cols": 3, "nodes": [{"id": "in", "label": "shell: read input", "sub": "file, HTTP, DB", "tone": "warn"}, {"id": "core", "label": "core: pure functions", "sub": "data in, data out — unit tested", "tone": "good"}, {"id": "out", "label": "shell: write output", "sub": "DB, API, file", "tone": "warn"}], "edges": [["in", "core"], ["core", "out"]], "t": "diagram", "id": "dg-9_6-03-3"},
+
 
 
 
@@ -250,6 +253,7 @@ def test_chase_rules(days_overdue, amount, expected):
     { t: "h2", n: "04", text: "Hidden dependencies", id: "hidden" },
 
     {"kind": "flow", "title": "All four have the same shape: something the function reaches out to grab", "caption": "**A module-level client, `datetime.now()`, `os.environ`, a global cache — all four are things the function reaches out to grab rather than being handed, and injecting each one is a small change that also documents the dependency.** The pattern for code that genuinely must touch the world is the humble object: **put the untestable part in a thin wrapper with no logic, and test the logic it calls.** Which is the honest limit — **you are not making I/O testable, you are making sure almost nothing depends on it.**", "cols": 3, "nodes": [{"id": "g", "label": "A module-level client", "sub": "grabbed, not handed", "tone": "crit"}, {"id": "t", "label": "datetime.now(), os.environ", "sub": "same shape", "tone": "crit"}, {"id": "i", "label": "Inject each one", "sub": "small, and it documents the dependency", "tone": "good"}, {"id": "h", "label": "Must touch the world? A humble object", "sub": "a thin wrapper with no logic", "tone": "violet"}, {"id": "l", "label": "Not making I/O testable", "sub": "making almost nothing depend on it", "tone": "teal"}], "edges": [["g", "i"], ["t", "i"], ["i", "h"], ["h", "l"]], "t": "diagram", "id": "dg-9_6-04-2"},
+
 
 
 

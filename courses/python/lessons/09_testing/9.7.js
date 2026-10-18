@@ -77,6 +77,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "testcontainers: the container is the fixture", code: `
 import pytest
 from sqlalchemy import create_engine
@@ -135,6 +136,7 @@ def db(engine):
     { t: "h2", n: "03", text: "HTTP, stubbed at the right layer", id: "http" },
 
     {"kind": "layers", "title": "Stub HTTP at the right layer", "caption": "Replace the transport, not your own client code: respx or a fake transport answers httpx's requests, so serialisation, retries and error handling still run for real.", "items": [{"label": "your service code", "sub": "runs for real", "tone": "good"}, {"label": "your API client wrapper", "sub": "runs for real — retries, parsing", "tone": "good"}, {"label": "httpx / requests", "sub": "runs for real", "tone": "accent"}, {"label": "transport → stubbed here", "sub": "respx / responses / a MockTransport", "tone": "warn"}, {"label": "the network", "sub": "never touched in a test", "tone": "crit"}], "t": "diagram", "id": "dg-9_7-03-3"},
+
 
 
 
@@ -257,6 +259,7 @@ def _no_network(request, monkeypatch):
 
 
 
+
     { t: "code", lang: "python", title: "state only what the test is about", code: `
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
@@ -318,6 +321,7 @@ def test_report_totals(seeded_db):
     { t: "h2", n: "05", text: "Keeping it fast enough to run", id: "fast" },
 
     {"kind": "trace", "title": "Six techniques, and the first one has no cost at all", "caption": "**A session-scoped container with a per-test transaction costs nothing — it is simply correct**, which is why it is first. `pytest-xdist` is near-linear across cores **and needs a database or schema per worker**, which is the whole setup cost. The row worth being honest about is the last: **reusing the container across runs saves two seconds per local run and leaves a stale schema when migrations change** — a trade that is fine until the day it costs you an hour of confusion.", "left": "technique", "codeW": 170, "vars": ["buys", "costs"], "steps": [{"code": "session container + per-test transaction", "state": ["the whole startup, once", "nothing - simply correct"], "tone": "violet"}, {"code": "pytest-xdist -n auto", "state": ["near-linear across cores", "a database per worker"], "changed": [0, 1], "tone": "good"}, {"code": "unit / integration / contract markers", "state": ["a fast default run", "discipline to mark them"], "changed": [0, 1], "tone": "good"}, {"code": "a template database restored per test", "state": ["faster than re-migrating", "Postgres-specific"], "changed": [0, 1], "tone": "good"}, {"code": "reusing the container (--reuse)", "state": ["two seconds a run", "a stale schema"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-9_7-05-2"},
+
 
 
 

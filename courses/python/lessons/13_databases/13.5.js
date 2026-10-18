@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Two layers", id: "layers" },
 
-    {"kind": "layers", "title": "SQLAlchemy's two layers", "caption": "Core builds and executes SQL as Python expressions over an engine and connection pool. The ORM sits on top, mapping classes to tables and tracking changes in a Session. You can use Core alone; the ORM always uses Core.", "items": [{"label": "ORM: mapped classes, Session, relationships", "sub": "unit of work, identity map", "tone": "good"}, {"label": "Core: select(), insert(), Table, Engine", "sub": "SQL as expressions", "tone": "accent"}, {"label": "DB-API driver: psycopg, asyncpg", "sub": "the wire protocol", "tone": "warn"}, {"label": "PostgreSQL", "tone": "violet"}], "t": "diagram", "id": "dg-13_5-01-0"},
+    {"kind": "layers", "title": "SQLAlchemy's two layers", "caption": "Core builds and executes SQL as Python expressions over an engine and connection pool. The ORM sits on top, mapping classes to tables and tracking changes in a Session. You can use Core alone; the ORM always uses Core.", "items": [{"label": "ORM: mapped classes, Session, relationships", "sub": "unit of work, identity map", "tone": "good"}, {"label": "Core: select(), insert(), Table, Engine", "sub": "SQL as expressions", "tone": "accent"}, {"label": "DB-API driver: psycopg, asyncpg", "sub": "the wire protocol", "tone": "warn"}, {"label": "PostgreSQL", "tone": "violet"}], "t": "diagram", "id": "dg-13_5-01-2"},
+
 
 
 
@@ -95,7 +96,8 @@ with Session(engine) as session:
 
     { t: "h2", n: "02", text: "The unit of work", id: "unit-of-work" },
 
-    {"kind": "flow", "title": "The unit of work", "caption": "Changes to mapped objects are recorded, not sent. flush() turns them into SQL in dependency order; commit() flushes and ends the transaction. Nothing reaches the database until one of those.", "cols": 4, "nodes": [{"id": "a", "label": "session.add(obj) / obj.x = 1", "sub": "tracked in memory", "tone": "accent"}, {"id": "b", "label": "flush()", "sub": "SQL emitted, ids assigned", "tone": "warn"}, {"id": "c", "label": "commit()", "sub": "transaction ends", "tone": "good"}, {"id": "d", "label": "expired objects", "sub": "reloaded on next access"}], "edges": [["a", "b", "autoflush or explicit"], ["b", "c"], ["c", "d"]], "t": "diagram", "id": "dg-13_5-02-1"},
+    {"kind": "flow", "title": "The unit of work", "caption": "Changes to mapped objects are recorded, not sent. flush() turns them into SQL in dependency order; commit() flushes and ends the transaction. Nothing reaches the database until one of those.", "cols": 4, "nodes": [{"id": "a", "label": "session.add(obj) / obj.x = 1", "sub": "tracked in memory", "tone": "accent"}, {"id": "b", "label": "flush()", "sub": "SQL emitted, ids assigned", "tone": "warn"}, {"id": "c", "label": "commit()", "sub": "transaction ends", "tone": "good"}, {"id": "d", "label": "expired objects", "sub": "reloaded on next access"}], "edges": [["a", "b", "autoflush or explicit"], ["b", "c"], ["c", "d"]], "t": "diagram", "id": "dg-13_5-02-3"},
+
 
 
 
@@ -242,6 +244,8 @@ def get_order(oid: UUID, db: DB) -> Order:
 
     { t: "h2", n: "04", text: "Relationships", id: "relationships" },
 
+    {"kind": "trace", "title": "The loading strategy is a per-query decision, and the default is the N+1", "caption": "**`lazy=\"select\"` is the default and it is the N+1 generator: each attribute access issues another query, at a point in the code far from the one that loaded the parent.** `selectinload` issues one extra query with an `IN` clause — **the right default for a collection** — and `joinedload` uses one query with a join, **which is right for a many-to-one and wrong for a collection, because the parent's columns are duplicated per child row.** And `raise` is the one worth knowing about: **it turns an accidental lazy load into an exception**, so the N+1 fails loudly in tests.", "left": "strategy", "codeW": 150, "vars": ["queries", "right for"], "steps": [{"code": "lazy='select' (the default)", "state": ["1 + N", "almost nothing"], "tone": "crit"}, {"code": "selectinload", "state": ["2, the second with IN", "collections"], "changed": [0, 1], "tone": "violet"}, {"code": "joinedload", "state": ["1, with a join", "many-to-one"], "changed": [0, 1], "tone": "good"}, {"code": "joinedload on a collection", "state": ["1, with duplicated parent columns", "wrong"], "changed": [0, 1], "tone": "warn"}, {"code": "lazy='raise'", "state": ["an exception", "making the N+1 loud in tests"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-13_5-04-0"},
+
     { t: "code", lang: "python", title: "declaring them, and controlling loads", code: `
 class Order(Base):
     __tablename__ = "orders"
@@ -302,6 +306,8 @@ select(Order).options(joinedload(Order.account))   # 1 query, 100 rows`},
     ]},
 
     { t: "h2", n: "05", text: "Where the ORM costs you", id: "costs" },
+
+    {"kind": "flow", "title": "`select(Order.id, Order.total)` is Core semantics through the ORM's session", "caption": "**No instances are constructed, no identity-map entries are made, and nothing is tracked for changes** — which is most of what the ORM costs, removed by naming columns instead of a class. Worth knowing because it is the cheapest escape hatch: **the session, the connection and the transaction are all still yours**, so a reporting query inside an ORM application does not need a second access layer. The other two costs the ORM imposes: **a unit-of-work flush whose ordering you do not control, and an identity map that keeps every loaded row alive for the session's life.**", "cols": 3, "nodes": [{"id": "s", "label": "select(Order.id, Order.total)", "sub": "columns, not a class", "tone": "violet"}, {"id": "n", "label": "No instances, no identity map, no tracking", "sub": "most of the cost, gone", "tone": "good"}, {"id": "t", "label": "Same session, connection, transaction", "sub": "no second access layer", "tone": "good"}, {"id": "f", "label": "And the costs it leaves elsewhere", "sub": "flush ordering you do not control", "tone": "warn"}, {"id": "i", "label": "Plus an identity map holding every row", "sub": "for the session's whole life", "tone": "warn"}], "edges": [["s", "n"], ["n", "t"], ["f", "i"]], "t": "diagram", "id": "dg-13_5-05-1"},
 
     { t: "code", lang: "python", title: "four places to drop to Core", code: `
 # 1. BULK UPDATE. The ORM version loads a million objects to change
