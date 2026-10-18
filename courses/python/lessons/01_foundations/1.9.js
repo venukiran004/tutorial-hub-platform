@@ -33,6 +33,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Here is a failure from a small program. Before reading the explanation, decide which line contains the bug." },
 
     { t: "code", lang: "text", title: "the traceback", numbered: false, code: `
@@ -126,6 +129,10 @@ ConfigError: could not load configuration`},
     /* ================================================================== */
     { t: "h2", n: "02", text: "print(), completely", id: "print" },
 
+    {"kind": "trace", "title": "Four keyword arguments, and one of them is a production concern", "caption": "`sep`, `end` and `file` are conveniences — **`sep=''` gives `abc`, `sep='-'` builds `2024-01-15` from parts, and `end=''` suppresses the newline.** **`flush=True` is the one that matters outside a terminal: stdout is line-buffered to a console and block-buffered to a pipe or a file, so a crash can lose everything printed since the last flush** — which is why a log line that definitely executed is missing from captured output. In production the answer is not `flush`, **it is `logging`.**", "left": "call", "codeW": 180, "vars": ["output", "note"], "steps": [{"code": "print('a', 'b', 'c')", "state": ["a b c", "sep=' ' by default"], "tone": "good"}, {"code": "print('a','b','c', sep='')", "state": ["abc", "-"], "changed": [0, 1], "tone": "good"}, {"code": "print(2024, 1, 15, sep='-')", "state": ["2024-01-15", "builds a string"], "changed": [0, 1], "tone": "good"}, {"code": "print(..., end='')", "state": ["no newline -- continued", "-"], "changed": [0, 1], "tone": "good"}, {"code": "print(..., flush=True)", "state": ["flushed immediately", "or a crash loses it"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-1_9-02-1"},
+
+
+
     { t: "code", lang: "python", title: "the four keyword arguments", code: `
 import sys
 
@@ -200,6 +207,10 @@ print("checkpoint reached", flush=True)`},
     /* ================================================================== */
     { t: "h2", n: "03", text: "input() and reading stdin", id: "input" },
 
+    {"kind": "flow", "title": "input() always returns a string, and strips only the newline", "caption": "**`input()` returns `\"30\"` and never an `int`**, so every numeric input needs parsing — with exactly the errors 1.8 measured. And the detail that bites: **it strips the trailing newline and nothing else, so leading and trailing spaces survive**, which is why `.strip()` before parsing is routine rather than defensive. The error path is worth copying as written: **report to `stderr` with `!r` so the offending value is quoted, then `raise SystemExit(1)`** — a message on stdout with a zero exit code is a failure the caller cannot detect.", "cols": 3, "nodes": [{"id": "i", "label": "input() returns a str", "sub": "'30', never 30", "tone": "accent"}, {"id": "s", "label": "It strips the newline only", "sub": "spaces survive", "tone": "warn"}, {"id": "p", "label": "So .strip() then int()", "sub": "with 1.8's ValueError", "tone": "good"}, {"id": "e", "label": "Report to stderr, with !r", "sub": "so the value is quoted", "tone": "good"}, {"id": "x", "label": "And raise SystemExit(1)", "sub": "or the caller cannot detect it", "tone": "violet"}], "edges": [["i", "s"], ["s", "p"], ["p", "e"], ["e", "x"]], "t": "diagram", "id": "dg-1_9-03-2"},
+
+
+
     { t: "code", lang: "python", title: "input always returns a string", code: `
 age_raw = input("Age: ")        # "30" -- never an int
 print(type(age_raw))
@@ -230,6 +241,10 @@ for line in sys.stdin:
     /* ================================================================== */
     { t: "h2", n: "04", text: "breakpoint()", id: "breakpoint",
       sub: "The alternative to adding print statements and re-running." },
+
+    {"kind": "layers", "title": "Eight commands, and two of them are why a debugger beats a print", "caption": "**Adding a print, re-running, discovering you needed a different variable, and repeating is a slow loop — `breakpoint()` stops execution and gives you a REPL with every local in scope**, so the next question costs one line instead of one run. The two rows no amount of printing replaces are the last: **`u` and `d` move up and down the stack to inspect a *caller's* locals**, which is where the wrong value usually came from.", "items": [{"label": "p expr / pp expr", "sub": "print, or pretty-print, any expression", "tone": "good", "side": "inspect"}, {"label": "l", "sub": "show the source around the current line", "tone": "good", "side": "orient"}, {"label": "n / s", "sub": "next line, stepping over / step into the call", "tone": "good", "side": "step"}, {"label": "c / q", "sub": "continue to the next breakpoint / quit", "tone": "good", "side": "control"}, {"label": "w", "sub": "where - print the current stack", "tone": "accent", "side": "context"}, {"label": "u / d", "sub": "move a frame to inspect a CALLER's locals", "tone": "violet", "side": "the reason"}], "t": "diagram", "id": "dg-1_9-04-3"},
+
+
 
     { t: "p", text: "Adding a `print`, re-running, discovering you needed a different variable, and repeating is a slow loop. `breakpoint()` stops execution and gives you a REPL with every local in scope." },
 

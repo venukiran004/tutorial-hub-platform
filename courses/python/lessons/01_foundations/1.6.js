@@ -33,6 +33,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "A `str` holds Unicode code points — the abstract idea of characters. A `bytes` holds integers 0–255. There is no automatic conversion between them, and that refusal is deliberate: Python 2 allowed it, and the resulting class of bug was severe enough to justify a breaking language change." },
 
     { t: "code", lang: "python", title: "the two types", code: `
@@ -131,6 +134,10 @@ with open("data.csv", encoding="utf-8") as f:
     { t: "h2", n: "02", text: "f-strings", id: "f-strings",
       sub: "The default way to build strings, and more capable than most people use." },
 
+    {"kind": "trace", "title": "Five specs, and the last two replace most debug printing", "caption": "The alignment and separator specs are what make log output readable, **and `{x=}` is the one worth adopting immediately: `f\"{score=}\"` prints `score=0.87241`, which replaces almost every `print(\"score:\", score)` you would otherwise write** — including over an expression, as `len(items)=2`. And **`!r` uses `repr()` rather than `str()`, which is what you want in logs and errors, because the quoting is what distinguishes `\"\"` from `\" \"`.**", "left": "spec", "codeW": 140, "vars": ["renders as", "use for"], "steps": [{"code": ":.1%", "state": ["87.2%", "rates, accuracy, progress"], "tone": "good"}, {"code": ":,", "state": ["1,234,567", "any number a human reads"], "changed": [0, 1], "tone": "good"}, {"code": ":>8 and :<8", "state": ["   0.872 | Ada     ", "aligned logs and CLI output"], "changed": [0, 1], "tone": "good"}, {"code": "{score=}", "state": ["score=0.87241", "replaces print('score:', s)"], "changed": [0, 1], "tone": "violet"}, {"code": "{len(items)=}", "state": ["len(items)=2", "an expression, not just a name"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-1_6-02-2"},
+
+
+
     { t: "code", lang: "python", title: "beyond simple interpolation", code: `
 name = "Ada"
 score = 0.87241
@@ -191,6 +198,9 @@ cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))`,
     { t: "h2", n: "03", text: "The methods worth knowing", id: "methods" },
 
     {"kind": "cells", "title": "Indexing and slicing a string", "caption": "Positive indices count from 0 at the left; negative indices count from −1 at the right. s[1:4] takes indices 1, 2 and 3 — the stop is excluded.", "items": ["P", "y", "t", "h", "o", "n"], "highlight": [1, 2, 3], "label": "s = 'Python'   s[1:4] == 'yth'   s[-1] == 'n'", "t": "diagram", "id": "dg-1_6-03-1"},
+
+
+
 
 
 

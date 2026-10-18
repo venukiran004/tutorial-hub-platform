@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "The question this lesson answers", id: "the-question" },
 
+    {"kind": "flow", "title": "It printed “starting”, then failed on a name nothing had checked", "caption": "**A compiled language like Java or Rust would have refused to build this file at all. Python ran most of it happily and failed at the exact moment it needed a name that did not exist** — and that is not sloppiness, it is a direct consequence of how Python turns text into behaviour. **The typo `totl` is grammatically fine — a perfectly legal name — so compilation had no objection.** Only the `return` instruction looked it up, **and it reached that instruction on the empty list too, because a `for` loop over nothing still falls through to what follows.**", "cols": 3, "nodes": [{"id": "c", "label": "Compilation checks the GRAMMAR", "sub": "'totl' is a legal name", "tone": "accent"}, {"id": "r", "label": "So the file loads and runs", "sub": "it printed 'starting'", "tone": "good"}, {"id": "l", "label": "The name is looked up at RUNTIME", "sub": "when return executes", "tone": "violet"}, {"id": "n", "label": "NameError: name 'totl' is not defined", "sub": "at that instruction, not before", "tone": "crit"}, {"id": "e", "label": "And the empty list reaches it too", "sub": "a for over nothing still falls through", "tone": "warn"}], "edges": [["c", "r"], ["r", "l"], ["l", "n"], ["n", "e"]], "t": "diagram", "id": "dg-1_1-01-2"},
+
+
+
     { t: "p", text: "Here is a piece of Python that behaves in a way beginners find arbitrary and experienced developers stop questioning. Read it and predict the output before you scroll." },
 
     { t: "code", lang: "python", title: "surprise.py", code: `
@@ -53,6 +57,10 @@ print(process([]))       # empty list: the loop body never runs
     /* ================================================================== */
     { t: "h2", n: "02", text: "Python is a language. CPython is a program.", id: "language-vs-implementation",
       sub: "The distinction that most tutorials skip, and that decides which runtime you deploy on." },
+
+    {"kind": "compare", "title": "A document on one side, a program on the other", "caption": "**“Python” names two different things, and conflating them causes real confusion later.** The split matters because **the implementations differ in exactly the places engineers care about: speed, memory, concurrency and C-library compatibility.** Two specifics worth holding onto: **the language does not mandate a Global Interpreter Lock — CPython has one — and the language does not mandate reference counting — CPython uses it.** So “Python has a GIL” is a statement about a program, not about a language.", "columns": [{"title": "The language", "tone": "accent", "items": ["a specification: grammar and semantics", "what for means, what a dict guarantees", "a document, not software", "does NOT mandate a GIL", "does NOT mandate reference counting"]}, {"title": "An implementation", "tone": "violet", "items": ["an actual program that runs the source", "CPython, in C — the default; every C extension targets it", "PyPy, in RPython — a JIT; fast hot loops, slower startup", "Jython / IronPython — for the JVM and .NET, versions behind", "MicroPython — microcontrollers, a deliberate subset"]}], "t": "diagram", "id": "dg-1_1-02-3"},
+
+
 
     { t: "p", text: "\"Python\" names two different things, and conflating them causes real confusion later." },
 
@@ -93,6 +101,9 @@ SyntaxError: invalid syntax`},
       sub: "Four transformations between the text you write and the effects you observe." },
 
     {"kind": "flow", "title": "The CPython pipeline", "caption": "Source text is tokenised, parsed into an AST, compiled to bytecode, and only then executed by the evaluation loop. Every performance, GIL and typing question in the course traces back to one of these five stages.", "cols": 5, "nodes": [{"id": "src", "label": "source .py"}, {"id": "tok", "label": "tokens", "sub": "tokenizer", "tone": "accent"}, {"id": "ast", "label": "AST", "sub": "parser", "tone": "accent"}, {"id": "bc", "label": "bytecode", "sub": "compiler · .pyc", "tone": "good"}, {"id": "vm", "label": "eval loop", "sub": "the PVM", "tone": "warn"}], "edges": [["src", "tok"], ["tok", "ast"], ["ast", "bc"], ["bc", "vm"]], "t": "diagram", "id": "dg-1_1-03-0"},
+
+
+
 
 
 
@@ -419,6 +430,9 @@ def normalise(values: list[float]) -> list[float]:
 
 
 
+
+
+
     { t: "p", text: "Stages 1–3 are deterministic: the same source always produces the same bytecode. Redoing that work on every run would be waste, so CPython caches the result — but only in one specific case." },
 
     { t: "code", lang: "bash", title: "terminal", code: `
@@ -464,6 +478,10 @@ RUN python -m compileall --invalidation-mode checked-hash /app`,
 
     /* ================================================================== */
     { t: "h2", n: "07", text: "Three famous behaviours, one explanation each", id: "consequences" },
+
+    {"kind": "steps", "title": "Three famous behaviours, each derivable from the pipeline", "caption": "**All three are usually presented as trivia and all three follow from one model.** The first is narrowing but not closing: **since 3.11 the interpreter is adaptive — it notices a `BINARY_OP` keeps seeing two ints and rewrites that instruction in place to an int-only version, skipping the type dispatch — which is a real speedup and still not C.** The third has the sharpest practical edge: **the lock is released around I/O, so while a thread waits on a socket, a file or a database another thread runs — which is precisely why threads help enormously for network-bound work and not at all for computation.**", "items": [{"label": "Why Python is slower than C in tight numeric loops", "code": "performance", "desc": "BINARY_OP must inspect both types, find the right add, call it, allocate a result and manage refcounts.", "tone": "accent"}, {"label": "Why a typo in a rare branch reaches production", "code": "correctness", "desc": "The compiler validated your grammar, not your names — nothing checks the name exists until it runs.", "tone": "crit"}, {"label": "Why threads do not speed up pure-Python compute", "code": "concurrency", "desc": "Only one thread may execute bytecode at any instant, so two numeric loops take turns.", "tone": "violet"}], "t": "diagram", "id": "dg-1_1-07-4"},
+
+
 
     { t: "p", text: "You now have enough of the model to derive things that are usually presented as trivia. Try to answer each before opening it." },
 
@@ -567,6 +585,10 @@ print(f"join is {concat / join:.1f}x faster")
 
     /* ================================================================== */
     { t: "h2", n: "09", text: "Version awareness", id: "versions" },
+
+    {"kind": "trace", "title": "Two of these four are guaranteed and two are not", "caption": "**Bytecode is an implementation detail with no stability guarantee — opcodes are added, removed and renamed between minor versions, 3.11 rewrote large parts of the interpreter, and 3.12 and 3.13 changed opcodes again.** So the line to hold is between **what `for` and `+` mean, which is stable across versions *and* implementations**, and **the specific opcode names, which are never safe in shipped code.** The `.pyc` format makes the point for you: **it is versioned in the filename for exactly this reason.**", "left": "what you depend on", "codeW": 190, "vars": ["stable?", "safe to rely on"], "steps": [{"code": "language semantics", "state": ["yes, across versions and impls", "always"], "tone": "good"}, {"code": "that dis exists at all", "state": ["yes", "always"], "changed": [0, 1], "tone": "good"}, {"code": "specific opcode names and numbers", "state": ["NO - changes between minors", "never in shipped code"], "changed": [0, 1], "tone": "crit"}, {"code": ".pyc file format", "state": ["NO - versioned in the filename", "never"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_1-09-5"},
+
+
 
     { t: "p", text: "One caution before you go and disassemble everything. **Bytecode is an implementation detail with no stability guarantee.** Opcodes are added, removed and renamed between minor versions — 3.11 rewrote large parts of the interpreter, and 3.12 and 3.13 changed opcodes again." },
 

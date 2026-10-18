@@ -33,6 +33,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "The name suggests something elaborate — a container, a sandbox, a runtime feature. It is none of those. Create one and look inside:" },
 
     { t: "code", lang: "bash", title: "terminal", code: `
@@ -174,6 +177,10 @@ $ pip install some-pure-python-package`},
     { t: "h2", n: "03", text: "Making your editor agree with your terminal", id: "vscode",
       sub: "The most common source of \"it runs in the terminal but the editor shows errors\"." },
 
+    {"kind": "flow", "title": "VS Code does not read your shell's PATH", "caption": "**It has its own notion of the selected interpreter, and every Python feature — IntelliSense, the linter, the debugger, the test runner — follows that setting rather than your terminal.** Which produces the characteristic symptom: **red squiggles under imports that work perfectly when you run the file.** Fix it once per project by committing the setting, so every contributor gets the same behaviour. And **`typeCheckingMode: basic` turns on real checking without the noise of `strict` on an untyped codebase** — it catches undefined names as you type, which is 1.1's deferred-name problem caught early.", "cols": 3, "nodes": [{"id": "t", "label": "Your terminal uses PATH", "sub": "the venv you activated", "tone": "good"}, {"id": "e", "label": "The editor uses its own setting", "sub": "and ignores PATH", "tone": "warn"}, {"id": "s", "label": "Symptom: squiggles on working imports", "sub": "linter, debugger, tests too", "tone": "crit"}, {"id": "c", "label": "Commit the interpreter path", "sub": "once per project", "tone": "good"}, {"id": "b", "label": "Plus typeCheckingMode: basic", "sub": "1.1's deferred names, caught early", "tone": "violet"}], "edges": [["t", "e"], ["e", "s"], ["s", "c"], ["c", "b"]], "t": "diagram", "id": "dg-1_3-03-1"},
+
+
+
     { t: "p", text: "VS Code does not read your shell's `PATH`. It has its own notion of the selected interpreter, and every Python feature — IntelliSense, the linter, the debugger, the test runner — follows that setting rather than your terminal. When the two disagree, you get red squiggles under imports that work perfectly when you run the file." },
 
     { t: "p", text: "Fix it once per project by committing the setting, so every contributor gets the same behaviour:" },
@@ -221,6 +228,10 @@ $ pip install some-pure-python-package`},
     /* ================================================================== */
     { t: "h2", n: "04", text: "Jupyter, without the stray kernels", id: "jupyter" },
 
+    {"kind": "flow", "title": "A kernel list belongs to your user account, not to the project", "caption": "**Jupyter has its own indirection: a kernel is a registered interpreter, and the registry is global to your user account rather than scoped to a directory.** So **a notebook can quietly run against an interpreter that has nothing to do with the project directory it lives in** — which is exactly why **a notebook works for you and fails for a colleague who cloned the same repository.** The fix is to register the project's venv as a named kernel and select it deliberately, so the notebook records which interpreter it expects.", "cols": 3, "nodes": [{"id": "k", "label": "A kernel is a registered interpreter", "sub": "not a project setting", "tone": "accent"}, {"id": "g", "label": "The registry is per USER ACCOUNT", "sub": "global, and long-lived", "tone": "warn"}, {"id": "n", "label": "So a notebook may run any of them", "sub": "regardless of its directory", "tone": "crit"}, {"id": "c", "label": "Works for you, fails for a colleague", "sub": "same repo, different registry", "tone": "crit"}, {"id": "f", "label": "Register the venv as a named kernel", "sub": "and select it deliberately", "tone": "good"}], "edges": [["k", "g"], ["g", "n"], ["n", "c"], ["c", "f"]], "t": "diagram", "id": "dg-1_3-04-2"},
+
+
+
     { t: "p", text: "Jupyter has its own indirection: a *kernel* is a registered interpreter, and the list of kernels is global to your user account. So a notebook can quietly run against an interpreter that has nothing to do with the project directory it lives in — which is why a notebook works for you and fails for a colleague who cloned the same repository." },
 
     { t: "code", lang: "bash", title: "terminal — bind a kernel to this project", code: `
@@ -252,6 +263,10 @@ print(sys.executable)`},
 
     /* ================================================================== */
     { t: "h2", n: "05", text: "The REPL is a tool, not a toy", id: "repl" },
+
+    {"kind": "layers", "title": "Five things to settle in the REPL rather than guess at", "caption": "**The interactive interpreter is where small questions belong — what does this method return, what shape is this data, does this regex match — and reaching for it is faster than writing a script and far faster than guessing.** The row most people have not met is the fourth: **`python -i script.py` runs the script and then leaves you in a REPL with all its variables still alive**, which is the cheapest way there is to inspect state after a failure. And **IPython costs one install and pays from the first session.**", "items": [{"label": "help(obj)", "sub": "docstring and signature - works on your own code too", "tone": "good", "side": "docs"}, {"label": "dir(obj)", "sub": "attributes; filter the underscores for the public surface", "tone": "good", "side": "surface"}, {"label": "_", "sub": "the last expression's result - saves retyping a long computation", "tone": "good", "side": "recall"}, {"label": "python -i script.py", "sub": "run it, then keep every variable alive", "tone": "violet", "side": "post-mortem"}, {"label": "IPython", "sub": "tab completion, ? and ??, %timeit, ! for shell", "tone": "teal", "side": "one install"}], "t": "diagram", "id": "dg-1_3-05-3"},
+
+
 
     { t: "p", text: "The interactive interpreter is where you should be answering small questions — what does this method return, what shape is this data, does this regex match. Reaching for it is faster than writing a script, and far faster than guessing." },
 

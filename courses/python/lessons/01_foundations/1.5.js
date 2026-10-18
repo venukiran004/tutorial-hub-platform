@@ -21,6 +21,10 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "Integers that do not overflow", id: "int" },
 
+    {"kind": "trace", "title": "Four operators where the answer is not what C taught you", "caption": "**An `int` grows to whatever size memory allows — `100!` is 302 digits and exact, where most languages would have wrapped silently.** The operators carry their own surprises, and two are worth internalising: **`//` rounds toward negative infinity, so `-7 // 2` is `-4` and not `-3`; and `%` carries the sign of the *divisor*, so `-7 % 3` is `2` in Python and `-1` in C and Java.** Which means **a bucket index computed with `%` behaves differently in a Python reimplementation of a C algorithm.**", "left": "expression", "codeW": 160, "vars": ["Python", "C / Java", "why"], "steps": [{"code": "6 / 3", "state": ["2.0", "2", "/ always returns a float"], "tone": "good"}, {"code": "-7 // 2", "state": ["-4", "-3", "floors toward -inf"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "-7 % 3", "state": ["2", "-1", "sign of the DIVISOR"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "2 ** 0.5", "state": ["1.414...", "-", "returns a float"], "changed": [0, 1, 2], "tone": "good"}, {"code": "math.factorial(100)", "state": ["302 digits, exact", "overflow", "int has no width"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-1_5-01-2"},
+
+
+
     { t: "p", text: "In most languages an integer is a fixed number of bits, and exceeding it wraps around silently. Python has no such limit — an `int` grows to whatever size your memory allows." },
 
     { t: "code", lang: "python", title: "arbitrary precision", code: `
@@ -66,6 +70,9 @@ print(sys.getsizeof(2 ** 1000))`,
     { t: "h2", n: "02", text: "Floats, and the money bug", id: "float" },
 
     {"kind": "trace", "title": "0.1 + 0.2 in binary", "caption": "A float carries 53 significant bits, and 0.1 is a **repeating fraction** in binary. What is stored is slightly above a tenth, so the sum lands slightly above three tenths — which is why `0.1 + 0.2 == 0.3` is `False`, and why money belongs in `Decimal` or integer pence.", "left": "what you write", "codeW": 170, "vars": ["what is actually stored"], "steps": [{"code": "0.1", "state": ["0.1000000000000000055511151231257827"]}, {"code": "0.2", "state": ["0.2000000000000000111022302462515654"]}, {"code": "0.1 + 0.2", "state": ["0.3000000000000000444089209850062616"], "changed": [0], "tone": "crit"}, {"code": "0.3", "state": ["0.2999999999999999888977697537403456"], "note": "a different number"}], "t": "diagram", "id": "dg-1_5-02-0"},
+
+
+
 
 
 
@@ -214,6 +221,9 @@ print(round(2.675, 2))  # 2.67 -- not 2.68`,
 
 
 
+
+
+
     { t: "p", text: "`bool` is a subclass of `int`. `True` is 1 and `False` is 0, not merely convertible to them." },
 
     { t: "code", lang: "python", title: "and this is genuinely useful", code: `
@@ -256,6 +266,10 @@ def apply_limit(limit: int | None = None) -> int:
 
     /* ================================================================== */
     { t: "h2", n: "04", text: "None means absent", id: "none" },
+
+    {"kind": "trace", "title": "Four falsy values that mean four different things", "caption": "**`None` is a singleton — there is exactly one instance in the process, which is why `is None` is the correct test — and its job is to represent the absence of a value, which is a different statement from zero or empty.** The user example makes it operational: **a user who has never logged in has `last_login = None`; a user with no items has `item_count = 0`; a user who cleared their bio has `bio = \"\"`.** All four are falsy, **so `if not x` collapses all four into one branch** — which is the bug this section exists to prevent.", "left": "value", "codeW": 130, "vars": ["means", "example", "falsy?"], "steps": [{"code": "None", "state": ["no value exists", "never logged in", "yes"], "tone": "violet"}, {"code": "0", "state": ["a quantity, which is zero", "no items", "yes"], "changed": [0, 1], "tone": "good"}, {"code": "\"\"", "state": ["a string, which is empty", "cleared their bio", "yes"], "changed": [0, 1], "tone": "good"}, {"code": "[]", "state": ["a collection, which is empty", "no roles", "yes"], "changed": [0, 1], "tone": "good"}, {"code": "if not x", "state": ["collapses all four", "-", "the bug"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-1_5-04-3"},
+
+
 
     { t: "p", text: "`None` is a singleton — there is exactly one instance in the process, which is why `is None` is the correct test (Lesson 1.4). Its job is to represent **the absence of a value**, which is a different statement from zero or empty." },
 

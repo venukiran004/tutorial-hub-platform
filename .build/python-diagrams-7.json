@@ -1,0 +1,1270 @@
+{
+ "1.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "It printed “starting”, then failed on a name nothing had checked",
+    "caption": "**A compiled language like Java or Rust would have refused to build this file at all. Python ran most of it happily and failed at the exact moment it needed a name that did not exist** — and that is not sloppiness, it is a direct consequence of how Python turns text into behaviour. **The typo `totl` is grammatically fine — a perfectly legal name — so compilation had no objection.** Only the `return` instruction looked it up, **and it reached that instruction on the empty list too, because a `for` loop over nothing still falls through to what follows.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "c",
+      "label": "Compilation checks the GRAMMAR",
+      "sub": "'totl' is a legal name",
+      "tone": "accent"
+     },
+     {
+      "id": "r",
+      "label": "So the file loads and runs",
+      "sub": "it printed 'starting'",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "The name is looked up at RUNTIME",
+      "sub": "when return executes",
+      "tone": "violet"
+     },
+     {
+      "id": "n",
+      "label": "NameError: name 'totl' is not defined",
+      "sub": "at that instruction, not before",
+      "tone": "crit"
+     },
+     {
+      "id": "e",
+      "label": "And the empty list reaches it too",
+      "sub": "a for over nothing still falls through",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "c",
+      "r"
+     ],
+     [
+      "r",
+      "l"
+     ],
+     [
+      "l",
+      "n"
+     ],
+     [
+      "n",
+      "e"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "compare",
+    "title": "A document on one side, a program on the other",
+    "caption": "**“Python” names two different things, and conflating them causes real confusion later.** The split matters because **the implementations differ in exactly the places engineers care about: speed, memory, concurrency and C-library compatibility.** Two specifics worth holding onto: **the language does not mandate a Global Interpreter Lock — CPython has one — and the language does not mandate reference counting — CPython uses it.** So “Python has a GIL” is a statement about a program, not about a language.",
+    "columns": [
+     {
+      "title": "The language",
+      "tone": "accent",
+      "items": [
+       "a specification: grammar and semantics",
+       "what for means, what a dict guarantees",
+       "a document, not software",
+       "does NOT mandate a GIL",
+       "does NOT mandate reference counting"
+      ]
+     },
+     {
+      "title": "An implementation",
+      "tone": "violet",
+      "items": [
+       "an actual program that runs the source",
+       "CPython, in C — the default; every C extension targets it",
+       "PyPy, in RPython — a JIT; fast hot loops, slower startup",
+       "Jython / IronPython — for the JVM and .NET, versions behind",
+       "MicroPython — microcontrollers, a deliberate subset"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "after": "07",
+   "d": {
+    "kind": "steps",
+    "title": "Three famous behaviours, each derivable from the pipeline",
+    "caption": "**All three are usually presented as trivia and all three follow from one model.** The first is narrowing but not closing: **since 3.11 the interpreter is adaptive — it notices a `BINARY_OP` keeps seeing two ints and rewrites that instruction in place to an int-only version, skipping the type dispatch — which is a real speedup and still not C.** The third has the sharpest practical edge: **the lock is released around I/O, so while a thread waits on a socket, a file or a database another thread runs — which is precisely why threads help enormously for network-bound work and not at all for computation.**",
+    "items": [
+     {
+      "label": "Why Python is slower than C in tight numeric loops",
+      "code": "performance",
+      "desc": "BINARY_OP must inspect both types, find the right add, call it, allocate a result and manage refcounts.",
+      "tone": "accent"
+     },
+     {
+      "label": "Why a typo in a rare branch reaches production",
+      "code": "correctness",
+      "desc": "The compiler validated your grammar, not your names — nothing checks the name exists until it runs.",
+      "tone": "crit"
+     },
+     {
+      "label": "Why threads do not speed up pure-Python compute",
+      "code": "concurrency",
+      "desc": "Only one thread may execute bytecode at any instant, so two numeric loops take turns.",
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "09",
+   "d": {
+    "kind": "trace",
+    "title": "Two of these four are guaranteed and two are not",
+    "caption": "**Bytecode is an implementation detail with no stability guarantee — opcodes are added, removed and renamed between minor versions, 3.11 rewrote large parts of the interpreter, and 3.12 and 3.13 changed opcodes again.** So the line to hold is between **what `for` and `+` mean, which is stable across versions *and* implementations**, and **the specific opcode names, which are never safe in shipped code.** The `.pyc` format makes the point for you: **it is versioned in the filename for exactly this reason.**",
+    "left": "what you depend on",
+    "codeW": 190,
+    "vars": [
+     "stable?",
+     "safe to rely on"
+    ],
+    "steps": [
+     {
+      "code": "language semantics",
+      "state": [
+       "yes, across versions and impls",
+       "always"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "that dis exists at all",
+      "state": [
+       "yes",
+       "always"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "specific opcode names and numbers",
+      "state": [
+       "NO - changes between minors",
+       "never in shipped code"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": ".pyc file format",
+      "state": [
+       "NO - versioned in the filename",
+       "never"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  }
+ ],
+ "1.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "One line of output is the authoritative answer; the rest is inference",
+    "caption": "**A typical machine has several Python installations that know nothing about each other, and typing `python` picks whichever appears first on your `PATH`** — so the habit worth building on day one is: never assume, ask. **`sys.executable` is the authoritative answer; everything else is inference.** Two details that save hours: **`sys.prefix != sys.base_prefix` is the reliable venv test**, and **`sys.version_info` is a comparable tuple — use it rather than string comparison, because `\"3.9\" > \"3.10\"` is `True` as strings and wrong as versions.**",
+    "left": "what you read",
+    "codeW": 170,
+    "vars": [
+     "value",
+     "status"
+    ],
+    "steps": [
+     {
+      "code": "sys.executable",
+      "state": [
+       "/project/.venv/bin/python",
+       "authoritative"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "sys.version_info",
+      "state": [
+       "(3, 12, 4, 'final', 0)",
+       "compare as a TUPLE"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "sys.prefix != sys.base_prefix",
+      "state": [
+       "True",
+       "the reliable venv test"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "site-packages path",
+      "state": [
+       ".venv/lib/python3.12/site-packages",
+       "where pip put it"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "accent",
+      "note": "two Pythons, two of these"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "The system Python runs the system",
+    "caption": "**Linux distributions and macOS ship a Python that the operating system itself depends on — package managers, system utilities and parts of the desktop are written in it.** So the rule is simple and absolute: **the system Python runs the system; you install your own and you work inside virtual environments.** The failure mode is worth picturing: **`sudo pip install` into the system interpreter can upgrade a package a system tool depended on, and the thing that breaks is not your project.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "The OS depends on its Python",
+      "sub": "package managers, desktop tools",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "sudo pip install upgrades a shared package",
+      "sub": "for everything at once",
+      "tone": "crit"
+     },
+     {
+      "id": "b",
+      "label": "And what breaks is not your project",
+      "sub": "it is the package manager",
+      "tone": "crit"
+     },
+     {
+      "id": "o",
+      "label": "So: install your own interpreter",
+      "sub": "python.org, Homebrew, pyenv",
+      "tone": "good"
+     },
+     {
+      "id": "v",
+      "label": "And work inside virtual environments",
+      "sub": "one per project",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "p"
+     ],
+     [
+      "p",
+      "b"
+     ],
+     [
+      "b",
+      "o"
+     ],
+     [
+      "o",
+      "v"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "compare",
+    "title": "The question is not whether a package exists",
+    "caption": "**Python's “batteries included” is earned — JSON, CSV, HTTP, SQLite, compression, hashing, dates, subprocesses, threading, async, testing and argument parsing are all in the standard library, and a large amount of professional Python needs nothing else.** PyPI adds several hundred thousand packages, **so the engineering question is not *does a package exist* — one always does — but *should this be a dependency*.** The two ends of the list are the clearest: **`zoneinfo` retired most date libraries, and there is no standard-library answer at all for array maths.**",
+    "columns": [
+     {
+      "title": "The standard library is enough",
+      "tone": "good",
+      "items": [
+       "dates and times — datetime, zoneinfo",
+       "CLI parsing — argparse, unless it is a large multi-command tool",
+       "config — configparser, dataclasses, away from boundaries",
+       "and zoneinfo specifically retired a whole category of package"
+      ]
+     },
+     {
+      "title": "Reach for a package",
+      "tone": "accent",
+      "items": [
+       "numeric work — immediately; numpy is not optional",
+       "testing — effectively always; pytest is the ecosystem standard",
+       "HTTP — almost always; pooling, retries and sane timeouts",
+       "validation at an API or file boundary — pydantic earns it there"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "1.3": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "VS Code does not read your shell's PATH",
+    "caption": "**It has its own notion of the selected interpreter, and every Python feature — IntelliSense, the linter, the debugger, the test runner — follows that setting rather than your terminal.** Which produces the characteristic symptom: **red squiggles under imports that work perfectly when you run the file.** Fix it once per project by committing the setting, so every contributor gets the same behaviour. And **`typeCheckingMode: basic` turns on real checking without the noise of `strict` on an untyped codebase** — it catches undefined names as you type, which is 1.1's deferred-name problem caught early.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "Your terminal uses PATH",
+      "sub": "the venv you activated",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "The editor uses its own setting",
+      "sub": "and ignores PATH",
+      "tone": "warn"
+     },
+     {
+      "id": "s",
+      "label": "Symptom: squiggles on working imports",
+      "sub": "linter, debugger, tests too",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "Commit the interpreter path",
+      "sub": "once per project",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": "Plus typeCheckingMode: basic",
+      "sub": "1.1's deferred names, caught early",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "e"
+     ],
+     [
+      "e",
+      "s"
+     ],
+     [
+      "s",
+      "c"
+     ],
+     [
+      "c",
+      "b"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "A kernel list belongs to your user account, not to the project",
+    "caption": "**Jupyter has its own indirection: a kernel is a registered interpreter, and the registry is global to your user account rather than scoped to a directory.** So **a notebook can quietly run against an interpreter that has nothing to do with the project directory it lives in** — which is exactly why **a notebook works for you and fails for a colleague who cloned the same repository.** The fix is to register the project's venv as a named kernel and select it deliberately, so the notebook records which interpreter it expects.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "k",
+      "label": "A kernel is a registered interpreter",
+      "sub": "not a project setting",
+      "tone": "accent"
+     },
+     {
+      "id": "g",
+      "label": "The registry is per USER ACCOUNT",
+      "sub": "global, and long-lived",
+      "tone": "warn"
+     },
+     {
+      "id": "n",
+      "label": "So a notebook may run any of them",
+      "sub": "regardless of its directory",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "Works for you, fails for a colleague",
+      "sub": "same repo, different registry",
+      "tone": "crit"
+     },
+     {
+      "id": "f",
+      "label": "Register the venv as a named kernel",
+      "sub": "and select it deliberately",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "k",
+      "g"
+     ],
+     [
+      "g",
+      "n"
+     ],
+     [
+      "n",
+      "c"
+     ],
+     [
+      "c",
+      "f"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "layers",
+    "title": "Five things to settle in the REPL rather than guess at",
+    "caption": "**The interactive interpreter is where small questions belong — what does this method return, what shape is this data, does this regex match — and reaching for it is faster than writing a script and far faster than guessing.** The row most people have not met is the fourth: **`python -i script.py` runs the script and then leaves you in a REPL with all its variables still alive**, which is the cheapest way there is to inspect state after a failure. And **IPython costs one install and pays from the first session.**",
+    "items": [
+     {
+      "label": "help(obj)",
+      "sub": "docstring and signature - works on your own code too",
+      "tone": "good",
+      "side": "docs"
+     },
+     {
+      "label": "dir(obj)",
+      "sub": "attributes; filter the underscores for the public surface",
+      "tone": "good",
+      "side": "surface"
+     },
+     {
+      "label": "_",
+      "sub": "the last expression's result - saves retyping a long computation",
+      "tone": "good",
+      "side": "recall"
+     },
+     {
+      "label": "python -i script.py",
+      "sub": "run it, then keep every variable alive",
+      "tone": "violet",
+      "side": "post-mortem"
+     },
+     {
+      "label": "IPython",
+      "sub": "tab completion, ? and ??, %timeit, ! for shell",
+      "tone": "teal",
+      "side": "one install"
+     }
+    ]
+   }
+  }
+ ],
+ "1.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Same id, same type, new value — then a different id entirely",
+    "caption": "**Identity and type are fixed for an object's whole life; only value can change, and only for mutable types.** The first two rows are one object mutated — **id `…91200` both times** — and the third is a different object at `…94016`. Which is the distinction the whole lesson rests on: **`x = 5` followed by `x = \"five\"` does not change an object, it binds `x` to a different one.** `is` compares the first column; `==` compares the third.",
+    "left": "statement",
+    "codeW": 160,
+    "vars": [
+     "id",
+     "type",
+     "value"
+    ],
+    "steps": [
+     {
+      "code": "a = [1, 2, 3]",
+      "state": [
+       "...891200",
+       "list",
+       "[1, 2, 3]"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "a.append(4)",
+      "state": [
+       "...891200",
+       "list",
+       "[1, 2, 3, 4]"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good",
+      "note": "mutated in place"
+     },
+     {
+      "code": "a = [9]",
+      "state": [
+       "...894016",
+       "list",
+       "[9]"
+      ],
+      "changed": [
+       0,
+       2
+      ],
+      "tone": "violet",
+      "note": "a different object"
+     },
+     {
+      "code": "so",
+      "state": [
+       "is compares this",
+       "fixed for life",
+       "== compares this"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "teal"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "The second call returns ['apple', 'banana'], and most people expect ['banana']",
+    "caption": "**Default arguments are evaluated once, when the `def` statement executes — not on each call** — which comes straight from 1.1: the `def` is an instruction that runs, and it builds the default at that moment. **So that empty list is created a single time and stored on the function object, and every call that omits the argument binds to *that same list*.** The last row is proof rather than explanation: **`func.__defaults__` is `(['apple', 'banana'],)`, so the accumulated state is printable.**",
+    "left": "call",
+    "codeW": 160,
+    "vars": [
+     "returns",
+     "the default object now holds"
+    ],
+    "steps": [
+     {
+      "code": "add('apple')",
+      "state": [
+       "['apple']",
+       "['apple']"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "add('banana')",
+      "state": [
+       "['apple', 'banana']",
+       "['apple', 'banana']"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit",
+      "note": "expected ['banana']"
+     },
+     {
+      "code": "func.__defaults__",
+      "state": [
+       "-",
+       "(['apple', 'banana'],)"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet",
+      "note": "visible, not mysterious"
+     }
+    ]
+   }
+  },
+  {
+   "after": "06",
+   "d": {
+    "kind": "flow",
+    "title": "`tags or DEFAULT_TAGS` does not copy the default",
+    "caption": "This is the shape the bug takes in a real codebase, **where the two names are far apart.** The expression **binds the new document's `tags` key to the module-level list — so every document created without tags shares one list, and the module constant is corrupted for the lifetime of the process.** The output shows it: **two documents, and appending to one changes both.** The fix is §04's fix: **`list(DEFAULT_TAGS)`, or `None` as the sentinel and build the list inside.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "o",
+      "label": "tags or DEFAULT_TAGS",
+      "sub": "looks like a default",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "Binds to the module-level list",
+      "sub": "no copy is made",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "Every untagged document shares it",
+      "sub": "['untagged', 'finance'] twice",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "And the module constant is corrupted",
+      "sub": "for the whole process",
+      "tone": "crit"
+     },
+     {
+      "id": "f",
+      "label": "Fix: list(DEFAULT_TAGS), or a None sentinel",
+      "sub": "same as section 04",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "o",
+      "b"
+     ],
+     [
+      "b",
+      "s"
+     ],
+     [
+      "s",
+      "c"
+     ],
+     [
+      "c",
+      "f"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.5": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Four operators where the answer is not what C taught you",
+    "caption": "**An `int` grows to whatever size memory allows — `100!` is 302 digits and exact, where most languages would have wrapped silently.** The operators carry their own surprises, and two are worth internalising: **`//` rounds toward negative infinity, so `-7 // 2` is `-4` and not `-3`; and `%` carries the sign of the *divisor*, so `-7 % 3` is `2` in Python and `-1` in C and Java.** Which means **a bucket index computed with `%` behaves differently in a Python reimplementation of a C algorithm.**",
+    "left": "expression",
+    "codeW": 160,
+    "vars": [
+     "Python",
+     "C / Java",
+     "why"
+    ],
+    "steps": [
+     {
+      "code": "6 / 3",
+      "state": [
+       "2.0",
+       "2",
+       "/ always returns a float"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "-7 // 2",
+      "state": [
+       "-4",
+       "-3",
+       "floors toward -inf"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "-7 % 3",
+      "state": [
+       "2",
+       "-1",
+       "sign of the DIVISOR"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "2 ** 0.5",
+      "state": [
+       "1.414...",
+       "-",
+       "returns a float"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "math.factorial(100)",
+      "state": [
+       "302 digits, exact",
+       "overflow",
+       "int has no width"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Four falsy values that mean four different things",
+    "caption": "**`None` is a singleton — there is exactly one instance in the process, which is why `is None` is the correct test — and its job is to represent the absence of a value, which is a different statement from zero or empty.** The user example makes it operational: **a user who has never logged in has `last_login = None`; a user with no items has `item_count = 0`; a user who cleared their bio has `bio = \"\"`.** All four are falsy, **so `if not x` collapses all four into one branch** — which is the bug this section exists to prevent.",
+    "left": "value",
+    "codeW": 130,
+    "vars": [
+     "means",
+     "example",
+     "falsy?"
+    ],
+    "steps": [
+     {
+      "code": "None",
+      "state": [
+       "no value exists",
+       "never logged in",
+       "yes"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "0",
+      "state": [
+       "a quantity, which is zero",
+       "no items",
+       "yes"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "\"\"",
+      "state": [
+       "a string, which is empty",
+       "cleared their bio",
+       "yes"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "[]",
+      "state": [
+       "a collection, which is empty",
+       "no roles",
+       "yes"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "if not x",
+      "state": [
+       "collapses all four",
+       "-",
+       "the bug"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  }
+ ],
+ "1.6": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Five specs, and the last two replace most debug printing",
+    "caption": "The alignment and separator specs are what make log output readable, **and `{x=}` is the one worth adopting immediately: `f\"{score=}\"` prints `score=0.87241`, which replaces almost every `print(\"score:\", score)` you would otherwise write** — including over an expression, as `len(items)=2`. And **`!r` uses `repr()` rather than `str()`, which is what you want in logs and errors, because the quoting is what distinguishes `\"\"` from `\" \"`.**",
+    "left": "spec",
+    "codeW": 140,
+    "vars": [
+     "renders as",
+     "use for"
+    ],
+    "steps": [
+     {
+      "code": ":.1%",
+      "state": [
+       "87.2%",
+       "rates, accuracy, progress"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": ":,",
+      "state": [
+       "1,234,567",
+       "any number a human reads"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": ":>8 and :<8",
+      "state": [
+       "   0.872 | Ada     ",
+       "aligned logs and CLI output"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "{score=}",
+      "state": [
+       "score=0.87241",
+       "replaces print('score:', s)"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "{len(items)=}",
+      "state": [
+       "len(items)=2",
+       "an expression, not just a name"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  }
+ ],
+ "1.7": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "layers",
+    "title": "Eleven tiers, and one of them is where the bugs are",
+    "caption": "**You do not need to memorise the table — you need the handful of places where the answer is not obvious, and to parenthesise there.** The surprise is tier 6: **the bitwise operators are looser than arithmetic and tighter than comparison, so `a & b == c` parses as `a & (b == c)`**, which is almost never what was meant. Two more worth knowing: **`**` is right-associative, so `2 ** 3 ** 2` is 512 rather than 64**, and **unary minus binds looser than `**`, so `-2 ** 2` is `-4`.**",
+    "items": [
+     {
+      "label": "1-2: ** then unary +x -x ~x",
+      "sub": "right-associative; -2 ** 2 is -4",
+      "tone": "violet",
+      "side": "tightest"
+     },
+     {
+      "label": "3-4: * / // % @ then + -",
+      "sub": "ordinary arithmetic",
+      "tone": "good",
+      "side": "arithmetic"
+     },
+     {
+      "label": "5-6: << >> then & ^ |",
+      "sub": "LOOSER than arithmetic, tighter than comparison",
+      "tone": "crit",
+      "side": "the trap"
+     },
+     {
+      "label": "7: in, is, <, <=, ==, !=",
+      "sub": "all comparisons in one tier, and they chain",
+      "tone": "good",
+      "side": "comparison"
+     },
+     {
+      "label": "8-10: not x, then and, then or",
+      "sub": "boolean, looser than every comparison",
+      "tone": "good",
+      "side": "boolean"
+     },
+     {
+      "label": "11: x if c else y, then lambda",
+      "sub": "looser than everything above",
+      "tone": "accent",
+      "side": "loosest"
+     }
+    ]
+   }
+  }
+ ],
+ "1.8": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Three conversions that lose data without raising",
+    "caption": "The rows that raise are the easy ones — **`int(\"3.5\")` is a `ValueError`, loudly.** The dangerous rows are silent: **`int(3.9)` is `3` because it truncates toward zero rather than rounding; `bool(\"False\")` is `True` because it only tests emptiness; and `str(x)` never fails, which is why a bug can travel a long way as the string `\"None\"`.** And **`dict` from pairs lets a later duplicate key overwrite an earlier one silently**, which is how a config merge loses an entry.",
+    "left": "call",
+    "codeW": 150,
+    "vars": [
+     "result",
+     "loud or silent?"
+    ],
+    "steps": [
+     {
+      "code": "int('3.5')",
+      "state": [
+       "ValueError",
+       "loud"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "int(3.9)",
+      "state": [
+       "3",
+       "SILENT - truncates"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "bool('False')",
+      "state": [
+       "True",
+       "SILENT - tests emptiness"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "str(None)",
+      "state": [
+       "'None'",
+       "SILENT - never fails"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "list('abc')",
+      "state": [
+       "['a', 'b', 'c']",
+       "not ['abc']"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "warn"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "The annotated function ran and returned 15",
+    "caption": "**Type hints let you write down what a function expects, and Python ignores them during execution — `repeat(5, 3)` on a function annotated `(str, int) -> str` runs and returns `15`.** So what they do is real and entirely static: **document the contract, drive editor autocomplete and refactoring, and let a checker such as mypy find mismatches without running the code.** What closes the gap is two tools for two different problems: **mypy in CI for your own code, and Pydantic at the boundary where data arrives from outside and runtime validation genuinely is required.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "d",
+      "label": "They document the contract",
+      "sub": "for readers and for the editor",
+      "tone": "good"
+     },
+     {
+      "id": "m",
+      "label": "And mypy checks it without running",
+      "sub": "statically",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "But Python ignores them at runtime",
+      "sub": "repeat(5, 3) returns 15",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "So: mypy in CI for your own code",
+      "sub": "14.4",
+      "tone": "violet"
+     },
+     {
+      "id": "p",
+      "label": "And Pydantic at the boundary",
+      "sub": "12.3 - where validation is required",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "d",
+      "m"
+     ],
+     [
+      "m",
+      "n"
+     ],
+     [
+      "n",
+      "c"
+     ],
+     [
+      "n",
+      "p"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.9": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Four keyword arguments, and one of them is a production concern",
+    "caption": "`sep`, `end` and `file` are conveniences — **`sep=''` gives `abc`, `sep='-'` builds `2024-01-15` from parts, and `end=''` suppresses the newline.** **`flush=True` is the one that matters outside a terminal: stdout is line-buffered to a console and block-buffered to a pipe or a file, so a crash can lose everything printed since the last flush** — which is why a log line that definitely executed is missing from captured output. In production the answer is not `flush`, **it is `logging`.**",
+    "left": "call",
+    "codeW": 180,
+    "vars": [
+     "output",
+     "note"
+    ],
+    "steps": [
+     {
+      "code": "print('a', 'b', 'c')",
+      "state": [
+       "a b c",
+       "sep=' ' by default"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "print('a','b','c', sep='')",
+      "state": [
+       "abc",
+       "-"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "print(2024, 1, 15, sep='-')",
+      "state": [
+       "2024-01-15",
+       "builds a string"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "print(..., end='')",
+      "state": [
+       "no newline -- continued",
+       "-"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "print(..., flush=True)",
+      "state": [
+       "flushed immediately",
+       "or a crash loses it"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "input() always returns a string, and strips only the newline",
+    "caption": "**`input()` returns `\"30\"` and never an `int`**, so every numeric input needs parsing — with exactly the errors 1.8 measured. And the detail that bites: **it strips the trailing newline and nothing else, so leading and trailing spaces survive**, which is why `.strip()` before parsing is routine rather than defensive. The error path is worth copying as written: **report to `stderr` with `!r` so the offending value is quoted, then `raise SystemExit(1)`** — a message on stdout with a zero exit code is a failure the caller cannot detect.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "i",
+      "label": "input() returns a str",
+      "sub": "'30', never 30",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "It strips the newline only",
+      "sub": "spaces survive",
+      "tone": "warn"
+     },
+     {
+      "id": "p",
+      "label": "So .strip() then int()",
+      "sub": "with 1.8's ValueError",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "Report to stderr, with !r",
+      "sub": "so the value is quoted",
+      "tone": "good"
+     },
+     {
+      "id": "x",
+      "label": "And raise SystemExit(1)",
+      "sub": "or the caller cannot detect it",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "i",
+      "s"
+     ],
+     [
+      "s",
+      "p"
+     ],
+     [
+      "p",
+      "e"
+     ],
+     [
+      "e",
+      "x"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "layers",
+    "title": "Eight commands, and two of them are why a debugger beats a print",
+    "caption": "**Adding a print, re-running, discovering you needed a different variable, and repeating is a slow loop — `breakpoint()` stops execution and gives you a REPL with every local in scope**, so the next question costs one line instead of one run. The two rows no amount of printing replaces are the last: **`u` and `d` move up and down the stack to inspect a *caller's* locals**, which is where the wrong value usually came from.",
+    "items": [
+     {
+      "label": "p expr / pp expr",
+      "sub": "print, or pretty-print, any expression",
+      "tone": "good",
+      "side": "inspect"
+     },
+     {
+      "label": "l",
+      "sub": "show the source around the current line",
+      "tone": "good",
+      "side": "orient"
+     },
+     {
+      "label": "n / s",
+      "sub": "next line, stepping over / step into the call",
+      "tone": "good",
+      "side": "step"
+     },
+     {
+      "label": "c / q",
+      "sub": "continue to the next breakpoint / quit",
+      "tone": "good",
+      "side": "control"
+     },
+     {
+      "label": "w",
+      "sub": "where - print the current stack",
+      "tone": "accent",
+      "side": "context"
+     },
+     {
+      "label": "u / d",
+      "sub": "move a frame to inspect a CALLER's locals",
+      "tone": "violet",
+      "side": "the reason"
+     }
+    ]
+   }
+  }
+ ]
+}
