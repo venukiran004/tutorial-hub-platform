@@ -50,6 +50,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "the mental model for indices", code: `
 items = ["a", "b", "c", "d", "e"]
 
@@ -166,6 +167,7 @@ dlrow olleh
 
 
 
+
     { t: "p", text: "A slice on the left of an assignment replaces that region **in place** — the list object stays the same, so every name bound to it sees the change." },
 
     { t: "code", lang: "python", title: "replacing regions", code: `
@@ -210,6 +212,7 @@ print(alias)`,
     { t: "h2", n: "03", text: "What a copy actually copies", id: "copying" },
 
     {"kind": "memory", "title": "Shallow copy versus deep copy", "caption": "A shallow copy is a new outer list whose elements are the same inner objects; the nested lists are shared. copy.deepcopy copies recursively, so nothing is shared.", "names": [{"name": "orig", "to": "o1"}, {"name": "shallow = list(orig)", "to": "o2"}, {"name": "orig[0] and shallow[0]", "to": "o3", "label": "both point here"}], "objects": [{"id": "o1", "type": "list", "value": "[ →inner, 2 ]", "note": "the original"}, {"id": "o2", "type": "list", "value": "[ →inner, 2 ]", "note": "new outer, same inner", "tone": "warn"}, {"id": "o3", "type": "list", "value": "[9, 9]", "note": "inner — shared by both", "tone": "crit"}], "t": "diagram", "id": "dg-2_4-03-1"},
+
 
 
 
@@ -367,6 +370,7 @@ print(TEMPLATE.tags, urgent.tags)
     { t: "h2", n: "04", text: "Copying costs", id: "costs" },
 
     {"kind": "trace", "title": "Four of these five are O(n) and copy pointers only", "caption": "The column that matters is the third: **a list or dict copy is `O(n)` and copies *pointers*, so the nested objects are shared** — which is why a shallow copy of a list of dicts gives you a new list whose dicts are the originals. **`copy.deepcopy` is the only one that follows the whole graph, tracking cycles, and it is `O(total graph)`** rather than `O(n)`. And the row that is free: **`tuple(t)` on a tuple returns the same object, because it cannot change.**", "left": "operation", "codeW": 190, "vars": ["cost", "what it copies"], "steps": [{"code": "lst[:], lst.copy(), list(lst)", "state": ["O(n)", "n pointers; nested shared"], "tone": "warn"}, {"code": "d.copy(), dict(d), {**d}", "state": ["O(n)", "n key/value pointers"], "changed": [0, 1], "tone": "warn"}, {"code": "lst[a:b]", "state": ["O(b-a)", "the pointers in that range"], "changed": [0, 1], "tone": "good"}, {"code": "tuple(t) where t is a tuple", "state": ["O(1)", "NOTHING - the same object"], "changed": [0, 1], "tone": "violet"}, {"code": "copy.deepcopy(x)", "state": ["O(total graph)", "everything, recursively"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-2_4-04-3"},
+
 
 
 

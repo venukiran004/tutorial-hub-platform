@@ -123,6 +123,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table",
       head: ["Operation", "list", "tuple", "set", "dict", "deque"],
       rows: [
@@ -173,6 +174,7 @@ ratio: 12,687x`,
     { t: "h2", n: "03", text: "Two structures, one dataset", id: "two-structures" },
 
     {"kind": "flow", "title": "Holding the data twice is a normal trade, and the discipline is the risk", "caption": "**Choosing a container is not always exclusive. When two access patterns both matter, holding the data twice is a normal engineering trade — you are spending memory to remove an order of complexity.** Here a list keeps order and a set answers membership in `O(1)`. **The cost is roughly double the memory and the discipline of keeping the two views consistent — and that discipline is the real risk**, which is why the synchronisation belongs **inside one small class rather than scattered across callers.**", "cols": 3, "nodes": [{"id": "l", "label": "A list keeps the order", "sub": "and membership is O(n)", "tone": "good"}, {"id": "s", "label": "A set answers membership", "sub": "O(1), and has no order", "tone": "good"}, {"id": "b", "label": "Hold both", "sub": "memory for an order of complexity", "tone": "violet"}, {"id": "r", "label": "The risk is the synchronisation", "sub": "not the memory", "tone": "crit"}, {"id": "c", "label": "So confine it to one small class", "sub": "never to the callers", "tone": "good"}], "edges": [["l", "b"], ["s", "b"], ["b", "r"], ["r", "c"]], "t": "diagram", "id": "dg-2_8-03-1"},
+
 
 
 

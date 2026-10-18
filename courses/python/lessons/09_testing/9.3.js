@@ -47,6 +47,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "fixtures request fixtures", code: `
 import pytest
 
@@ -138,6 +139,7 @@ def test_invoice_total(service: BillingService) -> None:
 
 
 
+
     { t: "code", lang: "python", title: "yield is the whole mechanism", code: `
 @pytest.fixture
 def connection(config: Config):
@@ -189,6 +191,7 @@ def resources():
     { t: "h2", n: "03", text: "Scope", id: "scope" },
 
     {"kind": "timeline", "title": "Fixture scopes across a test session", "caption": "A session-scoped fixture is built once and torn down at the end; a module-scoped one per test file; a function-scoped one per test. Wider scope is faster and shares state — choose the narrowest that is not too slow.", "span": 8, "tick": 1, "lanes": [{"label": "session: db", "tone": "crit", "bars": [[0, 8, "built once"]]}, {"label": "module: app", "tone": "warn", "bars": [[0, 4, "test_a.py"], [4, 8, "test_b.py"]]}, {"label": "function: client", "tone": "good", "bars": [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8]]}], "t": "diagram", "id": "dg-9_3-03-3"},
+
 
 
 
@@ -288,6 +291,7 @@ def app(config):                    # config is function-scoped
     { t: "h2", n: "04", text: "Factory fixtures", id: "factories" },
 
     {"kind": "flow", "title": "A factory fixture lets each test override only what it cares about", "caption": "**It keeps the defaults in one place and lets the test state only the field under test** — so `make_order(total=0)` says, in the call itself, that this test is about a zero total and nothing else. The alternative is **a twelve-field constructor call in every test, where a reader cannot tell which field matters.** And the structural advantage over a plain fixture: **a factory can be called more than once per test**, which is what you need for “two orders from the same customer” — a value fixture gives you one object.", "cols": 3, "nodes": [{"id": "d", "label": "Defaults live in the factory", "sub": "one place", "tone": "good"}, {"id": "o", "label": "make_order(total=0)", "sub": "the call states what matters", "tone": "violet"}, {"id": "a", "label": "Against a twelve-field constructor", "sub": "where nothing stands out", "tone": "crit"}, {"id": "m", "label": "And it can be called twice", "sub": "two orders, same customer", "tone": "violet"}, {"id": "v", "label": "A value fixture gives you one object", "sub": "which is the limit", "tone": "accent"}], "edges": [["d", "o"], ["o", "a"], ["m", "v"], ["o", "m"]], "t": "diagram", "id": "dg-9_3-04-1"},
+
 
 
 

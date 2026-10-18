@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The defaults are the bugs", id: "defaults" },
 
-    {"kind": "flow", "title": "The defaults are the bugs", "caption": "requests.get(url) has no timeout, no retry policy and trusts whatever comes back. A production client sets a timeout, checks the status, retries only idempotent calls with backoff, and validates the body at the boundary.", "cols": 5, "nodes": [{"id": "t", "label": "timeout=(3, 10)", "sub": "connect, read", "tone": "crit"}, {"id": "s", "label": "raise_for_status()", "sub": "4xx/5xx are errors", "tone": "warn"}, {"id": "r", "label": "retry with backoff", "sub": "5xx and timeouts only", "tone": "accent"}, {"id": "v", "label": "validate the body", "sub": "a Pydantic model", "tone": "good"}, {"id": "c", "label": "reuse the session", "sub": "connection pooling", "tone": "violet"}], "edges": [["t", "s"], ["s", "r"], ["r", "v"], ["v", "c"]], "t": "diagram", "id": "dg-12_2-01-0"},
+    {"kind": "flow", "title": "The defaults are the bugs", "caption": "requests.get(url) has no timeout, no retry policy and trusts whatever comes back. A production client sets a timeout, checks the status, retries only idempotent calls with backoff, and validates the body at the boundary.", "cols": 5, "nodes": [{"id": "t", "label": "timeout=(3, 10)", "sub": "connect, read", "tone": "crit"}, {"id": "s", "label": "raise_for_status()", "sub": "4xx/5xx are errors", "tone": "warn"}, {"id": "r", "label": "retry with backoff", "sub": "5xx and timeouts only", "tone": "accent"}, {"id": "v", "label": "validate the body", "sub": "a Pydantic model", "tone": "good"}, {"id": "c", "label": "reuse the session", "sub": "connection pooling", "tone": "violet"}], "edges": [["t", "s"], ["s", "r"], ["r", "v"], ["v", "c"]], "t": "diagram", "id": "dg-12_2-01-2"},
+
 
 
 
@@ -164,6 +165,8 @@ b = session.get(url_b, timeout=(3.05, budget.remaining()))`}
 
     { t: "h2", n: "02", text: "requests or httpx", id: "clients" },
 
+    {"kind": "trace", "title": "One row is a production incident waiting: requests has no default timeout", "caption": "**`requests` waits forever by default and `httpx` stops at 5 seconds** — which is the difference between a slow upstream degrading your service and a slow upstream exhausting your thread pool. Everything else is a preference; that row is a defect you must remember to patch at every call site. The rest favours `httpx` for new code: **the same API with an `AsyncClient`, HTTP/2 behind one flag** — against `requests`' one real advantage, **ubiquity: every example on the internet uses it.**", "left": "property", "codeW": 150, "vars": ["requests", "httpx"], "steps": [{"code": "default timeout", "state": ["NONE - waits forever", "5 seconds"], "tone": "crit"}, {"code": "async support", "state": ["no", "yes - same API, AsyncClient"], "changed": [0, 1], "tone": "good"}, {"code": "HTTP/2", "state": ["no", "yes, with http2=True"], "changed": [0, 1], "tone": "good"}, {"code": "test stubbing", "state": ["responses", "respx"], "changed": [0, 1], "tone": "good"}, {"code": "ubiquity", "state": ["every example uses it", "growing"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-12_2-02-0"},
+
     { t: "table",
       head: ["", "`requests`", "`httpx`"],
       rows: [
@@ -290,7 +293,8 @@ def fetch(url: str) -> dict:
 
     { t: "h2", n: "04", text: "Pagination", id: "pagination" },
 
-    {"kind": "flow", "title": "Cursor pagination", "caption": "Each page carries an opaque cursor for the next one; the client follows it until there is none. No page numbers to drift when rows are inserted, and each request is O(1) for the server.", "cols": 4, "nodes": [{"id": "a", "label": "GET /items", "sub": "first page", "tone": "accent"}, {"id": "b", "label": "{items, next_cursor: 'a3f'}", "sub": "the server's bookmark", "tone": "good"}, {"id": "c", "label": "GET /items?after=a3f", "sub": "follow it", "tone": "accent"}, {"id": "d", "label": "{items, next_cursor: null}", "sub": "done", "tone": "warn"}], "edges": [["a", "b"], ["b", "c"], ["c", "d"]], "t": "diagram", "id": "dg-12_2-04-1"},
+    {"kind": "flow", "title": "Cursor pagination", "caption": "Each page carries an opaque cursor for the next one; the client follows it until there is none. No page numbers to drift when rows are inserted, and each request is O(1) for the server.", "cols": 4, "nodes": [{"id": "a", "label": "GET /items", "sub": "first page", "tone": "accent"}, {"id": "b", "label": "{items, next_cursor: 'a3f'}", "sub": "the server's bookmark", "tone": "good"}, {"id": "c", "label": "GET /items?after=a3f", "sub": "follow it", "tone": "accent"}, {"id": "d", "label": "{items, next_cursor: null}", "sub": "done", "tone": "warn"}], "edges": [["a", "b"], ["b", "c"], ["c", "d"]], "t": "diagram", "id": "dg-12_2-04-3"},
+
 
 
 
@@ -365,6 +369,8 @@ while url:
     ]},
 
     { t: "h2", n: "05", text: "The boundary", id: "boundary" },
+
+    {"kind": "flow", "title": "Two boundaries in one class: exceptions and types", "caption": "**Callers never see `requests` or the vendor's field names — so swapping the HTTP library, or absorbing a renamed field, is a change inside one file.** The exception half is the one people skip: **a client that lets `requests.HTTPError` escape has made its callers depend on `requests`**, so every `except` clause upstream is now coupled to a library choice. Translate at the boundary: **the vendor's 429 becomes your `RateLimited`, their JSON becomes your dataclass, and their outage becomes one exception type you can retry on.**", "cols": 3, "nodes": [{"id": "v", "label": "The vendor's JSON and errors", "sub": "their field names, their exceptions", "tone": "accent"}, {"id": "e", "label": "Translate the exceptions", "sub": "429 -> your RateLimited", "tone": "violet"}, {"id": "t", "label": "Translate the types", "sub": "their dict -> your dataclass", "tone": "violet"}, {"id": "c", "label": "So callers never import requests", "sub": "nor know a field was renamed", "tone": "good"}, {"id": "s", "label": "And swapping the library is one file", "sub": "which is the whole point", "tone": "good"}], "edges": [["v", "e"], ["v", "t"], ["e", "c"], ["t", "c"], ["c", "s"]], "t": "diagram", "id": "dg-12_2-05-1"},
 
     { t: "code", lang: "python", title: "one place that knows about the vendor", code: `
 from dataclasses import dataclass

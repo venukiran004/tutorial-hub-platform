@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Parse, don't validate", id: "parse" },
 
-    {"kind": "flow", "title": "Parse, don't validate", "caption": "Untrusted JSON enters, a Pydantic model parses it once at the boundary, and everything inside works with a typed object that cannot be malformed. Validation logic lives in one place instead of every function.", "cols": 3, "nodes": [{"id": "raw", "label": "raw JSON", "sub": "anything at all", "tone": "crit"}, {"id": "model", "label": "Order.model_validate(data)", "sub": "parse once; 422 on failure", "tone": "accent"}, {"id": "typed", "label": "Order", "sub": "typed, trusted, everywhere inside", "tone": "good"}], "edges": [["raw", "model"], ["model", "typed"]], "t": "diagram", "id": "dg-12_3-01-0"},
+    {"kind": "flow", "title": "Parse, don't validate", "caption": "Untrusted JSON enters, a Pydantic model parses it once at the boundary, and everything inside works with a typed object that cannot be malformed. Validation logic lives in one place instead of every function.", "cols": 3, "nodes": [{"id": "raw", "label": "raw JSON", "sub": "anything at all", "tone": "crit"}, {"id": "model", "label": "Order.model_validate(data)", "sub": "parse once; 422 on failure", "tone": "accent"}, {"id": "typed", "label": "Order", "sub": "typed, trusted, everywhere inside", "tone": "good"}], "edges": [["raw", "model"], ["model", "typed"]], "t": "diagram", "id": "dg-12_3-01-3"},
+
 
 
 
@@ -158,6 +159,8 @@ class Order(StrictModel):
 
     { t: "h2", n: "02", text: "Where to put a rule", id: "validators" },
 
+    {"kind": "trace", "title": "Seven places a rule can live, and the fast ones run in Rust", "caption": "**`Field(ge=1)`, a pattern and an `Enum` all run in Rust — so prefer them, and not only for speed: they appear in the generated OpenAPI schema where a custom validator does not.** The ordering is the content: **`mode=\"before\"` runs on the raw value, so it is where you normalise; a plain `field_validator` runs after coercion, so it sees the typed value.** And the row people reach for too late: **a rule spanning two fields must be a `model_validator(mode=\"after\")`**, because a field validator cannot see its siblings.", "left": "rule", "codeW": 170, "vars": ["use", "runs"], "steps": [{"code": "quantity >= 1", "state": ["Field(ge=1)", "in Rust - prefer this"], "tone": "violet"}, {"code": "one of a fixed set", "state": ["an Enum or Literal", "in Rust, and in the schema"], "changed": [0, 1], "tone": "violet"}, {"code": "normalise before checking", "state": ["field_validator(mode='before')", "on the raw value"], "changed": [0, 1], "tone": "good"}, {"code": "custom logic on one field", "state": ["field_validator", "after coercion"], "changed": [0, 1], "tone": "good"}, {"code": "a rule spanning two fields", "state": ["model_validator(mode='after')", "once the model exists"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-12_3-02-0"},
+
     { t: "table",
       head: ["Rule", "Use", "Runs"],
       rows: [
@@ -230,6 +233,8 @@ except ValidationError as exc:
 
     { t: "h2", n: "03", text: "Serialisation is a separate contract", id: "serialisation" },
 
+    {"kind": "flow", "title": "`Field(exclude=True)` and `SecretStr` are the two that prevent incidents", "caption": "**A `password_hash` in a `model_dump()` reaches a log line, a response body or an analytics payload — and the model is where that is prevented once rather than at every serialisation site.** The two work differently and both are worth having: **`exclude=True` keeps the field out of the dump entirely, and `SecretStr` keeps the value out of `repr()` and any accidental interpolation** while leaving it readable through `.get_secret_value()`. Which is the general point: **validation and serialisation are separate contracts, and the input model is rarely the right output model.**", "cols": 3, "nodes": [{"id": "d", "label": "model_dump() includes everything", "sub": "by default", "tone": "crit"}, {"id": "l", "label": "So a hash reaches a log or a response", "sub": "or an analytics payload", "tone": "crit"}, {"id": "e", "label": "Field(exclude=True)", "sub": "out of the dump entirely", "tone": "good"}, {"id": "s", "label": "SecretStr", "sub": "out of repr and interpolation", "tone": "good"}, {"id": "t", "label": "In and out are different contracts", "sub": "so usually two models", "tone": "violet"}], "edges": [["d", "l"], ["l", "e"], ["l", "s"], ["e", "t"], ["s", "t"]], "t": "diagram", "id": "dg-12_3-03-1"},
+
     { t: "code", lang: "python", title: "what goes out is not what came in", code: `
 from pydantic import Field, SecretStr, computed_field
 
@@ -289,6 +294,8 @@ def create(payload: UserCreate) -> UserPublic:
     ]},
 
     { t: "h2", n: "04", text: "Settings", id: "settings" },
+
+    {"kind": "flow", "title": "The point is that it fails at startup", "caption": "**A missing or malformed environment variable stops the process immediately, with the field name in the message** — rather than producing an `AttributeError` on `None` at 3am, in the one code path that reads it. Which reframes what a settings class is for: **it is not configuration plumbing, it is a startup-time assertion that the deployment is complete.** And the corollary: **anything read with `os.environ.get(...)` scattered through the code is a variable that can be missing without anybody noticing until it is used.**", "cols": 3, "nodes": [{"id": "o", "label": "os.environ.get scattered about", "sub": "returns None, quietly", "tone": "crit"}, {"id": "l", "label": "AttributeError at 3am", "sub": "in the one path that reads it", "tone": "crit"}, {"id": "s", "label": "A settings model", "sub": "validated once, at import", "tone": "violet"}, {"id": "f", "label": "Fails at STARTUP, naming the field", "sub": "before traffic arrives", "tone": "good"}, {"id": "a", "label": "So it is a deployment assertion", "sub": "not configuration plumbing", "tone": "teal"}], "edges": [["o", "l"], ["l", "s"], ["s", "f"], ["f", "a"]], "t": "diagram", "id": "dg-12_3-04-2"},
 
     { t: "code", lang: "python", title: "typed configuration, validated at startup", code: `
 from pydantic import Field, PostgresDsn, SecretStr

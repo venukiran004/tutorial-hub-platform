@@ -24,6 +24,7 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Six classes at a million items, from 0.0001 ms to three hours", "caption": "**Complexity notation says nothing about whether a function takes a microsecond or a minute — it describes how the cost changes as the input grows, and deliberately discards the constant factors, the hardware and the language.** Which makes it narrow and makes the last column worth memorising: **at n = 1,000,000 and 100 ns a step, `O(n)` is 100 ms and `O(n²)` is three hours.** That gap is the entire practical content of the topic — **the difference between a request and an outage, from one scan moved inside a loop.**", "left": "class", "codeW": 130, "vars": ["ten times the data means", "at n = 1,000,000"], "steps": [{"code": "O(1)", "state": ["no change", "0.0001 ms"], "tone": "good"}, {"code": "O(log n)", "state": ["one extra step per tenfold", "0.002 ms"], "changed": [0, 1], "tone": "good"}, {"code": "O(n)", "state": ["ten times the work", "100 ms"], "changed": [0, 1], "tone": "good"}, {"code": "O(n log n)", "state": ["a little over ten times", "2 seconds"], "changed": [0, 1], "tone": "warn"}, {"code": "O(n^2)", "state": ["ONE HUNDRED times the work", "3 hours"], "changed": [0, 1], "tone": "crit"}, {"code": "O(2^n)", "state": ["unusable past about n = 40", "heat death"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-10_1-01-0"},
 
 
+
     { t: "p", text: "Complexity notation is often taught as though it measured speed. It does not. It says nothing about whether a function takes a microsecond or a minute. It describes **how the cost changes as the input grows**, and it deliberately discards everything else — the constant factors, the hardware, the language." },
 
     { t: "p", text: "That makes it a narrow tool. It is also the single most valuable thing you can know about a piece of code you are about to run on data ten times larger than you have ever tested it on." },
@@ -142,6 +143,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "dl", items: [
       ["Nesting multiplies", "A loop of n containing a loop of m costs n × m. If both loops walk the same data, that is n² — and the inner loop does not have to look like a loop. `x in some_list`, `some_list.index(x)`, `del some_list[0]`, `sorted(...)` and a slice are all loops in disguise."],
       ["Sequence adds, and the biggest term wins", "Three passes over the data one after another is 3n, which is `O(n)`. A sort followed by a single pass is `O(n log n) + O(n)`, which is `O(n log n)`. You keep the dominant term and drop the constant — but see section 07 for when dropping the constant misleads you."],
@@ -204,6 +206,7 @@ def find_duplicate_hashes(orders: list[dict]) -> list[tuple[str, str]]:
       sub: "The single most useful measurement in this module." },
 
     {"kind": "trace", "title": "The time ratio when you double n *is* the exponent, and it takes thirty seconds", "caption": "**You do not have to derive complexity from source — run the code at n, then at 2n, and the ratio of the times is the growth class.** The measured run is unambiguous: **×3.95, ×4.00, ×4.03 across three doublings, which is `O(n²)` and not an argument anybody needs to win.** And the table's value is the last column: **a ratio near 2.0 means reduce the constant factor, near 2.2 is usually a sort and normal, and near 4.0 means find the scan inside the loop — which is the fix worth making.**", "left": "ratio on doubling", "codeW": 160, "vars": ["class", "what to do next"], "steps": [{"code": "about 1.0", "state": ["O(1), or fixed overhead", "stop - size is not the problem"], "tone": "good"}, {"code": "about 2.0", "state": ["O(n)", "reduce the constant factor"], "changed": [0, 1], "tone": "good"}, {"code": "about 2.2", "state": ["O(n log n)", "usually a sort - normal"], "changed": [0, 1], "tone": "good"}, {"code": "about 4.0", "state": ["O(n^2)", "find the scan inside the loop"], "changed": [0, 1], "tone": "crit"}, {"code": "measured: 3.95, 4.00, 4.03", "state": ["O(n^2), confirmed", "no argument required"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-10_1-04-1"},
+
 
 
     { t: "p", text: "You do not have to derive complexity from source. You can measure it. Run the code at n, then at 2n, and look at the ratio of the times. The ratio *is* the exponent, and it takes thirty seconds to obtain." },
@@ -348,6 +351,7 @@ n=  16,000    1.4703s   x 4.03 time for x2 data`,
     {"kind": "trace", "title": "The growth is not 1.125x per resize — it is 32, then 64, then 96 bytes at a time", "caption": "**A list owns a block of slots; when it fills, CPython allocates a larger block and copies every element across — so that individual append is `O(n)`, and only the average over the whole sequence is constant.** Which is what *amortised* promises and what it does not: **it says nothing about any single call.** The measured steps show the over-allocation growing with the list — **+32 bytes early and +800 at length 761** — so **a latency-sensitive loop can hit a copy of the whole list at an unpredictable moment, and `O(1) amortised` will not warn you.**", "left": "length", "codeW": 130, "vars": ["bytes", "growth step"], "steps": [{"code": "0", "state": ["56", "-"], "tone": "accent"}, {"code": "1", "state": ["88", "+32"], "changed": [0, 1], "tone": "good"}, {"code": "9", "state": ["184", "+64"], "changed": [0, 1], "tone": "good"}, {"code": "41", "state": ["472", "+96"], "changed": [0, 1], "tone": "warn"}, {"code": "761", "state": ["6360", "+800"], "changed": [0, 1], "tone": "crit", "note": "and that append copied 761 items"}], "t": "diagram", "id": "dg-10_1-06-2"},
 
 
+
     { t: "p", text: "`list.append` is documented as `O(1)` amortised. That word is load-bearing. A list owns a block of slots; when it fills, CPython allocates a larger block and copies every element across. That individual append is `O(n)`. Averaged over the whole sequence of appends, the copying works out to a constant per item — hence *amortised*." },
 
     { t: "code", lang: "python", title: "watch the reallocations", code: `
@@ -392,6 +396,7 @@ len=761    bytes=6360  (+800)`,
       sub: "Four situations where the growth class is correct and irrelevant." },
 
     {"kind": "trace", "title": "Four situations where growth is the wrong lens, and the last one is not an operation at all", "caption": "**This is the part that separates people who quote big-O from people who use it.** The second row is the one that overturns intuition: **an `O(n)` loop making one HTTP call per item is 100× slower than an `O(n²)` loop doing arithmetic, at every realistic n.** And the fourth is a category error rather than a trade: **complexity counts operations, and waiting on a socket is not an operation — it is 200 ms of nothing**, so the lens to use is round-trip count and concurrency.", "left": "situation", "codeW": 170, "vars": ["why growth misleads", "what decides instead"], "steps": [{"code": "n is small and bounded", "state": ["12 columns is 144 iterations, forever", "readability"], "tone": "good"}, {"code": "the constant factor is enormous", "state": ["one HTTP call per item beats arithmetic", "where the wall-clock goes"], "changed": [0, 1], "tone": "crit"}, {"code": "memory locality dominates", "state": ["two array passes beat one pointer chase", "measurement on real data"], "changed": [0, 1], "tone": "violet"}, {"code": "the work is I/O", "state": ["waiting is not an operation", "round trips and concurrency"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-10_1-07-3"},
+
 
 
     { t: "p", text: "This is the part of the topic that separates people who quote big-O from people who use it. Complexity is one input to a performance decision, and frequently not the deciding one." },

@@ -49,6 +49,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "all three, side by side", code: `
 class Order:
     TAX_RATE = 0.2
@@ -257,6 +258,7 @@ print(type(AuditReport.empty()))`,
 
 
 
+
     { t: "p", text: "A `staticmethod` receives neither the instance nor the class. It is a plain function that happens to live inside a class body — so the honest question is always: **why is it in the class?**" },
 
     { t: "table",
@@ -316,6 +318,7 @@ class OrderProcessor:
 
 
 
+
     { t: "code", lang: "python", title: "a bound method is an object", code: `
 class Uploader:
     def __init__(self, payload: bytes) -> None:
@@ -361,6 +364,7 @@ for session in sessions:
     { t: "h2", n: "05", text: "classmethod for registries", id: "registries" },
 
     {"kind": "trace", "title": "A registry whose error message lists what it has", "caption": "**`classmethod` is what makes a registry work, because the subclass registering itself needs to know *which* class it is** — `__init_subclass__` or an explicit `register` both hand you `cls`. The output is the part worth copying: **`ValueError: no exporter for 'xml'; have ['csv', 'json']`.** A lookup that fails with just `KeyError: 'xml'` makes the caller go and read the registry; **this one answers the next question in the message**, which costs one f-string and saves a round trip in every bug report.", "left": "call", "codeW": 170, "vars": ["result"], "steps": [{"code": "Exporter.available()", "state": ["['csv', 'json']"], "tone": "good"}, {"code": "Exporter.for_format('csv')", "state": ["CsvExporter"], "changed": [0], "tone": "good"}, {"code": "Exporter.for_format('xml')", "state": ["no exporter for 'xml'; have ['csv', 'json']"], "changed": [0], "tone": "violet", "note": "not a bare KeyError"}], "t": "diagram", "id": "dg-4_3-05-3"},
+
 
 
 

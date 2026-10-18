@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Resources, not procedures", id: "resources" },
 
+    {"kind": "trace", "title": "Five procedure names, and each resource version answers a question the verb could not", "caption": "**`POST /cancelOrder` is a verb with no address; `POST /orders/{id}/cancellation` makes cancellation a thing you can also `GET`** — which is the test for the whole list: does the noun have state worth retrieving later? The clearest pair is the last: **an approval has a who and a when worth returning**, so `POST /orders/{id}/approvals` gives you a record and `POST /approve` gives you nothing. And **`GET /users/{id}/orders` is cacheable, safe and prefetchable** where a `POST` is none of those.", "left": "instead of", "codeW": 170, "vars": ["model as", "why"], "steps": [{"code": "POST /cancelOrder", "state": ["POST /orders/{id}/cancellation", "you can GET it afterwards"], "tone": "violet"}, {"code": "POST /getUserOrders", "state": ["GET /users/{id}/orders", "cacheable, safe, prefetchable"], "changed": [0, 1], "tone": "violet"}, {"code": "POST /updateEmail", "state": ["PATCH /users/{id}", "absorbs the next field"], "changed": [0, 1], "tone": "good"}, {"code": "GET /searchOrders?q=", "state": ["GET /orders?q=", "filtering is a collection property"], "changed": [0, 1], "tone": "good"}, {"code": "POST /orders/{id}/approve", "state": ["POST /orders/{id}/approvals", "an approval has a who and a when"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-12_6-01-0"},
+
     { t: "table",
       head: ["Instead of", "Model as", "Why"],
       rows: [
@@ -101,7 +103,8 @@ total: int                            -> total: float
 
     { t: "h2", n: "03", text: "Versioning", id: "versioning" },
 
-    {"kind": "compare", "title": "Three ways to version an API", "caption": "Path versions are visible and cacheable; header versions keep URLs stable; additive change avoids versioning altogether for as long as it can.", "columns": [{"title": "/v1/orders", "tone": "accent", "items": ["explicit, cacheable", "two code paths to maintain", "the common choice"]}, {"title": "Accept: application/vnd.api+json;version=2", "tone": "warn", "items": ["clean URLs", "invisible in logs and browsers", "harder to test by hand"]}, {"title": "additive only", "tone": "good", "items": ["add fields, never remove", "deprecate with headers", "no version until you must"]}], "t": "diagram", "id": "dg-12_6-03-0"},
+    {"kind": "compare", "title": "Three ways to version an API", "caption": "Path versions are visible and cacheable; header versions keep URLs stable; additive change avoids versioning altogether for as long as it can.", "columns": [{"title": "/v1/orders", "tone": "accent", "items": ["explicit, cacheable", "two code paths to maintain", "the common choice"]}, {"title": "Accept: application/vnd.api+json;version=2", "tone": "warn", "items": ["clean URLs", "invisible in logs and browsers", "harder to test by hand"]}, {"title": "additive only", "tone": "good", "items": ["add fields, never remove", "deprecate with headers", "no version until you must"]}], "t": "diagram", "id": "dg-12_6-03-3"},
+
 
 
 
@@ -172,6 +175,8 @@ total: int                            -> total: float
     },
 
     { t: "h2", n: "04", text: "Pagination, filtering, sorting", id: "collections" },
+
+    {"kind": "flow", "title": "Fetching `limit + 1` tells you there is a next page without a COUNT", "caption": "**A second `COUNT(*)` query on a large table is the expensive part of pagination, and asking for one row more than you need answers the same question** — if you got `limit + 1` back, there is another page, and you return the first `limit`. The cursor argument follows from the same table: **offset pagination makes the database skip every row it is not returning, so page 5,000 scans 100,000 rows to discard them** — and a keyset cursor on an indexed column is constant cost at every depth, **at the price of no random page access.**", "cols": 3, "nodes": [{"id": "c", "label": "A COUNT(*) for the total", "sub": "the expensive half", "tone": "crit"}, {"id": "l", "label": "Fetch limit + 1 instead", "sub": "and return limit", "tone": "violet"}, {"id": "o", "label": "OFFSET makes the DB skip rows", "sub": "page 5,000 scans 100,000", "tone": "crit"}, {"id": "k", "label": "A keyset cursor is constant cost", "sub": "WHERE id > last_seen", "tone": "good"}, {"id": "r", "label": "At the price of no random page", "sub": "which most clients never use", "tone": "accent"}], "edges": [["c", "l"], ["o", "k"], ["k", "r"], ["l", "k"]], "t": "diagram", "id": "dg-12_6-04-1"},
 
     { t: "code", lang: "python", title: "cursor pagination, and why not offsets", code: `
 class Page(BaseModel):
@@ -270,6 +275,8 @@ def list_orders(
     },
 
     { t: "h2", n: "05", text: "Deprecating without an incident", id: "deprecation" },
+
+    {"kind": "flow", "title": "Steps 3 and 4 are what separate a deprecation from an outage", "caption": "**Without usage data, removal is a guess** — and the client you did not know about is the one that breaks. So the sequence is: announce, add a `Deprecation` header and a sunset date, **then instrument the old path per client so you can see who is still calling it**, and **contact them with their own numbers** rather than a changelog entry. Only then remove. The step people skip is the third, **because it requires having built per-client attribution before you needed it** — which is 6.4's correlation id earning its place a second time.", "cols": 3, "nodes": [{"id": "a", "label": "1-2. Announce, and send a Deprecation header", "sub": "with a sunset date", "tone": "good"}, {"id": "i", "label": "3. Instrument the old path PER CLIENT", "sub": "the step people skip", "tone": "violet"}, {"id": "c", "label": "4. Contact them with their own numbers", "sub": "not a changelog entry", "tone": "violet"}, {"id": "r", "label": "5. Then remove it", "sub": "knowing who is left", "tone": "good"}, {"id": "w", "label": "Without 3, removal is a guess", "sub": "and needs 6.4's attribution", "tone": "crit"}], "edges": [["a", "i"], ["i", "c"], ["c", "r"], ["i", "w"]], "t": "diagram", "id": "dg-12_6-05-2"},
 
     { t: "code", lang: "python", title: "the sequence that works", code: `
 # 1. ADD the replacement. Populate both. Nothing breaks.

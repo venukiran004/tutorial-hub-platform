@@ -138,6 +138,7 @@ print(sorted(vars(c)))`,
 
 
 
+
     { t: "ladder",
       title: "A temperature reading",
       rungs: [
@@ -219,6 +220,7 @@ r.celsius += 5`,
 
 
 
+
     { t: "code", lang: "python", title: "a getter with no setter is read-only", code: `
 from decimal import Decimal
 from functools import cached_property
@@ -277,6 +279,7 @@ print(cart.total)                 # 10 -- STALE. The cache never invalidates.`},
     { t: "h2", n: "04", text: "Properties that lie", id: "properties-that-lie" },
 
     {"kind": "compare", "title": "Five tests, and each one is about what the caller will assume", "caption": "The rule behind all five: **a property makes a call look like an attribute read, so the caller will treat it like one — cheap, repeatable, side-effect free.** Break any of those and the syntax is lying. **The clearest violation is a property that does I/O: `order.customer` that silently issues a database query looks free at the call site, and in a loop it is N queries nobody wrote.** And the last row is the one that catches people: **`next_id` as a property that increments a counter is a method wearing attribute syntax.**", "columns": [{"title": "A property", "tone": "good", "items": ["conceptually an attribute — a value the object has", "cheap: no I/O, no significant computation", "no side effects", "takes no arguments", "repeated access is safe and idempotent"]}, {"title": "A method", "tone": "accent", "items": ["an action the object performs", "does I/O, or takes measurable time", "changes state, writes, or sends something", "needs arguments", "calling it twice differs from calling it once"]}], "t": "diagram", "id": "dg-4_4-04-2"},
+
 
 
 

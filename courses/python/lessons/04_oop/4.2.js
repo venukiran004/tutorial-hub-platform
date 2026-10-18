@@ -49,6 +49,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "Where an attribute comes from",
       caption: "Reading obj.x searches the instance __dict__, then the class, then each ancestor in MRO order, stopping at the first match. Writing obj.x = 1 always targets the instance __dict__ and never the class — which is why a class attribute behaves like a default that any instance can shadow.",
@@ -186,6 +187,7 @@ class ShoppingCart:
 
 
 
+
     { t: "code", lang: "python", title: "the legitimate uses", code: `
 from typing import ClassVar, Final
 
@@ -258,6 +260,7 @@ print(a.count, b.count, Counter.count)`,
 
 
 
+
     { t: "code", lang: "python", title: "the same lookup, applied to functions", code: `
 class Order:
     def total(self) -> int:
@@ -286,6 +289,7 @@ True
     { t: "h2", n: "04", text: "__slots__ changes the model", id: "slots" },
 
     {"kind": "trace", "title": "152 bytes to 56, and the object can no longer grow an attribute", "caption": "**`__slots__` removes the per-instance `__dict__` — 152 bytes becomes 56, a 2.7× reduction — and the trade is in the next two rows.** `hasattr(obj, \"__dict__\")` is now `False`, **so assigning an attribute the class did not declare raises `AttributeError` instead of silently creating one.** Which is a feature for a data class and a problem for anything that patches attributes on at runtime: **a mixin, a cache attribute, `functools.cached_property` and most ORM instrumentation all need the dict that slots removed.**", "left": "what you measure", "codeW": 180, "vars": ["without slots", "with slots"], "steps": [{"code": "instance size", "state": ["152 bytes", "56 bytes"], "tone": "good", "note": "2.7x"}, {"code": "has a __dict__?", "state": ["True", "False"], "changed": [0, 1], "tone": "accent"}, {"code": "obj.z = 1 on an undeclared name", "state": ["works silently", "AttributeError"], "changed": [0, 1], "tone": "violet"}, {"code": "so a mixin or cached_property", "state": ["works", "needs the dict back"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-4_2-04-2"},
+
 
 
 

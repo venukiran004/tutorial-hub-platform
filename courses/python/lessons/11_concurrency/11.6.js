@@ -47,6 +47,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "One thread, a queue of ready tasks",
       caption: "The loop picks a ready task and runs it until it awaits something unfinished. That task is parked with the OS watching its socket, and the loop picks the next ready one. Nothing is pre-empted — every switch happens at an `await`.",
@@ -119,6 +120,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Calling an async function returns a coroutine object and runs none of it", "caption": "**`fetch(url)` without `await` gives you `<coroutine object fetch at 0x...>` — which is the most common `asyncio` bug, and it produces a warning rather than an error, so it survives code review.** The second confusion is as costly and harder to see: **`await` in a loop is sequential — awaiting a hundred fetches one after another takes as long as doing them serially**, because `await` means *wait here*, not *start this*. **Concurrency comes from `gather` or a task group**, and that is the third distinction: **a coroutine is a recipe, a task is a scheduled one.**", "left": "what you write", "codeW": 170, "vars": ["what happens"], "steps": [{"code": "fetch(url)", "state": ["<coroutine object> - nothing runs"], "tone": "crit"}, {"code": "await fetch(url)", "state": ["runs it, and waits here"], "changed": [0], "tone": "good"}, {"code": "for u in urls: await fetch(u)", "state": ["sequential - as slow as serial"], "changed": [0], "tone": "crit"}, {"code": "await gather(*(fetch(u) for u in urls))", "state": ["concurrent"], "changed": [0], "tone": "violet"}, {"code": "create_task(fetch(u))", "state": ["scheduled - it runs without an await"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-11_6-02-0"},
 
+
     { t: "code", lang: "python", title: "calling one does not run it", code: `
 import asyncio
 
@@ -188,6 +190,7 @@ concurrent    1.00s`,
     { t: "h2", n: "03", text: "The blocking call", id: "blocking" },
 
     {"kind": "timeline", "title": "One blocking call stalls every task", "caption": "time.sleep(2) or a synchronous requests.get inside a coroutine holds the only thread; no other task runs until it returns. await asyncio.sleep or an async client yields instead.", "span": 6, "tick": 1, "lanes": [{"label": "task A", "tone": "crit", "bars": [[0, 3, "time.sleep(3) — holds the loop"]]}, {"label": "task B", "tone": "warn", "bars": [[3, 4, "finally runs"]]}, {"label": "task C", "tone": "warn", "bars": [[4, 5, "finally runs"]]}], "t": "diagram", "id": "dg-11_6-03-2"},
+
 
 
 

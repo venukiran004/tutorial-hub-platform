@@ -48,6 +48,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "Instance, class, metaclass",
       caption: "An object is an instance of its class; a class is an instance of its metaclass. `type` is its own metaclass, which is where the chain stops. Everything a metaclass can do, it does at the moment a class statement finishes executing.",
@@ -115,6 +116,7 @@ print(type(type))                              # <class 'type'>
     { t: "h2", n: "02", text: "The simpler hooks first", id: "simpler" },
 
     {"kind": "compare", "title": "The simpler hooks before a metaclass", "caption": "Most 'I need a metaclass' problems are solved by a hook that already exists. __init_subclass__ sees every subclass as it is created; __set_name__ tells a descriptor its attribute name; a class decorator rewrites a class after the fact.", "columns": [{"title": "__init_subclass__", "tone": "good", "items": ["runs on each subclass", "registries, validation", "no metaclass conflicts"]}, {"title": "__set_name__", "tone": "accent", "items": ["descriptor learns its name", "fields that know their key"]}, {"title": "class decorator", "tone": "warn", "items": ["transform a finished class", "dataclass is one"]}, {"title": "metaclass", "tone": "crit", "items": ["control class creation itself", "ORMs, enums, ABCs", "last resort"]}], "t": "diagram", "id": "dg-8_6-02-2"},
+
 
 
 
@@ -291,6 +293,7 @@ class AbstractExporter(Plugin):        # not registered -- nothing to skip
     { t: "h2", n: "04", text: "The conflict problem", id: "conflict" },
 
     {"kind": "flow", "title": "Two bases with unrelated metaclasses cannot be combined at all", "caption": "**`TypeError: metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases`** — raised at class definition, and there is no way around it from the subclass. Which is the strongest practical argument against metaclasses: **inheriting from two libraries that each use one is simply impossible**, and you cannot fix it without changing one of the libraries. **`__init_subclass__` has no such problem**, which is why it exists and why it is the right tool for almost everything a metaclass was once used for.", "cols": 3, "nodes": [{"id": "a", "label": "Base A with metaclass MA", "sub": "from one library", "tone": "accent"}, {"id": "b", "label": "Base B with metaclass MB", "sub": "from another", "tone": "accent"}, {"id": "c", "label": "class C(A, B)", "sub": "TypeError: metaclass conflict", "tone": "crit"}, {"id": "n", "label": "And you cannot fix it from C", "sub": "only by changing a library", "tone": "crit"}, {"id": "i", "label": "__init_subclass__ has no such problem", "sub": "which is why it exists", "tone": "good"}], "edges": [["a", "c"], ["b", "c"], ["c", "n"], ["n", "i"]], "t": "diagram", "id": "dg-8_6-04-0"},
+
 
 
 

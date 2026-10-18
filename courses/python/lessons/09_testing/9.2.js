@@ -164,6 +164,7 @@ def test_checkout(client):
 
 
 
+
     { t: "p", text: "A test that is never collected is indistinguishable from a test that passes. The rules are mechanical, and every one of them has a silent failure mode." },
 
     { t: "table",
@@ -236,6 +237,7 @@ filterwarnings = ["error"]         # a new DeprecationWarning fails the build
     { t: "h2", n: "03", text: "Reading a failure report", id: "reading-failures" },
 
     {"kind": "layers", "title": "Five sections in a failure report, and most people read one", "caption": "**The other four are where the cause usually is.** The node id is **the exact argument to rerun just this test — copy it, do not re-run the suite.** The fixture line shows every fixture with its repr, **so a useful `__repr__` on your fakes turns it into free diagnostics.** The `E` lines' **`+ where` clauses show how each side was computed, which is how you tell a wrong value from a wrong attribute.** And the section people skip is where the answer was: **captured output, shown only on failure.**", "items": [{"label": "1. The node id", "sub": "file::test[param] - rerun exactly this", "tone": "violet", "side": "copy it"}, {"label": "2. The fixture line", "sub": "every fixture, with its repr", "tone": "good", "side": "free"}, {"label": "3. The E lines", "sub": "+ where shows how each side was computed", "tone": "good", "side": "the diff"}, {"label": "4. Captured output", "sub": "stdout, stderr and logs - only on failure", "tone": "violet", "side": "skipped"}, {"label": "5. Short summary (-ra)", "sub": "one line per failure - read this first on 40", "tone": "teal", "side": "the pattern"}], "t": "diagram", "id": "dg-9_2-03-0"},
+
 
 
 

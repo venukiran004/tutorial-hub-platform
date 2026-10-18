@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Methods are a contract", id: "methods" },
 
+    {"kind": "trace", "title": "Safe and idempotent are two different promises, and PATCH keeps neither", "caption": "**Safe means no side effects at all, so a crawler or a browser prefetch cannot break anything. Idempotent means doing it twice has the same effect as doing it once** — which is what makes a retry safe after a lost response. The two rows worth internalising: **`DELETE` is idempotent, so deleting twice is not an error and returning 404 on the second call is a design choice rather than a requirement** — and **`PATCH` is not idempotent by default**, because `{\"quantity\": \"+1\"}` applied twice is not the same as once.", "left": "method", "codeW": 130, "vars": ["safe", "idempotent", "means"], "steps": [{"code": "GET, HEAD, OPTIONS", "state": ["yes", "yes", "read - no side effects"], "tone": "good"}, {"code": "PUT", "state": ["no", "yes", "replace with this body"], "changed": [0, 1, 2], "tone": "good"}, {"code": "DELETE", "state": ["no", "yes", "twice is not an error"], "changed": [2], "tone": "violet"}, {"code": "POST", "state": ["no", "NO", "everything else"], "changed": [1, 2], "tone": "warn"}, {"code": "PATCH", "state": ["no", "not by default", "a partial change"], "changed": [1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-12_1-01-0"},
+
     { t: "table",
       head: ["Method", "Safe", "Idempotent", "Means"],
       rows: [
@@ -136,7 +138,8 @@ if not body.get("success"):          # a second, bespoke error check
 
     { t: "h2", n: "03", text: "Idempotency", id: "idempotency" },
 
-    {"kind": "matrix", "title": "Safe and idempotent methods", "caption": "Safe: no state change. Idempotent: repeating has the same effect as doing it once. A client may retry idempotent requests freely; POST needs an idempotency key to be retried safely.", "rows": ["GET", "PUT", "DELETE", "POST", "PATCH"], "cols": ["safe", "idempotent"], "cells": [[true, true], [false, true], [false, true], [false, false], [false, {"text": "not guaranteed", "tone": "warn"}]], "t": "diagram", "id": "dg-12_1-03-0"},
+    {"kind": "matrix", "title": "Safe and idempotent methods", "caption": "Safe: no state change. Idempotent: repeating has the same effect as doing it once. A client may retry idempotent requests freely; POST needs an idempotency key to be retried safely.", "rows": ["GET", "PUT", "DELETE", "POST", "PATCH"], "cols": ["safe", "idempotent"], "cells": [[true, true], [false, true], [false, true], [false, false], [false, {"text": "not guaranteed", "tone": "warn"}]], "t": "diagram", "id": "dg-12_1-03-1"},
+
 
 
 

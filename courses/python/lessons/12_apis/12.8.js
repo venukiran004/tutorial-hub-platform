@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Passwords", id: "passwords" },
 
-    {"kind": "steps", "title": "Storing and checking a password", "caption": "Never store the password; store a slow, salted hash. argon2 or bcrypt take tens of milliseconds by design, so a stolen table cannot be brute-forced quickly. Verification hashes the attempt with the stored salt and compares in constant time.", "items": [{"label": "hash = argon2.hash(password)", "desc": "random salt, memory-hard, ~50 ms", "tone": "accent"}, {"label": "store the hash string only", "desc": "it contains the algorithm, parameters and salt", "tone": "good"}, {"label": "verify(hash, attempt)", "desc": "re-hash the attempt, constant-time compare", "tone": "warn"}, {"label": "rehash if parameters are outdated", "desc": "needs_rehash() after a successful login", "tone": "violet"}], "t": "diagram", "id": "dg-12_8-01-0"},
+    {"kind": "steps", "title": "Storing and checking a password", "caption": "Never store the password; store a slow, salted hash. argon2 or bcrypt take tens of milliseconds by design, so a stolen table cannot be brute-forced quickly. Verification hashes the attempt with the stored salt and compares in constant time.", "items": [{"label": "hash = argon2.hash(password)", "desc": "random salt, memory-hard, ~50 ms", "tone": "accent"}, {"label": "store the hash string only", "desc": "it contains the algorithm, parameters and salt", "tone": "good"}, {"label": "verify(hash, attempt)", "desc": "re-hash the attempt, constant-time compare", "tone": "warn"}, {"label": "rehash if parameters are outdated", "desc": "needs_rehash() after a successful login", "tone": "violet"}], "t": "diagram", "id": "dg-12_8-01-2"},
+
 
 
 
@@ -138,6 +139,8 @@ logger.info("login attempt", extra={"body": await request.json()})
 
     { t: "h2", n: "02", text: "Sessions or tokens", id: "sessions-vs-tokens" },
 
+    {"kind": "trace", "title": "Revocation is the row that decides it", "caption": "**A server session is revoked by deleting a row, immediately. A JWT cannot be revoked until it expires — unless you add a store, at which point you have a session with extra steps.** That is why **a first-party web application wants sessions**: logging someone out has to work. JWTs win where there is no shared store to consult: **service-to-service, and short-lived access tokens where the expiry *is* the revocation window.** And the cost is on every request: **several hundred bytes on the wire, with everything in it visible to the holder.**", "left": "property", "codeW": 150, "vars": ["server session", "JWT"], "steps": [{"code": "revocation", "state": ["immediate - delete the row", "NOT POSSIBLE until expiry"], "tone": "crit"}, {"code": "verification", "state": ["a lookup per request", "a signature check, no I/O"], "changed": [0, 1], "tone": "good"}, {"code": "size on the wire", "state": ["~32 bytes", "several hundred, every request"], "changed": [0, 1], "tone": "warn"}, {"code": "cross-service", "state": ["needs a shared store", "self-contained"], "changed": [0, 1], "tone": "good"}, {"code": "right for", "state": ["a first-party web app", "service-to-service, short-lived"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-12_8-02-0"},
+
     { t: "table",
       head: ["", "Server session", "JWT"],
       rows: [
@@ -170,7 +173,8 @@ refresh token   30 days       opaque, a row, revoked instantly
 
     { t: "h2", n: "03", text: "JWTs, without the four mistakes", id: "jwt" },
 
-    {"kind": "flow", "cols": 3, "title": "A JWT is three base64 parts", "caption": "`header.payload.signature`. The payload is **readable by anyone** — it is encoded, not encrypted — so it must not carry secrets. The signature is what the server checks, and a token with `alg: none` or an unexpected algorithm must be rejected.", "nodes": [{"id": "h", "label": "header", "sub": "{alg, typ}", "tone": "teal"}, {"id": "p", "label": "payload", "sub": "{sub, exp, …} — READABLE", "tone": "warn"}, {"id": "s", "label": "signature", "sub": "HMAC or RSA — the only guarantee", "tone": "good"}], "edges": [["h", "p", "."], ["p", "s", "."]], "t": "diagram", "id": "dg-12_8-03-1"},
+    {"kind": "flow", "cols": 3, "title": "A JWT is three base64 parts", "caption": "`header.payload.signature`. The payload is **readable by anyone** — it is encoded, not encrypted — so it must not carry secrets. The signature is what the server checks, and a token with `alg: none` or an unexpected algorithm must be rejected.", "nodes": [{"id": "h", "label": "header", "sub": "{alg, typ}", "tone": "teal"}, {"id": "p", "label": "payload", "sub": "{sub, exp, …} — READABLE", "tone": "warn"}, {"id": "s", "label": "signature", "sub": "HMAC or RSA — the only guarantee", "tone": "good"}], "edges": [["h", "p", "."], ["p", "s", "."]], "t": "diagram", "id": "dg-12_8-03-3"},
+
 
 
 
@@ -320,6 +324,8 @@ def get_order(order: OwnedOrder) -> Order:
     ]},
 
     { t: "h2", n: "05", text: "Secrets", id: "secrets" },
+
+    {"kind": "trace", "title": "Six rules, and two of them are about places people forget are readable", "caption": "**A secret in a Docker `ENV` is in a readable image layer, and a secret in a URL is logged by every proxy, browser history and access log between you and the server** — both feel private and neither is. The last two are about time rather than placement: **the same secret in every environment means staging can touch production**, and **a secret that has never rotated cannot be rotated in an emergency** — which is why the rotation schedule matters less than supporting **two valid keys at once.**", "left": "never", "codeW": 170, "vars": ["instead"], "steps": [{"code": "a secret in the repository", "state": ["an env var, or a secret manager"], "tone": "crit"}, {"code": "a secret in a Docker ENV", "state": ["injected at runtime - layers are readable"], "changed": [0], "tone": "crit"}, {"code": "a secret in a URL", "state": ["a header - URLs are logged everywhere"], "changed": [0], "tone": "crit"}, {"code": "the same secret in every environment", "state": ["per-environment, so staging cannot reach prod"], "changed": [0], "tone": "violet"}, {"code": "a secret that has never rotated", "state": ["two valid keys during a rotation"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-12_8-05-1"},
 
     { t: "code", lang: "python", title: "typed, validated, and hard to leak", code: `
 from pydantic import SecretStr, Field
