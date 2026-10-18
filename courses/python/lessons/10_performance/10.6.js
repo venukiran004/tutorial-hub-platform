@@ -46,6 +46,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "The decision, in order of cost",
       caption: "Each step is cheaper than the one below it and rules out the ones after. Teams that start at the bottom usually discover, several months in, that the answer was three steps up.",
@@ -122,6 +123,7 @@ print(best_case(12.0, 0.85, 50))       # 2.0 s — now it is worth doing`,
 
     {"kind": "trace", "title": "NumPy indexed element by element was slower than plain Python", "caption": "**4.10 s for the Python loop, 9.80 s for the same loop indexing a NumPy array, and 0.031 s vectorised — so the middle row is 2.4× *slower* than doing nothing at all.** The reason is the whole lesson: **indexing a NumPy array from Python pays a boxing cost per element on top of the interpreter overhead the loop already had**, so you have added work without removing any. **NumPy is not a faster list — it is a way of moving the loop out of Python**, and if the loop stays, it is a pessimisation.", "left": "approach", "codeW": 180, "vars": ["time", "against plain Python"], "steps": [{"code": "a Python loop", "state": ["4.10 s", "baseline"], "tone": "accent"}, {"code": "numpy, indexed per element", "state": ["9.80 s", "2.4x SLOWER"], "changed": [0, 1], "tone": "crit"}, {"code": "numpy, vectorised", "state": ["0.031 s", "130x faster"], "changed": [0, 1], "tone": "violet"}, {"code": "so NumPy is", "state": ["-", "not a faster list"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-10_6-02-0"},
 
+
     { t: "code", lang: "python", title: "the same work, three ways", code: `
 import numpy as np
 
@@ -167,6 +169,7 @@ result = [x * 2 for x in xs]               # ~18 us
     { t: "h2", n: "03", text: "Crossing into native code", id: "native" },
 
     {"kind": "compare", "title": "Four routes into native code, and the row that is not about speed", "caption": "**Memory safety is the row that actually differentiates them: Cython and a hand-written C extension are yours to get right, and Rust's is enforced** — which is a correctness argument rather than a performance one, since all three reach similar speeds. The honest ordering by cost: **Cython is annotated Python with a low learning cost, `ctypes`/`cffi` needs no build chain at all because the library already exists, and both C and Rust are a high learning cost plus `cibuildwheel` or `maturin` for every platform.**", "columns": [{"title": "Low cost to adopt", "tone": "good", "items": ["Cython — annotated Python, a compiler, low learning cost", "ctypes / cffi — no build chain; the .so already exists", "both leave memory safety to you", "Cython needs cibuildwheel for wheels; cffi needs nothing"]}, {"title": "High cost, more to show for it", "tone": "violet", "items": ["C extension — the CPython API directly, high learning cost", "Rust + PyO3 — high learning cost, memory safety ENFORCED", "maturin makes Rust wheels well supported", "and all four reach broadly similar speeds"]}], "t": "diagram", "id": "dg-10_6-03-1"},
+
 
     { t: "table",
       head: ["", "Cython", "C extension", "Rust + PyO3", "ctypes / cffi"],

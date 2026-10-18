@@ -73,6 +73,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "one function, both paths", code: `
 import json
 from pathlib import Path
@@ -188,6 +190,7 @@ finally: closing
 
 
 
+
     { t: "p", text: "Anything inside `try` is protected. If the success path raises the *same* exception class you are catching, your handler will claim it and report the wrong cause — and the log line will be confidently wrong, which is worse than silence." },
 
     { t: "code", lang: "python", title: "the misdiagnosis", code: `
@@ -264,6 +267,7 @@ except TimeoutError:
     { t: "h2", n: "03", text: "finally: guaranteed, and therefore dangerous", id: "finally" },
 
     {"kind": "trace", "title": "A `return` in `finally` drops the exception that was in flight", "caption": "**`finally` runs no matter how control leaves the `try` — and if control leaves the `finally` by a different route, that new route *replaces* the old one.** So the first row returns `-1` and the exception simply disappears: **no traceback, no log, a function that reports failure as a value nobody checked.** The same applies to `break` and `continue` in a loop. And the last row is the correct behaviour for comparison: **an inner `finally` that does not redirect control lets `boom` reach the outer handler.**", "left": "what the finally does", "codeW": 180, "vars": ["result", "the exception"], "steps": [{"code": "return -1", "state": ["-1", "DROPPED silently"], "tone": "crit"}, {"code": "break, inside a loop", "state": ["loop exits", "DROPPED"], "changed": [0, 1], "tone": "crit"}, {"code": "just cleanup", "state": ["inner finally runs", "reaches the outer except"], "changed": [0, 1], "tone": "good"}, {"code": "outer handler sees", "state": ["outer except: boom", "as it should"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-6_2-03-1"},
+
 
 
 
@@ -409,6 +413,7 @@ def settle(order, gateway, conn) -> Receipt:
     { t: "h2", n: "05", text: "with, suppress, and when try/finally is still right", id: "with" },
 
     {"kind": "trace", "title": "Five needs, and `try/finally` is the right answer to exactly one of them", "caption": "**For a resource you acquired, `with` puts the guarantee with the resource rather than in every call site** — so `try/finally` survives only for **things with no context manager: a raw handle, a temporary global, a monkeypatch in a test.** The others each have a named tool: **`suppress` is narrow, self-documenting and impossible to widen by accident; `ExitStack` unwinds a runtime-determined number in reverse order; and `@contextmanager` with a `yield` inside `try/except/else` puts a commit-or-rollback policy in one place.**", "left": "need", "codeW": 180, "vars": ["reach for", "why"], "steps": [{"code": "release a resource you acquired", "state": ["with", "the guarantee lives with the resource"], "tone": "good"}, {"code": "cleanup with no context manager", "state": ["try/finally", "a raw handle, a monkeypatch"], "changed": [0, 1], "tone": "violet"}, {"code": "ignore one failure deliberately", "state": ["suppress(FileNotFoundError)", "cannot widen by accident"], "changed": [0, 1], "tone": "good"}, {"code": "a number known at runtime", "state": ["ExitStack", "unwinds in reverse"], "changed": [0, 1], "tone": "good"}, {"code": "commit-or-rollback round a block", "state": ["@contextmanager", "the policy in one place"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-6_2-05-2"},
+
 
 
 

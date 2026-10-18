@@ -46,6 +46,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "The import binds a name in *your* module",
       caption: "`from x import y` copies a reference into the importing module's namespace. Patching `x.y` afterwards replaces the original but not the copy the module under test is already holding — so the real function still runs.",
@@ -181,6 +182,7 @@ fake_db.load_prfile()                        # AttributeError -- caught
 
 
 
+
     { t: "table",
       head: ["Double", "Does", "Use when"],
       rows: [
@@ -253,6 +255,7 @@ def test_place_order(db, mailer):
     {"kind": "trace", "title": "monkeypatch for values, patch for callables you will assert on", "caption": "**`monkeypatch` has no mock machinery — no `assert_called_with`, no `return_value`, no call list — which is exactly why it is the right tool for a value: it sets it, and undoes it after the test.** `patch` is for a callable whose *calls* you want to inspect. And the row that matters more than either: **time and randomness should be injected rather than patched** — take `now` or `rng` as a parameter, because patching `datetime` reaches every module that imported it, including ones you did not mean to affect.", "left": "tool", "codeW": 160, "vars": ["what it gives you", "use for"], "steps": [{"code": "monkeypatch.setattr / setenv", "state": ["set and auto-undo, no mock", "values, env vars, attributes"], "tone": "good"}, {"code": "unittest.mock.patch", "state": ["a Mock, with a call list", "callables you will assert on"], "changed": [0, 1], "tone": "good"}, {"code": "patching datetime.now", "state": ["every importer affected", "do not"], "changed": [0, 1], "tone": "crit"}, {"code": "now: datetime as a parameter", "state": ["one call site, explicit", "inject it"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-9_5-03-0"},
 
 
+
     { t: "code", lang: "python", title: "the same job, different ergonomics", code: `
 # pytest's monkeypatch fixture -- undone automatically after the test
 def test_reads_config(monkeypatch, tmp_path):
@@ -312,6 +315,7 @@ def test_expiry():
     { t: "h2", n: "04", text: "Asserting on calls", id: "asserting" },
 
     {"kind": "trace", "title": "Three assertions that pass while checking nothing", "caption": "**`assert_called_with` checks only the *most recent* call, so a test passes while missing an earlier wrong one — `assert_has_calls` or `call_args_list` is what you want when there was more than one.** The three that silently do nothing are worth memorising, because they look right: **any method misspelled on a `Mock` returns another `Mock` and therefore passes** — `assert_called_once` with a typo, `assert_called` on a `MagicMock` attribute that was never configured, and the classic **`assert mock.called_once` which is an attribute access, not a call.**", "left": "assertion", "codeW": 180, "vars": ["what it checks"], "steps": [{"code": "assert_called_with(...)", "state": ["only the MOST RECENT call"], "tone": "warn"}, {"code": "assert_has_calls([...])", "state": ["a subsequence of all calls"], "changed": [0], "tone": "good"}, {"code": "call_args_list", "state": ["every call, in order"], "changed": [0], "tone": "good"}, {"code": "assert mock.called_once", "state": ["NOTHING - an attribute access"], "changed": [0], "tone": "crit"}, {"code": "any misspelled assert_ method", "state": ["NOTHING - returns a Mock"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-9_5-04-1"},
+
 
 
     { t: "code", lang: "python", title: "the API worth knowing", code: `

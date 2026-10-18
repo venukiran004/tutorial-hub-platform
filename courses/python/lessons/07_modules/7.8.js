@@ -47,6 +47,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "Naive and aware are different types in practice",
       caption: "A naive datetime has no time zone, so it names a wall-clock reading with no way to know which clock. Comparing or subtracting a naive and an aware datetime raises. Mixing them accidentally is the most common date bug in Python.",
@@ -126,6 +127,7 @@ print(same_time)                      # 12:00`,
     { t: "h2", n: "02", text: "uuid and secrets", id: "identity" },
 
     {"kind": "trace", "title": "Two modules, and choosing the wrong one is a security bug rather than a style one", "caption": "**`uuid4` is random and `uuid5` is a deterministic hash of a namespace and a name — so the same inputs always give the same id, which is what you want for an idempotency key derived from a request.** The `secrets` rows are the ones to get right: **`token_urlsafe` and `token_hex` are cryptographically secure, and `random` is not** — `random.choice` for a password reset token is a real vulnerability, because Mersenne Twister's state is recoverable from its output. **And `compare_digest` is constant-time, which `==` on a token is not.**", "left": "call", "codeW": 170, "vars": ["result", "property"], "steps": [{"code": "uuid.uuid4()", "state": ["f47ac10b-58cc-4372-...", "random"], "tone": "good"}, {"code": "uuid.uuid5(ns, name)", "state": ["a6c4f1f8-3b52-5d1e-...", "deterministic"], "changed": [0, 1], "tone": "violet"}, {"code": "secrets.token_urlsafe(24)", "state": ["kO8vQ2mXhT4pR1sN7wY3bF9d", "cryptographically secure"], "changed": [0, 1], "tone": "good"}, {"code": "secrets.token_hex(16)", "state": ["9f2c4b8e1a7d3f6b...", "secure"], "changed": [0, 1], "tone": "good"}, {"code": "random.choice for a token", "state": ["-", "RECOVERABLE from output"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-7_8-02-0"},
+
 
 
 
@@ -298,6 +300,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 
+
     { t: "p", text: "`sqlite3` is a complete SQL database in the standard library, storing everything in one file — no server, no configuration, no dependency. It is the right answer far more often than people expect: a local cache, a desktop application's storage, a scratch database in a script, and above all **tests**, where `:memory:` gives you a real SQL engine that vanishes when the connection closes." },
 
     { t: "code", lang: "python", title: "A real database in four lines",
@@ -322,6 +325,7 @@ for row in conn.execute("SELECT id, email FROM users"):
     { t: "h2", n: "06", text: "The rest of the tour", id: "rest" },
 
     {"kind": "trace", "title": "Eight dependencies the standard library has replaced, and two it has not", "caption": "**`zoneinfo` replaced `pytz` outright in 3.9 and with a saner API; `tomllib` replaced TOML readers in 3.11, read-only; and `six` and `future` replaced nothing, because Python 2 compatibility ended in 2020.** The two rows where the package still wins are worth being honest about: **`urllib.request` is grudging for a single GET and `httpx` is worth it for anything real**, and **`orjson` earns its place only when profiling says serialisation is the bottleneck** — which is rarer than the benchmark posts suggest.", "left": "instead of", "codeW": 160, "vars": ["use", "verdict"], "steps": [{"code": "pytz", "state": ["zoneinfo", "stdlib since 3.9, better API"], "tone": "violet"}, {"code": "toml readers", "state": ["tomllib", "stdlib since 3.11, read-only"], "changed": [0, 1], "tone": "violet"}, {"code": "python-dotenv", "state": ["os.environ.get + 3 lines", "when the loader is trivial"], "changed": [0, 1], "tone": "good"}, {"code": "six, future", "state": ["nothing", "Python 2 ended in 2020"], "changed": [0, 1], "tone": "violet"}, {"code": "requests, for one call", "state": ["urllib.request", "grudgingly - httpx for real work"], "changed": [0, 1], "tone": "warn"}, {"code": "simplejson", "state": ["json", "orjson only if profiling says so"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-7_8-06-2"},
+
 
 
 

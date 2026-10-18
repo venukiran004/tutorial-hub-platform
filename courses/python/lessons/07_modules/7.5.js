@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "structure and what it means", code: `
 myapp/                       # a package -- importable as "myapp"
   __init__.py                # runs on ANY import of anything inside
@@ -63,6 +64,7 @@ myapp/                       # a package -- importable as "myapp"
     { t: "h2", n: "02", text: "The public surface", id: "surface" },
 
     {"kind": "trace", "title": "Four levels of visibility, and one of them means nothing at module level", "caption": "**A single underscore is a convention, not a mechanism — `_name` is importable and you may change it without notice, which is exactly why you should use it liberally: an internal helper marked `_` is one you can refactor freely.** The row to avoid is the third: **double underscores are name-mangled inside a class only, so `__helper` at module level is just a confusing name** with no privacy. And the fourth is the one people miss: **a name absent from `__all__` is outside the documented API even without an underscore.**", "left": "form", "codeW": 150, "vars": ["meaning", "mechanism?"], "steps": [{"code": "name", "state": ["public, documented, promised", "convention"], "tone": "good"}, {"code": "_name", "state": ["private - change it freely", "convention only"], "changed": [0, 1], "tone": "violet"}, {"code": "__name at module level", "state": ["nothing - a confusing name", "mangling is class-only"], "changed": [0, 1], "tone": "crit"}, {"code": "absent from __all__", "state": ["outside the API", "limits star-import only"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-7_5-02-1"},
+
 
 
 
@@ -216,6 +218,7 @@ usage: myapp [-h] {import,report} ...`,
     { t: "h2", n: "04", text: "Project layout", id: "layout" },
 
     {"kind": "tree", "title": "The src layout", "caption": "The package lives under src/, so tests import the installed package rather than the working directory by accident. pyproject.toml at the root describes how to build and install it.", "root": {"label": "myproject/", "tone": "accent", "children": [{"label": "pyproject.toml", "tone": "good"}, {"label": "src/", "children": [{"label": "myproject/", "tone": "warn", "children": [{"label": "__init__.py"}, {"label": "core.py"}, {"label": "cli.py"}]}]}, {"label": "tests/", "children": [{"label": "test_core.py"}]}, {"label": "README.md"}]}, "t": "diagram", "id": "dg-7_5-04-2"},
+
 
 
 

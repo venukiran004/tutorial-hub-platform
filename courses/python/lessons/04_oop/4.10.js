@@ -49,6 +49,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "What @dataclass writes for you",
       caption: "Six methods from one decorator. The value is not the typing saved — it is that every one is generated consistently, so equality and repr cannot drift from the field list.",
@@ -127,6 +128,7 @@ dict_keys(['host'])`},
 
 
 
+
     { t: "code", lang: "python", title: "the error dataclasses raise for you", code: `
 from dataclasses import dataclass, field
 
@@ -182,6 +184,7 @@ nightly-import`,
     { t: "h2", n: "03", text: "The four decorator options", id: "options" },
 
     {"kind": "trace", "title": "Four options, and `frozen=True` is the one to reach for by default", "caption": "**`frozen=True` blocks assignment and adds `__hash__`, which is what makes a value object usable as a dict key, a set member, or a shared default** — the measured output puts a `Point` in a set and raises `FrozenInstanceError` on assignment. The others are narrower: **`slots=True` for millions of instances (4.2's 152→56 bytes), `order=True` only when the natural sort really is field order, and `kw_only=True` past two or three fields** — which is 3.2's keyword-only argument arriving as one flag.", "left": "option", "codeW": 150, "vars": ["generates / does", "use when"], "steps": [{"code": "frozen=True", "state": ["blocks assignment, adds __hash__", "value objects - the default"], "tone": "violet"}, {"code": "slots=True", "state": ["removes the per-instance dict", "millions of instances (4.2)"], "changed": [0, 1], "tone": "good"}, {"code": "order=True", "state": ["lt, le, gt, ge from field order", "only if that IS the sort"], "changed": [0, 1], "tone": "warn"}, {"code": "kw_only=True", "state": ["every field keyword-only", "past two or three fields (3.2)"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-4_10-03-3"},
+
 
 
 
@@ -272,6 +275,7 @@ Event(name="deploy.finished")
 
 
 
+
     { t: "code", lang: "python", title: "validation and computed fields", code: `
 from dataclasses import dataclass, field
 
@@ -317,6 +321,7 @@ print(asdict(base))                 # recursive dict, for JSON`,
     { t: "h2", n: "05", text: "Dataclass, NamedTuple or Pydantic", id: "choosing" },
 
     {"kind": "compare", "title": "Dataclass, NamedTuple or Pydantic", "caption": "Choose by what the object is for: a mutable record, an immutable lightweight tuple, or validated data crossing a boundary.", "columns": [{"title": "dataclass", "tone": "accent", "items": ["mutable by default", "frozen=True available", "no validation", "internal records"]}, {"title": "NamedTuple", "tone": "good", "items": ["immutable, is a tuple", "unpackable", "lightweight", "return values"]}, {"title": "Pydantic", "tone": "warn", "items": ["validates and coerces", "JSON in and out", "heavier", "API and config boundaries"]}], "t": "diagram", "id": "dg-4_10-05-1"},
+
 
 
 

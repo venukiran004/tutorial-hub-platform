@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What crossing the boundary costs", id: "cost" },
 
-    {"kind": "flow", "title": "Crossing the process boundary", "caption": "Arguments are pickled, sent through a pipe, unpickled in the child; results come back the same way. A large array crosses twice, which is why multiprocessing loses on small tasks with big inputs.", "cols": 4, "nodes": [{"id": "p", "label": "parent", "sub": "pool.map(f, items)"}, {"id": "pk", "label": "pickle", "sub": "items serialised", "tone": "warn"}, {"id": "pipe", "label": "pipe / queue", "sub": "bytes across processes", "tone": "accent"}, {"id": "c", "label": "child", "sub": "unpickle, run f, pickle result", "tone": "good"}], "edges": [["p", "pk"], ["pk", "pipe"], ["pipe", "c"], ["c", "pipe", "result"], ["pipe", "p"]], "t": "diagram", "id": "dg-11_4-01-0"},
+    {"kind": "flow", "title": "Crossing the process boundary", "caption": "Arguments are pickled, sent through a pipe, unpickled in the child; results come back the same way. A large array crosses twice, which is why multiprocessing loses on small tasks with big inputs.", "cols": 4, "nodes": [{"id": "p", "label": "parent", "sub": "pool.map(f, items)"}, {"id": "pk", "label": "pickle", "sub": "items serialised", "tone": "warn"}, {"id": "pipe", "label": "pipe / queue", "sub": "bytes across processes", "tone": "accent"}, {"id": "c", "label": "child", "sub": "unpickle, run f, pickle result", "tone": "good"}], "edges": [["p", "pk"], ["pk", "pipe"], ["pipe", "c"], ["c", "pipe", "result"], ["pipe", "p"]], "t": "diagram", "id": "dg-11_4-01-1"},
+
 
 
 
@@ -144,7 +145,8 @@ False`},
 
     { t: "h2", n: "02", text: "Start methods", id: "start" },
 
-    {"kind": "compare", "title": "Start methods", "caption": "fork copies the parent's memory instantly but inherits its locks and threads — unsafe with threads; spawn starts a fresh interpreter and pickles everything, which is slower but safe. macOS and Windows default to spawn; Linux switched its default in 3.14.", "columns": [{"title": "fork", "tone": "warn", "items": ["copy-on-write clone", "fast start", "inherits locks, open files, threads — deadlock risk", "Linux only"]}, {"title": "spawn", "tone": "good", "items": ["fresh interpreter", "imports the module again — guard with __main__", "arguments must pickle", "the safe default"]}, {"title": "forkserver", "tone": "accent", "items": ["a clean server process forks on request", "fast and safe on Linux"]}], "t": "diagram", "id": "dg-11_4-02-1"},
+    {"kind": "compare", "title": "Start methods", "caption": "fork copies the parent's memory instantly but inherits its locks and threads — unsafe with threads; spawn starts a fresh interpreter and pickles everything, which is slower but safe. macOS and Windows default to spawn; Linux switched its default in 3.14.", "columns": [{"title": "fork", "tone": "warn", "items": ["copy-on-write clone", "fast start", "inherits locks, open files, threads — deadlock risk", "Linux only"]}, {"title": "spawn", "tone": "good", "items": ["fresh interpreter", "imports the module again — guard with __main__", "arguments must pickle", "the safe default"]}, {"title": "forkserver", "tone": "accent", "items": ["a clean server process forks on request", "fast and safe on Linux"]}], "t": "diagram", "id": "dg-11_4-02-2"},
+
 
 
 
@@ -283,6 +285,8 @@ with ProcessPoolExecutor(
     },
 
     { t: "h2", n: "04", text: "Sharing data", id: "sharing" },
+
+    {"kind": "trace", "title": "Shared memory was seven times faster than pickling 400 MB per worker", "caption": "**~6.4 s to pickle 400 MB per worker against ~0.9 s with `shared_memory` — because the second copies nothing.** The rows to avoid are the last two in a different way each: **`Manager().dict()` is very slow, since every single access is a round trip to a server process**, so a loop reading it is a loop making IPC calls. And the honest note on the fast path: **shared memory is zero-copy and you manage the lifetime**, so a crashed worker can leave a segment behind that nothing will clean up.", "left": "mechanism", "codeW": 170, "vars": ["for", "cost"], "steps": [{"code": "arguments and return values", "state": ["the default - small data", "pickled both ways"], "tone": "good"}, {"code": "multiprocessing.Queue", "state": ["a stream of work or results", "pickled per item"], "changed": [0, 1], "tone": "good"}, {"code": "shared_memory (400 MB)", "state": ["a large array many workers read", "~0.9 s, zero copy"], "changed": [0, 1], "tone": "violet"}, {"code": "...pickling the same 400 MB", "state": ["-", "~6.4 s per worker"], "changed": [0, 1], "tone": "crit"}, {"code": "Manager().dict()", "state": ["a shared mutable mapping", "a round trip PER ACCESS"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-11_4-04-0"},
 
     { t: "table",
       head: ["Mechanism", "For", "Cost"],

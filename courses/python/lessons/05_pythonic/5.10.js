@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Every `itertools` callable returns an **iterator**, not a list. Nothing is computed until you iterate, and once you have iterated, it is spent (Lesson 5.6). That is what lets you chain ten transformations over a 40 GB file with constant memory — and what makes a pipeline that works in the REPL return nothing on the second use." },
 
     { t: "code", lang: "python", title: "lazy means one pass", code: `
@@ -71,6 +72,7 @@ print(sum(b) == total)`,
     { t: "h2", n: "02", text: "Combining and reshaping", id: "combining" },
 
     {"kind": "trace", "title": "Five reshapings, and the last one is a grouping with a catch", "caption": "**`chain` concatenates, `islice` slices an iterator without materialising it, `batched` chunks with a short final batch, `compress` selects by a parallel mask of booleans.** The last row is `groupby`, and its behaviour is the one that surprises: **it groups *consecutive* equal keys, so it finds `['data-1', '# not-a-header', 'data-2']` as three groups rather than two** — because the input was not sorted. **`groupby` without a prior `sorted` on the same key is almost always a bug**, and it is a quiet one.", "left": "callable", "codeW": 150, "vars": ["result", "note"], "steps": [{"code": "chain(a, b)", "state": ["['a','b','c','d','e','f']", "concatenates lazily"], "tone": "good"}, {"code": "islice(count(10), 5)", "state": ["[10, 11, 12, 13, 14]", "slices an infinite source"], "changed": [0, 1], "tone": "good"}, {"code": "batched(range(7), 3)", "state": ["[(0,1,2), (3,4,5), (6,)]", "a short final batch"], "changed": [0, 1], "tone": "good"}, {"code": "compress(data, mask)", "state": ["[2, 7, 1]", "selects by a parallel mask"], "changed": [0, 1], "tone": "good"}, {"code": "groupby on unsorted input", "state": ["three groups, not two", "CONSECUTIVE keys only"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-5_10-02-1"},
+
 
 
 
@@ -130,6 +132,7 @@ for chunk in batched(rows, 500):
     { t: "h2", n: "03", text: "groupby, and why it surprises people", id: "groupby" },
 
     {"kind": "cells", "title": "groupby groups consecutive equal keys only", "caption": "groupby does not sort. Adjacent runs of the same key become one group; a key that reappears later starts a new group. Sort by the key first if you want one group per key.", "items": ["a", "a", "b", "a", "a", "c"], "highlight": [2], "negative": false, "label": "groupby('aabaac') → ('a', 2), ('b', 1), ('a', 2), ('c', 1) — four groups, not three", "t": "diagram", "id": "dg-5_10-03-2"},
+
 
 
 

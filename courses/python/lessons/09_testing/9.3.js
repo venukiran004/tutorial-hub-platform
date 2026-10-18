@@ -46,6 +46,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "fixtures request fixtures", code: `
 import pytest
 
@@ -136,6 +137,7 @@ def test_invoice_total(service: BillingService) -> None:
     {"kind": "flow", "title": "Teardown after `yield` is skipped entirely if setup raises", "caption": "**A fixture is `@contextmanager` with a different decorator, and it has the same rule: put the `yield` inside a `with`, so cleanup survives an exception in the test.** The failure mode is the one people do not plan for: **if the setup *before* the `yield` raises, the code after it never runs — so a half-created resource is never cleaned up**, and the next test inherits it. Which is why **acquiring two resources in one fixture is a bug waiting to happen, and `ExitStack` or two fixtures is the fix.**", "cols": 3, "nodes": [{"id": "y", "label": "Code before yield is setup", "sub": "after it is teardown", "tone": "good"}, {"id": "s", "label": "Setup raises -> teardown never runs", "sub": "the half-created resource leaks", "tone": "crit"}, {"id": "n", "label": "And the next test inherits it", "sub": "as a mystery failure", "tone": "crit"}, {"id": "w", "label": "Put the yield inside a with", "sub": "5.8's rule, again", "tone": "good"}, {"id": "t", "label": "Two resources? Two fixtures", "sub": "or an ExitStack", "tone": "good"}], "edges": [["y", "s"], ["s", "n"], ["n", "w"], ["w", "t"]], "t": "diagram", "id": "dg-9_3-02-0"},
 
 
+
     { t: "code", lang: "python", title: "yield is the whole mechanism", code: `
 @pytest.fixture
 def connection(config: Config):
@@ -187,6 +189,7 @@ def resources():
     { t: "h2", n: "03", text: "Scope", id: "scope" },
 
     {"kind": "timeline", "title": "Fixture scopes across a test session", "caption": "A session-scoped fixture is built once and torn down at the end; a module-scoped one per test file; a function-scoped one per test. Wider scope is faster and shares state — choose the narrowest that is not too slow.", "span": 8, "tick": 1, "lanes": [{"label": "session: db", "tone": "crit", "bars": [[0, 8, "built once"]]}, {"label": "module: app", "tone": "warn", "bars": [[0, 4, "test_a.py"], [4, 8, "test_b.py"]]}, {"label": "function: client", "tone": "good", "bars": [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8]]}], "t": "diagram", "id": "dg-9_3-03-3"},
+
 
 
 
@@ -285,6 +288,7 @@ def app(config):                    # config is function-scoped
     { t: "h2", n: "04", text: "Factory fixtures", id: "factories" },
 
     {"kind": "flow", "title": "A factory fixture lets each test override only what it cares about", "caption": "**It keeps the defaults in one place and lets the test state only the field under test** — so `make_order(total=0)` says, in the call itself, that this test is about a zero total and nothing else. The alternative is **a twelve-field constructor call in every test, where a reader cannot tell which field matters.** And the structural advantage over a plain fixture: **a factory can be called more than once per test**, which is what you need for “two orders from the same customer” — a value fixture gives you one object.", "cols": 3, "nodes": [{"id": "d", "label": "Defaults live in the factory", "sub": "one place", "tone": "good"}, {"id": "o", "label": "make_order(total=0)", "sub": "the call states what matters", "tone": "violet"}, {"id": "a", "label": "Against a twelve-field constructor", "sub": "where nothing stands out", "tone": "crit"}, {"id": "m", "label": "And it can be called twice", "sub": "two orders, same customer", "tone": "violet"}, {"id": "v", "label": "A value fixture gives you one object", "sub": "which is the limit", "tone": "accent"}], "edges": [["d", "o"], ["o", "a"], ["m", "v"], ["o", "m"]], "t": "diagram", "id": "dg-9_3-04-1"},
+
 
 
     { t: "code", lang: "python", title: "when each test needs its own variant", code: `

@@ -23,6 +23,7 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Three jobs a test can do, and the third is the one people forget", "caption": "**Every test is a permanent liability: it must be read, maintained and kept passing for as long as the code lives** — so it pays for itself only by doing one of three jobs. The second is the one with unusual economics: **most of design pressure's value is collected *before* the test ever runs**, which is why writing it can be worth it even if you delete it afterwards. And the third is the one prose cannot do: **an executable specification cannot go stale, because staleness makes it fail.**", "left": "job", "codeW": 170, "vars": ["the value", "when it is collected"], "steps": [{"code": "regression fence", "state": ["cost of breaking x chance of breaking", "every future run"], "tone": "good"}, {"code": "design pressure", "state": ["the code becomes callable from outside", "BEFORE it ever runs"], "changed": [0, 1], "tone": "violet"}, {"code": "executable specification", "state": ["cannot go stale", "every future read"], "changed": [0, 1], "tone": "violet"}, {"code": "none of the three", "state": ["a tax on all future change", "forever"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-9_1-01-0"},
 
 
+
     { t: "p", text: "Every test you write is a permanent liability: it must be read, maintained, and kept passing for as long as the code lives. It pays for itself only by doing one of three jobs — and the third one is the one people forget." },
 
     { t: "dl", items: [
@@ -44,6 +45,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "The pyramid, and the shapes teams actually have", id: "pyramid" },
 
     {"kind": "layers", "title": "The test pyramid", "caption": "Many fast unit tests at the base, fewer integration tests, a handful of end-to-end checks at the top. The shape is about cost: a unit test runs in microseconds and pins one decision; an end-to-end test runs in seconds and pins nothing in particular.", "taper": true, "items": [{"label": "end-to-end", "sub": "a few · slow · the whole system", "tone": "crit"}, {"label": "integration", "sub": "some · real database, stubbed HTTP", "tone": "warn"}, {"label": "unit", "sub": "many · milliseconds · one function", "tone": "good"}], "t": "diagram", "id": "dg-9_1-02-3"},
+
 
 
 
@@ -137,6 +139,7 @@ EC.receiveLesson({
     {"kind": "trace", "title": "The test budget is wildly uneven, and a coverage percentage flattens exactly that", "caption": "**Ask what it costs if this specific line is wrong and nobody notices for a month; that number times the chance of it being wrong is the budget for that code.** The range is the point: **money arithmetic gets exhaustive table-driven tests including rounding boundaries, and a `__repr__` gets no test, ever.** Two rows are about wiring rather than logic: **an authorisation rule needs a unit test per rule *and* an integration test per endpoint proving the check is actually wired in** — because a correct rule that is not called is the breach.", "left": "code", "codeW": 170, "vars": ["cost of being silently wrong", "the budget"], "steps": [{"code": "money arithmetic, tax, refunds", "state": ["restated accounts, regulatory exposure", "exhaustive table tests"], "tone": "crit"}, {"code": "authorisation checks", "state": ["a data breach", "per rule, PLUS per endpoint"], "changed": [0, 1], "tone": "crit"}, {"code": "parsers of external input", "state": ["silent corruption spreading", "real captured payloads, malformed too"], "changed": [0, 1], "tone": "crit"}, {"code": "data migrations", "state": ["irreversible corruption", "production-shaped data, and the rollback"], "changed": [0, 1], "tone": "crit"}, {"code": "a CRUD endpoint storing a nickname", "state": ["a user retypes it", "one happy-path integration test"], "changed": [0, 1], "tone": "good"}, {"code": "a __repr__", "state": ["nothing", "no test. ever."], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-9_1-03-1"},
 
 
+
     { t: "p", text: "Ask what it costs if this specific line is wrong and nobody notices for a month. That number, multiplied by the chance of it being wrong, is the test budget for that code. It is wildly uneven across a codebase, and a coverage percentage flattens exactly the distinction that matters." },
 
     { t: "table",
@@ -181,6 +184,7 @@ def test_line_total():
     { t: "h2", n: "04", text: "What coverage measures", id: "coverage" },
 
     {"kind": "trace", "title": "100% line coverage on a function whose other branch was never tried", "caption": "**Line coverage answers exactly one question: was this line executed? It says nothing about whether anything was asserted, whether the assertion was meaningful, or whether the other branch was tried.** Both are demonstrated: **a test with no assertion at all reports 100%**, and **the same file reports 100% on lines and 83% with `--cov-branch`, naming the missing jump as `2->4`.** Which is the minimum honest configuration — **branch coverage is one flag, and without it the number is measuring execution rather than testing.**", "left": "measurement", "codeW": 170, "vars": ["reports", "what it missed"], "steps": [{"code": "--cov, with no assertion in the test", "state": ["100%", "that nothing was checked"], "tone": "crit"}, {"code": "--cov on a two-branch function", "state": ["100%", "one branch never ran"], "changed": [0, 1], "tone": "crit"}, {"code": "--cov-branch on the same file", "state": ["83%, missing 2->4", "names the jump"], "changed": [0, 1], "tone": "violet"}, {"code": "so branch coverage is", "state": ["one flag", "the minimum honest setting"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-9_1-04-2"},
+
 
 
     { t: "p", text: "Line coverage answers exactly one question: **was this line executed by the test run?** It says nothing about whether anything was asserted, whether the assertion was meaningful, or whether the other branch was tried. Both properties are easy to demonstrate." },

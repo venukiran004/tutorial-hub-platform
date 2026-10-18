@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Six tools, and the obvious one is useful for almost nothing", "caption": "**`sys.getsizeof` measures one object shallowly — so a list of a million strings reports 8,856 bytes, the size of the pointer array, and not the strings.** Which is why the measured numbers sit beside each other: **48, 104, 8,856 shallow against 184,320 deep.** The default is `tracemalloc`, because **it attributes allocations to the line that made them**, and the escalation is `memray` **for when `tracemalloc` shows nothing — which means the allocation happened in a C extension it cannot see.**", "left": "tool", "codeW": 160, "vars": ["reports", "use it for"], "steps": [{"code": "sys.getsizeof(obj)", "state": ["one object, SHALLOWLY", "almost nothing"], "tone": "crit"}, {"code": "pympler.asizeof(obj)", "state": ["one object, deeply", "sizing a structure you are choosing"], "changed": [0, 1], "tone": "good"}, {"code": "tracemalloc", "state": ["Python allocations, by line", "the default"], "changed": [0, 1], "tone": "violet"}, {"code": "memray", "state": ["every allocation, incl. C", "when tracemalloc shows nothing"], "changed": [0, 1], "tone": "violet"}, {"code": "psutil rss", "state": ["the whole process, as the OS sees it", "what your container limit compares"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-10_3-01-0"},
 
+
     { t: "table",
       head: ["Tool", "Reports", "Use it for"],
       rows: [
@@ -83,6 +84,7 @@ print(peak_bytes(lambda: [{"id": i, "name": "x" * 20} for i in range(1000)]))
     { t: "h2", n: "02", text: "Where the bytes go", id: "where" },
 
     {"kind": "compare", "title": "Where the bytes go", "caption": "An int is 28 bytes; a list of a million ints is 8 MB of pointers plus 28 MB of ints. The same numbers in a NumPy array are 8 MB total, and __slots__ removes the per-instance dict from objects.", "columns": [{"title": "list of 1M ints", "tone": "crit", "items": ["8 MB of pointers", "+ 28 MB of int objects", "≈ 36 MB"]}, {"title": "array / numpy int64", "tone": "good", "items": ["8 bytes each, contiguous", "≈ 8 MB"]}, {"title": "1M small objects", "tone": "warn", "items": ["~56 bytes + __dict__ each", "__slots__: ~48 bytes, no dict"]}], "t": "diagram", "id": "dg-10_3-02-1"},
+
 
 
 

@@ -48,6 +48,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "What `with` guarantees",
       caption: "The exit runs whether the block finishes, returns, or raises. That guarantee is the entire point — it is the difference between a file that is always closed and one that usually is.",
@@ -225,6 +226,7 @@ class Transaction:
 
 
 
+
     { t: "code", lang: "python", title: "returning True swallows the exception", code: `
 class Swallow:
     def __enter__(self):
@@ -278,6 +280,7 @@ def logged(operation: str) -> Iterator[None]:
     { t: "h2", n: "04", text: "ExitStack", id: "exitstack" },
 
     {"kind": "flow", "title": "`with a, b, c:` needs the count at write time; ExitStack does not", "caption": "**`with a, b, c:` works when you know the resources at write time. When the number varies at runtime, `ExitStack` manages them and unwinds in reverse order** — so opening N files from a list is a loop of `stack.enter_context(...)` and every one closes, including on an exception part-way through the loop. The two uses worth knowing beyond that: **`callback()` registers arbitrary cleanup without a context manager, and `pop_all()` transfers ownership out** — which is how a factory returns a half-built object without leaking on failure.", "cols": 3, "nodes": [{"id": "s", "label": "with a, b, c:", "sub": "the count is fixed at write time", "tone": "good"}, {"id": "e", "label": "ExitStack: enter_context in a loop", "sub": "N known only at runtime", "tone": "violet"}, {"id": "r", "label": "Unwinds in reverse order", "sub": "including mid-loop failure", "tone": "good"}, {"id": "c", "label": "callback() for arbitrary cleanup", "sub": "no context manager needed", "tone": "good"}, {"id": "p", "label": "pop_all() transfers ownership out", "sub": "a factory that cannot leak", "tone": "accent"}], "edges": [["s", "e"], ["e", "r"], ["r", "c"], ["c", "p"]], "t": "diagram", "id": "dg-5_8-04-1"},
+
 
 
 

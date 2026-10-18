@@ -78,6 +78,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "getting in", code: `
 def process(order):
     total = compute(order)
@@ -138,6 +139,7 @@ for record in records:
     { t: "h2", n: "03", text: "Post-mortem debugging", id: "postmortem" },
 
     {"kind": "trace", "title": "The bug diagnosed in four commands, after the crash, with no re-run", "caption": "**The most useful `pdb` feature is the one people never find: you can inspect a crash *after* it happened, with the entire stack and every local still intact** — no re-running and no guessing what the values were. The session is the whole argument: **`bt` locates the frame, `a` shows `quantity='2'` as a string, `p type(...)` confirms it, and `u` plus one more read finds the source: `'legacy-import'`.** Four commands from traceback to root cause, **and the information was all sitting in a process that had already stopped.**", "left": "command", "codeW": 150, "vars": ["what it showed"], "steps": [{"code": "bt", "state": ["billing.py(78) line_total()"], "tone": "good"}, {"code": "a", "state": ["quantity='2' - a string"], "changed": [0], "tone": "violet"}, {"code": "p type(line.quantity)", "state": ["<class 'str'>"], "changed": [0], "tone": "violet"}, {"code": "u, then p order.source", "state": ["'legacy-import' - the cause"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-6_6-03-1"},
+
 
 
 
@@ -215,6 +217,7 @@ line = OrderLine(sku='W-1', price=Decimal('9.99'), quantity='2')
 
 
 
+
     { t: "ol", items: [
       "**Reproduce it.** A bug you cannot trigger on demand cannot be verified as fixed. Spend the time here — a reliable reproduction is most of the work, and everything after it is mechanical.",
       "**Shrink the reproduction.** Smallest input, fewest steps, fastest run. Every element you remove without losing the failure is a candidate cause eliminated.",
@@ -258,6 +261,7 @@ git bisect run pytest tests/test_totals.py -x -q`,
     { t: "h2", n: "05", text: "Bugs you cannot reproduce locally", id: "production" },
 
     {"kind": "trace", "title": "Six symptoms, and the highest-value move is the least technical", "caption": "**Logging the inputs and replaying locally turns an unreproducible bug into a reproducible one, which is the highest-value move on the list** — everything else only narrows where to look. Two tools are worth knowing by name before you need them: **`py-spy dump --pid` gives the stack of a live process without stopping it or importing anything into it**, which is the only option on a hung container, and **`faulthandler.enable()` produces a Python traceback from a fatal signal, which otherwise prints nothing at all.**", "left": "symptom", "codeW": 170, "vars": ["tool", "what it gives you"], "steps": [{"code": "hangs, no output", "state": ["faulthandler.dump_traceback_later(30)", "every thread's stack, built in"], "tone": "good"}, {"code": "hangs, already running", "state": ["py-spy dump --pid", "without stopping it"], "changed": [0, 1], "tone": "violet"}, {"code": "slow, cause unknown", "state": ["py-spy top --pid", "a live view of the time"], "changed": [0, 1], "tone": "good"}, {"code": "segfault or C-extension crash", "state": ["faulthandler.enable()", "a traceback where there was none"], "changed": [0, 1], "tone": "violet"}, {"code": "wrong output, cause unknown", "state": ["log the inputs, replay locally", "it becomes reproducible"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-6_6-05-2"},
+
 
 
 

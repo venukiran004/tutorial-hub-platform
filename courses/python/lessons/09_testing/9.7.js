@@ -75,6 +75,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "The container is the fixture, started once per session", "caption": "**A session-scoped container plus a per-test transaction that rolls back is the correct arrangement: the whole startup cost is paid once and every test still gets a clean database.** The detail that makes it work is `join_transaction_mode`, **which keeps the test's outer transaction in charge even when the code under test commits** — without it, application code calling `commit()` escapes the rollback and leaks state into the next test. And the SQLite substitution is the trade to make knowingly: **faster, and a different SQL dialect, so the things it cannot catch are exactly the dialect-specific ones.**", "cols": 3, "nodes": [{"id": "c", "label": "A session-scoped container", "sub": "startup paid once", "tone": "good"}, {"id": "t", "label": "A per-test transaction, rolled back", "sub": "a clean database each time", "tone": "good"}, {"id": "j", "label": "join_transaction_mode keeps yours in charge", "sub": "even when the code commits", "tone": "violet"}, {"id": "w", "label": "Without it a commit() escapes", "sub": "and leaks into the next test", "tone": "crit"}, {"id": "s", "label": "SQLite instead: faster, different dialect", "sub": "it cannot catch dialect bugs", "tone": "warn"}], "edges": [["c", "t"], ["t", "j"], ["j", "w"], ["w", "s"]], "t": "diagram", "id": "dg-9_7-02-0"},
 
 
+
     { t: "code", lang: "python", title: "testcontainers: the container is the fixture", code: `
 import pytest
 from sqlalchemy import create_engine
@@ -133,6 +134,7 @@ def db(engine):
     { t: "h2", n: "03", text: "HTTP, stubbed at the right layer", id: "http" },
 
     {"kind": "layers", "title": "Stub HTTP at the right layer", "caption": "Replace the transport, not your own client code: respx or a fake transport answers httpx's requests, so serialisation, retries and error handling still run for real.", "items": [{"label": "your service code", "sub": "runs for real", "tone": "good"}, {"label": "your API client wrapper", "sub": "runs for real — retries, parsing", "tone": "good"}, {"label": "httpx / requests", "sub": "runs for real", "tone": "accent"}, {"label": "transport → stubbed here", "sub": "respx / responses / a MockTransport", "tone": "warn"}, {"label": "the network", "sub": "never touched in a test", "tone": "crit"}], "t": "diagram", "id": "dg-9_7-03-3"},
+
 
 
 
@@ -251,6 +253,7 @@ def _no_network(request, monkeypatch):
     {"kind": "flow", "title": "State only what the test is about", "caption": "**The alternative is a twelve-field constructor call in every test, where a reader cannot tell which field matters** — so a factory makes the significant value the only visible one. And the warning next to it is about the opposite failure: **shared fixture data is the slow poison.** A module-level `sample_orders` that forty tests read becomes **something nobody can change, because any edit breaks an unrelated test** — and the tests that depend on its incidental properties are the ones that break. **Build per test; share only the expensive infrastructure.**", "cols": 3, "nodes": [{"id": "f", "label": "make_order(total=0)", "sub": "the significant field, alone", "tone": "good"}, {"id": "t", "label": "Against twelve fields in every test", "sub": "nothing stands out", "tone": "crit"}, {"id": "s", "label": "Shared fixture data", "sub": "forty tests read one list", "tone": "crit"}, {"id": "n", "label": "Nobody can change it", "sub": "any edit breaks something unrelated", "tone": "crit"}, {"id": "r", "label": "Build data per test", "sub": "share only the infrastructure", "tone": "good"}], "edges": [["f", "t"], ["s", "n"], ["n", "r"], ["t", "r"]], "t": "diagram", "id": "dg-9_7-04-1"},
 
 
+
     { t: "code", lang: "python", title: "state only what the test is about", code: `
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
@@ -312,6 +315,7 @@ def test_report_totals(seeded_db):
     { t: "h2", n: "05", text: "Keeping it fast enough to run", id: "fast" },
 
     {"kind": "trace", "title": "Six techniques, and the first one has no cost at all", "caption": "**A session-scoped container with a per-test transaction costs nothing — it is simply correct**, which is why it is first. `pytest-xdist` is near-linear across cores **and needs a database or schema per worker**, which is the whole setup cost. The row worth being honest about is the last: **reusing the container across runs saves two seconds per local run and leaves a stale schema when migrations change** — a trade that is fine until the day it costs you an hour of confusion.", "left": "technique", "codeW": 170, "vars": ["buys", "costs"], "steps": [{"code": "session container + per-test transaction", "state": ["the whole startup, once", "nothing - simply correct"], "tone": "violet"}, {"code": "pytest-xdist -n auto", "state": ["near-linear across cores", "a database per worker"], "changed": [0, 1], "tone": "good"}, {"code": "unit / integration / contract markers", "state": ["a fast default run", "discipline to mark them"], "changed": [0, 1], "tone": "good"}, {"code": "a template database restored per test", "state": ["faster than re-migrating", "Postgres-specific"], "changed": [0, 1], "tone": "good"}, {"code": "reusing the container (--reuse)", "state": ["two seconds a run", "a stale schema"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-9_7-05-2"},
+
 
 
     { t: "table",

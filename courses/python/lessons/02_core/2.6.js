@@ -114,6 +114,7 @@ elif score >= 80:
 
 
 
+
     { t: "p", text: "The most common shape in unmaintained Python is the *arrow*: each validation adds a level of indentation, and the actual work ends up six levels deep at the point of the arrowhead." },
 
     { t: "ladder",
@@ -194,6 +195,7 @@ def classify(n):
     { t: "h2", n: "03", text: "Replacing long chains", id: "dispatch" },
 
     {"kind": "trace", "title": "Three dispatch shapes, and the third one moves the branch into the data", "caption": "**A chain of `elif` comparing the same variable against constants is a lookup written as control flow — past three or four branches a dict usually reads better and is easier to extend.** The three forms differ in what the values are: **a constant per key, a function per key when each branch does work, or a method on the object itself when the branch genuinely belongs to the data.** The last is the one that scales, **because adding a case means adding a class rather than editing a dispatcher.**", "left": "shape", "codeW": 170, "vars": ["the dict holds", "when"], "steps": [{"code": "if / elif chain", "state": ["nothing - it is code", "two or three branches"], "tone": "good"}, {"code": "RATES[plan]", "state": ["a constant per key", "a pure lookup"], "changed": [0, 1], "tone": "good"}, {"code": "HANDLERS.get(event['type'])", "state": ["a function per key", "each branch does work"], "changed": [0, 1], "tone": "violet"}, {"code": "obj.handle()", "state": ["nothing - polymorphism", "the branch belongs to the data"], "changed": [0, 1], "tone": "violet", "note": "adding a case adds a class"}], "t": "diagram", "id": "dg-2_6-03-1"},
+
 
 
 
@@ -306,6 +308,7 @@ def bill(plan: Plan) -> Decimal:
     { t: "h2", n: "04", text: "Conditional expressions", id: "ternary" },
 
     {"kind": "trace", "title": "One conditional reads well, three nested ones do not", "caption": "**Inside a comprehension, an f-string or an argument list a statement is not allowed — the conditional expression is the only option, and that is what it is for rather than saving a line.** The degradation is quick: **two branches is still readable, three is already hard, and four wraps across lines and should be a table.** Which is what the last row is: **`GRADES[bisect_right(CUTOFFS, score)]` replaces the whole chain with sorted data and one lookup.**", "left": "form", "codeW": 190, "vars": ["verdict"], "steps": [{"code": "'even' if n % 2 == 0 else 'odd'", "state": ["the right tool"], "tone": "good"}, {"code": "inside a comprehension", "state": ["the ONLY option - no statements"], "changed": [0], "tone": "violet"}, {"code": "'high' if s > 90 else 'mid' if s > 50 else 'low'", "state": ["already hard to read"], "changed": [0], "tone": "warn"}, {"code": "four branches, wrapped", "state": ["should be a table"], "changed": [0], "tone": "crit"}, {"code": "GRADES[bisect_right(CUTOFFS, score)]", "state": ["sorted data, one lookup"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-2_6-04-2"},
+
 
 
 

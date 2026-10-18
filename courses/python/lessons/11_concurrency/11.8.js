@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The procedure", id: "procedure" },
 
-    {"kind": "steps", "title": "The procedure for choosing a model", "caption": "Answer the questions in order; the first yes decides. Most services end at step 2 or 3.", "items": [{"label": "Is it CPU-bound Python?", "desc": "yes → multiprocessing (or native code); the GIL rules out threads", "tone": "crit"}, {"label": "Is it I/O-bound with a few tasks?", "desc": "yes → ThreadPoolExecutor; simplest, works with any library", "tone": "accent"}, {"label": "Is it I/O-bound with thousands of connections?", "desc": "yes → asyncio, with async libraries end to end", "tone": "good"}, {"label": "Is it mixed?", "desc": "asyncio for the I/O, run_in_executor or a process pool for the CPU parts", "tone": "warn"}], "t": "diagram", "id": "dg-11_8-01-0"},
+    {"kind": "steps", "title": "The procedure for choosing a model", "caption": "Answer the questions in order; the first yes decides. Most services end at step 2 or 3.", "items": [{"label": "Is it CPU-bound Python?", "desc": "yes → multiprocessing (or native code); the GIL rules out threads", "tone": "crit"}, {"label": "Is it I/O-bound with a few tasks?", "desc": "yes → ThreadPoolExecutor; simplest, works with any library", "tone": "accent"}, {"label": "Is it I/O-bound with thousands of connections?", "desc": "yes → asyncio, with async libraries end to end", "tone": "good"}, {"label": "Is it mixed?", "desc": "asyncio for the I/O, run_in_executor or a process pool for the CPU parts", "tone": "warn"}], "t": "diagram", "id": "dg-11_8-01-1"},
+
 
 
 
@@ -281,6 +282,8 @@ def run(path: str) -> int:
     ]},
 
     { t: "h2", n: "03", text: "Signals you chose wrong", id: "signals" },
+
+    {"kind": "trace", "title": "Seven symptoms, and each one has a one-command check", "caption": "**“Threads made it slower” is GIL contention and the check is `cpu/wall` from 11.1** — which is why that measurement comes first. Two are easy to miss: **fast locally and slow on a bigger machine is nested library parallelism, fixed with `OMP_NUM_THREADS=1`**, because NumPy's threads multiply by your workers rather than dividing the work. And **“works, then 429s from upstream” is a concurrency limit with no rate limit** — bounding how many run at once says nothing about how fast they start.", "left": "symptom", "codeW": 170, "vars": ["likely cause", "the check"], "steps": [{"code": "threads made it slower", "state": ["CPU-bound pure Python", "cpu/wall; try processes"], "tone": "crit"}, {"code": "processes made it slower", "state": ["work below the boundary cost", "add chunksize, or drop it"], "changed": [0, 1], "tone": "crit"}, {"code": "async slower than sync", "state": ["a blocking call on the loop", "run with debug=True"], "changed": [0, 1], "tone": "crit"}, {"code": "fast locally, slow on a big machine", "state": ["nested library parallelism", "OMP_NUM_THREADS=1"], "changed": [0, 1], "tone": "violet"}, {"code": "works, then 429s", "state": ["a concurrency limit, no rate limit", "add a token bucket"], "changed": [0, 1], "tone": "violet"}, {"code": "shutdown hangs", "state": ["CancelledError swallowed", "check except BaseException"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-11_8-03-0"},
 
     { t: "table",
       head: ["Symptom", "Likely cause", "Check"],

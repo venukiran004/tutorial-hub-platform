@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The two distinctions", id: "distinctions" },
 
-    {"kind": "matrix", "title": "Which model for which workload", "caption": "I/O-bound work waits; threads and asyncio overlap the waiting. CPU-bound work computes; only processes (or free-threaded Python) use a second core, because of the GIL.", "rows": ["threads", "asyncio", "multiprocessing"], "cols": ["I/O-bound", "CPU-bound"], "cells": [[{"text": "good — GIL released while waiting", "tone": "good"}, {"text": "no speed-up", "tone": "crit"}], [{"text": "best at scale — one thread, thousands of tasks", "tone": "good"}, {"text": "blocks the loop", "tone": "crit"}], [{"text": "works, heavy", "tone": "warn"}, {"text": "true parallelism", "tone": "good"}]], "t": "diagram", "id": "dg-11_1-01-0"},
+    {"kind": "matrix", "title": "Which model for which workload", "caption": "I/O-bound work waits; threads and asyncio overlap the waiting. CPU-bound work computes; only processes (or free-threaded Python) use a second core, because of the GIL.", "rows": ["threads", "asyncio", "multiprocessing"], "cols": ["I/O-bound", "CPU-bound"], "cells": [[{"text": "good — GIL released while waiting", "tone": "good"}, {"text": "no speed-up", "tone": "crit"}], [{"text": "best at scale — one thread, thousands of tasks", "tone": "good"}, {"text": "blocks the loop", "tone": "crit"}], [{"text": "works, heavy", "tone": "warn"}, {"text": "true parallelism", "tone": "good"}]], "t": "diagram", "id": "dg-11_1-01-1"},
+
 
 
 
@@ -99,6 +100,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Which one are you?", id: "classify" },
 
+    {"kind": "trace", "title": "One ratio separates the two worlds, and both runs took about eight seconds", "caption": "**`cpu/wall` is the whole diagnostic: 2% means the process spent eight seconds waiting and a fifth of a second computing; 98% means it was busy the entire time.** Both finished in roughly the same wall-clock, **so the duration tells you nothing about which strategy will help** — threads will fix the first and do nothing for the second. Which is why this is the first measurement in the module: **it is two lines of `time.process_time()` against `time.perf_counter()`, and it decides the whole chapter.**", "left": "measurement", "codeW": 170, "vars": ["wall", "cpu", "cpu/wall", "verdict"], "steps": [{"code": "run A", "state": ["8.40s", "0.21s", "2%", "I/O-bound"], "tone": "good"}, {"code": "run B", "state": ["8.10s", "7.95s", "98%", "CPU-bound"], "changed": [0, 1, 2, 3], "tone": "crit"}, {"code": "so wall-clock alone", "state": ["nearly identical", "-", "-", "tells you nothing"], "changed": [0, 1, 2, 3], "tone": "violet"}], "t": "diagram", "id": "dg-11_1-02-0"},
+
     { t: "code", lang: "python", title: "the measurement takes a minute", code: `
 import time
 
@@ -145,7 +148,8 @@ wall 8.10s   cpu 7.95s   cpu/wall 98%      -> CPU-bound`,
 
     { t: "h2", n: "03", text: "The benchmark that makes it concrete", id: "benchmark" },
 
-    {"kind": "timeline", "title": "Concurrency versus parallelism", "caption": "Two I/O tasks on one core interleave their waits and finish in about the time of one. Two CPU tasks on one core just take turns; they need two cores to finish sooner.", "span": 8, "tick": 2, "lanes": [{"label": "I/O, 1 thread", "tone": "crit", "bars": [[0, 4, "wait A"], [4, 8, "wait B"]]}, {"label": "I/O, 2 threads", "tone": "good", "bars": [[0, 4, "wait A"], [0.2, 4.2, "wait B"]]}, {"label": "2 threads, 1 core", "tone": "warn", "bars": [[0, 1, "A"], [1, 2, "B"], [2, 3, "A"], [3, 4, "B"], [4, 5, "A"], [5, 6, "B"], [6, 7, "A"], [7, 8, "B"]]}, {"label": "CPU, 2 processes", "tone": "good", "bars": [[0, 4, "A on core 1"], [0, 4, "B on core 2"]]}], "t": "diagram", "id": "dg-11_1-03-1"},
+    {"kind": "timeline", "title": "Concurrency versus parallelism", "caption": "Two I/O tasks on one core interleave their waits and finish in about the time of one. Two CPU tasks on one core just take turns; they need two cores to finish sooner.", "span": 8, "tick": 2, "lanes": [{"label": "I/O, 1 thread", "tone": "crit", "bars": [[0, 4, "wait A"], [4, 8, "wait B"]]}, {"label": "I/O, 2 threads", "tone": "good", "bars": [[0, 4, "wait A"], [0.2, 4.2, "wait B"]]}, {"label": "2 threads, 1 core", "tone": "warn", "bars": [[0, 1, "A"], [1, 2, "B"], [2, 3, "A"], [3, 4, "B"], [4, 5, "A"], [5, 6, "B"], [6, 7, "A"], [7, 8, "B"]]}, {"label": "CPU, 2 processes", "tone": "good", "bars": [[0, 4, "A on core 1"], [0, 4, "B on core 2"]]}], "t": "diagram", "id": "dg-11_1-03-2"},
+
 
 
 

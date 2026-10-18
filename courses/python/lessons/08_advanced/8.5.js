@@ -47,6 +47,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "What `obj.x` actually does",
       caption: "The order is the whole lesson. A data descriptor on the class beats the instance dictionary; a non-data descriptor loses to it. That single distinction explains `property`, bound methods, and why `cached_property` can replace itself.",
@@ -147,6 +148,7 @@ print(Service.__dict__["fetch"].__get__(Service(), Service))
 
 
 
+
     { t: "code", lang: "python", title: "the full protocol", code: `
 class Field:
     def __set_name__(self, owner: type, name: str) -> None:
@@ -207,6 +209,7 @@ print(a.price)                    # 20 -- they share one descriptor`,
     { t: "h2", n: "03", text: "The library descriptors, explained", id: "library" },
 
     {"kind": "trace", "title": "Data or non-data decides who wins against the instance dict", "caption": "**A data descriptor defines `__set__` and takes precedence over the instance `__dict__`; a non-data descriptor does not, so an instance attribute shadows it** — which is 4.2's lookup order with the reason attached. That is why `cached_property` works at all: **it is non-data, so once it writes the value into `obj.__dict__` the second access never reaches the descriptor.** And it is why it fails on `__slots__`: **`TypeError: No '__dict__' attribute on 'WithSlots' instance to cache 'area'`** — the mechanism it depends on was removed.", "left": "object", "codeW": 160, "vars": ["kind", "its __get__ returns"], "steps": [{"code": "a plain function", "state": ["non-data", "a bound method"], "tone": "good"}, {"code": "property", "state": ["DATA", "the getter's result"], "changed": [0, 1], "tone": "violet"}, {"code": "classmethod / staticmethod", "state": ["non-data", "bound to the class / unbound"], "changed": [0, 1], "tone": "good"}, {"code": "cached_property", "state": ["non-data", "computes, then writes to __dict__"], "changed": [0, 1], "tone": "violet"}, {"code": "...on a __slots__ class", "state": ["-", "TypeError: no __dict__ to cache in"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-8_5-03-1"},
+
 
 
 

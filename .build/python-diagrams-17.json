@@ -1,0 +1,129 @@
+{
+ "11.1": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "One ratio separates the two worlds, and both runs took about eight seconds",
+         "caption": "**`cpu/wall` is the whole diagnostic: 2% means the process spent eight seconds waiting and a fifth of a second computing; 98% means it was busy the entire time.** Both finished in roughly the same wall-clock, **so the duration tells you nothing about which strategy will help** — threads will fix the first and do nothing for the second. Which is why this is the first measurement in the module: **it is two lines of `time.process_time()` against `time.perf_counter()`, and it decides the whole chapter.**",
+         "left": "measurement", "codeW": 170,
+         "vars": ["wall", "cpu", "cpu/wall", "verdict"],
+         "steps": [
+          {"code": "run A", "state": ["8.40s", "0.21s", "2%", "I/O-bound"], "tone": "good"},
+          {"code": "run B", "state": ["8.10s", "7.95s", "98%", "CPU-bound"], "changed": [0, 1, 2, 3], "tone": "crit"},
+          {"code": "so wall-clock alone", "state": ["nearly identical", "-", "-", "tells you nothing"], "changed": [0, 1, 2, 3], "tone": "violet"}]}}
+ ],
+
+ "11.3": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "A daemon thread does not run its `finally` blocks",
+         "caption": "**That is the row that matters and the one the name does not suggest: a daemon thread is killed abruptly at interpreter exit, so cleanup is skipped — files unclosed, buffers unflushed.** Which makes the choice concrete rather than stylistic: **anything holding a resource should not be a daemon, however much you want the process to exit promptly.** And the non-daemon risk is the mirror image: **a hung thread blocks exit forever**, so the real answer for background work is usually **a non-daemon thread plus a shutdown event it checks.**",
+         "left": "property", "codeW": 160,
+         "vars": ["non-daemon (default)", "daemon=True"],
+         "steps": [
+          {"code": "on interpreter exit", "state": ["Python waits for it", "killed abruptly"], "tone": "accent"},
+          {"code": "runs finally on shutdown", "state": ["yes", "NO"], "changed": [0, 1], "tone": "crit"},
+          {"code": "suits", "state": ["work that must complete", "polling, heartbeats"], "changed": [0, 1], "tone": "good"},
+          {"code": "the risk", "state": ["a hung thread blocks exit", "cleanup is skipped"], "changed": [0, 1], "tone": "crit"},
+          {"code": "so for background work", "state": ["non-daemon + a shutdown event", "-"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "`maxsize` is the important argument, and the default is unbounded",
+         "caption": "**An unbounded queue lets a fast producer read the entire input into memory while the consumers fall behind** — so the queue that was supposed to decouple them becomes the place the whole dataset lives. `maxsize` makes `put()` block, **which is backpressure: the producer is slowed to the rate the consumers can sustain, for free and with no extra code.** And the structural argument over a lock: **a queue hands ownership across rather than sharing it, so there is no window in which two threads can both see the same object** — 2.5's bug, designed out.",
+         "cols": 3,
+         "nodes": [
+          {"id": "u", "label": "An unbounded queue", "sub": "the default", "tone": "crit"},
+          {"id": "m", "label": "A fast producer reads everything in", "sub": "the queue holds the dataset", "tone": "crit"},
+          {"id": "b", "label": "maxsize makes put() block", "sub": "backpressure, for free", "tone": "violet"},
+          {"id": "q", "label": "And a queue hands ownership across", "sub": "rather than sharing it", "tone": "good"},
+          {"id": "l", "label": "So 2.5's shared-object window is gone", "sub": "designed out, not guarded", "tone": "good"}],
+         "edges": [["u", "m"], ["m", "b"], ["b", "q"], ["q", "l"]]}}
+ ],
+
+ "11.4": [
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Shared memory was seven times faster than pickling 400 MB per worker",
+         "caption": "**~6.4 s to pickle 400 MB per worker against ~0.9 s with `shared_memory` — because the second copies nothing.** The rows to avoid are the last two in a different way each: **`Manager().dict()` is very slow, since every single access is a round trip to a server process**, so a loop reading it is a loop making IPC calls. And the honest note on the fast path: **shared memory is zero-copy and you manage the lifetime**, so a crashed worker can leave a segment behind that nothing will clean up.",
+         "left": "mechanism", "codeW": 170,
+         "vars": ["for", "cost"],
+         "steps": [
+          {"code": "arguments and return values", "state": ["the default - small data", "pickled both ways"], "tone": "good"},
+          {"code": "multiprocessing.Queue", "state": ["a stream of work or results", "pickled per item"], "changed": [0, 1], "tone": "good"},
+          {"code": "shared_memory (400 MB)", "state": ["a large array many workers read", "~0.9 s, zero copy"], "changed": [0, 1], "tone": "violet"},
+          {"code": "...pickling the same 400 MB", "state": ["-", "~6.4 s per worker"], "changed": [0, 1], "tone": "crit"},
+          {"code": "Manager().dict()", "state": ["a shared mutable mapping", "a round trip PER ACCESS"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "11.5": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "A worker's exception is printed to stderr and lost, or re-raised on `.result()`",
+         "caption": "**The first row is the whole reason this layer exists: a raw thread that raises prints to stderr and the caller never knows** — so a batch of twenty tasks can lose three and report success. `concurrent.futures` re-raises on `.result()`, **which turns a silent partial failure into an exception at the point you asked for the answer.** And the row that pays off later: **switching between threads and processes is one class name**, so the experiment 11.1 implies costs a one-word edit rather than a rewrite.",
+         "left": "concern", "codeW": 160,
+         "vars": ["raw threading", "concurrent.futures"],
+         "steps": [
+          {"code": "a worker raises", "state": ["printed to stderr and LOST", "re-raised on .result()"], "tone": "crit"},
+          {"code": "collecting results", "state": ["a shared list or a queue", "returned directly"], "changed": [0, 1], "tone": "good"},
+          {"code": "shutdown", "state": ["join() every worker", "the with block"], "changed": [0, 1], "tone": "good"},
+          {"code": "thread <-> process", "state": ["a rewrite", "ONE class name"], "changed": [0, 1], "tone": "violet"},
+          {"code": "backpressure", "state": ["your bounded queue", "not built in"], "changed": [0, 1], "tone": "warn"}]}},
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "A timeout bounds your waiting, not the work",
+         "caption": "**The worker keeps running, keeps holding its thread, and keeps whatever resource it acquired** — so a `timeout=` on `.result()` lets *you* move on and changes nothing about the task. Which is the thing to internalise: **you cannot cancel a running task.** `future.cancel()` succeeds only while the task is still queued, **so a pool whose workers are all busy will return `False` for every cancel you attempt**, and a shutdown that waits for them is the only honest option — or `shutdown(cancel_futures=True)` for the ones that never started.",
+         "cols": 3,
+         "nodes": [
+          {"id": "t", "label": "result(timeout=5) returns to you", "sub": "after five seconds", "tone": "good"},
+          {"id": "w", "label": "The worker keeps running", "sub": "holding its thread and resources", "tone": "crit"},
+          {"id": "c", "label": "cancel() works only while QUEUED", "sub": "False once it started", "tone": "crit"},
+          {"id": "b", "label": "So a busy pool cancels nothing", "sub": "every attempt returns False", "tone": "crit"},
+          {"id": "s", "label": "shutdown(cancel_futures=True)", "sub": "for the ones not yet started", "tone": "good"}],
+         "edges": [["t", "w"], ["w", "c"], ["c", "b"], ["b", "s"]]}}
+ ],
+
+ "11.6": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Calling an async function returns a coroutine object and runs none of it",
+         "caption": "**`fetch(url)` without `await` gives you `<coroutine object fetch at 0x...>` — which is the most common `asyncio` bug, and it produces a warning rather than an error, so it survives code review.** The second confusion is as costly and harder to see: **`await` in a loop is sequential — awaiting a hundred fetches one after another takes as long as doing them serially**, because `await` means *wait here*, not *start this*. **Concurrency comes from `gather` or a task group**, and that is the third distinction: **a coroutine is a recipe, a task is a scheduled one.**",
+         "left": "what you write", "codeW": 170,
+         "vars": ["what happens"],
+         "steps": [
+          {"code": "fetch(url)", "state": ["<coroutine object> - nothing runs"], "tone": "crit"},
+          {"code": "await fetch(url)", "state": ["runs it, and waits here"], "changed": [0], "tone": "good"},
+          {"code": "for u in urls: await fetch(u)", "state": ["sequential - as slow as serial"], "changed": [0], "tone": "crit"},
+          {"code": "await gather(*(fetch(u) for u in urls))", "state": ["concurrent"], "changed": [0], "tone": "violet"},
+          {"code": "create_task(fetch(u))", "state": ["scheduled - it runs without an await"], "changed": [0], "tone": "violet"}]}}
+ ],
+
+ "11.7": [
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "Five bridges, and `asyncio.run` inside a running loop raises",
+         "caption": "**`asyncio.run` creates and closes a loop, so calling it from inside a coroutine is the error `asyncio.run() cannot be called from a running event loop`** — use it once, at the entry point. The workhorse is the second row: **`await asyncio.to_thread(fn)` is one line around a legacy blocking call you cannot replace.** And the third is the distinction people get wrong: **CPU-bound work needs a *process* pool, because pure Python in a thread contends for the GIL** — so `to_thread` on a tight numeric loop buys nothing.",
+         "left": "direction", "codeW": 160,
+         "vars": ["use", "note"],
+         "steps": [
+          {"code": "sync -> async, at the top", "state": ["asyncio.run(main())", "once; never inside a loop"], "tone": "good"},
+          {"code": "async -> a blocking function", "state": ["await asyncio.to_thread(fn)", "the workhorse"], "changed": [0, 1], "tone": "violet"},
+          {"code": "async -> CPU-bound work", "state": ["run_in_executor(process_pool, fn)", "a PROCESS - the GIL"], "changed": [0, 1], "tone": "violet"},
+          {"code": "sync -> async, from inside a loop", "state": ["run_coroutine_threadsafe", "returns a futures.Future"], "changed": [0, 1], "tone": "good"},
+          {"code": "a callback from another thread", "state": ["loop.call_soon_threadsafe(fn)", "the ONLY safe loop method"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "11.8": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Seven symptoms, and each one has a one-command check",
+         "caption": "**“Threads made it slower” is GIL contention and the check is `cpu/wall` from 11.1** — which is why that measurement comes first. Two are easy to miss: **fast locally and slow on a bigger machine is nested library parallelism, fixed with `OMP_NUM_THREADS=1`**, because NumPy's threads multiply by your workers rather than dividing the work. And **“works, then 429s from upstream” is a concurrency limit with no rate limit** — bounding how many run at once says nothing about how fast they start.",
+         "left": "symptom", "codeW": 170,
+         "vars": ["likely cause", "the check"],
+         "steps": [
+          {"code": "threads made it slower", "state": ["CPU-bound pure Python", "cpu/wall; try processes"], "tone": "crit"},
+          {"code": "processes made it slower", "state": ["work below the boundary cost", "add chunksize, or drop it"], "changed": [0, 1], "tone": "crit"},
+          {"code": "async slower than sync", "state": ["a blocking call on the loop", "run with debug=True"], "changed": [0, 1], "tone": "crit"},
+          {"code": "fast locally, slow on a big machine", "state": ["nested library parallelism", "OMP_NUM_THREADS=1"], "changed": [0, 1], "tone": "violet"},
+          {"code": "works, then 429s", "state": ["a concurrency limit, no rate limit", "add a token bucket"], "changed": [0, 1], "tone": "violet"},
+          {"code": "shutdown hangs", "state": ["CancelledError swallowed", "check except BaseException"], "changed": [0, 1], "tone": "crit"}]}}
+ ]
+}

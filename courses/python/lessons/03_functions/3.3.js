@@ -49,6 +49,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "LEGB — the search order for reading a name",
       caption: "Python looks outward until it finds the name, and stops at the first match. It never searches inward, and it never searches the caller's scope — which is why a function cannot see its caller's local variables.",
@@ -147,6 +148,7 @@ global
 
 
 
+
     { t: "p", text: "This is the rule that produces every scope surprise: **if a name is assigned anywhere in a function, it is local throughout that function** — decided when the function is compiled, not when the line runs." },
 
     { t: "code", lang: "python", title: "the classic UnboundLocalError", code: `
@@ -208,6 +210,7 @@ print(items, config)
     { t: "h2", n: "03", text: "global and nonlocal", id: "global-nonlocal" },
 
     {"kind": "trace", "title": "You need these only to assign, never to read", "caption": "**Reading follows LEGB automatically — `global` and `nonlocal` exist only so that an *assignment* writes somewhere other than the local scope.** The difference between them is where: **`global` writes to the module namespace, skipping enclosing scopes entirely; `nonlocal` writes to the nearest enclosing function's local.** And the asymmetry worth remembering: **`nonlocal` cannot create a name — it must already exist in an enclosing function — while `global` can create a module-level name that was never there.**", "left": "declaration", "codeW": 160, "vars": ["assignment writes to", "can it create the name?"], "steps": [{"code": "(none)", "state": ["the local scope", "yes - that is the default"], "tone": "good"}, {"code": "global name", "state": ["the MODULE namespace", "yes"], "changed": [0, 1], "tone": "accent", "note": "skips enclosing scopes"}, {"code": "nonlocal name", "state": ["the nearest enclosing function", "NO - it must exist"], "changed": [0, 1], "tone": "violet"}, {"code": "reading", "state": ["LEGB, automatically", "neither is needed"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-3_3-03-2"},
+
 
 
 
@@ -314,6 +317,7 @@ def count_calls(fn):
     { t: "h2", n: "04", text: "Scopes that are not what you expect", id: "surprises" },
 
     {"kind": "trace", "title": "Four scope results, and only one of them matches the intuition from other languages", "caption": "**Python scopes at function level, not block level — so a name assigned inside an `if` or a `for` is visible after it, and a loop variable outlives the loop.** Which is why the second row prints at all. Then the two that look inconsistent and are not: **a comprehension has its own scope so the outer name is `unchanged` (2.11), and a class body is a scope that methods do not nest inside** — so a method cannot see a class-level name without going through `self` or the class.", "left": "construct", "codeW": 170, "vars": ["result", "why"], "steps": [{"code": "assigned inside an if", "state": ["visible after", "function scope, not block"], "tone": "accent"}, {"code": "a for loop variable", "state": ["outlives the loop", "same reason"], "changed": [0, 1], "tone": "accent"}, {"code": "a comprehension variable", "state": ["unchanged outside", "its own scope (2.11)"], "changed": [0, 1], "tone": "violet"}, {"code": "a class body name, from a method", "state": ["not visible", "methods do not nest in it"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-3_3-04-3"},
+
 
 
 
