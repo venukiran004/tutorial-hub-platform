@@ -48,6 +48,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "Data is pulled through, one item at a time",
       caption: "Nothing runs until the consumer asks. Then a single item is drawn through every stage before the next one starts — so peak memory is one item per stage, whatever the size of the source.",
@@ -151,6 +152,7 @@ for record in pipeline:                    # NOW it runs, one item at a time
 
 
 
+
     { t: "code", lang: "python", title: "delegation, not just a shorter loop", code: `
 def flatten(nested):
     for group in nested:
@@ -182,6 +184,7 @@ def wrapper(items):
     { t: "h2", n: "03", text: "The two-way protocol", id: "send" },
 
     {"kind": "flow", "title": "send() makes a generator two-way", "caption": "A value passed to send() becomes the result of the yield expression inside the generator. The first call must be send(None) to advance to the first yield.", "cols": 3, "nodes": [{"id": "c", "label": "caller", "sub": "gen.send(value)", "tone": "accent"}, {"id": "y", "label": "x = yield result", "sub": "inside the generator", "tone": "good"}, {"id": "r", "label": "result → caller", "sub": "the yielded value", "tone": "warn"}], "edges": [["c", "y", "value arrives as x"], ["y", "r", "yields"], ["r", "c"]], "t": "diagram", "id": "dg-8_1-03-2"},
+
 
 
 
@@ -346,6 +349,7 @@ def read_rows(dsn: str, query: str) -> Iterator[tuple]:
     { t: "h2", n: "05", text: "When a pipeline is the wrong shape", id: "limits" },
 
     {"kind": "trace", "title": "Seven problems, and a pipeline is the right shape for two of them", "caption": "**Transform-and-filter is the shape exactly, and aggregation is fine at the end because the final consumer collects while the stages stay lazy.** The five wrong rows share one cause: **a generator is one pass, single-threaded, with no length and no index.** The two worth remembering are the last: **parallelising across cores is impossible by construction**, and **fanning out to several consumers fails silently — the first drains it and the second gets nothing**, which looks like a logic bug rather than an exhausted iterator.", "left": "problem", "codeW": 170, "vars": ["pipelines are", "because"], "steps": [{"code": "transform and filter a stream", "state": ["right", "that is the shape"], "tone": "good"}, {"code": "aggregate the whole stream", "state": ["fine, at the end", "the consumer collects"], "changed": [0, 1], "tone": "good"}, {"code": "need the data twice", "state": ["wrong", "tee buffers everything"], "changed": [0, 1], "tone": "crit"}, {"code": "sort, or group unsorted data", "state": ["wrong", "needs the whole input anyway"], "changed": [0, 1], "tone": "crit"}, {"code": "parallelise across cores", "state": ["wrong", "single-threaded by construction"], "changed": [0, 1], "tone": "crit"}, {"code": "fan out to several consumers", "state": ["wrong", "the first drains it"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-8_1-05-1"},
+
 
 
 

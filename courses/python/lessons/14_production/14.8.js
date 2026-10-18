@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "WSGI and ASGI", id: "wsgi-asgi" },
 
-    {"kind": "flow", "title": "WSGI and ASGI: the server, the interface, the app", "caption": "A web server speaks HTTP to the world and calls your application through an interface. WSGI is synchronous — one call, one response; ASGI is asynchronous and also carries WebSockets and lifespan events.", "cols": 4, "nodes": [{"id": "c", "label": "client"}, {"id": "srv", "label": "gunicorn / uvicorn", "sub": "speaks HTTP", "tone": "accent"}, {"id": "if", "label": "WSGI or ASGI", "sub": "the calling convention", "tone": "warn"}, {"id": "app", "label": "Flask / Django or FastAPI / Starlette", "sub": "your code", "tone": "good"}], "edges": [["c", "srv"], ["srv", "if"], ["if", "app"]], "t": "diagram", "id": "dg-14_8-01-1"},
+    {"kind": "flow", "title": "WSGI and ASGI: the server, the interface, the app", "caption": "A web server speaks HTTP to the world and calls your application through an interface. WSGI is synchronous — one call, one response; ASGI is asynchronous and also carries WebSockets and lifespan events.", "cols": 4, "nodes": [{"id": "c", "label": "client"}, {"id": "srv", "label": "gunicorn / uvicorn", "sub": "speaks HTTP", "tone": "accent"}, {"id": "if", "label": "WSGI or ASGI", "sub": "the calling convention", "tone": "warn"}, {"id": "app", "label": "Flask / Django or FastAPI / Starlette", "sub": "your code", "tone": "good"}], "edges": [["c", "srv"], ["srv", "if"], ["if", "app"]], "t": "diagram", "id": "dg-14_8-01-2"},
+
 
 
 
@@ -85,7 +86,8 @@ async def application(scope, receive, send):
 
     { t: "h2", n: "02", text: "Worker models", id: "workers" },
 
-    {"kind": "compare", "title": "Worker models", "caption": "Sync workers handle one request each; async workers handle many I/O-bound requests on one loop; a process per core gives the CPU parallelism the GIL denies threads. Gunicorn with uvicorn workers combines processes and async loops.", "columns": [{"title": "sync worker", "tone": "warn", "items": ["one request at a time", "simple, robust", "needs many processes"]}, {"title": "async worker (uvicorn)", "tone": "good", "items": ["thousands of connections", "one blocking call stalls all", "async end to end"]}, {"title": "processes × workers", "tone": "accent", "items": ["one per core (2n+1 rule)", "memory × processes", "gunicorn -k uvicorn.workers.UvicornWorker"]}], "t": "diagram", "id": "dg-14_8-02-0"},
+    {"kind": "compare", "title": "Worker models", "caption": "Sync workers handle one request each; async workers handle many I/O-bound requests on one loop; a process per core gives the CPU parallelism the GIL denies threads. Gunicorn with uvicorn workers combines processes and async loops.", "columns": [{"title": "sync worker", "tone": "warn", "items": ["one request at a time", "simple, robust", "needs many processes"]}, {"title": "async worker (uvicorn)", "tone": "good", "items": ["thousands of connections", "one blocking call stalls all", "async end to end"]}, {"title": "processes × workers", "tone": "accent", "items": ["one per core (2n+1 rule)", "memory × processes", "gunicorn -k uvicorn.workers.UvicornWorker"]}], "t": "diagram", "id": "dg-14_8-02-1"},
+
 
 
 
@@ -257,6 +259,8 @@ workers = (2 * cpu_quota) + 1` },
     ]},
 
     { t: "h2", n: "04", text: "Timeouts", id: "timeouts" },
+
+    {"kind": "flow", "title": "A missing timeout is not “no timeout” — it is the longest one in the stack", "caption": "**Something will eventually give up — a load balancer at 60 seconds, a kernel socket timeout, a client that reconnects — and until then your worker is held.** So the real question is whether *you* chose the number or inherited it. The rule that makes a stack coherent: **each layer's timeout must be shorter than the layer that calls it**, or an inner retry outlives the outer request and does work nobody is waiting for. And the set to configure explicitly: **connect, read, total, and the pool checkout** — because a connect timeout alone leaves a slow response unbounded.", "cols": 3, "nodes": [{"id": "m", "label": "No timeout set", "sub": "means the longest in the stack", "tone": "crit"}, {"id": "h", "label": "And your worker is held until then", "sub": "60s at the load balancer", "tone": "crit"}, {"id": "s", "label": "Each layer shorter than its caller", "sub": "or a retry outlives the request", "tone": "violet"}, {"id": "f", "label": "Set connect, read, total and pool", "sub": "four numbers, not one", "tone": "good"}, {"id": "c", "label": "Connect alone leaves the read unbounded", "sub": "the common half-measure", "tone": "crit"}], "edges": [["m", "h"], ["h", "s"], ["s", "f"], ["f", "c"]], "t": "diagram", "id": "dg-14_8-04-0"},
 
     { t: "code", lang: "python", title: "every layer needs one, and they must nest", code: `
 # THE ORDERING RULE: each layer's timeout must be SHORTER than the

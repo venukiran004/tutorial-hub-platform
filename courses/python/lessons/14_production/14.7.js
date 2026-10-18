@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Should this be a dependency", id: "should" },
 
+    {"kind": "trace", "title": "Seven questions, and the bad answers are specific enough to check", "caption": "**“One direct dependency becomes forty transitive” is the one with compounding cost — forty packages to audit, forty to update, forty with their own maintainers.** And the last is the one people never ask: **a `setup.py` doing network I/O runs code at install time, so `pip install` is arbitrary code execution on your build machine** — which is why the wheel-only install is worth enforcing. The pair worth weighing together: **using one function out of two hundred, when you could write thirty lines yourself.**", "left": "question", "codeW": 170, "vars": ["a bad answer looks like"], "steps": [{"code": "how much will we use?", "state": ["one function out of two hundred"], "tone": "warn"}, {"code": "how many transitive packages?", "state": ["one direct becomes forty"], "changed": [0], "tone": "crit"}, {"code": "when was it last released?", "state": ["2019, with open security issues"], "changed": [0], "tone": "crit"}, {"code": "how many maintainers?", "state": ["one, with no succession"], "changed": [0], "tone": "crit"}, {"code": "could we write it ourselves?", "state": ["it is thirty lines"], "changed": [0], "tone": "warn"}, {"code": "does it run code at install?", "state": ["a setup.py doing network I/O"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-14_7-01-0"},
+
     { t: "table",
       head: ["Question", "A bad answer looks like"],
       rows: [
@@ -127,6 +129,8 @@ dependencies = [
 
     { t: "h2", n: "03", text: "Finding vulnerabilities", id: "cves" },
 
+    {"kind": "flow", "title": "A CVSS score is not a priority", "caption": "**A critical vulnerability in a code path you never execute is a patch to schedule; a medium one in your authentication path is tonight's work** — and the scanner cannot tell them apart, because it scores the vulnerability rather than your exposure to it. So the triage question is reachability: **do we call the affected function, is the input attacker-controlled, and is the path reachable without authentication?** Which is why **a scanner that blocks on severity alone trains people to add blanket ignores** — and a blanket ignore hides the one that mattered.", "cols": 3, "nodes": [{"id": "s", "label": "A CVSS score", "sub": "scores the vulnerability", "tone": "accent"}, {"id": "e", "label": "Not your exposure to it", "sub": "which is what matters", "tone": "violet"}, {"id": "c", "label": "Critical, in code you never call", "sub": "schedule a patch", "tone": "good"}, {"id": "m", "label": "Medium, in your auth path", "sub": "tonight", "tone": "crit"}, {"id": "b", "label": "Blocking on severity alone", "sub": "trains people to add blanket ignores", "tone": "crit"}], "edges": [["s", "e"], ["e", "c"], ["e", "m"], ["c", "b"]], "t": "diagram", "id": "dg-14_7-03-1"},
+
     { t: "code", lang: "bash", title: "scanning, and what the results mean", code: `
 # Dependency CVEs, against the PyPI advisory database.
 $ uv run pip-audit --strict
@@ -185,7 +189,8 @@ uv export --no-dev | pip-audit -r /dev/stdin
 
     { t: "h2", n: "04", text: "Attacks on the supply chain", id: "attacks" },
 
-    {"kind": "flow", "title": "Where a supply-chain attack gets in", "caption": "Typosquatted names, hijacked maintainer accounts, malicious install scripts and compromised build pipelines all deliver code through the same 'pip install'. Pinning with hashes, a private index and a lock file reviewed in code review narrow every entry.", "cols": 4, "nodes": [{"id": "a", "label": "typosquat", "sub": "requets, python-dateutils", "tone": "crit"}, {"id": "b", "label": "hijacked package", "sub": "a new malicious release", "tone": "crit"}, {"id": "c", "label": "pip install", "sub": "runs setup.py", "tone": "warn"}, {"id": "d", "label": "your CI and prod", "sub": "secrets, tokens", "tone": "accent"}], "edges": [["a", "c"], ["b", "c"], ["c", "d"]], "t": "diagram", "id": "dg-14_7-04-0"},
+    {"kind": "flow", "title": "Where a supply-chain attack gets in", "caption": "Typosquatted names, hijacked maintainer accounts, malicious install scripts and compromised build pipelines all deliver code through the same 'pip install'. Pinning with hashes, a private index and a lock file reviewed in code review narrow every entry.", "cols": 4, "nodes": [{"id": "a", "label": "typosquat", "sub": "requets, python-dateutils", "tone": "crit"}, {"id": "b", "label": "hijacked package", "sub": "a new malicious release", "tone": "crit"}, {"id": "c", "label": "pip install", "sub": "runs setup.py", "tone": "warn"}, {"id": "d", "label": "your CI and prod", "sub": "secrets, tokens", "tone": "accent"}], "edges": [["a", "c"], ["b", "c"], ["c", "d"]], "t": "diagram", "id": "dg-14_7-04-3"},
+
 
 
 
@@ -281,6 +286,8 @@ acme-lib = { index = "company" }
     },
 
     { t: "h2", n: "05", text: "SBOM and provenance", id: "sbom" },
+
+    {"kind": "flow", "title": "An SBOM is inventory, not protection", "caption": "**Its whole value is answering the exposure question quickly** — when a CVE lands in a transitive dependency, the difference between a ten-minute answer and a two-day audit is whether you generated one. Which is also its limit: **it prevents nothing, and a complete SBOM for a vulnerable system is still a vulnerable system.** Provenance is the other half and answers a different question: **a signed attestation says *this* artifact came from *that* commit through *that* pipeline**, so an image nobody can trace to a build is one you should not deploy.", "cols": 3, "nodes": [{"id": "s", "label": "An SBOM lists what is inside", "sub": "including transitive packages", "tone": "good"}, {"id": "q", "label": "So 'are we exposed?' takes minutes", "sub": "not a two-day audit", "tone": "violet"}, {"id": "n", "label": "And it prevents nothing", "sub": "inventory, not protection", "tone": "warn"}, {"id": "p", "label": "Provenance: this artifact, that commit", "sub": "a signed attestation", "tone": "good"}, {"id": "t", "label": "An untraceable image is undeployable", "sub": "which is the policy it enables", "tone": "violet"}], "edges": [["s", "q"], ["q", "n"], ["p", "t"], ["n", "p"]], "t": "diagram", "id": "dg-14_7-05-2"},
 
     { t: "code", lang: "bash", title: "the question an SBOM answers", code: `
 # Generate a bill of materials for the artefact you shipped.

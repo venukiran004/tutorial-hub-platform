@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Mitigate first", id: "mitigate" },
 
-    {"kind": "steps", "title": "Mitigate first, then diagnose", "caption": "During an incident the order is fixed: stop the bleeding, then understand. Rolling back, scaling, or shedding load buys the time to look inside the process without users paying for it.", "items": [{"label": "Mitigate", "desc": "roll back, restart, scale, feature-flag off", "tone": "crit"}, {"label": "Preserve evidence", "desc": "logs, metrics, a py-spy dump or core before the restart", "tone": "warn"}, {"label": "Diagnose", "desc": "correlate the change, the metric and the trace", "tone": "accent"}, {"label": "Fix and verify", "desc": "a test that reproduces it, then the postmortem", "tone": "good"}], "t": "diagram", "id": "dg-14_9-01-0"},
+    {"kind": "steps", "title": "Mitigate first, then diagnose", "caption": "During an incident the order is fixed: stop the bleeding, then understand. Rolling back, scaling, or shedding load buys the time to look inside the process without users paying for it.", "items": [{"label": "Mitigate", "desc": "roll back, restart, scale, feature-flag off", "tone": "crit"}, {"label": "Preserve evidence", "desc": "logs, metrics, a py-spy dump or core before the restart", "tone": "warn"}, {"label": "Diagnose", "desc": "correlate the change, the metric and the trace", "tone": "accent"}, {"label": "Fix and verify", "desc": "a test that reproduces it, then the postmortem", "tone": "good"}], "t": "diagram", "id": "dg-14_9-01-4"},
+
 
 
 
@@ -114,6 +115,8 @@ kubectl rollout undo deploy/app             # the usual answer
 
     { t: "h2", n: "02", text: "Looking inside a running process", id: "tools" },
 
+    {"kind": "trace", "title": "Seven questions, and the last two are usually where the answer is", "caption": "**`py-spy dump` needs no restart and adds no overhead, which is what makes it the first command** — you get the stack of a wedged production process without changing anything. But the two rows at the bottom are the ones people reach for last and should reach for early: **`pg_stat_activity` is often the real answer**, because a Python process that looks stuck is usually waiting on a query, and **`ss -tanp` shows connection states**, where a pile of `CLOSE_WAIT` means your code is not closing sockets it was handed.", "left": "question", "codeW": 170, "vars": ["tool", "note"], "steps": [{"code": "what is it doing right now?", "state": ["py-spy dump", "no restart, no overhead"], "tone": "violet"}, {"code": "where is the CPU going?", "state": ["py-spy record", "a flame graph over N seconds"], "changed": [0, 1], "tone": "good"}, {"code": "what is growing in memory?", "state": ["tracemalloc, objgraph", "needs to have been enabled"], "changed": [0, 1], "tone": "warn"}, {"code": "what is the database doing?", "state": ["pg_stat_activity", "often the real answer"], "changed": [0, 1], "tone": "violet"}, {"code": "what is the network doing?", "state": ["ss -tanp", "CLOSE_WAIT leaks"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-14_9-02-0"},
+
     { t: "code", lang: "bash", title: "py-spy — the tool to reach for first", code: `
 # py-spy reads another process's memory. It does NOT require the
 # process to cooperate, does not need it restarted with a flag, and
@@ -161,6 +164,8 @@ $ py-spy top --pid 1
     },
 
     { t: "h2", n: "03", text: "Four shapes you will meet", id: "shapes" },
+
+    {"kind": "trace", "title": "Four failure shapes, recognisable by their curve before you read any code", "caption": "**The curve narrows the hypothesis before you look at anything** — a sudden step at a deploy time is a change you made, a slow ramp over hours is a leak or an unbounded queue, a daily spike is a scheduled job, and a sawtooth is a restart loop masking something. Which matters because of the rule next to it: **a hypothesis must be falsifiable and cheap** — “the database is slow” is neither, and “`pg_stat_activity` will show queries waiting on a lock” is both, **and takes ten seconds to settle.**", "left": "shape", "codeW": 160, "vars": ["likely cause", "the cheap check"], "steps": [{"code": "a sudden step", "state": ["a deploy, or a config change", "the deploy timeline"], "tone": "good"}, {"code": "a slow ramp over hours", "state": ["a leak or an unbounded queue", "RSS across cycles (8.9)"], "changed": [0, 1], "tone": "good"}, {"code": "a daily spike", "state": ["a scheduled job", "cron, and the clock"], "changed": [0, 1], "tone": "good"}, {"code": "a sawtooth", "state": ["a restart loop masking something", "restart count, then the logs before"], "changed": [0, 1], "tone": "violet"}, {"code": "'the database is slow'", "state": ["not a hypothesis", "unfalsifiable, and not cheap"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-14_9-03-1"},
 
     { t: "code", lang: "bash", title: "recognising them by their curve", code: `
 # ---- 1. MEMORY GROWS UNTIL OOM -------------------------------------
@@ -227,6 +232,8 @@ $ kubectl get pods -o wide          # is it always the same pod?
     ]},
 
     { t: "h2", n: "04", text: "A worked incident", id: "worked" },
+
+    {"kind": "flow", "title": "One transaction holding one network call", "caption": "**The incident trail ends at a bug small enough to state in a sentence: a transaction left open across an HTTP call to a payment provider.** Which is 13.4's rule violated once, and the consequence compounds exactly as that lesson predicts — **the provider slowed, every request held a pooled connection and a row lock for the duration, the pool exhausted, and the symptom was reported as “the site is down”.** The general lesson from the trail: **the metric told you *when*, `py-spy` told you *where*, and `pg_stat_activity` told you *why*** — three tools, in that order.", "cols": 3, "nodes": [{"id": "b", "label": "A transaction open across an HTTP call", "sub": "13.4's rule, violated once", "tone": "crit"}, {"id": "s", "label": "The provider slowed", "sub": "someone else's outage", "tone": "crit"}, {"id": "h", "label": "Every request held a connection and a lock", "sub": "for its duration", "tone": "crit"}, {"id": "p", "label": "The pool exhausted", "sub": "reported as 'the site is down'", "tone": "crit"}, {"id": "t", "label": "Metric when, py-spy where, pg_stat why", "sub": "in that order", "tone": "violet"}], "edges": [["b", "s"], ["s", "h"], ["h", "p"], ["p", "t"]], "t": "diagram", "id": "dg-14_9-04-2"},
 
     { t: "code", lang: "bash", title: "the trail, end to end", code: `
 # 09:14  PAGE: checkout error rate 8%, above the 1% SLO.
@@ -313,6 +320,8 @@ def create_order(cmd: PlaceOrder) -> Order:
     ]},
 
     { t: "h2", n: "05", text: "The postmortem", id: "postmortem" },
+
+    {"kind": "flow", "title": "What makes a postmortem worth writing", "caption": "**A timeline with timestamps, so the detection gap is visible as a number rather than an impression** — the gap between the first error and the first alert is usually the most actionable thing in the document. Then: **contributing factors in the plural, because a single root cause is almost always a simplification**, and **action items with an owner and a date, because the ones without either do not happen.** And the property that determines whether anyone writes the next one: **blameless — the question is what made this easy to do, not who did it.**", "cols": 3, "nodes": [{"id": "t", "label": "A timeline with timestamps", "sub": "the detection gap as a number", "tone": "violet"}, {"id": "c", "label": "Contributing factors, plural", "sub": "a single root cause is a simplification", "tone": "good"}, {"id": "a", "label": "Actions with an owner and a date", "sub": "or they do not happen", "tone": "good"}, {"id": "b", "label": "Blameless", "sub": "what made this easy to do", "tone": "violet"}, {"id": "n", "label": "Which decides whether a next one is written", "sub": "at all", "tone": "teal"}], "edges": [["t", "c"], ["c", "a"], ["a", "b"], ["b", "n"]], "t": "diagram", "id": "dg-14_9-05-3"},
 
     { t: "code", lang: "bash", title: "what makes one worth writing", code: `
 # BLAMELESS. Not politeness -- accuracy. "Alice deployed a bad

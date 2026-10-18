@@ -33,6 +33,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Before the mechanics: inheritance says **a `Child` is usable anywhere a `Parent` is expected.** If that is not true, you want composition (Lesson 4.7). Reusing code is not a reason to inherit — it is the most common reason people inherit wrongly." },
 
     { t: "code", lang: "python", title: "the basic mechanics", code: `
@@ -70,6 +71,7 @@ True`,
     { t: "h2", n: "02", text: "The MRO", id: "mro" },
 
     {"kind": "tree", "title": "The diamond, linearised by C3", "caption": "class D(B, C) with both B and C deriving from A gives the MRO D → B → C → A → object. Each class appears once, parents come after children, and the order of the bases is respected — which is what makes super() cooperative.", "root": {"label": "object", "children": [{"label": "A", "tone": "warn", "children": [{"label": "B", "tone": "accent", "children": [{"label": "D(B, C)", "sub": "MRO: D, B, C, A, object", "tone": "good"}]}, {"label": "C", "tone": "accent"}]}]}, "t": "diagram", "id": "dg-4_5-02-0"},
+
 
 
 
@@ -249,6 +251,7 @@ B -> A`},
 
 
 
+
     { t: "ladder",
       title: "Initialising a hierarchy",
       rungs: [
@@ -344,6 +347,7 @@ print(o.log_level, o.order_id, bool(o.created_at))`,
 
 
 
+
     { t: "code", lang: "python", title: "an impossible order", code: `
 class A: pass
 class B: pass
@@ -368,6 +372,7 @@ order (MRO) for bases X, Y`,
     { t: "h2", n: "05", text: "Mixins that behave", id: "mixins" },
 
     {"kind": "flow", "title": "A mixin that behaves assumes nothing and calls `super()`", "caption": "The measured output shows both working: **a mixin adding `to_json` produces `{\"name\": \"deploy\", \"priority\": 2}` without knowing what class it is mixed into.** The rules that make that true are short. **Name methods so they cannot collide, assume no attributes you did not declare, and always call `super()` so the next class in the MRO still runs.** A mixin that reads `self.name` without declaring it **works until it is mixed into something without a name**, and the failure is an `AttributeError` far from the mixin.", "cols": 3, "nodes": [{"id": "n", "label": "Name methods so they cannot collide", "sub": "to_json, not format", "tone": "good"}, {"id": "a", "label": "Assume no attribute you did not declare", "sub": "or it breaks on reuse", "tone": "good"}, {"id": "s", "label": "Always call super()", "sub": "so the next class still runs", "tone": "good"}, {"id": "w", "label": "Reading self.name undeclared", "sub": "works until it does not", "tone": "crit"}, {"id": "f", "label": "And the AttributeError is far from the mixin", "sub": "which is why the rule exists", "tone": "crit"}], "edges": [["n", "s"], ["a", "w"], ["w", "f"], ["s", "f"]], "t": "diagram", "id": "dg-4_5-05-3"},
+
 
 
 

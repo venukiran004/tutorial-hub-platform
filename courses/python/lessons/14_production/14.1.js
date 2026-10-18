@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "src layout", id: "src-layout" },
 
+    {"kind": "flow", "title": "The bug src layout prevents is testing the wrong copy of your code", "caption": "**Without it, the project root is on `sys.path`, so `import mypackage` finds the source directory rather than the installed package — and the tests pass against code that was never installed.** Which hides a whole class of packaging error: **a missing `__init__.py`, a file excluded from the wheel, a data file that is not package data.** With a `src/` directory the import can only resolve to the installed copy, **so the tests exercise what a user would get, and a packaging mistake fails in CI rather than on first install.**", "cols": 3, "nodes": [{"id": "r", "label": "The project root is on sys.path", "sub": "without src/", "tone": "crit"}, {"id": "f", "label": "import mypackage finds the SOURCE", "sub": "not the installed package", "tone": "crit"}, {"id": "h", "label": "So packaging errors are invisible", "sub": "a file missing from the wheel", "tone": "crit"}, {"id": "s", "label": "src/ makes that import impossible", "sub": "only the installed copy resolves", "tone": "good"}, {"id": "c", "label": "And the mistake fails in CI", "sub": "not on a user's first install", "tone": "violet"}], "edges": [["r", "f"], ["f", "h"], ["h", "s"], ["s", "c"]], "t": "diagram", "id": "dg-14_1-01-0"},
+
     { t: "code", lang: "bash", title: "the two layouts, and why one wins", code: `
 # FLAT LAYOUT -- the package sits at the repository root.
 myproject/
@@ -82,7 +84,8 @@ testpaths = ["tests"]
 
     { t: "h2", n: "02", text: "Layering", id: "layering" },
 
-    {"kind": "layers", "title": "Layering, with the dependencies pointing inward", "caption": "The domain knows nothing about the web or the database; the application layer orchestrates it; adapters translate to and from the outside world. Imports go downward only — an import from the API layer inside the domain is the smell to catch.", "items": [{"label": "interfaces: FastAPI routers, CLI", "sub": "parse, call, serialise", "tone": "warn"}, {"label": "application: use cases / services", "sub": "orchestrate the domain, own transactions", "tone": "accent"}, {"label": "domain: entities, rules, pure functions", "sub": "no framework imports", "tone": "good"}, {"label": "adapters: repositories, HTTP clients", "sub": "implement interfaces the domain declares", "tone": "violet"}], "t": "diagram", "id": "dg-14_1-02-0"},
+    {"kind": "layers", "title": "Layering, with the dependencies pointing inward", "caption": "The domain knows nothing about the web or the database; the application layer orchestrates it; adapters translate to and from the outside world. Imports go downward only — an import from the API layer inside the domain is the smell to catch.", "items": [{"label": "interfaces: FastAPI routers, CLI", "sub": "parse, call, serialise", "tone": "warn"}, {"label": "application: use cases / services", "sub": "orchestrate the domain, own transactions", "tone": "accent"}, {"label": "domain: entities, rules, pure functions", "sub": "no framework imports", "tone": "good"}, {"label": "adapters: repositories, HTTP clients", "sub": "implement interfaces the domain declares", "tone": "violet"}], "t": "diagram", "id": "dg-14_1-02-3"},
+
 
 
 
@@ -278,6 +281,8 @@ class OrderRow(Base):
 
     { t: "h2", n: "04", text: "Import cycles", id: "cycles" },
 
+    {"kind": "flow", "title": "A cycle is a design signal, not an import problem", "caption": "**Reaching for `TYPE_CHECKING` first hides the message**, which is that two modules each need something the other has — so one of them is in the wrong place. The three honest fixes, in order of preference: **move the shared thing into a third module that both import, move the function to the module that owns the data it uses, or invert the dependency so the lower layer declares a protocol the higher one satisfies.** `TYPE_CHECKING` is correct for a genuine annotation-only cycle, **and wrong as a first response, because the cycle will come back as a runtime one.**", "cols": 3, "nodes": [{"id": "c", "label": "A imports B, B imports A", "sub": "an ImportError at startup", "tone": "crit"}, {"id": "t", "label": "TYPE_CHECKING first", "sub": "hides the message", "tone": "crit"}, {"id": "m", "label": "Move the shared thing to a third module", "sub": "the usual fix", "tone": "good"}, {"id": "o", "label": "Or move the function to the data's owner", "sub": "4.11's cohesion question", "tone": "good"}, {"id": "i", "label": "Or invert it with a Protocol", "sub": "the lower layer declares it", "tone": "violet"}], "edges": [["c", "t"], ["c", "m"], ["m", "o"], ["o", "i"]], "t": "diagram", "id": "dg-14_1-04-1"},
+
     { t: "code", lang: "python", title: "the cycle, and three ways out", code: `
 # services/orders.py
 from services.billing import charge          # <-+
@@ -314,6 +319,8 @@ def charge(order: "Order") -> Charge: ...
     },
 
     { t: "h2", n: "05", text: "Enforcing it", id: "enforcing" },
+
+    {"kind": "flow", "title": "A rule enforced only in review is a rule that survives until a busy week", "caption": "**These three contracts are the whole mechanism, and all three are machine-checkable** — which is the point, because architecture that depends on everyone remembering is architecture that erodes silently. **`import-linter` declares the layers and fails the build on a violation; `ruff`'s banned-import rules stop a specific module reaching a specific other one; and a dependency test asserts the domain package imports nothing from the framework.** The last is the cheapest: **one test, and it catches the import that a reviewer would have had to notice.**", "cols": 3, "nodes": [{"id": "r", "label": "A rule enforced in review", "sub": "survives until a busy week", "tone": "crit"}, {"id": "i", "label": "import-linter declares the layers", "sub": "and fails the build", "tone": "good"}, {"id": "b", "label": "ruff bans a specific import", "sub": "module to module", "tone": "good"}, {"id": "t", "label": "A test: domain imports no framework", "sub": "one assertion", "tone": "violet"}, {"id": "c", "label": "All three are machine-checkable", "sub": "which is the whole point", "tone": "violet"}], "edges": [["r", "i"], ["i", "b"], ["b", "t"], ["t", "c"]], "t": "diagram", "id": "dg-14_1-05-2"},
 
     { t: "code", lang: "toml", title: "boundaries as a CI check", code: `
 # import-linter: contracts that fail the build, not a review comment.

@@ -24,6 +24,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "the same job, one word apart", code: `
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 
@@ -68,6 +69,7 @@ with ThreadPoolExecutor() as pool:
     { t: "h2", n: "02", text: "map, submit, as_completed", id: "apis" },
 
     {"kind": "flow", "title": "submit and as_completed", "caption": "submit returns a Future immediately; the pool runs the callable on a worker; as_completed yields futures in the order they finish, not the order they were submitted.", "cols": 4, "nodes": [{"id": "sub", "label": "executor.submit(f, x)", "sub": "returns a Future now", "tone": "accent"}, {"id": "q", "label": "work queue", "sub": "waits for a free worker"}, {"id": "w", "label": "worker thread/process", "sub": "runs f(x)", "tone": "good"}, {"id": "done", "label": "as_completed(futures)", "sub": "yields in finishing order", "tone": "warn"}], "edges": [["sub", "q"], ["q", "w"], ["w", "done", ".result()"]], "t": "diagram", "id": "dg-11_5-02-2"},
+
 
 
 
@@ -184,6 +186,7 @@ results = list(pool.map(risky, items))    # raises, and you get nothing`},
     { t: "h2", n: "03", text: "Timeouts and cancellation", id: "timeouts" },
 
     {"kind": "flow", "title": "A timeout bounds your waiting, not the work", "caption": "**The worker keeps running, keeps holding its thread, and keeps whatever resource it acquired** — so a `timeout=` on `.result()` lets *you* move on and changes nothing about the task. Which is the thing to internalise: **you cannot cancel a running task.** `future.cancel()` succeeds only while the task is still queued, **so a pool whose workers are all busy will return `False` for every cancel you attempt**, and a shutdown that waits for them is the only honest option — or `shutdown(cancel_futures=True)` for the ones that never started.", "cols": 3, "nodes": [{"id": "t", "label": "result(timeout=5) returns to you", "sub": "after five seconds", "tone": "good"}, {"id": "w", "label": "The worker keeps running", "sub": "holding its thread and resources", "tone": "crit"}, {"id": "c", "label": "cancel() works only while QUEUED", "sub": "False once it started", "tone": "crit"}, {"id": "b", "label": "So a busy pool cancels nothing", "sub": "every attempt returns False", "tone": "crit"}, {"id": "s", "label": "shutdown(cancel_futures=True)", "sub": "for the ones not yet started", "tone": "good"}], "edges": [["t", "w"], ["w", "c"], ["c", "b"], ["b", "s"]], "t": "diagram", "id": "dg-11_5-03-1"},
+
 
 
 

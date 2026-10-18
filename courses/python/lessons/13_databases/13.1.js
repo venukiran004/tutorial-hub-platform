@@ -49,6 +49,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "Written in one order, executed in another",
       caption: "This is not trivia. It explains why you cannot use a SELECT alias in WHERE, why HAVING and WHERE are different, and why LIMIT does not make an expensive query cheap.",
@@ -108,6 +109,7 @@ HAVING   count(*) > 5;                    -- then discard small groups
     { t: "h2", n: "02", text: "Joins", id: "joins" },
 
     {"kind": "compare", "title": "The joins", "caption": "INNER keeps matches only; LEFT keeps every left row and fills the right with NULL; FULL keeps both sides. A LEFT join followed by WHERE right.col IS NULL is the anti-join: 'customers with no orders'.", "columns": [{"title": "INNER", "tone": "accent", "items": ["rows with a match on both sides"]}, {"title": "LEFT", "tone": "good", "items": ["all left rows", "NULLs where no match", "+ IS NULL → anti-join"]}, {"title": "FULL", "tone": "warn", "items": ["all rows from both", "NULLs on either side"]}, {"title": "CROSS", "tone": "crit", "items": ["every pair", "usually a mistake"]}], "t": "diagram", "id": "dg-13_1-02-3"},
+
 
 
 
@@ -240,6 +242,7 @@ for r in rows: r.extra = lookup(r.fk)      ->  JOIN`},
 
     {"kind": "trace", "title": "Three ranking functions on the values 10, 10, 9", "caption": "**`row_number()` gives 1, 2, 3 — `rank()` gives 1, 1, 3 — `dense_rank()` gives 1, 1, 2.** Which is the whole distinction and the reason the wrong one is a quiet bug: **`row_number()` breaks ties arbitrarily, so “top 3 by score” silently drops one of two equal scores and the result is non-deterministic between runs.** Use `row_number()` when you need exactly one row per group, **`rank()` when the gap after a tie is meaningful, and `dense_rank()` when it is not.**", "left": "function", "codeW": 150, "vars": ["on 10, 10, 9", "use when"], "steps": [{"code": "row_number()", "state": ["1, 2, 3", "exactly one row per group"], "tone": "good"}, {"code": "rank()", "state": ["1, 1, 3", "the gap after a tie matters"], "changed": [0, 1], "tone": "good"}, {"code": "dense_rank()", "state": ["1, 1, 2", "it does not"], "changed": [0, 1], "tone": "good"}, {"code": "row_number() for 'top 3'", "state": ["drops one of two equal scores", "non-deterministic between runs"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-13_1-04-0"},
 
+
     { t: "code", lang: "sql", title: "aggregate without collapsing rows", code: `
 -- A GROUP BY collapses rows. A window function keeps them, and adds a
 -- column computed over a related set. That difference is the whole idea.
@@ -305,6 +308,7 @@ CROSS JOIN LATERAL (
     { t: "h2", n: "05", text: "CTEs over nested subqueries", id: "ctes" },
 
     {"kind": "flow", "title": "Each CTE is a named step you can read, test and reason about", "caption": "**The equivalent nested-subquery version is the same work and unreadable** — so this is a legibility argument rather than a performance one, and worth being precise about: **on PostgreSQL a plain CTE is no longer an optimisation fence, so the planner inlines it and the two forms usually produce the same plan.** Which removes the old reason to avoid them. The remaining practical advantage: **you can run a single CTE on its own to see what it returns**, where a nested subquery has to be extracted by hand first.", "cols": 3, "nodes": [{"id": "n", "label": "Nested subqueries", "sub": "the same work, unreadable", "tone": "crit"}, {"id": "c", "label": "A CTE is a named step", "sub": "read top to bottom", "tone": "good"}, {"id": "p", "label": "And no longer a planner fence", "sub": "on modern PostgreSQL", "tone": "violet"}, {"id": "s", "label": "So the plans usually match", "sub": "the old objection is gone", "tone": "good"}, {"id": "t", "label": "And you can run one CTE alone", "sub": "to see what it returns", "tone": "violet"}], "edges": [["n", "c"], ["c", "p"], ["p", "s"], ["s", "t"]], "t": "diagram", "id": "dg-13_1-05-1"},
+
 
     { t: "code", lang: "sql", title: "the same logic, readable", code: `
 WITH recent_orders AS (

@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "CSV looks like a format you can parse in one line, and it is not. A field may be quoted, a quoted field may contain a comma, a quoted field may contain a newline, and a quoted field may contain a quote — escaped by doubling it." },
 
     { t: "code", lang: "python", title: "a perfectly ordinary CSV", code: `
@@ -199,6 +200,7 @@ ValueError: could not convert string to float: ''
     { t: "h2", n: "03", text: "JSON's type map, and what falls off it", id: "json-types" },
 
     {"kind": "matrix", "title": "JSON's type map", "caption": "JSON has six types; Python has more. Everything that is not in the table needs a default= encoder on the way out and a conversion on the way in — datetimes, Decimals, sets and dataclasses included.", "rows": ["dict", "list / tuple", "str", "int / float", "True / False", "None", "datetime, Decimal, set…"], "cols": ["JSON"], "cells": [[{"text": "object", "tone": "good"}], [{"text": "array (tuple → list)", "tone": "good"}], [{"text": "string", "tone": "good"}], [{"text": "number", "tone": "good"}], [{"text": "true / false", "tone": "good"}], [{"text": "null", "tone": "good"}], [{"text": "TypeError — needs default=", "tone": "crit"}]], "t": "diagram", "id": "dg-7_2-03-2"},
+
 
 
 
@@ -413,6 +415,7 @@ print(json.dumps(payload, default=encode_extra, allow_nan=False))
     { t: "h2", n: "04", text: "Streaming: JSON Lines", id: "ndjson" },
 
     {"kind": "flow", "title": "A JSON array is only valid once its closing bracket has been read", "caption": "**`json.load(f)` builds the entire document before returning — there is no partial parse and no streaming mode, because a JSON array is only valid once its closing bracket arrives.** So a 4 GB array costs 4 GB of file **plus the considerably larger in-memory object graph.** **JSON Lines removes the problem without a new library: one complete JSON object per line, no enclosing array, no commas between records** — so every line is independently parseable and the file streams in constant memory, **and a truncated file loses one record rather than all of them.**", "cols": 3, "nodes": [{"id": "a", "label": "A JSON array needs its closing bracket", "sub": "to be valid at all", "tone": "accent"}, {"id": "n", "label": "So there is no streaming parse", "sub": "4 GB file, a larger object graph", "tone": "crit"}, {"id": "l", "label": "JSON Lines: one object per line", "sub": "no array, no commas", "tone": "violet"}, {"id": "s", "label": "Every line parses independently", "sub": "constant memory", "tone": "good"}, {"id": "t", "label": "And a truncation loses one record", "sub": "not the whole file", "tone": "good"}], "edges": [["a", "n"], ["n", "l"], ["l", "s"], ["s", "t"]], "t": "diagram", "id": "dg-7_2-04-1"},
+
 
 
 

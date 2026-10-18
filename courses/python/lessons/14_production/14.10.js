@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Coupling, in concrete terms", id: "coupling" },
 
-    {"kind": "compare", "title": "Coupling, in concrete terms", "caption": "Coupling is how much of B you must know to change A. Low coupling is a narrow interface with data crossing it; high coupling is shared mutable state and reaching into internals.", "columns": [{"title": "loose", "tone": "good", "items": ["calls a function with data", "depends on an interface", "can be tested alone"]}, {"title": "tight", "tone": "crit", "items": ["reads B's private attributes", "shares a global", "must be deployed together"]}], "t": "diagram", "id": "dg-14_10-01-0"},
+    {"kind": "compare", "title": "Coupling, in concrete terms", "caption": "Coupling is how much of B you must know to change A. Low coupling is a narrow interface with data crossing it; high coupling is shared mutable state and reaching into internals.", "columns": [{"title": "loose", "tone": "good", "items": ["calls a function with data", "depends on an interface", "can be tested alone"]}, {"title": "tight", "tone": "crit", "items": ["reads B's private attributes", "shares a global", "must be deployed together"]}], "t": "diagram", "id": "dg-14_10-01-3"},
+
 
 
 
@@ -181,6 +182,8 @@ app/validation.py      all validators` },
 
     { t: "h2", n: "03", text: "Seams", id: "seams" },
 
+    {"kind": "flow", "title": "A seam you do not use is a cost with no benefit", "caption": "**Every abstraction adds a layer to read through, so add one when you have a second implementation or a test that needs it — not in anticipation.** Which is the honest version of “design for change”: **the repository interface with exactly one implementation is a file that every reader must open and that no caller benefits from.** And the counter-rule that keeps it from becoming an excuse: **a seam is cheap to add later only if the call sites are few** — so the thing to watch is not the abstraction, it is how many places would have to change.", "cols": 3, "nodes": [{"id": "s", "label": "A seam with one implementation", "sub": "and no test using it", "tone": "crit"}, {"id": "l", "label": "A layer every reader opens", "sub": "and no caller benefits from", "tone": "crit"}, {"id": "a", "label": "Add it when there is a second", "sub": "or a test that needs it", "tone": "good"}, {"id": "c", "label": "Cheap to add later IF call sites are few", "sub": "the real variable", "tone": "violet"}, {"id": "w", "label": "So watch the call-site count", "sub": "not the abstraction", "tone": "violet"}], "edges": [["s", "l"], ["l", "a"], ["a", "c"], ["c", "w"]], "t": "diagram", "id": "dg-14_10-03-0"},
+
     { t: "code", lang: "python", title: "a seam is a place you can change behaviour without editing the code", code: `
 # NO SEAM. To test this you must have a real Stripe key and make a
 # real charge, or monkey-patch a module attribute by string -- which
@@ -235,6 +238,8 @@ assert not is_overdue(invoice, now=datetime(2026, 2, 1, tzinfo=UTC))
     ]},
 
     { t: "h2", n: "04", text: "Recording decisions", id: "adr" },
+
+    {"kind": "flow", "title": "Record the alternatives, not just the choice", "caption": "**The value is telling a future reader what was already thought about** — a decision record listing only the decision invites someone to re-propose the option you rejected for a good reason, and they will do it eighteen months later with no way to know. So the shape that pays: **context, the options considered, the decision, and the consequences you accepted.** And the discipline that keeps them useful: **record the decision when it is made, not when it is questioned** — because the reasoning is only available while it is still fresh.", "cols": 3, "nodes": [{"id": "d", "label": "A record listing only the decision", "sub": "invites re-proposal", "tone": "crit"}, {"id": "a", "label": "Record the ALTERNATIVES", "sub": "and why each was rejected", "tone": "violet"}, {"id": "s", "label": "Context, options, decision, consequences", "sub": "four short sections", "tone": "good"}, {"id": "w", "label": "Written when the decision is made", "sub": "not when it is questioned", "tone": "violet"}, {"id": "r", "label": "Because the reasoning is only fresh once", "sub": "which is the whole mechanism", "tone": "teal"}], "edges": [["d", "a"], ["a", "s"], ["s", "w"], ["w", "r"]], "t": "diagram", "id": "dg-14_10-04-1"},
 
     { t: "code", lang: "bash", title: "an ADR — one page, in the repository", code: `
 # docs/adr/0007-postgres-over-dynamodb.md
@@ -301,6 +306,8 @@ response = client.post(url, json=body)`},
     ]},
 
     { t: "h2", n: "05", text: "Debt, deliberately", id: "debt" },
+
+    {"kind": "trace", "title": "Four quadrants, and only two of them are debt", "caption": "**“Ship it now, refactor after launch” is deliberate and prudent — fine, and it needs a recorded trigger, because debt with no trigger is a decision that quietly became permanent.** “Now we know how it should be structured” is inadvertent and prudent, **and it is simply normal: refactor as you learn.** The other two are not debt at all, which is the useful part of the model: **“we don't have time for tests” is damage, and “what's a repository pattern?” is a learning problem** — and calling either one debt hides what to do about it.", "left": "quadrant", "codeW": 170, "vars": ["example", "response"], "steps": [{"code": "deliberate + prudent", "state": ["'ship now, refactor after launch'", "fine - record a trigger"], "tone": "good"}, {"code": "inadvertent + prudent", "state": ["'now we know how it should be'", "normal - refactor as you learn"], "changed": [0, 1], "tone": "good"}, {"code": "deliberate + reckless", "state": ["'no time for tests'", "not debt - damage"], "changed": [0, 1], "tone": "crit"}, {"code": "inadvertent + reckless", "state": ["'what is a repository pattern?'", "not debt - a learning problem"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-14_10-05-2"},
 
     { t: "table",
       head: ["Quadrant", "Example", "Response"],

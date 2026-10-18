@@ -147,6 +147,7 @@ print(apply_all("  hello  ", [str.strip, str.title]))
 
 
 
+
     { t: "p", text: "Lesson 2.6 replaced a chain of `elif` with a dict mapping keys to *values*. The same move with functions as the values replaces a chain where each branch does work." },
 
     { t: "ladder",
@@ -242,6 +243,7 @@ def handle_order_refunded(data: dict) -> None:
 
 
 
+
     { t: "code", lang: "python", title: "fixing some arguments now, the rest later", code: `
 from functools import partial
 
@@ -297,6 +299,7 @@ for h in handlers:
     { t: "h2", n: "04", text: "Strategy is a function", id: "strategy" },
 
     {"kind": "flow", "title": "The interface is the call signature", "caption": "**In languages without first-class functions, varying one behaviour means defining an interface and a class per implementation. In Python the interface *is* the call signature and each implementation is a function.** So the Strategy pattern collapses to a dict of functions and a lookup — 2.6's third dispatch shape — and the measured output is a discount of **80.00** selected by name. The limit is worth knowing: **once a strategy needs state, configuration or several related methods, a class earns its place back.**", "cols": 3, "nodes": [{"id": "i", "label": "Elsewhere: an interface per behaviour", "sub": "and a class per implementation", "tone": "accent"}, {"id": "s", "label": "Here: the call signature IS the interface", "sub": "and a function is the implementation", "tone": "violet"}, {"id": "d", "label": "So a dict of functions, and a lookup", "sub": "2.6's third shape", "tone": "good"}, {"id": "r", "label": "Measured: 80.00, chosen by name", "sub": "no class in sight", "tone": "good"}, {"id": "c", "label": "Until it needs state or several methods", "sub": "then a class earns it back", "tone": "warn"}], "edges": [["i", "s"], ["s", "d"], ["d", "r"], ["r", "c"]], "t": "diagram", "id": "dg-3_4-04-2"},
+
 
 
 

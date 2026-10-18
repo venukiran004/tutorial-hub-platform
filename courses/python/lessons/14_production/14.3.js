@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three signals, three questions", id: "signals" },
 
+    {"kind": "trace", "title": "Cardinality is the column that decides what goes where", "caption": "**Logs take any field at unlimited cardinality — a user id, a request id, an order number — and metrics do not.** A metric label with high cardinality multiplies the stored time series: **one label with 10,000 user ids is 10,000 series per metric**, which is how a monitoring bill and then a monitoring outage happen. So the division is mechanical rather than stylistic: **identifiers go in logs and traces, and metrics carry only bounded labels** — status code, endpoint, region. Traces sit between them: **high cardinality, and sampled, so the cost is bounded by the sample rate.**", "left": "signal", "codeW": 140, "vars": ["answers", "cost", "cardinality"], "steps": [{"code": "logs", "state": ["what happened in this request", "high per event", "UNLIMITED"], "tone": "good"}, {"code": "metrics", "state": ["how often, how slow, over time", "very low", "strictly limited"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "traces", "state": ["where the time went, across services", "medium, sampled", "high"], "changed": [0, 1, 2], "tone": "good"}, {"code": "profiles", "state": ["which function burns the CPU", "high", "n/a"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "so a user id goes in", "state": ["logs and traces", "-", "never a metric label"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-14_3-01-0"},
+
     { t: "table",
       head: ["Signal", "Answers", "Cost", "Cardinality"],
       rows: [
@@ -168,7 +170,8 @@ logger.exception("failed")                # message AND traceback`},
 
     { t: "h2", n: "03", text: "Metrics", id: "metrics" },
 
-    {"kind": "compare", "title": "The four golden signals", "caption": "Latency, traffic, errors and saturation. If a dashboard shows these four per service, most incidents are visible before the pager goes off.", "columns": [{"title": "latency", "tone": "accent", "items": ["p50, p95, p99 per endpoint", "of successful and failed requests separately"]}, {"title": "traffic", "tone": "good", "items": ["requests per second", "queue depth, messages per second"]}, {"title": "errors", "tone": "crit", "items": ["5xx rate, exception rate", "by type and endpoint"]}, {"title": "saturation", "tone": "warn", "items": ["CPU, memory, pool usage", "how full is the service"]}], "t": "diagram", "id": "dg-14_3-03-1"},
+    {"kind": "compare", "title": "The four golden signals", "caption": "Latency, traffic, errors and saturation. If a dashboard shows these four per service, most incidents are visible before the pager goes off.", "columns": [{"title": "latency", "tone": "accent", "items": ["p50, p95, p99 per endpoint", "of successful and failed requests separately"]}, {"title": "traffic", "tone": "good", "items": ["requests per second", "queue depth, messages per second"]}, {"title": "errors", "tone": "crit", "items": ["5xx rate, exception rate", "by type and endpoint"]}, {"title": "saturation", "tone": "warn", "items": ["CPU, memory, pool usage", "how full is the service"]}], "t": "diagram", "id": "dg-14_3-03-3"},
+
 
 
 
@@ -242,7 +245,8 @@ request_duration = Histogram(
 
     { t: "h2", n: "04", text: "Tracing", id: "tracing" },
 
-    {"kind": "timeline", "title": "A trace is spans nested in time", "caption": "One request becomes a root span with child spans for each call it makes. The gaps and the longest child are where the time went; the trace id ties the spans together across services.", "span": 10, "tick": 2, "lanes": [{"label": "GET /orders/42", "tone": "accent", "bars": [[0, 10, "root span 10 ms"]]}, {"label": "auth check", "tone": "good", "bars": [[0.5, 1.5, "1 ms"]]}, {"label": "SELECT orders", "tone": "warn", "bars": [[2, 6.5, "4.5 ms"]]}, {"label": "SELECT customer", "tone": "warn", "bars": [[6.8, 8.6, "1.8 ms"]]}, {"label": "serialise", "tone": "good", "bars": [[8.8, 9.8, "1 ms"]]}], "t": "diagram", "id": "dg-14_3-04-0"},
+    {"kind": "timeline", "title": "A trace is spans nested in time", "caption": "One request becomes a root span with child spans for each call it makes. The gaps and the longest child are where the time went; the trace id ties the spans together across services.", "span": 10, "tick": 2, "lanes": [{"label": "GET /orders/42", "tone": "accent", "bars": [[0, 10, "root span 10 ms"]]}, {"label": "auth check", "tone": "good", "bars": [[0.5, 1.5, "1 ms"]]}, {"label": "SELECT orders", "tone": "warn", "bars": [[2, 6.5, "4.5 ms"]]}, {"label": "SELECT customer", "tone": "warn", "bars": [[6.8, 8.6, "1.8 ms"]]}, {"label": "serialise", "tone": "good", "bars": [[8.8, 9.8, "1 ms"]]}], "t": "diagram", "id": "dg-14_3-04-2"},
+
 
 
 
@@ -361,6 +365,8 @@ def place_order(cmd: PlaceOrder) -> Order:
     ]},
 
     { t: "h2", n: "05", text: "Health checks and alerts", id: "health" },
+
+    {"kind": "flow", "title": "Conflating liveness and readiness is a classic outage amplifier", "caption": "**A liveness probe that checks the database restarts every replica when the database is briefly slow** — so a recoverable dependency blip becomes a full restart storm, and the restarts make the database slower. The division: **liveness asks “is this process wedged” and must check nothing external; readiness asks “can this replica serve traffic now” and may check dependencies**, because its failure removes the replica from the load balancer instead of killing it. And for alerts: **page on symptoms a user feels, not on causes** — error rate and latency, not CPU.", "cols": 3, "nodes": [{"id": "l", "label": "Liveness checking the database", "sub": "the mistake", "tone": "crit"}, {"id": "r", "label": "A brief blip restarts every replica", "sub": "and makes it worse", "tone": "crit"}, {"id": "a", "label": "Liveness: is this process wedged?", "sub": "nothing external", "tone": "good"}, {"id": "d", "label": "Readiness: can I serve now?", "sub": "dependencies allowed - it only delists", "tone": "good"}, {"id": "p", "label": "And page on symptoms, not causes", "sub": "error rate and latency, not CPU", "tone": "violet"}], "edges": [["l", "r"], ["r", "a"], ["a", "d"], ["d", "p"]], "t": "diagram", "id": "dg-14_3-05-1"},
 
     { t: "code", lang: "python", title: "liveness and readiness are different questions", code: `
 @app.get("/health/live")

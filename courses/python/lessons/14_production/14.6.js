@@ -121,7 +121,8 @@ jobs:
 
     { t: "h2", n: "02", text: "Build once, promote", id: "promote" },
 
-    {"kind": "flow", "title": "Build once, promote", "caption": "Tests run on the same artefact that ships. The image built on the commit is tagged, tested, then promoted to staging and production by tag — never rebuilt per environment.", "cols": 5, "nodes": [{"id": "ci", "label": "commit → CI", "sub": "lint, type-check, unit tests", "tone": "accent"}, {"id": "build", "label": "build image :sha", "sub": "once", "tone": "good"}, {"id": "int", "label": "integration tests", "sub": "against the image", "tone": "warn"}, {"id": "stg", "label": "promote to staging", "sub": "same tag", "tone": "violet"}, {"id": "prod", "label": "promote to production", "sub": "same tag · rollback = previous tag", "tone": "crit"}], "edges": [["ci", "build"], ["build", "int"], ["int", "stg"], ["stg", "prod"]], "t": "diagram", "id": "dg-14_6-02-0"},
+    {"kind": "flow", "title": "Build once, promote", "caption": "Tests run on the same artefact that ships. The image built on the commit is tagged, tested, then promoted to staging and production by tag — never rebuilt per environment.", "cols": 5, "nodes": [{"id": "ci", "label": "commit → CI", "sub": "lint, type-check, unit tests", "tone": "accent"}, {"id": "build", "label": "build image :sha", "sub": "once", "tone": "good"}, {"id": "int", "label": "integration tests", "sub": "against the image", "tone": "warn"}, {"id": "stg", "label": "promote to staging", "sub": "same tag", "tone": "violet"}, {"id": "prod", "label": "promote to production", "sub": "same tag · rollback = previous tag", "tone": "crit"}], "edges": [["ci", "build"], ["build", "int"], ["int", "stg"], ["stg", "prod"]], "t": "diagram", "id": "dg-14_6-02-3"},
+
 
 
 
@@ -210,6 +211,8 @@ promote:
 
     { t: "h2", n: "03", text: "Caching", id: "caching" },
 
+    {"kind": "flow", "title": "`hashFiles('requirements.txt')` on an unpinned file is a false key", "caption": "**The file is unchanged, the resolved versions are not — so the cache hits and you install yesterday's resolution, or it hits and you install something different from what the last build tested.** Which is the general shape of a cache-key bug: **the key must cover everything that affects the result.** For a lock file the hash is correct, because the lock file *is* the resolution. And the second rule: **include the Python version and the platform in the key**, since a wheel cache from 3.11 on x86 is not valid for 3.12 on arm.", "cols": 3, "nodes": [{"id": "h", "label": "hashFiles on requirements.txt", "sub": "unpinned", "tone": "crit"}, {"id": "u", "label": "Unchanged file, different resolution", "sub": "a false cache hit", "tone": "crit"}, {"id": "l", "label": "Hash the LOCK file", "sub": "it is the resolution", "tone": "good"}, {"id": "p", "label": "And include version and platform", "sub": "3.11/x86 is not 3.12/arm", "tone": "good"}, {"id": "g", "label": "The key must cover what affects the result", "sub": "the general rule", "tone": "violet"}], "edges": [["h", "u"], ["u", "l"], ["l", "p"], ["p", "g"]], "t": "diagram", "id": "dg-14_6-03-0"},
+
     { t: "code", lang: "toml", title: "cache keys that are correct rather than fast", code: `
 # The key must include everything that changes what is installed.
 - uses: actions/cache@v4
@@ -259,6 +262,8 @@ path: .venv
     ]},
 
     { t: "h2", n: "04", text: "Gates worth having", id: "gates" },
+
+    {"kind": "trace", "title": "Nine gates, and the two that should not block are the ones people add first", "caption": "**A total coverage threshold of 80% encourages tests of getters rather than of behaviour** — it is satisfiable by the least valuable tests available, which is why a **decrease** is the gate worth having instead. And **“every dependency current” is noise: it fails builds for a patch release nobody needed**, so batch upgrades on a schedule. The seven that should block are all cheap and all catch something specific — **including the migration check, because a non-concurrent index build is an outage, not a slow deploy.**", "left": "gate", "codeW": 170, "vars": ["blocks?", "because"], "steps": [{"code": "lint and format", "state": ["yes", "free, and it ends style review"], "tone": "good"}, {"code": "type check, tests", "state": ["yes", "a static error class; the contract"], "changed": [0, 1], "tone": "good"}, {"code": "secret scanning", "state": ["yes", "cheap, and the failure is unrecoverable"], "changed": [0, 1], "tone": "good"}, {"code": "migration safety check", "state": ["yes", "a non-concurrent index is an outage"], "changed": [0, 1], "tone": "violet"}, {"code": "total coverage >= 80%", "state": ["NO", "rewards tests of getters"], "changed": [0, 1], "tone": "crit"}, {"code": "every dependency current", "state": ["NO", "noise - batch on a schedule"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-14_6-04-1"},
 
     { t: "table",
       head: ["Gate", "Blocks the deploy?", "Because"],
@@ -318,6 +323,8 @@ path: .venv
     },
 
     { t: "h2", n: "05", text: "Deploying and rolling back", id: "deploy" },
+
+    {"kind": "flow", "title": "A rollback that requires thought is not a rollback", "caption": "**The previous digest is known at deploy time, so restoring it is one command that needs no decision and no investigation** — which is the only property that matters at 3am. The constraint that makes it true is the one people discover too late: **the database must be compatible with both versions, so a migration that drops a column cannot be rolled back by redeploying the old image.** Hence the sequence: **expand, deploy, contract** — add the column, ship code that writes both, and only remove the old one after the rollback window has closed.", "cols": 3, "nodes": [{"id": "d", "label": "The previous digest is known", "sub": "at deploy time", "tone": "good"}, {"id": "o", "label": "So rollback is one command", "sub": "no decision, no investigation", "tone": "violet"}, {"id": "m", "label": "Unless a migration dropped a column", "sub": "then the old image cannot run", "tone": "crit"}, {"id": "e", "label": "So: expand, deploy, contract", "sub": "add, write both, then remove", "tone": "good"}, {"id": "w", "label": "Remove after the rollback window", "sub": "not in the same release", "tone": "violet"}], "edges": [["d", "o"], ["o", "m"], ["m", "e"], ["e", "w"]], "t": "diagram", "id": "dg-14_6-05-2"},
 
     { t: "code", lang: "toml", title: "deploy, verify, roll back automatically", code: `
   deploy:

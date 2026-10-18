@@ -24,6 +24,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "starting and finishing threads", code: `
 import threading
 
@@ -105,6 +106,7 @@ threading.excepthook = lambda args: log.exception(
     { t: "h2", n: "02", text: "Races", id: "races" },
 
     {"kind": "timeline", "title": "A race on counter += 1", "caption": "The += is three bytecodes: read, add, write. Two threads can both read 5, both write 6, and one increment is lost. A lock makes the three steps one.", "span": 6, "tick": 1, "lanes": [{"label": "thread A", "tone": "accent", "bars": [[0, 1, "read 5"], [1, 2, "add"], [2, 3, "write 6"]]}, {"label": "thread B", "tone": "warn", "bars": [[0.5, 1.5, "read 5"], [1.5, 2.5, "add"], [2.5, 3.5, "write 6", "crit"]]}], "t": "diagram", "id": "dg-11_3-02-2"},
+
 
 
 
@@ -249,6 +251,7 @@ with lock:
 
 
 
+
     { t: "ladder",
       title: "Transferring between two accounts",
       rungs: [
@@ -306,6 +309,7 @@ class Ledger:
     { t: "h2", n: "04", text: "Queues instead of shared state", id: "queues" },
 
     {"kind": "flow", "title": "`maxsize` is the important argument, and the default is unbounded", "caption": "**An unbounded queue lets a fast producer read the entire input into memory while the consumers fall behind** — so the queue that was supposed to decouple them becomes the place the whole dataset lives. `maxsize` makes `put()` block, **which is backpressure: the producer is slowed to the rate the consumers can sustain, for free and with no extra code.** And the structural argument over a lock: **a queue hands ownership across rather than sharing it, so there is no window in which two threads can both see the same object** — 2.5's bug, designed out.", "cols": 3, "nodes": [{"id": "u", "label": "An unbounded queue", "sub": "the default", "tone": "crit"}, {"id": "m", "label": "A fast producer reads everything in", "sub": "the queue holds the dataset", "tone": "crit"}, {"id": "b", "label": "maxsize makes put() block", "sub": "backpressure, for free", "tone": "violet"}, {"id": "q", "label": "And a queue hands ownership across", "sub": "rather than sharing it", "tone": "good"}, {"id": "l", "label": "So 2.5's shared-object window is gone", "sub": "designed out, not guarded", "tone": "good"}], "edges": [["u", "m"], ["m", "b"], ["b", "q"], ["q", "l"]], "t": "diagram", "id": "dg-11_3-04-1"},
+
 
 
 

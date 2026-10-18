@@ -168,7 +168,8 @@ def test_something():
 
     { t: "h2", n: "03", text: "Environments", id: "environments" },
 
-    {"kind": "flow", "title": "One artefact, many environments", "caption": "The same container image runs in dev, staging and production; only the configuration injected at start-up differs. Anything that differs by environment is configuration; anything that does not is code.", "cols": 4, "nodes": [{"id": "img", "label": "one image", "sub": "built once", "tone": "accent"}, {"id": "dev", "label": "dev", "sub": "DATABASE_URL=… DEBUG=1", "tone": "good"}, {"id": "stg", "label": "staging", "sub": "real-shaped data", "tone": "warn"}, {"id": "prod", "label": "production", "sub": "secrets from a vault", "tone": "crit"}], "edges": [["img", "dev"], ["img", "stg"], ["img", "prod"]], "t": "diagram", "id": "dg-14_2-03-0"},
+    {"kind": "flow", "title": "One artefact, many environments", "caption": "The same container image runs in dev, staging and production; only the configuration injected at start-up differs. Anything that differs by environment is configuration; anything that does not is code.", "cols": 4, "nodes": [{"id": "img", "label": "one image", "sub": "built once", "tone": "accent"}, {"id": "dev", "label": "dev", "sub": "DATABASE_URL=… DEBUG=1", "tone": "good"}, {"id": "stg", "label": "staging", "sub": "real-shaped data", "tone": "warn"}, {"id": "prod", "label": "production", "sub": "secrets from a vault", "tone": "crit"}], "edges": [["img", "dev"], ["img", "stg"], ["img", "prod"]], "t": "diagram", "id": "dg-14_2-03-2"},
+
 
 
 
@@ -260,6 +261,8 @@ def production_requires_real_secrets(self) -> "Settings":
 
     { t: "h2", n: "04", text: "Secrets", id: "secrets" },
 
+    {"kind": "trace", "title": "Six places to put a secret, three of which are never", "caption": "**A repository is never, because git history is permanent and a rotation does not remove it** — the secret stays in every clone forever. A Docker `ENV` is never, **because image layers are readable by anyone who can pull it.** And a URL is never, **because URLs appear in access logs, proxies and browser history.** The useful part is the top of the ladder: **a mounted file beats an environment variable — it is not in `/proc/*/environ` and it can be rotated without a restart** — and a secret manager with a short-lived token adds audit and revocation.", "left": "storage", "codeW": 170, "vars": ["verdict", "why"], "steps": [{"code": "in the repository", "state": ["NEVER", "history is permanent"], "tone": "crit"}, {"code": "a Docker ENV or ARG", "state": ["NEVER", "layers are readable"], "changed": [0, 1], "tone": "crit"}, {"code": "a URL or query string", "state": ["NEVER", "logs, proxies, history"], "changed": [0, 1], "tone": "crit"}, {"code": "an environment variable", "state": ["acceptable", "the common baseline"], "changed": [0, 1], "tone": "good"}, {"code": "a mounted file (/run/secrets)", "state": ["better", "not in /proc; rotatable live"], "changed": [0, 1], "tone": "violet"}, {"code": "a manager + short-lived token", "state": ["best", "audited, rotatable, revocable"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-14_2-04-0"},
+
     { t: "table",
       head: ["Storage", "Verdict"],
       rows: [
@@ -325,6 +328,8 @@ requests.get("https://api/x", headers={"Authorization": f"Bearer {token}"})
     ]},
 
     { t: "h2", n: "05", text: "Rotation", id: "rotation" },
+
+    {"kind": "flow", "title": "Build this before you need it", "caption": "**Rotating under pressure — after a leak — is when you discover that your application reads the secret once at startup, that two services share it, and that nothing accepts two values at the same time.** Which is why the capability matters more than the schedule: **support two valid keys simultaneously, so a rotation is two deploys rather than an outage**, and **re-read the secret rather than caching it at import**, so the second deploy is not required at all. And the test worth having: **rotate in staging on a timer, so the path is exercised before an incident uses it.**", "cols": 3, "nodes": [{"id": "p", "label": "Rotating under pressure", "sub": "after a leak", "tone": "crit"}, {"id": "d", "label": "You discover: read once at startup", "sub": "and shared with another service", "tone": "crit"}, {"id": "t", "label": "Support TWO valid keys at once", "sub": "the capability, not the schedule", "tone": "violet"}, {"id": "r", "label": "And re-read rather than cache", "sub": "so no deploy is needed", "tone": "good"}, {"id": "s", "label": "Rotate in staging on a timer", "sub": "so the path is exercised", "tone": "violet"}], "edges": [["p", "d"], ["d", "t"], ["t", "r"], ["r", "s"]], "t": "diagram", "id": "dg-14_2-05-1"},
 
     { t: "code", lang: "python", title: "accept two keys, so rotation is not an outage", code: `
 class Settings(BaseSettings):

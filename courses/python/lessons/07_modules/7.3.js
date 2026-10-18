@@ -51,6 +51,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "JSON is a description of a value. A pickle is a sequence of opcodes for a virtual machine that *builds* a value. The distinction sounds academic until you look at the opcodes." },
 
     { t: "code", lang: "python", title: "what is actually in the file", code: `
@@ -160,6 +161,7 @@ highest protocol among opcodes = 4`,
 
 
 
+
     { t: "p", text: "`__reduce__` is a documented, supported part of the object model (Lesson 4.9). Any class can define it. Nothing checks what it returns." },
 
     { t: "code", lang: "python", title: "twelve lines to remote code execution", code: `
@@ -207,6 +209,7 @@ arbitrary code, running as you`,
     { t: "h2", n: "03", text: "What actually helps", id: "mitigations" },
 
     {"kind": "trace", "title": "Seven formats, and only one of them executes on load", "caption": "**The MAC does not make pickle safe — it makes the pickle unloadable unless someone with your key produced it**, which is a different and sufficient claim. And overriding `find_class` works because **every `GLOBAL` opcode routes through it**, giving `_pickle.UnpicklingError: blocked global: posix.system`. The table's real content is the first column: **pickle is the only row that executes on load, and the bottom four have a schema** — with `safetensors` built specifically to replace pickled checkpoints.", "left": "format", "codeW": 150, "vars": ["executes on load", "schema", "use it for"], "steps": [{"code": "pickle", "state": ["YES", "no", "one trust boundary only"], "tone": "crit"}, {"code": "json", "state": ["no", "no", "config, APIs, logs"], "changed": [0, 2], "tone": "good"}, {"code": "msgpack / cbor2", "state": ["no", "no", "compact binary on a hot path"], "changed": [2], "tone": "good"}, {"code": "Parquet / Arrow", "state": ["no", "yes", "columnar tabular at scale"], "changed": [1, 2], "tone": "good"}, {"code": "Protobuf / Avro", "state": ["no", "yes, enforced", "versioned service messages"], "changed": [1, 2], "tone": "good"}, {"code": "safetensors", "state": ["no", "tensor metadata", "model weights"], "changed": [1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-7_3-03-1"},
+
 
 
 
@@ -324,6 +327,7 @@ loads_restricted(pickle.dumps(Exploit()))
     { t: "h2", n: "04", text: "The other cost: pickles rot", id: "fragility" },
 
     {"kind": "trace", "title": "A pickle does not contain your class — it contains the import path of your class", "caption": "**Rebuilding the object requires that path to still resolve to a compatible definition**, which is why `ModuleNotFoundError: No module named 'myapp.model'` is the normal end state of an archived pickle. Four things break it, and the second is the quiet one: **an added attribute is simply missing rather than defaulted, because `__setstate__` only restores the keys present in the stream** — so the failure surfaces later, somewhere else. And the fourth fails at **load, not at build**: a protocol-5 pickle is unreadable by 3.7.", "left": "what changed", "codeW": 160, "vars": ["failure", "when you find out"], "steps": [{"code": "module or class renamed", "state": ["ModuleNotFoundError", "every archive at once"], "tone": "crit"}, {"code": "attribute added", "state": ["silently missing, not defaulted", "later, somewhere else"], "changed": [0, 1], "tone": "crit"}, {"code": "library version changed", "state": ["raises, or loads differently", "maybe never"], "changed": [0, 1], "tone": "crit"}, {"code": "Python version changed", "state": ["protocol 5 unreadable by 3.7", "at load, not at build"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-7_3-04-2"},
+
 
 
 

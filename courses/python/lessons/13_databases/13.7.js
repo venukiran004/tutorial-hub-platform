@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "Autogenerate is a draft, not a migration", "caption": "**It misses server defaults, enum changes, index method choices and anything about data** — so the generated file is a starting point you are expected to edit, and treating it as output is how a migration drops a column it should have renamed. The two habits that follow: **read every generated migration before committing it**, and **write the data migration by hand**, because autogenerate compares schemas and has no idea a column's values need moving. And the one that saves an outage: **test the downgrade**, since the first time you need it will be the worst time to discover it was never run.", "cols": 3, "nodes": [{"id": "a", "label": "Autogenerate compares schemas", "sub": "and nothing else", "tone": "accent"}, {"id": "m", "label": "Misses defaults, enums, index methods", "sub": "and all data changes", "tone": "crit"}, {"id": "r", "label": "So read every generated file", "sub": "it is a draft", "tone": "good"}, {"id": "d", "label": "Write data migrations by hand", "sub": "it cannot see values", "tone": "good"}, {"id": "t", "label": "And test the downgrade", "sub": "before you need it", "tone": "violet"}], "edges": [["a", "m"], ["m", "r"], ["r", "d"], ["d", "t"]], "t": "diagram", "id": "dg-13_7-01-0"},
 
+
     { t: "code", lang: "python", title: "a migration worth reviewing", code: `
 """add archived_at to orders
 
@@ -88,6 +89,7 @@ op.add_column("users", sa.Column("full_name", sa.String()))
     { t: "h2", n: "02", text: "Zero-downtime changes", id: "zero-downtime" },
 
     {"kind": "steps", "title": "A zero-downtime column rename", "caption": "A rename in one migration breaks the running old code. Expand, migrate, contract: add the new column, write to both, backfill, switch reads, drop the old one — each step deployable on its own.", "items": [{"label": "Add new column, nullable", "desc": "old code ignores it", "tone": "accent"}, {"label": "Deploy code that writes both", "desc": "reads still from the old column", "tone": "accent"}, {"label": "Backfill in batches", "desc": "small transactions, no long lock", "tone": "warn"}, {"label": "Deploy code that reads the new column", "desc": "then stop writing the old", "tone": "good"}, {"label": "Drop the old column", "desc": "a release later", "tone": "violet"}], "t": "diagram", "id": "dg-13_7-02-1"},
+
 
 
 
@@ -218,6 +220,7 @@ SET statement_timeout = '30s';`},
     { t: "h2", n: "03", text: "Sizing a pool", id: "pool" },
 
     {"kind": "flow", "title": "Sizing a connection pool", "caption": "Every worker holds up to pool_size + max_overflow connections. Workers × pool must stay under the database's max_connections with room for migrations and admins — a limit hit at 3 a.m. by a scaled-up deployment.", "cols": 3, "nodes": [{"id": "w", "label": "8 workers", "sub": "× (pool 5 + overflow 10)", "tone": "accent"}, {"id": "p", "label": "up to 120 connections", "sub": "from this service alone", "tone": "warn"}, {"id": "db", "label": "max_connections = 100", "sub": "exhausted", "tone": "crit"}], "edges": [["w", "p"], ["p", "db"]], "t": "diagram", "id": "dg-13_7-03-2"},
+
 
 
 

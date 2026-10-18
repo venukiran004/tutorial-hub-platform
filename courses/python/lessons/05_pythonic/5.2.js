@@ -33,6 +33,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table",
       head: ["Bucket", "Examples", "How you handle it"],
       rows: [
@@ -194,6 +195,7 @@ AttributeError: 'Child' object has no attribute '__token'`,
 
 
 
+
     { t: "viz",
       title: "The shape of a module a Python reader expects",
       caption: "The order is not arbitrary: imports are grouped so that a dependency-related failure names its own group; constants sit above the code that uses them; the main guard is last so that importing the module runs nothing. A reader scanning an unfamiliar file navigates by this shape, and a file that violates it costs them a full read.",
@@ -304,6 +306,7 @@ order = Order(...)`},
 
 
 
+
     { t: "p", text: "This is the one layout decision the formatter cannot make for you, because it depends on which grouping is meaningful. The formatter will produce something legal from any input; you decide what it has to work with." },
 
     { t: "code", lang: "python", title: "the magic trailing comma", code: `
@@ -348,6 +351,7 @@ if user.can_be_billed() and region in ALLOWED_REGIONS:
     { t: "h2", n: "05", text: "Comments and docstrings", id: "comments" },
 
     {"kind": "trace", "title": "A comment that says what is a liability; one that says why is the most valuable line in the file", "caption": "**A comment restating the code is a maintenance liability, because it is the part that will not be updated** — the code changes in the diff and the comment stays. The docstring rules are short and worth getting right: **imperative mood ending in a full stop — “Return the settled total”, not “Returns” and not “This function returns”.** And the two omissions matter: **do not document parameter types, because the annotations state them and cannot drift** — and **a docstring on every function regardless of value trains readers to skip docstrings.**", "left": "the comment or docstring", "codeW": 180, "vars": ["verdict"], "steps": [{"code": "says WHAT the code does", "state": ["a liability - it will not be updated"], "tone": "crit"}, {"code": "says WHY", "state": ["the most valuable line in the file"], "changed": [0], "tone": "violet"}, {"code": "one-line docstring", "state": ["imperative, full stop: 'Return the...'"], "changed": [0], "tone": "good"}, {"code": "the parameter types", "state": ["do not - annotations cannot drift"], "changed": [0], "tone": "crit"}, {"code": "one on every function", "state": ["trains readers to skip them"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-5_2-05-2"},
+
 
 
 

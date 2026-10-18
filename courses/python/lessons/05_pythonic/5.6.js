@@ -50,6 +50,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "Iterable and iterator are separate roles",
       caption: "An iterable is a factory: ask it for an iterator and it hands you a fresh one each time. An iterator is a cursor: it holds a position, is consumed as you read it, and is exhausted permanently. A list is an iterable; the object list.__iter__() returns is the iterator.",
@@ -239,6 +240,7 @@ test_iterable_is_reusable(Results([[{"id": 1}], [{"id": 2}]]))`},
 
 
 
+
     { t: "code", lang: "python", title: "collections.abc gives you the surrounding methods", code: `
 from collections.abc import Iterator, Sequence
 
@@ -284,6 +286,7 @@ True 1 [{'id': 3}, {'id': 2}, {'id': 1}]`,
     { t: "h2", n: "04", text: "iter() with a sentinel", id: "sentinel" },
 
     {"kind": "flow", "title": "The two-argument `iter()` is the read-until-sentinel loop", "caption": "**`iter(callable, sentinel)` calls the callable repeatedly and stops when it returns the sentinel** — which is the pre-walrus idiom for read-until-sentinel loops, and **still the cleanest when the sentinel is a specific value rather than falsiness.** The canonical use is a fixed-size read: **`iter(partial(f.read, 4096), b\"\")` yields chunks until the file is exhausted**, with no `while True`, no break and no repeated call written twice. And the distinction from a walrus loop is exactly that: **a walrus tests a condition, this compares against one value.**", "cols": 3, "nodes": [{"id": "i", "label": "iter(callable, sentinel)", "sub": "two arguments, not one", "tone": "violet"}, {"id": "c", "label": "Calls it until it returns the sentinel", "sub": "then stops", "tone": "good"}, {"id": "r", "label": "iter(partial(f.read, 4096), b'')", "sub": "chunks until exhausted", "tone": "good"}, {"id": "n", "label": "No while True, no break", "sub": "and the call is written once", "tone": "good"}, {"id": "w", "label": "A walrus tests a condition", "sub": "this compares one value", "tone": "accent"}], "edges": [["i", "c"], ["c", "r"], ["r", "n"], ["n", "w"]], "t": "diagram", "id": "dg-5_6-04-1"},
+
 
 
 

@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Layers and caching", id: "layers" },
 
-    {"kind": "layers", "title": "Docker layers, and what invalidates them", "caption": "Each instruction is a cached layer; a change invalidates it and everything after it. Copy the dependency manifest and install before copying the source, so a code change does not reinstall every package.", "items": [{"label": "COPY . .   + CMD", "sub": "changes every commit — keep it last", "tone": "crit"}, {"label": "RUN pip install / uv sync", "sub": "changes when the lock file changes", "tone": "warn"}, {"label": "COPY pyproject.toml uv.lock", "sub": "just the manifest", "tone": "accent"}, {"label": "FROM python:3.12-slim", "sub": "changes rarely — the base", "tone": "good"}], "t": "diagram", "id": "dg-14_5-01-0"},
+    {"kind": "layers", "title": "Docker layers, and what invalidates them", "caption": "Each instruction is a cached layer; a change invalidates it and everything after it. Copy the dependency manifest and install before copying the source, so a code change does not reinstall every package.", "items": [{"label": "COPY . .   + CMD", "sub": "changes every commit — keep it last", "tone": "crit"}, {"label": "RUN pip install / uv sync", "sub": "changes when the lock file changes", "tone": "warn"}, {"label": "COPY pyproject.toml uv.lock", "sub": "just the manifest", "tone": "accent"}, {"label": "FROM python:3.12-slim", "sub": "changes rarely — the base", "tone": "good"}], "t": "diagram", "id": "dg-14_5-01-2"},
+
 
 
 
@@ -108,6 +109,8 @@ CMD python -m uvicorn app.main:app --host 0.0.0.0
     },
 
     { t: "h2", n: "02", text: "A Dockerfile worth copying", id: "dockerfile" },
+
+    {"kind": "flow", "title": "`PYTHONUNBUFFERED=1` is not optional", "caption": "**Without it stdout is block-buffered when not a TTY, so logs appear in chunks minutes late — or not at all when the container is killed**, which is precisely the moment you needed them. The rest of the Dockerfile is layer ordering: **copy the lock file and install before copying the source, so a code change does not invalidate the dependency layer.** And the two that reduce what an attacker gets: **a non-root `USER`, and a multi-stage build so the compiler and the build dependencies never reach the final image.**", "cols": 3, "nodes": [{"id": "u", "label": "PYTHONUNBUFFERED=1", "sub": "not optional", "tone": "violet"}, {"id": "b", "label": "Without it: chunks, minutes late", "sub": "or lost when killed", "tone": "crit"}, {"id": "l", "label": "Lock file and install BEFORE the source", "sub": "so code changes keep the cache", "tone": "good"}, {"id": "m", "label": "Multi-stage: no compiler in the final image", "sub": "nor the build dependencies", "tone": "good"}, {"id": "n", "label": "And a non-root USER", "sub": "which costs one line", "tone": "good"}], "edges": [["u", "b"], ["l", "m"], ["m", "n"], ["b", "l"]], "t": "diagram", "id": "dg-14_5-02-0"},
 
     { t: "code", lang: "bash", title: "multi-stage, cached, non-root", code: `
 # ---------- builder: has compilers, does not ship -------------------
@@ -262,6 +265,8 @@ CMD ["uvicorn", "app.main:app"]
     ]},
 
     { t: "h2", n: "04", text: "Choosing a base image", id: "base" },
+
+    {"kind": "trace", "title": "Alpine is 50 MB and compiles your wheels from source", "caption": "**musl libc means many wheels simply do not exist for it — so a build that is 130 MB and thirty seconds on slim becomes 50 MB and fifteen minutes on alpine**, with a compiler in the image unless you stage it out. Which is why **slim is the default choice: Debian, glibc, and wheels just work.** The two ends are for specific reasons: **the full image is ~1.0 GB of attack surface you do not need**, and **distroless has no shell and no package manager — secure, and hard to debug when you need to.**", "left": "base", "codeW": 170, "vars": ["size", "trade-off"], "steps": [{"code": "python:3.12", "state": ["~1.0 GB", "far more attack surface than needed"], "tone": "crit"}, {"code": "python:3.12-slim", "state": ["~130 MB", "the default - wheels just work"], "changed": [0, 1], "tone": "violet"}, {"code": "python:3.12-alpine", "state": ["~50 MB", "musl: wheels compile from source"], "changed": [0, 1], "tone": "crit"}, {"code": "distroless/python3", "state": ["~50 MB", "no shell - secure, hard to debug"], "changed": [0, 1], "tone": "warn"}, {"code": "ubuntu:24.04 + python", "state": ["~180 MB", "when you need system packages"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-14_5-04-1"},
 
     { t: "table",
       head: ["Base", "Size", "Trade-off"],

@@ -128,6 +128,7 @@ print(len(tags["order-1"]))
 
 
 
+
     { t: "code", lang: "python", title: "counting, ranking, and arithmetic", code: `
 from collections import Counter
 
@@ -174,6 +175,7 @@ top = min(counts.items(), key=lambda kv: (-kv[1], kv[0]))`},
     { t: "h2", n: "03", text: "deque", id: "deque" },
 
     {"kind": "cells", "title": "deque: O(1) at both ends", "caption": "A deque is a doubly linked block list. appendleft and popleft are O(1) where a list's insert(0) and pop(0) are O(n); maxlen turns it into a rolling window that drops the oldest item automatically.", "items": ["appendL", "a", "b", "c", "d", "← append"], "highlight": [0, 5], "negative": false, "label": "deque(maxlen=4): a fifth append drops 'a' from the left", "t": "diagram", "id": "dg-5_9-03-3"},
+
 
 
 
@@ -257,6 +259,7 @@ deque.popleft(): 0.0043s`},
 
 
 
+
     { t: "code", lang: "python", title: "prefer the typed form", code: `
 from typing import NamedTuple
 from decimal import Decimal
@@ -301,6 +304,7 @@ OrderLine(sku='W-1', quantity=3, unit_price=Decimal('19.99'))
     { t: "h2", n: "05", text: "ChainMap", id: "chainmap" },
 
     {"kind": "trace", "title": "ChainMap searches the layers and never copies them", "caption": "**A `ChainMap` searches its mappings left to right, so the first layer wins — `debug` is `True` from the override, `timeout` is 10 from the middle layer, `retries` is 3 from the defaults** — and nothing was merged. Which is the difference from 2.3's spread: **a merge produces a snapshot and a `ChainMap` stays live, so a later change to the defaults is visible immediately.** And the `.maps` attribute is the reason it is good for configuration: **you can see which layer every value came from**, which a merged dict has permanently lost.", "left": "lookup", "codeW": 170, "vars": ["value", "from"], "steps": [{"code": "cfg['debug']", "state": ["True", "the first layer"], "tone": "good"}, {"code": "cfg['timeout']", "state": ["10", "the second - the first lacks it"], "changed": [0, 1], "tone": "good"}, {"code": "cfg['retries']", "state": ["3", "the defaults"], "changed": [0, 1], "tone": "good"}, {"code": "cfg.maps", "state": ["all three, in order", "which a merge has lost"], "changed": [0, 1], "tone": "violet"}, {"code": "changing a default later", "state": ["visible immediately", "it is live, not a snapshot"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_9-05-2"},
+
 
 
 
