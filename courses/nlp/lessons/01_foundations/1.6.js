@@ -26,6 +26,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "A claim about text alone, which is exactly why it scales", "caption": "Firth's line from 1957 is the whole basis of the field. **If two words appear in the same contexts — *the ___ ran across the garden* — then whatever they mean, they mean something similar enough to be substitutable there.** And note what the claim does **not** require: no dictionary, no labels, no linguistics, no annotation budget. **Every method in this lesson is a different way of turning co-occurrence counts into vectors, and all of them rest on this one assumption.**", "cols": 3, "nodes": [{"id": "c", "label": "Two words share their contexts", "sub": "the ___ ran across the garden", "tone": "accent"}, {"id": "s", "label": "So they are substitutable there", "sub": "whatever they mean", "tone": "good"}, {"id": "n", "label": "No dictionary, no labels, no linguistics", "sub": "a claim about text alone", "tone": "violet"}, {"id": "x", "label": "Which is why it scales", "sub": "more text is the only input", "tone": "good"}, {"id": "a", "label": "Every method here rests on it", "sub": "Word2Vec, GloVe, FastText", "tone": "teal"}], "edges": [["c", "s"], ["s", "n"], ["n", "x"], ["x", "a"]], "t": "diagram", "id": "dg-1_6-01-0"},
 
 
+
+
     { t: "callout", kind: "mental", title: "You shall know a word by the company it keeps",
       body: [{ t: "p", text: "Firth's line from 1957 is the whole basis of the field. If two words appear in the same contexts — *the ___ ran across the garden* — then whatever they mean, they mean something similar enough to be substitutable there. That is a claim about text alone, requiring no dictionary, no labels and no linguistics, which is exactly why it scales. Every embedding method in this lesson is a different way of turning co-occurrence counts into vectors, and they all rest on this one assumption." }] },
 
@@ -57,6 +59,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Fifty thousand dot products per pair, replaced by K+1", "caption": "The honest objective is a softmax over **every** word in the vocabulary — 50,000 dot products and a normalisation, **for every training pair, of which there are billions.** Negative sampling asks a cheaper question: **push the true context word's score up and `K` randomly sampled words' scores down, with `K` typically 5 to 20.** The samples come from the unigram distribution raised to **0.75**, which flattens it — **an empirical exponent rather than a principled one**, chosen to stop common words dominating the negatives while still sampling them more often than rare ones.", "cols": 3, "nodes": [{"id": "s", "label": "Softmax over 50,000 words", "sub": "per pair, billions of pairs", "tone": "crit"}, {"id": "k", "label": "Instead: 1 positive + K negatives", "sub": "K is 5 to 20", "tone": "good"}, {"id": "u", "label": "Push the true word up", "sub": "score -> 1", "tone": "good"}, {"id": "d", "label": "Push K sampled words down", "sub": "score -> 0", "tone": "good"}, {"id": "e", "label": "Sampled from freq^0.75", "sub": "empirical, not principled", "tone": "warn"}], "edges": [["s", "k"], ["k", "u"], ["k", "d"], ["d", "e"]], "t": "diagram", "id": "dg-1_6-03-1"},
 
 
+
+
     { t: "math", tex: "\\mathcal{L} = -\\log \\sigma(\\mathbf{v}_c^{\\top}\\mathbf{u}_o) \\;-\\; \\sum_{k=1}^{K} \\log \\sigma(-\\mathbf{v}_c^{\\top}\\mathbf{u}_{n_k})" },
 
     { t: "callout", kind: "insight", title: "The softmax over the vocabulary is the thing being avoided",
@@ -85,6 +89,8 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Six groups, the same gap in every one, and no labels anywhere", "caption": "**Within-group cosine near 0.99 and across-group well under 0.45, in all six groups** — from 4,000 sentences, 63,736 pairs, six epochs and **no labels at all.** The gap is the structure the model found from co-occurrence alone. And the comparison that makes it mean something: **with one-hot, the cosine between any two distinct words is exactly 0.000, so there is no gap because there is no structure** — and nothing a downstream model could generalise from.", "left": "group", "codeW": 130, "vars": ["within", "across", "gap"], "steps": [{"code": "animals", "state": ["+0.989", "+0.274", "+0.715"], "tone": "good"}, {"code": "persons", "state": ["+0.989", "+0.435", "+0.554"], "changed": [1, 2], "tone": "good"}, {"code": "places", "state": ["+0.998", "+0.382", "+0.616"], "changed": [0, 1, 2], "tone": "good"}, {"code": "objects, verbs", "state": ["+0.987", "+0.344", "+0.583"], "changed": [0, 1, 2], "tone": "good"}, {"code": "one-hot, any pair", "state": ["0.000", "0.000", "none"], "changed": [0, 1, 2], "tone": "crit", "note": "no structure to generalise from"}], "t": "diagram", "id": "dg-1_6-04-2"},
 
 
+
+
     { t: "p", text: "Trained on 4,000 sentences with a 24-word vocabulary, where animals, people, places, objects and two kinds of verb each occupy a distinct template slot — 63,736 training pairs, six epochs, no labels:" },
 
     { t: "out", text: `  cat      -> wolf 0.991, dog 0.988, fox 0.986, park 0.408
@@ -109,6 +115,8 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Three methods, and only one of them survives an unseen word", "caption": "Word2Vec and GloVe differ in **where the counts come from** — sampled local windows against the corpus-wide co-occurrence matrix, factorised directly — and they share the same hard limit: **a word absent from training has no vector, so there is nothing to look up.** FastText changes the unit: **a word's vector is the sum of its character n-gram vectors**, so an unseen word is still built from pieces that were seen. Which is 1.3's subword argument arriving in the embedding layer.", "left": "method", "codeW": 150, "vars": ["what it fits", "an unseen word"], "steps": [{"code": "Word2Vec", "state": ["sampled local windows", "no vector at all"], "tone": "warn"}, {"code": "GloVe", "state": ["the global co-occurrence matrix", "no vector at all"], "changed": [0], "tone": "warn"}, {"code": "FastText", "state": ["character n-grams", "the sum of its subwords"], "changed": [0, 1], "tone": "good", "note": "1.3's argument, again"}], "t": "diagram", "id": "dg-1_6-05-3"},
 
 
+
+
     { t: "table", head: ["Method", "Key idea", "Handles OOV?"],
       rows: [
         ["**Word2Vec**", "Predict context from centre (or the reverse), locally, with negative sampling", "No"],
@@ -122,6 +130,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "The analogy, honestly", id: "analogy" },
 
     {"kind": "flow", "title": "The result is real and the demonstration is stage-managed", "caption": "The analogy works when a relation happens to be a consistent **translation** in the vector space, and for some relations it genuinely is — a real and surprising property of embeddings trained on enough text. **But the standard evaluation excludes the three input words from the candidate answers, and without that exclusion the nearest vector to `king − man + woman` is frequently `king` itself.** Worth knowing both halves, **because the analogy is often cited as evidence that embeddings capture meaning more strongly than the geometry supports.**", "cols": 3, "nodes": [{"id": "r", "label": "Some relations ARE a translation", "sub": "real, and surprising", "tone": "good"}, {"id": "e", "label": "The evaluation excludes the 3 inputs", "sub": "king, man, woman", "tone": "warn"}, {"id": "w", "label": "Without that, the answer is often 'king'", "sub": "the nearest vector", "tone": "crit"}, {"id": "b", "label": "So: the result holds, the demo is staged", "sub": "both halves are true", "tone": "violet"}, {"id": "c", "label": "It is cited as more than it shows", "sub": "which is why this matters", "tone": "teal"}], "edges": [["r", "e"], ["e", "w"], ["w", "b"], ["b", "c"]], "t": "diagram", "id": "dg-1_6-06-4"},
+
+
 
 
     { t: "math", tex: "\\text{vec}(\\text{king}) - \\text{vec}(\\text{man}) + \\text{vec}(\\text{woman}) \\;\\approx\\; \\text{vec}(\\text{queen})" },

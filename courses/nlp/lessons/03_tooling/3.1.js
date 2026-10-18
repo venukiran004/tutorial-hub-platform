@@ -22,6 +22,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The pipeline is a list", id: "pipeline" },
 
+    {"kind": "layers", "title": "Six components, one shared encoder, and the order is a dependency graph", "caption": "**`tok2vec` computes the token vectors every downstream component reads — shared, so the encoder runs once rather than per component**, which is why §04's timings behave the way they do. And the order is not arbitrary: **the lemmatizer needs the POS tag, which is why it runs after the tagger**, and `attribute_ruler` sits between them applying rule-based fixes over the statistical output. **Nothing here is hidden — you can print the list, reorder it, remove from it and add to it.**", "items": [{"label": "tok2vec", "sub": "the token vectors everything else reads", "tone": "violet", "side": "shared"}, {"label": "tagger", "sub": "token.tag_, the fine Penn Treebank tag", "tone": "good", "side": "statistical"}, {"label": "parser", "sub": "token.dep_, token.head - and doc.sents", "tone": "good", "side": "expensive"}, {"label": "attribute_ruler", "sub": "rule fixes, and tag_ -> pos_", "tone": "accent", "side": "rules"}, {"label": "lemmatizer", "sub": "needs the POS tag - hence the order", "tone": "accent", "side": "dependent"}, {"label": "ner", "sub": "doc.ents, as spans", "tone": "good", "side": "expensive"}], "t": "diagram", "id": "dg-3_1-01-0"},
+
+
     { t: "p", text: "`spacy.load` returns a `Language` object, and calling it runs the text through an ordered list of components. Each one annotates the same `Doc` in place and passes it along. Nothing here is hidden — you can print the list, reorder it, remove from it and add to it." },
 
     { t: "out", text:
@@ -41,6 +44,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "One sentence, fully annotated", id: "annotated" },
 
+    {"kind": "trace", "title": "Two details in one annotated sentence", "caption": "**`U.K.` survived as a single token, full stops included — the tokeniser carries exception lists for abbreviations, so it neither splits on that full stop nor treats it as a sentence boundary.** And **`$1 billion` is one entity span covering three tokens**, which is why `doc.ents` yields spans rather than tokens: an entity's boundaries do not have to line up with anything you can read off a single token.", "left": "token or span", "codeW": 150, "vars": ["POS", "dep", "note"], "steps": [{"code": "Apple", "state": ["PROPN", "nsubj", "ORG, chars 0:5"], "tone": "good"}, {"code": "U.K.", "state": ["PROPN", "dobj", "ONE token, full stops kept"], "changed": [1, 2], "tone": "violet", "note": "an abbreviation exception"}, {"code": "$ / 1 / billion", "state": ["SYM NUM NUM", "quantmod compound pobj", "three tokens"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "'$1 billion'", "state": ["-", "-", "ONE entity: MONEY 44:54"], "changed": [2], "tone": "violet", "note": "spans, not tokens"}], "t": "diagram", "id": "dg-3_1-02-1"},
+
+
     { t: "code", lang: "python", title: "scratchpad/nlp/n31.py — the sentence", code:
 "import spacy\n\nnlp = spacy.load(\"en_core_web_sm\")     # sm: fast. md/lg: vectors. trf: most accurate\ndoc = nlp(\"Apple is looking at buying U.K. startup for $1 billion\")\n\nfor token in doc:\n    print(f\"{token.text:10} {token.pos_:6} {token.dep_:10} \"\n          f\"{token.is_stop} {token.lemma_}\")\n\nfor ent in doc.ents:\n    print(f\"{ent.text:20} {ent.label_:10} ({ent.start_char}:{ent.end_char})\")",
       caption: "Four model sizes ship: `sm` has no word vectors, `md` and `lg` do, and `trf` wraps a transformer. `doc.similarity()` silently degrades on `sm` because there are no vectors to compare." },
@@ -52,6 +58,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Doc, Token and Span are views", id: "objects" },
 
+    {"kind": "flow", "title": "A Token stores an index, not a string", "caption": "`token.i = 3` and `token.idx = 17`, and `doc.text[17:19]` is `'at'` — **so every attribute you read is a lookup into the parent `Doc`'s arrays, and nothing is copied.** Slicing gives a `Span`, which is likewise a pair of indices. **Which is why `doc[0].doc is doc` returns `True`**: the views keep a reference to the document, so passing a `Span` around costs nothing and **keeps the whole `Doc` alive**, which is the one practical consequence.", "cols": 3, "nodes": [{"id": "d", "label": "Doc owns the arrays", "sub": "text, tags, heads, vectors", "tone": "violet"}, {"id": "t", "label": "Token = an index into them", "sub": "token.i = 3, token.idx = 17", "tone": "good"}, {"id": "s", "label": "Span = a pair of indices", "sub": "doc[0:2]", "tone": "good"}, {"id": "n", "label": "Nothing is copied", "sub": "span.doc is doc -> True", "tone": "good"}, {"id": "k", "label": "So a Span keeps the whole Doc alive", "sub": "the one practical consequence", "tone": "warn"}], "edges": [["d", "t"], ["d", "s"], ["t", "n"], ["s", "n"], ["n", "k"]], "t": "diagram", "id": "dg-3_1-03-2"},
+
+
     { t: "p", text: "A `Token` is not a string. It holds an index into the parent `Doc`, and every attribute you read is looked up from the `Doc`'s underlying arrays. Slicing gives a `Span`, which is likewise a pair of indices. Nothing is copied." },
 
     { t: "out", text:
@@ -61,6 +70,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "`token.i` is the token's position in the document — 3 here — and `token.idx` is its **character** offset in the original text — 17. You need the character offset whenever you report a result back to something that holds the raw string: highlighting in a UI, writing an annotation back to a database, citing a source. This is the same offset mapping you used for extractive QA in lesson 2.8, and it is the reason spaCy never destroys the original text. `doc.text` reconstructs the input exactly, whitespace included." }] },
 
     { t: "h2", n: "04", text: "Making it fast", id: "fast" },
+
+    {"kind": "trace", "title": "The parser and NER are the cost; everything after that is tok2vec", "caption": "**Dropping the parser and NER roughly halved the time — 0.988s to 0.550s — and dropping everything else after that bought almost nothing (0.534s), because `tok2vec` is still running and it is the shared cost underneath.** So the lever is those two components, not the component count. The second measurement compounds with it: **`nlp.pipe` on 500 documents is 2.30× faster than calling `nlp` in a loop.** And if you genuinely only want tokens, **`nlp.make_doc` skips the pipeline altogether.**", "left": "configuration", "codeW": 210, "vars": ["time", "what is still running"], "steps": [{"code": "disable=[]", "state": ["0.988s", "everything"], "tone": "crit"}, {"code": "disable parser", "state": ["0.844s", "tok2vec, tagger, ner, ..."], "changed": [0, 1], "tone": "warn"}, {"code": "disable parser + ner", "state": ["0.550s", "tok2vec, tagger, lemmatizer"], "changed": [0, 1], "tone": "good", "note": "roughly halved"}, {"code": "disable all five", "state": ["0.534s", "tok2vec - the floor"], "changed": [0, 1], "tone": "good", "note": "bought almost nothing"}, {"code": "500 docs: loop vs nlp.pipe", "state": ["3.218s vs 1.397s", "2.30x"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_1-04-3"},
+
 
     { t: "p", text: "Two levers, and they compound. Disable the components you do not use, and batch with `nlp.pipe` rather than calling `nlp` in a loop." },
 
@@ -73,6 +85,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Calling `nlp(text)` in a loop processes one document at a time and leaves the model's batch dimension at 1, which wastes most of the matrix multiply. `nlp.pipe(texts, batch_size=50)` was **2.30x** faster here on 500 short documents, and the gap widens with a transformer model where batching matters far more. It also accepts `n_process` for multiprocessing. If you are calling `nlp()` inside a `for` loop over a list you already have, that is the single easiest speedup available." }] },
 
     { t: "h2", n: "05", text: "Custom components", id: "custom" },
+
+    {"kind": "trace", "title": "A four-line component, and the position in the list is a correctness question", "caption": "The component works on three inputs and **fails on `not good at all`, calling it positive** — which is 2.2's negation problem arriving in a custom component. The structural point is the placement: **`last=True` puts it after NER so it can read `doc.ents`; `before=\"ner\"` would let it modify tokens the entity recogniser then sees.** And **a component needing POS tags must run after the tagger — spaCy will not stop you getting that wrong, it will hand you empty attributes.**", "left": "input", "codeW": 230, "vars": ["component output", "correct?"], "steps": [{"code": "'a great product with amazing features'", "state": ["positive", "yes"], "tone": "good"}, {"code": "'the worst thing I have ever bought'", "state": ["negative", "yes"], "changed": [0], "tone": "good"}, {"code": "'The product arrived on Tuesday'", "state": ["neutral", "yes"], "changed": [0], "tone": "good"}, {"code": "'This is not good at all'", "state": ["positive", "NO"], "changed": [0, 1], "tone": "crit", "note": "2.2's negation problem"}], "t": "diagram", "id": "dg-3_1-05-4"},
+
 
     { t: "p", text: "A component is any callable taking a `Doc` and returning a `Doc`. Register it with `@Language.component`, declare any custom attributes on `Doc`, `Token` or `Span`, and add it to the pipeline by name." },
 
@@ -89,6 +104,9 @@ EC.receiveLesson({
     { t: "p", text: "Where a component sits matters. `last=True` puts it at the end, after NER, so it can read `doc.ents`. `before=\"ner\"` would let it modify tokens the entity recogniser then sees. A component that needs POS tags must run after the tagger, and spaCy will not stop you from getting that wrong — it will just hand you empty attributes." },
 
     { t: "h2", n: "06", text: "Rule-based matching", id: "matching" },
+
+    {"kind": "flow", "title": "Two matchers, and choosing wrongly costs three orders of magnitude", "caption": "**If you know the exact strings or the exact grammatical shape you want, a matcher is faster, exact and debuggable — statistical models are not always the right tool.** The two are not interchangeable: **`Matcher` takes token patterns with attribute predicates like `POS`, so it can express *adjective followed by noun*; `PhraseMatcher` takes literal phrases only.** The next section measures what that choice costs, and the answer is three orders of magnitude.", "cols": 3, "nodes": [{"id": "m", "label": "Matcher: token patterns", "sub": "ADJ_MODEL -> 'large model'", "tone": "good"}, {"id": "a", "label": "Can use attribute predicates", "sub": "POS, LEMMA, IS_DIGIT, regex", "tone": "good"}, {"id": "p", "label": "PhraseMatcher: literal phrases", "sub": "'Machine Learning', 'Deep Learning'", "tone": "good"}, {"id": "e", "label": "Exact, fast and debuggable", "sub": "no model to misbehave", "tone": "violet"}, {"id": "c", "label": "And the wrong one costs 1000x", "sub": "measured next", "tone": "crit"}], "edges": [["m", "a"], ["a", "e"], ["p", "e"], ["e", "c"]], "t": "diagram", "id": "dg-3_1-06-5"},
+
 
     { t: "p", text: "Statistical models are not always the right tool. If you know the exact strings or the exact grammatical shape you want, a matcher is faster, exact, and debuggable. spaCy has two, and choosing wrongly costs you three orders of magnitude." },
 
@@ -128,6 +146,9 @@ EC.receiveLesson({
       ] },
 
     { t: "h2", n: "08", text: "Why spaCy is the production default", id: "production" },
+
+    {"kind": "flow", "title": "The case is the machinery, not the model — and that cuts both ways", "caption": "**It is not that spaCy's models are the most accurate: `en_core_web_trf` is competitive, and a fine-tuned transformer will usually beat it.** The case is that **one object holds all annotations with offsets preserved, components are declarative and swappable, batching and multiprocessing are first-class, the models are versioned artefacts you pin, and it runs on CPU fast enough that per-document cost is a non-issue.** So it stops being the answer where the task is **classification or generation rather than linguistic annotation.**", "cols": 3, "nodes": [{"id": "o", "label": "One object, offsets preserved", "sub": "annotations stay aligned", "tone": "good"}, {"id": "s", "label": "Swappable, pinnable, batched", "sub": "versioned model artefacts", "tone": "good"}, {"id": "c", "label": "CPU-fast: per-doc cost is a non-issue", "sub": "the real production argument", "tone": "violet"}, {"id": "n", "label": "Not for classification or generation", "sub": "that is 3.3's HuggingFace", "tone": "warn"}, {"id": "d", "label": "Nor for domain-specialised NER", "sub": "though you can wrap one as a component", "tone": "warn"}], "edges": [["o", "s"], ["s", "c"], ["c", "n"], ["n", "d"]], "t": "diagram", "id": "dg-3_1-08-6"},
+
 
     { t: "p", text: "The case is not that spaCy's models are the most accurate — `en_core_web_trf` is competitive but a fine-tuned transformer will usually beat it. The case is that everything around the model is built for shipping: one object holds all annotations with offsets preserved, components are declarative and swappable, batching and multiprocessing are first-class, the models are versioned artefacts you pin, and the whole thing runs on CPU at a speed that makes per-document cost a non-issue." },
 

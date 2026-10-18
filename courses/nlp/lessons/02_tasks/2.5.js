@@ -24,6 +24,8 @@ EC.receiveLesson({
 
     {"kind": "layers", "title": "Five tasks that are one task", "caption": "**All of these assign one label per token and decode spans from the label sequence — so the same model, the same BIO scheme and the same decoding algorithm serve all of them.** Which is why sequence labelling is worth treating as a single topic rather than learning NER and POS tagging separately: **the only thing that changes between the rows is the label set**, and POS tagging is the degenerate case where spans are always one token long.", "items": [{"label": "Named entity recognition", "sub": "spans as people, organisations, places", "tone": "violet", "side": "BIO"}, {"label": "POS tagging", "sub": "one tag per token, no spans", "tone": "accent", "side": "no spans"}, {"label": "Chunking", "sub": "flat phrase boundaries, no full parse", "tone": "good", "side": "BIO"}, {"label": "Slot filling", "sub": "origin, destination, date", "tone": "good", "side": "BIO"}, {"label": "Any span extraction", "sub": "products, symptoms, clauses, PII", "tone": "good", "side": "BIO"}], "t": "diagram", "id": "dg-2_5-01-0"},
 
+
+
     { t: "dl", items: [
       ["Named entity recognition", "Label spans as people, organisations, places. BIO tags per token."],
       ["POS tagging", "Label each token with its grammatical category. One tag per token, no spans."],
@@ -37,6 +39,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Greedy decoding fails", id: "greedy" },
 
     {"kind": "trace", "title": "A 0.1 preference at one token produces an invalid tag sequence", "caption": "These are raw per-token scores, before any structure is imposed. **At *Steve* the model prefers `I-PER` at 1.50 over `B-PER` at 1.40 — a difference of 0.1, well inside the noise of any real model** — and greedy decoding takes it, emitting `O → I-PER`, which 1.7 showed decodes to nothing. **So the failure is not a weak model: the scores are fine, and argmax-per-token has no way to know that a tag sequence can be structurally invalid.**", "left": "token", "codeW": 140, "vars": ["O", "B-PER", "I-PER", "greedy picks"], "steps": [{"code": "met", "state": ["2.00", "-1.00", "-1.00", "O"], "tone": "good"}, {"code": "Steve", "state": ["-1.00", "1.40", "1.50", "I-PER"], "changed": [0, 1, 2, 3], "tone": "crit", "note": "by 0.1"}, {"code": "Jobs", "state": ["-1.00", "0.90", "1.10", "I-PER"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "yesterday", "state": ["1.80", "-1.00", "0.20", "O"], "changed": [0, 1, 2, 3], "tone": "good"}, {"code": "result", "state": ["-", "-", "-", "O I-PER I-PER O"], "changed": [3], "tone": "crit", "note": "invalid: O -> I-PER"}], "t": "diagram", "id": "dg-2_5-02-1"},
+
+
 
     { t: "out", text: `  token       O        B-PER    I-PER
   met         2.00     -1.00    -1.00
@@ -55,6 +59,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Viterbi", id: "viterbi" },
 
     {"kind": "trace", "title": "Exact, not a heuristic, and 10^157 sequences become 136,900 updates", "caption": "Each cell holds **the best score of any path ending in that tag**, so the invalid `O → I-PER` move is scored at −∞ rather than pruned — **no valid path is ever discarded, which is why Viterbi is exact and not a search heuristic.** The result flips the decode: **`O B-PER I-PER O` at 8.80 against greedy's path at −999999991.70.** And the cost is `O(T·K²)` against `O(K^T)` — **at 100 tokens and 37 tags, 136,900 cell updates against 10^157 sequences.**", "left": "token", "codeW": 140, "vars": ["O", "B-PER", "I-PER"], "steps": [{"code": "met", "state": ["2.60", "-0.60", "-inf"], "tone": "good", "note": "-inf = unreachable"}, {"code": "Steve", "state": ["2.10", "4.30", "2.10"], "changed": [0, 1, 2], "tone": "good"}, {"code": "Jobs", "state": ["3.50", "4.70", "6.60"], "changed": [0, 1, 2], "tone": "good"}, {"code": "yesterday", "state": ["8.80", "5.20", "7.70"], "changed": [0, 1, 2], "tone": "violet", "note": "best total 8.80"}, {"code": "path", "state": ["O B-PER I-PER O", "-", "-"], "tone": "good"}], "t": "diagram", "id": "dg-2_5-03-2"},
+
+
 
     { t: "math", tex: "\\delta_t(k) = \\max_{j} \\big[\\delta_{t-1}(j) + T_{j,k}\\big] + E_t(k)" },
 
@@ -85,6 +91,8 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "An intent and its arguments, which is sequence labelling plus one classification", "caption": "*“Book a flight from New York to London on Friday”* gives **one intent and three slots** — and the decomposition is the point: **the intent is a sentence-level classification (2.1) and the slots are span extraction (1.7), running over the same tokens.** Which is why a slot-filling model is usually one encoder with two heads rather than two models: the features that tell you this is a `book_flight` request are the features that tell you `London` is the destination.", "cols": 3, "nodes": [{"id": "i", "label": "intent: book_flight", "sub": "a sentence classification (2.1)", "tone": "violet"}, {"id": "o", "label": "origin: New York", "sub": "a span (1.7)", "tone": "good"}, {"id": "d", "label": "destination: London", "sub": "a span", "tone": "good"}, {"id": "t", "label": "date: Friday", "sub": "a span", "tone": "good"}, {"id": "e", "label": "So: one encoder, two heads", "sub": "the features are the same features", "tone": "teal"}], "edges": [["i", "e"], ["o", "e"], ["d", "e"], ["t", "e"]], "t": "diagram", "id": "dg-2_5-04-3"},
 
+
+
     { t: "out", text: `  "Book a flight from New York to London on Friday"
   intent: book_flight
   slots:
@@ -98,6 +106,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "Modern practice", id: "modern" },
 
     {"kind": "flow", "title": "One argument does the span decoding, and without it you are back in 1.7's alignment trap", "caption": "`aggregation_strategy=\"simple\"` turns per-subword tags into merged spans with scores — **without it you get per-subword tags and have to merge them yourself, which is exactly where 1.7's alignment trap lives.** And the modern default is simpler than the lesson implies: **a transformer encoder alone is usually enough, because the contextual representation makes most invalid transitions unlikely even without a CRF.** The CRF earns its place when **the output must be structurally valid by construction**, or the tag scheme has hard constraints the data does not fully teach.", "cols": 3, "nodes": [{"id": "a", "label": "aggregation_strategy='simple'", "sub": "does the span decoding", "tone": "good"}, {"id": "w", "label": "Without it: per-subword tags", "sub": "1.7's alignment trap", "tone": "crit"}, {"id": "e", "label": "Encoder alone is usually enough", "sub": "context makes invalid tags unlikely", "tone": "good"}, {"id": "c", "label": "Add a CRF when validity must be guaranteed", "sub": "not merely likely", "tone": "accent"}, {"id": "h", "label": "Or when the data under-teaches the scheme", "sub": "hard constraints, few examples", "tone": "accent"}], "edges": [["a", "w"], ["a", "e"], ["e", "c"], ["c", "h"]], "t": "diagram", "id": "dg-2_5-05-4"},
+
+
 
     { t: "code", lang: "python", title: "Token classification with a pretrained model",
       code: `ner = pipeline("token-classification", model="dslim/bert-base-NER",

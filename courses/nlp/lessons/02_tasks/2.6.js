@@ -56,6 +56,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "The off-topic sentence outscores two of the three on-topic ones", "caption": "*“The weather that week was unremarkable”* scores **1.7321 — above the sentence about attention (1.6014)** — because `weather` and `unremarkable` are rare in this document and rarity is all the scorer measures. **TF-IDF cannot tell distinctive from relevant.** And length is the other structural bias: **summing over terms means a long sentence accumulates more weight than a short one saying the same thing**, so raw sums quietly favour verbosity, and dividing by length over-rewards one exotic word.", "left": "sentence", "codeW": 230, "vars": ["TF-IDF sum", "on topic?"], "steps": [{"code": "'The transformer architecture... 2017'", "state": ["2.0000", "yes"], "tone": "good"}, {"code": "'It replaced recurrence with self-attention'", "state": ["1.9923", "yes"], "changed": [0], "tone": "good"}, {"code": "'The weather that week was unremarkable'", "state": ["1.7321", "NO"], "changed": [0, 1], "tone": "crit", "note": "rare, not relevant"}, {"code": "'Attention allows every position...'", "state": ["1.6014", "yes - and ranked below"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-2_6-02-0"},
 
+
+
     { t: "p", text: "The cheapest scorer sums the TF-IDF weights of a sentence's terms. Rare, content-bearing words push a sentence up; stopwords contribute nothing once they are removed. Original order is preserved so the result still reads forwards." },
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n26.py — extractive summarisation", code:
@@ -93,6 +95,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Seven times the parameters, five times the latency, two percent more compression", "caption": "`bart-large-cnn` has **406M parameters against t5-small's 61M and takes 115.2s against 23.1s** — and produces **60% compression against 58%**, on output that differs mainly in capitalisation. Which is worth measuring before choosing: **the big model's advantage here is not visible in either number this lesson can compute**, and §05 is about to show that neither output is doing what “abstractive” implies. Note the interface difference too: **T5 needs the `summarize: ` prefix and BART does not.**", "left": "model", "codeW": 190, "vars": ["params", "time", "compression"], "steps": [{"code": "t5-small", "state": ["61M", "23.1s", "58%"], "tone": "good", "note": "needs 'summarize: '"}, {"code": "facebook/bart-large-cnn", "state": ["406M", "115.2s", "60%"], "changed": [0, 1, 2], "tone": "warn", "note": "no prefix"}, {"code": "ratio", "state": ["6.7x", "5.0x", "+2 points"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-2_6-04-1"},
 
+
+
     { t: "p", text: "Abstractive models are encoder-decoders: the encoder reads the document, the decoder generates the summary one token at a time. T5 frames every task as text-to-text and needs the prefix `summarize: `; BART was fine-tuned on CNN/DailyMail news and needs no prefix." },
 
     { t: "callout", kind: "warn", title: "The pipeline call no longer runs",
@@ -108,6 +112,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "How abstractive is abstractive?", id: "copyrate" },
 
     {"kind": "trace", "title": "Copy rate 100%, longest verbatim run 57 words, and no novel words at all", "caption": "Both outputs read well, **and on two of three inputs neither model produced a single word absent from the source.** The transcript case is the starkest: **33% shorter, and the entire 57-word output is one verbatim run.** Only the list of facts gives any novelty, and look at what it is — **`5.1million`, `6.8million`, `inq3`, `inq4`: artefacts of whitespace joining, not new wording.** So in practice **these models are doing high-quality extraction**, and the hallucination risk in §07 comes from the same mechanism occasionally not copying.", "left": "input", "codeW": 170, "vars": ["shorter by", "copy rate", "longest run", "novel words"], "steps": [{"code": "clean expository prose", "state": ["4%", "27/27 = 100%", "20 words", "NONE"], "tone": "crit"}, {"code": "a rambling transcript", "state": ["33%", "57/57 = 100%", "57 words", "NONE"], "changed": [0, 1, 2], "tone": "crit", "note": "the whole output"}, {"code": "a list of facts", "state": ["18%", "27/32 = 84.4%", "15 words", "5 'words'"], "changed": [0, 1, 2, 3], "tone": "warn"}, {"code": "...and those 5 are", "state": ["-", "-", "-", "5.1million, inq3, inq4"], "changed": [3], "tone": "crit", "note": "join artefacts"}], "t": "diagram", "id": "dg-2_6-05-2"},
+
+
 
     { t: "p", text: "Both outputs read well. But neither contained a single word absent from the source, so I measured it properly on three inputs: copy rate, longest verbatim run, and the set of genuinely novel words after normalising case and edge punctuation on both sides." },
 
@@ -127,6 +133,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "ROUGE", id: "rouge" },
 
     {"kind": "trace", "title": "One substituted word, and the four variants disagree about how much it cost", "caption": "`sat` becomes `was`, and that single change costs **ROUGE-1 nothing in structure (0.8333) and ROUGE-2 a fifth of its score (0.6000)**, because the substitution breaks **two** bigrams while breaking only one unigram. ROUGE-L matches ROUGE-1 here because the LCS is still 5. **The orientation is the design choice: ROUGE is recall-first because the failure being penalised is omission** — a summary that leaves things out, not one that adds.", "left": "variant", "codeW": 150, "vars": ["overlap", "recall", "F1", "what it measures"], "steps": [{"code": "ROUGE-1", "state": ["5", "0.8333", "0.8333", "content coverage"], "tone": "good"}, {"code": "ROUGE-2", "state": ["3", "0.6000", "0.6000", "local fluency"], "changed": [0, 1, 2, 3], "tone": "warn", "note": "one word, two bigrams"}, {"code": "ROUGE-L (LCS)", "state": ["5", "0.8333", "0.8333", "in-order, not adjacent"], "changed": [0, 1, 2, 3], "tone": "good"}, {"code": "ROUGE-Lsum", "state": ["per sentence", "-", "-", "what papers report"], "changed": [0, 1, 2, 3], "tone": "accent"}], "t": "diagram", "id": "dg-2_6-06-3"},
+
+
 
     { t: "p", text: "Summarisation is scored with ROUGE, which is recall-oriented: of the n-grams in the reference summary, how many did the system produce? Recall is the right orientation because the failure mode being penalised is omission." },
 
@@ -150,6 +158,8 @@ EC.receiveLesson({
     { t: "h2", n: "07", text: "Choosing", id: "choosing" },
 
     {"kind": "compare", "title": "Six rows, and §05 just undercut one of them", "caption": "The table is the standard comparison and it is worth reading against this lesson's own measurement. **“Faithfulness: risk of hallucination” is the abstractive column's real cost — but §05 measured a 100% copy rate on two of three inputs, so in practice the models were faithful by accident rather than by construction.** The reliable differences are the other four: **extractive is milliseconds on CPU with no training data, and choppy between picks.**", "columns": [{"title": "Extractive", "tone": "good", "items": ["select sentences from the source", "faithful by construction", "milliseconds, on CPU", "no training data required", "choppy between picks", "TextRank, LexRank, LSA"]}, {"title": "Abstractive", "tone": "accent", "items": ["generate new text", "risk of hallucination — though §05 measured 100% copying", "seconds, GPU preferred", "training data required, and large", "reads naturally", "T5, BART, PEGASUS"]}], "t": "diagram", "id": "dg-2_6-07-4"},
+
+
 
     { t: "table",
       head: ["Aspect", "Extractive", "Abstractive"],

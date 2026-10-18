@@ -25,6 +25,8 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "Two Dirichlet priors, and they are the two dials you actually set", "caption": "The generative story is short: **draw a topic mixture for the document, draw a topic per word, draw a word from that topic.** The two priors are what put the *latent Dirichlet* in the name, and they are the parameters with an interpretable effect: **low `α` means each document is about one or two topics and high `α` means documents blend many; `β` does the same for how concentrated each topic is over words.** Everything else is inference.", "cols": 3, "nodes": [{"id": "a", "label": "alpha: the document's topic mixture", "sub": "low = one or two topics", "tone": "violet"}, {"id": "t", "label": "Draw a topic per word", "sub": "z ~ Cat(theta_d)", "tone": "accent"}, {"id": "b", "label": "beta: the topic's word mixture", "sub": "low = a tight vocabulary", "tone": "violet"}, {"id": "w", "label": "Draw a word from that topic", "sub": "w ~ Cat(phi_z)", "tone": "accent"}, {"id": "i", "label": "The rest is inference", "sub": "run backwards from the words", "tone": "good"}], "edges": [["a", "t"], ["b", "w"], ["t", "w"], ["w", "i"]], "t": "diagram", "id": "dg-2_3-01-0"},
 
+
+
     { t: "callout", kind: "mental", title: "A topic is a probability distribution over the vocabulary",
       body: [{ t: "p", text: "Not a label, not a cluster of documents — a **distribution over words**. The topic you would call *hockey* is simply one where `game`, `team`, `hockey` and `nhl` have high probability and everything else has low probability. LDA's generative story is that each document is a mixture of topics, and each word in it was produced by first picking a topic from that document's mixture and then picking a word from that topic's distribution. Fitting the model means running that story backwards: given the words, infer the mixtures and the distributions. Nothing in it knows what a topic *means* — the interpretation is yours, and it is done by reading the top words." }] },
 
@@ -35,6 +37,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Fitting it", id: "fitting" },
 
     {"kind": "trace", "title": "Four topics, four real categories, and the mapping is not one-to-one", "caption": "LDA is **not told** the categories and recovers something close to them — but read the purity column rather than the word lists. **Hockey splits into two topics: one about the game at 93% pure, and one that is `pts pt 16 10 vs 25 11`, which is box-score formatting at 81%.** That second one is not a topic anybody wanted; **it is a co-occurrence cluster of numbers, and it is also a correct result.** Meanwhile graphics and guns sit at 58% and 61%, mixing with each other's vocabulary.", "left": "topic", "codeW": 190, "vars": ["top words", "maps to", "purity"], "steps": [{"code": "1", "state": ["game team hockey season", "rec.sport.hockey", "490/525 = 93%"], "tone": "good"}, {"code": "2", "state": ["pts la pt 16 10 vs 25", "rec.sport.hockey", "39/48 = 81%"], "changed": [0, 1, 2], "tone": "warn", "note": "box-score formatting"}, {"code": "3", "state": ["people gun don just like", "talk.politics.guns", "509/840 = 61%"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "0", "state": ["space data image graphics", "comp.graphics", "532/910 = 58%"], "changed": [0, 1, 2], "tone": "crit", "note": "mixed with sci.space"}], "t": "diagram", "id": "dg-2_3-02-1"},
+
+
 
     { t: "code", lang: "python", title: "The setup",
       code: `vectorizer = CountVectorizer(max_df=0.95, min_df=2, stop_words="english")
@@ -66,6 +70,8 @@ lda.fit(dtm)`,
 
     {"kind": "trace", "title": "Perplexity keeps falling past the number of real categories", "caption": "There are **four** real categories in this corpus, and perplexity improves monotonically through `k=10` — **4889 at k=2, 4350 at k=4, 3970 at k=10.** So the metric does not have a minimum at the right answer, and **optimising it selects for more topics, not better ones.** Which is the practical point: **`k` is chosen by reading the topics and deciding whether they are useful, with perplexity as a sanity check rather than a criterion.**", "left": "k", "codeW": 130, "vars": ["perplexity", "against 4 real categories"], "steps": [{"code": "2", "state": ["4889.2", "too few - categories merge"], "tone": "crit"}, {"code": "4", "state": ["4350.7", "the true number"], "changed": [0, 1], "tone": "good"}, {"code": "6", "state": ["4098.4", "better perplexity, extra topics"], "changed": [0, 1], "tone": "warn"}, {"code": "10", "state": ["3969.7", "best perplexity, most fragments"], "changed": [0, 1], "tone": "crit", "note": "no minimum at k=4"}], "t": "diagram", "id": "dg-2_3-03-2"},
 
+
+
     { t: "out", text: `  k= 2  perplexity 4889.2
   k= 4  perplexity 4350.7
   k= 6  perplexity 4098.4
@@ -77,6 +83,8 @@ lda.fit(dtm)`,
     { t: "h2", n: "04", text: "The alternatives", id: "alternatives" },
 
     {"kind": "trace", "title": "Four methods, and the last one is not a joke", "caption": "NMF is **faster, deterministic and often more coherent on short text**, which matters because LDA's seed-dependence is §05's first point. Embedding clustering is the quality ceiling now and needs an embedding model. **And “just read them” is the honest recommendation under about 1,000 documents** — sampling a few hundred documents gives you the real categories, costs an afternoon, and avoids presenting a word distribution as if it were a finding.", "left": "method", "codeW": 170, "vars": ["how it works", "when"], "steps": [{"code": "LDA", "state": ["generative model over counts", "the default; gives proportions"], "tone": "good"}, {"code": "NMF", "state": ["factorise the TF-IDF matrix", "faster, deterministic, short text"], "changed": [0, 1], "tone": "good"}, {"code": "Embedding clustering", "state": ["embed, then cluster", "best quality; needs a model"], "changed": [0, 1], "tone": "violet"}, {"code": "Just read them", "state": ["sample a few hundred docs", "under ~1,000 docs: honestly best"], "changed": [0, 1], "tone": "teal"}], "t": "diagram", "id": "dg-2_3-04-3"},
+
+
 
     { t: "table", head: ["Method", "How it works", "When"],
       rows: [
@@ -92,6 +100,8 @@ lda.fit(dtm)`,
     { t: "h2", n: "05", text: "Reading the output honestly", id: "honest" },
 
     {"kind": "flow", "title": "Topics are word distributions that a human labels", "caption": "**Two runs with different seeds give different topics, and both can be defensible** — so a topic is not a category and should not be reported as one. **Junk topics are normal**: numbers, boilerplate, mailing-list headers and OCR noise co-occur strongly, which is exactly what §02's box-score topic was. **Filter the vocabulary rather than the topics.** And there is **no `k` where every topic is clean** — related categories merge low and fragment high — so **the check worth running is stability: fit several times and see which topics recur.**", "cols": 3, "nodes": [{"id": "t", "label": "A topic is a word distribution", "sub": "a human supplies the label", "tone": "accent"}, {"id": "s", "label": "Different seeds, different topics", "sub": "both defensible", "tone": "warn"}, {"id": "j", "label": "Junk topics are normal", "sub": "headers, numbers, OCR noise", "tone": "warn"}, {"id": "v", "label": "So filter the VOCABULARY", "sub": "not the topics", "tone": "good"}, {"id": "k", "label": "No k is clean: merge low, fragment high", "sub": "there is no right answer", "tone": "crit"}, {"id": "r", "label": "Check stability: refit and see what recurs", "sub": "the stable ones are real", "tone": "violet"}], "edges": [["t", "s"], ["s", "r"], ["j", "v"], ["k", "r"]], "t": "diagram", "id": "dg-2_3-05-4"},
+
+
 
     { t: "dl", items: [
       ["Topics are not categories", "They are word distributions that a human labels. Two runs with different seeds give different topics, and both can be defensible."],

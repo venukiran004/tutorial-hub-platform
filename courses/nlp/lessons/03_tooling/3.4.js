@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Metrics by task", id: "bytask" },
 
+    {"kind": "layers", "title": "Seven tasks, and the pattern is that each needs a pair", "caption": "Almost no row is one metric, and the pairings are the content. **NER needs strict *and* partial F1, because 1.7 measured a one-token boundary error costing half the span score.** Summarisation and translation both pair an n-gram metric with an embedding one — ROUGE with BERTScore, BLEU with COMET — **because surface overlap and meaning overlap fail on different inputs.** And QA reports exact match alongside token F1 for the same reason.", "items": [{"label": "Classification", "sub": "accuracy, F1, precision, recall, AUC-ROC", "tone": "good", "side": "§02"}, {"label": "NER", "sub": "entity-level F1, strict AND partial", "tone": "accent", "side": "1.7"}, {"label": "Summarisation", "sub": "ROUGE-1/2/L, plus BERTScore", "tone": "accent", "side": "§03"}, {"label": "Translation", "sub": "BLEU, chrF, COMET, BERTScore", "tone": "accent", "side": "2.7"}, {"label": "Question answering", "sub": "exact match AND token-overlap F1", "tone": "accent", "side": "§04"}, {"label": "Generation / similarity", "sub": "perplexity; Spearman and Pearson", "tone": "good", "side": "§05"}], "t": "diagram", "id": "dg-3_4-01-0"},
+
+
     { t: "table",
       head: ["Task", "Primary metrics"],
       rows: [
@@ -33,6 +36,9 @@ EC.receiveLesson({
       ] },
 
     { t: "h2", n: "02", text: "The averaging choice decides the number", id: "averaging" },
+
+    {"kind": "trace", "title": "The same predictions scored four ways, from 0.5504 to 0.9700", "caption": "950 / 40 / 10 documents, class 0 perfect, half of class 1, **none of class 2** — and the model is a 0.97 or a 0.55 depending entirely on the averaging. **Micro equals accuracy in single-label multiclass and is dominated by the largest class. Weighted tracks accuracy closely and hides the same things.** Only **macro** exposes the failed rare class, because every class counts equally regardless of size. **And per-class is the row to always report: the averages exist to compress it, and the compression is where the information goes.**", "left": "metric", "codeW": 160, "vars": ["value", "what it is reporting"], "steps": [{"code": "accuracy", "state": ["0.9700", "class 0 is 95% of the data"], "tone": "crit"}, {"code": "micro F1", "state": ["0.9700", "identical, by construction"], "changed": [0, 1], "tone": "crit"}, {"code": "weighted F1", "state": ["0.9619", "hides the same things"], "changed": [0, 1], "tone": "crit"}, {"code": "macro F1", "state": ["0.5504", "class 2 scored 0.0000"], "changed": [0, 1], "tone": "good"}, {"code": "per class, recall", "state": ["1.00 / 0.50 / 0.00", "the actual result"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_4-02-1"},
+
 
     { t: "p", text: "A three-class problem: 950 documents in class 0, 40 in class 1, 10 in class 2. The model gets class 0 perfect, half of class 1, and **none** of class 2." },
 
@@ -51,6 +57,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "ROUGE, and a figure that did not reproduce", id: "rouge" },
 
+    {"kind": "trace", "title": "0.833 measured against 0.857 quoted, and the gap is a tokenisation decision", "caption": "The quoted ROUGE-1 is **0.857** and the measured value is **0.833** on the same pair of strings — a 6/7 against a 5/6, so the difference is **how many tokens the reference was split into**, not how well the system did. Which is the general warning for every number in this lesson: **a ROUGE figure is only comparable against another produced by the same tokeniser and the same stemming setting**, and papers rarely state either.", "left": "variant", "codeW": 150, "vars": ["measured", "quoted"], "steps": [{"code": "rouge1", "state": ["P=R=F1=0.833", "0.857"], "tone": "warn"}, {"code": "rouge2", "state": ["P=R=F1=0.600", "-"], "changed": [0, 1], "tone": "good"}, {"code": "rougeL", "state": ["P=R=F1=0.833", "-"], "changed": [0], "tone": "good"}, {"code": "the cause", "state": ["a different token split", "not a different system"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_4-03-2"},
+
+
     { t: "code", lang: "python", title: "scratchpad/nlp/n34.py — the ROUGE example", code:
 "from rouge_score import rouge_scorer\n\nscorer = rouge_scorer.RougeScorer([\"rouge1\", \"rouge2\", \"rougeL\"],\n                                  use_stemmer=True)\nscores = scorer.score(\"The cat sat on the mat.\",\n                      \"The cat is on the mat.\")\nfor metric, v in scores.items():\n    print(f\"{metric}: P={v.precision:.3f} R={v.recall:.3f} F1={v.fmeasure:.3f}\")" },
 
@@ -62,6 +71,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "QA: exact match and token F1", id: "qa" },
 
+    {"kind": "trace", "title": "Normalisation makes three wrong-looking answers exactly right", "caption": "SQuAD-style evaluation **lowercases, strips articles and punctuation, and collapses whitespace before comparing** — so `'arthur samuel'` and `'The Arthur Samuel'` both score **exact match True**, which is the correct behaviour and surprises people. The two metrics then split on the interesting cases: **an answer that is too long and one that is too short both score EM False and F1 0.6667**, so **F1 is what distinguishes a near-miss from `'Alan Turing'` at 0.0000.**", "left": "prediction", "codeW": 190, "vars": ["exact match", "token F1"], "steps": [{"code": "'Arthur Samuel'", "state": ["True", "1.0000"], "tone": "good"}, {"code": "'arthur samuel'", "state": ["True", "1.0000"], "changed": [0], "tone": "good", "note": "lowercased"}, {"code": "'The Arthur Samuel'", "state": ["True", "1.0000"], "tone": "good", "note": "article stripped"}, {"code": "'Arthur Samuel in 1959' / 'Samuel'", "state": ["False", "0.6667"], "changed": [0, 1], "tone": "warn"}, {"code": "'Alan Turing'", "state": ["False", "0.0000"], "changed": [1], "tone": "crit"}], "t": "diagram", "id": "dg-3_4-04-3"},
+
+
     { t: "p", text: "SQuAD-style evaluation normalises before comparing — lowercase, strip articles and punctuation, collapse whitespace — then reports exact match and token-overlap F1 side by side." },
 
     { t: "out", text:
@@ -71,6 +83,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Exact match is binary and unforgiving: *Arthur Samuel in 1959* is a correct answer with extra context and scores **0**. Token F1 gives it 0.6667, which is closer to fair. But F1 alone is too generous — *Samuel* also scores 0.6667, and a bare surname is a materially worse answer than a correct one with a trailing date. Neither number is right on its own, which is exactly why SQuAD reports both. Note also what normalisation buys: *The Arthur Samuel* counts as an **exact** match because the article is stripped, which is the difference between measuring answers and measuring formatting." }] },
 
     { t: "h2", n: "05", text: "Perplexity", id: "perplexity" },
+
+    {"kind": "trace", "title": "The repeated word scores best, and the grammatical nonsense scores worst", "caption": "**`the the the the the the the the` gets perplexity 16.59 — by far the best score in the table — and `Colorless green ideas sleep furiously` gets 6413.36.** Which is exactly what perplexity measures: **how predictable the text is, not how good it is.** Degenerate repetition is maximally predictable. And **it is not comparable across models with different tokenizers**: two models scoring 20 and 25 on the same text are not ranked unless they share a vocabulary, because the per-token normalisation depends on the split.", "left": "text", "codeW": 220, "vars": ["gpt2 perplexity", "what that means"], "steps": [{"code": "'the the the the the the the the'", "state": ["16.59", "maximally predictable"], "tone": "crit", "note": "the best score here"}, {"code": "'The cat sat on the mat.'", "state": ["90.24", "ordinary English"], "changed": [0, 1], "tone": "good"}, {"code": "'The quick brown fox jumps...'", "state": ["162.47", "ordinary, less common"], "changed": [0, 1], "tone": "good"}, {"code": "'asdf qwer zxcv hjkl poiu mnbv'", "state": ["791.05", "non-words"], "changed": [0, 1], "tone": "warn"}, {"code": "'Colorless green ideas sleep furiously.'", "state": ["6413.36", "grammatical, meaningless"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-3_4-05-4"},
+
 
     { t: "p", text: "Perplexity is the exponential of the mean negative log-likelihood — the model's effective branching factor, or how many equally-likely words it was choosing between on average. Lower is better, and it needs no reference text, which is what makes it useful for language models." },
 
@@ -85,6 +100,9 @@ EC.receiveLesson({
     { t: "p", text: "Perplexity is also not comparable across models with different tokenizers. Two models scoring 20 and 25 on the same text are not ranked unless they share a vocabulary, because the per-token normalisation depends on how the text was split. Byte-level and word-level models are especially incomparable." },
 
     { t: "h2", n: "06", text: "METEOR and BERTScore", id: "meteor" },
+
+    {"kind": "flow", "title": "One fixes BLEU's matching; the other abandons matching", "caption": "**METEOR keeps string comparison and widens it: stem matches, WordNet-synonym matches, and a fragmentation penalty for word order** — so *movie* can match *film* and a reordered translation is penalised explicitly rather than silently through n-gram counts. **BERTScore drops string matching entirely and greedily aligns contextual embeddings**, which is why it scores 2.4's paraphrase pair where BLEU and ROUGE score zero — **and why it needs a model, a GPU and a version pin to be reproducible.**", "cols": 3, "nodes": [{"id": "m", "label": "METEOR: stems + WordNet synonyms", "sub": "movie can match film", "tone": "good"}, {"id": "f", "label": "Plus a fragmentation penalty", "sub": "word order, explicitly", "tone": "good"}, {"id": "b", "label": "BERTScore: align embeddings greedily", "sub": "no string matching at all", "tone": "violet"}, {"id": "p", "label": "So it scores a zero-overlap paraphrase", "sub": "which BLEU and ROUGE cannot", "tone": "violet"}, {"id": "c", "label": "At the cost of a model and a version pin", "sub": "or the number is not reproducible", "tone": "warn"}], "edges": [["m", "f"], ["b", "p"], ["p", "c"]], "t": "diagram", "id": "dg-3_4-06-5"},
+
 
     { t: "p", text: "Both were designed to fix BLEU's surface matching. METEOR adds stem and WordNet-synonym matching plus a fragmentation penalty for word order; BERTScore abandons string matching entirely and greedily aligns contextual embeddings." },
 
