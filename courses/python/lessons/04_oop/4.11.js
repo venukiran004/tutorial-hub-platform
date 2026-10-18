@@ -44,6 +44,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "SOLID, with the Python translation",
       caption: "Three of the five are largely automatic in Python. The two that still take deliberate effort are single responsibility and dependency inversion — and those are the two worth arguing about in review.",
@@ -85,6 +86,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "S — one reason to change", id: "srp" },
 
     {"kind": "flow", "title": "A reason to change is a person who might ask for something different", "caption": "**The usual phrasing — *a class should do one thing* — is unfalsifiable, because “one thing” can be any size.** The useful phrasing is **a module should have one reason to change, where a reason is a person or a team who might ask for something different.** Which turns the principle into a question you can answer: **if finance asks for a new tax rule and marketing asks for a new email template, and both land in the same file, that file has two reasons to change** — and the split follows the askers rather than the nouns.", "cols": 3, "nodes": [{"id": "u", "label": "'A class should do one thing'", "sub": "unfalsifiable - any size", "tone": "crit"}, {"id": "r", "label": "One REASON to change", "sub": "and a reason is a person", "tone": "violet"}, {"id": "f", "label": "Finance asks for a new tax rule", "sub": "one asker", "tone": "accent"}, {"id": "m", "label": "Marketing asks for a new template", "sub": "another asker", "tone": "accent"}, {"id": "s", "label": "Same file -> two reasons -> split it", "sub": "along the askers, not the nouns", "tone": "good"}], "edges": [["u", "r"], ["f", "s"], ["m", "s"], ["r", "s"]], "t": "diagram", "id": "dg-4_11-02-1"},
+
 
 
 
@@ -184,6 +186,7 @@ def export(rows: Sequence[Row], fmt: str) -> bytes:
 
 
 
+
     { t: "p", text: "Liskov substitution says a subclass must be usable anywhere its base is, without callers knowing. This is the principle Python needs **most**, because nothing checks it — no compiler, no interface declaration, and duck typing means a wrong substitution often runs successfully and produces wrong behaviour." },
 
     { t: "code", lang: "python", title: "the classic violation, and a Python-specific one", code: `
@@ -232,6 +235,7 @@ class StrictCache(Cache):
     { t: "h2", n: "05", text: "I — segregation happens naturally", id: "isp" },
 
     {"kind": "flow", "title": "Segregation is the default when the consumer declares the interface", "caption": "***No client should depend on methods it does not use.* In Java this means splitting a fat interface into several — an explicit refactor somebody has to do.** In Python, **because a `Protocol` is declared by the consumer, segregation is the default rather than an effort**: a function that needs one method declares a protocol with one method, and the provider never knows. **So the principle is not something you apply here; it is a consequence of where the declaration lives**, which is 4.8's row about who declares the interface doing real work.", "cols": 3, "nodes": [{"id": "j", "label": "Java: split the fat interface", "sub": "an explicit refactor", "tone": "accent"}, {"id": "p", "label": "Python: the CONSUMER declares it", "sub": "4.8's deciding row", "tone": "violet"}, {"id": "o", "label": "Needs one method -> declares one", "sub": "nothing to split", "tone": "good"}, {"id": "n", "label": "And the provider never knows", "sub": "no coupling to segregate", "tone": "good"}, {"id": "c", "label": "So it is a consequence, not a practice", "sub": "of where the declaration lives", "tone": "teal"}], "edges": [["j", "p"], ["p", "o"], ["o", "n"], ["n", "c"]], "t": "diagram", "id": "dg-4_11-05-3"},
+
 
 
 

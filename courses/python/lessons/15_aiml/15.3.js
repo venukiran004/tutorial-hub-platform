@@ -41,6 +41,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "ladder",
       title: "Writing a day's aggregates",
       rungs: [

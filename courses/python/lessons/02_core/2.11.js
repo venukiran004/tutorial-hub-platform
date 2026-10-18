@@ -45,6 +45,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "Reading a comprehension in the order it executes",
       caption: "Written output-first, executed loop-first. Reading it in execution order — for, then if, then the expression — is what makes a nested one tractable.",
@@ -124,6 +125,7 @@ print(list(lengths))   # []`},
 
 
 
+
     { t: "code", lang: "python", title: "filtering versus transforming", code: `
 values = [1, -2, 3, -4]
 
@@ -150,6 +152,7 @@ print(labels)
     { t: "h2", n: "03", text: "Where a comprehension stops helping", id: "limits" },
 
     {"kind": "compare", "title": "When a comprehension stops helping", "caption": "A comprehension is for building one collection from one iterable with at most one condition. Side effects, nested logic and three-level nesting belong in a loop, where a reader can breathe.", "columns": [{"title": "keep the comprehension", "tone": "good", "items": ["[f(x) for x in xs if ok(x)]", "one input, one output", "fits on a line or two"]}, {"title": "write the loop", "tone": "warn", "items": ["calls with side effects", "try/except per item", "two nested fors with conditions", "when you needed a comment"]}], "t": "diagram", "id": "dg-2_11-03-1"},
+
 
 
 
@@ -267,6 +270,7 @@ print(transposed)
 
 
 
+
     { t: "code", lang: "python", title: "drop the brackets, drop the memory", code: `
 import sys
 
@@ -313,6 +317,7 @@ for u in users:                     # correct
     { t: "h2", n: "05", text: "Scope", id: "scope" },
 
     {"kind": "trace", "title": "The comprehension variable does not leak, and that is a Python 3 change", "caption": "**A comprehension has its own scope, so the loop variable does not leak into the enclosing function — the outer `x` prints `unchanged`.** This was not true in Python 2, which is why older code sometimes relies on the leak. The second row is the part that still catches people: **the iterable of the outermost `for` is evaluated in the enclosing scope, while everything else is evaluated inside** — which is why a comprehension at class level can see the class's names in that first iterable and nowhere else.", "left": "what you read", "codeW": 190, "vars": ["value", "scope"], "steps": [{"code": "x after the comprehension", "state": ["unchanged", "its own scope"], "tone": "good"}, {"code": "the comprehension's own x", "state": ["2", "invisible outside"], "changed": [0, 1], "tone": "good"}, {"code": "the outermost iterable", "state": ["evaluated OUTSIDE", "the one exception"], "changed": [0, 1], "tone": "violet"}, {"code": "so at class level", "state": ["only that iterable sees class names", "the rest cannot"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-2_11-05-4"},
+
 
 
 

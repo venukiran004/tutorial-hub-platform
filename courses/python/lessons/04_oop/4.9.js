@@ -40,6 +40,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "If you write one dunder method on a class, write this one. It is what appears in the debugger, in a failed test's assertion output, in a log line and in every `print` of a list of your objects." },
 
     { t: "code", lang: "python", title: "the difference it makes", code: `
@@ -99,6 +100,7 @@ print(f"{m} / {m!r}") # both, explicitly`}
     { t: "h2", n: "02", text: "__eq__ and __hash__ are one decision", id: "eq-hash" },
 
     {"kind": "matrix", "title": "__eq__ and __hash__ are one decision", "caption": "Defining __eq__ without __hash__ makes the class unhashable. Equal objects must hash equal, so hash the same fields you compare — and only if they are immutable.", "rows": ["define __eq__ only", "both on the same fields", "mutable fields hashed"], "cols": ["usable in set/dict", "correct"], "cells": [[false, {"text": "unhashable", "tone": "warn"}], [true, true], [true, {"text": "breaks when mutated", "tone": "crit"}]], "t": "diagram", "id": "dg-4_9-02-0"},
+
 
 
 
@@ -251,6 +253,7 @@ def __eq__(self, other):
 
 
 
+
     { t: "code", lang: "python", title: "total_ordering fills in the rest", code: `
 from functools import total_ordering
 
@@ -293,6 +296,7 @@ True Version(1, 10, 0)`,
     { t: "h2", n: "04", text: "The container protocol", id: "containers" },
 
     {"kind": "trace", "title": "Five methods, and the object works with nine built-in constructs", "caption": "**Write `__len__`, `__contains__`, `__getitem__`, `__iter__` and `__bool__` and the object works with `len`, `in`, subscripting, `for`, comprehensions, `sorted`, `sum`, unpacking and truthiness** — which is what “protocol” means operationally. The legacy row is worth knowing because it explains surprising behaviour: **`__getitem__` alone makes an object iterable**, since `for` falls back to calling it with 0, 1, 2 … until `IndexError`. **So a class with only `__getitem__` iterates, and a bug in it becomes an infinite loop.**", "left": "method", "codeW": 170, "vars": ["enables"], "steps": [{"code": "__len__", "state": ["len(obj), and truthiness if no __bool__"], "tone": "good"}, {"code": "__contains__", "state": ["x in obj"], "changed": [0], "tone": "good"}, {"code": "__getitem__", "state": ["obj[i], slicing - and iteration"], "changed": [0], "tone": "violet"}, {"code": "__iter__", "state": ["for, comprehensions, sorted, sum, unpacking"], "changed": [0], "tone": "good"}, {"code": "__getitem__ with a bug", "state": ["an infinite loop, via the fallback"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-4_9-04-2"},
+
 
 
 
@@ -350,6 +354,7 @@ print(list(Weird()))          # [0, 10, 20] -- no __iter__ anywhere`,
     { t: "h2", n: "05", text: "Context managers and callables", id: "context-callable" },
 
     {"kind": "flow", "title": "`__exit__`'s return value decides whether the exception survives", "caption": "**`__exit__` receives the exception if one occurred, and its return value decides whether to suppress it — returning `True` swallows the exception, which is almost never what you want.** The trap is that **a bare `return` or a forgotten one returns `None`, which is falsy and therefore correct** — so the dangerous version is the one that accidentally returns something truthy. And on operator overloading: **`__add__` and friends are excellent for genuine mathematical or quantity types and actively harmful elsewhere**, because `order1 + order2` has no obvious meaning.", "cols": 3, "nodes": [{"id": "e", "label": "__exit__ receives the exception", "sub": "type, value, traceback", "tone": "accent"}, {"id": "t", "label": "Return True -> it is swallowed", "sub": "almost never right", "tone": "crit"}, {"id": "n", "label": "Return None -> it propagates", "sub": "which a bare return gives you", "tone": "good"}, {"id": "a", "label": "__add__ for quantities and vectors", "sub": "genuine arithmetic types", "tone": "good"}, {"id": "h", "label": "And harmful elsewhere", "sub": "order1 + order2 means nothing", "tone": "crit"}], "edges": [["e", "t"], ["e", "n"], ["a", "h"]], "t": "diagram", "id": "dg-4_9-05-3"},
+
 
 
 

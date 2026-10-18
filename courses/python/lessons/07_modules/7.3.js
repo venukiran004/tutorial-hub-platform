@@ -21,7 +21,8 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "A pickle is an instruction stream", id: "opcodes" },
 
-    {"kind": "flow", "title": "A pickle is an instruction stream", "caption": "pickle.loads runs a small stack machine whose opcodes can import any module and call any callable. Unpickling data you did not produce is executing code you did not write.", "cols": 4, "nodes": [{"id": "bytes", "label": "pickle bytes", "sub": "from a file or the network", "tone": "warn"}, {"id": "vm", "label": "the pickle VM", "sub": "GLOBAL, REDUCE, BUILD …", "tone": "accent"}, {"id": "imp", "label": "import os; os.system(...)", "sub": "an attacker's payload", "tone": "crit"}, {"id": "obj", "label": "'your object'", "sub": "whatever the stream says"}], "edges": [["bytes", "vm"], ["vm", "imp", "GLOBAL + REDUCE"], ["vm", "obj"]], "t": "diagram", "id": "dg-7_3-01-0"},
+    {"kind": "flow", "title": "A pickle is an instruction stream", "caption": "pickle.loads runs a small stack machine whose opcodes can import any module and call any callable. Unpickling data you did not produce is executing code you did not write.", "cols": 4, "nodes": [{"id": "bytes", "label": "pickle bytes", "sub": "from a file or the network", "tone": "warn"}, {"id": "vm", "label": "the pickle VM", "sub": "GLOBAL, REDUCE, BUILD …", "tone": "accent"}, {"id": "imp", "label": "import os; os.system(...)", "sub": "an attacker's payload", "tone": "crit"}, {"id": "obj", "label": "'your object'", "sub": "whatever the stream says"}], "edges": [["bytes", "vm"], ["vm", "imp", "GLOBAL + REDUCE"], ["vm", "obj"]], "t": "diagram", "id": "dg-7_3-01-3"},
+
 
 
 
@@ -143,6 +144,8 @@ highest protocol among opcodes = 4`,
     /* ================================================================== */
     { t: "h2", n: "02", text: "The demonstration", id: "rce" },
 
+    {"kind": "trace", "title": "A documented part of the object model, and nothing checks what it returns", "caption": "**`__reduce__` is a supported hook that tells `pickle` how to rebuild an object — any class can define it, and nothing validates the callable it names.** So a class whose `__reduce__` returns `(os.system, (\"...\",))` produces a 60-byte pickle that **runs arbitrary code as you, during `load()`, before you have looked at a single value.** The bytes are readable in the output: **`posix` and `system` appear as plain strings in the stream** — which is also what makes §03's `find_class` override possible.", "left": "step", "codeW": 170, "vars": ["what happens"], "steps": [{"code": "define __reduce__", "state": ["returns (os.system, (cmd,))"], "tone": "accent"}, {"code": "pickle.dumps(obj)", "state": ["60 bytes, with 'posix' and 'system' in them"], "changed": [0], "tone": "warn"}, {"code": "pickle.loads(data)", "state": ["arbitrary code, running as you"], "changed": [0], "tone": "crit"}, {"code": "and this is before", "state": ["you have read any value"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-7_3-02-0"},
+
     { t: "p", text: "`__reduce__` is a documented, supported part of the object model (Lesson 4.9). Any class can define it. Nothing checks what it returns." },
 
     { t: "code", lang: "python", title: "twelve lines to remote code execution", code: `
@@ -188,6 +191,8 @@ arbitrary code, running as you`,
 
     /* ================================================================== */
     { t: "h2", n: "03", text: "What actually helps", id: "mitigations" },
+
+    {"kind": "trace", "title": "Seven formats, and only one of them executes on load", "caption": "**The MAC does not make pickle safe — it makes the pickle unloadable unless someone with your key produced it**, which is a different and sufficient claim. And overriding `find_class` works because **every `GLOBAL` opcode routes through it**, giving `_pickle.UnpicklingError: blocked global: posix.system`. The table's real content is the first column: **pickle is the only row that executes on load, and the bottom four have a schema** — with `safetensors` built specifically to replace pickled checkpoints.", "left": "format", "codeW": 150, "vars": ["executes on load", "schema", "use it for"], "steps": [{"code": "pickle", "state": ["YES", "no", "one trust boundary only"], "tone": "crit"}, {"code": "json", "state": ["no", "no", "config, APIs, logs"], "changed": [0, 2], "tone": "good"}, {"code": "msgpack / cbor2", "state": ["no", "no", "compact binary on a hot path"], "changed": [2], "tone": "good"}, {"code": "Parquet / Arrow", "state": ["no", "yes", "columnar tabular at scale"], "changed": [1, 2], "tone": "good"}, {"code": "Protobuf / Avro", "state": ["no", "yes, enforced", "versioned service messages"], "changed": [1, 2], "tone": "good"}, {"code": "safetensors", "state": ["no", "tensor metadata", "model weights"], "changed": [1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-7_3-03-1"},
 
     { t: "h3", text: "1. Authenticate the bytes before you load them" },
 
@@ -296,6 +301,8 @@ loads_restricted(pickle.dumps(Exploit()))
 
     /* ================================================================== */
     { t: "h2", n: "04", text: "The other cost: pickles rot", id: "fragility" },
+
+    {"kind": "trace", "title": "A pickle does not contain your class — it contains the import path of your class", "caption": "**Rebuilding the object requires that path to still resolve to a compatible definition**, which is why `ModuleNotFoundError: No module named 'myapp.model'` is the normal end state of an archived pickle. Four things break it, and the second is the quiet one: **an added attribute is simply missing rather than defaulted, because `__setstate__` only restores the keys present in the stream** — so the failure surfaces later, somewhere else. And the fourth fails at **load, not at build**: a protocol-5 pickle is unreadable by 3.7.", "left": "what changed", "codeW": 160, "vars": ["failure", "when you find out"], "steps": [{"code": "module or class renamed", "state": ["ModuleNotFoundError", "every archive at once"], "tone": "crit"}, {"code": "attribute added", "state": ["silently missing, not defaulted", "later, somewhere else"], "changed": [0, 1], "tone": "crit"}, {"code": "library version changed", "state": ["raises, or loads differently", "maybe never"], "changed": [0, 1], "tone": "crit"}, {"code": "Python version changed", "state": ["protocol 5 unreadable by 3.7", "at load, not at build"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-7_3-04-2"},
 
     { t: "p", text: "Even with security set aside, pickle is a poor archive format, because a pickle does not contain your class — it contains **the import path of your class**. Rebuilding the object requires that path to still resolve to a compatible definition." },
 

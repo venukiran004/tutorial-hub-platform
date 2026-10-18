@@ -44,6 +44,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "A list is a contiguous block of memory holding **pointers to objects**, plus a count of how many slots are used and how many exist. The objects themselves live elsewhere on the heap — which is why a list can hold an int, a string and another list at once. Every slot is the same size, because every slot is a pointer." },
 
     { t: "viz",
@@ -143,6 +144,7 @@ len= 17  bytes=248`},
 
 
 
+
     { t: "table",
       head: ["Operation", "Cost", "Notes"],
       rows: [
@@ -200,6 +202,7 @@ print(items)              # None -- the list is gone`,
     { t: "h2", n: "03", text: "Sorting", id: "sorting" },
 
     {"kind": "trace", "title": "Stability is a guarantee, which is what makes a multi-pass sort work", "caption": "**Timsort is stable: elements comparing equal keep their original relative order** — and that is a documented guarantee rather than an observation, which is what lets you **sort by several keys in separate passes, least significant first.** The output shows it: `beth` and `carol` both have 50.0 and stay in input order. **`key=` is called once per element**, so an expensive key is cheap here and ruinous in a comparison function — and **`operator.itemgetter(\"total\")` is faster than the equivalent lambda.**", "left": "technique", "codeW": 170, "vars": ["what it does", "note"], "steps": [{"code": "key=lambda o: o.total", "state": ["called ONCE per element", "not once per comparison"], "tone": "good"}, {"code": "key=lambda o: (a, b)", "state": ["sort by a, tie-break on b", "negate a number to reverse it"], "changed": [0, 1], "tone": "good"}, {"code": "stability", "state": ["50.0 beth before 50.0 carol", "input order, guaranteed"], "changed": [0, 1], "tone": "violet"}, {"code": "so: several passes", "state": ["least significant first", "each one preserves the last"], "changed": [0, 1], "tone": "violet"}, {"code": "itemgetter('total')", "state": ["faster than the lambda", "and reads well", "-"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-2_1-03-2"},
+
 
 
 

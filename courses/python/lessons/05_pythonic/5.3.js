@@ -23,6 +23,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Most comparisons pick an example where a built-in already solves it", "caption": "**The textbook pair — `if key in d` against `try: d[key]` — is settled by `d.get()`, which is why it teaches nothing.** The interesting cases are the ones where no `get()` exists: **files, network calls, parsing, another process's state.** There the distinction is real and it is not about style: **LBYL asks whether the operation will work and then does it; EAFP does it and handles the failure** — and between the question and the action, **anything shared can change.**", "cols": 3, "nodes": [{"id": "t", "label": "if key in d / try: d[key]", "sub": "settled by d.get()", "tone": "accent"}, {"id": "r", "label": "So the real cases have no get()", "sub": "files, network, parsing, processes", "tone": "violet"}, {"id": "l", "label": "LBYL: ask, then act", "sub": "two steps", "tone": "good"}, {"id": "e", "label": "EAFP: act, then handle", "sub": "one step", "tone": "good"}, {"id": "g", "label": "And between ask and act, state changes", "sub": "which is the whole argument", "tone": "crit"}], "edges": [["t", "r"], ["r", "l"], ["r", "e"], ["l", "g"]], "t": "diagram", "id": "dg-5_3-01-0"},
 
 
+
     { t: "code", lang: "python", title: "same operation, two shapes", code: `
 # LBYL -- Look Before You Leap
 if "timeout" in config:
@@ -51,6 +52,7 @@ timeout = config.get("timeout", 30)
     { t: "h2", n: "02", text: "The race LBYL cannot fix", id: "toctou" },
 
     {"kind": "timeline", "title": "The race that look-before-you-leap cannot fix", "caption": "Between the check and the use, another process can change the world. EAFP does the operation and handles the failure, which closes the gap.", "span": 6, "lanes": [{"label": "your code", "tone": "accent", "bars": [[0, 2, "os.path.exists(p) → True"], [4, 6, "open(p) → FileNotFoundError", "crit"]]}, {"label": "other process", "tone": "warn", "bars": [[2, 4, "deletes p"]]}], "t": "diagram", "id": "dg-5_3-02-3"},
+
 
 
 
@@ -142,6 +144,7 @@ except PermissionError:
     {"kind": "trace", "title": "EAFP is 2.2x faster on a hit and 4.4x slower on a miss", "caption": "**On the hit path EAFP wins — 0.041 against 0.089, because there is no check to pay for. On the miss path it loses badly — 0.271 against 0.062, because raising and catching an exception is expensive.** Which turns the style question into an arithmetic one: **the right choice depends on how often the operation fails, and the crossover is low — a failure rate of a few percent already favours EAFP.** So the rule is: **EAFP unless failure is the expected case.**", "left": "path", "codeW": 150, "vars": ["LBYL", "EAFP", "winner"], "steps": [{"code": "hit (the common case)", "state": ["0.089", "0.041", "EAFP, 2.2x"], "tone": "good"}, {"code": "miss", "state": ["0.062", "0.271", "LBYL, 4.4x"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "so", "state": ["-", "-", "it depends on the failure rate"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-5_3-03-1"},
 
 
+
     { t: "code", lang: "python", title: "the cost is in which path is common", code: `
 import timeit
 
@@ -175,6 +178,7 @@ miss  lbyl=0.062  eafp=0.271`,
     { t: "h2", n: "04", text: "Where LBYL is right", id: "lbyl-right" },
 
     {"kind": "trace", "title": "Five situations, and two of them have nothing to do with speed", "caption": "The two rows that are about **correctness rather than cost** are the ones to remember. **Anything about shared state — files, network, other processes — is EAFP, because a check is out of date by the time you act**, which is the race no amount of care removes. And **anything expensive or irreversible to attempt is LBYL, because it is better to check than to half-perform and roll back.** The others follow the arithmetic in §03: **rare failure favours EAFP, common failure favours LBYL.**", "left": "if the failure is", "codeW": 170, "vars": ["prefer", "because"], "steps": [{"code": "rare", "state": ["EAFP", "no check cost on the common path"], "tone": "good"}, {"code": "common", "state": ["LBYL", "raising is expensive"], "changed": [0, 1], "tone": "good"}, {"code": "about shared state", "state": ["EAFP", "a check is out of date already"], "changed": [0, 1], "tone": "violet"}, {"code": "expensive or irreversible", "state": ["LBYL", "better than a half-performed rollback"], "changed": [0, 1], "tone": "violet"}, {"code": "cheap to attempt and undo", "state": ["EAFP", "attempting IS the check"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-5_3-04-2"},
+
 
 
     { t: "code", lang: "python", title: "four legitimate cases", code: `

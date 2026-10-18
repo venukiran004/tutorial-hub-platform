@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "compare", "title": "Two failure modes, and each has a characteristic way of being got wrong", "caption": "**The division is about what continuing would produce: wrong data means fail fast, a smaller but correct result means degrade.** The trap rows are the useful part. **Being defensive about your own bugs hides them** — a `try/except` around a calculation that should never fail converts a loud bug into a quiet wrong number. And **degrading something that was never optional makes a partial result look complete**, which is the worse of the two because nothing downstream can tell.", "columns": [{"title": "Fail fast", "tone": "crit", "items": ["a bug, a broken invariant, a misconfiguration", "continuing would produce or persist wrong data", "raise, crash, refuse to start", "a missing DATABASE_URL at startup; a negative price", "trap: being defensive about your own bugs, and hiding them"]}, {"title": "Degrade gracefully", "tone": "good", "items": ["a dependency slow, absent or rate limited", "continuing would produce a smaller but correct result", "fallback, cached value, reduced feature", "recommendations down, so show popular items", "trap: degrading something that was never optional"]}], "t": "diagram", "id": "dg-6_5-01-0"},
 
+
     { t: "table",
       head: ["", "Fail fast", "Degrade gracefully"],
       rows: [
@@ -178,6 +179,7 @@ def withdraw(account, amount):
 
 
 
+
     { t: "p", text: "Every call that crosses a process boundary needs a timeout, and almost every library defaults to waiting forever. This is the single highest-value defensive measure in this lesson: an unbounded wait converts one slow dependency into a queue of stuck workers, and then into an outage of a service that was itself healthy." },
 
     { t: "code", lang: "python", title: "the defaults are all wrong", code: `
@@ -225,6 +227,7 @@ orders = client.get("/orders", timeout=budget.remaining())`},
     { t: "h2", n: "04", text: "Retries", id: "retries" },
 
     {"kind": "timeline", "title": "Exponential backoff with jitter", "caption": "Each retry waits roughly twice as long as the last, with random jitter so a thousand clients do not retry in lockstep. Cap the total and give up: a retry is not a fix for a bug.", "span": 16, "tick": 2, "lanes": [{"label": "attempt 1", "tone": "crit", "bars": [[0, 1, "fail"]]}, {"label": "wait 1 s", "tone": "accent", "bars": [[1, 2]]}, {"label": "attempt 2", "tone": "crit", "bars": [[2, 3, "fail"]]}, {"label": "wait 2 s ± jitter", "tone": "accent", "bars": [[3, 5.4]]}, {"label": "attempt 3", "tone": "crit", "bars": [[5.4, 6.4, "fail"]]}, {"label": "wait 4 s ± jitter", "tone": "accent", "bars": [[6.4, 10]]}, {"label": "attempt 4", "tone": "good", "bars": [[10, 11, "ok"]]}], "t": "diagram", "id": "dg-6_5-04-1"},
+
 
 
 

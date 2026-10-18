@@ -154,6 +154,7 @@ mydecorators
 
 
 
+
     { t: "code", lang: "python", title: "supporting both @deco and @deco(...)", code: `
 import functools
 

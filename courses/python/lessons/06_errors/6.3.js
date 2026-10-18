@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Four forms, and two of them damage the traceback", "caption": "**`raise NewError(...) from err` joins the two with “The above exception was the direct cause”; a bare `raise` inside `except` re-raises untouched; and `raise NewError(...)` without `from` still chains, with the weaker “During handling of the above exception” phrase.** The form to avoid is `raise err`: **it re-raises the same object but appends the current frame, so the traceback now shows the `except` block as well as the real origin** — and in a deeply nested call chain that buries the line you needed.", "left": "form", "codeW": 180, "vars": ["effect on the traceback"], "steps": [{"code": "raise NewError(...) from err", "state": ["'the direct cause' - both visible"], "tone": "violet"}, {"code": "raise  (bare, inside except)", "state": ["untouched - the original origin"], "changed": [0], "tone": "good"}, {"code": "raise NewError(...)", "state": ["'during handling' - a weaker join"], "changed": [0], "tone": "good"}, {"code": "raise err", "state": ["appends this frame - buries the origin"], "changed": [0], "tone": "crit"}, {"code": "raise ... from None", "state": ["hides the cause deliberately"], "changed": [0], "tone": "accent"}], "t": "diagram", "id": "dg-6_3-01-0"},
 
+
     { t: "code", lang: "python", title: "each does something different", code: `
 def process(payload):
     try:
@@ -175,6 +176,7 @@ ConfigError: database_url is not set`,
 
 
 
+
     { t: "p", text: "The question is not \"what can go wrong here\". It is **\"what would a caller do differently\"**. Two failures that lead to the same handling do not need two exception types, however different their causes." },
 
     { t: "ladder",
@@ -290,6 +292,7 @@ time.sleep(err.retry_after)`},
     { t: "h2", n: "04", text: "Translating at the boundary", id: "boundary" },
 
     {"kind": "flow", "title": "Translate at the boundary", "caption": "A low-level exception from a dependency becomes your domain's exception, chained with 'from' so the cause survives in the traceback. Callers see one vocabulary.", "cols": 3, "nodes": [{"id": "lib", "label": "httpx.TimeoutException", "sub": "the dependency's error", "tone": "crit"}, {"id": "b", "label": "except … as e: raise GatewayTimeout(...) from e", "sub": "the boundary", "tone": "accent"}, {"id": "dom", "label": "GatewayTimeout", "sub": "your caller's vocabulary", "tone": "good"}], "edges": [["lib", "b"], ["b", "dom"]], "t": "diagram", "id": "dg-6_3-04-2"},
+
 
 
 

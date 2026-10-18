@@ -43,6 +43,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "What `with` guarantees",
       caption: "The exit runs whether the block finishes, returns, or raises. That guarantee is the entire point — it is the difference between a file that is always closed and one that usually is.",
@@ -215,6 +216,7 @@ class Transaction:
     {"kind": "trace", "title": "A bare `return True` swallows KeyboardInterrupt and your own bugs", "caption": "**Returning `True` from `__exit__` suppresses *every* exception — including `KeyboardInterrupt` and bugs in your own code — and the measured output is the whole problem: `execution continues, and nothing was logged`.** So if suppression is genuinely wanted, **name what you are ignoring: `contextlib.suppress(FileNotFoundError)` is fine precisely because it says which exception.** Which is 5.1's Zen row doing real work: **errors should never pass silently, unless *explicitly* silenced** — and the explicitness is the exception type.", "left": "form", "codeW": 190, "vars": ["what it suppresses", "verdict"], "steps": [{"code": "__exit__ returning True", "state": ["everything", "execution continues, nothing logged"], "tone": "crit"}, {"code": "...including KeyboardInterrupt", "state": ["and your own bugs", "unkillable, undiagnosable"], "changed": [0, 1], "tone": "crit"}, {"code": "suppress(FileNotFoundError)", "state": ["one named exception", "fine - it says which"], "changed": [0, 1], "tone": "good"}, {"code": "except Exception: pass", "state": ["everything but exits", "the same bug, spelled differently"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-5_8-03-0"},
 
 
+
     { t: "code", lang: "python", title: "returning True swallows the exception", code: `
 class Swallow:
     def __enter__(self):
@@ -268,6 +270,7 @@ def logged(operation: str) -> Iterator[None]:
     { t: "h2", n: "04", text: "ExitStack", id: "exitstack" },
 
     {"kind": "flow", "title": "`with a, b, c:` needs the count at write time; ExitStack does not", "caption": "**`with a, b, c:` works when you know the resources at write time. When the number varies at runtime, `ExitStack` manages them and unwinds in reverse order** — so opening N files from a list is a loop of `stack.enter_context(...)` and every one closes, including on an exception part-way through the loop. The two uses worth knowing beyond that: **`callback()` registers arbitrary cleanup without a context manager, and `pop_all()` transfers ownership out** — which is how a factory returns a half-built object without leaking on failure.", "cols": 3, "nodes": [{"id": "s", "label": "with a, b, c:", "sub": "the count is fixed at write time", "tone": "good"}, {"id": "e", "label": "ExitStack: enter_context in a loop", "sub": "N known only at runtime", "tone": "violet"}, {"id": "r", "label": "Unwinds in reverse order", "sub": "including mid-loop failure", "tone": "good"}, {"id": "c", "label": "callback() for arbitrary cleanup", "sub": "no context manager needed", "tone": "good"}, {"id": "p", "label": "pop_all() transfers ownership out", "sub": "a factory that cannot leak", "tone": "accent"}], "edges": [["s", "e"], ["e", "r"], ["r", "c"], ["c", "p"]], "t": "diagram", "id": "dg-5_8-04-1"},
+
 
 
     { t: "p", text: "`with a, b, c:` works when you know the resources at write time. When the number varies at runtime, `ExitStack` manages them and unwinds in reverse order." },

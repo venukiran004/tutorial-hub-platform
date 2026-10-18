@@ -95,6 +95,7 @@ True`},
 
 
 
+
     { t: "table",
       head: ["", "ABC", "Protocol"],
       rows: [
@@ -123,6 +124,7 @@ True`},
     { t: "h2", n: "03", text: "Template method: where an ABC earns it", id: "template-method" },
 
     {"kind": "flow", "title": "Template method: the ABC owns the skeleton", "caption": "run() in the base class fixes the order of steps; subclasses fill in the abstract ones. The base never needs to know which subclass it is.", "cols": 4, "nodes": [{"id": "run", "label": "run()", "sub": "concrete, in the ABC", "tone": "accent"}, {"id": "a", "label": "load()", "sub": "abstract", "tone": "warn"}, {"id": "b", "label": "transform()", "sub": "abstract", "tone": "warn"}, {"id": "c", "label": "save()", "sub": "concrete default", "tone": "good"}], "edges": [["run", "a"], ["a", "b"], ["b", "c"]], "t": "diagram", "id": "dg-4_8-03-0"},
+
 
 
 
@@ -238,6 +240,7 @@ def run_batch(
 
 
 
+
     { t: "code", lang: "python", title: "inherit and get the rest for free", code: `
 from collections.abc import Mapping, Sequence
 
@@ -296,6 +299,7 @@ def needs_rows(rows):
 
 
 
+
     { t: "code", lang: "python", title: "virtual subclassing", code: `
 from abc import ABC, abstractmethod
 
@@ -336,6 +340,7 @@ AttributeError: 'NotASerialiser' object has no attribute 'dumps'`},
     { t: "h2", n: "06", text: "The ABC that should be a function", id: "over-abstraction" },
 
     {"kind": "flow", "title": "One abstract method, one implementation, no state — that is a function", "caption": "**An ABC with a single abstract method, whose subclasses hold no state and share no implementation, is a function with extra ceremony.** The test is mechanical: **if every subclass is `def run(self, x): return ...` and nothing reads `self`, the hierarchy is carrying nothing.** Which is 3.4's point arriving from the other direction — **the interface is the call signature** — and the replacement is a dict of functions or a `Callable` hint. **The ABC earns its place the moment a subclass needs state, configuration, or a second related method.**", "cols": 3, "nodes": [{"id": "o", "label": "One abstract method", "sub": "and nothing else", "tone": "accent"}, {"id": "s", "label": "Subclasses never read self", "sub": "no state, no shared code", "tone": "crit"}, {"id": "c", "label": "So the hierarchy carries nothing", "sub": "ceremony around a call", "tone": "crit"}, {"id": "f", "label": "Use a function, or a Callable hint", "sub": "3.4's argument", "tone": "good"}, {"id": "e", "label": "It earns it back with state", "sub": "or a second method", "tone": "violet"}], "edges": [["o", "s"], ["s", "c"], ["c", "f"], ["f", "e"]], "t": "diagram", "id": "dg-4_8-06-4"},
+
 
 
 

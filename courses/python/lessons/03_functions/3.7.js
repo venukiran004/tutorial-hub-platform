@@ -43,6 +43,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Start with the two facts from earlier lessons: functions are values (3.4), and a nested function remembers its enclosing scope (3.6). A decorator is those two facts combined." },
 
     { t: "code", lang: "python", title: "step 1 — a function that wraps a function", code: `
@@ -132,6 +133,7 @@ add = with_logging(add)
 
 
 
+
     { t: "code", lang: "python", title: "what the naive version destroys", code: `
 import inspect
 
@@ -176,6 +178,7 @@ def with_logging(fn):
     { t: "h2", n: "03", text: "Decorators with arguments", id: "with-arguments" },
 
     {"kind": "flow", "title": "`@expr` calls expr with the function, so a call needs one more layer", "caption": "**The reason is mechanical: `@expr` calls `expr` with the function. If `expr` is itself a call, its *result* must be the thing that takes the function** — hence three nested definitions rather than two. Read the equivalence: **`retry(times=5)` runs first and returns `decorator`; that result is then applied to `fetch`.** And the failure mode is specific: **forget the parentheses and the function itself becomes the `times` argument, so the error appears at the call site rather than at the decoration**, which is what makes it puzzling.", "cols": 3, "nodes": [{"id": "a", "label": "@expr calls expr with the function", "sub": "always", "tone": "accent"}, {"id": "c", "label": "So if expr is a call...", "sub": "retry(times=5)", "tone": "violet"}, {"id": "r", "label": "...its RESULT takes the function", "sub": "three nested defs", "tone": "violet"}, {"id": "f", "label": "Forget the parentheses", "sub": "and the function becomes times", "tone": "crit"}, {"id": "s", "label": "Error at the CALL SITE, not the decoration", "sub": "which is why it is puzzling", "tone": "crit"}], "edges": [["a", "c"], ["c", "r"], ["r", "f"], ["f", "s"]], "t": "diagram", "id": "dg-3_7-03-3"},
+
 
 
 
@@ -351,6 +354,7 @@ def refund_order(order_id: str) -> Receipt:
     { t: "h2", n: "05", text: "Stacking, and order", id: "stacking" },
 
     {"kind": "layers", "title": "Stacked decorators apply bottom-up, run top-down", "caption": "@a above @b above def f is a(b(f)). b wraps f first, then a wraps that; on a call the outermost wrapper, a's, runs first.", "items": [{"label": "@a  — applied last, runs first on a call", "tone": "warn"}, {"label": "@b  — applied first, runs second", "tone": "accent"}, {"label": "def f  — the original, runs last", "tone": "good"}], "t": "diagram", "id": "dg-3_7-05-1"},
+
 
 
 

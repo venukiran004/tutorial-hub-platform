@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What import actually does", id: "what" },
 
-    {"kind": "steps", "title": "What import actually does", "caption": "A module is executed exactly once and cached in sys.modules; every later import anywhere in the process returns the same module object. That cache is also what makes circular imports fail halfway.", "items": [{"label": "sys.modules['pkg.mod'] cached?", "desc": "yes → bind the name and stop", "tone": "good"}, {"label": "find it: sys.path, finders, loaders", "desc": "a .py, a package directory, a compiled extension", "tone": "accent"}, {"label": "create the module object and register it", "desc": "in sys.modules before executing — so cycles see a partial module", "tone": "warn"}, {"label": "execute the module body top to bottom", "desc": "def and class statements run; side effects happen here", "tone": "violet"}], "t": "diagram", "id": "dg-7_4-01-0"},
+    {"kind": "steps", "title": "What import actually does", "caption": "A module is executed exactly once and cached in sys.modules; every later import anywhere in the process returns the same module object. That cache is also what makes circular imports fail halfway.", "items": [{"label": "sys.modules['pkg.mod'] cached?", "desc": "yes → bind the name and stop", "tone": "good"}, {"label": "find it: sys.path, finders, loaders", "desc": "a .py, a package directory, a compiled extension", "tone": "accent"}, {"label": "create the module object and register it", "desc": "in sys.modules before executing — so cycles see a partial module", "tone": "warn"}, {"label": "execute the module body top to bottom", "desc": "def and class statements run; side effects happen here", "tone": "violet"}], "t": "diagram", "id": "dg-7_4-01-1"},
+
 
 
 
@@ -145,7 +146,8 @@ def get_connection():
 
     { t: "h2", n: "02", text: "sys.path, and the two ways to run a program", id: "syspath" },
 
-    {"kind": "trace", "title": "sys.path depends on how you ran it", "caption": "python pkg/mod.py puts pkg/ first on sys.path and the package's own imports break; python -m pkg.mod puts the current directory first and everything resolves. The file is the same; the search path is not.", "vars": ["sys.path[0]", "import pkg.other"], "steps": [{"code": "python pkg/mod.py", "state": ["pkg/", "ModuleNotFoundError"], "changed": [0, 1], "tone": "crit", "note": "pkg is not on the path"}, {"code": "python -m pkg.mod", "state": ["'' (cwd)", "works"], "changed": [0, 1], "tone": "good"}, {"code": "pip install -e . then import pkg", "state": ["site-packages link", "works anywhere"], "changed": [0, 1], "tone": "good", "note": "the real fix"}], "t": "diagram", "id": "dg-7_4-02-2"},
+    {"kind": "trace", "title": "sys.path depends on how you ran it", "caption": "python pkg/mod.py puts pkg/ first on sys.path and the package's own imports break; python -m pkg.mod puts the current directory first and everything resolves. The file is the same; the search path is not.", "vars": ["sys.path[0]", "import pkg.other"], "steps": [{"code": "python pkg/mod.py", "state": ["pkg/", "ModuleNotFoundError"], "changed": [0, 1], "tone": "crit", "note": "pkg is not on the path"}, {"code": "python -m pkg.mod", "state": ["'' (cwd)", "works"], "changed": [0, 1], "tone": "good"}, {"code": "pip install -e . then import pkg", "state": ["site-packages link", "works anywhere"], "changed": [0, 1], "tone": "good", "note": "the real fix"}], "t": "diagram", "id": "dg-7_4-02-3"},
+
 
 
 
@@ -211,6 +213,8 @@ random.randint(1, 10)
 
     { t: "h2", n: "03", text: "Absolute and relative imports", id: "relative" },
 
+    {"kind": "flow", "title": "An absolute import says where something comes from without counting dots", "caption": "**Absolute imports say where something comes from without the reader counting dots, and they survive a file being moved** — which is why PEP 8 recommends them. Explicit relative imports earn their place in one case: **inside a package that may be vendored or renamed, where `from .models import Order` keeps working after the package is re-rooted.** The form to avoid entirely is the implicit relative import, **which Python 3 removed** — and the reason it was removed is that `import models` inside a package was ambiguous with a top-level `models`.", "cols": 3, "nodes": [{"id": "a", "label": "from acme.billing.models import Order", "sub": "says where it comes from", "tone": "good"}, {"id": "m", "label": "And survives the file being moved", "sub": "PEP 8's recommendation", "tone": "good"}, {"id": "r", "label": "from .models import Order", "sub": "for a vendorable package", "tone": "accent"}, {"id": "v", "label": "Keeps working when re-rooted", "sub": "the one real case", "tone": "accent"}, {"id": "i", "label": "import models - removed in Python 3", "sub": "it was ambiguous", "tone": "crit"}], "edges": [["a", "m"], ["r", "v"], ["m", "i"], ["v", "i"]], "t": "diagram", "id": "dg-7_4-03-0"},
+
     { t: "code", lang: "python", title: "prefer absolute", code: `
 myapp/
   __init__.py
@@ -240,7 +244,8 @@ from models.order import Order                # WRONG: implicit relative,
 
     { t: "h2", n: "04", text: "Circular imports", id: "circular" },
 
-    {"kind": "cycle", "title": "A circular import", "caption": "a imports b at the top; b imports a at the top; when b runs, a is in sys.modules but half-executed, so from a import thing fails with ImportError. Move the import inside the function, or move the shared thing to a third module.", "nodes": [{"label": "a.py starts", "sub": "registered, not finished", "tone": "accent"}, {"label": "import b", "sub": "b starts executing", "tone": "warn"}, {"label": "from a import thing", "sub": "a is only half done", "tone": "crit"}, {"label": "ImportError", "sub": "cannot import name 'thing'", "tone": "crit"}], "t": "diagram", "id": "dg-7_4-04-1"},
+    {"kind": "cycle", "title": "A circular import", "caption": "a imports b at the top; b imports a at the top; when b runs, a is in sys.modules but half-executed, so from a import thing fails with ImportError. Move the import inside the function, or move the shared thing to a third module.", "nodes": [{"label": "a.py starts", "sub": "registered, not finished", "tone": "accent"}, {"label": "import b", "sub": "b starts executing", "tone": "warn"}, {"label": "from a import thing", "sub": "a is only half done", "tone": "crit"}, {"label": "ImportError", "sub": "cannot import name 'thing'", "tone": "crit"}], "t": "diagram", "id": "dg-7_4-04-2"},
+
 
 
 

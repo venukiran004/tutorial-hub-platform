@@ -43,6 +43,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table",
       head: ["You want to", "Reach for", "Not"],
       rows: [
@@ -72,6 +73,7 @@ def looks_like_email(value: str) -> bool:
     { t: "h2", n: "02", text: "The syntax that covers 95%", id: "syntax" },
 
     {"kind": "trace", "title": "Greedy took everything between the first and last angle bracket", "caption": "**`*` `+` `?` are greedy — they take as much as possible — so a pattern for a tag matched `'b>bold</b> and <i>italic</i'`: one match spanning the whole string.** The lazy versions `*?` `+?` `??` take as little as possible and give the four tags. **A character class that excludes the terminator does the same thing without laziness**, and is usually clearer. Two more rows worth internalising: **`\\b` is the fix for matching `cat` inside `category`**, and **`(?:...)` should be the default group** — capture only what you will read back.", "left": "pattern", "codeW": 150, "vars": ["result", "why"], "steps": [{"code": "<(.+)>", "state": ["one match, the whole string", "greedy"], "tone": "crit"}, {"code": "<(.+?)>", "state": ["['b', '/b', 'i', '/i']", "lazy"], "changed": [0, 1], "tone": "good"}, {"code": "<([^>]+)>", "state": ["['b', '/b', 'i', '/i']", "a class, and clearer"], "changed": [1], "tone": "violet"}, {"code": "\\bcat\\b", "state": ["does not match category", "word boundary"], "changed": [0, 1], "tone": "good"}, {"code": "(?:...) rather than (...)", "state": ["groups without capturing", "capture what you read back"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-5_11-02-0"},
+
 
 
     { t: "table",
@@ -190,6 +192,7 @@ print(CARD.sub(mask, "paid with 4111 1111 1111 1111 today"))`,
     { t: "h2", n: "04", text: "Catastrophic backtracking", id: "redos" },
 
     {"kind": "tree", "title": "Catastrophic backtracking", "caption": "(a+)+ against 'aaaa…b' tries every way of splitting the a's between the inner and outer groups before failing — 2ⁿ attempts. Possessive quantifiers, atomic groups or a rewritten pattern remove the ambiguity.", "root": {"label": "(a+)+ on 'aaab'", "tone": "crit", "children": [{"label": "(aaa)", "children": [{"label": "fail at b", "tone": "warn"}]}, {"label": "(aa)(a)", "children": [{"label": "fail at b", "tone": "warn"}]}, {"label": "(a)(aa)", "children": [{"label": "fail", "tone": "warn"}]}, {"label": "(a)(a)(a)", "children": [{"label": "fail", "tone": "warn"}]}]}, "t": "diagram", "id": "dg-5_11-04-2"},
+
 
 
 
