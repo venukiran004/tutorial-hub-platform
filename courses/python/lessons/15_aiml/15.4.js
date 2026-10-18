@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The hidden state problem", id: "state" },
 
-    {"kind": "steps", "title": "The hidden-state problem", "caption": "Cells run in the order you clicked, not the order on the page. A notebook that passes 'Restart and run all' is reproducible; one that does not is a collection of results nobody can regenerate.", "items": [{"label": "cell 3 defines df", "desc": "run first"}, {"label": "cell 1 uses df", "desc": "works — because of the order you ran them", "tone": "warn"}, {"label": "cell 3 edited, not re-run", "desc": "cell 1's result is now stale", "tone": "crit"}, {"label": "Restart kernel, Run all", "desc": "the only test of a notebook", "tone": "good"}], "t": "diagram", "id": "dg-15_4-01-0"},
+    {"kind": "steps", "title": "The hidden-state problem", "caption": "Cells run in the order you clicked, not the order on the page. A notebook that passes 'Restart and run all' is reproducible; one that does not is a collection of results nobody can regenerate.", "items": [{"label": "cell 3 defines df", "desc": "run first"}, {"label": "cell 1 uses df", "desc": "works — because of the order you ran them", "tone": "warn"}, {"label": "cell 3 edited, not re-run", "desc": "cell 1's result is now stale", "tone": "crit"}, {"label": "Restart kernel, Run all", "desc": "the only test of a notebook", "tone": "good"}], "t": "diagram", "id": "dg-15_4-01-2"},
+
 
 
 
@@ -119,6 +120,8 @@ df["total"] = df["total"] * 1.2      # silently applies VAT TWICE
     },
 
     { t: "h2", n: "02", text: "Notebooks in version control", id: "vcs" },
+
+    {"kind": "trace", "title": "Five notebook problems with one cause and mostly one fix", "caption": "**All five come from the same thing: a notebook is JSON with embedded outputs, execution counts and metadata, so every run changes the file even when the code did not.** `nbstripout` on commit fixes four of them outright — **unreadable diffs, unresolvable conflicts, and repository bloat from a base64 PNG per plot per commit.** The fifth needs more: **an API key echoed in a cell output is committed and permanent, so stripping has to be paired with a secret scanner** — because the strip is a convention and the scanner is the enforcement.", "left": "problem", "codeW": 170, "vars": ["why", "fix"], "steps": [{"code": "diffs are unreadable", "state": ["JSON with embedded outputs", "nbstripout on commit"], "tone": "good"}, {"code": "conflicts are unresolvable", "state": ["execution counts change every run", "strip those too"], "changed": [0, 1], "tone": "good"}, {"code": "repository bloat", "state": ["a base64 PNG per plot, per commit", "stripping fixes it"], "changed": [0, 1], "tone": "good"}, {"code": "SECRETS COMMITTED", "state": ["a key echoed in a cell output", "stripping PLUS a scanner"], "changed": [0, 1], "tone": "crit"}, {"code": "review is impossible", "state": ["reviewers see JSON", "nbdime, or jupytext pairing"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-15_4-02-0"},
 
     { t: "table",
       head: ["Problem", "Why", "Fix"],
@@ -221,6 +224,8 @@ from analytics.cleaning import clean_orders`,
     ]},
 
     { t: "h2", n: "04", text: "Notebooks that run unattended", id: "papermill" },
+
+    {"kind": "flow", "title": "The executed notebook as an artefact is the real argument for papermill", "caption": "**For a report a human reads, the output *is* the deliverable — so running a parameterised notebook and keeping the executed copy gives you the result and the evidence in one file**, which a script's stdout does not. Which is the narrow case where a notebook belongs in a scheduler at all. The conditions that make it safe: **parameters injected rather than edited, a pinned environment, outputs written to a dated path, and a non-zero exit on failure** — and without that last one **a failed notebook run looks exactly like a successful one.**", "cols": 3, "nodes": [{"id": "o", "label": "The output IS the deliverable", "sub": "for a report a human reads", "tone": "violet"}, {"id": "a", "label": "So keep the executed notebook", "sub": "result and evidence in one file", "tone": "good"}, {"id": "p", "label": "Parameters injected, not edited", "sub": "and the environment pinned", "tone": "good"}, {"id": "d", "label": "Outputs to a dated path", "sub": "so yesterday's survives", "tone": "good"}, {"id": "e", "label": "And a non-zero exit on failure", "sub": "or a failure looks like a success", "tone": "crit"}], "edges": [["o", "a"], ["a", "p"], ["p", "d"], ["d", "e"]], "t": "diagram", "id": "dg-15_4-04-1"},
 
     { t: "code", lang: "python", title: "parameterised execution", code: `
 # Tag ONE cell as "parameters" in the notebook's cell metadata.

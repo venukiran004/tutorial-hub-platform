@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Idempotence", id: "idempotence" },
 
-    {"kind": "flow", "title": "An idempotent pipeline step", "caption": "Running the step twice for the same partition gives the same result: it overwrites its output partition rather than appending. Retries and backfills become safe by construction.", "cols": 4, "nodes": [{"id": "in", "label": "input partition", "sub": "date=2026-09-20"}, {"id": "tf", "label": "transform", "sub": "pure", "tone": "accent"}, {"id": "out", "label": "overwrite output partition", "sub": "not append", "tone": "good"}, {"id": "re", "label": "re-run", "sub": "same result, no duplicates", "tone": "warn"}], "edges": [["in", "tf"], ["tf", "out"], ["re", "in", "", "dashed"]], "t": "diagram", "id": "dg-15_3-01-0"},
+    {"kind": "flow", "title": "An idempotent pipeline step", "caption": "Running the step twice for the same partition gives the same result: it overwrites its output partition rather than appending. Retries and backfills become safe by construction.", "cols": 4, "nodes": [{"id": "in", "label": "input partition", "sub": "date=2026-09-20"}, {"id": "tf", "label": "transform", "sub": "pure", "tone": "accent"}, {"id": "out", "label": "overwrite output partition", "sub": "not append", "tone": "good"}, {"id": "re", "label": "re-run", "sub": "same result, no duplicates", "tone": "warn"}], "edges": [["in", "tf"], ["tf", "out"], ["re", "in", "", "dashed"]], "t": "diagram", "id": "dg-15_3-01-3"},
+
 
 
 
@@ -116,6 +117,8 @@ atomic_replace(tmp, final)      # a rename, not a copy
 
     { t: "h2", n: "02", text: "Schemas as contracts", id: "schemas" },
 
+    {"kind": "flow", "title": "`lazy=True` reports every violation at once", "caption": "**Without it you fix one column, re-run for ten minutes, and discover the next one** — so a schema check on a large file is a sequence of ten-minute round trips rather than one report. Which is the whole argument for the flag, and it generalises: **a validator that stops at the first error turns a batch problem into a serial one.** The schema's other job is the one that outlasts the data: **it is a written contract, so a column rename upstream fails here with a name rather than three transformations later with a `KeyError`.**", "cols": 3, "nodes": [{"id": "d", "label": "Default: stop at the first violation", "sub": "on a ten-minute file", "tone": "crit"}, {"id": "s", "label": "So fixing ten columns takes ten runs", "sub": "serially", "tone": "crit"}, {"id": "l", "label": "lazy=True reports all of them", "sub": "one report", "tone": "violet"}, {"id": "c", "label": "And the schema is a written contract", "sub": "not just a check", "tone": "good"}, {"id": "r", "label": "So a rename fails HERE, with a name", "sub": "not later with a KeyError", "tone": "good"}], "edges": [["d", "s"], ["s", "l"], ["l", "c"], ["c", "r"]], "t": "diagram", "id": "dg-15_3-02-0"},
+
     { t: "code", lang: "python", title: "validate at the boundary, once", code: `
 import pandera.pandas as pa
 from pandera.typing import DataFrame, Series
@@ -167,6 +170,8 @@ def load_orders(path: str) -> DataFrame[RawOrder]:
     ]},
 
     { t: "h2", n: "03", text: "Partial failure", id: "partial" },
+
+    {"kind": "flow", "title": "The rejection threshold is what separates tolerance from negligence", "caption": "**Skipping a few malformed rows is sensible; skipping a third of the file is a silent outage** — and the only difference between them is a number somebody wrote down. So the shape that works: **count the rejects, write them somewhere inspectable, and fail the run when the proportion crosses the threshold.** The part people omit is the middle one: **a reject count with no sample is a number you cannot act on**, because the fix depends on *why* they failed — and the rejects file is the only artefact that answers that.", "cols": 3, "nodes": [{"id": "s", "label": "Skip a few malformed rows", "sub": "sensible", "tone": "good"}, {"id": "t", "label": "Skip a third of the file", "sub": "a silent outage", "tone": "crit"}, {"id": "n", "label": "The difference is a written threshold", "sub": "and nothing else", "tone": "violet"}, {"id": "w", "label": "Write the rejects somewhere", "sub": "a count alone is unactionable", "tone": "violet"}, {"id": "f", "label": "And fail the run above the threshold", "sub": "loudly", "tone": "good"}], "edges": [["s", "t"], ["t", "n"], ["n", "w"], ["w", "f"]], "t": "diagram", "id": "dg-15_3-03-1"},
 
     { t: "code", lang: "python", title: "keep the good rows and the bad ones", code: `
 @dataclass
@@ -283,6 +288,8 @@ def backfill(start: date, end: date, *, rate_limit: float = 0.5) -> None:
     },
 
     { t: "h2", n: "05", text: "Detecting quality regressions", id: "quality" },
+
+    {"kind": "trace", "title": "Freshness is the check that catches the most incidents", "caption": "**A pipeline that reprocesses yesterday's file succeeds every time, reports green, and produces a stale answer** — and no row-level validation will ever notice, because every row is valid. Which is why **the max timestamp in the data is the single highest-value assertion in a data pipeline**, and it costs one query. The other three are about distribution rather than correctness: **row count against the recent average, null rate per column, and the distribution of a key numeric field** — each catching an upstream change that produces valid-looking data.", "left": "check", "codeW": 170, "vars": ["catches", "cost"], "steps": [{"code": "freshness: max timestamp", "state": ["a stale re-run that reports green", "one query"], "tone": "violet"}, {"code": "row count vs the recent average", "state": ["a truncated or doubled input", "one query"], "changed": [0, 1], "tone": "good"}, {"code": "null rate per column", "state": ["an upstream field that stopped arriving", "one scan"], "changed": [0, 1], "tone": "good"}, {"code": "distribution of a numeric field", "state": ["a unit change, or a new population", "one scan"], "changed": [0, 1], "tone": "good"}, {"code": "row-level validation alone", "state": ["none of the four", "-"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-15_3-05-2"},
 
     { t: "code", lang: "python", title: "checks that compare against yesterday", code: `
 # STATIC checks catch violations. They do not catch DRIFT -- data

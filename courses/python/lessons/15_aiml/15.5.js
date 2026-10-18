@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The contract", id: "contract" },
 
+    {"kind": "flow", "title": "`fit_transform` on test data is the single most common leakage bug", "caption": "**And it looks harmless — it is one method name, on the line you would naturally write** — which is why it survives review and produces a model that scores well and fails in production. The contract is the defence: **`fit` learns parameters and `transform` applies them, so test data gets `transform` only, with the parameters learned on train.** A `Pipeline` makes it structural rather than remembered: **`fit` on the pipeline fits each step on train and `predict` transforms only**, so the correct thing is the easy thing.", "cols": 3, "nodes": [{"id": "f", "label": "fit_transform on test data", "sub": "one method name", "tone": "crit"}, {"id": "l", "label": "The scaler learned the test distribution", "sub": "leakage", "tone": "crit"}, {"id": "s", "label": "Scores well, fails in production", "sub": "and review missed it", "tone": "crit"}, {"id": "c", "label": "fit learns, transform applies", "sub": "the contract", "tone": "good"}, {"id": "p", "label": "A Pipeline makes it structural", "sub": "so correct is easy", "tone": "violet"}], "edges": [["f", "l"], ["l", "s"], ["s", "c"], ["c", "p"]], "t": "diagram", "id": "dg-15_5-01-0"},
+
     { t: "code", lang: "python", title: "four methods, and everything follows", code: `
 # ESTIMATOR
 #   fit(X, y)        learn parameters from training data. Returns self.
@@ -55,7 +57,8 @@ model.classes_
 
     { t: "h2", n: "02", text: "Leakage", id: "leakage" },
 
-    {"kind": "flow", "title": "Leakage: fitting the scaler on all the data", "caption": "A scaler fit on train and test together has seen the test set's mean and variance. Fit every transformer on the training split only, inside a Pipeline, so cross-validation refits it per fold.", "cols": 4, "nodes": [{"id": "all", "label": "fit scaler on all rows", "sub": "test statistics leak in", "tone": "crit"}, {"id": "split", "label": "split first", "tone": "accent"}, {"id": "pipe", "label": "Pipeline(scaler, model).fit(train)", "sub": "transformers fit on train only", "tone": "good"}, {"id": "cv", "label": "cross_val_score(pipe)", "sub": "refit per fold", "tone": "warn"}], "edges": [["split", "pipe"], ["pipe", "cv"]], "t": "diagram", "id": "dg-15_5-02-0"},
+    {"kind": "flow", "title": "Leakage: fitting the scaler on all the data", "caption": "A scaler fit on train and test together has seen the test set's mean and variance. Fit every transformer on the training split only, inside a Pipeline, so cross-validation refits it per fold.", "cols": 4, "nodes": [{"id": "all", "label": "fit scaler on all rows", "sub": "test statistics leak in", "tone": "crit"}, {"id": "split", "label": "split first", "tone": "accent"}, {"id": "pipe", "label": "Pipeline(scaler, model).fit(train)", "sub": "transformers fit on train only", "tone": "good"}, {"id": "cv", "label": "cross_val_score(pipe)", "sub": "refit per fold", "tone": "warn"}], "edges": [["split", "pipe"], ["pipe", "cv"]], "t": "diagram", "id": "dg-15_5-02-3"},
+
 
 
 
@@ -188,7 +191,8 @@ if auc > 0.95:
 
     { t: "h2", n: "03", text: "ColumnTransformer", id: "columntransformer" },
 
-    {"kind": "flow", "title": "A ColumnTransformer inside a Pipeline", "caption": "Numeric columns are imputed and scaled, categorical columns one-hot encoded, the two blocks concatenated, and the model fit on the result — one object that fits and predicts consistently.", "cols": 4, "nodes": [{"id": "num", "label": "numeric columns", "sub": "SimpleImputer → StandardScaler", "tone": "accent"}, {"id": "cat", "label": "categorical columns", "sub": "OneHotEncoder(handle_unknown='ignore')", "tone": "warn"}, {"id": "ct", "label": "ColumnTransformer", "sub": "concatenates the blocks", "tone": "good"}, {"id": "m", "label": "model", "sub": "fit on the transformed matrix", "tone": "violet"}], "edges": [["num", "ct"], ["cat", "ct"], ["ct", "m"]], "t": "diagram", "id": "dg-15_5-03-1"},
+    {"kind": "flow", "title": "A ColumnTransformer inside a Pipeline", "caption": "Numeric columns are imputed and scaled, categorical columns one-hot encoded, the two blocks concatenated, and the model fit on the result — one object that fits and predicts consistently.", "cols": 4, "nodes": [{"id": "num", "label": "numeric columns", "sub": "SimpleImputer → StandardScaler", "tone": "accent"}, {"id": "cat", "label": "categorical columns", "sub": "OneHotEncoder(handle_unknown='ignore')", "tone": "warn"}, {"id": "ct", "label": "ColumnTransformer", "sub": "concatenates the blocks", "tone": "good"}, {"id": "m", "label": "model", "sub": "fit on the transformed matrix", "tone": "violet"}], "edges": [["num", "ct"], ["cat", "ct"], ["ct", "m"]], "t": "diagram", "id": "dg-15_5-03-4"},
+
 
 
 
@@ -261,6 +265,8 @@ model.get_feature_names_out()      # traceable back to source columns
 
     { t: "h2", n: "04", text: "Splitting honestly", id: "splitting" },
 
+    {"kind": "trace", "title": "Two of these splitters exist because a random split is a correctness bug", "caption": "**With time order, a random split trains on the future — the model sees tomorrow's data and reports a score it cannot reproduce on a single real day.** With groups, **the same customer in train and test is leakage**, because the model can memorise the customer rather than learn the behaviour. Both produce a *better* cross-validation score than the honest split, **which is what makes them dangerous rather than merely wrong.** And the last row is the honest admission: **neither alone is sufficient when you have both.**", "left": "the data has", "codeW": 160, "vars": ["use", "because"], "steps": [{"code": "no structure", "state": ["KFold(shuffle=True)", "the default case"], "tone": "good"}, {"code": "imbalanced classes", "state": ["StratifiedKFold", "a fold may contain no positives"], "changed": [0, 1], "tone": "good"}, {"code": "time order", "state": ["TimeSeriesSplit", "a random split trains on the future"], "changed": [0, 1], "tone": "crit"}, {"code": "groups (customers)", "state": ["GroupKFold", "the same customer is leakage"], "changed": [0, 1], "tone": "crit"}, {"code": "both", "state": ["StratifiedGroupKFold + a cutoff", "neither alone is sufficient"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-15_5-04-1"},
+
     { t: "table",
       head: ["Data has", "Use", "Because"],
       rows: [
@@ -310,6 +316,8 @@ X_dev, X_holdout, y_dev, y_holdout = train_test_split(
     },
 
     { t: "h2", n: "05", text: "Custom transformers", id: "custom" },
+
+    {"kind": "flow", "title": "The `__init__` rule is not stylistic", "caption": "**`clone()` reconstructs an estimator from `get_params()`, so a parameter transformed in `__init__` is lost — and `clone()` is called by every cross-validation, every grid search and every pipeline fit.** Which means the rule *“store constructor arguments unchanged, with the same names”* is what makes an estimator usable at all: **validate in `fit`, not in `__init__`, and derive nothing until then.** The symptom when it is broken is characteristic: **the estimator works alone and misbehaves inside `GridSearchCV`**, with no error.", "cols": 3, "nodes": [{"id": "c", "label": "clone() rebuilds from get_params()", "sub": "nothing else", "tone": "accent"}, {"id": "e", "label": "Called by every CV, search and pipeline", "sub": "constantly", "tone": "accent"}, {"id": "t", "label": "So a transform in __init__ is lost", "sub": "silently", "tone": "crit"}, {"id": "s", "label": "Store arguments unchanged, same names", "sub": "validate in fit", "tone": "good"}, {"id": "y", "label": "Symptom: fine alone, wrong in GridSearchCV", "sub": "and no error", "tone": "crit"}], "edges": [["c", "e"], ["e", "t"], ["t", "s"], ["t", "y"]], "t": "diagram", "id": "dg-15_5-05-2"},
 
     { t: "code", lang: "python", title: "behave like a built-in and everything composes", code: `
 from sklearn.base import BaseEstimator, TransformerMixin

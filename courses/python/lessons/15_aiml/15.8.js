@@ -65,7 +65,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Streaming", id: "streaming" },
 
-    {"kind": "flow", "title": "Streaming tokens from an LLM API", "caption": "With stream=True the response arrives as server-sent events, one chunk of tokens at a time; the client yields them to the user as they come instead of waiting for the whole completion.", "cols": 4, "nodes": [{"id": "req", "label": "request", "sub": "stream=True", "tone": "accent"}, {"id": "sse", "label": "SSE chunks", "sub": "data: {\"delta\": \"tok\"}", "tone": "warn"}, {"id": "gen", "label": "generator", "sub": "yields each delta", "tone": "good"}, {"id": "ui", "label": "user sees text appear", "tone": "violet"}], "edges": [["req", "sse"], ["sse", "gen"], ["gen", "ui"]], "t": "diagram", "id": "dg-15_8-02-0"},
+    {"kind": "flow", "title": "Streaming tokens from an LLM API", "caption": "With stream=True the response arrives as server-sent events, one chunk of tokens at a time; the client yields them to the user as they come instead of waiting for the whole completion.", "cols": 4, "nodes": [{"id": "req", "label": "request", "sub": "stream=True", "tone": "accent"}, {"id": "sse", "label": "SSE chunks", "sub": "data: {\"delta\": \"tok\"}", "tone": "warn"}, {"id": "gen", "label": "generator", "sub": "yields each delta", "tone": "good"}, {"id": "ui", "label": "user sees text appear", "tone": "violet"}], "edges": [["req", "sse"], ["sse", "gen"], ["gen", "ui"]], "t": "diagram", "id": "dg-15_8-02-1"},
+
 
 
 
@@ -231,7 +232,8 @@ async def extract(doc: str, attempts: int = 3) -> Invoice:
 
     { t: "h2", n: "04", text: "Tokens and the context window", id: "tokens" },
 
-    {"kind": "layers", "title": "The context window is a budget", "caption": "System prompt, retrieved context, the conversation so far and the answer all share one window. Count tokens **before** the call and leave room for the response, or the model truncates from the wrong end.", "items": [{"label": "the answer", "sub": "reserve it FIRST or generation truncates", "tone": "crit", "side": "≤ 1,800"}, {"label": "the question", "sub": "paid once", "tone": "good", "side": "200"}, {"label": "the conversation so far", "sub": "the only part that grows", "tone": "warn", "side": "2,200"}, {"label": "retrieved context", "sub": "k chunks, and k is set by what is left", "tone": "accent", "side": "3,000"}, {"label": "the system prompt", "sub": "fixed per call", "tone": "teal", "side": "800"}], "t": "diagram", "id": "dg-15_8-04-1"},
+    {"kind": "layers", "title": "The context window is a budget", "caption": "System prompt, retrieved context, the conversation so far and the answer all share one window. Count tokens **before** the call and leave room for the response, or the model truncates from the wrong end.", "items": [{"label": "the answer", "sub": "reserve it FIRST or generation truncates", "tone": "crit", "side": "≤ 1,800"}, {"label": "the question", "sub": "paid once", "tone": "good", "side": "200"}, {"label": "the conversation so far", "sub": "the only part that grows", "tone": "warn", "side": "2,200"}, {"label": "retrieved context", "sub": "k chunks, and k is set by what is left", "tone": "accent", "side": "3,000"}, {"label": "the system prompt", "sub": "fixed per call", "tone": "teal", "side": "800"}], "t": "diagram", "id": "dg-15_8-04-2"},
+
 
 
 
@@ -344,6 +346,8 @@ async def check_budget(user_id: str, estimated: int) -> None:
     ]},
 
     { t: "h2", n: "05", text: "Retries and failure", id: "retries" },
+
+    {"kind": "flow", "title": "Jitter is not optional on a rate limit", "caption": "**Without it every rate-limited client retries at the same instant, so the limiter rejects them all again and the pattern repeats** — 14.2's measurement from the NLP course arriving as an LLM concern: a synchronised retry wave is the original spike, repeated. The rest of the policy is about which failures deserve a retry at all: **a 429 and a 5xx yes, with backoff; a 400 and a context-length error never, because they will fail identically.** And the bound that matters most: **a cap on total attempts *and* on total time**, since a retried LLM call is a bill as well as a delay.", "cols": 3, "nodes": [{"id": "n", "label": "No jitter", "sub": "every client retries together", "tone": "crit"}, {"id": "r", "label": "The limiter rejects them all again", "sub": "the spike, repeated", "tone": "crit"}, {"id": "j", "label": "Full jitter across the interval", "sub": "not optional", "tone": "violet"}, {"id": "w", "label": "Retry 429 and 5xx; never 400", "sub": "nor a context-length error", "tone": "good"}, {"id": "c", "label": "Cap attempts AND total time", "sub": "a retry is a bill too", "tone": "violet"}], "edges": [["n", "r"], ["r", "j"], ["j", "w"], ["w", "c"]], "t": "diagram", "id": "dg-15_8-05-0"},
 
     { t: "code", lang: "python", title: "what to retry, and what not to", code: `
 RETRIABLE = (

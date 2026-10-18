@@ -93,6 +93,8 @@ arr.sum()                            # ~8 ms
 
     { t: "h2", n: "02", text: "dtypes", id: "dtypes" },
 
+    {"kind": "trace", "title": "`dtype=object` means the array is not doing what you think", "caption": "**Every operation falls back to a Python-level loop over boxed objects, so the vectorisation you came for is gone and the array is a list with extra steps** — and `dtype='<U32'` is the same problem with a fixed-width string, which also silently truncates anything longer. The tell is cheap: **print the dtype, and if it is `object` on numeric data, find the `None` or the string that caused it.** And the second row is the cost nobody budgets for: **float64 to float32 halves the memory and is usually enough for features**, which matters at the scale where it matters at all.", "left": "dtype", "codeW": 150, "vars": ["what it means", "consequence"], "steps": [{"code": "float64, int64", "state": ["a real numeric array", "vectorised, contiguous"], "tone": "good"}, {"code": "float32", "state": ["half the memory", "usually enough for features"], "changed": [0, 1], "tone": "violet"}, {"code": "object", "state": ["boxed Python objects", "a Python loop per operation"], "changed": [0, 1], "tone": "crit"}, {"code": "'<U32'", "state": ["fixed-width strings", "silently truncates longer ones"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-15_1-02-0"},
+
     { t: "code", lang: "python", title: "the type is a decision, not a detail", code: `
 # Memory is dtype x count. On a 100M-element array:
 np.zeros(100_000_000, dtype=np.float64)   # 800 MB
@@ -145,7 +147,8 @@ np.array([1, "two", 3.0])                 # dtype('<U32') -- STRINGS
 
     { t: "h2", n: "03", text: "Broadcasting", id: "broadcasting" },
 
-    {"kind": "cells", "title": "Broadcasting stretches the smaller shape", "caption": "Shapes are compared from the right; a dimension of 1 is stretched to match. (3, 4) + (4,) works; (3, 4) + (3,) does not, because 4 and 3 disagree — reshape to (3, 1) first.", "items": ["(3, 4)", "+ (4,)", "→ (3, 4)", "·", "(3, 4)", "+ (3, 1)", "→ (3, 4)"], "highlight": [2, 6], "negative": false, "tone": "good", "label": "(3, 4) + (3,) → ValueError: operands could not be broadcast", "t": "diagram", "id": "dg-15_1-03-0"},
+    {"kind": "cells", "title": "Broadcasting stretches the smaller shape", "caption": "Shapes are compared from the right; a dimension of 1 is stretched to match. (3, 4) + (4,) works; (3, 4) + (3,) does not, because 4 and 3 disagree — reshape to (3, 1) first.", "items": ["(3, 4)", "+ (4,)", "→ (3, 4)", "·", "(3, 4)", "+ (3, 1)", "→ (3, 4)"], "highlight": [2, 6], "negative": false, "tone": "good", "label": "(3, 4) + (3,) → ValueError: operands could not be broadcast", "t": "diagram", "id": "dg-15_1-03-2"},
+
 
 
 
@@ -238,7 +241,8 @@ centred = a - col_means                     # broadcasts directly`},
 
     { t: "h2", n: "04", text: "Views and copies", id: "views" },
 
-    {"kind": "memory", "title": "Views share memory; copies do not", "caption": "A slice of a NumPy array is a view onto the same buffer: writing through it changes the original. Fancy indexing and .copy() allocate a new buffer.", "names": [{"name": "a = np.arange(6)", "to": "o1"}, {"name": "v = a[2:5]  (view)", "to": "o1", "label": "same buffer"}, {"name": "c = a[[2, 3, 4]]  (copy)", "to": "o2"}], "objects": [{"id": "o1", "type": "buffer", "value": "[0 1 2 3 4 5]", "note": "v[0] = 99 changes a[2]", "tone": "accent"}, {"id": "o2", "type": "buffer", "value": "[2 3 4]", "note": "independent", "tone": "good"}], "t": "diagram", "id": "dg-15_1-04-1"},
+    {"kind": "memory", "title": "Views share memory; copies do not", "caption": "A slice of a NumPy array is a view onto the same buffer: writing through it changes the original. Fancy indexing and .copy() allocate a new buffer.", "names": [{"name": "a = np.arange(6)", "to": "o1"}, {"name": "v = a[2:5]  (view)", "to": "o1", "label": "same buffer"}, {"name": "c = a[[2, 3, 4]]  (copy)", "to": "o2"}], "objects": [{"id": "o1", "type": "buffer", "value": "[0 1 2 3 4 5]", "note": "v[0] = 99 changes a[2]", "tone": "accent"}, {"id": "o2", "type": "buffer", "value": "[2 3 4]", "note": "independent", "tone": "good"}], "t": "diagram", "id": "dg-15_1-04-3"},
+
 
 
 
@@ -306,6 +310,8 @@ np.shares_memory(subset, data)   # True`,
     },
 
     { t: "h2", n: "05", text: "Thinking in whole arrays", id: "vectorising" },
+
+    {"kind": "flow", "title": "`np.vectorize` is the trap in this list", "caption": "**It looks like the answer to “how do I vectorise this function” and it is a convenience wrapper around a Python loop — so it gives you the broadcasting *semantics* and none of the speed.** The real tools are the ones that keep the loop out of Python: **`np.where` for a conditional, boolean masks for a filter, `np.select` for several conditions, and the ufuncs for arithmetic.** And the general test: **if the expression contains a Python-level `for` or a `lambda` applied per element, the loop did not leave Python**, whatever the wrapper is called.", "cols": 3, "nodes": [{"id": "v", "label": "np.vectorize", "sub": "a wrapper around a Python loop", "tone": "crit"}, {"id": "s", "label": "Broadcasting semantics, none of the speed", "sub": "which is the trap", "tone": "crit"}, {"id": "w", "label": "np.where for a conditional", "sub": "np.select for several", "tone": "good"}, {"id": "m", "label": "A boolean mask for a filter", "sub": "and ufuncs for arithmetic", "tone": "good"}, {"id": "t", "label": "Test: is there a per-element lambda?", "sub": "then the loop stayed in Python", "tone": "violet"}], "edges": [["v", "s"], ["s", "w"], ["w", "m"], ["m", "t"]], "t": "diagram", "id": "dg-15_1-05-1"},
 
     { t: "code", lang: "python", title: "the four patterns that remove most loops", code: `
 # 1. CONDITIONAL -> np.where

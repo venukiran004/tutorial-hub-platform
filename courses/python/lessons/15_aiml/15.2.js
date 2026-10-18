@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Selection, unambiguously", id: "selection" },
 
+    {"kind": "trace", "title": "`.loc` slices include the endpoint and `.iloc` slices do not", "caption": "**`df.loc[3:5]` gives three rows and `df.iloc[3:5]` gives two** — which is the one asymmetry in pandas indexing that catches everybody, and it is deliberate: a label slice has no notion of “one past the end”. The practical rule that follows: **use `.loc` for labels and `.iloc` for positions, and never bare `df[...]`**, because bare brackets mean a column on a string, a row slice on a slice, and a boolean filter on a mask — **three different operations behind one syntax.**", "left": "expression", "codeW": 170, "vars": ["returns", "why"], "steps": [{"code": "df.loc[3:5]", "state": ["THREE rows", "labels include the endpoint"], "tone": "violet"}, {"code": "df.iloc[3:5]", "state": ["two rows", "positions do not"], "changed": [0, 1], "tone": "violet"}, {"code": "df['total']", "state": ["a column", "a string key"], "changed": [0, 1], "tone": "warn"}, {"code": "df[3:5]", "state": ["a row slice", "the same brackets"], "changed": [0, 1], "tone": "crit"}, {"code": "df[mask]", "state": ["filtered rows", "and again"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-15_2-01-0"},
+
     { t: "code", lang: "python", title: "the three accessors and when each is right", code: `
 import pandas as pd
 
@@ -56,7 +58,8 @@ df.loc[0:3]                   # rows with LABELS 0..3 -- scattered,
 
     { t: "h2", n: "02", text: "SettingWithCopyWarning", id: "setting" },
 
-    {"kind": "flow", "title": "Where SettingWithCopyWarning comes from", "caption": "df[df.x > 0] may be a copy or a view; assigning a column on it might modify a temporary that is thrown away. Use .loc[mask, 'col'] = value on the original, or .copy() explicitly when you mean a new frame.", "cols": 3, "nodes": [{"id": "df", "label": "df", "sub": "the original", "tone": "accent"}, {"id": "sub", "label": "df[df.x > 0]", "sub": "copy or view? pandas cannot promise", "tone": "warn"}, {"id": "set", "label": "['col'] = value", "sub": "may vanish — the warning", "tone": "crit"}], "edges": [["df", "sub"], ["sub", "set"]], "t": "diagram", "id": "dg-15_2-02-0"},
+    {"kind": "flow", "title": "Where SettingWithCopyWarning comes from", "caption": "df[df.x > 0] may be a copy or a view; assigning a column on it might modify a temporary that is thrown away. Use .loc[mask, 'col'] = value on the original, or .copy() explicitly when you mean a new frame.", "cols": 3, "nodes": [{"id": "df", "label": "df", "sub": "the original", "tone": "accent"}, {"id": "sub", "label": "df[df.x > 0]", "sub": "copy or view? pandas cannot promise", "tone": "warn"}, {"id": "set", "label": "['col'] = value", "sub": "may vanish — the warning", "tone": "crit"}], "edges": [["df", "sub"], ["sub", "set"]], "t": "diagram", "id": "dg-15_2-02-4"},
+
 
 
 
@@ -147,6 +150,8 @@ large["status"] = "large"          # no warning: it IS a copy
 
     { t: "h2", n: "03", text: "Memory", id: "memory" },
 
+    {"kind": "trace", "title": "`memory_usage='deep'` is the only number that counts the strings", "caption": "**The default reports the pointer array and not the objects it points at, so a DataFrame of text looks far smaller than it is** — and `deep=True` follows them. Which is 10.3's `getsizeof` problem in another library. The fix for the usual culprit is one line: **an object column with few distinct values becomes a `category` and loses most of its memory**, because the strings are stored once. And the second: **downcasting int64 to int32 or float64 to float32 where the range allows it** is free in accuracy terms and halves the column.", "left": "measurement or fix", "codeW": 180, "vars": ["effect"], "steps": [{"code": "memory_usage() default", "state": ["pointers only - far too small"], "tone": "crit"}, {"code": "memory_usage(deep=True)", "state": ["follows the strings"], "changed": [0], "tone": "violet"}, {"code": "astype('category')", "state": ["stores each distinct string once"], "changed": [0], "tone": "good"}, {"code": "downcast int64 -> int32", "state": ["half the column, no accuracy cost"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-15_2-03-1"},
+
     { t: "code", lang: "python", title: "the four changes that usually halve it", code: `
 df.info(memory_usage="deep")      # "deep" counts the string objects
                                   # -- without it, object columns are
@@ -210,6 +215,8 @@ pd.concat([df_a, df_b])       # a typo in one column name gives you
     ]},
 
     { t: "h2", n: "04", text: "groupby and merge", id: "groupby" },
+
+    {"kind": "trace", "title": "`groupby` drops NaN keys by default, so the summary does not sum to the total", "caption": "**A column with missing values produces a summary that silently excludes those rows** — and the giveaway is exactly that: the group totals do not add up to the overall total, which nobody checks. **`dropna=False` includes them as their own group.** The merge equivalent is the companion bug: **a left join that unexpectedly grows the row count means the right side was not unique on the key** — so **`validate=\"m:1\"` turns that into an exception rather than a silent duplication of every matched row.**", "left": "operation", "codeW": 170, "vars": ["default behaviour", "the fix"], "steps": [{"code": "groupby on a column with NaN", "state": ["drops those rows silently", "dropna=False"], "tone": "crit"}, {"code": "the giveaway", "state": ["groups do not sum to the total", "and nobody checks"], "changed": [0, 1], "tone": "crit"}, {"code": "a left merge that grows", "state": ["the right side was not unique", "validate='m:1'"], "changed": [0, 1], "tone": "violet"}, {"code": "indicator=True", "state": ["-", "shows which side each row matched"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-15_2-04-2"},
 
     { t: "code", lang: "python", title: "aggregation that stays readable", code: `
 # Named aggregation: explicit output columns, no MultiIndex to flatten.
@@ -279,6 +286,8 @@ orders.merge(refunds, on="id", suffixes=("_order", "_refund"))
     },
 
     { t: "h2", n: "05", text: "When pandas is the wrong tool", id: "limits" },
+
+    {"kind": "trace", "title": "Six situations, and pandas is the right answer to exactly one of them", "caption": "**Under about a gigabyte and exploratory — that is where pandas is genuinely the right tool, and the row is worth stating because the rest of the table reads as a dismissal otherwise.** Two rows are about not moving the data at all: **if it is already in a database, do not fetch it to aggregate it**, and larger-than-memory wants DuckDB over Parquet. And the last is a judgement rather than a size: **in a production pipeline, pandas' looseness is a liability** — silent dtype changes and index alignment are features for exploration and hazards in a job.", "left": "situation", "codeW": 170, "vars": ["reach for"], "steps": [{"code": "under ~1 GB, exploratory", "state": ["pandas - the right tool"], "tone": "good"}, {"code": "1-50 GB on one machine", "state": ["Polars or DuckDB"], "changed": [0], "tone": "good"}, {"code": "already in a database", "state": ["SQL - do not fetch it to aggregate"], "changed": [0], "tone": "violet"}, {"code": "larger than memory", "state": ["DuckDB over Parquet"], "changed": [0], "tone": "good"}, {"code": "a production pipeline", "state": ["Polars or SQL - looseness is a liability"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-15_2-05-3"},
 
     { t: "table",
       head: ["Situation", "Reach for"],

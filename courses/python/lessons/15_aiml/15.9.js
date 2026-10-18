@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Concurrency, bounded", id: "concurrency" },
 
-    {"kind": "flow", "title": "A semaphore bounds concurrency", "caption": "A thousand coroutines may exist, but only ten hold the semaphore at once; the rest wait. The API sees at most ten in-flight requests, which is the number you agreed to.", "cols": 3, "nodes": [{"id": "tasks", "label": "1,000 tasks", "sub": "created at once", "tone": "warn"}, {"id": "sem", "label": "asyncio.Semaphore(10)", "sub": "async with sem:", "tone": "accent"}, {"id": "api", "label": "≤ 10 in flight", "sub": "the rate the API allows", "tone": "good"}], "edges": [["tasks", "sem"], ["sem", "api"]], "t": "diagram", "id": "dg-15_9-01-0"},
+    {"kind": "flow", "title": "A semaphore bounds concurrency", "caption": "A thousand coroutines may exist, but only ten hold the semaphore at once; the rest wait. The API sees at most ten in-flight requests, which is the number you agreed to.", "cols": 3, "nodes": [{"id": "tasks", "label": "1,000 tasks", "sub": "created at once", "tone": "warn"}, {"id": "sem", "label": "asyncio.Semaphore(10)", "sub": "async with sem:", "tone": "accent"}, {"id": "api", "label": "≤ 10 in flight", "sub": "the rate the API allows", "tone": "good"}], "edges": [["tasks", "sem"], ["sem", "api"]], "t": "diagram", "id": "dg-15_9-01-2"},
+
 
 
 
@@ -227,6 +228,8 @@ class AdaptiveLimiter:
 
     { t: "h2", n: "03", text: "Backpressure", id: "backpressure" },
 
+    {"kind": "flow", "title": "Shedding stale work is what breaks the death spiral", "caption": "**Once every queued job is older than its client's timeout, the system is spending 100% of its capacity producing results nobody will read** — and because it is still busy, the queue keeps growing. Which is the spiral, and adding capacity does not break it. **Dropping a job whose deadline has already passed is the only move that recovers**, because it converts wasted work back into throughput. The mechanism is small: **stamp each job with a deadline on arrival, and check it before starting rather than after finishing.**", "cols": 3, "nodes": [{"id": "q", "label": "The queue grows past the timeout", "sub": "every job is already stale", "tone": "crit"}, {"id": "w", "label": "100% of capacity, zero useful output", "sub": "and still busy", "tone": "crit"}, {"id": "a", "label": "Adding capacity does not break it", "sub": "the queue absorbs it", "tone": "crit"}, {"id": "d", "label": "Stamp a deadline on arrival", "sub": "check it BEFORE starting", "tone": "violet"}, {"id": "s", "label": "Shedding converts waste into throughput", "sub": "the only recovery", "tone": "good"}], "edges": [["q", "w"], ["w", "a"], ["a", "d"], ["d", "s"]], "t": "diagram", "id": "dg-15_9-03-0"},
+
     { t: "code", lang: "python", title: "refuse work you cannot do", code: `
 # WITHOUT BACKPRESSURE: accept everything, queue it, and fail later.
 #
@@ -282,6 +285,8 @@ async def worker() -> None:
     },
 
     { t: "h2", n: "04", text: "Caching", id: "caching" },
+
+    {"kind": "trace", "title": "Prompt caching is the highest-value option for most applications", "caption": "**Because a long stable system prompt is the largest part of the request, and ~90% off the cached prefix applies to every call rather than only to repeats.** The exact-match cache saves 100% and helps only on identical input, which in a chat application is almost never. And the semantic cache is the one to be careful with: **100% on *similar* input, at the cost of an embedding call per request and false hits** — so it is trading correctness for cost, which needs a threshold somebody chose deliberately.", "left": "layer", "codeW": 170, "vars": ["saves", "cost"], "steps": [{"code": "exact-match cache", "state": ["100% of a repeated call", "only identical input"], "tone": "good"}, {"code": "provider prompt cache", "state": ["~90% of the cached prefix", "a stable prefix, a short TTL"], "changed": [0, 1], "tone": "violet"}, {"code": "semantic cache", "state": ["100%, on similar input", "an embedding call, and FALSE HITS"], "changed": [0, 1], "tone": "crit"}, {"code": "partial results", "state": ["re-running only what failed", "state to manage"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-15_9-04-1"},
 
     { t: "table",
       head: ["Layer", "Saves", "Cost"],

@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What a model actually is", id: "what" },
 
-    {"kind": "layers", "title": "What a trained model actually is", "caption": "A model artefact is the learned parameters plus the code that interprets them plus the preprocessing that produced its inputs. Save and version all three together, or the loaded model silently disagrees with training.", "items": [{"label": "the parameters", "sub": "weights, trees, coefficients", "tone": "accent"}, {"label": "the preprocessing", "sub": "scaler statistics, vocabularies, encoders", "tone": "warn"}, {"label": "the code version", "sub": "library versions, feature code — pinned", "tone": "good"}, {"label": "the data version and seed", "sub": "what it was trained on", "tone": "violet"}], "t": "diagram", "id": "dg-15_6-01-0"},
+    {"kind": "layers", "title": "What a trained model actually is", "caption": "A model artefact is the learned parameters plus the code that interprets them plus the preprocessing that produced its inputs. Save and version all three together, or the loaded model silently disagrees with training.", "items": [{"label": "the parameters", "sub": "weights, trees, coefficients", "tone": "accent"}, {"label": "the preprocessing", "sub": "scaler statistics, vocabularies, encoders", "tone": "warn"}, {"label": "the code version", "sub": "library versions, feature code — pinned", "tone": "good"}, {"label": "the data version and seed", "sub": "what it was trained on", "tone": "violet"}], "t": "diagram", "id": "dg-15_6-01-2"},
+
 
 
 
@@ -92,6 +93,8 @@ EC.receiveLesson({
     },
 
     { t: "h2", n: "02", text: "Serialisation", id: "serialisation" },
+
+    {"kind": "trace", "title": "Three formats, and the one everybody uses is portable in neither sense", "caption": "**A pickled model needs the same classes and the same library versions to load, and loading it is arbitrary code execution** — which is 7.3's argument applied to the artefact a data scientist hands to a platform team. So it is fine inside one trust boundary and your own infrastructure, **and it is the wrong thing to accept from anywhere else.** ONNX is the answer for serving: **a computation graph that any runtime in any language can load safely** — which also decouples the serving stack from the training stack's versions.", "left": "format", "codeW": 150, "vars": ["portable?", "safe to load?", "use for"], "steps": [{"code": "pickle / joblib", "state": ["NO - same classes, same versions", "NO - code execution", "your own infrastructure"], "tone": "crit"}, {"code": "ONNX", "state": ["yes - any runtime, any language", "yes - a graph", "serving, and cross-language"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "PMML", "state": ["yes", "yes", "legacy enterprise interop"], "changed": [0, 1, 2], "tone": "good"}], "t": "diagram", "id": "dg-15_6-02-0"},
 
     { t: "table",
       head: ["Format", "Portable?", "Safe to load?", "Use for"],
@@ -260,6 +263,8 @@ print(f"{np.mean(scores):.3f} +/- {np.std(scores):.3f}")
     ]},
 
     { t: "h2", n: "04", text: "Versioning data with code", id: "data-versioning" },
+
+    {"kind": "flow", "title": "`git_dirty` is the field people omit and need", "caption": "**A commit sha recorded from a working tree with uncommitted changes describes code that does not exist anywhere** — so the artefact claims reproducibility it does not have, and the discrepancy only surfaces when someone tries to rebuild it months later. Which makes the metadata set short and specific: **the commit sha, whether the tree was dirty, the data version or content hash, the library versions, and the random seed.** And the reason all five travel together: **any one of them missing makes the other four insufficient to reproduce the run.**", "cols": 3, "nodes": [{"id": "s", "label": "The commit sha", "sub": "the obvious field", "tone": "good"}, {"id": "d", "label": "git_dirty", "sub": "the omitted one", "tone": "violet"}, {"id": "w", "label": "Dirty + a sha = code that does not exist", "sub": "a false claim of reproducibility", "tone": "crit"}, {"id": "v", "label": "Plus data hash, library versions, seed", "sub": "five fields", "tone": "good"}, {"id": "a", "label": "Any one missing makes the rest insufficient", "sub": "which is why they travel together", "tone": "violet"}], "edges": [["s", "d"], ["d", "w"], ["w", "v"], ["v", "a"]], "t": "diagram", "id": "dg-15_6-04-1"},
 
     { t: "code", lang: "python", title: "the metadata that makes a result reconstructable", code: `
 @dataclass(frozen=True)

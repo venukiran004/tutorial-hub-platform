@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Load once", id: "loading" },
 
+    {"kind": "flow", "title": "`--preload` loads the model once and shares it copy-on-write", "caption": "**Under gunicorn the model is loaded in the master and inherited by every worker, so four workers cost one model's memory rather than four** — which for anything large is the difference between fitting on the instance and not. The caveat is worth knowing before you enable it: **copy-on-write means memory is shared only while nothing writes to it**, so a model that mutates state per request de-shares its pages and you are back to four copies. And the other half: **load at import or in a lifespan hook, never on the first request**, or the first user pays for it and the health check passes before the model exists.", "cols": 3, "nodes": [{"id": "p", "label": "--preload: load in the master", "sub": "workers inherit it", "tone": "violet"}, {"id": "o", "label": "Four workers, one model's memory", "sub": "copy-on-write", "tone": "good"}, {"id": "w", "label": "Until something writes to it", "sub": "then the pages de-share", "tone": "warn"}, {"id": "f", "label": "And load at import or in lifespan", "sub": "never on the first request", "tone": "good"}, {"id": "h", "label": "Or the health check passes too early", "sub": "and the first user waits", "tone": "crit"}], "edges": [["p", "o"], ["o", "w"], ["p", "f"], ["f", "h"]], "t": "diagram", "id": "dg-15_7-01-0"},
+
     { t: "code", lang: "python", title: "lifespan, and why nothing else will do", code: `
 from contextlib import asynccontextmanager
 
@@ -229,7 +231,8 @@ def predict(f: Features, background: BackgroundTasks) -> Prediction:
 
     { t: "h2", n: "04", text: "Batching", id: "batching" },
 
-    {"kind": "timeline", "title": "Batching requests at inference", "caption": "Predicting one row at a time pays the fixed cost per call; collecting requests for a few milliseconds and predicting the batch amortises it. Latency rises slightly, throughput rises a lot.", "span": 10, "tick": 2, "lanes": [{"label": "one at a time", "tone": "warn", "bars": [[0, 2, "r1"], [2, 4, "r2"], [4, 6, "r3"], [6, 8, "r4"]]}, {"label": "batched, 1 ms", "tone": "good", "bars": [[0, 1, "collect"], [1, 3.2, "predict r1–r4"]]}], "t": "diagram", "id": "dg-15_7-04-0"},
+    {"kind": "timeline", "title": "Batching requests at inference", "caption": "Predicting one row at a time pays the fixed cost per call; collecting requests for a few milliseconds and predicting the batch amortises it. Latency rises slightly, throughput rises a lot.", "span": 10, "tick": 2, "lanes": [{"label": "one at a time", "tone": "warn", "bars": [[0, 2, "r1"], [2, 4, "r2"], [4, 6, "r3"], [6, 8, "r4"]]}, {"label": "batched, 1 ms", "tone": "good", "bars": [[0, 1, "collect"], [1, 3.2, "predict r1–r4"]]}], "t": "diagram", "id": "dg-15_7-04-2"},
+
 
 
 
@@ -333,6 +336,8 @@ class BatchPredictor:
     ]},
 
     { t: "h2", n: "05", text: "The silent failures", id: "failures" },
+
+    {"kind": "trace", "title": "Output drift is the cheapest signal you will ever add", "caption": "**It needs no labels, it moves within hours of an upstream change, and it is a histogram of your own predictions** — which is why it catches the failures that accuracy monitoring cannot, because accuracy needs ground truth that arrives weeks later or never. The four silent failures share one property: **the service returns 200 and a plausible number throughout.** A feature that stopped arriving becomes a default, a renamed category becomes an unknown, **and a model loaded from a stale artefact predicts confidently with last quarter's weights.**", "left": "silent failure", "codeW": 170, "vars": ["what the service returns", "what catches it"], "steps": [{"code": "a feature stopped arriving", "state": ["200, and a plausible number", "null rate, or output drift"], "tone": "crit"}, {"code": "a category was renamed upstream", "state": ["200 - it became 'unknown'", "a cardinality check"], "changed": [0, 1], "tone": "crit"}, {"code": "a stale artefact was deployed", "state": ["200, confidently wrong", "the artefact's recorded version"], "changed": [0, 1], "tone": "crit"}, {"code": "the input distribution moved", "state": ["200", "output drift - hours, no labels"], "changed": [0, 1], "tone": "violet"}, {"code": "accuracy monitoring", "state": ["-", "needs labels, weeks later"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-15_7-05-1"},
 
     { t: "code", lang: "python", title: "monitoring that catches what 500s do not", code: `
 # A model service has THREE health questions, and only the first is
