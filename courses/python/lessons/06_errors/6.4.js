@@ -21,7 +21,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", text: "The model", id: "model",
       sub: "Four objects, and the one relationship people miss" },
 
-    {"kind": "flow", "title": "The logging model", "caption": "A logger emits a record; handlers decide where it goes; formatters decide what it looks like; levels filter at each stage. Loggers form a tree by dotted name, and records propagate to the root.", "cols": 4, "nodes": [{"id": "log", "label": "logger 'app.db'", "sub": "level, propagates to 'app' and root", "tone": "accent"}, {"id": "rec", "label": "LogRecord", "sub": "message, level, extras", "tone": "good"}, {"id": "h", "label": "handlers", "sub": "stream, file, HTTP …", "tone": "warn"}, {"id": "fmt", "label": "formatter", "sub": "text or JSON", "tone": "violet"}], "edges": [["log", "rec"], ["rec", "h"], ["h", "fmt"]], "t": "diagram", "id": "dg-6_4-01-0"},
+    {"kind": "flow", "title": "The logging model", "caption": "A logger emits a record; handlers decide where it goes; formatters decide what it looks like; levels filter at each stage. Loggers form a tree by dotted name, and records propagate to the root.", "cols": 4, "nodes": [{"id": "log", "label": "logger 'app.db'", "sub": "level, propagates to 'app' and root", "tone": "accent"}, {"id": "rec", "label": "LogRecord", "sub": "message, level, extras", "tone": "good"}, {"id": "h", "label": "handlers", "sub": "stream, file, HTTP …", "tone": "warn"}, {"id": "fmt", "label": "formatter", "sub": "text or JSON", "tone": "violet"}], "edges": [["log", "rec"], ["rec", "h"], ["h", "fmt"]], "t": "diagram", "id": "dg-6_4-01-3"},
+
 
 
 
@@ -122,7 +123,8 @@ def main():
 
     { t: "h2", n: "02", text: "Levels that mean something", id: "levels" },
 
-    {"kind": "layers", "title": "Levels that mean something", "caption": "A level is a promise about who needs to act. Set the threshold per environment and the meaning per message.", "items": [{"label": "CRITICAL", "sub": "the process cannot continue", "tone": "crit"}, {"label": "ERROR", "sub": "a request or job failed; someone should look", "tone": "crit"}, {"label": "WARNING", "sub": "unexpected but handled; watch the rate", "tone": "warn"}, {"label": "INFO", "sub": "the normal narrative of the service", "tone": "accent"}, {"label": "DEBUG", "sub": "for you, in development", "tone": "good"}], "t": "diagram", "id": "dg-6_4-02-1"},
+    {"kind": "layers", "title": "Levels that mean something", "caption": "A level is a promise about who needs to act. Set the threshold per environment and the meaning per message.", "items": [{"label": "CRITICAL", "sub": "the process cannot continue", "tone": "crit"}, {"label": "ERROR", "sub": "a request or job failed; someone should look", "tone": "crit"}, {"label": "WARNING", "sub": "unexpected but handled; watch the rate", "tone": "warn"}, {"label": "INFO", "sub": "the normal narrative of the service", "tone": "accent"}, {"label": "DEBUG", "sub": "for you, in development", "tone": "good"}], "t": "diagram", "id": "dg-6_4-02-4"},
+
 
 
 
@@ -202,6 +204,8 @@ log.debug("payload: %s", payload)
 
     { t: "h2", n: "03", text: "Structured output", id: "structured" },
 
+    {"kind": "trace", "title": "Eleven fields in one line, and five of them you added", "caption": "**A structured line is a JSON object rather than a sentence, which is what makes it queryable: `order_id`, `customer_id` and `request_id` are fields you can filter and group by**, not substrings you have to parse out of prose. Five come from the logging framework (**timestamp, level, logger, module, line**), one from `logger.exception` (**the full traceback, as a field**), and the rest are the ones you passed. And the format is the whole argument: **“error processing order 8821” cannot be grouped by customer; this can.**", "left": "field", "codeW": 150, "vars": ["source", "what it buys"], "steps": [{"code": "ts, level, logger, module, line", "state": ["the framework", "filter and route"], "tone": "good"}, {"code": "message", "state": ["your call", "human reading"], "changed": [0, 1], "tone": "good"}, {"code": "order_id, customer_id", "state": ["your extra fields", "group by, and join to data"], "changed": [0, 1], "tone": "violet"}, {"code": "request_id", "state": ["a ContextVar filter", "one request's whole path"], "changed": [0, 1], "tone": "violet"}, {"code": "exception", "state": ["logger.exception", "the traceback as a FIELD"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-6_4-03-0"},
+
     { t: "code", lang: "python", title: "a JSON formatter in twenty lines", code: `
 import json
 import logging
@@ -254,6 +258,8 @@ log.info("done", extra={"ctx": {"module": "billing"}})`},
     ]},
 
     { t: "h2", n: "04", text: "Correlation IDs", id: "correlation" },
+
+    {"kind": "flow", "title": "Passing a request id through every signature is the obvious approach and it is unbearable", "caption": "**In a service handling concurrent requests, interleaved log lines are useless without something tying one request's lines together** — and the obvious fix, threading a `request_id` parameter through every function, touches every signature in the call chain including the ones that do not log. **A filter reading a `ContextVar` does it in one place**: the entry point sets the variable, the filter attaches it to every record, and **no intermediate function knows the id exists.** And `ContextVar` rather than a thread-local **because it follows an `await` across tasks.**", "cols": 3, "nodes": [{"id": "i", "label": "Interleaved lines, no way to group", "sub": "concurrent requests", "tone": "crit"}, {"id": "p", "label": "Pass request_id everywhere", "sub": "every signature in the chain", "tone": "crit"}, {"id": "c", "label": "Set a ContextVar at the entry point", "sub": "once", "tone": "violet"}, {"id": "f", "label": "A filter attaches it to every record", "sub": "in one place", "tone": "good"}, {"id": "a", "label": "And it follows an await", "sub": "which a thread-local does not", "tone": "violet"}], "edges": [["i", "p"], ["p", "c"], ["c", "f"], ["f", "a"]], "t": "diagram", "id": "dg-6_4-04-1"},
 
     { t: "p", text: "In a service handling concurrent requests, interleaved log lines are useless without something tying one request's lines together. Passing a `request_id` through every function signature is the obvious approach and it is unbearable. A **filter reading a `ContextVar`** does it in one place." },
 
@@ -316,6 +322,8 @@ class RedactingFilter(logging.Filter):
     ]},
 
     { t: "h2", n: "05", text: "Configuring an application", id: "config" },
+
+    {"kind": "flow", "title": "One `dictConfig` call, and one default that silences everything", "caption": "**`disable_existing_loggers: False` is essential — the default `True` silences every logger created before the call, which includes all of them if configuration happens after imports.** The deployment answer is shorter than people expect: **in a container, log to stdout and stop thinking about it** — files inside a container die with it, rotation fights the orchestrator, and the platform already collects stdout. And if you must ship from inside the process: **wrap the handler in `QueueHandler` with a `QueueListener`, so the emitting thread never blocks on the network.**", "cols": 3, "nodes": [{"id": "d", "label": "dictConfig: the whole setup in one place", "sub": "formatters, filters, handlers", "tone": "good"}, {"id": "s", "label": "disable_existing_loggers: False", "sub": "the default True silences everything", "tone": "crit"}, {"id": "o", "label": "In a container: log to stdout", "sub": "the platform collects it", "tone": "violet"}, {"id": "f", "label": "Files inside a container die with it", "sub": "and fight the orchestrator", "tone": "crit"}, {"id": "q", "label": "Shipping in-process? QueueHandler", "sub": "so the thread never blocks", "tone": "good"}], "edges": [["d", "s"], ["s", "o"], ["o", "f"], ["f", "q"]], "t": "diagram", "id": "dg-6_4-05-2"},
 
     { t: "code", lang: "python", title: "dictConfig — the whole setup in one place", code: `
 import logging.config

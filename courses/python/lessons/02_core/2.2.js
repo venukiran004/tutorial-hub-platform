@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "The usual explanation — *a tuple is an immutable list* — is technically true and pedagogically misleading. The distinction experienced Python engineers actually use is about **what the positions mean**." },
 
     { t: "table",
@@ -126,6 +127,7 @@ id_, customer, *_ = order   # still unpacks`,
     { t: "h2", n: "02", text: "Sets are hash tables without values", id: "sets" },
 
     {"kind": "flow", "title": "How a set finds an element", "caption": "hash(x) picks a slot; a collision probes onward. Membership is O(1) on average, which is why 'x in s' beats 'x in list' by orders of magnitude on large data — and why elements must be hashable.", "cols": 4, "nodes": [{"id": "x", "label": "x", "sub": "the element"}, {"id": "h", "label": "hash(x)", "sub": "an integer", "tone": "accent"}, {"id": "slot", "label": "slot = hash & mask", "sub": "index into the table", "tone": "good"}, {"id": "cmp", "label": "compare with ==", "sub": "probe on collision", "tone": "warn"}], "edges": [["x", "h"], ["h", "slot"], ["slot", "cmp"]], "t": "diagram", "id": "dg-2_2-02-0"},
+
 
 
 
@@ -268,6 +270,7 @@ print(list(dict.fromkeys(items)))`,
 
 
 
+
     { t: "code", lang: "python", title: "the four operations", code: `
 current = {"read", "write", "delete"}
 required = {"read", "write", "admin"}
@@ -345,6 +348,7 @@ def touches_admin(user_permissions: set[str]) -> bool:
     { t: "h2", n: "04", text: "frozenset", id: "frozenset" },
 
     {"kind": "flow", "title": "It exists because it is hashable, and that is a narrower reason than it looks", "caption": "**A `frozenset` is an immutable set, and because it cannot change it is hashable — which means it can be a dictionary key or an element of another set.** That is the whole reason it exists. The narrowness is worth stating: **if you only need “this set should not be modified”, a plain `set` and a convention costs nothing** — the type earns its place only when something downstream requires hashability, such as **keying a cache on a set of permissions, or deduplicating sets of tags.**", "cols": 3, "nodes": [{"id": "i", "label": "Immutable, so hashable", "sub": "the only real difference", "tone": "accent"}, {"id": "k", "label": "So it can be a dict key", "sub": "or an element of another set", "tone": "good"}, {"id": "u", "label": "Cache keyed on a permission set", "sub": "the real use", "tone": "violet"}, {"id": "d", "label": "Or deduplicating sets of tags", "sub": "a set of sets", "tone": "violet"}, {"id": "n", "label": "Not for 'do not modify this'", "sub": "a set and a convention is free", "tone": "warn"}], "edges": [["i", "k"], ["k", "u"], ["k", "d"], ["i", "n"]], "t": "diagram", "id": "dg-2_2-04-3"},
+
 
 
 

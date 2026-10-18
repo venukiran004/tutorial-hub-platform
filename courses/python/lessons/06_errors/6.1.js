@@ -21,7 +21,8 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "What raising actually does", id: "raising" },
 
-    {"kind": "layers", "title": "raise unwinds the stack until a handler matches", "caption": "Each frame is checked for a try/except that matches the exception's type; frames without one are discarded on the way up. If nothing matches, the interpreter prints the traceback and exits.", "taper": true, "items": [{"label": "parse()  raises ValueError", "sub": "no handler here", "tone": "crit"}, {"label": "load()  no matching except", "sub": "frame discarded", "tone": "warn"}, {"label": "main()  except ValueError:", "sub": "caught here — execution continues after the try", "tone": "good"}, {"label": "the interpreter", "sub": "would print the traceback if nothing had caught it"}], "t": "diagram", "id": "dg-6_1-01-0"},
+    {"kind": "layers", "title": "raise unwinds the stack until a handler matches", "caption": "Each frame is checked for a try/except that matches the exception's type; frames without one are discarded on the way up. If nothing matches, the interpreter prints the traceback and exits.", "taper": true, "items": [{"label": "parse()  raises ValueError", "sub": "no handler here", "tone": "crit"}, {"label": "load()  no matching except", "sub": "frame discarded", "tone": "warn"}, {"label": "main()  except ValueError:", "sub": "caught here — execution continues after the try", "tone": "good"}, {"label": "the interpreter", "sub": "would print the traceback if nothing had caught it"}], "t": "diagram", "id": "dg-6_1-01-1"},
+
 
 
 
@@ -127,7 +128,8 @@ main()
     { t: "h2", n: "02", text: "The hierarchy is an API", id: "hierarchy",
       sub: "An except clause is an isinstance check, so every base class in the tree is a catch group somebody designed for you." },
 
-    {"kind": "tree", "title": "The hierarchy is an API", "caption": "Catching a class catches every subclass. except Exception catches almost everything; except BaseException also catches KeyboardInterrupt and SystemExit, which is almost never what you want.", "root": {"label": "BaseException", "tone": "crit", "children": [{"label": "SystemExit"}, {"label": "KeyboardInterrupt"}, {"label": "Exception", "tone": "accent", "children": [{"label": "ValueError", "tone": "good", "children": [{"label": "UnicodeError"}]}, {"label": "LookupError", "children": [{"label": "KeyError"}, {"label": "IndexError"}]}, {"label": "OSError", "tone": "warn", "children": [{"label": "FileNotFoundError"}]}]}]}, "t": "diagram", "id": "dg-6_1-02-1"},
+    {"kind": "tree", "title": "The hierarchy is an API", "caption": "Catching a class catches every subclass. except Exception catches almost everything; except BaseException also catches KeyboardInterrupt and SystemExit, which is almost never what you want.", "root": {"label": "BaseException", "tone": "crit", "children": [{"label": "SystemExit"}, {"label": "KeyboardInterrupt"}, {"label": "Exception", "tone": "accent", "children": [{"label": "ValueError", "tone": "good", "children": [{"label": "UnicodeError"}]}, {"label": "LookupError", "children": [{"label": "KeyError"}, {"label": "IndexError"}]}, {"label": "OSError", "tone": "warn", "children": [{"label": "FileNotFoundError"}]}]}]}, "t": "diagram", "id": "dg-6_1-02-2"},
+
 
 
 
@@ -260,6 +262,8 @@ no permission`,
 
     /* ================================================================== */
     { t: "h2", n: "03", text: "Which clause wins, and what happens to the name", id: "matching" },
+
+    {"kind": "trace", "title": "The first matching clause wins, and the name is gone after the block", "caption": "**Clauses are tried top to bottom and the first match wins — so a broad clause above a narrow one makes the narrow one dead code**, and nothing warns you. The second half is the part that bites: **`as err` is deleted at the end of the `except` block, so reading `err` afterwards raises `NameError`.** Python does that deliberately, **to break the reference cycle between the exception and the frame that caught it** — which means anything you still need must be copied out inside the block.", "left": "what you read", "codeW": 180, "vars": ["value"], "steps": [{"code": "type(err).__name__", "state": ["KeyError"], "tone": "good"}, {"code": "err.args", "state": ["('customer',)"], "changed": [0], "tone": "good"}, {"code": "err.args[0]", "state": ["customer"], "changed": [0], "tone": "good"}, {"code": "repr(err)", "state": ["KeyError('customer')"], "changed": [0], "tone": "good"}, {"code": "err, after the block", "state": ["NameError - it is deleted"], "changed": [0], "tone": "crit", "note": "breaks a reference cycle"}], "t": "diagram", "id": "dg-6_1-03-0"},
 
     { t: "code", lang: "python", title: "first match wins, top to bottom", code: `
 def classify(fn):

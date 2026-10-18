@@ -238,6 +238,7 @@ def total(raw: str) -> Decimal:
 
 
 
+
     { t: "code", lang: "toml", title: ".pre-commit-config.yaml", code: `
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit

@@ -112,6 +112,7 @@ f(some_object)           # incref for the argument, decref on return
 
 
 
+
     { t: "table",
       head: ["Situation", "Released?", "Consequence"],
       rows: [
