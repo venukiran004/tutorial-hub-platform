@@ -23,6 +23,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "One path object, nine answers, and no string slicing", "caption": "**Treat a path as a string and you take responsibility for its structure — separators, duplicates, trailing slashes, platform differences — and the wrongness usually only appears on the other operating system.** `Path` models the structure instead: **`/` joins with the correct separator, and the parts you would otherwise parse out are attributes.** The two rows worth noticing are `suffix` and `suffixes`: **`.gz` alone, or `['.tar', '.gz']` for the pair** — which is the distinction a `rsplit(\".\")` gets wrong on `orders.tar.gz`.", "left": "what you read", "codeW": 150, "vars": ["value"], "steps": [{"code": "base / '2024-06' / 'orders.tar.gz'", "state": ["/srv/app/data/2024-06/orders.tar.gz"], "tone": "good"}, {"code": "p.name / p.stem", "state": ["orders.tar.gz / orders.tar"], "changed": [0], "tone": "good"}, {"code": "p.suffix / p.suffixes", "state": [".gz / ['.tar', '.gz']"], "changed": [0], "tone": "violet"}, {"code": "p.parent / p.parts", "state": ["the directory / a tuple of components"], "changed": [0], "tone": "good"}, {"code": "p.with_suffix('.json')", "state": ["...2024-06/orders.json"], "changed": [0], "tone": "good"}, {"code": "p.with_name('audit.csv')", "state": ["...2024-06/audit.csv"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-7_1-01-0"},
 
+
+
     { t: "p", text: "Filesystem paths have structure: a root, a sequence of components, a stem and a suffix. Treat one as a string and you take responsibility for that structure yourself — separators, duplicates, trailing slashes, platform differences. You will get it wrong, and the wrongness usually only appears on the other operating system." },
 
     { t: "code", lang: "python", title: "four ways string paths go wrong", code: `
@@ -127,6 +129,8 @@ safe_join(Path("/srv/app/uploads"), "../../etc/passwd")
       sub: "A file on disk contains bytes. A Python `str` contains code points. Something has to convert." },
 
     {"kind": "flow", "title": "What text mode does", "caption": "open(p) in text mode decodes bytes with an encoding and translates newlines; 'rb' gives you the bytes untouched. Name the encoding every time, because the default depends on the machine.", "cols": 3, "nodes": [{"id": "disk", "label": "bytes on disk", "sub": "b'caf\\xc3\\xa9\\r\\n'", "tone": "warn"}, {"id": "dec", "label": "decode + newline translation", "sub": "encoding='utf-8', newline=None", "tone": "accent"}, {"id": "str", "label": "str in your program", "sub": "'café\\n'", "tone": "good"}], "edges": [["disk", "dec", "read"], ["dec", "str"]], "t": "diagram", "id": "dg-7_1-02-2"},
+
+
 
 
 
@@ -264,6 +268,8 @@ with log.open("a", encoding="utf-8") as f:
 
     {"kind": "trace", "title": "The same code reads the same file differently on two machines", "caption": "**Until Python 3.15, `open()` without `encoding` uses whatever the operating system says the local default is — UTF-8 on modern Linux and macOS, cp1252 on a Western Windows install, cp932 on a Japanese one.** Which is the mechanism behind **the single most common cross-platform Python bug**, and the traceback shows its shape: `'charmap' codec can't decode byte 0x9d`. The three arguments to know: **`utf-8-sig` for anything out of Excel, or your first column name becomes `\\ufeffid`; `surrogateescape` to round-trip undecodable filenames; and `newline=\"\"`, which the `csv` module requires.**", "left": "argument", "codeW": 170, "vars": ["what it does", "when"], "steps": [{"code": "no encoding=", "state": ["the OS locale decides", "the cross-platform bug"], "tone": "crit"}, {"code": "encoding='utf-8'", "state": ["rejects invalid bytes", "anything you control"], "changed": [0, 1], "tone": "good"}, {"code": "encoding='utf-8-sig'", "state": ["strips a leading BOM", "anything out of Excel"], "changed": [0, 1], "tone": "violet"}, {"code": "errors='surrogateescape'", "state": ["round-trips bad bytes", "POSIX filenames"], "changed": [0, 1], "tone": "accent"}, {"code": "newline=''", "state": ["no newline translation", "required by csv"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-7_1-03-1"},
 
+
+
     { t: "p", text: "Until Python 3.15, `open()` without an `encoding` argument uses `locale.getencoding()` — whatever the operating system says the local default is. That is UTF-8 on modern Linux and macOS, and it is **cp1252** on a Western Windows install and **cp932** on a Japanese one." },
 
     { t: "p", text: "So the same code reads the same file differently on two machines. This is the mechanism behind the single most common cross-platform Python bug." },
@@ -319,6 +325,8 @@ Path("out.txt").read_text()
     { t: "h2", n: "04", text: "Writing without losing the old file", id: "atomic-writes" },
 
     {"kind": "steps", "title": "Atomic write: temp file, then rename", "caption": "Writing straight into the target leaves a half-written file if the process dies. Write to a temporary file in the same directory, fsync, then rename — the rename is atomic on the same filesystem.", "items": [{"label": "write to target.tmp", "desc": "same directory, so the rename cannot cross filesystems", "tone": "accent"}, {"label": "flush and os.fsync()", "desc": "the bytes are on disk, not in a cache", "tone": "warn"}, {"label": "os.replace('target.tmp', 'target')", "desc": "atomic: readers see the old file or the new one, never a partial", "tone": "good"}], "t": "diagram", "id": "dg-7_1-04-3"},
+
+
 
 
 

@@ -25,6 +25,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "When an engineer says \"this isn't very Pythonic\", they usually mean one of two very different things, and the review stalls because nobody separates them." },
 
     { t: "dl", items: [
@@ -44,6 +46,8 @@ EC.receiveLesson({
       sub: "Each one names a cost. If a change does not satisfy one of them, it is a preference." },
 
     {"kind": "compare", "title": "Four tests you can apply in review", "caption": "'Pythonic' is a judgement, but each of these is a yes/no question a reviewer can ask of a line of code.", "columns": [{"title": "Does it use the protocol?", "tone": "accent", "items": ["for x in xs, not indices", "with, not try/finally", "len(), not .size()"]}, {"title": "Is the intent on the line?", "tone": "good", "items": ["names say why", "no clever one-liners", "errors say what failed"]}, {"title": "Does the stdlib do it?", "tone": "warn", "items": ["Counter, not a dict loop", "pathlib, not os.path", "enumerate, not range(len)"]}, {"title": "Would a stranger predict it?", "tone": "violet", "items": ["no hidden mutation", "no surprising defaults", "EAFP where it is safe"]}], "t": "diagram", "id": "dg-5_1-02-3"},
+
+
 
 
 
@@ -293,6 +297,8 @@ totals = {
 
 
 
+
+
     { t: "p", text: "`import this` prints nineteen aphorisms by Tim Peters. It is half joke, and the half that is not is genuinely load-bearing — but only if you notice that several of the lines contradict each other on purpose." },
 
     { t: "table",
@@ -323,6 +329,8 @@ totals = {
     { t: "h2", n: "05", text: "Idiom as a shared vocabulary", id: "vocabulary" },
 
     {"kind": "flow", "title": "Idiom is compression, and the thing it compresses is attention", "caption": "**When you write `with open(path) as f:` a Python reader spends no attention on it — they know the file closes on every exit path, including the exception path, without reading further.** That is **one unit of attention freed for the part of the function that is actually specific to you.** Which is the deeper argument for idiom and the reason it is not style: **a non-idiomatic equivalent is not merely unusual, it costs every future reader a careful read of something that could have been skipped.**", "cols": 3, "nodes": [{"id": "w", "label": "with open(path) as f:", "sub": "a reader spends no attention", "tone": "good"}, {"id": "k", "label": "They know it closes on every path", "sub": "including the exception path", "tone": "good"}, {"id": "f", "label": "So attention is freed", "sub": "for the part that is yours", "tone": "violet"}, {"id": "n", "label": "A hand-rolled equivalent", "sub": "needs a careful read", "tone": "crit"}, {"id": "c", "label": "Which is a cost, not a preference", "sub": "paid by every future reader", "tone": "crit"}], "edges": [["w", "k"], ["k", "f"], ["n", "c"], ["f", "c"]], "t": "diagram", "id": "dg-5_1-05-2"},
+
+
 
 
 

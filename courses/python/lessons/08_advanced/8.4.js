@@ -130,6 +130,9 @@ isinstance(Wrong(), Reader)            # True. Only the NAME is checked.`,
 
     { t: "h2", n: "02", text: "Generics", id: "generics" },
 
+    {"kind": "trace", "title": "A type variable is what makes this different from Any", "caption": "**`first(list[int])` returns `int | None`, not `Any` — the relationship between the argument and the return is preserved, which is the whole point and the thing `Any` throws away.** The 3.12 syntax puts the variable in the signature rather than declaring it separately. And the bound-against-constrained distinction matters more than it looks: **a bound accepts subclasses, constraints do not — `T: (int, Decimal)` means T is `int` *or* `Decimal` and never a union of them**, which is exactly what you want for a numeric function that must not mix them.", "left": "declaration", "codeW": 170, "vars": ["meaning", "accepts"], "steps": [{"code": "first[T]: list[T] -> T | None", "state": ["the return follows the argument", "any element type"], "tone": "violet"}, {"code": "with Any instead", "state": ["the relationship is lost", "and checks nothing after"], "changed": [0, 1], "tone": "crit"}, {"code": "T: Number  (a bound)", "state": ["T is Number or a subclass", "subclasses too"], "changed": [0, 1], "tone": "good"}, {"code": "T: (int, Decimal)  (constraints)", "state": ["T is int OR Decimal", "never a union, no subclasses"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-8_4-02-0"},
+
+
     { t: "code", lang: "python", title: "the 3.12 syntax, and what it replaced", code: `
 # Python 3.12+
 def first[T](items: Sequence[T]) -> T | None:
@@ -194,7 +197,9 @@ add(1, Decimal(2))           # mypy: cannot infer -- and correctly so,
 
     { t: "h2", n: "03", text: "Variance", id: "variance" },
 
-    {"kind": "compare", "title": "Variance, on list and Sequence", "caption": "list is invariant: a list[Dog] is not a list[Animal], because the callee could append a Cat. Sequence is covariant: read-only, so the substitution is safe. Callable is contravariant in its arguments.", "columns": [{"title": "invariant · list[T]", "tone": "crit", "items": ["list[Dog] ≠ list[Animal]", "mutable — writes could break it"]}, {"title": "covariant · Sequence[T]", "tone": "good", "items": ["Sequence[Dog] ≤ Sequence[Animal]", "read-only, so safe"]}, {"title": "contravariant · Callable[[T], R]", "tone": "accent", "items": ["a handler of Animal accepts Dog", "arguments flip the direction"]}], "t": "diagram", "id": "dg-8_4-03-0"},
+    {"kind": "compare", "title": "Variance, on list and Sequence", "caption": "list is invariant: a list[Dog] is not a list[Animal], because the callee could append a Cat. Sequence is covariant: read-only, so the substitution is safe. Callable is contravariant in its arguments.", "columns": [{"title": "invariant · list[T]", "tone": "crit", "items": ["list[Dog] ≠ list[Animal]", "mutable — writes could break it"]}, {"title": "covariant · Sequence[T]", "tone": "good", "items": ["Sequence[Dog] ≤ Sequence[Animal]", "read-only, so safe"]}, {"title": "contravariant · Callable[[T], R]", "tone": "accent", "items": ["a handler of Animal accepts Dog", "arguments flip the direction"]}], "t": "diagram", "id": "dg-8_4-03-3"},
+
+
 
 
 
@@ -257,6 +262,9 @@ class BoxOld(Generic[T_co]):
 
     { t: "h2", n: "04", text: "TypedDict", id: "typeddict" },
 
+    {"kind": "trace", "title": "A plain dict at runtime, with keys the checker can verify", "caption": "**A `TypedDict` is a plain `dict` at runtime — no class, no validation, no cost — and it exists purely so the checker can verify keys and value types on data you did not construct**, which is the JSON-from-an-API case exactly. Which also states its limit: **nothing checks the data actually has those keys, so it is a claim about your code rather than about the payload.** The three-way choice: **TypedDict for a dict you receive, a dataclass for one you construct, and Pydantic when you need the validation to actually run.**", "left": "option", "codeW": 160, "vars": ["runtime cost", "validates?", "for"], "steps": [{"code": "TypedDict", "state": ["none - it is a dict", "no", "data you did NOT construct"], "tone": "violet"}, {"code": "dataclass", "state": ["a class", "no", "data you construct"], "changed": [0, 2], "tone": "good"}, {"code": "Pydantic model", "state": ["a class + parsing", "YES, at runtime", "an external boundary"], "changed": [0, 1, 2], "tone": "good"}, {"code": "so a TypedDict is", "state": ["-", "-", "a claim about your code"], "changed": [0, 1, 2], "tone": "warn"}], "t": "diagram", "id": "dg-8_4-04-1"},
+
+
     { t: "code", lang: "python", title: "a shape for data you did not construct", code: `
 from typing import NotRequired, ReadOnly, TypedDict
 
@@ -299,6 +307,9 @@ o["total"] = "free"                  # mypy: expected int
     ]},
 
     { t: "h2", n: "05", text: "Self and generic self", id: "self" },
+
+    {"kind": "flow", "title": "`Self` is the type that follows subclasses", "caption": "**A method annotated `-> Self` returns the subclass's type rather than the base's — which is what a fluent interface, a `from_row` classmethod, or a `copy()` method needs.** Before 3.11 this required a bound `TypeVar` on the method, declared separately and repeated at every use; **`Self` says it in one word.** The failure it prevents is specific and common: **a builder method annotated `-> Builder` makes `SubBuilder().with_x().with_y()` a type error on the second call**, because the first already narrowed the type to the base.", "cols": 3, "nodes": [{"id": "s", "label": "-> Self", "sub": "returns the subclass's type", "tone": "violet"}, {"id": "u", "label": "For fluent chains, from_row, copy()", "sub": "the three real uses", "tone": "good"}, {"id": "b", "label": "-> Builder instead", "sub": "narrows to the base", "tone": "crit"}, {"id": "f", "label": "So the second chained call fails", "sub": "SubBuilder().with_x().with_y()", "tone": "crit"}, {"id": "o", "label": "Before 3.11: a bound TypeVar, repeated", "sub": "Self says it in one word", "tone": "accent"}], "edges": [["s", "u"], ["b", "f"], ["o", "s"]], "t": "diagram", "id": "dg-8_4-05-2"},
+
 
     { t: "code", lang: "python", title: "the type that follows subclasses", code: `
 from typing import Self

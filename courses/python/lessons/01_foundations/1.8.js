@@ -46,6 +46,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "viz",
       title: "Where a conversion can silently change the value",
       caption: "Widening conversions keep the value; narrowing ones may not. `int(2.9)` truncates rather than rounding, and `float(large_int)` loses precision above 2⁵³.",
@@ -141,6 +143,8 @@ Decimal("1.5") + 0.1        # TypeError -- Decimal refuses to mix with float`,
 
 
 
+
+
     { t: "table",
       head: ["Call", "Does", "Watch for"],
       rows: [
@@ -210,6 +214,8 @@ ValueError: quantity must be a whole number, got '12.5'`,
     { t: "h2", n: "03", text: "type() versus isinstance()", id: "type-vs-isinstance" },
 
     {"kind": "tree", "title": "isinstance respects the hierarchy; type() does not", "caption": "type(True) is bool, so type(True) == int is False — but isinstance(True, int) is True because bool inherits from int. Prefer isinstance, and prefer duck typing to either.", "root": {"label": "int", "tone": "accent", "children": [{"label": "bool", "tone": "good", "sub": "isinstance(True, int) → True"}]}, "t": "diagram", "id": "dg-1_8-03-1"},
+
+
 
 
 
@@ -333,6 +339,8 @@ sending to x`},
     { t: "h2", n: "05", text: "Type hints, briefly", id: "type-hints" },
 
     {"kind": "flow", "title": "The annotated function ran and returned 15", "caption": "**Type hints let you write down what a function expects, and Python ignores them during execution — `repeat(5, 3)` on a function annotated `(str, int) -> str` runs and returns `15`.** So what they do is real and entirely static: **document the contract, drive editor autocomplete and refactoring, and let a checker such as mypy find mismatches without running the code.** What closes the gap is two tools for two different problems: **mypy in CI for your own code, and Pydantic at the boundary where data arrives from outside and runtime validation genuinely is required.**", "cols": 3, "nodes": [{"id": "d", "label": "They document the contract", "sub": "for readers and for the editor", "tone": "good"}, {"id": "m", "label": "And mypy checks it without running", "sub": "statically", "tone": "good"}, {"id": "n", "label": "But Python ignores them at runtime", "sub": "repeat(5, 3) returns 15", "tone": "crit"}, {"id": "c", "label": "So: mypy in CI for your own code", "sub": "14.4", "tone": "violet"}, {"id": "p", "label": "And Pydantic at the boundary", "sub": "12.3 - where validation is required", "tone": "violet"}], "edges": [["d", "m"], ["m", "n"], ["n", "c"], ["n", "p"]], "t": "diagram", "id": "dg-1_8-05-3"},
+
+
 
 
 

@@ -43,6 +43,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "viz",
       title: "The four steps, and where each failure comes from",
       caption: "The cache is the step people forget. A module executes exactly once per process, so import-time side effects happen once — and a module imported under two different names is two independent copies with separate state.",
@@ -167,6 +169,8 @@ def get_connection():
 
 
 
+
+
     { t: "code", lang: "python", title: "where the first entry comes from", code: `
 import sys
 print(sys.path)
@@ -215,6 +219,8 @@ random.randint(1, 10)
 
     {"kind": "flow", "title": "An absolute import says where something comes from without counting dots", "caption": "**Absolute imports say where something comes from without the reader counting dots, and they survive a file being moved** — which is why PEP 8 recommends them. Explicit relative imports earn their place in one case: **inside a package that may be vendored or renamed, where `from .models import Order` keeps working after the package is re-rooted.** The form to avoid entirely is the implicit relative import, **which Python 3 removed** — and the reason it was removed is that `import models` inside a package was ambiguous with a top-level `models`.", "cols": 3, "nodes": [{"id": "a", "label": "from acme.billing.models import Order", "sub": "says where it comes from", "tone": "good"}, {"id": "m", "label": "And survives the file being moved", "sub": "PEP 8's recommendation", "tone": "good"}, {"id": "r", "label": "from .models import Order", "sub": "for a vendorable package", "tone": "accent"}, {"id": "v", "label": "Keeps working when re-rooted", "sub": "the one real case", "tone": "accent"}, {"id": "i", "label": "import models - removed in Python 3", "sub": "it was ambiguous", "tone": "crit"}], "edges": [["a", "m"], ["r", "v"], ["m", "i"], ["v", "i"]], "t": "diagram", "id": "dg-7_4-03-0"},
 
+
+
     { t: "code", lang: "python", title: "prefer absolute", code: `
 myapp/
   __init__.py
@@ -245,6 +251,8 @@ from models.order import Order                # WRONG: implicit relative,
     { t: "h2", n: "04", text: "Circular imports", id: "circular" },
 
     {"kind": "cycle", "title": "A circular import", "caption": "a imports b at the top; b imports a at the top; when b runs, a is in sys.modules but half-executed, so from a import thing fails with ImportError. Move the import inside the function, or move the shared thing to a third module.", "nodes": [{"label": "a.py starts", "sub": "registered, not finished", "tone": "accent"}, {"label": "import b", "sub": "b starts executing", "tone": "warn"}, {"label": "from a import thing", "sub": "a is only half done", "tone": "crit"}, {"label": "ImportError", "sub": "cannot import name 'thing'", "tone": "crit"}], "t": "diagram", "id": "dg-7_4-04-2"},
+
+
 
 
 

@@ -23,6 +23,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Two rows that split into five, three and two fields, none of them right", "caption": "**CSV looks like a format you can parse in one line and it is not: a field may be quoted, a quoted field may contain a comma, a newline, or a quote escaped by doubling it.** The naive split produces `['1001', '\"Acme', ' Inc.\"', '', '49.99']` — **one record become five fields with stray quotes** — and the second record splits across two lines because a quoted field contained a newline. `DictReader` gets all four cases right: **`'Acme, Inc.'`, `'O\"Brien Ltd'`, and a notes field containing an actual newline.**", "left": "parser", "codeW": 170, "vars": ["row 1", "row 2"], "steps": [{"code": "line.split(',')", "state": ["5 fields, stray quotes", "split across two lines"], "tone": "crit"}, {"code": "csv.DictReader", "state": ["customer='Acme, Inc.'", "notes has a real newline"], "changed": [0, 1], "tone": "good"}, {"code": "and the doubled quote", "state": ["-", "'O\"Brien Ltd', unescaped"], "changed": [1], "tone": "violet"}], "t": "diagram", "id": "dg-7_2-01-0"},
 
+
+
     { t: "p", text: "CSV looks like a format you can parse in one line, and it is not. A field may be quoted, a quoted field may contain a comma, a quoted field may contain a newline, and a quoted field may contain a quote — escaped by doubling it." },
 
     { t: "code", lang: "python", title: "a perfectly ordinary CSV", code: `
@@ -192,6 +194,8 @@ ValueError: could not convert string to float: ''
     { t: "h2", n: "03", text: "JSON's type map, and what falls off it", id: "json-types" },
 
     {"kind": "matrix", "title": "JSON's type map", "caption": "JSON has six types; Python has more. Everything that is not in the table needs a default= encoder on the way out and a conversion on the way in — datetimes, Decimals, sets and dataclasses included.", "rows": ["dict", "list / tuple", "str", "int / float", "True / False", "None", "datetime, Decimal, set…"], "cols": ["JSON"], "cells": [[{"text": "object", "tone": "good"}], [{"text": "array (tuple → list)", "tone": "good"}], [{"text": "string", "tone": "good"}], [{"text": "number", "tone": "good"}], [{"text": "true / false", "tone": "good"}], [{"text": "null", "tone": "good"}], [{"text": "TypeError — needs default=", "tone": "crit"}]], "t": "diagram", "id": "dg-7_2-03-2"},
+
+
 
 
 
@@ -399,6 +403,8 @@ print(json.dumps(payload, default=encode_extra, allow_nan=False))
     { t: "h2", n: "04", text: "Streaming: JSON Lines", id: "ndjson" },
 
     {"kind": "flow", "title": "A JSON array is only valid once its closing bracket has been read", "caption": "**`json.load(f)` builds the entire document before returning — there is no partial parse and no streaming mode, because a JSON array is only valid once its closing bracket arrives.** So a 4 GB array costs 4 GB of file **plus the considerably larger in-memory object graph.** **JSON Lines removes the problem without a new library: one complete JSON object per line, no enclosing array, no commas between records** — so every line is independently parseable and the file streams in constant memory, **and a truncated file loses one record rather than all of them.**", "cols": 3, "nodes": [{"id": "a", "label": "A JSON array needs its closing bracket", "sub": "to be valid at all", "tone": "accent"}, {"id": "n", "label": "So there is no streaming parse", "sub": "4 GB file, a larger object graph", "tone": "crit"}, {"id": "l", "label": "JSON Lines: one object per line", "sub": "no array, no commas", "tone": "violet"}, {"id": "s", "label": "Every line parses independently", "sub": "constant memory", "tone": "good"}, {"id": "t", "label": "And a truncation loses one record", "sub": "not the whole file", "tone": "good"}], "edges": [["a", "n"], ["n", "l"], ["l", "s"], ["s", "t"]], "t": "diagram", "id": "dg-7_2-04-1"},
+
+
 
     { t: "p", text: "`json.load(f)` builds the entire document as Python objects before returning. There is no partial parse and no streaming mode, because a JSON array is only valid once its closing bracket has been read. A 4 GB array of records therefore costs you 4 GB of file plus the considerably larger in-memory object graph — a dict of five short keys costs roughly 400 bytes, so ten million of them is 4 GB of RAM before you have processed anything." },
 

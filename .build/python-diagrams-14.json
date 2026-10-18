@@ -1,0 +1,1186 @@
+{
+ "8.1": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "The delegating generator gets the sub-generator's return value",
+    "caption": "**`yield from sub` yields everything `sub` produces and *also* evaluates to `sub`'s return value** — so `produced = yield from counted(...)` gives `produced 3 items`, which a `for` loop cannot express. The two-way forwarding is the other half: **`send` and `throw` reach the sub-generator unchanged**, so a delegating generator is transparent to its caller rather than a wrapper around it. **Which is why it is a statement rather than sugar for a loop** — the loop version is equivalent only for plain one-way iteration.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "y",
+      "label": "yield from sub",
+      "sub": "yields everything it produces",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "AND evaluates to its return value",
+      "sub": "produced 3 items",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "send and throw pass through",
+      "sub": "unchanged",
+      "tone": "violet"
+     },
+     {
+      "id": "t",
+      "label": "So the delegate is transparent",
+      "sub": "not a wrapper",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "A for loop does neither",
+      "sub": "equivalent for plain iteration only",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "y",
+      "r"
+     ],
+     [
+      "r",
+      "s"
+     ],
+     [
+      "s",
+      "t"
+     ],
+     [
+      "t",
+      "l"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "trace",
+    "title": "Seven problems, and a pipeline is the right shape for two of them",
+    "caption": "**Transform-and-filter is the shape exactly, and aggregation is fine at the end because the final consumer collects while the stages stay lazy.** The five wrong rows share one cause: **a generator is one pass, single-threaded, with no length and no index.** The two worth remembering are the last: **parallelising across cores is impossible by construction**, and **fanning out to several consumers fails silently — the first drains it and the second gets nothing**, which looks like a logic bug rather than an exhausted iterator.",
+    "left": "problem",
+    "codeW": 170,
+    "vars": [
+     "pipelines are",
+     "because"
+    ],
+    "steps": [
+     {
+      "code": "transform and filter a stream",
+      "state": [
+       "right",
+       "that is the shape"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "aggregate the whole stream",
+      "state": [
+       "fine, at the end",
+       "the consumer collects"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "need the data twice",
+      "state": [
+       "wrong",
+       "tee buffers everything"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "sort, or group unsorted data",
+      "state": [
+       "wrong",
+       "needs the whole input anyway"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "parallelise across cores",
+      "state": [
+       "wrong",
+       "single-threaded by construction"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "fan out to several consumers",
+      "state": [
+       "wrong",
+       "the first drains it"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  }
+ ],
+ "8.2": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Nothing special is needed for methods — `*args` absorbs `self`",
+    "caption": "**A function decorator works unchanged on a method, because `*args` absorbs `self` like any other positional argument.** What needs care is **ordering when another descriptor is involved: `classmethod`, `staticmethod` and `property` must be the *outermost* decorator**, because they produce descriptor objects rather than functions — and a plain decorator applied on top receives a descriptor and tries to call it. **Which fails at decoration time if you are lucky and at the first call if you are not.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "f",
+      "label": "A function decorator works as-is",
+      "sub": "*args absorbs self",
+      "tone": "good"
+     },
+     {
+      "id": "d",
+      "label": "classmethod / staticmethod / property",
+      "sub": "produce DESCRIPTORS, not functions",
+      "tone": "accent"
+     },
+     {
+      "id": "o",
+      "label": "So they must be outermost",
+      "sub": "listed first",
+      "tone": "violet"
+     },
+     {
+      "id": "w",
+      "label": "Wrong order: your decorator gets a descriptor",
+      "sub": "and tries to call it",
+      "tone": "crit"
+     },
+     {
+      "id": "l",
+      "label": "Fails at decoration if you are lucky",
+      "sub": "at the first call if not",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "f",
+      "d"
+     ],
+     [
+      "d",
+      "o"
+     ],
+     [
+      "o",
+      "w"
+     ],
+     [
+      "w",
+      "l"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "A class decorator must return a class, and forgetting the return replaces yours with None",
+    "caption": "**`@dataclass`, `@functools.total_ordering` and `@runtime_checkable` are all class decorators — the same substitution as a function decorator, applied to a class.** The failure mode is blunt: **they must return a class, and forgetting the `return` replaces your class with `None`**, so the error is a `TypeError: 'NoneType' object is not callable` at the first instantiation, far from the decorator. And the choice against the alternative: **`__init_subclass__` runs for every subclass automatically, where a decorator has to be applied to each one.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "The same substitution, on a class",
+      "sub": "dataclass, total_ordering",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "It MUST return a class",
+      "sub": "usually the same one",
+      "tone": "violet"
+     },
+     {
+      "id": "n",
+      "label": "Forget the return -> your class is None",
+      "sub": "TypeError at instantiation",
+      "tone": "crit"
+     },
+     {
+      "id": "i",
+      "label": "__init_subclass__ is automatic",
+      "sub": "for every subclass",
+      "tone": "good"
+     },
+     {
+      "id": "d",
+      "label": "A decorator must be applied to each",
+      "sub": "which is the trade",
+      "tone": "accent"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "r"
+     ],
+     [
+      "r",
+      "n"
+     ],
+     [
+      "i",
+      "d"
+     ],
+     [
+      "n",
+      "d"
+     ]
+    ]
+   }
+  }
+ ],
+ "8.3": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Eight precision upgrades, and the two middle rows are a promise rather than a type",
+    "caption": "**`Sequence[str]` rather than `list[str]` in a parameter accepts tuples and other sequences, and documents that you will not mutate it** — and `Mapping` does the same for a dict. Then the direction reverses for returns: **be specific, and give callers everything you actually have — `-> list[str]`, not `-> Sequence[str]`.** The rule behind both: **loose on the way in, precise on the way out.** And the first row is the one that silently checks nothing: **a bare `list` is `list[Any]`.**",
+    "left": "instead of",
+    "codeW": 150,
+    "vars": [
+     "write",
+     "because"
+    ],
+    "steps": [
+     {
+      "code": "list (bare)",
+      "state": [
+       "list[str]",
+       "bare is list[Any] - checks nothing"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "param: list[str]",
+      "state": [
+       "param: Sequence[str]",
+       "accepts tuples; promises no mutation"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "param: dict[str, int]",
+      "state": [
+       "param: Mapping[str, int]",
+       "read-only, so it is a promise"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "-> Sequence[str]",
+      "state": [
+       "-> list[str]",
+       "returns should be SPECIFIC"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "Optional[str], Union[int, str]",
+      "state": [
+       "str | None, int | str",
+       "3.10+, and reads better"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "Callable (bare)",
+      "state": [
+       "Callable[[int, str], bool]",
+       "bare says only 'callable'"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "`NewType` is the highest-value item here, and it costs nothing at runtime",
+    "caption": "**Every system with several kinds of integer identifier eventually passes the wrong one — a `user_id` where an `order_id` was wanted — and `NewType` makes that a type error with zero runtime cost**, because it is the same `int` at execution time. `Literal` constrains a value to a set, `Final` says it is not reassigned, and an alias names a shape you repeat. And the warning that frames all of them: **`Any` is contagious — one `Any` disables checking downstream**, so an untyped boundary silently unchecks everything it touches.",
+    "left": "construct",
+    "codeW": 150,
+    "vars": [
+     "what it encodes",
+     "runtime cost"
+    ],
+    "steps": [
+     {
+      "code": "NewType('UserId', int)",
+      "state": [
+       "which KIND of int this is",
+       "zero - it is an int"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "Literal['csv', 'json']",
+      "state": [
+       "one of a fixed set",
+       "zero"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "Final",
+      "state": [
+       "not reassigned",
+       "zero"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "a type alias",
+      "state": [
+       "a name for a repeated shape",
+       "zero"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "Any",
+      "state": [
+       "nothing - and it spreads",
+       "disables checking downstream"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  }
+ ],
+ "8.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "A type variable is what makes this different from Any",
+    "caption": "**`first(list[int])` returns `int | None`, not `Any` — the relationship between the argument and the return is preserved, which is the whole point and the thing `Any` throws away.** The 3.12 syntax puts the variable in the signature rather than declaring it separately. And the bound-against-constrained distinction matters more than it looks: **a bound accepts subclasses, constraints do not — `T: (int, Decimal)` means T is `int` *or* `Decimal` and never a union of them**, which is exactly what you want for a numeric function that must not mix them.",
+    "left": "declaration",
+    "codeW": 170,
+    "vars": [
+     "meaning",
+     "accepts"
+    ],
+    "steps": [
+     {
+      "code": "first[T]: list[T] -> T | None",
+      "state": [
+       "the return follows the argument",
+       "any element type"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "with Any instead",
+      "state": [
+       "the relationship is lost",
+       "and checks nothing after"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "T: Number  (a bound)",
+      "state": [
+       "T is Number or a subclass",
+       "subclasses too"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "T: (int, Decimal)  (constraints)",
+      "state": [
+       "T is int OR Decimal",
+       "never a union, no subclasses"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "A plain dict at runtime, with keys the checker can verify",
+    "caption": "**A `TypedDict` is a plain `dict` at runtime — no class, no validation, no cost — and it exists purely so the checker can verify keys and value types on data you did not construct**, which is the JSON-from-an-API case exactly. Which also states its limit: **nothing checks the data actually has those keys, so it is a claim about your code rather than about the payload.** The three-way choice: **TypedDict for a dict you receive, a dataclass for one you construct, and Pydantic when you need the validation to actually run.**",
+    "left": "option",
+    "codeW": 160,
+    "vars": [
+     "runtime cost",
+     "validates?",
+     "for"
+    ],
+    "steps": [
+     {
+      "code": "TypedDict",
+      "state": [
+       "none - it is a dict",
+       "no",
+       "data you did NOT construct"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "dataclass",
+      "state": [
+       "a class",
+       "no",
+       "data you construct"
+      ],
+      "changed": [
+       0,
+       2
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "Pydantic model",
+      "state": [
+       "a class + parsing",
+       "YES, at runtime",
+       "an external boundary"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "so a TypedDict is",
+      "state": [
+       "-",
+       "-",
+       "a claim about your code"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "warn"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "`Self` is the type that follows subclasses",
+    "caption": "**A method annotated `-> Self` returns the subclass's type rather than the base's — which is what a fluent interface, a `from_row` classmethod, or a `copy()` method needs.** Before 3.11 this required a bound `TypeVar` on the method, declared separately and repeated at every use; **`Self` says it in one word.** The failure it prevents is specific and common: **a builder method annotated `-> Builder` makes `SubBuilder().with_x().with_y()` a type error on the second call**, because the first already narrowed the type to the base.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "-> Self",
+      "sub": "returns the subclass's type",
+      "tone": "violet"
+     },
+     {
+      "id": "u",
+      "label": "For fluent chains, from_row, copy()",
+      "sub": "the three real uses",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": "-> Builder instead",
+      "sub": "narrows to the base",
+      "tone": "crit"
+     },
+     {
+      "id": "f",
+      "label": "So the second chained call fails",
+      "sub": "SubBuilder().with_x().with_y()",
+      "tone": "crit"
+     },
+     {
+      "id": "o",
+      "label": "Before 3.11: a bound TypeVar, repeated",
+      "sub": "Self says it in one word",
+      "tone": "accent"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "u"
+     ],
+     [
+      "b",
+      "f"
+     ],
+     [
+      "o",
+      "s"
+     ]
+    ]
+   }
+  }
+ ],
+ "8.5": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "`obj is None` means it was accessed on the class, not an instance",
+    "caption": "**That check is the whole reason `__get__` takes two arguments — returning `self` when `obj is None` is the convention, and it is what lets `Product.price` give you the descriptor to introspect while `product.price` gives you the value.** The rule next to it is absolute: **never store per-instance state on the descriptor, because one descriptor object serves every instance of the class** — so `self._value = x` makes every product share a price, and the bug looks like a caching problem. **Store it in `obj.__dict__` under the name `__set_name__` gave you.**",
+    "left": "access",
+    "codeW": 170,
+    "vars": [
+     "obj is",
+     "return"
+    ],
+    "steps": [
+     {
+      "code": "product.price",
+      "state": [
+       "the instance",
+       "the computed value"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "Product.price",
+      "state": [
+       "None",
+       "self - the descriptor"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "self._value = x",
+      "state": [
+       "-",
+       "shared by EVERY instance"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "obj.__dict__[self._name] = x",
+      "state": [
+       "-",
+       "per instance, correctly"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "Data or non-data decides who wins against the instance dict",
+    "caption": "**A data descriptor defines `__set__` and takes precedence over the instance `__dict__`; a non-data descriptor does not, so an instance attribute shadows it** — which is 4.2's lookup order with the reason attached. That is why `cached_property` works at all: **it is non-data, so once it writes the value into `obj.__dict__` the second access never reaches the descriptor.** And it is why it fails on `__slots__`: **`TypeError: No '__dict__' attribute on 'WithSlots' instance to cache 'area'`** — the mechanism it depends on was removed.",
+    "left": "object",
+    "codeW": 160,
+    "vars": [
+     "kind",
+     "its __get__ returns"
+    ],
+    "steps": [
+     {
+      "code": "a plain function",
+      "state": [
+       "non-data",
+       "a bound method"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "property",
+      "state": [
+       "DATA",
+       "the getter's result"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "classmethod / staticmethod",
+      "state": [
+       "non-data",
+       "bound to the class / unbound"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "cached_property",
+      "state": [
+       "non-data",
+       "computes, then writes to __dict__"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "...on a __slots__ class",
+      "state": [
+       "-",
+       "TypeError: no __dict__ to cache in"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  }
+ ],
+ "8.6": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Two bases with unrelated metaclasses cannot be combined at all",
+    "caption": "**`TypeError: metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases`** — raised at class definition, and there is no way around it from the subclass. Which is the strongest practical argument against metaclasses: **inheriting from two libraries that each use one is simply impossible**, and you cannot fix it without changing one of the libraries. **`__init_subclass__` has no such problem**, which is why it exists and why it is the right tool for almost everything a metaclass was once used for.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "Base A with metaclass MA",
+      "sub": "from one library",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "Base B with metaclass MB",
+      "sub": "from another",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "class C(A, B)",
+      "sub": "TypeError: metaclass conflict",
+      "tone": "crit"
+     },
+     {
+      "id": "n",
+      "label": "And you cannot fix it from C",
+      "sub": "only by changing a library",
+      "tone": "crit"
+     },
+     {
+      "id": "i",
+      "label": "__init_subclass__ has no such problem",
+      "sub": "which is why it exists",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "c"
+     ],
+     [
+      "b",
+      "c"
+     ],
+     [
+      "c",
+      "n"
+     ],
+     [
+      "n",
+      "i"
+     ]
+    ]
+   }
+  }
+ ],
+ "8.7": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Six parameters, five kinds, and `bind` turns a call into a dict",
+    "caption": "**`inspect.signature` recovers the full parameter list with each one's kind — `POSITIONAL_OR_KEYWORD`, `VAR_POSITIONAL`, `KEYWORD_ONLY`, `VAR_KEYWORD`** — which is how a framework decides what to inject without being told. The pair that does the real work is `bind` and `apply_defaults`: **a call becomes `{'source': ..., 'amount': 500, 'tags': (), 'dry_run': True, 'extra': {}}`, with defaults filled in** — and a wrong call becomes a readable error, **`missing a required argument: 'target'`**, before anything runs.",
+    "left": "what you call",
+    "codeW": 170,
+    "vars": [
+     "result"
+    ],
+    "steps": [
+     {
+      "code": "str(signature(f))",
+      "state": [
+       "(source, target, amount=0, *tags, dry_run=False, **extra)"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "p.kind per parameter",
+      "state": [
+       "POSITIONAL_OR_KEYWORD ... VAR_KEYWORD"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "bind(...).apply_defaults()",
+      "state": [
+       "every parameter, defaults filled"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "ba.args, ba.kwargs",
+      "state": [
+       "('acct-1','acct-2',500), {'dry_run': True}"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "bind with an argument missing",
+      "state": [
+       "missing a required argument: 'target'"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "`__annotations__` gives you strings; `get_type_hints` gives you the types",
+    "caption": "**With `from __future__ import annotations`, or on Python 3.14 by default, annotations are stored as strings — `{'user': 'User', 'limit': 'int'}` — so reading `__annotations__` directly gives you text that happens to look like a type.** `typing.get_type_hints(fn)` resolves them against the defining module's namespace and returns real objects: **`{'user': <class 'User'>, ...}`.** Which is the difference between a framework that works and one that fails on a forward reference — **and the resolution can itself raise `NameError` if the name is only available under `TYPE_CHECKING`.**",
+    "left": "how you read them",
+    "codeW": 170,
+    "vars": [
+     "result"
+    ],
+    "steps": [
+     {
+      "code": "fn.__annotations__",
+      "state": [
+       "{'user': 'User', 'limit': 'int'}"
+      ],
+      "tone": "warn",
+      "note": "strings"
+     },
+     {
+      "code": "get_type_hints(fn)",
+      "state": [
+       "{'user': <class 'User'>, ...}"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "a TYPE_CHECKING-only import",
+      "state": [
+       "NameError during resolution"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "trace",
+    "title": "Seven functions, and two of them fail where you least expect",
+    "caption": "**`getsource` needs the file to exist, so it fails in a zipapp, in a REPL and in anything that compiled from a string** — which is the one to guard rather than assume. **`getdoc` is better than `obj.__doc__` because it dedents *and* follows inheritance**, so an overridden method with no docstring still reports the base's. And the row frameworks are built on: **`iscoroutinefunction` is how a framework decides whether to `await`** — which is why decorating an async function with a sync wrapper breaks dispatch, unless `wraps` preserved it.",
+    "left": "function",
+    "codeW": 170,
+    "vars": [
+     "gives",
+     "note"
+    ],
+    "steps": [
+     {
+      "code": "getsource(obj)",
+      "state": [
+       "the source text",
+       "fails in a zipapp or a REPL"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "getdoc(obj)",
+      "state": [
+       "dedented AND inherited",
+       "better than __doc__"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "iscoroutinefunction(fn)",
+      "state": [
+       "a bool",
+       "how a framework decides to await"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "getmembers(obj, predicate)",
+      "state": [
+       "name/value pairs",
+       "isfunction on a class, ismethod on an instance"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "unwrap(fn)",
+      "state": [
+       "the innermost function",
+       "follows __wrapped__ down"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     }
+    ]
+   }
+  }
+ ],
+ "8.9": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "A leak rises forever; fragmentation flattens",
+    "caption": "**The two sequences are the whole diagnostic, and they are distinguishable in five samples.** A leak adds roughly the same amount every cycle — **+56 MB, indefinitely.** Fragmentation **rises and then flattens at 201 MB**, because the allocator is holding freed arenas it cannot return to the OS rather than retaining live objects. Which matters because **only the first has a fix in your code**: the second is addressed by allocation patterns, a different allocator, or restarting the worker, **and `tracemalloc` will show you nothing growing.**",
+    "left": "samples over five cycles",
+    "codeW": 180,
+    "vars": [
+     "MB",
+     "diagnosis"
+    ],
+    "steps": [
+     {
+      "code": "142.3, 198.7, 254.9, 311.2, 367.5",
+      "state": [
+       "+56 per cycle",
+       "a LEAK"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "142.3, 198.7, 201.1, 201.4, 201.6",
+      "state": [
+       "flattens at ~201",
+       "fragmentation"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "and the difference matters",
+      "state": [
+       "-",
+       "only the first is in your code"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "The top line is 241 MiB from one file, and the count is what identifies it",
+    "caption": "**`tracemalloc`'s snapshot comparison attributes allocations to the line that made them — `app/cache.py:47: size=241 MiB, count=1250000, average=202 B`.** The count is the field that names the bug: **1.25 million objects averaging 202 bytes is a cache with no bound, not a few large buffers** — and an unbounded cache is the first of §05's six suspects. Note how fast it falls off: **241 MiB, then 38.1, then 4.2** — so a leak is almost always one line, which is what makes this cheap to act on.",
+    "left": "line",
+    "codeW": 160,
+    "vars": [
+     "size",
+     "count",
+     "average"
+    ],
+    "steps": [
+     {
+      "code": "app/cache.py:47",
+      "state": [
+       "241 MiB",
+       "1,250,000",
+       "202 B"
+      ],
+      "tone": "crit",
+      "note": "a cache, not a buffer"
+     },
+     {
+      "code": "app/models.py:88",
+      "state": [
+       "38.1 MiB",
+       "250,000",
+       "160 B"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "app/handlers.py:23",
+      "state": [
+       "4.2 MiB",
+       "5,000",
+       "880 B"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "so a leak is",
+      "state": [
+       "almost always one line",
+       "-",
+       "-"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "trace",
+    "title": "Six causes, and each has a signature you can recognise before profiling",
+    "caption": "**The second row is the one people do not expect: `lru_cache` on a method pins every instance it was called with, so memory plateaus at `maxsize` instances rather than at `maxsize` values** — a bounded cache that is unbounded in what it retains. The fourth is similarly quiet: **a `defaultdict` read with arbitrary keys creates entries for keys nobody set**, so reading is a write. And the last: **objects never collected despite going out of scope points at a closure or a descriptor keyed by instance** — `WeakKeyDictionary`.",
+    "left": "cause",
+    "codeW": 170,
+    "vars": [
+     "signature",
+     "fix"
+    ],
+    "steps": [
+     {
+      "code": "an unbounded cache or registry",
+      "state": [
+       "one dict grows with requests",
+       "lru_cache(maxsize=), deque(maxlen=)"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "lru_cache on a method",
+      "state": [
+       "plateaus at maxsize INSTANCES",
+       "cached_property, or per-instance"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "a module-level mutable default",
+      "state": [
+       "growth with no obvious owner",
+       "None default, build inside (3.2)"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "a defaultdict read with any key",
+      "state": [
+       "entries nobody set",
+       ".get() for reads"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "retained exceptions",
+      "state": [
+       "frames and locals held",
+       "log and discard"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "a closure keyed by instance",
+      "state": [
+       "never collected despite scope",
+       "WeakKeyDictionary"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  }
+ ]
+}

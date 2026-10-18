@@ -45,6 +45,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "A dict computes `hash(key)`, uses part of that hash to pick a slot in an index array, and looks there. If the slot holds a different key — a **collision** — it probes further until it finds the right one or an empty slot. Because the number of probes does not grow with the size of the dict, lookup is O(1)." },
 
     { t: "viz",
@@ -148,6 +150,8 @@ print(f(a=1, b=2))             # **kwargs is a dict`,
 
 
 
+
+
     { t: "p", text: "Dicts preserve insertion order. This became an implementation detail in CPython 3.6 and a **language guarantee** in 3.7 — so it is safe to rely on across implementations, not merely in CPython." },
 
     { t: "code", lang: "python", title: "what the guarantee does and does not cover", code: `
@@ -193,6 +197,8 @@ def remember(key, value, limit=100):
     { t: "h2", n: "03", text: "Reading a key: four options", id: "access" },
 
     {"kind": "compare", "title": "Four ways to read a key", "caption": "Pick by what a missing key means: a bug (d[k]), a default (get), a default to store (setdefault), or something the structure should handle for you (defaultdict).", "columns": [{"title": "d[k]", "tone": "crit", "items": ["KeyError if absent", "use when absence is a bug"]}, {"title": "d.get(k, default)", "tone": "accent", "items": ["returns default", "does not store it"]}, {"title": "d.setdefault(k, v)", "tone": "good", "items": ["stores v if absent", "returns the value"]}, {"title": "defaultdict", "tone": "violet", "items": ["factory called on miss", "for grouping and counting"]}], "t": "diagram", "id": "dg-2_3-03-1"},
+
+
 
 
 
@@ -320,6 +326,8 @@ Counter({'paid': 8, 'pending': 2, 'failed': 1})`
 
 
 
+
+
     { t: "p", text: "`d.keys()`, `d.values()` and `d.items()` return **views** — live windows onto the dict, not copies. They reflect later changes, cost nothing to create, and the key and item views support set operations." },
 
     { t: "code", lang: "python", title: "views are live and set-like", code: `
@@ -366,6 +374,8 @@ b 2`
     { t: "h2", n: "06", text: "Merging, copying and the traps", id: "traps" },
 
     {"kind": "trace", "title": "Later keys win, and the merge is one level deep", "caption": "**`{**defaults, **overrides}` resolves a duplicate key in favour of the later mapping** — which is what makes the layered-configuration idiom work at all. The limit is the one 2.9 §04 returns to: **the merge is shallow, so a nested dict in `overrides` replaces the whole nested dict in `defaults` rather than merging into it.** For a flat config that is exactly right; for `{'db': {'host': ..., 'port': ...}}` **overriding only the host silently drops the port.**", "left": "merge", "codeW": 190, "vars": ["result", "depth"], "steps": [{"code": "spreading both mappings", "state": ["port 9000, debug False", "later keys win"], "tone": "good"}, {"code": "d1 | d2  (3.9+)", "state": ["the same thing", "an operator for it"], "changed": [0, 1], "tone": "good"}, {"code": "a nested dict in overrides", "state": ["REPLACES, not merges", "one level only"], "changed": [0, 1], "tone": "crit", "note": "2.9 revisits this"}], "t": "diagram", "id": "dg-2_3-06-4"},
+
+
 
 
 

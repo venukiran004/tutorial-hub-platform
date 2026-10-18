@@ -20,7 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What a class statement does", id: "creation" },
 
-    {"kind": "steps", "title": "What a class statement does", "caption": "The body runs as a function to fill a namespace, then the metaclass — type unless you say otherwise — is called with the name, bases and namespace to build the class object. Hooks fire along the way.", "items": [{"label": "determine the metaclass", "desc": "from the bases and any metaclass= keyword"}, {"label": "metaclass.__prepare__(name, bases)", "desc": "the namespace the body will fill — usually a dict", "tone": "accent"}, {"label": "execute the class body", "desc": "def and assignments populate the namespace", "tone": "good"}, {"label": "cls = metaclass(name, bases, namespace)", "desc": "__new__ and __init__ of the metaclass; __set_name__ on descriptors; __init_subclass__ on the parent", "tone": "warn"}], "t": "diagram", "id": "dg-8_6-01-0"},
+    {"kind": "steps", "title": "What a class statement does", "caption": "The body runs as a function to fill a namespace, then the metaclass — type unless you say otherwise — is called with the name, bases and namespace to build the class object. Hooks fire along the way.", "items": [{"label": "determine the metaclass", "desc": "from the bases and any metaclass= keyword"}, {"label": "metaclass.__prepare__(name, bases)", "desc": "the namespace the body will fill — usually a dict", "tone": "accent"}, {"label": "execute the class body", "desc": "def and assignments populate the namespace", "tone": "good"}, {"label": "cls = metaclass(name, bases, namespace)", "desc": "__new__ and __init__ of the metaclass; __set_name__ on descriptors; __init_subclass__ on the parent", "tone": "warn"}], "t": "diagram", "id": "dg-8_6-01-1"},
+
+
 
 
 
@@ -109,7 +111,9 @@ print(type(type))                              # <class 'type'>
 
     { t: "h2", n: "02", text: "The simpler hooks first", id: "simpler" },
 
-    {"kind": "compare", "title": "The simpler hooks before a metaclass", "caption": "Most 'I need a metaclass' problems are solved by a hook that already exists. __init_subclass__ sees every subclass as it is created; __set_name__ tells a descriptor its attribute name; a class decorator rewrites a class after the fact.", "columns": [{"title": "__init_subclass__", "tone": "good", "items": ["runs on each subclass", "registries, validation", "no metaclass conflicts"]}, {"title": "__set_name__", "tone": "accent", "items": ["descriptor learns its name", "fields that know their key"]}, {"title": "class decorator", "tone": "warn", "items": ["transform a finished class", "dataclass is one"]}, {"title": "metaclass", "tone": "crit", "items": ["control class creation itself", "ORMs, enums, ABCs", "last resort"]}], "t": "diagram", "id": "dg-8_6-02-1"},
+    {"kind": "compare", "title": "The simpler hooks before a metaclass", "caption": "Most 'I need a metaclass' problems are solved by a hook that already exists. __init_subclass__ sees every subclass as it is created; __set_name__ tells a descriptor its attribute name; a class decorator rewrites a class after the fact.", "columns": [{"title": "__init_subclass__", "tone": "good", "items": ["runs on each subclass", "registries, validation", "no metaclass conflicts"]}, {"title": "__set_name__", "tone": "accent", "items": ["descriptor learns its name", "fields that know their key"]}, {"title": "class decorator", "tone": "warn", "items": ["transform a finished class", "dataclass is one"]}, {"title": "metaclass", "tone": "crit", "items": ["control class creation itself", "ORMs, enums, ABCs", "last resort"]}], "t": "diagram", "id": "dg-8_6-02-2"},
+
+
 
 
 
@@ -279,6 +283,9 @@ class AbstractExporter(Plugin):        # not registered -- nothing to skip
     },
 
     { t: "h2", n: "04", text: "The conflict problem", id: "conflict" },
+
+    {"kind": "flow", "title": "Two bases with unrelated metaclasses cannot be combined at all", "caption": "**`TypeError: metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases`** — raised at class definition, and there is no way around it from the subclass. Which is the strongest practical argument against metaclasses: **inheriting from two libraries that each use one is simply impossible**, and you cannot fix it without changing one of the libraries. **`__init_subclass__` has no such problem**, which is why it exists and why it is the right tool for almost everything a metaclass was once used for.", "cols": 3, "nodes": [{"id": "a", "label": "Base A with metaclass MA", "sub": "from one library", "tone": "accent"}, {"id": "b", "label": "Base B with metaclass MB", "sub": "from another", "tone": "accent"}, {"id": "c", "label": "class C(A, B)", "sub": "TypeError: metaclass conflict", "tone": "crit"}, {"id": "n", "label": "And you cannot fix it from C", "sub": "only by changing a library", "tone": "crit"}, {"id": "i", "label": "__init_subclass__ has no such problem", "sub": "which is why it exists", "tone": "good"}], "edges": [["a", "c"], ["b", "c"], ["c", "n"], ["n", "i"]], "t": "diagram", "id": "dg-8_6-04-0"},
+
 
     { t: "code", lang: "python", title: "why metaclasses do not compose", code: `
 class MetaA(type): pass

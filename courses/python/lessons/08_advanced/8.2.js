@@ -132,7 +132,9 @@ mydecorators
 
     { t: "h2", n: "02", text: "With or without arguments", id: "optional" },
 
-    {"kind": "layers", "title": "A decorator with arguments is three functions deep", "caption": "@retry(times=3) calls retry(3) first, which returns the actual decorator, which receives the function and returns the wrapper. Each layer closes over the one outside it.", "taper": true, "items": [{"label": "retry(times=3)", "sub": "the factory: runs at decoration, returns decorator", "tone": "warn"}, {"label": "decorator(func)", "sub": "receives the function, returns wrapper", "tone": "accent"}, {"label": "wrapper(*args, **kwargs)", "sub": "runs on every call; sees times and func", "tone": "good"}], "t": "diagram", "id": "dg-8_2-02-0"},
+    {"kind": "layers", "title": "A decorator with arguments is three functions deep", "caption": "@retry(times=3) calls retry(3) first, which returns the actual decorator, which receives the function and returns the wrapper. Each layer closes over the one outside it.", "taper": true, "items": [{"label": "retry(times=3)", "sub": "the factory: runs at decoration, returns decorator", "tone": "warn"}, {"label": "decorator(func)", "sub": "receives the function, returns wrapper", "tone": "accent"}, {"label": "wrapper(*args, **kwargs)", "sub": "runs on every call; sees times and func", "tone": "good"}], "t": "diagram", "id": "dg-8_2-02-2"},
+
+
 
 
 
@@ -187,6 +189,9 @@ def retry(fn=None, *, attempts=3, delay=0.2):
     },
 
     { t: "h2", n: "03", text: "Decorating methods", id: "methods" },
+
+    {"kind": "flow", "title": "Nothing special is needed for methods — `*args` absorbs `self`", "caption": "**A function decorator works unchanged on a method, because `*args` absorbs `self` like any other positional argument.** What needs care is **ordering when another descriptor is involved: `classmethod`, `staticmethod` and `property` must be the *outermost* decorator**, because they produce descriptor objects rather than functions — and a plain decorator applied on top receives a descriptor and tries to call it. **Which fails at decoration time if you are lucky and at the first call if you are not.**", "cols": 3, "nodes": [{"id": "f", "label": "A function decorator works as-is", "sub": "*args absorbs self", "tone": "good"}, {"id": "d", "label": "classmethod / staticmethod / property", "sub": "produce DESCRIPTORS, not functions", "tone": "accent"}, {"id": "o", "label": "So they must be outermost", "sub": "listed first", "tone": "violet"}, {"id": "w", "label": "Wrong order: your decorator gets a descriptor", "sub": "and tries to call it", "tone": "crit"}, {"id": "l", "label": "Fails at decoration if you are lucky", "sub": "at the first call if not", "tone": "crit"}], "edges": [["f", "d"], ["d", "o"], ["o", "w"], ["w", "l"]], "t": "diagram", "id": "dg-8_2-03-0"},
+
 
     { t: "code", lang: "python", title: "a function decorator works unchanged", code: `
 class Client:
@@ -328,6 +333,9 @@ charge("nope")      # mypy: Argument 1 has incompatible type "str"`,
     },
 
     { t: "h2", n: "05", text: "Class decorators", id: "classdeco" },
+
+    {"kind": "flow", "title": "A class decorator must return a class, and forgetting the return replaces yours with None", "caption": "**`@dataclass`, `@functools.total_ordering` and `@runtime_checkable` are all class decorators — the same substitution as a function decorator, applied to a class.** The failure mode is blunt: **they must return a class, and forgetting the `return` replaces your class with `None`**, so the error is a `TypeError: 'NoneType' object is not callable` at the first instantiation, far from the decorator. And the choice against the alternative: **`__init_subclass__` runs for every subclass automatically, where a decorator has to be applied to each one.**", "cols": 3, "nodes": [{"id": "s", "label": "The same substitution, on a class", "sub": "dataclass, total_ordering", "tone": "good"}, {"id": "r", "label": "It MUST return a class", "sub": "usually the same one", "tone": "violet"}, {"id": "n", "label": "Forget the return -> your class is None", "sub": "TypeError at instantiation", "tone": "crit"}, {"id": "i", "label": "__init_subclass__ is automatic", "sub": "for every subclass", "tone": "good"}, {"id": "d", "label": "A decorator must be applied to each", "sub": "which is the trade", "tone": "accent"}], "edges": [["s", "r"], ["r", "n"], ["i", "d"], ["n", "d"]], "t": "diagram", "id": "dg-8_2-05-1"},
+
 
     { t: "code", lang: "python", title: "same substitution, applied to a class", code: `
 def register(cls):

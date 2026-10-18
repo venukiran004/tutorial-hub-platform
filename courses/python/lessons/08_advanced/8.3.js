@@ -20,7 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Annotations are inert", id: "runtime" },
 
-    {"kind": "flow", "title": "Annotations are inert at runtime", "caption": "The interpreter stores annotations and never checks them. mypy or pyright reads the same annotations before the code runs; Pydantic and FastAPI read them at runtime to validate. Three consumers, one syntax.", "cols": 4, "nodes": [{"id": "src", "label": "def f(x: int) -> str", "sub": "annotations stored on f"}, {"id": "rt", "label": "CPython", "sub": "ignores them", "tone": "warn"}, {"id": "mypy", "label": "mypy / pyright", "sub": "checks before running", "tone": "good"}, {"id": "pyd", "label": "Pydantic / FastAPI", "sub": "validates at runtime", "tone": "accent"}], "edges": [["src", "rt"], ["src", "mypy"], ["src", "pyd"]], "t": "diagram", "id": "dg-8_3-01-0"},
+    {"kind": "flow", "title": "Annotations are inert at runtime", "caption": "The interpreter stores annotations and never checks them. mypy or pyright reads the same annotations before the code runs; Pydantic and FastAPI read them at runtime to validate. Three consumers, one syntax.", "cols": 4, "nodes": [{"id": "src", "label": "def f(x: int) -> str", "sub": "annotations stored on f"}, {"id": "rt", "label": "CPython", "sub": "ignores them", "tone": "warn"}, {"id": "mypy", "label": "mypy / pyright", "sub": "checks before running", "tone": "good"}, {"id": "pyd", "label": "Pydantic / FastAPI", "sub": "validates at runtime", "tone": "accent"}], "edges": [["src", "rt"], ["src", "mypy"], ["src", "pyd"]], "t": "diagram", "id": "dg-8_3-01-2"},
+
+
 
 
 
@@ -75,6 +77,9 @@ print(f.__annotations__)      # {'x': 'SomeClassDefinedLater', ...}`},
 
     { t: "h2", n: "02", text: "Precision that pays", id: "precision" },
 
+    {"kind": "trace", "title": "Eight precision upgrades, and the two middle rows are a promise rather than a type", "caption": "**`Sequence[str]` rather than `list[str]` in a parameter accepts tuples and other sequences, and documents that you will not mutate it** — and `Mapping` does the same for a dict. Then the direction reverses for returns: **be specific, and give callers everything you actually have — `-> list[str]`, not `-> Sequence[str]`.** The rule behind both: **loose on the way in, precise on the way out.** And the first row is the one that silently checks nothing: **a bare `list` is `list[Any]`.**", "left": "instead of", "codeW": 150, "vars": ["write", "because"], "steps": [{"code": "list (bare)", "state": ["list[str]", "bare is list[Any] - checks nothing"], "tone": "crit"}, {"code": "param: list[str]", "state": ["param: Sequence[str]", "accepts tuples; promises no mutation"], "changed": [0, 1], "tone": "violet"}, {"code": "param: dict[str, int]", "state": ["param: Mapping[str, int]", "read-only, so it is a promise"], "changed": [0, 1], "tone": "violet"}, {"code": "-> Sequence[str]", "state": ["-> list[str]", "returns should be SPECIFIC"], "changed": [0, 1], "tone": "violet"}, {"code": "Optional[str], Union[int, str]", "state": ["str | None, int | str", "3.10+, and reads better"], "changed": [0, 1], "tone": "good"}, {"code": "Callable (bare)", "state": ["Callable[[int, str], bool]", "bare says only 'callable'"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-8_3-02-0"},
+
+
     { t: "table",
       head: ["Instead of", "Write", "Because"],
       rows: [
@@ -111,6 +116,9 @@ total((1, 2, 3))                         # mypy: expected list[int]
     },
 
     { t: "h2", n: "03", text: "Types that encode a rule", id: "rules" },
+
+    {"kind": "trace", "title": "`NewType` is the highest-value item here, and it costs nothing at runtime", "caption": "**Every system with several kinds of integer identifier eventually passes the wrong one — a `user_id` where an `order_id` was wanted — and `NewType` makes that a type error with zero runtime cost**, because it is the same `int` at execution time. `Literal` constrains a value to a set, `Final` says it is not reassigned, and an alias names a shape you repeat. And the warning that frames all of them: **`Any` is contagious — one `Any` disables checking downstream**, so an untyped boundary silently unchecks everything it touches.", "left": "construct", "codeW": 150, "vars": ["what it encodes", "runtime cost"], "steps": [{"code": "NewType('UserId', int)", "state": ["which KIND of int this is", "zero - it is an int"], "tone": "violet"}, {"code": "Literal['csv', 'json']", "state": ["one of a fixed set", "zero"], "changed": [0, 1], "tone": "good"}, {"code": "Final", "state": ["not reassigned", "zero"], "changed": [0, 1], "tone": "good"}, {"code": "a type alias", "state": ["a name for a repeated shape", "zero"], "changed": [0, 1], "tone": "good"}, {"code": "Any", "state": ["nothing - and it spreads", "disables checking downstream"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-8_3-03-1"},
+
 
     { t: "code", lang: "python", title: "Literal, Final, NewType, and aliases", code: `
 from typing import Final, Literal, NewType
@@ -167,7 +175,9 @@ timeout: int = config.timeout            # no error, even if it is a string`},
 
     { t: "h2", n: "04", text: "Narrowing", id: "narrowing" },
 
-    {"kind": "trace", "title": "Narrowing: the checker tracks what it knows", "caption": "After isinstance, an early return or a None check, the type checker refines the declared type inside that branch. Narrowing is why Optional[str] can be used safely without a cast.", "vars": ["declared", "known after this line"], "steps": [{"code": "def f(x: str | None):", "state": ["str | None", "str | None"]}, {"code": "    if x is None: return 0", "state": ["str | None", "str"], "changed": [1], "tone": "good", "note": "None eliminated"}, {"code": "    return len(x)", "state": ["str | None", "str"], "note": "no error"}, {"code": "def g(v: int | str): if isinstance(v, int): v + 1", "state": ["int | str", "int in the branch"], "changed": [1], "tone": "good"}], "t": "diagram", "id": "dg-8_3-04-1"},
+    {"kind": "trace", "title": "Narrowing: the checker tracks what it knows", "caption": "After isinstance, an early return or a None check, the type checker refines the declared type inside that branch. Narrowing is why Optional[str] can be used safely without a cast.", "vars": ["declared", "known after this line"], "steps": [{"code": "def f(x: str | None):", "state": ["str | None", "str | None"]}, {"code": "    if x is None: return 0", "state": ["str | None", "str"], "changed": [1], "tone": "good", "note": "None eliminated"}, {"code": "    return len(x)", "state": ["str | None", "str"], "note": "no error"}, {"code": "def g(v: int | str): if isinstance(v, int): v + 1", "state": ["int | str", "int in the branch"], "changed": [1], "tone": "good"}], "t": "diagram", "id": "dg-8_3-04-3"},
+
+
 
 
 
