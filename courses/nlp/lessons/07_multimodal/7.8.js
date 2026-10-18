@@ -109,6 +109,10 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "A better counting check, for free",
       body: [{ t: "p", text: "If you need to evaluate counting, do not ask a metric that cannot count. Generate images with a **known** object count, and score the caption by extracting the number and comparing it directly — an exact check against ground truth you constructed, with no model in the loop. The same applies to spatial relations, colours and any attribute you can control at generation time. Synthetic probes with known answers are the most reliable multimodal evaluation available, and this lesson's four-square image is an example of exactly that." }] },
 
+    { t: "code", lang: "python", title: "FID and CLIPScore, as library calls",
+      code: 'from torchmetrics.image.fid import FrechetInceptionDistance\nfrom torchmetrics.multimodal.clip_score import CLIPScore\n\nfid = FrechetInceptionDistance(feature=2048)\nfid.update(real_uint8, real=True)      # accumulate over MANY images\nfid.update(fake_uint8, real=False)\nfid.compute()\n\nclip = CLIPScore(model_name_or_path="openai/clip-vit-base-patch16")\nclip(image_uint8, "two blue squares")',
+      caption: "`fid.update` twice, then `compute` once — the API itself says it is a set-level metric." },
+    { t: "p", text: "The shape of the FID interface is the thing to notice: **`update` accumulates feature statistics and `compute` returns a single number, so there is no per-image FID to report** — §01’s point enforced by the library. In practice it needs **thousands** of images to be stable, and **a FID computed on 100 images is noise with a plausible-looking value.** `feature=2048` selects the Inception-v3 pool layer, and changing it changes the number, so **two FIDs are comparable only at the same feature setting.**" },
     { t: "exercise", title: "Test the metrics",
       tasks: [
         "Compute CLIPScore for a correct caption and a wrong-count variant on your own images, and record the gap.",

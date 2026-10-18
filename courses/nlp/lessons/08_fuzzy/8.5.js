@@ -129,6 +129,10 @@ EC.receiveLesson({
         ["Anything at scale", "Block first, then any of the above (8.5)"]
       ] },
 
+    { t: "code", lang: "python", title: "The library, with the two arguments that change the cost",
+      code: 'from rapidfuzz import fuzz, process, utils\n\nfuzz.WRatio("New York Mets", "the Mets of New York")\n\nprocess.extractOne(query, choices,\n                   scorer=fuzz.token_sort_ratio,\n                   processor=utils.default_process,\n                   score_cutoff=80)\n\nprocess.cdist(queries, choices, scorer=fuzz.ratio,\n              score_cutoff=80, workers=-1)   # the whole matrix, in parallel',
+      caption: "`score_cutoff` abandons a comparison that cannot reach the threshold; `workers=-1` uses every core." },
+    { t: "p", text: "Both arguments attack §04’s arithmetic rather than the algorithm. **`score_cutoff` lets the distance computation stop as soon as the best achievable score falls below the threshold**, which on dissimilar pairs — most pairs — is most of the work avoided. **`process.cdist` with `workers=-1` computes the whole matrix across cores**, and `utils.default_process` is the normalisation step applied consistently to both sides: **lowercase, strip non-alphanumerics, collapse whitespace** — which is 8.4’s normalisation argument as a default rather than a decision." },
     { t: "exercise", title: "Build the system",
       tasks: [
         "Run all five scorers on 20 pairs from your data and find one where each is wrong.",

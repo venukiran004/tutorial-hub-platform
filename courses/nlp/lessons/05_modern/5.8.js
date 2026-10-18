@@ -153,6 +153,10 @@ EC.receiveLesson({
         ["sampled token", "(1,)", "Appended, and the loop repeats"]
       ] },
 
+    { t: "code", lang: "python", title: "The three lines this whole lesson traced",
+      code: 'from transformers import AutoTokenizer, AutoModelForCausalLM\n\ntok = AutoTokenizer.from_pretrained("gpt2")\nmodel = AutoModelForCausalLM.from_pretrained("gpt2")\n\nout = model(**tok("The capital of France is", return_tensors="pt"),\n            output_hidden_states=True, output_attentions=True)\n\nout.logits.shape          # (1, 5, 50257)\nlen(out.hidden_states)    # 13 - the embedding output plus 12 layers\nlen(out.attentions)       # 12, each (1, 12, 5, 5)',
+      caption: "`AutoModelForCausalLM` adds the LM head; `AutoModel` would return only `last_hidden_state`." },
+    { t: "p", text: "The two `output_*` flags are what made §03 possible, and they are off by default for a reason: **`output_hidden_states=True` returns 13 tensors and `output_attentions=True` returns 12 more, so a long sequence materialises every attention matrix at once** — which is exactly the `O(n²)` memory FlashAttention exists to avoid. Useful for inspection, and not something to leave on in a serving path." },
     { t: "exercise", title: "Trace your own prompt",
       tasks: [
         "Push a prompt through a model with `output_hidden_states=True` and plot residual-stream RMS against layer depth.",

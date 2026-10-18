@@ -125,6 +125,10 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "The failure mode is fluent wrongness",
       body: [{ t: "p", text: "Every caption above was grammatical, confident and plausible. None was accurate. That is the characteristic VLM failure and it is much more dangerous than an obvious error, because nothing in the output signals low confidence — exactly the hallucination problem lesson 3.8 addressed with entailment checking. If a VLM's output feeds a decision, you need verification: ask the same question several ways and check for agreement, cross-check against a specialist model such as OCR or a detector, or keep a human in the loop. Treat a VLM as a strong prior about what an image probably contains, not as a measurement instrument." }] },
 
+    { t: "code", lang: "python", title: "A VLM, as two classes",
+      code: 'from transformers import AutoProcessor, LlavaForConditionalGeneration\n\nproc = AutoProcessor.from_pretrained("llava-hf/llava-1.5-7b-hf")\nmodel = LlavaForConditionalGeneration.from_pretrained(\n    "llava-hf/llava-1.5-7b-hf", torch_dtype=torch.float16)\n\ninputs = proc(images=image, text="USER: <image>\\nWhat is this? ASSISTANT:",\n              return_tensors="pt")\nout = model.generate(**inputs, max_new_tokens=64)\nproc.decode(out[0], skip_special_tokens=True)',
+      caption: "`<image>` in the prompt is a real token — the projected patches are substituted at its position." },
+    { t: "p", text: "`AutoProcessor` is the detail worth knowing: **it bundles the image transform and the tokenizer into one object, because the two have to agree about the `<image>` placeholder** — how many visual tokens the projector will produce and where they go. Use a tokenizer alone and the placeholder is one token where the model expects 576, which fails as a shape error rather than as a bad answer. And the prompt template is model-specific: **LLaVA’s `USER:`/`ASSISTANT:` format is part of the checkpoint, not a convention.**" },
     { t: "exercise", title: "Probe a VLM's limits",
       tasks: [
         "Caption five images from your domain unconditionally and count how many are accurate.",

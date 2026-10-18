@@ -99,6 +99,10 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Jaro-Winkler for names, edit distance for everything else",
       body: [{ t: "p", text: "Jaro-Winkler's two design choices — a matching window and a prefix bonus — both encode assumptions about **personal names** specifically: that errors are small displacements and that beginnings are reliable. On names it outperforms raw edit distance and it is the default in most record-linkage systems for that reason. On addresses, product codes or free text those assumptions are weaker, and the prefix bonus can actively mislead — two unrelated addresses both starting *\"12 \"* get a bonus for nothing. Match the metric's assumptions to your field, and use different metrics for different columns of the same record." }] },
 
+    { t: "code", lang: "python", title: "And the two libraries that ship it",
+      code: 'import jellyfish\n\njellyfish.jaro_similarity("MARTHA", "MARHTA")          # 0.9444\njellyfish.jaro_winkler_similarity("MARTHA", "MARHTA")  # 0.9611\njellyfish.soundex("Smith"), jellyfish.soundex("Smyth") # both S530\njellyfish.metaphone("Smith")\n\nfrom rapidfuzz.distance import JaroWinkler\nJaroWinkler.similarity("MARTHA", "MARHTA")             # the same, in C++',
+      caption: "The same two numbers as the hand implementation — and `soundex` gives `Smith` and `Smyth` one key." },
+    { t: "p", text: "`jellyfish` is the one to reach for when you want the phonetic functions as well, because **`soundex(\"Smith\")` and `soundex(\"Smyth\")` are both `S530`, which is 8.5’s phonetic blocking key in one call.** `rapidfuzz.distance.JaroWinkler` is the same metric with C++ internals, and it takes a `score_cutoff` — **so a comparison that cannot beat your threshold is abandoned early rather than computed in full**, which matters when the thing you are doing is millions of comparisons." },
     { t: "exercise", title: "Implement and calibrate",
       tasks: [
         "Implement Jaro and reproduce 0.9444 for MARTHA/MARHTA before adding the Winkler bonus.",

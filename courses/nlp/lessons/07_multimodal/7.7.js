@@ -112,6 +112,10 @@ EC.receiveLesson({
     { t: "callout", kind: "crit", title: "Documents are where fluent wrongness is most expensive",
       body: [{ t: "p", text: "Document AI usually feeds a financial, legal or clinical decision, and the characteristic VLM failure from lesson 7.3 — grammatical, confident and inaccurate — is at its most dangerous there. A misread invoice total or a hallucinated dosage does not announce itself. So this is the domain where verification is least optional: check extracted values against document-level constraints (do the line items sum to the total?), surface OCR confidence rather than discarding it, and route low-confidence extractions to a human. A structural check that a number is internally consistent catches errors no amount of model quality will." }] },
 
+    { t: "code", lang: "python", title: "The layout-aware extractors, as imported",
+      code: 'from unstructured.partition.pdf import partition_pdf\n\nelements = partition_pdf("report.pdf",\n                         strategy="hi_res",\n                         infer_table_structure=True)\n\nfor el in elements:\n    el.category          # Title, NarrativeText, Table, Image, ...\n    el.metadata.page_number\n    el.metadata.text_as_html   # for a Table, the recovered grid',
+      caption: "`infer_table_structure=True` is the argument that returns a grid rather than a jumble." },
+    { t: "p", text: "The `category` field is the part that matters for §01’s argument: **the output is not a string, it is a list of typed elements with page numbers — so reading order and layout survive as data rather than being flattened away.** And `strategy=\"hi_res\"` runs a layout model rather than the PDF’s own text layer, which is slower and is the only mode that can produce `text_as_html` for a table. **§06’s first error class is exactly what that layout model gets wrong**, so its confidence is worth surfacing rather than trusting." },
     { t: "exercise", title: "Measure your pipeline",
       tasks: [
         "Take 50 documents and measure layout, OCR and extraction accuracy separately, then compare the product against the end-to-end number.",

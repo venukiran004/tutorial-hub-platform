@@ -110,6 +110,10 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Generation inverts the tokenisation problem",
       body: [{ t: "p", text: "Recognition compresses audio into something a transformer can read. **Generation** must produce audio at full rate — 16,000 samples per second — from a model that emits one token at a time. Generating a second of speech token by token at sample rate is hopeless, so generative audio models use a neural codec: an encoder that compresses waveform into a few hundred discrete tokens per second, and a decoder that reconstructs it. The transformer then predicts *codec tokens*, and the codec expands them back to audio. It is the same manoeuvre as the VAE in latent diffusion from lesson 7.4 — put the expensive sequential model in a compressed space and decode once at the end." }] },
 
+    { t: "code", lang: "python", title: "Both directions, as installed libraries",
+      code: '# speech to text\nfrom transformers import pipeline\nasr = pipeline("automatic-speech-recognition", model="openai/whisper-small")\nasr("audio.wav", return_timestamps=True)["chunks"]\n\n# text to speech\nfrom TTS.api import TTS\ntts = TTS("tts_models/multilingual/multi-dataset/xtts_v2")\ntts.tts_to_file(text="Hello there.", speaker_wav="ref.wav",\n                language="en", file_path="output.wav")',
+      caption: "`return_timestamps=True` is what makes a transcript usable for anything but reading." },
+    { t: "p", text: "Two practical notes. **Whisper’s encoder is fixed at 30 seconds (§02’s 1500 tokens), so the pipeline chunks longer audio and stitches the results** — which is where most transcription errors at segment boundaries come from, not from the model. And `speaker_wav` is the voice-cloning argument: **a reference clip of a few seconds is the whole enrollment**, which is §06’s VALL-E row arriving as a keyword parameter in an installable package." },
     { t: "exercise", title: "Compute the budgets",
       tasks: [
         "Compute the sequence length for your audio at several hop sizes, and check it against your model's limit.",
