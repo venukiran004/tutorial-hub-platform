@@ -203,6 +203,8 @@ def _(node: And) -> str:
 
 
 
+
+
     { t: "p", text: "Observer survives because the problem is real: something needs to notify an unknown set of listeners. What dissolves is the machinery — no `Observer` interface, no `attach`/`detach` ceremony, just callables." },
 
     { t: "code", lang: "python", title: "the whole pattern", code: `
@@ -269,6 +271,9 @@ order_paid.emit(order)
 
     { t: "h2", n: "04", text: "Adapter and Proxy, which stay", id: "adapter-proxy" },
 
+    {"kind": "compare", "title": "Both survive, and what shrinks is the ceremony", "caption": "**Adapter survives because third-party interfaces are a permanent fact — what shrinks is the declaration: no `Target` interface, because a `Protocol` describes what the consumer needs without anybody implementing it.** Proxy survives for **lazy loading, access control and instrumentation, and `__getattr__` makes it cheap** — with one caveat worth knowing before you ship it: **special methods are looked up on the *type*, not the instance, so `__getattr__` never sees `len(proxy)` or `proxy[0]`** and those have to be forwarded explicitly.", "columns": [{"title": "Adapter", "tone": "good", "items": ["reshape an interface you do not control", "survives: third-party interfaces are permanent", "shrinks: no Target interface to declare", "a Protocol says what the consumer needs"]}, {"title": "Proxy", "tone": "violet", "items": ["same interface, added behaviour", "survives: lazy loading, access control, instrumentation", "shrinks: __getattr__ forwards everything", "caveat: special methods are found on the TYPE, so forward them by hand"]}], "t": "diagram", "id": "dg-4_12-04-2"},
+
+
     { t: "code", lang: "python", title: "Adapter: reshape an interface you do not control", code: `
 class StripeGateway:                    # what your code wants (Lesson 4.6)
     def charge(self, amount: Decimal) -> str: ...
@@ -326,6 +331,8 @@ class LazyDataset:
     { t: "h2", n: "05", text: "State: the transitions are the design", id: "state" },
 
     {"kind": "cycle", "title": "State: the transitions are the design", "caption": "An order moves through states along allowed edges only; the state machine is a dict of transitions and a check, not a class per state.", "nodes": [{"label": "pending", "tone": "accent"}, {"label": "paid", "tone": "good"}, {"label": "shipped", "tone": "good"}, {"label": "delivered", "tone": "violet"}, {"label": "cancelled", "tone": "crit", "sub": "from pending or paid only"}], "t": "diagram", "id": "dg-4_12-05-1"},
+
+
 
 
 

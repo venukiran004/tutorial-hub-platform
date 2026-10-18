@@ -90,6 +90,9 @@ True`},
 
     { t: "h2", n: "02", text: "ABC or Protocol", id: "abc-or-protocol" },
 
+    {"kind": "compare", "title": "Who declares the interface is the difference that decides it", "caption": "**An ABC is declared by the provider hierarchy and a Protocol by the consumer that needs it** — and every other row follows from that. **Providers must inherit from an ABC, which is real coupling and impossible for third-party classes**; a Protocol is satisfied structurally, so it works on classes you cannot modify. What an ABC buys for that cost is genuine: **shared concrete implementation and state, plus a refusal to instantiate an incomplete subclass at runtime.** A Protocol offers neither — **`isinstance` works only with `@runtime_checkable`, and then it checks names only.**", "columns": [{"title": "ABC", "tone": "accent", "items": ["declared by the PROVIDER hierarchy", "providers must inherit — real coupling", "refuses to instantiate if incomplete, at runtime", "can carry concrete methods and state", "third-party classes only via register()"]}, {"title": "Protocol", "tone": "violet", "items": ["declared by the CONSUMER that needs it", "satisfied structurally — no inheritance", "no runtime enforcement at all", "default method bodies only, no state", "works on classes you cannot modify"]}], "t": "diagram", "id": "dg-4_8-02-1"},
+
+
     { t: "table",
       head: ["", "ABC", "Protocol"],
       rows: [
@@ -118,6 +121,8 @@ True`},
     { t: "h2", n: "03", text: "Template method: where an ABC earns it", id: "template-method" },
 
     {"kind": "flow", "title": "Template method: the ABC owns the skeleton", "caption": "run() in the base class fixes the order of steps; subclasses fill in the abstract ones. The base never needs to know which subclass it is.", "cols": 4, "nodes": [{"id": "run", "label": "run()", "sub": "concrete, in the ABC", "tone": "accent"}, {"id": "a", "label": "load()", "sub": "abstract", "tone": "warn"}, {"id": "b", "label": "transform()", "sub": "abstract", "tone": "warn"}, {"id": "c", "label": "save()", "sub": "concrete default", "tone": "good"}], "edges": [["run", "a"], ["a", "b"], ["b", "c"]], "t": "diagram", "id": "dg-4_8-03-0"},
+
+
 
 
 
@@ -224,6 +229,9 @@ def run_batch(
 
     { t: "h2", n: "04", text: "The standard library's ABCs", id: "stdlib-abcs" },
 
+    {"kind": "trace", "title": "Three methods written, and the rest arrive free", "caption": "**Inheriting `collections.abc.Mapping` and writing `__getitem__`, `__iter__` and `__len__` gives you `keys`, `values`, `items`, `get`, `__contains__`, `__eq__` and `__ne__`** — which is the case where an ABC's shared implementation is unambiguously worth the coupling. The output shows the derived methods working on a class that never defined them. **And it is the one place to prefer an ABC over a Protocol without hesitation: the standard library's ABCs exist to give you implementation, not just to require methods.**", "left": "what you get", "codeW": 180, "vars": ["source", "result"], "steps": [{"code": "__getitem__, __iter__, __len__", "state": ["you write them", "three methods"], "tone": "accent"}, {"code": "config['host'], 'host' in config", "state": ["derived", "localhost, True"], "changed": [0, 1], "tone": "good"}, {"code": "list(config.keys()), items()", "state": ["derived", "['host','port'], pairs"], "changed": [0, 1], "tone": "good"}, {"code": "config.get('missing', '-')", "state": ["derived", "-"], "changed": [0, 1], "tone": "good"}, {"code": "equality against another Mapping", "state": ["derived", "True"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-4_8-04-2"},
+
+
     { t: "code", lang: "python", title: "inherit and get the rest for free", code: `
 from collections.abc import Mapping, Sequence
 
@@ -277,6 +285,9 @@ def needs_rows(rows):
 
     { t: "h2", n: "05", text: "register(), and why to avoid it", id: "register" },
 
+    {"kind": "flow", "title": "register() makes isinstance say yes and changes nothing else", "caption": "**`MyClass` registered against an ABC reports `True` for `isinstance` and `issubclass` — and gains none of the ABC's concrete methods, and is checked for nothing.** Which is the problem: **the claim is now a lie that the runtime agrees with.** A class registered as a `Mapping` that lacks `keys` passes every `isinstance` guard and fails at the first call. **So `register()` buys a true-looking answer to the wrong question**, and the honest alternative is a `Protocol`, which checks the shape it actually needs.", "cols": 3, "nodes": [{"id": "r", "label": "register(MyClass)", "sub": "on an ABC", "tone": "accent"}, {"id": "i", "label": "isinstance and issubclass say True", "sub": "both of them", "tone": "warn"}, {"id": "n", "label": "No methods inherited, nothing checked", "sub": "the class is unchanged", "tone": "crit"}, {"id": "f", "label": "So a missing method passes the guard", "sub": "and fails at the call", "tone": "crit"}, {"id": "p", "label": "Use a Protocol instead", "sub": "it checks the shape you need", "tone": "good"}], "edges": [["r", "i"], ["i", "n"], ["n", "f"], ["f", "p"]], "t": "diagram", "id": "dg-4_8-05-3"},
+
+
     { t: "code", lang: "python", title: "virtual subclassing", code: `
 from abc import ABC, abstractmethod
 
@@ -315,6 +326,9 @@ AttributeError: 'NotASerialiser' object has no attribute 'dumps'`},
     ]},
 
     { t: "h2", n: "06", text: "The ABC that should be a function", id: "over-abstraction" },
+
+    {"kind": "flow", "title": "One abstract method, one implementation, no state — that is a function", "caption": "**An ABC with a single abstract method, whose subclasses hold no state and share no implementation, is a function with extra ceremony.** The test is mechanical: **if every subclass is `def run(self, x): return ...` and nothing reads `self`, the hierarchy is carrying nothing.** Which is 3.4's point arriving from the other direction — **the interface is the call signature** — and the replacement is a dict of functions or a `Callable` hint. **The ABC earns its place the moment a subclass needs state, configuration, or a second related method.**", "cols": 3, "nodes": [{"id": "o", "label": "One abstract method", "sub": "and nothing else", "tone": "accent"}, {"id": "s", "label": "Subclasses never read self", "sub": "no state, no shared code", "tone": "crit"}, {"id": "c", "label": "So the hierarchy carries nothing", "sub": "ceremony around a call", "tone": "crit"}, {"id": "f", "label": "Use a function, or a Callable hint", "sub": "3.4's argument", "tone": "good"}, {"id": "e", "label": "It earns it back with state", "sub": "or a second method", "tone": "violet"}], "edges": [["o", "s"], ["s", "c"], ["c", "f"], ["f", "e"]], "t": "diagram", "id": "dg-4_8-06-4"},
+
 
     { t: "code", lang: "python", title: "abstraction with nothing to abstract", code: `
 # Three classes, one method each, one implementation each.

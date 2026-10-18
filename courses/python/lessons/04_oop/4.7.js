@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The is-a test, and how it fails", id: "is-a" },
 
+    {"kind": "flow", "title": "Three plausible is-a claims, and only one of them is a good idea", "caption": "**The usual advice — inherit when B is-a A, compose when B has-a A — is correct and insufficient, because English lets you claim is-a for almost anything.** `AdminUser` is-a `User`. `CachedRepository` is-a `Repository`. `RetryingHttpClient` is-a `HttpClient`. **All plausible, and only one of them is a good idea** — and the test that separates them is not grammatical: **does every caller of the base still get what the base promised, without knowing which subclass it has?** A cache that returns stale data and a client that retries a non-idempotent write both fail it.", "cols": 3, "nodes": [{"id": "a", "label": "AdminUser is-a User", "sub": "a genuine specialisation", "tone": "good"}, {"id": "c", "label": "CachedRepository is-a Repository", "sub": "but it may return stale data", "tone": "crit"}, {"id": "r", "label": "RetryingHttpClient is-a HttpClient", "sub": "but it may repeat a write", "tone": "crit"}, {"id": "t", "label": "The real test is not grammar", "sub": "English permits all three", "tone": "violet"}, {"id": "q", "label": "Does the base's promise still hold?", "sub": "without the caller knowing", "tone": "violet"}], "edges": [["a", "t"], ["c", "t"], ["r", "t"], ["t", "q"]], "t": "diagram", "id": "dg-4_7-01-2"},
+
+
     { t: "p", text: "The usual advice is *inherit when B is-a A, compose when B has-a A.* That is correct and insufficient, because English lets you claim is-a for almost anything. `AdminUser` is-a `User`. `CachedRepository` is-a `Repository`. `RetryingHttpClient` is-a `HttpClient`. All plausible, and only one of them is a good idea." },
 
     { t: "callout", kind: "mental", title: "The sharper test", body: [
@@ -36,6 +39,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "The class explosion", id: "explosion" },
 
     {"kind": "tree", "title": "The class explosion", "caption": "Every combination of two axes needs its own subclass: 2 × 3 today, 3 × 4 next quarter. Composition holds one object per axis and combines them at runtime.", "root": {"label": "Report", "children": [{"label": "PdfReport", "tone": "accent", "children": [{"label": "PdfSalesReport", "tone": "crit"}, {"label": "PdfStockReport", "tone": "crit"}]}, {"label": "HtmlReport", "tone": "accent", "children": [{"label": "HtmlSalesReport", "tone": "crit"}, {"label": "HtmlStockReport", "tone": "crit"}]}]}, "t": "diagram", "id": "dg-4_7-02-0"},
+
+
 
 
 
@@ -196,6 +201,8 @@ Report(rows, formatter=JsonFormatter())          # no compression`,
 
 
 
+
+
     { t: "p", text: "The usual objection to composition is boilerplate: an inherited method comes free, a delegated one has to be forwarded. Python has three answers depending on how much of the interface you are exposing." },
 
     { t: "tabs", items: [
@@ -288,6 +295,9 @@ p.append(track)       # bypasses it entirely -- and so do
     ]},
 
     { t: "h2", n: "04", text: "When inheritance is right", id: "when-inheritance" },
+
+    {"kind": "compare", "title": "Five tests, and two of them are about who controls the code", "caption": "**The first row is the only one that is about correctness and the rest are about change.** Composition wins whenever **behaviour varies along more than one axis**, because inheritance forces you to pick one axis for the hierarchy and encode the rest as classes-per-combination. And the last two rows are the practical ones: **inheritance assumes the relationship will never change for an instance, and that you control both the base and every subclass** — so **wrapping something you do not control is composition by definition.**", "columns": [{"title": "Inheritance", "tone": "violet", "items": ["the subclass is genuinely substitutable", "a framework requires it — a Django model, a pytest plugin", "real shared implementation, one level deep", "the relationship never changes for an instance", "you control the base and every subclass"]}, {"title": "Composition", "tone": "good", "items": ["behaviour varies along more than one axis", "you choose the behaviour at runtime or from config", "each piece should be testable on its own", "the relationship might change during its life", "you are wrapping something you do not control"]}], "t": "diagram", "id": "dg-4_7-04-3"},
+
 
     { t: "table",
       head: ["Use inheritance when", "Use composition when"],

@@ -128,6 +128,8 @@ print(sorted(vars(c)))`,
 
 
 
+
+
     { t: "ladder",
       title: "A temperature reading",
       rungs: [
@@ -198,6 +200,9 @@ r.celsius += 5`,
 
     { t: "h2", n: "03", text: "Read-only and computed properties", id: "read-only" },
 
+    {"kind": "flow", "title": "A getter with no setter is as close as Python gets to a read-only field", "caption": "**No setter means assignment raises `AttributeError` — and that is enough**, because the point is to stop accidental writes rather than to make them impossible. `cached_property` goes further: **it replaces itself with the computed value in the instance `__dict__` on first access**, so the second read is a plain attribute lookup. Which creates the failure the lesson measures: **on mutable state it goes stale — the cache has no idea the fields it read have changed**, so it belongs on immutable objects or needs explicit invalidation.", "cols": 3, "nodes": [{"id": "g", "label": "A getter with no setter", "sub": "assignment raises AttributeError", "tone": "good"}, {"id": "r", "label": "Read-only, in practice", "sub": "stops accidents, not malice", "tone": "good"}, {"id": "c", "label": "cached_property writes into __dict__", "sub": "first access computes, then it is gone", "tone": "violet"}, {"id": "s", "label": "So on mutable state it goes stale", "sub": "it cannot know the fields changed", "tone": "crit"}, {"id": "f", "label": "Use it on frozen objects", "sub": "or invalidate explicitly", "tone": "good"}], "edges": [["g", "r"], ["c", "s"], ["s", "f"]], "t": "diagram", "id": "dg-4_4-03-1"},
+
+
     { t: "code", lang: "python", title: "a getter with no setter is read-only", code: `
 from decimal import Decimal
 from functools import cached_property
@@ -254,6 +259,9 @@ print(cart.total)                 # 10 -- STALE. The cache never invalidates.`},
     ]},
 
     { t: "h2", n: "04", text: "Properties that lie", id: "properties-that-lie" },
+
+    {"kind": "compare", "title": "Five tests, and each one is about what the caller will assume", "caption": "The rule behind all five: **a property makes a call look like an attribute read, so the caller will treat it like one — cheap, repeatable, side-effect free.** Break any of those and the syntax is lying. **The clearest violation is a property that does I/O: `order.customer` that silently issues a database query looks free at the call site, and in a loop it is N queries nobody wrote.** And the last row is the one that catches people: **`next_id` as a property that increments a counter is a method wearing attribute syntax.**", "columns": [{"title": "A property", "tone": "good", "items": ["conceptually an attribute — a value the object has", "cheap: no I/O, no significant computation", "no side effects", "takes no arguments", "repeated access is safe and idempotent"]}, {"title": "A method", "tone": "accent", "items": ["an action the object performs", "does I/O, or takes measurable time", "changes state, writes, or sends something", "needs arguments", "calling it twice differs from calling it once"]}], "t": "diagram", "id": "dg-4_4-04-2"},
+
 
     { t: "callout", kind: "warn", title: "A property should behave like an attribute", body: [
       { t: "p", text: "Callers read `order.total` and assume attribute semantics: cheap, no side effects, no exceptions beyond the obvious. A property that violates that is worse than a method, because the syntax hides the cost." },

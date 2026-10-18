@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Inheritance is for substitutability", id: "substitutability" },
 
+    {"kind": "flow", "title": "Reusing code is the most common reason people inherit wrongly", "caption": "**Inheritance says a `Child` is usable anywhere a `Parent` is expected. If that is not true, you want composition** — and the measured output is the test passing: the subclass answers the base's call and `isinstance` is `True`. The sentence to keep is the negative one: **reusing code is not a reason to inherit.** A subclass that inherits only to borrow three helper methods **has bought substitutability it does not want and cannot honour**, and every caller that relies on the base's contract is now relying on something untrue.", "cols": 3, "nodes": [{"id": "s", "label": "A Child is usable where a Parent is expected", "sub": "that is the whole claim", "tone": "violet"}, {"id": "t", "label": "If that is not true: compose", "sub": "4.7", "tone": "good"}, {"id": "r", "label": "Reuse is NOT a reason to inherit", "sub": "the commonest wrong reason", "tone": "crit"}, {"id": "b", "label": "It buys substitutability you cannot honour", "sub": "and callers now rely on it", "tone": "crit"}, {"id": "h", "label": "Borrowing three helpers?", "sub": "that is a module, or a field", "tone": "good"}], "edges": [["s", "t"], ["r", "b"], ["b", "h"]], "t": "diagram", "id": "dg-4_5-01-1"},
+
+
     { t: "p", text: "Before the mechanics: inheritance says **a `Child` is usable anywhere a `Parent` is expected.** If that is not true, you want composition (Lesson 4.7). Reusing code is not a reason to inherit — it is the most common reason people inherit wrongly." },
 
     { t: "code", lang: "python", title: "the basic mechanics", code: `
@@ -57,6 +60,8 @@ True`,
     { t: "h2", n: "02", text: "The MRO", id: "mro" },
 
     {"kind": "tree", "title": "The diamond, linearised by C3", "caption": "class D(B, C) with both B and C deriving from A gives the MRO D → B → C → A → object. Each class appears once, parents come after children, and the order of the bases is respected — which is what makes super() cooperative.", "root": {"label": "object", "children": [{"label": "A", "tone": "warn", "children": [{"label": "B", "tone": "accent", "children": [{"label": "D(B, C)", "sub": "MRO: D, B, C, A, object", "tone": "good"}]}, {"label": "C", "tone": "accent"}]}]}, "t": "diagram", "id": "dg-4_5-02-0"},
+
+
 
 
 
@@ -196,7 +201,9 @@ B -> A`},
 
     { t: "h2", n: "03", text: "Cooperative __init__", id: "cooperative" },
 
-    {"kind": "steps", "title": "Cooperative __init__ through the MRO", "caption": "Each __init__ calls `super().__init__(**kwargs)` and takes only its own arguments; super() follows the MRO, not the parent, so every class in the diamond runs exactly once.", "items": [{"label": "D.__init__(name, size, colour)", "desc": "takes name, passes the rest up", "tone": "good"}, {"label": "super() → B.__init__(size, colour)", "desc": "takes size", "tone": "accent"}, {"label": "super() → C.__init__(colour)", "desc": "takes colour — next in the MRO, not B's parent", "tone": "accent"}, {"label": "super() → A.__init__()", "desc": "runs once", "tone": "warn"}, {"label": "object.__init__()", "desc": "accepts no arguments: **kwargs must be empty by here", "tone": "violet"}], "t": "diagram", "id": "dg-4_5-03-1"},
+    {"kind": "steps", "title": "Cooperative __init__ through the MRO", "caption": "Each __init__ calls `super().__init__(**kwargs)` and takes only its own arguments; super() follows the MRO, not the parent, so every class in the diamond runs exactly once.", "items": [{"label": "D.__init__(name, size, colour)", "desc": "takes name, passes the rest up", "tone": "good"}, {"label": "super() → B.__init__(size, colour)", "desc": "takes size", "tone": "accent"}, {"label": "super() → C.__init__(colour)", "desc": "takes colour — next in the MRO, not B's parent", "tone": "accent"}, {"label": "super() → A.__init__()", "desc": "runs once", "tone": "warn"}, {"label": "object.__init__()", "desc": "accepts no arguments: **kwargs must be empty by here", "tone": "violet"}], "t": "diagram", "id": "dg-4_5-03-4"},
+
+
 
 
 
@@ -294,6 +301,9 @@ print(o.log_level, o.order_id, bool(o.created_at))`,
 
     { t: "h2", n: "04", text: "When C3 refuses", id: "c3-errors" },
 
+    {"kind": "trace", "title": "C3 refuses rather than guessing, and the error names the bases", "caption": "**`TypeError: Cannot create a consistent method resolution order (MRO) for bases X, Y` — raised at class *definition* time, not at a call.** Which is the good news in this section: **the one inheritance mistake Python catches for you is an impossible linearisation**, because C3 requires that each base's own order is preserved and that a class precedes its parents. **Two hierarchies that disagree about the order of X and Y cannot both be honoured, so it refuses rather than picking one** — and the fix is always to make the orders agree.", "left": "what happens", "codeW": 190, "vars": ["when", "value"], "steps": [{"code": "class Z(X, Y) with conflicting orders", "state": ["at definition", "TypeError"], "tone": "crit"}, {"code": "the message", "state": ["-", "consistent MRO for bases X, Y"], "changed": [0, 1], "tone": "violet"}, {"code": "why", "state": ["C3 preserves each base's order", "and both cannot hold"], "changed": [0, 1], "tone": "accent"}, {"code": "so", "state": ["it refuses rather than guessing", "make the orders agree"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-4_5-04-2"},
+
+
     { t: "code", lang: "python", title: "an impossible order", code: `
 class A: pass
 class B: pass
@@ -316,6 +326,9 @@ order (MRO) for bases X, Y`,
     ]},
 
     { t: "h2", n: "05", text: "Mixins that behave", id: "mixins" },
+
+    {"kind": "flow", "title": "A mixin that behaves assumes nothing and calls `super()`", "caption": "The measured output shows both working: **a mixin adding `to_json` produces `{\"name\": \"deploy\", \"priority\": 2}` without knowing what class it is mixed into.** The rules that make that true are short. **Name methods so they cannot collide, assume no attributes you did not declare, and always call `super()` so the next class in the MRO still runs.** A mixin that reads `self.name` without declaring it **works until it is mixed into something without a name**, and the failure is an `AttributeError` far from the mixin.", "cols": 3, "nodes": [{"id": "n", "label": "Name methods so they cannot collide", "sub": "to_json, not format", "tone": "good"}, {"id": "a", "label": "Assume no attribute you did not declare", "sub": "or it breaks on reuse", "tone": "good"}, {"id": "s", "label": "Always call super()", "sub": "so the next class still runs", "tone": "good"}, {"id": "w", "label": "Reading self.name undeclared", "sub": "works until it does not", "tone": "crit"}, {"id": "f", "label": "And the AttributeError is far from the mixin", "sub": "which is why the rule exists", "tone": "crit"}], "edges": [["n", "s"], ["a", "w"], ["w", "f"], ["s", "f"]], "t": "diagram", "id": "dg-4_5-05-3"},
+
 
     { t: "code", lang: "python", title: "the rules, applied", code: `
 from __future__ import annotations

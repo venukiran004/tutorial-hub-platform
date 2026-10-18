@@ -39,6 +39,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "`Order(\"o-1\", 100)` looks like a function call, and it is — calling a class runs its metaclass's `__call__`, which does two things in sequence." },
 
     { t: "viz",
@@ -207,6 +209,9 @@ class Report:
 
     { t: "h2", n: "03", text: "__new__, and when you need it", id: "new" },
 
+    {"kind": "trace", "title": "Four cases, and in each one `__init__` runs too late", "caption": "**You will write `__init__` constantly and `__new__` perhaps twice in a career — it exists for the cases where you must control *which object is returned*, not merely how it is populated.** The first row is the clearest: **subclassing an immutable type fixes the value at allocation, so by the time `__init__` runs it is too late to change.** And the two middle rows share one reason: **`__init__` cannot choose to return a different object**, so caching, interning and singletons are all out of its reach.", "left": "case", "codeW": 190, "vars": ["why __init__ cannot do it"], "steps": [{"code": "subclassing int, str, tuple", "state": ["the value is fixed at allocation"], "tone": "violet"}, {"code": "returning a cached instance", "state": ["__init__ cannot return another object"], "changed": [0], "tone": "violet"}, {"code": "a singleton", "state": ["same reason"], "tone": "violet"}, {"code": "metaclass-level allocation", "state": ["framework internals only"], "changed": [0], "tone": "accent"}], "t": "diagram", "id": "dg-4_1-03-1"},
+
+
     { t: "p", text: "You will write `__init__` constantly and `__new__` perhaps twice in a career. It exists for the cases where you must control **which object is returned**, not merely how it is populated." },
 
     { t: "table",
@@ -266,6 +271,9 @@ print(a.settings)`,
     ]},
 
     { t: "h2", n: "04", text: "Do you need a class at all?", id: "need-a-class" },
+
+    {"kind": "layers", "title": "Five options, and the first one covers most code", "caption": "**A function, for one behaviour with no state between calls — which is most code.** The two middle rows are where records belong: **a dataclass is the modern default for data with a few fields and little behaviour, and a NamedTuple when the record should behave like a tuple.** A class earns its place when there is **state plus several methods that operate on it, or a type you will subclass or substitute.** And the row people forget: **a module is already a namespace of related functions with no per-instance state.**", "items": [{"label": "A function", "sub": "one behaviour, no state between calls", "tone": "good", "side": "most code"}, {"label": "A dataclass", "sub": "a few fields, little behaviour - the modern default", "tone": "good", "side": "records"}, {"label": "A NamedTuple", "sub": "an immutable record that behaves like a tuple", "tone": "good", "side": "records"}, {"label": "A class", "sub": "state plus several methods, or a type to substitute", "tone": "violet", "side": "state"}, {"label": "A module", "sub": "related functions, no per-instance state", "tone": "teal", "side": "forgotten"}], "t": "diagram", "id": "dg-4_1-04-2"},
+
 
     { t: "table",
       head: ["Use", "When"],
