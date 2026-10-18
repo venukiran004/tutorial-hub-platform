@@ -22,6 +22,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", text: "Three buckets", id: "three-buckets",
       sub: "Every PEP 8 rule belongs in exactly one of them, and they need completely different treatment." },
 
+    {"kind": "trace", "title": "Three buckets, and 95% of PEP 8's text belongs in the first", "caption": "**The automate bucket is roughly 95% of PEP 8's text and almost none of its value: indentation, quote style, line length, trailing commas, blank lines, operator spacing, import sorting — `ruff format` plus `ruff check --select I` in CI, and never discussed in review.** The decide bucket is **roughly 5% of the text and 95% of the value**, and it is where review attention belongs. And the third exists because **PEP 8 says so itself: “know when to be inconsistent”** — broken with a `noqa` and a reason.", "left": "bucket", "codeW": 140, "vars": ["examples", "how you handle it"], "steps": [{"code": "automate it", "state": ["indentation, quotes, line length, imports", "ruff in CI, never in review"], "tone": "good", "note": "95% of the text"}, {"code": "decide it", "state": ["names, module structure, what is public", "human judgement"], "changed": [0, 1], "tone": "violet", "note": "95% of the value"}, {"code": "break it", "state": ["a table of constants, a local lambda", "noqa, with a reason"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-5_2-01-0"},
+
     { t: "table",
       head: ["Bucket", "Examples", "How you handle it"],
       rows: [
@@ -153,7 +155,8 @@ AttributeError: 'Child' object has no attribute '__token'`,
     { t: "h2", n: "03", text: "Module layout", id: "layout",
       sub: "There is a conventional order, and readers rely on it whether or not they could recite it." },
 
-    {"kind": "layers", "title": "Module layout, top to bottom", "caption": "The order a reader expects: what this module is, what it needs, what it exports, then the implementation. A module that opens with helper functions makes the reader scroll to find the point.", "items": [{"label": "docstring", "sub": "one paragraph: what and why", "tone": "accent"}, {"label": "imports", "sub": "stdlib, third-party, local — three groups", "tone": "good"}, {"label": "constants and __all__", "sub": "the public surface, declared"}, {"label": "public functions and classes", "sub": "in the order a reader needs them", "tone": "warn"}, {"label": "private helpers", "sub": "_leading underscore, after the code that uses them"}, {"label": "if __name__ == '__main__':", "sub": "the entry point, last", "tone": "violet"}], "t": "diagram", "id": "dg-5_2-03-0"},
+    {"kind": "layers", "title": "Module layout, top to bottom", "caption": "The order a reader expects: what this module is, what it needs, what it exports, then the implementation. A module that opens with helper functions makes the reader scroll to find the point.", "items": [{"label": "docstring", "sub": "one paragraph: what and why", "tone": "accent"}, {"label": "imports", "sub": "stdlib, third-party, local — three groups", "tone": "good"}, {"label": "constants and __all__", "sub": "the public surface, declared"}, {"label": "public functions and classes", "sub": "in the order a reader needs them", "tone": "warn"}, {"label": "private helpers", "sub": "_leading underscore, after the code that uses them"}, {"label": "if __name__ == '__main__':", "sub": "the entry point, last", "tone": "violet"}], "t": "diagram", "id": "dg-5_2-03-3"},
+
 
 
 
@@ -272,6 +275,8 @@ order = Order(...)`},
     /* ================================================================== */
     { t: "h2", n: "04", text: "Breaking lines for meaning", id: "line-breaks" },
 
+    {"kind": "flow", "title": "The one layout decision a formatter cannot make for you", "caption": "**The formatter will produce something legal from any input; you decide what it has to work with** — because where a line breaks depends on **which grouping is meaningful**, and that is a fact about the code's intent rather than about its length. So the rule is to break at the seam you want the reader to see: **arguments that belong together on one line, a long boolean split so each clause is its own line, a chained call broken at the step boundaries.** A formatter run over a badly grouped line **produces a tidy version of the wrong grouping.**", "cols": 3, "nodes": [{"id": "f", "label": "The formatter makes it legal", "sub": "from any input", "tone": "accent"}, {"id": "g", "label": "You choose the grouping", "sub": "which is about intent", "tone": "violet"}, {"id": "b", "label": "Break at the seam you want seen", "sub": "one clause per line", "tone": "good"}, {"id": "w", "label": "Badly grouped in, tidy out", "sub": "and still wrong", "tone": "crit"}, {"id": "c", "label": "So it is a decide-it item", "sub": "not an automate-it one", "tone": "teal"}], "edges": [["f", "g"], ["g", "b"], ["f", "w"], ["w", "c"]], "t": "diagram", "id": "dg-5_2-04-1"},
+
     { t: "p", text: "This is the one layout decision the formatter cannot make for you, because it depends on which grouping is meaningful. The formatter will produce something legal from any input; you decide what it has to work with." },
 
     { t: "code", lang: "python", title: "the magic trailing comma", code: `
@@ -314,6 +319,8 @@ if user.can_be_billed() and region in ALLOWED_REGIONS:
 
     /* ================================================================== */
     { t: "h2", n: "05", text: "Comments and docstrings", id: "comments" },
+
+    {"kind": "trace", "title": "A comment that says what is a liability; one that says why is the most valuable line in the file", "caption": "**A comment restating the code is a maintenance liability, because it is the part that will not be updated** — the code changes in the diff and the comment stays. The docstring rules are short and worth getting right: **imperative mood ending in a full stop — “Return the settled total”, not “Returns” and not “This function returns”.** And the two omissions matter: **do not document parameter types, because the annotations state them and cannot drift** — and **a docstring on every function regardless of value trains readers to skip docstrings.**", "left": "the comment or docstring", "codeW": 180, "vars": ["verdict"], "steps": [{"code": "says WHAT the code does", "state": ["a liability - it will not be updated"], "tone": "crit"}, {"code": "says WHY", "state": ["the most valuable line in the file"], "changed": [0], "tone": "violet"}, {"code": "one-line docstring", "state": ["imperative, full stop: 'Return the...'"], "changed": [0], "tone": "good"}, {"code": "the parameter types", "state": ["do not - annotations cannot drift"], "changed": [0], "tone": "crit"}, {"code": "one on every function", "state": ["trains readers to skip them"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-5_2-05-2"},
 
     { t: "p", text: "PEP 8 and PEP 257 are brief here and the practical rule is briefer: **a comment that says what the code does is a maintenance liability, because it is the part that will not be updated.** A comment that says why is the most valuable line in the file." },
 

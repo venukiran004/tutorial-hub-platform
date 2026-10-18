@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Unpacking is a length assertion", id: "assertion" },
 
-    {"kind": "cells", "title": "Unpacking is a length assertion", "caption": "first, *middle, last = seq gives first and last one item each and middle whatever remains — an empty list for a two-item sequence. Without the star, the counts must match exactly or Python raises.", "items": ["first", "*middle", "*middle", "*middle", "last"], "highlight": [1, 2, 3], "negative": false, "label": "first, *middle, last = [1, 2, 3, 4, 5]   → first=1, middle=[2, 3, 4], last=5", "t": "diagram", "id": "dg-5_4-01-0"},
+    {"kind": "cells", "title": "Unpacking is a length assertion", "caption": "first, *middle, last = seq gives first and last one item each and middle whatever remains — an empty list for a two-item sequence. Without the star, the counts must match exactly or Python raises.", "items": ["first", "*middle", "*middle", "*middle", "last"], "highlight": [1, 2, 3], "negative": false, "label": "first, *middle, last = [1, 2, 3, 4, 5]   → first=1, middle=[2, 3, 4], last=5", "t": "diagram", "id": "dg-5_4-01-2"},
+
 
 
 
@@ -134,6 +135,8 @@ print(rest)`,
 
     { t: "h2", n: "02", text: "Unpacking at call sites", id: "call-sites" },
 
+    {"kind": "trace", "title": "The same star does three different jobs depending on where it sits", "caption": "**At a call site a star spreads a sequence into positional arguments and a double star spreads a mapping into keywords** — so `f(*args)` and `f(**opts)` are the inverse of the collection 3.2 measured. The join row is the one that catches people: **`\"|\".join(parts)` takes an iterable, not varargs, so there is no star** — and the merge row shows the double star building a dict rather than passing one. **Three syntaxes that look the same and differ by context, which is why reading the surrounding call matters more than recognising the symbol.**", "left": "expression", "codeW": 180, "vars": ["result", "what the star did"], "steps": [{"code": "add(*[3, 4])", "state": ["7", "spread into positionals"], "tone": "good"}, {"code": "'|'.join(parts)", "state": ["a | b!", "no star - join takes an iterable"], "changed": [0, 1], "tone": "warn"}, {"code": "merged = dict(a, b_kwargs)", "state": ["{'timeout': 5, 'retries': 3}", "built a dict, not a call"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_4-02-0"},
+
     { t: "code", lang: "python", title: "spreading, merging and forwarding", code: `
 # Spread a sequence into positional arguments
 point = (3, 7)
@@ -173,7 +176,8 @@ print({**defaults, **override})     # port is GONE`,
 
     { t: "h2", n: "03", text: "The walrus operator", id: "walrus" },
 
-    {"kind": "trace", "title": "The walrus operator in a loop", "caption": ":= binds a name inside an expression, so the read-then-test pattern needs no separate assignment line. The name is visible after the loop as well.", "vars": ["chunk", "loop runs?"], "steps": [{"code": "while (chunk := f.read(4096)):", "state": ["b'...4096 bytes'", "yes"], "changed": [0, 1]}, {"code": "    process(chunk)", "state": ["b'...4096 bytes'", "yes"]}, {"code": "while (chunk := f.read(4096)):", "state": ["b'...last 812'", "yes"], "changed": [0]}, {"code": "while (chunk := f.read(4096)):", "state": ["b''", "no"], "changed": [0, 1], "tone": "good", "note": "empty bytes is falsy"}], "t": "diagram", "id": "dg-5_4-03-1"},
+    {"kind": "trace", "title": "The walrus operator in a loop", "caption": ":= binds a name inside an expression, so the read-then-test pattern needs no separate assignment line. The name is visible after the loop as well.", "vars": ["chunk", "loop runs?"], "steps": [{"code": "while (chunk := f.read(4096)):", "state": ["b'...4096 bytes'", "yes"], "changed": [0, 1]}, {"code": "    process(chunk)", "state": ["b'...4096 bytes'", "yes"]}, {"code": "while (chunk := f.read(4096)):", "state": ["b'...last 812'", "yes"], "changed": [0]}, {"code": "while (chunk := f.read(4096)):", "state": ["b''", "no"], "changed": [0, 1], "tone": "good", "note": "empty bytes is falsy"}], "t": "diagram", "id": "dg-5_4-03-3"},
+
 
 
 
@@ -265,6 +269,8 @@ if (user := db.fetch(user_id)) and user.active:
     ]},
 
     { t: "h2", n: "04", text: "Unpacking in function signatures and returns", id: "signatures" },
+
+    {"kind": "trace", "title": "A function returning a NamedTuple unpacks and stays readable", "caption": "**`start, end = get_range()` works on anything iterable, so a plain tuple return unpacks — and a `NamedTuple` return unpacks *and* prints as `Range(start=10, end=20)`.** That is the whole argument for using one: **the call site that wants two values is unchanged, and the call site that wants one named field no longer indexes by position.** Which is 5.9's row made concrete: **a tuple return is fine until a third value is added, at which point every positional unpack is a silent reordering risk.**", "left": "what you write", "codeW": 180, "vars": ["result"], "steps": [{"code": "start, end = get_range()", "state": ["10 10"], "tone": "good"}, {"code": "r = get_range()", "state": ["Range(start=10, end=20)"], "changed": [0], "tone": "violet"}, {"code": "r.end", "state": ["20, by name"], "changed": [0], "tone": "good"}, {"code": "adding a third field", "state": ["positional unpacks break loudly"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-5_4-04-1"},
 
     { t: "code", lang: "python", title: "multiple returns, named", code: `
 from typing import NamedTuple

@@ -60,6 +60,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Everything about mutability reduces to one question asked in two parts, first seen in Lesson 1.4:" },
 
     { t: "callout", kind: "mental", title: "The two-question test, restated", body: [
@@ -209,6 +211,7 @@ DEFAULT_TAGS = ("untagged",)                 # tuple, not list
 
 
 
+
     { t: "ladder",
       title: "A settings object handed to many components",
       rungs: [
@@ -282,6 +285,7 @@ def normalise(config: Mapping[str, str]) -> dict[str, str]:
     { t: "h2", n: "04", text: "Why concurrency is not the cause", id: "concurrency" },
 
     {"kind": "flow", "title": "Concurrency removes the accident of timing that was hiding the flaw", "caption": "**Shared mutable state is a bug in a single-threaded program too — it is just harder to observe, because nothing else runs between your read and your write.** The output makes it concrete: two call sites, **`{'limit': 50}` twice**, one object. So **concurrency does not introduce the flaw; it removes the accident of timing that was hiding it** — which is why “it only breaks under load” is a statement about observability rather than about cause, and why the fix is the same in both cases.", "cols": 3, "nodes": [{"id": "s", "label": "One mutable object, two owners", "sub": "{'limit': 50} twice", "tone": "crit"}, {"id": "o", "label": "Single-threaded: nothing runs between", "sub": "read and write are adjacent", "tone": "warn"}, {"id": "h", "label": "So the bug is hidden, not absent", "sub": "the state is already shared", "tone": "crit"}, {"id": "c", "label": "Concurrency interleaves them", "sub": "and the flaw becomes visible", "tone": "crit"}, {"id": "f", "label": "So the fix is the same either way", "sub": "do not share the object", "tone": "good"}], "edges": [["s", "o"], ["o", "h"], ["h", "c"], ["c", "f"]], "t": "diagram", "id": "dg-2_5-04-3"},
+
 
 
 

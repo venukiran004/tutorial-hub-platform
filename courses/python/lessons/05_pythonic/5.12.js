@@ -21,6 +21,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", text: "The script", id: "script",
       sub: "Sixty lines that have been in production for eighteen months" },
 
+    {"kind": "flow", "title": "It works, it was written in an afternoon, and everyone is slightly afraid of it", "caption": "**This runs nightly: it reads the day's orders, applies volume discounts, writes a summary file and emails anyone over their credit limit.** The description is the point — **four responsibilities, one file, no arguments and no tests** — and none of that is visible as a bug, which is why nobody has touched it. **The three passes that follow separate the three different kinds of problem: what is wrong, what cannot be tested, and what will fail at 3am** — and they are deliberately not done at once.", "cols": 3, "nodes": [{"id": "s", "label": "Reads orders, discounts, writes, emails", "sub": "four jobs, one file", "tone": "accent"}, {"id": "w", "label": "It works", "sub": "which is why nobody touched it", "tone": "warn"}, {"id": "p1", "label": "Pass 1: what is wrong", "sub": "correctness", "tone": "good"}, {"id": "p2", "label": "Pass 2: what cannot be tested", "sub": "seams", "tone": "good"}, {"id": "p3", "label": "Pass 3: what fails at 3am", "sub": "production", "tone": "good"}], "edges": [["s", "w"], ["w", "p1"], ["p1", "p2"], ["p2", "p3"]], "t": "diagram", "id": "dg-5_12-01-0"},
+
     { t: "p", text: "This runs nightly. It reads the day's orders, applies volume discounts, writes a summary file and emails anyone whose account went over its credit limit. It was written in an afternoon, it works, and everyone is slightly afraid of it." },
 
     { t: "code", lang: "python", title: "nightly.py — as found", code: `
@@ -69,7 +71,8 @@ run()
 
     { t: "h2", n: "02", text: "What is actually wrong", id: "wrong" },
 
-    {"kind": "steps", "title": "Three passes over a script", "caption": "Correctness first, then the seams that make it testable, then what production needs. Doing them in this order means each pass has something stable to work on.", "items": [{"label": "Pass 1 — correctness", "desc": "the mutable default, the bare except, the wrong encoding, the off-by-one", "tone": "crit"}, {"label": "Pass 2 — seams", "desc": "pure functions, injected I/O, a main() that takes arguments", "tone": "accent"}, {"label": "Pass 3 — production", "desc": "logging, config, exit codes, idempotence, a test", "tone": "good"}], "t": "diagram", "id": "dg-5_12-02-0"},
+    {"kind": "steps", "title": "Three passes over a script", "caption": "Correctness first, then the seams that make it testable, then what production needs. Doing them in this order means each pass has something stable to work on.", "items": [{"label": "Pass 1 — correctness", "desc": "the mutable default, the bare except, the wrong encoding, the off-by-one", "tone": "crit"}, {"label": "Pass 2 — seams", "desc": "pure functions, injected I/O, a main() that takes arguments", "tone": "accent"}, {"label": "Pass 3 — production", "desc": "logging, config, exit codes, idempotence, a test", "tone": "good"}], "t": "diagram", "id": "dg-5_12-02-4"},
+
 
 
 
@@ -173,6 +176,8 @@ def test_current_behaviour(tmp_path, monkeypatch):
     { t: "h2", n: "03", text: "Pass 1 — correctness", id: "pass1",
       sub: "The only pass that is allowed to change what the program does" },
 
+    {"kind": "trace", "title": "Six correctness fixes, and two of them were invisible on CPython", "caption": "**`Decimal(r[2])` rather than `float` — because `0.1 + 0.2` is not `0.3` in binary floating point, and eighteen months of accumulating that is why the report never quite reconciles.** Two were hidden by the implementation: **the original leaked a handle on every exception and never closed the writer if a row raised, which CPython's refcounting hides and PyPy does not.** And one was hidden by the data: **dicts preserve insertion order, so two identical days produced diffable-looking files that differed everywhere** until `sorted` was added.", "left": "fix", "codeW": 170, "vars": ["what it was hiding"], "steps": [{"code": "Decimal(r[2]), not float", "state": ["the report never reconciled"], "tone": "crit"}, {"code": "with open(...)", "state": ["a leaked handle per exception"], "changed": [0], "tone": "crit", "note": "refcounting hid it"}, {"code": "try/except around the row parse", "state": ["one empty field killed 40,000 rows"], "changed": [0], "tone": "crit"}, {"code": "report written before email", "state": ["an SMTP outage truncated the report"], "changed": [0], "tone": "crit"}, {"code": "sorted(results)", "state": ["two identical days, different files"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-5_12-03-1"},
+
     { t: "code", lang: "python", title: "nightly.py — after pass 1", code: `
 import csv
 import smtplib
@@ -258,6 +263,8 @@ def run():
 
     { t: "h2", n: "04", text: "Pass 2 — seams", id: "pass2",
       sub: "Behaviour must not change at all. If a test result moves, you made a mistake." },
+
+    {"kind": "flow", "title": "Two tests in 0.01s, which is what the seams bought", "caption": "**`2 passed in 0.01s` — and the measurement that matters is the time, not the count.** The pass did not add tests to the script; **it separated the pure calculation from the I/O so that a test needs no file, no SMTP server and no clock.** Which is the general shape: **a function that reads, computes and writes can only be tested by providing all three, so the seam goes between computing and the rest.** And the discount rule is now testable **in isolation, at every boundary value, in milliseconds.**", "cols": 3, "nodes": [{"id": "o", "label": "Read, compute, write, email - one function", "sub": "testable only end to end", "tone": "crit"}, {"id": "s", "label": "Put the seam around the computing", "sub": "a pure function", "tone": "violet"}, {"id": "t", "label": "Now a test needs no file", "sub": "no SMTP, no clock", "tone": "good"}, {"id": "r", "label": "2 passed in 0.01s", "sub": "the time is the result", "tone": "good"}, {"id": "b", "label": "And every boundary value is cheap", "sub": "which is why they get tested", "tone": "teal"}], "edges": [["o", "s"], ["s", "t"], ["t", "r"], ["r", "b"]], "t": "diagram", "id": "dg-5_12-04-2"},
 
     { t: "code", lang: "python", title: "nightly.py — after pass 2", code: `
 from __future__ import annotations
@@ -372,6 +379,8 @@ def test_report_is_stable_regardless_of_row_order():
     ]},
 
     { t: "h2", n: "05", text: "Pass 3 — production", id: "pass3" },
+
+    {"kind": "trace", "title": "Seven production changes, and four of them are about the next failure", "caption": "**A date argument, because any job derived from `date.today()` cannot be re-run or backfilled without editing the source.** Then three that are about what a crash leaves behind: **dated filenames, because `summary.txt` was overwritten every night including when today's was wrong; write-then-rename, because a crash mid-write leaves a truncated report that looks complete; and distinct exit codes, so a scheduler can retry a 2 in an hour, page on a 3, and merely log a 1.** And the quality gate: **silently skipping rows is right for a handful and wrong for a third of the file.**", "left": "change", "codeW": 170, "vars": ["what it prevents"], "steps": [{"code": "a date argument", "state": ["no re-run, no backfill without editing"], "tone": "violet"}, {"code": "dated output filenames", "state": ["yesterday's report gone"], "changed": [0], "tone": "crit"}, {"code": "write-then-rename", "state": ["a truncated report that looks complete"], "changed": [0], "tone": "crit"}, {"code": "distinct exit codes 0/1/2/3", "state": ["a scheduler that cannot tell them apart"], "changed": [0], "tone": "violet"}, {"code": "a quality gate on skipped rows", "state": ["quietly incomplete, instead of loud"], "changed": [0], "tone": "crit"}, {"code": "logging, not print", "state": ["no timestamps, levels or filters"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-5_12-05-3"},
 
     { t: "code", lang: "python", title: "nightly.py — the entry point after pass 3", code: `
 import logging

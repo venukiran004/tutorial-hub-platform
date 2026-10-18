@@ -117,6 +117,8 @@ print(len(tags["order-1"]))
 
     { t: "h2", n: "02", text: "Counter", id: "counter" },
 
+    {"kind": "trace", "title": "A missing key is 0, and the arithmetic operators are the reason to use it", "caption": "**`Counter` returns `0` for a missing key rather than raising**, which removes the `if key in counts` from every increment. And `most_common(2)` answers the question people write a sort for. The rows worth knowing are the last three: **`+` merges and sums, `-` subtracts and drops anything that reaches zero or below, and `&` keeps the minimum of each key** — so a diff between two days' counts is one operator, and **the asymmetry of `-` is deliberate: a `Counter` of counts has no meaning below zero.**", "left": "expression", "codeW": 170, "vars": ["result"], "steps": [{"code": "Counter(statuses)", "state": ["{'paid': 3, 'pending': 1, 'failed': 1}"], "tone": "good"}, {"code": "c['absent']", "state": ["0 - no KeyError"], "changed": [0], "tone": "violet"}, {"code": "c.most_common(2)", "state": ["[('paid', 3), ('pending', 1)]"], "changed": [0], "tone": "good"}, {"code": "a + b", "state": ["sums each key"], "changed": [0], "tone": "good"}, {"code": "a - b", "state": ["drops anything <= 0"], "changed": [0], "tone": "violet"}, {"code": "a & b", "state": ["the minimum of each key"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-5_9-02-0"},
+
     { t: "code", lang: "python", title: "counting, ranking, and arithmetic", code: `
 from collections import Counter
 
@@ -162,7 +164,8 @@ top = min(counts.items(), key=lambda kv: (-kv[1], kv[0]))`},
 
     { t: "h2", n: "03", text: "deque", id: "deque" },
 
-    {"kind": "cells", "title": "deque: O(1) at both ends", "caption": "A deque is a doubly linked block list. appendleft and popleft are O(1) where a list's insert(0) and pop(0) are O(n); maxlen turns it into a rolling window that drops the oldest item automatically.", "items": ["appendL", "a", "b", "c", "d", "← append"], "highlight": [0, 5], "negative": false, "label": "deque(maxlen=4): a fifth append drops 'a' from the left", "t": "diagram", "id": "dg-5_9-03-0"},
+    {"kind": "cells", "title": "deque: O(1) at both ends", "caption": "A deque is a doubly linked block list. appendleft and popleft are O(1) where a list's insert(0) and pop(0) are O(n); maxlen turns it into a rolling window that drops the oldest item automatically.", "items": ["appendL", "a", "b", "c", "d", "← append"], "highlight": [0, 5], "negative": false, "label": "deque(maxlen=4): a fifth append drops 'a' from the left", "t": "diagram", "id": "dg-5_9-03-3"},
+
 
 
 
@@ -225,6 +228,8 @@ deque.popleft(): 0.0043s`},
 
     { t: "h2", n: "04", text: "namedtuple and NamedTuple", id: "namedtuple" },
 
+    {"kind": "trace", "title": "Four record types, and the choice is whether tuple behaviour is wanted", "caption": "**A `NamedTuple` unpacks like a tuple *and* reads by name — `OrderLine(sku='W-1', quantity=3, ...)` prints usefully and `line.sku` works** — so it is right for multi-value returns, coordinates and database rows. **A frozen dataclass is usually clearer when tuple behaviour is not wanted, and it supports `slots`.** The row that is easy to get wrong is the last: **a dict is right when the keys are data rather than a fixed schema** — and reaching for a record type there means inventing a schema the data does not have.", "left": "use", "codeW": 170, "vars": ["when", "note"], "steps": [{"code": "NamedTuple", "state": ["immutable AND unpacks like a tuple", "returns, coordinates, rows"], "tone": "violet"}, {"code": "dataclass(frozen=True)", "state": ["immutable, no tuple behaviour", "clearer, and supports slots"], "changed": [0, 1], "tone": "good"}, {"code": "dataclass", "state": ["a mutable record", "-"], "changed": [0, 1], "tone": "good"}, {"code": "dict", "state": ["the keys are DATA, not a schema", "do not invent one"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-5_9-04-1"},
+
     { t: "code", lang: "python", title: "prefer the typed form", code: `
 from typing import NamedTuple
 from decimal import Decimal
@@ -267,6 +272,8 @@ OrderLine(sku='W-1', quantity=3, unit_price=Decimal('19.99'))
     },
 
     { t: "h2", n: "05", text: "ChainMap", id: "chainmap" },
+
+    {"kind": "trace", "title": "ChainMap searches the layers and never copies them", "caption": "**A `ChainMap` searches its mappings left to right, so the first layer wins — `debug` is `True` from the override, `timeout` is 10 from the middle layer, `retries` is 3 from the defaults** — and nothing was merged. Which is the difference from 2.3's spread: **a merge produces a snapshot and a `ChainMap` stays live, so a later change to the defaults is visible immediately.** And the `.maps` attribute is the reason it is good for configuration: **you can see which layer every value came from**, which a merged dict has permanently lost.", "left": "lookup", "codeW": 170, "vars": ["value", "from"], "steps": [{"code": "cfg['debug']", "state": ["True", "the first layer"], "tone": "good"}, {"code": "cfg['timeout']", "state": ["10", "the second - the first lacks it"], "changed": [0, 1], "tone": "good"}, {"code": "cfg['retries']", "state": ["3", "the defaults"], "changed": [0, 1], "tone": "good"}, {"code": "cfg.maps", "state": ["all three, in order", "which a merge has lost"], "changed": [0, 1], "tone": "violet"}, {"code": "changing a default later", "state": ["visible immediately", "it is live, not a snapshot"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_9-05-2"},
 
     { t: "code", lang: "python", title: "layered lookup without merging", code: `
 from collections import ChainMap

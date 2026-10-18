@@ -81,7 +81,8 @@ match event:
 
     { t: "h2", n: "02", text: "The pattern kinds", id: "kinds" },
 
-    {"kind": "tree", "title": "The pattern kinds", "caption": "A case clause is a pattern that either matches the subject's shape and binds names, or fails and falls through to the next case. Patterns nest, so a mapping pattern can contain a sequence pattern that contains a class pattern.", "root": {"label": "pattern", "children": [{"label": "literal", "sub": "case 0 | case 'quit'", "tone": "accent"}, {"label": "capture", "sub": "case x — binds", "tone": "good"}, {"label": "sequence", "sub": "case [x, y, *rest]", "tone": "warn"}, {"label": "mapping", "sub": "case {'type': t}", "tone": "warn"}, {"label": "class", "sub": "case Point(x=0)", "tone": "violet"}, {"label": "or / guard", "sub": "case A | B if cond"}]}, "t": "diagram", "id": "dg-5_5-02-0"},
+    {"kind": "tree", "title": "The pattern kinds", "caption": "A case clause is a pattern that either matches the subject's shape and binds names, or fails and falls through to the next case. Patterns nest, so a mapping pattern can contain a sequence pattern that contains a class pattern.", "root": {"label": "pattern", "children": [{"label": "literal", "sub": "case 0 | case 'quit'", "tone": "accent"}, {"label": "capture", "sub": "case x — binds", "tone": "good"}, {"label": "sequence", "sub": "case [x, y, *rest]", "tone": "warn"}, {"label": "mapping", "sub": "case {'type': t}", "tone": "warn"}, {"label": "class", "sub": "case Point(x=0)", "tone": "violet"}, {"label": "or / guard", "sub": "case A | B if cond"}]}, "t": "diagram", "id": "dg-5_5-02-2"},
+
 
 
 
@@ -230,6 +231,8 @@ match event:
 
     { t: "h2", n: "03", text: "Guards", id: "guards" },
 
+    {"kind": "flow", "title": "A guard runs after the bindings are made, so it can use them", "caption": "**A guard runs *after* the pattern matches and its bindings exist — so it can test the values it just captured — and if the guard is false, matching continues to the next case** rather than falling out of the `match` entirely. Which gives a clean division of labour: **put structure in the pattern and values in the guard.** A pattern cannot say “a two-element list whose first element exceeds 100”; **the pattern says two-element list, the guard says exceeds 100.**", "cols": 3, "nodes": [{"id": "m", "label": "The pattern matches", "sub": "and bindings are made", "tone": "accent"}, {"id": "g", "label": "THEN the guard runs", "sub": "so it can use them", "tone": "violet"}, {"id": "f", "label": "False -> try the next case", "sub": "not out of the match", "tone": "good"}, {"id": "s", "label": "Structure in the pattern", "sub": "a two-element list", "tone": "good"}, {"id": "v", "label": "Values in the guard", "sub": "whose first exceeds 100", "tone": "good"}], "edges": [["m", "g"], ["g", "f"], ["s", "v"], ["g", "v"]], "t": "diagram", "id": "dg-5_5-03-0"},
+
     { t: "code", lang: "python", title: "a condition the pattern cannot express", code: `
 match order:
     case {"total": total} if total > 10_000:
@@ -258,6 +261,8 @@ case dict() as d if "items" in d and isinstance(d["items"], list):`},
     ]},
 
     { t: "h2", n: "04", text: "Order matters, and there is no fall-through", id: "order" },
+
+    {"kind": "trace", "title": "First match wins, nothing falls through, and nothing checks you covered the cases", "caption": "**Like `if`/`elif`, the first matching case wins and nothing falls through — no `break` needed — so specific patterns must come before general ones** or the general one shadows them permanently. And the absence worth planning for: **there is no exhaustiveness check at runtime.** A `match` with no matching case **does nothing and raises nothing**, so a new message type added upstream passes through silently. **A `case _:` that raises is the fix, and mypy can check exhaustiveness over an enum or a union.**", "left": "property", "codeW": 170, "vars": ["behaviour", "consequence"], "steps": [{"code": "first match wins", "state": ["like if/elif", "no break needed"], "tone": "good"}, {"code": "no fall-through", "state": ["one case runs", "specific before general"], "changed": [0, 1], "tone": "good"}, {"code": "a general pattern placed first", "state": ["shadows the rest", "permanently"], "changed": [0, 1], "tone": "crit"}, {"code": "no case matches", "state": ["nothing happens, nothing raises", "silent pass-through"], "changed": [0, 1], "tone": "crit"}, {"code": "case _: raise", "state": ["loud", "and mypy can check an enum"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-5_5-04-1"},
 
     { t: "code", lang: "python", title: "first match wins", code: `
 match point:

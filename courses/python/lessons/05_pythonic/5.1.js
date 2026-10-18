@@ -21,6 +21,8 @@ EC.receiveLesson({
     /* ================================================================== */
     { t: "h2", n: "01", text: "The word is doing two jobs", id: "two-jobs" },
 
+    {"kind": "compare", "title": "Only one of the two meanings predicts a cost", "caption": "**When an engineer says “this isn't very Pythonic” they usually mean one of two very different things, and the review stalls because nobody separates them.** The useful meaning predicts something concrete: **a future reader will misread the code, or a future change will break it.** The useless meaning is **taste dressed as principle, and it produces the review comments that make people dread review.** The test is one question: **a definition of Pythonic that cannot predict a cost is a preference.**", "columns": [{"title": "The useful meaning", "tone": "good", "items": ["you re-implemented something the language provides", "manual index bookkeeping instead of iteration", "a try-free resource open instead of with", "a hand-rolled counter instead of Counter", "it predicts a misreading, or a future break"]}, {"title": "The useless meaning", "tone": "crit", "items": ["'it does not look like the code I write'", "taste dressed as principle", "predicts nothing", "produces the comments that make people dread review", "and cannot be argued to a conclusion"]}], "t": "diagram", "id": "dg-5_1-01-0"},
+
     { t: "p", text: "When an engineer says \"this isn't very Pythonic\", they usually mean one of two very different things, and the review stalls because nobody separates them." },
 
     { t: "dl", items: [
@@ -39,7 +41,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Four tests you can apply in review", id: "four-tests",
       sub: "Each one names a cost. If a change does not satisfy one of them, it is a preference." },
 
-    {"kind": "compare", "title": "Four tests you can apply in review", "caption": "'Pythonic' is a judgement, but each of these is a yes/no question a reviewer can ask of a line of code.", "columns": [{"title": "Does it use the protocol?", "tone": "accent", "items": ["for x in xs, not indices", "with, not try/finally", "len(), not .size()"]}, {"title": "Is the intent on the line?", "tone": "good", "items": ["names say why", "no clever one-liners", "errors say what failed"]}, {"title": "Does the stdlib do it?", "tone": "warn", "items": ["Counter, not a dict loop", "pathlib, not os.path", "enumerate, not range(len)"]}, {"title": "Would a stranger predict it?", "tone": "violet", "items": ["no hidden mutation", "no surprising defaults", "EAFP where it is safe"]}], "t": "diagram", "id": "dg-5_1-02-0"},
+    {"kind": "compare", "title": "Four tests you can apply in review", "caption": "'Pythonic' is a judgement, but each of these is a yes/no question a reviewer can ask of a line of code.", "columns": [{"title": "Does it use the protocol?", "tone": "accent", "items": ["for x in xs, not indices", "with, not try/finally", "len(), not .size()"]}, {"title": "Is the intent on the line?", "tone": "good", "items": ["names say why", "no clever one-liners", "errors say what failed"]}, {"title": "Does the stdlib do it?", "tone": "warn", "items": ["Counter, not a dict loop", "pathlib, not os.path", "enumerate, not range(len)"]}, {"title": "Would a stranger predict it?", "tone": "violet", "items": ["no hidden mutation", "no surprising defaults", "EAFP where it is safe"]}], "t": "diagram", "id": "dg-5_1-02-3"},
+
 
 
 
@@ -282,6 +285,8 @@ totals = {
     /* ================================================================== */
     { t: "h2", n: "04", text: "The Zen of Python, read critically", id: "zen" },
 
+    {"kind": "trace", "title": "Nineteen aphorisms, several of which contradict each other on purpose", "caption": "**`import this` is half joke, and the half that is not is load-bearing — but only if you notice the deliberate contradictions.** The pair that licenses real design work is *simple is better than complex / complex is better than complicated*: **two rungs, not one — prefer simple, and when the problem is genuinely complex, structure the complexity rather than tangling it.** And the honest reading of the famous line: **there are four ways to merge dicts and three to format a string, so read it as a design aspiration for the language rather than a claim about it.**", "left": "aphorism", "codeW": 180, "vars": ["what it decides in practice"], "steps": [{"code": "explicit is better than implicit", "state": ["pass dependencies in; name the encoding"], "tone": "good"}, {"code": "errors should never pass silently...", "state": ["suppress(FileNotFoundError), not except: pass"], "changed": [0], "tone": "good"}, {"code": "simple > complex > complicated", "state": ["two rungs - structure it, do not tangle it"], "changed": [0], "tone": "violet"}, {"code": "one obvious way to do it", "state": ["the least true line - an aspiration"], "changed": [0], "tone": "crit"}, {"code": "practicality beats purity", "state": ["the escape hatch, with a comment"], "changed": [0], "tone": "accent"}, {"code": "readability counts", "state": ["the only line that survives every argument"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-5_1-04-1"},
+
     { t: "p", text: "`import this` prints nineteen aphorisms by Tim Peters. It is half joke, and the half that is not is genuinely load-bearing — but only if you notice that several of the lines contradict each other on purpose." },
 
     { t: "table",
@@ -310,6 +315,8 @@ totals = {
 
     /* ================================================================== */
     { t: "h2", n: "05", text: "Idiom as a shared vocabulary", id: "vocabulary" },
+
+    {"kind": "flow", "title": "Idiom is compression, and the thing it compresses is attention", "caption": "**When you write `with open(path) as f:` a Python reader spends no attention on it — they know the file closes on every exit path, including the exception path, without reading further.** That is **one unit of attention freed for the part of the function that is actually specific to you.** Which is the deeper argument for idiom and the reason it is not style: **a non-idiomatic equivalent is not merely unusual, it costs every future reader a careful read of something that could have been skipped.**", "cols": 3, "nodes": [{"id": "w", "label": "with open(path) as f:", "sub": "a reader spends no attention", "tone": "good"}, {"id": "k", "label": "They know it closes on every path", "sub": "including the exception path", "tone": "good"}, {"id": "f", "label": "So attention is freed", "sub": "for the part that is yours", "tone": "violet"}, {"id": "n", "label": "A hand-rolled equivalent", "sub": "needs a careful read", "tone": "crit"}, {"id": "c", "label": "Which is a cost, not a preference", "sub": "paid by every future reader", "tone": "crit"}], "edges": [["w", "k"], ["k", "f"], ["n", "c"], ["f", "c"]], "t": "diagram", "id": "dg-5_1-05-2"},
 
     { t: "p", text: "The deeper reason idiom matters is compression. When you write `with open(path) as f:`, a Python reader spends no attention on it — they know the file closes on every exit path, including the exception path, without reading further. That is one unit of attention freed for the part of the function that is actually specific to your problem." },
 

@@ -41,6 +41,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "all three, side by side", code: `
 class Order:
     TAX_RATE = 0.2
@@ -241,6 +242,7 @@ print(type(AuditReport.empty()))`,
     {"kind": "compare", "title": "Six reasons given for a staticmethod, and three of them hold", "caption": "**A `staticmethod` receives neither the instance nor the class — it is a plain function that happens to live inside a class body — so the honest question is always: why is it in the class?** The three weak answers all have the same cheaper alternative: **namespacing by module is cheaper and more discoverable, and a module-level `_helper` says “only this class uses it” without the coupling.** The legitimate three are different in kind: **two are constraints you did not choose, and one is a genuine public check — `Order.is_valid_amount(x)` reads well.**", "columns": [{"title": "Weak — use a module instead", "tone": "crit", "items": ["'it is related to this class'", "'it is a helper only this class uses'", "'it belongs on the class for organisation'", "and all three make the class harder to test in isolation"]}, {"title": "Legitimate", "tone": "good", "items": ["'subclasses need to override it' — though that is probably a classmethod", "'existing code calls it through the instance' — a constraint you did not choose", "'it is a validator the class exposes' — Order.is_valid_amount(x) reads well"]}], "t": "diagram", "id": "dg-4_3-03-1"},
 
 
+
     { t: "p", text: "A `staticmethod` receives neither the instance nor the class. It is a plain function that happens to live inside a class body — so the honest question is always: **why is it in the class?**" },
 
     { t: "table",
@@ -292,6 +294,7 @@ class OrderProcessor:
     {"kind": "trace", "title": "A bound method carries its instance, which is why a callback keeps the object alive", "caption": "**`obj.send` is a bound method: it holds a reference to `obj`, so `obj.send.__self__ is obj` is `True` and `obj.send.__func__` is the plain function.** The consequence is the one that matters in long-lived code: **passing `obj.send` as a callback stores a reference to the whole object, so a registry of callbacks keeps every instance alive** — which is a memory leak that looks like a list of functions. **`weakref.WeakMethod` is the fix when the registry should not own the object.**", "left": "expression", "codeW": 180, "vars": ["result", "consequence"], "steps": [{"code": "obj.send.__self__ is obj", "state": ["True", "it holds the instance"], "tone": "violet"}, {"code": "obj.send.__func__", "state": ["<function Uploader.send>", "the unbound function"], "changed": [0, 1], "tone": "good"}, {"code": "callbacks.append(obj.send)", "state": ["sending 1000 bytes", "keeps obj alive"], "changed": [0, 1], "tone": "crit"}, {"code": "weakref.WeakMethod(obj.send)", "state": ["the same call", "does not own it"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-4_3-04-2"},
 
 
+
     { t: "code", lang: "python", title: "a bound method is an object", code: `
 class Uploader:
     def __init__(self, payload: bytes) -> None:
@@ -337,6 +340,7 @@ for session in sessions:
     { t: "h2", n: "05", text: "classmethod for registries", id: "registries" },
 
     {"kind": "trace", "title": "A registry whose error message lists what it has", "caption": "**`classmethod` is what makes a registry work, because the subclass registering itself needs to know *which* class it is** — `__init_subclass__` or an explicit `register` both hand you `cls`. The output is the part worth copying: **`ValueError: no exporter for 'xml'; have ['csv', 'json']`.** A lookup that fails with just `KeyError: 'xml'` makes the caller go and read the registry; **this one answers the next question in the message**, which costs one f-string and saves a round trip in every bug report.", "left": "call", "codeW": 170, "vars": ["result"], "steps": [{"code": "Exporter.available()", "state": ["['csv', 'json']"], "tone": "good"}, {"code": "Exporter.for_format('csv')", "state": ["CsvExporter"], "changed": [0], "tone": "good"}, {"code": "Exporter.for_format('xml')", "state": ["no exporter for 'xml'; have ['csv', 'json']"], "changed": [0], "tone": "violet", "note": "not a bare KeyError"}], "t": "diagram", "id": "dg-4_3-05-3"},
+
 
 
     { t: "code", lang: "python", title: "a self-registering hierarchy without a metaclass", code: `

@@ -43,6 +43,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "A nested shape, and where it breaks",
       caption: "Every level is a place a key can be absent or a type can differ. Walking such a structure with plain indexing works until one record is shaped differently — which is what real data always contains.",
@@ -211,6 +212,7 @@ print(order.address.city)               # plain attribute access from now on
     { t: "h2", n: "03", text: "Reshaping", id: "reshaping" },
 
     {"kind": "trace", "title": "One nested order becomes two flat rows, and an empty dict survives flattening", "caption": "**Reshaping nested data into flat rows is the commonest transformation there is — one order with two line items becomes two rows, each carrying the order and customer fields repeated.** Which is the shape every analytics tool wants and no API returns. The flattening row is the edge case worth having a decision about: **`{'e': {}}` flattens to `{'e': {}}` rather than disappearing**, because there is no leaf inside it — so **an empty branch is either preserved as a value or lost, and the recursion has to choose.**", "left": "input", "codeW": 170, "vars": ["output"], "steps": [{"code": "one order, two line items", "state": ["two flat rows"], "tone": "good"}, {"code": "each row carries", "state": ["order_id, customer_id, city repeated"], "changed": [0], "tone": "good"}, {"code": "plus its own", "state": ["sku, qty, amount"], "changed": [0], "tone": "good"}, {"code": "flatten {'a': {'b': {'c': 1}}, 'e': {}}", "state": ["{'a.b.c': 1, 'd': 2, 'e': {}}"], "changed": [0], "tone": "violet", "note": "the empty branch survives"}], "t": "diagram", "id": "dg-2_9-03-1"},
+
 
 
 

@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The body does not run on call", id: "suspension" },
 
-    {"kind": "trace", "title": "A generator runs only when asked", "caption": "Calling gen() executes nothing; each next() runs the body to the next yield and pauses there with its locals intact. After the last yield, the next call raises StopIteration.", "vars": ["body position", "n", "yielded"], "steps": [{"code": "g = countdown(3)", "state": ["not started", "", ""], "note": "no code has run"}, {"code": "next(g)", "state": ["paused at yield", "3", "3"], "changed": [0, 1, 2]}, {"code": "next(g)", "state": ["paused at yield", "2", "2"], "changed": [1, 2]}, {"code": "next(g)", "state": ["paused at yield", "1", "1"], "changed": [1, 2]}, {"code": "next(g)", "state": ["finished", "0", "StopIteration"], "changed": [0, 2], "tone": "warn"}], "t": "diagram", "id": "dg-5_7-01-1"},
+    {"kind": "trace", "title": "A generator runs only when asked", "caption": "Calling gen() executes nothing; each next() runs the body to the next yield and pauses there with its locals intact. After the last yield, the next call raises StopIteration.", "vars": ["body position", "n", "yielded"], "steps": [{"code": "g = countdown(3)", "state": ["not started", "", ""], "note": "no code has run"}, {"code": "next(g)", "state": ["paused at yield", "3", "3"], "changed": [0, 1, 2]}, {"code": "next(g)", "state": ["paused at yield", "2", "2"], "changed": [1, 2]}, {"code": "next(g)", "state": ["paused at yield", "1", "1"], "changed": [1, 2]}, {"code": "next(g)", "state": ["finished", "0", "StopIteration"], "changed": [0, 2], "tone": "warn"}], "t": "diagram", "id": "dg-5_7-01-4"},
+
 
 
 
@@ -155,7 +156,8 @@ def naturals():
 
     { t: "h2", n: "02", text: "Pipelines", id: "pipelines" },
 
-    {"kind": "flow", "title": "A generator pipeline pulls one item at a time", "caption": "Nothing runs until the consumer asks. Each stage yields one item to the next; no stage ever holds the whole dataset, so a ten-gigabyte file streams through in constant memory.", "cols": 4, "nodes": [{"id": "src", "label": "read_lines(path)", "sub": "yields one line", "tone": "accent"}, {"id": "p", "label": "parse(lines)", "sub": "yields one record", "tone": "good"}, {"id": "f", "label": "filter_valid(records)", "sub": "yields some", "tone": "good"}, {"id": "c", "label": "sum(...)", "sub": "the consumer pulls", "tone": "warn"}], "edges": [["src", "p"], ["p", "f"], ["f", "c"]], "t": "diagram", "id": "dg-5_7-02-0"},
+    {"kind": "flow", "title": "A generator pipeline pulls one item at a time", "caption": "Nothing runs until the consumer asks. Each stage yields one item to the next; no stage ever holds the whole dataset, so a ten-gigabyte file streams through in constant memory.", "cols": 4, "nodes": [{"id": "src", "label": "read_lines(path)", "sub": "yields one line", "tone": "accent"}, {"id": "p", "label": "parse(lines)", "sub": "yields one record", "tone": "good"}, {"id": "f", "label": "filter_valid(records)", "sub": "yields some", "tone": "good"}, {"id": "c", "label": "sum(...)", "sub": "the consumer pulls", "tone": "warn"}], "edges": [["src", "p"], ["p", "f"], ["f", "c"]], "t": "diagram", "id": "dg-5_7-02-3"},
+
 
 
 
@@ -222,6 +224,8 @@ def parse(lines) -> list[dict]:
 
     { t: "h2", n: "03", text: "yield from", id: "yield-from" },
 
+    {"kind": "trace", "title": "`yield from` delegates, and the recursion flattens a tree in four lines", "caption": "**`yield from sub` yields every value the sub-generator produces, so a recursive walk needs no accumulator and no loop** — the output `['root', 'a', 'a1', 'b']` is a pre-order traversal with one statement per level. The part the equivalent `for` loop cannot do: **`yield from` also forwards `send`, `throw` and the sub-generator's return value**, so a delegating generator is transparent to its caller. **Which is why it exists at all — the loop version is equivalent only for plain iteration.**", "left": "what it does", "codeW": 180, "vars": ["result"], "steps": [{"code": "yield from a sub-generator", "state": ["yields everything it produces"], "tone": "good"}, {"code": "recursive walk of a tree", "state": ["['root', 'a', 'a1', 'b']"], "changed": [0], "tone": "good", "note": "no accumulator"}, {"code": "and it forwards send and throw", "state": ["the delegate is transparent"], "changed": [0], "tone": "violet"}, {"code": "a for loop instead", "state": ["equivalent only for plain iteration"], "changed": [0], "tone": "warn"}], "t": "diagram", "id": "dg-5_7-03-0"},
+
     { t: "code", lang: "python", title: "delegation, and what it adds", code: `
 # Equivalent for simple iteration:
 def flatten_manual(nested):
@@ -272,6 +276,8 @@ def outer(groups):
 
     { t: "h2", n: "04", text: "Cleanup", id: "cleanup" },
 
+    {"kind": "flow", "title": "Abandoning a generator leaves the `with` inside it open", "caption": "**A `with` inside a generator releases its resource when the generator is exhausted or closed — and a generator abandoned part-way is neither.** Breaking out of a `for` over it leaves the frame suspended inside the `with`, **so the file stays open until the garbage collector finalises the generator, which on CPython is usually soon and on PyPy is not.** The fix is explicit: **wrap the consumption in `contextlib.closing`, or call `.close()`** — and the reason this is worth knowing is that **the leak is invisible in the generator's own code.**", "cols": 3, "nodes": [{"id": "w", "label": "A with inside a generator", "sub": "releases on exhaustion or close", "tone": "good"}, {"id": "b", "label": "break out of the for", "sub": "neither happened", "tone": "crit"}, {"id": "s", "label": "The frame is suspended inside the with", "sub": "so the file stays open", "tone": "crit"}, {"id": "g", "label": "Until the GC finalises it", "sub": "soon on CPython, not on PyPy", "tone": "warn"}, {"id": "f", "label": "Fix: closing(), or .close()", "sub": "the leak is invisible in the generator", "tone": "good"}], "edges": [["w", "b"], ["b", "s"], ["s", "g"], ["g", "f"]], "t": "diagram", "id": "dg-5_7-04-1"},
+
     { t: "code", lang: "python", title: "the `with` inside a generator", code: `
 def read_lines(path: Path) -> Iterator[str]:
     with path.open(encoding="utf-8") as handle:
@@ -314,6 +320,8 @@ with path.open(encoding="utf-8") as handle:
     ]},
 
     { t: "h2", n: "05", text: "When a generator is wrong", id: "when-wrong" },
+
+    {"kind": "compare", "title": "Five tests, and three of them are about what you do next", "caption": "**The first row is the one people quote and the middle three are the ones that actually decide it**, because they are about consumption rather than size. **You consume it once, you only iterate, early exit is likely** — all three favour a generator and none of them mention how big the data is. And the last row is the sharpest: **you cannot sort or reverse a generator without materialising it**, so a pipeline that ends in `sorted()` has already paid for the list and should probably have been one.", "columns": [{"title": "A generator", "tone": "violet", "items": ["the source is large or unbounded", "you consume it once", "you only iterate", "early exit is likely", "stages compose into a pipeline"]}, {"title": "A list", "tone": "good", "items": ["the result is small and known", "you need it more than once", "you need len(), indexing or slicing", "you will consume all of it anyway", "you need to sort or reverse it"]}], "t": "diagram", "id": "dg-5_7-05-2"},
 
     { t: "table",
       head: ["Use a generator", "Use a list"],

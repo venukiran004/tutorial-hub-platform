@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Two different things", id: "two-things" },
 
-    {"kind": "flow", "title": "Iterable versus iterator", "caption": "An iterable knows how to make an iterator (__iter__); an iterator produces values (__next__) and is exhausted once. A list is iterable and reusable; a generator is an iterator and one-shot.", "cols": 3, "nodes": [{"id": "it", "label": "iterable", "sub": "__iter__ → iterator · reusable", "tone": "accent"}, {"id": "iter", "label": "iterator", "sub": "__next__ → value · one pass", "tone": "good"}, {"id": "stop", "label": "StopIteration", "sub": "exhausted", "tone": "warn"}], "edges": [["it", "iter", "iter()"], ["iter", "stop", "next() … next()"]], "t": "diagram", "id": "dg-5_6-01-0"},
+    {"kind": "flow", "title": "Iterable versus iterator", "caption": "An iterable knows how to make an iterator (__iter__); an iterator produces values (__next__) and is exhausted once. A list is iterable and reusable; a generator is an iterator and one-shot.", "cols": 3, "nodes": [{"id": "it", "label": "iterable", "sub": "__iter__ → iterator · reusable", "tone": "accent"}, {"id": "iter", "label": "iterator", "sub": "__next__ → value · one pass", "tone": "good"}, {"id": "stop", "label": "StopIteration", "sub": "exhausted", "tone": "warn"}], "edges": [["it", "iter", "iter()"], ["iter", "stop", "next() … next()"]], "t": "diagram", "id": "dg-5_6-01-2"},
+
 
 
 
@@ -218,6 +219,8 @@ test_iterable_is_reusable(Results([[{"id": 1}], [{"id": 2}]]))`},
 
     { t: "h2", n: "03", text: "Inheriting the rest", id: "abc" },
 
+    {"kind": "trace", "title": "Three methods, and the rest of the sequence protocol arrives", "caption": "**Writing `__len__` and `__getitem__` and inheriting `collections.abc.Sequence` gives you `__contains__`, `__iter__`, `__reversed__`, `index` and `count`** — and the output shows all five working on a class that defined none of them. Which is 4.8's standard-library ABC argument in its clearest form: **the ABC is not there to require methods, it is there to give you implementations derived from the two you wrote.** And the derived ones are correct rather than merely present: **`__reversed__` walks backwards without building a list.**", "left": "what you get", "codeW": 170, "vars": ["source", "result"], "steps": [{"code": "__len__, __getitem__", "state": ["you write them", "two methods"], "tone": "accent"}, {"code": "len, obj[0], obj[-1], obj[1:]", "state": ["derived from __getitem__", "3, {'id': 1}, {'id': 3}, a slice"], "changed": [0, 1], "tone": "good"}, {"code": "x in obj, obj.index(x)", "state": ["derived", "True, 1"], "changed": [0, 1], "tone": "good"}, {"code": "list(reversed(obj))", "state": ["derived", "reversed, without a copy"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_6-03-0"},
+
     { t: "code", lang: "python", title: "collections.abc gives you the surrounding methods", code: `
 from collections.abc import Iterator, Sequence
 
@@ -261,6 +264,8 @@ True 1 [{'id': 3}, {'id': 2}, {'id': 1}]`,
     ]},
 
     { t: "h2", n: "04", text: "iter() with a sentinel", id: "sentinel" },
+
+    {"kind": "flow", "title": "The two-argument `iter()` is the read-until-sentinel loop", "caption": "**`iter(callable, sentinel)` calls the callable repeatedly and stops when it returns the sentinel** — which is the pre-walrus idiom for read-until-sentinel loops, and **still the cleanest when the sentinel is a specific value rather than falsiness.** The canonical use is a fixed-size read: **`iter(partial(f.read, 4096), b\"\")` yields chunks until the file is exhausted**, with no `while True`, no break and no repeated call written twice. And the distinction from a walrus loop is exactly that: **a walrus tests a condition, this compares against one value.**", "cols": 3, "nodes": [{"id": "i", "label": "iter(callable, sentinel)", "sub": "two arguments, not one", "tone": "violet"}, {"id": "c", "label": "Calls it until it returns the sentinel", "sub": "then stops", "tone": "good"}, {"id": "r", "label": "iter(partial(f.read, 4096), b'')", "sub": "chunks until exhausted", "tone": "good"}, {"id": "n", "label": "No while True, no break", "sub": "and the call is written once", "tone": "good"}, {"id": "w", "label": "A walrus tests a condition", "sub": "this compares one value", "tone": "accent"}], "edges": [["i", "c"], ["c", "r"], ["r", "n"], ["n", "w"]], "t": "diagram", "id": "dg-5_6-04-1"},
 
     { t: "code", lang: "python", title: "the two-argument form", code: `
 # iter(callable, sentinel) calls the function repeatedly until it
