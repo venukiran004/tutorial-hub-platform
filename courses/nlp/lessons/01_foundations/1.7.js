@@ -25,6 +25,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Five spans, five labels, and one distinction people collapse", "caption": "NER finds **spans** and labels them — note that `Apple Inc.` is two tokens and one entity, which is what §02 is about. The label set is `PERSON, ORG, GPE, LOC, DATE, TIME, MONEY, PERCENT, PRODUCT, EVENT, WORK_OF_ART, LAW, LANGUAGE`, and **`GPE` and `LOC` are genuinely distinct: a country is a political entity, a mountain range is not.** Collapsing them is a modelling decision, not a tidy-up — and it is usually made by accident.", "left": "span", "codeW": 170, "vars": ["label", "what the label covers"], "steps": [{"code": "Apple Inc.", "state": ["ORG", "companies, agencies, institutions"], "tone": "good", "note": "two tokens, one entity"}, {"code": "Steve Jobs", "state": ["PERSON", "people, including fictional"], "changed": [0, 1], "tone": "good"}, {"code": "Cupertino, California", "state": ["GPE", "countries, cities, states"], "changed": [0, 1], "tone": "good"}, {"code": "April 1, 1976", "state": ["DATE", "absolute or relative"], "changed": [0, 1], "tone": "good"}, {"code": "a mountain range", "state": ["LOC, not GPE", "not a political entity"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-1_7-01-0"},
 
+
     { t: "out", text: `  Apple Inc.                ORG        Companies, agencies, institutions
   Steve Jobs                PERSON     People, including fictional
   Cupertino                 GPE        Countries, cities, states
@@ -36,6 +37,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Tagging schemes", id: "schemes" },
 
     {"kind": "trace", "title": "Two adjacent people, and the scheme decides whether they are one person", "caption": "This is why the `B-` exists, and it takes one example to show: **`IO` decodes `Steve Jobs Tim Cook` to ONE span of four tokens; `BIO` decodes it to two.** Without a begin tag there is no way to express a boundary between two adjacent entities of the same type. **BIOES** makes every boundary explicit rather than inferred, at `4n+1` tags instead of `2n+1` — **73 classes instead of 37 at 18 entity types**, which is the cost to weigh against a usually-small gain.", "left": "scheme", "codeW": 130, "vars": ["tags for 'Steve Jobs Tim Cook'", "decoded spans", "tags at 18 types"], "steps": [{"code": "IO", "state": ["PER PER PER PER", "ONE span of 4", "19"], "tone": "crit"}, {"code": "BIO", "state": ["B-PER I-PER B-PER I-PER", "two spans", "37"], "changed": [0, 1, 2], "tone": "good"}, {"code": "BIOES", "state": ["+ E- and S-", "two spans, explicit", "73"], "changed": [0, 1, 2], "tone": "warn", "note": "4n+1, not 2n+1"}], "t": "diagram", "id": "dg-1_7-02-1"},
+
 
     { t: "out", text: `  token       tag
   Apple       B-ORG
@@ -70,6 +72,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "83.3% token accuracy and 0.50 span F1, on the same prediction", "caption": "One token wrong — the third `I-PER` predicted as `O` — and the two metrics describe different worlds. **Token accuracy says 83.3% because five of six tags are right. Span F1 says 0.50, because the PER span is now `(0,1)` instead of `(0,2)`, and a span that is nearly right is wrong.** Which is the correct way to score it: **a downstream system extracts the span, so a truncated name is a wrong name, not an 83%-right one.**", "left": "level", "codeW": 150, "vars": ["what it sees", "score"], "steps": [{"code": "gold spans", "state": ["PER(0,2), ORG(4,5)", "-"], "tone": "accent"}, {"code": "predicted spans", "state": ["PER(0,1), ORG(4,5)", "-"], "changed": [0], "tone": "warn", "note": "one token short"}, {"code": "token level", "state": ["5 of 6 tags correct", "83.3%"], "changed": [0, 1], "tone": "crit"}, {"code": "span level", "state": ["1 of 2 spans exact", "F1 0.50"], "changed": [0, 1], "tone": "good", "note": "the honest one"}], "t": "diagram", "id": "dg-1_7-03-2"},
 
+
     { t: "out", text: `  gold : ['B-PER', 'I-PER', 'I-PER', 'O', 'B-ORG', 'I-ORG']  -> spans [('PER',0,2), ('ORG',4,5)]
   pred : ['B-PER', 'I-PER', 'O',     'O', 'B-ORG', 'I-ORG']  -> spans [('PER',0,1), ('ORG',4,5)]
 
@@ -82,6 +85,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "What a CRF adds", id: "crf" },
 
     {"kind": "trace", "title": "Six of twenty-five transitions are structurally impossible", "caption": "`O` to `I-PER` is not a mistake the model should be slightly discouraged from — **it is not a valid tag sequence at all**, because an inside tag with no begin before it decodes to nothing. **A per-token classifier can emit it, because it scores each position independently; a CRF scores the sequence, so it can learn a transition weight that makes the invalid moves unreachable.** That is the whole contribution: **6 of 25 transitions here are structurally invalid, and only a sequence model can rule them out.**", "left": "transition", "codeW": 160, "vars": ["valid?", "why"], "steps": [{"code": "O -> B-PER", "state": ["ok", "an entity starts"], "tone": "good"}, {"code": "O -> I-PER", "state": ["BAD", "inside, with no begin"], "changed": [0, 1], "tone": "crit"}, {"code": "B-PER -> I-ORG", "state": ["BAD", "the type changed mid-span"], "changed": [0, 1], "tone": "crit"}, {"code": "B-ORG -> I-ORG", "state": ["ok", "the span continues"], "changed": [0, 1], "tone": "good"}, {"code": "total", "state": ["6 of 25 invalid", "a per-token model can emit them"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-1_7-04-3"},
+
 
     { t: "math", tex: "P(y \\mid x) = \\frac{1}{Z(x)} \\exp\\!\\left(\\sum_{t=1}^{T}\\sum_{k} \\lambda_k f_k(y_{t-1}, y_t, x, t)\\right)" },
 
@@ -109,6 +113,7 @@ predictions = crf.decode(emissions, mask=mask)   # inference: Viterbi`,
     { t: "h2", n: "05", text: "Choosing an approach", id: "approaches" },
 
     {"kind": "layers", "title": "Five approaches, and the production answer is two of them at once", "caption": "**A regex is exact, auditable and free, and no learned model will beat it on a pattern that is genuinely a pattern** — postcodes, order numbers, ISINs, dates in a known format. Transformers are the accuracy ceiling for the open categories, because people, organisations and products need context. **LLM zero-shot is for the long tail: a new entity type tomorrow with no labelled data, at a cost per document and with output that varies between calls.** Hence the last row: **rules for the formatted entities, a model for the open ones, and a merge step where rules win.**", "items": [{"label": "Rule-based regex", "sub": "no training data; brittle, low recall", "tone": "good", "side": "closed sets"}, {"label": "CRF / BiLSTM-CRF", "sub": "good with small data; feature engineering", "tone": "good", "side": "small data"}, {"label": "spaCy NER", "sub": "fast, production-ready; needs training data", "tone": "good", "side": "throughput"}, {"label": "Transformer NER", "sub": "best accuracy; slower, needs a GPU", "tone": "violet", "side": "the ceiling"}, {"label": "LLM zero-shot", "sub": "no training; expensive, inconsistent", "tone": "warn", "side": "long tail"}, {"label": "Hybrid: rules + model + merge", "sub": "and rules win the overlaps", "tone": "teal", "side": "the usual"}], "t": "diagram", "id": "dg-1_7-05-4"},
+
 
     { t: "out", text: `  Rule-based (regex)   No training data needed      Brittle, low recall
   CRF / BiLSTM-CRF     Good with small data         Feature engineering

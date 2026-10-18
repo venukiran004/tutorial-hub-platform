@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "T tokens give T−n+1 n-grams, and the probabilities are ratios of counts", "caption": "Six tokens yield 5 bigrams and 4 trigrams — **every extra word of context costs you one training example from the same sentence**, which is the first hint of the sparsity wall in §05. And the conditional probability is nothing more than a ratio: **`the` is followed by `cat` once and `mat` once, so each is 0.5 and the two sum to 1.** No parameters are estimated; the counts *are* the model.", "left": "n", "codeW": 130, "vars": ["n-grams from 6 tokens", "example"], "steps": [{"code": "1", "state": ["6", "('the',) ('cat',) ('sat',)"], "tone": "good"}, {"code": "2", "state": ["5", "('the','cat') ('cat','sat')"], "changed": [0, 1], "tone": "good"}, {"code": "3", "state": ["4", "('the','cat','sat')"], "changed": [0, 1], "tone": "warn"}, {"code": "P(mat | the)", "state": ["1/2 = 0.5", "a ratio of counts"], "changed": [0, 1], "tone": "violet", "note": "no parameters fitted"}], "t": "diagram", "id": "dg-1_5-01-0"},
 
+
     { t: "out", text: `  1-grams (6): [('the',), ('cat',), ('sat',)]
   2-grams (5): [('the', 'cat'), ('cat', 'sat'), ('sat', 'on')]
   3-grams (4): [('the', 'cat', 'sat'), ('cat', 'sat', 'on'), ('sat', 'on', 'the')]
@@ -43,6 +44,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "One zero makes the whole sentence impossible", "caption": "`P(flew | cat)` is **0.0000** — not small, zero. And because the sentence probability is a **product** over positions, one unseen bigram sets the probability of the entire sentence to zero, however fluent the rest of it is. **So an unsmoothed model does not merely rank an unseen continuation last: it declares the sentence impossible**, which is why smoothing is not an optimisation but a requirement for the model to function at all.", "left": "continuation of 'cat'", "codeW": 180, "vars": ["MLE probability", "effect on the sentence"], "steps": [{"code": "sat", "state": ["0.6667", "fine"], "tone": "good"}, {"code": "chased", "state": ["0.3333", "fine"], "changed": [0], "tone": "good"}, {"code": "flew", "state": ["0.0000", "P(sentence) = 0"], "changed": [0, 1], "tone": "crit", "note": "a product, so one zero wins"}], "t": "diagram", "id": "dg-1_5-02-1"},
 
+
     { t: "out", text: `  MLE  P(sat     | cat ) = 0.6667
   MLE  P(chased  | cat ) = 0.3333
   MLE  P(flew    | cat ) = 0.0000` },
@@ -53,6 +55,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Add-one smoothing, and what it costs", id: "smoothing" },
 
     {"kind": "trace", "title": "Add-one gives 61.5% of the mass to things never observed", "caption": "This is the cost stated as a number. **The MLE gives the seen continuations 1.000 of the probability mass; add-one leaves them 0.385** — so **61.5% of the distribution has been handed to events the corpus never saw**, simply because the vocabulary is 10 and the context count is 3. The denominator `count(c) + |V|` is the whole problem: **the correction scales with the vocabulary, not with the evidence**, so a realistic `|V|` makes it worse, not better.", "left": "continuation of 'cat'", "codeW": 180, "vars": ["MLE", "add-one", "formula"], "steps": [{"code": "sat", "state": ["0.6667", "0.2308", "(2+1)/(3+10)"], "tone": "warn"}, {"code": "chased", "state": ["0.3333", "0.1538", "(1+1)/(3+10)"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "flew (unseen)", "state": ["0.0000", "0.0769", "(0+1)/(3+10)"], "changed": [0, 1, 2], "tone": "good"}, {"code": "mass on seen events", "state": ["1.000", "0.385", "61.5% given away"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-1_5-03-2"},
+
 
     { t: "math", tex: "P_{\\text{add-1}}(w \\mid c) = \\frac{\\text{count}(c, w) + 1}{\\text{count}(c) + |V|}" },
 
@@ -79,6 +82,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Perplexity is a branching factor, and it is only comparable within a tokenization", "caption": "**4.93 on training against 6.58 held out, where uniform guessing over this 10-word vocabulary would be 10** — so the model is doing real work and doing less of it on unseen text, which is the gap you watch. The published figures tell the field's story: **a trigram narrows the next word to about 80 candidates and GPT-4 to under 10.** But they are only comparable across models sharing a vocabulary and tokenization — **a larger vocabulary faces a harder prediction, so its number is not a worse model.**", "left": "model or split", "codeW": 170, "vars": ["perplexity", "reading"], "steps": [{"code": "this model, training", "state": ["4.93", "of 10 if uniform"], "tone": "good"}, {"code": "this model, held out", "state": ["6.58", "the honest number"], "changed": [0, 1], "tone": "warn"}, {"code": "unigram / bigram", "state": ["~1000 / ~200", "barely narrowing"], "changed": [0, 1], "tone": "crit"}, {"code": "trigram", "state": ["~80", "80 candidates left"], "changed": [0, 1], "tone": "warn"}, {"code": "BERT / GPT-4", "state": ["5-30 / 3-10", "under 10 candidates"], "changed": [0, 1], "tone": "good", "note": "same vocab, or not comparable"}], "t": "diagram", "id": "dg-1_5-04-3"},
 
+
     { t: "math", tex: "\\text{PP} = 2^{H} \\quad \\text{where} \\quad H = -\\frac{1}{N}\\sum_{i} \\log_2 P(w_i \\mid w_{i-1})" },
 
     { t: "out", text: `  on the TRAINING sentences : 4.93
@@ -102,6 +106,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "The sparsity wall", id: "sparsity" },
 
     {"kind": "trace", "title": "Each extra word of context multiplies the table by 50,000", "caption": "**A 3-gram table over a 50,000-word vocabulary has 1.25×10¹⁴ cells and a 4-gram table 6.25×10¹⁸** — more cells than there are words in any corpus, so **the overwhelming majority of entries are zero and the model is mostly smoothing.** And three other limits are structural rather than about size: **a fixed context window cannot see a verb agreeing with a subject six words back, and `good` and `great` stay unrelated symbols, so seeing one teaches nothing about the other.**", "left": "n", "codeW": 130, "vars": ["possible n-grams at |V|=50,000", "what is in the table"], "steps": [{"code": "1", "state": ["5.00e+04", "mostly observed"], "tone": "good"}, {"code": "2", "state": ["2.50e+09", "mostly zero"], "changed": [0, 1], "tone": "warn"}, {"code": "3", "state": ["1.25e+14", "almost all zero"], "changed": [0, 1], "tone": "crit"}, {"code": "4", "state": ["6.25e+18", "the model IS the smoothing"], "changed": [0, 1], "tone": "crit"}, {"code": "and separately", "state": ["no semantic sharing", "good / great unrelated"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_5-05-4"},
+
 
     { t: "out", text: `  vocabulary 50,000 -> 1-gram space = 5.00e+04 possible n-grams
   vocabulary 50,000 -> 2-gram space = 2.50e+09 possible n-grams

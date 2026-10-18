@@ -24,6 +24,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "The same word, two tags, decided by the sentence", "caption": "`book`, `play` and `duck` each take two different tags in two different sentences — **so a part-of-speech tag is not a property of a word, it is a property of a word in a position**, and a lookup table cannot produce it. That is also the cleanest statement of what 1.4's representations were missing. Two tag sets exist for a reason: **`pos_` is 17 coarse universal tags designed to be comparable across languages, and `tag_` is the finer Penn Treebank set** that distinguishes `VBZ` from `VBP`.", "left": "sentence", "codeW": 190, "vars": ["the ambiguous word", "tag"], "steps": [{"code": "'I book a flight'", "state": ["book", "VERB (VBP)"], "tone": "good"}, {"code": "'I read the book'", "state": ["book", "NOUN (NN)"], "changed": [1], "tone": "good"}, {"code": "'They will play'", "state": ["play", "VERB (VB)"], "changed": [0, 1], "tone": "good"}, {"code": "'It was a play'", "state": ["play", "NOUN (NN)"], "changed": [1], "tone": "good"}, {"code": "'The duck can fly' / 'I duck under it'", "state": ["duck", "NOUN / VERB"], "changed": [0, 1], "tone": "violet", "note": "position, not word"}], "t": "diagram", "id": "dg-1_8-01-0"},
 
+
     { t: "out", text: `  token      pos    tag   explanation
   The        DET    DT    determiner
   quick      ADJ    JJ    adjective
@@ -91,6 +92,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Twelve tokens between the subject and its verb", "caption": "Two sentences with **identical bags of words** get opposite triples from the parse — `(cat, chased, mouse)` against `(mouse, chased, cat)` — which is the structure 1.4's representation discarded. And the second measurement is the one that sets up module 4: in *“The engineers who joined the company last year from several different teams were promoted”*, **the subject and its verb are 12 tokens apart, and the agreement spans that whole distance. A bigram model sees only `(teams, were)` and has no way to know.**", "left": "input", "codeW": 190, "vars": ["bag of words", "what the parse gives"], "steps": [{"code": "'The cat chased the mouse'", "state": ["cat chased mouse the the", "SVO (cat, chased, mouse)"], "tone": "good"}, {"code": "'The mouse chased the cat'", "state": ["cat chased mouse the the", "SVO (mouse, chased, cat)"], "changed": [1], "tone": "good", "note": "identical bags"}, {"code": "'The engineers who ... were promoted'", "state": ["no distance at all", "engineers -> promoted, 12 apart"], "changed": [0, 1], "tone": "violet"}, {"code": "what a bigram sees", "state": ["(teams, were)", "and cannot know"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_8-03-1"},
 
+
     { t: "out", text: `  'The cat chased the mouse'   -> SVO [('cat', 'chased', 'mouse')]
   'The mouse chased the cat'   -> SVO [('mouse', 'chased', 'cat')]
   as a BAG OF WORDS these two are IDENTICAL:
@@ -107,6 +109,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Noun chunks", id: "chunks" },
 
     {"kind": "trace", "title": "Three phrases, each with its head and its grammatical role attached", "caption": "**A noun chunk is a noun plus the words describing it, read straight off the parse — the cheapest useful phrase extractor there is.** *machine learning engineers* comes out as **one unit rather than three tokens**, with `root=engineers` and `dep=nsubj`, so you get the phrase and what it is doing in the sentence in one pass. For key-phrase extraction, building a knowledge graph, or turning a sentence into a triple, **that pairing is the part that saves work.**", "left": "chunk", "codeW": 210, "vars": ["root", "dep", "role"], "steps": [{"code": "Machine learning engineers", "state": ["engineers", "nsubj", "who acts"], "tone": "good", "note": "one unit, not three tokens"}, {"code": "large-scale recommendation systems", "state": ["systems", "dobj", "what is acted on"], "changed": [0, 1, 2], "tone": "good"}, {"code": "Google", "state": ["Google", "pobj", "the preposition's object"], "changed": [0, 1, 2], "tone": "good"}], "t": "diagram", "id": "dg-1_8-04-2"},
+
 
     { t: "out", text: `  Machine learning engineers               root=engineers       dep=nsubj
   Google                                   root=Google          dep=pobj

@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The pipeline", id: "pipeline" },
 
+    {"kind": "trace", "title": "Naive Bayes wins, and the baseline is the number that makes any of it meaningful", "caption": "**The majority class gets 0.2583, so every model here is doing real work** — without that row, 0.87 is an unreadable number. And the ordering is the useful surprise: **Naive Bayes at 0.9040 beats both Logistic Regression and SVM on 2,323 training documents.** The cross-validated spread says it is not noise — ±0.0084 against LR's ±0.0156. **On a small, balanced, bag-of-words problem the simplest model is not a concession.**", "left": "model", "codeW": 170, "vars": ["5-fold CV", "test accuracy", "macro-F1"], "steps": [{"code": "majority class", "state": ["-", "0.2583", "-"], "tone": "crit", "note": "the baseline to beat"}, {"code": "Logistic Regression", "state": ["0.8782 +/- 0.0156", "0.8642", "0.8643"], "changed": [0, 1, 2], "tone": "good"}, {"code": "SVM", "state": ["0.8911 +/- 0.0115", "0.8700", "0.8694"], "changed": [0, 1, 2], "tone": "good"}, {"code": "Naive Bayes", "state": ["0.9040 +/- 0.0084", "0.8933", "0.8928"], "changed": [0, 1, 2], "tone": "violet", "note": "and the tightest spread"}], "t": "diagram", "id": "dg-2_1-01-0"},
+
     { t: "code", lang: "python", title: "TF-IDF plus a linear classifier",
       code: `pipelines = {
     "Logistic Regression": Pipeline([
@@ -51,6 +53,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Naive Bayes by hand", id: "nb" },
 
+    {"kind": "trace", "title": "One unseen word would have collapsed the whole product", "caption": "**`good` never appears in a negative document, so without smoothing `P(good | c0)` is 0 and the entire product collapses** — the same failure 1.5 measured for n-gram models, and the same fix. With add-one it gets 0.0588 rather than 0, **and class 1 wins by about 1.1 nats**, which sklearn's `MultinomialNB` agrees with. Note the shape of the decision: **a sum of logs, so each word contributes additively and one word can carry the classification.**", "left": "classifying 'good film'", "codeW": 180, "vars": ["P(good | c)", "P(film | c)", "log P"], "steps": [{"code": "class 1 (positive)", "state": ["(2+1)/17 = 0.1765", "(1+1)/17 = 0.1176", "-4.5678"], "tone": "good"}, {"code": "class 0 (negative)", "state": ["(0+1)/17 = 0.0588", "(1+1)/17 = 0.1176", "-5.6664"], "changed": [0, 2], "tone": "warn"}, {"code": "without smoothing", "state": ["0.0000", "0.1176", "-inf"], "changed": [0, 2], "tone": "crit", "note": "the product collapses"}, {"code": "margin", "state": ["-", "-", "~1.1 nats for class 1"], "changed": [2], "tone": "violet"}], "t": "diagram", "id": "dg-2_1-02-1"},
+
     { t: "math", tex: "\\hat{y} = \\arg\\max_{c} \\; \\log P(c) + \\sum_{i} \\log P(w_i \\mid c), \\qquad P(w \\mid c) = \\frac{\\text{count}(w, c) + \\alpha}{\\text{count}(c) + \\alpha|V|}" },
 
     { t: "out", text: `  corpus: [('good movie great acting', 1), ('bad movie poor acting', 0),
@@ -71,6 +75,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Why accuracy lies", id: "imbalance" },
 
+    {"kind": "trace", "title": "Ninety-eight percent accurate, and it never once predicted the thing you care about", "caption": "A 2% positive rate and a model that always answers negative: **accuracy 0.9800, macro-F1 0.4949, recall on the positive class 0.0000.** The accuracy figure is not slightly misleading, it is **the majority rate with a model-shaped label on it.** Which is why macro-F1 is the usual default on imbalanced data — it averages per class, so a class never predicted drags it down — and why **per-class recall is the metric when one class carries the cost: fraud, disease, abuse.**", "left": "metric", "codeW": 190, "vars": ["value", "what it is actually reporting"], "steps": [{"code": "accuracy", "state": ["0.9800", "the negative rate"], "tone": "crit", "note": "looks excellent"}, {"code": "macro-F1", "state": ["0.4949", "one class is absent"], "changed": [0, 1], "tone": "good", "note": "tells the truth"}, {"code": "recall, positive class", "state": ["0.0000", "it never predicted it"], "changed": [0, 1], "tone": "crit"}, {"code": "so report", "state": ["macro-F1 + per-class recall", "weighted F1 alongside, not instead"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-2_1-03-2"},
+
     { t: "out", text: `  a 2% positive rate, and a model that ALWAYS predicts negative:
     accuracy  0.9800   <- looks excellent
     macro-F1  0.4949   <- tells the truth
@@ -89,6 +95,8 @@ EC.receiveLesson({
       ] },
 
     { t: "h2", n: "04", text: "Transformers, zero-shot and fine-tuned", id: "transformers" },
+
+    {"kind": "flow", "title": "Three options, and the order to try them in is the reverse of the order people try them", "caption": "**The classical baseline trains in under a minute, is interpretable, and is frequently within a few points — so run it first**, because it is also the number that tells you whether anything harder is worth it. A **fine-tuned transformer** is the accuracy answer once you have a few thousand labelled examples: `AutoModelForSequenceClassification` with `num_labels`, learning rate around **2e-5**, two to four epochs. **Zero-shot is for the case where labels do not exist yet** — exploration, a new label tomorrow, a long tail of rare categories — and it is slow per document.", "cols": 3, "nodes": [{"id": "c", "label": "Classical: under a minute to train", "sub": "and often within a few points", "tone": "good"}, {"id": "b", "label": "So it is also your baseline", "sub": "run it FIRST", "tone": "violet"}, {"id": "f", "label": "Fine-tuned transformer", "sub": "lr ~2e-5, 2-4 epochs", "tone": "good"}, {"id": "n", "label": "Needs a few thousand labels", "sub": "which is the real gate", "tone": "warn"}, {"id": "z", "label": "Zero-shot: no labels at all", "sub": "slow per document, less accurate", "tone": "accent"}], "edges": [["c", "b"], ["b", "f"], ["f", "n"], ["n", "z"]], "t": "diagram", "id": "dg-2_1-04-3"},
 
     { t: "code", lang: "python", title: "Zero-shot: no training at all",
       code: `classifier = pipeline("zero-shot-classification",

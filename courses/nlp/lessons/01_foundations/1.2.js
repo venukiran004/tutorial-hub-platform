@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "The preprocessing function",
       code: `def preprocess_text(text, lowercase=True, remove_html=True, remove_urls=True,
                     remove_emails=True, remove_numbers=False,
@@ -57,6 +58,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "out", text: `  raw            '<b>Email</b> me at a@b.com or see https://x.co -- costs $30.50! Great…'
   +unicode NFKD  '<b>Email</b> me at a@b.com or see https://x.co -- costs $30.50! Great...'
   +html          ' Email  me at a@b.com or see https://x.co -- costs $30.50! Great...'
@@ -77,6 +79,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "The stages are not commutative. Removing HTML before URLs means an `href` attribute's URL is already gone; doing it the other way leaves fragments. Removing emails before lowercasing works, and so does the reverse here — but a case-sensitive pattern would break if you lowercased first." },
 
     { t: "dl", items: [
@@ -89,6 +92,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Stemming", id: "stemming" },
 
     {"kind": "trace", "title": "Seven words, and the stemmers agree on the ones that do not matter", "caption": "They agree on `running`, and the interesting rows are where they do not. **`studies` becomes `studi` in both — not a word, and that is fine, because a stemmer's output is an index key rather than text.** `generously` splits them: Porter cuts to `gener`, Snowball stops at `generous`. **And the three failures are shared: `better`, `children` and `mice` pass through untouched**, because suffix-chopping cannot do irregular morphology at all.", "left": "word", "codeW": 150, "vars": ["porter", "snowball", "is it a word?"], "steps": [{"code": "running", "state": ["run", "run", "yes"], "tone": "good"}, {"code": "studies", "state": ["studi", "studi", "no"], "changed": [0, 1, 2], "tone": "warn", "note": "and that is fine"}, {"code": "generously", "state": ["gener", "generous", "differ"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "was", "state": ["wa", "was", "differ"], "changed": [0, 1], "tone": "warn"}, {"code": "better, children, mice", "state": ["unchanged", "unchanged", "yes"], "changed": [0, 1, 2], "tone": "crit", "note": "irregular - no suffix to chop"}], "t": "diagram", "id": "dg-1_2-04-3"},
+
 
 
 
@@ -107,6 +111,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "Lemmatisation", id: "lemmatisation" },
 
     {"kind": "flow", "title": "The part-of-speech tag is the whole difference", "caption": "`better` with `pos=\"a\"` becomes **good**; `running` with `pos=\"v\"` becomes **run** — exactly the two words the stemmers could not touch. But read what the lemmatiser needs to get there: **a dictionary lookup, and a part-of-speech tag you have to supply.** Without the tag it defaults to noun and `better` stays `better`, which means **a lemmatiser used without tagging is a slower stemmer that happens to return real words.**", "cols": 3, "nodes": [{"id": "s", "label": "A stemmer: chop the suffix", "sub": "better -> better (no suffix)", "tone": "warn"}, {"id": "l", "label": "A lemmatiser: look it up", "sub": "better + pos=a -> good", "tone": "good"}, {"id": "t", "label": "But the tag is an input", "sub": "running + pos=v -> run", "tone": "accent"}, {"id": "d", "label": "No tag -> it assumes noun", "sub": "and better stays better", "tone": "crit"}, {"id": "c", "label": "So untagged = a slow stemmer", "sub": "with real words as output", "tone": "crit"}], "edges": [["s", "l"], ["l", "t"], ["t", "d"], ["d", "c"]], "t": "diagram", "id": "dg-1_2-05-4"},
+
 
 
 
@@ -136,6 +141,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Format-specific cleaning", id: "formats" },
 
     {"kind": "flow", "title": "Format-specific cleaning is where the generic pipeline stops helping", "caption": "The eight generic stages do nothing about a `@mention`, a `#hashtag`, an `RT` prefix, a code block in a markdown document or a quoted reply chain in an email — **and each of those is a decision rather than a cleanup, because the thing you would strip is sometimes the signal.** A hashtag is the topic label on a tweet; a quoted reply is the context of the answer. **Which is why this stage cannot be a library default: it depends on the task, not the format.**", "cols": 3, "nodes": [{"id": "t", "label": "Tweets: @mentions, #hashtags, RT", "sub": "the hashtag may BE the label", "tone": "accent"}, {"id": "m", "label": "Markdown: code blocks, link syntax", "sub": "code is not prose", "tone": "accent"}, {"id": "e", "label": "Email: signatures, quoted replies", "sub": "the quote may be the context", "tone": "accent"}, {"id": "d", "label": "Each is a decision, not a cleanup", "sub": "what you strip may be the signal", "tone": "violet"}, {"id": "n", "label": "So it cannot be a library default", "sub": "it depends on the task", "tone": "teal"}], "edges": [["t", "d"], ["m", "d"], ["e", "d"], ["d", "n"]], "t": "diagram", "id": "dg-1_2-06-5"},
+
 
 
 

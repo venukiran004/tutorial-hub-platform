@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Lexical similarity", id: "lexical" },
 
+    {"kind": "trace", "title": "The middle value is 0.151, and the reason is a default nobody mentions", "caption": "The quoted figure is roughly 0.4 and **the measured value is 0.151** — because `TfidfVectorizer` **drops single-character tokens by default**, so `I` is not a feature and the two documents share only `learning`. Which is the lesson in miniature: **a similarity number is a property of the vectoriser's settings as much as of the text.** The third row is the one that matters either way: **two documents sharing no words score exactly 0, whatever they mean.**", "left": "pair", "codeW": 220, "vars": ["tf-idf cosine", "why"], "steps": [{"code": "'I love machine learning' / 'I enjoy deep learning'", "state": ["0.151", "share only 'learning'"], "tone": "warn", "note": "quoted as ~0.4"}, {"code": "...because 'I' is not a feature", "state": ["-", "single chars dropped by default"], "changed": [1], "tone": "accent"}, {"code": "either / 'The weather is sunny'", "state": ["0.000", "no shared words at all"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-2_4-01-0"},
+
     { t: "out", text: `  documents: ['I love machine learning', 'I enjoy deep learning', 'The weather is sunny']
   cosine matrix:
     [1.0, 0.151, 0.0]
@@ -44,6 +46,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Where lexical similarity breaks", id: "failure" },
 
+    {"kind": "trace", "title": "Paraphrase scores 0.000 and an unrelated pair scores 0.311", "caption": "Read the first and last rows together, because together they are the whole indictment. **A genuine paraphrase — *how to learn machine learning* against *the best way to study ML* — scores exactly 0.000, because it shares no words.** And *the bank raised rates* against *the river bank was muddy* scores **0.311, the highest in the table**, because it shares `the` and `bank`. **The ranking is not merely noisy: it is inverted on the two cases that matter most.**", "left": "pair", "codeW": 210, "vars": ["tf-idf cosine", "truth"], "steps": [{"code": "learn ML / study ML", "state": ["0.000", "a paraphrase"], "tone": "crit"}, {"code": "film excellent / movie superb", "state": ["0.155", "a paraphrase"], "changed": [0], "tone": "crit"}, {"code": "a car / an automobile", "state": ["0.247", "a synonym"], "changed": [0], "tone": "crit"}, {"code": "bank rates / river bank", "state": ["0.311", "unrelated - highest score"], "changed": [0, 1], "tone": "crit", "note": "inverted"}], "t": "diagram", "id": "dg-2_4-02-1"},
+
     { t: "out", text: `  text A                                 text B                                 tf-idf cos
   How to learn machine learning?         What is the best way to study ML?      0.000
   The film was excellent                 The movie was superb                   0.155
@@ -54,6 +58,8 @@ EC.receiveLesson({
       body: [{ t: "p", text: "The first three pairs are paraphrases — they mean the same thing — and they score **0.000, 0.155 and 0.247**. The fourth pair means two completely different things and scores **0.311**, the highest of the four, because both sentences contain `bank` and `the`. A retrieval system built on TF-IDF would rank the unrelated pair above every genuine paraphrase. This is not a tuning problem; it is what happens when the representation encodes which words are present and nothing about what they mean." }] },
 
     { t: "h2", n: "03", text: "Semantic similarity", id: "semantic" },
+
+    {"kind": "trace", "title": "The same four pairs, and the ordering is now right", "caption": "384 dimensions and the inversion is gone: **the synonym pair goes 0.247 to 0.910, the paraphrase 0.155 to 0.737, and the ML question pair 0.000 to 0.534.** Note the honest detail: **the reference quotes ~0.85 for that last pair and the measured value is 0.534** — so a short embedding model is less confident on a paraphrase with no shared vocabulary than the write-up suggests. **The ordering is what you rely on, not the magnitude.**", "left": "pair", "codeW": 190, "vars": ["tf-idf", "embedding", "change"], "steps": [{"code": "learn ML / study ML", "state": ["0.000", "0.534", "0 -> usable"], "tone": "good", "note": "quoted as ~0.85"}, {"code": "film excellent / movie superb", "state": ["0.155", "0.737", "+0.58"], "changed": [0, 1, 2], "tone": "good"}, {"code": "a car / an automobile", "state": ["0.247", "0.910", "+0.66"], "changed": [0, 1, 2], "tone": "good"}, {"code": "ML question / weather", "state": ["0.000", "0.059", "still near zero"], "changed": [0, 1, 2], "tone": "good", "note": "the ordering holds"}], "t": "diagram", "id": "dg-2_4-03-2"},
 
     { t: "out", text: `  embedding shape (3, 384)
   ML question vs ML question : 0.5336
@@ -72,6 +78,8 @@ EC.receiveLesson({
     { t: "p", text: "The encoder maps a whole sentence to one 384-dimensional vector, and the cosine between two such vectors is the similarity. This is a **bi-encoder**: each text is encoded independently, so the corpus can be encoded once and cached, which is what makes search possible at all." },
 
     { t: "h2", n: "04", text: "Scale", id: "scale" },
+
+    {"kind": "trace", "title": "Exact cosine is one dot product per document, per query", "caption": "The arithmetic is unforgiving because it is linear in corpus size and there is no constant factor to hide in: **at 10 million documents and 384 dimensions, one query is 3.8×10⁹ multiply-adds.** Which is why approximate nearest-neighbour indexes exist at all — **not to make the search smarter, but to stop it being a full scan.** And the cost is per **query**, so it is paid at serving time rather than once at build time.", "left": "corpus size", "codeW": 170, "vars": ["dot products per query", "multiply-adds at 384 dims"], "steps": [{"code": "1,000", "state": ["1,000", "3.8e5"], "tone": "good"}, {"code": "100,000", "state": ["100,000", "3.8e7"], "changed": [0, 1], "tone": "warn"}, {"code": "10,000,000", "state": ["10,000,000", "3.8e9"], "changed": [0, 1], "tone": "crit", "note": "per query"}], "t": "diagram", "id": "dg-2_4-04-3"},
 
     { t: "out", text: `        1000 documents: exact cosine = 1000 dot products PER QUERY
       100000 documents: exact cosine = 100000 dot products PER QUERY
