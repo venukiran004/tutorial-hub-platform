@@ -389,6 +389,28 @@ def _(value: set) -> list:
       ]
     },
 
+    { t: "code", lang: "python", title: "Two itertools functions that replace a comprehension nobody enjoys reading",
+      code: `from itertools import starmap, combinations_with_replacement
+from operator import mul
+
+# starmap: like map, but each item is already the argument TUPLE
+pairs = [(3, 4), (5, 6), (7, 8)]
+list(starmap(mul, pairs))                  # [12, 30, 56]
+# the alternative is map(lambda p: mul(*p), pairs) — the same thing, noisier
+
+# so it reads well over zip
+widths, heights = [3, 5, 7], [4, 6, 8]
+list(starmap(mul, zip(widths, heights)))   # [12, 30, 56]
+
+# combinations_with_replacement: combinations where an item may repeat
+list(combinations_with_replacement("ABC", 2))
+# [('A','A'), ('A','B'), ('A','C'), ('B','B'), ('B','C'), ('C','C')]
+
+# combinations() would drop the AA/BB/CC pairs — which matters when the
+# "pair" is a currency pair, a self-join, or a grid of parameter values`,
+      caption: "`starmap` is the one to reach for whenever the thing you are mapping over is already a tuple of arguments — it removes a `lambda` whose only job is to unpack. `combinations_with_replacement` differs from `combinations` in exactly one way, and the difference is usually the requirement: **a pair of the same item with itself is either meaningful in your domain or it is not.**" },
+    { t: "p", text: "The whole family is worth knowing by name rather than by memory: `starmap`, `takewhile`, `dropwhile`, `filterfalse`, `pairwise` and `batched` each replace a loop with a name that says what the loop was for. **The value is not speed — it is that the name is the comment.**" },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

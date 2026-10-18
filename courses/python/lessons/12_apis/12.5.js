@@ -436,6 +436,33 @@ def create_order(payload: OrderCreate, background: BackgroundTasks, db: DB):
       { t: "p", text: "**The blocking point is easy to miss.** A background task holds the worker that served the request, so a slow one reduces throughput exactly as if it had run before the response — the client just does not wait for it." }
     ]},
 
+    { t: "code", lang: "python", title: "`slowapi`: a rate limit as middleware plus a per-route decorator",
+      code: `from fastapi import FastAPI, Request
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
+
+limiter = Limiter(key_func=get_remote_address, storage_uri="redis://cache:6379")
+app = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+@app.get("/search")
+@limiter.limit("30/minute")               # the Request parameter is REQUIRED
+async def search(request: Request, q: str):
+    return await do_search(q)
+
+@app.post("/report")
+@limiter.limit("5/hour;100/day")          # several windows, cheapest first
+async def report(request: Request):
+    return await enqueue_report()
+
+# key_func is the decision that matters: get_remote_address limits per client
+# IP, which is wrong behind a proxy and wrong for authenticated APIs —
+# there the key should be the API key or the tenant id.`,
+      caption: "**The `key_func` is the whole design.** Limiting by IP puts every user behind one corporate NAT in the same bucket, and behind a load balancer it limits the balancer. For an authenticated API the key is the credential; **and `storage_uri` matters just as much, because in-memory counters mean each replica enforces its own separate limit.**" },
+    { t: "p", text: "A limit that rejects without telling the client when to come back is a limit clients cannot cooperate with: **return `429` with a `Retry-After` header**, which `slowapi` does for you. The alternative placements are a gateway or an ingress controller — cheaper, and blind to your tenant model. **The library is for limits that depend on who is calling; the gateway is for limits that do not.**" },
+
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
     { t: "exercise",

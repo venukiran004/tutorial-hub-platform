@@ -437,6 +437,36 @@ alert: CheckoutErrorRateAboveSLO
       { t: "p", text: "**Every muted alert is one that will not fire when it matters.** Alert fatigue is not a discipline problem — it is a design problem, and the fix is deleting alerts, not asking people to try harder." }
     ]},
 
+    { t: "code", lang: "python", title: "The two libraries behind this chapter, named",
+      code: `# --- metrics: prometheus_client
+from prometheus_client import Counter, Histogram, Gauge, make_asgi_app
+
+REQUESTS = Counter("http_requests_total", "Requests", ["method", "route", "status"])
+LATENCY = Histogram("http_request_seconds", "Latency", ["route"],
+                    buckets=(0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5))
+IN_FLIGHT = Gauge("http_in_flight", "Requests being served")
+
+app.mount("/metrics", make_asgi_app())    # make_wsgi_app() for Flask or Django
+
+# label VALUES must be bounded — a user id or a raw path is a cardinality
+# incident; the route TEMPLATE ("/orders/{id}") is the correct label.
+
+# --- logs: python-json-logger
+import logging
+from pythonjsonlogger import jsonlogger
+
+handler = logging.StreamHandler()
+handler.setFormatter(jsonlogger.JsonFormatter(
+    "%(asctime)s %(levelname)s %(name)s %(message)s",
+    rename_fields={"levelname": "level", "asctime": "timestamp"},
+))
+logging.basicConfig(handlers=[handler], level=logging.INFO)
+log.info("order shipped", extra={"order_id": 7, "tenant": "acme"})
+# {"timestamp": "...", "level": "INFO", "message": "order shipped",
+#  "order_id": 7, "tenant": "acme"}`,
+      caption: "**The comment about label values is the one that costs money.** A Prometheus metric with an unbounded label is a new time series per distinct value — a user id turns one metric into millions, and the first symptom is the monitoring system falling over rather than yours. **Labels are for dimensions with a small, fixed set of values.**" },
+    { t: "p", text: "`structlog` is the common alternative to `python-json-logger` and takes a different approach: **you bind context onto a logger once and every later call carries it**, which fits a request-scoped correlation id better than passing `extra` at each call site. Either library gets you the thing that matters — **one JSON object per event, with the fields your aggregator can filter on.**" },
+
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
     { t: "exercise",

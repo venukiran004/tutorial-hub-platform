@@ -439,6 +439,36 @@ class PartnerClient:
       caption: "**Two boundaries in one class: exceptions and types.** Callers never see `requests` or the vendor's field names, so swapping to `httpx` or absorbing an upstream rename changes this file alone (Lesson 6.3)."
     },
 
+    { t: "code", lang: "python", title: "`pybreaker`: the circuit breaker as a library rather than a hand-rolled class",
+      code: `import pybreaker, httpx
+
+# fail_max consecutive failures -> open; reset_timeout seconds -> half-open
+breaker = pybreaker.CircuitBreaker(
+    fail_max=5,
+    reset_timeout=30,
+    exclude=[lambda e: isinstance(e, httpx.HTTPStatusError) and e.response.status_code < 500],
+)
+
+@breaker
+def fetch_quote(symbol: str) -> dict:
+    r = httpx.get(f"https://partner.example/quote/{symbol}", timeout=2.0)
+    r.raise_for_status()
+    return r.json()
+
+try:
+    quote = fetch_quote("ACME")
+except pybreaker.CircuitBreakerError:
+    quote = cached_quote("ACME")          # the breaker is open: fail fast, serve stale
+
+# listeners are the reason to use the library rather than write one:
+class Alert(pybreaker.CircuitBreakerListener):
+    def state_change(self, cb, old, new):
+        log.warning("breaker %s: %s -> %s", cb.name, old.name, new.name)
+
+breaker.add_listener(Alert())`,
+      caption: "**The `exclude` argument is the part a hand-rolled breaker usually gets wrong**: a 404 is not a sign the service is unhealthy, so it must not count towards opening the circuit. Only the failures that mean *the dependency is in trouble* should — timeouts, connection errors, and 5xx." },
+    { t: "p", text: "`pybreaker` and `purgatory` cover the sync and async cases; a service mesh or an API gateway can also do this a layer below your code, which is worth knowing before you add it in two places. **A breaker in the application and a breaker in the mesh will interact, and the one with the shorter timeout wins.**" },
+
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
     { t: "exercise",

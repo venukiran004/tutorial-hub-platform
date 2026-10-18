@@ -365,6 +365,33 @@ def verify_token(token: str) -> TokenData:
       caption: "**Build this before you need it.** Rotating under pressure — after a leak — is when you discover that your design assumed one key, and the choice becomes \"log everyone out\" or \"leave the compromised key valid\"."
     },
 
+    { t: "code", lang: "python", title: "Encrypting a value yourself, when a secrets manager is not available",
+      code: `from cryptography.fernet import Fernet, InvalidToken, MultiFernet
+
+# Fernet: symmetric AES-CBC with an HMAC, a timestamp, and one API
+key = Fernet.generate_key()               # 32 url-safe base64 bytes — a SECRET
+f = Fernet(key)
+
+token = f.encrypt(b"pk_live_abc123")      # versioned, authenticated ciphertext
+f.decrypt(token, ttl=86_400)              # InvalidToken if tampered OR too old
+
+# rotation without re-encrypting everything at once: new key first
+rotating = MultiFernet([Fernet(new_key), Fernet(old_key)])
+rotating.rotate(token)                    # re-encrypt under the new key
+
+# and the asymmetric case, for a key you must hand to someone else
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+
+private = rsa.generate_private_key(public_exponent=65537, key_size=4096)
+pem = private.private_bytes(
+    encoding=serialization.Encoding.PEM,
+    format=serialization.PrivateFormat.PKCS8,
+    encryption_algorithm=serialization.BestAvailableEncryption(passphrase),
+)`,
+      caption: "**Fernet is the one safe default in this space** — it picks the algorithm, the mode, the padding and the authentication for you, so there is no parameter to get wrong. `MultiFernet` is what makes rotation possible without a migration: **decrypt with any key in the list, encrypt with the first.** Note the `hazmat` in the second import path; the name is a deliberate warning." },
+    { t: "p", text: "This does not remove the original problem, it moves it: **the Fernet key is itself a secret that must come from the environment or a manager, and encrypting a config value with a key stored beside it protects nothing.** The honest ordering is a managed secrets service, then envelope encryption with a KMS-held key, then this — and never a key committed to the repository." },
+
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
     { t: "exercise",

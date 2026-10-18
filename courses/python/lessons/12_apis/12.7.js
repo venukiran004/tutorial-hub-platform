@@ -399,6 +399,35 @@ def deliver(endpoint: WebhookEndpoint, event: Event) -> None:
       { t: "p", text: "**Point five is the one teams skip**, and it is what turns \"our receiver was down for an hour\" from a support ticket into something the customer resolves themselves." }
     ]},
 
+    { t: "code", lang: "python", title: "Two queue libraries, and the Celery primitives worth knowing by name",
+      code: `# --- rq: the small one. Redis only, no result backend to configure.
+from redis import Redis
+from rq import Queue
+
+q = Queue("reports", connection=Redis(host="cache"))
+job = q.enqueue(build_report, tenant_id=42, job_timeout=600)
+job.get_status()                           # 'queued' | 'started' | 'finished' | 'failed'
+
+# --- celery: the big one. Several brokers, and composition primitives.
+from celery import Celery, chord, group, chain
+from celery.result import AsyncResult
+
+app = Celery("tasks", broker="amqp://rabbit", backend="redis://cache")
+
+# chain: run in sequence, each result feeding the next
+chain(extract.s(path), transform.s(), load.s())()
+
+# group: run in parallel, collect the results
+group(score.s(batch) for batch in batches)()
+
+# chord: a group, PLUS a callback that runs once when all of them finish
+chord(score.s(b) for b in batches)(summarise.s())
+
+# recovering a result later, from a job id you stored in your own database
+AsyncResult(job_id, app=app).state          # 'PENDING' means queued OR UNKNOWN`,
+      caption: "**`chord` is the primitive that replaces a polling loop**: a fan-out whose callback fires exactly once, when the last task in the group completes. And the comment on the final line is a real trap — **Celery cannot distinguish a task that is queued from a task id that never existed, so both report `PENDING`.**" },
+    { t: "p", text: "The choice between them is mostly about what you already run: **`rq` needs only Redis and reads like a function call; Celery brings routing, retries, scheduled tasks and the composition primitives above, at the cost of real configuration.** Both need the same discipline — a timeout on every task, idempotent task bodies, and arguments that are ids rather than objects." },
+
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
     { t: "exercise",

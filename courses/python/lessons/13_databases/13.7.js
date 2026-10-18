@@ -309,6 +309,31 @@ create_engine(url, poolclass=NullPool)`},
       { t: "p", text: "**Transaction mode is the useful one, and it is where the surprises live.** Every one of the broken features fails at runtime rather than at deploy, usually under load, usually in the code path nobody tested against the pooler." }
     ]},
 
+    { t: "code", lang: "python", title: "Building the engine from configuration, and watching it with events",
+      code: `from sqlalchemy import create_engine, engine_from_config, event
+from sqlalchemy.pool import QueuePool, NullPool
+
+# engine_from_config reads a prefixed dict — the same shape Alembic's
+# alembic.ini uses, so the migration tool and the app share one definition
+settings = {
+    "db.url": "postgresql+psycopg://app@db/orders",
+    "db.pool_size": 5, "db.max_overflow": 10,
+    "db.pool_timeout": 30, "db.pool_recycle": 1800, "db.pool_pre_ping": True,
+}
+engine = engine_from_config(settings, prefix="db.", poolclass=QueuePool)
+
+# events are how you observe the pool without a profiler attached
+@event.listens_for(engine, "connect")
+def on_connect(dbapi_conn, record):
+    with dbapi_conn.cursor() as cur:
+        cur.execute("SET statement_timeout = '5s'")    # per-connection setting
+
+@event.listens_for(engine, "checkout")
+def on_checkout(dbapi_conn, record, proxy):
+    metrics.gauge("db.pool.checked_out", engine.pool.checkedout())`,
+      caption: "**The `connect` event is the right place for a per-connection `SET`** — a statement timeout, a search path, a role — because it runs once per physical connection rather than once per query. And `engine_from_config` is the reason to keep pool settings in config rather than in code: **Alembic and your application then pool the same way, which is what stops migrations from exhausting the pool.**" },
+    { t: "p", text: "`NullPool` is worth knowing as the deliberate opposite: **no pooling at all, which is the correct choice in a serverless function or behind an external pooler like PgBouncer**, where a long-lived client pool is either impossible or duplicated. The failure it prevents is the one where a hundred short-lived invocations each hold five connections." },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

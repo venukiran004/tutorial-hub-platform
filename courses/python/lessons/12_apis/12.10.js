@@ -63,6 +63,34 @@ hmac.compare_digest(provided_token, expected_token)   # constant time
         ["Implicit", "Nothing — deprecated", "Tokens in the URL fragment; use Code + PKCE"]
       ] },
 
+    { t: "code", lang: "python", title: "Verifying a provider's token: fetch the key by `kid`, never hard-code it",
+      code: `import jwt                                  # PyJWT
+from jwt import PyJWKClient, InvalidTokenError
+
+# the provider publishes its public keys and ROTATES them; the client caches
+# them and refetches when a token arrives with an unknown key id
+jwks = PyJWKClient("https://issuer.example/.well-known/jwks.json", cache_keys=True)
+
+def verify(token: str) -> dict:
+    key = jwks.get_signing_key_from_jwt(token).key     # picked by the kid header
+    return jwt.decode(
+        token, key,
+        algorithms=["RS256"],              # a LIST, and never "none"
+        audience="api://orders",           # or any token for any service passes
+        issuer="https://issuer.example/",
+        options={"require": ["exp", "iat", "aud", "iss"]},
+    )
+
+try:
+    claims = verify(token)
+except InvalidTokenError as e:             # expired, wrong aud, bad signature
+    raise HTTPException(401, "invalid token") from e
+
+# python-jose raises JWTError for the same cases; the library choice matters
+# less than passing algorithms= and audience= explicitly, which both require.`,
+      caption: "**Two arguments do the security work here.** Omitting `algorithms` lets an attacker choose the algorithm the token is verified with, which is how the `alg: none` and RS256-to-HS256 confusion attacks work. Omitting `audience` means a token minted for *another* service in the same tenant validates against yours. **`PyJWKClient` exists because keys rotate** — a hard-coded public key is an outage with a date on it." },
+    { t: "p", text: "The same applies to the error type: **catch `InvalidTokenError` (PyJWT) or `JWTError` (python-jose) and return a flat `401`.** Reporting *why* the token failed tells an attacker whether the signature, the expiry or the audience was wrong, which is free information about your configuration." },
+
     { t: "h2", n: "03", text: "Authorisation models", id: "authz" },
 
     { t: "diagram", kind: "compare", title: "RBAC, ABAC, scopes and ownership", caption: "Four different questions. A request can pass three of them and still be an attack if the fourth — does this user own this row — is missing. That omission is OWASP's number-one category.", columns: [

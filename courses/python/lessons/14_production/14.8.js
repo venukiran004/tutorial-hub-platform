@@ -370,6 +370,31 @@ app = FastAPI(lifespan=lifespan)
       caption: "**The `startupProbe` prevents a restart loop on slow-starting applications.** Without it, an application taking forty seconds to load a model fails its liveness probe and is killed before it ever becomes ready."
     },
 
+    { t: "code", lang: "python", title: "`locust`: a load test written in Python, which is why it gets maintained",
+      code: `from locust import HttpUser, task, between, constant_throughput
+
+class Shopper(HttpUser):
+    wait_time = between(1, 3)             # think time between tasks, per user
+
+    def on_start(self):                   # once per simulated user
+        r = self.client.post("/login", json={"user": "load", "password": "x"})
+        self.client.headers["Authorization"] = f"Bearer {r.json()['token']}"
+
+    @task(5)                              # weight: five browses per checkout
+    def browse(self):
+        self.client.get("/products?page=1", name="/products")   # GROUP the URL
+
+    @task(1)
+    def checkout(self):
+        with self.client.post("/orders", json=CART, catch_response=True) as r:
+            if r.elapsed.total_seconds() > 1.0:
+                r.failure("slower than the 1s SLO")   # your own pass/fail rule
+
+# locust -f load.py --headless -u 500 -r 20 --run-time 10m --host https://staging
+# -u = concurrent users, -r = ramp per second. Report p50/p95/p99, not the mean.`,
+      caption: "**The `name=` argument is the detail that makes a report readable** — without it every distinct query string becomes its own row, and a thousand near-identical lines hide the one endpoint that is slow. The `catch_response` block is the other half: **a 200 that took four seconds is a failure against an SLO, and only your test knows that.**" },
+    { t: "p", text: "The ramp matters as much as the target number: **a step profile — 100 users, hold, 200, hold — tells you where the knee is, while jumping straight to 500 only tells you that 500 broke it.** And run it against something shaped like production. A load test against a single replica with an empty database measures the test harness." },
+
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
     { t: "exercise",

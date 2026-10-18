@@ -306,6 +306,28 @@ git bisect run pytest tests/test_totals.py -x -q`,
       { t: "p", text: "**Bisect the differences too.** Run locally with the production environment variables; run the production image locally; run with production-shaped data. Each one either reproduces the bug or eliminates a cause." }
     ]},
 
+    { t: "code", lang: "python", title: "Two stdlib modules for the moment the structure is too big to read",
+      code: `import pprint, reprlib
+
+config = {"db": {"host": "db-1", "pool": {"min": 2, "max": 20, "timeout": 5.0}},
+          "features": ["billing", "exports", "sso"], "debug": False}
+
+pprint.pprint(config, width=60, sort_dicts=True)
+# prints it indented and key-sorted, instead of one 180-character line
+msg = pprint.pformat(config, width=60)       # the same thing, as a string, for a log
+
+# reprlib truncates instead of formatting — for the case where the object
+# is enormous and you only want to know its SHAPE
+rows = [{"id": i, "payload": "x" * 500} for i in range(10_000)]
+print(reprlib.repr(rows))
+# [{'id': 0, 'payload': 'xxxxxxxxx...xxx'}, {'id': 1, ...}, ...]
+
+class Batch:
+    def __repr__(self):
+        return f"Batch({reprlib.repr(self.rows)})"   # a safe __repr__ on big data`,
+      caption: "**`pprint` is for reading and `reprlib` is for truncating** — and the second one solves a real production problem: a `__repr__` that interpolates a ten-thousand-row list will fill a log line, slow the logger down, and sometimes be the reason a handler times out." },
+    { t: "p", text: "The rule that follows is worth applying to every `__repr__` you write on a container: **a repr is read by humans and by log aggregators, so it has to be bounded.** `reprlib.repr` bounds it for you, with per-type limits you can configure through `reprlib.Repr`." },
+
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
     { t: "exercise",

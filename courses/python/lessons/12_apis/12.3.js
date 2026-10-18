@@ -358,6 +358,37 @@ def get_settings() -> Settings:
       { t: "p", text: "**Use it at boundaries, not everywhere.** A Pydantic model for an object that never leaves your process is paying a runtime check to protect against your own bugs — which is what the type checker and the tests are for." }
     ]},
 
+    { t: "code", lang: "python", title: "The serialisation half of Pydantic, which gets less attention than validation",
+      code: `from datetime import datetime
+from decimal import Decimal
+from pydantic import BaseModel, computed_field, field_serializer, model_serializer
+
+class Order(BaseModel):
+    id: int
+    created: datetime
+    net: Decimal
+    vat_rate: Decimal
+
+    @computed_field                       # appears in the output, not in the input
+    @property
+    def gross(self) -> Decimal:
+        return self.net * (1 + self.vat_rate)
+
+    @field_serializer("created")          # one field, on the way out
+    def ser_created(self, v: datetime) -> str:
+        return v.isoformat(timespec="seconds")
+
+    @field_serializer("net", "vat_rate")  # Decimal -> string, never float
+    def ser_money(self, v: Decimal) -> str:
+        return str(v)
+
+Order(id=7, created=datetime(2026, 3, 1, 9, 30), net=Decimal("100.00"),
+      vat_rate=Decimal("0.20")).model_dump()
+# {'id': 7, 'created': '2026-03-01T09:30:00', 'net': '100.00',
+#  'vat_rate': '0.20', 'gross': '120.00'}`,
+      caption: "**`computed_field` is the one that changes an API design**: a derived value that belongs in the response but must never be accepted in a request. Validation and serialisation are separate directions, and **a field validator does not run on the way out** — which is why money arriving as a `Decimal` can still leave as a float unless you say otherwise." },
+    { t: "p", text: "`model_serializer` replaces the whole output shape when a field-level hook is not enough, and `model_dump(mode=\"json\")` is the call that guarantees JSON-safe primitives rather than Python objects. For a third-party type Pydantic does not know, **`__get_pydantic_core_schema__` with a `GetCoreSchemaHandler` teaches it the validation and serialisation rules once**, rather than annotating every use site." },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

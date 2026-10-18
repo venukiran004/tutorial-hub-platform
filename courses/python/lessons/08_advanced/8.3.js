@@ -348,6 +348,31 @@ ignore_missing_imports = true`,
       { t: "p", text: "**A useful sequencing:** public function signatures, then dataclasses and models, then module internals, then the legacy exception list — with each step producing findings that justify the next." }
     ]},
 
+    { t: "code", lang: "python", title: "`NoReturn` and `Never`: the annotation for a function that does not come back",
+      code: `from typing import NoReturn, Never
+
+def fail(message: str) -> NoReturn:
+    """Always raises. The type checker knows control does not continue."""
+    raise ValueError(message)
+
+def handle(status: int) -> str:
+    if status == 200:
+        return "ok"
+    if status == 404:
+        return "missing"
+    fail(f"unhandled status {status}")       # no "missing return" error here
+    # the checker knows fail() cannot fall through, so the function is total
+
+# Never is the same type under its modern name (3.11+), and it also reads
+# well as an ARGUMENT type, which is what proves exhaustiveness:
+def assert_never(value: Never) -> NoReturn:
+    raise AssertionError(f"unhandled variant: {value!r}")
+
+# in a match over a closed set, the default branch takes Never — so adding
+# a new variant without handling it becomes a type error, not a runtime one`,
+      caption: "**`NoReturn` is how you tell the checker that a helper always raises**, which is what stops it reporting a missing return on every caller. `Never` is the same type renamed in 3.11, and as a *parameter* type it is the trick behind exhaustiveness checking: **nothing can be passed to it, so reaching that branch is a type error.**" },
+    { t: "p", text: "`sys.exit()` and `os._exit()` are annotated `NoReturn` in the stubs for the same reason. **If you write a `raise_for()` or `die()` helper, annotate it — otherwise every function that ends in a call to it needs a return statement it will never reach.**" },
+
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
     { t: "exercise",

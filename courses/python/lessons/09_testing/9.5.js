@@ -359,6 +359,29 @@ mock.called_once_with("x")            # not a real method at all`},
       { t: "p", text: "**Three defences, in order:** use `autospec` so unknown attributes raise; enable `mock.patch` linting (`ruff`'s `PGH005` and pylint's `assert-on-tuple` family catch some); and prefer asserting on **outcomes** over call records, since an outcome assertion cannot be silently misspelled into nothing." }
     ]},
 
+    { t: "code", lang: "python", title: "`PropertyMock`: patching an attribute that is computed, not stored",
+      code: `from unittest.mock import patch, PropertyMock, MagicMock
+
+class Account:
+    @property
+    def balance(self) -> int:
+        return self._fetch_balance_from_ledger()      # slow, and a network call
+
+# Assigning to the attribute on a Mock does NOT work for a property:
+#   mock.balance = 500        <- sets an attribute, bypassing property semantics
+# and patching it with a plain value loses the "accessed" assertion entirely.
+
+with patch.object(Account, "balance", new_callable=PropertyMock) as balance:
+    balance.return_value = 500
+    assert Account().balance == 500
+    balance.assert_called_once()                      # properties record ACCESS
+
+# it also lets a property raise, which is awkward to arrange any other way
+with patch.object(Account, "balance", new_callable=PropertyMock) as balance:
+    balance.side_effect = TimeoutError("ledger unavailable")`,
+      caption: "**`PropertyMock` is patched onto the class, not the instance** — that is the part people get wrong, and the reason a plain `mock.balance = 500` silently does something different. The payoff is the assertion: **it records each access, so you can prove the code read the property once rather than on every loop iteration.**" },
+    { t: "p", text: "The same applies to `__getitem__`, `__len__` and the rest of the dunder protocol: **a plain `Mock` does not support them, and `MagicMock` does.** When a test fails with a `TypeError` about an unsupported operation on a mock, the fix is almost always the more capable mock class rather than more setup." },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

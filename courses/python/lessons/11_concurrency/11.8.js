@@ -320,6 +320,26 @@ def run(path: str) -> int:
       { t: "p", text: "**Which argues for starting with threads in an existing synchronous codebase**, measuring, and moving to `asyncio` only when the connection counts or the measurement demand it. In a new I/O-heavy service, start async and keep every driver async from the first commit." }
     ]},
 
+    { t: "code", lang: "python", title: "Subinterpreters: a fourth option, between threads and processes",
+      code: `# PEP 734, stdlib "interpreters" module in 3.14; the private _interpreters
+# backend exists in 3.12/3.13, and the "interpreters-pep-734" backport wraps it.
+import interpreters                      # 3.14+;  import _interpreters on 3.12/3.13
+
+interp = interpreters.create()           # a fresh interpreter: its own GIL
+interp.exec("import math; print(math.factorial(20))")
+
+# each interpreter has its OWN GIL, so pure-Python CPU work runs in parallel
+# without the pickle-and-spawn cost of multiprocessing:
+#
+#   threads          one GIL        shared memory       no CPU parallelism
+#   subinterpreters  one GIL EACH   explicit channels   ~ms to create
+#   processes        one GIL each   pickled or shared   ~tens of ms to spawn
+#
+# the cost is isolation: no shared objects, so data crosses through queues,
+# and a C extension that is not per-interpreter-safe cannot be imported`,
+      caption: "**Subinterpreters sit exactly where the gap in this module has been: parallel CPU work on pure Python, without a process boundary.** Each one has its own GIL, so 11.2's constraint does not apply across them, and creation is milliseconds rather than tens. **The catch is the C extension ecosystem** — a module that keeps global state is not safe to load twice in one process, and many still do." },
+    { t: "p", text: "The related change is free-threading: **3.13 shipped an optional build with the GIL removed entirely (PEP 703), selected at install time as the `t` variant.** Both are real and both are early. **The decision table above is still the right one to apply in 2026** — reach for these when you have measured the process-boundary cost and found it to be the problem." },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",
