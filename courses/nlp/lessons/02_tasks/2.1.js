@@ -27,6 +27,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "TF-IDF plus a linear classifier",
       code: `pipelines = {
     "Logistic Regression": Pipeline([
@@ -65,6 +68,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "math", tex: "\\hat{y} = \\arg\\max_{c} \\; \\log P(c) + \\sum_{i} \\log P(w_i \\mid c), \\qquad P(w \\mid c) = \\frac{\\text{count}(w, c) + \\alpha}{\\text{count}(c) + \\alpha|V|}" },
 
     { t: "out", text: `  corpus: [('good movie great acting', 1), ('bad movie poor acting', 0),
@@ -92,6 +98,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text: `  a 2% positive rate, and a model that ALWAYS predicts negative:
     accuracy  0.9800   <- looks excellent
     macro-F1  0.4949   <- tells the truth
@@ -112,6 +121,9 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Transformers, zero-shot and fine-tuned", id: "transformers" },
 
     {"kind": "flow", "title": "Three options, and the order to try them in is the reverse of the order people try them", "caption": "**The classical baseline trains in under a minute, is interpretable, and is frequently within a few points — so run it first**, because it is also the number that tells you whether anything harder is worth it. A **fine-tuned transformer** is the accuracy answer once you have a few thousand labelled examples: `AutoModelForSequenceClassification` with `num_labels`, learning rate around **2e-5**, two to four epochs. **Zero-shot is for the case where labels do not exist yet** — exploration, a new label tomorrow, a long tail of rare categories — and it is slow per document.", "cols": 3, "nodes": [{"id": "c", "label": "Classical: under a minute to train", "sub": "and often within a few points", "tone": "good"}, {"id": "b", "label": "So it is also your baseline", "sub": "run it FIRST", "tone": "violet"}, {"id": "f", "label": "Fine-tuned transformer", "sub": "lr ~2e-5, 2-4 epochs", "tone": "good"}, {"id": "n", "label": "Needs a few thousand labels", "sub": "which is the real gate", "tone": "warn"}, {"id": "z", "label": "Zero-shot: no labels at all", "sub": "slow per document, less accurate", "tone": "accent"}], "edges": [["c", "b"], ["b", "f"], ["f", "n"], ["n", "z"]], "t": "diagram", "id": "dg-2_1-04-3"},
+
+
+
 
 
 

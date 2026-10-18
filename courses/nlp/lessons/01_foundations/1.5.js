@@ -28,6 +28,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text: `  1-grams (6): [('the',), ('cat',), ('sat',)]
   2-grams (5): [('the', 'cat'), ('cat', 'sat'), ('sat', 'on')]
   3-grams (4): [('the', 'cat', 'sat'), ('cat', 'sat', 'on'), ('sat', 'on', 'the')]
@@ -55,6 +58,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text: `  MLE  P(sat     | cat ) = 0.6667
   MLE  P(chased  | cat ) = 0.3333
   MLE  P(flew    | cat ) = 0.0000` },
@@ -65,6 +71,9 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Add-one smoothing, and what it costs", id: "smoothing" },
 
     {"kind": "trace", "title": "Add-one gives 61.5% of the mass to things never observed", "caption": "This is the cost stated as a number. **The MLE gives the seen continuations 1.000 of the probability mass; add-one leaves them 0.385** — so **61.5% of the distribution has been handed to events the corpus never saw**, simply because the vocabulary is 10 and the context count is 3. The denominator `count(c) + |V|` is the whole problem: **the correction scales with the vocabulary, not with the evidence**, so a realistic `|V|` makes it worse, not better.", "left": "continuation of 'cat'", "codeW": 180, "vars": ["MLE", "add-one", "formula"], "steps": [{"code": "sat", "state": ["0.6667", "0.2308", "(2+1)/(3+10)"], "tone": "warn"}, {"code": "chased", "state": ["0.3333", "0.1538", "(1+1)/(3+10)"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "flew (unseen)", "state": ["0.0000", "0.0769", "(0+1)/(3+10)"], "changed": [0, 1, 2], "tone": "good"}, {"code": "mass on seen events", "state": ["1.000", "0.385", "61.5% given away"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-1_5-03-2"},
+
+
+
 
 
 
@@ -103,6 +112,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "math", tex: "\\text{PP} = 2^{H} \\quad \\text{where} \\quad H = -\\frac{1}{N}\\sum_{i} \\log_2 P(w_i \\mid w_{i-1})" },
 
     { t: "out", text: `  on the TRAINING sentences : 4.93
@@ -126,6 +138,9 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "The sparsity wall", id: "sparsity" },
 
     {"kind": "trace", "title": "Each extra word of context multiplies the table by 50,000", "caption": "**A 3-gram table over a 50,000-word vocabulary has 1.25×10¹⁴ cells and a 4-gram table 6.25×10¹⁸** — more cells than there are words in any corpus, so **the overwhelming majority of entries are zero and the model is mostly smoothing.** And three other limits are structural rather than about size: **a fixed context window cannot see a verb agreeing with a subject six words back, and `good` and `great` stay unrelated symbols, so seeing one teaches nothing about the other.**", "left": "n", "codeW": 130, "vars": ["possible n-grams at |V|=50,000", "what is in the table"], "steps": [{"code": "1", "state": ["5.00e+04", "mostly observed"], "tone": "good"}, {"code": "2", "state": ["2.50e+09", "mostly zero"], "changed": [0, 1], "tone": "warn"}, {"code": "3", "state": ["1.25e+14", "almost all zero"], "changed": [0, 1], "tone": "crit"}, {"code": "4", "state": ["6.25e+18", "the model IS the smoothing"], "changed": [0, 1], "tone": "crit"}, {"code": "and separately", "state": ["no semantic sharing", "good / great unrelated"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_5-05-4"},
+
+
+
 
 
 

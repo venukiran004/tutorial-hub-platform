@@ -30,6 +30,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text: `  token      pos    tag   explanation
   The        DET    DT    determiner
   quick      ADJ    JJ    adjective
@@ -103,6 +106,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text: `  'The cat chased the mouse'   -> SVO [('cat', 'chased', 'mouse')]
   'The mouse chased the cat'   -> SVO [('mouse', 'chased', 'cat')]
   as a BAG OF WORDS these two are IDENTICAL:
@@ -119,6 +125,9 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Noun chunks", id: "chunks" },
 
     {"kind": "trace", "title": "Three phrases, each with its head and its grammatical role attached", "caption": "**A noun chunk is a noun plus the words describing it, read straight off the parse — the cheapest useful phrase extractor there is.** *machine learning engineers* comes out as **one unit rather than three tokens**, with `root=engineers` and `dep=nsubj`, so you get the phrase and what it is doing in the sentence in one pass. For key-phrase extraction, building a knowledge graph, or turning a sentence into a triple, **that pairing is the part that saves work.**", "left": "chunk", "codeW": 210, "vars": ["root", "dep", "role"], "steps": [{"code": "Machine learning engineers", "state": ["engineers", "nsubj", "who acts"], "tone": "good", "note": "one unit, not three tokens"}, {"code": "large-scale recommendation systems", "state": ["systems", "dobj", "what is acted on"], "changed": [0, 1, 2], "tone": "good"}, {"code": "Google", "state": ["Google", "pobj", "the preposition's object"], "changed": [0, 1, 2], "tone": "good"}], "t": "diagram", "id": "dg-1_8-04-2"},
+
+
+
 
 
 

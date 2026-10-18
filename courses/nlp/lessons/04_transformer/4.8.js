@@ -22,6 +22,9 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Three levels, and only the middle one has no fatal problem", "caption": "The last column is the argument. **Word level: any unseen word becomes UNK and morphology is invisible, at a 500,000+ vocabulary. Character level: a ~128 vocabulary and quadratic attention over very long sequences, with little meaning per token.** Subword keeps common words whole and splits rare ones into pieces it has seen — **`the` is one token, `unhappiness` becomes `un` + `happiness`** — so **frequent words stay short and nothing is ever unrepresentable.**", "left": "level", "codeW": 130, "vars": ["vocabulary", "sequence length", "fatal problem"], "steps": [{"code": "word", "state": ["500,000+", "short", "UNK; no morphology"], "tone": "crit"}, {"code": "character", "state": ["~128", "very long", "quadratic attention"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "subword", "state": ["30,000-128,000", "moderate", "none fatal"], "changed": [0, 1, 2], "tone": "good", "note": "which is why everything uses it"}], "t": "diagram", "id": "dg-4_8-01-0"},
 
+
+
+
     { t: "table",
       head: ["Level", "Vocabulary", "Sequence length", "Fatal problem"],
       rows: [
@@ -35,6 +38,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Training BPE, worked", id: "training" },
 
     {"kind": "trace", "title": "Two pairs tie for the maximum at nine", "caption": "The initial counts on the four-word corpus put **`(e,r)` and `(r,</w>)` both at 9** — a genuine tie at the top, which is where §03's divergence comes from: **the algorithm as stated does not say which to merge, so the implementation's tie-break decides the vocabulary.** Below them, `(w,e)` at 8 and `(l,o)`/`(o,w)` at 7. The `</w>` end marker is doing real work here: **it makes `er` at the end of a word a different symbol from `er` inside one.**", "left": "pair", "codeW": 150, "vars": ["count", "note"], "steps": [{"code": "(e,r)", "state": ["9", "tied for max"], "tone": "violet"}, {"code": "(r,</w>)", "state": ["9", "also tied for max"], "changed": [0, 1], "tone": "violet", "note": "the tie-break decides"}, {"code": "(w,e)", "state": ["8", "-"], "changed": [0, 1], "tone": "good"}, {"code": "(l,o) / (o,w)", "state": ["7", "-"], "changed": [0, 1], "tone": "good"}, {"code": "(e,s) / (s,t) / (t,</w>)", "state": ["2", "never merged, as it turns out"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-4_8-02-1"},
+
+
+
 
     { t: "out", text:
 "the tiny corpus, characters plus an end marker\n\n  5 x  l o w </w>\n  2 x  l o w e s t </w>\n  6 x  n e w e r </w>\n  3 x  w i d e r </w>" },
@@ -50,6 +56,9 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Strict greedy and the reference take different merges from merge 3 onward", "caption": "Both agree on merges 1 and 2. **Then strict greedy takes `(l,o)` at frequency 7, because 7 > 6; the reference takes `(n,e)` at 6.** Neither is wrong about the counts — **the reference is following a different ordering convention, and the result is a different vocabulary from identical data.** Which is the practical warning: **a BPE vocabulary is not determined by the corpus alone, so two implementations can both be “correct” and produce different tokenizations.**", "left": "merge", "codeW": 130, "vars": ["strict greedy", "freq", "the reference"], "steps": [{"code": "1", "state": ["(e,r) -> er", "9", "same"], "tone": "good"}, {"code": "2", "state": ["(er,</w>) -> er</w>", "9", "same"], "changed": [0], "tone": "good"}, {"code": "3", "state": ["(l,o) -> lo", "7", "(n,e) -> ne  [6]"], "changed": [0, 1, 2], "tone": "crit", "note": "diverges here"}, {"code": "4", "state": ["(lo,w) -> low", "7", "(ne,w) -> new  [6]"], "changed": [0, 2], "tone": "crit"}, {"code": "result", "state": ["a different vocabulary", "-", "from identical data"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-4_8-03-2"},
 
+
+
+
     { t: "out", text:
 "always merging the most frequent pair\n\n  merge 1   (e,r)        -> 'er'          freq 9\n  merge 2   (er,</w>)    -> 'er</w>'     freq 9\n  merge 3   (l,o)        -> 'lo'         freq 7\n  merge 4   (lo,w)       -> 'low'        freq 7\n  merge 5   (e,w)        -> 'ew'         freq 6\n  merge 6   (ew,er</w>)  -> 'ewer</w>'   freq 6\n  merge 7   (n,ewer</w>) -> 'newer</w>'  freq 6\n\nthe order:\n  merge 3   (n,e) -> 'ne'   [6]\n  merge 4   (ne,w) -> 'new' [6]\n  merge 5   (l,o) -> 'lo'   [7]\n  merge 6   (lo,w) -> 'low' [7]" },
 
@@ -59,6 +68,9 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Encoding applies the rules in order", id: "encoding" },
 
     {"kind": "trace", "title": "Encoding is the merge list replayed in order, and the fallback is characters", "caption": "**The merges are applied in the order they were learned, which is why encoding is deterministic and why the list is part of the tokenizer rather than just the vocabulary.** `lower` was never seen whole and encodes to **2 tokens** from pieces that were. Then the degradation is visible: **`lowest` is 5 tokens because `e`, `s` and `t` were never merged, and `widest` is 7 — a full character fallback.** So a word's token count depends on how much of it the merge list happened to cover.", "left": "word", "codeW": 150, "vars": ["encoding", "tokens"], "steps": [{"code": "lower (unseen whole)", "state": ["['low', 'er</w>']", "2"], "tone": "good"}, {"code": "lowest", "state": ["['low', 'e', 's', 't', '</w>']", "5"], "changed": [0, 1], "tone": "warn", "note": "e, s, t never merged"}, {"code": "widest", "state": ["['w','i','d','e','s','t','</w>']", "7"], "changed": [0, 1], "tone": "crit", "note": "character fallback"}], "t": "diagram", "id": "dg-4_8-04-3"},
+
+
+
 
     { t: "out", text:
 "'lower'   (never seen whole in training)\n  l o w e r </w>\n  apply 'er'      -> l o w er </w>\n  apply 'er</w>'  -> l o w er</w>\n  apply 'lo'      -> lo w er</w>\n  apply 'low'     -> low er</w>\n  -> 2 tokens: ['low', 'er</w>']\n\n'lowest'\n  apply 'lo', 'low'  -> low e s t </w>\n  -> 5 tokens: ['low', 'e', 's', 't', '</w>']     e, s, t never merged\n\n'widest'\n  -> 7 tokens: ['w', 'i', 'd', 'e', 's', 't', '</w>']   full character fallback" },
@@ -72,6 +84,9 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "The four algorithms", id: "algorithms" },
 
     {"kind": "trace", "title": "Four names, and one of them is not an algorithm", "caption": "**SentencePiece is a framework rather than an algorithm: it treats the input as a raw byte stream with no pre-tokenisation, so it works on languages without spaces, and it implements both BPE and Unigram.** Which is why “SentencePiece vs BPE” is a category error. And Unigram runs in the opposite direction from the other two: **start with a large vocabulary and *prune* the tokens that least affect corpus likelihood — top-down, where BPE and WordPiece build bottom-up from characters.**", "left": "name", "codeW": 160, "vars": ["what it does", "direction"], "steps": [{"code": "BPE (GPT, LLaMA)", "state": ["merge the most frequent pair", "bottom-up"], "tone": "good"}, {"code": "WordPiece (BERT)", "state": ["merge by likelihood gain; ## marks", "bottom-up"], "changed": [0], "tone": "good"}, {"code": "Unigram", "state": ["prune what costs least likelihood", "TOP-DOWN"], "changed": [0, 1], "tone": "violet"}, {"code": "SentencePiece (T5, LLaMA)", "state": ["a framework: raw bytes, no pre-tok", "either of the above"], "changed": [0, 1], "tone": "accent", "note": "not an algorithm"}], "t": "diagram", "id": "dg-4_8-05-4"},
+
+
+
 
     { t: "dl", items: [
       ["BPE — GPT, LLaMA", "Merge the most frequent adjacent pair. Bottom-up from characters. Simple, deterministic, and the most widely used."],
@@ -87,6 +102,9 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Five, seven or eight tokens for the same five words", "caption": "**GPT-2 gives 5 ids, RoBERTa 7 and BERT 8** — and the differences are not all about subwords: RoBERTa adds `<s>` and `</s>`, BERT adds `[CLS]` and `[SEP]`, **and GPT-2 adds nothing.** The genuine split is `transformer`: **BERT breaks it into `transform` + `##er` while GPT-2 and RoBERTa keep it whole.** And the id sequence does not match what is usually quoted — **`[101, 1045, 2293, 10938, 2121, 4275, 999, 102]` against a quoted `[..., 19081, ...]`**, which is one token where the quote assumes `transformer` was whole.", "left": "tokenizer", "codeW": 170, "vars": ["ids", "'transformer' becomes", "special tokens"], "steps": [{"code": "gpt2", "state": ["5", "Ġtransformer (whole)", "none"], "tone": "good"}, {"code": "roberta-base", "state": ["7", "Ġtransformer (whole)", "<s> </s>"], "changed": [0, 2], "tone": "good"}, {"code": "bert-base-uncased", "state": ["8", "transform + ##er", "[CLS] [SEP]"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "quoted bert ids", "state": ["7", "19081 (whole)", "-"], "changed": [0, 1], "tone": "crit", "note": "not what it does"}], "t": "diagram", "id": "dg-4_8-06-5"},
 
+
+
+
     { t: "out", text:
 "\"I love transformer models!\"\n\nbert-base-uncased   8 ids   ['[CLS]','i','love','transform','##er','models','!','[SEP]']\ngpt2                5 ids   ['I','Ġlove','Ġtransformer','Ġmodels','!']\nroberta-base        7 ids   ['<s>','I','Ġlove','Ġtransformer','Ġmodels','!','</s>']\n\nbert input_ids: [101, 1045, 2293, 10938, 2121, 4275, 999, 102]\nreference says: [101, 1045, 2293, 19081, 4275, 999, 102]" },
 
@@ -96,6 +114,9 @@ EC.receiveLesson({
     { t: "h2", n: "07", text: "What tokenisation costs", id: "cost" },
 
     {"kind": "trace", "title": "Plain English costs all three exactly ten tokens; Hindi costs GPT-2 more than twice BERT", "caption": "**The differences only appear once you leave the distribution the vocabulary was built for.** Code costs BERT 27 against GPT-2's 24, and numbers 18 against 16 — **both cases where BERT's smaller, more English-word-oriented vocabulary has to split more.** Then the direction reverses: **Hindi costs BERT 11 tokens and GPT-2 26, and emoji 5 against 12**, because byte-level BPE spends one token per byte on text it has no merges for. **Which is a direct cost multiplier on every non-English prompt.**", "left": "text (same content)", "codeW": 160, "vars": ["chars", "BERT", "GPT-2 / RoBERTa"], "steps": [{"code": "plain english", "state": ["44", "10", "10"], "tone": "good", "note": "identical"}, {"code": "code", "state": ["55", "27", "24"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "numbers", "state": ["47", "18", "16"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "emoji", "state": ["16", "5", "12"], "changed": [0, 1, 2], "tone": "crit", "note": "reversed"}, {"code": "hindi", "state": ["16", "11", "26"], "changed": [0, 1, 2], "tone": "crit", "note": "2.4x"}], "t": "diagram", "id": "dg-4_8-07-6"},
+
+
+
 
     { t: "out", text:
 "tokens required, same text, no special tokens\n\ntext              chars    BERT    GPT-2   RoBERTa\nplain english      44       10      10      10\ncode               55       27      24      24\nnumbers            47       18      16      16\ngerman compound    43       16      18      18\nemoji              16        5      12      12\nhindi              16       11      26      26" },
@@ -108,6 +129,9 @@ EC.receiveLesson({
     { t: "h2", n: "08", text: "Choosing a vocabulary size", id: "vocab" },
 
     {"kind": "trace", "title": "Thirty thousand to a hundred and twenty-eight thousand, and the trend is upward", "caption": "The sizes track the era rather than the architecture: **BERT at 30,522 and LLaMA 2 at 32,000 against GPT-4 at ~100,000 and LLaMA 3 at 128,000.** The reason the number grew is §07's measurement — **a larger vocabulary buys shorter sequences on code and non-English text, which is where the token cost actually hurts** — and 4.10 §05 shows what makes it affordable: **a vocabulary is embedding parameters, and the embedding share falls as the model grows.**", "left": "model", "codeW": 150, "vars": ["vocabulary", "algorithm"], "steps": [{"code": "BERT", "state": ["30,522", "WordPiece"], "tone": "accent"}, {"code": "LLaMA 2", "state": ["32,000", "SentencePiece BPE"], "changed": [0, 1], "tone": "accent"}, {"code": "GPT-2", "state": ["50,257", "byte-level BPE"], "changed": [0, 1], "tone": "good"}, {"code": "GPT-4", "state": ["~100,000", "BPE (tiktoken)"], "changed": [0, 1], "tone": "good"}, {"code": "LLaMA 3", "state": ["128,000", "BPE (tiktoken)"], "changed": [0, 1], "tone": "violet", "note": "4x LLaMA 2"}], "t": "diagram", "id": "dg-4_8-08-7"},
+
+
+
 
     { t: "out", text:
 "BERT      30,522    WordPiece\nGPT-2     50,257    byte-level BPE\nGPT-4    ~100,000   BPE (tiktoken)\nLLaMA 2   32,000    SentencePiece BPE\nLLaMA 3  128,000    BPE (tiktoken)" },

@@ -23,6 +23,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The Chinchilla result", id: "chinchilla" },
 
+    {"kind": "trace", "title": "Twenty tokens per parameter, and the models that ignored it", "caption": "**Because `N ∝ C^0.5` and `D ∝ C^0.5`, their ratio is constant — the rule is simply *scale parameters and data together*, at about 20 tokens per parameter.** The table is the finding: **Chinchilla at 70B/1400B used less compute than Gopher at 280B/300B and beat it**, because Gopher spent 1.1 tokens per parameter. And **LLaMA-3 8B is at 1875 — a long way past optimal in the other direction**, which §02 explains. Via `C ≈ 6ND`, **a compute budget gives you a model size and a token count in one line.**", "left": "model", "codeW": 140, "vars": ["params", "tokens", "tokens/param"], "steps": [{"code": "Gopher", "state": ["280B", "300B", "1.1"], "tone": "crit"}, {"code": "GPT-3", "state": ["175B", "300B", "1.7"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "Chinchilla", "state": ["70B", "1400B", "20.0"], "changed": [0, 1, 2], "tone": "violet", "note": "less compute than Gopher"}, {"code": "LLaMA-1 65B", "state": ["65B", "1400B", "21.5"], "changed": [0, 2], "tone": "good"}, {"code": "LLaMA-3 8B", "state": ["8B", "15000B", "1875.0"], "changed": [0, 1, 2], "tone": "accent", "note": "deliberately past optimal"}], "t": "diagram", "id": "dg-5_4-01-0"},
+
+
+
     { t: "out", text:
 "model           params    tokens     tokens/param   train FLOPs\nGopher           280B       300B            1.1       5.04e+23\nChinchilla        70B      1400B           20.0       5.88e+23\nGPT-3            175B       300B            1.7       3.15e+23\nLLaMA-1 65B       65B      1400B           21.5       5.46e+23\nLLaMA-3 8B         8B     15000B         1875.0       7.20e+23" },
 
@@ -38,6 +42,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Why modern models ignore it", id: "overshoot" },
 
+    {"kind": "trace", "title": "Gopher was 18.7x short of its own optimal token count", "caption": "The shortfall column is the Chinchilla paper's argument in one number: **Gopher should have seen 5,600B tokens and saw 300B.** But the modern models at the bottom are not correcting toward 20 — **they are overshooting it deliberately, because Chinchilla optimises training compute only.** If you serve a model at volume, **overshoot `D` and shrink `N`: a one-off training cost against a permanent inference saving** — which is why LLaMA-3 8B sits at 1875 tokens per parameter rather than 20.", "left": "model", "codeW": 150, "vars": ["tokens/param", "Chinchilla-optimal D", "shortfall"], "steps": [{"code": "Gopher", "state": ["1.1", "5600B", "18.7x"], "tone": "crit"}, {"code": "GPT-3", "state": ["1.7", "3500B", "11.7x"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "Chinchilla", "state": ["20.0", "1400B", "1.0x"], "changed": [0, 1, 2], "tone": "good"}, {"code": "LLaMA-3 8B", "state": ["1875.0", "160B", "1.0x"], "changed": [0, 1], "tone": "violet", "note": "overshooting on purpose"}], "t": "diagram", "id": "dg-5_4-02-1"},
+
+
+
     { t: "out", text:
 "model           tokens/param   Chinchilla-optimal   shortfall\nGopher                   1.1            5600B          18.7x\nGPT-3                    1.7            3500B          11.7x\nChinchilla              20.0            1400B           1.0x\nLLaMA-1 65B             21.5            1300B           1.0x\nLLaMA-3 8B            1875.0             160B           1.0x" },
 
@@ -45,6 +53,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "That is not a mistake, it is a different objective. Chinchilla answers *what minimises training loss for a fixed training budget*. Nobody deploying a model cares only about that, because **inference cost scales with N and is paid on every request, forever**, while training is paid once. If overshooting on data lets you reach the same quality with a smaller model, you have traded a one-off training cost for a permanent inference saving — and at serving scale that trade is overwhelmingly worth it. Hence the modern pattern: small models trained far past the point Chinchilla would stop. The 8B model above consumed 7.20e23 training FLOPs, *more* than Gopher's 280B model did." }] },
 
     { t: "h2", n: "03", text: "The power law", id: "powerlaw" },
+
+    {"kind": "trace", "title": "Each 10x in parameters buys less than the last, and the law predicts how much", "caption": "With Kaplan's constants the drops shrink monotonically: **0.6447 from 1e6 to 1e7, and 0.2688 from 1e11 to 1e12.** The practical value is not the curve but the extrapolation: **fit it on small models you can afford, and know roughly what a run 100× larger will achieve before committing to it.** Which is what **turned large-model training from a gamble into a budgeting exercise** — and note `L_inf = 1.69`, an irreducible floor the law says no amount of scale removes.", "left": "parameters", "codeW": 130, "vars": ["predicted loss", "drop from previous"], "steps": [{"code": "1e+06", "state": ["5.7059", "-"], "tone": "crit"}, {"code": "1e+07", "state": ["5.0612", "0.6447"], "changed": [0, 1], "tone": "warn"}, {"code": "1e+09", "state": ["4.0656", "0.4543"], "changed": [0, 1], "tone": "warn"}, {"code": "1e+11", "state": ["3.3641", "0.3202"], "changed": [0, 1], "tone": "good"}, {"code": "1e+12", "state": ["3.0953", "0.2688"], "changed": [0, 1], "tone": "good", "note": "floor at L_inf = 1.69"}], "t": "diagram", "id": "dg-5_4-03-2"},
+
+
 
     { t: "math", tex: "L(N) = \\left(\\frac{N_c}{N}\\right)^{\\alpha} + L_{\\infty}" },
 
@@ -57,6 +69,10 @@ EC.receiveLesson({
     { t: "p", text: "The practical value of a power law is prediction. You fit it on small models you can afford to train, extrapolate, and know roughly what a run 100x larger will achieve before committing to it. That is what turned large-model training from a gamble into a budgeting exercise." },
 
     { t: "h2", n: "04", text: "Emergent abilities, as usually described", id: "emergence" },
+
+    {"kind": "flow", "title": "A claim worth testing, because of what follows if it is true", "caption": "**The standard account: few-shot learning appears around 1B, code generation around 10B, chain-of-thought around 100B — performance at chance across orders of magnitude, then a sharp rise.** If true the implications are serious: **you cannot predict what a larger model will do, and safety-relevant capabilities could appear without warning.** Which is exactly why it is worth testing rather than repeating — **and §06's conclusion is to re-score with a continuous metric first, because most reported cliffs are `p^k` in disguise.**", "cols": 3, "nodes": [{"id": "c", "label": "Few-shot: ~1B. Code: ~10B. CoT: ~100B", "sub": "the standard claim", "tone": "accent"}, {"id": "d", "label": "At chance, then a sharp rise", "sub": "discontinuous in scale", "tone": "accent"}, {"id": "p", "label": "If true: larger models are unpredictable", "sub": "no extrapolation possible", "tone": "crit"}, {"id": "s", "label": "And capabilities arrive without warning", "sub": "a safety problem", "tone": "crit"}, {"id": "t", "label": "So test it rather than repeat it", "sub": "most cliffs are p^k", "tone": "violet"}], "edges": [["c", "d"], ["d", "p"], ["p", "s"], ["s", "t"]], "t": "diagram", "id": "dg-5_4-04-3"},
+
+
 
     { t: "out", text:
 "the standard claim\n\n  few-shot learning          appears around 1B parameters\n  code generation            appears around 10B\n  chain-of-thought reasoning appears around 100B\n\nthese capabilities are said not to exist in smaller models —\nthey \"emerge\" discontinuously at scale" },
@@ -101,6 +117,10 @@ EC.receiveLesson({
       ] },
 
     { t: "h2", n: "06", text: "Using scaling laws in practice", id: "practice" },
+
+    {"kind": "layers", "title": "Four uses, and two of them contradict the headline result", "caption": "**Fit before you commit: train a ladder of small models, fit the power law, extrapolate — knowing the loss a 100× run will reach is worth far more than the cost of the ladder.** `C ≈ 6ND` turns GPU-hours into a feasible `(N, D)` pair. Then the two caveats: **Chinchilla optimises training only, so serving at volume means overshooting `D` and shrinking `N`** — and **distrust sharp curves: re-score with a continuous metric before believing a capability appeared.**", "items": [{"label": "Fit before you commit", "sub": "a ladder of small models, then extrapolate", "tone": "good", "side": "cheap"}, {"label": "Budget with C = 6ND", "sub": "GPU-hours -> a feasible (N, D)", "tone": "good", "side": "4.10"}, {"label": "Weight inference cost", "sub": "overshoot D, shrink N - a permanent saving", "tone": "violet", "side": "not Chinchilla"}, {"label": "Distrust sharp curves", "sub": "most reported cliffs are p^k in disguise", "tone": "crit", "side": "re-score"}], "t": "diagram", "id": "dg-5_4-06-4"},
+
+
 
     { t: "dl", items: [
       ["Fit before you commit", "Train a ladder of small models, fit the power law, extrapolate. Knowing the loss a 100x run will reach is worth far more than the cost of the ladder."],

@@ -31,6 +31,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "The preprocessing function",
       code: `def preprocess_text(text, lowercase=True, remove_html=True, remove_urls=True,
                     remove_emails=True, remove_numbers=False,
@@ -69,6 +72,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text: `  raw            '<b>Email</b> me at a@b.com or see https://x.co -- costs $30.50! Great…'
   +unicode NFKD  '<b>Email</b> me at a@b.com or see https://x.co -- costs $30.50! Great...'
   +html          ' Email  me at a@b.com or see https://x.co -- costs $30.50! Great...'
@@ -86,6 +92,9 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Order matters", id: "order" },
 
     {"kind": "flow", "title": "Four ordering constraints, and each has a specific victim", "caption": "The stages are **not commutative**, and the reasons are mechanical rather than stylistic. **`https://user@host/path` contains an `@`, so an email pattern run before the URL pattern butchers it.** HTML before URLs, or the URL regex eats `href` attribute values and leaves broken tags. **And lowercasing is a one-way door for every case-sensitive pattern you have not run yet** — acronym detection, proper-noun heuristics and `RT` stripping all stop working.", "cols": 3, "nodes": [{"id": "h", "label": "HTML before URLs", "sub": "or the regex eats href values", "tone": "good"}, {"id": "u", "label": "URLs before emails", "sub": "user@host contains an @", "tone": "good"}, {"id": "c", "label": "Case-sensitive patterns before lowercase", "sub": "acronyms, RT, proper nouns", "tone": "good"}, {"id": "p", "label": "Punctuation, then whitespace", "sub": "removal leaves gaps to collapse", "tone": "good"}, {"id": "o", "label": "Lowercasing is a one-way door", "sub": "nothing after it can see case", "tone": "crit"}], "edges": [["h", "u"], ["u", "c"], ["c", "p"], ["c", "o"]], "t": "diagram", "id": "dg-1_2-03-2"},
+
+
+
 
 
 
@@ -116,6 +125,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text: `  word         porter     snowball
   running      run        run
   studies      studi      studi
@@ -131,6 +143,9 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "Lemmatisation", id: "lemmatisation" },
 
     {"kind": "flow", "title": "The part-of-speech tag is the whole difference", "caption": "`better` with `pos=\"a\"` becomes **good**; `running` with `pos=\"v\"` becomes **run** — exactly the two words the stemmers could not touch. But read what the lemmatiser needs to get there: **a dictionary lookup, and a part-of-speech tag you have to supply.** Without the tag it defaults to noun and `better` stays `better`, which means **a lemmatiser used without tagging is a slower stemmer that happens to return real words.**", "cols": 3, "nodes": [{"id": "s", "label": "A stemmer: chop the suffix", "sub": "better -> better (no suffix)", "tone": "warn"}, {"id": "l", "label": "A lemmatiser: look it up", "sub": "better + pos=a -> good", "tone": "good"}, {"id": "t", "label": "But the tag is an input", "sub": "running + pos=v -> run", "tone": "accent"}, {"id": "d", "label": "No tag -> it assumes noun", "sub": "and better stays better", "tone": "crit"}, {"id": "c", "label": "So untagged = a slow stemmer", "sub": "with real words as output", "tone": "crit"}], "edges": [["s", "l"], ["l", "t"], ["t", "d"], ["d", "c"]], "t": "diagram", "id": "dg-1_2-05-4"},
+
+
+
 
 
 
@@ -166,6 +181,9 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Format-specific cleaning", id: "formats" },
 
     {"kind": "flow", "title": "Format-specific cleaning is where the generic pipeline stops helping", "caption": "The eight generic stages do nothing about a `@mention`, a `#hashtag`, an `RT` prefix, a code block in a markdown document or a quoted reply chain in an email — **and each of those is a decision rather than a cleanup, because the thing you would strip is sometimes the signal.** A hashtag is the topic label on a tweet; a quoted reply is the context of the answer. **Which is why this stage cannot be a library default: it depends on the task, not the format.**", "cols": 3, "nodes": [{"id": "t", "label": "Tweets: @mentions, #hashtags, RT", "sub": "the hashtag may BE the label", "tone": "accent"}, {"id": "m", "label": "Markdown: code blocks, link syntax", "sub": "code is not prose", "tone": "accent"}, {"id": "e", "label": "Email: signatures, quoted replies", "sub": "the quote may be the context", "tone": "accent"}, {"id": "d", "label": "Each is a decision, not a cleanup", "sub": "what you strip may be the signal", "tone": "violet"}, {"id": "n", "label": "So it cannot be a library default", "sub": "it depends on the task", "tone": "teal"}], "edges": [["t", "d"], ["m", "d"], ["e", "d"], ["d", "n"]], "t": "diagram", "id": "dg-1_2-06-5"},
+
+
+
 
 
 

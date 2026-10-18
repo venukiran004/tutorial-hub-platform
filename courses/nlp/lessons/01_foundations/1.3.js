@@ -30,6 +30,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text: `  scheme                 vocab        OOV handling
   word-level             large        poor - [UNK]
   character-level        ~256         none needed
@@ -44,6 +47,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Training BPE by hand", id: "training" },
 
     {"kind": "trace", "title": "Three rounds, and the winner changes because the previous merge changed the counts", "caption": "The whole algorithm is in the third column. **Round 1 merges `u+g` at 20. That merge removes `(p,u)` from 17 down to 12, because five of those `pu` pairs were in `pug`, which is now `p·ug`** — so round 2's winner is `(u,n)` at 16 rather than the pair that was second a moment ago. **Each merge rewrites the frequency table it will be scored against next**, which is why BPE has to be run rather than predicted.", "left": "round", "codeW": 130, "vars": ["top pair", "runner-up", "merge"], "steps": [{"code": "1", "state": ["(u,g)=20", "(p,u)=17", "u + g -> ug"], "tone": "good"}, {"code": "2", "state": ["(u,n)=16", "(h,ug)=15", "u + n -> un"], "changed": [0, 1, 2], "tone": "good", "note": "(p,u) fell 17 -> 12"}, {"code": "3", "state": ["(h,ug)=15", "(p,un)=12", "h + ug -> hug"], "changed": [0, 1, 2], "tone": "good"}, {"code": "result", "state": ["3 merges", "vocab 7 -> 10", "match: True"], "tone": "violet"}], "t": "diagram", "id": "dg-1_3-02-1"},
+
+
+
 
 
 
@@ -115,6 +121,9 @@ def bpe_encode(word, merges):
 
 
 
+
+
+
     { t: "out", text: `  hugs   -> ['hug', 's']   reference: ['hug', 's']   match=True
   bug    -> ['b', 'ug']   reference: ['b', 'ug']   match=True
   pun    -> ['p', 'un']   reference: ['p', 'un']   match=True
@@ -134,6 +143,9 @@ def bpe_encode(word, merges):
 
 
 
+
+
+
     { t: "out", text: `  a character-level base vocab cannot represent text outside its training alphabet
   as raw bytes that same text is a sequence of values, every one of them in 0..255:
     [109, 195, 188, 108, 108, 101, 114, 32, 240, 159, 152, 128] ...` },
@@ -144,6 +156,9 @@ def bpe_encode(word, merges):
     { t: "h2", n: "05", text: "WordPiece and Unigram", id: "variants" },
 
     {"kind": "trace", "title": "The same table, two criteria, two different merges", "caption": "BPE takes the **count** and merges `(u,g)` at 20. WordPiece divides by how often the parts occur alone, **and `(g,s)` wins at 0.05 on a count of 5** — because `g` and `s` are rare on their own, so seeing them together is informative. **BPE asks “what is common”; WordPiece asks “what is surprisingly common”**, which is pointwise mutual information in all but name, and is why the two produce different vocabularies from identical text.", "left": "pair", "codeW": 130, "vars": ["freq", "freq(a)*freq(b)", "WordPiece score"], "steps": [{"code": "(u,g)", "state": ["20", "720", "0.0278"], "tone": "good", "note": "BPE merges this"}, {"code": "(p,u)", "state": ["17", "612", "0.0278"], "changed": [0, 1], "tone": "accent"}, {"code": "(u,n)", "state": ["16", "576", "0.0278"], "changed": [0, 1], "tone": "accent"}, {"code": "(g,s)", "state": ["5", "100", "0.0500"], "changed": [0, 1, 2], "tone": "violet", "note": "WordPiece merges this"}], "t": "diagram", "id": "dg-1_3-05-4"},
+
+
+
 
 
 
@@ -186,6 +201,9 @@ def bpe_encode(word, merges):
 
 
 
+
+
+
     { t: "out", text: `  BERT (WordPiece)         ['un', '##bel', '##ie', '##va', '##bly', 'transform', '##ative']
                            vocab 30522
   GPT-2 (byte-level BPE)   ['un', 'bel', 'iev', 'ably', 'Ġtransformative']
@@ -207,6 +225,9 @@ def bpe_encode(word, merges):
     { t: "h2", n: "07", text: "Special tokens", id: "special" },
 
     {"kind": "layers", "title": "Seven special tokens, and only one of them can break your model silently", "caption": "`[CLS]`, `[SEP]` and `[MASK]` are architectural — the pretraining objective is built around them, so using the wrong one fails loudly. **`[PAD]` is the dangerous one: it exists only to make a batch rectangular, and it must be masked out, or attention spends weight on positions that mean nothing** — which is a quiet accuracy loss rather than an error. And `[UNK]` is the row byte-level BPE deletes from the list entirely.", "items": [{"label": "[CLS]", "sub": "first position; its final state is the sentence vector", "tone": "accent", "side": "BERT"}, {"label": "[SEP]", "sub": "sentence boundary, and end of input", "tone": "accent", "side": "BERT"}, {"label": "[MASK]", "sub": "what the pretraining objective predicts", "tone": "accent", "side": "BERT"}, {"label": "[PAD]", "sub": "batch alignment - MUST be masked out", "tone": "crit", "side": "silent"}, {"label": "[UNK]", "sub": "byte-level BPE never needs it", "tone": "warn", "side": "avoidable"}, {"label": "<|endoftext|> / <s> </s>", "sub": "document and sequence boundaries", "tone": "good", "side": "GPT, T5"}], "t": "diagram", "id": "dg-1_3-07-6"},
+
+
+
 
 
 

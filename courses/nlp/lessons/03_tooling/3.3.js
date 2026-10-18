@@ -26,6 +26,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "dl", items: [
       ["`pipeline`", "Tokenize, run, post-process, in one call. Fastest way to a result and the hardest to debug."],
       ["`AutoTokenizer` + `AutoModel`", "You own the tensors. This is where you work when anything goes wrong or you need control."],
@@ -44,6 +47,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "scratchpad/nlp/n33.py — inspecting the encoding", code:
 "from transformers import AutoTokenizer\n\ntok = AutoTokenizer.from_pretrained(\"bert-base-uncased\")\nenc = tok(\"Hello world\", return_tensors=\"pt\")\n\nprint(list(enc.keys()))\nprint(tok.convert_ids_to_tokens(enc[\"input_ids\"][0]))",
       caption: "Always print `convert_ids_to_tokens` when something is wrong. Most tokenisation bugs are visible immediately and invisible otherwise." },
@@ -56,6 +62,9 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "The attention mask is not optional", id: "mask" },
 
     {"kind": "trace", "title": "Cosine 1.000000 with the mask, 0.472976 without", "caption": "The same short sentence, padded to 12 and embedded two ways. **With the mask the result is identical to the unpadded version — cosine 1.000000, max absolute difference 1.9×10⁻⁶, which is float noise. Without it, cosine 0.472976 and a max difference of 6.633.** So dropping the mask does not degrade the representation slightly: **it produces a different vector, because attention distributed weight over nine padding positions.** And nothing warns you — the code runs and the shapes are right.", "left": "configuration", "codeW": 210, "vars": ["cosine vs unpadded", "max abs diff"], "steps": [{"code": "padded, WITH attention_mask", "state": ["1.000000", "1.907e-06"], "tone": "good", "note": "float noise"}, {"code": "padded, WITHOUT the mask", "state": ["0.472976", "6.633e+00"], "changed": [0, 1], "tone": "crit"}, {"code": "what happened", "state": ["attention spent weight on 9 zeros", "no error, correct shapes"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-3_3-03-2"},
+
+
+
 
 
 
@@ -84,6 +93,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text:
 "AutoModel outputs: ['last_hidden_state', 'pooler_output']\n  last_hidden_state (1, 4, 768)      one vector per token\n  pooler_output     (1, 768)         [CLS] through a tanh layer\n\nAutoModelForSequenceClassification outputs: ['logits']\n  logits (1, 2)                      two numbers\n\nparams: base 109.5M   with head 109.5M   (the head adds 1,538)" },
 
@@ -100,6 +112,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text:
 "\"The unhappiest tokenization I have seen\"\n\nbert-base-uncased  12 ids  ['[CLS]','the','un','##ha','##pp','##iest','token',\n                             '##ization','i','have','seen','[SEP]']\nroberta-base       11 ids  ['<s>','The','Ġunh','app','iest','Ġtoken',\n                             'ization','ĠI','Ġhave','Ġseen','</s>']\ngpt2                9 ids  ['The','Ġunh','app','iest','Ġtoken','ization',\n                             'ĠI','Ġhave','Ġseen']" },
 
@@ -111,6 +126,9 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Zero-shot classification", id: "zeroshot" },
 
     {"kind": "flow", "title": "Classification reformulated as entailment, which is why it needs no labels", "caption": "For each candidate label it asks an NLI-trained model **whether the input entails the hypothesis *This example is about {label}***, then normalises the entailment scores — `travel 0.998`, `cooking 0.994`, both correct with no labelled examples. Which makes it **the right first move on a new classification problem: it gives you a working baseline in minutes and tells you whether the label set is even separable before anyone spends a week annotating.**", "cols": 3, "nodes": [{"id": "l", "label": "Each label becomes a hypothesis", "sub": "'This example is about {label}'", "tone": "violet"}, {"id": "n", "label": "An NLI model scores entailment", "sub": "trained on a different task", "tone": "good"}, {"id": "s", "label": "Normalise across labels", "sub": "travel 0.998, cooking 0.994", "tone": "good"}, {"id": "z", "label": "No labelled examples at all", "sub": "a baseline in minutes", "tone": "good"}, {"id": "t", "label": "And it tells you if the labels separate", "sub": "before a week of annotation", "tone": "teal"}], "edges": [["l", "n"], ["n", "s"], ["s", "z"], ["z", "t"]], "t": "diagram", "id": "dg-3_3-06-5"},
+
+
+
 
 
 
@@ -135,6 +153,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text:
 "Paris is the [MASK] of France.   capital 0.997, heart 0.001, center 0.000, centre 0.000\n\nThe man worked as a [MASK].      carpenter 0.097, waiter 0.052, barber 0.050, mechanic 0.038\nThe woman worked as a [MASK].    nurse 0.220, waitress 0.160, maid 0.115, prostitute 0.038" },
 
@@ -144,6 +165,9 @@ EC.receiveLesson({
     { t: "h2", n: "08", text: "Fine-tuning with Trainer", id: "trainer" },
 
     {"kind": "flow", "title": "Four arguments, and three of them discard data quietly", "caption": "**`learning_rate=2e-5` is two orders of magnitude below training from scratch, because higher rates destroy the pretrained weights — this is the parameter to suspect first when a fine-tune fails.** The other three are about what gets thrown away: **`truncation=True` silently discards anything past the limit, and on IMDB at 256 tokens that is a substantial fraction of each review — measure how much before accepting the number.** `padding=\"max_length\"` wastes compute that `DataCollatorWithPadding` recovers, and **`.map` caches on a hash of the function**, so re-running is free until you change it.", "cols": 3, "nodes": [{"id": "l", "label": "learning_rate=2e-5", "sub": "100x below from-scratch", "tone": "violet"}, {"id": "d", "label": "Higher destroys the pretrained weights", "sub": "suspect this first", "tone": "crit"}, {"id": "t", "label": "truncation=True discards silently", "sub": "measure how much, on your data", "tone": "crit"}, {"id": "p", "label": "padding='max_length' wastes compute", "sub": "DataCollatorWithPadding is faster", "tone": "warn"}, {"id": "m", "label": ".map caches on a hash of the function", "sub": "free to re-run, recomputes on change", "tone": "good"}], "edges": [["l", "d"], ["d", "t"], ["t", "p"], ["p", "m"]], "t": "diagram", "id": "dg-3_3-08-7"},
+
+
+
 
 
 

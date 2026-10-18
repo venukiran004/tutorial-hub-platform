@@ -23,6 +23,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Speculative decoding", id: "speculative" },
 
+    {"kind": "flow", "title": "Verification is parallel even though generation is not", "caption": "**Decoding is sequential because token `t+1` needs token `t`** — and speculative decoding attacks the dependency rather than the cost: **a small draft model proposes `K` tokens cheaply, and the large model verifies all `K` in a single forward pass.** The asymmetry is the whole trick: **scoring a given sequence is one parallel pass, while producing it was `K` sequential ones.** And because rejected tokens are discarded, **the output distribution is unchanged — this is lossless.**", "cols": 3, "nodes": [{"id": "s", "label": "Generation is sequential", "sub": "t+1 needs t", "tone": "crit"}, {"id": "d", "label": "A small draft proposes K tokens", "sub": "cheaply, sequentially", "tone": "good"}, {"id": "v", "label": "The target verifies all K at once", "sub": "ONE forward pass", "tone": "violet"}, {"id": "r", "label": "Rejected tokens are discarded", "sub": "from the first mismatch", "tone": "accent"}, {"id": "l", "label": "So the output distribution is unchanged", "sub": "lossless, unlike quantisation", "tone": "good"}], "edges": [["s", "d"], ["d", "v"], ["v", "r"], ["r", "l"]], "t": "diagram", "id": "dg-5_3-01-0"},
+
+
+
     { t: "p", text: "Decoding is sequential because token `t+1` needs token `t`. Speculative decoding attacks that dependency: a small draft model proposes `K` tokens cheaply, and the large model verifies **all K in a single forward pass**, because verification is parallel even though generation is not." },
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n53.py — the full loop", code:
@@ -31,6 +35,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "What it actually did", id: "measured" },
 
+    {"kind": "trace", "title": "Every configuration was slower than plain greedy decoding", "caption": "**Plain greedy on gpt2-medium took 4.85s. The best speculative configuration took 9.60s — twice as slow.** And the mechanism worked exactly as advertised: **tokens per target pass rose from 1.71 to 3.47 as `K` grew.** The reason it still lost is the draft: **gpt2 is 124M against gpt2-medium's 355M, so the draft costs about a third of the target per pass, and acceptance fell from 61% to 32% as `K` grew.** A 2.9× ratio is nowhere near enough.", "left": "configuration", "codeW": 140, "vars": ["time", "accepted", "tokens/pass"], "steps": [{"code": "plain greedy (medium)", "state": ["4.85 s", "-", "1.00"], "tone": "good"}, {"code": "K=2", "state": ["12.36 s", "34 of 56 (61%)", "1.71"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "K=4", "state": ["9.60 s", "34 of 76 (45%)", "2.53"], "changed": [0, 1, 2], "tone": "crit", "note": "best, still 2x slower"}, {"code": "K=8", "state": ["15.04 s", "38 of 120 (32%)", "3.47"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-5_3-02-1"},
+
+
+
     { t: "out", text:
 "target gpt2-medium (354,823,168)   draft gpt2 (124,439,808)\n48 new tokens, greedy\n\n  K=2   12.36 s   proposed  56   accepted 34 (61%)   19 passes -> 1.71 tok/pass\n  K=4    9.60 s   proposed  76   accepted 34 (45%)   19 passes -> 2.53 tok/pass\n  K=8   15.04 s   proposed 120   accepted 38 (32%)   15 passes -> 3.47 tok/pass\n\n  plain greedy on gpt2-medium: 4.85 s, 48 passes" },
 
@@ -38,6 +46,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Every part behaved as designed. Acceptance **fell** with K — 61%, 45%, 32% — because each additional drafted token must survive all the earlier ones being right. Tokens per expensive pass **rose** — 1.71, 2.53, 3.47 — which is the actual benefit. And it was still twice as slow as just decoding, because gpt2 is only 2.85x cheaper than gpt2-medium, so drafting four tokens costs about 1.4 target passes before the target pass even runs. Speculative decoding does not make decoding cheaper; it converts expensive sequential passes into cheap sequential passes plus one expensive parallel pass. If the draft is not dramatically cheaper, there is nothing to convert." }] },
 
     { t: "h2", n: "03", text: "The arithmetic that decides it", id: "arithmetic" },
+
+    {"kind": "trace", "title": "At 90% acceptance K=8 gives 6.13 tokens a pass; at 30% it gives 1.43", "caption": "**The expected gain saturates in `K` and is governed almost entirely by the acceptance rate `a`: at `a = 0.3`, raising `K` from 1 to 8 moves 1.30 to 1.43 — nothing.** Which explains §02's result and dictates the production shape: **pair a 7B target with a 1B draft, or train a draft specifically to imitate the target.** Checked at one position, the two models disagreed outright — **gpt2-medium wanted ` 1950` and gpt2 wanted ` late`.**", "left": "acceptance a", "codeW": 140, "vars": ["K=1", "K=2", "K=4", "K=8"], "steps": [{"code": "0.3", "state": ["1.30", "1.39", "1.43", "1.43"], "tone": "crit", "note": "K buys nothing"}, {"code": "0.5", "state": ["1.50", "1.75", "1.94", "2.00"], "changed": [0, 1, 2, 3], "tone": "warn"}, {"code": "0.7", "state": ["1.70", "2.19", "2.77", "3.20"], "changed": [0, 1, 2, 3], "tone": "good"}, {"code": "0.9", "state": ["1.90", "2.71", "4.10", "6.13"], "changed": [0, 1, 2, 3], "tone": "violet"}], "t": "diagram", "id": "dg-5_3-03-2"},
+
+
 
     { t: "math", tex: "\\mathbb{E}[\\text{tokens per target pass}] = \\frac{1 - a^{K+1}}{1 - a}" },
 
@@ -79,6 +91,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "05", text: "Quantisation", id: "quantisation" },
 
+    {"kind": "trace", "title": "Four bytes to half a byte, and 280 GB to 35", "caption": "The arithmetic is simply bytes per parameter, and it reproduces the reference exactly — **but the row that changes what is possible is INT4: a 70B model at 35 GB fits on one 40GB card, where at FP16 it needs 140.** The four named methods differ in how they protect accuracy: **GPTQ uses second-order information one-shot, AWQ protects the small fraction of weights that matter most to activations, GGUF targets CPU and Apple Silicon, and QLoRA quantises the frozen base to 4-bit and trains adapters above it.**", "left": "precision", "codeW": 160, "vars": ["bytes/param", "7B", "70B"], "steps": [{"code": "FP32", "state": ["4.0", "28.0 GB", "280.0 GB"], "tone": "crit"}, {"code": "FP16 / BF16", "state": ["2.0", "14.0 GB", "140.0 GB"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "INT8", "state": ["1.0", "7.0 GB", "70.0 GB"], "changed": [0, 1, 2], "tone": "good"}, {"code": "INT4", "state": ["0.5", "3.5 GB", "35.0 GB"], "changed": [0, 1, 2], "tone": "violet", "note": "70B on one card"}], "t": "diagram", "id": "dg-5_3-05-3"},
+
+
+
     { t: "out", text:
 "precision     bytes/param    7B model     70B model\nFP32              4.0          28.0 GB      280.0 GB\nFP16 / BF16       2.0          14.0 GB      140.0 GB\nINT8              1.0           7.0 GB       70.0 GB\nINT4              0.5           3.5 GB       35.0 GB\n\nreference's 7B figures reproduce exactly" },
 
@@ -93,6 +109,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "The usual figures are roughly **0.5%** degradation from FP16 to INT8 and **1–2%** from FP16 to INT4 — acceptable for inference and not for training, where gradients need the dynamic range. Two cautions from lesson 3.5's measurement, where quantisation shifted a logit by 0.0238. First, those percentages are averages over benchmarks; the errors concentrate near decision boundaries and on rare classes, so per-class metrics can move much more than the headline. Second, always evaluate the artefact you deploy, not the one you fine-tuned. Quantisation is the highest-return inference optimisation available — halving memory doubles your batch size, and decode is memory-bandwidth-bound so it directly halves the bottleneck — but it is the only one here that is genuinely lossy." }] },
 
     { t: "h2", n: "06", text: "Choosing what to do first", id: "order" },
+
+    {"kind": "trace", "title": "Five of seven techniques are lossless, so the order is not a trade-off question", "caption": "Read the “lossy” column: **the KV cache, FlashAttention, continuous batching and PagedAttention all recover pure waste — recomputation, memory traffic, idle slots, over-allocation — so they are not trades and should be done first.** GQA is slightly lossy for an 8× cache reduction. **Quantisation costs 0.5–2% accuracy, and speculative decoding costs nothing but only works with a much cheaper draft** — which §02 measured the hard way.", "left": "technique", "codeW": 170, "vars": ["what it recovers", "lossy?", "gain"], "steps": [{"code": "KV cache", "state": ["prefix recomputation", "no", "grows with length"], "tone": "good"}, {"code": "FlashAttention", "state": ["memory traffic", "no", "2-4x on attention"], "changed": [0, 2], "tone": "good"}, {"code": "continuous batching + PagedAttention", "state": ["idle slots, over-allocation", "no", "2-4x throughput"], "changed": [0, 2], "tone": "good"}, {"code": "GQA / MQA", "state": ["cache size", "slightly", "8x at GQA8"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "quantisation", "state": ["weight memory", "yes, 0.5-2%", "2x per halving"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "speculative decoding", "state": ["the sequential dependency", "no", "2-3x, if the draft is cheap"], "changed": [0, 1, 2], "tone": "accent"}], "t": "diagram", "id": "dg-5_3-06-4"},
+
+
 
     { t: "table",
       head: ["Technique", "What it recovers", "Lossy?", "Typical gain"],

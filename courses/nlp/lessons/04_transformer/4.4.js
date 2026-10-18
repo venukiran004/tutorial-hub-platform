@@ -23,6 +23,9 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Nobody implements h separate projections", "caption": "The equation says run attention `h` times on different learned projections, concatenate, and pass through `Wᴼ`. **In practice there is one `d_model × d_model` matrix per role, projected once and then *reshaped* into heads — mathematically identical and far faster**, because it is one large matrix multiply instead of `h` small ones. Which is worth knowing when reading an implementation: **the heads are a `view()` on a tensor, not a list of modules**, so there is nothing per-head to inspect except a slice.", "cols": 3, "nodes": [{"id": "e", "label": "The equation: h separate projections", "sub": "head_i = Attention(QW_i, ...)", "tone": "accent"}, {"id": "o", "label": "The code: ONE d_model x d_model per role", "sub": "then reshape into heads", "tone": "good"}, {"id": "i", "label": "Mathematically identical", "sub": "and one big matmul, not h small", "tone": "good"}, {"id": "v", "label": "So a head is a view(), not a module", "sub": "nothing per-head to inspect", "tone": "violet"}, {"id": "w", "label": "W_O then mixes the concatenated heads", "sub": "one more d_model x d_model", "tone": "accent"}], "edges": [["e", "o"], ["o", "i"], ["i", "v"], ["o", "w"]], "t": "diagram", "id": "dg-4_4-01-0"},
 
 
+
+
+
     { t: "math", tex: "\\text{MultiHead}(Q,K,V) = \\text{Concat}(\\text{head}_1, \\ldots, \\text{head}_h)\\,W^{O}, \\qquad \\text{head}_i = \\text{Attention}(QW_i^{Q}, KW_i^{K}, VW_i^{V})" },
 
     { t: "p", text: "Run attention `h` times on different learned projections of the same input, concatenate the results, and pass them through one more linear layer. In practice nobody implements `h` separate projections — one `d_model × d_model` matrix per role is projected and then *reshaped* into heads, which is mathematically identical and far faster." },
@@ -55,6 +58,9 @@ EC.receiveLesson({
     {"kind": "trace", "title": "One head or sixty-four, the parameter count is identical", "caption": "**`d_k = d_model / h`, so the Q/K/V projections are always `d_model × d_model` in total — 262,144 each — and the count is 1,048,576 whatever `h` is.** Which is the reason multi-head attention was free to adopt: **more heads is not more capacity, it is the same capacity partitioned differently.** And it does cost something the table cannot show — **each head works in a `d_k`-dimensional subspace, so 64 heads means 8 dimensions per head**, which is too few to represent much.", "left": "h", "codeW": 120, "vars": ["d_k", "Q/K/V each", "total"], "steps": [{"code": "1", "state": ["512", "262,144", "1,048,576"], "tone": "good"}, {"code": "8", "state": ["64", "262,144", "1,048,576"], "changed": [0], "tone": "good", "note": "the usual choice"}, {"code": "16", "state": ["32", "262,144", "1,048,576"], "changed": [0], "tone": "good"}, {"code": "64", "state": ["8", "262,144", "1,048,576"], "changed": [0], "tone": "crit", "note": "8 dims per head"}], "t": "diagram", "id": "dg-4_4-03-1"},
 
 
+
+
+
     { t: "out", text:
 "d_model = 512\n\nh      d_k    Q/K/V each    W_O        total\n1      512    262,144       262,144    1,048,576\n2      256    262,144       262,144    1,048,576\n4      128    262,144       262,144    1,048,576\n8       64    262,144       262,144    1,048,576\n16      32    262,144       262,144    1,048,576\n64       8    262,144       262,144    1,048,576" },
 
@@ -69,6 +75,9 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Eight of twelve heads send most of their weight to [SEP]", "caption": "The claim under test is that head 1 learns syntax, head 2 semantics, head 3 proximity, head 4 coreference. **What layer 4 of `bert-base-uncased` actually does on a centre-embedded sentence: head 3 puts 0.7180 of its weight on `[SEP]` with an entropy of 0.7883, and most heads are in the same regime.** These are **attention sinks** — a head with nothing to contribute parks its mass on a token that carries no content. **The tidy division of labour is not what the weights show.**", "left": "layer 4, head", "codeW": 140, "vars": ["mean offset", "entropy", "-> [SEP]"], "steps": [{"code": "0", "state": ["5.64", "1.4482", "0.5157"], "tone": "warn"}, {"code": "3", "state": ["5.86", "0.7883", "0.7180"], "changed": [0, 1, 2], "tone": "crit", "note": "a sink"}, {"code": "10", "state": ["2.07", "1.6155", "0.3588"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "11", "state": ["4.36", "1.0731", "0.5324"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "1 (the most diffuse)", "state": ["4.36", "2.1780", "0.2083"], "changed": [1, 2], "tone": "accent"}], "t": "diagram", "id": "dg-4_4-04-2"},
 
 
+
+
+
     { t: "p", text: "It is commonly claimed head 1 learns syntax, head 2 semantics, head 3 proximity, head 4 coreference. That is a testable claim, so I ran a sentence with a centre-embedded clause through `bert-base-uncased` with `output_attentions=True` and summarised every head." },
 
     { t: "out", text:
@@ -80,6 +89,9 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "A head that does something legible", id: "legible" },
 
     {"kind": "trace", "title": "One head, found by search, that reads the previous token", "caption": "**Searching all 144 heads for the highest average weight on the immediately preceding token found layer 3, head 5 at mean weight 0.7165** — and its per-token behaviour is clean: `on → sat` at 0.984, `sat → chased` at 0.941, `that → cat` at 0.967. **So genuinely interpretable heads do exist; they are found by searching rather than by reading a diagram.** The first two rows show the boundary condition — **the first content tokens have no previous token to read, so they fall back to `[CLS]`.**", "left": "token", "codeW": 140, "vars": ["attends to", "weight"], "steps": [{"code": "the / cat", "state": ["[CLS]", "0.856 / 0.663"], "tone": "warn", "note": "no previous token"}, {"code": "that", "state": ["cat", "0.967"], "changed": [0, 1], "tone": "good"}, {"code": "chased", "state": ["dog", "0.732"], "changed": [0, 1], "tone": "good"}, {"code": "sat", "state": ["chased", "0.941"], "changed": [0, 1], "tone": "good"}, {"code": "on", "state": ["sat", "0.984"], "changed": [0, 1], "tone": "good", "note": "mean 0.7165 overall"}], "t": "diagram", "id": "dg-4_4-05-3"},
+
+
+
 
 
     { t: "p", text: "Sinks are the common case, but genuinely interpretable heads do exist. Searching all 144 heads for the one with the highest average weight on the immediately preceding token found a clean example." },
@@ -98,6 +110,9 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Depth changes the behaviour more than head index", id: "depth" },
 
     {"kind": "trace", "title": "The same head index behaves completely differently by depth", "caption": "Head 0 traced through all twelve layers: **mean offset goes from +0.93 to −2.07 to +6.50, entropy from 2.5284 down to 0.0220 at layer 2 and back up, and `[SEP]` weight from 0.0760 to 0.8644.** Compare that with the within-layer spread in §04 and the conclusion is clear: **depth changes a head's behaviour far more than head index does.** And the pairwise measurement makes the middle position precise — **mean cosine 0.7132 between heads in one layer, min 0.4511, max 0.9004: real diversity, no independence.**", "left": "layer (head 0)", "codeW": 150, "vars": ["mean offset", "entropy", "-> [SEP]"], "steps": [{"code": "0", "state": ["+0.93", "2.5284", "0.0760"], "tone": "good"}, {"code": "1", "state": ["-2.07", "1.9673", "0.1293"], "changed": [0, 1, 2], "tone": "good", "note": "looks backwards"}, {"code": "2", "state": ["-0.07", "0.0220", "0.0730"], "changed": [0, 1, 2], "tone": "violet", "note": "near-deterministic"}, {"code": "6", "state": ["+4.79", "0.7493", "0.7441"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "11", "state": ["+6.50", "0.5773", "0.8644"], "changed": [0, 1, 2], "tone": "crit", "note": "a sink"}], "t": "diagram", "id": "dg-4_4-06-4"},
+
+
+
 
 
     { t: "out", text:

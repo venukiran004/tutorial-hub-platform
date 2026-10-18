@@ -30,6 +30,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "callout", kind: "mental", title: "A topic is a probability distribution over the vocabulary",
       body: [{ t: "p", text: "Not a label, not a cluster of documents — a **distribution over words**. The topic you would call *hockey* is simply one where `game`, `team`, `hockey` and `nhl` have high probability and everything else has low probability. LDA's generative story is that each document is a mixture of topics, and each word in it was produced by first picking a topic from that document's mixture and then picking a word from that topic's distribution. Fitting the model means running that story backwards: given the words, infer the mixtures and the distributions. Nothing in it knows what a topic *means* — the interpretation is yours, and it is done by reading the top words." }] },
 
@@ -40,6 +43,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Fitting it", id: "fitting" },
 
     {"kind": "trace", "title": "Four topics, four real categories, and the mapping is not one-to-one", "caption": "LDA is **not told** the categories and recovers something close to them — but read the purity column rather than the word lists. **Hockey splits into two topics: one about the game at 93% pure, and one that is `pts pt 16 10 vs 25 11`, which is box-score formatting at 81%.** That second one is not a topic anybody wanted; **it is a co-occurrence cluster of numbers, and it is also a correct result.** Meanwhile graphics and guns sit at 58% and 61%, mixing with each other's vocabulary.", "left": "topic", "codeW": 190, "vars": ["top words", "maps to", "purity"], "steps": [{"code": "1", "state": ["game team hockey season", "rec.sport.hockey", "490/525 = 93%"], "tone": "good"}, {"code": "2", "state": ["pts la pt 16 10 vs 25", "rec.sport.hockey", "39/48 = 81%"], "changed": [0, 1, 2], "tone": "warn", "note": "box-score formatting"}, {"code": "3", "state": ["people gun don just like", "talk.politics.guns", "509/840 = 61%"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "0", "state": ["space data image graphics", "comp.graphics", "532/910 = 58%"], "changed": [0, 1, 2], "tone": "crit", "note": "mixed with sci.space"}], "t": "diagram", "id": "dg-2_3-02-1"},
+
+
+
 
 
 
@@ -81,6 +87,9 @@ lda.fit(dtm)`,
 
 
 
+
+
+
     { t: "out", text: `  k= 2  perplexity 4889.2
   k= 4  perplexity 4350.7
   k= 6  perplexity 4098.4
@@ -92,6 +101,9 @@ lda.fit(dtm)`,
     { t: "h2", n: "04", text: "The alternatives", id: "alternatives" },
 
     {"kind": "trace", "title": "Four methods, and the last one is not a joke", "caption": "NMF is **faster, deterministic and often more coherent on short text**, which matters because LDA's seed-dependence is §05's first point. Embedding clustering is the quality ceiling now and needs an embedding model. **And “just read them” is the honest recommendation under about 1,000 documents** — sampling a few hundred documents gives you the real categories, costs an afternoon, and avoids presenting a word distribution as if it were a finding.", "left": "method", "codeW": 170, "vars": ["how it works", "when"], "steps": [{"code": "LDA", "state": ["generative model over counts", "the default; gives proportions"], "tone": "good"}, {"code": "NMF", "state": ["factorise the TF-IDF matrix", "faster, deterministic, short text"], "changed": [0, 1], "tone": "good"}, {"code": "Embedding clustering", "state": ["embed, then cluster", "best quality; needs a model"], "changed": [0, 1], "tone": "violet"}, {"code": "Just read them", "state": ["sample a few hundred docs", "under ~1,000 docs: honestly best"], "changed": [0, 1], "tone": "teal"}], "t": "diagram", "id": "dg-2_3-04-3"},
+
+
+
 
 
 
@@ -112,6 +124,9 @@ lda.fit(dtm)`,
     { t: "h2", n: "05", text: "Reading the output honestly", id: "honest" },
 
     {"kind": "flow", "title": "Topics are word distributions that a human labels", "caption": "**Two runs with different seeds give different topics, and both can be defensible** — so a topic is not a category and should not be reported as one. **Junk topics are normal**: numbers, boilerplate, mailing-list headers and OCR noise co-occur strongly, which is exactly what §02's box-score topic was. **Filter the vocabulary rather than the topics.** And there is **no `k` where every topic is clean** — related categories merge low and fragment high — so **the check worth running is stability: fit several times and see which topics recur.**", "cols": 3, "nodes": [{"id": "t", "label": "A topic is a word distribution", "sub": "a human supplies the label", "tone": "accent"}, {"id": "s", "label": "Different seeds, different topics", "sub": "both defensible", "tone": "warn"}, {"id": "j", "label": "Junk topics are normal", "sub": "headers, numbers, OCR noise", "tone": "warn"}, {"id": "v", "label": "So filter the VOCABULARY", "sub": "not the topics", "tone": "good"}, {"id": "k", "label": "No k is clean: merge low, fragment high", "sub": "there is no right answer", "tone": "crit"}, {"id": "r", "label": "Check stability: refit and see what recurs", "sub": "the stable ones are real", "tone": "violet"}], "edges": [["t", "s"], ["s", "r"], ["j", "v"], ["k", "r"]], "t": "diagram", "id": "dg-2_3-05-4"},
+
+
+
 
 
 

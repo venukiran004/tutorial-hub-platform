@@ -27,6 +27,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "table", head: ["Approach", "Training data", "Strength", "Weakness"],
       rows: [
         ["**VADER** (lexicon + rules)", "None", "Instant, tuned for social media, handles emoji and emphasis", "No understanding beyond the rules"],
@@ -50,6 +53,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text: `  'good'       +0.440   vs  'GOOD'       +0.440
   'good'       +0.440   vs  'good!!!'    +0.583
   'good'       +0.440   vs  'not good'   -0.341
@@ -65,6 +71,9 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Where every lexicon fails", id: "failures" },
 
     {"kind": "trace", "title": "Five sentences, five wrong answers, and each wrong for a different reason", "caption": "**Sarcasm needs world knowledge about meetings. Litotes needs *not bad* to be mild praise rather than negated praise. Comparison needs the model to know which clause is the subject. Unrealised intent needs *wanted to* to reverse *love*. And *unbelievable* is genuinely ambiguous out of context.** No rule list closes these, **because each requires something outside the sentence — which is the argument for a model with context, and the reason §05 ends where it does.**", "left": "input", "codeW": 230, "vars": ["VADER", "the right answer"], "steps": [{"code": "'Oh great, another meeting.'", "state": ["+0.625", "negative - sarcasm"], "tone": "crit"}, {"code": "'The movie was not bad at all.'", "state": ["+0.431", "mild praise, not strong"], "changed": [0, 1], "tone": "crit"}, {"code": "'...better than their last, which was awful'", "state": ["-0.026", "positive - comparison"], "changed": [0, 1], "tone": "crit"}, {"code": "'I wanted to love it.'", "state": ["+0.637", "negative - it did not happen"], "changed": [0, 1], "tone": "crit"}, {"code": "'Unbelievable quality.'", "state": ["+0.202", "unknowable without context"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-2_2-03-2"},
+
+
+
 
 
 
@@ -112,6 +121,9 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "Choosing", id: "choosing" },
 
     {"kind": "flow", "title": "Domain register beats general accuracy, and the lexicon cannot be fixed", "caption": "**A model trained on movie reviews applied to financial news reads *volatile*, *aggressive* and *exposure* as negative when they are neutral domain terms, and misses that *beat expectations* is strongly positive.** Lexicons are worse still, **because the polarity is fixed at build time** — *sick* is positive in one register and negative in another, and no amount of context helps a static table. **So: assume a general model is wrong on your domain until measured, and budget a few hundred hand-labelled examples to check.**", "cols": 3, "nodes": [{"id": "v", "label": "VADER: social, short, no labels, now", "sub": "emoji, slang, emphasis", "tone": "good"}, {"id": "c", "label": "Classical fine-tune: your own domain", "sub": "a few thousand labels", "tone": "good"}, {"id": "t", "label": "Pretrained transformer: best general", "sub": "handles negation and context", "tone": "good"}, {"id": "a", "label": "ABSA when the output must be per-aspect", "sub": "which reviews always are", "tone": "accent"}, {"id": "d", "label": "But register beats accuracy", "sub": "'volatile' is neutral in finance", "tone": "crit"}, {"id": "m", "label": "So measure on your own sample first", "sub": "a few hundred labels", "tone": "violet"}], "edges": [["v", "d"], ["c", "d"], ["t", "d"], ["a", "d"], ["d", "m"]], "t": "diagram", "id": "dg-2_2-05-3"},
+
+
+
 
 
 

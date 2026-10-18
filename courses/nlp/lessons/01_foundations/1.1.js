@@ -32,6 +32,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "dl", items: [
       ["Corpus / token", "A body of text / the atomic unit you split it into — word, subword or character."],
       ["Tokenization", "Splitting text into tokens. Subword schemes like BPE and WordPiece handle rare words."],
@@ -76,6 +79,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text: `  lowercasing lost the CEO/ceo distinction, and 'NYC' -> 'nyc'
   "didn't"   -> ["didn't"]   (one token: the apostrophe is inside the class)
   'e-mailed' -> ['e', 'mailed']   (the hyphen SPLIT it into two)
@@ -88,6 +94,9 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Stopword removal is not free", id: "stopwords" },
 
     {"kind": "trace", "title": "Two opposite sentences, one identical output", "caption": "This is the measurement that decides the question, and it is not a matter of degree: **“this movie is not good” and “this movie is good” both reduce to `movie good`.** The stopword list contains *not*, so the one word carrying the sentiment is the one removed — **and the classifier downstream cannot recover it, because the two inputs are now the same string.** The question-answering row loses *who* and *of*, which is most of the question's structure.", "left": "task and input", "codeW": 230, "vars": ["after stopword removal"], "steps": [{"code": "sentiment: 'this movie is not good'", "state": ["movie good"], "tone": "crit"}, {"code": "sentiment: 'this movie is good'", "state": ["movie good"], "tone": "crit", "note": "identical"}, {"code": "QA: 'who is the ceo of openai'", "state": ["ceo openai"], "changed": [0], "tone": "crit", "note": "the question is gone"}], "t": "diagram", "id": "dg-1_1-04-2"},
+
+
+
 
 
 
@@ -110,6 +119,9 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "What the normalisation buys", id: "vocabulary" },
 
     {"kind": "trace", "title": "Fifteen types to ten, and what survives tells you the rest", "caption": "**A 33% smaller vocabulary from one `.lower()` call** — and that is the whole argument for preprocessing: fewer parameters to learn and more examples per type, which mattered enormously when the model was a linear classifier over sparse counts. **Read what survives, though: `cat` and `cats` are still two types, and `sat` and `sitting` are still two.** Case was the cheap half; morphology is what stemming and lemmatisation are for.", "left": "stage", "codeW": 190, "vars": ["types", "still distinct"], "steps": [{"code": "raw whitespace split", "state": ["15", "A / a, The / the, CAT / cat"], "tone": "crit"}, {"code": "after lowercasing", "state": ["10  (33% smaller)", "cat / cats, sat / sitting"], "changed": [0, 1], "tone": "good"}, {"code": "what is left to collapse", "state": ["-", "morphology, not case"], "tone": "violet"}], "t": "diagram", "id": "dg-1_1-05-3"},
+
+
+
 
 
 
@@ -158,6 +170,9 @@ EC.receiveLesson({
     { t: "h2", n: "07", text: "Why the pipeline shrank", id: "evolution" },
 
     {"kind": "timeline", "title": "Six eras, and the pipeline got shorter as the model got bigger", "caption": "The bars are eras rather than durations, and the trend is the point: **every stage of hand-built preprocessing in this lesson was invented for the era where the model was a linear classifier over sparse counts.** Rule-based meant regexes and CFG parsers; statistical meant Naive Bayes, SVM, CRF and HMM; then Word2Vec and GloVe, then ELMo, then BERT and T5, then GPT-4 and Claude. **As the model absorbed more of the work, the pipeline in front of it shrank** — so most of what this lesson measures is now a decision you make about the input rather than a step you must run.", "span": 80, "tick": 10, "unit": "years, 1950 to 2030", "lanes": [{"label": "rule-based", "bars": [[0, 40, "regexes, parsers", "crit"]]}, {"label": "statistical ML", "bars": [[40, 60, "Naive Bayes, SVM", "warn"]]}, {"label": "shallow neural", "bars": [[63, 67, "W2V", "accent"]]}, {"label": "deep neural", "bars": [[67, 68, "", "accent"]]}, {"label": "transformers", "bars": [[68, 72, "BERT", "good"]]}, {"label": "LLMs", "bars": [[72, 80, "GPT-4", "good"]]}], "t": "diagram", "id": "dg-1_1-07-4"},
+
+
+
 
 
 

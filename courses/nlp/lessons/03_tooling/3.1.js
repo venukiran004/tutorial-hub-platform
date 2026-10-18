@@ -28,6 +28,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "`spacy.load` returns a `Language` object, and calling it runs the text through an ordered list of components. Each one annotates the same `Doc` in place and passes it along. Nothing here is hidden — you can print the list, reorder it, remove from it and add to it." },
 
     { t: "out", text:
@@ -53,6 +56,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "code", lang: "python", title: "scratchpad/nlp/n31.py — the sentence", code:
 "import spacy\n\nnlp = spacy.load(\"en_core_web_sm\")     # sm: fast. md/lg: vectors. trf: most accurate\ndoc = nlp(\"Apple is looking at buying U.K. startup for $1 billion\")\n\nfor token in doc:\n    print(f\"{token.text:10} {token.pos_:6} {token.dep_:10} \"\n          f\"{token.is_stop} {token.lemma_}\")\n\nfor ent in doc.ents:\n    print(f\"{ent.text:20} {ent.label_:10} ({ent.start_char}:{ent.end_char})\")",
       caption: "Four model sizes ship: `sm` has no word vectors, `md` and `lg` do, and `trf` wraps a transformer. `doc.similarity()` silently degrades on `sm` because there are no vectors to compare." },
@@ -70,6 +76,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "A `Token` is not a string. It holds an index into the parent `Doc`, and every attribute you read is looked up from the `Doc`'s underlying arrays. Slicing gives a `Span`, which is likewise a pair of indices. Nothing is copied." },
 
     { t: "out", text:
@@ -81,6 +90,9 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Making it fast", id: "fast" },
 
     {"kind": "trace", "title": "The parser and NER are the cost; everything after that is tok2vec", "caption": "**Dropping the parser and NER roughly halved the time — 0.988s to 0.550s — and dropping everything else after that bought almost nothing (0.534s), because `tok2vec` is still running and it is the shared cost underneath.** So the lever is those two components, not the component count. The second measurement compounds with it: **`nlp.pipe` on 500 documents is 2.30× faster than calling `nlp` in a loop.** And if you genuinely only want tokens, **`nlp.make_doc` skips the pipeline altogether.**", "left": "configuration", "codeW": 210, "vars": ["time", "what is still running"], "steps": [{"code": "disable=[]", "state": ["0.988s", "everything"], "tone": "crit"}, {"code": "disable parser", "state": ["0.844s", "tok2vec, tagger, ner, ..."], "changed": [0, 1], "tone": "warn"}, {"code": "disable parser + ner", "state": ["0.550s", "tok2vec, tagger, lemmatizer"], "changed": [0, 1], "tone": "good", "note": "roughly halved"}, {"code": "disable all five", "state": ["0.534s", "tok2vec - the floor"], "changed": [0, 1], "tone": "good", "note": "bought almost nothing"}, {"code": "500 docs: loop vs nlp.pipe", "state": ["3.218s vs 1.397s", "2.30x"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_1-04-3"},
+
+
+
 
 
 
@@ -104,6 +116,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "A component is any callable taking a `Doc` and returning a `Doc`. Register it with `@Language.component`, declare any custom attributes on `Doc`, `Token` or `Span`, and add it to the pipeline by name." },
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n31.py — a custom component", code:
@@ -121,6 +136,9 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Rule-based matching", id: "matching" },
 
     {"kind": "flow", "title": "Two matchers, and choosing wrongly costs three orders of magnitude", "caption": "**If you know the exact strings or the exact grammatical shape you want, a matcher is faster, exact and debuggable — statistical models are not always the right tool.** The two are not interchangeable: **`Matcher` takes token patterns with attribute predicates like `POS`, so it can express *adjective followed by noun*; `PhraseMatcher` takes literal phrases only.** The next section measures what that choice costs, and the answer is three orders of magnitude.", "cols": 3, "nodes": [{"id": "m", "label": "Matcher: token patterns", "sub": "ADJ_MODEL -> 'large model'", "tone": "good"}, {"id": "a", "label": "Can use attribute predicates", "sub": "POS, LEMMA, IS_DIGIT, regex", "tone": "good"}, {"id": "p", "label": "PhraseMatcher: literal phrases", "sub": "'Machine Learning', 'Deep Learning'", "tone": "good"}, {"id": "e", "label": "Exact, fast and debuggable", "sub": "no model to misbehave", "tone": "violet"}, {"id": "c", "label": "And the wrong one costs 1000x", "sub": "measured next", "tone": "crit"}], "edges": [["m", "a"], ["a", "e"], ["p", "e"], ["e", "c"]], "t": "diagram", "id": "dg-3_1-06-5"},
+
+
+
 
 
 
@@ -166,6 +184,9 @@ EC.receiveLesson({
     { t: "h2", n: "08", text: "Why spaCy is the production default", id: "production" },
 
     {"kind": "flow", "title": "The case is the machinery, not the model — and that cuts both ways", "caption": "**It is not that spaCy's models are the most accurate: `en_core_web_trf` is competitive, and a fine-tuned transformer will usually beat it.** The case is that **one object holds all annotations with offsets preserved, components are declarative and swappable, batching and multiprocessing are first-class, the models are versioned artefacts you pin, and it runs on CPU fast enough that per-document cost is a non-issue.** So it stops being the answer where the task is **classification or generation rather than linguistic annotation.**", "cols": 3, "nodes": [{"id": "o", "label": "One object, offsets preserved", "sub": "annotations stay aligned", "tone": "good"}, {"id": "s", "label": "Swappable, pinnable, batched", "sub": "versioned model artefacts", "tone": "good"}, {"id": "c", "label": "CPU-fast: per-doc cost is a non-issue", "sub": "the real production argument", "tone": "violet"}, {"id": "n", "label": "Not for classification or generation", "sub": "that is 3.3's HuggingFace", "tone": "warn"}, {"id": "d", "label": "Nor for domain-specialised NER", "sub": "though you can wrap one as a component", "tone": "warn"}], "edges": [["o", "s"], ["s", "c"], ["c", "n"], ["n", "d"]], "t": "diagram", "id": "dg-3_1-08-6"},
+
+
+
 
 
 

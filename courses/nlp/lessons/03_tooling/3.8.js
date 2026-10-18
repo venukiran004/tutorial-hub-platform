@@ -28,6 +28,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Natural language inference takes a premise and a hypothesis and classifies their relationship into three classes. The three-way distinction is the whole point — two of them are not simply \"true\" and \"false\"." },
 
     { t: "dl", items: [
@@ -54,6 +57,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Lessons 2.6 and 3.4 both ended at the same wall: ROUGE and BERTScore cannot see a hallucinated fact. NLI can. Treat the source document as the premise and each generated sentence as a hypothesis." },
 
     { t: "out", text:
@@ -71,6 +77,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text:
 "text: \"I want to book a flight to Paris\"\n\nhypothesis                            entailment\n\"This example is about travel.\"       0.9438\n\"This example is about sports.\"       0.0205\n\"This example is about cooking.\"      0.0033" },
 
@@ -79,6 +88,9 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Text augmentation", id: "augmentation" },
 
     {"kind": "trace", "title": "Synonym replacement produced “The Robert William Service at this restaurant”", "caption": "**The premise is that a label-preserving transformation produces a valid new example, and the whole difficulty is whether it actually does.** Here is what WordNet synonym replacement produced: **`service` became the proper noun `Robert William Service`, `product` became `Cartesian product`, and `terrible` became `dead abominable`.** The first four EDA methods are **easy in exactly the way that hides the problem** — senses and proper nouns leak in, and the output is training data the model then learns from.", "left": "original", "codeW": 210, "vars": ["augmented", "what leaked"], "steps": [{"code": "'...absolutely terrible and I hated...'", "state": ["'dead abominable'", "an odd register"], "tone": "warn"}, {"code": "'The service at this restaurant was excellent'", "state": ["'The Robert William Service'", "a proper noun"], "changed": [0, 1], "tone": "crit"}, {"code": "'...recommend this product to anyone'", "state": ["'this Cartesian product'", "the wrong sense"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-3_8-04-3"},
+
+
+
 
 
 
@@ -128,6 +140,9 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Which augmentation for which task", id: "which" },
 
     {"kind": "trace", "title": "Five tasks, and what is unsafe is decided by where the label lives", "caption": "The rule behind every row: **ask what the label is attached to.** Topic is carried redundantly across many words, so deletion is fine. **Sentiment often rests on one word — delete *terrible* and the label is now wrong.** NER's label **is** the span offsets, so any reordering invalidates every annotation. **And for NLI the label is the relation between two sentences, so changing the hypothesis changes the label by definition.** QA is the same shape: the answer is a span with character offsets into the context.", "left": "task", "codeW": 150, "vars": ["safe", "unsafe", "because the label is"], "steps": [{"code": "Topic classification", "state": ["deletion, synonym, back-translation", "-", "spread over many words"], "tone": "good"}, {"code": "Sentiment", "state": ["back-translation, contextual insertion", "deletion, naive synonym", "often one word"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "NER", "state": ["entity substitution from a gazetteer", "swap, deletion, synonym", "the span offsets"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "NLI / paraphrase", "state": ["back-translation on the premise", "anything on the hypothesis", "the relation itself"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "QA", "state": ["paraphrasing the question", "anything touching the context", "offsets into the context"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-3_8-06-4"},
+
+
+
 
 
 

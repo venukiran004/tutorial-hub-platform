@@ -23,6 +23,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three families", id: "families" },
 
+    {"kind": "trace", "title": "Three families, and the row that matters is what each cannot do", "caption": "**An encoder cannot generate autoregressively and a decoder cannot see its own future** — and those two limits are not design preferences, they follow from the attention mask. Encoder-decoder has a dash in that row, which is why it survived for translation and summarisation: **it reads bidirectionally and writes causally.** The measured sizes are worth noting too — **T5-small is 60.5M against BERT-base's 109.5M**, so the family and the size are independent choices.", "left": "property", "codeW": 140, "vars": ["encoder-only", "decoder-only", "encoder-decoder"], "steps": [{"code": "attention", "state": ["bidirectional", "causal", "both + cross"], "tone": "accent"}, {"code": "objective", "state": ["masked LM", "next token", "span corruption"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "CANNOT", "state": ["generate", "see its future", "-"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "examples", "state": ["BERT, RoBERTa, BGE", "GPT-4, LLaMA, Claude", "T5, BART, Whisper"], "changed": [0, 1, 2], "tone": "good"}, {"code": "measured size", "state": ["109,482,240", "124,439,808", "60,506,624"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-5_1-01-0"},
+
+
+
     { t: "table",
       head: ["", "Encoder-only", "Decoder-only", "Encoder-decoder"],
       rows: [
@@ -36,6 +40,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "What each is allowed to see", id: "seeing" },
 
+    {"kind": "trace", "title": "0.3074 to the future in BERT, exactly 0.0000 in GPT-2", "caption": "The same sentence through the first head of the first layer of each. **BERT's row 2 sends 0.3074 of its weight forward and distributes across all eight positions; GPT-2's row 2 is `[0.477, 0.139, 0.384, 0.000, 0.000, 0.000]` — three exact zeros.** Which makes the architectural claim concrete and checkable: **the difference between the two families is visible in one attention row, and the zeros are exact rather than small** because of 4.5's `-inf` fill.", "left": "model", "codeW": 170, "vars": ["max weight on a future token", "row 2"], "steps": [{"code": "bert-base-uncased", "state": ["0.3074", "spread over all 8 positions"], "tone": "accent"}, {"code": "gpt2", "state": ["0.0000", "[0.477, 0.139, 0.384, 0, 0, 0]"], "changed": [0, 1], "tone": "violet", "note": "exact, not small"}], "t": "diagram", "id": "dg-5_1-02-1"},
+
+
+
     { t: "out", text:
 "\"the cat sat on the mat\", first head of the first layer\n\nbert-base-uncased  (encoder-only)\n  max attention to a FUTURE token: 0.3074\n  row 2 attends to: [0.099, 0.085, 0.113, 0.177, 0.066, 0.090, 0.201, 0.168]\n\ngpt2  (decoder-only)\n  max attention to a FUTURE token: 0.0000\n  row 2 attends to: [0.477, 0.139, 0.384, 0.000, 0.000, 0.000]" },
 
@@ -43,6 +51,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "BERT's token 2 spreads attention across all eight positions, including the four that follow it — its single largest weight, **0.201**, goes to a token further right. GPT-2's token 2 puts **exactly 0.0** on every position after itself. That is the whole architectural distinction, and everything else follows from it: what objective you can train, whether you can generate, and what the model is good at. The causal mask is not an optimisation; it defines the family." }] },
 
     { t: "h2", n: "03", text: "BERT: masked language modelling", id: "bert" },
+
+    {"kind": "trace", "title": "Eighty, ten and ten — a split that exists to prevent train-serve skew", "caption": "**Fine-tuning and inference never contain `[MASK]`, so if 100% of masked positions carried it, the pretraining and downstream distributions would differ at every position the model cared about** — a built-in train-serve skew of exactly 3.5's kind, designed out of the objective. And the measured fills show the objective working: **`floor` at 0.314 for the mat position, while the subject position is a flat `girl 0.069, man 0.067, dog 0.056`** — the context constrains one far more than the other.", "left": "component", "codeW": 170, "vars": ["what it does", "why"], "steps": [{"code": "mask 15% of tokens", "state": ["the objective", "-"], "tone": "accent"}, {"code": "of those, 80% -> [MASK]", "state": ["the normal case", "-"], "changed": [0], "tone": "good"}, {"code": "10% a random token", "state": ["forces real context use", "no [MASK] to lean on"], "changed": [0, 1], "tone": "violet"}, {"code": "10% left unchanged", "state": ["matches inference", "where [MASK] never appears", "-"], "changed": [0, 1], "tone": "violet"}, {"code": "NSP", "state": ["dropped by RoBERTa", "unnecessary"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-5_1-03-2"},
+
+
 
     { t: "out", text:
 "MLM pre-training\n  mask 15% of tokens; of those, 80% become [MASK],\n  10% a random token, 10% are left unchanged\n\nNSP: given (sentence A, sentence B), is B the real next sentence?\n  RoBERTa showed NSP is unnecessary and removed it\n\nBERT-base   12 layers, 768 dim, 12 heads, 110M params\nBERT-large  24 layers, 1024 dim, 16 heads, 340M params" },
@@ -57,6 +69,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "Why BERT cannot generate", id: "cannot" },
 
+    {"kind": "trace", "title": "One mask gives Paris; three masks give “in le ##y”", "caption": "**With one mask BERT is excellent — `paris` at 0.417. With three it produces `in le ##y`, because every masked position is predicted independently and in parallel, with no access to what the others decided.** Which is the precise reason an encoder cannot generate: **generation requires each token to condition on the previous one, and MLM's parallelism is exactly the absence of that.** Not a quality problem — a structural one.", "left": "prompt", "codeW": 190, "vars": ["output", "why"], "steps": [{"code": "'The capital of France is [MASK].'", "state": ["paris 0.417", "one decision"], "tone": "good"}, {"code": "'...is [MASK] [MASK] [MASK].'", "state": ["'in le ##y'", "three independent decisions"], "changed": [0, 1], "tone": "crit"}, {"code": "so", "state": ["no conditioning between positions", "which IS generation"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_1-04-3"},
+
+
+
     { t: "out", text:
 "one mask\n  \"The capital of France is [MASK].\"\n  -> paris 0.417, lille 0.071, lyon 0.063\n\nthree masks\n  \"The capital of France is [MASK] [MASK] [MASK].\"\n  -> \"in le ##y\"" },
 
@@ -64,6 +80,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "**You must decide the output length in advance.** The number of `[MASK]` tokens is part of the input, so the model cannot produce a two-word answer when you asked for three, or stop when it is finished. A decoder emits an end-of-text token and decides for itself. **And each mask is predicted independently.** There is no factorisation making mask 2 conditional on what mask 1 turned out to be, so the three positions produce individually-plausible tokens that do not form a phrase — `in le ##y`. Autoregression gets joint coherence for free from the chain rule; masked prediction does not have it at all." }] },
 
     { t: "h2", n: "05", text: "GPT: next-token prediction", id: "gpt" },
+
+    {"kind": "trace", "title": "Five positions, five distributions, one forward pass", "caption": "**`logits` is (1, 5, 50257): one next-token distribution per position, all from a single pass** — this is 4.5's parallel training made concrete. **Each position is scored against the token that actually followed it, and the causal mask is what makes computing them simultaneously legitimate.** Read the confidences: **0.454 after `on` and 0.076 after `the`**, so the model is far surer about a preposition's object than about what the object is.", "left": "after", "codeW": 190, "vars": ["top token", "p"], "steps": [{"code": "'The'", "state": ["\\n", "0.014"], "tone": "warn"}, {"code": "'The cat'", "state": ["' was'", "0.110"], "changed": [0, 1], "tone": "good"}, {"code": "'The cat sat'", "state": ["' on'", "0.224"], "changed": [0, 1], "tone": "good"}, {"code": "'The cat sat on'", "state": ["' the'", "0.454"], "changed": [0, 1], "tone": "good", "note": "most confident"}, {"code": "'The cat sat on the'", "state": ["' floor'", "0.076"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-5_1-05-4"},
+
+
 
     { t: "out", text:
 "prompt \"The cat sat on the\" -> logits (1, 5, 50257)\n\none next-token distribution per position, all from ONE forward pass\n\n  after 'The'                  \\n 0.014, ' the' 0.010\n  after 'The cat'              ' was' 0.110, ' is' 0.073\n  after 'The cat sat'          ' on' 0.224, ' in' 0.132\n  after 'The cat sat on'       ' the' 0.454, ' a' 0.110\n  after 'The cat sat on the'   ' floor' 0.076, ' bed' 0.065" },
@@ -78,6 +98,10 @@ EC.receiveLesson({
     ] },
 
     { t: "h2", n: "06", text: "T5: everything is text-to-text", id: "t5" },
+
+    {"kind": "trace", "title": "One model, three tasks, and the task name is in the input string", "caption": "`t5-small` translates, summarises and judges grammatical acceptability — **and the only thing that changes is the prefix.** Which is what “everything is text-to-text” means operationally: **there is no task head, no label space and no output layer per task, so adding a task means writing a prefix.** The pretraining objective matches: **span corruption drops contiguous spans and trains the decoder to emit them, and crucially a span can be any length** — which is what BERT's fixed one-token-per-mask cannot do.", "left": "input prefix", "codeW": 200, "vars": ["output"], "steps": [{"code": "'translate English to German: ...'", "state": ["'Das Haus ist wunderbar.'"], "tone": "good"}, {"code": "'summarize: ...'", "state": ["a shortened version"], "changed": [0], "tone": "good"}, {"code": "'cola sentence: ...'", "state": ["'acceptable'"], "changed": [0], "tone": "good", "note": "a classification, as text"}, {"code": "pretraining", "state": ["span corruption - any length"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-5_1-06-5"},
+
+
 
     { t: "out", text:
 "t5-small, one model, three completely different tasks\n\n  \"translate English to German: The house is wonderful.\"\n    -> \"Das Haus ist wunderbar.\"\n\n  \"summarize: The transformer replaced recurrence with attention, which\n     allowed parallel training and removed the sequential bottleneck.\"\n    -> \"transformer replaced recurrence with attention, which allowed\n        parallel training.\"\n\n  \"cola sentence: The course is jumping well.\"\n    -> \"acceptable\"" },

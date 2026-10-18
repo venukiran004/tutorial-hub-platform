@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The KV cache", id: "kvcache" },
 
+    {"kind": "trace", "title": "1.87x at twenty tokens and 3.46x at sixty — the gain grows with length", "caption": "**Without a cache you recompute K and V for the whole prefix at every step; with one you compute them for the new token only and append.** So the saving is quadratic in the number of generated tokens, which the two measurements show directly: **0.52s against 0.98s at 20 tokens, and 1.31s against 4.52s at 60.** Which means **the cache is not an optimisation you benchmark once — its value depends on how much you generate**, and at a thousand tokens it is the difference between usable and not.", "left": "tokens generated", "codeW": 170, "vars": ["with cache", "without", "speedup"], "steps": [{"code": "20", "state": ["0.52 s", "0.98 s", "1.87x"], "tone": "good"}, {"code": "60", "state": ["1.31 s", "4.52 s", "3.46x"], "changed": [0, 1, 2], "tone": "violet", "note": "the gain grows"}], "t": "diagram", "id": "dg-5_2-01-0"},
+
+
+
     { t: "p", text: "During generation, step `t` attends over every previous token. Without a cache you recompute K and V for the whole prefix at every step. With one, you compute K and V for the *new* token only and append them." },
 
     { t: "out", text:
@@ -29,6 +33,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "1.87x at 20 tokens and 3.46x at 60 — the gap widens because the un-cached version redoes attention over the *entire* prefix at every step, so its total work is quadratic in the number of generated tokens while the cached version's is linear. At realistic generation lengths of hundreds or thousands of tokens the factor is far larger still. This is why `use_cache=True` is the default everywhere and why turning it off is almost always a bug rather than a choice." }] },
 
     { t: "h2", n: "02", text: "What the cache costs", id: "cost" },
+
+    {"kind": "trace", "title": "10.74 GB of cache for one sequence, or 0.17 with MQA", "caption": "LLaMA-2-70B at 4096 tokens in fp16: **10.74 GB with full multi-head attention, 1.34 GB with GQA8, 0.17 GB with MQA** — an 8× and 64× reduction from sharing K and V heads, reproducing the reference exactly. Then the scaling table is the number that governs serving: **at 32k context and batch 32, GQA8 still needs 343.6 GB, and at 128k with batch 128 it is 5,497.6 GB.** **The cache, not the weights, is what makes long context expensive.**", "left": "scheme or scale", "codeW": 170, "vars": ["KV cache bytes", "GB"], "steps": [{"code": "MHA, n_kv = 64", "state": ["10,737,418,240", "10.74"], "tone": "crit"}, {"code": "GQA8, n_kv = 8", "state": ["1,342,177,280", "1.34"], "changed": [0, 1], "tone": "good", "note": "8x less"}, {"code": "MQA, n_kv = 1", "state": ["167,772,160", "0.17"], "changed": [0, 1], "tone": "good"}, {"code": "GQA8, 8192 tok, batch 8", "state": ["-", "21.5"], "changed": [0, 1], "tone": "warn"}, {"code": "GQA8, 32768 tok, batch 32", "state": ["-", "343.6"], "changed": [1], "tone": "crit", "note": "and 5497.6 at 128k/128"}], "t": "diagram", "id": "dg-5_2-02-1"},
+
+
 
     { t: "math", tex: "\\text{bytes} = 2 \\cdot n_{\\text{layers}} \\cdot \\text{seq} \\cdot n_{\\text{kv heads}} \\cdot d_{\\text{head}} \\cdot \\text{bytes per element}" },
 
@@ -71,6 +79,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "FlashAttention and online softmax", id: "flash" },
 
+    {"kind": "trace", "title": "The partial result is wrong, and the rescaling makes it exact", "caption": "**After the first block the running output is −0.7038, which is *wrong* — a partial result normalised by a partial denominator.** The second block raises the running max from −0.1746 to 0.1312, **rescales what was already accumulated by `exp(m − m_new)`, adds its own contribution, and lands on 0.330191 — exactly what standard attention gives.** Nothing is discarded or approximated, which is why **block size does not affect accuracy: max absolute difference stays at ~1.5e-07 from block size 1 to 100.**", "left": "block", "codeW": 140, "vars": ["running m", "running l", "running O[0]"], "steps": [{"code": "0", "state": ["-0.1746", "1.7131", "-0.7038"], "tone": "crit", "note": "wrong, and that is fine"}, {"code": "1", "state": ["0.1312", "2.7810", "0.3302"], "changed": [0, 1, 2], "tone": "good", "note": "rescaled by exp(m - m_new)"}, {"code": "final O/l[0]", "state": ["-", "-", "0.330191"], "changed": [2], "tone": "violet"}, {"code": "standard attention", "state": ["-", "-", "0.330191"], "tone": "violet", "note": "identical"}], "t": "diagram", "id": "dg-5_2-04-2"},
+
+
+
     { t: "p", text: "Standard attention materialises the full `N × N` score matrix so softmax can find each row's max and sum. FlashAttention never does — it processes each row in blocks, carrying a running maximum and denominator, and retroactively rescales what it has already accumulated whenever a larger value appears." },
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n52.py — online softmax attention", code:
@@ -89,6 +101,10 @@ EC.receiveLesson({
     { t: "p", text: "After the first block the running output is `−0.7038`, which is *wrong* — it is a partial result normalised by a partial denominator. The second block raises the running max from `−0.1746` to `0.1312`, rescales the accumulated output by `exp(m − m_new)`, adds its own contribution, and lands on the exact answer. Nothing is discarded and nothing is approximated; the intermediate state is simply not meaningful on its own." },
 
     { t: "h2", n: "05", text: "Sparse attention", id: "sparse" },
+
+    {"kind": "trace", "title": "Four O(n) patterns, and they get there four different ways", "caption": "**Longformer and BigBird keep real attention and restrict *which* pairs are computed — window plus a few global tokens, with BigBird adding random connections and the proof that sparse attention is Turing complete.** Linformer and Performer instead **approximate**: one projects K and V to a fixed dimension before attending, the other uses random feature maps to approximate the softmax kernel without ever forming the matrix. **Which is the real split: restricted-exact against full-approximate.**", "left": "model", "codeW": 150, "vars": ["pattern", "exact or approximate"], "steps": [{"code": "Longformer", "state": ["sliding window + global tokens", "exact, restricted"], "tone": "good"}, {"code": "BigBird", "state": ["random + window + global", "exact, restricted"], "changed": [0], "tone": "good", "note": "Turing complete"}, {"code": "Linformer", "state": ["low-rank projection of K, V", "APPROXIMATE"], "changed": [0, 1], "tone": "warn"}, {"code": "Performer", "state": ["FAVOR+ random features", "APPROXIMATE"], "changed": [0], "tone": "warn", "note": "never forms the matrix"}], "t": "diagram", "id": "dg-5_2-05-3"},
+
+
 
     { t: "table",
       head: ["Model", "Pattern", "Complexity", "Idea"],
