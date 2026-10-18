@@ -25,6 +25,9 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Three classes, and the third is the one that matters in practice", "caption": "**Entailment is not “consistent with” — it is *forced by*. Contradiction is active incompatibility. And neutral is the class that matters most in practice: consistent with the premise but not supported by it.** The measured row makes it concrete: *“The man is a professional musician”* given *“A man is playing a guitar on stage”* is **NEUTRAL at 0.997** — plausible, unsupported, and exactly the kind of sentence a summariser invents. **MNLI's genre diversity is why MNLI-trained models transfer better than SNLI's image captions.**", "left": "premise -> hypothesis", "codeW": 200, "vars": ["class", "confidence"], "steps": [{"code": "guitar on stage -> performing music", "state": ["ENTAILMENT", "0.990"], "tone": "good", "note": "forced by it"}, {"code": "guitar on stage -> sleeping at home", "state": ["CONTRADICTION", "0.999"], "changed": [0, 1], "tone": "good"}, {"code": "guitar on stage -> a professional musician", "state": ["NEUTRAL", "0.997"], "changed": [0, 1], "tone": "violet", "note": "plausible, unsupported"}, {"code": "record profits -> lost money", "state": ["CONTRADICTION", "0.999"], "changed": [0, 1], "tone": "good"}, {"code": "two dogs in a field -> animals outdoors", "state": ["ENTAILMENT", "0.978"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-3_8-01-0"},
 
+
+
+
     { t: "p", text: "Natural language inference takes a premise and a hypothesis and classifies their relationship into three classes. The three-way distinction is the whole point — two of them are not simply \"true\" and \"false\"." },
 
     { t: "dl", items: [
@@ -48,6 +51,9 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "The wall 2.6 and 3.4 both hit, and the metric that gets over it", "caption": "**ROUGE and BERTScore cannot see a hallucinated fact. NLI can** — treat the source as the premise and each generated sentence as a hypothesis. Three faithful sentences come back ENTAILMENT at 0.977–0.993, a reversed figure comes back **CONTRADICTION at 0.989**, and an invented forecast comes back **NEUTRAL** — which is the right verdict for an unsupported claim rather than a false one. **The production shape is a pipeline stage: split, check each sentence, route anything not entailed to a human or drop it — one forward pass per sentence, cheap next to the generation.**", "left": "candidate sentence", "codeW": 210, "vars": ["expected", "NLI verdict"], "steps": [{"code": "'Revenue rose to 4.2 million in Q1.'", "state": ["faithful", "ENTAILMENT 0.993"], "tone": "good"}, {"code": "'Revenue grew year over year.'", "state": ["faithful", "ENTAILMENT 0.990"], "changed": [1], "tone": "good"}, {"code": "'Growth was driven by enterprise customers.'", "state": ["faithful", "ENTAILMENT 0.977"], "changed": [1], "tone": "good"}, {"code": "'Revenue fell to 4.2 million.'", "state": ["contradicted", "CONTRADICTION 0.989"], "changed": [0, 1], "tone": "crit"}, {"code": "'The company expects 6 million next quarter.'", "state": ["unsupported", "NEUTRAL"], "changed": [0, 1], "tone": "warn", "note": "not false - invented"}], "t": "diagram", "id": "dg-3_8-02-1"},
 
+
+
+
     { t: "p", text: "Lessons 2.6 and 3.4 both ended at the same wall: ROUGE and BERTScore cannot see a hallucinated fact. NLI can. Treat the source document as the premise and each generated sentence as a hypothesis." },
 
     { t: "out", text:
@@ -62,6 +68,9 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "There is no zero-shot model — there is an NLI model and a template", "caption": "**`facebook/bart-large-mnli` is an NLI model. The zero-shot pipeline loops over candidate labels, builds a hypothesis from a template, and normalises the entailment probabilities** — that is the entire mechanism, written out. Which tells you how to improve it, and it is not the model: **the hypothesis template is a prompt.** *“This example is about travel”* scores 0.9438, and a template matching how your labels are actually phrased will score differently on the same text.", "cols": 3, "nodes": [{"id": "l", "label": "Each label -> a hypothesis", "sub": "'This example is about {label}'", "tone": "violet"}, {"id": "n", "label": "An NLI model scores entailment", "sub": "bart-large-mnli", "tone": "good"}, {"id": "s", "label": "Normalise across the labels", "sub": "travel 0.9438, sports 0.0205", "tone": "good"}, {"id": "t", "label": "So the template is a prompt", "sub": "and the tunable part", "tone": "violet"}, {"id": "m", "label": "Not the model", "sub": "which is where people tune first", "tone": "teal"}], "edges": [["l", "n"], ["n", "s"], ["s", "t"], ["t", "m"]], "t": "diagram", "id": "dg-3_8-03-2"},
 
+
+
+
     { t: "out", text:
 "text: \"I want to book a flight to Paris\"\n\nhypothesis                            entailment\n\"This example is about travel.\"       0.9438\n\"This example is about sports.\"       0.0205\n\"This example is about cooking.\"      0.0033" },
 
@@ -70,6 +79,9 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Text augmentation", id: "augmentation" },
 
     {"kind": "trace", "title": "Synonym replacement produced “The Robert William Service at this restaurant”", "caption": "**The premise is that a label-preserving transformation produces a valid new example, and the whole difficulty is whether it actually does.** Here is what WordNet synonym replacement produced: **`service` became the proper noun `Robert William Service`, `product` became `Cartesian product`, and `terrible` became `dead abominable`.** The first four EDA methods are **easy in exactly the way that hides the problem** — senses and proper nouns leak in, and the output is training data the model then learns from.", "left": "original", "codeW": 210, "vars": ["augmented", "what leaked"], "steps": [{"code": "'...absolutely terrible and I hated...'", "state": ["'dead abominable'", "an odd register"], "tone": "warn"}, {"code": "'The service at this restaurant was excellent'", "state": ["'The Robert William Service'", "a proper noun"], "changed": [0, 1], "tone": "crit"}, {"code": "'...recommend this product to anyone'", "state": ["'this Cartesian product'", "the wrong sense"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-3_8-04-3"},
+
+
+
 
     { t: "p", text: "Augmentation generates additional training examples from existing ones. The premise is that a transformation preserving the label produces a valid new example — and the whole difficulty is in whether it actually does." },
 
@@ -116,6 +128,9 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Which augmentation for which task", id: "which" },
 
     {"kind": "trace", "title": "Five tasks, and what is unsafe is decided by where the label lives", "caption": "The rule behind every row: **ask what the label is attached to.** Topic is carried redundantly across many words, so deletion is fine. **Sentiment often rests on one word — delete *terrible* and the label is now wrong.** NER's label **is** the span offsets, so any reordering invalidates every annotation. **And for NLI the label is the relation between two sentences, so changing the hypothesis changes the label by definition.** QA is the same shape: the answer is a span with character offsets into the context.", "left": "task", "codeW": 150, "vars": ["safe", "unsafe", "because the label is"], "steps": [{"code": "Topic classification", "state": ["deletion, synonym, back-translation", "-", "spread over many words"], "tone": "good"}, {"code": "Sentiment", "state": ["back-translation, contextual insertion", "deletion, naive synonym", "often one word"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "NER", "state": ["entity substitution from a gazetteer", "swap, deletion, synonym", "the span offsets"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "NLI / paraphrase", "state": ["back-translation on the premise", "anything on the hypothesis", "the relation itself"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "QA", "state": ["paraphrasing the question", "anything touching the context", "offsets into the context"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-3_8-06-4"},
+
+
+
 
     { t: "table",
       head: ["Task", "Safe", "Unsafe", "Why"],

@@ -24,6 +24,9 @@ EC.receiveLesson({
     {"kind": "flow", "title": "Where spaCy hands you one pipeline, NLTK hands you the parts", "caption": "NLTK **predates the production libraries by a decade** and is a teaching and research toolkit: **dozens of corpora, several implementations of most classical algorithms so you can compare them, and the lexical resources — which is the part with no real substitute.** WordNet, VADER's lexicon and the stopword lists exist nowhere else in this form. **And nothing ships with the package: `nltk.download('punkt')` fetches data at runtime, which is a deployment consideration rather than a detail.**", "cols": 3, "nodes": [{"id": "c", "label": "Corpora: Gutenberg, Brown, Reuters", "sub": "~100, one reader interface", "tone": "good"}, {"id": "a", "label": "Algorithms, several of each", "sub": "4 stemmers, many tokenisers", "tone": "good"}, {"id": "l", "label": "Lexical resources", "sub": "WordNet, VADER, stopwords", "tone": "violet"}, {"id": "n", "label": "No real substitute for those", "sub": "which is why it stays installed", "tone": "violet"}, {"id": "d", "label": "But nothing ships with the package", "sub": "downloads at runtime", "tone": "warn"}], "edges": [["c", "a"], ["a", "l"], ["l", "n"], ["n", "d"]], "t": "diagram", "id": "dg-3_2-01-0"},
 
 
+
+
+
     { t: "p", text: "NLTK is a teaching and research toolkit that predates the production libraries by a decade. It bundles dozens of corpora, implementations of most classical algorithms, and interfaces to lexical resources — and it makes every step inspectable. Where spaCy hands you one opinionated pipeline, NLTK hands you the parts." },
 
     { t: "dl", items: [
@@ -36,6 +39,9 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Tokenising and tagging", id: "tokenising" },
 
     {"kind": "trace", "title": "The sentence splitter did not break after Inc.", "caption": "Both hard cases come out right: **`Inc.` keeps its full stop as one token, and the sentence splitter still broke after `Cupertino.` rather than after `Inc.`** — that is the **Punkt** model, which is trained rather than rule-based, doing exactly what it should. Worth noting because it is the same decision 1.1's regex got wrong on `e-mailed`: **abbreviation handling is not something a character class can express.**", "left": "step", "codeW": 160, "vars": ["output", "the hard part"], "steps": [{"code": "sent_tokenize", "state": ["2 sentences", "did NOT break after Inc."], "tone": "good", "note": "Punkt, trained"}, {"code": "word_tokenize", "state": ["14 tokens", "'Inc.' kept its full stop"], "changed": [0, 1], "tone": "good"}, {"code": "pos_tag", "state": ["NNP NNP VBD NNP NNP", "'Inc.' tagged NNP"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-3_2-02-1"},
+
+
+
 
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n32.py — the worked example", code:
@@ -52,6 +58,9 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Three of four entities wrong, against the result that is usually quoted", "caption": "It is commonly stated that `ne_chunk` returns *Steve Jobs (PERSON)*, *Apple Inc. (ORGANIZATION)* and *Cupertino (GPE)*. **Run on NLTK 3.10.3 it splits `Steve Jobs` into two entities and labels `Apple Inc.` as PERSON** — and spaCy's small model gets all three right. Which is the honest reason NLTK is a teaching toolkit rather than a production one: **its NER chunker is a decades-old classifier that nobody has retrained, and the documented output is not what the code does.**", "left": "entity", "codeW": 150, "vars": ["NLTK ne_chunk", "spaCy en_core_web_sm"], "steps": [{"code": "Steve Jobs", "state": ["TWO entities, both PERSON", "PERSON, one span"], "tone": "crit"}, {"code": "Apple Inc.", "state": ["PERSON", "ORG"], "changed": [0, 1], "tone": "crit"}, {"code": "Cupertino", "state": ["GPE", "GPE"], "changed": [0, 1], "tone": "good"}, {"code": "quoted result", "state": ["PERSON / ORGANIZATION / GPE", "-"], "changed": [0, 1], "tone": "warn", "note": "not what it does"}], "t": "diagram", "id": "dg-3_2-03-2"},
 
 
+
+
+
     { t: "p", text: "It is commonly stated that `ne_chunk` returns *Steve Jobs (PERSON)*, *Apple Inc. (ORGANIZATION)* and *Cupertino (GPE)*. Run on NLTK 3.10.3, it does not." },
 
     { t: "out", text:
@@ -63,6 +72,9 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Stemming against lemmatisation", id: "stemming" },
 
     {"kind": "trace", "title": "Twelve words chosen to expose the difference, and the verb POS does most of the work", "caption": "**`ran` is the clearest row: both stemmers and the noun lemmatiser leave it alone, and only `wordnet-v` gets `run`** — so the part-of-speech argument from 1.2 is what separates the columns, not the algorithm. **`was` splits all four: Porter mangles it to `wa`, Snowball leaves it, and the verb lemmatiser returns `be`.** And the `universal / university / universe` block is the stemmer failure mode in one line: **all three collapse to `univers`, which is three unrelated meanings in one index key.**", "left": "word", "codeW": 130, "vars": ["porter", "snowball", "wordnet-n", "wordnet-v"], "steps": [{"code": "ran", "state": ["ran", "ran", "ran", "run"], "tone": "warn", "note": "only the verb POS works"}, {"code": "was", "state": ["wa", "was", "wa", "be"], "changed": [0, 1, 2, 3], "tone": "warn"}, {"code": "studies", "state": ["studi", "studi", "study", "study"], "changed": [0, 1, 2, 3], "tone": "good"}, {"code": "ponies", "state": ["poni", "poni", "pony", "ponies"], "changed": [0, 1, 2, 3], "tone": "warn"}, {"code": "universal / university / universe", "state": ["univers", "univers", "unchanged", "unchanged"], "changed": [0, 1, 2, 3], "tone": "crit", "note": "three meanings, one key"}], "t": "diagram", "id": "dg-3_2-04-3"},
+
+
+
 
 
     { t: "p", text: "Both reduce inflected forms to a common base, but by completely different means. A stemmer applies suffix-stripping rules and never consults a dictionary; a lemmatiser looks the word up and needs to know its part of speech. The difference shows on words chosen to expose it." },
@@ -80,6 +92,9 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Eighteen senses of bank, and a similarity you can print the reason for", "caption": "**`bank` has 18 synsets and `run` has 57** — which is the sense inventory a distributional model never gives you explicitly. `path_similarity` scores two synsets by distance in the hypernym tree: **dog/cat at 0.2000 against dog/car at 0.0769.** Crude next to an embedding, **and interpretable: you can print the path — `entity → physical_entity → object → whole → living_thing → organism → animal → domestic_animal → dog` — and see exactly why.** That is the trade WordNet always offers.", "left": "query", "codeW": 170, "vars": ["result", "and you can see why"], "steps": [{"code": "synsets('bank')", "state": ["18 senses", "sloping land / institution / ridge"], "tone": "accent"}, {"code": "synsets('run')", "state": ["57 senses", "-"], "changed": [0, 1], "tone": "accent"}, {"code": "path_similarity(dog, cat)", "state": ["0.2000", "both under domestic_animal"], "changed": [0, 1], "tone": "good"}, {"code": "path_similarity(dog, car)", "state": ["0.0769", "diverge at physical_entity"], "changed": [0, 1], "tone": "good"}, {"code": "antonyms(good.a.01)", "state": ["['bad']", "hand-built, not inferred"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_2-05-4"},
 
 
+
+
+
     { t: "p", text: "WordNet is a hand-built lexical database: words grouped into synsets (sets of synonyms sharing one meaning), linked by relations — hypernym for *is-a*, hyponym for the inverse, meronym for *part-of*, plus antonymy. It encodes what a word *means* and how meanings relate, which no amount of distributional training gives you directly." },
 
     { t: "out", text:
@@ -93,6 +108,9 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Frequency and collocations", id: "collocations" },
 
     {"kind": "trace", "title": "The scoring function decides whether you find any collocations at all", "caption": "Same 161,600 tokens of *Emma*, two scoring functions, two completely different lists. **Raw frequency returns `to be`, `of the`, `it was` — grammar, not phrases.** PMI returns `brunswick square`, `william larkins`, `box hill`, `maple grove`: **proper nouns and place names, which is what a collocation is.** And the one junk entry is instructive: **`don t` is a tokenisation artefact, so PMI faithfully reports that the apostrophe split produced a highly-associated pair.**", "left": "scoring function", "codeW": 160, "vars": ["top bigrams", "what they are"], "steps": [{"code": "raw frequency", "state": ["to be, of the, it was, in the", "grammar"], "tone": "crit"}, {"code": "PMI", "state": ["brunswick square, william larkins", "names and places"], "changed": [0, 1], "tone": "good"}, {"code": "PMI, continued", "state": ["box hill, maple grove, abbey mill", "real collocations"], "changed": [0], "tone": "good"}, {"code": "and one artefact", "state": ["don t", "the apostrophe split"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-3_2-06-5"},
+
+
+
 
 
     { t: "p", text: "A collocation is a word pair that co-occurs more than chance would predict — a fixed phrase rather than an accident of grammar. The scoring function decides whether you find any." },

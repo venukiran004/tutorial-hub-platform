@@ -23,6 +23,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The causal mask", id: "mask" },
 
+    {"kind": "trace", "title": "Token 0 sees one position and token 4 sees five", "caption": "The mask is `tril(ones(n, n))` and the consequence is worth stating in terms of what each position gets: **token 0 has one input — itself — so its representation is a function of a single token, while token 4 has five.** Which means **the early positions of a sequence are intrinsically less informed than the later ones**, and it is why a decoder's first few tokens are the hardest to predict and why `[CLS]`-style prefix tokens become attention sinks (§4.4): position 0 has nowhere else to look.", "left": "token", "codeW": 120, "vars": ["mask row", "positions visible"], "steps": [{"code": "0", "state": ["[1, 0, 0, 0, 0]", "1 of 5 - itself"], "tone": "crit"}, {"code": "1", "state": ["[1, 1, 0, 0, 0]", "2 of 5"], "changed": [0, 1], "tone": "warn"}, {"code": "2", "state": ["[1, 1, 1, 0, 0]", "3 of 5"], "changed": [0, 1], "tone": "warn"}, {"code": "4", "state": ["[1, 1, 1, 1, 1]", "5 of 5"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-4_5-01-0"},
+
+
     { t: "p", text: "A decoder must not see the future. Position `i` may attend only to positions up to and including `i`, which is a lower-triangular pattern." },
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n44.py — the mask", code:
@@ -34,6 +37,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "What masking does to the softmax", id: "softmax" },
 
+    {"kind": "trace", "title": "Masking does not zero one weight — it redistributes all of them", "caption": "One row: *sat* attending to `[The, cat, sat, future]` with scaled scores `[0.40, 0.53, 0.59, 0.95]`. **Masked, the weights are `[0.2987, 0.3401, 0.3612, 0.0000]`; unmasked, they are `[0.1968, 0.2241, 0.2380, 0.3411]`.** So the three legitimate weights each **rose** when the future was masked — **the softmax renormalises over what is left, which is why masking is a change to the denominator rather than a filter on the output.** The reference's `[0.299, 0.340, 0.361, 0.000]` reproduces exactly.", "left": "position", "codeW": 140, "vars": ["score", "masked weight", "unmasked weight"], "steps": [{"code": "The", "state": ["0.40", "0.2987", "0.1968"], "tone": "good"}, {"code": "cat", "state": ["0.53", "0.3401", "0.2241"], "changed": [0, 1, 2], "tone": "good"}, {"code": "sat", "state": ["0.59", "0.3612", "0.2380"], "changed": [0, 1, 2], "tone": "good"}, {"code": "future", "state": ["-inf (was 0.95)", "0.0000", "0.3411"], "changed": [0, 1, 2], "tone": "crit", "note": "its mass went to the others"}], "t": "diagram", "id": "dg-4_5-02-1"},
+
+
     { t: "p", text: "The worked example takes one row: token *sat* attending to `[The, cat, sat, future]` with scaled scores `[0.40, 0.53, 0.59, 0.95]`. Recomputed:" },
 
     { t: "out", text:
@@ -44,6 +50,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Why negative infinity and not a large negative number", id: "neginf" },
 
+    {"kind": "trace", "title": "Minus ten leaks 4.49e-06 of exactly the information the mask exists to hide", "caption": "**In float32, anything below roughly `-1e4` underflows to exactly zero after the exponential, so `-inf` and `-1e9` are equivalent — both give a masked weight of 0.000e+00.** A merely *large* negative number does not: **`-10` leaves 4.492e-06 on a position the model must not see.** Small, and it is a leak of the future, **which makes the bug invisible in a loss curve and visible only as a model that is mysteriously good at next-token prediction.**", "left": "mask fill value", "codeW": 150, "vars": ["weights", "masked weight"], "steps": [{"code": "-inf", "state": ["[0.731059, 0.268941, 0.0]", "0.000e+00"], "tone": "good"}, {"code": "-1e9", "state": ["[0.731059, 0.268941, 0.0]", "0.000e+00"], "tone": "good", "note": "underflows identically"}, {"code": "-1e4", "state": ["[0.731059, 0.268941, 0.0]", "0.000e+00"], "tone": "good"}, {"code": "-10", "state": ["[0.731055, 0.268940, 4e-06]", "4.492e-06"], "changed": [0, 1], "tone": "crit", "note": "a future leak"}], "t": "diagram", "id": "dg-4_5-03-2"},
+
+
     { t: "out", text:
 "scores [2.0, 1.0, 0.5], masking the third\n\nfill     weights                            masked weight\n-inf     [0.731059, 0.268941, 0.000000]     0.000e+00\n-1e9     [0.731059, 0.268941, 0.000000]     0.000e+00\n-1e4     [0.731059, 0.268941, 0.000000]     0.000e+00\n-10      [0.731055, 0.268940, 0.000004]     4.492e-06" },
 
@@ -53,6 +62,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "`-1e9` is outside float16's range and overflows to `-inf`, which happens to be the behaviour you wanted. But masking with float16's finite minimum, `-65504`, returned **`[nan, nan, nan]`** in my test — the intermediate arithmetic overflows and poisons the whole row. NaNs then propagate through every subsequent layer and the loss becomes NaN with no indication of where it started. If you write your own attention and run it in mixed precision, use `torch.finfo(dtype).min` rather than a hard-coded constant, and check for NaNs immediately after the softmax while you still know which operation produced them." }] },
 
     { t: "h2", n: "04", text: "Autoregression is the chain rule", id: "autoregressive" },
+
+    {"kind": "flow", "title": "An identity, not an assumption — which is why the loss is what it is", "caption": "**Any joint distribution factorises as a product of conditionals; that is the chain rule, not a modelling choice.** So an autoregressive model is not approximating the joint distribution with an independence assumption — **it is learning each exact conditional, and maximising the sequence log-likelihood is *exactly* minimising next-token cross-entropy.** Which is why the training objective needs no justification beyond the factorisation: **`p(\"the cat sat\") = p(\"the\") · p(\"cat\" | \"the\") · p(\"sat\" | \"the\", \"cat\")`.**", "cols": 3, "nodes": [{"id": "c", "label": "Every joint factorises into conditionals", "sub": "the chain rule", "tone": "violet"}, {"id": "n", "label": "So no independence assumption is made", "sub": "unlike a bag of words", "tone": "good"}, {"id": "l", "label": "The model learns each conditional", "sub": "p(x_t | x_<t)", "tone": "good"}, {"id": "o", "label": "Max log-likelihood = min next-token CE", "sub": "exactly, not approximately", "tone": "violet"}, {"id": "t", "label": "Which is why the loss needs no argument", "sub": "it falls out of the factorisation", "tone": "teal"}], "edges": [["c", "n"], ["n", "l"], ["l", "o"], ["o", "t"]], "t": "diagram", "id": "dg-4_5-04-3"},
+
 
     { t: "math", tex: "p(x_1, x_2, \\ldots, x_n) = \\prod_{t=1}^{n} p(x_t \\mid x_1, \\ldots, x_{t-1})" },
 
@@ -88,6 +100,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "06", text: "Exposure bias", id: "exposure" },
 
+    {"kind": "trace", "title": "Mean 0.6488 under teacher forcing, and a minimum of 0.0836", "caption": "**Training always conditions on a correct prefix; inference conditions on whatever the model produced, mistakes included.** Scored with teacher forcing against a gold continuation GPT-2 would not have chosen, **the mean probability is 0.6488 and the minimum is 0.0836 at `' Italy'`** — the one token where the gold path diverges from the model's own preference. Left to generate, **it picks Berlin, then Washington, then London: a template it is confident in.** The gap between those two regimes is exposure bias.", "left": "step", "codeW": 140, "vars": ["gold token", "p under teacher forcing"], "steps": [{"code": "0", "state": ["' Berlin'", "0.2667"], "tone": "warn"}, {"code": "4", "state": ["' of'", "0.9911"], "changed": [0, 1], "tone": "good"}, {"code": "5", "state": ["' Italy'", "0.0836"], "changed": [0, 1], "tone": "crit", "note": "the divergence point"}, {"code": "7", "state": ["' Rome'", "0.4107"], "changed": [0, 1], "tone": "warn"}, {"code": "mean / min", "state": ["-", "0.6488 / 0.0836"], "changed": [1], "tone": "violet"}], "t": "diagram", "id": "dg-4_5-06-4"},
+
+
     { t: "p", text: "Training always conditions on a correct prefix. Inference conditions on whatever the model produced, mistakes included. The gap between those two regimes is exposure bias, and it is visible in a real model." },
 
     { t: "out", text:
@@ -100,6 +115,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Left to itself the model went to *the United States*, not *Italy*. Teacher forcing nevertheless hands it ` Italy` as step 5 and asks for the next token — and the model assigns that gold token only **0.0836**. At every subsequent step it is conditioning on a prefix it disagrees with, yet the loss is computed as though that prefix were its own. At inference nothing corrects it: an early low-probability choice becomes the context for everything after, and errors compound. That is exposure bias. The mitigations are scheduled sampling (mix in the model's own predictions during training), sequence-level or RL fine-tuning (optimise the whole output, not each token against a gold prefix), and better decoding, which lesson 5.8 traces end to end." }] },
 
     { t: "h2", n: "07", text: "Four ways to model a sequence", id: "families" },
+
+    {"kind": "trace", "title": "Four families, and only one of them cannot generate at all", "caption": "The weaknesses are the content. **Autoregressive is the quality answer and costs `O(n)` sequential passes — which is 3.5's latency problem at its root.** Bidirectional MLM is an excellent encoder and **cannot generate**, because every position sees both sides. **Non-autoregressive emits every token in parallel and is weaker for a specific reason: it has no left context while deciding**, so it cannot condition on its own earlier choices. Diffusion LMs are improving fast and still behind.", "left": "family", "codeW": 170, "vars": ["how it generates", "the limitation"], "steps": [{"code": "Autoregressive (GPT, LLaMA)", "state": ["left to right, one per step", "O(n) sequential passes"], "tone": "good"}, {"code": "Bidirectional MLM (BERT)", "state": ["fills masked positions", "CANNOT generate"], "changed": [0, 1], "tone": "warn"}, {"code": "Non-autoregressive", "state": ["every token in parallel", "no left context while deciding"], "changed": [0, 1], "tone": "warn"}, {"code": "Diffusion / masked-diffusion", "state": ["iteratively denoises the whole", "quality still behind AR"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-4_5-07-5"},
+
 
     { t: "table",
       head: ["Family", "How it generates", "Strength", "Weakness"],

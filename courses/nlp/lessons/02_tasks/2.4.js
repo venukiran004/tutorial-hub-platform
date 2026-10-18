@@ -24,6 +24,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text: `  documents: ['I love machine learning', 'I enjoy deep learning', 'The weather is sunny']
   cosine matrix:
     [1.0, 0.151, 0.0]
@@ -52,6 +55,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "out", text: `  text A                                 text B                                 tf-idf cos
   How to learn machine learning?         What is the best way to study ML?      0.000
   The film was excellent                 The movie was superb                   0.155
@@ -64,6 +70,9 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Semantic similarity", id: "semantic" },
 
     {"kind": "trace", "title": "The same four pairs, and the ordering is now right", "caption": "384 dimensions and the inversion is gone: **the synonym pair goes 0.247 to 0.910, the paraphrase 0.155 to 0.737, and the ML question pair 0.000 to 0.534.** Note the honest detail: **the reference quotes ~0.85 for that last pair and the measured value is 0.534** — so a short embedding model is less confident on a paraphrase with no shared vocabulary than the write-up suggests. **The ordering is what you rely on, not the magnitude.**", "left": "pair", "codeW": 190, "vars": ["tf-idf", "embedding", "change"], "steps": [{"code": "learn ML / study ML", "state": ["0.000", "0.534", "0 -> usable"], "tone": "good", "note": "quoted as ~0.85"}, {"code": "film excellent / movie superb", "state": ["0.155", "0.737", "+0.58"], "changed": [0, 1, 2], "tone": "good"}, {"code": "a car / an automobile", "state": ["0.247", "0.910", "+0.66"], "changed": [0, 1, 2], "tone": "good"}, {"code": "ML question / weather", "state": ["0.000", "0.059", "still near zero"], "changed": [0, 1, 2], "tone": "good", "note": "the ordering holds"}], "t": "diagram", "id": "dg-2_4-03-2"},
+
+
+
 
 
 
@@ -86,6 +95,9 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Scale", id: "scale" },
 
     {"kind": "trace", "title": "Exact cosine is one dot product per document, per query", "caption": "The arithmetic is unforgiving because it is linear in corpus size and there is no constant factor to hide in: **at 10 million documents and 384 dimensions, one query is 3.8×10⁹ multiply-adds.** Which is why approximate nearest-neighbour indexes exist at all — **not to make the search smarter, but to stop it being a full scan.** And the cost is per **query**, so it is paid at serving time rather than once at build time.", "left": "corpus size", "codeW": 170, "vars": ["dot products per query", "multiply-adds at 384 dims"], "steps": [{"code": "1,000", "state": ["1,000", "3.8e5"], "tone": "good"}, {"code": "100,000", "state": ["100,000", "3.8e7"], "changed": [0, 1], "tone": "warn"}, {"code": "10,000,000", "state": ["10,000,000", "3.8e9"], "changed": [0, 1], "tone": "crit", "note": "per query"}], "t": "diagram", "id": "dg-2_4-04-3"},
+
+
+
 
 
 

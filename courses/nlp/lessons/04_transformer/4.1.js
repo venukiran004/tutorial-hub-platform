@@ -23,6 +23,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What was wrong with recurrence", id: "rnn" },
 
+    {"kind": "trace", "title": "Four problems, four answers, and the third is the one people underrate", "caption": "**An RNN compresses everything it has read into one fixed-size vector, so information about token 5 must survive being overwritten 500 times to reach token 505. Attention has no such compression — token 505 reads token 5 directly.** That is a different claim from the gradient one: even with perfect optimisation, the bottleneck is a capacity limit rather than a training difficulty. And the last row is why the architecture won in practice: **the whole computation is matrix multiplies.**", "left": "RNN problem", "codeW": 190, "vars": ["transformer answer", "kind of fix"], "steps": [{"code": "sequential along time", "state": ["all positions attend in parallel", "throughput"], "tone": "good"}, {"code": "vanishing gradients over long spans", "state": ["a direct connection between any two", "optimisation"], "changed": [0, 1], "tone": "good"}, {"code": "a fixed-size hidden state", "state": ["every token reads every other", "CAPACITY"], "changed": [0, 1], "tone": "violet", "note": "not a training problem"}, {"code": "poor GPU utilisation", "state": ["it is all matrix multiplies", "hardware"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-4_1-01-0"},
+
+
+
     { t: "table",
       head: ["RNN problem", "Transformer answer"],
       rows: [
@@ -35,6 +39,10 @@ EC.receiveLesson({
     { t: "p", text: "The third row is the one people underrate. An RNN compresses everything it has read into one fixed-size vector, so information about token 5 must survive being overwritten 500 times to reach token 505. Attention has no such compression — token 505 reads token 5 directly." },
 
     { t: "h2", n: "02", text: "Timing both", id: "timing" },
+
+    {"kind": "trace", "title": "Attention is faster up to 256 tokens and slower at 512", "caption": "The crossover is the measurement worth having, because the usual summary is that attention is the fast one. **It is 1.84× faster at 32 tokens, and 0.75× — slower — at 512.** Which is exactly what the complexity says: **attention is `O(n²)` in sequence length and an LSTM is `O(n)`, so parallelism wins at short lengths and the quadratic term wins eventually.** The transformer's advantage at scale is **hardware utilisation and gradient paths, not asymptotic cost.**", "left": "sequence length", "codeW": 160, "vars": ["LSTM ms", "attention ms", "ratio"], "steps": [{"code": "32", "state": ["3.21", "1.75", "1.84x faster"], "tone": "good"}, {"code": "64", "state": ["7.05", "4.51", "1.56x"], "changed": [0, 1, 2], "tone": "good"}, {"code": "128", "state": ["12.76", "10.26", "1.24x"], "changed": [0, 1, 2], "tone": "good"}, {"code": "256", "state": ["24.01", "22.62", "1.06x"], "changed": [0, 1, 2], "tone": "warn", "note": "the crossover"}, {"code": "512", "state": ["47.79", "63.36", "0.75x - SLOWER"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-4_1-02-1"},
+
+
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n41.py — LSTM against attention, same width", code:
 "import torch, torch.nn as nn\n\nD, B = 256, 16\nrnn  = nn.LSTM(D, D, batch_first=True).eval()\nattn = nn.MultiheadAttention(D, 8, batch_first=True).eval()\n\nfor T in [32, 64, 128, 256, 512]:\n    x = torch.randn(B, T, D)\n    with torch.no_grad():\n        r = bench(lambda: rnn(x))\n        a = bench(lambda: attn(x, x, x, need_weights=False))\n    print(T, r, a, r / a)",
@@ -100,6 +108,10 @@ EC.receiveLesson({
 "the original paper's configuration\n\n  d_model   512     embedding dimension\n  n_heads     8     attention heads\n  d_ff     2048     FFN inner dimension, 4 x d_model\n  N           6     encoder layers = decoder layers\n  d_k = d_v  64     d_model / n_heads" },
 
     { t: "h2", n: "05", text: "Where the parameters actually are", id: "params" },
+
+    {"kind": "trace", "title": "The feed-forward network is twice the attention block", "caption": "At the paper's configuration, **attention is four 512×512 projections for 1,050,624 parameters and the FFN is 512→2048→512 for 2,099,712 — so the FFN is 2.00× the attention block.** Which is the opposite of where the attention goes when the architecture is explained: **two thirds of every encoder block's parameters are in the part with no interaction between positions at all.** 4.6 is about what that part does, and 4.10 counts the whole model this way.", "left": "component", "codeW": 210, "vars": ["parameters", "share of the block"], "steps": [{"code": "attention: 4 x (512 x 512)", "state": ["1,050,624", "33%"], "tone": "accent"}, {"code": "FFN: 512 -> 2048 -> 512", "state": ["2,099,712", "67%"], "changed": [0, 1], "tone": "violet", "note": "2.00x the attention"}, {"code": "and the FFN is position-wise", "state": ["no cross-token interaction", "two thirds of the block"], "changed": [0, 1], "tone": "teal"}], "t": "diagram", "id": "dg-4_1-05-2"},
+
+
 
     { t: "out", text:
 "per encoder block, at the paper's configuration\n\n  attention (4 projections of 512x512)   1,050,624 params\n  FFN (512->2048->512)                    2,099,712 params\n\n  the FFN is 2.00x the attention block" },

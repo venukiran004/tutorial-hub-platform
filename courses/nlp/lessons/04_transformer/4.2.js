@@ -23,6 +23,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why position must be added at all", id: "why" },
 
+    {"kind": "flow", "title": "Attention cannot tell “the cat sat” from “sat cat the”", "caption": "4.3 shows attention is **permutation-equivariant** — shuffle the input rows and the output rows shuffle identically — so **the mechanism genuinely cannot distinguish one word order from another.** Since order carries most of the meaning in language, **position has to enter somewhere, and the transformer adds it to the input embedding** rather than building it into the mechanism. Which is a design choice with consequences: **it is the only place order lives, so every variant in 4.9 is a variant of this one addition.**", "cols": 3, "nodes": [{"id": "p", "label": "Attention is permutation-equivariant", "sub": "shuffle in, shuffle out", "tone": "accent"}, {"id": "c", "label": "So 'the cat sat' = 'sat cat the'", "sub": "to the mechanism", "tone": "crit"}, {"id": "o", "label": "But order carries the meaning", "sub": "in language", "tone": "crit"}, {"id": "a", "label": "So: add it to the input embedding", "sub": "a design choice", "tone": "good"}, {"id": "v", "label": "Which is why 4.9 has so many variants", "sub": "all of one addition", "tone": "violet"}], "edges": [["p", "c"], ["c", "o"], ["o", "a"], ["a", "v"]], "t": "diagram", "id": "dg-4_2-01-0"},
+
+
+
     { t: "math", tex: "\\text{Input} = \\text{TokenEmbedding}(x) + \\text{PositionalEncoding}(pos)" },
 
     { t: "p", text: "Lesson 4.3 shows that attention is permutation-equivariant — shuffle the input rows and the output rows shuffle identically. The mechanism genuinely cannot distinguish *the cat sat* from *sat cat the*. Since order carries most of the meaning in language, positional information has to enter somewhere, and the transformer puts it in the input by **addition**." },
@@ -31,6 +35,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Concatenating a position vector would be the obvious choice and it is not what happens: position is summed into the same `d_model` dimensions the token content occupies. That seems destructive — the two signals now share every coordinate — but it works because `d_model` is large and the network can learn projections that read them apart. The practical payoff is that no dimensions are spent on position, so the whole width stays available for content, and the block's shapes are unchanged." }] },
 
     { t: "h2", n: "02", text: "The construction", id: "construction" },
+
+    {"kind": "trace", "title": "Each pair of dimensions is one frequency, as sine and cosine", "caption": "**At position 0 every sine is 0 and every cosine is 1, which is why the first row alternates `[0, 1, 0, 1, ...]`** — the position-0 encoding is not a zero vector. The structure is the point: **dimensions `(2i, 2i+1)` hold the sine and cosine of the *same* frequency, and that pairing is what makes the rotation property in §05 possible.** Every value lies in [−1, 1] by construction, so the encoding cannot blow up at any position.", "left": "position", "codeW": 140, "vars": ["first 8 dimensions", "note"], "steps": [{"code": "0", "state": ["0.0 1.0 0.0 1.0 0.0 1.0 0.0 1.0", "sin=0, cos=1 everywhere"], "tone": "accent"}, {"code": "1", "state": ["0.8415 0.5403 0.8219 0.5697 ...", "each pair, one frequency"], "changed": [0, 1], "tone": "good"}, {"code": "shape and range", "state": ["(200, 512), all in [-1, 1]", "cannot blow up"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-4_2-02-1"},
+
+
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n42b.py — sinusoidal positional encoding", code:
 "def sinusoidal(max_len, d_model):\n    pe = torch.zeros(max_len, d_model)\n    position = torch.arange(0, max_len).unsqueeze(1).float()\n    div_term = torch.exp(torch.arange(0, d_model, 2).float() *\n                         -(math.log(10000.0) / d_model))\n    pe[:, 0::2] = torch.sin(position * div_term)   # even dimensions\n    pe[:, 1::2] = torch.cos(position * div_term)   # odd dimensions\n    return pe",
@@ -45,6 +53,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "A geometric range of wavelengths", id: "wavelengths" },
 
+    {"kind": "trace", "title": "Wavelengths from 6.28 positions to 60,611", "caption": "The frequencies are a **geometric** range, so the wavelengths span four orders of magnitude: **dimension pair 0 completes a cycle every 6.28 positions, and pair 255 every 60,611.** Which is what gives the encoding its resolution at both ends — **the fast dimensions distinguish adjacent positions, and the slow ones distinguish regions of the sequence** — and why the longest wavelength being far longer than any sequence you train on matters: that dimension is effectively a linear ramp.", "left": "dim pair", "codeW": 130, "vars": ["frequency", "wavelength in positions"], "steps": [{"code": "0", "state": ["1.000e+00", "6.28"], "tone": "good", "note": "adjacent positions"}, {"code": "32", "state": ["3.162e-01", "19.87"], "changed": [0, 1], "tone": "good"}, {"code": "64", "state": ["1.000e-01", "62.83"], "changed": [0, 1], "tone": "good"}, {"code": "128", "state": ["1.000e-02", "628.32"], "changed": [0, 1], "tone": "accent"}, {"code": "255", "state": ["1.037e-04", "60,611.48"], "changed": [0, 1], "tone": "violet", "note": "a linear ramp in practice"}], "t": "diagram", "id": "dg-4_2-03-2"},
+
+
+
     { t: "out", text:
 "dim pair    frequency      wavelength (positions)\n0           1.000e+00               6.28\n1           9.647e-01               6.51\n32          3.162e-01              19.87\n64          1.000e-01              62.83\n128         1.000e-02             628.32\n255         1.037e-04           60611.48" },
 
@@ -53,12 +65,20 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "Three properties worth verifying", id: "properties" },
 
+    {"kind": "trace", "title": "Unique, equal-norm, and smoothly decaying — all three checked", "caption": "**Max off-diagonal cosine over 200 positions is 0.973055, so no two positions collide.** Every position vector has norm exactly **16.0000** — `sqrt(d_model/2)` — **so no position is intrinsically louder than another**, which matters because the encoding is *added* to the embedding. And the dot product decays smoothly with separation: **0.9731 at k=1 down to 0.3374 at k=199. That last property is the useful one: attention scores can pick up distance directly from the encoding.**", "left": "property", "codeW": 170, "vars": ["measurement", "why it matters"], "steps": [{"code": "uniqueness", "state": ["max off-diag cos 0.973055", "no two positions collide"], "tone": "good"}, {"code": "norm", "state": ["16.0000 at every position", "no position is louder"], "changed": [0, 1], "tone": "good"}, {"code": "cos(PE[0], PE[k]), k=1", "state": ["0.9731", "adjacent = similar"], "changed": [0, 1], "tone": "good"}, {"code": "k=10 / k=50", "state": ["0.6789 / 0.5121", "smooth decay"], "changed": [0, 1], "tone": "good"}, {"code": "k=199", "state": ["0.3374", "distance is readable from it"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-4_2-04-3"},
+
+
+
     { t: "out", text:
 "uniqueness\n  max off-diagonal cosine over 200 positions: 0.973055\n  no two positions collide\n\nnorm\n  |PE[10]| = 16.0000        |PE[4999]| = 16.0000\n  constant at sqrt(d_model / 2) for every position\n\nsimilarity decays with distance — cos(PE[0], PE[k])\n  k=1     0.9731\n  k=2     0.9052\n  k=5     0.7406\n  k=10    0.6789\n  k=20    0.6155\n  k=50    0.5121\n  k=100   0.4373\n  k=199   0.3374" },
 
     { t: "p", text: "Every position gets a distinct vector, all of them have the same magnitude — so no position is intrinsically louder than another — and the dot product between two position vectors decays smoothly with their separation. That last property is the useful one: it means attention scores can pick up distance information directly from the positional component." },
 
     { t: "h2", n: "05", text: "The rotation property", id: "rotation" },
+
+    {"kind": "trace", "title": "Three starting positions, one offset, and the rotation predicts all three exactly", "caption": "The paper's stated motivation is that **`PE[pos+k]` is a linear function of `PE[pos]` for any fixed offset `k`** — and within one frequency pair that linear function is **a plane rotation by `ω·k`.** Checked at three different starting positions with `k = 7`, the prediction matches to four decimal places every time. **Which is why the sine/cosine pairing of §02 is load-bearing: a rotation needs two components, and the encoding supplies exactly two per frequency.**", "left": "pos -> pos+7", "codeW": 150, "vars": ["actual", "the rotation predicts"], "steps": [{"code": "0 -> 7", "state": ["(0.0006, 1.0000)", "(0.0006, 1.0000)"], "tone": "good"}, {"code": "10 -> 17", "state": ["(0.4325, -0.9016)", "(0.4325, -0.9016)"], "changed": [0, 1], "tone": "good"}, {"code": "50 -> 57", "state": ["(0.7850, 0.6195)", "(0.7850, 0.6195)"], "changed": [0, 1], "tone": "good"}, {"code": "so the offset", "state": ["is one fixed matrix", "independent of pos"], "tone": "violet"}], "t": "diagram", "id": "dg-4_2-05-4"},
+
+
 
     { t: "p", text: "The paper's stated motivation is that `PE[pos+k]` is a *linear function* of `PE[pos]` for any fixed offset `k`. Within one frequency pair that linear function is a plane rotation by `ω·k`. Checking it at three different starting positions with `k = 7`:" },
 
@@ -69,6 +89,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "One matrix — the rotation by `ω·k` — maps position `pos` to `pos+k` no matter what `pos` is. So a head that wants to implement \"attend seven tokens back\" needs to learn **one** transformation, not a separate rule for every absolute position. That is a genuine inductive bias toward relative position, built into the input rather than the architecture. It is also the seed of rotary positional embeddings (RoPE), which lesson 4.9 covers: RoPE applies exactly this rotation to the queries and keys inside every attention layer instead of adding a vector once at the input." }] },
 
     { t: "h2", n: "06", text: "The scaling factor", id: "scaling" },
+
+    {"kind": "trace", "title": "The stated justification is backwards: embeddings were already larger", "caption": "The reference multiplies the token embedding by `sqrt(d_model)` **because otherwise the positional encoding would dominate.** Measured with `nn.Embedding`'s default `N(0,1)` init: **token RMS 0.9963 against PE RMS 0.7071 — the embeddings are already 1.41× larger.** After multiplying by `sqrt(512) = 22.6274` the ratio is **31.88**, so the scaling does not prevent domination, **it makes the positional signal 32 times quieter than the token signal.** Which may still be the right thing — **and it is not the stated reason.**", "left": "quantity", "codeW": 170, "vars": ["RMS", "token : PE ratio"], "steps": [{"code": "token embedding, N(0,1)", "state": ["0.9963", "-"], "tone": "accent"}, {"code": "positional encoding", "state": ["0.7071", "1.4089"], "changed": [0, 1], "tone": "warn", "note": "embeddings already larger"}, {"code": "after x sqrt(512)", "state": ["22.5426", "31.8800"], "changed": [0, 1], "tone": "crit", "note": "position is now 32x quieter"}], "t": "diagram", "id": "dg-4_2-06-5"},
+
+
 
     { t: "p", text: "The reference multiplies the token embedding by `sqrt(d_model)` before adding position, and justifies it by saying that otherwise the positional encoding would dominate the embeddings. That is measurable." },
 

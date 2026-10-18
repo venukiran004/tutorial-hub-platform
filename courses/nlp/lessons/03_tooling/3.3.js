@@ -23,6 +23,9 @@ EC.receiveLesson({
     {"kind": "layers", "title": "Four layers, and the second one is where you work when anything goes wrong", "caption": "**`pipeline` is the fastest way to a result and the hardest to debug** — it tokenizes, runs and post-processes in one call, so a surprising output has three possible causes you cannot see. **`AutoTokenizer` + `AutoModel` is where you own the tensors**, which is why §02 and §03 work at that level. `Trainer` is the fine-tuning loop already written, and `datasets` is memory-mapped with a caching `.map`, **so it handles corpora far larger than RAM.**", "items": [{"label": "pipeline(...)", "sub": "tokenize, run, post-process in one call", "tone": "good", "side": "fastest"}, {"label": "AutoTokenizer + AutoModel", "sub": "you own the tensors", "tone": "violet", "side": "debuggable"}, {"label": "Trainer", "sub": "eval, checkpointing, mixed precision, logging", "tone": "good", "side": "training"}, {"label": "datasets", "sub": "memory-mapped, with a caching .map", "tone": "good", "side": "> RAM"}], "t": "diagram", "id": "dg-3_3-01-0"},
 
 
+
+
+
     { t: "dl", items: [
       ["`pipeline`", "Tokenize, run, post-process, in one call. Fastest way to a result and the hardest to debug."],
       ["`AutoTokenizer` + `AutoModel`", "You own the tensors. This is where you work when anything goes wrong or you need control."],
@@ -38,6 +41,9 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Three keys, and two of them are about batching rather than text", "caption": "`input_ids` is the text. **The other two exist because a model takes rectangular tensors: `token_type_ids` marks which of two segments each token belongs to — all zeros here because there is one sentence — and `attention_mask` marks which positions are real.** On a single unpadded input the mask is all ones and looks redundant, which is exactly why it gets dropped. **§03 measures what that costs.**", "left": "key", "codeW": 170, "vars": ["shape", "value", "what it is for"], "steps": [{"code": "input_ids", "state": ["(1, 4)", "[[101, 7592, 2088, 102]]", "the text"], "tone": "good"}, {"code": "token_type_ids", "state": ["(1, 4)", "[[0, 0, 0, 0]]", "which segment"], "changed": [1, 2], "tone": "accent"}, {"code": "attention_mask", "state": ["(1, 4)", "[[1, 1, 1, 1]]", "which positions are real"], "changed": [1, 2], "tone": "violet", "note": "looks redundant here"}], "t": "diagram", "id": "dg-3_3-02-1"},
 
 
+
+
+
     { t: "code", lang: "python", title: "scratchpad/nlp/n33.py — inspecting the encoding", code:
 "from transformers import AutoTokenizer\n\ntok = AutoTokenizer.from_pretrained(\"bert-base-uncased\")\nenc = tok(\"Hello world\", return_tensors=\"pt\")\n\nprint(list(enc.keys()))\nprint(tok.convert_ids_to_tokens(enc[\"input_ids\"][0]))",
       caption: "Always print `convert_ids_to_tokens` when something is wrong. Most tokenisation bugs are visible immediately and invisible otherwise." },
@@ -50,6 +56,9 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "The attention mask is not optional", id: "mask" },
 
     {"kind": "trace", "title": "Cosine 1.000000 with the mask, 0.472976 without", "caption": "The same short sentence, padded to 12 and embedded two ways. **With the mask the result is identical to the unpadded version — cosine 1.000000, max absolute difference 1.9×10⁻⁶, which is float noise. Without it, cosine 0.472976 and a max difference of 6.633.** So dropping the mask does not degrade the representation slightly: **it produces a different vector, because attention distributed weight over nine padding positions.** And nothing warns you — the code runs and the shapes are right.", "left": "configuration", "codeW": 210, "vars": ["cosine vs unpadded", "max abs diff"], "steps": [{"code": "padded, WITH attention_mask", "state": ["1.000000", "1.907e-06"], "tone": "good", "note": "float noise"}, {"code": "padded, WITHOUT the mask", "state": ["0.472976", "6.633e+00"], "changed": [0, 1], "tone": "crit"}, {"code": "what happened", "state": ["attention spent weight on 9 zeros", "no error, correct shapes"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-3_3-03-2"},
+
+
+
 
 
     { t: "p", text: "Batching requires equal lengths, so shorter sequences are padded. The mask tells the model which positions are real. It is easy to drop, and nothing warns you." },
@@ -72,6 +81,9 @@ EC.receiveLesson({
     {"kind": "trace", "title": "The task head is 1,538 parameters against 109.5 million", "caption": "**A 768×2 matrix plus two biases — 1,538 parameters — bolted onto a 109.5M encoder, which is why the two models report the same rounded parameter count.** Practically all the knowledge is in the base model, **so fine-tuning is mostly about adapting that rather than training the head**, and it is also why 3.3's `learning_rate=2e-5` matters: you are nudging 109.5M pretrained weights, not fitting 1,538 new ones.", "left": "class", "codeW": 230, "vars": ["outputs", "shape", "params"], "steps": [{"code": "AutoModel", "state": ["last_hidden_state", "(1, 4, 768)", "109.5M"], "tone": "good", "note": "one vector per token"}, {"code": "AutoModel (pooled)", "state": ["pooler_output", "(1, 768)", "-"], "changed": [0, 1], "tone": "good", "note": "[CLS] through a tanh"}, {"code": "AutoModelForSequenceClassification", "state": ["logits", "(1, 2)", "109.5M + 1,538"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-3_3-04-3"},
 
 
+
+
+
     { t: "out", text:
 "AutoModel outputs: ['last_hidden_state', 'pooler_output']\n  last_hidden_state (1, 4, 768)      one vector per token\n  pooler_output     (1, 768)         [CLS] through a tanh layer\n\nAutoModelForSequenceClassification outputs: ['logits']\n  logits (1, 2)                      two numbers\n\nparams: base 109.5M   with head 109.5M   (the head adds 1,538)" },
 
@@ -85,6 +97,9 @@ EC.receiveLesson({
     {"kind": "trace", "title": "One sentence, three token counts, three conventions", "caption": "**12 ids, 11 and 9 for the same seven words** — so a token budget computed with one tokenizer does not transfer. The conventions differ in the opposite direction too: **BERT marks continuations with `##`; RoBERTa and GPT-2 mark word-*initial* tokens with `Ġ`, a visible stand-in for a preceding space.** And **GPT-2 adds no special tokens at all, because a causal LM has no use for `[CLS]` or `[SEP]`** — which means a pipeline that slices off the first and last ids silently eats real words.", "left": "tokenizer", "codeW": 190, "vars": ["ids", "marks", "special tokens"], "steps": [{"code": "bert-base-uncased", "state": ["12", "## = continuation", "[CLS] ... [SEP]"], "tone": "good"}, {"code": "roberta-base", "state": ["11", "Ġ = word-initial", "<s> ... </s>"], "changed": [0, 1, 2], "tone": "good"}, {"code": "gpt2", "state": ["9", "Ġ = word-initial", "NONE"], "changed": [0, 2], "tone": "warn", "note": "slicing [1:-1] eats words"}], "t": "diagram", "id": "dg-3_3-05-4"},
 
 
+
+
+
     { t: "out", text:
 "\"The unhappiest tokenization I have seen\"\n\nbert-base-uncased  12 ids  ['[CLS]','the','un','##ha','##pp','##iest','token',\n                             '##ization','i','have','seen','[SEP]']\nroberta-base       11 ids  ['<s>','The','Ġunh','app','iest','Ġtoken',\n                             'ization','ĠI','Ġhave','Ġseen','</s>']\ngpt2                9 ids  ['The','Ġunh','app','iest','Ġtoken','ization',\n                             'ĠI','Ġhave','Ġseen']" },
 
@@ -96,6 +111,9 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Zero-shot classification", id: "zeroshot" },
 
     {"kind": "flow", "title": "Classification reformulated as entailment, which is why it needs no labels", "caption": "For each candidate label it asks an NLI-trained model **whether the input entails the hypothesis *This example is about {label}***, then normalises the entailment scores — `travel 0.998`, `cooking 0.994`, both correct with no labelled examples. Which makes it **the right first move on a new classification problem: it gives you a working baseline in minutes and tells you whether the label set is even separable before anyone spends a week annotating.**", "cols": 3, "nodes": [{"id": "l", "label": "Each label becomes a hypothesis", "sub": "'This example is about {label}'", "tone": "violet"}, {"id": "n", "label": "An NLI model scores entailment", "sub": "trained on a different task", "tone": "good"}, {"id": "s", "label": "Normalise across labels", "sub": "travel 0.998, cooking 0.994", "tone": "good"}, {"id": "z", "label": "No labelled examples at all", "sub": "a baseline in minutes", "tone": "good"}, {"id": "t", "label": "And it tells you if the labels separate", "sub": "before a week of annotation", "tone": "teal"}], "edges": [["l", "n"], ["n", "s"], ["s", "z"], ["z", "t"]], "t": "diagram", "id": "dg-3_3-06-5"},
+
+
+
 
 
     { t: "p", text: "Zero-shot classification needs no training data at all. It reformulates classification as natural language inference: for each candidate label it asks a model trained on NLI whether the input entails the hypothesis *This example is about {label}*, then normalises the entailment scores." },
@@ -114,6 +132,9 @@ EC.receiveLesson({
     {"kind": "trace", "title": "A factual probe at 0.997, and the same mechanism reading back its training data", "caption": "`Paris is the [MASK] of France` gives `capital` at **0.997** — the probe working as intended. Then the same two sentences differing by one word: **`The man worked as a [MASK]` gives `carpenter 0.097, waiter 0.052`, and `The woman worked as a [MASK]` gives `nurse 0.220, waitress 0.160, maid 0.115, prostitute 0.038`.** Note the **confidence** gap as well as the content: the female-subject distribution is sharper, so **the model is more certain about the stereotype than about the occupation.**", "left": "prompt", "codeW": 200, "vars": ["top predictions", "top probability"], "steps": [{"code": "'Paris is the [MASK] of France.'", "state": ["capital, heart, center", "0.997"], "tone": "good"}, {"code": "'The man worked as a [MASK].'", "state": ["carpenter, waiter, barber", "0.097"], "changed": [0, 1], "tone": "warn"}, {"code": "'The woman worked as a [MASK].'", "state": ["nurse, waitress, maid", "0.220"], "changed": [0, 1], "tone": "crit", "note": "and more confident"}], "t": "diagram", "id": "dg-3_3-07-6"},
 
 
+
+
+
     { t: "out", text:
 "Paris is the [MASK] of France.   capital 0.997, heart 0.001, center 0.000, centre 0.000\n\nThe man worked as a [MASK].      carpenter 0.097, waiter 0.052, barber 0.050, mechanic 0.038\nThe woman worked as a [MASK].    nurse 0.220, waitress 0.160, maid 0.115, prostitute 0.038" },
 
@@ -123,6 +144,9 @@ EC.receiveLesson({
     { t: "h2", n: "08", text: "Fine-tuning with Trainer", id: "trainer" },
 
     {"kind": "flow", "title": "Four arguments, and three of them discard data quietly", "caption": "**`learning_rate=2e-5` is two orders of magnitude below training from scratch, because higher rates destroy the pretrained weights — this is the parameter to suspect first when a fine-tune fails.** The other three are about what gets thrown away: **`truncation=True` silently discards anything past the limit, and on IMDB at 256 tokens that is a substantial fraction of each review — measure how much before accepting the number.** `padding=\"max_length\"` wastes compute that `DataCollatorWithPadding` recovers, and **`.map` caches on a hash of the function**, so re-running is free until you change it.", "cols": 3, "nodes": [{"id": "l", "label": "learning_rate=2e-5", "sub": "100x below from-scratch", "tone": "violet"}, {"id": "d", "label": "Higher destroys the pretrained weights", "sub": "suspect this first", "tone": "crit"}, {"id": "t", "label": "truncation=True discards silently", "sub": "measure how much, on your data", "tone": "crit"}, {"id": "p", "label": "padding='max_length' wastes compute", "sub": "DataCollatorWithPadding is faster", "tone": "warn"}, {"id": "m", "label": ".map caches on a hash of the function", "sub": "free to re-run, recomputes on change", "tone": "good"}], "edges": [["l", "d"], ["d", "t"], ["t", "p"], ["p", "m"]], "t": "diagram", "id": "dg-3_3-08-7"},
+
+
+
 
 
     { t: "code", lang: "python", title: "The standard fine-tuning loop", code:
