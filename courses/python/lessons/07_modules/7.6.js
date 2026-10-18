@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "bash", title: "three commands, and what they leave behind", code: `
 python -m venv .venv
 
@@ -75,6 +76,7 @@ source .venv/bin/activate && pip install -r requirements.txt
     { t: "h2", n: "02", text: "Direct versus transitive", id: "graph" },
 
     {"kind": "tree", "title": "Direct versus transitive dependencies", "caption": "You declare the direct ones; the resolver pulls in their dependencies. A lock file records every resolved version so two installs on two machines are identical.", "root": {"label": "your project", "tone": "accent", "children": [{"label": "requests  (direct)", "tone": "good", "children": [{"label": "urllib3"}, {"label": "certifi"}, {"label": "charset-normalizer"}]}, {"label": "pandas  (direct)", "tone": "good", "children": [{"label": "numpy"}, {"label": "python-dateutil", "children": [{"label": "six"}]}]}]}, "t": "diagram", "id": "dg-7_6-02-2"},
+
 
 
 
@@ -171,6 +173,7 @@ source .venv/bin/activate && pip install -r requirements.txt
     { t: "h2", n: "03", text: "Version specifiers, precisely", id: "specifiers" },
 
     {"kind": "trace", "title": "Seven specifiers, and the bare lower bound is the one to stop writing", "caption": "**`>=2.31` allows anything newer *including 3.0*, so it is rarely correct on its own — the next major release will break you and the install will succeed.** The right default for a direct dependency is **`>=2.31,<3`**, or `~=2.31` which means the same thing more compactly. And the first row is a rule rather than a preference: **`==` belongs in a lockfile and never in a library's dependencies**, because an exact pin in a library makes it uninstallable alongside anything else that pinned differently.", "left": "specifier", "codeW": 140, "vars": ["allows", "use for"], "steps": [{"code": "==2.31.0", "state": ["exactly that", "lockfiles - NEVER a library"], "tone": "crit"}, {"code": ">=2.31", "state": ["anything newer, incl. 3.0", "rarely correct alone"], "changed": [0, 1], "tone": "crit"}, {"code": ">=2.31,<3", "state": ["the rest of the 2.x line", "the right default"], "changed": [0, 1], "tone": "violet"}, {"code": "~=2.31", "state": ["the same, compactly", "equivalent"], "changed": [0, 1], "tone": "good"}, {"code": "~=2.31.0", "state": ["patch releases only", "a dependency you distrust"], "changed": [0, 1], "tone": "good"}, {"code": "!=2.31.2", "state": ["everything but that release", "one known-broken version"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-7_6-03-1"},
+
 
 
 

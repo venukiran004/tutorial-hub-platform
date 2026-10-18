@@ -45,6 +45,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Every recursive function has two parts, and writing them in the wrong order is why recursion feels hard. **The base case is the one that stops.** Write it first, and the recursive case usually falls out." },
 
     { t: "code", lang: "python", title: "the shape", code: `
@@ -102,6 +103,7 @@ print(total_size(tree))
     { t: "h2", n: "02", text: "What the stack costs", id: "the-stack" },
 
     {"kind": "layers", "title": "Each recursive call adds a frame", "caption": "fact(4) pushes four frames before the base case returns; each frame holds its own n and its return address. Python caps the stack at about 1,000 frames, which is why deep recursion raises RecursionError and loops do not.", "items": [{"label": "fact(1)  → returns 1", "sub": "base case — the top of the stack", "tone": "good"}, {"label": "fact(2)  waiting for fact(1)", "tone": "accent"}, {"label": "fact(3)  waiting for fact(2)", "tone": "accent"}, {"label": "fact(4)  waiting for fact(3)", "sub": "the first call — the bottom", "tone": "warn"}], "t": "diagram", "id": "dg-3_8-02-0"},
+
 
 
 
@@ -314,6 +316,7 @@ def find_large(root: dict, threshold: int) -> Iterator[str]:
 
 
 
+
     { t: "code", lang: "python", title: "the classic disaster, and the one-line fix", code: `
 import functools
 import time
@@ -355,6 +358,7 @@ cached:   0.000023s`,
     { t: "h2", n: "05", text: "Choosing", id: "choosing" },
 
     {"kind": "compare", "title": "The question is whether the data is recursive, not whether the problem is", "caption": "**The first row decides most cases: trees, nested JSON, filesystems and expression grammars are recursive *data*, and a recursive traversal of recursive data is the clearest code there is.** The rest is about risk. **Depth that is bounded and known small — a JSON document, a parse tree — is safe; depth that is unbounded or user-controlled is a stack overflow waiting for the right input.** And the last row is the asymmetry: **iteration handles arbitrarily large input, which recursion cannot, whatever its depth limit is set to.**", "columns": [{"title": "Recursion", "tone": "violet", "items": ["the DATA is recursive — trees, nested JSON, filesystems", "depth is bounded and known small", "the recursive form is dramatically clearer", "the traversal is naturally post-order", "branches overlap, so memoisation applies"]}, {"title": "Iteration", "tone": "good", "items": ["the problem is a linear sequence", "depth is unbounded or user-controlled", "both forms are similarly clear", "pre-order, which converts mechanically", "input can be arbitrarily large"]}], "t": "diagram", "id": "dg-3_8-05-3"},
+
 
 
 

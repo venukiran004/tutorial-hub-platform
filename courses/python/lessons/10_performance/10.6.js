@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "First: is it Python?", id: "first" },
 
-    {"kind": "steps", "title": "Is it Python, and what then", "caption": "Profile first: most slow Python programs are slow because of an algorithm or I/O, not the interpreter. Only when the hot loop is genuinely numeric Python do the last three options apply.", "items": [{"label": "Profile", "desc": "is the time in your loop, in a library, or waiting on I/O?", "tone": "accent"}, {"label": "Fix the algorithm or the query", "desc": "the usual 10–1000× win", "tone": "good"}, {"label": "Vectorise", "desc": "NumPy, pandas, polars — the loop moves into C", "tone": "good"}, {"label": "Native code", "desc": "Cython, Rust via PyO3, a C extension", "tone": "warn"}, {"label": "Scale out", "desc": "more processes or machines — after the above, not instead", "tone": "crit"}], "t": "diagram", "id": "dg-10_6-01-0"},
+    {"kind": "steps", "title": "Is it Python, and what then", "caption": "Profile first: most slow Python programs are slow because of an algorithm or I/O, not the interpreter. Only when the hot loop is genuinely numeric Python do the last three options apply.", "items": [{"label": "Profile", "desc": "is the time in your loop, in a library, or waiting on I/O?", "tone": "accent"}, {"label": "Fix the algorithm or the query", "desc": "the usual 10–1000× win", "tone": "good"}, {"label": "Vectorise", "desc": "NumPy, pandas, polars — the loop moves into C", "tone": "good"}, {"label": "Native code", "desc": "Cython, Rust via PyO3, a C extension", "tone": "warn"}, {"label": "Scale out", "desc": "more processes or machines — after the above, not instead", "tone": "crit"}], "t": "diagram", "id": "dg-10_6-01-2"},
+
 
 
 
@@ -119,6 +120,8 @@ print(best_case(12.0, 0.85, 50))       # 2.0 s — now it is worth doing`,
 
     { t: "h2", n: "02", text: "Vectorisation", id: "vectorise" },
 
+    {"kind": "trace", "title": "NumPy indexed element by element was slower than plain Python", "caption": "**4.10 s for the Python loop, 9.80 s for the same loop indexing a NumPy array, and 0.031 s vectorised — so the middle row is 2.4× *slower* than doing nothing at all.** The reason is the whole lesson: **indexing a NumPy array from Python pays a boxing cost per element on top of the interpreter overhead the loop already had**, so you have added work without removing any. **NumPy is not a faster list — it is a way of moving the loop out of Python**, and if the loop stays, it is a pessimisation.", "left": "approach", "codeW": 180, "vars": ["time", "against plain Python"], "steps": [{"code": "a Python loop", "state": ["4.10 s", "baseline"], "tone": "accent"}, {"code": "numpy, indexed per element", "state": ["9.80 s", "2.4x SLOWER"], "changed": [0, 1], "tone": "crit"}, {"code": "numpy, vectorised", "state": ["0.031 s", "130x faster"], "changed": [0, 1], "tone": "violet"}, {"code": "so NumPy is", "state": ["-", "not a faster list"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-10_6-02-0"},
+
     { t: "code", lang: "python", title: "the same work, three ways", code: `
 import numpy as np
 
@@ -162,6 +165,8 @@ result = [x * 2 for x in xs]               # ~18 us
     ]},
 
     { t: "h2", n: "03", text: "Crossing into native code", id: "native" },
+
+    {"kind": "compare", "title": "Four routes into native code, and the row that is not about speed", "caption": "**Memory safety is the row that actually differentiates them: Cython and a hand-written C extension are yours to get right, and Rust's is enforced** — which is a correctness argument rather than a performance one, since all three reach similar speeds. The honest ordering by cost: **Cython is annotated Python with a low learning cost, `ctypes`/`cffi` needs no build chain at all because the library already exists, and both C and Rust are a high learning cost plus `cibuildwheel` or `maturin` for every platform.**", "columns": [{"title": "Low cost to adopt", "tone": "good", "items": ["Cython — annotated Python, a compiler, low learning cost", "ctypes / cffi — no build chain; the .so already exists", "both leave memory safety to you", "Cython needs cibuildwheel for wheels; cffi needs nothing"]}, {"title": "High cost, more to show for it", "tone": "violet", "items": ["C extension — the CPython API directly, high learning cost", "Rust + PyO3 — high learning cost, memory safety ENFORCED", "maturin makes Rust wheels well supported", "and all four reach broadly similar speeds"]}], "t": "diagram", "id": "dg-10_6-03-1"},
 
     { t: "table",
       head: ["", "Cython", "C extension", "Rust + PyO3", "ctypes / cffi"],

@@ -1,0 +1,148 @@
+{
+ "10.1": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Six classes at a million items, from 0.0001 ms to three hours",
+         "caption": "**Complexity notation says nothing about whether a function takes a microsecond or a minute — it describes how the cost changes as the input grows, and deliberately discards the constant factors, the hardware and the language.** Which makes it narrow and makes the last column worth memorising: **at n = 1,000,000 and 100 ns a step, `O(n)` is 100 ms and `O(n²)` is three hours.** That gap is the entire practical content of the topic — **the difference between a request and an outage, from one scan moved inside a loop.**",
+         "left": "class", "codeW": 130,
+         "vars": ["ten times the data means", "at n = 1,000,000"],
+         "steps": [
+          {"code": "O(1)", "state": ["no change", "0.0001 ms"], "tone": "good"},
+          {"code": "O(log n)", "state": ["one extra step per tenfold", "0.002 ms"], "changed": [0, 1], "tone": "good"},
+          {"code": "O(n)", "state": ["ten times the work", "100 ms"], "changed": [0, 1], "tone": "good"},
+          {"code": "O(n log n)", "state": ["a little over ten times", "2 seconds"], "changed": [0, 1], "tone": "warn"},
+          {"code": "O(n^2)", "state": ["ONE HUNDRED times the work", "3 hours"], "changed": [0, 1], "tone": "crit"},
+          {"code": "O(2^n)", "state": ["unusable past about n = 40", "heat death"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "The time ratio when you double n *is* the exponent, and it takes thirty seconds",
+         "caption": "**You do not have to derive complexity from source — run the code at n, then at 2n, and the ratio of the times is the growth class.** The measured run is unambiguous: **×3.95, ×4.00, ×4.03 across three doublings, which is `O(n²)` and not an argument anybody needs to win.** And the table's value is the last column: **a ratio near 2.0 means reduce the constant factor, near 2.2 is usually a sort and normal, and near 4.0 means find the scan inside the loop — which is the fix worth making.**",
+         "left": "ratio on doubling", "codeW": 160,
+         "vars": ["class", "what to do next"],
+         "steps": [
+          {"code": "about 1.0", "state": ["O(1), or fixed overhead", "stop - size is not the problem"], "tone": "good"},
+          {"code": "about 2.0", "state": ["O(n)", "reduce the constant factor"], "changed": [0, 1], "tone": "good"},
+          {"code": "about 2.2", "state": ["O(n log n)", "usually a sort - normal"], "changed": [0, 1], "tone": "good"},
+          {"code": "about 4.0", "state": ["O(n^2)", "find the scan inside the loop"], "changed": [0, 1], "tone": "crit"},
+          {"code": "measured: 3.95, 4.00, 4.03", "state": ["O(n^2), confirmed", "no argument required"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "06",
+   "d": {"kind": "trace",
+         "title": "The growth is not 1.125x per resize — it is 32, then 64, then 96 bytes at a time",
+         "caption": "**A list owns a block of slots; when it fills, CPython allocates a larger block and copies every element across — so that individual append is `O(n)`, and only the average over the whole sequence is constant.** Which is what *amortised* promises and what it does not: **it says nothing about any single call.** The measured steps show the over-allocation growing with the list — **+32 bytes early and +800 at length 761** — so **a latency-sensitive loop can hit a copy of the whole list at an unpredictable moment, and `O(1) amortised` will not warn you.**",
+         "left": "length", "codeW": 130,
+         "vars": ["bytes", "growth step"],
+         "steps": [
+          {"code": "0", "state": ["56", "-"], "tone": "accent"},
+          {"code": "1", "state": ["88", "+32"], "changed": [0, 1], "tone": "good"},
+          {"code": "9", "state": ["184", "+64"], "changed": [0, 1], "tone": "good"},
+          {"code": "41", "state": ["472", "+96"], "changed": [0, 1], "tone": "warn"},
+          {"code": "761", "state": ["6360", "+800"], "changed": [0, 1], "tone": "crit", "note": "and that append copied 761 items"}]}},
+  {"after": "07",
+   "d": {"kind": "trace",
+         "title": "Four situations where growth is the wrong lens, and the last one is not an operation at all",
+         "caption": "**This is the part that separates people who quote big-O from people who use it.** The second row is the one that overturns intuition: **an `O(n)` loop making one HTTP call per item is 100× slower than an `O(n²)` loop doing arithmetic, at every realistic n.** And the fourth is a category error rather than a trade: **complexity counts operations, and waiting on a socket is not an operation — it is 200 ms of nothing**, so the lens to use is round-trip count and concurrency.",
+         "left": "situation", "codeW": 170,
+         "vars": ["why growth misleads", "what decides instead"],
+         "steps": [
+          {"code": "n is small and bounded", "state": ["12 columns is 144 iterations, forever", "readability"], "tone": "good"},
+          {"code": "the constant factor is enormous", "state": ["one HTTP call per item beats arithmetic", "where the wall-clock goes"], "changed": [0, 1], "tone": "crit"},
+          {"code": "memory locality dominates", "state": ["two array passes beat one pointer chase", "measurement on real data"], "changed": [0, 1], "tone": "violet"},
+          {"code": "the work is I/O", "state": ["waiting is not an operation", "round trips and concurrency"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "10.2": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Everyone picked json.loads; 58% was in strptime",
+         "caption": "**`json.loads` is about 16% of the runtime and roughly 58% is in `datetime.strptime` — a function nobody had an opinion about.** The reason is mechanical and worth knowing: **`strptime` builds and matches a regular expression derived from your format string on every single call**, so 200,000 lines means 200,000 regex compilations' worth of work. Which is why the lesson is framed as predict-then-measure: **the prediction was not close, and no amount of reading the source would have produced the real answer.**",
+         "left": "operation", "codeW": 170,
+         "vars": ["share of 3.8s", "the guess"],
+         "steps": [
+          {"code": "datetime.strptime", "state": ["~58%", "nobody named it"], "tone": "violet"},
+          {"code": "json.loads", "state": ["~16%", "everyone named it"], "changed": [0, 1], "tone": "crit"},
+          {"code": "why strptime is slow", "state": ["a regex derived per call", "200,000 times"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "05",
+   "d": {"kind": "flow",
+         "title": "cProfile stops at function boundaries",
+         "caption": "**When the expensive function is one of yours and forty lines long, a function-level profile tells you the name you already suspected and nothing more** — which is where the next resolution down earns its place. `line_profiler` attributes time **per line, inside the function you nominate**, at the cost of running under its decorator. And for the case where the process is already running and you cannot restart it: **`py-spy` samples a live process without stopping it or importing into it**, which is the only option in production.",
+         "cols": 3,
+         "nodes": [
+          {"id": "c", "label": "cProfile: per function", "sub": "names what you suspected", "tone": "good"},
+          {"id": "l", "label": "line_profiler: per LINE", "sub": "inside the function you nominate", "tone": "violet"},
+          {"id": "d", "label": "At the cost of its decorator", "sub": "and a modified run", "tone": "warn"},
+          {"id": "p", "label": "py-spy: a live process", "sub": "no restart, no import", "tone": "violet"},
+          {"id": "o", "label": "Which is the only production option", "sub": "when you cannot reproduce it", "tone": "good"}],
+         "edges": [["c", "l"], ["l", "d"], ["c", "p"], ["p", "o"]]}},
+  {"after": "07",
+   "d": {"kind": "trace",
+         "title": "Making a 30% part infinitely fast buys 1.4x",
+         "caption": "**A part's share of the runtime caps what any optimisation of it can ever return, and the arithmetic is worth doing before you commit a week.** The rows that matter are the bottom three: **at 30% of runtime, making the part *infinitely* fast buys 1.4× — and at 10% it buys 1.1×.** Which is the number to compute before starting, because **a 2× speedup of a 5% part is a 1.03× speedup of the program**, and that is three days of work for something nobody can measure in production.",
+         "left": "that part is", "codeW": 140,
+         "vars": ["2x faster", "10x faster", "infinitely fast"],
+         "steps": [
+          {"code": "90% of runtime", "state": ["1.8x", "5.3x", "10x"], "tone": "good"},
+          {"code": "61%", "state": ["1.4x", "2.2x", "2.6x"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "30%", "state": ["1.2x", "1.4x", "1.4x"], "changed": [0, 1, 2], "tone": "warn"},
+          {"code": "10%", "state": ["1.05x", "1.1x", "1.1x"], "changed": [0, 1, 2], "tone": "crit"},
+          {"code": "5%", "state": ["1.03x", "1.05x", "1.05x"], "changed": [0, 1, 2], "tone": "crit"}]}}
+ ],
+
+ "10.3": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Six tools, and the obvious one is useful for almost nothing",
+         "caption": "**`sys.getsizeof` measures one object shallowly — so a list of a million strings reports 8,856 bytes, the size of the pointer array, and not the strings.** Which is why the measured numbers sit beside each other: **48, 104, 8,856 shallow against 184,320 deep.** The default is `tracemalloc`, because **it attributes allocations to the line that made them**, and the escalation is `memray` **for when `tracemalloc` shows nothing — which means the allocation happened in a C extension it cannot see.**",
+         "left": "tool", "codeW": 160,
+         "vars": ["reports", "use it for"],
+         "steps": [
+          {"code": "sys.getsizeof(obj)", "state": ["one object, SHALLOWLY", "almost nothing"], "tone": "crit"},
+          {"code": "pympler.asizeof(obj)", "state": ["one object, deeply", "sizing a structure you are choosing"], "changed": [0, 1], "tone": "good"},
+          {"code": "tracemalloc", "state": ["Python allocations, by line", "the default"], "changed": [0, 1], "tone": "violet"},
+          {"code": "memray", "state": ["every allocation, incl. C", "when tracemalloc shows nothing"], "changed": [0, 1], "tone": "violet"},
+          {"code": "psutil rss", "state": ["the whole process, as the OS sees it", "what your container limit compares"], "changed": [0, 1], "tone": "good"}]}}
+ ],
+
+ "10.5": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "One row of this table is the whole accidental quadratic",
+         "caption": "**`x in c` is `O(n)` on a list and `O(1)` on a set — and that single difference, inside a loop, is the commonest quadratic in production Python.** The rest of the table is the cost of switching: **a set has no order and no duplicates, so it is not a drop-in replacement for a list you are also iterating.** Which is why the usual fix is **both** — 2.8's “hold the data twice” — and why `deque` is the answer to a different quadratic: **removing from the front of a list is `O(n)` and `O(1)` on a deque.**",
+         "left": "operation", "codeW": 170,
+         "vars": ["list", "set / dict", "deque"],
+         "steps": [
+          {"code": "x in c", "state": ["O(n)", "O(1)", "O(n)"], "tone": "crit", "note": "the quadratic"},
+          {"code": "append to the end", "state": ["O(1)", "O(1)", "O(1)"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "insert or remove at the front", "state": ["O(n)", "-", "O(1)"], "changed": [0, 1, 2], "tone": "violet"},
+          {"code": "index by position", "state": ["O(1)", "-", "O(n)"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "order / duplicates", "state": ["yes / yes", "insertion / NO", "yes / yes"], "changed": [0, 1, 2], "tone": "warn"}]}}
+ ],
+
+ "10.6": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "NumPy indexed element by element was slower than plain Python",
+         "caption": "**4.10 s for the Python loop, 9.80 s for the same loop indexing a NumPy array, and 0.031 s vectorised — so the middle row is 2.4× *slower* than doing nothing at all.** The reason is the whole lesson: **indexing a NumPy array from Python pays a boxing cost per element on top of the interpreter overhead the loop already had**, so you have added work without removing any. **NumPy is not a faster list — it is a way of moving the loop out of Python**, and if the loop stays, it is a pessimisation.",
+         "left": "approach", "codeW": 180,
+         "vars": ["time", "against plain Python"],
+         "steps": [
+          {"code": "a Python loop", "state": ["4.10 s", "baseline"], "tone": "accent"},
+          {"code": "numpy, indexed per element", "state": ["9.80 s", "2.4x SLOWER"], "changed": [0, 1], "tone": "crit"},
+          {"code": "numpy, vectorised", "state": ["0.031 s", "130x faster"], "changed": [0, 1], "tone": "violet"},
+          {"code": "so NumPy is", "state": ["-", "not a faster list"], "changed": [0, 1], "tone": "good"}]}},
+  {"after": "03",
+   "d": {"kind": "compare",
+         "title": "Four routes into native code, and the row that is not about speed",
+         "caption": "**Memory safety is the row that actually differentiates them: Cython and a hand-written C extension are yours to get right, and Rust's is enforced** — which is a correctness argument rather than a performance one, since all three reach similar speeds. The honest ordering by cost: **Cython is annotated Python with a low learning cost, `ctypes`/`cffi` needs no build chain at all because the library already exists, and both C and Rust are a high learning cost plus `cibuildwheel` or `maturin` for every platform.**",
+         "columns": [
+          {"title": "Low cost to adopt", "tone": "good",
+           "items": ["Cython — annotated Python, a compiler, low learning cost",
+                     "ctypes / cffi — no build chain; the .so already exists",
+                     "both leave memory safety to you",
+                     "Cython needs cibuildwheel for wheels; cffi needs nothing"]},
+          {"title": "High cost, more to show for it", "tone": "violet",
+           "items": ["C extension — the CPython API directly, high learning cost",
+                     "Rust + PyO3 — high learning cost, memory safety ENFORCED",
+                     "maturin makes Rust wheels well supported",
+                     "and all four reach broadly similar speeds"]}]}}
+ ]
+}

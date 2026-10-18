@@ -107,6 +107,7 @@ match event:
 
 
 
+
     { t: "tabs", items: [
       { label: "Literal & capture", blocks: [
         { t: "code", lang: "python", title: "the two simplest, and the trap between them", code: `
@@ -243,6 +244,7 @@ match event:
 
 
 
+
     { t: "code", lang: "python", title: "a condition the pattern cannot express", code: `
 match order:
     case {"total": total} if total > 10_000:
@@ -273,6 +275,7 @@ case dict() as d if "items" in d and isinstance(d["items"], list):`},
     { t: "h2", n: "04", text: "Order matters, and there is no fall-through", id: "order" },
 
     {"kind": "trace", "title": "First match wins, nothing falls through, and nothing checks you covered the cases", "caption": "**Like `if`/`elif`, the first matching case wins and nothing falls through — no `break` needed — so specific patterns must come before general ones** or the general one shadows them permanently. And the absence worth planning for: **there is no exhaustiveness check at runtime.** A `match` with no matching case **does nothing and raises nothing**, so a new message type added upstream passes through silently. **A `case _:` that raises is the fix, and mypy can check exhaustiveness over an enum or a union.**", "left": "property", "codeW": 170, "vars": ["behaviour", "consequence"], "steps": [{"code": "first match wins", "state": ["like if/elif", "no break needed"], "tone": "good"}, {"code": "no fall-through", "state": ["one case runs", "specific before general"], "changed": [0, 1], "tone": "good"}, {"code": "a general pattern placed first", "state": ["shadows the rest", "permanently"], "changed": [0, 1], "tone": "crit"}, {"code": "no case matches", "state": ["nothing happens, nothing raises", "silent pass-through"], "changed": [0, 1], "tone": "crit"}, {"code": "case _: raise", "state": ["loud", "and mypy can check an enum"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-5_5-04-1"},
+
 
 
 

@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "toml", title: "pyproject.toml", code: `
 [build-system]
 requires = ["hatchling>=1.24"]
@@ -93,6 +94,7 @@ packages = ["src/acme_billing"]
 
 
 
+
     { t: "table",
       head: ["Table", "Installed when", "Shipped in metadata?", "For"],
       rows: [
@@ -120,6 +122,7 @@ dev = ["pytest~=8.0", "mypy~=1.10", "ruff"]`},
     { t: "h2", n: "03", text: "Build backends", id: "backends" },
 
     {"kind": "trace", "title": "Six backends, and the choice is made by what you are building", "caption": "**hatchling is the default for a new pure-Python project — fast, sensible defaults, good version handling, no legacy surface.** The row that overrides it is the second: **setuptools is the only one with deep extension-building support**, so a C extension decides the question for you and you pay in configuration. The last three are decided by the language you are extending: **maturin for Rust and PyO3, scikit-build-core for a CMake-based C++ extension** — which replaces the setuptools-plus-CMake dance. And for pdm or poetry: **fine, just do not mix them.**", "left": "backend", "codeW": 160, "vars": ["choose when", "note"], "steps": [{"code": "hatchling", "state": ["a new pure-Python project", "the default"], "tone": "violet"}, {"code": "setuptools", "state": ["C extensions, or a migration", "the only deep extension support"], "changed": [0, 1], "tone": "good"}, {"code": "flit-core", "state": ["a single module, no build steps", "minimal and opinionated"], "changed": [0, 1], "tone": "good"}, {"code": "maturin", "state": ["a Rust extension", "the PyO3 standard"], "changed": [0, 1], "tone": "good"}, {"code": "scikit-build-core", "state": ["a CMake C++ extension", "replaces the CMake dance"], "changed": [0, 1], "tone": "good"}, {"code": "pdm-backend / poetry-core", "state": ["you already use that tool", "do not mix them"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-7_7-03-2"},
+
 
 
 
@@ -156,6 +159,7 @@ name = "acme_billing"
     { t: "h2", n: "04", text: "Building", id: "building" },
 
     {"kind": "flow", "title": "From source to a published package", "caption": "The build backend named in pyproject.toml turns the source tree into an sdist and a wheel; twine or uv uploads them; pip resolves and installs the wheel on the other side.", "cols": 4, "nodes": [{"id": "src", "label": "source tree", "sub": "pyproject.toml, src/"}, {"id": "build", "label": "python -m build", "sub": "the backend: hatchling, setuptools", "tone": "accent"}, {"id": "dist", "label": "dist/*.whl, *.tar.gz", "sub": "wheel and sdist", "tone": "good"}, {"id": "pypi", "label": "PyPI", "sub": "twine upload / uv publish", "tone": "warn"}], "edges": [["src", "build"], ["build", "dist"], ["dist", "pypi"]], "t": "diagram", "id": "dg-7_7-04-3"},
+
 
 
 

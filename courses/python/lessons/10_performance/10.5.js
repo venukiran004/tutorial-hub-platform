@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "1 — The N+1 query", id: "n1" },
 
-    {"kind": "timeline", "title": "N+1: one query per row", "caption": "Fetching 4 orders then each order's customer is 5 round trips; a join or a batched IN (...) is 1. At 400 orders the difference is 401 round trips against 1 — the same code, a hundred times slower.", "span": 10, "tick": 2, "lanes": [{"label": "N+1", "tone": "crit", "bars": [[0, 1, "orders"], [2, 3, "cust 1"], [4, 5, "cust 2"], [6, 7, "cust 3"], [8, 9, "cust 4"]]}, {"label": "one join", "tone": "good", "bars": [[0, 1.4, "the join"]]}], "t": "diagram", "id": "dg-10_5-01-0"},
+    {"kind": "timeline", "title": "N+1: one query per row", "caption": "Fetching 4 orders then each order's customer is 5 round trips; a join or a batched IN (...) is 1. At 400 orders the difference is 401 round trips against 1 — the same code, a hundred times slower.", "span": 10, "tick": 2, "lanes": [{"label": "N+1", "tone": "crit", "bars": [[0, 1, "orders"], [2, 3, "cust 1"], [4, 5, "cust 2"], [6, 7, "cust 3"], [8, 9, "cust 4"]]}, {"label": "one join", "tone": "good", "bars": [[0, 1.4, "the join"]]}], "t": "diagram", "id": "dg-10_5-01-1"},
+
 
 
 
@@ -150,6 +151,8 @@ def test_order_list_does_not_n_plus_one(client, query_counter, make_orders):
     ]},
 
     { t: "h2", n: "02", text: "2 — Accidental quadratic", id: "quadratic" },
+
+    {"kind": "trace", "title": "One row of this table is the whole accidental quadratic", "caption": "**`x in c` is `O(n)` on a list and `O(1)` on a set — and that single difference, inside a loop, is the commonest quadratic in production Python.** The rest of the table is the cost of switching: **a set has no order and no duplicates, so it is not a drop-in replacement for a list you are also iterating.** Which is why the usual fix is **both** — 2.8's “hold the data twice” — and why `deque` is the answer to a different quadratic: **removing from the front of a list is `O(n)` and `O(1)` on a deque.**", "left": "operation", "codeW": 170, "vars": ["list", "set / dict", "deque"], "steps": [{"code": "x in c", "state": ["O(n)", "O(1)", "O(n)"], "tone": "crit", "note": "the quadratic"}, {"code": "append to the end", "state": ["O(1)", "O(1)", "O(1)"], "changed": [0, 1, 2], "tone": "good"}, {"code": "insert or remove at the front", "state": ["O(n)", "-", "O(1)"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "index by position", "state": ["O(1)", "-", "O(n)"], "changed": [0, 1, 2], "tone": "good"}, {"code": "order / duplicates", "state": ["yes / yes", "insertion / NO", "yes / yes"], "changed": [0, 1, 2], "tone": "warn"}], "t": "diagram", "id": "dg-10_5-02-0"},
 
     { t: "code", lang: "python", title: "no nested loop in sight", code: `
 # 1. Membership test against a list — O(n) per check, inside a loop

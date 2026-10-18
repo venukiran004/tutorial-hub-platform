@@ -22,6 +22,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", text: "Predict, then measure", id: "predict",
       sub: "Do this honestly. The gap between your guess and the profile is the point of the lesson." },
 
+    {"kind": "trace", "title": "Everyone picked json.loads; 58% was in strptime", "caption": "**`json.loads` is about 16% of the runtime and roughly 58% is in `datetime.strptime` — a function nobody had an opinion about.** The reason is mechanical and worth knowing: **`strptime` builds and matches a regular expression derived from your format string on every single call**, so 200,000 lines means 200,000 regex compilations' worth of work. Which is why the lesson is framed as predict-then-measure: **the prediction was not close, and no amount of reading the source would have produced the real answer.**", "left": "operation", "codeW": 170, "vars": ["share of 3.8s", "the guess"], "steps": [{"code": "datetime.strptime", "state": ["~58%", "nobody named it"], "tone": "violet"}, {"code": "json.loads", "state": ["~16%", "everyone named it"], "changed": [0, 1], "tone": "crit"}, {"code": "why strptime is slow", "state": ["a regex derived per call", "200,000 times"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-10_2-01-0"},
+
     { t: "p", text: "Here is a function that summarises a deploy log. It runs over 200,000 JSON lines and takes 3.8 seconds. Before reading on, decide which single operation you think dominates." },
 
     { t: "code", lang: "python", title: "summarise.py", code: `
@@ -63,7 +65,8 @@ def summarise_deploys(path: Path) -> dict[str, int]:
     /* ================================================================== */
     { t: "h2", n: "02", text: "Four instruments, four questions", id: "instruments" },
 
-    {"kind": "compare", "title": "Four instruments, four questions", "caption": "Pick the tool by the question. Each answers one thing well and the others badly.", "columns": [{"title": "timeit", "tone": "accent", "items": ["how long does this expression take?", "microbenchmarks", "repeat, take the min"]}, {"title": "cProfile", "tone": "good", "items": ["which functions eat the time?", "whole-program", "tottime vs cumtime"]}, {"title": "line_profiler", "tone": "warn", "items": ["which line in this function?", "after cProfile named it"]}, {"title": "py-spy", "tone": "violet", "items": ["what is the live process doing?", "no restart, no code change", "flame graphs"]}], "t": "diagram", "id": "dg-10_2-02-0"},
+    {"kind": "compare", "title": "Four instruments, four questions", "caption": "Pick the tool by the question. Each answers one thing well and the others badly.", "columns": [{"title": "timeit", "tone": "accent", "items": ["how long does this expression take?", "microbenchmarks", "repeat, take the min"]}, {"title": "cProfile", "tone": "good", "items": ["which functions eat the time?", "whole-program", "tottime vs cumtime"]}, {"title": "line_profiler", "tone": "warn", "items": ["which line in this function?", "after cProfile named it"]}, {"title": "py-spy", "tone": "violet", "items": ["what is the live process doing?", "no restart, no code change", "flame graphs"]}], "t": "diagram", "id": "dg-10_2-02-3"},
+
 
 
 
@@ -188,7 +191,8 @@ list comprehension:   2.914000s
     /* ================================================================== */
     { t: "h2", n: "04", text: "cProfile: the two columns that matter", id: "cprofile" },
 
-    {"kind": "compare", "title": "tottime versus cumtime", "caption": "tottime is time inside the function itself; cumtime includes everything it called. Sort by tottime to find the function doing the work; by cumtime to find the caller responsible for it.", "columns": [{"title": "tottime", "tone": "accent", "items": ["own code only", "sort here to find the hot function", "a hot leaf: optimise it"]}, {"title": "cumtime", "tone": "good", "items": ["own time + callees", "sort here to find the hot path", "a hot root: call it less"]}], "t": "diagram", "id": "dg-10_2-04-1"},
+    {"kind": "compare", "title": "tottime versus cumtime", "caption": "tottime is time inside the function itself; cumtime includes everything it called. Sort by tottime to find the function doing the work; by cumtime to find the caller responsible for it.", "columns": [{"title": "tottime", "tone": "accent", "items": ["own code only", "sort here to find the hot function", "a hot leaf: optimise it"]}, {"title": "cumtime", "tone": "good", "items": ["own time + callees", "sort here to find the hot path", "a hot root: call it less"]}], "t": "diagram", "id": "dg-10_2-04-4"},
+
 
 
 
@@ -253,6 +257,8 @@ $ python -c "import pstats; pstats.Stats('deploys.prof').sort_stats('tottime').p
 
     /* ================================================================== */
     { t: "h2", n: "05", text: "Line level, and live processes", id: "line-and-live" },
+
+    {"kind": "flow", "title": "cProfile stops at function boundaries", "caption": "**When the expensive function is one of yours and forty lines long, a function-level profile tells you the name you already suspected and nothing more** — which is where the next resolution down earns its place. `line_profiler` attributes time **per line, inside the function you nominate**, at the cost of running under its decorator. And for the case where the process is already running and you cannot restart it: **`py-spy` samples a live process without stopping it or importing into it**, which is the only option in production.", "cols": 3, "nodes": [{"id": "c", "label": "cProfile: per function", "sub": "names what you suspected", "tone": "good"}, {"id": "l", "label": "line_profiler: per LINE", "sub": "inside the function you nominate", "tone": "violet"}, {"id": "d", "label": "At the cost of its decorator", "sub": "and a modified run", "tone": "warn"}, {"id": "p", "label": "py-spy: a live process", "sub": "no restart, no import", "tone": "violet"}, {"id": "o", "label": "Which is the only production option", "sub": "when you cannot reproduce it", "tone": "good"}], "edges": [["c", "l"], ["l", "d"], ["c", "p"], ["p", "o"]], "t": "diagram", "id": "dg-10_2-05-1"},
 
     { t: "p", text: "`cProfile` stops at function boundaries. When the expensive function is one of yours and forty lines long, you need the next resolution down." },
 
@@ -383,6 +389,8 @@ with profiled("summarise 200k deploys"):
 
     /* ================================================================== */
     { t: "h2", n: "07", text: "The ceiling, computed before you start", id: "ceiling" },
+
+    {"kind": "trace", "title": "Making a 30% part infinitely fast buys 1.4x", "caption": "**A part's share of the runtime caps what any optimisation of it can ever return, and the arithmetic is worth doing before you commit a week.** The rows that matter are the bottom three: **at 30% of runtime, making the part *infinitely* fast buys 1.4× — and at 10% it buys 1.1×.** Which is the number to compute before starting, because **a 2× speedup of a 5% part is a 1.03× speedup of the program**, and that is three days of work for something nobody can measure in production.", "left": "that part is", "codeW": 140, "vars": ["2x faster", "10x faster", "infinitely fast"], "steps": [{"code": "90% of runtime", "state": ["1.8x", "5.3x", "10x"], "tone": "good"}, {"code": "61%", "state": ["1.4x", "2.2x", "2.6x"], "changed": [0, 1, 2], "tone": "good"}, {"code": "30%", "state": ["1.2x", "1.4x", "1.4x"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "10%", "state": ["1.05x", "1.1x", "1.1x"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "5%", "state": ["1.03x", "1.05x", "1.05x"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-10_2-07-2"},
 
     { t: "p", text: "A profile gives you each part's share of the runtime. That share caps what any optimisation of that part can ever return, and the arithmetic is worth doing before you commit a week." },
 

@@ -47,6 +47,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "How a log record travels",
       caption: "A logger decides whether to create a record. Handlers decide where it goes and may filter again. Then the record travels UP the logger hierarchy to every ancestor's handlers — which is why one handler on the root logger is usually all the configuration you need, and why adding a second produces duplicates.",
@@ -153,6 +154,7 @@ def main():
 
 
 
+
     { t: "table",
       head: ["Level", "Means", "Who acts", "Example"],
       rows: [
@@ -218,6 +220,7 @@ log.debug("payload: %s", payload)
 
 
 
+
     { t: "code", lang: "python", title: "a JSON formatter in twenty lines", code: `
 import json
 import logging
@@ -272,6 +275,7 @@ log.info("done", extra={"ctx": {"module": "billing"}})`},
     { t: "h2", n: "04", text: "Correlation IDs", id: "correlation" },
 
     {"kind": "flow", "title": "Passing a request id through every signature is the obvious approach and it is unbearable", "caption": "**In a service handling concurrent requests, interleaved log lines are useless without something tying one request's lines together** — and the obvious fix, threading a `request_id` parameter through every function, touches every signature in the call chain including the ones that do not log. **A filter reading a `ContextVar` does it in one place**: the entry point sets the variable, the filter attaches it to every record, and **no intermediate function knows the id exists.** And `ContextVar` rather than a thread-local **because it follows an `await` across tasks.**", "cols": 3, "nodes": [{"id": "i", "label": "Interleaved lines, no way to group", "sub": "concurrent requests", "tone": "crit"}, {"id": "p", "label": "Pass request_id everywhere", "sub": "every signature in the chain", "tone": "crit"}, {"id": "c", "label": "Set a ContextVar at the entry point", "sub": "once", "tone": "violet"}, {"id": "f", "label": "A filter attaches it to every record", "sub": "in one place", "tone": "good"}, {"id": "a", "label": "And it follows an await", "sub": "which a thread-local does not", "tone": "violet"}], "edges": [["i", "p"], ["p", "c"], ["c", "f"], ["f", "a"]], "t": "diagram", "id": "dg-6_4-04-1"},
+
 
 
 
@@ -340,6 +344,7 @@ class RedactingFilter(logging.Filter):
     { t: "h2", n: "05", text: "Configuring an application", id: "config" },
 
     {"kind": "flow", "title": "One `dictConfig` call, and one default that silences everything", "caption": "**`disable_existing_loggers: False` is essential — the default `True` silences every logger created before the call, which includes all of them if configuration happens after imports.** The deployment answer is shorter than people expect: **in a container, log to stdout and stop thinking about it** — files inside a container die with it, rotation fights the orchestrator, and the platform already collects stdout. And if you must ship from inside the process: **wrap the handler in `QueueHandler` with a `QueueListener`, so the emitting thread never blocks on the network.**", "cols": 3, "nodes": [{"id": "d", "label": "dictConfig: the whole setup in one place", "sub": "formatters, filters, handlers", "tone": "good"}, {"id": "s", "label": "disable_existing_loggers: False", "sub": "the default True silences everything", "tone": "crit"}, {"id": "o", "label": "In a container: log to stdout", "sub": "the platform collects it", "tone": "violet"}, {"id": "f", "label": "Files inside a container die with it", "sub": "and fight the orchestrator", "tone": "crit"}, {"id": "q", "label": "Shipping in-process? QueueHandler", "sub": "so the thread never blocks", "tone": "good"}], "edges": [["d", "s"], ["s", "o"], ["o", "f"], ["f", "q"]], "t": "diagram", "id": "dg-6_4-05-2"},
+
 
 
 
