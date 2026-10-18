@@ -1,0 +1,1446 @@
+{
+ "1.1": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "layers",
+    "title": "Nine terms, and the one number that dates the whole list",
+    "caption": "Every term above the line is a decision about **what a token is and how many of them there are**; every term below it is a decision about **how a token becomes a number**. The perplexity row is the one that shows how far the field moved: **a good trigram model sits near 80 and a modern LLM near 3–10**, which is the same metric reporting an order-of-magnitude different world.",
+    "items": [
+     {
+      "label": "Corpus, token, tokenization",
+      "sub": "what the atomic unit is",
+      "tone": "accent",
+      "side": "the split"
+     },
+     {
+      "label": "Stemming, lemmatisation, stopwords",
+      "sub": "which distinctions you throw away",
+      "tone": "accent",
+      "side": "the squeeze"
+     },
+     {
+      "label": "Bag of Words, TF-IDF",
+      "sub": "counts, then counts weighted by rarity",
+      "tone": "good",
+      "side": "sparse"
+     },
+     {
+      "label": "Word embedding",
+      "sub": "a dense vector where near means similar",
+      "tone": "violet",
+      "side": "dense"
+     },
+     {
+      "label": "n-gram, perplexity",
+      "sub": "the model, and how surprised it is",
+      "tone": "teal",
+      "side": "80 -> 3-10"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "Four tokens, four different fates, from one regex",
+    "caption": "The pattern is a single character class and it draws four different lines. **`didn't` survives whole because the apostrophe is inside the class; `e-mailed` is split in two because the hyphen is not.** Neither outcome was chosen — both fell out of one decision about which characters count as word characters. Which is the lesson: **preprocessing destroys information you did not decide to destroy**, and the only way to know what it did is to print it.",
+    "left": "input",
+    "codeW": 150,
+    "vars": [
+     "what came out",
+     "what was lost"
+    ],
+    "steps": [
+     {
+      "code": "\"didn't\"",
+      "state": [
+       "[\"didn't\"]",
+       "nothing"
+      ],
+      "tone": "good",
+      "note": "apostrophe is inside the class"
+     },
+     {
+      "code": "'e-mailed'",
+      "state": [
+       "['e', 'mailed']",
+       "one word became two"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit",
+      "note": "hyphen is not"
+     },
+     {
+      "code": "\"NYC's\"",
+      "state": [
+       "[\"nyc's\"]",
+       "the capitals"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "'2024'",
+      "state": [
+       "['2024']",
+       "nothing"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "'--' and '!'",
+      "state": [
+       "gone entirely",
+       "both"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Two opposite sentences, one identical output",
+    "caption": "This is the measurement that decides the question, and it is not a matter of degree: **“this movie is not good” and “this movie is good” both reduce to `movie good`.** The stopword list contains *not*, so the one word carrying the sentiment is the one removed — **and the classifier downstream cannot recover it, because the two inputs are now the same string.** The question-answering row loses *who* and *of*, which is most of the question's structure.",
+    "left": "task and input",
+    "codeW": 230,
+    "vars": [
+     "after stopword removal"
+    ],
+    "steps": [
+     {
+      "code": "sentiment: 'this movie is not good'",
+      "state": [
+       "movie good"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "sentiment: 'this movie is good'",
+      "state": [
+       "movie good"
+      ],
+      "tone": "crit",
+      "note": "identical"
+     },
+     {
+      "code": "QA: 'who is the ceo of openai'",
+      "state": [
+       "ceo openai"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit",
+      "note": "the question is gone"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "trace",
+    "title": "Fifteen types to ten, and what survives tells you the rest",
+    "caption": "**A 33% smaller vocabulary from one `.lower()` call** — and that is the whole argument for preprocessing: fewer parameters to learn and more examples per type, which mattered enormously when the model was a linear classifier over sparse counts. **Read what survives, though: `cat` and `cats` are still two types, and `sat` and `sitting` are still two.** Case was the cheap half; morphology is what stemming and lemmatisation are for.",
+    "left": "stage",
+    "codeW": 190,
+    "vars": [
+     "types",
+     "still distinct"
+    ],
+    "steps": [
+     {
+      "code": "raw whitespace split",
+      "state": [
+       "15",
+       "A / a, The / the, CAT / cat"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "after lowercasing",
+      "state": [
+       "10  (33% smaller)",
+       "cat / cats, sat / sitting"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "what is left to collapse",
+      "state": [
+       "-",
+       "morphology, not case"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "07",
+   "d": {
+    "kind": "timeline",
+    "title": "Six eras, and the pipeline got shorter as the model got bigger",
+    "caption": "The bars are eras rather than durations, and the trend is the point: **every stage of hand-built preprocessing in this lesson was invented for the era where the model was a linear classifier over sparse counts.** Rule-based meant regexes and CFG parsers; statistical meant Naive Bayes, SVM, CRF and HMM; then Word2Vec and GloVe, then ELMo, then BERT and T5, then GPT-4 and Claude. **As the model absorbed more of the work, the pipeline in front of it shrank** — so most of what this lesson measures is now a decision you make about the input rather than a step you must run.",
+    "span": 80,
+    "tick": 10,
+    "unit": "years, 1950 to 2030",
+    "lanes": [
+     {
+      "label": "rule-based",
+      "bars": [
+       [
+        0,
+        40,
+        "regexes, parsers",
+        "crit"
+       ]
+      ]
+     },
+     {
+      "label": "statistical ML",
+      "bars": [
+       [
+        40,
+        60,
+        "Naive Bayes, SVM",
+        "warn"
+       ]
+      ]
+     },
+     {
+      "label": "shallow neural",
+      "bars": [
+       [
+        63,
+        67,
+        "W2V",
+        "accent"
+       ]
+      ]
+     },
+     {
+      "label": "deep neural",
+      "bars": [
+       [
+        67,
+        68,
+        "",
+        "accent"
+       ]
+      ]
+     },
+     {
+      "label": "transformers",
+      "bars": [
+       [
+        68,
+        72,
+        "BERT",
+        "good"
+       ]
+      ]
+     },
+     {
+      "label": "LLMs",
+      "bars": [
+       [
+        72,
+        80,
+        "GPT-4",
+        "good"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "1.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "The emoji is where this pipeline and the reference part",
+    "caption": "One input, two outputs, and **`match: False`** — the reference's expected string drops the emoji and this pipeline keeps it. Which is worth stopping on rather than fixing silently: **nothing in the stage list says what to do with an emoji, so the answer depends on whether your punctuation class happens to include it.** For sentiment that is a real decision, because 🎉 carries more signal than most of the words around it.",
+    "left": "stage",
+    "codeW": 170,
+    "vars": [
+     "text"
+    ],
+    "steps": [
+     {
+      "code": "input",
+      "state": [
+       "<p>Check out https://example.com! It's AMAZING... 🎉🎉🎉</p>"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "this pipeline",
+      "state": [
+       "check out its amazing 🎉🎉🎉"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "the reference",
+      "state": [
+       "check out its amazing"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "warn",
+      "note": "match: False"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Eight stages on one string, each one printed",
+    "caption": "Read the `$30.50` column: **it survives every stage until punctuation removal turns it into `3050`** — a price became a four-digit integer, and no stage announced it. The ellipsis is the other one worth noting: **NFKD turned `…` into three full stops, so a Unicode normalisation step silently changed the character count**, which matters the moment you are tracking spans or offsets back into the original text.",
+    "left": "stage",
+    "codeW": 150,
+    "vars": [
+     "the money",
+     "the ellipsis",
+     "length"
+    ],
+    "steps": [
+     {
+      "code": "raw",
+      "state": [
+       "$30.50",
+       "…",
+       "longest"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "+ unicode NFKD",
+      "state": [
+       "$30.50",
+       "...",
+       "+2 chars"
+      ],
+      "changed": [
+       1,
+       2
+      ],
+      "tone": "warn",
+      "note": "offsets now shifted"
+     },
+     {
+      "code": "+ html, urls, emails",
+      "state": [
+       "$30.50",
+       "...",
+       "shrinking"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "+ lowercase",
+      "state": [
+       "$30.50",
+       "...",
+       "same"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "+ punctuation",
+      "state": [
+       "3050",
+       "gone",
+       "shorter"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "crit",
+      "note": "a price became an integer"
+     },
+     {
+      "code": "+ whitespace",
+      "state": [
+       "3050",
+       "gone",
+       "shortest"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Four ordering constraints, and each has a specific victim",
+    "caption": "The stages are **not commutative**, and the reasons are mechanical rather than stylistic. **`https://user@host/path` contains an `@`, so an email pattern run before the URL pattern butchers it.** HTML before URLs, or the URL regex eats `href` attribute values and leaves broken tags. **And lowercasing is a one-way door for every case-sensitive pattern you have not run yet** — acronym detection, proper-noun heuristics and `RT` stripping all stop working.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "h",
+      "label": "HTML before URLs",
+      "sub": "or the regex eats href values",
+      "tone": "good"
+     },
+     {
+      "id": "u",
+      "label": "URLs before emails",
+      "sub": "user@host contains an @",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Case-sensitive patterns before lowercase",
+      "sub": "acronyms, RT, proper nouns",
+      "tone": "good"
+     },
+     {
+      "id": "p",
+      "label": "Punctuation, then whitespace",
+      "sub": "removal leaves gaps to collapse",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "Lowercasing is a one-way door",
+      "sub": "nothing after it can see case",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "h",
+      "u"
+     ],
+     [
+      "u",
+      "c"
+     ],
+     [
+      "c",
+      "p"
+     ],
+     [
+      "c",
+      "o"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Seven words, and the stemmers agree on the ones that do not matter",
+    "caption": "They agree on `running`, and the interesting rows are where they do not. **`studies` becomes `studi` in both — not a word, and that is fine, because a stemmer's output is an index key rather than text.** `generously` splits them: Porter cuts to `gener`, Snowball stops at `generous`. **And the three failures are shared: `better`, `children` and `mice` pass through untouched**, because suffix-chopping cannot do irregular morphology at all.",
+    "left": "word",
+    "codeW": 150,
+    "vars": [
+     "porter",
+     "snowball",
+     "is it a word?"
+    ],
+    "steps": [
+     {
+      "code": "running",
+      "state": [
+       "run",
+       "run",
+       "yes"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "studies",
+      "state": [
+       "studi",
+       "studi",
+       "no"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "warn",
+      "note": "and that is fine"
+     },
+     {
+      "code": "generously",
+      "state": [
+       "gener",
+       "generous",
+       "differ"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "was",
+      "state": [
+       "wa",
+       "was",
+       "differ"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "better, children, mice",
+      "state": [
+       "unchanged",
+       "unchanged",
+       "yes"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "crit",
+      "note": "irregular - no suffix to chop"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "The part-of-speech tag is the whole difference",
+    "caption": "`better` with `pos=\"a\"` becomes **good**; `running` with `pos=\"v\"` becomes **run** — exactly the two words the stemmers could not touch. But read what the lemmatiser needs to get there: **a dictionary lookup, and a part-of-speech tag you have to supply.** Without the tag it defaults to noun and `better` stays `better`, which means **a lemmatiser used without tagging is a slower stemmer that happens to return real words.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "A stemmer: chop the suffix",
+      "sub": "better -> better (no suffix)",
+      "tone": "warn"
+     },
+     {
+      "id": "l",
+      "label": "A lemmatiser: look it up",
+      "sub": "better + pos=a -> good",
+      "tone": "good"
+     },
+     {
+      "id": "t",
+      "label": "But the tag is an input",
+      "sub": "running + pos=v -> run",
+      "tone": "accent"
+     },
+     {
+      "id": "d",
+      "label": "No tag -> it assumes noun",
+      "sub": "and better stays better",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "So untagged = a slow stemmer",
+      "sub": "with real words as output",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "l"
+     ],
+     [
+      "l",
+      "t"
+     ],
+     [
+      "t",
+      "d"
+     ],
+     [
+      "d",
+      "c"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "06",
+   "d": {
+    "kind": "flow",
+    "title": "Format-specific cleaning is where the generic pipeline stops helping",
+    "caption": "The eight generic stages do nothing about a `@mention`, a `#hashtag`, an `RT` prefix, a code block in a markdown document or a quoted reply chain in an email — **and each of those is a decision rather than a cleanup, because the thing you would strip is sometimes the signal.** A hashtag is the topic label on a tweet; a quoted reply is the context of the answer. **Which is why this stage cannot be a library default: it depends on the task, not the format.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "Tweets: @mentions, #hashtags, RT",
+      "sub": "the hashtag may BE the label",
+      "tone": "accent"
+     },
+     {
+      "id": "m",
+      "label": "Markdown: code blocks, link syntax",
+      "sub": "code is not prose",
+      "tone": "accent"
+     },
+     {
+      "id": "e",
+      "label": "Email: signatures, quoted replies",
+      "sub": "the quote may be the context",
+      "tone": "accent"
+     },
+     {
+      "id": "d",
+      "label": "Each is a decision, not a cleanup",
+      "sub": "what you strip may be the signal",
+      "tone": "violet"
+     },
+     {
+      "id": "n",
+      "label": "So it cannot be a library default",
+      "sub": "it depends on the task",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "d"
+     ],
+     [
+      "m",
+      "d"
+     ],
+     [
+      "e",
+      "d"
+     ],
+     [
+      "d",
+      "n"
+     ]
+    ]
+   }
+  }
+ ],
+ "1.3": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Six schemes, and only one of them can never say UNK",
+    "caption": "Read the two ends against each other. **Word-level has a large vocabulary and handles an unseen word badly — it emits `[UNK]` and the information is gone. Byte-level BPE has the largest vocabulary of all and can never emit `[UNK]`**, because every input is a sequence of byte values and every byte value is in the table. Character-level gets the same guarantee with a ~256-symbol vocabulary, and pays for it in sequence length instead.",
+    "left": "scheme",
+    "codeW": 200,
+    "vars": [
+     "vocab",
+     "an unseen word becomes"
+    ],
+    "steps": [
+     {
+      "code": "word-level",
+      "state": [
+       "large",
+       "[UNK] - information gone"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "character-level",
+      "state": [
+       "~256",
+       "its characters - always works"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "BPE / WordPiece",
+      "state": [
+       "30K-50K",
+       "subword pieces"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "Unigram / SentencePiece",
+      "state": [
+       "32K-64K",
+       "subword pieces"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "byte-level BPE",
+      "state": [
+       "50K-100K",
+       "bytes - UNK is impossible"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Three rounds, and the winner changes because the previous merge changed the counts",
+    "caption": "The whole algorithm is in the third column. **Round 1 merges `u+g` at 20. That merge removes `(p,u)` from 17 down to 12, because five of those `pu` pairs were in `pug`, which is now `p·ug`** — so round 2's winner is `(u,n)` at 16 rather than the pair that was second a moment ago. **Each merge rewrites the frequency table it will be scored against next**, which is why BPE has to be run rather than predicted.",
+    "left": "round",
+    "codeW": 130,
+    "vars": [
+     "top pair",
+     "runner-up",
+     "merge"
+    ],
+    "steps": [
+     {
+      "code": "1",
+      "state": [
+       "(u,g)=20",
+       "(p,u)=17",
+       "u + g -> ug"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "2",
+      "state": [
+       "(u,n)=16",
+       "(h,ug)=15",
+       "u + n -> un"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "good",
+      "note": "(p,u) fell 17 -> 12"
+     },
+     {
+      "code": "3",
+      "state": [
+       "(h,ug)=15",
+       "(p,un)=12",
+       "h + ug -> hug"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "result",
+      "state": [
+       "3 merges",
+       "vocab 7 -> 10",
+       "match: True"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "A word never seen, encoded from pieces that were",
+    "caption": "**`bug` never appeared in training and still encodes cleanly as `b` + `ug`, because both pieces are in the vocabulary** — that is the property that makes subword tokenization work at all. And `mug` is the limit stated exactly: **`m` was never in the corpus, so there is no symbol for it**, which is what byte-level BPE fixes by making the base alphabet the 256 byte values instead of whatever characters happened to appear.",
+    "left": "word",
+    "codeW": 130,
+    "vars": [
+     "encoding",
+     "seen in training?"
+    ],
+    "steps": [
+     {
+      "code": "hugs",
+      "state": [
+       "['hug', 's']",
+       "yes, as a word"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "pun",
+      "state": [
+       "['p', 'un']",
+       "yes, as a word"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "bug",
+      "state": [
+       "['b', 'ug']",
+       "NO - both pieces were"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good",
+      "note": "the whole point"
+     },
+     {
+      "code": "mug",
+      "state": [
+       "['m', 'ug']",
+       "'m' never appeared"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit",
+      "note": "the limit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Make the alphabet the byte values and the problem stops existing",
+    "caption": "A character-level base vocabulary **cannot represent text outside its training alphabet** — and `müller 😀` is exactly that text. As raw bytes it is `[109, 195, 188, 108, 108, 101, 114, 32, 240, 159, 152, 128]`, **and every one of those values is in 0..255**, so the base vocabulary covers all possible input by construction. **The cost is in the sequence: one character can take four bytes, so unusual text tokenises longer** — 10 tokens for 9 characters, measured below.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "c",
+      "label": "A character alphabet is whatever you saw",
+      "sub": "so new characters have no symbol",
+      "tone": "crit"
+     },
+     {
+      "id": "b",
+      "label": "Bytes: every input is 0..255",
+      "sub": "müller 😀 -> [109, 195, 188, ...]",
+      "tone": "good"
+     },
+     {
+      "id": "a",
+      "label": "So the base vocab covers everything",
+      "sub": "by construction, not by luck",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "One character can be four bytes",
+      "sub": "10 tokens for 9 characters",
+      "tone": "warn"
+     },
+     {
+      "id": "p",
+      "label": "UNK traded for sequence length",
+      "sub": "which is the real trade",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "c",
+      "b"
+     ],
+     [
+      "b",
+      "a"
+     ],
+     [
+      "a",
+      "l"
+     ],
+     [
+      "l",
+      "p"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "trace",
+    "title": "The same table, two criteria, two different merges",
+    "caption": "BPE takes the **count** and merges `(u,g)` at 20. WordPiece divides by how often the parts occur alone, **and `(g,s)` wins at 0.05 on a count of 5** — because `g` and `s` are rare on their own, so seeing them together is informative. **BPE asks “what is common”; WordPiece asks “what is surprisingly common”**, which is pointwise mutual information in all but name, and is why the two produce different vocabularies from identical text.",
+    "left": "pair",
+    "codeW": 130,
+    "vars": [
+     "freq",
+     "freq(a)*freq(b)",
+     "WordPiece score"
+    ],
+    "steps": [
+     {
+      "code": "(u,g)",
+      "state": [
+       "20",
+       "720",
+       "0.0278"
+      ],
+      "tone": "good",
+      "note": "BPE merges this"
+     },
+     {
+      "code": "(p,u)",
+      "state": [
+       "17",
+       "612",
+       "0.0278"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "(u,n)",
+      "state": [
+       "16",
+       "576",
+       "0.0278"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "(g,s)",
+      "state": [
+       "5",
+       "100",
+       "0.0500"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "violet",
+      "note": "WordPiece merges this"
+     }
+    ]
+   }
+  },
+  {
+   "after": "06",
+   "d": {
+    "kind": "trace",
+    "title": "The same word through two real tokenizers, and one surprise",
+    "caption": "BERT marks every continuation with `##`, so the pieces are visibly glued. GPT-2 marks the **space** instead, with `Ġ` — and that is the surprise worth keeping: **the real tokenizer produces `Ġtransformative` as one token, not ` transform` plus `ative`.** Which means a leading space is part of the token, so `'Hello world'` and `' Hello world'` tokenise differently: **in byte-level BPE, whitespace is data rather than a delimiter.**",
+    "left": "input",
+    "codeW": 170,
+    "vars": [
+     "BERT (WordPiece)",
+     "GPT-2 (byte-level BPE)"
+    ],
+    "steps": [
+     {
+      "code": "'unbelievably'",
+      "state": [
+       "un ##bel ##ie ##va ##bly",
+       "un bel iev ably"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "' transformative'",
+      "state": [
+       "transform ##ative",
+       "Ġtransformative - ONE token"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "'Hello world'",
+      "state": [
+       "hello world",
+       "['Hello', 'Ġworld']"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "' Hello world'",
+      "state": [
+       "hello world",
+       "['ĠHello', 'Ġworld']"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "warn",
+      "note": "space is data"
+     },
+     {
+      "code": "vocab",
+      "state": [
+       "30522",
+       "50257"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "07",
+   "d": {
+    "kind": "layers",
+    "title": "Seven special tokens, and only one of them can break your model silently",
+    "caption": "`[CLS]`, `[SEP]` and `[MASK]` are architectural — the pretraining objective is built around them, so using the wrong one fails loudly. **`[PAD]` is the dangerous one: it exists only to make a batch rectangular, and it must be masked out, or attention spends weight on positions that mean nothing** — which is a quiet accuracy loss rather than an error. And `[UNK]` is the row byte-level BPE deletes from the list entirely.",
+    "items": [
+     {
+      "label": "[CLS]",
+      "sub": "first position; its final state is the sentence vector",
+      "tone": "accent",
+      "side": "BERT"
+     },
+     {
+      "label": "[SEP]",
+      "sub": "sentence boundary, and end of input",
+      "tone": "accent",
+      "side": "BERT"
+     },
+     {
+      "label": "[MASK]",
+      "sub": "what the pretraining objective predicts",
+      "tone": "accent",
+      "side": "BERT"
+     },
+     {
+      "label": "[PAD]",
+      "sub": "batch alignment - MUST be masked out",
+      "tone": "crit",
+      "side": "silent"
+     },
+     {
+      "label": "[UNK]",
+      "sub": "byte-level BPE never needs it",
+      "tone": "warn",
+      "side": "avoidable"
+     },
+     {
+      "label": "<|endoftext|> / <s> </s>",
+      "sub": "document and sequence boundaries",
+      "tone": "good",
+      "side": "GPT, T5"
+     }
+    ]
+   }
+  }
+ ],
+ "1.4": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Three words, three vectors, and every pair is equally far apart",
+    "caption": "The vectors are orthogonal, so **the dot product between any two distinct words is 0 and the cosine similarity is 0** — `cat` is exactly as unrelated to `kitten` as it is to `bulldozer`. That is the whole indictment: **one-hot encodes identity and nothing else, and the dimension is the vocabulary size**, so a 50,000-word vocabulary needs a 50,000-long vector to say *“this is word 3,112”*.",
+    "left": "word",
+    "codeW": 130,
+    "vars": [
+     "vector",
+     "similarity to 'cat'"
+    ],
+    "steps": [
+     {
+      "code": "cat",
+      "state": [
+       "[1, 0, 0]",
+       "1.0"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "sat",
+      "state": [
+       "[0, 1, 0]",
+       "0.0"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "mat",
+      "state": [
+       "[0, 0, 1]",
+       "0.0"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit",
+      "note": "same as any other word"
+     },
+     {
+      "code": "dimension",
+      "state": [
+       "= vocabulary size",
+       "-"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "warn"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Sorted, de-duplicated, and order-free",
+    "caption": "The feature list is **alphabetical and one entry per distinct word** — which is already the representation's two properties. Sorting means a column index has no relation to where the word appeared; de-duplication means a document is a point in a space with one axis per vocabulary word. **So “the dog chased the cat” and “the cat chased the dog” have identical vectors**, and no amount of counting recovers which one you had.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "f",
+      "label": "features: cat chased dog log mat on sat the",
+      "sub": "sorted, de-duplicated",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Sorted -> the index is not the position",
+      "sub": "order is discarded at build time",
+      "tone": "warn"
+     },
+     {
+      "id": "d",
+      "label": "A document is a count per axis",
+      "sub": "one axis per vocabulary word",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "'dog chased cat' = 'cat chased dog'",
+      "sub": "identical vectors",
+      "tone": "crit"
+     },
+     {
+      "id": "n",
+      "label": "And nothing downstream can recover it",
+      "sub": "the bag is why it is called a bag",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "f",
+      "s"
+     ],
+     [
+      "s",
+      "d"
+     ],
+     [
+      "d",
+      "o"
+     ],
+     [
+      "o",
+      "n"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "The word in every document gets an idf of exactly 1.0",
+    "caption": "`the` has `df=3` in a three-document corpus, so `ln(3/3) + 1 = 1.0` — **the `+1` is the only reason it is not zero.** And then the arithmetic lands somewhere worth noticing: **`mat` at 0.3498 does beat `the` at 0.3333, but only just, because `the` appears twice and tf rewards that.** The raw formula divides by document length and does not renormalise, which is exactly where scikit-learn differs — and the difference matters.",
+    "left": "term in doc 0",
+    "codeW": 140,
+    "vars": [
+     "tf",
+     "idf",
+     "tf-idf"
+    ],
+    "steps": [
+     {
+      "code": "the",
+      "state": [
+       "2/6 = 0.3333",
+       "1.0000",
+       "0.3333"
+      ],
+      "tone": "warn",
+      "note": "in every doc"
+     },
+     {
+      "code": "mat",
+      "state": [
+       "1/6 = 0.1667",
+       "2.0986",
+       "0.3498"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "good",
+      "note": "rare - wins, just"
+     },
+     {
+      "code": "cat, on, sat",
+      "state": [
+       "1/6 = 0.1667",
+       "1.4055",
+       "0.2342"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "so the ranking",
+      "state": [
+       "-",
+       "-",
+       "mat > the, barely"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "The hand computation matches once you use the library's formula",
+    "caption": "**`match: True`, and the row L2 norms are all exactly 1.0** — so two defaults are doing the work. `smooth_idf=True` computes `ln((1+N)/(1+df)) + 1`, as if one extra document contained every term, **which prevents a division by zero for a term seen at predict time but never in training.** And L2 normalisation scales every row to unit length, **so cosine similarity reduces to a dot product and document length stops mattering** — which is what fixed §03's near-tie.",
+    "left": "check",
+    "codeW": 190,
+    "vars": [
+     "value"
+    ],
+    "steps": [
+     {
+      "code": "sklearn idf",
+      "state": [
+       "[1.2877, 1.6931, ..., 1.0]"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "hand, smoothed",
+      "state": [
+       "[1.2877, 1.6931, ..., 1.0]"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "match: True"
+     },
+     {
+      "code": "row L2 norms",
+      "state": [
+       "[1.0, 1.0, 1.0]"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "length stops mattering"
+     },
+     {
+      "code": "why smooth_idf",
+      "state": [
+       "no divide-by-zero at predict time"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "trace",
+    "title": "Forty-one percent closer, which is less than the word “weighting” suggests",
+    "caption": "This is the honest number: **the raw count ratio of `the` to `mat` is 2.0 and the tf-idf ratio is 1.181 — 41% closer, not eliminated.** `the` still outscores `mat` in doc 0. **idf compresses the gap between a common and a rare word; it does not invert it**, which is why `sublinear_tf` exists as the other half: it takes a hundredfold count difference down to 5.6-fold, because **the tenth occurrence of a word tells you far less than the first.**",
+    "left": "measurement",
+    "codeW": 180,
+    "vars": [
+     "the",
+     "mat",
+     "ratio"
+    ],
+    "steps": [
+     {
+      "code": "raw counts in doc 0",
+      "state": [
+       "2",
+       "1",
+       "2.000"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "tf-idf in doc 0",
+      "state": [
+       "0.5812",
+       "0.4920",
+       "1.181"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "good",
+      "note": "41% closer, not inverted"
+     },
+     {
+      "code": "sublinear_tf: 1 + ln(tf)",
+      "state": [
+       "tf 2 -> 1.69",
+       "tf 100 -> 5.61",
+       "100x -> 5.6x"
+      ],
+      "changed": [
+       0,
+       1,
+       2
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "06",
+   "d": {
+    "kind": "compare",
+    "title": "Three representations, and the row that decides it",
+    "caption": "**“Captures meaning” is the row that matters, and only the third column answers yes** — which is what the whole of 1.6 is about. The rest is a trade you can read off: the sparse representations are interpretable, cheap and exact, so a coefficient on `refund` is a number you can show someone; the dense one is none of those and knows that `refund` and `reimbursement` are related. **Neither of the first two columns can be fixed into the third by tuning.**",
+    "columns": [
+     {
+      "title": "BoW / TF-IDF",
+      "tone": "good",
+      "items": [
+       "one axis per vocabulary word — sparse",
+       "interpretable: a coefficient per word",
+       "no training, and exact arithmetic",
+       "cat and kitten are unrelated",
+       "an unseen word has no column at all",
+       "order is discarded"
+      ]
+     },
+     {
+      "title": "Embeddings",
+      "tone": "violet",
+      "items": [
+       "a few hundred dense dimensions",
+       "not interpretable per dimension",
+       "trained, on a lot of text",
+       "cat and kitten land near each other",
+       "subwords give an unseen word a vector",
+       "order still discarded — until module 4"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The methods", id: "methods" },
 
+    {"kind": "trace", "title": "Six schemes, and only one of them can never say UNK", "caption": "Read the two ends against each other. **Word-level has a large vocabulary and handles an unseen word badly — it emits `[UNK]` and the information is gone. Byte-level BPE has the largest vocabulary of all and can never emit `[UNK]`**, because every input is a sequence of byte values and every byte value is in the table. Character-level gets the same guarantee with a ~256-symbol vocabulary, and pays for it in sequence length instead.", "left": "scheme", "codeW": 200, "vars": ["vocab", "an unseen word becomes"], "steps": [{"code": "word-level", "state": ["large", "[UNK] - information gone"], "tone": "crit"}, {"code": "character-level", "state": ["~256", "its characters - always works"], "changed": [0, 1], "tone": "good"}, {"code": "BPE / WordPiece", "state": ["30K-50K", "subword pieces"], "changed": [0, 1], "tone": "good"}, {"code": "Unigram / SentencePiece", "state": ["32K-64K", "subword pieces"], "changed": [0], "tone": "good"}, {"code": "byte-level BPE", "state": ["50K-100K", "bytes - UNK is impossible"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-1_3-01-0"},
+
+
+
     { t: "out", text: `  scheme                 vocab        OOV handling
   word-level             large        poor - [UNK]
   character-level        ~256         none needed
@@ -32,6 +36,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Word-level tokenization gives short sequences and an enormous vocabulary with an unavoidable `[UNK]` problem — any word you did not see in training is lost entirely. Character-level gives a tiny vocabulary and no OOV at all, but sequences become five to ten times longer, and since attention is quadratic in length that is expensive. Subword schemes sit in between deliberately: common words stay whole so sequences stay short, and rare words degrade into pieces rather than disappearing. The vocabulary size is the dial between those extremes, and 30,000 to 50,000 is where the field settled for English." }] },
 
     { t: "h2", n: "02", text: "Training BPE by hand", id: "training" },
+
+    {"kind": "trace", "title": "Three rounds, and the winner changes because the previous merge changed the counts", "caption": "The whole algorithm is in the third column. **Round 1 merges `u+g` at 20. That merge removes `(p,u)` from 17 down to 12, because five of those `pu` pairs were in `pug`, which is now `p·ug`** — so round 2's winner is `(u,n)` at 16 rather than the pair that was second a moment ago. **Each merge rewrites the frequency table it will be scored against next**, which is why BPE has to be run rather than predicted.", "left": "round", "codeW": 130, "vars": ["top pair", "runner-up", "merge"], "steps": [{"code": "1", "state": ["(u,g)=20", "(p,u)=17", "u + g -> ug"], "tone": "good"}, {"code": "2", "state": ["(u,n)=16", "(h,ug)=15", "u + n -> un"], "changed": [0, 1, 2], "tone": "good", "note": "(p,u) fell 17 -> 12"}, {"code": "3", "state": ["(h,ug)=15", "(p,un)=12", "h + ug -> hug"], "changed": [0, 1, 2], "tone": "good"}, {"code": "result", "state": ["3 merges", "vocab 7 -> 10", "match: True"], "tone": "violet"}], "t": "diagram", "id": "dg-1_3-02-1"},
+
+
 
     { t: "p", text: "Start with every word as a sequence of characters, count adjacent pairs weighted by word frequency, merge the winner, repeat. The corpus is five words:" },
 
@@ -85,6 +93,10 @@ def bpe_encode(word, merges):
 
     { t: "h2", n: "03", text: "Encoding an unseen word", id: "encoding" },
 
+    {"kind": "trace", "title": "A word never seen, encoded from pieces that were", "caption": "**`bug` never appeared in training and still encodes cleanly as `b` + `ug`, because both pieces are in the vocabulary** — that is the property that makes subword tokenization work at all. And `mug` is the limit stated exactly: **`m` was never in the corpus, so there is no symbol for it**, which is what byte-level BPE fixes by making the base alphabet the 256 byte values instead of whatever characters happened to appear.", "left": "word", "codeW": 130, "vars": ["encoding", "seen in training?"], "steps": [{"code": "hugs", "state": ["['hug', 's']", "yes, as a word"], "tone": "good"}, {"code": "pun", "state": ["['p', 'un']", "yes, as a word"], "changed": [0], "tone": "good"}, {"code": "bug", "state": ["['b', 'ug']", "NO - both pieces were"], "changed": [0, 1], "tone": "good", "note": "the whole point"}, {"code": "mug", "state": ["['m', 'ug']", "'m' never appeared"], "changed": [0, 1], "tone": "crit", "note": "the limit"}], "t": "diagram", "id": "dg-1_3-03-2"},
+
+
+
     { t: "out", text: `  hugs   -> ['hug', 's']   reference: ['hug', 's']   match=True
   bug    -> ['b', 'ug']   reference: ['b', 'ug']   match=True
   pun    -> ['p', 'un']   reference: ['p', 'un']   match=True
@@ -94,6 +106,10 @@ def bpe_encode(word, merges):
 
     { t: "h2", n: "04", text: "Byte-level BPE", id: "byte-level" },
 
+    {"kind": "flow", "title": "Make the alphabet the byte values and the problem stops existing", "caption": "A character-level base vocabulary **cannot represent text outside its training alphabet** — and `müller 😀` is exactly that text. As raw bytes it is `[109, 195, 188, 108, 108, 101, 114, 32, 240, 159, 152, 128]`, **and every one of those values is in 0..255**, so the base vocabulary covers all possible input by construction. **The cost is in the sequence: one character can take four bytes, so unusual text tokenises longer** — 10 tokens for 9 characters, measured below.", "cols": 3, "nodes": [{"id": "c", "label": "A character alphabet is whatever you saw", "sub": "so new characters have no symbol", "tone": "crit"}, {"id": "b", "label": "Bytes: every input is 0..255", "sub": "müller 😀 -> [109, 195, 188, ...]", "tone": "good"}, {"id": "a", "label": "So the base vocab covers everything", "sub": "by construction, not by luck", "tone": "good"}, {"id": "l", "label": "One character can be four bytes", "sub": "10 tokens for 9 characters", "tone": "warn"}, {"id": "p", "label": "UNK traded for sequence length", "sub": "which is the real trade", "tone": "violet"}], "edges": [["c", "b"], ["b", "a"], ["a", "l"], ["l", "p"]], "t": "diagram", "id": "dg-1_3-04-3"},
+
+
+
     { t: "out", text: `  a character-level base vocab cannot represent text outside its training alphabet
   as raw bytes that same text is a sequence of values, every one of them in 0..255:
     [109, 195, 188, 108, 108, 101, 114, 32, 240, 159, 152, 128] ...` },
@@ -102,6 +118,10 @@ def bpe_encode(word, merges):
       body: [{ t: "p", text: "Any text, in any script, is a sequence of bytes, and there are only 256 possible bytes. Start BPE from those instead of from characters and every conceivable input — an emoji, an alphabet you never trained on, a corrupted file — is already representable. That is why GPT-2 onwards, LLaMA and Claude all use byte-level BPE: there is **no unknown token in the vocabulary because there is no way to produce one**. The cost appears in the next section." }] },
 
     { t: "h2", n: "05", text: "WordPiece and Unigram", id: "variants" },
+
+    {"kind": "trace", "title": "The same table, two criteria, two different merges", "caption": "BPE takes the **count** and merges `(u,g)` at 20. WordPiece divides by how often the parts occur alone, **and `(g,s)` wins at 0.05 on a count of 5** — because `g` and `s` are rare on their own, so seeing them together is informative. **BPE asks “what is common”; WordPiece asks “what is surprisingly common”**, which is pointwise mutual information in all but name, and is why the two produce different vocabularies from identical text.", "left": "pair", "codeW": 130, "vars": ["freq", "freq(a)*freq(b)", "WordPiece score"], "steps": [{"code": "(u,g)", "state": ["20", "720", "0.0278"], "tone": "good", "note": "BPE merges this"}, {"code": "(p,u)", "state": ["17", "612", "0.0278"], "changed": [0, 1], "tone": "accent"}, {"code": "(u,n)", "state": ["16", "576", "0.0278"], "changed": [0, 1], "tone": "accent"}, {"code": "(g,s)", "state": ["5", "100", "0.0500"], "changed": [0, 1, 2], "tone": "violet", "note": "WordPiece merges this"}], "t": "diagram", "id": "dg-1_3-05-4"},
+
+
 
     { t: "math", tex: "\\text{BPE: } \\arg\\max_{(a,b)} \\; \\text{freq}(a,b) \\qquad\\qquad \\text{WordPiece: } \\arg\\max_{(a,b)} \\; \\frac{\\text{freq}(a,b)}{\\text{freq}(a)\\cdot\\text{freq}(b)}" },
 
@@ -126,6 +146,10 @@ def bpe_encode(word, merges):
 
     { t: "h2", n: "06", text: "The real tokenizers", id: "real" },
 
+    {"kind": "trace", "title": "The same word through two real tokenizers, and one surprise", "caption": "BERT marks every continuation with `##`, so the pieces are visibly glued. GPT-2 marks the **space** instead, with `Ġ` — and that is the surprise worth keeping: **the real tokenizer produces `Ġtransformative` as one token, not ` transform` plus `ative`.** Which means a leading space is part of the token, so `'Hello world'` and `' Hello world'` tokenise differently: **in byte-level BPE, whitespace is data rather than a delimiter.**", "left": "input", "codeW": 170, "vars": ["BERT (WordPiece)", "GPT-2 (byte-level BPE)"], "steps": [{"code": "'unbelievably'", "state": ["un ##bel ##ie ##va ##bly", "un bel iev ably"], "tone": "good"}, {"code": "' transformative'", "state": ["transform ##ative", "Ġtransformative - ONE token"], "changed": [0, 1], "tone": "violet"}, {"code": "'Hello world'", "state": ["hello world", "['Hello', 'Ġworld']"], "changed": [0, 1], "tone": "accent"}, {"code": "' Hello world'", "state": ["hello world", "['ĠHello', 'Ġworld']"], "changed": [1], "tone": "warn", "note": "space is data"}, {"code": "vocab", "state": ["30522", "50257"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-1_3-06-5"},
+
+
+
     { t: "out", text: `  BERT (WordPiece)         ['un', '##bel', '##ie', '##va', '##bly', 'transform', '##ative']
                            vocab 30522
   GPT-2 (byte-level BPE)   ['un', 'bel', 'iev', 'ably', 'Ġtransformative']
@@ -145,6 +169,10 @@ def bpe_encode(word, merges):
       body: [{ t: "p", text: "`Hello` and `ĠHello` are **different token IDs** in GPT-2. That is why prompts are sensitive to whitespace in ways that look superstitious until you see the tokenization, and why a trailing space before a completion can measurably change the output. The second line is the byte-level cost: a nine-character string containing one emoji and two CJK characters became **ten tokens**, because each of those characters is several bytes and none of those byte sequences was frequent enough in training to merge. English averages well under one token per word; text in an underrepresented script can cost three or four times more, which is a direct and often-unnoticed cost in both context window and API billing." }] },
 
     { t: "h2", n: "07", text: "Special tokens", id: "special" },
+
+    {"kind": "layers", "title": "Seven special tokens, and only one of them can break your model silently", "caption": "`[CLS]`, `[SEP]` and `[MASK]` are architectural — the pretraining objective is built around them, so using the wrong one fails loudly. **`[PAD]` is the dangerous one: it exists only to make a batch rectangular, and it must be masked out, or attention spends weight on positions that mean nothing** — which is a quiet accuracy loss rather than an error. And `[UNK]` is the row byte-level BPE deletes from the list entirely.", "items": [{"label": "[CLS]", "sub": "first position; its final state is the sentence vector", "tone": "accent", "side": "BERT"}, {"label": "[SEP]", "sub": "sentence boundary, and end of input", "tone": "accent", "side": "BERT"}, {"label": "[MASK]", "sub": "what the pretraining objective predicts", "tone": "accent", "side": "BERT"}, {"label": "[PAD]", "sub": "batch alignment - MUST be masked out", "tone": "crit", "side": "silent"}, {"label": "[UNK]", "sub": "byte-level BPE never needs it", "tone": "warn", "side": "avoidable"}, {"label": "<|endoftext|> / <s> </s>", "sub": "document and sequence boundaries", "tone": "good", "side": "GPT, T5"}], "t": "diagram", "id": "dg-1_3-07-6"},
+
+
 
     { t: "table", head: ["Token", "Model", "Purpose"],
       rows: [

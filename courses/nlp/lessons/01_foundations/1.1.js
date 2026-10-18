@@ -22,6 +22,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The vocabulary", id: "definitions" },
 
+    {"kind": "layers", "title": "Nine terms, and the one number that dates the whole list", "caption": "Every term above the line is a decision about **what a token is and how many of them there are**; every term below it is a decision about **how a token becomes a number**. The perplexity row is the one that shows how far the field moved: **a good trigram model sits near 80 and a modern LLM near 3–10**, which is the same metric reporting an order-of-magnitude different world.", "items": [{"label": "Corpus, token, tokenization", "sub": "what the atomic unit is", "tone": "accent", "side": "the split"}, {"label": "Stemming, lemmatisation, stopwords", "sub": "which distinctions you throw away", "tone": "accent", "side": "the squeeze"}, {"label": "Bag of Words, TF-IDF", "sub": "counts, then counts weighted by rarity", "tone": "good", "side": "sparse"}, {"label": "Word embedding", "sub": "a dense vector where near means similar", "tone": "violet", "side": "dense"}, {"label": "n-gram, perplexity", "sub": "the model, and how surprised it is", "tone": "teal", "side": "80 -> 3-10"}], "t": "diagram", "id": "dg-1_1-01-0"},
+
+
+
     { t: "dl", items: [
       ["Corpus / token", "A body of text / the atomic unit you split it into — word, subword or character."],
       ["Tokenization", "Splitting text into tokens. Subword schemes like BPE and WordPiece handle rare words."],
@@ -56,6 +60,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "What each stage destroyed", id: "cost" },
 
+    {"kind": "trace", "title": "Four tokens, four different fates, from one regex", "caption": "The pattern is a single character class and it draws four different lines. **`didn't` survives whole because the apostrophe is inside the class; `e-mailed` is split in two because the hyphen is not.** Neither outcome was chosen — both fell out of one decision about which characters count as word characters. Which is the lesson: **preprocessing destroys information you did not decide to destroy**, and the only way to know what it did is to print it.", "left": "input", "codeW": 150, "vars": ["what came out", "what was lost"], "steps": [{"code": "\"didn't\"", "state": ["[\"didn't\"]", "nothing"], "tone": "good", "note": "apostrophe is inside the class"}, {"code": "'e-mailed'", "state": ["['e', 'mailed']", "one word became two"], "changed": [0, 1], "tone": "crit", "note": "hyphen is not"}, {"code": "\"NYC's\"", "state": ["[\"nyc's\"]", "the capitals"], "changed": [0, 1], "tone": "warn"}, {"code": "'2024'", "state": ["['2024']", "nothing"], "changed": [0, 1], "tone": "good"}, {"code": "'--' and '!'", "state": ["gone entirely", "both"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_1-03-1"},
+
+
+
     { t: "out", text: `  lowercasing lost the CEO/ceo distinction, and 'NYC' -> 'nyc'
   "didn't"   -> ["didn't"]   (one token: the apostrophe is inside the class)
   'e-mailed' -> ['e', 'mailed']   (the hyphen SPLIT it into two)
@@ -66,6 +74,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "`[a-z0-9']+` keeps the apostrophe, so `didn't` survives as one token — good. But the same rule has no opinion about hyphens, so **`e-mailed` becomes `e` and `mailed`**, and now your vocabulary contains a meaningless single letter. `NYC's` keeps its possessive, which may or may not be what you want. Every character class is a policy, and the policy applies to text you have not seen yet. This is the fundamental reason subword tokenizers took over: they *learn* the splits from the corpus instead of asserting them." }] },
 
     { t: "h2", n: "04", text: "Stopword removal is not free", id: "stopwords" },
+
+    {"kind": "trace", "title": "Two opposite sentences, one identical output", "caption": "This is the measurement that decides the question, and it is not a matter of degree: **“this movie is not good” and “this movie is good” both reduce to `movie good`.** The stopword list contains *not*, so the one word carrying the sentiment is the one removed — **and the classifier downstream cannot recover it, because the two inputs are now the same string.** The question-answering row loses *who* and *of*, which is most of the question's structure.", "left": "task and input", "codeW": 230, "vars": ["after stopword removal"], "steps": [{"code": "sentiment: 'this movie is not good'", "state": ["movie good"], "tone": "crit"}, {"code": "sentiment: 'this movie is good'", "state": ["movie good"], "tone": "crit", "note": "identical"}, {"code": "QA: 'who is the ceo of openai'", "state": ["ceo openai"], "changed": [0], "tone": "crit", "note": "the question is gone"}], "t": "diagram", "id": "dg-1_1-04-2"},
+
+
 
     { t: "out", text: `  sentiment          'this movie is not good'
                      -> 'movie good'
@@ -78,6 +90,10 @@ EC.receiveLesson({
       body: [{ t: "p", text: "`not` is on virtually every standard stopword list, including NLTK's. Remove it and a negative review and a positive review reduce to the same two words — the model cannot possibly separate them, and no amount of capacity downstream recovers the distinction. The same applies to question answering: `who`, `what`, `where` and `when` are all stopwords, and they are precisely the part of the question that determines what answer is wanted. **Stopword removal is a technique for tasks where only topic matters** — document retrieval, topic modelling — and it is actively destructive for sentiment, QA, negation-sensitive extraction and anything involving function words." }] },
 
     { t: "h2", n: "05", text: "What the normalisation buys", id: "vocabulary" },
+
+    {"kind": "trace", "title": "Fifteen types to ten, and what survives tells you the rest", "caption": "**A 33% smaller vocabulary from one `.lower()` call** — and that is the whole argument for preprocessing: fewer parameters to learn and more examples per type, which mattered enormously when the model was a linear classifier over sparse counts. **Read what survives, though: `cat` and `cats` are still two types, and `sat` and `sitting` are still two.** Case was the cheap half; morphology is what stemming and lemmatisation are for.", "left": "stage", "codeW": 190, "vars": ["types", "still distinct"], "steps": [{"code": "raw whitespace split", "state": ["15", "A / a, The / the, CAT / cat"], "tone": "crit"}, {"code": "after lowercasing", "state": ["10  (33% smaller)", "cat / cats, sat / sitting"], "changed": [0, 1], "tone": "good"}, {"code": "what is left to collapse", "state": ["-", "morphology, not case"], "tone": "violet"}], "t": "diagram", "id": "dg-1_1-05-3"},
+
+
 
     { t: "out", text: `  raw whitespace split : 15 types
     ['A', 'CAT', 'Cats', 'Mat', 'Sat', 'The', 'a', 'cat', 'is', 'mat', 'mats', 'on', 'sat', 'sitting', 'the']
@@ -116,6 +132,10 @@ EC.receiveLesson({
     { t: "p", text: "Question answering, conversational AI and information extraction sit in both columns because they require the model to understand an input and then produce a new output — which is exactly the encoder-decoder shape module 4 derives." },
 
     { t: "h2", n: "07", text: "Why the pipeline shrank", id: "evolution" },
+
+    {"kind": "timeline", "title": "Six eras, and the pipeline got shorter as the model got bigger", "caption": "The bars are eras rather than durations, and the trend is the point: **every stage of hand-built preprocessing in this lesson was invented for the era where the model was a linear classifier over sparse counts.** Rule-based meant regexes and CFG parsers; statistical meant Naive Bayes, SVM, CRF and HMM; then Word2Vec and GloVe, then ELMo, then BERT and T5, then GPT-4 and Claude. **As the model absorbed more of the work, the pipeline in front of it shrank** — so most of what this lesson measures is now a decision you make about the input rather than a step you must run.", "span": 80, "tick": 10, "unit": "years, 1950 to 2030", "lanes": [{"label": "rule-based", "bars": [[0, 40, "regexes, parsers", "crit"]]}, {"label": "statistical ML", "bars": [[40, 60, "Naive Bayes, SVM", "warn"]]}, {"label": "shallow neural", "bars": [[63, 67, "W2V", "accent"]]}, {"label": "deep neural", "bars": [[67, 68, "", "accent"]]}, {"label": "transformers", "bars": [[68, 72, "BERT", "good"]]}, {"label": "LLMs", "bars": [[72, 80, "GPT-4", "good"]]}], "t": "diagram", "id": "dg-1_1-07-4"},
+
+
 
     { t: "table", head: ["Era", "Approach", "Examples"],
       rows: [
