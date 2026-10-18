@@ -46,6 +46,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text:
 "google/vit-base-patch16-224\n\n  image 224, patch 16, hidden 768, layers 12, heads 12\n  86,389,248 params = 86.4M\n\n  patch embedding: Conv2d(768, 3, 16, 16), kernel (16,16), stride (16,16)\n  position embeddings: (1, 197, 768)\n\n  input (1, 3, 224, 224) -> last_hidden_state (1, 197, 768)\n  pooler output ([CLS] vector) (1, 768)" },
 
@@ -55,6 +57,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Where the parameters are", id: "params" },
 
     {"kind": "trace", "title": "Embeddings are 0.9% of ViT and 31.2% of GPT-2 small", "caption": "**The MLP dominates, exactly as in any transformer — 2,359,296 per `fc1` and per `fc2`, twelve times over.** The interesting number is the comparison: **ViT's entire embedding apparatus is 742,656 parameters, 0.9% of the model, against GPT-2 small's token embedding alone at 31.2%.** The reason is structural: **a vocabulary needs one row per token type and patches need none at all** — so ViT spends nothing on an input table and everything on the encoder.", "left": "component", "codeW": 190, "vars": ["parameters", "share"], "steps": [{"code": "layers.N.mlp.fc1 / fc2 (each)", "state": ["2,359,296", "the largest tensors"], "tone": "violet"}, {"code": "all embeddings in ViT-Base", "state": ["742,656", "0.9%"], "changed": [0, 1], "tone": "good"}, {"code": "GPT-2 small token embedding", "state": ["38,597,376", "31.2%"], "changed": [0, 1], "tone": "crit"}, {"code": "why", "state": ["patches need no vocabulary", "one row per token type"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-5_7-03-1"},
+
+
 
 
 
@@ -70,6 +74,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text:
 "image       patches   tokens   attention entries per head per layer\n224x224        196      197              38,809\n384x384        576      577             332,929\n448x448        784      785             616,225\n896x896       3136     3137           9,840,769" },
 
@@ -79,6 +85,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "What ViT gives up", id: "bias" },
 
     {"kind": "trace", "title": "Three priors given up, and the crossover where that becomes a gain", "caption": "**Locality: a 3×3 convolution can only see neighbours, while ViT's layer-1 attention is unconstrained over all 38,809 pairs — nothing tells it adjacent patches are related. Translation equivariance: one kernel slides everywhere, so a feature found in one place is found in all; ViT must learn that per position. Hierarchy: a CNN's receptive field grows with depth, while every ViT layer is global from the start.** And the trade shows up as a data threshold: **ResNet wins at 1.3M images, equal at 14M, ViT wins clearly at 300M.**", "left": "prior", "codeW": 180, "vars": ["what a CNN gets free", "what ViT must learn"], "steps": [{"code": "locality", "state": ["a 3x3 kernel sees neighbours", "all 38,809 pairs, unconstrained"], "tone": "crit"}, {"code": "translation equivariance", "state": ["one kernel slides everywhere", "separately, per position"], "changed": [0, 1], "tone": "crit"}, {"code": "hierarchy", "state": ["receptive field grows with depth", "global from layer 1"], "changed": [0, 1], "tone": "crit"}, {"code": "1.3M images", "state": ["ResNet wins", "-"], "changed": [0, 1], "tone": "warn"}, {"code": "300M images", "state": ["-", "ViT wins clearly"], "changed": [0, 1], "tone": "violet", "note": "the priors become limits"}], "t": "diagram", "id": "dg-5_7-05-3"},
+
+
 
 
 
@@ -126,6 +134,8 @@ EC.receiveLesson({
     { t: "h2", n: "07", text: "What transferred, and what did not", id: "transfer" },
 
     {"kind": "trace", "title": "Everything vision-specific lives in the first ten lines", "caption": "**The encoder is the same encoder — same multi-head attention, same Pre-LN blocks, same FFN at 4× width, same `[CLS]` pooling as BERT** — and the rows that differ are all about how the input becomes tokens. Which is the striking claim of ViT, and it is checkable: **two rows say “identical”.** The one row with a real asymmetry is positional encoding: **ViT uses a learned 1-D table over a flattened 2-D grid**, so the model is not told which patches are vertically adjacent.", "left": "component", "codeW": 150, "vars": ["language transformer", "vision transformer"], "steps": [{"code": "tokenisation", "state": ["subword vocabulary, 30k-128k", "fixed pixel patches, no vocabulary"], "tone": "crit"}, {"code": "embedding cost", "state": ["31.2% of GPT-2 small", "0.9% of ViT-Base"], "changed": [0, 1], "tone": "crit"}, {"code": "sequence length", "state": ["set by the text", "set by resolution and patch size"], "changed": [0, 1], "tone": "warn"}, {"code": "positional encoding", "state": ["learned or RoPE, 1-D", "learned 1-D over a 2-D grid"], "changed": [0, 1], "tone": "warn"}, {"code": "encoder blocks / pooling", "state": ["identical", "identical"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_7-07-4"},
+
+
 
 
 

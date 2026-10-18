@@ -28,6 +28,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text:
 "model           params    tokens     tokens/param   train FLOPs\nGopher           280B       300B            1.1       5.04e+23\nChinchilla        70B      1400B           20.0       5.88e+23\nGPT-3            175B       300B            1.7       3.15e+23\nLLaMA-1 65B       65B      1400B           21.5       5.46e+23\nLLaMA-3 8B         8B     15000B         1875.0       7.20e+23" },
 
@@ -48,6 +50,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text:
 "model           tokens/param   Chinchilla-optimal   shortfall\nGopher                   1.1            5600B          18.7x\nGPT-3                    1.7            3500B          11.7x\nChinchilla              20.0            1400B           1.0x\nLLaMA-1 65B             21.5            1300B           1.0x\nLLaMA-3 8B            1875.0             160B           1.0x" },
 
@@ -57,6 +61,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "The power law", id: "powerlaw" },
 
     {"kind": "trace", "title": "Each 10x in parameters buys less than the last, and the law predicts how much", "caption": "With Kaplan's constants the drops shrink monotonically: **0.6447 from 1e6 to 1e7, and 0.2688 from 1e11 to 1e12.** The practical value is not the curve but the extrapolation: **fit it on small models you can afford, and know roughly what a run 100× larger will achieve before committing to it.** Which is what **turned large-model training from a gamble into a budgeting exercise** — and note `L_inf = 1.69`, an irreducible floor the law says no amount of scale removes.", "left": "parameters", "codeW": 130, "vars": ["predicted loss", "drop from previous"], "steps": [{"code": "1e+06", "state": ["5.7059", "-"], "tone": "crit"}, {"code": "1e+07", "state": ["5.0612", "0.6447"], "changed": [0, 1], "tone": "warn"}, {"code": "1e+09", "state": ["4.0656", "0.4543"], "changed": [0, 1], "tone": "warn"}, {"code": "1e+11", "state": ["3.3641", "0.3202"], "changed": [0, 1], "tone": "good"}, {"code": "1e+12", "state": ["3.0953", "0.2688"], "changed": [0, 1], "tone": "good", "note": "floor at L_inf = 1.69"}], "t": "diagram", "id": "dg-5_4-03-2"},
+
+
 
 
 
@@ -74,6 +80,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Emergent abilities, as usually described", id: "emergence" },
 
     {"kind": "flow", "title": "A claim worth testing, because of what follows if it is true", "caption": "**The standard account: few-shot learning appears around 1B, code generation around 10B, chain-of-thought around 100B — performance at chance across orders of magnitude, then a sharp rise.** If true the implications are serious: **you cannot predict what a larger model will do, and safety-relevant capabilities could appear without warning.** Which is exactly why it is worth testing rather than repeating — **and §06's conclusion is to re-score with a continuous metric first, because most reported cliffs are `p^k` in disguise.**", "cols": 3, "nodes": [{"id": "c", "label": "Few-shot: ~1B. Code: ~10B. CoT: ~100B", "sub": "the standard claim", "tone": "accent"}, {"id": "d", "label": "At chance, then a sharp rise", "sub": "discontinuous in scale", "tone": "accent"}, {"id": "p", "label": "If true: larger models are unpredictable", "sub": "no extrapolation possible", "tone": "crit"}, {"id": "s", "label": "And capabilities arrive without warning", "sub": "a safety problem", "tone": "crit"}, {"id": "t", "label": "So test it rather than repeat it", "sub": "most cliffs are p^k", "tone": "violet"}], "edges": [["c", "d"], ["d", "p"], ["p", "s"], ["s", "t"]], "t": "diagram", "id": "dg-5_4-04-3"},
+
+
 
 
 
@@ -123,6 +131,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Using scaling laws in practice", id: "practice" },
 
     {"kind": "layers", "title": "Four uses, and two of them contradict the headline result", "caption": "**Fit before you commit: train a ladder of small models, fit the power law, extrapolate — knowing the loss a 100× run will reach is worth far more than the cost of the ladder.** `C ≈ 6ND` turns GPU-hours into a feasible `(N, D)` pair. Then the two caveats: **Chinchilla optimises training only, so serving at volume means overshooting `D` and shrinking `N`** — and **distrust sharp curves: re-score with a continuous metric before believing a capability appeared.**", "items": [{"label": "Fit before you commit", "sub": "a ladder of small models, then extrapolate", "tone": "good", "side": "cheap"}, {"label": "Budget with C = 6ND", "sub": "GPU-hours -> a feasible (N, D)", "tone": "good", "side": "4.10"}, {"label": "Weight inference cost", "sub": "overshoot D, shrink N - a permanent saving", "tone": "violet", "side": "not Chinchilla"}, {"label": "Distrust sharp curves", "sub": "most reported cliffs are p^k in disguise", "tone": "crit", "side": "re-score"}], "t": "diagram", "id": "dg-5_4-06-4"},
+
+
 
 
 

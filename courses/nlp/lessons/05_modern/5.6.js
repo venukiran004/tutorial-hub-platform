@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "The standard fine-tuning configuration", code:
 "training_args = TrainingArguments(\n    output_dir=\"./results\",\n    num_train_epochs=3,\n    per_device_train_batch_size=16,\n    per_device_eval_batch_size=64,      # no gradients, so larger fits\n    learning_rate=2e-5,\n    weight_decay=0.01,\n    warmup_ratio=0.1,\n    eval_strategy=\"epoch\",              # was evaluation_strategy before 4.41\n    save_strategy=\"epoch\",\n    load_best_model_at_end=True,\n    fp16=True,\n)\n\ntrainer = Trainer(model=model, args=training_args,\n                  train_dataset=train_dataset, eval_dataset=eval_dataset,\n                  tokenizer=tokenizer)\ntrainer.train()",
       caption: "`load_best_model_at_end=True` requires `eval_strategy` and `save_strategy` to match — a mismatch raises at construction, which is one of the few errors this API gives you early." },
@@ -41,6 +43,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "LoRA", id: "lora" },
 
     {"kind": "trace", "title": "Rank 8 on query and value is 0.271% of BERT", "caption": "**Freeze `W`, learn `BA` instead — and at inference fold `BA` back into `W`, so there is no added latency at all**, unlike adapters which insert real layers. The reduction is steep and the useful range is the top of the table: **rank 8 on one 768×768 projection is 12,288 parameters, a 48× reduction.** Applied to query and value across all 12 BERT layers plus a classification head: **296,450 trainable of 109,483,778 — 0.271%.**", "left": "rank r", "codeW": 130, "vars": ["LoRA params (one d x d)", "fraction", "reduction"], "steps": [{"code": "1", "state": ["1,536", "0.0026", "384x"], "tone": "good"}, {"code": "8", "state": ["12,288", "0.0208", "48x"], "changed": [0, 1, 2], "tone": "violet", "note": "the usual choice"}, {"code": "32", "state": ["49,152", "0.0833", "12x"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "64", "state": ["98,304", "0.1667", "6x"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "r=8 on Q,V of 12 layers", "state": ["296,450 trainable", "0.271%", "-"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-5_6-02-1"},
+
+
 
 
 
@@ -60,6 +64,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text:
 "                 weights    gradients    Adam state    total\nfull fine-tune   437.9 MB    437.9 MB      875.9 MB   1751.7 MB\nLoRA r=8         437.9 MB      1.2 MB        2.4 MB    441.5 MB" },
 
@@ -69,6 +75,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Is the low-rank assumption justified?", id: "lowrank" },
 
     {"kind": "trace", "title": "A rank-64 truncation captures 14.5% of a random matrix, not most of it", "caption": "**LoRA is often explained as “weight matrices are low-rank”, and that claim is easy to test: a rank-64 truncated SVD of a random 768×768 matrix captures 14.5%, and rank 256 captures 49%.** So a random matrix is emphatically **not** low-rank — which means **the justification cannot be that weights are low-rank. It is that the *update* needed for a downstream task is low-rank**, which is a different and much weaker claim, and the one the empirical results actually support.", "left": "rank r", "codeW": 130, "vars": ["fraction of a random 768x768 captured"], "steps": [{"code": "1", "state": ["0.3%"], "tone": "crit"}, {"code": "16", "state": ["3.9%"], "changed": [0], "tone": "crit"}, {"code": "64", "state": ["14.5%"], "changed": [0], "tone": "crit", "note": "the usual LoRA range"}, {"code": "256", "state": ["49.0%"], "changed": [0], "tone": "warn"}, {"code": "768", "state": ["100.0%"], "changed": [0], "tone": "good", "note": "so weights are NOT low-rank"}], "t": "diagram", "id": "dg-5_6-04-3"},
+
+
 
 
 
@@ -83,6 +91,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "The PEFT family", id: "peft" },
 
     {"kind": "trace", "title": "Four methods, and only one of them is free at inference", "caption": "The inference column is the differentiator. **LoRA folds `BA` into `W`, so it costs nothing at serving time.** Adapters insert bottleneck layers between blocks — **real added latency, on every forward pass, forever.** And both prompt-side methods **lengthen the effective sequence**, which is a quadratic cost under 4.3 rather than a constant one. **Prompt tuning is the cheapest to train at ~0.01% and the most fragile**, because a few thousand parameters is not much room.", "left": "method", "codeW": 140, "vars": ["approach", "trainable", "inference cost"], "steps": [{"code": "LoRA", "state": ["low-rank update to W", "0.1-1%", "ZERO - folded in"], "tone": "violet"}, {"code": "Adapters", "state": ["inserted bottleneck layers", "1-5%", "real added latency"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "Prefix tuning", "state": ["virtual tokens on K and V", "~0.1%", "longer sequence"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "Prompt tuning", "state": ["soft-prompt embeddings only", "~0.01%", "longer sequence"], "changed": [0, 1, 2], "tone": "warn"}], "t": "diagram", "id": "dg-5_6-05-4"},
+
+
 
 
 
@@ -101,6 +111,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Knowledge distillation", id: "distillation" },
 
     {"kind": "trace", "title": "Temperature 2.0 is where the teacher starts saying something useful", "caption": "At `T = 1` the teacher's distribution is `cat 0.7163` and almost nothing else — **little more information than the hard label.** At `T = 2` it says `tiger 0.2372, lion 0.2042, car 0.0412`: **cats are like tigers and lions and unlike cars, which is the knowledge being distilled.** The `T²` factor is not cosmetic — **gradients through a softmax at temperature `T` scale as `1/T²`, so without it raising the temperature would silently shrink the distillation term and `α` would stop meaning what you set.**", "left": "T", "codeW": 120, "vars": ["cat", "tiger", "car", "entropy"], "steps": [{"code": "1.0", "state": ["0.7163", "0.1598", "0.0048", "0.8152"], "tone": "warn", "note": "nearly a hard label"}, {"code": "2.0", "state": ["0.5022", "0.2372", "0.0412", "1.2066"], "changed": [0, 1, 2, 3], "tone": "violet", "note": "the structure appears"}, {"code": "5.0", "state": ["0.3275", "0.2427", "0.1205", "-"], "changed": [0, 1, 2], "tone": "good"}, {"code": "10.0", "state": ["0.2632", "0.2266", "0.1597", "-"], "changed": [0, 1, 2], "tone": "crit", "note": "max entropy is 1.6094"}], "t": "diagram", "id": "dg-5_6-06-5"},
+
+
 
 
 

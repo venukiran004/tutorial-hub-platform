@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "math", tex: "\\text{MultiHead}(Q,K,V) = \\text{Concat}(\\text{head}_1, \\ldots, \\text{head}_h)\\,W^{O}, \\qquad \\text{head}_i = \\text{Attention}(QW_i^{Q}, KW_i^{K}, VW_i^{V})" },
 
     { t: "p", text: "Run attention `h` times on different learned projections of the same input, concatenate the results, and pass them through one more linear layer. In practice nobody implements `h` separate projections — one `d_model × d_model` matrix per role is projected and then *reshaped* into heads, which is mathematically identical and far faster." },
@@ -63,6 +65,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text:
 "d_model = 512\n\nh      d_k    Q/K/V each    W_O        total\n1      512    262,144       262,144    1,048,576\n2      256    262,144       262,144    1,048,576\n4      128    262,144       262,144    1,048,576\n8       64    262,144       262,144    1,048,576\n16      32    262,144       262,144    1,048,576\n64       8    262,144       262,144    1,048,576" },
 
@@ -75,6 +79,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Do heads really specialise?", id: "specialise" },
 
     {"kind": "trace", "title": "Eight of twelve heads send most of their weight to [SEP]", "caption": "The claim under test is that head 1 learns syntax, head 2 semantics, head 3 proximity, head 4 coreference. **What layer 4 of `bert-base-uncased` actually does on a centre-embedded sentence: head 3 puts 0.7180 of its weight on `[SEP]` with an entropy of 0.7883, and most heads are in the same regime.** These are **attention sinks** — a head with nothing to contribute parks its mass on a token that carries no content. **The tidy division of labour is not what the weights show.**", "left": "layer 4, head", "codeW": 140, "vars": ["mean offset", "entropy", "-> [SEP]"], "steps": [{"code": "0", "state": ["5.64", "1.4482", "0.5157"], "tone": "warn"}, {"code": "3", "state": ["5.86", "0.7883", "0.7180"], "changed": [0, 1, 2], "tone": "crit", "note": "a sink"}, {"code": "10", "state": ["2.07", "1.6155", "0.3588"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "11", "state": ["4.36", "1.0731", "0.5324"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "1 (the most diffuse)", "state": ["4.36", "2.1780", "0.2083"], "changed": [1, 2], "tone": "accent"}], "t": "diagram", "id": "dg-4_4-04-2"},
+
+
 
 
 
@@ -98,6 +104,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Sinks are the common case, but genuinely interpretable heads do exist. Searching all 144 heads for the one with the highest average weight on the immediately preceding token found a clean example." },
 
     { t: "out", text:
@@ -114,6 +122,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Depth changes the behaviour more than head index", id: "depth" },
 
     {"kind": "trace", "title": "The same head index behaves completely differently by depth", "caption": "Head 0 traced through all twelve layers: **mean offset goes from +0.93 to −2.07 to +6.50, entropy from 2.5284 down to 0.0220 at layer 2 and back up, and `[SEP]` weight from 0.0760 to 0.8644.** Compare that with the within-layer spread in §04 and the conclusion is clear: **depth changes a head's behaviour far more than head index does.** And the pairwise measurement makes the middle position precise — **mean cosine 0.7132 between heads in one layer, min 0.4511, max 0.9004: real diversity, no independence.**", "left": "layer (head 0)", "codeW": 150, "vars": ["mean offset", "entropy", "-> [SEP]"], "steps": [{"code": "0", "state": ["+0.93", "2.5284", "0.0760"], "tone": "good"}, {"code": "1", "state": ["-2.07", "1.9673", "0.1293"], "changed": [0, 1, 2], "tone": "good", "note": "looks backwards"}, {"code": "2", "state": ["-0.07", "0.0220", "0.0730"], "changed": [0, 1, 2], "tone": "violet", "note": "near-deterministic"}, {"code": "6", "state": ["+4.79", "0.7493", "0.7441"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "11", "state": ["+6.50", "0.5773", "0.8644"], "changed": [0, 1, 2], "tone": "crit", "note": "a sink"}], "t": "diagram", "id": "dg-4_4-06-4"},
+
+
 
 
 

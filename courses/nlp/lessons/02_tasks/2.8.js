@@ -54,6 +54,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "A span QA model is an encoder with two linear heads. Feed it `[CLS] question [SEP] passage [SEP]`; one head scores each token as a possible start, the other as a possible end. The answer is the span maximising the product of the two probabilities, subject to the end not preceding the start." },
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n28.py — the span search, written out", code:
@@ -69,6 +71,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "What SQuAD 2.0 added", id: "squad2" },
 
     {"kind": "trace", "title": "Fifty thousand unanswerable questions, and the model learns a different skill", "caption": "**SQuAD 1.1 guaranteed every question had an answer in its passage, so a model trained on it never learns to decline** — at inference it returns its best guess no matter what, **and a confident wrong span is far more dangerous than an abstention.** SQuAD 2.0's ~50,000 adversarially written unanswerable questions change what the model must learn: **not where the answer is, but whether there is one** — which moves abstention from an external confidence filter into the model's own output.", "left": "property", "codeW": 170, "vars": ["SQuAD 1.1", "SQuAD 2.0"], "steps": [{"code": "unanswerable questions", "state": ["none", "~50,000, adversarial"], "tone": "accent"}, {"code": "on a bad question", "state": ["returns its best span", "can route to the null slot"], "changed": [0, 1], "tone": "crit"}, {"code": "what it must learn", "state": ["where the answer is", "...and whether there is one"], "changed": [0, 1], "tone": "violet"}, {"code": "deployment", "state": ["needs an external filter", "abstention is part of the output"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-2_8-03-1"},
+
+
 
 
 

@@ -23,6 +23,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Jaccard", id: "jaccard" },
 
+    {"kind": "trace", "title": "A perfect 1.0000 on the reordering and a flat 0.0000 on the typos", "caption": "**Order disappears at the tokenisation step — a set has no order, so the metric cannot be sensitive to it** — which is why `'John Smith'`/`'Smith John'` is **1.0000** and the three-word reorderings are too. Then the exact mirror of 8.1's failure: **`'John Smith'`/`'Jon Smyth'` scores 0.0000, because not one token is shared.** And the comma row shows the brittleness of word tokens: **`'Smith, John'` scores only 0.3333, because `'Smith,'` is a different token from `'Smith'`.**", "left": "pair", "codeW": 210, "vars": ["word Jaccard"], "steps": [{"code": "'John Smith' / 'Smith John'", "state": ["1.0000"], "tone": "good"}, {"code": "'Acme Corp Ltd' / 'Ltd Acme Corp'", "state": ["1.0000"], "tone": "good"}, {"code": "'John Smith' / 'Smith, John'", "state": ["0.3333"], "changed": [0], "tone": "warn", "note": "the comma"}, {"code": "'John Smith' / 'Jon Smyth'", "state": ["0.0000"], "changed": [0], "tone": "crit", "note": "no shared token"}], "t": "diagram", "id": "dg-8_3-01-0"},
+
     { t: "math", tex: "J(A, B) = \\frac{|A \\cap B|}{|A \\cup B|}" },
 
     { t: "p", text: "Tokenise both strings into **sets** and divide the intersection by the union. Order disappears at the tokenisation step — a set has no order, so the metric cannot be sensitive to it." },
@@ -35,6 +37,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The complementary failure", id: "complementary" },
 
+    {"kind": "trace", "title": "The two metrics are each near-zero on exactly the pair the other handles", "caption": "This is the clearest table in the module. **Edit similarity scores the typo pair 0.8000 and the reordered pair 0.0909. Word Jaccard scores the typo pair 0.0000 and the reordered pair 0.3333.** Neither is a weak version of the other — **they fail on disjoint inputs**, which is why §03's character n-grams exist and why 8.5's `token_sort_ratio` exists: **both are attempts to be good at both columns at once.**", "left": "pair", "codeW": 190, "vars": ["edit similarity", "word Jaccard"], "steps": [{"code": "'John Smith' / 'Jon Smyth'", "state": ["0.8000", "0.0000"], "tone": "crit"}, {"code": "'John Smith' / 'Smith, John'", "state": ["0.0909", "0.3333"], "changed": [0, 1], "tone": "crit", "note": "reversed"}], "t": "diagram", "id": "dg-8_3-02-1"},
+
     { t: "out", text:
 "pair                            edit sim    word Jaccard\n'John Smith' / 'Jon Smyth'       0.8000       0.0000\n'John Smith' / 'Smith, John'     0.0909       0.3333" },
 
@@ -42,6 +46,8 @@ EC.receiveLesson({
       body: [{ t: "p", text: "The typo pair: edit distance **0.8000**, Jaccard **0.0000**. The reordered pair: edit distance **0.0909**, Jaccard **0.3333**. There is no threshold on either metric that classifies both correctly, and no amount of tuning changes that, because the failures are structural. This is why production entity resolution computes **several scores per pair** and combines them — either with a weighted rule or with a trained classifier taking all the scores as features. Choosing one metric means choosing which kind of true match you will systematically miss." }] },
 
     { t: "h2", n: "03", text: "Character n-grams", id: "ngrams" },
+
+    {"kind": "trace", "title": "Every pair gets a non-zero score, and no pair gets a perfect one", "caption": "**A single typo destroys only the few n-grams that span it**, so the typo pair rises from 0.0000 to **0.1538** — and the reorderings fall from 1.0000 to between 0.4167 and 0.7273, because reordering breaks the n-grams at the joins. **That is the trade: n-grams are the only representation here that scores every one of these pairs sensibly, and the price is that nothing scores 1.0.** Choosing `n` is real: **2 is tolerant and collides, 4 or 5 is discriminating and brittle, 3 is the usual default for names.**", "left": "pair", "codeW": 190, "vars": ["word Jaccard", "3-gram Jaccard"], "steps": [{"code": "'John Smith' / 'Smith John'", "state": ["1.0000", "0.4545"], "tone": "warn"}, {"code": "'John Smith' / 'Smith, John'", "state": ["0.3333", "0.4167"], "changed": [0, 1], "tone": "good", "note": "improved"}, {"code": "'John Smith' / 'Jon Smyth'", "state": ["0.0000", "0.1538"], "changed": [0, 1], "tone": "good", "note": "no longer zero"}, {"code": "'red hot chili...' reordered", "state": ["1.0000", "0.7273"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-8_3-03-2"},
 
     { t: "p", text: "The problem with word-level sets is that a token is atomic — change one character and it is a different token. Tokenise into overlapping **character n-grams** instead, and a single typo destroys only the few n-grams that span it." },
 
@@ -57,6 +63,8 @@ EC.receiveLesson({
     { t: "p", text: "Choosing `n` is a real trade. `n = 2` is very tolerant and produces many collisions between unrelated strings; `n = 4` or `5` is discriminating but brittle to typos. **`n = 3` is the usual default** for names, and the right value depends on your field lengths — short fields need small `n` simply to produce enough n-grams to compare." },
 
     { t: "h2", n: "04", text: "Cosine similarity", id: "cosine" },
+
+    {"kind": "trace", "title": "Five differences, and the one that decides it is weighting", "caption": "**Jaccard treats tokens as present or absent; cosine works on counts or weights, so a token appearing three times contributes more than one appearing once — and the vectors can carry TF-IDF weights rather than raw presence.** Which is the row that matters for 8.4: **all tokens equal against any weighting**, because real record data is full of tokens that are present and uninformative. The length row is the other practical difference: **Jaccard penalises different sizes through the union; cosine normalises it away.**", "left": "property", "codeW": 150, "vars": ["Jaccard", "cosine"], "steps": [{"code": "input", "state": ["sets - presence only", "vectors - counts or weights"], "tone": "good"}, {"code": "repeated tokens", "state": ["ignored", "counted"], "changed": [0, 1], "tone": "good"}, {"code": "weighting", "state": ["all tokens equal", "any, including TF-IDF"], "changed": [0, 1], "tone": "violet"}, {"code": "length sensitivity", "state": ["penalised via the union", "normalised away"], "changed": [0, 1], "tone": "good"}, {"code": "best for", "state": ["short fields", "longer text, weighted tokens"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-8_3-04-3"},
 
     { t: "math", tex: "\\cos(a, b) = \\frac{a \\cdot b}{\\|a\\|\\,\\|b\\|}" },
 

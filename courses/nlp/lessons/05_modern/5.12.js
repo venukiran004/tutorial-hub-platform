@@ -23,6 +23,8 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Half a terabyte of KV cache for one million tokens", "caption": "A 32-layer, 4096-wide 7B model at a million tokens in fp16: **524.3 GB with full multi-head attention, 131.1 GB with GQA8.** Neither fits on any single accelerator, **and the weights are 14 GB** — so at this length **the model is a rounding error and the cache is the system.** Which frames everything that follows: the techniques in this lesson are about the cache and the score matrix, not about the parameters.", "left": "scheme", "codeW": 170, "vars": ["KV cache at 1M tokens", "against 14 GB of weights"], "steps": [{"code": "full MHA (n_kv = 32)", "state": ["524.3 GB", "37x the model"], "tone": "crit"}, {"code": "GQA8 (n_kv = 8)", "state": ["131.1 GB", "9x the model"], "changed": [0, 1], "tone": "crit", "note": "still no single device"}], "t": "diagram", "id": "dg-5_12-01-0"},
 
 
+
+
     { t: "out", text:
 "KV cache for a 32-layer, 4096-wide 7B model at 1,000,000 tokens, fp16\n\n  full MHA   (n_kv = 32)    524.3 GB\n  GQA8       (n_kv = 8)     131.1 GB" },
 
@@ -45,6 +47,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Proving it is exact", id: "exact" },
 
     {"kind": "trace", "title": "Four devices, four partial answers, and the last one is exact", "caption": "**Each device attends to one KV block at a time and must combine `P` partial results into the true softmax over all `N` keys — which is precisely 5.2's running-statistics update, so FlashAttention's online softmax is the enabling idea for ring attention rather than merely a related one.** The partials are meaningless on the way: **+0.334320, then +0.137551, then +0.122937** — and the final value is **+0.187467 against full attention's +0.187466, a difference of 7.45e-08.**", "left": "after device", "codeW": 150, "vars": ["running output[0,0]", "meaningful?"], "steps": [{"code": "0", "state": ["+0.334320", "no - partial"], "tone": "crit"}, {"code": "1", "state": ["+0.137551", "no"], "changed": [0], "tone": "crit"}, {"code": "2", "state": ["+0.122937", "no"], "changed": [0], "tone": "crit"}, {"code": "3", "state": ["+0.187467", "yes"], "changed": [0, 1], "tone": "good"}, {"code": "full attention", "state": ["+0.187466", "diff 7.451e-08"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_12-03-1"},
+
+
 
 
     { t: "p", text: "Each device attends to one KV block at a time and must combine `P` partial results into the true softmax over all `N` keys. That is precisely the running-statistics update from lesson 5.2 — which is why FlashAttention's online softmax is the enabling idea for ring attention, not merely a related one." },
@@ -72,6 +76,8 @@ EC.receiveLesson({
     {"kind": "trace", "title": "A 4,096-token window reaches 131,072 tokens once you stack 32 layers", "caption": "**Restricting every token to the previous `W` positions is `O(N·W)` instead of `O(N²)`, and it looks like it should destroy long-range dependency — except that stacking layers recovers it.** Each layer extends the reach by `W`, so **Mistral 7B's 32 layers × 4096 is 131,072 tokens of effective reach.** And the saving grows with length: **2× less compute at 8,192 tokens, 8× at 32,768, 32× at 131,072** — because the window is constant while full attention is not.", "left": "layers / length", "codeW": 160, "vars": ["effective reach", "compute saving"], "steps": [{"code": "1 layer", "state": ["4,096 tokens", "-"], "tone": "warn"}, {"code": "8 layers", "state": ["32,768", "-"], "changed": [0], "tone": "good"}, {"code": "32 layers", "state": ["131,072", "-"], "changed": [0], "tone": "violet", "note": "Mistral 7B"}, {"code": "N = 32,768", "state": ["-", "8x less"], "changed": [0, 1], "tone": "good"}, {"code": "N = 131,072", "state": ["-", "32x less"], "changed": [1], "tone": "good"}], "t": "diagram", "id": "dg-5_12-04-2"},
 
 
+
+
     { t: "p", text: "Mistral's approach is different: restrict every token to attending only to the previous `W` positions. That is `O(N·W)` instead of `O(N²)`, and it looks like it should destroy long-range dependency — except that stacking layers recovers it." },
 
     { t: "out", text:
@@ -83,6 +89,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "Extending a trained model", id: "extending" },
 
     {"kind": "layers", "title": "Six ways to extend a trained model, and two of them need no fine-tuning", "caption": "The first three are all operations on RoPE's frequency spectrum from 4.9. **Position Interpolation scales the indices and compresses high-frequency detail uniformly; NTK-aware raises the base so high frequencies are barely touched and low ones stretch, and often works with no fine-tuning at all; YaRN adds attention temperature and took LLaMA-3 from 8K to 128K.** The last two change the architecture instead: **landmark tokens summarise preceding context, and Infini-attention keeps a fixed-size compressive memory.**", "items": [{"label": "Position Interpolation", "sub": "scale indices by L_train / L_target", "tone": "good", "side": "light FT"}, {"label": "NTK-aware scaling", "sub": "raise the RoPE base; low frequencies stretch", "tone": "violet", "side": "often no FT"}, {"label": "YaRN", "sub": "NTK-by-parts + attention temperature", "tone": "violet", "side": "8K -> 128K"}, {"label": "Dynamic NTK", "sub": "scale by the actual length, at inference", "tone": "good", "side": "no FT"}, {"label": "Landmark / beacon tokens", "sub": "summary tokens for distant context", "tone": "accent", "side": "architecture"}, {"label": "Infini-attention", "sub": "local attention + a compressive memory", "tone": "accent", "side": "architecture"}], "t": "diagram", "id": "dg-5_12-05-3"},
+
+
 
 
     { t: "dl", items: [
@@ -102,6 +110,8 @@ EC.receiveLesson({
     {"kind": "flow", "title": "The U-shape is two mechanisms this course already measured", "caption": "Needle-in-a-haystack accuracy is **high at the start, high at the end, with a pronounced dip in the middle** — and both halves have a measured cause. **Attention sinks: 4.4 measured a head sending 86.4% of its mass to a structural token, and early positions attract attention regardless of content. RoPE's decay: 4.9 measured aligned scores falling to 5.36% of their distance-0 value by 2,048 positions.** **The beginning is favoured by the first, the end by the second, and the middle gets neither** — so **measure effective context rather than reading it off a spec sheet.**", "cols": 3, "nodes": [{"id": "s", "label": "Attention sinks favour the start", "sub": "4.4: 86.4% to a structural token", "tone": "crit"}, {"id": "r", "label": "RoPE's decay favours the end", "sub": "4.9: 5.36% of score by 2048", "tone": "crit"}, {"id": "m", "label": "The middle gets neither", "sub": "hence the U-shape", "tone": "crit"}, {"id": "a", "label": "So 128K may degrade past 32K", "sub": "measure, do not read the spec", "tone": "warn"}, {"id": "q", "label": "Retrieval into a short window competes", "sub": "2.8 is not superseded", "tone": "violet"}], "edges": [["s", "m"], ["r", "m"], ["m", "a"], ["a", "q"]], "t": "diagram", "id": "dg-5_12-06-4"},
 
 
+
+
     { t: "callout", kind: "crit", title: "Lost in the middle, explained by two things already measured",
       body: [{ t: "p", text: "Hide a fact at a random position in a long context and ask for it — the standard needle-in-a-haystack benchmark — and retrieval accuracy forms a **U-shape**: high at the start, high at the end, a pronounced dip in the middle. Two mechanisms from earlier lessons both point that way. **Attention sinks**: lesson 4.4 measured a BERT head sending 86.4% of its mass to a structural token, and early positions attract attention regardless of content. **RoPE's distance decay**: lesson 4.9 measured aligned query-key scores falling to 5.36% of their distance-0 value by 2,048 positions, so recent tokens are structurally easier to attend to. The beginning is favoured by the first mechanism and the end by the second. The middle gets neither." }] },
 
@@ -110,6 +120,8 @@ EC.receiveLesson({
     { t: "h2", n: "07", text: "Parallelism for training", id: "parallelism" },
 
     {"kind": "trace", "title": "Four parallelisms, and each one is named for what it cannot do", "caption": "Read the cost column as the selection rule. **Data parallel is the cheapest and requires the full model on every device, so it solves nothing about model size.** Tensor parallel splits individual matrices and pays **high communication per layer.** Pipeline parallel splits layers and pays **bubble overhead between stages.** And sequence/ring parallel is the only one that addresses context length — **at the price of a high-bandwidth ring topology**, which is why it is a datacentre technique rather than a general one.", "left": "technique", "codeW": 150, "vars": ["what it splits", "use when", "cost"], "steps": [{"code": "data parallel", "state": ["the batch", "batch too large", "full model per device"], "tone": "good"}, {"code": "tensor parallel", "state": ["individual matrices", "one layer too large", "high comms per layer"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "pipeline parallel", "state": ["layers across devices", "model too deep", "bubble overhead"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "sequence / ring", "state": ["the sequence itself", "context too long", "a high-bandwidth ring"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-5_12-07-5"},
+
+
 
 
     { t: "table",

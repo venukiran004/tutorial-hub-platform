@@ -29,6 +29,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "math", tex: "\\text{Attention}(Q, K, V) = \\text{softmax}\\!\\left(\\frac{QK^{\\top}}{\\sqrt{d_k}}\\right)V" },
 
     { t: "p", text: "Five steps hide in that line. Project the input three ways; multiply queries by keys to get scores; scale; softmax each row; use the resulting weights to average the values." },
@@ -84,6 +86,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Take each component of `q` and `k` to be independent with mean 0 and variance 1. The dot product is a sum of `d_k` such products:" },
 
     { t: "math", tex: "\\mathbb{E}[q \\cdot k] = \\sum_{i=1}^{d_k} \\mathbb{E}[q_i]\\,\\mathbb{E}[k_i] = 0, \\qquad \\operatorname{Var}(q \\cdot k) = \\sum_{i=1}^{d_k} \\mathbb{E}[q_i^2]\\,\\mathbb{E}[k_i^2] = d_k" },
@@ -106,6 +110,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text:
 "softmax over n = 64 scores drawn N(0, sigma^2), averaged over 400 draws\n\nscore std    mean max p    mean entropy    mean grad norm\n0.5          0.0453        4.0359          4.1102e-02\n1.0          0.1117        3.6742          5.3834e-02\n2.0          0.3041        2.6371          7.9304e-02\n4.0          0.5873        1.3401          8.2483e-02\n8.0          0.7877        0.5867          5.8543e-02\n16.0         0.9016        0.2521          3.1649e-02\n\nmaximum possible entropy at n = 64 is ln 64 = 4.1589" },
 
@@ -121,6 +127,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "Complexity", id: "complexity" },
 
     {"kind": "trace", "title": "Everything is quadratic in n except the one step people worry about", "caption": "Read the memory column rather than the time column. **`QKᵀ` materialises an `(n × n)` matrix and so does the softmax, so memory is `O(n²)` regardless of `d` — which is why a long sequence runs out of memory before it runs out of time, and why FlashAttention's contribution is not computing the score matrix faster but never storing it.** And the final `weights · V` step is `O(n² d_v)` in time but only `O(n·d_v)` in memory, because the output is the same shape as the input.", "left": "operation", "codeW": 150, "vars": ["time", "memory"], "steps": [{"code": "Q K^T", "state": ["O(n^2 d_k)", "O(n^2)"], "tone": "crit"}, {"code": "softmax", "state": ["O(n^2)", "O(n^2)"], "changed": [0], "tone": "crit", "note": "the same matrix again"}, {"code": "weights . V", "state": ["O(n^2 d_v)", "O(n d_v)"], "changed": [0, 1], "tone": "good"}, {"code": "whole layer", "state": ["O(n^2 d)", "O(n^2)"], "changed": [0, 1], "tone": "violet", "note": "memory is the binding limit"}], "t": "diagram", "id": "dg-4_3-05-3"},
+
+
 
 
 

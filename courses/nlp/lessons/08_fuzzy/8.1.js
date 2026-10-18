@@ -23,6 +23,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The question all of this answers", id: "question" },
 
+    {"kind": "trace", "title": "Two families, and each one is blind to exactly what the other handles", "caption": "*“Jon Smith, 12 High St”* against *“John Smyth, 12 High Street”* — **there is no exact match to look up, so you need a score between 0 and 1 and a threshold above which you call it a match. Everything in this module is either a way to compute that score or a way to choose that threshold.** And the two families are complementary rather than competing: **edit distance handles typos and is blind to reordered words; set and vector methods handle reordering and are blind to typos inside a word.**", "left": "family", "codeW": 150, "vars": ["compares", "good at", "blind to"], "steps": [{"code": "edit distance", "state": ["characters, in order", "typos, OCR errors", "reordered words"], "tone": "good"}, {"code": "set / vector", "state": ["tokens, order ignored", "reordering, extra words", "typos inside a word"], "changed": [0, 1, 2], "tone": "good"}, {"code": "so", "state": ["each is blind to the other's strength", "-", "-"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-8_1-01-0"},
+
     { t: "out", text:
 "Two records say\n\n    \"Jon Smith, 12 High St\"\n    \"John Smyth, 12 High Street\"\n\nAre they the same person?" },
 
@@ -40,6 +42,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Levenshtein distance", id: "levenshtein" },
 
+    {"kind": "flow", "title": "Three operations and a recurrence that is the best of three neighbours", "caption": "**The minimum number of single-character edits — insert, delete or substitute — to turn one string into another.** The recurrence is the whole algorithm: **each cell is the best of the cell above plus one (delete), the cell left plus one (insert), and the diagonal plus the substitution cost.** The boundary conditions carry the base case: **`d[i][0] = i` and `d[0][j] = j`, because turning a string into an empty one costs one delete per character.** And **`cost = 0` when the characters match**, which is what lets a diagonal run through for free.", "cols": 3, "nodes": [{"id": "a", "label": "d[i-1][j] + 1", "sub": "delete", "tone": "good"}, {"id": "l", "label": "d[i][j-1] + 1", "sub": "insert", "tone": "good"}, {"id": "d", "label": "d[i-1][j-1] + cost", "sub": "substitute; cost 0 if equal", "tone": "good"}, {"id": "m", "label": "Take the minimum", "sub": "per cell", "tone": "violet"}, {"id": "b", "label": "d[i][0] = i, d[0][j] = j", "sub": "one delete per character", "tone": "accent"}], "edges": [["a", "m"], ["l", "m"], ["d", "m"], ["b", "m"]], "t": "diagram", "id": "dg-8_1-02-1"},
+
     { t: "p", text: "The minimum number of single-character edits — insert, delete or substitute — to turn one string into another. It is a **distance**: 0 means identical, larger means further apart." },
 
     { t: "math", tex: "d[i][j] = \\min \\begin{cases} d[i-1][j] + 1 & \\text{delete} \\\\ d[i][j-1] + 1 & \\text{insert} \\\\ d[i-1][j-1] + \\text{cost} & \\text{substitute} \\end{cases}" },
@@ -47,6 +51,8 @@ EC.receiveLesson({
     { t: "p", text: "with `d[i][0] = i` and `d[0][j] = j` — turning a string into an empty one costs one delete per character — and `cost = 0` if the characters match, 1 otherwise." },
 
     { t: "h2", n: "03", text: "The matrix, filled", id: "matrix" },
+
+    {"kind": "trace", "title": "One cell checked by hand, and the diagonal wins at 1", "caption": "For row `k`, column `s`: **above gives 2, left gives 2, and the diagonal gives `d[0][0] + cost = 0 + 1 = 1` because `k ≠ s`** — so the minimum is 1, which is what the matrix says. **Every cell is the best of three neighbours, and the bottom-right cell is the answer for the whole pair: 3.** The three edits it found: **`kitten → sitten`, `sitten → sittin`, `sittin → sitting`** — two substitutions and an insert.", "left": "candidate", "codeW": 170, "vars": ["arithmetic", "value"], "steps": [{"code": "above (delete)", "state": ["d[0][1] + 1 = 1 + 1", "2"], "tone": "warn"}, {"code": "left (insert)", "state": ["d[1][0] + 1 = 1 + 1", "2"], "changed": [0, 1], "tone": "warn"}, {"code": "diagonal (substitute)", "state": ["d[0][0] + 1 = 0 + 1", "1"], "changed": [0, 1], "tone": "good", "note": "k != s, so cost 1"}, {"code": "minimum", "state": ["-", "1 - matches the matrix"], "changed": [0, 1], "tone": "violet"}, {"code": "bottom right", "state": ["the whole pair", "3"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-8_1-03-2"},
 
     { t: "out", text:
 "kitten -> sitting\n\n            \"\"    s    i    t    t    i    n    g\n   \"\"       0    1    2    3    4    5    6    7\n   k        1    1    2    3    4    5    6    7\n   i        2    2    1    2    3    4    5    6\n   t        3    3    2    1    2    3    4    5\n   t        4    4    3    2    1    2    3    4\n   e        5    5    4    3    2    2    3    4\n   n        6    6    5    4    3    3    2    3\n\n  answer: 3 (bottom right)" },
@@ -57,6 +63,8 @@ EC.receiveLesson({
     { t: "p", text: "The three edits the matrix found: `kitten → sitten` (substitute k→s), `sitten → sittin` (substitute e→i), `sittin → sitting` (insert g). Every cell is the best of three neighbours, and the bottom-right cell is the answer for the whole pair." },
 
     { t: "h2", n: "04", text: "Implementing it", id: "implementation" },
+
+    {"kind": "trace", "title": "Three cases including the empty string, all matching the reference", "caption": "The implementation reproduces all three: **`kitten`/`sitting` = 3, `flaw`/`lawn` = 2, and `''`/`'abc'` = 3.** The last is the one worth having in a test suite — **it exercises the boundary row the recurrence depends on**, and a version that initialises `d[0][j]` to zero instead of `j` passes the first two cases and fails only this one. **Which is the general shape of an edit-distance bug: the interior logic is easy and the base case is where it goes wrong.**", "left": "pair", "codeW": 190, "vars": ["distance", "reference"], "steps": [{"code": "'kitten' / 'sitting'", "state": ["3", "3 ok"], "tone": "good"}, {"code": "'flaw' / 'lawn'", "state": ["2", "2 ok"], "changed": [0, 1], "tone": "good"}, {"code": "'' / 'abc'", "state": ["3", "3 ok"], "changed": [0], "tone": "violet", "note": "exercises the base case"}], "t": "diagram", "id": "dg-8_1-04-3"},
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n81.py — two rows, not a full matrix", code:
 "def levenshtein(a, b):\n    \"\"\"Two rows instead of the full matrix: O(min(m, n)) memory.\"\"\"\n    prev = list(range(len(b) + 1))          # the \"\" row: 0, 1, 2, ...\n    for i, ca in enumerate(a, 1):\n        cur = [i]                           # the \"\" column\n        for j, cb in enumerate(b, 1):\n            cur.append(min(\n                prev[j] + 1,                # delete\n                cur[j - 1] + 1,             # insert\n                prev[j - 1] + (ca != cb),   # substitute; True is 1\n            ))\n        prev = cur\n    return prev[-1]",
@@ -69,6 +77,8 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Every comparison costs the product of the two string lengths. That is fine for one pair and ruinous at scale: comparing a million records pairwise is 5 × 10¹¹ comparisons, which lesson 8.5 computes at roughly **15 years** at ten thousand per second. The response is not a faster edit-distance implementation — it is to **not compare most pairs at all**, which is what blocking does. Recognising that the algorithm's cost forces an architectural decision is the important part." }] },
 
     { t: "h2", n: "05", text: "Damerau-Levenshtein", id: "damerau" },
+
+    {"kind": "trace", "title": "A transposition costs 2 under Levenshtein and 1 under Damerau", "caption": "**Levenshtein has three operations; Damerau adds a fourth — transposition of two adjacent characters, at a cost of 1.** The three cases it fixes are all the same keyboard event: **`ca`/`ac`, `teh`/`the` — the classic typo — and `Smith`/`Smtih`.** All three drop from 2 to 1. And the last row is the control: **`kitten`/`sitting` is 3 either way, because there is no transposition in it** — so Damerau is strictly a refinement rather than a different metric.", "left": "pair", "codeW": 160, "vars": ["Levenshtein", "Damerau", "why"], "steps": [{"code": "'ca' / 'ac'", "state": ["2", "1", "one transposition"], "tone": "good"}, {"code": "'teh' / 'the'", "state": ["2", "1", "the classic typo"], "changed": [2], "tone": "good"}, {"code": "'Smith' / 'Smtih'", "state": ["2", "1", "adjacent swap"], "changed": [2], "tone": "good"}, {"code": "'kitten' / 'sitting'", "state": ["3", "3", "no transposition"], "changed": [0, 1, 2], "tone": "accent"}], "t": "diagram", "id": "dg-8_1-05-4"},
 
     { t: "p", text: "Levenshtein has three operations. Damerau adds a fourth: **transposition** of two adjacent characters, at a cost of 1." },
 
@@ -83,6 +93,8 @@ EC.receiveLesson({
       caption: "This is *optimal string alignment* — it forbids editing a substring twice. True Damerau-Levenshtein allows it and is more complex; the OSA variant is what almost every library implements." },
 
     { t: "h2", n: "06", text: "From distance to similarity", id: "similarity" },
+
+    {"kind": "trace", "title": "The reordered pair scores 0.0909, which is worse than two unrelated names", "caption": "**Dividing by the longer length bounds the result in [0, 1] and makes scores comparable across lengths — a distance of 2 means something very different on a 4-character string than on a 40-character one.** Then the failure the whole module exists for: **`'John Smith'`/`'Jon Smyth'` scores 0.8000 with two typos, and `'John Smith'`/`'Smith, John'` scores 0.0909 for being the same name reordered.** Edit distance is not slightly wrong about reordering — **it rates a reordering as almost maximally different.**", "left": "pair", "codeW": 190, "vars": ["distance", "similarity"], "steps": [{"code": "'John Smith' / 'Jon Smyth'", "state": ["2", "0.8000"], "tone": "good", "note": "two typos"}, {"code": "'Acme Corp Ltd' / 'Ltd Acme Corp'", "state": ["8", "0.3846"], "changed": [0, 1], "tone": "crit"}, {"code": "'John Smith' / 'Smith, John'", "state": ["10", "0.0909"], "changed": [0, 1], "tone": "crit", "note": "the same name"}], "t": "diagram", "id": "dg-8_1-06-5"},
 
     { t: "math", tex: "\\text{similarity} = 1 - \\frac{\\text{distance}}{\\max(|a|, |b|)}" },
 

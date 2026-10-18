@@ -31,6 +31,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "NLTK is a teaching and research toolkit that predates the production libraries by a decade. It bundles dozens of corpora, implementations of most classical algorithms, and interfaces to lexical resources — and it makes every step inspectable. Where spaCy hands you one opinionated pipeline, NLTK hands you the parts." },
 
     { t: "dl", items: [
@@ -43,6 +45,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Tokenising and tagging", id: "tokenising" },
 
     {"kind": "trace", "title": "The sentence splitter did not break after Inc.", "caption": "Both hard cases come out right: **`Inc.` keeps its full stop as one token, and the sentence splitter still broke after `Cupertino.` rather than after `Inc.`** — that is the **Punkt** model, which is trained rather than rule-based, doing exactly what it should. Worth noting because it is the same decision 1.1's regex got wrong on `e-mailed`: **abbreviation handling is not something a character class can express.**", "left": "step", "codeW": 160, "vars": ["output", "the hard part"], "steps": [{"code": "sent_tokenize", "state": ["2 sentences", "did NOT break after Inc."], "tone": "good", "note": "Punkt, trained"}, {"code": "word_tokenize", "state": ["14 tokens", "'Inc.' kept its full stop"], "changed": [0, 1], "tone": "good"}, {"code": "pos_tag", "state": ["NNP NNP VBD NNP NNP", "'Inc.' tagged NNP"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-3_2-02-1"},
+
+
 
 
 
@@ -73,6 +77,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "It is commonly stated that `ne_chunk` returns *Steve Jobs (PERSON)*, *Apple Inc. (ORGANIZATION)* and *Cupertino (GPE)*. Run on NLTK 3.10.3, it does not." },
 
     { t: "out", text:
@@ -84,6 +90,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Stemming against lemmatisation", id: "stemming" },
 
     {"kind": "trace", "title": "Twelve words chosen to expose the difference, and the verb POS does most of the work", "caption": "**`ran` is the clearest row: both stemmers and the noun lemmatiser leave it alone, and only `wordnet-v` gets `run`** — so the part-of-speech argument from 1.2 is what separates the columns, not the algorithm. **`was` splits all four: Porter mangles it to `wa`, Snowball leaves it, and the verb lemmatiser returns `be`.** And the `universal / university / universe` block is the stemmer failure mode in one line: **all three collapse to `univers`, which is three unrelated meanings in one index key.**", "left": "word", "codeW": 130, "vars": ["porter", "snowball", "wordnet-n", "wordnet-v"], "steps": [{"code": "ran", "state": ["ran", "ran", "ran", "run"], "tone": "warn", "note": "only the verb POS works"}, {"code": "was", "state": ["wa", "was", "wa", "be"], "changed": [0, 1, 2, 3], "tone": "warn"}, {"code": "studies", "state": ["studi", "studi", "study", "study"], "changed": [0, 1, 2, 3], "tone": "good"}, {"code": "ponies", "state": ["poni", "poni", "pony", "ponies"], "changed": [0, 1, 2, 3], "tone": "warn"}, {"code": "universal / university / universe", "state": ["univers", "univers", "unchanged", "unchanged"], "changed": [0, 1, 2, 3], "tone": "crit", "note": "three meanings, one key"}], "t": "diagram", "id": "dg-3_2-04-3"},
+
+
 
 
 
@@ -115,6 +123,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "WordNet is a hand-built lexical database: words grouped into synsets (sets of synonyms sharing one meaning), linked by relations — hypernym for *is-a*, hyponym for the inverse, meronym for *part-of*, plus antonymy. It encodes what a word *means* and how meanings relate, which no amount of distributional training gives you directly." },
 
     { t: "out", text:
@@ -128,6 +138,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Frequency and collocations", id: "collocations" },
 
     {"kind": "trace", "title": "The scoring function decides whether you find any collocations at all", "caption": "Same 161,600 tokens of *Emma*, two scoring functions, two completely different lists. **Raw frequency returns `to be`, `of the`, `it was` — grammar, not phrases.** PMI returns `brunswick square`, `william larkins`, `box hill`, `maple grove`: **proper nouns and place names, which is what a collocation is.** And the one junk entry is instructive: **`don t` is a tokenisation artefact, so PMI faithfully reports that the apostrophe split produced a highly-associated pair.**", "left": "scoring function", "codeW": 160, "vars": ["top bigrams", "what they are"], "steps": [{"code": "raw frequency", "state": ["to be, of the, it was, in the", "grammar"], "tone": "crit"}, {"code": "PMI", "state": ["brunswick square, william larkins", "names and places"], "changed": [0, 1], "tone": "good"}, {"code": "PMI, continued", "state": ["box hill, maple grove, abbey mill", "real collocations"], "changed": [0], "tone": "good"}, {"code": "and one artefact", "state": ["don t", "the apostrophe split"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-3_2-06-5"},
+
+
 
 
 

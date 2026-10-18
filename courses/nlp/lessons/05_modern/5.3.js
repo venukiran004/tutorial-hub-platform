@@ -28,6 +28,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Decoding is sequential because token `t+1` needs token `t`. Speculative decoding attacks that dependency: a small draft model proposes `K` tokens cheaply, and the large model verifies **all K in a single forward pass**, because verification is parallel even though generation is not." },
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n53.py — the full loop", code:
@@ -41,6 +43,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text:
 "target gpt2-medium (354,823,168)   draft gpt2 (124,439,808)\n48 new tokens, greedy\n\n  K=2   12.36 s   proposed  56   accepted 34 (61%)   19 passes -> 1.71 tok/pass\n  K=4    9.60 s   proposed  76   accepted 34 (45%)   19 passes -> 2.53 tok/pass\n  K=8   15.04 s   proposed 120   accepted 38 (32%)   15 passes -> 3.47 tok/pass\n\n  plain greedy on gpt2-medium: 4.85 s, 48 passes" },
 
@@ -50,6 +54,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "The arithmetic that decides it", id: "arithmetic" },
 
     {"kind": "trace", "title": "At 90% acceptance K=8 gives 6.13 tokens a pass; at 30% it gives 1.43", "caption": "**The expected gain saturates in `K` and is governed almost entirely by the acceptance rate `a`: at `a = 0.3`, raising `K` from 1 to 8 moves 1.30 to 1.43 — nothing.** Which explains §02's result and dictates the production shape: **pair a 7B target with a 1B draft, or train a draft specifically to imitate the target.** Checked at one position, the two models disagreed outright — **gpt2-medium wanted ` 1950` and gpt2 wanted ` late`.**", "left": "acceptance a", "codeW": 140, "vars": ["K=1", "K=2", "K=4", "K=8"], "steps": [{"code": "0.3", "state": ["1.30", "1.39", "1.43", "1.43"], "tone": "crit", "note": "K buys nothing"}, {"code": "0.5", "state": ["1.50", "1.75", "1.94", "2.00"], "changed": [0, 1, 2, 3], "tone": "warn"}, {"code": "0.7", "state": ["1.70", "2.19", "2.77", "3.20"], "changed": [0, 1, 2, 3], "tone": "good"}, {"code": "0.9", "state": ["1.90", "2.71", "4.10", "6.13"], "changed": [0, 1, 2, 3], "tone": "violet"}], "t": "diagram", "id": "dg-5_3-03-2"},
+
+
 
 
 
@@ -99,6 +105,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text:
 "precision     bytes/param    7B model     70B model\nFP32              4.0          28.0 GB      280.0 GB\nFP16 / BF16       2.0          14.0 GB      140.0 GB\nINT8              1.0           7.0 GB       70.0 GB\nINT4              0.5           3.5 GB       35.0 GB\n\nreference's 7B figures reproduce exactly" },
 
@@ -115,6 +123,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Choosing what to do first", id: "order" },
 
     {"kind": "trace", "title": "Five of seven techniques are lossless, so the order is not a trade-off question", "caption": "Read the “lossy” column: **the KV cache, FlashAttention, continuous batching and PagedAttention all recover pure waste — recomputation, memory traffic, idle slots, over-allocation — so they are not trades and should be done first.** GQA is slightly lossy for an 8× cache reduction. **Quantisation costs 0.5–2% accuracy, and speculative decoding costs nothing but only works with a much cheaper draft** — which §02 measured the hard way.", "left": "technique", "codeW": 170, "vars": ["what it recovers", "lossy?", "gain"], "steps": [{"code": "KV cache", "state": ["prefix recomputation", "no", "grows with length"], "tone": "good"}, {"code": "FlashAttention", "state": ["memory traffic", "no", "2-4x on attention"], "changed": [0, 2], "tone": "good"}, {"code": "continuous batching + PagedAttention", "state": ["idle slots, over-allocation", "no", "2-4x throughput"], "changed": [0, 2], "tone": "good"}, {"code": "GQA / MQA", "state": ["cache size", "slightly", "8x at GQA8"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "quantisation", "state": ["weight memory", "yes, 0.5-2%", "2x per halving"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "speculative decoding", "state": ["the sequential dependency", "no", "2-3x, if the draft is cheap"], "changed": [0, 1, 2], "tone": "accent"}], "t": "diagram", "id": "dg-5_3-06-4"},
+
+
 
 
 

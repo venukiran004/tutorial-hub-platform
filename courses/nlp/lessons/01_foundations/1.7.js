@@ -35,6 +35,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text: `  Apple Inc.                ORG        Companies, agencies, institutions
   Steve Jobs                PERSON     People, including fictional
   Cupertino                 GPE        Countries, cities, states
@@ -46,6 +48,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Tagging schemes", id: "schemes" },
 
     {"kind": "trace", "title": "Two adjacent people, and the scheme decides whether they are one person", "caption": "This is why the `B-` exists, and it takes one example to show: **`IO` decodes `Steve Jobs Tim Cook` to ONE span of four tokens; `BIO` decodes it to two.** Without a begin tag there is no way to express a boundary between two adjacent entities of the same type. **BIOES** makes every boundary explicit rather than inferred, at `4n+1` tags instead of `2n+1` — **73 classes instead of 37 at 18 entity types**, which is the cost to weigh against a usually-small gain.", "left": "scheme", "codeW": 130, "vars": ["tags for 'Steve Jobs Tim Cook'", "decoded spans", "tags at 18 types"], "steps": [{"code": "IO", "state": ["PER PER PER PER", "ONE span of 4", "19"], "tone": "crit"}, {"code": "BIO", "state": ["B-PER I-PER B-PER I-PER", "two spans", "37"], "changed": [0, 1, 2], "tone": "good"}, {"code": "BIOES", "state": ["+ E- and S-", "two spans, explicit", "73"], "changed": [0, 1, 2], "tone": "warn", "note": "4n+1, not 2n+1"}], "t": "diagram", "id": "dg-1_7-02-1"},
+
+
 
 
 
@@ -100,6 +104,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text: `  gold : ['B-PER', 'I-PER', 'I-PER', 'O', 'B-ORG', 'I-ORG']  -> spans [('PER',0,2), ('ORG',4,5)]
   pred : ['B-PER', 'I-PER', 'O',     'O', 'B-ORG', 'I-ORG']  -> spans [('PER',0,1), ('ORG',4,5)]
 
@@ -112,6 +118,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "What a CRF adds", id: "crf" },
 
     {"kind": "trace", "title": "Six of twenty-five transitions are structurally impossible", "caption": "`O` to `I-PER` is not a mistake the model should be slightly discouraged from — **it is not a valid tag sequence at all**, because an inside tag with no begin before it decodes to nothing. **A per-token classifier can emit it, because it scores each position independently; a CRF scores the sequence, so it can learn a transition weight that makes the invalid moves unreachable.** That is the whole contribution: **6 of 25 transitions here are structurally invalid, and only a sequence model can rule them out.**", "left": "transition", "codeW": 160, "vars": ["valid?", "why"], "steps": [{"code": "O -> B-PER", "state": ["ok", "an entity starts"], "tone": "good"}, {"code": "O -> I-PER", "state": ["BAD", "inside, with no begin"], "changed": [0, 1], "tone": "crit"}, {"code": "B-PER -> I-ORG", "state": ["BAD", "the type changed mid-span"], "changed": [0, 1], "tone": "crit"}, {"code": "B-ORG -> I-ORG", "state": ["ok", "the span continues"], "changed": [0, 1], "tone": "good"}, {"code": "total", "state": ["6 of 25 invalid", "a per-token model can emit them"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-1_7-04-3"},
+
+
 
 
 
@@ -149,6 +157,8 @@ predictions = crf.decode(emissions, mask=mask)   # inference: Viterbi`,
     { t: "h2", n: "05", text: "Choosing an approach", id: "approaches" },
 
     {"kind": "layers", "title": "Five approaches, and the production answer is two of them at once", "caption": "**A regex is exact, auditable and free, and no learned model will beat it on a pattern that is genuinely a pattern** — postcodes, order numbers, ISINs, dates in a known format. Transformers are the accuracy ceiling for the open categories, because people, organisations and products need context. **LLM zero-shot is for the long tail: a new entity type tomorrow with no labelled data, at a cost per document and with output that varies between calls.** Hence the last row: **rules for the formatted entities, a model for the open ones, and a merge step where rules win.**", "items": [{"label": "Rule-based regex", "sub": "no training data; brittle, low recall", "tone": "good", "side": "closed sets"}, {"label": "CRF / BiLSTM-CRF", "sub": "good with small data; feature engineering", "tone": "good", "side": "small data"}, {"label": "spaCy NER", "sub": "fast, production-ready; needs training data", "tone": "good", "side": "throughput"}, {"label": "Transformer NER", "sub": "best accuracy; slower, needs a GPU", "tone": "violet", "side": "the ceiling"}, {"label": "LLM zero-shot", "sub": "no training; expensive, inconsistent", "tone": "warn", "side": "long tail"}, {"label": "Hybrid: rules + model + merge", "sub": "and rules win the overlaps", "tone": "teal", "side": "the usual"}], "t": "diagram", "id": "dg-1_7-05-4"},
+
+
 
 
 

@@ -24,6 +24,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Four steps, each one re-running the decoder over what it has built", "caption": "**Each step re-runs the decoder over the sequence so far, takes the distribution at the last position, picks a token and appends it** — and the loop ends when it picks `<eos>`, which is why §01 of 6.5 put that token in the vocabulary. **The encoder does not run again: `memory` was computed once and is reused at every step.** This is what the loop looks like **when the model works**; §02 is what this model actually did.", "left": "step", "codeW": 190, "vars": ["fed", "picked"], "steps": [{"code": "1", "state": ["[<bos>]", "ich"], "tone": "good"}, {"code": "2", "state": ["[<bos>, ich]", "liebe"], "changed": [0, 1], "tone": "good"}, {"code": "3", "state": ["[<bos>, ich, liebe]", "KI"], "changed": [0, 1], "tone": "good"}, {"code": "4", "state": ["[<bos>, ich, liebe, KI]", "<eos> -> STOP"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-6_7-01-0"},
 
+
+
     { t: "out", text:
 "step 1: feed [<bos>]                     -> pick 'ich'\nstep 2: feed [<bos>, ich]                -> pick 'liebe'\nstep 3: feed [<bos>, ich, liebe]         -> pick 'KI'\nstep 4: feed [<bos>, ich, liebe, KI]     -> pick '<eos>'  -> STOP" },
 
@@ -32,6 +34,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "What actually happened", id: "actual" },
 
     {"kind": "trace", "title": "It emitted “liebe” five times and never stopped", "caption": "6.6's mode collapse becomes a generation failure directly: **`liebe` at 0.762, then feeding it back gives `liebe` at 0.804, then 0.792, then 0.777, then 0.777** — and the probability **rises** at step 2 because the model now sees its own favourite token in its input. **It never picks `<eos>`, so there is no stopping condition and the loop runs to whatever length limit you set.** Which is the clearest demonstration of 4.5's exposure bias: **teacher forcing scored 0.436 at position 1, and free generation never gets there.**", "left": "step", "codeW": 190, "vars": ["fed", "picked", "p"], "steps": [{"code": "1", "state": ["[<bos>]", "liebe", "0.762"], "tone": "crit"}, {"code": "2", "state": ["[<bos>, liebe]", "liebe", "0.804"], "changed": [0, 1, 2], "tone": "crit", "note": "more confident"}, {"code": "3", "state": ["[<bos>, liebe, liebe]", "liebe", "0.792"], "changed": [0, 2], "tone": "crit"}, {"code": "4-5", "state": ["...", "liebe", "0.777"], "changed": [0, 2], "tone": "crit", "note": "never picks <eos>"}], "t": "diagram", "id": "dg-6_7-02-1"},
+
+
 
     { t: "out", text:
 "step 1: feed ['<bos>']                              -> 'liebe'  p=0.762\nstep 2: feed ['<bos>','liebe']                      -> 'liebe'  p=0.804\nstep 3: feed ['<bos>','liebe','liebe']              -> 'liebe'  p=0.792\nstep 4: feed ['<bos>','liebe','liebe','liebe']      -> 'liebe'  p=0.777\nstep 5: ...                                         -> 'liebe'  p=0.777\nstep 6: ...                                         -> 'liebe'  p=0.792\n\nno <eos> after 6 steps\n\n  produced: liebe liebe liebe liebe liebe liebe\n  wanted  : ich liebe KI" },
@@ -46,6 +50,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "One encoder pass and six decoder passes", "caption": "**The encoder runs once — `memory` is (3, 4) and computed one time — while the decoder runs once per generated token.** Which is the asymmetry that governs the cost of translation and of every encoder-decoder system: **source length is paid once and target length is paid per token.** It is also exactly where 5.2's KV cache applies: **the decoder's six passes re-attend over a prefix that grows each time, so caching the K and V of what is already written is the obvious saving.**", "left": "component", "codeW": 170, "vars": ["passes", "why"], "steps": [{"code": "encoder", "state": ["1", "memory is reused"], "tone": "good"}, {"code": "decoder", "state": ["6", "one per generated token"], "changed": [0, 1], "tone": "warn"}, {"code": "so", "state": ["source paid once, target per token", "and 5.2's cache applies here"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-6_7-03-2"},
 
+
+
     { t: "out", text:
 "6 generated tokens\n\n  encoder passes:  1    (memory shape (3, 4), computed once)\n  decoder passes:  6    (one per generated token)" },
 
@@ -55,6 +61,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "The complete pipeline", id: "pipeline" },
 
     {"kind": "layers", "title": "Twelve steps, and the whole course so far fits in them", "caption": "Read it as the index it is. **Steps 1–2 are module 4's tokenisation and positional encoding, 3–6 are scaled dot-product attention, 7–8 are the residual, norm and FFN, 9–10 are the two masks, and 11–12 are the head and the loss.** Each line is one formula and one sentence, and every one of them has been computed by hand in this module. **The twelfth is the only one that is not part of the forward pass** — it is the number training pushes down.", "items": [{"label": "1-2: tokenise, embed, add PE", "sub": "words become vectors; stamp the order in", "tone": "accent", "side": "6.1"}, {"label": "3-6: Q K V, scores, softmax, mix", "sub": "every word rates every word, then absorbs context", "tone": "violet", "side": "6.2"}, {"label": "7-8: add and norm, then FFN", "sub": "keep the original and the scale; per-word processing", "tone": "good", "side": "6.3"}, {"label": "9-10: causal mask, cross-attention", "sub": "no peeking; the German asks the English", "tone": "crit", "side": "6.6"}, {"label": "11-12: logits, softmax, cross-entropy", "sub": "hidden vector to words; the number training reduces", "tone": "teal", "side": "6.6"}], "t": "diagram", "id": "dg-6_7-04-3"},
+
+
 
     { t: "table",
       head: ["#", "Step", "Formula", "In words"],

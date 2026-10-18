@@ -22,6 +22,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Five numbers scaled down by three to four orders of magnitude", "caption": "The toy is not a simplification of the mechanism, only of the sizes — **one head where GPT-3 has 96, four dimensions where it has 12,288, six words where it has 50,257.** Every operation in the next three lessons is the real operation on these numbers. **Which is the point of working it by hand: there is nothing in a 175B model's forward pass that does not appear here**, so if the arithmetic below is followable, the architecture is understood.", "left": "component", "codeW": 170, "vars": ["toy", "real GPT-3", "ratio"], "steps": [{"code": "vocabulary", "state": ["6 words", "50,257", "8,376x"], "tone": "accent"}, {"code": "d_model", "state": ["4", "12,288", "3,072x"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "attention heads", "state": ["1", "96", "96x"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "layers", "state": ["1", "96", "96x"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "d_ff", "state": ["4", "49,152", "12,288x"], "changed": [0, 1, 2], "tone": "violet", "note": "same operations throughout"}], "t": "diagram", "id": "dg-6_1-01-0"},
 
+
+
     { t: "table",
       head: ["Component", "Toy value", "Real GPT-3"],
       rows: [
@@ -44,6 +46,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Three words become three integers, and the text is never seen again", "caption": "**The stack receives integers and never sees the text again — so whatever the tokenizer decides is the model's entire view of the input.** One word per token here; a real tokenizer uses subwords, as 4.8 measured, **and nothing downstream cares.** Which is worth holding onto, because it means every tokenisation finding in module 4 is a finding about model capability rather than about preprocessing hygiene.", "left": "stage", "codeW": 170, "vars": ["value"], "steps": [{"code": "text", "state": ["'the cat sat'"], "tone": "accent"}, {"code": "tokens", "state": ["['the', 'cat', 'sat']"], "changed": [0], "tone": "good"}, {"code": "ids", "state": ["[0, 1, 2]"], "changed": [0], "tone": "good"}, {"code": "what the model sees", "state": ["only this - the text is gone"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-6_1-02-1"},
 
+
+
     { t: "out", text:
 "\"the cat sat\"  ->  [\"the\", \"cat\", \"sat\"]  ->  [0, 1, 2]" },
 
@@ -52,6 +56,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Embedding lookup", id: "embed" },
 
     {"kind": "trace", "title": "Three vectors carrying identity and no order at all", "caption": "The lookup is the whole operation — **`E[0]`, `E[1]`, `E[2]`, three rows of a 6×4 table.** And the resulting matrix has a property worth naming before fixing it: **at this point the model cannot distinguish *“the cat sat”* from *“sat cat the”*, exactly as 4.9 proved for attention in general.** The vectors encode which words are present, in no particular arrangement.", "left": "id", "codeW": 130, "vars": ["word", "E[id]"], "steps": [{"code": "0", "state": ["the", "[1, 0, 1, 0]"], "tone": "good"}, {"code": "1", "state": ["cat", "[0, 1, 1, 0]"], "changed": [0, 1], "tone": "good"}, {"code": "2", "state": ["sat", "[1, 1, 0, 0]"], "changed": [0, 1], "tone": "good"}, {"code": "order information", "state": ["none yet", "4.9's permutation proof"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-6_1-03-2"},
+
+
 
     { t: "out", text:
 "ID 0 \"the\"  ->  E[0] = [1, 0, 1, 0]\nID 1 \"cat\"  ->  E[1] = [0, 1, 1, 0]\nID 2 \"sat\"  ->  E[2] = [1, 1, 0, 0]" },
@@ -64,6 +70,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Positional encoding", id: "position" },
 
     {"kind": "trace", "title": "One fast pair and one slow pair, which is the whole spectrum at d=4", "caption": "**At `d = 4` the four dimensions are `[sin(pos), cos(pos), sin(pos/100), cos(pos/100)]`** — the miniature version of 4.2's geometric spectrum. Read the columns: **the fast pair swings from 0.0000 to 0.9093 over three positions while the slow pair moves from 0.0000 to 0.0200.** So **the fast pair distinguishes adjacent positions and the slow pair would distinguish regions of a much longer sequence**, and the reference values reproduce exactly.", "left": "pos", "codeW": 120, "vars": ["fast pair", "slow pair"], "steps": [{"code": "0", "state": ["[0.0000, 1.0000]", "[0.0000, 1.0000]"], "tone": "accent"}, {"code": "1", "state": ["[0.8415, 0.5403]", "[0.0100, 1.0000]"], "changed": [0, 1], "tone": "good"}, {"code": "2", "state": ["[0.9093, -0.4161]", "[0.0200, 0.9998]"], "changed": [0, 1], "tone": "good", "note": "slow pair barely moves"}], "t": "diagram", "id": "dg-6_1-04-3"},
+
+
 
     { t: "math", tex: "PE_{(pos,\\,2i)} = \\sin\\!\\left(\\frac{pos}{10000^{2i/d}}\\right), \\qquad PE_{(pos,\\,2i+1)} = \\cos\\!\\left(\\frac{pos}{10000^{2i/d}}\\right)" },
 
@@ -78,6 +86,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "The layer input", id: "input" },
 
     {"kind": "trace", "title": "Position 0 turns [1,0,1,0] into all ones", "caption": "The addition is elementwise and the first row is instructive: **`E[the] + PE(0)` is `[1,0,1,0] + [0,1,0,1]` = `[1,1,1,1]`** — the positional encoding at position 0 is **not** a zero vector, so even the first token's representation is moved. And this `X` is now the only input the block will see: **three rows, four columns, with word identity and position already blended into the same four numbers and no way to separate them again.**", "left": "token (position)", "codeW": 150, "vars": ["embedding", "+ PE", "= X row"], "steps": [{"code": "the (0)", "state": ["[1,0,1,0]", "[0.00, 1.00, 0.00, 1.00]", "[1.0000, 1.0000, 1.0000, 1.0000]"], "tone": "violet", "note": "PE(0) is not zero"}, {"code": "cat (1)", "state": ["[0,1,1,0]", "[0.84, 0.54, 0.01, 1.00]", "[0.8415, 1.5403, 1.0100, 1.0000]"], "changed": [0, 1, 2], "tone": "good"}, {"code": "sat (2)", "state": ["[1,1,0,0]", "[0.91, -0.42, 0.02, 1.00]", "[1.9093, 0.5839, 0.0200, 0.9998]"], "changed": [0, 1, 2], "tone": "good"}, {"code": "shape", "state": ["-", "-", "(3 tokens x 4 dims)"], "changed": [2], "tone": "accent"}], "t": "diagram", "id": "dg-6_1-05-4"},
+
+
 
     { t: "out", text:
 "z0 = E[the] + PE(0) = [1,0,1,0] + [0.00, 1.00,0.00,1.00] = [1.0000, 1.0000, 1.0000, 1.0000]\nz1 = E[cat] + PE(1) = [0,1,1,0] + [0.84, 0.54,0.01,1.00] = [0.8415, 1.5403, 1.0100, 1.0000]\nz2 = E[sat] + PE(2) = [1,1,0,0] + [0.91,-0.42,0.02,1.00] = [1.9093, 0.5839, 0.0200, 0.9998]\n\n       X = | 1.0000   1.0000   1.0000   1.0000 |   the  (position 0)\n           | 0.8415   1.5403   1.0100   1.0000 |   cat  (position 1)\n           | 1.9093   0.5839   0.0200   0.9998 |   sat  (position 2)\n\n                                    shape (3 tokens x 4 dims)" },

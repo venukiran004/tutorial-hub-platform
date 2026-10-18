@@ -23,6 +23,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "One space, many modalities", id: "space" },
 
+    {"kind": "flow", "title": "One space, and the queries can cross", "caption": "The mechanism is just §02's shared space with more encoders attached — **and what it buys is that a query in one modality retrieves in another: text finds images, an image finds descriptions, audio finds video clips.** The models differ only in how many towers they bind: **CLIP two, CLAP two, ImageBind six — image, text, audio, depth, thermal and IMU.** Which raises the question §04 answers: **you cannot have paired data for all fifteen modality pairs, so how is six achieved?**", "cols": 3, "nodes": [{"id": "e", "label": "One encoder per modality", "sub": "image, text, audio, ...", "tone": "good"}, {"id": "s", "label": "All outputs in ONE space", "sub": "comparable by cosine", "tone": "violet"}, {"id": "c", "label": "So a query can cross modalities", "sub": "text -> image, audio -> video", "tone": "good"}, {"id": "n", "label": "CLIP 2, CLAP 2, ImageBind 6", "sub": "the only difference is the count", "tone": "accent"}, {"id": "q", "label": "But 6 modalities is 15 pairs", "sub": "which section 04 answers", "tone": "warn"}], "edges": [["e", "s"], ["s", "c"], ["c", "n"], ["n", "q"]], "t": "diagram", "id": "dg-7_6-01-0"},
+
+
     { t: "out", text:
 "Image -> image encoder -> embedding\nText  -> text encoder  -> embedding      all in the SAME space\nAudio -> audio encoder -> embedding\n\nwhich enables:\n  text query   -> find matching images\n  image query  -> find matching descriptions\n  audio query  -> find matching video clips" },
 
@@ -37,6 +40,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Cross-modal retrieval, run", id: "retrieval" },
 
+    {"kind": "trace", "title": "Three of three, on a margin of 0.03 to 0.10", "caption": "**Every query retrieves the right image — and the diagonal values are 0.2857, 0.3191 and 0.3493 against off-diagonals in the 0.21–0.25 range.** So the retrieval works on **a margin of about 0.03 to 0.10, with every absolute value in a narrow band**, which is 3.6's anisotropy appearing a third time. **Read the gap, not the score: 0.2857 sounds like weak evidence and it is the strongest cell in its row.**", "left": "query", "codeW": 170, "vars": ["-> circle", "-> square", "-> triangle"], "steps": [{"code": "'a photo of a red circle'", "state": ["0.2857", "0.2219", "0.2102"], "tone": "good"}, {"code": "'a photo of a blue square'", "state": ["0.2248", "0.3191", "0.2406"], "changed": [0, 1, 2], "tone": "good"}, {"code": "'a photo of a green triangle'", "state": ["0.2115", "0.2495", "0.3493"], "changed": [0, 1, 2], "tone": "good"}, {"code": "margin", "state": ["0.03 to 0.10", "in a narrow band", "3/3 correct"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-7_6-02-1"},
+
+
     { t: "out", text:
 "text queries against three generated images\n\n  query                          circle      square      triangle\n  a photo of a red circle        0.2857      0.2219      0.2102\n  a photo of a blue square       0.2248      0.3191      0.2406\n  a photo of a green triangle    0.2115      0.2495      0.3493\n\n  retrieval correct: 3/3" },
 
@@ -45,6 +51,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Transfer to untrained pairings", id: "transfer" },
 
+    {"kind": "trace", "title": "Text-to-text similarity works, on a pairing the loss never compared", "caption": "**CLIP's contrastive loss only ever compares images against texts — it never scores two texts against each other. And yet: `'a red circle'` against `'a crimson round shape'` is 0.8064, while against `'a blue square'` it is 0.6762.** Which is the property that makes a shared space more than a lookup table: **aligning both towers to each other forces structure *within* each tower**, so relationships the training objective never mentioned are nonetheless preserved. The dog/puppy pair at **0.9594 against 0.8323** shows it again.", "left": "pair (text vs text)", "codeW": 200, "vars": ["similarity", "compared in training?"], "steps": [{"code": "'red circle' / 'crimson round shape'", "state": ["0.8064", "never"], "tone": "good"}, {"code": "'red circle' / 'blue square'", "state": ["0.6762", "never"], "changed": [0], "tone": "warn"}, {"code": "'a dog' / 'a puppy'", "state": ["0.9594", "never"], "changed": [0], "tone": "good"}, {"code": "'a dog' / 'an engine'", "state": ["0.8323", "never"], "changed": [0], "tone": "warn", "note": "structure, not luck"}], "t": "diagram", "id": "dg-7_6-03-2"},
+
+
     { t: "out", text:
 "text-to-text similarity — a pairing CLIP's loss NEVER compared\n\n  0.8064   'a photo of a red circle' / 'a photo of a crimson round shape'\n  0.6762   'a photo of a red circle' / 'a photo of a blue square'\n\n  0.9594   'a photo of a dog'        / 'a photo of a puppy'\n  0.8323   'a photo of a dog'        / 'a photo of an engine'" },
 
@@ -52,6 +61,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Paraphrase beats contrast in both cases — 0.8064 over 0.6762, and 0.9594 over 0.8323. CLIP was never trained to compare two texts, only text against images, so this is **emergent transfer**: forcing both modalities into one space aligns text with text as a side effect. But notice that *dog*/*engine*, two completely unrelated concepts, scores **0.8323** — higher than *red circle*/*blue square* at 0.6762, which are at least both simple coloured shapes. The absolute value carries almost no information across different comparisons. Use these scores to **rank within a query** and never to threshold across queries, which is a standing rule for embedding retrieval and the reason recall@k is the metric rather than a similarity cutoff." }] },
 
     { t: "h2", n: "04", text: "ImageBind's anchor", id: "imagebind" },
+
+    {"kind": "trace", "title": "Bind everything to images and six modalities share one space from five pair types", "caption": "**The observation is that images appear in all the natural pairings — captions give image-text, video with sound gives image-audio, RGBD cameras give image-depth, thermal cameras give image-thermal, video with motion sensors gives image-IMU.** So **you never need an audio-thermal dataset: bind each modality to images and all six end up in one space**, with the cross-pairs emerging the way §03's text-to-text similarity did. **Five pair types instead of fifteen**, and images are the only modality that could have served as the anchor.", "left": "pairing", "codeW": 150, "vars": ["data source", "needs a new dataset?"], "steps": [{"code": "image <-> text", "state": ["caption pairs", "no - CLIP-style"], "tone": "good"}, {"code": "image <-> audio", "state": ["video with sound", "no"], "changed": [0, 1], "tone": "good"}, {"code": "image <-> depth", "state": ["RGBD cameras", "no"], "changed": [0, 1], "tone": "good"}, {"code": "image <-> thermal / IMU", "state": ["thermal cameras, motion sensors", "no"], "changed": [0, 1], "tone": "good"}, {"code": "audio <-> thermal", "state": ["nothing - and not needed", "emerges"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-7_6-04-3"},
+
 
     { t: "out", text:
 "the key observation: images appear in all the natural pairings\n\n  image <-> text       from CLIP-style caption pairs\n  image <-> audio      from video with sound\n  image <-> depth      from RGBD cameras\n  image <-> thermal    from thermal cameras\n  image <-> IMU        from video with motion sensors\n\nbind each modality to IMAGES, and all six share one space" },
@@ -83,6 +95,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Captioning images with a VLM and indexing the captions is the most common approach because it reuses everything you already have. It also inserts a **lossy, hallucinating** step at index time, and the errors are permanent — lesson 7.3's model captioned a red circle as *\"a white circle with a black dot\"*, and once that is in the index the image is unfindable by anyone searching for a red circle and wrongly findable by someone searching for a black dot. Direct CLIP embedding has no such step. If you use captions, evaluate them: sample a hundred and count how many are accurate before building an index on them." }] },
 
     { t: "h2", n: "06", text: "ColPali: retrieval without parsing", id: "colpali" },
+
+    {"kind": "flow", "title": "Skip the parsing entirely: render the page and embed the image", "caption": "**PDF text extraction destroys exactly what makes documents comprehensible — table structure becomes a jumble of cells, figures vanish, column layout interleaves, and a chart's meaning disappears entirely.** ColPali's answer is to not do it: **render the page as an image and embed it with a vision model, so the document is preserved as the thing it actually is.** Which is 7.7's “position is semantics” argument taken to its conclusion — **if the layout carries the meaning, do not project it to one dimension at all.**", "cols": 3, "nodes": [{"id": "t", "label": "PDF -> parse -> text -> embed", "sub": "the traditional pipeline", "tone": "crit"}, {"id": "l", "label": "Tables jumble, figures vanish", "sub": "columns interleave", "tone": "crit"}, {"id": "c", "label": "ColPali: render the page as an image", "sub": "then embed it", "tone": "good"}, {"id": "p", "label": "The document is preserved", "sub": "as what it is", "tone": "violet"}, {"id": "s", "label": "7.7's argument, concluded", "sub": "do not flatten 2-D to 1-D", "tone": "teal"}], "edges": [["t", "l"], ["l", "c"], ["c", "p"], ["p", "s"]], "t": "diagram", "id": "dg-7_6-06-4"},
+
 
     { t: "out", text:
 "traditional:  PDF -> parse -> extract text -> embed text -> retrieve\nColPali:      PDF -> render page as image -> embed with a vision model" },

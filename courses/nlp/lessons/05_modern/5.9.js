@@ -27,6 +27,8 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Three models, three answers to where the modalities meet", "caption": "The first column is the design decision and everything else follows from it. **CLIP's towers never meet — no cross-attention at all — which is what makes it a retrieval model rather than a reasoning one.** LLaVA projects ViT patches **into the LLM's token stream**, so vision becomes text as far as the model is concerned. **Flamingo inserts gated cross-attention between frozen towers, so only the inserted layers train** — which is why it is the few-shot one: the language model is untouched.", "left": "model", "codeW": 140, "vars": ["where they meet", "what trains", "used for"], "steps": [{"code": "CLIP", "state": ["nowhere - two towers", "both, contrastively", "retrieval, zero-shot"], "tone": "accent"}, {"code": "LLaVA", "state": ["patches -> the token stream", "the projection, then tuning", "visual QA, chat"], "changed": [0, 1, 2], "tone": "good"}, {"code": "Flamingo", "state": ["gated cross-attention", "only the inserted layers", "few-shot multimodal"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-5_9-01-0"},
 
 
+
+
     { t: "table",
       head: ["Model", "Where the modalities meet", "What is trained", "Used for"],
       rows: [
@@ -38,6 +40,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "CLIP: alignment without interaction", id: "clip" },
 
     {"kind": "trace", "title": "The ordering is exactly right and every value is above 0.73", "caption": "**dog/puppy 0.959 > dog/cat 0.931 > dog/car 0.878 > dog/city 0.735** — the ranking is correct at every step. And the absolute values are all high and compressed into a narrow band, **which is the same anisotropy 3.6 found in BERT's final layer: read the gap, not the raw cosine.** The learned temperature explains how a 0.07 gap becomes a decision: **`logit_scale = 4.6052`, so `exp(4.6052) = 100.00`, and every similarity is multiplied by a hundred before the softmax.**", "left": "pair", "codeW": 170, "vars": ["cosine", "gap from dog/puppy"], "steps": [{"code": "dog / puppy", "state": ["0.959", "-"], "tone": "good"}, {"code": "dog / cat", "state": ["0.931", "-0.028"], "changed": [0, 1], "tone": "good"}, {"code": "dog / car", "state": ["0.878", "-0.081"], "changed": [0, 1], "tone": "warn"}, {"code": "dog / city", "state": ["0.735", "-0.224"], "changed": [0, 1], "tone": "warn"}, {"code": "learned logit_scale", "state": ["exp(4.6052) = 100.00", "x100 before softmax"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_9-02-1"},
+
+
 
 
     { t: "out", text:
@@ -78,6 +82,8 @@ EC.receiveLesson({
     {"kind": "trace", "title": "A 1024-pixel image does not fit in a 4k context at all", "caption": "**256 visual tokens at 224×224 is 6.2% of a 4k context; 5,329 tokens at 1024×1024 is 130.1% — the image alone overflows the window before any text.** Which is the constraint that shapes every vision-language design: **resolution is context budget**, so Flamingo's Perceiver Resampler compressing to a fixed 64 tokens is not a refinement but the thing that makes multi-image conversation possible at all.", "left": "resolution", "codeW": 160, "vars": ["patch", "visual tokens", "of a 4k context"], "steps": [{"code": "224 x 224", "state": ["14", "256", "6.2%"], "tone": "good"}, {"code": "336 x 336", "state": ["14", "576", "14.1%"], "changed": [1, 2], "tone": "good"}, {"code": "672 x 672", "state": ["14", "2304", "56.2%"], "changed": [1, 2], "tone": "crit"}, {"code": "1024 x 1024", "state": ["14", "5329", "130.1%"], "changed": [1, 2], "tone": "crit", "note": "it does not fit"}], "t": "diagram", "id": "dg-5_9-04-2"},
 
 
+
+
     { t: "out", text:
 "resolution     patch    visual tokens    fraction of a 4k context\n224x224          14           256                6.2%\n336x336          14           576               14.1%\n384x384          16           576               14.1%\n672x672          14          2304               56.2%\n1024x1024        14          5329              130.1%" },
 
@@ -87,6 +93,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "Flamingo: cross-attention between frozen towers", id: "flamingo" },
 
     {"kind": "flow", "title": "The gate starts at zero, so training begins from exactly the original model", "caption": "**Each inserted cross-attention layer starts with a `tanh` gate initialised at zero, so at the start of training the model is *exactly* the original LM** — visual influence is learned gradually rather than imposed. Both towers stay frozen, **so the LM's language ability cannot be degraded by multimodal training, which is a real risk in the LLaVA approach.** The cost is honest: **cross-attention layers are real added compute in every forward pass, unlike LLaVA's projection, which is paid once per image.**", "cols": 3, "nodes": [{"id": "f", "label": "Both towers frozen", "sub": "language ability cannot degrade", "tone": "good"}, {"id": "g", "label": "Gated: tanh initialised at zero", "sub": "training starts AT the original LM", "tone": "violet"}, {"id": "p", "label": "Perceiver Resampler -> 64 tokens", "sub": "image cost stops scaling", "tone": "good"}, {"id": "c", "label": "But cross-attention runs every pass", "sub": "not once per image", "tone": "warn"}, {"id": "l", "label": "LLaVA pays its projection once", "sub": "and risks the LM", "tone": "accent"}], "edges": [["f", "g"], ["g", "p"], ["p", "c"], ["c", "l"]], "t": "diagram", "id": "dg-5_9-05-3"},
+
+
 
 
     { t: "p", text: "Flamingo takes a third route: freeze both a vision encoder and a language model, and insert **gated cross-attention** layers between the LM's existing blocks, where the queries come from the text stream and the keys and values from the vision features." },
@@ -104,6 +112,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "What carries over from text", id: "carryover" },
 
     {"kind": "flow", "title": "Nothing in modules 4 and 5 stops applying", "caption": "**Visual tokens go through the same attention, the same KV cache and the same quantisation** — so there is no separate multimodal performance story to learn. 4.3's `O(n²)` is **what makes high resolution expensive**, which is §04 restated. And 5.2's cache arithmetic **now includes hundreds of visual tokens per image, which is why a multi-image conversation exhausts memory far faster than a text one of the same apparent length.**", "cols": 3, "nodes": [{"id": "a", "label": "Same attention (4.3)", "sub": "so O(n^2) in visual tokens too", "tone": "accent"}, {"id": "r", "label": "Which is why resolution is expensive", "sub": "section 04, restated", "tone": "crit"}, {"id": "k", "label": "Same KV cache (5.2)", "sub": "now with 256-5329 tokens per image", "tone": "accent"}, {"id": "m", "label": "So multi-image eats memory fast", "sub": "faster than equivalent text", "tone": "crit"}, {"id": "q", "label": "Same quantisation (5.3)", "sub": "nothing new to learn", "tone": "good"}], "edges": [["a", "r"], ["k", "m"], ["q", "m"]], "t": "diagram", "id": "dg-5_9-06-4"},
+
+
 
 
     { t: "p", text: "Everything in Modules 4 and 5 applies unchanged. Visual tokens go through the same attention, the same KV cache, the same quantisation. The `O(n²)` cost from lesson 4.3 is what makes high resolution expensive; the KV-cache arithmetic from lesson 5.2 now includes hundreds of visual tokens per image, which is why multi-image conversations exhaust memory so quickly." },

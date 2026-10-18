@@ -25,6 +25,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "During generation, step `t` attends over every previous token. Without a cache you recompute K and V for the whole prefix at every step. With one, you compute K and V for the *new* token only and append them." },
 
     { t: "out", text:
@@ -36,6 +38,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "What the cache costs", id: "cost" },
 
     {"kind": "trace", "title": "10.74 GB of cache for one sequence, or 0.17 with MQA", "caption": "LLaMA-2-70B at 4096 tokens in fp16: **10.74 GB with full multi-head attention, 1.34 GB with GQA8, 0.17 GB with MQA** — an 8× and 64× reduction from sharing K and V heads, reproducing the reference exactly. Then the scaling table is the number that governs serving: **at 32k context and batch 32, GQA8 still needs 343.6 GB, and at 128k with batch 128 it is 5,497.6 GB.** **The cache, not the weights, is what makes long context expensive.**", "left": "scheme or scale", "codeW": 170, "vars": ["KV cache bytes", "GB"], "steps": [{"code": "MHA, n_kv = 64", "state": ["10,737,418,240", "10.74"], "tone": "crit"}, {"code": "GQA8, n_kv = 8", "state": ["1,342,177,280", "1.34"], "changed": [0, 1], "tone": "good", "note": "8x less"}, {"code": "MQA, n_kv = 1", "state": ["167,772,160", "0.17"], "changed": [0, 1], "tone": "good"}, {"code": "GQA8, 8192 tok, batch 8", "state": ["-", "21.5"], "changed": [0, 1], "tone": "warn"}, {"code": "GQA8, 32768 tok, batch 32", "state": ["-", "343.6"], "changed": [1], "tone": "crit", "note": "and 5497.6 at 128k/128"}], "t": "diagram", "id": "dg-5_2-02-1"},
+
+
 
 
 
@@ -86,6 +90,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Standard attention materialises the full `N × N` score matrix so softmax can find each row's max and sum. FlashAttention never does — it processes each row in blocks, carrying a running maximum and denominator, and retroactively rescales what it has already accumulated whenever a larger value appears." },
 
     { t: "code", lang: "python", title: "scratchpad/nlp/n52.py — online softmax attention", code:
@@ -106,6 +112,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "Sparse attention", id: "sparse" },
 
     {"kind": "trace", "title": "Four O(n) patterns, and they get there four different ways", "caption": "**Longformer and BigBird keep real attention and restrict *which* pairs are computed — window plus a few global tokens, with BigBird adding random connections and the proof that sparse attention is Turing complete.** Linformer and Performer instead **approximate**: one projects K and V to a fixed dimension before attending, the other uses random feature maps to approximate the softmax kernel without ever forming the matrix. **Which is the real split: restricted-exact against full-approximate.**", "left": "model", "codeW": 150, "vars": ["pattern", "exact or approximate"], "steps": [{"code": "Longformer", "state": ["sliding window + global tokens", "exact, restricted"], "tone": "good"}, {"code": "BigBird", "state": ["random + window + global", "exact, restricted"], "changed": [0], "tone": "good", "note": "Turing complete"}, {"code": "Linformer", "state": ["low-rank projection of K, V", "APPROXIMATE"], "changed": [0, 1], "tone": "warn"}, {"code": "Performer", "state": ["FAVOR+ random features", "APPROXIMATE"], "changed": [0], "tone": "warn", "note": "never forms the matrix"}], "t": "diagram", "id": "dg-5_2-05-3"},
+
+
 
 
 

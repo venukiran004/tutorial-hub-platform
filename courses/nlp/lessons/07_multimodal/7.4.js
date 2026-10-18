@@ -23,6 +23,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why latent space", id: "latent" },
 
+    {"kind": "trace", "title": "Forty-eight times smaller, at every resolution", "caption": "**Stable Diffusion's VAE downsamples 8× spatially into 4 channels, and the compression is exactly 48.0× at every resolution** — which is the point of latent diffusion: **the expensive iterative process runs on 16,384 numbers instead of 786,432.** And because the ratio is constant, **resolution scales the cost of the denoiser linearly in pixels rather than changing the method** — so a 1024×1024 image is a 65,536-element latent, still well inside what a U-Net or DiT handles.", "left": "resolution", "codeW": 160, "vars": ["pixels", "latent", "compression"], "steps": [{"code": "256 x 256", "state": ["196,608", "32x32x4 = 4,096", "48.0x"], "tone": "good"}, {"code": "512 x 512", "state": ["786,432", "64x64x4 = 16,384", "48.0x"], "changed": [0, 1], "tone": "good"}, {"code": "1024 x 1024", "state": ["3,145,728", "128x128x4 = 65,536", "48.0x"], "changed": [0, 1], "tone": "violet", "note": "ratio is constant"}], "t": "diagram", "id": "dg-7_4-01-0"},
+
+
     { t: "out", text:
 "Stable Diffusion's VAE: 8x spatial downsample, 4 channels\n\n  resolution      pixels        latent            compression\n  256x256        196,608       32x32x4 =   4,096      48.0x\n  512x512        786,432       64x64x4 =  16,384      48.0x\n  1024x1024    3,145,728      128x128x4 =  65,536      48.0x" },
 
@@ -30,6 +33,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Diffusion requires the denoising network to run once per sampling step — typically 20 to 50 times per image. Doing that in pixel space at 512×512 means 50 passes over **786,432** values; in latent space it is 50 passes over **16,384**. The compression is not a modest optimisation, it is what made high-resolution diffusion affordable at all, and it is the single idea that separates Stable Diffusion from the pixel-space models before it. The VAE itself runs just twice — encode once at training, decode once at the end of sampling — so its cost is negligible against the U-Net's." }] },
 
     { t: "h2", n: "02", text: "The forward process", id: "forward" },
+
+    {"kind": "trace", "title": "Correlation with the original crosses zero at step 700", "caption": "**`alpha_bar` falls from 0.9999 to 0.000040 over 1000 steps, and the correlation between `z_t` and `z_0` goes 0.9999 → 0.5307 at step 300 → −0.0017 at step 700.** So **by step 700 the noised latent carries no linear information about the original at all** — which is what “pure noise” means operationally, and why the schedule's tail is relatively uninformative. Note the signal coefficient at step 500 is **0.2789**: a quarter of the original is still present where the correlation is already down to 0.1755.", "left": "t", "codeW": 120, "vars": ["alpha_bar", "signal coeff", "corr(z_t, z_0)"], "steps": [{"code": "0", "state": ["0.999900", "0.9999", "0.9999"], "tone": "good"}, {"code": "300", "state": ["0.394011", "0.6277", "0.5307"], "changed": [0, 1, 2], "tone": "good"}, {"code": "500", "state": ["0.077797", "0.2789", "0.1755"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "700", "state": ["0.006868", "0.0829", "-0.0017"], "changed": [0, 1, 2], "tone": "crit", "note": "no linear information left"}, {"code": "999", "state": ["0.000040", "0.0064", "-0.0682"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-7_4-02-1"},
+
 
     { t: "math", tex: "z_t = \\sqrt{\\bar{\\alpha}_t}\\, z_0 + \\sqrt{1 - \\bar{\\alpha}_t}\\, \\epsilon, \\qquad \\epsilon \\sim \\mathcal{N}(0, I)" },
 
@@ -40,6 +46,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Correlation with the original latent reaches **−0.0017** at t = 700 and stays at noise level thereafter — the last 300 steps are destroying something already destroyed. More importantly, that closed form lets you jump to **any** `t` in one operation. Training therefore does not simulate a thousand-step chain: sample a random `t`, add the corresponding noise once, ask the network to predict the noise, done. Without that closed form, diffusion training would be intractable, and it is available only because each step adds Gaussian noise and Gaussians compose." }] },
 
     { t: "h2", n: "03", text: "Why predict noise", id: "epsilon" },
+
+    {"kind": "trace", "title": "Predicting noise and predicting the image are algebraically the same choice", "caption": "**Given `ε`, recovering the clean latent is one line of algebra — and with the true `ε` the max absolute error is 4.06e-07**, which is float noise. So the network could equally be trained to predict `z_0` directly: **the two parameterisations are related by an exact invertible formula.** The reason `ε` wins is practical rather than mathematical — **its target has roughly unit variance at every timestep, while `z_0`'s does not, so the loss is comparably scaled across the whole schedule.**", "left": "step", "codeW": 190, "vars": ["value"], "steps": [{"code": "the formula", "state": ["z0 = (z_t - sqrt(1-ab) eps) / sqrt(ab)"], "tone": "accent"}, {"code": "with the true eps", "state": ["max abs error 4.06e-07"], "changed": [0], "tone": "good"}, {"code": "so", "state": ["predicting eps or z_0 is one choice"], "changed": [0], "tone": "violet"}, {"code": "why eps", "state": ["unit variance at every timestep"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-7_4-03-2"},
+
 
     { t: "out", text:
 "given a predicted epsilon, recovering the clean latent is algebra\n\n  z_0_hat = (z_t - sqrt(1 - alpha_bar) * eps) / sqrt(alpha_bar)\n\n  with the true epsilon, max abs error: 4.06e-07" },
@@ -73,6 +82,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "05", text: "Classifier-free guidance", id: "cfg" },
 
+    {"kind": "trace", "title": "Guidance extrapolates past the conditional prediction, and doubles the cost", "caption": "**At `w = 1.0` the result *is* the conditional prediction — distance 0.0000. Above that, guidance extrapolates: at `w = 7.5` the output is 1.5244 away from the conditional and nowhere near either input.** Which is why high guidance produces saturated, over-committed images: **it is an extrapolation, not an interpolation.** And the cost is structural: **every step needs both a conditional and an unconditional forward pass, so 50 steps is 100 U-Net calls** — a permanent doubling, and why distilled-guidance models are an active area.", "left": "guidance w", "codeW": 130, "vars": ["eps_hat", "distance from eps_cond"], "steps": [{"code": "0.0", "state": ["[0.100, -0.200, 0.300]", "0.2345"], "tone": "accent", "note": "= unconditional"}, {"code": "1.0", "state": ["[0.250, -0.050, 0.200]", "0.0000"], "changed": [0, 1], "tone": "good", "note": "= conditional"}, {"code": "7.5", "state": ["[1.225, 0.925, -0.450]", "1.5244"], "changed": [0, 1], "tone": "crit", "note": "extrapolating"}, {"code": "15.0", "state": ["[2.350, 2.050, -1.200]", "3.2833"], "changed": [0, 1], "tone": "crit"}, {"code": "cost at 50 steps", "state": ["100 U-Net calls", "2x, permanently"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-7_4-05-3"},
+
+
     { t: "math", tex: "\\hat{\\epsilon} = \\epsilon_{\\text{uncond}} + w\\,(\\epsilon_{\\text{cond}} - \\epsilon_{\\text{uncond}})" },
 
     { t: "out", text:
@@ -88,6 +100,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "06", text: "Control and editing", id: "control" },
 
+    {"kind": "layers", "title": "Five control mechanisms, and two of them need no training at all", "caption": "**Inpainting and Img2Img are sampling tricks: re-impose the unmasked latent at every step so only the masked area changes, or start from a partially noised real image so the noise level sets how much survives.** Neither trains anything. **ControlNet's zero-initialised convolutions are the same idea as Flamingo's gate — at the start of training the condition has no effect, so the base model is preserved exactly.** And the last row changes the subject rather than the style: **teaching the model a *specific* subject from a handful of images.**", "items": [{"label": "Inpainting", "sub": "re-impose the unmasked latent each step", "tone": "good", "side": "no training"}, {"label": "Img2Img", "sub": "start from a partially noised real image", "tone": "good", "side": "no training"}, {"label": "ControlNet", "sub": "a parallel encoder, zero-init convolutions", "tone": "violet", "side": "trained"}, {"label": "InstructPix2Pix", "sub": "'make it sunset' - synthetic before/after pairs", "tone": "accent", "side": "trained"}, {"label": "DreamBooth / Textual Inversion", "sub": "one specific subject from a few images", "tone": "accent", "side": "per subject"}], "t": "diagram", "id": "dg-7_4-06-4"},
+
+
     { t: "dl", items: [
       ["ControlNet", "A parallel copy of the U-Net encoder processes a condition — edges, depth, pose — and injects it through **zero-initialised convolutions**, so at the start of training the model is unchanged. The same trick as Flamingo's zero gate in lesson 7.3."],
       ["Inpainting", "Fill a masked region. The unmasked latent is re-imposed at every denoising step, so only the masked area is free to change."],
@@ -100,6 +115,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "ControlNet's zero convolutions, Flamingo's zero-gated cross-attention, and LoRA's zero-initialised `B` matrix are the same idea three times: **add a new pathway whose initial contribution is exactly zero**, so the augmented model starts identical to the working model and the new capability is learned in gradually. It is a general recipe for extending a pretrained model without risking what it already does, and recognising it makes each individual case easier to remember." }] },
 
     { t: "h2", n: "07", text: "The lineage", id: "lineage" },
+
+    {"kind": "trace", "title": "The U-Net is becoming a transformer and CLIP is becoming T5", "caption": "Two trends are visible in four rows. **The U-Net is being replaced by a transformer (DiT) in SD3 and Flux — which is 5.7's convergence again: once you can tokenise the input, the transformer block works.** And **the text encoder is moving from CLIP to T5**, in Imagen 3 and DALL-E 3's better captioner, **which addresses the conditioning weakness directly: CLIP's text tower was trained for retrieval, not for carrying compositional detail into a generator.**", "left": "model", "codeW": 160, "vars": ["architecture", "what it fixed"], "steps": [{"code": "Stable Diffusion", "state": ["latent diffusion, CLIP conditioning", "open weights"], "tone": "good"}, {"code": "DALL-E 3", "state": ["diffusion + a better captioner", "text fidelity"], "changed": [0, 1], "tone": "good"}, {"code": "Imagen 3", "state": ["cascaded diffusion, T5 encoder", "text fidelity"], "changed": [0, 1], "tone": "violet"}, {"code": "SD3 / Flux", "state": ["DiT + flow matching", "a transformer backbone"], "changed": [0, 1], "tone": "violet", "note": "5.7's convergence"}], "t": "diagram", "id": "dg-7_4-07-5"},
+
 
     { t: "out", text:
 "GANs (2014)  ->  VAEs  ->  Flow models  ->  Diffusion (2020+)  ->  Flow matching\n\nDALL-E 3          diffusion + a better captioner      text fidelity\nStable Diffusion  latent diffusion, CLIP conditioning  open weights\nSD3 / Flux        DiT + flow matching                  transformer backbone\nImagen 3          cascaded diffusion, T5 encoder       text fidelity" },

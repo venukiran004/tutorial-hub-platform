@@ -22,6 +22,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why documents are not text", id: "why" },
 
+    {"kind": "flow", "title": "1,240.00 means “total” because of where it sits", "caption": "**In an invoice, `1,240.00` means *total* because it sits in the bottom-right, aligned under a column headed *Amount*, on the row labelled *Total*. Strip the layout and you have a number with no role.** The same failure in two other forms: **a two-column paper extracted naively interleaves the columns into sentences that alternate between unrelated paragraphs, and a table flattened to a sequence leaves no cell knowing its row or column.** **The information was never in the characters — it was in the arrangement, and every text-extraction step is a lossy projection of a 2-D object onto a 1-D one.**", "cols": 3, "nodes": [{"id": "n", "label": "'1,240.00'", "sub": "a number with no role", "tone": "accent"}, {"id": "p", "label": "Bottom-right, under 'Amount', row 'Total'", "sub": "THAT is what makes it the total", "tone": "violet"}, {"id": "c", "label": "Two columns -> interleaved sentences", "sub": "alternating paragraphs", "tone": "crit"}, {"id": "t", "label": "A table -> cells with no row or column", "sub": "the grid is gone", "tone": "crit"}, {"id": "l", "label": "Extraction is a lossy 2-D -> 1-D projection", "sub": "every time", "tone": "crit"}], "edges": [["n", "p"], ["p", "l"], ["c", "l"], ["t", "l"]], "t": "diagram", "id": "dg-7_7-01-0"},
+
+
     { t: "callout", kind: "crit", title: "Position is semantics",
       body: [{ t: "p", text: "In an invoice, `1,240.00` means *total* because it sits in the bottom-right, aligned under a column headed *Amount*, on the row labelled *Total*. Strip the layout and you have a number with no role. In a two-column paper, naive extraction interleaves the columns and produces sentences that alternate between unrelated paragraphs. In a table, reading order flattens a grid into a sequence where no cell knows its row or column. The information was never in the characters alone — it was in the **arrangement**, and every text-extraction step is a lossy projection of a 2-D object onto a 1-D one." }] },
 
@@ -41,6 +44,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "The model landscape", id: "models" },
 
+    {"kind": "trace", "title": "Six models, and two of them delete a pipeline stage", "caption": "**Donut is OCR-free — image straight to structured output, with no OCR stage at all — and Nougat goes page image to LaTeX, preserving equations.** Both remove the step that §06 identifies as the biggest error source. The others keep the stages and improve one each: **LayoutLM adds 2-D position to the transformer, TrOCR replaces the OCR model, Table Transformer treats rows and columns as objects to detect.** Which is the real choice in document AI: **fix a stage, or remove it.**", "left": "model", "codeW": 150, "vars": ["task", "approach"], "steps": [{"code": "LayoutLM", "state": ["document understanding", "text + 2-D position + patches"], "tone": "good"}, {"code": "Donut", "state": ["OCR-free understanding", "image -> structured output"], "changed": [0, 1], "tone": "violet", "note": "no OCR stage"}, {"code": "Nougat", "state": ["academic PDF parsing", "page image -> LaTeX"], "changed": [0, 1], "tone": "violet"}, {"code": "TrOCR / DocTR", "state": ["OCR", "transformer, or detect + recognise"], "changed": [0, 1], "tone": "good"}, {"code": "Table Transformer", "state": ["table structure", "object detection for cells"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-7_7-03-1"},
+
+
     { t: "table",
       head: ["Model", "Task", "Approach"],
       rows: [
@@ -53,6 +59,9 @@ EC.receiveLesson({
       ] },
 
     { t: "h2", n: "04", text: "LayoutLM: position as an input", id: "layoutlm" },
+
+    {"kind": "trace", "title": "Four extra numbers per token, and that is the whole idea", "caption": "**A text transformer embeds a token and adds a 1-D positional encoding for its index in the sequence. LayoutLM adds 2-D positional embeddings as well — the token's bounding box — so the model knows not just that a word is fifth but that it sits at a particular x and y.** Plus image patch features for the visual appearance. **Which is small and effective, and it is 4.9's positional-encoding question asked in two dimensions**: the same mechanism, with the grid that ViT's flattened 1-D table threw away.", "left": "model", "codeW": 150, "vars": ["what is added to the token embedding"], "steps": [{"code": "a standard text model", "state": ["1-D position (index in sequence)"], "tone": "good"}, {"code": "LayoutLM", "state": ["+ 2-D position (x0, y0, x1, y1)"], "changed": [0], "tone": "violet"}, {"code": "and", "state": ["+ image patch features"], "changed": [0], "tone": "good"}, {"code": "so the model knows", "state": ["not just fifth - but where"], "changed": [0], "tone": "accent"}], "t": "diagram", "id": "dg-7_7-04-2"},
+
 
     { t: "p", text: "The idea is small and effective. A text transformer embeds a token and adds a **1-D** positional encoding for its index in the sequence. LayoutLM adds **2-D** positional embeddings as well — the token's bounding box on the page — so the model knows not just that a word is fifth but that it sits at a particular x and y." },
 
@@ -88,6 +97,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Donut takes a page image and emits structured output directly, with no OCR stage at all, so there is no five-stage product of accuracies to decay. That is a genuine advantage, and it comes with a real loss: when a five-stage pipeline gets something wrong you can find out *which stage*, and when an end-to-end model gets it wrong you have one number and an image. The second cost is data — an OCR pipeline generalises across document types because OCR is generic, whereas an end-to-end model needs training examples in **your** format and layout. My recommendation would be OCR-based for varied document types and modest volume, end-to-end when you process one high-volume format and can afford to label it." }] },
 
     { t: "h2", n: "06", text: "Where the errors actually come from", id: "errors" },
+
+    {"kind": "layers", "title": "Five error sources, and the most damaging one is the least noticed", "caption": "**Layout misdetection is first for a reason: a merged table region or a missed column boundary corrupts everything downstream, and OCR will happily read the wrong crop** — producing confident text from the wrong part of the page. Reading order is the subtle one: **text that is individually correct, assembled into nonsense.** And the last row is the trap: **sending the page to a general VLM feels like it skips all of this, and 7.3 measured what that costs — fluent, confident, wrong.**", "items": [{"label": "Layout misdetection", "sub": "most damaging, least noticed - OCR reads the wrong crop", "tone": "crit", "side": "first"}, {"label": "OCR on hard input", "sub": "handwriting, stamps, low resolution, non-Latin", "tone": "warn", "side": "surface it"}, {"label": "Reading order", "sub": "correct text assembled into nonsense", "tone": "crit", "side": "subtle"}, {"label": "Table structure", "sub": "detecting a table exists is far easier than its grid", "tone": "warn", "side": "merged cells"}, {"label": "The VLM shortcut", "sub": "7.3: fluent, confident, wrong", "tone": "crit", "side": "the trap"}], "t": "diagram", "id": "dg-7_7-06-3"},
+
 
     { t: "dl", items: [
       ["Layout misdetection", "The most damaging and the least noticed. A merged table region or a missed column boundary corrupts everything downstream, and OCR will happily read the wrong crop."],

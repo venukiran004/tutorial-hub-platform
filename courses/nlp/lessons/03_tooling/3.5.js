@@ -44,6 +44,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text:
 "distilbert-base-uncased, 67.0M params, 4 CPU threads\n\nsingle request:  mean 21.47 ms   P50 21.50   P95 23.84   P99 26.84\n\nP99 is 1.25x the median" },
 
@@ -55,6 +57,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Where batching stops helping", id: "batching" },
 
     {"kind": "trace", "title": "The knee is at 16, and 32 was marginally worse", "caption": "Per-item cost falls from **21.958 ms to 7.586 ms — a 2.9× throughput gain — and then flattens.** Past 16 there is essentially nothing left: **32 was marginally *worse* and 64 gained under 1%.** So **the knee is the batch size to ship, because everything past it adds queueing latency for no throughput** — a batch of 64 makes the first request in the batch wait 480 ms to be served at the same per-item rate as a batch of 16.", "left": "batch", "codeW": 120, "vars": ["total ms", "ms per item", "items/sec"], "steps": [{"code": "1", "state": ["21.96", "21.958", "45.5"], "tone": "crit"}, {"code": "4", "state": ["41.56", "10.390", "96.2"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "16", "state": ["121.38", "7.586", "131.8"], "changed": [0, 1, 2], "tone": "good", "note": "the knee - 2.9x"}, {"code": "32", "state": ["248.21", "7.757", "128.9"], "changed": [0, 1, 2], "tone": "crit", "note": "worse"}, {"code": "64", "state": ["480.88", "7.514", "133.1"], "changed": [0, 1, 2], "tone": "crit", "note": "+1%, 480ms of queueing"}], "t": "diagram", "id": "dg-3_5-03-1"},
+
+
 
 
 
@@ -82,6 +86,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text:
 "32 documents, padding=True\n\nall short            padded shape (32, 3)      58.91 ms\n31 short + 1 long    padded shape (32, 158)  2319.61 ms\n\n39x slower, from one document" },
 
@@ -93,6 +99,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "Quantisation", id: "quantisation" },
 
     {"kind": "trace", "title": "1.79x faster, 48% smaller, and the logits moved by 0.0238", "caption": "int8 dynamic quantisation on CPU: **23.81 ms to 13.29 ms, 267.9 MB to 138.7 MB, and the second logit shifted from 0.0397 to 0.0635.** A max absolute difference of **0.0238** is usually harmless and is not nothing — **it is enough to flip a prediction sitting near a decision threshold, which is exactly the population a calibrated classifier cares about.** The other routes compose with this one: **ONNX Runtime for 2–5× through operator fusion, and distillation from 340M down to 14M.**", "left": "precision", "codeW": 150, "vars": ["mean latency", "P95", "size", "logits"], "steps": [{"code": "fp32", "state": ["23.81 ms", "26.41 ms", "267.9 MB", "[0.1527, 0.0397]"], "tone": "accent"}, {"code": "int8", "state": ["13.29 ms", "16.09 ms", "138.7 MB", "[0.1527, 0.0635]"], "changed": [0, 1, 2, 3], "tone": "good", "note": "1.79x, 48% smaller"}, {"code": "difference", "state": ["-10.5 ms", "-10.3 ms", "-129 MB", "max 0.0238"], "changed": [0, 1, 2, 3], "tone": "warn", "note": "enough to flip a borderline case"}], "t": "diagram", "id": "dg-3_5-05-3"},
+
+
 
 
 
@@ -127,6 +135,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Real query traffic is not uniform — it is heavily skewed, with a small number of queries accounting for most requests. That makes caching the cheapest optimisation available, and the one most often skipped." },
 
     { t: "out", text:
@@ -137,6 +147,8 @@ EC.receiveLesson({
     { t: "h2", n: "07", text: "Train-serve skew", id: "skew" },
 
     {"kind": "trace", "title": "The bug was invisible until someone swapped the checkpoint", "caption": "The probe is `\"EXCELLENT Service\"`, and on `bert-base-uncased` **both paths agree — because the tokenizer lowercases anyway, so a serving path that forgets to lowercase is indistinguishable from one that does.** Then the checkpoint changes to `bert-base-cased` and **the serve path produces `['E', '##X', '##CE', '##LL', '##EN', '##T', 'Service']`: seven subword tokens where training produced two words.** Accuracy degrades, **and every test still passes, because both paths work perfectly in isolation.**", "left": "checkpoint and path", "codeW": 200, "vars": ["tokens"], "steps": [{"code": "uncased, train path", "state": ["[CLS] excellent service [SEP]"], "tone": "good"}, {"code": "uncased, serve path", "state": ["[CLS] excellent service [SEP]"], "changed": [0], "tone": "good", "note": "identical - bug invisible"}, {"code": "cased, train path", "state": ["[CLS] excellent service [SEP]"], "tone": "good"}, {"code": "cased, serve path", "state": ["[CLS] E ##X ##CE ##LL ##EN ##T Service [SEP]"], "changed": [0], "tone": "crit", "note": "no error anywhere"}], "t": "diagram", "id": "dg-3_5-07-5"},
+
+
 
 
 
@@ -160,6 +172,8 @@ EC.receiveLesson({
     { t: "h2", n: "08", text: "The checklist", id: "checklist" },
 
     {"kind": "layers", "title": "Four stages, and the last row is the one that changes the cost model", "caption": "Most of this is the lesson's own measurements turned into instructions — **benchmark after warm-up, enforce a max input length, bucket by length, and track percentiles rather than means.** The scaling row has the item worth noticing: **a cascade, where a cheap model runs first and the expensive one runs only when it abstains**, which turns the P99 problem into a routing problem. And **logging the prediction distribution is what catches drift**, because accuracy needs labels and the distribution does not.", "items": [{"label": "Pre-deployment", "sub": "P50/P95/P99 after warm-up; empty, long and odd-unicode inputs; a max length; load at startup", "tone": "good", "side": "measure"}, {"label": "Serving", "sub": "async, dynamic batching with a timeout, length buckets, model.eval() and no_grad()", "tone": "good", "side": "the knee"}, {"label": "Monitoring", "sub": "log the prediction distribution; percentiles not means; errors by input type", "tone": "violet", "side": "no labels"}, {"label": "Scaling", "sub": "replicas, Redis on normalised inputs, queue slow work", "tone": "good", "side": "cache"}, {"label": "...and a cascade", "sub": "cheap model first, expensive only on abstention", "tone": "teal", "side": "routing"}], "t": "diagram", "id": "dg-3_5-08-6"},
+
+
 
 
 

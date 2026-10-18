@@ -23,6 +23,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Image generation metrics", id: "generation" },
 
+    {"kind": "trace", "title": "Three metrics, and two of them score a distribution rather than an image", "caption": "**FID and IS both measure quality *and* diversity together, over a set — so neither can score a single image, and a model that produces one perfect picture every time scores badly on both.** FID is a Fréchet distance between real and generated feature distributions in Inception-v3 space, which means **it inherits whatever Inception-v3 is sensitive to.** LPIPS is the odd one out: **a learned perceptual distance between two specific images, so it needs a reference and answers a different question.**", "left": "metric", "codeW": 130, "vars": ["measures", "direction", "per image?"], "steps": [{"code": "FID", "state": ["quality + diversity", "lower, 0 = identical", "no - a set"], "tone": "good"}, {"code": "IS", "state": ["quality + diversity", "higher", "no - a set"], "changed": [0, 1, 2], "tone": "good"}, {"code": "LPIPS", "state": ["perceptual similarity of two", "lower = more similar", "yes, with a reference"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-7_8-01-0"},
+
+
     { t: "table",
       head: ["Metric", "Measures", "Direction", "How"],
       rows: [
@@ -39,6 +42,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Vision-language metrics", id: "vl" },
 
+    {"kind": "trace", "title": "One of these needs no reference caption, which is why it gets used", "caption": "**CLIPScore's appeal is that it is reference-free — you need only the image and the candidate, not human captions to compare against — which makes it usable at scale where CIDEr and SPICE are not.** The others all need references: **CIDEr wants several, SPICE parses both into scene graphs, and BLEU/ROUGE/METEOR are 3.4's text metrics with all their limits.** The question §03 answers is whether reference-free also means useful.", "left": "metric", "codeW": 140, "vars": ["what it does", "needs a reference?"], "steps": [{"code": "CLIPScore", "state": ["scaled CLIP cosine", "NO"], "tone": "violet"}, {"code": "CIDEr", "state": ["TF-IDF weighted n-grams", "several"], "changed": [0, 1], "tone": "good"}, {"code": "SPICE", "state": ["scene graphs: objects, relations", "yes"], "changed": [0, 1], "tone": "good"}, {"code": "BLEU / ROUGE / METEOR", "state": ["3.4's text metrics", "yes"], "changed": [0, 1], "tone": "warn"}, {"code": "VQA accuracy", "state": ["min(humans giving it / 3, 1)", "ten humans"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-7_8-02-1"},
+
+
     { t: "table",
       head: ["Metric", "Task", "What it does"],
       rows: [
@@ -53,6 +59,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "CLIPScore, tested", id: "clipscore" },
 
+    {"kind": "trace", "title": "The wrong count scores higher than the right one", "caption": "The image has **exactly two blue squares**, and the measurement is damning: **`'one blue square'` scores 0.6741 against the correct `'two blue squares'` at 0.6717 — the wrong caption wins by +0.0023.** Meanwhile wrong colour costs −0.0595 and wrong shape −0.0482, **so CLIPScore sees colour and shape and is blind to number.** And the longest caption scores highest at **0.7028**: **length and specificity inflate it somewhat independently of accuracy**, which matters before comparing captioners with different output lengths.", "left": "caption", "codeW": 210, "vars": ["CLIPScore", "gap from correct"], "steps": [{"code": "'two blue squares' (correct)", "state": ["0.6717", "-"], "tone": "accent"}, {"code": "'one blue square'", "state": ["0.6741", "+0.0023 - HIGHER"], "changed": [0, 1], "tone": "crit"}, {"code": "'three blue squares'", "state": ["0.6708", "-0.0009"], "changed": [0, 1], "tone": "crit", "note": "count is invisible"}, {"code": "'two red squares'", "state": ["0.6122", "-0.0595"], "changed": [0, 1], "tone": "good"}, {"code": "'...on the left and...on the right'", "state": ["0.7028", "+0.0311 - longest"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-7_8-03-2"},
+
+
     { t: "out", text:
 "image: exactly TWO BLUE SQUARES\n\ncaption                                                    CLIPScore\ntwo blue squares                                            0.6717\nthree blue squares                                          0.6708\none blue square                                             0.6741\ntwo red squares                                             0.6122\ntwo blue circles                                            0.6235\na blue square on the left and a blue square on the right    0.7028\na photograph of a cat                                       0.5082" },
 
@@ -65,6 +74,9 @@ EC.receiveLesson({
     { t: "p", text: "Note also that the *longest* caption scores highest at 0.7028 — the spatially-explicit one. Length and specificity inflate CLIPScore somewhat independently of accuracy, which is worth knowing before using it to compare captioners that produce different caption lengths." },
 
     { t: "h2", n: "04", text: "VQA soft accuracy", id: "vqa" },
+
+    {"kind": "flow", "title": "A metric that admits the ground truth is a distribution", "caption": "**Ten annotators answer each question. Three or more giving your answer scores 1.0; one gives 0.33.** The definition exists because **visual questions frequently have several defensible answers — *what colour is the shirt?* on a shirt that is arguably blue or arguably teal — and a binary exact-match metric would call a reasonable answer wrong.** Which is **a more honest framing than most benchmarks use**, and it has a price: **ten human annotations per question, so it exists only for the datasets that paid for it.**", "cols": 3, "nodes": [{"id": "t", "label": "Ten annotators per question", "sub": "not one gold answer", "tone": "accent"}, {"id": "s", "label": "3 or more agree -> 1.0; one -> 0.33", "sub": "min(count/3, 1)", "tone": "good"}, {"id": "w", "label": "Because 'blue' or 'teal' are both defensible", "sub": "exact match would say wrong", "tone": "violet"}, {"id": "h", "label": "So the truth is a distribution", "sub": "stated in the metric", "tone": "violet"}, {"id": "c", "label": "At ten annotations per question", "sub": "only where someone paid", "tone": "warn"}], "edges": [["t", "s"], ["s", "w"], ["w", "h"], ["h", "c"]], "t": "diagram", "id": "dg-7_8-04-3"},
+
 
     { t: "math", tex: "\\text{accuracy}(a) = \\min\\!\\left(\\frac{\\#\\{\\text{humans who gave } a\\}}{3},\\; 1\\right)" },
 

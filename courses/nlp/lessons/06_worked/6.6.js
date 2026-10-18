@@ -22,6 +22,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "The input is the target shifted right, which is how three predictions train in parallel", "caption": "**The decoder input is `[<bos>, ich, liebe]` and the target is `[ich, liebe, KI]` — the same sequence offset by one.** So position 0 is given `<bos>` and must predict `ich`, position 1 is given `<bos> ich` and must predict `liebe`, and position 2 is given both and must predict `KI`. **All three are scored in one forward pass, which is only legitimate because the causal mask stops position 0 seeing `ich` in its own input.**", "left": "position", "codeW": 150, "vars": ["given", "must predict"], "steps": [{"code": "0", "state": ["<bos>", "ich"], "tone": "good"}, {"code": "1", "state": ["<bos> ich", "liebe"], "changed": [0, 1], "tone": "good"}, {"code": "2", "state": ["<bos> ich liebe", "KI"], "changed": [0, 1], "tone": "good"}, {"code": "all three", "state": ["one forward pass", "the mask makes it legal"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-6_6-01-0"},
 
+
+
     { t: "out", text:
 "target sentence:  ich liebe KI\n\n  decoder input  (shifted right)   [<bos>,  ich,   liebe]\n  decoder target (what to predict) [ich,   liebe, KI   ]\n\n  position 0: given <bos>              -> predict ich\n  position 1: given <bos> ich          -> predict liebe\n  position 2: given <bos> ich liebe    -> predict KI" },
 
@@ -32,6 +34,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Exactly zero above the diagonal, and row 0 is forced to 1.000", "caption": "**Upper-triangle maximum 0.00e+00**, as required — 4.5's `-inf` fill reproduced in a 3×3 matrix. And `<bos>`'s weight of 1.000 is **forced rather than chosen**, the same structural artefact 6.2 flagged: one visible position means a softmax of 1.0 whatever the score. The sublayer's job is narrow and worth naming: **it answers *“what have I written so far?”* and nothing else — it has no access to the English at all.**", "left": "query", "codeW": 130, "vars": ["-> <bos>", "-> ich", "-> liebe"], "steps": [{"code": "<bos>", "state": ["1.000", "0.000", "0.000"], "tone": "violet", "note": "forced"}, {"code": "ich", "state": ["0.368", "0.632", "0.000"], "changed": [0, 1], "tone": "good"}, {"code": "liebe", "state": ["0.257", "0.334", "0.409"], "changed": [0, 1, 2], "tone": "good"}, {"code": "sees the source?", "state": ["no", "no", "no"], "changed": [0, 1, 2], "tone": "accent"}], "t": "diagram", "id": "dg-6_6-02-1"},
 
+
+
     { t: "out", text:
 "decoder self-attention weights\n\n             <bos>   ich     liebe\n  <bos>    [1.000   0.000   0.000]\n  ich      [0.368   0.632   0.000]\n  liebe    [0.257   0.334   0.409]\n\n  upper-triangle maximum: 0.00e+00" },
 
@@ -40,6 +44,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Cross-attention", id: "cross" },
 
     {"kind": "trace", "title": "Queries from the target, keys and values from the source — and no triangle", "caption": "**The shape is (3, 3) but it is target-by-source, not target-by-target — so there is nothing to mask: a German word may legitimately read any English word, including ones later in the sentence.** Rows sum to 1.0 over the **source**, which is 4.7's cross-attention measurement in miniature. This is the sublayer that answers *“what does the English say?”*, and it is the only place the two languages meet.", "left": "target query", "codeW": 130, "vars": ["-> I", "-> love", "-> AI", "row sum"], "steps": [{"code": "<bos>", "state": ["0.347", "0.300", "0.353", "1.0"], "tone": "good"}, {"code": "ich", "state": ["0.313", "0.391", "0.296", "1.0"], "changed": [0, 1, 2], "tone": "good"}, {"code": "liebe", "state": ["0.328", "0.360", "0.312", "1.0"], "changed": [0, 1, 2], "tone": "good"}, {"code": "masked?", "state": ["no - target x source", "-", "-", "-"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-6_6-03-2"},
+
+
 
     { t: "out", text:
 "cross-attention weights — queries from the decoder, keys and values\nfrom the encoder memory\n\n             I        love     AI\n  <bos>    [0.347    0.300    0.353]\n  ich      [0.313    0.391    0.296]\n  liebe    [0.328    0.360    0.312]\n\n  shape (3, 3) — target by source\n  rows sum to [1.0, 1.0, 1.0]" },
@@ -51,6 +57,8 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Maximum deviation from uniform: 0.0577", "caption": "This is what an untrained alignment looks like, quantified. **Uniform would be 0.333 in every cell and the largest deviation anywhere is 0.0577** — so the cross-attention matrix carries essentially no alignment information. The diagonal is **barely** favoured: **0.3500 mean on the diagonal against 0.3250 off it, a gap of 0.025.** Which is the honest reading of any attention map from an untrained model: **the structure people point to in trained alignment plots has to be learned, and here it is not there yet.**", "left": "measurement", "codeW": 190, "vars": ["value"], "steps": [{"code": "uniform would be", "state": ["0.333 in every cell"], "tone": "accent"}, {"code": "max deviation", "state": ["0.0577"], "changed": [0], "tone": "crit"}, {"code": "diagonal mean", "state": ["0.3500"], "changed": [0], "tone": "warn"}, {"code": "off-diagonal mean", "state": ["0.3250"], "changed": [0], "tone": "warn", "note": "a gap of 0.025"}], "t": "diagram", "id": "dg-6_6-04-3"},
 
+
+
     { t: "out", text:
 "how far is this from uniform?\n\n  uniform would be 0.333 in every cell\n  maximum deviation from uniform: 0.0577\n\n  diagonal mean      0.3500\n  off-diagonal mean  0.3250" },
 
@@ -60,6 +68,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "The loss", id: "loss" },
 
     {"kind": "trace", "title": "The model predicts “liebe” at all three positions, and the loss is 2.532", "caption": "**Mean cross-entropy 2.532, matching the reference exactly** — and the per-position probabilities show why: **p(target) is 0.014, 0.436 and 0.081.** Position 1 scores well **by accident**, because the target there happens to be `liebe`. Which is the classic untrained signature: **mode collapse — one output token dominates regardless of input, at 0.762, 0.436 and 0.774** — and it is what the first few hundred training steps typically fix, **before the model learns anything about the task.**", "left": "position", "codeW": 140, "vars": ["predicted", "target", "p(target)"], "steps": [{"code": "0", "state": ["liebe (0.762)", "ich", "0.014"], "tone": "crit"}, {"code": "1", "state": ["liebe (0.436)", "liebe", "0.436"], "changed": [0, 1, 2], "tone": "warn", "note": "right by accident"}, {"code": "2", "state": ["liebe (0.774)", "KI", "0.081"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "mean loss", "state": ["-", "-", "2.532"], "changed": [2], "tone": "violet", "note": "mode collapse"}], "t": "diagram", "id": "dg-6_6-05-4"},
+
+
 
     { t: "out", text:
 "                 <bos>   <eos>   ich     liebe   KI\n  -> ich        0.093   0.093   0.014   0.762   0.038\n  -> liebe      0.035   0.035   0.143   0.436   0.351\n  -> KI         0.058   0.058   0.030   0.774   0.081\n\n  pos 0: predict 'liebe'   target 'ich'     p(target) = 0.014\n  pos 1: predict 'liebe'   target 'liebe'   p(target) = 0.436\n  pos 2: predict 'liebe'   target 'KI'      p(target) = 0.081\n\n  mean cross-entropy loss = 2.532        reference 2.532" },

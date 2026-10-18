@@ -28,6 +28,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["", "Encoder-only", "Decoder-only", "Encoder-decoder"],
       rows: [
@@ -46,6 +48,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text:
 "\"the cat sat on the mat\", first head of the first layer\n\nbert-base-uncased  (encoder-only)\n  max attention to a FUTURE token: 0.3074\n  row 2 attends to: [0.099, 0.085, 0.113, 0.177, 0.066, 0.090, 0.201, 0.168]\n\ngpt2  (decoder-only)\n  max attention to a FUTURE token: 0.0000\n  row 2 attends to: [0.477, 0.139, 0.384, 0.000, 0.000, 0.000]" },
 
@@ -55,6 +59,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "BERT: masked language modelling", id: "bert" },
 
     {"kind": "trace", "title": "Eighty, ten and ten — a split that exists to prevent train-serve skew", "caption": "**Fine-tuning and inference never contain `[MASK]`, so if 100% of masked positions carried it, the pretraining and downstream distributions would differ at every position the model cared about** — a built-in train-serve skew of exactly 3.5's kind, designed out of the objective. And the measured fills show the objective working: **`floor` at 0.314 for the mat position, while the subject position is a flat `girl 0.069, man 0.067, dog 0.056`** — the context constrains one far more than the other.", "left": "component", "codeW": 170, "vars": ["what it does", "why"], "steps": [{"code": "mask 15% of tokens", "state": ["the objective", "-"], "tone": "accent"}, {"code": "of those, 80% -> [MASK]", "state": ["the normal case", "-"], "changed": [0], "tone": "good"}, {"code": "10% a random token", "state": ["forces real context use", "no [MASK] to lean on"], "changed": [0, 1], "tone": "violet"}, {"code": "10% left unchanged", "state": ["matches inference", "where [MASK] never appears", "-"], "changed": [0, 1], "tone": "violet"}, {"code": "NSP", "state": ["dropped by RoBERTa", "unnecessary"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-5_1-03-2"},
+
+
 
 
 
@@ -77,6 +83,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text:
 "one mask\n  \"The capital of France is [MASK].\"\n  -> paris 0.417, lille 0.071, lyon 0.063\n\nthree masks\n  \"The capital of France is [MASK] [MASK] [MASK].\"\n  -> \"in le ##y\"" },
 
@@ -86,6 +94,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "GPT: next-token prediction", id: "gpt" },
 
     {"kind": "trace", "title": "Five positions, five distributions, one forward pass", "caption": "**`logits` is (1, 5, 50257): one next-token distribution per position, all from a single pass** — this is 4.5's parallel training made concrete. **Each position is scored against the token that actually followed it, and the causal mask is what makes computing them simultaneously legitimate.** Read the confidences: **0.454 after `on` and 0.076 after `the`**, so the model is far surer about a preposition's object than about what the object is.", "left": "after", "codeW": 190, "vars": ["top token", "p"], "steps": [{"code": "'The'", "state": ["\\n", "0.014"], "tone": "warn"}, {"code": "'The cat'", "state": ["' was'", "0.110"], "changed": [0, 1], "tone": "good"}, {"code": "'The cat sat'", "state": ["' on'", "0.224"], "changed": [0, 1], "tone": "good"}, {"code": "'The cat sat on'", "state": ["' the'", "0.454"], "changed": [0, 1], "tone": "good", "note": "most confident"}, {"code": "'The cat sat on the'", "state": ["' floor'", "0.076"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-5_1-05-4"},
+
+
 
 
 
@@ -105,6 +115,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "T5: everything is text-to-text", id: "t5" },
 
     {"kind": "trace", "title": "One model, three tasks, and the task name is in the input string", "caption": "`t5-small` translates, summarises and judges grammatical acceptability — **and the only thing that changes is the prefix.** Which is what “everything is text-to-text” means operationally: **there is no task head, no label space and no output layer per task, so adding a task means writing a prefix.** The pretraining objective matches: **span corruption drops contiguous spans and trains the decoder to emit them, and crucially a span can be any length** — which is what BERT's fixed one-token-per-mask cannot do.", "left": "input prefix", "codeW": 200, "vars": ["output"], "steps": [{"code": "'translate English to German: ...'", "state": ["'Das Haus ist wunderbar.'"], "tone": "good"}, {"code": "'summarize: ...'", "state": ["a shortened version"], "changed": [0], "tone": "good"}, {"code": "'cola sentence: ...'", "state": ["'acceptable'"], "changed": [0], "tone": "good", "note": "a classification, as text"}, {"code": "pretraining", "state": ["span corruption - any length"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-5_1-06-5"},
+
+
 
 
 

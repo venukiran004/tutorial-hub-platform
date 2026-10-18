@@ -23,12 +23,18 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why raw audio is impossible", id: "raw" },
 
+    {"kind": "trace", "title": "Thirty seconds of audio would be 2.3e+11 attention entries", "caption": "**16 kHz means 480,000 samples for thirty seconds, and as tokens that is 2.30e+11 attention entries per head per layer.** Which is **identical to the image problem in 5.7: the natural representation has far more elements than a quadratic-cost mechanism can accept** — and the solution is identical too. **Do not tokenise the raw signal. For images that meant patches; for audio it means a spectrogram.**", "left": "duration at 16 kHz", "codeW": 160, "vars": ["samples"], "steps": [{"code": "1 second", "state": ["16,000"], "tone": "good"}, {"code": "10 seconds", "state": ["160,000"], "changed": [0], "tone": "warn"}, {"code": "30 seconds", "state": ["480,000"], "changed": [0], "tone": "crit", "note": "2.30e+11 attention entries"}, {"code": "10 minutes", "state": ["9,600,000"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-7_5-01-0"},
+
+
     { t: "out", text:
 "16 kHz audio\n\n  1 second        16,000 samples\n  10 seconds     160,000\n  30 seconds     480,000\n  10 minutes   9,600,000\n\n30 seconds as tokens would be 2.30e+11 attention entries\nper head, per layer" },
 
     { t: "p", text: "The problem is identical to images in lesson 5.7: the natural representation has far more elements than a quadratic-cost mechanism can accept. And the solution is identical too — do not tokenise the raw signal. For images that meant patches; for audio it means a **spectrogram**." },
 
     { t: "h2", n: "02", text: "The spectrogram", id: "spectrogram" },
+
+    {"kind": "trace", "title": "A 10 ms hop gives 5 to 15 frames per phoneme, which is the whole reason for the number", "caption": "**Phonemes last roughly 50–150 ms, so a 10 ms frame gives 5 to 15 frames per phoneme — enough to see the transitions that distinguish one from another. At 100 ms hops a whole phoneme might occupy a single frame and the distinguishing detail is gone.** So **the hop size is a resolution choice made against the physics of speech, not an arbitrary hyperparameter.** And the arithmetic lands somewhere convenient: **3000 frames halved by a stride-2 convolution, so Whisper's encoder always sees exactly 1500 tokens.**", "left": "hop", "codeW": 150, "vars": ["frames in 30s", "resolves", "verdict"], "steps": [{"code": "80 samples", "state": ["6000", "5 ms", "very fine, expensive"], "tone": "warn"}, {"code": "160 samples", "state": ["3000", "10 ms", "Whisper's choice"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "320 samples", "state": ["1500", "20 ms", "coarser, cheaper"], "changed": [0, 1, 2], "tone": "good"}, {"code": "1600 samples", "state": ["300", "100 ms", "misses phoneme boundaries"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "then stride-2 conv", "state": ["3000 -> 1500", "-", "always exactly 1500 tokens"], "changed": [0, 1, 2], "tone": "accent"}], "t": "diagram", "id": "dg-7_5-02-1"},
+
 
     { t: "out", text:
 "Whisper: 16 kHz audio, 160-sample hop (10 ms), 80 mel bins\n\n  1 second    ->  100 frames x 80 mels =   8,000 values\n  10 seconds  -> 1000 frames x 80 mels =  80,000\n  30 seconds  -> 3000 frames x 80 mels = 240,000\n\n  a stride-2 convolution then halves 3000 frames to 1500\n  so Whisper's encoder always sees exactly 1500 tokens" },
@@ -43,6 +49,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Whisper", id: "whisper" },
 
+    {"kind": "trace", "title": "The decoder is 78% of Whisper, which is the reverse of a vision model", "caption": "**8,208,384 parameters in the encoder and 29,552,256 in the decoder — 22% against 78%.** The reason is in the last row: **the decoder has a 51,865-entry multilingual vocabulary with language tags, and 5.7 showed an embedding table is where a vocabulary's cost lands.** So Whisper is mostly a language model that happens to be conditioned on audio, **which is also why it hallucinates fluent text on silence: the decoder is strong enough to continue plausibly without the encoder.**", "left": "component", "codeW": 150, "vars": ["parameters", "share"], "steps": [{"code": "encoder (4 layers)", "state": ["8,208,384", "22%"], "tone": "good"}, {"code": "decoder (4 layers)", "state": ["29,552,256", "78%"], "changed": [0, 1], "tone": "violet"}, {"code": "the cause", "state": ["vocabulary 51,865", "multilingual, with tags"], "changed": [0, 1], "tone": "accent"}, {"code": "total", "state": ["37,760,640", "d_model 384, 6 heads"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-7_5-03-2"},
+
+
     { t: "out", text:
 "openai/whisper-tiny: 37,760,640 params\n\n  encoder layers 4, decoder layers 4, d_model 384, heads 6\n  mel bins 80, max source positions 1500\n  vocabulary 51,865 (multilingual, with language tags)\n\n  encoder    8,208,384   (22%)\n  decoder   29,552,256   (78%)" },
 
@@ -53,6 +62,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Source and target are **different modalities**, of **different lengths**, and the entire audio **exists before** transcription begins. That is precisely the shape lesson 5.1 identified as still favouring encoder-decoder over decoder-only, and Whisper is the clearest live example. It also gains what lesson 6.6 described: cross-attention is a target-by-source alignment matrix, and Whisper uses it literally — **word-level timestamps are read off the cross-attention weights**, telling you which audio frames produced which word. A decoder-only model has no such matrix and no equivalent way to produce them." }] },
 
     { t: "h2", n: "04", text: "Video's arithmetic", id: "video" },
+
+    {"kind": "trace", "title": "A sixty-second clip at 24 fps is 1.36e+11 attention entries", "caption": "**At 256 tokens per frame, one second at 8 fps is 2,048 tokens and sixty seconds at 24 fps is 368,640** — which is 1.36e+11 attention entries, the same order as thirty seconds of raw audio in §01. So **video is not a harder version of the image problem, it is the image problem multiplied by frame rate**, and every strategy in the table is a way of not paying it. Note what each costs: **sparse sampling misses fast motion, pooling loses spatial detail in every frame, and a bottleneck loses whatever its queries miss.**", "left": "clip", "codeW": 140, "vars": ["frames", "tokens", "attention entries"], "steps": [{"code": "1s at 8 fps", "state": ["8", "2,048", "4.19e+06"], "tone": "good"}, {"code": "5s at 8 fps", "state": ["40", "10,240", "1.05e+08"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "10s at 24 fps", "state": ["240", "61,440", "3.77e+09"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "60s at 24 fps", "state": ["1,440", "368,640", "1.36e+11"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-7_5-04-3"},
+
 
     { t: "out", text:
 "at 256 visual tokens per frame\n\n  clip     fps    frames     tokens      attention entries\n  1s        8         8      2,048           4.19e+06\n  5s        8        40     10,240           1.05e+08\n  10s      24       240     61,440           3.77e+09\n  60s      24     1,440    368,640           1.36e+11" },
@@ -71,6 +83,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "05", text: "Spatio-temporal factorisation", id: "factorised" },
 
+    {"kind": "trace", "title": "Fourteen point eight times cheaper, and one thing becomes impossible", "caption": "**16 frames × 196 patches is 3,136 tokens: joint attention is 9,834,496 entries, and a spatial pass followed by a temporal pass is 664,832 — 14.8× cheaper.** The saving is real and so is the loss, and it is specific: **no single-hop cross-frame, cross-patch attention.** A patch in frame 1 can reach a patch in frame 16 **only via a shared position** — so a moving object that changes location between frames needs two hops, **which is exactly the dependency video is about.**", "left": "scheme", "codeW": 190, "vars": ["attention entries", "what it loses"], "steps": [{"code": "joint over all 3,136 tokens", "state": ["9,834,496", "nothing"], "tone": "crit"}, {"code": "spatial pass, then temporal", "state": ["664,832", "cross-frame cross-patch in one hop"], "changed": [0, 1], "tone": "good", "note": "14.8x cheaper"}, {"code": "so a moving object", "state": ["needs two hops", "and that is the dependency"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-7_5-05-4"},
+
+
     { t: "out", text:
 "16 frames x 196 patches = 3,136 tokens\n\n  joint attention over all tokens      9,834,496 entries\n  spatial pass, then temporal pass       664,832 entries\n\n  14.8x cheaper" },
 
@@ -78,6 +93,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Instead of one attention over all 3,136 tokens, do attention within each frame (16 separate 196-token problems) then attention across frames at each spatial position (196 separate 16-token problems). **14.8x fewer entries**, and it is what TimeSformer and ViViT do. The cost is precise: a patch can no longer attend to a *different* patch in a *different* frame in one hop — it needs two, one spatial and one temporal. For tracking an object that moves across the frame, that matters. It is the same trade as Swin's windows in lesson 5.7: restrict attention to a structured subset, recover the missing paths through depth." }] },
 
     { t: "h2", n: "06", text: "The audio model landscape", id: "landscape" },
+
+    {"kind": "trace", "title": "Five models, and only one of them is an encoder-decoder", "caption": "**Whisper is the only encoder-decoder here, and the only one doing recognition rather than generation** — everything else is autoregressive over audio tokens. Which is the structural split worth noticing: **recognition maps a long signal to a short sequence, so an encoder-decoder fits; generation maps a short prompt to a long signal, so a decoder does.** And **VALL-E's three-second enrollment is the number that makes voice cloning a safety question rather than a research one.**", "left": "model", "codeW": 140, "vars": ["task", "notable for"], "steps": [{"code": "Whisper", "state": ["speech to text", "encoder-decoder, 99 languages"], "tone": "violet"}, {"code": "Bark", "state": ["text to speech", "emotion, non-verbal sounds"], "changed": [0, 1], "tone": "good"}, {"code": "VALL-E", "state": ["voice cloning", "three-second enrollment"], "changed": [0, 1], "tone": "crit"}, {"code": "MusicGen", "state": ["text to music", "conditioned generation"], "changed": [0, 1], "tone": "good"}, {"code": "AudioLM", "state": ["audio continuation", "autoregressive over audio tokens"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-7_5-06-5"},
+
 
     { t: "table",
       head: ["Model", "Task", "Notable for"],

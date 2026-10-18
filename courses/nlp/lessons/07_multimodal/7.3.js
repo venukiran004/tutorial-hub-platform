@@ -23,6 +23,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three architectures", id: "architectures" },
 
+    {"kind": "trace", "title": "Three patterns, and the middle one is the whole open-source ecosystem", "caption": "**Dual encoders do similarity only, so they retrieve and classify and cannot answer a question. The bridge pattern — vision encoder, connector, LLM — is what every open VLM is**, and the variation between them is the connector: **LLaVA uses an MLP, BLIP-2 uses 32 learned queries, Flamingo uses gated cross-attention.** Native multimodal trains all modalities in one stack from pretraining, **which is the only pattern that generates as well as understands.**", "left": "pattern", "codeW": 150, "vars": ["how", "used for"], "steps": [{"code": "dual encoder", "state": ["two towers, similarity only", "retrieval, zero-shot"], "tone": "good"}, {"code": "bridge to an LLM", "state": ["encoder -> connector -> LLM", "VQA, captioning, chat"], "changed": [0, 1], "tone": "violet"}, {"code": "native multimodal", "state": ["one stack from pretraining", "everything, incl. generation"], "changed": [0, 1], "tone": "accent"}, {"code": "the open reference", "state": ["LLaVA: ViT + MLP + Vicuna", "-"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-7_3-01-0"},
+
+
     { t: "table",
       head: ["Pattern", "Examples", "How", "Used for"],
       rows: [
@@ -63,6 +66,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "What the projector has to achieve", id: "projector" },
 
+    {"kind": "flow", "title": "The LLM will process anything you hand it, sensibly or not", "caption": "**Its layers were trained on inputs with a particular scale and geometry — a specific typical norm, a specific distribution across dimensions — and nothing checks that what arrives resembles that.** So the projector's job is not only dimensional (**1024 → 4096**) but **distributional**: produce vectors that sit where token embeddings sit. The scale reference makes it concrete — **GPT-2's token embeddings have std 0.1437 and mean norm 3.9585** — and **a projector whose output norm is ten times that will be attended to as if it were a shouting token.**", "cols": 3, "nodes": [{"id": "d", "label": "1024 -> 4096", "sub": "the dimensional job", "tone": "good"}, {"id": "s", "label": "And into the right distribution", "sub": "std 0.1437, mean norm 3.9585", "tone": "violet"}, {"id": "n", "label": "Nothing validates the input", "sub": "the LLM processes it regardless", "tone": "crit"}, {"id": "t", "label": "A 10x norm = a shouting token", "sub": "attended to disproportionately", "tone": "crit"}, {"id": "l", "label": "So the projector is learned, not derived", "sub": "it has to find that geometry", "tone": "accent"}], "edges": [["d", "s"], ["s", "n"], ["n", "t"], ["t", "l"]], "t": "diagram", "id": "dg-7_3-03-1"},
+
+
     { t: "out", text:
 "it maps ViT patch embeddings (d=1024) into the LLM's token space (d=4096)\n\nfor scale reference, gpt2's token embeddings:\n  std 0.1437, mean norm 3.9585" },
 
@@ -71,12 +77,18 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "Why stage 1 freezes the LLM", id: "freeze" },
 
+    {"kind": "flow", "title": "A few hundred thousand caption pairs would overwrite the language ability", "caption": "**Training the LLM directly on image-caption pairs is catastrophic forgetting: a narrow fine-tuning distribution overwriting broad pretrained capability.** So stage 1 **teaches the projector to speak the LLM's language without touching the LLM at all**, and stage 2 unfreezes it on instruction data once the visual tokens already land in the right place. Which is the same reasoning as Flamingo's zero-initialised gate in 5.9 — **both designs start from exactly the original model and add visual influence from there.**", "cols": 3, "nodes": [{"id": "t", "label": "Train the LLM on caption pairs", "sub": "a few hundred thousand", "tone": "crit"}, {"id": "f", "label": "Catastrophic forgetting", "sub": "narrow data overwrites broad ability", "tone": "crit"}, {"id": "s", "label": "Stage 1: train the projector only", "sub": "the LLM is frozen", "tone": "good"}, {"id": "u", "label": "Stage 2: unfreeze, on instructions", "sub": "visual tokens already land right", "tone": "good"}, {"id": "g", "label": "Same logic as Flamingo's zero gate", "sub": "start AT the original model", "tone": "violet"}], "edges": [["t", "f"], ["f", "s"], ["s", "u"], ["u", "g"]], "t": "diagram", "id": "dg-7_3-04-2"},
+
+
     { t: "p", text: "Training the LLM directly on a few hundred thousand image-caption pairs would degrade its language ability — catastrophic forgetting, where a narrow fine-tuning distribution overwrites broad pretrained capability. Stage 1 therefore teaches the *projector* to speak the LLM's language without touching the LLM at all. Stage 2 then unfreezes it on instruction data, with the risk managed by a much lower learning rate and a broader data mix." },
 
     { t: "callout", kind: "insight", title: "Flamingo removes the risk rather than managing it",
       body: [{ t: "p", text: "Lesson 5.9 noted Flamingo's gated cross-attention layers are initialised with a `tanh` gate at **zero**, so at step 0 the multimodal model is *bit-identical* to the original LLM and visual influence is learned in gradually. That is a stronger guarantee than LLaVA's staged unfreezing: there is no point at which the language model is exposed to a distribution that could damage it. The cost is that the inserted layers are real added compute in every forward pass and must be redesigned per LLM architecture — which is why LLaVA's approach, weaker in principle, won in practice on composability." }] },
 
     { t: "h2", n: "05", text: "Running one", id: "running" },
+
+    {"kind": "trace", "title": "Fluent, confident and wrong — and one prefix fixes it", "caption": "BLIP at 224M parameters on three synthetic images: **a red circle becomes `'a white circle with a black dot on it'`, and two blue squares become `\"a blue square icon with the word ' s logo\"`.** Fluent English, confidently wrong, **and nothing in the output signals the failure.** Then the conditional runs: **the prefix `'there are'` produces `'there are two squares'` — correct — while `'a picture of'` produces a degenerate loop of apostrophes.** So **the prompt is doing more work than the image here**, which is the honest reading of small-VLM captioning.", "left": "input", "codeW": 190, "vars": ["output", "right?"], "steps": [{"code": "red circle, unconditional", "state": ["'a white circle with a black dot'", "no"], "tone": "crit"}, {"code": "two squares, unconditional", "state": ["\"a blue square icon with the word\"", "no"], "changed": [0], "tone": "crit"}, {"code": "prefix 'a picture of'", "state": ["a loop of apostrophes", "no"], "changed": [0], "tone": "crit"}, {"code": "prefix 'there are'", "state": ["'there are two squares'", "YES"], "changed": [0, 1], "tone": "good", "note": "the prompt did the work"}], "t": "diagram", "id": "dg-7_3-05-3"},
+
 
     { t: "out", text:
 "Salesforce/blip-image-captioning-base: 223,971,644 params\n\nunconditional captioning of generated images\n\n  red circle    -> 'a white circle with a black dot on it'\n  two squares   -> \"a blue square icon with the word ' s logo\"\n  stripes       -> 'a white background with a black and white stripe'" },

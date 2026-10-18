@@ -22,6 +22,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What makes it hard", id: "hard" },
 
+    {"kind": "trace", "title": "Six modalities, and the hard part is in none of these columns", "caption": "**The difficulty is not processing each one — module 5 showed a transformer handles images by tokenising patches** — it is **aligning representations so that a vector derived from pixels and a vector derived from words can be meaningfully compared.** Read the third column: every modality has a working tokenisation, **so the input problem is solved and the comparison problem is what §05 is about.**", "left": "modality", "codeW": 140, "vars": ["what it is", "tokenised as"], "steps": [{"code": "text", "state": ["natural language", "subword ids"], "tone": "good"}, {"code": "image", "state": ["pixels", "patches, usually 16x16"], "changed": [0, 1], "tone": "good"}, {"code": "audio", "state": ["waveforms", "spectrogram frames"], "changed": [0, 1], "tone": "good"}, {"code": "video", "state": ["frame sequences", "spatio-temporal patches"], "changed": [0, 1], "tone": "good"}, {"code": "point cloud / tabular", "state": ["3D coords / rows", "points or voxels / columns"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-7_1-01-0"},
+
+
     { t: "p", text: "A multimodal model understands or generates across several data types. The difficulty is not processing each one — Module 5 showed a transformer handles images by simply tokenising patches — it is **aligning representations** so that a vector derived from pixels and a vector derived from words can be meaningfully compared." },
 
     { t: "table",
@@ -72,6 +75,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Where the models sit", id: "placing" },
 
+    {"kind": "trace", "title": "LLaVA has no cross-attention module and gets cross-attention anyway", "caption": "**It projects patches into the LLM's embedding space so they become ordinary tokens — and because self-attention then runs over text and visual tokens together, the *effect* is cross-modal attention in every layer.** So it achieves cross-attention fusion without a cross-attention module, which is why the architecture diagram is so much simpler than Flamingo's. The fusion point is the real axis: **CLIP has zero interaction, the bridges interact everywhere, and the bottlenecks interact through a fixed number of slots.**", "left": "model", "codeW": 140, "vars": ["fusion", "how"], "steps": [{"code": "CLIP", "state": ["late", "two towers, zero interaction"], "tone": "accent"}, {"code": "LLaVA", "state": ["cross-attention, implicitly", "visual tokens join self-attention"], "changed": [0, 1], "tone": "violet"}, {"code": "Flamingo", "state": ["cross-attention, explicitly", "gated layers, frozen towers"], "changed": [0, 1], "tone": "good"}, {"code": "Q-Former", "state": ["bottleneck", "32 learned queries"], "changed": [0, 1], "tone": "good"}, {"code": "Perceiver", "state": ["bottleneck", "a fixed latent array, any input"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-7_1-03-1"},
+
+
     { t: "out", text:
 "CLIP        late fusion        two towers, zero interaction\nLLaVA       cross-attention    visual tokens share the LLM's self-attention\nFlamingo    cross-attention    gated layers between frozen towers\nQ-Former    bottleneck         32 learned queries compress the image\nPerceiver   bottleneck         fixed latent array, any input size" },
 
@@ -79,10 +85,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "Bottleneck fusion", id: "bottleneck" },
 
+    {"kind": "flow", "title": "Thirty-two vectors, whatever the resolution", "caption": "5.9 computed the problem this solves: **a 1024-pixel image at patch 14 is 5,329 visual tokens, 130% of a 4k context.** BLIP-2's Q-Former uses **32 learned query vectors that cross-attend to the image features and output 32 tokens, regardless of resolution**; Flamingo's Perceiver Resampler does it with 64. **The image cost becomes a constant rather than a function of resolution, which is what makes multi-image and video input feasible at all.** The trade is explicit: **whatever those 32 vectors miss is gone — and small text in a document is exactly what a fixed-size summary loses.**", "cols": 3, "nodes": [{"id": "p", "label": "5,329 tokens at 1024 pixels", "sub": "130% of a 4k context (5.9)", "tone": "crit"}, {"id": "q", "label": "32 learned queries cross-attend", "sub": "BLIP-2's Q-Former", "tone": "good"}, {"id": "o", "label": "Output: 32 tokens, any resolution", "sub": "Flamingo uses 64", "tone": "violet"}, {"id": "c", "label": "So image cost is a constant", "sub": "which enables video", "tone": "good"}, {"id": "l", "label": "And whatever they miss is gone", "sub": "small text, distant objects", "tone": "crit"}], "edges": [["p", "q"], ["q", "o"], ["o", "c"], ["c", "l"]], "t": "diagram", "id": "dg-7_1-04-2"},
+
+
     { t: "callout", kind: "insight", title: "A fixed number of queries decouples cost from resolution",
       body: [{ t: "p", text: "Lesson 5.9 computed the problem this solves: a 1024-pixel image at patch 14 is **5,329 visual tokens**, 130% of a 4k context. BLIP-2's Q-Former uses **32 learned query vectors** that cross-attend to the image features and output 32 tokens — regardless of resolution. Flamingo's Perceiver Resampler does the same with 64. The image cost becomes a constant rather than a function of resolution, which is what makes multi-image and video input feasible at all. The trade is explicit and unavoidable: whatever those 32 vectors fail to capture is gone, and fine detail — small text in a document, a distant object — is exactly what a fixed-size summary tends to lose." }] },
 
     { t: "h2", n: "05", text: "The alignment problem", id: "alignment" },
+
+    {"kind": "trace", "title": "Three ways to align, and they differ by a factor of three hundred in what you train", "caption": "**Contrastive alignment trains both encoders and needs enormous paired data — 400M pairs for CLIP. Projection alignment freezes a good vision encoder and a good LLM and trains a small bridge: about 21M parameters against a 7B model.** Joint training updates everything on interleaved data and is what the largest native-multimodal models do. **So the question is not which is best but what you have: paired data, two good frozen models, or a training budget.**", "left": "strategy", "codeW": 160, "vars": ["what trains", "what it needs", "example"], "steps": [{"code": "contrastive", "state": ["both encoders", "400M paired examples", "CLIP"], "tone": "accent"}, {"code": "projection", "state": ["~21M of bridge", "two good frozen models", "LLaVA"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "joint", "state": ["everything", "the largest budget", "native multimodal"], "changed": [0, 1, 2], "tone": "warn"}], "t": "diagram", "id": "dg-7_1-05-3"},
+
 
     { t: "p", text: "Whichever fusion point you choose, something has to make a picture of a dog and the word *dog* land near each other. There are essentially three ways, and they map onto the fusion strategies." },
 

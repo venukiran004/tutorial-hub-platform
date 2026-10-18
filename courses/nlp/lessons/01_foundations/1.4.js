@@ -34,6 +34,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text: `  Vocabulary: ["cat", "sat", "mat"]
   "cat" -> [1, 0, 0]
   "sat" -> [0, 1, 0]
@@ -45,6 +47,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Bag of Words", id: "bow" },
 
     {"kind": "flow", "title": "Sorted, de-duplicated, and order-free", "caption": "The feature list is **alphabetical and one entry per distinct word** — which is already the representation's two properties. Sorting means a column index has no relation to where the word appeared; de-duplication means a document is a point in a space with one axis per vocabulary word. **So “the dog chased the cat” and “the cat chased the dog” have identical vectors**, and no amount of counting recovers which one you had.", "cols": 3, "nodes": [{"id": "f", "label": "features: cat chased dog log mat on sat the", "sub": "sorted, de-duplicated", "tone": "accent"}, {"id": "s", "label": "Sorted -> the index is not the position", "sub": "order is discarded at build time", "tone": "warn"}, {"id": "d", "label": "A document is a count per axis", "sub": "one axis per vocabulary word", "tone": "good"}, {"id": "o", "label": "'dog chased cat' = 'cat chased dog'", "sub": "identical vectors", "tone": "crit"}, {"id": "n", "label": "And nothing downstream can recover it", "sub": "the bag is why it is called a bag", "tone": "crit"}], "edges": [["f", "s"], ["s", "d"], ["d", "o"], ["o", "n"]], "t": "diagram", "id": "dg-1_4-02-1"},
+
+
 
 
 
@@ -78,6 +82,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "TF-IDF, by hand", id: "tfidf" },
 
     {"kind": "trace", "title": "The word in every document gets an idf of exactly 1.0", "caption": "`the` has `df=3` in a three-document corpus, so `ln(3/3) + 1 = 1.0` — **the `+1` is the only reason it is not zero.** And then the arithmetic lands somewhere worth noticing: **`mat` at 0.3498 does beat `the` at 0.3333, but only just, because `the` appears twice and tf rewards that.** The raw formula divides by document length and does not renormalise, which is exactly where scikit-learn differs — and the difference matters.", "left": "term in doc 0", "codeW": 140, "vars": ["tf", "idf", "tf-idf"], "steps": [{"code": "the", "state": ["2/6 = 0.3333", "1.0000", "0.3333"], "tone": "warn", "note": "in every doc"}, {"code": "mat", "state": ["1/6 = 0.1667", "2.0986", "0.3498"], "changed": [0, 1, 2], "tone": "good", "note": "rare - wins, just"}, {"code": "cat, on, sat", "state": ["1/6 = 0.1667", "1.4055", "0.2342"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "so the ranking", "state": ["-", "-", "mat > the, barely"], "tone": "violet"}], "t": "diagram", "id": "dg-1_4-03-2"},
+
+
 
 
 
@@ -131,6 +137,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text: `  sklearn idf values: [1.2877, 1.6931, 1.2877, 1.6931, 1.6931, 1.2877, 1.2877, 1.0]
   hand smooth idf   : [1.2877, 1.6931, 1.2877, 1.6931, 1.6931, 1.2877, 1.2877, 1.0]
   match             : True
@@ -148,6 +156,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "What idf actually bought", id: "measured" },
 
     {"kind": "trace", "title": "Forty-one percent closer, which is less than the word “weighting” suggests", "caption": "This is the honest number: **the raw count ratio of `the` to `mat` is 2.0 and the tf-idf ratio is 1.181 — 41% closer, not eliminated.** `the` still outscores `mat` in doc 0. **idf compresses the gap between a common and a rare word; it does not invert it**, which is why `sublinear_tf` exists as the other half: it takes a hundredfold count difference down to 5.6-fold, because **the tenth occurrence of a word tells you far less than the first.**", "left": "measurement", "codeW": 180, "vars": ["the", "mat", "ratio"], "steps": [{"code": "raw counts in doc 0", "state": ["2", "1", "2.000"], "tone": "warn"}, {"code": "tf-idf in doc 0", "state": ["0.5812", "0.4920", "1.181"], "changed": [0, 1, 2], "tone": "good", "note": "41% closer, not inverted"}, {"code": "sublinear_tf: 1 + ln(tf)", "state": ["tf 2 -> 1.69", "tf 100 -> 5.61", "100x -> 5.6x"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-1_4-05-4"},
+
+
 
 
 
@@ -182,6 +192,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Choosing a representation", id: "comparison" },
 
     {"kind": "compare", "title": "Three representations, and the row that decides it", "caption": "**“Captures meaning” is the row that matters, and only the third column answers yes** — which is what the whole of 1.6 is about. The rest is a trade you can read off: the sparse representations are interpretable, cheap and exact, so a coefficient on `refund` is a number you can show someone; the dense one is none of those and knows that `refund` and `reimbursement` are related. **Neither of the first two columns can be fixed into the third by tuning.**", "columns": [{"title": "BoW / TF-IDF", "tone": "good", "items": ["one axis per vocabulary word — sparse", "interpretable: a coefficient per word", "no training, and exact arithmetic", "cat and kitten are unrelated", "an unseen word has no column at all", "order is discarded"]}, {"title": "Embeddings", "tone": "violet", "items": ["a few hundred dense dimensions", "not interpretable per dimension", "trained, on a lot of text", "cat and kitten land near each other", "subwords give an unseen word a vector", "order still discarded — until module 4"]}], "t": "diagram", "id": "dg-1_4-06-5"},
+
+
 
 
 

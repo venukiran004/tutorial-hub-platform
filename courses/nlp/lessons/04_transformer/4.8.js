@@ -26,6 +26,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Level", "Vocabulary", "Sequence length", "Fatal problem"],
       rows: [
@@ -39,6 +41,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Training BPE, worked", id: "training" },
 
     {"kind": "trace", "title": "Two pairs tie for the maximum at nine", "caption": "The initial counts on the four-word corpus put **`(e,r)` and `(r,</w>)` both at 9** — a genuine tie at the top, which is where §03's divergence comes from: **the algorithm as stated does not say which to merge, so the implementation's tie-break decides the vocabulary.** Below them, `(w,e)` at 8 and `(l,o)`/`(o,w)` at 7. The `</w>` end marker is doing real work here: **it makes `er` at the end of a word a different symbol from `er` inside one.**", "left": "pair", "codeW": 150, "vars": ["count", "note"], "steps": [{"code": "(e,r)", "state": ["9", "tied for max"], "tone": "violet"}, {"code": "(r,</w>)", "state": ["9", "also tied for max"], "changed": [0, 1], "tone": "violet", "note": "the tie-break decides"}, {"code": "(w,e)", "state": ["8", "-"], "changed": [0, 1], "tone": "good"}, {"code": "(l,o) / (o,w)", "state": ["7", "-"], "changed": [0, 1], "tone": "good"}, {"code": "(e,s) / (s,t) / (t,</w>)", "state": ["2", "never merged, as it turns out"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-4_8-02-1"},
+
+
 
 
 
@@ -62,6 +66,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text:
 "always merging the most frequent pair\n\n  merge 1   (e,r)        -> 'er'          freq 9\n  merge 2   (er,</w>)    -> 'er</w>'     freq 9\n  merge 3   (l,o)        -> 'lo'         freq 7\n  merge 4   (lo,w)       -> 'low'        freq 7\n  merge 5   (e,w)        -> 'ew'         freq 6\n  merge 6   (ew,er</w>)  -> 'ewer</w>'   freq 6\n  merge 7   (n,ewer</w>) -> 'newer</w>'  freq 6\n\nthe order:\n  merge 3   (n,e) -> 'ne'   [6]\n  merge 4   (ne,w) -> 'new' [6]\n  merge 5   (l,o) -> 'lo'   [7]\n  merge 6   (lo,w) -> 'low' [7]" },
 
@@ -71,6 +77,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Encoding applies the rules in order", id: "encoding" },
 
     {"kind": "trace", "title": "Encoding is the merge list replayed in order, and the fallback is characters", "caption": "**The merges are applied in the order they were learned, which is why encoding is deterministic and why the list is part of the tokenizer rather than just the vocabulary.** `lower` was never seen whole and encodes to **2 tokens** from pieces that were. Then the degradation is visible: **`lowest` is 5 tokens because `e`, `s` and `t` were never merged, and `widest` is 7 — a full character fallback.** So a word's token count depends on how much of it the merge list happened to cover.", "left": "word", "codeW": 150, "vars": ["encoding", "tokens"], "steps": [{"code": "lower (unseen whole)", "state": ["['low', 'er</w>']", "2"], "tone": "good"}, {"code": "lowest", "state": ["['low', 'e', 's', 't', '</w>']", "5"], "changed": [0, 1], "tone": "warn", "note": "e, s, t never merged"}, {"code": "widest", "state": ["['w','i','d','e','s','t','</w>']", "7"], "changed": [0, 1], "tone": "crit", "note": "character fallback"}], "t": "diagram", "id": "dg-4_8-04-3"},
+
+
 
 
 
@@ -88,6 +96,8 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "The four algorithms", id: "algorithms" },
 
     {"kind": "trace", "title": "Four names, and one of them is not an algorithm", "caption": "**SentencePiece is a framework rather than an algorithm: it treats the input as a raw byte stream with no pre-tokenisation, so it works on languages without spaces, and it implements both BPE and Unigram.** Which is why “SentencePiece vs BPE” is a category error. And Unigram runs in the opposite direction from the other two: **start with a large vocabulary and *prune* the tokens that least affect corpus likelihood — top-down, where BPE and WordPiece build bottom-up from characters.**", "left": "name", "codeW": 160, "vars": ["what it does", "direction"], "steps": [{"code": "BPE (GPT, LLaMA)", "state": ["merge the most frequent pair", "bottom-up"], "tone": "good"}, {"code": "WordPiece (BERT)", "state": ["merge by likelihood gain; ## marks", "bottom-up"], "changed": [0], "tone": "good"}, {"code": "Unigram", "state": ["prune what costs least likelihood", "TOP-DOWN"], "changed": [0, 1], "tone": "violet"}, {"code": "SentencePiece (T5, LLaMA)", "state": ["a framework: raw bytes, no pre-tok", "either of the above"], "changed": [0, 1], "tone": "accent", "note": "not an algorithm"}], "t": "diagram", "id": "dg-4_8-05-4"},
+
+
 
 
 
@@ -111,6 +121,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "out", text:
 "\"I love transformer models!\"\n\nbert-base-uncased   8 ids   ['[CLS]','i','love','transform','##er','models','!','[SEP]']\ngpt2                5 ids   ['I','Ġlove','Ġtransformer','Ġmodels','!']\nroberta-base        7 ids   ['<s>','I','Ġlove','Ġtransformer','Ġmodels','!','</s>']\n\nbert input_ids: [101, 1045, 2293, 10938, 2121, 4275, 999, 102]\nreference says: [101, 1045, 2293, 19081, 4275, 999, 102]" },
 
@@ -120,6 +132,8 @@ EC.receiveLesson({
     { t: "h2", n: "07", text: "What tokenisation costs", id: "cost" },
 
     {"kind": "trace", "title": "Plain English costs all three exactly ten tokens; Hindi costs GPT-2 more than twice BERT", "caption": "**The differences only appear once you leave the distribution the vocabulary was built for.** Code costs BERT 27 against GPT-2's 24, and numbers 18 against 16 — **both cases where BERT's smaller, more English-word-oriented vocabulary has to split more.** Then the direction reverses: **Hindi costs BERT 11 tokens and GPT-2 26, and emoji 5 against 12**, because byte-level BPE spends one token per byte on text it has no merges for. **Which is a direct cost multiplier on every non-English prompt.**", "left": "text (same content)", "codeW": 160, "vars": ["chars", "BERT", "GPT-2 / RoBERTa"], "steps": [{"code": "plain english", "state": ["44", "10", "10"], "tone": "good", "note": "identical"}, {"code": "code", "state": ["55", "27", "24"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "numbers", "state": ["47", "18", "16"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "emoji", "state": ["16", "5", "12"], "changed": [0, 1, 2], "tone": "crit", "note": "reversed"}, {"code": "hindi", "state": ["16", "11", "26"], "changed": [0, 1, 2], "tone": "crit", "note": "2.4x"}], "t": "diagram", "id": "dg-4_8-07-6"},
+
+
 
 
 
@@ -136,6 +150,8 @@ EC.receiveLesson({
     { t: "h2", n: "08", text: "Choosing a vocabulary size", id: "vocab" },
 
     {"kind": "trace", "title": "Thirty thousand to a hundred and twenty-eight thousand, and the trend is upward", "caption": "The sizes track the era rather than the architecture: **BERT at 30,522 and LLaMA 2 at 32,000 against GPT-4 at ~100,000 and LLaMA 3 at 128,000.** The reason the number grew is §07's measurement — **a larger vocabulary buys shorter sequences on code and non-English text, which is where the token cost actually hurts** — and 4.10 §05 shows what makes it affordable: **a vocabulary is embedding parameters, and the embedding share falls as the model grows.**", "left": "model", "codeW": 150, "vars": ["vocabulary", "algorithm"], "steps": [{"code": "BERT", "state": ["30,522", "WordPiece"], "tone": "accent"}, {"code": "LLaMA 2", "state": ["32,000", "SentencePiece BPE"], "changed": [0, 1], "tone": "accent"}, {"code": "GPT-2", "state": ["50,257", "byte-level BPE"], "changed": [0, 1], "tone": "good"}, {"code": "GPT-4", "state": ["~100,000", "BPE (tiktoken)"], "changed": [0, 1], "tone": "good"}, {"code": "LLaMA 3", "state": ["128,000", "BPE (tiktoken)"], "changed": [0, 1], "tone": "violet", "note": "4x LLaMA 2"}], "t": "diagram", "id": "dg-4_8-08-7"},
+
+
 
 
 

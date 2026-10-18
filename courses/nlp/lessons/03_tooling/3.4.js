@@ -30,6 +30,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table",
       head: ["Task", "Primary metrics"],
       rows: [
@@ -45,6 +47,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "The averaging choice decides the number", id: "averaging" },
 
     {"kind": "trace", "title": "The same predictions scored four ways, from 0.5504 to 0.9700", "caption": "950 / 40 / 10 documents, class 0 perfect, half of class 1, **none of class 2** — and the model is a 0.97 or a 0.55 depending entirely on the averaging. **Micro equals accuracy in single-label multiclass and is dominated by the largest class. Weighted tracks accuracy closely and hides the same things.** Only **macro** exposes the failed rare class, because every class counts equally regardless of size. **And per-class is the row to always report: the averages exist to compress it, and the compression is where the information goes.**", "left": "metric", "codeW": 160, "vars": ["value", "what it is reporting"], "steps": [{"code": "accuracy", "state": ["0.9700", "class 0 is 95% of the data"], "tone": "crit"}, {"code": "micro F1", "state": ["0.9700", "identical, by construction"], "changed": [0, 1], "tone": "crit"}, {"code": "weighted F1", "state": ["0.9619", "hides the same things"], "changed": [0, 1], "tone": "crit"}, {"code": "macro F1", "state": ["0.5504", "class 2 scored 0.0000"], "changed": [0, 1], "tone": "good"}, {"code": "per class, recall", "state": ["1.00 / 0.50 / 0.00", "the actual result"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_4-02-1"},
+
+
 
 
 
@@ -81,6 +85,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "scratchpad/nlp/n34.py — the ROUGE example", code:
 "from rouge_score import rouge_scorer\n\nscorer = rouge_scorer.RougeScorer([\"rouge1\", \"rouge2\", \"rougeL\"],\n                                  use_stemmer=True)\nscores = scorer.score(\"The cat sat on the mat.\",\n                      \"The cat is on the mat.\")\nfor metric, v in scores.items():\n    print(f\"{metric}: P={v.precision:.3f} R={v.recall:.3f} F1={v.fmeasure:.3f}\")" },
 
@@ -93,6 +99,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "QA: exact match and token F1", id: "qa" },
 
     {"kind": "trace", "title": "Normalisation makes three wrong-looking answers exactly right", "caption": "SQuAD-style evaluation **lowercases, strips articles and punctuation, and collapses whitespace before comparing** — so `'arthur samuel'` and `'The Arthur Samuel'` both score **exact match True**, which is the correct behaviour and surprises people. The two metrics then split on the interesting cases: **an answer that is too long and one that is too short both score EM False and F1 0.6667**, so **F1 is what distinguishes a near-miss from `'Alan Turing'` at 0.0000.**", "left": "prediction", "codeW": 190, "vars": ["exact match", "token F1"], "steps": [{"code": "'Arthur Samuel'", "state": ["True", "1.0000"], "tone": "good"}, {"code": "'arthur samuel'", "state": ["True", "1.0000"], "changed": [0], "tone": "good", "note": "lowercased"}, {"code": "'The Arthur Samuel'", "state": ["True", "1.0000"], "tone": "good", "note": "article stripped"}, {"code": "'Arthur Samuel in 1959' / 'Samuel'", "state": ["False", "0.6667"], "changed": [0, 1], "tone": "warn"}, {"code": "'Alan Turing'", "state": ["False", "0.0000"], "changed": [1], "tone": "crit"}], "t": "diagram", "id": "dg-3_4-04-3"},
+
+
 
 
 
@@ -122,6 +130,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Perplexity is the exponential of the mean negative log-likelihood — the model's effective branching factor, or how many equally-likely words it was choosing between on average. Lower is better, and it needs no reference text, which is what makes it useful for language models." },
 
     { t: "math", tex: "\\text{PPL}(X) = \\exp\\!\\left(-\\frac{1}{N}\\sum_{i=1}^{N} \\log p_\\theta(x_i \\mid x_{<i})\\right)" },
@@ -137,6 +147,8 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "METEOR and BERTScore", id: "meteor" },
 
     {"kind": "flow", "title": "One fixes BLEU's matching; the other abandons matching", "caption": "**METEOR keeps string comparison and widens it: stem matches, WordNet-synonym matches, and a fragmentation penalty for word order** — so *movie* can match *film* and a reordered translation is penalised explicitly rather than silently through n-gram counts. **BERTScore drops string matching entirely and greedily aligns contextual embeddings**, which is why it scores 2.4's paraphrase pair where BLEU and ROUGE score zero — **and why it needs a model, a GPU and a version pin to be reproducible.**", "cols": 3, "nodes": [{"id": "m", "label": "METEOR: stems + WordNet synonyms", "sub": "movie can match film", "tone": "good"}, {"id": "f", "label": "Plus a fragmentation penalty", "sub": "word order, explicitly", "tone": "good"}, {"id": "b", "label": "BERTScore: align embeddings greedily", "sub": "no string matching at all", "tone": "violet"}, {"id": "p", "label": "So it scores a zero-overlap paraphrase", "sub": "which BLEU and ROUGE cannot", "tone": "violet"}, {"id": "c", "label": "At the cost of a model and a version pin", "sub": "or the number is not reproducible", "tone": "warn"}], "edges": [["m", "f"], ["b", "p"], ["p", "c"]], "t": "diagram", "id": "dg-3_4-06-5"},
+
+
 
 
 
