@@ -37,6 +37,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "Truthiness: what counts as false",
       caption: "Only these are falsy. Everything else — including `[0]`, `\"0\"`, `\"False\"` and any object without `__bool__` or `__len__` — is true.",
@@ -142,6 +143,7 @@ def make_request(retries: int | None = None, verbose: bool | None = None):
 
 
 
+
     { t: "p", text: "Any object can be used where a boolean is expected. Python asks the object what it thinks: it calls `__bool__` if defined, falls back to `__len__` if not, and otherwise treats the object as true." },
 
     { t: "table",
@@ -216,6 +218,7 @@ if not queue:
 
 
 
+
     { t: "p", text: "Python allows mathematical-style comparison chains, and they mean what a mathematician expects — each operand is evaluated once, and adjacent pairs are compared with implicit `and`." },
 
     { t: "code", lang: "python", title: "chains", code: `
@@ -266,6 +269,7 @@ print(not value is None)     # same result, harder to read
     { t: "h2", n: "04", text: "Precedence", id: "precedence" },
 
     {"kind": "layers", "title": "Eleven tiers, and one of them is where the bugs are", "caption": "**You do not need to memorise the table — you need the handful of places where the answer is not obvious, and to parenthesise there.** The surprise is tier 6: **the bitwise operators are looser than arithmetic and tighter than comparison, so `a & b == c` parses as `a & (b == c)`**, which is almost never what was meant. Two more worth knowing: **`**` is right-associative, so `2 ** 3 ** 2` is 512 rather than 64**, and **unary minus binds looser than `**`, so `-2 ** 2` is `-4`.**", "items": [{"label": "1-2: ** then unary +x -x ~x", "sub": "right-associative; -2 ** 2 is -4", "tone": "violet", "side": "tightest"}, {"label": "3-4: * / // % @ then + -", "sub": "ordinary arithmetic", "tone": "good", "side": "arithmetic"}, {"label": "5-6: << >> then & ^ |", "sub": "LOOSER than arithmetic, tighter than comparison", "tone": "crit", "side": "the trap"}, {"label": "7: in, is, <, <=, ==, !=", "sub": "all comparisons in one tier, and they chain", "tone": "good", "side": "comparison"}, {"label": "8-10: not x, then and, then or", "sub": "boolean, looser than every comparison", "tone": "good", "side": "boolean"}, {"label": "11: x if c else y, then lambda", "sub": "looser than everything above", "tone": "accent", "side": "loosest"}], "t": "diagram", "id": "dg-1_7-04-3"},
+
 
 
 

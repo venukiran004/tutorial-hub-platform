@@ -39,6 +39,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "the full grammar, in order", code: `
 def example(pos_only, /, standard, *args, kw_only, **kwargs):
     ...
@@ -163,6 +164,8 @@ parse(data, strict=True)`},
     /* ================================================================== */
     { t: "h2", n: "03", text: "Positional-only", id: "positional-only" },
 
+    {"kind": "flow", "title": "A slash buys back the freedom to rename a parameter", "caption": "**Without `/`, a parameter name is part of your public API forever — if nobody can write `x=3`, you can rename `x` to `dx` in a patch release.** That is the main reason, and two others follow. **Some names add nothing: `len(obj=[1,2,3])` is a `TypeError`, and rightly — `obj` carries no information a reader needed**, which is why many built-ins are positional-only. And **a function taking `**kwargs` cannot also accept a keyword matching one of its own parameters; making them positional-only removes the clash entirely** — which is what lets the output pass a `name` key straight through.", "cols": 3, "nodes": [{"id": "n", "label": "A parameter name is public API", "sub": "forever, without a slash", "tone": "crit"}, {"id": "r", "label": "With / you can rename it", "sub": "in a patch release", "tone": "good"}, {"id": "l", "label": "Some names add nothing", "sub": "len(obj=[1,2,3]) is a TypeError", "tone": "good"}, {"id": "k", "label": "And kwargs cannot clash with them", "sub": "a name key passes through", "tone": "violet"}, {"id": "b", "label": "Which is why built-ins use it", "sub": "not an exotic feature", "tone": "teal"}], "edges": [["n", "r"], ["r", "l"], ["l", "k"], ["k", "b"]], "t": "diagram", "id": "dg-3_2-03-1"},
+
     { t: "code", lang: "python", title: "the / marker", code: `
 def distance(x, y, /):
     """x and y can never be passed by name."""
@@ -200,6 +203,8 @@ print(tag("div", name="header"))
 
     /* ================================================================== */
     { t: "h2", n: "04", text: "`*args` and `**kwargs`", id: "args-kwargs" },
+
+    {"kind": "trace", "title": "The same call twice, and the second one is missing a field", "caption": "**`*args` collects extra positionals into a tuple and `**kwargs` collects extra keywords into a dict** — so a logging wrapper can accept anything and pass it on. The output is the argument for being explicit about what you forward: **the first call carries `request_id` and `latency`, the second carries only `request_id`**, and nothing in the signature said either was expected. Which is the trade: **`**kwargs` makes a function accept everything, including a typo, so a misspelled keyword is silently collected rather than rejected.**", "left": "call", "codeW": 170, "vars": ["args", "kwargs"], "steps": [{"code": "log('INFO', 'user', 42, request_id=..., latency=1.2)", "state": ["('user', 42)", "{'request_id', 'latency'}"], "tone": "good"}, {"code": "log('INFO', 'user', 42, request_id=...)", "state": ["('user', 42)", "{'request_id'}"], "changed": [1], "tone": "good"}, {"code": "log(..., requst_id=...)", "state": ["('user', 42)", "collected, not rejected"], "changed": [1], "tone": "crit", "note": "a typo survives"}], "t": "diagram", "id": "dg-3_2-04-2"},
 
     { t: "code", lang: "python", title: "collecting and unpacking", code: `
 def log(level, *parts, **fields):
@@ -256,6 +261,8 @@ def create_user(
 
     /* ================================================================== */
     { t: "h2", n: "05", text: "Defaults, revisited", id: "defaults" },
+
+    {"kind": "trace", "title": "Three levels of default, and `None` stops working at the third", "caption": "The rules are short: **never a mutable literal (1.4), evaluate once at `def` time, and prefer `None` as the sentinel.** The third level is where people get stuck: **`None` works until `None` is itself a valid value the caller might pass — then you need a private sentinel object, which cannot be confused with anything a caller could supply.** The usual shape is a module-level `_MISSING = object()`, **and it is the only way to tell “argument omitted” from “argument explicitly `None`”.**", "left": "default", "codeW": 170, "vars": ["works when", "fails when"], "steps": [{"code": "def f(x=[])", "state": ["never", "always - 1.4"], "tone": "crit"}, {"code": "def f(x=None)", "state": ["None is not a valid value", "None is meaningful"], "changed": [0, 1], "tone": "good"}, {"code": "_MISSING = object()", "state": ["always", "-"], "changed": [0, 1], "tone": "violet"}, {"code": "so it distinguishes", "state": ["omitted", "from explicitly None"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_2-05-3"},
 
     { t: "code", lang: "python", title: "the three rules", code: `
 from datetime import datetime, UTC

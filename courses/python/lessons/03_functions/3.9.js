@@ -79,6 +79,8 @@ def export_orders(
     /* ================================================================== */
     { t: "h2", n: "02", text: "Naming", id: "naming" },
 
+    {"kind": "trace", "title": "Six renames, and each one answers a question the caller was going to ask", "caption": "The pattern is that **a verb says what happens and a noun says to what** — so `process(data)` tells a reader nothing and `normalise_addresses(addresses)` needs no docstring. Three carry real information beyond clarity: **`get` hides whether it hits the network, where `fetch` implies I/O and `find` implies it may return nothing; `is_` returns a bool where `validate` raises, and `check` could be either; and units belong in the name or the type, never in the docstring alone** — which is why `timeout_seconds=30` beats `timeout=30`.", "left": "instead of", "codeW": 150, "vars": ["write", "because"], "steps": [{"code": "process(data)", "state": ["normalise_addresses(addresses)", "verb + noun"], "tone": "good"}, {"code": "get_user(id)", "state": ["fetch_user / find_user", "I/O, or may return nothing"], "changed": [0, 1], "tone": "violet"}, {"code": "check(x)", "state": ["is_valid(x) / validate(x)", "returns a bool, or raises"], "changed": [0, 1], "tone": "violet"}, {"code": "flag=True", "state": ["include_archived=True", "a flag with no noun is unreadable"], "changed": [0, 1], "tone": "good"}, {"code": "timeout=30", "state": ["timeout_seconds=30", "units in the name, not the docs"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_9-02-1"},
+
     { t: "table",
       head: ["Instead of", "Write", "Because"],
       rows: [
@@ -191,6 +193,8 @@ def schedule(
     /* ================================================================== */
     { t: "h2", n: "04", text: "Sentinels", id: "sentinels" },
 
+    {"kind": "trace", "title": "`filters or {}` and `filters is None` differ, and the difference is a falsy value", "caption": "**For a dict the two are usually equivalent in effect — and they diverge the moment a falsy value is meaningful: `page or 1` silently rejects `page=0`, and `retries or 3` rejects `retries=0`** (1.7). There is a second, quieter reason to prefer the explicit test: **`filters or {}` also creates a new dict when an *empty* one is passed, silently discarding the caller's object** — harmless for a filter and surprising for anything the caller intended to keep a reference to.", "left": "call", "codeW": 160, "vars": ["x or default", "x is None check"], "steps": [{"code": "f() with no argument", "state": ["the default", "the default"], "tone": "good"}, {"code": "f(retries=5)", "state": ["5", "5"], "changed": [0, 1], "tone": "good"}, {"code": "f(retries=0)", "state": ["3 - WRONG", "0"], "changed": [0, 1], "tone": "crit"}, {"code": "f(filters={})", "state": ["a NEW dict", "the caller's dict"], "changed": [0, 1], "tone": "crit", "note": "their object is discarded"}], "t": "diagram", "id": "dg-3_9-04-2"},
+
     { t: "code", lang: "python", title: "three levels of default", code: `
 from typing import Any, Final
 
@@ -235,6 +239,7 @@ def search(filters=None):
     { t: "h2", n: "05", text: "Evolving a signature", id: "evolving" },
 
     {"kind": "steps", "title": "Evolving a signature without breaking callers", "caption": "Add the new parameter as keyword-only with a default; deprecate the old one with a warning; remove it a release later. Callers that used keywords never notice.", "items": [{"label": "def send(msg, *, retries=3)", "desc": "new parameter, keyword-only, defaulted", "tone": "good"}, {"label": "accept the old name, warn", "desc": "warnings.warn('use retries=', DeprecationWarning)", "tone": "warn"}, {"label": "remove the old name next release", "desc": "the warning gave callers a version to migrate in", "tone": "accent"}], "t": "diagram", "id": "dg-3_9-05-0"},
+
 
 
 

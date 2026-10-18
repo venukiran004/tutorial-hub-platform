@@ -28,6 +28,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "In most languages an integer is a fixed number of bits, and exceeding it wraps around silently. Python has no such limit — an `int` grows to whatever size your memory allows." },
 
     { t: "code", lang: "python", title: "arbitrary precision", code: `
@@ -73,6 +74,7 @@ print(sys.getsizeof(2 ** 1000))`,
     { t: "h2", n: "02", text: "Floats, and the money bug", id: "float" },
 
     {"kind": "trace", "title": "0.1 + 0.2 in binary", "caption": "A float carries 53 significant bits, and 0.1 is a **repeating fraction** in binary. What is stored is slightly above a tenth, so the sum lands slightly above three tenths — which is why `0.1 + 0.2 == 0.3` is `False`, and why money belongs in `Decimal` or integer pence.", "left": "what you write", "codeW": 170, "vars": ["what is actually stored"], "steps": [{"code": "0.1", "state": ["0.1000000000000000055511151231257827"]}, {"code": "0.2", "state": ["0.2000000000000000111022302462515654"]}, {"code": "0.1 + 0.2", "state": ["0.3000000000000000444089209850062616"], "changed": [0], "tone": "crit"}, {"code": "0.3", "state": ["0.2999999999999999888977697537403456"], "note": "a different number"}], "t": "diagram", "id": "dg-1_5-02-0"},
+
 
 
 
@@ -233,6 +235,7 @@ print(round(2.675, 2))  # 2.67 -- not 2.68`,
 
 
 
+
     { t: "p", text: "`bool` is a subclass of `int`. `True` is 1 and `False` is 0, not merely convertible to them." },
 
     { t: "code", lang: "python", title: "and this is genuinely useful", code: `
@@ -277,6 +280,7 @@ def apply_limit(limit: int | None = None) -> int:
     { t: "h2", n: "04", text: "None means absent", id: "none" },
 
     {"kind": "trace", "title": "Four falsy values that mean four different things", "caption": "**`None` is a singleton — there is exactly one instance in the process, which is why `is None` is the correct test — and its job is to represent the absence of a value, which is a different statement from zero or empty.** The user example makes it operational: **a user who has never logged in has `last_login = None`; a user with no items has `item_count = 0`; a user who cleared their bio has `bio = \"\"`.** All four are falsy, **so `if not x` collapses all four into one branch** — which is the bug this section exists to prevent.", "left": "value", "codeW": 130, "vars": ["means", "example", "falsy?"], "steps": [{"code": "None", "state": ["no value exists", "never logged in", "yes"], "tone": "violet"}, {"code": "0", "state": ["a quantity, which is zero", "no items", "yes"], "changed": [0, 1], "tone": "good"}, {"code": "\"\"", "state": ["a string, which is empty", "cleared their bio", "yes"], "changed": [0, 1], "tone": "good"}, {"code": "[]", "state": ["a collection, which is empty", "no roles", "yes"], "changed": [0, 1], "tone": "good"}, {"code": "if not x", "state": ["collapses all four", "-", "the bug"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-1_5-04-3"},
+
 
 
 

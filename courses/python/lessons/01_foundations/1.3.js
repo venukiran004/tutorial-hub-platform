@@ -39,6 +39,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "The name suggests something elaborate — a container, a sandbox, a runtime feature. It is none of those. Create one and look inside:" },
 
     { t: "code", lang: "bash", title: "terminal", code: `
@@ -187,6 +188,7 @@ $ pip install some-pure-python-package`},
 
 
 
+
     { t: "p", text: "VS Code does not read your shell's `PATH`. It has its own notion of the selected interpreter, and every Python feature — IntelliSense, the linter, the debugger, the test runner — follows that setting rather than your terminal. When the two disagree, you get red squiggles under imports that work perfectly when you run the file." },
 
     { t: "p", text: "Fix it once per project by committing the setting, so every contributor gets the same behaviour:" },
@@ -241,6 +243,7 @@ $ pip install some-pure-python-package`},
 
 
 
+
     { t: "p", text: "Jupyter has its own indirection: a *kernel* is a registered interpreter, and the list of kernels is global to your user account. So a notebook can quietly run against an interpreter that has nothing to do with the project directory it lives in — which is why a notebook works for you and fails for a colleague who cloned the same repository." },
 
     { t: "code", lang: "bash", title: "terminal — bind a kernel to this project", code: `
@@ -274,6 +277,7 @@ print(sys.executable)`},
     { t: "h2", n: "05", text: "The REPL is a tool, not a toy", id: "repl" },
 
     {"kind": "layers", "title": "Five things to settle in the REPL rather than guess at", "caption": "**The interactive interpreter is where small questions belong — what does this method return, what shape is this data, does this regex match — and reaching for it is faster than writing a script and far faster than guessing.** The row most people have not met is the fourth: **`python -i script.py` runs the script and then leaves you in a REPL with all its variables still alive**, which is the cheapest way there is to inspect state after a failure. And **IPython costs one install and pays from the first session.**", "items": [{"label": "help(obj)", "sub": "docstring and signature - works on your own code too", "tone": "good", "side": "docs"}, {"label": "dir(obj)", "sub": "attributes; filter the underscores for the public surface", "tone": "good", "side": "surface"}, {"label": "_", "sub": "the last expression's result - saves retyping a long computation", "tone": "good", "side": "recall"}, {"label": "python -i script.py", "sub": "run it, then keep every variable alive", "tone": "violet", "side": "post-mortem"}, {"label": "IPython", "sub": "tab completion, ? and ??, %timeit, ! for shell", "tone": "teal", "side": "one install"}], "t": "diagram", "id": "dg-1_3-05-3"},
+
 
 
 

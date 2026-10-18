@@ -1,0 +1,212 @@
+{
+ "3.1": [
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "A return type that varies with the path is the signal",
+         "caption": "**Every Python function returns something — one with no `return`, or one that falls off the end, returns `None`.** The problem is not `None` itself; **it is a function whose return *type* varies with the path taken**, because every caller then needs a different set of checks and no two callers agree on which. The split follows the seams: **the decision that drives everything is routine versus exceptional — an empty id and a missing record mean the caller's assumption was wrong, so those raise; a record with no lines is a perfectly normal state, so that returns.**",
+         "cols": 3,
+         "nodes": [
+          {"id": "v", "label": "The return type varies by path", "sub": "dict, None, False, a string", "tone": "crit"},
+          {"id": "c", "label": "So every caller checks differently", "sub": "and no two agree", "tone": "crit"},
+          {"id": "d", "label": "Decide: routine or exceptional?", "sub": "the split that drives the rest", "tone": "violet"},
+          {"id": "r", "label": "Exceptional -> raise", "sub": "a missing record, an empty id", "tone": "good"},
+          {"id": "n", "label": "Routine -> return", "sub": "a record with no lines", "tone": "good"}],
+         "edges": [["v", "c"], ["c", "d"], ["d", "r"], ["d", "n"]]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "How much docstring, decided by who reads it",
+         "caption": "**A docstring that restates the signature earns nothing — the signature is already there, and type hints say the types.** So the amount is a function of the audience: **a short private helper needs a one-line summary or nothing at all if the name and hints say it; a public API needs Summary, Args, Returns and Raises, because callers cannot read your source.** And the two rows that always need text regardless of size: **a non-obvious constraint — idempotency, thread-safety, ordering, units — and anything surprising, where you document *why* rather than *what*.**",
+         "left": "the function", "codeW": 190,
+         "vars": ["what it needs"],
+         "steps": [
+          {"code": "short, obvious, private", "state": ["one line, or nothing"], "tone": "good"},
+          {"code": "public API", "state": ["Summary, Args, Returns, Raises"], "changed": [0], "tone": "violet"},
+          {"code": "a non-obvious constraint", "state": ["THAT constraint, always"], "changed": [0], "tone": "violet", "note": "units, ordering, thread-safety"},
+          {"code": "surprising behaviour", "state": ["why, not what"], "changed": [0], "tone": "violet"},
+          {"code": "restating the signature", "state": ["worth nothing"], "changed": [0], "tone": "crit"}]}}
+ ],
+
+ "3.2": [
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "A slash buys back the freedom to rename a parameter",
+         "caption": "**Without `/`, a parameter name is part of your public API forever — if nobody can write `x=3`, you can rename `x` to `dx` in a patch release.** That is the main reason, and two others follow. **Some names add nothing: `len(obj=[1,2,3])` is a `TypeError`, and rightly — `obj` carries no information a reader needed**, which is why many built-ins are positional-only. And **a function taking `**kwargs` cannot also accept a keyword matching one of its own parameters; making them positional-only removes the clash entirely** — which is what lets the output pass a `name` key straight through.",
+         "cols": 3,
+         "nodes": [
+          {"id": "n", "label": "A parameter name is public API", "sub": "forever, without a slash", "tone": "crit"},
+          {"id": "r", "label": "With / you can rename it", "sub": "in a patch release", "tone": "good"},
+          {"id": "l", "label": "Some names add nothing", "sub": "len(obj=[1,2,3]) is a TypeError", "tone": "good"},
+          {"id": "k", "label": "And kwargs cannot clash with them", "sub": "a name key passes through", "tone": "violet"},
+          {"id": "b", "label": "Which is why built-ins use it", "sub": "not an exotic feature", "tone": "teal"}],
+         "edges": [["n", "r"], ["r", "l"], ["l", "k"], ["k", "b"]]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "The same call twice, and the second one is missing a field",
+         "caption": "**`*args` collects extra positionals into a tuple and `**kwargs` collects extra keywords into a dict** — so a logging wrapper can accept anything and pass it on. The output is the argument for being explicit about what you forward: **the first call carries `request_id` and `latency`, the second carries only `request_id`**, and nothing in the signature said either was expected. Which is the trade: **`**kwargs` makes a function accept everything, including a typo, so a misspelled keyword is silently collected rather than rejected.**",
+         "left": "call", "codeW": 170,
+         "vars": ["args", "kwargs"],
+         "steps": [
+          {"code": "log('INFO', 'user', 42, request_id=..., latency=1.2)", "state": ["('user', 42)", "{'request_id', 'latency'}"], "tone": "good"},
+          {"code": "log('INFO', 'user', 42, request_id=...)", "state": ["('user', 42)", "{'request_id'}"], "changed": [1], "tone": "good"},
+          {"code": "log(..., requst_id=...)", "state": ["('user', 42)", "collected, not rejected"], "changed": [1], "tone": "crit", "note": "a typo survives"}]}},
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "Three levels of default, and `None` stops working at the third",
+         "caption": "The rules are short: **never a mutable literal (1.4), evaluate once at `def` time, and prefer `None` as the sentinel.** The third level is where people get stuck: **`None` works until `None` is itself a valid value the caller might pass — then you need a private sentinel object, which cannot be confused with anything a caller could supply.** The usual shape is a module-level `_MISSING = object()`, **and it is the only way to tell “argument omitted” from “argument explicitly `None`”.**",
+         "left": "default", "codeW": 170,
+         "vars": ["works when", "fails when"],
+         "steps": [
+          {"code": "def f(x=[])", "state": ["never", "always - 1.4"], "tone": "crit"},
+          {"code": "def f(x=None)", "state": ["None is not a valid value", "None is meaningful"], "changed": [0, 1], "tone": "good"},
+          {"code": "_MISSING = object()", "state": ["always", "-"], "changed": [0, 1], "tone": "violet"},
+          {"code": "so it distinguishes", "state": ["omitted", "from explicitly None"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "3.3": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "You need these only to assign, never to read",
+         "caption": "**Reading follows LEGB automatically — `global` and `nonlocal` exist only so that an *assignment* writes somewhere other than the local scope.** The difference between them is where: **`global` writes to the module namespace, skipping enclosing scopes entirely; `nonlocal` writes to the nearest enclosing function's local.** And the asymmetry worth remembering: **`nonlocal` cannot create a name — it must already exist in an enclosing function — while `global` can create a module-level name that was never there.**",
+         "left": "declaration", "codeW": 160,
+         "vars": ["assignment writes to", "can it create the name?"],
+         "steps": [
+          {"code": "(none)", "state": ["the local scope", "yes - that is the default"], "tone": "good"},
+          {"code": "global name", "state": ["the MODULE namespace", "yes"], "changed": [0, 1], "tone": "accent", "note": "skips enclosing scopes"},
+          {"code": "nonlocal name", "state": ["the nearest enclosing function", "NO - it must exist"], "changed": [0, 1], "tone": "violet"},
+          {"code": "reading", "state": ["LEGB, automatically", "neither is needed"], "changed": [0, 1], "tone": "good"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Four scope results, and only one of them matches the intuition from other languages",
+         "caption": "**Python scopes at function level, not block level — so a name assigned inside an `if` or a `for` is visible after it, and a loop variable outlives the loop.** Which is why the second row prints at all. Then the two that look inconsistent and are not: **a comprehension has its own scope so the outer name is `unchanged` (2.11), and a class body is a scope that methods do not nest inside** — so a method cannot see a class-level name without going through `self` or the class.",
+         "left": "construct", "codeW": 170,
+         "vars": ["result", "why"],
+         "steps": [
+          {"code": "assigned inside an if", "state": ["visible after", "function scope, not block"], "tone": "accent"},
+          {"code": "a for loop variable", "state": ["outlives the loop", "same reason"], "changed": [0, 1], "tone": "accent"},
+          {"code": "a comprehension variable", "state": ["unchanged outside", "its own scope (2.11)"], "changed": [0, 1], "tone": "violet"},
+          {"code": "a class body name, from a method", "state": ["not visible", "methods do not nest in it"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "3.4": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "partial freezes arguments and keeps the function inspectable",
+         "caption": "**`partial(send, channel=\"ops\", urgent=True)` returns a callable with those arguments already bound** — so the call site passes only what varies. The advantage over a lambda is the last row: **a `partial` object exposes `.func` and `.keywords`, so it prints as `send {'channel': 'ops', 'urgent': True}` and a debugger can tell you what it was built from.** A lambda closing over the same values shows you nothing. **Which is also why `partial` pickles and a lambda does not** — the difference that matters for multiprocessing.",
+         "left": "object", "codeW": 170,
+         "vars": ["call site", "inspectable?"],
+         "steps": [
+          {"code": "partial(send, channel='ops', urgent=True)", "state": ["alert('disk at 95%')", "yes"], "tone": "good"},
+          {"code": "lambda m: send(m, 'ops', True)", "state": ["the same", "NO"], "changed": [1], "tone": "warn"},
+          {"code": "printing the partial", "state": ["send {'channel': 'ops', ...}", "func and keywords"], "changed": [0, 1], "tone": "violet"},
+          {"code": "pickling it", "state": ["works", "a lambda does not"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "The interface is the call signature",
+         "caption": "**In languages without first-class functions, varying one behaviour means defining an interface and a class per implementation. In Python the interface *is* the call signature and each implementation is a function.** So the Strategy pattern collapses to a dict of functions and a lookup — 2.6's third dispatch shape — and the measured output is a discount of **80.00** selected by name. The limit is worth knowing: **once a strategy needs state, configuration or several related methods, a class earns its place back.**",
+         "cols": 3,
+         "nodes": [
+          {"id": "i", "label": "Elsewhere: an interface per behaviour", "sub": "and a class per implementation", "tone": "accent"},
+          {"id": "s", "label": "Here: the call signature IS the interface", "sub": "and a function is the implementation", "tone": "violet"},
+          {"id": "d", "label": "So a dict of functions, and a lookup", "sub": "2.6's third shape", "tone": "good"},
+          {"id": "r", "label": "Measured: 80.00, chosen by name", "sub": "no class in sight", "tone": "good"},
+          {"id": "c", "label": "Until it needs state or several methods", "sub": "then a class earns it back", "tone": "warn"}],
+         "edges": [["i", "s"], ["s", "d"], ["d", "r"], ["r", "c"]]}}
+ ],
+
+ "3.5": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Three cases, and the middle one is the one a comprehension cannot do cleanly",
+         "caption": "A comprehension is the default and **`map` wins in exactly three situations.** The first is cosmetic — **`map(str.strip, lines)` beats `[s.strip() for s in lines]` when the function already exists, because the loop variable adds nothing.** The second is the real one: **`map(f, a, b)` iterates several sequences in parallel and stops at the shortest, which a comprehension needs `zip` to express.** And the third is laziness over a large or infinite source, **where `map` returns an iterator rather than building a list.**",
+         "left": "case", "codeW": 190,
+         "vars": ["map", "the comprehension"],
+         "steps": [
+          {"code": "the function already exists", "state": ["map(str.strip, lines)", "[s.strip() for s in lines]"], "tone": "good"},
+          {"code": "parallel over several sequences", "state": ["map(f, first, last)", "needs zip to express"], "changed": [0, 1], "tone": "violet"},
+          {"code": "a large or infinite source", "state": ["lazy - an iterator", "builds the whole list"], "changed": [0, 1], "tone": "violet"},
+          {"code": "anything with a condition", "state": ["needs filter too", "clearer - one expression"], "changed": [0, 1], "tone": "warn"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Four results, and three of them have a built-in that says it better",
+         "caption": "`reduce` folds a binary function over a sequence, and the measured values make the case against it: **24 is `math.prod`, 10 is `sum`, 4 is `max`** — all three read better as the named built-in, and `reduce` requires the reader to decode the lambda to find out which operation it was. **So what is left for `reduce` is the fourth row: a genuinely custom combine with no built-in equivalent** — merging configuration dicts left to right, composing functions, intersecting a list of sets. **And it moved out of builtins into `functools` in Python 3, which was a judgement about how often it is the right tool.**",
+         "left": "reduce expression", "codeW": 180,
+         "vars": ["result", "what to write instead"],
+         "steps": [
+          {"code": "reduce(mul, [1,2,3,4])", "state": ["24", "math.prod"], "tone": "crit"},
+          {"code": "reduce(add, [1,2,3,4])", "state": ["10", "sum"], "changed": [0, 1], "tone": "crit"},
+          {"code": "reduce(lambda a,b: a if a>b else b, xs)", "state": ["4", "max"], "changed": [0, 1], "tone": "crit"},
+          {"code": "reduce(merge, configs)", "state": ["a merged dict", "nothing - reduce is right"], "changed": [0, 1], "tone": "good"}]}}
+ ],
+
+ "3.7": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Without wraps the function's identity is the wrapper's",
+         "caption": "**A decorator returns a different function object, so unless you copy the metadata across, the decorated function reports the wrapper's name, no docstring and a signature of `(*args, **kwargs)`.** Which is not cosmetic: **`help()` shows the wrapper, a traceback names the wrapper, and introspection-driven tools — pytest fixtures, FastAPI route signatures, `inspect.signature` — read the wrong thing.** `functools.wraps` is one decorator on the inner function and it fixes all three, **and it also sets `__wrapped__` so the original is still reachable.**",
+         "left": "what you read", "codeW": 170,
+         "vars": ["without wraps", "with wraps"],
+         "steps": [
+          {"code": "func.__name__", "state": ["wrapper", "the real name"], "tone": "crit"},
+          {"code": "func.__doc__", "state": ["None", "the real docstring"], "changed": [0, 1], "tone": "crit"},
+          {"code": "inspect.signature(func)", "state": ["(*args, **kwargs)", "the real signature"], "changed": [0, 1], "tone": "crit"},
+          {"code": "func.__wrapped__", "state": ["absent", "the original function"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "`@expr` calls expr with the function, so a call needs one more layer",
+         "caption": "**The reason is mechanical: `@expr` calls `expr` with the function. If `expr` is itself a call, its *result* must be the thing that takes the function** — hence three nested definitions rather than two. Read the equivalence: **`retry(times=5)` runs first and returns `decorator`; that result is then applied to `fetch`.** And the failure mode is specific: **forget the parentheses and the function itself becomes the `times` argument, so the error appears at the call site rather than at the decoration**, which is what makes it puzzling.",
+         "cols": 3,
+         "nodes": [
+          {"id": "a", "label": "@expr calls expr with the function", "sub": "always", "tone": "accent"},
+          {"id": "c", "label": "So if expr is a call...", "sub": "retry(times=5)", "tone": "violet"},
+          {"id": "r", "label": "...its RESULT takes the function", "sub": "three nested defs", "tone": "violet"},
+          {"id": "f", "label": "Forget the parentheses", "sub": "and the function becomes times", "tone": "crit"},
+          {"id": "s", "label": "Error at the CALL SITE, not the decoration", "sub": "which is why it is puzzling", "tone": "crit"}],
+         "edges": [["a", "c"], ["c", "r"], ["r", "f"], ["f", "s"]]}}
+ ],
+
+ "3.8": [
+  {"after": "05",
+   "d": {"kind": "compare",
+         "title": "The question is whether the data is recursive, not whether the problem is",
+         "caption": "**The first row decides most cases: trees, nested JSON, filesystems and expression grammars are recursive *data*, and a recursive traversal of recursive data is the clearest code there is.** The rest is about risk. **Depth that is bounded and known small — a JSON document, a parse tree — is safe; depth that is unbounded or user-controlled is a stack overflow waiting for the right input.** And the last row is the asymmetry: **iteration handles arbitrarily large input, which recursion cannot, whatever its depth limit is set to.**",
+         "columns": [
+          {"title": "Recursion", "tone": "violet",
+           "items": ["the DATA is recursive — trees, nested JSON, filesystems",
+                     "depth is bounded and known small",
+                     "the recursive form is dramatically clearer",
+                     "the traversal is naturally post-order",
+                     "branches overlap, so memoisation applies"]},
+          {"title": "Iteration", "tone": "good",
+           "items": ["the problem is a linear sequence",
+                     "depth is unbounded or user-controlled",
+                     "both forms are similarly clear",
+                     "pre-order, which converts mechanically",
+                     "input can be arbitrarily large"]}]}}
+ ],
+
+ "3.9": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Six renames, and each one answers a question the caller was going to ask",
+         "caption": "The pattern is that **a verb says what happens and a noun says to what** — so `process(data)` tells a reader nothing and `normalise_addresses(addresses)` needs no docstring. Three carry real information beyond clarity: **`get` hides whether it hits the network, where `fetch` implies I/O and `find` implies it may return nothing; `is_` returns a bool where `validate` raises, and `check` could be either; and units belong in the name or the type, never in the docstring alone** — which is why `timeout_seconds=30` beats `timeout=30`.",
+         "left": "instead of", "codeW": 150,
+         "vars": ["write", "because"],
+         "steps": [
+          {"code": "process(data)", "state": ["normalise_addresses(addresses)", "verb + noun"], "tone": "good"},
+          {"code": "get_user(id)", "state": ["fetch_user / find_user", "I/O, or may return nothing"], "changed": [0, 1], "tone": "violet"},
+          {"code": "check(x)", "state": ["is_valid(x) / validate(x)", "returns a bool, or raises"], "changed": [0, 1], "tone": "violet"},
+          {"code": "flag=True", "state": ["include_archived=True", "a flag with no noun is unreadable"], "changed": [0, 1], "tone": "good"},
+          {"code": "timeout=30", "state": ["timeout_seconds=30", "units in the name, not the docs"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "`filters or {}` and `filters is None` differ, and the difference is a falsy value",
+         "caption": "**For a dict the two are usually equivalent in effect — and they diverge the moment a falsy value is meaningful: `page or 1` silently rejects `page=0`, and `retries or 3` rejects `retries=0`** (1.7). There is a second, quieter reason to prefer the explicit test: **`filters or {}` also creates a new dict when an *empty* one is passed, silently discarding the caller's object** — harmless for a filter and surprising for anything the caller intended to keep a reference to.",
+         "left": "call", "codeW": 160,
+         "vars": ["x or default", "x is None check"],
+         "steps": [
+          {"code": "f() with no argument", "state": ["the default", "the default"], "tone": "good"},
+          {"code": "f(retries=5)", "state": ["5", "5"], "changed": [0, 1], "tone": "good"},
+          {"code": "f(retries=0)", "state": ["3 - WRONG", "0"], "changed": [0, 1], "tone": "crit"},
+          {"code": "f(filters={})", "state": ["a NEW dict", "the caller's dict"], "changed": [0, 1], "tone": "crit", "note": "their object is discarded"}]}}
+ ]
+}
